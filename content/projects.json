@@ -1,0 +1,27 @@
+{
+  "projects": [
+    {
+      "id": "1",
+      "title": "Revenue Analytics Dashboard",
+      "description": "A comprehensive analytics dashboard for revenue tracking and forecasting.",
+      "image": "/images/projects/revenue-analytics.jpg",
+      "link": "https://example.com/revenue-analytics",
+      "github": "https://github.com/username/revenue-analytics",
+      "tags": ["Next.js", "TypeScript", "Data Visualization"],
+      "featured": true,
+      "publishedAt": "2024-02-21"
+    },
+    {
+      "id": "2",
+      "title": "Process Automation System",
+      "description": "Automated system for streamlining business processes and workflows.",
+      "image": "/images/projects/process-automation.jpg",
+      "link": "https://example.com/process-automation",
+      "github": "https://github.com/username/process-automation",
+      "tags": ["React", "Node.js", "Automation"],
+      "featured": false,
+      "publishedAt": "2024-01-15"
+    }
+  ]
+}
+

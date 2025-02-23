@@ -1,0 +1,21 @@
+{
+  "testimonials": [
+    {
+      "id": "1",
+      "name": "Alex Thompson",
+      "role": "CEO",
+      "company": "TechCorp",
+      "content": "Richard's expertise in revenue operations transformed our business processes.",
+      "image": "/images/testimonials/alex-thompson.jpg"
+    },
+    {
+      "id": "2",
+      "name": "Sarah Chen",
+      "role": "COO",
+      "company": "InnovateNow",
+      "content": "His strategic approach to digital transformation yielded impressive results.",
+      "image": "/images/testimonials/sarah-chen.jpg"
+    }
+  ]
+}
+
