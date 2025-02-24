@@ -14,7 +14,8 @@ export async function GET() {
         DO UPDATE SET views = analytics.views + 1
       `
     } catch (error) {
-      throw new ResumeGenerationError("Failed to track resume download", ResumeErrorCodes.DATABASE_ERROR, error)
+      console.error("Failed to track resume download:", error)
+      // Continue with download even if tracking fails
     }
 
     // Launch Puppeteer with retry mechanism
@@ -31,7 +32,7 @@ export async function GET() {
     try {
       const page = await browser.newPage()
 
-      // Set viewport to match A4 size
+      // Set viewport to match A4 size at 96 DPI
       await page.setViewport({
         width: 794, // A4 width in pixels at 96 DPI
         height: 1123, // A4 height in pixels at 96 DPI
@@ -64,11 +65,12 @@ export async function GET() {
 
       await browser.close()
 
-      // Return the PDF
+      // Return the PDF with appropriate headers
       return new NextResponse(pdf, {
         headers: {
           "Content-Type": "application/pdf",
-          "Content-Disposition": "attachment; filename=richard-hudson-resume.pdf",
+          "Content-Disposition": 'attachment; filename="richard-hudson-resume.pdf"',
+          "Cache-Control": "no-cache",
         },
       })
     } catch (error) {
@@ -78,6 +80,7 @@ export async function GET() {
       throw new ResumeGenerationError("Failed to generate resume PDF", ResumeErrorCodes.RENDER_ERROR, error)
     }
   } catch (error) {
+    console.error("Resume generation error:", error)
     return NextResponse.json(
       {
         error:

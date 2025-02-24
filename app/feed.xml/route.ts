@@ -1,46 +1,40 @@
-import { sql } from "@vercel/postgres"
-import RSS from "rss"
+import { getPosts } from "@/lib/blog/api"
+import { siteConfig } from "@/config/site"
 
 export async function GET() {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://richardwhudsonjr.com"
+  const posts = await getPosts()
 
-  const feed = new RSS({
-    title: "Richard Hudson's Blog",
-    description: "Thoughts and insights on software development, revenue operations, and technology solutions",
-    site_url: baseUrl,
-    feed_url: `${baseUrl}/feed.xml`,
-    language: "en",
-    pubDate: new Date(),
-    copyright: `All rights reserved ${new Date().getFullYear()}, Richard Hudson`,
-  })
+  const feed = `<?xml version="1.0" encoding="UTF-8"?>
+    <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+      <channel>
+        <title>${siteConfig.name}</title>
+        <link>${siteConfig.url}</link>
+        <description>${siteConfig.description}</description>
+        <language>en</language>
+        <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+        <atom:link href="${siteConfig.url}/feed.xml" rel="self" type="application/rss+xml"/>
+        ${posts
+          .map(
+            (post) => `
+          <item>
+            <title>${post.title}</title>
+            <link>${siteConfig.url}/blog/${post.slug}</link>
+            <description>${post.description}</description>
+            <pubDate>${new Date(post.publishedAt || post.updatedAt).toUTCString()}</pubDate>
+            <guid>${siteConfig.url}/blog/${post.slug}</guid>
+            <author>${siteConfig.author.email} (${siteConfig.author.name})</author>
+            ${post.tags.map((tag) => `<category>${tag}</category>`).join("")}
+          </item>
+        `,
+          )
+          .join("")}
+      </channel>
+    </rss>`
 
-  const { rows: posts } = await sql`
-    SELECT 
-      title, 
-      excerpt, 
-      slug, 
-      published_at,
-      content
-    FROM posts 
-    WHERE status = 'published' 
-    ORDER BY published_at DESC
-    LIMIT 10
-  `
-
-  posts.forEach((post) => {
-    feed.item({
-      title: post.title,
-      description: post.excerpt,
-      url: `${baseUrl}/blog/${post.slug}`,
-      date: post.published_at,
-      guid: post.slug,
-      custom_elements: [{ "content:encoded": post.content }],
-    })
-  })
-
-  return new Response(feed.xml({ indent: true }), {
+  return new Response(feed, {
     headers: {
       "Content-Type": "application/xml",
+      "Cache-Control": "public, max-age=3600",
     },
   })
 }

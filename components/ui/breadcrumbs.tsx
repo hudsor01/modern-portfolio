@@ -1,6 +1,6 @@
-import { ChevronRight, Home } from "lucide-react"
 import Link from "next/link"
-import { Fragment } from "react"
+import { ChevronRight, Home } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface Breadcrumb {
   label: string
@@ -9,11 +9,12 @@ interface Breadcrumb {
 
 interface BreadcrumbsProps {
   items: Breadcrumb[]
+  className?: string
 }
 
-export function Breadcrumbs({ items }: BreadcrumbsProps) {
+export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
   return (
-    <nav className="flex" aria-label="Breadcrumb">
+    <nav aria-label="Breadcrumb" className={cn("flex", className)}>
       <ol className="flex items-center space-x-2">
         <li>
           <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -22,22 +23,19 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
           </Link>
         </li>
         {items.map((item, index) => (
-          <Fragment key={item.href}>
-            <li className="flex items-center">
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            </li>
-            <li>
-              <Link
-                href={item.href}
-                className={`text-sm hover:text-foreground transition-colors ${
-                  index === items.length - 1 ? "font-medium text-foreground" : "text-muted-foreground"
-                }`}
-                aria-current={index === items.length - 1 ? "page" : undefined}
-              >
-                {item.label}
-              </Link>
-            </li>
-          </Fragment>
+          <li key={item.href} className="flex items-center">
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            <Link
+              href={item.href}
+              className={cn(
+                "ml-2 text-sm hover:text-foreground transition-colors",
+                index === items.length - 1 ? "font-medium text-foreground" : "text-muted-foreground",
+              )}
+              aria-current={index === items.length - 1 ? "page" : undefined}
+            >
+              {item.label}
+            </Link>
+          </li>
         ))}
       </ol>
     </nav>

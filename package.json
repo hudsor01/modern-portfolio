@@ -131,7 +131,10 @@
     "@tiptap/extension-task-item": "latest",
     "@tiptap/extension-code-block-lowlight": "latest",
     "use-debounce": "latest",
-    "drizzle-zod": "latest"
+    "drizzle-zod": "latest",
+    "crypto": "latest",
+    "react-intersection-observer": "latest",
+    "sanitize-html": "latest"
   },
   "devDependencies": {
     "@types/node": "^22",

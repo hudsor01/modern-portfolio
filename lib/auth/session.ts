@@ -1,60 +1,54 @@
 import { cookies } from "next/headers"
-import { encrypt, decrypt } from "./crypto"
+import { encrypt, decrypt } from "@/lib/crypto"
+import { authConfig } from "./config"
 
-const SESSION_COOKIE = "session"
-const MAX_AGE = 60 * 60 * 24 * 7 // 7 days
-
-export interface Session {
-  id: string
+interface SessionData {
   userId: string
   email: string
   role: "admin" | "user"
-  expires: Date
+  createdAt: number
 }
 
-export async function createSession(data: Omit<Session, "id" | "expires">): Promise<Session> {
-  const session: Session = {
-    id: crypto.randomUUID(),
+export async function createSession(data: Omit<SessionData, "createdAt">) {
+  const sessionData: SessionData = {
     ...data,
-    expires: new Date(Date.now() + MAX_AGE * 1000),
+    createdAt: Date.now(),
   }
 
-  // Encrypt session data
-  const encrypted = await encrypt(JSON.stringify(session))
+  const encrypted = await encrypt(JSON.stringify(sessionData))
 
-  // Set cookie
-  cookies().set(SESSION_COOKIE, encrypted, {
+  cookies().set("session", encrypted, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
-    maxAge: MAX_AGE,
-    path: "/",
+    maxAge: authConfig.session.maxAge,
   })
 
-  return session
+  return sessionData
 }
 
-export async function getSession(): Promise<Session | null> {
-  const cookie = cookies().get(SESSION_COOKIE)
-  if (!cookie) return null
+export async function getSession(): Promise<SessionData | null> {
+  const session = cookies().get("session")
+
+  if (!session) return null
 
   try {
-    const decrypted = await decrypt(cookie.value)
-    const session: Session = JSON.parse(decrypted)
+    const decrypted = await decrypt(session.value)
+    const sessionData: SessionData = JSON.parse(decrypted)
 
     // Check if session is expired
-    if (new Date(session.expires) < new Date()) {
-      await deleteSession()
+    if (Date.now() - sessionData.createdAt > authConfig.session.maxAge * 1000) {
+      cookies().delete("session")
       return null
     }
 
-    return session
+    return sessionData
   } catch {
     return null
   }
 }
 
 export async function deleteSession() {
-  cookies().delete(SESSION_COOKIE)
+  cookies().delete("session")
 }
 

@@ -1,38 +1,46 @@
 import { createCipheriv, createDecipheriv, randomBytes } from "crypto"
 
-const algorithm = "aes-256-gcm"
-const ivLength = 12
-const saltLength = 16
-const tagLength = 16
-const tagPosition = saltLength + ivLength
-const encryptedPosition = tagPosition + tagLength
+const ALGORITHM = "aes-256-gcm"
+const IV_LENGTH = 12
+const SALT_LENGTH = 16
+const TAG_LENGTH = 16
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY!
 
-export function encrypt(text: string): string {
-  const iv = randomBytes(ivLength)
-  const salt = randomBytes(saltLength)
-  const key = Buffer.from(process.env.ENCRYPTION_KEY!, "hex")
-
-  const cipher = createCipheriv(algorithm, key, iv)
-  const encrypted = Buffer.concat([cipher.update(text, "utf8"), cipher.final()])
-  const tag = cipher.getAuthTag()
-
-  const buffer = Buffer.concat([salt, iv, tag, encrypted])
-  return buffer.toString("base64")
+if (!ENCRYPTION_KEY) {
+  throw new Error("ENCRYPTION_KEY environment variable is not set")
 }
 
-export function decrypt(encdata: string): string {
-  const buffer = Buffer.from(encdata, "base64")
-  const salt = buffer.subarray(0, saltLength)
-  const iv = buffer.subarray(saltLength, tagPosition)
-  const tag = buffer.subarray(tagPosition, encryptedPosition)
-  const encrypted = buffer.subarray(encryptedPosition)
-  const key = Buffer.from(process.env.ENCRYPTION_KEY!, "hex")
+export async function encrypt(text: string): Promise<string> {
+  const iv = randomBytes(IV_LENGTH)
+  const salt = randomBytes(SALT_LENGTH)
 
-  const decipher = createDecipheriv(algorithm, key, iv)
-  decipher.setAuthTag(tag)
+  const cipher = createCipheriv(ALGORITHM, Buffer.from(ENCRYPTION_KEY, "hex"), iv)
 
-  const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()])
+  let encrypted = cipher.update(text, "utf8", "hex")
+  encrypted += cipher.final("hex")
 
-  return decrypted.toString("utf8")
+  const authTag = cipher.getAuthTag()
+
+  // Combine IV, salt, auth tag, and encrypted data
+  const combined = Buffer.concat([iv, salt, authTag, Buffer.from(encrypted, "hex")])
+
+  return combined.toString("base64")
 }
 
+export async function decrypt(encrypted: string): Promise<string> {
+  const buf = Buffer.from(encrypted, "base64")
+
+  const iv = buf.subarray(0, IV_LENGTH)
+  const salt = buf.subarray(IV_LENGTH, IV_LENGTH + SALT_LENGTH)
+  const authTag = buf.subarray(IV_LENGTH + SALT_LENGTH, IV_LENGTH + SALT_LENGTH + TAG_LENGTH)
+  const encryptedText = buf.subarray(IV_LENGTH + SALT_LENGTH + TAG_LENGTH)
+
+  const decipher = createDecipheriv(ALGORITHM, Buffer.from(ENCRYPTION_KEY, "hex"), iv)
+
+  decipher.setAuthTag(authTag)
+
+  let decrypted = decipher.update(encryptedText.toString("hex"), "hex", "utf8")
+  decrypted += decipher.final("utf8")
+
+  return decrypted
+}
