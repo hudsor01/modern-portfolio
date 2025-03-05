@@ -13,19 +13,20 @@ export function middleware(request: NextRequest) {
 
 	// Set security headers
 	const ContentSecurityPolicy = `
-    default-src 'self';
-    script-src 'self' 'unsafe-eval' 'unsafe-inline';
-    style-src 'self' 'unsafe-inline';
-    img-src 'self' blob: data: https://*;
-    font-src 'self';
-    object-src 'none';
-    connect-src 'self' vitals.vercel-insights.com;
-    frame-src 'self';
-  `
+default-src 'self'
+script-src 'self'
+style-src 'self'
+img-src 'self' blob: data: https://your-image-domain.com
+font-src 'self'
+object-src 'none'
+connect-src 'self' vitals.vercel-insights.com vercel-analytics.com
+frame-src 'self'
+report-uri /api/csp-report
+`
 
 	response.headers.set(
 		'Content-Security-Policy',
-		ContentSecurityPolicy.replace(/\s{2,}/g, ' ').trim()
+		ContentSecurityPolicy.replace(/\s{2,}/g, ' ').trim(),
 	)
 	response.headers.set('X-Frame-Options', 'DENY')
 	response.headers.set('X-Content-Type-Options', 'nosniff')

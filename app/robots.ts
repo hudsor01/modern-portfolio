@@ -1,13 +1,12 @@
 import { MetadataRoute } from 'next'
-import { siteConfig } from '@/lib/config/site'
 
 export default function robots(): MetadataRoute.Robots {
 	return {
 		rules: {
 			userAgent: '*',
 			allow: '/',
-			disallow: ['/api/', '/private/'],
+			disallow: ['/api/*', '/dashboard/*'], // Add paths you don't want crawled
 		},
-		sitemap: `${siteConfig.url}/sitemap.xml`,
+		sitemap: 'https://yourdomain.com/sitemap.xml', // Update with your actual domain
 	}
 }

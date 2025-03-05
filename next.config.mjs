@@ -4,7 +4,11 @@ const nextConfig = {
 	images: {
 		formats: ['image/avif', 'image/webp'],
 		deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
-		minimumCacheTTL: 60,
+		minimumCacheTTL: 31536000, // 1 year for optimal caching
+		remotePatterns: [
+			// Add any external domains you need to load images from
+			// Example: { protocol: 'https', hostname: 'example.com' },
+		],
 	},
 	poweredByHeader: false,
 	experimental: {
@@ -18,6 +22,8 @@ const nextConfig = {
 			'@radix-ui/react-toast',
 		],
 	},
+	// Optimize for Vercel deployment
+	output: 'standalone',
 }
 
 export default nextConfig

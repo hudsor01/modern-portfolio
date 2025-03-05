@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Github, ExternalLink, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Project } from '@/app/(marketing)/projects/types'
+import { Project } from '@/app/projects/types'
 
 export function AnimatedProjectCard({ project }: { project: Project }) {
 	return (

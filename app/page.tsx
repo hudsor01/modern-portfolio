@@ -1,10 +1,10 @@
 import * as React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ProjectSwiper } from '@/app/(marketing)/projects/project-swiper'
+import { ProjectSwiper } from '@/app/projects/project-swiper'
 import { fetchFeaturedProjects } from '@/lib/actions/projects'
 import { Button } from '@/components/ui/button'
-import { ResumeDownload } from '@/app/(marketing)/resume/resume-download'
+import { ResumeDownload } from '@/app/resume/resume-download'
 import { FileText, Github, Linkedin, Mail } from 'lucide-react'
 
 async function HomePage() {
