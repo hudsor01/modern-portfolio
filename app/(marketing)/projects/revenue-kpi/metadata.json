@@ -1,0 +1,26 @@
+{
+	"title": "Revenue KPI Dashboard",
+	"description": "An executive dashboard that provides a comprehensive view of revenue metrics and KPIs, allowing business leaders to monitor performance, identify trends, and make data-driven decisions.",
+	"image": "/images/projects/revenue-kpi.jpg",
+	"liveUrl": "https://demo.revenuekpi.example.com",
+	"githubUrl": "https://github.com/hudsonr01/revenue-kpi",
+	"technologies": [
+		"React",
+		"TypeScript",
+		"Recharts",
+		"Tailwind CSS",
+		"Next.js",
+		"GraphQL",
+		"REST API"
+	],
+	"featured": true,
+	"features": [
+		"Real-time revenue tracking with multiple visualization options",
+		"Customizable KPI cards for key metrics monitoring",
+		"Year-over-year and month-over-month comparison views",
+		"Goal tracking and progress visualization",
+		"Forecast modeling based on historical performance",
+		"Data export and report generation capabilities",
+		"Role-based access control for different stakeholders"
+	]
+}

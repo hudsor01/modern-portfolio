@@ -1,22 +1,17 @@
 import React from 'react'
-import type { Metadata } from 'next'
+// Metadata is imported from './metadata.ts'
 import { ThemeProvider } from '@/components/theme-provider'
-import { Navbar } from '@/components/navbar'
-import { Footer } from '@/components/footer'
+import { Header } from '@/components/layout/header'
+import { Footer } from '@/components/layout/footer'
 import { Toaster } from '@/components/toaster'
-import { siteConfig } from '@/lib/config/site'
+import { WebVitals } from '@/components/web-vitals'
 import './globals.css'
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
 
-export const metadata: Metadata = {
-	title: {
-		default: siteConfig.name,
-		template: `%s | ${siteConfig.name}`,
-	},
-	description: siteConfig.description,
-	icons: {
-		icon: '/favicon.ico',
-	},
-}
+// Import metadata from separate file
+import './metadata'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
@@ -27,9 +22,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 					defaultTheme='system'
 					enableSystem
 					disableTransitionOnChange>
+					<WebVitals />
 					<Toaster />
 					<div className='relative flex min-h-screen flex-col'>
-						<Navbar />
+						<Header />
 						<main className='flex-1 pt-16'>{children}</main>
 						<Footer />
 					</div>

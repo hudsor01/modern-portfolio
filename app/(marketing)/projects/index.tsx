@@ -1,22 +1,7 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import EmblaCarousel from './EmblaCarousel'
-import { EmblaOptionsType } from 'embla-carousel'
+'use client'
 
-const OPTIONS: EmblaOptionsType = { loop: true }
-const SLIDE_COUNT = 5
-const SLIDES = Array.from(Array(SLIDE_COUNT).keys())
+// This file is only used for module exports, not for rendering.
+// Export components from this file if needed.
 
-const App: React.FC = () => (
-  <>
-    <Header />
-    <EmblaCarousel slides={SLIDES} options={OPTIONS} />
-    <Footer />
-  </>
-)
-
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-)
+export { default as SwiperCarousel } from './SwiperCarousel'
+export { ProjectSwiper } from './project-swiper'

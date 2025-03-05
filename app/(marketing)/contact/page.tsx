@@ -1,7 +1,7 @@
 import { Mail, MapPin, Phone, Linkedin, Twitter, Github } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Animate } from '@/components/ui/animate'
-import { ContactForm } from '@/app/(marketing)/contact/contact-form'
+import { ContactForm } from '@/app/(marketing)/contact/contact-form-updated'
 
 export const metadata = {
 	title: 'Contact | Richard Hudson',

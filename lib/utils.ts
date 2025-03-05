@@ -9,8 +9,8 @@ export function cn(...inputs: ClassValue[]) {
  * Formats a string from kebab-case to Title Case
  */
 export function formatProjectName(name: string): string {
-  return name
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+	return name
+		.split('-')
+		.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(' ')
 }

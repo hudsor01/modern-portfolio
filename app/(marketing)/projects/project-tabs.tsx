@@ -4,7 +4,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { HeadlessTabs } from '@/components/ui/tabs-headless'
 import { Project as BaseProject } from '@/lib/data/projects'
-import EmblaCarousel from './EmblaCarousel'
+import SwiperCarousel from './SwiperCarousel'
 interface Project extends BaseProject {
 	tags?: string[]
 }
@@ -38,7 +38,7 @@ export function ProjectTabs({ projects }: ProjectTabsProps) {
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
 				transition={{ duration: 0.3 }}>
-				<EmblaCarousel projects={getFilteredProjects(category)} />
+				<SwiperCarousel projects={getFilteredProjects(category)} />
 			</motion.div>
 		),
 	}))

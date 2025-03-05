@@ -1,0 +1,17 @@
+{
+	"extends": ["next/core-web-vitals", "prettier", "plugin:react/recommended"],
+	"plugins": ["react", "prettier"],
+	"rules": {
+		"react/no-unescaped-entities": "off",
+		"react/react-in-jsx-scope": "off",
+		"react/prop-types": "off",
+		"prettier/prettier": [
+			"error",
+			{
+				"singleQuote": true,
+				"tabWidth": 2,
+				"trailingComma": "es5"
+			}
+		]
+	}
+}

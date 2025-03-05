@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { ArrowLeft, Github, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { fetchProjectById } from '@/lib/actions/projects'
 import { getProjects } from '@/lib/data/projects'
 
 interface ProjectPageProps {
@@ -12,8 +13,17 @@ interface ProjectPageProps {
 	}
 }
 
+// Generate static params for all projects
+export async function generateStaticParams() {
+	const projects = await getProjects();
+
+	return projects.map(project => ({
+		slug: project.id,
+	}));
+}
+
 export default async function ProjectPage({ params }: ProjectPageProps) {
-	const project = (await getProjects()).find(p => p.id === params.slug)
+	const project = await fetchProjectById(params.slug)
 
 	if (!project) {
 		notFound()

@@ -96,7 +96,7 @@ export function MobileDrawer() {
 								<Linkedin className='h-5 w-5' />
 							</a>
 							<a
-								href={`mailto:${siteConfig.author.email}`}
+								href={`mailto:${siteConfig.links.email}`}
 								className='text-foreground/70 hover:text-primary transition-colors'
 								aria-label='Email'>
 								<Mail className='h-5 w-5' />

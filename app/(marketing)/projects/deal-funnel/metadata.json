@@ -1,0 +1,17 @@
+{
+	"title": "Sales Pipeline Funnel Analytics",
+	"description": "A comprehensive sales pipeline visualization tool that tracks conversion rates across different stages of the sales process, helping sales teams identify bottlenecks and optimize their approach.",
+	"image": "/images/projects/deal-funnel.jpg",
+	"liveUrl": "https://demo.salesfunnel.example.com",
+	"githubUrl": "https://github.com/hudsonr01/deal-funnel",
+	"technologies": ["React", "TypeScript", "Recharts", "Tailwind CSS", "Next.js", "Redux"],
+	"featured": true,
+	"features": [
+		"Interactive funnel visualization of the sales pipeline",
+		"Stage-by-stage conversion analytics",
+		"Time-in-stage tracking for deal velocity metrics",
+		"Win/loss ratio analysis by sales rep and deal type",
+		"Custom pipeline configuration for different sales processes",
+		"Historical trend analysis to track improvement over time"
+	]
+}

@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import {
@@ -19,7 +20,8 @@ interface ProjectCardProps {
 	project: Project
 }
 
-export function ProjectCard({ project }: ProjectCardProps) {
+// Component implementation
+function ProjectCardComponent({ project }: ProjectCardProps) {
 	return (
 		<Card className='overflow-hidden transition-all hover:shadow-lg'>
 			{project.image && (
@@ -29,6 +31,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
 						alt={project.title}
 						fill
 						className='object-cover transition-all hover:scale-105'
+						sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
+						loading='lazy'
+						quality={85}
 					/>
 				</div>
 			)}
@@ -69,3 +74,6 @@ export function ProjectCard({ project }: ProjectCardProps) {
 		</Card>
 	)
 }
+
+// Memoize the component to prevent unnecessary re-renders
+export const ProjectCard = React.memo(ProjectCardComponent);

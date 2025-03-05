@@ -38,7 +38,7 @@ export function validationErrorResponse(error: ZodError): NextResponse<ApiRespon
 			return acc
 		},
 		{} as Record<string, string[]>
-	);
+	)
 	return NextResponse.json(
 		{
 			success: false,

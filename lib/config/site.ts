@@ -1,25 +1,43 @@
 export const siteConfig = {
-	name: 'Richard Hudson',
-	description: 'Revenue Operations Expert & Process Optimization Consultant',
+	name: 'Richard Hudson | Revenue Operations Professional',
+	description:
+		'Driving business growth through data-driven insights, process optimization, and strategic operational improvements.',
 	url: 'https://richardwhudsonjr.com',
-	ogImage: '/images/og-image.jpg',
+	ogImage: 'https://richardwhudsonjr.com/richard.jpg',
 	links: {
-		github: 'https://github.com/hudsor01',
+		github: 'https://github.com/hudsonr01',
 		linkedin: 'https://linkedin.com/in/hudsor01',
-	},
-	author: {
-		name: 'Richard Hudson',
-		email: 'hello@richardwhudsonjr.com',
+		email: 'hello@richardhudson.com',
 	},
 	mainNav: [
 		{ title: 'Home', href: '/' },
 		{ title: 'About', href: '/about' },
 		{ title: 'Projects', href: '/projects' },
+		{ title: 'Resume', href: '/resume' },
+		{ title: 'Contact', href: '/contact' },
 	],
 	footerNav: {
 		resources: [
-			{ title: 'Docs', href: '/docs' },
-			{ title: 'FAQ', href: '/faq' },
+			{ title: 'Projects', href: '/projects' },
+			{ title: 'Resume', href: '/resume' },
+			{ title: 'Contact', href: '/contact' },
 		],
 	},
+	keywords: [
+		'Richard Hudson',
+		'Revenue Operations',
+		'Data Analysis',
+		'Process Optimization',
+		'Business Intelligence',
+		'Strategic Planning',
+		'Cross-functional Leadership',
+		'Portfolio',
+		'Resume',
+	],
+	author: {
+		name: 'Richard Hudson',
+		url: 'https://richardwhudsonjr.com',
+	},
 }
+
+export type SiteConfig = typeof siteConfig

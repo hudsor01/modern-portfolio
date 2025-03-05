@@ -99,9 +99,9 @@ export function Footer() {
 								whileHover={{ y: -2 }}>
 								<Mail className='mr-2 h-4 w-4' />
 								<a
-									href={`mailto:${siteConfig.author.email}`}
+									href={`mailto:${siteConfig.links.email}`}
 									className='hover:text-primary transition-colors'>
-									{siteConfig.author.email}
+									{siteConfig.links.email}
 								</a>
 							</motion.li>
 						</ul>
