@@ -3,10 +3,8 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { HeadlessTabs } from '@/components/ui/tabs-headless'
-import { ProjectCarousel } from './project-carousel'
 import { Project as BaseProject } from '@/lib/data/projects'
-
-// Extend the Project interface to include tags
+import EmblaCarousel from './EmblaCarousel'
 interface Project extends BaseProject {
 	tags?: string[]
 }
@@ -16,7 +14,6 @@ interface ProjectTabsProps {
 }
 
 export function ProjectTabs({ projects }: ProjectTabsProps) {
-	// Generate unique categories from project tags/technologies
 	const allCategories = React.useMemo(() => {
 		const categories = new Set<string>()
 		projects.forEach(project => {
@@ -41,10 +38,7 @@ export function ProjectTabs({ projects }: ProjectTabsProps) {
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
 				transition={{ duration: 0.3 }}>
-				<ProjectCarousel
-					projects={getFilteredProjects(category)}
-					subtitle={`${getFilteredProjects(category).length} projects in this category`}
-				/>
+				<EmblaCarousel projects={getFilteredProjects(category)} />
 			</motion.div>
 		),
 	}))

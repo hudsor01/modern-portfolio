@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { getAllProjects } from '@/lib/data/projects'
+import { getProjects } from '@/lib/data/projects'
 import { ProjectTabs } from './project-tabs'
 import { HeadlessTabs } from '@/components/ui/tabs-headless'
 import { ProjectGrid } from './project-grid'
-import { ProjectCarousel } from './project-carousel'
 import { Project } from '@/lib/data/projects'
+import EmblaCarousel from './EmblaCarousel' // Import the new EmblaCarousel
 
 export default function ProjectsPage() {
 	const [projects, setProjects] = useState<Project[]>([])
@@ -16,7 +16,7 @@ export default function ProjectsPage() {
 	useEffect(() => {
 		const fetchProjects = async () => {
 			try {
-				const data = await getAllProjects()
+				const data = await getProjects()
 				setProjects(data)
 			} catch (error) {
 				console.error('Failed to fetch projects', error)
@@ -38,7 +38,7 @@ export default function ProjectsPage() {
 		{
 			key: 'carousel',
 			title: 'Carousel',
-			content: <ProjectCarousel projects={projects} />,
+			content: <EmblaCarousel projects={projects} />, // Use the new EmblaCarousel here
 		},
 		{
 			key: 'categories',

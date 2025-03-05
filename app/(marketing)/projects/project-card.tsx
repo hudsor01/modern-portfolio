@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
+import { RevenueDashboardPreview } from './revenue-dashboard-preview'
 import type { Project } from '@/lib/data/projects'
 
 interface ProjectCardProps {
@@ -32,8 +33,10 @@ export function ProjectCard({ project }: ProjectCardProps) {
 				</div>
 			)}
 
-			{project.preview && (
-				<div className='bg-muted/20 h-48 w-full overflow-hidden'>{project.preview}</div>
+			{project.id === 'revenue-dashboard' && (
+				<div className='bg-muted/20 h-48 w-full overflow-hidden'>
+					<RevenueDashboardPreview />
+				</div>
 			)}
 
 			<CardHeader>
@@ -57,7 +60,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
 			<CardFooter>
 				<Button variant='ghost' className='group ml-auto' asChild>
-					<Link href={project.href || `/projects/${project.id}`}>
+					<Link href={`/projects/${project.id}`}>
 						View Project
 						<ArrowRight className='ml-2 h-4 w-4 transition-transform group-hover:translate-x-1' />
 					</Link>

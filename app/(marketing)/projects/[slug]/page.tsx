@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { ArrowLeft, Github, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { getAllProjects } from '@/lib/data/projects'
+import { getProjects } from '@/lib/data/projects'
 
 interface ProjectPageProps {
 	params: {
@@ -13,7 +13,7 @@ interface ProjectPageProps {
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
-	const project = (await getAllProjects()).find(p => p.id === params.slug)
+	const project = (await getProjects()).find(p => p.id === params.slug)
 
 	if (!project) {
 		notFound()
