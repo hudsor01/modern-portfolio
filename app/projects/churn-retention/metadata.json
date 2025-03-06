@@ -2,8 +2,8 @@
 	"title": "Customer Churn & Retention Analytics",
 	"description": "A sophisticated analytics platform that helps businesses understand and reduce customer churn while improving retention rates through predictive modeling and actionable insights.",
 	"image": "/images/projects/churn-retention.jpg",
-	"liveUrl": "https://demo.churnanalytics.example.com",
-	"githubUrl": "https://github.com/hudsonr01/churn-retention",
+	"liveUrl": "https://richardwhudsonjr.com/projects/churn-retention",
+	"githubUrl": "https://github.com/hudsonr01/modern-portfolio",
 	"technologies": [
 		"React",
 		"TypeScript",
@@ -12,7 +12,10 @@
 		"Next.js",
 		"Machine Learning",
 		"Python",
-		"FastAPI"
+		"Data Visualization",
+		"Predictive Analytics",
+		"Customer Retention",
+		"CRM Integration"
 	],
 	"featured": true,
 	"features": [

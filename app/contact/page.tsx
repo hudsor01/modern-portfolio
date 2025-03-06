@@ -1,180 +1,173 @@
-import { Mail, MapPin, Phone, Linkedin, Twitter, Github } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Animate } from '@/components/ui/animate'
-import { ContactForm } from '@/app/contact/contact-form-updated'
-import { AnimatedHeading } from '@/components/ui/animated-heading'
-import { SuspenseWrapper } from '@/components/suspense-wrapper'
-import { CalendlyWidget } from '@/components/calendly-widget'
+import { Metadata } from 'next'
+import { Mail, MapPin, Phone, Linkedin, Github, Calendar } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
-export const metadata = {
-	title: 'Contact | Richard Hudson',
-	description:
-		'Get in touch with Richard Hudson for frontend development projects and consulting.',
+export const metadata: Metadata = {
+  title: 'Contact | Richard Hudson',
+  description: 'Get in touch with Richard Hudson for revenue operations consulting and professional services.',
 }
 
 export default function ContactPage() {
-	return (
-		<div className='container-custom py-16'>
-			<div className='mb-12 text-center'>
-				<SuspenseWrapper>
-					<AnimatedHeading
-						level='h1'
-						text={['Get In Touch', 'Contact Me', "Let's Connect"]}
-						className='text-4xl font-bold tracking-tight sm:text-5xl'
-						typeSpeed={90}
-						delaySpeed={2000}
-					/>
-				</SuspenseWrapper>
-				<p className='text-muted-foreground mx-auto mt-4 max-w-2xl text-lg'>
-					Have a project in mind or want to discuss how I can help bring your web
-					application ideas to life? Let&apos;s connect!
-				</p>
-			</div>
-
-			<div className='grid gap-8 lg:grid-cols-2'>
-				<Animate variant='fade'>
-					<Card>
-						<CardHeader className='space-y-1'>
-							<CardTitle className='text-2xl'>Send a Message</CardTitle>
-							<CardDescription>
-								Fill out the form below and I will get back to you as soon as
-								possible.
-							</CardDescription>
-						</CardHeader>
-						<CardContent>
-							<ContactForm />
-						</CardContent>
-					</Card>
-				</Animate>
-
-				<div className='space-y-6'>
-					<Animate variant='fade' delay={0.1}>
-						<Card>
-							<CardHeader className='pb-3'>
-								<CardTitle className='text-2xl'>Contact Information</CardTitle>
-								<CardDescription>
-									Here are the best ways to reach me.
-								</CardDescription>
-							</CardHeader>
-							<CardContent className='space-y-4'>
-								<div className='flex items-start space-x-4'>
-									<div className='bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full'>
-										<Mail className='text-primary h-5 w-5' />
-									</div>
-									<div>
-										<p className='font-medium'>Email</p>
-										<a
-											href='mailto:hello@richardwhudsonjr.com'
-											className='text-primary hover:underline'>
-											hello@richardwhudsonjr.com
-										</a>
-									</div>
-								</div>
-
-								<div className='flex items-start space-x-4'>
-									<div className='bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full'>
-										<Phone className='text-primary h-5 w-5' />
-									</div>
-									<div>
-										<p className='font-medium'>Phone</p>
-										<a
-											href='tel:+15555555555'
-											className='text-primary hover:underline'>
-											(555) 555-5555
-										</a>
-									</div>
-								</div>
-
-								<div className='flex items-start space-x-4'>
-									<div className='bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full'>
-										<MapPin className='text-primary h-5 w-5' />
-									</div>
-									<div>
-										<p className='font-medium'>Location</p>
-										<p className='text-muted-foreground'>Plano, Texas</p>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					</Animate>
-
-					<Animate variant='fade' delay={0.2}>
-						<Card>
-							<CardHeader className='pb-3'>
-								<CardTitle className='text-2xl'>Connect</CardTitle>
-								<CardDescription>Find me on these platforms.</CardDescription>
-							</CardHeader>
-							<CardContent>
-								<div className='flex flex-wrap gap-3'>
-									<a
-										href='https://linkedin.com/in/hudsor01'
-										target='_blank'
-										rel='noopener noreferrer'
-										className='flex items-center justify-center rounded-full bg-[#0077B5] p-3 text-white transition-transform hover:scale-110'
-										aria-label='LinkedIn'>
-										<Linkedin className='h-5 w-5' />
-									</a>
-									<a
-										href='https://github.com/hudsor01'
-										target='_blank'
-										rel='noopener noreferrer'
-										className='flex items-center justify-center rounded-full bg-[#181717] p-3 text-white transition-transform hover:scale-110'
-										aria-label='GitHub'>
-										<Github className='h-5 w-5' />
-									</a>
-									<a
-										href='https://twitter.com'
-										target='_blank'
-										rel='noopener noreferrer'
-										className='flex items-center justify-center rounded-full bg-[#1DA1F2] p-3 text-white transition-transform hover:scale-110'
-										aria-label='Twitter'>
-										<Twitter className='h-5 w-5' />
-									</a>
-								</div>
-							</CardContent>
-						</Card>
-					</Animate>
-
-					<Animate variant='fade' delay={0.3}>
-						<Card>
-							<CardHeader className='pb-3'>
-								<CardTitle className='text-2xl'>Office Hours</CardTitle>
-								<CardDescription>When I am available to chat.</CardDescription>
-							</CardHeader>
-							<CardContent className='space-y-2'>
-								<div className='flex justify-between'>
-									<span className='font-medium'>Monday - Friday</span>
-									<span>9:00 AM - 5:00 PM CST</span>
-								</div>
-								<div className='flex justify-between'>
-									<span className='font-medium'>Saturday</span>
-									<span>By appointment</span>
-								</div>
-								<div className='flex justify-between'>
-									<span className='font-medium'>Sunday</span>
-									<span>Closed</span>
-								</div>
-								<p className='text-muted-foreground mt-4 text-sm'>
-									I typically respond to inquiries within 24 business hours.
-								</p>
-							</CardContent>
-						</Card>
-					</Animate>
-				</div>
-			</div>
-
-			{/* Scheduling Section */}
-			<div className='mt-16'>
-				<div className='mb-8 text-center'>
-					<h2 className='text-3xl font-bold tracking-tight'>Schedule a Consultation</h2>
-					<p className='text-muted-foreground mx-auto mt-4 max-w-2xl'>
-						Choose a convenient time for us to discuss your project needs in detail.
-					</p>
-				</div>
-				<Animate variant='fade'>
-					<CalendlyWidget />
-				</Animate>
-			</div>
-		</div>
-	)
+  return (
+    <main className="bg-white dark:bg-gray-900">
+      <div className="container mx-auto max-w-7xl px-4 py-16">
+        <div className="mb-12 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">Contact Me</h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Have a project in mind or want to discuss how I can help optimize your business operations?
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Contact Info */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold mb-6 text-[#0070f3]">Contact Information</h2>
+            
+            <div className="space-y-6">
+              <div className="flex items-start gap-4">
+                <div className="bg-[#0070f3]/10 p-3 rounded-full">
+                  <Mail className="w-6 h-6 text-[#0070f3]" />
+                </div>
+                <div>
+                  <p className="font-medium text-lg">Email</p>
+                  <a href="mailto:hudsor01@icloud.com" className="text-[#0070f3] hover:underline">
+                    hudsor01@icloud.com
+                  </a>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-4">
+                <div className="bg-[#0070f3]/10 p-3 rounded-full">
+                  <Phone className="w-6 h-6 text-[#0070f3]" />
+                </div>
+                <div>
+                  <p className="font-medium text-lg">Phone</p>
+                  <a href="tel:+12145660279" className="text-[#0070f3] hover:underline">
+                    (214) 566-0279
+                  </a>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-4">
+                <div className="bg-[#0070f3]/10 p-3 rounded-full">
+                  <MapPin className="w-6 h-6 text-[#0070f3]" />
+                </div>
+                <div>
+                  <p className="font-medium text-lg">Location</p>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Plano, Texas
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="border-t border-gray-200 dark:border-gray-700 mt-8 pt-8">
+              <h3 className="font-medium text-lg mb-4">Connect With Me</h3>
+              <div className="flex gap-4">
+                <a
+                  href="https://linkedin.com/in/hudsor01"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-[#0077B5] text-white p-3 rounded-full transition-transform hover:scale-110"
+                  aria-label="LinkedIn"
+                >
+                  <Linkedin className="w-5 h-5" />
+                </a>
+                <a
+                  href="https://github.com/hudsor01"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-[#181717] text-white p-3 rounded-full transition-transform hover:scale-110"
+                  aria-label="GitHub"
+                >
+                  <Github className="w-5 h-5" />
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          {/* Availability */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="bg-[#0070f3]/10 p-3 rounded-full">
+                <Calendar className="w-6 h-6 text-[#0070f3]" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-[#0070f3]">Availability</h2>
+                <p className="text-gray-600 dark:text-gray-300">Schedule a consultation at a time that works for you</p>
+              </div>
+            </div>
+            
+            <div className="space-y-5">
+              <div className="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-700">
+                <span className="font-medium">Monday - Friday</span>
+                <span className="text-[#0070f3] font-semibold">9:00 AM - 5:00 PM CST</span>
+              </div>
+              <div className="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-700">
+                <span className="font-medium">Saturday</span>
+                <span className="text-[#0070f3] font-semibold">By appointment</span>
+              </div>
+              <div className="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-700">
+                <span className="font-medium">Sunday</span>
+                <span className="text-gray-500">Closed</span>
+              </div>
+            </div>
+            
+            <div className="mt-8 pt-6">
+              <p className="text-gray-600 dark:text-gray-300 mb-6">
+                I typically respond to inquiries within 24 business hours. For urgent matters, please call directly.
+              </p>
+              <Button asChild className="w-full bg-[#0070f3] hover:bg-[#0070f3]/90">
+                <a href="#calendly">
+                  Check My Calendar
+                </a>
+              </Button>
+            </div>
+          </div>
+          
+          {/* Calendly */}
+          <div id="calendly" className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+            <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+              <h2 className="text-2xl font-bold text-[#0070f3]">Schedule a Call</h2>
+              <p className="text-gray-600 dark:text-gray-300">
+                Book a time slot directly on my calendar
+              </p>
+            </div>
+            <div className="h-[500px]">
+              <iframe
+                src="https://calendly.com/rhudsontspr/30min?hide_landing_page_details=1&hide_gdpr_banner=1&primary_color=0070f3&text_color=1a202c&background_color=ffffff"
+                width="100%"
+                height="100%"
+                frameBorder="0"
+                title="Schedule a meeting with Richard Hudson"
+              />
+            </div>
+          </div>
+        </div>
+        
+        {/* Map Section */}
+        <div className="mt-20">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">Based in Plano, Texas</h2>
+            <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              Available for local meetings in the Dallas/Fort Worth metroplex and remote consultations worldwide.
+            </p>
+          </div>
+          
+          <div className="rounded-xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-700">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d107159.79282087772!2d-96.81080782459738!3d33.0198443905186!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x864c21da13c59513%3A0x62aa036489cd602b!2sPlano%2C%20TX!5e0!3m2!1sen!2sus!4v1653669571594!5m2!1sen!2sus"
+              width="100%"
+              height="450"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </main>
+  )
 }

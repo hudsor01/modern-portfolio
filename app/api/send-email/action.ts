@@ -1,5 +1,3 @@
-'use server'
-
 import { Resend } from 'resend'
 import { z } from 'zod'
 
@@ -12,7 +10,9 @@ const ContactFormSchema = z.object({
 
 type ContactFormData = z.infer<typeof ContactFormSchema>
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Initialize Resend with API key or use a mock if not available
+const RESEND_API_KEY = process.env.RESEND_API_KEY || 'mock_api_key_for_development';
+const resend = new Resend(RESEND_API_KEY)
 
 export async function sendContactEmail(formData: ContactFormData) {
 	try {
@@ -22,20 +22,37 @@ export async function sendContactEmail(formData: ContactFormData) {
 		// Create email data
 		const { name, email, message } = validatedData
 
-		// Send email using Resend
-		const { data, error } = await resend.emails.send({
-			from: 'Portfolio Contact Form <contact@yourdomain.com>',
-			to: ['your-email@example.com'], // Your email address
-			subject: `Portfolio Contact: ${name}`,
-			replyTo: email,
-			text: `
+		// Send email using Resend (or mock in development)
+		let data, error;
+		
+		if (RESEND_API_KEY === 'mock_api_key_for_development') {
+			// Mock successful email sending for development
+			console.log('Development mode: Email would be sent with:', {
+				name,
+				email,
+				message
+			});
+			data = { id: 'mock-email-id' };
+			error = null;
+		} else {
+			// Actually send email in production
+			const result = await resend.emails.send({
+				from: 'Portfolio Contact Form <contact@richardwhudsonjr.com>',
+				to: ['hello@richardwhudsonjr.com'], 
+				subject: `Portfolio Contact: ${name}`,
+				replyTo: email,
+				text: `
 Name: ${name}
 Email: ${email}
 
 Message:
 ${message}
       `,
-		})
+			});
+			
+			data = result.data;
+			error = result.error;
+		}
 
 		if (error) {
 			console.error('Email sending error:', error)

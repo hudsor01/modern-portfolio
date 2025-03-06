@@ -1,85 +1,73 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { cn } from '@/lib/utils'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
-interface TypewriterProps {
-	words: {
-		text: string
-		className?: string
-	}[]
-	className?: string
-	cursorClassName?: string
+interface TypewriterEffectProps {
+  words: string[]
+  delay?: number
+  cursorColor?: string
 }
 
-export function TypewriterEffect({ words, className, cursorClassName }: TypewriterProps) {
-	const [currentWordIndex, setCurrentWordIndex] = useState(0)
-	const [currentText, setCurrentText] = useState('')
-	const [isDeleting, setIsDeleting] = useState(false)
+export function TypewriterEffect({
+  words,
+  delay = 1500,
+  cursorColor = 'currentColor'
+}: TypewriterEffectProps) {
+  const [currentWordIndex, setCurrentWordIndex] = useState(0)
+  const [visibleChars, setVisibleChars] = useState('')
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [typingSpeed, setTypingSpeed] = useState(150)
 
-	useEffect(() => {
-		const typingSpeed = 80 // Speed for typing
-		const deletingSpeed = 40 // Speed for deleting
-		const delayBetweenWords = 2000 // Pause between words
+  useEffect(() => {
+    if (!words.length) return
 
-		const word = words[currentWordIndex].text
+    const currentWord = words[currentWordIndex]
 
-		const timeout = setTimeout(
-			() => {
-				if (!isDeleting) {
-					// Typing
-					if (currentText !== word) {
-						setCurrentText(word.slice(0, currentText.length + 1))
-					} else {
-						// Word completed, wait before deleting
-						setTimeout(() => setIsDeleting(true), delayBetweenWords)
-					}
-				} else {
-					// Deleting
-					if (currentText === '') {
-						setIsDeleting(false)
-						setCurrentWordIndex(prev => (prev + 1) % words.length)
-					} else {
-						setCurrentText(word.slice(0, currentText.length - 1))
-					}
-				}
-			},
-			isDeleting ? deletingSpeed : typingSpeed
-		)
+    const typingTimer = setTimeout(() => {
+      if (!isDeleting) {
+        // Typing forward
+        setVisibleChars(currentWord.substring(0, visibleChars.length + 1))
+        setTypingSpeed(150)
 
-		return () => clearTimeout(timeout)
-	}, [currentText, isDeleting, currentWordIndex, words])
+        // If we've reached the end of the word, pause then start deleting
+        if (visibleChars.length === currentWord.length) {
+          setTypingSpeed(delay)
+          setIsDeleting(true)
+        }
+      } else {
+        // Deleting
+        setVisibleChars(currentWord.substring(0, visibleChars.length - 1))
+        setTypingSpeed(75)
 
-	return (
-		<div className={cn('inline-flex items-center', className)}>
-			<motion.span
-				className='inline-block text-center'
-				initial={{ opacity: 0 }}
-				animate={{ opacity: 1 }}
-				transition={{ duration: 0.3 }}>
-				{currentText}
-			</motion.span>
-			<motion.span
-				className={cn(
-					'inline-block h-[1em] w-[4px] bg-[var(--color-primary)]',
-					cursorClassName
-				)}
-				animate={{
-					opacity: [1, 0, 1],
-					marginLeft: '2px',
-				}}
-				transition={{
-					opacity: {
-						duration: 0.8,
-						repeat: Infinity,
-						repeatType: 'loop',
-					},
-					marginLeft: {
-						duration: 0.1,
-					},
-				}}
-			/>
-		</div>
-	)
+        // If we've deleted the whole word, move to the next word
+        if (visibleChars.length === 0) {
+          setIsDeleting(false)
+          setCurrentWordIndex((currentWordIndex + 1) % words.length)
+        }
+      }
+    }, typingSpeed)
+
+    return () => clearTimeout(typingTimer)
+  }, [currentWordIndex, isDeleting, visibleChars, words, delay, typingSpeed])
+
+  return (
+    <div className="inline-flex items-center">
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={visibleChars}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.1 }}
+        >
+          {visibleChars}
+        </motion.span>
+      </AnimatePresence>
+      <span
+        className="w-0.5 h-5 ml-1 inline-block animate-blink"
+        style={{ backgroundColor: cursorColor }}
+      ></span>
+    </div>
+  )
 }

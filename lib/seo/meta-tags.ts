@@ -28,12 +28,6 @@ export function generateMetaTags(config: MetaConfig) {
 		'og:url': siteConfig.url,
 		'og:site_name': siteConfig.name,
 
-		// Twitter Card
-		'twitter:card': 'summary_large_image',
-		'twitter:title': config.title,
-		'twitter:description': config.description,
-		'twitter:image': config.image || siteConfig.ogImage,
-
 		// Article Specific
 		...(config.type === 'article' && {
 			'article:published_time': config.publishedAt,

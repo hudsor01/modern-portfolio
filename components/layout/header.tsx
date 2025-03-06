@@ -97,7 +97,7 @@ export function ThemeToggle() {
 
 export function Header() {
 	return (
-		<header className='border-border/40 bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur'>
+		<header className='border-border/40 bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur-sm'>
 			<div className='container-custom flex h-16 items-center justify-between'>
 				<div className='flex items-center gap-2'>
 					<MobileNav />

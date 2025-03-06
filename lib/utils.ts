@@ -1,5 +1,16 @@
+// Split utilities into client and server files
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+
+// Create a client-safe absoluteUrl function
+export function absoluteUrl(path: string): string {
+	const host = typeof window !== 'undefined'
+		? window.location.host
+		: process.env.NEXT_PUBLIC_VERCEL_URL || 'https://richardwhudsonjr.com'
+
+	const protocol = host.includes('localhost') ? 'http' : 'https'
+	return `${protocol}://${host}${path}`
+}
 
 export function cn(...inputs: ClassValue[]): string {
 	return twMerge(clsx(...inputs))

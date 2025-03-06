@@ -30,7 +30,7 @@ export function Dialog({ open, onClose, children, initialFocus, className }: Dia
 					leave='ease-in duration-200'
 					leaveFrom='opacity-100'
 					leaveTo='opacity-0'>
-					<div className='fixed inset-0 bg-black/40 backdrop-blur-sm' />
+					<div className='fixed inset-0 bg-black/40 backdrop-blur-sm-xs' />
 				</Transition.Child>
 
 				<div className='fixed inset-0 overflow-y-auto'>

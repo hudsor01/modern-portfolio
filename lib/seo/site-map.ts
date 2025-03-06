@@ -13,8 +13,8 @@ export const siteMap = {
 			href: '/projects',
 		},
 		{
-			title: 'Blog',
-			href: '/blog',
+			title: 'Resume',
+			href: '/resume',
 		},
 		{
 			title: 'Contact',
@@ -24,33 +24,14 @@ export const siteMap = {
 	footerNav: {
 		social: [
 			{
-				title: 'Twitter',
-				href: 'https://twitter.com/richardwhudsonjr',
-				icon: 'twitter',
-			},
-			{
 				title: 'GitHub',
 				href: 'https://github.com/hudsor01',
 				icon: 'github',
 			},
 			{
 				title: 'LinkedIn',
-				href: 'https://linkedin.com/in/richardwhudsonjr',
+				href: 'https://linkedin.com/in/hudsor01',
 				icon: 'linkedin',
-			},
-		],
-		resources: [
-			{
-				title: 'Blog',
-				href: '/blog',
-			},
-			{
-				title: 'Newsletter',
-				href: '/newsletter',
-			},
-			{
-				title: 'RSS',
-				href: '/feed.xml',
 			},
 		],
 		legal: [

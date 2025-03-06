@@ -39,14 +39,14 @@ export function HeadlessTabs({
 						key={item.key}
 						className={({ selected }) =>
 							cn(
-								'relative flex-1 py-2.5 text-sm font-medium whitespace-nowrap transition-all focus:outline-none',
+								'relative flex-1 py-2.5 text-sm font-medium whitespace-nowrap transition-all focus:outline-hidden',
 
 								// Pills variant
 								variant === 'pills' &&
 									cn(
 										'rounded-lg px-3 py-2.5',
 										selected ?
-											'bg-primary text-white shadow'
+											'bg-primary text-white shadow-sm'
 										:	'text-foreground/70 hover:bg-muted/30 hover:text-foreground'
 									),
 
@@ -89,7 +89,7 @@ export function HeadlessTabs({
 			<Tab.Panels className='mt-4'>
 				<AnimatePresence mode='wait'>
 					{items.map(item => (
-						<Tab.Panel key={item.key} className='focus:outline-none' unmount={false}>
+						<Tab.Panel key={item.key} className='focus:outline-hidden' unmount={false}>
 							{() => (
 								<motion.div
 									initial={{ opacity: 0, y: 10 }}

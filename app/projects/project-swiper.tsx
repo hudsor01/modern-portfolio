@@ -11,14 +11,14 @@ import { Project } from '@/lib/data/projects'
 import { ProjectQuickView } from './project-quick-view'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination, Autoplay, EffectCreative } from 'swiper/modules'
-import { PrevButton, NextButton, CustomPagination } from './swiper-navigation'
+import { PrevButton, NextButton, CustomPagination } from '@/components/swiper-navigation'
 
 // Import Swiper styles
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import 'swiper/css/effect-creative'
-import './swiper-styles-project.css'
+import '@/components/swiper-styles-project.css'
 
 interface ProjectSwiperProps {
 	title?: string
@@ -47,7 +47,7 @@ export function ProjectSwiper({
 	// Return early if there are no projects
 	if (!projects || projects.length === 0) {
 		return (
-			<div className='bg-muted/30 rounded-lg p-6 text-center shadow-sm'>
+			<div className='bg-muted/30 rounded-lg p-6 text-center shadow-xs'>
 				No projects available
 			</div>
 		)
@@ -121,14 +121,14 @@ export function ProjectSwiper({
 										</div>
 									}
 									{/* Enhanced image overlay with improved hover effects */}
-									<div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 backdrop-blur-[2px] transition-all duration-300 group-hover:opacity-100'>
+									<div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 backdrop-blur-sm-[2px] transition-all duration-300 group-hover:opacity-100'>
 										<div className='absolute bottom-0 w-full p-4'>
 											<div className='flex flex-wrap gap-2'>
 												<Button
 													onClick={() => handleOpenQuickView(project)}
 													variant='outline'
 													size='sm'
-													className='bg-background/95 hover:bg-background/100 text-xs backdrop-blur-sm transition-all'>
+													className='bg-background/95 hover:bg-background/100 text-xs backdrop-blur-sm-xs transition-all'>
 													<Info className='mr-1 h-3 w-3' />
 													Quick View
 												</Button>
@@ -136,7 +136,7 @@ export function ProjectSwiper({
 													asChild
 													variant='outline'
 													size='sm'
-													className='bg-background/95 hover:bg-background/100 text-xs backdrop-blur-sm transition-all'>
+													className='bg-background/95 hover:bg-background/100 text-xs backdrop-blur-sm-xs transition-all'>
 													<Link href={`/projects/${project.id}`}>
 														Details
 													</Link>
@@ -146,7 +146,7 @@ export function ProjectSwiper({
 														asChild
 														variant='outline'
 														size='sm'
-														className='bg-background/95 hover:bg-background/100 text-xs backdrop-blur-sm transition-all'>
+														className='bg-background/95 hover:bg-background/100 text-xs backdrop-blur-sm-xs transition-all'>
 														<a
 															href={project.liveUrl}
 															target='_blank'

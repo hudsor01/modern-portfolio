@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { ProjectChart } from './project-chart'
+import { ProjectChart } from '@/app/projects/project-chart'
 
 interface SkillsChartProps {
 	title?: string

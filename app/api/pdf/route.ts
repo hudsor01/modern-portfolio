@@ -8,7 +8,7 @@ export const maxDuration = 60 // 60 seconds
 export async function GET() {
 	try {
 		// Get the site URL from environment or default to localhost
-		const siteUrl = process.env.SITE_URL || 'http://localhost:3000'
+		const siteUrl = process.env.SITE_URL || 'https://richardwhudsonjr.com'
 		const resumePath = '/resume?print=true'
 		const fullUrl = `${siteUrl}${resumePath}`
 

@@ -1,111 +1,54 @@
 'use client'
 
-import { Component, type ErrorInfo, type ReactNode } from 'react'
-import { Button } from '@/components/ui/button'
-import { AlertTriangle, RefreshCw } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import React, { Component, ErrorInfo, ReactNode } from 'react'
 
 interface ErrorBoundaryProps {
-	children: ReactNode
-	fallback?: ReactNode
-	className?: string
-	onError?: () => void
-	resetText?: string
+  children: ReactNode
+  fallback?: ReactNode
 }
 
 interface ErrorBoundaryState {
-	hasError: boolean
-	error?: Error
+  hasError: boolean
+  error: Error | null
 }
 
-/**
- * Simple error boundary component that can be used throughout the application
- */
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-	public state: ErrorBoundaryState = {
-		hasError: false,
-	}
+  constructor(props: ErrorBoundaryProps) {
+    super(props)
+    this.state = { 
+      hasError: false,
+      error: null
+    }
+  }
 
-	public static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-		return { hasError: true, error }
-	}
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    // Update state so the next render will show the fallback UI
+    return { 
+      hasError: true,
+      error 
+    }
+  }
 
-	public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-		console.error('Uncaught error:', error, errorInfo)
-		if (this.props.onError) {
-			this.props.onError()
-		}
-	}
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+    // You can log the error to an error reporting service
+    console.error('ErrorBoundary caught an error:', error)
+  }
 
-	private handleReset = () => {
-		this.setState({ hasError: false, error: undefined })
-	}
+  render(): ReactNode {
+    if (this.state.hasError) {
+      // For all errors, use the fallback or default error message
+      return this.props.fallback || (
+        <div className="p-4 rounded-md bg-red-50 border border-red-100">
+          <h2 className="text-lg font-medium text-red-800">
+            Something went wrong
+          </h2>
+          <p className="mt-1 text-sm text-red-700">
+            Please try refreshing the page
+          </p>
+        </div>
+      )
+    }
 
-	public render() {
-		if (this.state.hasError) {
-			return (
-				this.props.fallback || (
-					<div
-						className={cn(
-							'bg-background flex min-h-[200px] w-full flex-col items-center justify-center gap-4 rounded-[var(--radius)] border p-6 text-center',
-							this.props.className
-						)}>
-						<AlertTriangle className='h-8 w-8 text-amber-500' />
-						<div className='space-y-2'>
-							<h2 className='text-lg font-semibold'>Something went wrong</h2>
-							<p className='text-sm text-[var(--muted-foreground)]'>
-								{this.state.error?.message ||
-									'An error occurred while rendering this content'}
-							</p>
-						</div>
-						<Button onClick={this.handleReset} className='button mt-2 gap-2' size='sm'>
-							<RefreshCw className='h-4 w-4' />
-							{this.props.resetText || 'Try again'}
-						</Button>
-					</div>
-				)
-			)
-		}
-
-		return this.props.children
-	}
-}
-
-/**
- * Error fallback component that can be used with react-error-boundary
- */
-interface ErrorFallbackProps {
-	error: Error
-	resetErrorBoundary: () => void
-	className?: string
-	title?: string
-	resetText?: string
-}
-
-export function ErrorFallback({
-	error,
-	resetErrorBoundary,
-	className,
-	title = 'Something went wrong',
-	resetText = 'Try again',
-}: ErrorFallbackProps) {
-	return (
-		<div
-			className={cn(
-				'bg-background flex min-h-[200px] w-full flex-col items-center justify-center gap-4 rounded-[var(--radius)] border p-6 text-center',
-				className
-			)}>
-			<AlertTriangle className='h-8 w-8 text-amber-500' />
-			<div className='space-y-2'>
-				<h2 className='text-lg font-semibold'>{title}</h2>
-				<p className='text-sm text-[var(--muted-foreground)]'>
-					{error?.message || 'An error occurred while rendering this content'}
-				</p>
-			</div>
-			<Button onClick={resetErrorBoundary} className='button mt-2 gap-2' size='sm'>
-				<RefreshCw className='h-4 w-4' />
-				{resetText}
-			</Button>
-		</div>
-	)
+    return this.props.children
+  }
 }

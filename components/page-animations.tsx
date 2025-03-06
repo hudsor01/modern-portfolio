@@ -50,7 +50,7 @@ export function AnimatedProjectCard({ project }: { project: Project }) {
 						</Link>
 					</Button>
 					{project.githubUrl && (
-						<Button asChild variant='outline' size='icon' className='flex-shrink-0'>
+						<Button asChild variant='outline' size='icon' className='shrink-0'>
 							<Link href={project.githubUrl} target='_blank' rel='noreferrer'>
 								<span className='sr-only'>GitHub Repository</span>
 								<Github className='h-4 w-4' />
@@ -58,7 +58,7 @@ export function AnimatedProjectCard({ project }: { project: Project }) {
 						</Button>
 					)}
 					{project.demoUrl && (
-						<Button asChild variant='outline' size='icon' className='flex-shrink-0'>
+						<Button asChild variant='outline' size='icon' className='shrink-0'>
 							<Link href={project.demoUrl} target='_blank' rel='noreferrer'>
 								<span className='sr-only'>Live Demo</span>
 								<ExternalLink className='h-4 w-4' />

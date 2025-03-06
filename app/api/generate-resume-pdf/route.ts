@@ -4,7 +4,12 @@ import { errorResponse } from '@/lib/api/response'
 import { headers } from 'next/headers'
 
 // Configure allowed origins for CORS
-const allowedOrigins = [process.env.NEXT_PUBLIC_BASE_URL, 'http://localhost:3000']
+const allowedOrigins = [
+	process.env.NEXT_PUBLIC_BASE_URL,
+	'http://localhost:3000',
+	'https://richardwhudsonjr.com',
+	'https://www.richardwhudsonjr.com'
+]
 
 // Custom error class for PDF generation
 class PDFGenerationError extends Error {
@@ -56,7 +61,7 @@ export async function GET() {
 		page.setDefaultTimeout(10000)
 
 		// Navigate to the resume page with proper error handling
-		const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+		const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://richardwhudsonjr.com'
 		await page
 			.goto(`${baseUrl}/resume?print=true`, {
 				waitUntil: 'networkidle2',

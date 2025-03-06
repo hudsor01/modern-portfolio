@@ -1,27 +1,21 @@
 {
-	"name": "Richard Hudson - Full Stack Developer",
-	"short_name": "Richard Hudson",
-	"description": "Portfolio showcasing expertise in React, Next.js, TypeScript, and modern web development",
-	"start_url": "/",
-	"display": "standalone",
-	"background_color": "#ffffff",
-	"theme_color": "#0f172a",
-	"icons": [
-		{
-			"src": "/android-chrome-192x192.png",
-			"sizes": "192x192",
-			"type": "image/png"
-		},
-		{
-			"src": "/android-chrome-512x512.png",
-			"sizes": "512x512",
-			"type": "image/png"
-		},
-		{
-			"src": "/maskable-icon.png",
-			"sizes": "512x512",
-			"type": "image/png",
-			"purpose": "maskable"
-		}
-	]
+  "name": "Richard Hudson - Revenue Operations Professional",
+  "short_name": "Richard Hudson",
+  "description": "Portfolio showcasing expertise in revenue operations, data analytics, and business intelligence",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }

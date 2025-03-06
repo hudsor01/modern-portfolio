@@ -1,6 +1,4 @@
-'use server'
-
-import { getProjects, Project } from '@/lib/data/projects'
+import { getProjects, getProjectById, Project } from '@/lib/data/projects'
 
 export async function fetchProjects(): Promise<Project[]> {
 	try {
@@ -21,12 +19,13 @@ export async function fetchFeaturedProjects(): Promise<Project[]> {
 	}
 }
 
-export async function fetchProjectById(id: string): Promise<Project | null> {
+export async function fetchProjectById(slug: string): Promise<Project | null> {
 	try {
-		const project = getProjects().find(p => p.id === id)
-		return project || null
+		// Use the dedicated getProjectById function from the data module
+		const project = getProjectById(slug);
+		return project || null;
 	} catch (error) {
-		console.error(`Error fetching project with id ${id}:`, error)
-		return null
+		console.error(`Error fetching project with slug ${slug}:`, error);
+		return null;
 	}
 }

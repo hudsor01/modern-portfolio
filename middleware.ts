@@ -1,51 +1,35 @@
-import { NextResponse, type NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 
-export function middleware(request: NextRequest) {
-	// Clone the request headers
-	const requestHeaders = new Headers(request.headers)
+export function middleware() {
+  // Get response
+  const response = NextResponse.next()
 
-	// Get response
-	const response = NextResponse.next({
-		request: {
-			headers: requestHeaders,
-		},
-	})
+  // Add security headers
+  const cspHeader = `
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' 'unsafe-eval';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: blob: https:;
+    font-src 'self' data:;
+    object-src 'self' data:;
+    media-src 'self';
+    connect-src 'self' https:;
+    frame-src 'self';
+  `.replace(/\s{2,}/g, ' ').trim()
 
-	// Set security headers
-	const ContentSecurityPolicy = `
-default-src 'self'
-script-src 'self'
-style-src 'self'
-img-src 'self' blob: data: https://your-image-domain.com
-font-src 'self'
-object-src 'none'
-connect-src 'self' vitals.vercel-insights.com vercel-analytics.com
-frame-src 'self'
-report-uri /api/csp-report
-`
+  // Set the headers
+  response.headers.set('Content-Security-Policy', cspHeader)
 
-	response.headers.set(
-		'Content-Security-Policy',
-		ContentSecurityPolicy.replace(/\s{2,}/g, ' ').trim(),
-	)
-	response.headers.set('X-Frame-Options', 'DENY')
-	response.headers.set('X-Content-Type-Options', 'nosniff')
-	response.headers.set('Referrer-Policy', 'origin-when-cross-origin')
-	response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  // Additional security headers
+  response.headers.set('X-XSS-Protection', '1; mode=block')
+  response.headers.set('X-Frame-Options', 'SAMEORIGIN')
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
 
-	return response
+  return response
 }
 
-// Only run middleware on the frontend paths
+// Define which paths this middleware will run on
 export const config = {
-	matcher: [
-		/*
-		 * Match all paths except for:
-		 * 1. /api routes
-		 * 2. /_next (Next.js internals)
-		 * 3. /_static (inside /public)
-		 * 4. all root files inside /public (e.g. /favicon.ico)
-		 */
-		'/((?!api|_next|_static|_vercel|[\\w-]+\\.\\w+).*)',
-	],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 }

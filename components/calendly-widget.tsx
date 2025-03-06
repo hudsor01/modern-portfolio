@@ -1,5 +1,12 @@
 "use client";
 
+// Extend the Window interface to include Calendly
+declare global {
+  interface Window {
+    Calendly?: any;
+  }
+}
+
 import { useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -11,27 +18,40 @@ export function CalendlyWidget() {
     script.async = true;
     document.body.appendChild(script);
 
+    // Initialize Calendly once script is loaded
+    script.onload = () => {
+      if (window.Calendly) {
+        console.log('Calendly script loaded successfully');
+      }
+    };
+
     return () => {
-      // Cleanup function to remove script when component unmounts
-      document.body.removeChild(script);
+      // Find and remove the script
+      const existingScript = document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]');
+      if (existingScript && existingScript.parentNode) {
+        existingScript.parentNode.removeChild(existingScript);
+      }
     };
   }, []);
 
-  return (
-    <Card className="w-full">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl">Schedule a Meeting</CardTitle>
-        <CardDescription>
-          Book a time slot that works for you using my online calendar.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div
-          className="calendly-inline-widget"
-          data-url="https://calendly.com/rhudsontspr?hide_landing_page_details=1&hide_gdpr_banner=1"
-          style={{ minWidth: '320px', height: '700px' }}
-        />
-      </CardContent>
-    </Card>
-  );
+// Directly embed the Calendly inline widget using their recommended approach
+    return (
+      <Card className="w-full overflow-hidden">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl">Schedule a Meeting</CardTitle>
+          <CardDescription>
+            Book a time slot that works for you using my online calendar.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-0 h-[700px]">
+          <iframe
+            src="https://calendly.com/rhudsontspr?hide_landing_page_details=1&hide_gdpr_banner=1&primary_color=0070f3"
+            width="100%"
+            height="100%"
+            frameBorder="0"
+            title="Schedule a meeting with Richard Hudson"
+          />
+        </CardContent>
+      </Card>
+    );
 }

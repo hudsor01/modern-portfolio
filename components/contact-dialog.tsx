@@ -92,7 +92,7 @@ export function ContactDialog({ open, onClose }: ContactDialogProps) {
 								value={formState.name}
 								onChange={handleChange}
 								required
-								className='border-border bg-background focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-1'
+								className='border-border bg-background focus:border-primary focus:ring-3-primary w-full rounded-md border px-3 py-2 text-sm outline-hidden focus:ring-1'
 							/>
 						</div>
 
@@ -107,7 +107,7 @@ export function ContactDialog({ open, onClose }: ContactDialogProps) {
 								value={formState.email}
 								onChange={handleChange}
 								required
-								className='border-border bg-background focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-1'
+								className='border-border bg-background focus:border-primary focus:ring-3-primary w-full rounded-md border px-3 py-2 text-sm outline-hidden focus:ring-1'
 							/>
 						</div>
 
@@ -122,7 +122,7 @@ export function ContactDialog({ open, onClose }: ContactDialogProps) {
 								onChange={handleChange}
 								required
 								rows={4}
-								className='border-border bg-background focus:border-primary focus:ring-primary w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-1'
+								className='border-border bg-background focus:border-primary focus:ring-3-primary w-full rounded-md border px-3 py-2 text-sm outline-hidden focus:ring-1'
 							/>
 						</div>
 

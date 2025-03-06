@@ -19,7 +19,7 @@ export function ResumeDownload({
 	variant = 'default',
 	size = 'default',
 	label = 'Download Resume',
-	fallbackToPDF = true,
+	fallbackToPDF = false,
 }: ResumeDownloadProps) {
 	const [isDownloading, setIsDownloading] = useState(false)
 
