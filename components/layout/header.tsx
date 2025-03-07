@@ -26,7 +26,7 @@ export function MainNav({ className }: React.HTMLAttributes<HTMLElement>) {
     <nav className={cn('flex items-center space-x-4 lg:space-x-6', className)}>
       {routes.map((route) => (
         <Link
-          key={route.path} // Explicitly typed as string
+          key={typeof route.path === 'string' ? route.path : JSON.stringify(route.path)} // Explicitly typed as string
           href={route.path}
           className={cn(
             'hover:text-primary text-sm font-medium transition-colors',
@@ -37,7 +37,7 @@ export function MainNav({ className }: React.HTMLAttributes<HTMLElement>) {
         </Link>
       ))}
     </nav>
-  );
+  )
 }
 
 export function MobileNav() {
@@ -62,7 +62,7 @@ export function MobileNav() {
           <div className="flex flex-col space-y-3 pt-6">
             {routes.map((route) => (
               <Link
-                key={route.path} // Explicitly typed as string
+                key={typeof route.path === 'string' ? route.path : JSON.stringify(route.path)} // Explicitly typed as string
                 href={route.path}
                 className={cn(
                   'flex items-center rounded-md px-3 py-2.5 text-base font-medium transition-colors',
@@ -78,7 +78,7 @@ export function MobileNav() {
         </div>
       </SheetContent>
     </Sheet>
-  );
+  )
 }
 
 export function ThemeToggle() {

@@ -11,17 +11,18 @@ const api = axios.create({
 
 // Example project data interface
 export interface Project {
-  [x: string]: string
+  [x: string]: string | undefined
   slug: string
   id: string
   title: string
   description: string
-  technologies: string[]
+  technologies: string
   imageUrl: string
   githubUrl: string
-  liveUrl?: string
+  liveUrl: string
   date: string
-  featured: boolean
+  featured: string | undefined
+  type?: string | undefined
 }
 
 // Format dates with date-fns

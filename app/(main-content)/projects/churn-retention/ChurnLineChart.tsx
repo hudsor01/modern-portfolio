@@ -1,4 +1,5 @@
 'use client';
+import { useState, useEffect } from 'react';
 import {
   LineChart,
   Line,
@@ -18,6 +19,20 @@ const data = monthlyChurnData.map((item) => ({
 }));
 
 export default function ChurnLineChart() {
+  // Add client-side only rendering check
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return (
+      <div className="rounded-lg bg-white dark:bg-gray-800 p-6 shadow-lg h-[300px] flex items-center justify-center">
+        <div className="text-slate-400">Loading chart...</div>
+      </div>
+    );
+  }
   return (
     <div className="rounded-lg bg-white dark:bg-gray-800 p-6 shadow-lg">
       <h2 className="mb-4 text-xl font-semibold text-slate-800 dark:text-white">

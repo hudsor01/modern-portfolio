@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/api/*', '/dashboard/*'], // Add paths you don't want crawled
     },
-    sitemap: 'https://yourdomain.com/sitemap.xml', // Update with your actual domain
+    sitemap: 'https://richardwhudsonjr.com/sitemap.xml',
   };
 }

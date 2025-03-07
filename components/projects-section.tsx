@@ -25,13 +25,12 @@ export function ProjectsSection() {
           {projects?.map((project) => (
             <ProjectCard
               key={project.id}
-              title={project.title}
-              description={project.description}
-              imageUrl={project.imageUrl}
-              technologies={project.technologies}
-              githubUrl={project.githubUrl}
-              liveUrl={project.liveUrl ?? ''}
-              project={{ ...project, slug: project.slug ?? project.id, image: project.image }}
+              project={{
+                ...project,
+                slug: project.slug ?? project.id,
+                image: project.imageUrl,
+                technologies: project.technologies.split(',').map((tech: string) => tech.trim()),
+              }}
             />
           ))}
         </div>

@@ -140,7 +140,7 @@ export default function ResumePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="text-4xl md:text-5xl font-bold mb-4 text-gradient"
+              className="text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white"
             >
               Professional Resume
             </motion.h1>
@@ -191,7 +191,7 @@ export default function ResumePage() {
         </div>
       </section>
 
-      {/* Main resume content */}
+      {/* Header/Profile */}
       <section className="section-bg-primary py-16 px-4">
         <div className="container mx-auto max-w-5xl">
           {showPdf ? (
@@ -200,155 +200,48 @@ export default function ResumePage() {
               {pdfUrl && <ResumeViewer pdfUrl={pdfUrl} />}
             </div>
           ) : (
-            // Stylized resume
-            <div className="space-y-12">
-              {/* Header/Profile */}
-              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-8 mb-8">
-                <div className="flex flex-col items-center text-center gap-8">
-                  <div>
-                    <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-2">
-                      Richard Hudson
-                    </h2>
-                    <h3 className="text-xl md:text-2xl font-medium text-blue-600 dark:text-blue-400 mb-4">
-                      Revenue Operations Professional
-                    </h3>
-                  </div>
-
-                  <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-md dark:border-slate-700">
-                    <Image
-                      src="/images/richard.jpg"
-                      alt="Richard Hudson"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-
-                  <p className="text-slate-600 dark:text-slate-300 mb-4 max-w-2xl text-justify">
-                    Driving business growth through data-driven insights, process optimization, and
-                    strategic operational improvements.
-                  </p>
-                  <div className="flex flex-wrap justify-center gap-4 mt-2">
-                    <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-                      <Mail className="h-4 w-4 text-blue-600" />
-                      <span>hello@richardwhudsonjr.com</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-                      <Linkedin className="h-4 w-4 text-blue-600" />
-                      <span>linkedin.com/in/hudsor01</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-                      <Globe className="h-4 w-4 text-blue-600" />
-                      <span>richardwhudsonjr.com</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-                      <Github className="h-4 w-4 text-blue-600" />
-                      <span>github.com/hudsor01</span>
-                    </div>
-                  </div>
+            // Stylized resume - Header/Profile
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-8 mb-8">
+              <div className="flex flex-col items-center text-center gap-8">
+                <div>
+                  <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-2">
+                    Richard Hudson
+                  </h2>
+                  <h3 className="text-xl md:text-2xl font-medium text-blue-600 dark:text-blue-400 mb-4">
+                    Revenue Operations Professional
+                  </h3>
                 </div>
-              </div>
 
-              {/* Professional Experience */}
-              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-8">
-                <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white flex items-center">
-                  <Building className="mr-2 text-blue-600" />
-                  Professional Experience
-                </h2>
-                <div className="space-y-8">
-                  {experience.map((job, index) => (
-                    <div key={index} className="border-l-4 border-blue-600 pl-6 pb-2">
-                      <div className="text-center mb-2">
-                        <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-                          {job.title}
-                        </h3>
-                      </div>
-                      <div className="flex flex-wrap justify-between items-center mb-2">
-                        <p className="text-lg font-medium text-blue-600 dark:text-blue-400">
-                          {job.company}
-                        </p>
-                        <span className="text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full flex items-center">
-                          <Calendar className="h-3 w-3 mr-1" />
-                          {job.period}
-                        </span>
-                      </div>
-                      <ul className="space-y-2">
-                        {job.description.map((item, i) => (
-                          <li key={i} className="flex items-start">
-                            <span className="text-blue-600 mr-2 mt-1">•</span>
-                            <span className="text-slate-600 dark:text-slate-300">{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
+                <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-md dark:border-slate-700">
+                  <Image
+                    src="/images/richard.jpg"
+                    alt="Richard Hudson"
+                    fill
+                    className="object-cover"
+                  />
                 </div>
-              </div>
 
-              {/* Education */}
-              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-8">
-                <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white flex items-center">
-                  <GraduationCap className="mr-2 text-blue-600" />
-                  Education
-                </h2>
-                {education.map((edu, index) => (
-                  <div key={index} className="border-l-4 border-blue-600 pl-6">
-                    <div className="flex flex-wrap justify-between items-start mb-2">
-                      <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-                        {edu.degree}
-                      </h3>
-                      <span className="text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full flex items-center">
-                        <Calendar className="h-3 w-3 mr-1" />
-                        {edu.period}
-                      </span>
-                    </div>
-                    <p className="text-lg font-medium text-blue-600 dark:text-blue-400 mb-3">
-                      {edu.institution}
-                    </p>
-                    <p className="text-slate-600 dark:text-slate-300">{edu.focus}</p>
+                <p className="text-slate-600 dark:text-slate-300 mb-4 max-w-2xl text-justify">
+                  Driving business growth through data-driven insights, process optimization, and
+                  strategic operational improvements.
+                </p>
+                <div className="flex flex-wrap justify-center gap-4 mt-2">
+                  <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                    <Mail className="h-4 w-4 text-blue-600" />
+                    <span>hello@richardwhudsonjr.com</span>
                   </div>
-                ))}
-              </div>
-
-              {/* Skills */}
-              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-8">
-                <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white flex items-center">
-                  <BadgeCheck className="mr-2 text-blue-600" />
-                  Skills & Expertise
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {skills.map((skillGroup, index) => (
-                    <div key={index}>
-                      <h3 className="text-lg font-semibold text-blue-600 dark:text-blue-400 mb-3">
-                        {skillGroup.category}
-                      </h3>
-                      <ul className="space-y-2">
-                        {skillGroup.items.map((skill, i) => (
-                          <li key={i} className="flex items-center">
-                            <div className="w-2 h-2 rounded-full bg-blue-600 mr-2"></div>
-                            <span className="text-slate-600 dark:text-slate-300">{skill}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Certifications */}
-              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-8">
-                <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white flex items-center">
-                  <BadgeCheck className="mr-2 text-blue-600" />
-                  Certifications
-                </h2>
-                <div className="flex flex-wrap gap-3">
-                  {certifications.map((cert, index) => (
-                    <span
-                      key={index}
-                      className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-4 py-2 rounded-lg font-medium"
-                    >
-                      {cert}
-                    </span>
-                  ))}
+                  <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                    <Linkedin className="h-4 w-4 text-blue-600" />
+                    <span>linkedin.com/in/hudsor01</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                    <Globe className="h-4 w-4 text-blue-600" />
+                    <span>richardwhudsonjr.com</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                    <Github className="h-4 w-4 text-blue-600" />
+                    <span>github.com/hudsor01</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -356,14 +249,141 @@ export default function ResumePage() {
         </div>
       </section>
 
+      {/* Professional Experience - Brown Background */}
+      {!showPdf && (
+        <section className="section-bg-secondary py-16 px-4">
+          <div className="container mx-auto max-w-5xl">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-8">
+              <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white flex items-center">
+                <Building className="mr-2 text-blue-600" />
+                Professional Experience
+              </h2>
+              <div className="space-y-8">
+                {experience.map((job, index) => (
+                  <div key={index} className="border-l-4 border-blue-600 pl-6 pb-2">
+                    <div className="text-center mb-2">
+                      <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
+                        {job.title}
+                      </h3>
+                    </div>
+                    <div className="flex flex-wrap justify-between items-center mb-2">
+                      <p className="text-lg font-medium text-blue-600 dark:text-blue-400">
+                        {job.company}
+                      </p>
+                      <span className="text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full flex items-center">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        {job.period}
+                      </span>
+                    </div>
+                    <ul className="space-y-2">
+                      {job.description.map((item, i) => (
+                        <li key={i} className="flex items-start">
+                          <span className="text-blue-600 mr-2 mt-1">•</span>
+                          <span className="text-slate-600 dark:text-slate-300">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Education - White Background */}
+      {!showPdf && (
+        <section className="section-bg-primary py-16 px-4">
+          <div className="container mx-auto max-w-5xl">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-8">
+              <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white flex items-center">
+                <GraduationCap className="mr-2 text-blue-600" />
+                Education
+              </h2>
+              {education.map((edu, index) => (
+                <div key={index} className="border-l-4 border-blue-600 pl-6">
+                  <div className="flex flex-wrap justify-between items-start mb-2">
+                    <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
+                      {edu.degree}
+                    </h3>
+                    <span className="text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full flex items-center">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      {edu.period}
+                    </span>
+                  </div>
+                  <p className="text-lg font-medium text-blue-600 dark:text-blue-400 mb-3">
+                    {edu.institution}
+                  </p>
+                  <p className="text-slate-600 dark:text-slate-300">{edu.focus}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Skills & Expertise - Brown Background */}
+      {!showPdf && (
+        <section className="section-bg-secondary py-16 px-4">
+          <div className="container mx-auto max-w-5xl">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-8">
+              <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white flex items-center">
+                <BadgeCheck className="mr-2 text-blue-600" />
+                Skills & Expertise
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {skills.map((skillGroup, index) => (
+                  <div key={index}>
+                    <h3 className="text-lg font-semibold text-blue-600 dark:text-blue-400 mb-3">
+                      {skillGroup.category}
+                    </h3>
+                    <ul className="space-y-2">
+                      {skillGroup.items.map((skill, i) => (
+                        <li key={i} className="flex items-center">
+                          <div className="w-2 h-2 rounded-full bg-blue-600 mr-2"></div>
+                          <span className="text-slate-600 dark:text-slate-300">{skill}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Certifications - White Background */}
+      {!showPdf && (
+        <section className="section-bg-primary py-16 px-4">
+          <div className="container mx-auto max-w-5xl">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-8">
+              <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white flex items-center">
+                <BadgeCheck className="mr-2 text-blue-600" />
+                Certifications
+              </h2>
+              <div className="flex flex-wrap gap-3">
+                {certifications.map((cert, index) => (
+                  <span
+                    key={index}
+                    className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-4 py-2 rounded-lg font-medium"
+                  >
+                    {cert}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Call to action section */}
       <section className="section-bg-secondary py-16 px-4">
         <div className="container mx-auto max-w-5xl">
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-12 text-slate-900 dark:text-white text-center border border-slate-200 dark:border-slate-700 shadow-lg">
             <h2 className="text-3xl font-bold mb-6">Ready to Connect?</h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto">
-              Interested in discussing how my skills and experience can help your team? Let&rsquos
-              connect!
+              Interested in discussing how my skills and experience can help your team? Let&apos;s connect!
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button

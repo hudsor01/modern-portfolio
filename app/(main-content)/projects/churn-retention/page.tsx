@@ -51,14 +51,22 @@ export default function ChurnAnalysis() {
       partnerGroupRetention.length
   );
 
+  // Ensure components are only rendered on client side
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Simulate loading state
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 800);
-
-    return () => clearTimeout(timer);
-  }, []);
+    if (mounted) {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [mounted]);
 
   // Animation variants
   const fadeInUp = {
@@ -108,6 +116,33 @@ export default function ChurnAnalysis() {
 
   // Latest cohort data
   const latestCohortData = retentionCohortData[retentionCohortData.length - 1];
+
+  // Only render the full page if we're on the client
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white px-4 py-8 md:p-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <Link
+              href="/projects"
+              className="flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 transition-colors"
+            >
+              <ArrowLeft size={16} className="mr-2" />
+              <span>Back to Projects</span>
+            </Link>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Churn & Retention Analysis</h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-8">
+            Loading dashboard...
+          </p>
+          <div className="grid grid-cols-1 gap-4 animate-pulse">
+            <div className="h-64 bg-white dark:bg-gray-800 rounded-xl"></div>
+            <div className="h-64 bg-white dark:bg-gray-800 rounded-xl"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white px-4 py-8 md:p-8">

@@ -8,7 +8,7 @@ export const metadata = {
 
 export default async function HomePage() {
   return (
-    <main className="overflow-hidden">
+    <main>
       {/* Static Hero Section */}
       <HeroSectionStatic />
     </main>

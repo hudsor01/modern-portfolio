@@ -45,7 +45,7 @@ jobs:
       # If you use Vercel for deployment
       - name: Deploy to Vercel
         if: github.event_name != 'pull_request'
-        uses: vercel/actions/cli@master
+        uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}

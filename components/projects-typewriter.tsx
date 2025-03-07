@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 
 interface ProjectsTypewriterProps {
   phrases: string[];
@@ -62,15 +61,12 @@ export function ProjectsTypewriter({
 
   return (
     <div className="relative inline-block min-h-[3.5rem]">
-      <motion.h1
-        className="text-4xl md:text-5xl font-bold tracking-tight"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
+      <h1
+        className="text-4xl md:text-5xl font-bold tracking-tight opacity-100 transition-opacity duration-500"
       >
         <span className="text-gradient">{currentText}</span>
         <span className="inline-block w-2 h-8 bg-blue-600 ml-1 animate-blink align-middle"></span>
-      </motion.h1>
+      </h1>
     </div>
   );
 }

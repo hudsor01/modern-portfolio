@@ -65,30 +65,14 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <div className="pb-20 overflow-auto">
-      {/* Hero Section with brown background */}
+      {/* Hero Section with background */}
       <section className="section-bg-secondary pt-20 pb-24">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-            <div className="space-y-6">
-              <h1 className="mui-heading-1 text-gradient">About Me</h1>
-              <p className="mui-body-1">
-                Revenue Operations Professional with a passion for driving business growth through
-                data-driven strategies.
-              </p>
-              <div className="flex gap-4">
-                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
-                  <Link href={"/contact" as Route<string>}>Contact Me</Link>
-                </Button>
-                <Button asChild variant="outline">
-                  <Link href={"/resume" as Route<string>}>View Resume</Link>
-                </Button>
-              </div>
-            </div>
-
-            <div className="relative mx-auto">
-              <div className="relative w-64 h-64 md:w-80 md:h-80">
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-600 to-violet-600 blur-md" />
-                <div className="absolute inset-1 rounded-2xl bg-white dark:bg-slate-900 overflow-hidden">
+          <div className="flex flex-col md:flex-row gap-16 items-center">
+            <div className="relative md:w-1/3 order-2 md:order-1">
+              <div className="relative w-64 h-64 md:w-80 md:h-80 mx-auto">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 blur-md transform rotate-3"></div>
+                <div className="absolute inset-1 rounded-2xl bg-white dark:bg-slate-900 overflow-hidden transform -rotate-3">
                   <Image
                     src="/images/richard.jpg"
                     alt="Richard Hudson"
@@ -101,6 +85,26 @@ export default function AboutPage() {
                 </div>
               </div>
             </div>
+
+            <div className="space-y-6 md:w-2/3 order-1 md:order-2 text-center md:text-left">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white">
+                About Me
+              </h1>
+              <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 leading-relaxed">
+                As a Revenue Operations Professional with over 7 years of experience, I specialize
+                in optimizing business processes and driving growth through data-driven strategies.
+                My approach combines analytical expertise with strategic vision to deliver
+                measurable business results.
+              </p>
+              <div className="flex gap-4 justify-center md:justify-start">
+                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                  <Link href={'/contact' as Route<string>}>Contact Me</Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link href={'/resume' as Route<string>}>View Resume</Link>
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -108,19 +112,19 @@ export default function AboutPage() {
       {/* Professional Background */}
       <SectionContainer variant="primary">
         <div className="max-w-4xl mx-auto">
-          <h2 className="mui-heading-2 mb-6 flex items-center">
+          <h2 className="text-3xl font-bold mb-6 flex items-center text-slate-900 dark:text-white">
             <BriefcaseIcon className="mr-3 text-blue-600" />
             Professional Background
           </h2>
           <div className="prose prose-lg prose-slate dark:prose-invert max-w-none">
             <p>
-              I&rsquom Richard Hudson, a Revenue Operations Professional with over 7 years of
+              I&apos;m Richard Hudson, a Revenue Operations Professional with over 7 years of
               experience optimizing business processes and driving growth. My expertise lies in
               developing data-driven strategies that enhance operational efficiency and improve
               financial outcomes.
             </p>
             <p>
-              Throughout my career, I&rsquove helped companies implement cross-functional workflow
+              Throughout my career, I&apos;ve helped companies implement cross-functional workflow
               improvements, establish effective reporting systems, and create scalable processes
               that support business growth.
             </p>
@@ -136,98 +140,173 @@ export default function AboutPage() {
 
       {/* Experience Timeline with Alternating Layout */}
       <SectionContainer variant="secondary" className="py-16">
-        <h2 className="mui-heading-2 mb-16 text-center">Professional Journey</h2>
+        <h2 className="text-3xl font-bold mb-16 text-center text-slate-900 dark:text-white">
+          Professional Journey
+        </h2>
 
         <div className="max-w-5xl mx-auto relative">
+          {/* Center timeline line */}
+          <div className="absolute left-1/2 -translate-x-1/2 top-0 h-full w-1 bg-blue-600 rounded-full"></div>
+
           {/* Timeline items */}
-          <div className="space-y-12 md:space-y-24">
-            {/* Item 1 */}
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-8 shadow-md border border-slate-200 dark:border-slate-700 relative">
-              <div className="absolute left-0 top-0 h-full w-2 bg-blue-600 rounded-tl-lg rounded-bl-lg"></div>
-              <div className="pl-4">
-                <div className="text-blue-600 font-semibold mb-2">December 2022 - November 2024</div>
-                <h3 className="text-2xl font-bold mb-2">Revenue Operations Consultant</h3>
-                <p className="font-medium text-slate-600 dark:text-slate-300 mb-4">Thryv</p>
-                <ul className="list-disc pl-5 space-y-2 text-slate-600 dark:text-slate-300">
-                  <li>
-                    Drove $1.1M+ revenue growth through data-driven forecasting and optimization
-                    strategies while scaling partner network by 2,200%.
-                  </li>
-                  <li>Grew partner network by 2,200% and increased transaction volume by 432%.</li>
-                  <li>
-                    Architected revenue modeling framework in Power BI and Salesforce achieving 95%
-                    forecast accuracy across all divisions.
-                  </li>
-                </ul>
+          <div className="relative space-y-12">
+            {/* Item 1 - Left */}
+            <div className="flex flex-col md:flex-row items-center">
+              <div className="md:w-1/2 md:pr-12 mb-8 md:mb-0">
+                <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-lg border border-slate-200 dark:border-slate-700 relative">
+                  {/* Arrow pointing to timeline */}
+                  <div className="hidden md:block absolute top-1/2 -translate-y-1/2 right-0 translate-x-12 w-12 h-1 bg-blue-600"></div>
+
+                  {/* Content */}
+                  <div>
+                    <div className="text-blue-600 font-semibold mb-2">
+                      December 2022 - November 2024
+                    </div>
+                    <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">
+                      Revenue Operations Consultant
+                    </h3>
+                    <p className="font-medium text-slate-600 dark:text-slate-300 mb-4">Thryv</p>
+                    <ul className="list-disc pl-5 space-y-2 text-slate-600 dark:text-slate-300">
+                      <li>
+                        Drove $1.1M+ revenue growth through data-driven forecasting and optimization
+                        strategies
+                      </li>
+                      <li>
+                        Grew partner network by 2,200% and increased transaction volume by 432%
+                      </li>
+                      <li>
+                        Architected revenue modeling framework in Power BI and Salesforce achieving
+                        95% forecast accuracy
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Timeline node */}
+              <div className="z-10 w-10 h-10 rounded-full border-4 border-blue-600 bg-white dark:bg-slate-900 absolute left-1/2 -translate-x-1/2"></div>
+
+              {/* Right side (empty for this item) */}
+              <div className="md:w-1/2 md:pl-12"></div>
+            </div>
+
+            {/* Item 2 - Right */}
+            <div className="flex flex-col md:flex-row items-center">
+              {/* Left side (empty for this item) */}
+              <div className="md:w-1/2 md:pr-12"></div>
+
+              {/* Timeline node */}
+              <div className="z-10 w-10 h-10 rounded-full border-4 border-blue-600 bg-white dark:bg-slate-900 absolute left-1/2 -translate-x-1/2"></div>
+
+              {/* Right side content */}
+              <div className="md:w-1/2 md:pl-12 mb-8 md:mb-0">
+                <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-lg border border-slate-200 dark:border-slate-700 relative">
+                  {/* Arrow pointing to timeline */}
+                  <div className="hidden md:block absolute top-1/2 -translate-y-1/2 left-0 -translate-x-12 w-12 h-1 bg-blue-600"></div>
+
+                  {/* Content */}
+                  <div>
+                    <div className="text-blue-600 font-semibold mb-2">
+                      February 2022 - December 2022
+                    </div>
+                    <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">
+                      Sales Operations Analyst
+                    </h3>
+                    <p className="font-medium text-slate-600 dark:text-slate-300 mb-4">Thryv</p>
+                    <ul className="list-disc pl-5 space-y-2 text-slate-600 dark:text-slate-300">
+                      <li>
+                        Built automated KPI dashboards driving 28% quota attainment growth across
+                        teams
+                      </li>
+                      <li>
+                        Automated commission management system achieving 100% accuracy and reducing
+                        processing time by 73%
+                      </li>
+                      <li>
+                        Improved forecast accuracy by 40% through standardized metrics and reporting
+                        frameworks
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Item 2 */}
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-8 shadow-md border border-slate-200 dark:border-slate-700 relative">
-              <div className="absolute left-0 top-0 h-full w-2 bg-blue-600 rounded-tl-lg rounded-bl-lg"></div>
-              <div className="pl-4">
-                <div className="text-blue-600 font-semibold mb-2">February 2022 - December 2022</div>
-                <h3 className="text-2xl font-bold mb-2">Sales Operation Analyst</h3>
-                <p className="font-medium text-slate-600 dark:text-slate-300 mb-4">Thryv</p>
-                <ul className="list-disc pl-5 space-y-2 text-slate-600 dark:text-slate-300">
-                  <li>
-                    Built automated KPI dashboards driving 28% quota attainment growth across teams
-                    and divisions.
-                  </li>
-                  <li>
-                    Automated commission management system achieving 100% accuracy and reducing
-                    processing time by 73%.
-                  </li>
-                  <li>
-                    Improved forecast accuracy by 40% through standardized metrics and reporting
-                    frameworks.
-                  </li>
-                </ul>
+            {/* Item 3 - Left */}
+            <div className="flex flex-col md:flex-row items-center">
+              <div className="md:w-1/2 md:pr-12 mb-8 md:mb-0">
+                <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-lg border border-slate-200 dark:border-slate-700 relative">
+                  {/* Arrow pointing to timeline */}
+                  <div className="hidden md:block absolute top-1/2 -translate-y-1/2 right-0 translate-x-12 w-12 h-1 bg-blue-600"></div>
+
+                  {/* Content */}
+                  <div>
+                    <div className="text-blue-600 font-semibold mb-2">March 2020 - March 2022</div>
+                    <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">
+                      Channel Operations Lead
+                    </h3>
+                    <p className="font-medium text-slate-600 dark:text-slate-300 mb-4">Thryv</p>
+                    <ul className="list-disc pl-5 space-y-2 text-slate-600 dark:text-slate-300">
+                      <li>
+                        Scaled network to over 300 active affiliates, resellers, and MSPs,
+                        maintaining 99.9% data accuracy
+                      </li>
+                      <li>
+                        Reduced onboarding time by 45% through PartnerStack automation and workflow
+                        optimization
+                      </li>
+                      <li>
+                        Built scalable infrastructure driving 432% volume growth and 67% faster
+                        processing time
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
+
+              {/* Timeline node */}
+              <div className="z-10 w-10 h-10 rounded-full border-4 border-blue-600 bg-white dark:bg-slate-900 absolute left-1/2 -translate-x-1/2"></div>
+
+              {/* Right side (empty for this item) */}
+              <div className="md:w-1/2 md:pl-12"></div>
             </div>
 
-            {/* Item 3 */}
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-8 shadow-md border border-slate-200 dark:border-slate-700 relative">
-              <div className="absolute left-0 top-0 h-full w-2 bg-blue-600 rounded-tl-lg rounded-bl-lg"></div>
-              <div className="pl-4">
-                <div className="text-blue-600 font-semibold mb-2">March 2020 - March 2022</div>
-                <h3 className="text-2xl font-bold mb-2">Channel Operations Lead</h3>
-                <p className="font-medium text-slate-600 dark:text-slate-300 mb-4">Thryv</p>
-                <ul className="list-disc pl-5 space-y-2 text-slate-600 dark:text-slate-300">
-                  <li>
-                    Scaled network to over 300 active affiliates, resellers, and Managed Service
-                    Providers (MSPs), maintaining 99.9% data accuracy.
-                  </li>
-                  <li>
-                    Reduced onboarding time by 45% through PartnerStack automation and workflow
-                    optimization.
-                  </li>
-                  <li>
-                    Built scalable infrastructure driving 432% volume growth and 67% faster
-                    processing time.
-                  </li>
-                </ul>
-              </div>
-            </div>
+            {/* Item 4 - Right */}
+            <div className="flex flex-col md:flex-row items-center">
+              {/* Left side (empty for this item) */}
+              <div className="md:w-1/2 md:pr-12"></div>
 
-            {/* Item 4 */}
-            <div className="bg-white dark:bg-slate-800 rounded-lg p-8 shadow-md border border-slate-200 dark:border-slate-700 relative">
-              <div className="absolute left-0 top-0 h-full w-2 bg-blue-600 rounded-tl-lg rounded-bl-lg"></div>
-              <div className="pl-4">
-                <div className="text-blue-600 font-semibold mb-2">December 2017 - March 2020</div>
-                <h3 className="text-2xl font-bold mb-2">Business Systems Specialist</h3>
-                <p className="font-medium text-slate-600 dark:text-slate-300 mb-4">Thryv</p>
-                <ul className="list-disc pl-5 space-y-2 text-slate-600 dark:text-slate-300">
-                  <li>
-                    Led Salesforce platform integration and automation reducing order processing
-                    time by 60%.
-                  </li>
-                  <li>Achieved 95% SLA compliance managing offshore operations team.</li>
-                  <li>
-                    Developed KPI monitoring systems improving revenue visibility and team
-                    performance metrics.
-                  </li>
-                </ul>
+              {/* Timeline node */}
+              <div className="z-10 w-10 h-10 rounded-full border-4 border-blue-600 bg-white dark:bg-slate-900 absolute left-1/2 -translate-x-1/2"></div>
+
+              {/* Right side content */}
+              <div className="md:w-1/2 md:pl-12 mb-8 md:mb-0">
+                <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-lg border border-slate-200 dark:border-slate-700 relative">
+                  {/* Arrow pointing to timeline */}
+                  <div className="hidden md:block absolute top-1/2 -translate-y-1/2 left-0 -translate-x-12 w-12 h-1 bg-blue-600"></div>
+
+                  {/* Content */}
+                  <div>
+                    <div className="text-blue-600 font-semibold mb-2">
+                      December 2017 - March 2020
+                    </div>
+                    <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">
+                      Business Systems Specialist
+                    </h3>
+                    <p className="font-medium text-slate-600 dark:text-slate-300 mb-4">Thryv</p>
+                    <ul className="list-disc pl-5 space-y-2 text-slate-600 dark:text-slate-300">
+                      <li>
+                        Led Salesforce platform integration and automation reducing order processing
+                        time by 60%
+                      </li>
+                      <li>Achieved 95% SLA compliance managing offshore operations team</li>
+                      <li>
+                        Developed KPI monitoring systems improving revenue visibility and team
+                        performance metrics
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -237,12 +316,12 @@ export default function AboutPage() {
       {/* Education with Updated Styling */}
       <SectionContainer variant="primary">
         <div className="max-w-4xl mx-auto">
-          <h2 className="mui-heading-2 mb-8 flex items-center justify-center">
+          <h2 className="text-3xl font-bold mb-8 flex items-center justify-center text-slate-900 dark:text-white">
             <GraduationCapIcon className="mr-3 text-blue-600" />
             Education
           </h2>
           <div className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-md border border-slate-200 dark:border-slate-700 text-center">
-            <h3 className="text-2xl font-bold">
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
               Bachelor of Science (BS) in Business Administration
             </h3>
             <p className="text-blue-600 dark:text-blue-500 font-medium mt-2">
@@ -260,7 +339,9 @@ export default function AboutPage() {
 
       {/* Skills Section with RPG-style Bars */}
       <SectionContainer variant="secondary">
-        <h2 className="mui-heading-2 mb-10 text-center">Skills & Expertise</h2>
+        <h2 className="text-3xl font-bold mb-10 text-center text-slate-900 dark:text-white">
+          Skills & Expertise
+        </h2>
 
         {/* Using client component for MUI components with dynamic styling */}
         <SkillsWithProgress skillsData={skillsData} />
@@ -274,16 +355,15 @@ export default function AboutPage() {
         <div className="bg-white dark:bg-slate-800 rounded-2xl p-12 text-slate-900 dark:text-white text-center border border-slate-200 dark:border-slate-700 shadow-lg">
           <h2 className="text-3xl font-bold mb-6">Interested in Working Together?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Let&rsquos discuss how I can help optimize your business operations and drive growth.
+            Let&apos;s discuss how I can help optimize your business operations and drive growth.
           </p>
           <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl">
-            <Link href={"/contact" as Route<string>} className="group">
+            <Link href={'/contact' as Route<string>} className="group">
               Get in Touch
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
         </div>
       </SectionContainer>
     </div>
-  );
+  )
 }

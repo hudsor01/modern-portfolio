@@ -28,10 +28,10 @@
     --color-popover: 255 255 255;
     --color-popover-foreground: 15 23 42;
 
-    /* Primary and accent colors */
-    --color-primary: 96, 165, 250; /* RGB values for #60a5fa (blue-400) */
-    --color-primary-light: 147, 197, 253; /* RGB values for #93c5fd (blue-300) */
-    --color-primary-dark: 59, 130, 246; /* RGB values for #3b82f6 (blue-500) */
+    /* Primary and accent colors - standardized blue */
+    --color-primary: 59, 130, 246; /* RGB values for #3b82f6 (blue-500) */
+    --color-primary-light: 96, 165, 250; /* RGB values for #60a5fa (blue-400) */
+    --color-primary-dark: 37, 99, 235; /* RGB values for #2563eb (blue-600) */
     --color-primary-foreground: 240 234 214; /* eggshell */
     --color-secondary: 241 245 249;
     --color-secondary-foreground: 15 23 42;
@@ -146,7 +146,7 @@
   html,
   body {
     min-height: 100vh;
-    overflow: hidden;
+    overflow-x: hidden;
   }
 
   body {
@@ -184,15 +184,19 @@
   }
 
   h1 {
-    font-size: 2.5rem;
+    font-size: 3.5rem;
     font-weight: 800;
+    letter-spacing: -0.05em;
+    line-height: 1.1;
   }
 
   h2 {
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: 700;
+    letter-spacing: -0.03em;
     border-bottom: 1px solid rgb(var(--color-border));
     padding-bottom: 0.5rem;
+    line-height: 1.2;
   }
 
   h3 {
@@ -247,7 +251,7 @@
   }
 
   a:not([class]) {
-    color: hsl(213, 94%, 68%); /* Changed to match blue-400 */
+    color: hsl(217, 91%, 60%); /* Match blue-500 */
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 2px;
@@ -255,7 +259,7 @@
   }
 
   a:not([class]):hover {
-    color: hsl(213, 94%, 58%); /* Darker shade for hover */
+    color: hsl(221, 83%, 53%); /* Match blue-600 for hover */
     opacity: 0.8;
   }
 
@@ -326,12 +330,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(213, 94%, 68%); /* Changed to match blue-400 */
+  background: hsl(217, 91%, 60%); /* Match blue-500 */
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(213, 94%, 58%); /* Darker shade for hover */
+  background: hsl(221, 83%, 53%); /* Match blue-600 for hover */
 }
 
 /* Custom animation for typewriter cursor blink */
@@ -366,7 +370,7 @@
   }
 
   .section-bg-secondary {
-    background-color: rgb(var(--color-bg-secondary));
+    background-color: #3b82f6;
   }
 
   /* Hero background gradient - consistent across all pages */
@@ -396,7 +400,7 @@
 
   /* Text gradient */
   .text-gradient {
-    @apply bg-gradient-to-r from-primary to-violet-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-blue-500 to-blue-700 bg-clip-text text-transparent;
   }
 
   /* Typography enhancements */

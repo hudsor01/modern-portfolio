@@ -1,14 +1,15 @@
 export interface Project {
-  id: string;
-  slug: string;
-  title: string;
-  description: string;
-  image: string;
-  liveUrl?: string;
-  githubUrl?: string;
-  technologies?: string[];
-  featured?: boolean;
-  features?: string[];
+  id: string
+  slug: string
+  title: string
+  description: string
+  image: string
+  [x: string]: string | string[] | boolean | undefined
+  liveUrl?: string
+  githubUrl?: string
+  technologies?: string[]
+  featured?: boolean | undefined | string | string[]
+  features?: string[]
 }
 
 /**

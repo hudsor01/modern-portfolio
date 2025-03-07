@@ -24,15 +24,15 @@ module.exports = {
         background: 'rgb(var(--color-background) / <alpha-value>)',
         foreground: 'rgb(var(--color-foreground) / <alpha-value>)',
         primary: {
-          DEFAULT: '#60a5fa', // Changed to blue-400
-          light: '#93c5fd', // Changed to blue-300 for lighter variant
-          dark: '#3b82f6', // Changed to blue-500 for darker variant
+          DEFAULT: '#3b82f6', // blue-500 as our standard blue
+          light: '#60a5fa', // blue-400 for lighter variant
+          dark: '#2563eb', // blue-600 for darker variant
           foreground: 'hsl(0, 0%, 98%)',
         },
         secondary: {
           DEFAULT: 'rgb(var(--color-secondary) / <alpha-value>)',
-          foreground: 'rgb(var(--color-secondary-foreground) / <alpha-value>)',
         },
+
         destructive: {
           DEFAULT: 'rgb(var(--color-destructive) / <alpha-value>)',
           foreground: 'rgb(var(--color-destructive-foreground) / <alpha-value>)',
@@ -134,4 +134,4 @@ module.exports = {
     },
   },
   plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],
-};
+}

@@ -4,21 +4,21 @@ import Link from 'next/link';
 import type { Route } from 'next';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, FileText, Folder, User, Mail } from 'lucide-react';
+import { ArrowRight, FileText, Folder, Mail } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 export function HeroSectionStatic() {
   const { theme } = useTheme();
 
   return (
-    <section className="relative h-screen flex flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-[#1a1a2e] to-[#16213e]">
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#1a1a2e] to-[#16213e]">
       {/* Background elements */}
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[length:50px_50px]"></div>
       
       {/* Animated background gradient */}
-      <div className="absolute top-0 -left-4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
-      <div className="absolute top-0 -right-4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
-      <div className="absolute bottom-0 left-20 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
+      <div className="absolute top-0 -left-4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+      <div className="absolute top-0 -right-4 w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+      <div className="absolute bottom-0 left-20 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
 
       {/* Content Container */}
       <div className="container relative z-10 px-4 mx-auto max-w-7xl">
@@ -30,7 +30,7 @@ export function HeroSectionStatic() {
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="mb-8"
           >
-            <span className="inline-flex items-center rounded-full bg-[#8DA9C4]/10 border border-[#8DA9C4]/30 px-3 py-1 text-sm font-medium text-[#8DA9C4]">
+            <span className="inline-flex items-center rounded-full bg-blue-500/10 border border-blue-500/30 px-3 py-1 text-sm font-medium text-blue-400">
               Revenue Operations Professional
             </span>
           </motion.div>
@@ -52,7 +52,7 @@ export function HeroSectionStatic() {
             transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             className="mb-8"
           >
-            <h2 className="bg-gradient-to-r from-[#8DA9C4] to-[#7A9BB9] bg-clip-text text-transparent text-2xl sm:text-3xl md:text-4xl tracking-tight font-medium">
+            <h2 className="bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent text-2xl sm:text-3xl md:text-4xl tracking-tight font-medium">
               Driving Business Growth Through Data
             </h2>
           </motion.div>
@@ -75,27 +75,11 @@ export function HeroSectionStatic() {
             transition={{ duration: 0.7, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-wrap gap-4 justify-center"
           >
-            {/* About Button */}
-            <Button
-              asChild
-              size="lg"
-              className="bg-transparent hover:bg-[#8DA9C4]/20 text-[#F5F5DC] px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl border border-[#8DA9C4]/50 transition-all duration-300 group"
-            >
-              <Link href={"/about" as Route<string>} className="flex items-center gap-3">
-                <User size={20} className="text-[#F5F5DC]/90" />
-                <span>About</span>
-                <ArrowRight
-                  size={18}
-                  className="transition-transform duration-300 group-hover:translate-x-1"
-                />
-              </Link>
-            </Button>
-
             {/* Projects Button */}
             <Button
               asChild
               size="lg"
-              className="bg-transparent hover:bg-[#8DA9C4]/20 text-[#F5F5DC] px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl border border-[#8DA9C4]/50 transition-all duration-300 group"
+              className="bg-transparent hover:bg-blue-500/20 text-[#F5F5DC] px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl border border-blue-500/50 transition-all duration-300 group"
             >
               <Link href={"/projects" as Route<string>} className="flex items-center gap-3">
                 <Folder size={20} className="text-[#F5F5DC]/90" />
@@ -111,7 +95,7 @@ export function HeroSectionStatic() {
             <Button
               asChild
               size="lg"
-              className="bg-transparent hover:bg-[#8DA9C4]/20 text-[#F5F5DC] px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl border border-[#8DA9C4]/50 transition-all duration-300 group"
+              className="bg-transparent hover:bg-blue-500/20 text-[#F5F5DC] px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl border border-blue-500/50 transition-all duration-300 group"
             >
               <Link href={"/resume" as Route<string>} className="flex items-center gap-3">
                 <FileText size={20} className="text-[#F5F5DC]/90" />
@@ -127,7 +111,7 @@ export function HeroSectionStatic() {
             <Button
               asChild
               size="lg"
-              className="bg-transparent hover:bg-[#8DA9C4]/20 text-[#F5F5DC] px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl border border-[#8DA9C4]/50 transition-all duration-300 group"
+              className="bg-transparent hover:bg-blue-500/20 text-[#F5F5DC] px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl border border-blue-500/50 transition-all duration-300 group"
             >
               <Link href={"/contact" as Route<string>} className="flex items-center gap-3">
                 <Mail size={20} className="text-[#F5F5DC]/90" />

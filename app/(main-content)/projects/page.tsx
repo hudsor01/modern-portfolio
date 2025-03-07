@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectsPage() {
+  // Force dynamic rendering to ensure projects are loaded
   const projects = await getProjects();
 
   // Witty typewriter titles
@@ -24,7 +25,7 @@ export default async function ProjectsPage() {
   ];
 
   return (
-    <main className="pb-10">
+    <main className="pb-10 overflow-auto">
       {/* Hero Section with Typewriter */}
       <section className="section-bg-secondary py-20 mb-6">
         <div className="container mx-auto max-w-7xl px-4">
@@ -42,7 +43,15 @@ export default async function ProjectsPage() {
 
       {/* Projects Section */}
       <SectionContainer variant="primary" className="py-0">
-        <ProjectFiltersEnhanced projects={projects} />
+        {projects && projects.length > 0 ? (
+          <ProjectFiltersEnhanced projects={projects} />
+        ) : (
+          <div className="text-center py-12">
+            <h3 className="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-4">
+              Loading projects...
+            </h3>
+          </div>
+        )}
       </SectionContainer>
 
       {/* CTA Section moved from homepage */}

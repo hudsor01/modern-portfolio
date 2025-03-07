@@ -1,11 +1,10 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Project } from '@/lib/data/projects';
-import { ProjectCardEnhanced } from './project-card-enhanced';
+import { ProjectGrid } from '@/app/(main-content)/projects/project-grid';
 import { Button } from '@/components/ui/button';
-import { Tabs, Tab, Box, Chip, Paper, Typography, Grid, Container } from '@mui/material';
+import ClientSideOnly from '@/components/client-side-only';
 
 interface ProjectFiltersEnhancedProps {
   projects: Project[];
@@ -37,95 +36,57 @@ export function ProjectFiltersEnhanced({ projects }: ProjectFiltersEnhancedProps
   }, [projects]);
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      {/* Enhanced Filters */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 2,
-          mb: 4,
-          borderRadius: 3,
-          backgroundColor: 'transparent',
-          display: 'flex',
-          justifyContent: 'center',
-          overflowX: 'auto',
-          '&::-webkit-scrollbar': {
-            height: '4px',
-          },
-          '&::-webkit-scrollbar-track': {
-            backgroundColor: 'rgba(0,0,0,0.05)',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: 'rgba(0,0,0,0.1)',
-            borderRadius: '2px',
-          },
-        }}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 1,
-            justifyContent: 'center',
-            p: 1,
-          }}
-        >
-          {allTechnologies.map((tech) => (
-            <Chip
-              key={tech}
-              label={tech}
-              onClick={() => handleFilterChange(tech)}
-              color={selectedFilter === tech ? 'primary' : 'default'}
-              variant={selectedFilter === tech ? 'filled' : 'outlined'}
-              sx={{
-                borderRadius: '2rem',
-                px: 1,
-                fontWeight: selectedFilter === tech ? 600 : 400,
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  backgroundColor: selectedFilter === tech ? 'primary.main' : 'rgba(0,0,0,0.08)',
-                },
-              }}
-            />
-          ))}
-        </Box>
-      </Paper>
+    <ClientSideOnly
+      fallback={
+        <div className="container mx-auto max-w-7xl px-4">
+          <div className="text-center py-12">
+            <p className="text-slate-600 dark:text-slate-300 mb-6">Loading projects...</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-pulse">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-72 bg-slate-100 dark:bg-slate-800 rounded-xl"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <div className="container mx-auto max-w-7xl px-4">
+      {/* Filter Pills */}
+      <div className="flex flex-wrap justify-center gap-2 mb-8 p-4">
+        {allTechnologies.map((tech) => (
+          <button
+            key={tech}
+            onClick={() => handleFilterChange(tech)}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              selectedFilter === tech
+                ? 'bg-blue-600 text-white shadow-md'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+            }`}
+          >
+            {tech}
+          </button>
+        ))}
+      </div>
 
       {/* Project Grid */}
-      <AnimatePresence mode="wait">
-        {filteredProjects.length > 0 ? (
-          <Grid
-            container
-            spacing={4}
-            sx={{
-              marginTop: 1,
-              marginBottom: 6,
-            }}
+      {filteredProjects.length > 0 ? (
+        <div>
+          <ProjectGrid projects={filteredProjects} />
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <h3 className="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-4">
+            No projects found with the selected technology.
+          </h3>
+          <Button
+            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={() => handleFilterChange('All')}
           >
-            {filteredProjects.map((project, index) => (
-              <Grid item xs={12} sm={6} md={4} key={project.id}>
-                <ProjectCardEnhanced project={project} index={index} />
-              </Grid>
-            ))}
-          </Grid>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-12"
-          >
-            <Typography variant="h6" color="textSecondary" gutterBottom>
-              No projects found with the selected technology.
-            </Typography>
-            <Button
-              className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
-              onClick={() => handleFilterChange('All')}
-            >
-              Show All Projects
-            </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </Container>
+            Show All Projects
+          </Button>
+        </div>
+      )}
+      </div>
+    </ClientSideOnly>
   );
 }

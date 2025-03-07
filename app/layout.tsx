@@ -6,8 +6,8 @@ import { NavbarWrapper } from '@/components/layout/navbar-wrapper';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="modern-portfolio relative min-h-screen overflow-auto">
+    <html lang="en" suppressHydrationWarning>
+      <body className="modern-portfolio relative min-h-screen" suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
