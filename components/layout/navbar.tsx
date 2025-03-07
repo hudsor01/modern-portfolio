@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { MobileDrawer } from '@/components/mobile-drawer';
 import type { NextLinkHref } from '@/types/next-types';
 import { getRouteKey } from '@/lib/utils';
 
@@ -48,7 +47,7 @@ export function Navbar() {
       { className: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8' },
       React.createElement(
         'div', 
-        { className: 'flex h-16 items-center justify-between' },
+        { className: 'flex h-20 items-center justify-between' },
         [
           // Left spacer
           React.createElement(
@@ -61,12 +60,12 @@ export function Navbar() {
           React.createElement(
             'nav', 
             { 
-              className: 'hidden absolute left-1/2 -translate-x-1/2 md:flex items-center justify-center',
+              className: 'absolute left-1/2 -translate-x-1/2 flex items-center justify-center',
               key: 'nav'
             },
             React.createElement(
               'div', 
-              { className: 'flex items-center space-x-8' },
+              { className: 'flex items-center space-x-6 md:space-x-12' },
               navItems.map((item, index) => (
                 React.createElement(
                   'div', 
@@ -75,7 +74,7 @@ export function Navbar() {
                     Link, 
                     { 
                       href: item.href,
-                      className: `hover:text-blue-500 relative text-sm font-medium transition-colors px-1 py-1 ${
+                      className: `hover:text-blue-500 relative text-base md:text-lg font-medium transition-colors px-3 py-3 ${
                         pathname === item.href
                           ? 'text-blue-500'
                           : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-[rgb(var(--color-eggshell))]'
@@ -86,7 +85,7 @@ export function Navbar() {
                       pathname === item.href && React.createElement(
                         'span',
                         {
-                          className: 'absolute -bottom-1 left-0 h-0.5 w-full bg-blue-500',
+                          className: 'absolute -bottom-2 left-0 h-1.5 w-full bg-blue-600 rounded-full',
                           key: 'indicator'
                         }
                       )
@@ -103,11 +102,10 @@ export function Navbar() {
             { className: 'hidden md:block w-4', key: 'right-spacer' }
           ),
 
-          // Mobile menu
+          // Hidden spacer (replacing mobile menu)
           React.createElement(
             'div', 
-            { className: 'md:hidden', key: 'mobile-menu' },
-            React.createElement(MobileDrawer)
+            { className: 'w-4', key: 'right-mobile-spacer' }
           )
         ]
       )

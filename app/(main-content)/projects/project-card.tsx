@@ -41,7 +41,7 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
   const projectPath = projectPaths[project.id] || '/projects';
 
   return (
-    <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full border-slate-200 dark:border-slate-700 group hover:-translate-y-2">
+    <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full border-slate-200 dark:border-slate-700 group hover:-translate-y-2 rounded-xl">
       {project.image && (
         <div className="relative aspect-video w-full overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 z-10 group-hover:opacity-0 transition-opacity duration-300"></div>
@@ -73,12 +73,12 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
 
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xl font-bold text-slate-900 dark:text-white">{project.title}</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{project.title}</CardTitle>
           <div className="bg-blue-100 dark:bg-blue-900/40 p-2 rounded-full">
             {getProjectIcon((project.type as string) || 'dashboard')}
           </div>
         </div>
-        <CardDescription className="mt-2 text-base text-slate-600 dark:text-slate-300">{project.description}</CardDescription>
+        <CardDescription className="mt-3 text-base sm:text-lg text-slate-600 dark:text-slate-300">{project.description}</CardDescription>
       </CardHeader>
 
       {project.technologies && project.technologies.length > 0 && (
@@ -87,7 +87,7 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
             {project.technologies.slice(0, 3).map((tag) => (
               <span
                 key={tag}
-                className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200 rounded-full px-3 py-1 text-xs font-medium shadow-sm"
+                className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200 rounded-full px-3 py-1 text-xs sm:text-sm font-medium shadow-sm"
               >
                 {tag}
               </span>
@@ -104,7 +104,7 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
       <CardFooter className="pt-2 border-t border-slate-100 dark:border-slate-800">
         <Button
           variant="ghost"
-          className="w-full justify-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+          className="w-full justify-center py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium"
           asChild
         >
           <Link href={projectPath as Route<string>} className="group">

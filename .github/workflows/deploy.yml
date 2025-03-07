@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '23.8.0'
+          node-version: '22.x'
           cache: 'npm'
 
       - name: Install dependencies
@@ -42,12 +42,12 @@ jobs:
       # - name: Run bundle optimization
       #   run: npm run optimize
 
-      # If you use Vercel for deployment
-      - name: Deploy to Vercel
-        if: github.event_name != 'pull_request'
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
+      # Vercel deployment step removed - deploy manually
+      # - name: Deploy to Vercel
+      #   if: github.event_name != 'pull_request'
+      #   uses: amondnet/vercel-action@v25
+      #   with:
+      #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
+      #     vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+      #     vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+      #     vercel-args: '--prod'

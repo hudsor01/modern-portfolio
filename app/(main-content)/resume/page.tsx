@@ -133,22 +133,22 @@ export default function ResumePage() {
   return (
     <div className="bg-white dark:bg-slate-900 overflow-auto">
       {/* Hero section with brown background */}
-      <section className="section-bg-secondary py-16">
+      <section className="section-bg-secondary py-16 sm:py-20">
         <div className="container mx-auto max-w-6xl px-4">
           <div className="flex flex-col items-center justify-center text-center">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="text-4xl md:text-5xl font-bold mb-4 text-slate-900 dark:text-white"
+              className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 text-white"
             >
               Professional Resume
             </motion.h1>
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-              className="text-slate-600 dark:text-slate-300 max-w-2xl text-lg mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="text-white/90 max-w-2xl text-xl md:text-2xl mb-8"
             >
               A comprehensive overview of my professional experience, skills, and qualifications
             </motion.p>
@@ -159,10 +159,10 @@ export default function ResumePage() {
               className="flex flex-wrap justify-center gap-4"
             >
               <Button
-                className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 rounded-xl shadow-md"
+                size="lg"
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md flex items-center gap-2"
                 onClick={handleDownloadResume}
                 disabled={isDownloading}
-                size="lg"
               >
                 <FileDown className="h-5 w-5" />
                 {isDownloading ? 'Downloading...' : 'Download PDF Resume'}

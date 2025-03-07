@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { getProjects } from '@/lib/data/projects';
-import { ProjectsTypewriter } from '@/components/projects-typewriter';
+// import { ProjectsTypewriter } from '@/components/projects-typewriter';
 import { ProjectFiltersEnhanced } from '@/components/project-filters-enhanced';
 import { CTASection } from '@/components/cta-section';
 import { SectionContainer } from '@/components/ui/section-container';
@@ -17,7 +17,7 @@ export default async function ProjectsPage() {
 
   // Witty typewriter titles
   const typewriterPhrases = [
-    'Visualization Showcase',
+    'Data Visualization Showcase',
     'Data-Driven Solutions',
     'Analytics Portfolio',
     'Revenue Insights',
@@ -27,14 +27,14 @@ export default async function ProjectsPage() {
   return (
     <main className="pb-10 overflow-auto">
       {/* Hero Section with Typewriter */}
-      <section className="section-bg-secondary py-20 mb-6">
+      <section className="section-bg-secondary py-16 sm:py-20 mb-10">
         <div className="container mx-auto max-w-7xl px-4">
           <div className="text-center mb-4">
-            {/* Typewriter Effect */}
-            <div className="mb-6 flex justify-center">
-              <ProjectsTypewriter phrases={typewriterPhrases} />
-            </div>
-            <p className="text-slate-600 dark:text-slate-300 max-w-2xl mx-auto text-lg">
+            {/* Static Title Instead of Typewriter */}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 text-white">
+              Project Showcase
+            </h1>
+            <p className="text-white/90 max-w-2xl mx-auto text-xl md:text-2xl mb-2">
               Interactive dashboards and analytics visualizations built with modern web technologies
             </p>
           </div>

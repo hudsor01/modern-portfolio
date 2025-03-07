@@ -1,3 +1,5 @@
+/* Modern Portfolio Website Styles - Richard Hudson */
+
 /* Using system fonts defined in fonts.ts */
 
 /* Tailwind directives */
@@ -132,15 +134,15 @@
   }
 
   html {
-    -webkit-text-size-adjust: 100%;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    box-sizing: border-box;
-    line-height: 1.15;
-    background-color: rgb(var(--color-background));
-    font-size: 62.5%;
-    scroll-behavior: smooth;
-    overscroll-behavior-y: none;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+  line-height: 1.15;
+  background-color: rgb(var(--color-background));
+  font-size: 68%; /* Further increased base font size */
+  scroll-behavior: smooth;
+  overscroll-behavior-y: none;
   }
 
   html,
@@ -152,7 +154,7 @@
   body {
     background-color: rgb(var(--color-background));
     color: rgb(var(--color-foreground));
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     line-height: 1.65;
     font-family: var(--font-sans);
     width: 100%;
@@ -370,7 +372,8 @@
   }
 
   .section-bg-secondary {
-    background-color: #3b82f6;
+    background-color: #4b87f0; /* Lighter, less intense blue */
+    color: white;
   }
 
   /* Hero background gradient - consistent across all pages */

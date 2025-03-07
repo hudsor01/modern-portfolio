@@ -11,7 +11,7 @@ export function HeroSectionStatic() {
   const { theme } = useTheme();
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#1a1a2e] to-[#16213e]">
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#0f172a] to-[#1e293b]">
       {/* Background elements */}
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[length:50px_50px]"></div>
       
@@ -40,7 +40,7 @@ export function HeroSectionStatic() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#F5F5DC] to-[#E8E8D0] mb-6"
+            className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white mb-6"
           >
             Richard Hudson
           </motion.h1>
@@ -52,7 +52,7 @@ export function HeroSectionStatic() {
             transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             className="mb-8"
           >
-            <h2 className="bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent text-2xl sm:text-3xl md:text-4xl tracking-tight font-medium">
+            <h2 className="text-blue-300 text-2xl sm:text-3xl md:text-4xl tracking-tight font-medium">
               Driving Business Growth Through Data
             </h2>
           </motion.div>
@@ -62,7 +62,7 @@ export function HeroSectionStatic() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="text-[#F5F5DC]/80 text-lg md:text-xl max-w-3xl mb-12 leading-relaxed px-4 font-light"
+            className="text-gray-200 text-lg md:text-xl max-w-3xl mb-12 leading-relaxed px-4 font-light"
           >
             Experienced in optimizing revenue operations through data-driven insights, 
             process optimization, and strategic operational improvements that drive measurable business results.
@@ -79,10 +79,10 @@ export function HeroSectionStatic() {
             <Button
               asChild
               size="lg"
-              className="bg-transparent hover:bg-blue-500/20 text-[#F5F5DC] px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl border border-blue-500/50 transition-all duration-300 group"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
             >
               <Link href={"/projects" as Route<string>} className="flex items-center gap-3">
-                <Folder size={20} className="text-[#F5F5DC]/90" />
+                <Folder size={20} className="text-white" />
                 <span>Projects</span>
                 <ArrowRight
                   size={18}
@@ -95,10 +95,10 @@ export function HeroSectionStatic() {
             <Button
               asChild
               size="lg"
-              className="bg-transparent hover:bg-blue-500/20 text-[#F5F5DC] px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl border border-blue-500/50 transition-all duration-300 group"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
             >
               <Link href={"/resume" as Route<string>} className="flex items-center gap-3">
-                <FileText size={20} className="text-[#F5F5DC]/90" />
+                <FileText size={20} className="text-white" />
                 <span>Resume</span>
                 <ArrowRight
                   size={18}
@@ -111,10 +111,10 @@ export function HeroSectionStatic() {
             <Button
               asChild
               size="lg"
-              className="bg-transparent hover:bg-blue-500/20 text-[#F5F5DC] px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl border border-blue-500/50 transition-all duration-300 group"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
             >
               <Link href={"/contact" as Route<string>} className="flex items-center gap-3">
-                <Mail size={20} className="text-[#F5F5DC]/90" />
+                <Mail size={20} className="text-white" />
                 <span>Contact</span>
                 <ArrowRight
                   size={18}

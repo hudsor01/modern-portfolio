@@ -30,3 +30,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.prettierrc.json
+.prettierignore
+.npmrc
+components.json
+eslint.config.js
+next-env.d.ts
+vercel.json
+.github/
+.next
+.vercel
+.vscode
