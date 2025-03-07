@@ -36,11 +36,11 @@ jobs:
           # Add any environment variables needed for build (non-sensitive)
           NODE_ENV: production
 
-      - name: Run bundle analysis
-        run: npm run analyze
+      # - name: Run bundle analysis
+      #   run: npm run analyze
 
-      - name: Run bundle optimization
-        run: npm run optimize
+      # - name: Run bundle optimization
+      #   run: npm run optimize
 
       # If you use Vercel for deployment
       - name: Deploy to Vercel
