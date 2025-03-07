@@ -1,43 +1,36 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 
 // Skills data organized by categories
 const skillsData = [
   {
-    category: "Revenue Operations",
+    category: 'Revenue Operations',
     skills: [
-      "Revenue Operations",
-      "Data Analytics",
-      "Process Optimization",
-      "Strategic Planning",
-      "Sales Operations",
-      "Business Analysis"
-    ]
+      'Revenue Operations',
+      'Data Analytics',
+      'Process Optimization',
+      'Strategic Planning',
+      'Sales Operations',
+      'Business Analysis',
+    ],
   },
   {
-    category: "Tools & Platforms",
-    skills: [
-      "Salesforce",
-      "HubSpot",
-      "SalesLoft",
-      "PartnerStack",
-      "Workato",
-      "Power BI"
-    ]
+    category: 'Tools & Platforms',
+    skills: ['Salesforce', 'HubSpot', 'SalesLoft', 'PartnerStack', 'Workato', 'Power BI'],
   },
   {
-    category: "Technical Skills",
+    category: 'Technical Skills',
     skills: [
-      "Python",
-      "JavaScript",
-      "React & Next.js",
-      "SQL",
-      "Data Visualization",
-      "API Integrations"
-    ]
-  }
+      'Python',
+      'JavaScript',
+      'React & Next.js',
+      'SQL',
+      'Data Visualization',
+      'API Integrations',
+    ],
+  },
 ];
 
 export function SkillsSection() {
@@ -48,9 +41,9 @@ export function SkillsSection() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.05
-      }
-    }
+        staggerChildren: 0.05,
+      },
+    },
   };
 
   const itemVariants = {
@@ -59,18 +52,18 @@ export function SkillsSection() {
       opacity: 1,
       y: 0,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 300,
-        damping: 24
-      }
-    }
+        damping: 24,
+      },
+    },
   };
 
   return (
     <section className="py-20 bg-white dark:bg-gray-900">
       <div className="container mx-auto max-w-7xl px-4">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -79,7 +72,7 @@ export function SkillsSection() {
           >
             Skills & Expertise
           </motion.h2>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -127,7 +120,11 @@ export function SkillsSection() {
                   key={skill}
                   variants={itemVariants}
                   className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 text-center aspect-square flex flex-col items-center justify-center hover:shadow-md transition-shadow"
-                  whileHover={{ y: -5, boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)" }}
+                  whileHover={{
+                    y: -5,
+                    boxShadow:
+                      '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                  }}
                 >
                   <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
                     <span className="text-blue-600 dark:text-blue-400 font-bold text-xl">
@@ -140,8 +137,8 @@ export function SkillsSection() {
             </motion.div>
           </div>
         ))}
-        
-        <motion.div 
+
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -150,54 +147,78 @@ export function SkillsSection() {
         >
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Continuous Development</h3>
+              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+                Continuous Development
+              </h3>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
-                I'm committed to staying at the forefront of revenue operations best practices and technologies. 
-                Through ongoing professional development, I constantly expand my knowledge and skills to deliver 
-                exceptional results.
+                I&rsquom committed to staying at the forefront of revenue operations best practices
+                and technologies. Through ongoing professional development, I constantly expand my
+                knowledge and skills to deliver exceptional results.
               </p>
               <p className="text-gray-600 dark:text-gray-300">
-                My approach combines proven methodologies with innovative techniques to address complex business challenges.
+                My approach combines proven methodologies with innovative techniques to address
+                complex business challenges.
               </p>
             </div>
             <div className="space-y-4">
               <div className="relative pt-1">
                 <div className="flex mb-2 items-center justify-between">
                   <div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Revenue Strategy</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Revenue Strategy
+                    </span>
                   </div>
                   <div className="text-right">
-                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400">95%</span>
+                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                      95%
+                    </span>
                   </div>
                 </div>
                 <div className="overflow-hidden h-2 mb-4 text-xs flex rounded-full bg-gray-200 dark:bg-gray-700">
-                  <div style={{ width: "95%" }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600"></div>
+                  <div
+                    style={{ width: '95%' }}
+                    className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600"
+                  ></div>
                 </div>
               </div>
               <div className="relative pt-1">
                 <div className="flex mb-2 items-center justify-between">
                   <div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Data Analytics</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Data Analytics
+                    </span>
                   </div>
                   <div className="text-right">
-                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400">90%</span>
+                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                      90%
+                    </span>
                   </div>
                 </div>
                 <div className="overflow-hidden h-2 mb-4 text-xs flex rounded-full bg-gray-200 dark:bg-gray-700">
-                  <div style={{ width: "90%" }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600"></div>
+                  <div
+                    style={{ width: '90%' }}
+                    className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600"
+                  ></div>
                 </div>
               </div>
               <div className="relative pt-1">
                 <div className="flex mb-2 items-center justify-between">
                   <div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Process Optimization</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Process Optimization
+                    </span>
                   </div>
                   <div className="text-right">
-                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400">98%</span>
+                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                      98%
+                    </span>
                   </div>
                 </div>
                 <div className="overflow-hidden h-2 mb-4 text-xs flex rounded-full bg-gray-200 dark:bg-gray-700">
-                  <div style={{ width: "98%" }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600"></div>
+                  <div
+                    style={{ width: '98%' }}
+                    className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600"
+                  ></div>
                 </div>
               </div>
             </div>

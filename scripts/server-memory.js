@@ -8,7 +8,7 @@ const path = require('path');
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
-  terminal: false
+  terminal: false,
 });
 
 // In-memory data store (will reset when the server restarts)
@@ -42,135 +42,147 @@ const saveMemory = () => {
 const handleRequest = async (request) => {
   try {
     const { type, params } = JSON.parse(request);
-    
+
     if (type === 'metadata') {
       // Return metadata for the memory server
       return JSON.stringify({
         type: 'result',
         result: {
           name: 'Memory',
-          description: 'Persistent memory for Claude to store and retrieve information across sessions',
+          description:
+            'Persistent memory for Claude to store and retrieve information across sessions',
           methods: {
             store: {
               description: 'Store a value in memory',
               params: {
                 key: { type: 'string', description: 'Key to store the value under' },
                 value: { type: 'any', description: 'Value to store' },
-                namespace: { 
-                  type: 'string', 
+                namespace: {
+                  type: 'string',
                   description: 'Optional namespace for organizing memories',
                   required: false,
-                  default: 'default'
-                }
-              }
+                  default: 'default',
+                },
+              },
             },
             retrieve: {
               description: 'Retrieve a value from memory',
               params: {
                 key: { type: 'string', description: 'Key to retrieve' },
-                namespace: { 
-                  type: 'string', 
+                namespace: {
+                  type: 'string',
                   description: 'Namespace to retrieve from',
                   required: false,
-                  default: 'default'
-                }
-              }
+                  default: 'default',
+                },
+              },
             },
             list: {
               description: 'List all keys in a namespace',
               params: {
-                namespace: { 
-                  type: 'string', 
+                namespace: {
+                  type: 'string',
                   description: 'Namespace to list keys from',
                   required: false,
-                  default: 'default'
-                }
-              }
+                  default: 'default',
+                },
+              },
             },
             delete: {
               description: 'Delete a key from memory',
               params: {
                 key: { type: 'string', description: 'Key to delete' },
-                namespace: { 
-                  type: 'string', 
+                namespace: {
+                  type: 'string',
                   description: 'Namespace to delete from',
                   required: false,
-                  default: 'default'
-                }
-              }
-            }
-          }
-        }
+                  default: 'default',
+                },
+              },
+            },
+          },
+        },
       });
     } else if (type === 'method') {
       const { method, params: methodParams } = params;
-      
-      // Initialize namespace if it doesn't exist
+
+      // Initialize namespace if it doesn&rdquot exist
       const namespace = methodParams.namespace || 'default';
       if (!memoryStore[namespace]) {
         memoryStore[namespace] = {};
       }
-      
+
       if (method === 'store') {
         const { key, value } = methodParams;
         memoryStore[namespace][key] = value;
         saveMemory();
-        
+
         return JSON.stringify({
           type: 'result',
-          result: { success: true, message: `Stored value for key '${key}' in namespace '${namespace}'` }
+          result: {
+            success: true,
+            message: `Stored value for key '${key}' in namespace '${namespace}'`,
+          },
         });
       } else if (method === 'retrieve') {
         const { key } = methodParams;
         const value = memoryStore[namespace][key];
-        
+
         if (value === undefined) {
           return JSON.stringify({
             type: 'result',
-            result: { found: false, message: `No value found for key '${key}' in namespace '${namespace}'` }
+            result: {
+              found: false,
+              message: `No value found for key '${key}' in namespace '${namespace}'`,
+            },
           });
         }
-        
+
         return JSON.stringify({
           type: 'result',
-          result: { found: true, value }
+          result: { found: true, value },
         });
       } else if (method === 'list') {
         const keys = Object.keys(memoryStore[namespace] || {});
-        
+
         return JSON.stringify({
           type: 'result',
-          result: { keys, namespace }
+          result: { keys, namespace },
         });
       } else if (method === 'delete') {
         const { key } = methodParams;
         const existed = memoryStore[namespace] && key in memoryStore[namespace];
-        
+
         if (existed) {
           delete memoryStore[namespace][key];
           saveMemory();
         }
-        
+
         return JSON.stringify({
           type: 'result',
-          result: { success: existed, message: existed ? `Deleted key '${key}' from namespace '${namespace}'` : `Key '${key}' not found in namespace '${namespace}'` }
+          result: {
+            success: existed,
+            message: existed
+              ? `Deleted key '${key}' from namespace '${namespace}'`
+              : `Key '${key}' not found in namespace '${namespace}'`,
+          },
         });
       } else {
         return JSON.stringify({
           type: 'error',
-          error: `Unknown method: ${method}`
+          error: `Unknown method: ${method}`,
         });
       }
     } else {
       return JSON.stringify({
         type: 'error',
-        error: 'Invalid request type'
+        error: 'Invalid request type',
       });
     }
   } catch (error) {
     return JSON.stringify({
       type: 'error',
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -181,10 +193,12 @@ rl.on('line', async (line) => {
     const response = await handleRequest(line);
     console.log(response);
   } catch (error) {
-    console.log(JSON.stringify({
-      type: 'error',
-      error: error.message
-    }));
+    console.log(
+      JSON.stringify({
+        type: 'error',
+        error: error.message,
+      })
+    );
   }
 });
 

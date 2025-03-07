@@ -6,14 +6,14 @@ import readline from 'readline';
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
-  terminal: false
+  terminal: false,
 });
 
 // Handle the sequential thinking process
 const handleRequest = async (request) => {
   try {
     const { type, params } = JSON.parse(request);
-    
+
     if (type === 'metadata') {
       // Return metadata for the sequential thinking server
       return JSON.stringify({
@@ -25,32 +25,32 @@ const handleRequest = async (request) => {
             think: {
               description: 'Process complex problems step by step',
               params: {
-                problem: { 
-                  type: 'string', 
-                  description: 'The problem or question to analyze' 
+                problem: {
+                  type: 'string',
+                  description: 'The problem or question to analyze',
                 },
-                context: { 
-                  type: 'string', 
+                context: {
+                  type: 'string',
                   description: 'Additional context or constraints',
-                  required: false
+                  required: false,
                 },
-                steps: { 
-                  type: 'number', 
+                steps: {
+                  type: 'number',
                   description: 'Number of steps to break down the thinking process',
                   required: false,
-                  default: 5
-                }
-              }
-            }
-          }
-        }
+                  default: 5,
+                },
+              },
+            },
+          },
+        },
       });
     } else if (type === 'method') {
       const { method, params: methodParams } = params;
-      
+
       if (method === 'think') {
         const { problem, context = '', steps = 5 } = methodParams;
-        
+
         // The actual step-by-step thinking will be handled by Claude
         // This just gives the model a structured prompt to work with
         return JSON.stringify({
@@ -59,25 +59,26 @@ const handleRequest = async (request) => {
             problemStatement: problem,
             context: context,
             requestedSteps: steps,
-            instructions: "Please break down your thinking process into clear sequential steps. For each step, provide your reasoning and any intermediate conclusions. This helps organize complex problem-solving in a structured way."
-          }
+            instructions:
+              'Please break down your thinking process into clear sequential steps. For each step, provide your reasoning and any intermediate conclusions. This helps organize complex problem-solving in a structured way.',
+          },
         });
       } else {
         return JSON.stringify({
           type: 'error',
-          error: `Unknown method: ${method}`
+          error: `Unknown method: ${method}`,
         });
       }
     } else {
       return JSON.stringify({
         type: 'error',
-        error: 'Invalid request type'
+        error: 'Invalid request type',
       });
     }
   } catch (error) {
     return JSON.stringify({
       type: 'error',
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -88,10 +89,12 @@ rl.on('line', async (line) => {
     const response = await handleRequest(line);
     console.log(response);
   } catch (error) {
-    console.log(JSON.stringify({
-      type: 'error',
-      error: error.message
-    }));
+    console.log(
+      JSON.stringify({
+        type: 'error',
+        error: error.message,
+      })
+    );
   }
 });
 

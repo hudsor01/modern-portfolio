@@ -1,442 +1,410 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { 
-  Box, 
-  Typography, 
-  Container, 
-  Grid, 
-  Button,
-  Paper,
-  Stack,
-  Chip,
-  useTheme,
-  alpha
-} from '@mui/material'
-import { ArrowForward, FileDownload, LinkedIn, GitHub, KeyboardArrowDown } from '@mui/icons-material'
-import { motion } from 'framer-motion'
-import { Link as ScrollLink } from 'react-scroll'
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { useTheme } from 'next-themes';
+import Grid from '@mui/material/Unstable_Grid2';
+import { Typography, Button as MuiButton, Container, Box } from '@mui/material';
+import { FileText, Folder, User, ArrowRight } from 'lucide-react';
+import type { Route } from 'next';
 
-interface HeroSectionProps {
-  titles: string[];
-}
+export function HeroSectionMUI() {
+  const [mounted, setMounted] = useState(false);
 
-export function HeroSection({ titles }: HeroSectionProps) {
-  const theme = useTheme();
-  const [currentTitle, setCurrentTitle] = useState(0);
-  const [displayedText, setDisplayedText] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
-  
-  // Typewriter effect
   useEffect(() => {
-    const title = titles[currentTitle];
-    const typingDelay = 100; // Delay between typing each character
-    const deletingDelay = 50; // Faster when deleting
-    const completeDelay = 1500; // Pause when word is complete
-    
-    let timeout;
-    
-    if (!isDeleting && displayedText === title) {
-      // Word is complete, wait then start deleting
-      timeout = setTimeout(() => setIsDeleting(true), completeDelay);
-    } else if (isDeleting && displayedText === '') {
-      // Word is deleted, move to next word
-      setIsDeleting(false);
-      setCurrentTitle((prev) => (prev + 1) % titles.length);
-    } else if (isDeleting) {
-      // Delete a character
-      timeout = setTimeout(() => {
-        setDisplayedText(prev => prev.slice(0, -1));
-      }, deletingDelay);
-    } else {
-      // Type a character
-      timeout = setTimeout(() => {
-        setDisplayedText(title.slice(0, displayedText.length + 1));
-      }, typingDelay);
-    }
-    
-    return () => clearTimeout(timeout);
-  }, [currentTitle, displayedText, isDeleting, titles]);
-  
+    // Ensure hydration doesn't cause UI mismatches
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
   return (
-    <Box 
-      component="section" 
-      sx={{ 
-        minHeight: '90vh',
-        display: 'flex',
-        alignItems: 'center',
-        pt: 8,
-        pb: 15,
+    <Box
+      component="section"
+      sx={{
+        minHeight: '100vh',
+        background: 'linear-gradient(to bottom, #1a1a2e, #16213e)',
         position: 'relative',
-        backgroundColor: theme => theme.palette.mode === 'light' ? 'white' : 'background.default'
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
       }}
     >
-      {/* Subtle background elements */}
-      <Box 
+      {/* Background elements */}
+      <Box
         sx={{
           position: 'absolute',
-          top: '20%',
-          right: '5%',
-          width: { xs: 200, md: 300 },
-          height: { xs: 200, md: 300 },
-          borderRadius: '50%',
-          backgroundColor: alpha(theme.palette.primary.main, 0.03),
-          filter: 'blur(60px)',
-          zIndex: 0
+          inset: 0,
+          backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 0)',
+          backgroundSize: '50px 50px',
         }}
       />
-      
-      <Box 
+
+      {/* Animated background gradient */}
+      <Box
+        className="animate-blob"
         sx={{
           position: 'absolute',
-          bottom: '10%',
-          left: '10%',
-          width: { xs: 250, md: 350 },
-          height: { xs: 250, md: 350 },
+          top: 0,
+          left: -16,
+          width: 384,
+          height: 384,
+          backgroundColor: 'rgba(168, 85, 247, 0.1)',
           borderRadius: '50%',
-          backgroundColor: alpha(theme.palette.secondary.main, 0.04),
-          filter: 'blur(70px)',
-          zIndex: 0
+          mixBlendMode: 'multiply',
+          filter: 'blur(24px)',
         }}
       />
-      
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-        <Grid container spacing={6} alignItems="center">
-          {/* Left Content */}
-          <Grid item xs={12} lg={7}>
-            <Box>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Chip
-                  label="Revenue Operations Professional"
-                  color="primary"
-                  size="medium"
-                  sx={{ 
-                    mb: 2,
-                    borderRadius: 'full',
-                    fontWeight: 500,
-                    px: 1.5,
-                    fontSize: '0.85rem'
-                  }}
-                />
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-              >
-                <Typography 
-                  variant="h2" 
-                  component="h1"
-                  sx={{ 
-                    fontWeight: 800,
-                    mb: 2,
-                    lineHeight: 1.2,
-                    fontSize: { xs: '2.5rem', sm: '3rem', md: '3.5rem' }
-                  }}
-                >
-                  Driving Business Growth Through Data-Driven Insights
-                </Typography>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                <Box sx={{ height: 42, my: 2 }}>
-                  <Typography 
-                    variant="h5"
-                    component="div" 
-                    color="text.secondary"
-                    sx={{ display: 'flex', alignItems: 'center' }}
-                  >
-                    <Box component="span">
-                      {displayedText}
-                    </Box>
-                    <Box 
-                      component="span" 
-                      sx={{ 
-                        width: 2, 
-                        height: 24, 
-                        bgcolor: 'primary.main', 
-                        ml: 0.5,
-                        animation: 'blink 1s step-end infinite'
-                      }}
-                    />
-                  </Typography>
-                </Box>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-              >
-                <Typography 
-                  variant="body1" 
-                  color="text.secondary"
-                  sx={{ 
-                    mb: 4,
-                    maxWidth: 600,
-                    fontSize: '1.1rem',
-                    lineHeight: 1.6
-                  }}
-                >
-                  I help businesses optimize their revenue operations through strategic process improvements, 
-                  cross-functional collaboration, and actionable data analytics.
-                </Typography>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-              >
-                <Stack 
-                  direction={{ xs: 'column', sm: 'row' }} 
-                  spacing={2}
-                  sx={{ mb: 4 }}
-                >
-                  <Button 
-                    variant="contained" 
-                    component={Link} 
-                    href="/projects"
-                    size="large"
-                    endIcon={<ArrowForward />}
-                    sx={{ 
-                      px: 3, 
-                      py: 1.5,
-                      borderRadius: 2
-                    }}
-                  >
-                    View Projects
-                  </Button>
-                  
-                  <Button 
-                    variant="outlined" 
-                    component={Link} 
-                    href="/resume"
-                    size="large"
-                    startIcon={<FileDownload />}
-                    sx={{ 
-                      px: 3, 
-                      py: 1.5,
-                      borderRadius: 2
-                    }}
-                  >
-                    View Resume
-                  </Button>
-                </Stack>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-              >
-                <Stack direction="row" spacing={3} alignItems="center">
-                  <Link href="https://linkedin.com/in/hudsor01" passHref>
-                    <Box 
-                      component="a"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      sx={{
-                        color: 'text.secondary',
-                        transition: 'color 0.2s',
-                        '&:hover': {
-                          color: 'primary.main'
-                        }
-                      }}
-                      aria-label="LinkedIn Profile"
-                    >
-                      <LinkedIn fontSize="medium" />
-                    </Box>
-                  </Link>
-                  
-                  <Link href="https://github.com/hudsor01" passHref>
-                    <Box 
-                      component="a"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      sx={{
-                        color: 'text.secondary',
-                        transition: 'color 0.2s',
-                        '&:hover': {
-                          color: 'primary.main'
-                        }
-                      }}
-                      aria-label="GitHub Profile"
-                    >
-                      <GitHub fontSize="medium" />
-                    </Box>
-                  </Link>
-                </Stack>
-              </motion.div>
-            </Box>
-          </Grid>
-          
-          {/* Right Content - Image */}
-          <Grid item xs={12} lg={5}>
+      <Box
+        className="animate-blob animation-delay-2000"
+        sx={{
+          position: 'absolute',
+          top: 0,
+          right: -16,
+          width: 384,
+          height: 384,
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          borderRadius: '50%',
+          mixBlendMode: 'multiply',
+          filter: 'blur(24px)',
+        }}
+      />
+      <Box
+        className="animate-blob animation-delay-4000"
+        sx={{
+          position: 'absolute',
+          bottom: 0,
+          left: 80,
+          width: 384,
+          height: 384,
+          backgroundColor: 'rgba(99, 102, 241, 0.1)',
+          borderRadius: '50%',
+          mixBlendMode: 'multiply',
+          filter: 'blur(24px)',
+        }}
+      />
+
+      {/* Content Container */}
+      <Container sx={{ position: 'relative', zIndex: 10, maxWidth: 'lg' }}>
+        <Grid container direction="column" alignItems="center" spacing={2} textAlign="center">
+          {/* Eyebrow badge */}
+          <Grid xs={12}>
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              sx={{ position: 'relative' }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              style={{ marginBottom: '2rem' }}
             >
-              <Box 
-                sx={{ 
-                  position: 'relative',
-                  mx: 'auto',
-                  width: { xs: '80%', sm: '70%', md: '100%' },
-                  maxWidth: 450,
-                  aspectRatio: '1/1',
+              <Box
+                component="span"
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  borderRadius: '9999px',
+                  backgroundColor: 'rgba(141, 169, 196, 0.1)',
+                  border: '1px solid rgba(141, 169, 196, 0.3)',
+                  px: 1.5,
+                  py: 0.5,
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  color: 'rgb(141, 169, 196)',
                 }}
               >
-                {/* Background decorations */}
-                <Box 
-                  sx={{
-                    position: 'absolute',
-                    right: { xs: '-5%', md: '-10%' },
-                    bottom: { xs: '-5%', md: '-10%' },
-                    width: '90%',
-                    height: '90%',
-                    backgroundColor: alpha(theme.palette.grey[200], theme.palette.mode === 'light' ? 1 : 0.1),
-                    borderRadius: 4,
-                    zIndex: 0
-                  }}
-                />
-                
-                <Box 
-                  sx={{
-                    position: 'absolute',
-                    left: { xs: '-5%', md: '-8%' },
-                    top: { xs: '-5%', md: '-8%' },
-                    width: '30%',
-                    height: '30%',
-                    backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                    borderRadius: 2,
-                    zIndex: 0
-                  }}
-                />
-                
-                {/* Image container */}
-                <Paper
-                  elevation={6}
-                  sx={{
-                    position: 'absolute',
-                    inset: 0,
-                    borderRadius: 4,
-                    overflow: 'hidden',
-                    border: '8px solid',
-                    borderColor: theme.palette.mode === 'light' ? 'white' : theme.palette.background.paper,
-                    zIndex: 1
-                  }}
-                >
-                  <Image
-                    src="/images/richard.jpg"
-                    alt="Richard Hudson"
-                    fill
-                    sizes="(max-width: 768px) 70vw, (max-width: 1200px) 50vw, 33vw"
-                    style={{ 
-                      objectFit: 'cover',
-                      objectPosition: 'center'
-                    }}
-                    priority
-                  />
-                </Paper>
-                
-                {/* Experience badge */}
-                <Paper
-                  elevation={8}
-                  sx={{
-                    position: 'absolute',
-                    right: '-10%',
-                    bottom: '-5%',
-                    width: 90,
-                    height: 90,
-                    borderRadius: '50%',
-                    backgroundColor: theme.palette.primary.main,
-                    color: theme.palette.primary.contrastText,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '4px solid',
-                    borderColor: theme.palette.mode === 'light' ? 'white' : theme.palette.background.paper,
-                    zIndex: 2
-                  }}
-                >
-                  <Typography variant="h5" fontWeight="bold" lineHeight={1}>7+</Typography>
-                  <Typography variant="caption" fontSize="0.7rem">Years Exp.</Typography>
-                </Paper>
+                Revenue Operations Professional
               </Box>
             </motion.div>
           </Grid>
+
+          {/* Main heading with gradient */}
+          <Grid xs={12}>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              style={{ marginBottom: '1.5rem' }}
+            >
+              <Typography
+                variant="h1"
+                component="h1"
+                sx={{
+                  fontFamily: 'serif',
+                  fontSize: { xs: '3rem', sm: '4rem', md: '5rem', lg: '6rem' },
+                  fontWeight: 700,
+                  letterSpacing: '-0.025em',
+                  background: 'linear-gradient(to right, #F5F5DC, #E8E8D0)',
+                  backgroundClip: 'text',
+                  textFillColor: 'transparent',
+                  color: 'transparent',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                Richard Hudson
+              </Typography>
+            </motion.div>
+          </Grid>
+
+          {/* Subtitle with gradient */}
+          <Grid xs={12}>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+              style={{ marginBottom: '2rem' }}
+            >
+              <Typography
+                variant="h2"
+                component="h2"
+                sx={{
+                  fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2.25rem' },
+                  fontWeight: 500,
+                  letterSpacing: '-0.025em',
+                  background: 'linear-gradient(to right, #8DA9C4, #7A9BB9)',
+                  backgroundClip: 'text',
+                  textFillColor: 'transparent',
+                  color: 'transparent',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                Driving Business Growth Through Data
+              </Typography>
+            </motion.div>
+          </Grid>
+
+          {/* Description text with improved typography */}
+          <Grid xs={12}>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              style={{ marginBottom: '3rem' }}
+            >
+              <Typography
+                variant="body1"
+                sx={{
+                  color: 'rgba(245, 245, 220, 0.8)',
+                  fontSize: { xs: '1rem', md: '1.25rem' },
+                  maxWidth: '48rem',
+                  mx: 'auto',
+                  lineHeight: 1.7,
+                  fontWeight: 300,
+                  px: 2,
+                }}
+              >
+                Experienced in optimizing revenue operations through data-driven insights, process
+                optimization, and strategic operational improvements that drive measurable business
+                results.
+              </Typography>
+            </motion.div>
+          </Grid>
+
+          {/* CTA Buttons - Using Grid for button layout */}
+          <Grid xs={12}>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <Grid
+                container
+                spacing={2}
+                justifyContent="center"
+                sx={{ flexWrap: { xs: 'wrap', md: 'nowrap' } }}
+              >
+                {/* Resume Button */}
+                <Grid>
+                  <Link href={'/resume' as Route<string>} className="group">
+                    <MuiButton
+                      variant="contained"
+                      size="large"
+                      sx={{
+                        backgroundColor: '#8DA9C4',
+                        color: '#F5F5DC',
+                        padding: '0.875rem 2rem',
+                        fontSize: '1.125rem',
+                        borderRadius: '0.75rem',
+                        boxShadow:
+                          '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
+                        border: '1px solid rgba(141, 169, 196, 0.8)',
+                        transition: 'all 0.3s',
+                        '&:hover': {
+                          backgroundColor: '#7A9BB9',
+                          boxShadow:
+                            '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+                        },
+                      }}
+                      startIcon={
+                        <FileText
+                          size={20}
+                          className="text-[#F5F5DC]/90 transition-transform duration-300 group-hover:translate-x-1"
+                        />
+                      }
+                    >
+                      View Resume
+                    </MuiButton>
+                  </Link>
+                </Grid>
+
+                {/* Projects Button */}
+                <Grid>
+                  <Link href={'/projects' as Route<string>} className="group">
+                    <MuiButton
+                      variant="contained"
+                      size="large"
+                      sx={{
+                        backgroundColor: '#8DA9C4',
+                        color: '#F5F5DC',
+                        padding: '0.875rem 2rem',
+                        fontSize: '1.125rem',
+                        borderRadius: '0.75rem',
+                        boxShadow:
+                          '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
+                        border: '1px solid rgba(141, 169, 196, 0.8)',
+                        transition: 'all 0.3s',
+                        '&:hover': {
+                          boxShadow:
+                            '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+                          backgroundColor: '#7A9BB9',
+                        },
+                      }}
+                      startIcon={
+                        <Folder
+                          size={20}
+                          className="text-[#F5F5DC]/90 transition-transform duration-300 group-hover:translate-x-1"
+                        />
+                      }
+                    >
+                      View Projects
+                    </MuiButton>
+                  </Link>
+                </Grid>
+
+                {/* About Me Button */}
+                <Grid>
+                  <Link href={'/about' as Route<string>} className="group">
+                    <MuiButton
+                      variant="contained"
+                      size="large"
+                      sx={{
+                        backgroundColor: '#8DA9C4',
+                        color: '#F5F5DC',
+                        padding: '0.875rem 2rem',
+                        fontSize: '1.125rem',
+                        borderRadius: '0.75rem',
+                        boxShadow:
+                          '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
+                        border: '1px solid rgba(141, 169, 196, 0.8)',
+                        transition: 'all 0.3s',
+                        '&:hover': {
+                          boxShadow:
+                            '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+                          backgroundColor: '#7A9BB9',
+                        },
+                      }}
+                      startIcon={
+                        <User
+                          size={20}
+                          className="text-[#F5F5DC]/90 transition-transform duration-300 group-hover:translate-x-1"
+                        />
+                      }
+                    >
+                      About Me
+                    </MuiButton>
+                  </Link>
+                </Grid>
+              </Grid>
+            </motion.div>
+          </Grid>
         </Grid>
-        
-        {/* Scroll indicator */}
-        <Box 
+      </Container>
+
+      {/* Scroll indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2, duration: 0.8 }}
+        style={{
+          position: 'absolute',
+          bottom: '2.5rem',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Typography
+          variant="body2"
           sx={{
-            position: 'absolute',
-            bottom: 40,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            textAlign: 'center',
-            zIndex: 2
+            color: 'rgba(245, 245, 220, 0.6)',
+            fontSize: '0.875rem',
+            marginBottom: '0.5rem',
+          }}
+        >
+          Scroll to explore
+        </Typography>
+        <Box
+          sx={{
+            width: '1.5rem',
+            height: '2.5rem',
+            border: '2px solid rgba(245, 245, 220, 0.3)',
+            borderRadius: '9999px',
+            display: 'flex',
+            justifyContent: 'center',
+            padding: '0.25rem',
           }}
         >
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2, duration: 0.6 }}
-          >
-            <ScrollLink
-              to="projects-section"
-              spy={true}
-              smooth={true}
-              offset={-80}
-              duration={800}
-            >
-              <Stack 
-                direction="column" 
-                alignItems="center"
-                spacing={1}
-                sx={{ cursor: 'pointer' }}
-              >
-                <Typography variant="body2" color="text.secondary">
-                  Scroll to explore
-                </Typography>
-                <Box 
-                  sx={{
-                    animation: 'bounce 2s infinite'
-                  }}
-                >
-                  <KeyboardArrowDown color="primary" />
-                </Box>
-              </Stack>
-            </ScrollLink>
-          </motion.div>
+            animate={{
+              y: [0, 12, 0],
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 1.5,
+              ease: 'easeInOut',
+            }}
+            style={{
+              width: '0.375rem',
+              height: '0.375rem',
+              backgroundColor: 'rgba(245, 245, 220, 0.6)',
+              borderRadius: '9999px',
+            }}
+          />
         </Box>
-      </Container>
-      
-      {/* Add keyframes for blinking cursor and bounce animation */}
+      </motion.div>
+
+      {/* CSS for animation delays */}
       <style jsx global>{`
-        @keyframes blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0; }
+        .animation-delay-2000 {
+          animation-delay: 2s;
         }
-        
-        @keyframes bounce {
-          0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-          40% { transform: translateY(-10px); }
-          60% { transform: translateY(-5px); }
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
+
+        @keyframes blob {
+          0% {
+            transform: translate(0px, 0px) scale(1);
+          }
+          33% {
+            transform: translate(30px, -50px) scale(1.1);
+          }
+          66% {
+            transform: translate(-20px, 20px) scale(0.9);
+          }
+          100% {
+            transform: translate(0px, 0px) scale(1);
+          }
+        }
+
+        .animate-blob {
+          animation: blob 7s infinite;
         }
       `}</style>
     </Box>

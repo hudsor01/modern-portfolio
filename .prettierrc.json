@@ -2,17 +2,13 @@
   "printWidth": 100,
   "tabWidth": 2,
   "useTabs": false,
-  "semi": true,
-  "comma": "es5",
+  "semi": false,
   "singleQuote": true,
   "jsxSingleQuote": false,
-  "quoteProps": "as-is",
+  "quoteProps": "as-needed",
   "bracketSameLine": false,
   "proseWrap": "preserve",
   "arrowParens": "always",
-  "sortEmptyLines": "up",
   "endOfLine": "lf",
-  "trailingComma": "es5",
-  "eslintIntegration": true,
-  "ignored": ["node_modules/**/*", ".github/**/*", ".cache/**/*"]
+  "trailingComma": "es5"
 }

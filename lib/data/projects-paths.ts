@@ -1,5 +1,5 @@
-import type { Route } from 'next'
-import { asRoute } from '@/lib/utils'
+import type { Route } from 'next';
+import { asRoute } from '@/lib/utils';
 
 // Map of project IDs to static path strings
 // This avoids dynamic path construction in Link components
@@ -11,8 +11,8 @@ export const projectPaths: Record<string, Route<string>> = {
   'revenue-kpi': asRoute('/projects/revenue-kpi'),
   // Fallback for any other projects
   default: asRoute('/projects'),
-}
+};
 
 export function getProjectPath(id: string): Route<string> {
-  return projectPaths[id] || asRoute(`/projects/${id}`)
+  return projectPaths[id] || asRoute(`/projects/${id}`);
 }

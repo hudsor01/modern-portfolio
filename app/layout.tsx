@@ -1,25 +1,12 @@
-'use client'
+import './globals.css';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/react';
+import { ThemeProvider } from '@/components/theme-provider';
+import { NavbarWrapper } from '@/components/layout/navbar-wrapper';
 
-import './globals.css'
-import { usePathname } from 'next/navigation'
-import { fontSans, fontSerif, fontMono } from './fonts'
-import { Toaster } from 'react-hot-toast'
-import { SpeedInsights } from '@vercel/speed-insights/next'
-import { Analytics } from '@vercel/analytics/react'
-import { ThemeProvider } from '@/components/theme-provider'
-import { Navbar } from '@/components/layout/navbar'
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  // Determine if we're on the homepage
-  const pathname = usePathname();
-  const isHomePage = pathname === '/';
-  
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable}`}>
+    <html lang="en">
       <body className="modern-portfolio relative min-h-screen overflow-auto">
         <ThemeProvider
           attribute="class"
@@ -27,19 +14,16 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {/* Only show Navbar on non-homepage routes */}
-          {!isHomePage && <Navbar />}
-          
+          {/* NavbarWrapper will only show Navbar on non-homepage routes */}
+          <NavbarWrapper />
+
           {children}
-          
-          {/* Toast notifications */}
-          <Toaster position="bottom-right" />
-          
+
           {/* Analytics */}
           <SpeedInsights />
           <Analytics />
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }

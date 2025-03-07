@@ -1,24 +1,24 @@
-'use client'
+'use client';
 
-import React, { ReactNode } from 'react'
-import { Typewriter } from 'react-simple-typewriter'
-import { cn } from '@/lib/utils'
+import React, { ReactNode } from 'react';
+import { Typewriter } from 'react-simple-typewriter';
+import { cn } from '@/lib/utils';
 
-type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 
 interface AnimatedHeadingProps {
-	text: string | string[]
-	level?: HeadingLevel
-	className?: string
-	typeSpeed?: number
-	deleteSpeed?: number
-	delaySpeed?: number
-	loop?: boolean
-	cursor?: boolean
-	cursorBlinking?: boolean
-	cursorStyle?: string
-	words?: string[]
-	children?: ReactNode
+  text: string | string[];
+  level?: HeadingLevel;
+  className?: string;
+  typeSpeed?: number;
+  deleteSpeed?: number;
+  delaySpeed?: number;
+  loop?: boolean;
+  cursor?: boolean;
+  cursorBlinking?: boolean;
+  cursorStyle?: string;
+  words?: string[];
+  children?: ReactNode;
 }
 
 /**
@@ -37,37 +37,37 @@ interface AnimatedHeadingProps {
  * @param {string[]} words - Words to cycle through (alternative to text array)
  */
 export function AnimatedHeading({
-	text,
-	level = 'h2',
-	className,
-	typeSpeed = 80,
-	deleteSpeed = 50,
-	delaySpeed = 1500,
-	loop = true,
-	cursor = true,
-	cursorBlinking = true,
-	cursorStyle = '|',
-	words,
+  text,
+  level = 'h2',
+  className,
+  typeSpeed = 80,
+  deleteSpeed = 50,
+  delaySpeed = 1500,
+  loop = true,
+  cursor = true,
+  cursorBlinking = true,
+  cursorStyle = '|',
+  words,
 }: AnimatedHeadingProps) {
-	// Use either the text array or words prop
-	const textArray = Array.isArray(text) ? text : words || [text as string]
+  // Use either the text array or words prop
+  const textArray = Array.isArray(text) ? text : words || [text as string];
 
-	return (
-		<>
-			{React.createElement(
-				level,
-				{ className: cn('font-bold', className) },
-				<Typewriter
-					words={textArray}
-					loop={loop}
-					cursor={cursor}
-					cursorStyle={cursorStyle}
-					cursorBlinking={cursorBlinking}
-					typeSpeed={typeSpeed}
-					deleteSpeed={deleteSpeed}
-					delaySpeed={delaySpeed}
-				/>
-			)}
-		</>
-	)
+  return (
+    <>
+      {React.createElement(
+        level,
+        { className: cn('font-bold', className) },
+        <Typewriter
+          words={textArray}
+          loop={loop}
+          cursor={cursor}
+          cursorStyle={cursorStyle}
+          cursorBlinking={cursorBlinking}
+          typeSpeed={typeSpeed}
+          deleteSpeed={deleteSpeed}
+          delaySpeed={delaySpeed}
+        />
+      )}
+    </>
+  );
 }

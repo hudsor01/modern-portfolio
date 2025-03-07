@@ -7,7 +7,7 @@ export const themeColors = {
     light: 'hsl(217, 91%, 60%)', // Tailwind blue-600 - matches hero section
     dark: 'hsl(217, 91%, 60%)',
   },
-  
+
   // Background colors for section alternation
   background: {
     light: {
@@ -17,14 +17,14 @@ export const themeColors = {
     dark: {
       primary: 'hsl(240, 10%, 3.9%)', // Dark background
       secondary: 'hsl(240, 10%, 5.9%)', // Slightly lighter dark background
-    }
+    },
   },
-  
+
   // Card gradient settings
   cardGradient: {
     light: 'linear-gradient(135deg, rgba(0, 112, 243, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%)',
     dark: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%)',
-  }
+  },
 };
 
 // CSS variable utility to insert these values into globals.css

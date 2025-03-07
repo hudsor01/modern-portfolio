@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import { ArrowRight, FileText, Github, Linkedin, ChevronDown } from 'lucide-react'
-import { TypewriterEffect } from '@/components/ui/typewriter-effect'
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { ArrowRight, FileText, Github, Linkedin, ChevronDown } from 'lucide-react';
+import { TypewriterEffect } from '@/components/ui/typewriter-effect';
 
 interface HeroSectionModernProps {
   titles: string[];
@@ -27,11 +27,11 @@ export function HeroSectionModern({ titles }: HeroSectionModernProps) {
         <div className="absolute top-1/4 right-1/4 w-64 h-64 rounded-full bg-blue-500/5 dark:bg-blue-500/10 blur-3xl"></div>
         <div className="absolute bottom-1/3 left-1/3 w-96 h-96 rounded-full bg-indigo-500/5 dark:bg-indigo-500/10 blur-3xl"></div>
       </div>
-      
+
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Text Content - Takes 7 columns on large screens */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8 }}
@@ -46,8 +46,8 @@ export function HeroSectionModern({ titles }: HeroSectionModernProps) {
               >
                 Revenue Operations Professional
               </motion.span>
-              
-              <motion.h1 
+
+              <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
@@ -55,7 +55,7 @@ export function HeroSectionModern({ titles }: HeroSectionModernProps) {
               >
                 Driving Business Growth Through Data-Driven Insights
               </motion.h1>
-              
+
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -68,30 +68,42 @@ export function HeroSectionModern({ titles }: HeroSectionModernProps) {
               </motion.div>
             </div>
 
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
               className="text-lg text-gray-600 dark:text-gray-300 max-w-xl"
             >
-              I help businesses optimize their revenue operations through strategic process improvements, 
-              cross-functional collaboration, and actionable data analytics.
+              I help businesses optimize their revenue operations through strategic process
+              improvements, cross-functional collaboration, and actionable data analytics.
             </motion.p>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
               className="flex flex-wrap gap-4"
             >
-              <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-700 px-6 py-6 text-base group">
+              <Button
+                asChild
+                size="lg"
+                className="bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-700 px-6 py-6 text-base group"
+              >
                 <Link href="/projects" className="flex items-center gap-2">
                   View Projects
-                  <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                  <ArrowRight
+                    size={16}
+                    className="transition-transform group-hover:translate-x-1"
+                  />
                 </Link>
               </Button>
-              
-              <Button asChild variant="outline" size="lg" className="border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-6 py-6 text-base group">
+
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-6 py-6 text-base group"
+              >
                 <Link href="/resume" className="flex items-center gap-2">
                   <FileText size={16} />
                   View Resume
@@ -99,7 +111,7 @@ export function HeroSectionModern({ titles }: HeroSectionModernProps) {
               </Button>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
@@ -127,7 +139,7 @@ export function HeroSectionModern({ titles }: HeroSectionModernProps) {
           </motion.div>
 
           {/* Image Area - Takes 5 columns on large screens */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
@@ -136,13 +148,13 @@ export function HeroSectionModern({ titles }: HeroSectionModernProps) {
             <div className="relative w-full max-w-md aspect-square">
               {/* Background decoration */}
               <div className="absolute -right-8 -bottom-8 w-full h-full rounded-xl bg-gray-100 dark:bg-gray-800"></div>
-              
+
               {/* Secondary decoration */}
               <div className="absolute -left-5 -top-5 w-24 h-24 bg-blue-100 dark:bg-blue-900/30 rounded-lg"></div>
-              
+
               {/* Image container */}
               <div className="absolute inset-0 rounded-xl overflow-hidden border-8 border-white dark:border-gray-900 shadow-xl">
-                <Image 
+                <Image
                   src="/images/richard.jpg"
                   alt="Richard Hudson"
                   fill
@@ -151,7 +163,7 @@ export function HeroSectionModern({ titles }: HeroSectionModernProps) {
                   priority
                 />
               </div>
-              
+
               {/* Experience badge */}
               <div className="absolute -right-4 -bottom-4 w-24 h-24 rounded-full bg-blue-600 z-10 flex flex-col items-center justify-center text-white border-4 border-white dark:border-gray-900 shadow-lg">
                 <span className="text-2xl font-bold">7+</span>
@@ -160,9 +172,9 @@ export function HeroSectionModern({ titles }: HeroSectionModernProps) {
             </div>
           </motion.div>
         </div>
-        
+
         {/* Scroll indicator */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 1 }}
@@ -174,5 +186,5 @@ export function HeroSectionModern({ titles }: HeroSectionModernProps) {
         </motion.div>
       </div>
     </section>
-  )
+  );
 }

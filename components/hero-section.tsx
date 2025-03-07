@@ -17,30 +17,30 @@ export function HeroSection({ titles }: HeroSectionProps) {
     <div className="relative overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0070f3]/10 via-transparent to-[#7461c3]/10 z-0" />
-      
+
       {/* Animated background elements */}
       <div className="absolute inset-0 z-0">
         {[...Array(5)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute rounded-full bg-[#0070f3]/5 blur-3xl"
-            initial={{ 
-              width: `${Math.random() * 400 + 100}px`, 
+            initial={{
+              width: `${Math.random() * 400 + 100}px`,
               height: `${Math.random() * 400 + 100}px`,
               x: `${Math.random() * 100}%`,
               y: `${Math.random() * 100}%`,
-              opacity: 0.3
+              opacity: 0.3,
             }}
-            animate={{ 
+            animate={{
               x: `${Math.random() * 100}%`,
               y: `${Math.random() * 100}%`,
-              opacity: [0.3, 0.5, 0.3]
+              opacity: [0.3, 0.5, 0.3],
             }}
-            transition={{ 
-              duration: Math.random() * 20 + 10, 
+            transition={{
+              duration: Math.random() * 20 + 10,
               repeat: Infinity,
               repeatType: 'reverse',
-              ease: 'easeInOut'
+              ease: 'easeInOut',
             }}
           />
         ))}
@@ -48,14 +48,14 @@ export function HeroSection({ titles }: HeroSectionProps) {
 
       <div className="container mx-auto px-4 py-24 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <motion.div 
+          <motion.div
             className="space-y-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
             <div>
-              <motion.h1 
+              <motion.h1
                 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-[#0070f3] to-[#7461c3] bg-clip-text text-transparent"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -63,7 +63,7 @@ export function HeroSection({ titles }: HeroSectionProps) {
               >
                 Richard Hudson
               </motion.h1>
-              <motion.div 
+              <motion.div
                 className="h-14 text-2xl text-muted-foreground"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -78,17 +78,17 @@ export function HeroSection({ titles }: HeroSectionProps) {
               </motion.div>
             </div>
 
-            <motion.p 
+            <motion.p
               className="text-muted-foreground text-lg max-w-md"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
-              Driving business growth through data-driven insights, process optimization,
-              and strategic operational improvements.
+              Driving business growth through data-driven insights, process optimization, and
+              strategic operational improvements.
             </motion.p>
 
-            <motion.div 
+            <motion.div
               className="flex flex-wrap gap-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -109,7 +109,7 @@ export function HeroSection({ titles }: HeroSectionProps) {
               </Button>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               className="flex items-center gap-6 pt-2"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -143,7 +143,7 @@ export function HeroSection({ titles }: HeroSectionProps) {
             </motion.div>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="flex justify-center md:justify-end"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}

@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { ReactNode } from 'react'
-import { Link as ScrollLink } from 'react-scroll'
-import { Button, ButtonProps } from '@mui/material'
+import { ReactNode } from 'react';
+import { Link as ScrollLink } from 'react-scroll';
+import { Button, ButtonProps } from '@mui/material';
 
 interface SmoothScrollLinkProps extends Omit<ButtonProps, 'href'> {
-  to: string
-  children: ReactNode
-  offset?: number
-  variant?: 'text' | 'outlined' | 'contained'
-  color?: 'primary' | 'secondary' | 'inherit' | 'success' | 'error' | 'info' | 'warning'
+  to: string;
+  children: ReactNode;
+  offset?: number;
+  variant?: 'text' | 'outlined' | 'contained';
+  color?: 'primary' | 'secondary' | 'inherit' | 'success' | 'error' | 'info' | 'warning';
 }
 
 export function SmoothScrollLink({
@@ -33,5 +33,5 @@ export function SmoothScrollLink({
         {children}
       </Button>
     </ScrollLink>
-  )
+  );
 }

@@ -4,14 +4,14 @@ export async function POST(request: NextRequest) {
   try {
     // Parse the web vitals data
     const webVitalsData = await request.json();
-    
+
     // Log the web vitals data in development
     if (process.env.NODE_ENV === 'development') {
       console.log('Web Vitals API:', webVitalsData);
     }
-    
+
     // In production, you might want to send this to an analytics service
-    
+
     // Return a success response
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

@@ -9,7 +9,7 @@ const URL = require('url').URL;
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
-  terminal: false
+  terminal: false,
 });
 
 // Fetch data from a URL with appropriate error handling
@@ -19,49 +19,53 @@ const fetchUrl = (url, options = {}) => {
       // Parse URL to determine if http or https
       const parsedUrl = new URL(url);
       const client = parsedUrl.protocol === 'https:' ? https : http;
-      
+
       // Set sensible defaults for timeout
       const requestOptions = {
         ...options,
-        timeout: options.timeout || 10000 // 10 second default timeout
+        timeout: options.timeout || 10000, // 10 second default timeout
       };
-      
+
       const req = client.get(url, requestOptions, (res) => {
         const { statusCode } = res;
-        
+
         // Handle redirects (up to 5 levels)
-        if ((statusCode === 301 || statusCode === 302 || statusCode === 307 || statusCode === 308) && 
-            options.redirectCount < 5 && 
-            res.headers.location) {
-          return resolve(fetchUrl(res.headers.location, { 
-            ...options, 
-            redirectCount: (options.redirectCount || 0) + 1 
-          }));
+        if (
+          (statusCode === 301 || statusCode === 302 || statusCode === 307 || statusCode === 308) &&
+          options.redirectCount < 5 &&
+          res.headers.location
+        ) {
+          return resolve(
+            fetchUrl(res.headers.location, {
+              ...options,
+              redirectCount: (options.redirectCount || 0) + 1,
+            })
+          );
         }
-        
+
         // Handle HTTP errors
         if (statusCode < 200 || statusCode >= 300) {
           return reject(new Error(`Request failed with status code ${statusCode}`));
         }
-        
+
         // Collect response data
         const contentType = res.headers['content-type'];
         let rawData = '';
         res.setEncoding('utf8');
-        
-        res.on('data', (chunk) => { 
-          rawData += chunk; 
+
+        res.on('data', (chunk) => {
+          rawData += chunk;
         });
-        
+
         res.on('end', () => {
           try {
             const result = {
               status: statusCode,
               headers: res.headers,
               data: rawData,
-              contentType
+              contentType,
             };
-            
+
             // Try to parse JSON if applicable
             if (contentType && contentType.includes('application/json')) {
               try {
@@ -70,23 +74,22 @@ const fetchUrl = (url, options = {}) => {
                 // Couldn't parse as JSON, leave as raw data
               }
             }
-            
+
             resolve(result);
           } catch (e) {
             reject(e);
           }
         });
       });
-      
+
       req.on('error', (e) => {
         reject(e);
       });
-      
+
       req.on('timeout', () => {
         req.destroy();
         reject(new Error('Request timeout'));
       });
-      
     } catch (error) {
       reject(error);
     }
@@ -97,7 +100,7 @@ const fetchUrl = (url, options = {}) => {
 const handleRequest = async (request) => {
   try {
     const { type, params } = JSON.parse(request);
-    
+
     if (type === 'metadata') {
       // Return metadata for the fetch server
       return JSON.stringify({
@@ -109,32 +112,32 @@ const handleRequest = async (request) => {
             get: {
               description: 'Fetch data from a URL using GET method',
               params: {
-                url: { 
-                  type: 'string', 
-                  description: 'URL to fetch data from' 
+                url: {
+                  type: 'string',
+                  description: 'URL to fetch data from',
                 },
-                headers: { 
-                  type: 'object', 
+                headers: {
+                  type: 'object',
                   description: 'HTTP headers to include in the request',
-                  required: false
+                  required: false,
                 },
-                timeout: { 
-                  type: 'number', 
+                timeout: {
+                  type: 'number',
                   description: 'Request timeout in milliseconds',
                   required: false,
-                  default: 10000
-                }
-              }
-            }
-          }
-        }
+                  default: 10000,
+                },
+              },
+            },
+          },
+        },
       });
     } else if (type === 'method') {
       const { method, params: methodParams } = params;
-      
+
       if (method === 'get') {
         const { url, headers = {}, timeout = 10000 } = methodParams;
-        
+
         try {
           // Only allow fetching from trusted domains for security
           const parsedUrl = new URL(url);
@@ -145,46 +148,49 @@ const handleRequest = async (request) => {
             'api.openai.com',
             'api.anthropic.com',
             'dummyjson.com',
-            'fakestoreapi.com'
+            'fakestoreapi.com',
           ];
-          
+
           // Check if the domain is allowed
-          if (!allowedDomains.some(domain => parsedUrl.hostname === domain || 
-                                            parsedUrl.hostname.endsWith('.' + domain))) {
+          if (
+            !allowedDomains.some(
+              (domain) => parsedUrl.hostname === domain || parsedUrl.hostname.endsWith('.' + domain)
+            )
+          ) {
             return JSON.stringify({
               type: 'error',
-              error: `Fetching from domain '${parsedUrl.hostname}' is not allowed for security reasons`
+              error: `Fetching from domain '${parsedUrl.hostname}' is not allowed for security reasons`,
             });
           }
-          
+
           const result = await fetchUrl(url, { headers, timeout, redirectCount: 0 });
-          
+
           return JSON.stringify({
             type: 'result',
-            result
+            result,
           });
         } catch (error) {
           return JSON.stringify({
             type: 'error',
-            error: `Failed to fetch URL: ${error.message}`
+            error: `Failed to fetch URL: ${error.message}`,
           });
         }
       } else {
         return JSON.stringify({
           type: 'error',
-          error: `Unknown method: ${method}`
+          error: `Unknown method: ${method}`,
         });
       }
     } else {
       return JSON.stringify({
         type: 'error',
-        error: 'Invalid request type'
+        error: 'Invalid request type',
       });
     }
   } catch (error) {
     return JSON.stringify({
       type: 'error',
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -195,10 +201,12 @@ rl.on('line', async (line) => {
     const response = await handleRequest(line);
     console.log(response);
   } catch (error) {
-    console.log(JSON.stringify({
-      type: 'error',
-      error: error.message
-    }));
+    console.log(
+      JSON.stringify({
+        type: 'error',
+        error: error.message,
+      })
+    );
   }
 });
 

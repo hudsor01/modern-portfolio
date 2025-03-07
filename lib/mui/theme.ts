@@ -9,21 +9,29 @@ function cssVarToColor(r: number, g: number, b: number): string {
   r /= 255;
   g /= 255;
   b /= 255;
-  
+
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
-  let h = 0, s = 0, l = (max + min) / 2;
+  let h = 0,
+    s = 0,
+    l = (max + min) / 2;
 
   if (max !== min) {
     const d = max - min;
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    
+
     switch (max) {
-      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-      case g: h = (b - r) / d + 2; break;
-      case b: h = (r - g) / d + 4; break;
+      case r:
+        h = (g - b) / d + (g < b ? 6 : 0);
+        break;
+      case g:
+        h = (b - r) / d + 2;
+        break;
+      case b:
+        h = (r - g) / d + 4;
+        break;
     }
-    
+
     h /= 6;
   }
 
@@ -40,7 +48,7 @@ export const getDesignTokens = (mode: PaletteMode): ThemeOptions => {
   const blue600 = cssVarToColor(37, 99, 235); // --color-primary
   const bgPrimary = mode === 'light' ? cssVarToColor(255, 255, 255) : cssVarToColor(15, 23, 42);
   const bgSecondary = mode === 'light' ? cssVarToColor(248, 244, 237) : cssVarToColor(22, 32, 54);
-  
+
   // Create theme based on our CSS variables
   return {
     palette: {
@@ -193,15 +201,20 @@ export const getDesignTokens = (mode: PaletteMode): ThemeOptions => {
             padding: '0.625rem 1.25rem', // More padding
             ':hover': {
               transform: 'translateY(-2px)',
-              boxShadow: mode === 'light' ? '0 6px 20px rgba(0, 0, 0, 0.1)' : '0 6px 20px rgba(0, 0, 0, 0.2)',
+              boxShadow:
+                mode === 'light'
+                  ? '0 6px 20px rgba(0, 0, 0, 0.1)'
+                  : '0 6px 20px rgba(0, 0, 0, 0.2)',
             },
           },
           containedPrimary: {
             backgroundColor: 'hsl(217, 91%, 60%)', // Use the blue-600 consistently
             color: 'hsl(0, 0%, 98%)',
-            backgroundImage: 'linear-gradient(135deg, hsl(217, 91%, 60%) 0%, hsl(224, 91%, 58%) 100%)', // Subtle gradient
+            backgroundImage:
+              'linear-gradient(135deg, hsl(217, 91%, 60%) 0%, hsl(224, 91%, 58%) 100%)', // Subtle gradient
             ':hover': {
-              backgroundImage: 'linear-gradient(135deg, hsl(217, 91%, 55%) 0%, hsl(224, 91%, 53%) 100%)',
+              backgroundImage:
+                'linear-gradient(135deg, hsl(217, 91%, 55%) 0%, hsl(224, 91%, 53%) 100%)',
             },
           },
           outlinedPrimary: {
@@ -220,19 +233,22 @@ export const getDesignTokens = (mode: PaletteMode): ThemeOptions => {
             borderRadius: '1rem', // More rounded cards
             border: '1px solid',
             borderColor: mode === 'light' ? 'hsl(240, 5.9%, 90%)' : 'hsl(240, 3.7%, 15.9%)',
-            boxShadow: mode === 'light' 
-              ? '0 4px 20px rgba(0, 0, 0, 0.05), 0 8px 16px rgba(0, 0, 0, 0.02)' 
-              : '0 4px 20px rgba(0, 0, 0, 0.2)',
+            boxShadow:
+              mode === 'light'
+                ? '0 4px 20px rgba(0, 0, 0, 0.05), 0 8px 16px rgba(0, 0, 0, 0.02)'
+                : '0 4px 20px rgba(0, 0, 0, 0.2)',
             transition: 'all 0.3s ease',
             ':hover': {
               transform: 'translateY(-4px)',
-              boxShadow: mode === 'light' 
-                ? '0 12px 30px rgba(0, 0, 0, 0.08), 0 16px 24px rgba(0, 0, 0, 0.03)' 
-                : '0 12px 30px rgba(0, 0, 0, 0.3)',
+              boxShadow:
+                mode === 'light'
+                  ? '0 12px 30px rgba(0, 0, 0, 0.08), 0 16px 24px rgba(0, 0, 0, 0.03)'
+                  : '0 12px 30px rgba(0, 0, 0, 0.3)',
             },
-            backgroundImage: mode === 'light' 
-              ? 'linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(249, 250, 251, 1) 100%)' 
-              : 'linear-gradient(135deg, rgba(30, 41, 59, 1) 0%, rgba(26, 32, 44, 1) 100%)',
+            backgroundImage:
+              mode === 'light'
+                ? 'linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(249, 250, 251, 1) 100%)'
+                : 'linear-gradient(135deg, rgba(30, 41, 59, 1) 0%, rgba(26, 32, 44, 1) 100%)',
           },
         },
       },
@@ -252,7 +268,8 @@ export const getDesignTokens = (mode: PaletteMode): ThemeOptions => {
             padding: '0 8px',
           },
           filled: {
-            backgroundColor: mode === 'light' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.2)',
+            backgroundColor:
+              mode === 'light' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.2)',
             color: mode === 'light' ? 'hsl(217, 91%, 45%)' : 'hsl(217, 91%, 80%)',
           },
         },

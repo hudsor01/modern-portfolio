@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import Image from 'next/image'
-import Link from 'next/link'
-import { ArrowRight, ArrowUpRight } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Project } from '@/lib/data/projects'
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Project } from '@/lib/data/projects';
 
 interface FeaturedProjectsSectionProps {
-  projects: Project[]
+  projects: Project[];
 }
 
 export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionProps) {
@@ -18,7 +18,10 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
-    <section id="projects-section" className="py-24 md:py-32 lg:py-36 section-transition section-bg-secondary">
+    <section
+      id="projects-section"
+      className="py-24 md:py-32 lg:py-36 section-transition section-bg-secondary"
+    >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <motion.h2
@@ -26,7 +29,7 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary dark:from-primary dark:to-primary"
           >
             Featured Projects
           </motion.h2>
@@ -53,10 +56,7 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
             >
-              <Link
-                href={`/projects/${project.slug}`}
-                className="block h-full"
-              >
+              <Link href={`/projects/${project.slug}`} className="block h-full">
                 <div className="bg-card rounded-xl overflow-hidden shadow-md hover:shadow-xl h-full flex flex-col border border-border transition-all duration-300 relative">
                   <div className="relative h-60 overflow-hidden">
                     <Image
@@ -97,7 +97,7 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
                           {tech}
                         </span>
                       ))}
-                      {project.technologies?.length > 3 && (
+                      {project.technologies && project.technologies.length > 3 && (
                         <span className="px-3 py-1 bg-muted text-muted-foreground text-xs rounded-full">
                           +{project.technologies?.length - 3} more
                         </span>
@@ -125,10 +125,18 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
           transition={{ duration: 0.5, delay: 0.3 }}
           className="mt-12 text-center"
         >
-          <Button asChild variant="outline" size="lg" className="border-blue-600 text-blue-600 dark:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-6 py-6 text-lg rounded-xl group shadow-sm hover:shadow-md transition-all">
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="border-primary text-primary dark:text-primary hover:bg-primary/10 dark:hover:bg-primary/20 px-6 py-6 text-lg rounded-xl group shadow-sm hover:shadow-md transition-all"
+          >
             <Link href="/projects" className="flex items-center gap-2">
               View All Projects
-              <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform duration-300" />
+              <ArrowRight
+                size={16}
+                className="group-hover:translate-x-1.5 transition-transform duration-300"
+              />
             </Link>
           </Button>
         </motion.div>

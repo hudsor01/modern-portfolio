@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import React, { ReactNode } from 'react'
-import { Link as ScrollLink } from 'react-scroll'
+import React, { ReactNode } from 'react';
+import { Link as ScrollLink } from 'react-scroll';
 
 interface SmoothScrollButtonProps {
-  to: string
-  children: ReactNode
-  className?: string
-  offset?: number
-  duration?: number
+  to: string;
+  children: ReactNode;
+  className?: string;
+  offset?: number;
+  duration?: number;
 }
 
 export function SmoothScrollButton({
@@ -16,7 +16,7 @@ export function SmoothScrollButton({
   children,
   className = '',
   offset = -80, // Adjust based on header height
-  duration = 800
+  duration = 800,
 }: SmoothScrollButtonProps) {
   return (
     <ScrollLink
@@ -29,23 +29,19 @@ export function SmoothScrollButton({
     >
       {children}
     </ScrollLink>
-  )
+  );
 }
 
 interface SmoothScrollSectionProps {
-  id: string
-  children: ReactNode
-  className?: string
+  id: string;
+  children: ReactNode;
+  className?: string;
 }
 
-export function SmoothScrollSection({
-  id,
-  children,
-  className = ''
-}: SmoothScrollSectionProps) {
+export function SmoothScrollSection({ id, children, className = '' }: SmoothScrollSectionProps) {
   return (
     <section id={id} className={className}>
       {children}
     </section>
-  )
+  );
 }

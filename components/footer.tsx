@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
+import Link from 'next/link';
 
 export function Footer() {
-  const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-gray-100 dark:bg-[#0c0c1f] text-gray-600 dark:text-gray-300 py-12">
@@ -14,29 +14,44 @@ export function Footer() {
             <div className="grid grid-cols-2 gap-4">
               <ul className="space-y-2">
                 <li>
-                  <Link href="/" className="text-gray-600 dark:text-gray-400 hover:text-[#0070f3] dark:hover:text-[#0070f3] transition-colors">
+                  <Link
+                    href="/"
+                    className="text-gray-600 dark:text-gray-400 hover:text-[#0070f3] dark:hover:text-[#0070f3] transition-colors"
+                  >
                     Home
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about" className="text-gray-600 dark:text-gray-400 hover:text-[#0070f3] dark:hover:text-[#0070f3] transition-colors">
+                  <Link
+                    href="/about"
+                    className="text-gray-600 dark:text-gray-400 hover:text-[#0070f3] dark:hover:text-[#0070f3] transition-colors"
+                  >
                     About
                   </Link>
                 </li>
               </ul>
               <ul className="space-y-2">
                 <li>
-                  <Link href="/projects" className="text-gray-600 dark:text-gray-400 hover:text-[#0070f3] dark:hover:text-[#0070f3] transition-colors">
+                  <Link
+                    href="/projects"
+                    className="text-gray-600 dark:text-gray-400 hover:text-[#0070f3] dark:hover:text-[#0070f3] transition-colors"
+                  >
                     Projects
                   </Link>
                 </li>
                 <li>
-                  <Link href="/resume" className="text-gray-600 dark:text-gray-400 hover:text-[#0070f3] dark:hover:text-[#0070f3] transition-colors">
+                  <Link
+                    href="/resume"
+                    className="text-gray-600 dark:text-gray-400 hover:text-[#0070f3] dark:hover:text-[#0070f3] transition-colors"
+                  >
                     Resume
                   </Link>
                 </li>
                 <li>
-                  <Link href="/contact" className="text-gray-600 dark:text-gray-400 hover:text-[#0070f3] dark:hover:text-[#0070f3] transition-colors">
+                  <Link
+                    href="/contact"
+                    className="text-gray-600 dark:text-gray-400 hover:text-[#0070f3] dark:hover:text-[#0070f3] transition-colors"
+                  >
                     Contact
                   </Link>
                 </li>
@@ -46,24 +61,24 @@ export function Footer() {
 
           <div className="col-span-2 flex flex-col items-start md:items-end justify-between">
             <div className="space-y-2">
-              <a 
-                href="https://linkedin.com/in/hudsor01" 
-                target="_blank" 
+              <a
+                href="https://linkedin.com/in/hudsor01"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-600 dark:text-gray-400 hover:text-[#0070f3] dark:hover:text-[#0070f3] transition-colors inline-flex items-center"
               >
                 LinkedIn
               </a>
-              <a 
-                href="https://github.com/hudsor01" 
-                target="_blank" 
+              <a
+                href="https://github.com/hudsor01"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-600 dark:text-gray-400 hover:text-[#0070f3] dark:hover:text-[#0070f3] transition-colors inline-flex items-center ml-4"
               >
                 GitHub
               </a>
             </div>
-            
+
             <div className="text-right mt-8">
               <p className="text-sm text-gray-500 dark:text-gray-500">
                 © {currentYear} Richard Hudson | All rights reserved.
@@ -73,5 +88,5 @@ export function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }

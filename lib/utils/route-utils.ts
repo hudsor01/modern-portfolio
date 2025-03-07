@@ -1,12 +1,12 @@
-import type { Route } from 'next'
-import type { UrlObject } from 'url'
-import type { NextLinkHref } from '@/types/next-types'
+import type { Route } from 'next';
+import type { UrlObject } from 'url';
+import type { NextLinkHref } from '@/types/next-types';
 
 /**
  * Safely converts a string to a Next.js Route type
  */
 export function asRoute(path: string): Route<string> {
-  return path as Route<string>
+  return path as Route<string>;
 }
 
 /**
@@ -14,28 +14,30 @@ export function asRoute(path: string): Route<string> {
  */
 export function getRouteKey(route: NextLinkHref, fallback: string | number): string {
   if (typeof route === 'string') {
-    return route
+    return route;
   }
   if (typeof route === 'object' && route !== null && 'pathname' in route) {
-    return String(route.pathname)
+    return String((route as { pathname: string }).pathname);
   }
-  return String(fallback)
+  return String(fallback);
 }
 
 /**
  * Convert all string paths in an array to Next.js Routes
  */
 export function routeArray(paths: string[]): Route<string>[] {
-  return paths.map(path => asRoute(path))
+  return paths.map((path) => asRoute(path));
 }
 
 /**
  * Convert routes in a record to Next.js Routes
  */
-export function routeRecord<T extends Record<string, string>>(routes: T): Record<keyof T, Route<string>> {
-  const result: Record<string, Route<string>> = {}
+export function routeRecord<T extends Record<string, string>>(
+  routes: T
+): Record<keyof T, Route<string>> {
+  const result: Record<string, Route<string>> = {};
   for (const key in routes) {
-    result[key] = asRoute(routes[key])
+    result[key] = asRoute(routes[key]);
   }
-  return result as Record<keyof T, Route<string>>
+  return result as Record<keyof T, Route<string>>;
 }

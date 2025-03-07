@@ -1,21 +1,21 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Project } from '@/lib/data/projects'
-import { ArrowRight, ExternalLink } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Project } from '@/lib/data/projects';
+import { ArrowRight, ExternalLink } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 interface ProjectShowcaseProps {
-  projects: Project[]
+  projects: Project[];
 }
 
 export function ProjectShowcase({ projects }: ProjectShowcaseProps) {
-  const [activeIndex, setActiveIndex] = useState(0)
-  const activeProject = projects[activeIndex]
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeProject = projects[activeIndex];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
@@ -31,14 +31,16 @@ export function ProjectShowcase({ projects }: ProjectShowcaseProps) {
             <button
               onClick={() => setActiveIndex(index)}
               className={`w-full text-left p-4 rounded-xl transition-all duration-300 ${
-                activeIndex === index 
-                  ? 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-[#0070f3]' 
+                activeIndex === index
+                  ? 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-[#0070f3]'
                   : 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border-l-4 border-transparent'
               }`}
             >
-              <h3 className={`font-semibold text-lg mb-1 ${
-                activeIndex === index ? 'text-[#0070f3]' : ''
-              }`}>
+              <h3
+                className={`font-semibold text-lg mb-1 ${
+                  activeIndex === index ? 'text-[#0070f3]' : ''
+                }`}
+              >
                 {project.title}
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
@@ -71,7 +73,7 @@ export function ProjectShowcase({ projects }: ProjectShowcaseProps) {
 
             <div className="p-6">
               <h3 className="text-2xl font-bold mb-2">{activeProject.title}</h3>
-              
+
               <div className="flex flex-wrap gap-2 mb-4">
                 {activeProject.technologies?.slice(0, 5).map((tech) => (
                   <Badge key={tech} className="bg-blue-50 dark:bg-blue-900/20 text-[#0070f3]">
@@ -79,22 +81,23 @@ export function ProjectShowcase({ projects }: ProjectShowcaseProps) {
                   </Badge>
                 ))}
               </div>
-              
-              <p className="text-gray-700 dark:text-gray-300 mb-6">
-                {activeProject.description}
-              </p>
-              
+
+              <p className="text-gray-700 dark:text-gray-300 mb-6">{activeProject.description}</p>
+
               <div className="flex gap-4">
                 <Button asChild>
-                  <Link href={`/projects/${activeProject.slug}`} className="flex items-center gap-1">
+                  <Link
+                    href={`/projects/${activeProject.slug}`}
+                    className="flex items-center gap-1"
+                  >
                     View Details
                     <ArrowRight size={16} />
                   </Link>
                 </Button>
-                
+
                 {activeProject.liveUrl && (
                   <Button asChild variant="outline">
-                    <a 
+                    <a
                       href={activeProject.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -111,5 +114,5 @@ export function ProjectShowcase({ projects }: ProjectShowcaseProps) {
         </AnimatePresence>
       </div>
     </div>
-  )
+  );
 }

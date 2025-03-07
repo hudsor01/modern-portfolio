@@ -8,14 +8,14 @@ const path = require('path');
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
-  terminal: false
+  terminal: false,
 });
 
 // Function to handle server-side file system operations
 const handleRequest = async (request) => {
   try {
     const { type, params } = JSON.parse(request);
-    
+
     if (type === 'metadata') {
       // Return metadata for the server
       return JSON.stringify({
@@ -27,25 +27,25 @@ const handleRequest = async (request) => {
             listFiles: {
               description: 'List files in a directory',
               params: {
-                directory: { type: 'string', description: 'Directory path to list' }
-              }
+                directory: { type: 'string', description: 'Directory path to list' },
+              },
             },
             readFile: {
               description: 'Read content of a file',
               params: {
-                filePath: { type: 'string', description: 'Path to the file to read' }
-              }
-            }
-          }
-        }
+                filePath: { type: 'string', description: 'Path to the file to read' },
+              },
+            },
+          },
+        },
       });
     } else if (type === 'method') {
       const { method, params: methodParams } = params;
-      
+
       if (method === 'listFiles') {
         const { directory } = methodParams;
         const dirPath = path.resolve(process.cwd(), directory);
-        
+
         try {
           const files = await fs.promises.readdir(dirPath);
           const fileStats = await Promise.all(
@@ -57,53 +57,53 @@ const handleRequest = async (request) => {
                 path: filePath,
                 isDirectory: stats.isDirectory(),
                 size: stats.size,
-                modified: stats.mtime
+                modified: stats.mtime,
               };
             })
           );
-          
+
           return JSON.stringify({
             type: 'result',
-            result: fileStats
+            result: fileStats,
           });
         } catch (error) {
           return JSON.stringify({
             type: 'error',
-            error: `Failed to list directory: ${error.message}`
+            error: `Failed to list directory: ${error.message}`,
           });
         }
       } else if (method === 'readFile') {
         const { filePath } = methodParams;
         const resolvedPath = path.resolve(process.cwd(), filePath);
-        
+
         try {
           const content = await fs.promises.readFile(resolvedPath, 'utf8');
           return JSON.stringify({
             type: 'result',
-            result: { content }
+            result: { content },
           });
         } catch (error) {
           return JSON.stringify({
             type: 'error',
-            error: `Failed to read file: ${error.message}`
+            error: `Failed to read file: ${error.message}`,
           });
         }
       } else {
         return JSON.stringify({
           type: 'error',
-          error: `Unknown method: ${method}`
+          error: `Unknown method: ${method}`,
         });
       }
     } else {
       return JSON.stringify({
         type: 'error',
-        error: 'Invalid request type'
+        error: 'Invalid request type',
       });
     }
   } catch (error) {
     return JSON.stringify({
       type: 'error',
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -114,10 +114,12 @@ rl.on('line', async (line) => {
     const response = await handleRequest(line);
     console.log(response);
   } catch (error) {
-    console.log(JSON.stringify({
-      type: 'error',
-      error: error.message
-    }));
+    console.log(
+      JSON.stringify({
+        type: 'error',
+        error: error.message,
+      })
+    );
   }
 });
 

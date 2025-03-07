@@ -1,14 +1,20 @@
-// Augment Next.js types
-import 'next';
+import type { ComponentProps } from 'react';
+import Link from 'next/link';
+
+declare module 'next/link' {
+  export default function Link(props: ComponentProps<typeof Link>): JSX.Element;
+}
+
+// Add NextLinkHref type for use with navigation links
 import type { Route } from 'next';
-import type { UrlObject } from 'url';
+export type NextLinkHref = Route<string>;
 
-// Helper type for href props in Next.js 15+
-export type NextLinkHref = Route<string> | UrlObject;
-
-declare module 'next/types' {
-  interface PageProps {
-    params: Record<string, string>;
-    searchParams?: { [key: string]: string | string[] | undefined };
+declare global {
+  // Add route types
+  interface ProjectPageProps {
+    params: {
+      slug: string;
+    };
+    searchParams?: Record<string, string | string[] | undefined>;
   }
 }

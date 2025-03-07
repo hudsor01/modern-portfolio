@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { Github, Linkedin } from 'lucide-react'
+import Link from 'next/link';
+import { Github, Linkedin } from 'lucide-react';
 
 export function Footer() {
-  const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 py-4 border-t border-gray-200 dark:border-gray-800">
@@ -30,12 +30,12 @@ export function Footer() {
               <Github size={20} />
             </a>
           </div>
-          
+
           <p className="text-sm">
             © {currentYear} Richard Hudson | Revenue Operations Professional
           </p>
         </div>
       </div>
     </footer>
-  )
+  );
 }

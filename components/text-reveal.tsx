@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { useEffect, useRef } from 'react'
-import { motion, useInView, useAnimation } from 'framer-motion'
+import { useEffect, useRef } from 'react';
+import { motion, useInView, useAnimation } from 'framer-motion';
 
 interface TextRevealProps {
-  text: string
-  className?: string
-  delay?: number
-  duration?: number
-  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span'
-  once?: boolean
+  text: string;
+  className?: string;
+  delay?: number;
+  duration?: number;
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span';
+  once?: boolean;
 }
 
 export default function TextReveal({
@@ -20,13 +20,13 @@ export default function TextReveal({
   as = 'p',
   once = true,
 }: TextRevealProps) {
-  const controls = useAnimation()
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once, margin: '-100px' })
+  const controls = useAnimation();
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once, margin: '-100px' });
 
   // Split text into words and then letters
-  const words = text.split(' ')
-  
+  const words = text.split(' ');
+
   // Animation variants
   const container = {
     hidden: { opacity: 0 },
@@ -34,8 +34,8 @@ export default function TextReveal({
       opacity: 1,
       transition: { staggerChildren: duration, delayChildren: delay * i },
     }),
-  }
-  
+  };
+
   const child = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -47,18 +47,18 @@ export default function TextReveal({
         stiffness: 100,
       },
     },
-  }
-  
+  };
+
   useEffect(() => {
     if (isInView) {
-      controls.start('visible')
+      controls.start('visible');
     } else {
-      controls.start('hidden')
+      controls.start('hidden');
     }
-  }, [controls, isInView])
-  
-  const Component = motion[as]
-  
+  }, [controls, isInView]);
+
+  const Component = motion[as];
+
   return (
     <Component
       ref={ref}
@@ -70,11 +70,7 @@ export default function TextReveal({
       {words.map((word, wordIndex) => (
         <span key={wordIndex} className="inline-block mr-1">
           {Array.from(word).map((letter, letterIndex) => (
-            <motion.span 
-              key={letterIndex} 
-              variants={child}
-              className="inline-block"
-            >
+            <motion.span key={letterIndex} variants={child} className="inline-block">
               {letter}
             </motion.span>
           ))}
@@ -82,5 +78,5 @@ export default function TextReveal({
         </span>
       ))}
     </Component>
-  )
+  );
 }

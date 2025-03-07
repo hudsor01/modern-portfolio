@@ -17,7 +17,7 @@
  * ```
  */
 export function themeVar(lightValue: string): string {
-	return `var(--theme-value, ${lightValue})`
+  return `var(--theme-value, ${lightValue})`;
 }
 
 /**
@@ -40,7 +40,7 @@ export function themeVar(lightValue: string): string {
  * ```
  */
 export function themeClass(baseClasses: string, lightClasses: string, darkClasses: string): string {
-	return `${baseClasses} ${lightClasses} dark:${darkClasses}`
+  return `${baseClasses} ${lightClasses} dark:${darkClasses}`;
 }
 
 /**
@@ -58,9 +58,9 @@ export function themeClass(baseClasses: string, lightClasses: string, darkClasse
  * ```
  */
 export function opacityColor(color: string, opacity: number): string {
-	// Ensure opacity is between 0 and 100
-	const safeOpacity = Math.max(0, Math.min(100, opacity))
-	return `${color}/${safeOpacity}`
+  // Ensure opacity is between 0 and 100
+  const safeOpacity = Math.max(0, Math.min(100, opacity));
+  return `${color}/${safeOpacity}`;
 }
 
 /**
@@ -72,9 +72,9 @@ export function opacityColor(color: string, opacity: number): string {
  * @returns CSS var() function with appropriate fallbacks
  */
 export function getThemeVariable(
-	name: string,
-	lightFallback: string,
-	darkFallback: string
+  name: string,
+  lightFallback: string,
+  darkFallback: string
 ): string {
-	return `var(--${name}, var(--light-mode-${name}, ${lightFallback})) dark:var(--${name}, var(--dark-mode-${name}, ${darkFallback}))`
+  return `var(--${name}, var(--light-mode-${name}, ${lightFallback})) dark:var(--${name}, var(--dark-mode-${name}, ${darkFallback}))`;
 }

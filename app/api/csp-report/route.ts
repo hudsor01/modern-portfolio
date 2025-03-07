@@ -4,10 +4,10 @@ export async function POST(request: NextRequest) {
   try {
     // Parse the CSP report payload
     const cspReport = await request.json();
-    
+
     // Log the CSP report - in production, you might want to send this to a monitoring service
     console.log('CSP Violation:', cspReport);
-    
+
     // Return a success response
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

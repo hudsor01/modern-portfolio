@@ -1,11 +1,11 @@
 {
-	"recommendations": [
-		"dbaeumer.vscode-eslint",
-		"esbenp.prettier-vscode",
-		"bradlc.vscode-tailwindcss",
-		"prisma.prisma",
-		"ms-vscode.typescript-language-features",
-		"ms-vscode.vscode-typescript-tslint",
-		"ms-vscode.vscode-typescript-next"
-	]
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "prisma.prisma",
+    "ms-vscode.typescript-language-features",
+    "ms-vscode.vscode-typescript-tslint",
+    "ms-vscode.vscode-typescript-next"
+  ]
 }

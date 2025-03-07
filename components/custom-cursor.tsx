@@ -1,22 +1,22 @@
-'use client'
+'use client';
 
-import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 
 export default function CustomCursor() {
-  const [mousePosition, setMousePosition] = useState({ x: -100, y: -100 })
-  const [isHovering, setIsHovering] = useState(false)
+  const [mousePosition, setMousePosition] = useState({ x: -100, y: -100 });
+  const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
     // Skip cursor effects on mobile devices
-    if (window.matchMedia('(pointer: coarse)').matches) return
+    if (window.matchMedia('(pointer: coarse)').matches) return;
 
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
 
     const handleMouseEnter = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
+      const target = e.target as HTMLElement;
       if (
         target.tagName === 'A' ||
         target.tagName === 'BUTTON' ||
@@ -25,20 +25,20 @@ export default function CustomCursor() {
         target.getAttribute('role') === 'button' ||
         target.classList.contains('clickable')
       ) {
-        setIsHovering(true)
+        setIsHovering(true);
       } else {
-        setIsHovering(false)
+        setIsHovering(false);
       }
-    }
+    };
 
-    window.addEventListener('mousemove', handleMouseMove)
-    document.addEventListener('mouseover', handleMouseEnter)
+    window.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseover', handleMouseEnter);
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseover', handleMouseEnter)
-    }
-  }, [])
+      window.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseover', handleMouseEnter);
+    };
+  }, []);
 
   const variants = {
     default: {
@@ -57,11 +57,11 @@ export default function CustomCursor() {
       backgroundColor: 'rgba(0, 112, 243, 0.2)',
       mixBlendMode: 'normal' as 'normal',
     },
-  }
+  };
 
   // Only render on non-touch devices
   if (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches) {
-    return null
+    return null;
   }
 
   return (
@@ -71,5 +71,5 @@ export default function CustomCursor() {
       animate={isHovering ? 'hover' : 'default'}
       transition={{ type: 'spring', stiffness: 500, damping: 28, mass: 0.8 }}
     />
-  )
+  );
 }

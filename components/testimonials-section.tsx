@@ -1,30 +1,33 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Quote } from 'lucide-react'
-import { motion } from 'framer-motion'
-import Image from 'next/image'
+import { useState } from 'react';
+import { Quote } from 'lucide-react';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 // Sample testimonials data
 const testimonials = [
   {
-    quote: "Richard's data-driven approach to revenue operations transformed our sales process and increased our conversion rates by 35% in just three months.",
-    name: "Sarah Johnson",
-    title: "VP of Sales, TechCorp Inc.",
-    image: "" // Placeholder - will use fallback with initials
+    quote:
+      "Richard's data-driven approach to revenue operations transformed our sales process and increased our conversion rates by 35% in just three months.",
+    name: 'Sarah Johnson',
+    title: 'VP of Sales, TechCorp Inc.',
+    image: '',
   },
   {
-    quote: "Working with Richard on our process optimization initiative was a game-changer. His strategic insights and analytical skills helped us identify bottlenecks we didn't even know existed.",
-    name: "Michael Chen",
-    title: "COO, GrowthMetrics",
-    image: "" // Placeholder - will use fallback with initials
+    quote:
+      "Working with Richard on our process optimization initiative was a game-changer. His strategic insights and analytical skills helped us identify bottlenecks we didn't even know existed.",
+    name: 'Michael Chen',
+    title: 'COO, GrowthMetrics',
+    image: '',
   },
   {
-    quote: "Richard's expertise in partner management and revenue operations helped us scale our channel program to new heights. His ability to translate data into actionable strategies is remarkable.",
-    name: "Jessica Williams",
-    title: "Partner Operations Director, ScaleUp Solutions",
-    image: "" // Placeholder - will use fallback with initials
-  }
+    quote:
+      "Richard's expertise in partner management and revenue operations helped us scale our channel program to new heights. His ability to translate data into actionable strategies is remarkable.",
+    name: 'Jessica Williams',
+    title: 'Partner Operations Director, ScaleUp Solutions',
+    image: '',
+  },
 ];
 
 export function TestimonialsSection() {
@@ -34,7 +37,7 @@ export function TestimonialsSection() {
     <section className="py-20 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -43,14 +46,15 @@ export function TestimonialsSection() {
           >
             What My Clients Say
           </motion.h2>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-gray-600 dark:text-gray-300"
           >
-            I've helped businesses across various industries optimize their revenue operations and drive growth.
+            I&rsquove helped businesses across various industries optimize their revenue operations
+            and drive growth.
           </motion.p>
         </div>
 
@@ -62,7 +66,7 @@ export function TestimonialsSection() {
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: 20 }}
-                  animate={{ 
+                  animate={{
                     opacity: activeIndex === index ? 1 : 0,
                     x: activeIndex === index ? 0 : 20,
                     scale: activeIndex === index ? 1 : 0.95,
@@ -75,7 +79,7 @@ export function TestimonialsSection() {
                 >
                   <Quote className="text-blue-500 dark:text-blue-400 w-12 h-12 mb-4 opacity-20" />
                   <blockquote className="text-xl text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
-                    "{testimonial.quote}"
+                    &quot;{testimonial.quote}&quot;
                   </blockquote>
                   <div className="flex items-center">
                     <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-200 dark:border-gray-700 mr-4">
@@ -97,8 +101,12 @@ export function TestimonialsSection() {
                       </div>
                     </div>
                     <div>
-                      <h4 className="font-bold text-gray-900 dark:text-white">{testimonial.name}</h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{testimonial.title}</p>
+                      <h4 className="font-bold text-gray-900 dark:text-white">
+                        {testimonial.name}
+                      </h4>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {testimonial.title}
+                      </p>
                     </div>
                   </div>
                 </motion.div>

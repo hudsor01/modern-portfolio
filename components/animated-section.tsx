@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { motion } from 'framer-motion'
-import { cn } from '@/lib/utils'
-import { ReactNode } from 'react'
-import { useInView } from 'react-intersection-observer'
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { ReactNode } from 'react';
+import { useInView } from 'react-intersection-observer';
 
 interface AnimatedSectionProps {
-  children: ReactNode
-  className?: string
-  delay?: number
-  as?: 'section' | 'div'
+  children: ReactNode;
+  className?: string;
+  delay?: number;
+  as?: 'section' | 'div';
 }
 
 export default function AnimatedSection({
@@ -22,7 +22,7 @@ export default function AnimatedSection({
     triggerOnce: true,
     threshold: 0.1,
     rootMargin: '-50px 0px',
-  })
+  });
 
   const variants = {
     hidden: { opacity: 0, y: 20 },
@@ -35,9 +35,9 @@ export default function AnimatedSection({
         ease: [0.25, 0.1, 0.25, 1.0],
       },
     },
-  }
+  };
 
-  const Component = as === 'section' ? motion.section : motion.div
+  const Component = as === 'section' ? motion.section : motion.div;
 
   return (
     <Component
@@ -49,5 +49,5 @@ export default function AnimatedSection({
     >
       {children}
     </Component>
-  )
+  );
 }

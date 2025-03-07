@@ -97,12 +97,12 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
                 >
                   <CardActionArea
                     component={Link}
-                    href={`/projects/${project.slug}`}
-                    sx={{
-                      textDecoration: 'none'
-                    }}
+                    href={`/projects/${project.slug}` as any}
                   >
-                    <Box sx={{ position: 'relative', height: 240 }}>
+                    <Box
+                      sx={{ position: 'relative', height: 240 }}
+                      component="div"
+                    >
                       <CardMedia
                         component="div"
                         sx={{
@@ -187,7 +187,7 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
                             }}
                           />
                         ))}
-                        {project.technologies?.length > 3 && (
+                        {project.technologies && project.technologies.length > 3 && (
                           <Chip
                             label={`+${project.technologies.length - 3} more`}
                             size="small"
@@ -222,7 +222,7 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
             <Button
               variant="outlined"
               component={Link}
-              href="/projects"
+              href="/projects" 
               size="large"
               endIcon={<ArrowForward />}
               sx={{ py: 1.5, px: 3 }}

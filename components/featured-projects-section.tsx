@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import Image from 'next/image'
-import Link from 'next/link'
-import { ArrowRight, ArrowUpRight } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Project } from '@/lib/data/projects'
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Project } from '@/lib/data/projects';
 
 interface FeaturedProjectsSectionProps {
-  projects: Project[]
+  projects: Project[];
 }
 
 export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionProps) {
@@ -19,7 +19,7 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
     <section id="projects-section" className="py-20 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto max-w-7xl px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -28,7 +28,7 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
           >
             Featured Projects
           </motion.h2>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -51,14 +51,11 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
             >
-              <Link
-                href={`/projects/${project.slug}`}
-                className="block h-full"
-              >
-                <div 
+              <Link href={`/projects/${project.slug}`} className="block h-full">
+                <div
                   className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md h-full flex flex-col border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-xl"
-                  style={{ 
-                    transform: hoveredIndex === index ? 'translateY(-8px)' : 'translateY(0)'
+                  style={{
+                    transform: hoveredIndex === index ? 'translateY(-8px)' : 'translateY(0)',
                   }}
                 >
                   <div className="relative h-60 overflow-hidden">
@@ -67,8 +64,8 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
                       alt={project.title}
                       fill
                       className="object-cover transition-transform duration-500"
-                      style={{ 
-                        transform: hoveredIndex === index ? 'scale(1.05)' : 'scale(1)'
+                      style={{
+                        transform: hoveredIndex === index ? 'scale(1.05)' : 'scale(1)',
                       }}
                     />
 
@@ -81,12 +78,12 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
                         <h3 className="text-white text-xl font-bold transition-colors duration-300">
                           {project.title}
                         </h3>
-                        <ArrowUpRight 
-                          size={18} 
+                        <ArrowUpRight
+                          size={18}
                           className="text-white opacity-0 transform translate-x-2 transition-all duration-300"
-                          style={{ 
+                          style={{
                             opacity: hoveredIndex === index ? 1 : 0,
-                            transform: hoveredIndex === index ? 'translateX(0)' : 'translateX(8px)'
+                            transform: hoveredIndex === index ? 'translateX(0)' : 'translateX(8px)',
                           }}
                         />
                       </div>
@@ -100,14 +97,14 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
 
                     <div className="flex flex-wrap gap-2 mb-4">
                       {project.technologies?.slice(0, 3).map((tech, techIndex) => (
-                        <span 
+                        <span
                           key={techIndex}
                           className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-full"
                         >
                           {tech}
                         </span>
                       ))}
-                      {project.technologies?.length > 3 && (
+                      {project.technologies && project.technologies.length > 3 && (
                         <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-full">
                           +{project.technologies.length - 3} more
                         </span>
@@ -116,11 +113,11 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
 
                     <div className="flex items-center mt-auto text-blue-600 dark:text-blue-400 font-medium group-hover:underline">
                       View Project Details
-                      <ArrowRight 
-                        size={16} 
+                      <ArrowRight
+                        size={16}
                         className="ml-1 transition-transform duration-300"
-                        style={{ 
-                          transform: hoveredIndex === index ? 'translateX(4px)' : 'translateX(0)'
+                        style={{
+                          transform: hoveredIndex === index ? 'translateX(4px)' : 'translateX(0)',
                         }}
                       />
                     </div>
@@ -131,14 +128,19 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
           ))}
         </div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
           className="mt-12 text-center"
         >
-          <Button asChild variant="outline" size="lg" className="border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-6 py-6">
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-6 py-6"
+          >
             <Link href="/projects" className="flex items-center gap-2">
               View All Projects
               <ArrowRight size={16} />

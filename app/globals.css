@@ -29,9 +29,9 @@
     --color-popover-foreground: 15 23 42;
 
     /* Primary and accent colors */
-    --color-primary: 141 169 196; /* pewter-blue */
-    --color-primary-light: 186 207 226; /* lighter pewter-blue */
-    --color-primary-dark: 112 145 178; /* darker pewter-blue */
+    --color-primary: 96, 165, 250; /* RGB values for #60a5fa (blue-400) */
+    --color-primary-light: 147, 197, 253; /* RGB values for #93c5fd (blue-300) */
+    --color-primary-dark: 59, 130, 246; /* RGB values for #3b82f6 (blue-500) */
     --color-primary-foreground: 240 234 214; /* eggshell */
     --color-secondary: 241 245 249;
     --color-secondary-foreground: 15 23 42;
@@ -56,9 +56,13 @@
     /* Section background alternation */
     --color-bg-primary: 255 255 255; /* White */
     --color-bg-secondary: 248 244 237; /* Light brown #F8F4ED */
-    
+
     /* Card gradient effect */
-    --card-gradient: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(59, 130, 246, 0.04) 100%);
+    --card-gradient: linear-gradient(
+      135deg,
+      rgba(37, 99, 235, 0.08) 0%,
+      rgba(59, 130, 246, 0.04) 100%
+    );
 
     /* Layout & Spacing */
     --container-default: 80rem;
@@ -68,9 +72,12 @@
     --container-resume: 65rem;
 
     /* Typography - System fonts fallback */
-    --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-sans:
+      system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+      sans-serif;
     --font-serif: Georgia, Cambria, 'Times New Roman', Times, serif;
-    --font-mono: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    --font-mono:
+      SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 
     /* Border Radius */
     --radius-sm: 0.125rem;
@@ -99,13 +106,17 @@
     --color-accent-foreground: 255 255 255;
     --color-muted: 51 65 85;
     --color-muted-foreground: 148 163 184;
-    
+
     /* Dark mode section background alternation */
     --color-bg-primary: 15 23 42;
     --color-bg-secondary: 22 32 54;
-    
+
     /* Dark mode card gradient effect */
-    --card-gradient: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%);
+    --card-gradient: linear-gradient(
+      135deg,
+      rgba(37, 99, 235, 0.15) 0%,
+      rgba(59, 130, 246, 0.05) 100%
+    );
 
     --color-destructive: 239 68 68;
     --color-destructive-foreground: 255 255 255;
@@ -114,7 +125,9 @@
     --color-ring: 37 99 235;
   }
 
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     border-color: rgb(var(--color-border));
   }
 
@@ -130,11 +143,12 @@
     overscroll-behavior-y: none;
   }
 
-  html, body {
+  html,
+  body {
     min-height: 100vh;
     overflow: hidden;
   }
-  
+
   body {
     background-color: rgb(var(--color-background));
     color: rgb(var(--color-foreground));
@@ -145,7 +159,8 @@
   }
 
   /* Typography styles */
-  h1, h2 {
+  h1,
+  h2 {
     font-family: var(--font-serif);
     font-weight: 700;
     line-height: 1.2;
@@ -155,7 +170,10 @@
     color: rgb(var(--color-foreground));
   }
 
-  h3, h4, h5, h6 {
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-sans);
     font-weight: 700;
     line-height: 1.2;
@@ -200,7 +218,8 @@
     color: rgb(var(--color-foreground));
   }
 
-  ul, ol {
+  ul,
+  ol {
     margin-bottom: 1.5rem;
     padding-left: 1.5rem;
   }
@@ -228,7 +247,7 @@
   }
 
   a:not([class]) {
-    color: hsl(217, 91%, 60%);
+    color: hsl(213, 94%, 68%); /* Changed to match blue-400 */
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 2px;
@@ -236,11 +255,12 @@
   }
 
   a:not([class]):hover {
-    color: hsl(217, 91%, 45%);
+    color: hsl(213, 94%, 58%); /* Darker shade for hover */
     opacity: 0.8;
   }
 
-  pre, code {
+  pre,
+  code {
     font-family: var(--font-mono);
   }
 
@@ -270,7 +290,8 @@
     margin-bottom: 1.5rem;
   }
 
-  th, td {
+  th,
+  td {
     padding: 0.75rem;
     border: 1px solid rgb(var(--color-border));
   }
@@ -305,18 +326,23 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(217, 91%, 60%);
+  background: hsl(213, 94%, 68%); /* Changed to match blue-400 */
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(217, 91%, 50%);
+  background: hsl(213, 94%, 58%); /* Darker shade for hover */
 }
 
 /* Custom animation for typewriter cursor blink */
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 .animate-blink {
@@ -329,76 +355,82 @@
     @apply transition-all duration-200 ease-out;
     background-image: var(--card-gradient);
   }
-  
+
   .card-hover:hover {
     @apply -translate-y-1 shadow-lg;
   }
-  
+
   /* Section background alternation */
   .section-bg-primary {
     background-color: rgb(var(--color-bg-primary));
   }
-  
+
   .section-bg-secondary {
     background-color: rgb(var(--color-bg-secondary));
   }
-  
+
   /* Hero background gradient - consistent across all pages */
   .hero-gradient-bg {
     @apply relative;
     background: linear-gradient(180deg, rgba(37, 99, 235, 0.1) 0%, rgba(37, 99, 235, 0) 100%);
   }
-  
+
   /* Section transition for smooth scrolling */
   .section-transition {
     @apply relative overflow-hidden;
-    transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+    transition:
+      transform 0.5s ease-out,
+      opacity 0.5s ease-out;
   }
-  
+
   .section-transition::after {
     content: '';
     @apply absolute bottom-0 left-0 w-full h-16 pointer-events-none;
-    background: linear-gradient(to top, rgba(var(--color-background), 1), rgba(var(--color-background), 0));
+    background: linear-gradient(
+      to top,
+      rgba(var(--color-background), 1),
+      rgba(var(--color-background), 0)
+    );
     opacity: 0.7;
   }
-  
+
   /* Text gradient */
   .text-gradient {
-    @apply bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary to-violet-600 bg-clip-text text-transparent;
   }
-  
+
   /* Typography enhancements */
   .prose-custom {
-    @apply prose prose-lg prose-slate max-w-none dark:prose-invert 
+    @apply prose prose-lg prose-slate max-w-none dark:prose-invert
     prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight
     prose-h1:text-4xl md:prose-h1:text-5xl lg:prose-h1:text-6xl
     prose-h2:text-3xl md:prose-h2:text-4xl
     prose-p:text-base md:prose-p:text-lg prose-p:leading-relaxed
-    prose-a:text-blue-600 hover:prose-a:text-blue-500 dark:prose-a:text-blue-400
+    prose-a:text-primary hover:prose-a:text-primary-dark dark:prose-a:text-primary-light
     prose-img:rounded-md prose-img:shadow-md;
   }
-  
+
   /* Material UI style typography classes - with .modern-portfolio namespace to avoid conflicts */
   .modern-portfolio .mui-heading-1 {
     @apply font-serif text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-slate-100;
   }
-  
+
   .modern-portfolio .mui-heading-2 {
     @apply font-serif text-3xl md:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100;
   }
-  
+
   .modern-portfolio .mui-heading-3 {
     @apply font-sans text-2xl md:text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100;
   }
-  
+
   .modern-portfolio .mui-body-1 {
     @apply text-base md:text-lg text-slate-700 dark:text-slate-300 leading-relaxed;
   }
-  
+
   .modern-portfolio .mui-body-2 {
     @apply text-sm md:text-base text-slate-600 dark:text-slate-400 leading-relaxed;
   }
-  
+
   .modern-portfolio .mui-subtitle {
     @apply text-lg text-slate-500 dark:text-slate-400 font-medium;
   }
@@ -411,32 +443,32 @@
     animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     animation-fill-mode: both;
   }
-  
+
   .slide-in-from-left {
     animation-name: slideInFromLeft;
   }
-  
+
   .slide-in-from-right {
     animation-name: slideInFromRight;
   }
-  
+
   .slide-in-from-bottom {
     animation-name: slideInFromBottom;
   }
-  
+
   .fade-in-50 {
     animation-name: fadeIn50;
   }
-  
+
   /* Hero section utilities */
   .hero-scroll-indicator {
     @apply absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center;
   }
-  
+
   .hero-image-container {
     @apply relative bg-white dark:bg-slate-800 rounded-3xl p-2 shadow-2xl;
   }
-  
+
   /* Content containers */
   .content-container {
     max-width: var(--container-content);
@@ -444,25 +476,25 @@
     margin-right: auto;
     padding: 0 1rem;
   }
-  
+
   .large-container {
     max-width: var(--container-large);
     margin-left: auto;
     margin-right: auto;
     padding: 0 1.5rem;
   }
-  
+
   /* Glassmorphism utilities */
   .backdrop-blur-sm {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
   }
-  
+
   .backdrop-blur-md {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
-  
+
   .backdrop-blur-lg {
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);

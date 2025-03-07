@@ -29,7 +29,7 @@ export const yearOverYearGrowth: YearOverYearGrowth[] = [
     total_revenue_growth: 0,
     total_commissions: 590000,
     commission_growth_percentage: 0,
-    total_commission_growth: 0
+    total_commission_growth: 0,
   },
   {
     year: 2021,
@@ -44,7 +44,7 @@ export const yearOverYearGrowth: YearOverYearGrowth[] = [
     total_revenue_growth: 2600000,
     total_commissions: 850000,
     commission_growth_percentage: 44.1,
-    total_commission_growth: 260000
+    total_commission_growth: 260000,
   },
   {
     year: 2022,
@@ -59,7 +59,7 @@ export const yearOverYearGrowth: YearOverYearGrowth[] = [
     total_revenue_growth: 4300000,
     total_commissions: 1280000,
     commission_growth_percentage: 50.6,
-    total_commission_growth: 430000
+    total_commission_growth: 430000,
   },
   {
     year: 2023,
@@ -74,7 +74,7 @@ export const yearOverYearGrowth: YearOverYearGrowth[] = [
     total_revenue_growth: 4050000,
     total_commissions: 1685000,
     commission_growth_percentage: 31.6,
-    total_commission_growth: 405000
+    total_commission_growth: 405000,
   },
   {
     year: 2024,
@@ -89,6 +89,6 @@ export const yearOverYearGrowth: YearOverYearGrowth[] = [
     total_revenue_growth: 1900000,
     total_commissions: 1875000,
     commission_growth_percentage: 11.3,
-    total_commission_growth: 190000
-  }
+    total_commission_growth: 190000,
+  },
 ];

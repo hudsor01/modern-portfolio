@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { 
-  Box, 
-  Typography, 
-  Container, 
-  Grid, 
-  Card, 
+import { useState } from 'react';
+import {
+  Box,
+  Typography,
+  Container,
+  Grid,
+  Card,
   CardContent,
   Tabs,
   Tab,
@@ -14,52 +14,45 @@ import {
   Paper,
   Avatar,
   useTheme,
-  alpha
-} from '@mui/material'
-import { motion } from 'framer-motion'
+  alpha,
+} from '@mui/material';
+import { motion } from 'framer-motion';
 
 // Skills data organized by categories
 const skillsData = [
   {
-    category: "Revenue Operations",
+    category: 'Revenue Operations',
     skills: [
-      "Revenue Operations",
-      "Data Analytics",
-      "Process Optimization",
-      "Strategic Planning",
-      "Sales Operations",
-      "Business Analysis"
-    ]
+      'Revenue Operations',
+      'Data Analytics',
+      'Process Optimization',
+      'Strategic Planning',
+      'Sales Operations',
+      'Business Analysis',
+    ],
   },
   {
-    category: "Tools & Platforms",
-    skills: [
-      "Salesforce",
-      "HubSpot",
-      "SalesLoft",
-      "PartnerStack",
-      "Workato",
-      "Power BI"
-    ]
+    category: 'Tools & Platforms',
+    skills: ['Salesforce', 'HubSpot', 'SalesLoft', 'PartnerStack', 'Workato', 'Power BI'],
   },
   {
-    category: "Technical Skills",
+    category: 'Technical Skills',
     skills: [
-      "Python",
-      "JavaScript",
-      "React & Next.js",
-      "SQL",
-      "Data Visualization",
-      "API Integrations"
-    ]
-  }
+      'Python',
+      'JavaScript',
+      'React & Next.js',
+      'SQL',
+      'Data Visualization',
+      'API Integrations',
+    ],
+  },
 ];
 
 // Skill progress data
 const skillProgress = [
-  { name: "Revenue Strategy", value: 95 },
-  { name: "Data Analytics", value: 90 },
-  { name: "Process Optimization", value: 98 }
+  { name: 'Revenue Strategy', value: 95 },
+  { name: 'Data Analytics', value: 90 },
+  { name: 'Process Optimization', value: 98 },
 ];
 
 export function SkillsSection() {
@@ -76,9 +69,9 @@ export function SkillsSection() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.05
-      }
-    }
+        staggerChildren: 0.05,
+      },
+    },
   };
 
   const itemVariants = {
@@ -87,26 +80,27 @@ export function SkillsSection() {
       opacity: 1,
       y: 0,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 300,
-        damping: 24
-      }
-    }
+        damping: 24,
+      },
+    },
   };
 
   return (
-    <Box 
-      component="section" 
-      sx={{ 
+    <Box
+      component="section"
+      sx={{
         py: 10,
-        backgroundColor: theme => theme.palette.mode === 'light' ? 'white' : 'background.default'
+        backgroundColor: (theme) =>
+          theme.palette.mode === 'light' ? 'white' : 'background.default',
       }}
     >
       <Container maxWidth="lg">
-        <Box 
-          sx={{ 
-            textAlign: 'center', 
-            mb: 6 
+        <Box
+          sx={{
+            textAlign: 'center',
+            mb: 6,
           }}
         >
           <motion.div
@@ -115,23 +109,23 @@ export function SkillsSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Typography 
-              variant="h3" 
-              component="h2" 
+            <Typography
+              variant="h3"
+              component="h2"
               gutterBottom
-              sx={{ 
+              sx={{
                 fontWeight: 'bold',
-                mb: 1
+                mb: 1,
               }}
             >
               Skills & Expertise
             </Typography>
-            <Typography 
-              variant="body1" 
+            <Typography
+              variant="body1"
               color="text.secondary"
-              sx={{ 
-                maxWidth: 650, 
-                mx: 'auto' 
+              sx={{
+                maxWidth: 650,
+                mx: 'auto',
               }}
             >
               Specialized capabilities that drive results across various business functions
@@ -141,8 +135,8 @@ export function SkillsSection() {
 
         {/* Category tabs */}
         <Box sx={{ mb: 4, display: 'flex', justifyContent: 'center' }}>
-          <Tabs 
-            value={activeTab} 
+          <Tabs
+            value={activeTab}
             onChange={handleTabChange}
             variant="scrollable"
             scrollButtons="auto"
@@ -152,13 +146,13 @@ export function SkillsSection() {
                 backgroundColor: 'primary.main',
               },
               '& .MuiTabs-flexContainer': {
-                gap: 2
-              }
+                gap: 2,
+              },
             }}
           >
             {skillsData.map((category, index) => (
-              <Tab 
-                key={category.category} 
+              <Tab
+                key={category.category}
                 label={category.category}
                 sx={{
                   fontWeight: 500,
@@ -166,14 +160,14 @@ export function SkillsSection() {
                   py: 1.5,
                   borderRadius: '99px',
                   color: activeTab === index ? 'primary.main' : 'text.primary',
-                  bgcolor: activeTab === index 
-                    ? alpha(theme.palette.primary.main, 0.1) 
-                    : 'transparent',
+                  bgcolor:
+                    activeTab === index ? alpha(theme.palette.primary.main, 0.1) : 'transparent',
                   '&:hover': {
-                    bgcolor: activeTab === index 
-                      ? alpha(theme.palette.primary.main, 0.1) 
-                      : alpha(theme.palette.text.primary, 0.05)
-                  }
+                    bgcolor:
+                      activeTab === index
+                        ? alpha(theme.palette.primary.main, 0.1)
+                        : alpha(theme.palette.text.primary, 0.05),
+                  },
                 }}
               />
             ))}
@@ -188,7 +182,7 @@ export function SkillsSection() {
           viewport={{ once: true }}
         >
           {skillsData.map((category, categoryIndex) => (
-            <Box 
+            <Box
               key={category.category}
               sx={{ display: activeTab === categoryIndex ? 'block' : 'none' }}
             >
@@ -196,7 +190,7 @@ export function SkillsSection() {
                 {category.skills.map((skill, index) => (
                   <Grid item xs={6} sm={4} md={3} lg={2} key={skill}>
                     <motion.div variants={itemVariants}>
-                      <Card 
+                      <Card
                         sx={{
                           height: '100%',
                           display: 'flex',
@@ -210,17 +204,17 @@ export function SkillsSection() {
                           transition: 'all 0.3s ease',
                           '&:hover': {
                             transform: 'translateY(-5px)',
-                            boxShadow: 4
-                          }
+                            boxShadow: 4,
+                          },
                         }}
                       >
-                        <Avatar 
-                          sx={{ 
-                            width: 48, 
+                        <Avatar
+                          sx={{
+                            width: 48,
                             height: 48,
                             bgcolor: alpha(theme.palette.primary.main, 0.1),
                             color: 'primary.main',
-                            mb: 2
+                            mb: 2,
                           }}
                         >
                           {index + 1}
@@ -236,7 +230,7 @@ export function SkillsSection() {
             </Box>
           ))}
         </motion.div>
-        
+
         {/* Skill progress section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -244,25 +238,23 @@ export function SkillsSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <Paper 
-            elevation={1} 
-            sx={{ mt: 8, p: 4, borderRadius: 3 }}
-          >
+          <Paper elevation={1} sx={{ mt: 8, p: 4, borderRadius: 3 }}>
             <Grid container spacing={4} alignItems="center">
               <Grid item xs={12} md={6}>
                 <Typography variant="h4" gutterBottom fontWeight="bold">
                   Continuous Development
                 </Typography>
                 <Typography variant="body1" paragraph color="text.secondary">
-                  I'm committed to staying at the forefront of revenue operations best practices and technologies. 
-                  Through ongoing professional development, I constantly expand my knowledge and skills to deliver 
-                  exceptional results.
+                  I&rsquom committed to staying at the forefront of revenue operations best
+                  practices and technologies. Through ongoing professional development, I constantly
+                  expand my knowledge and skills to deliver exceptional results.
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
-                  My approach combines proven methodologies with innovative techniques to address complex business challenges.
+                  My approach combines proven methodologies with innovative techniques to address
+                  complex business challenges.
                 </Typography>
               </Grid>
-              
+
               <Grid item xs={12} md={6}>
                 <Box sx={{ px: 2 }}>
                   {skillProgress.map((skill, index) => (
@@ -275,14 +267,14 @@ export function SkillsSection() {
                           {skill.value}%
                         </Typography>
                       </Box>
-                      <LinearProgress 
-                        variant="determinate" 
-                        value={skill.value} 
-                        sx={{ 
-                          height: 8, 
+                      <LinearProgress
+                        variant="determinate"
+                        value={skill.value}
+                        sx={{
+                          height: 8,
                           borderRadius: 4,
-                          backgroundColor: alpha(theme.palette.primary.main, 0.1)
-                        }} 
+                          backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                        }}
                       />
                     </Box>
                   ))}
