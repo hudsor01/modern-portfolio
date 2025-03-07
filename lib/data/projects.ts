@@ -22,6 +22,13 @@ export async function getProjects(): Promise<Project[]> {
   return projects;
 }
 
+/**
+ * Get a specific project by its slug
+ */
+export function getProjectById(slug: string): Project | undefined {
+  return projects.find(project => project.slug === slug);
+}
+
 const projects: Project[] = [
   {
     id: 'churn-retention',

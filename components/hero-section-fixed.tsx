@@ -106,7 +106,7 @@ export function HeroSection({ titles }: HeroSectionProps) {
               transition={{ duration: 0.5, delay: 0.6 }}
               className="flex flex-wrap gap-4"
             >
-              <Button asChild size="lg" className="bg-[var(--color-primary)] hover:bg-[var(--color-primary)]/90 text-[var(--color-primary-foreground)] px-6 py-6 text-lg group">
+              <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-6 text-lg group">
                 <Link href="/resume" className="flex items-center gap-2">
                   <FileText size={18} />
                   View Resume
@@ -121,31 +121,7 @@ export function HeroSection({ titles }: HeroSectionProps) {
               </Button>
             </motion.div>
 
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.8 }}
-              className="flex items-center gap-6"
-            >
-              <a
-                href="https://linkedin.com/in/hudsor01"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors duration-300"
-              >
-                <Linkedin size={22} />
-                <span className="sr-only">LinkedIn</span>
-              </a>
-              <a
-                href="https://github.com/hudsor01"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors duration-300"
-              >
-                <Github size={22} />
-                <span className="sr-only">GitHub</span>
-              </a>
-            </motion.div>
+{/* Social icons moved to footer */}
           </motion.div>
 
           <motion.div 
@@ -179,20 +155,7 @@ export function HeroSection({ titles }: HeroSectionProps) {
           </motion.div>
         </div>
         
-        {/* Scroll down indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 0.5 }}
-          className="absolute left-1/2 bottom-8 -translate-x-1/2 flex flex-col items-center"
-        >
-          <SmoothScrollButton to="projects-section">
-            <div className="text-muted-foreground hover:text-primary transition-colors duration-300 flex flex-col items-center">
-              <span className="text-sm mb-2">Scroll down</span>
-              <ChevronDown className="animate-bounce" />
-            </div>
-          </SmoothScrollButton>
-        </motion.div>
+{/* Scroll down indicator removed as requested */}
       </div>
     </section>
   )

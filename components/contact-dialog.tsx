@@ -40,23 +40,41 @@ export function ContactDialog({ open, onClose }: ContactDialogProps) {
 		e.preventDefault()
 		setIsSubmitting(true)
 
-		// Simulate API call
-		setTimeout(() => {
-			setIsSubmitting(false)
-			setIsSuccess(true)
-			toast.success('Your message has been sent!')
+		try {
+			// Call the actual API endpoint
+			const response = await fetch('/api/send-email', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(formState),
+			});
 
-			// Reset after 2 seconds
-			setTimeout(() => {
-				setIsSuccess(false)
-				setFormState({
-					name: '',
-					email: '',
-					message: '',
-				})
-				onClose()
-			}, 2000)
-		}, 1500)
+			const data = await response.json();
+
+			if (data.success) {
+				setIsSuccess(true);
+				toast.success('Your message has been sent!');
+				
+				// Reset after 2 seconds
+				setTimeout(() => {
+					setIsSuccess(false);
+					setFormState({
+						name: '',
+						email: '',
+						message: '',
+					});
+					onClose();
+				}, 2000);
+			} else {
+				toast.error(data.error || 'Failed to send message. Please try again.');
+				setIsSubmitting(false);
+			}
+		} catch (error) {
+			console.error('Error sending message:', error);
+			toast.error('Failed to send message. Please try again.');
+			setIsSubmitting(false);
+		}
 	}
 
 	return (

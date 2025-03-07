@@ -18,19 +18,19 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
-    <section id="projects-section" className="py-20">
-      <div className="container-custom">
+    <section id="projects-section" className="py-24 md:py-32 lg:py-36 section-transition section-bg-secondary">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-3xl md:text-4xl font-bold mb-4"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400"
           >
             Featured Projects
           </motion.h2>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -49,7 +49,7 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="group card-hover"
+              className="group transform transition-all duration-300 hover:-translate-y-2"
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
             >
@@ -57,7 +57,7 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
                 href={`/projects/${project.slug}`}
                 className="block h-full"
               >
-                <div className="bg-card rounded-xl overflow-hidden shadow-md h-full flex flex-col border border-border">
+                <div className="bg-card rounded-xl overflow-hidden shadow-md hover:shadow-xl h-full flex flex-col border border-border transition-all duration-300 relative">
                   <div className="relative h-60 overflow-hidden">
                     <Image
                       src={project.image || '/images/projects/churn-retention.jpg'}
@@ -75,8 +75,8 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
                         <h3 className="text-white text-xl font-bold transition-colors duration-300 group-hover:text-primary">
                           {project.title}
                         </h3>
-                        <ArrowUpRight 
-                          size={18} 
+                        <ArrowUpRight
+                          size={18}
                           className="text-white opacity-0 translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0"
                         />
                       </div>
@@ -90,7 +90,7 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
 
                     <div className="flex flex-wrap gap-2 mb-4">
                       {project.technologies?.slice(0, 3).map((tech, techIndex) => (
-                        <span 
+                        <span
                           key={techIndex}
                           className="px-3 py-1 bg-muted text-muted-foreground text-xs rounded-full"
                         >
@@ -99,15 +99,15 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
                       ))}
                       {project.technologies?.length > 3 && (
                         <span className="px-3 py-1 bg-muted text-muted-foreground text-xs rounded-full">
-                          +{project.technologies.length - 3} more
+                          +{project.technologies?.length - 3} more
                         </span>
                       )}
                     </div>
 
                     <div className="flex items-center mt-auto text-primary font-medium group-hover:underline">
                       View Project Details
-                      <ArrowRight 
-                        size={16} 
+                      <ArrowRight
+                        size={16}
                         className="ml-1 transition-transform duration-300 group-hover:translate-x-1"
                       />
                     </div>
@@ -118,17 +118,17 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
           ))}
         </div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
           className="mt-12 text-center"
         >
-          <Button asChild variant="outline" size="lg">
+          <Button asChild variant="outline" size="lg" className="border-blue-600 text-blue-600 dark:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-6 py-6 text-lg rounded-xl group shadow-sm hover:shadow-md transition-all">
             <Link href="/projects" className="flex items-center gap-2">
               View All Projects
-              <ArrowRight size={16} />
+              <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform duration-300" />
             </Link>
           </Button>
         </motion.div>

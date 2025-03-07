@@ -1,36 +1,18 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 import Link from 'next/link';
 import { ArrowLeft, RefreshCcw, Calendar, Download, Filter, ChevronDown, ArrowUpRight, TrendingUp, TrendingDown } from 'lucide-react';
 import { motion } from 'framer-motion';
+import LeadSourcePieChart from './LeadSourcePieChart';
 
-// Enhanced data
-const pieData = [
-  { name: 'Organic Search', value: 40, revenue: 248000, cpa: 85 },
-  { name: 'Paid Advertising', value: 30, revenue: 185000, cpa: 120 },
-  { name: 'Referrals', value: 20, revenue: 142000, cpa: 65 },
-  { name: 'Social Media', value: 10, revenue: 76000, cpa: 95 }
-];
-
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899'];
-
-const monthlyData = [
-  { month: 'Jan', organic: 150, paid: 120, referral: 80, social: 40 },
-  { month: 'Feb', organic: 160, paid: 110, referral: 90, social: 45 },
-  { month: 'Mar', organic: 170, paid: 130, referral: 85, social: 50 },
-  { month: 'Apr', organic: 180, paid: 140, referral: 95, social: 55 },
-  { month: 'May', organic: 200, paid: 150, referral: 100, social: 60 },
-  { month: 'Jun', organic: 220, paid: 145, referral: 110, social: 65 },
-];
-
-const conversionData = [
-  { source: 'Organic Search', conversion: 4.2, ctr: 3.1 },
-  { source: 'Paid Advertising', conversion: 3.8, ctr: 4.5 },
-  { source: 'Referrals', conversion: 5.6, ctr: 2.8 },
-  { source: 'Social Media', conversion: 2.9, ctr: 3.9 },
-];
+// Import real data
+import { 
+  leadSources, 
+  channelPerformance, 
+  monthlyAttribution 
+} from '@/lib/data/partner-analytics';
 
 export default function LeadAttribution() {
   const [isLoading, setIsLoading] = useState(true);
@@ -38,7 +20,21 @@ export default function LeadAttribution() {
   const [selectedSource, setSelectedSource] = useState(null);
   
   // Total leads calculation
-  const totalLeads = pieData.reduce((sum, item) => sum + item.value, 0);
+  const totalLeads = leadSources.reduce((sum, item) => sum + item.count, 0);
+  
+  // Calculate total revenue
+  const totalRevenue = channelPerformance.reduce((sum, item) => sum + item.revenue, 0);
+  
+  // Calculate average conversion rate
+  const avgConversionRate = parseFloat(
+    (channelPerformance.reduce((sum, item) => sum + item.conversion_rate, 0) / 
+    channelPerformance.length).toFixed(1)
+  );
+  
+  // Calculate average cost per acquisition
+  const totalConversions = channelPerformance.reduce((sum, item) => sum + item.conversions, 0);
+  const totalSpend = 500000; // Assuming campaign spend
+  const avgCostPerLead = Math.round(totalSpend / totalLeads);
   
   // Simulate loading state
   useEffect(() => {
@@ -71,19 +67,66 @@ export default function LeadAttribution() {
 
   // Format numbers for display
   const formatNumber = (num) => {
+    if (num >= 1000000) {
+      return `${(num / 1000000).toFixed(1)}M`;
+    }
     if (num >= 1000) {
-      return `${(num / 1000).toFixed(1)}k`;
+      return `${(num / 1000).toFixed(1)}K`;
     }
     return num;
   };
 
+  // Transform monthly data for visualization
+  const monthlyTrendData = Object.keys(monthlyAttribution[0])
+    .filter(key => key !== 'month')
+    .map(sourceKey => {
+      // Convert from snake_case to readable format
+      const displayName = sourceKey
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+        
+      // Get latest month percentage
+      const latestValue = monthlyAttribution[monthlyAttribution.length - 1][sourceKey];
+      const previousValue = monthlyAttribution[monthlyAttribution.length - 2][sourceKey];
+      const change = (((latestValue - previousValue) / previousValue) * 100).toFixed(1);
+      
+      return {
+        source: displayName,
+        percentage: latestValue,
+        change: parseFloat(change),
+        trend: change >= 0 ? 'up' : 'down',
+      };
+    });
+
+  // Prepare data for the monthly attribution line chart
+  const monthlyLineData = monthlyAttribution.slice(-6).map(item => ({
+    month: item.month,
+    'Partner Referral': item.partner_referral,
+    'Website': item.website,
+    'Direct Outreach': item.direct_outreach,
+    'Events': item.events,
+    'Content Marketing': item.content_marketing,
+    'Social Media': item.social_media,
+  }));
+
+  // Channel performance colors
+  const channelColors = {
+    'Partner Referral': '#4F46E5',
+    'Website': '#10B981',
+    'Direct Outreach': '#F59E0B',
+    'Events': '#EF4444',
+    'Content Marketing': '#8B5CF6',
+    'Social Media': '#EC4899'
+  };
+
   return (
-    <div className="min-h-screen bg-gray-950 text-white px-4 py-8 md:p-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white px-4 py-8 md:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <Link 
             href="/projects" 
-            className="flex items-center text-blue-400 hover:text-blue-300 transition-colors"
+            className="flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 transition-colors"
           >
             <ArrowLeft size={16} className="mr-2" />
             <span>Back to Projects</span>
@@ -91,25 +134,41 @@ export default function LeadAttribution() {
           
           <div className="flex items-center space-x-2">
             <button 
-              className={`px-3 py-1 rounded-md ${activeTimeframe === '1M' ? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700'}`}
+              className={`px-3 py-1 rounded-md ${
+                activeTimeframe === '1M' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
               onClick={() => setActiveTimeframe('1M')}
             >
               1M
             </button>
             <button 
-              className={`px-3 py-1 rounded-md ${activeTimeframe === '3M' ? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700'}`}
+              className={`px-3 py-1 rounded-md ${
+                activeTimeframe === '3M' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
               onClick={() => setActiveTimeframe('3M')}
             >
               3M
             </button>
             <button 
-              className={`px-3 py-1 rounded-md ${activeTimeframe === '6M' ? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700'}`}
+              className={`px-3 py-1 rounded-md ${
+                activeTimeframe === '6M' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
               onClick={() => setActiveTimeframe('6M')}
             >
               6M
             </button>
             <button 
-              className={`px-3 py-1 rounded-md ${activeTimeframe === '1Y' ? 'bg-blue-600' : 'bg-gray-800 hover:bg-gray-700'}`}
+              className={`px-3 py-1 rounded-md ${
+                activeTimeframe === '1Y' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
               onClick={() => setActiveTimeframe('1Y')}
             >
               1Y
@@ -123,8 +182,8 @@ export default function LeadAttribution() {
           variants={fadeInUp}
           className="mb-6"
         >
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">Lead Source Attribution</h1>
-          <p className="text-gray-400">Analyzing marketing performance and lead channel effectiveness</p>
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Partner Lead Attribution</h1>
+          <p className="text-gray-600 dark:text-gray-400">Analyzing lead source effectiveness and partner channel performance</p>
         </motion.div>
         
         {/* Key Metrics Cards */}
@@ -135,326 +194,283 @@ export default function LeadAttribution() {
           animate="visible"
         >
           <motion.div 
-            className="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl border border-gray-700"
+            className="bg-white dark:bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm"
             variants={fadeInUp}
           >
             <div className="flex justify-between mb-3">
-              <h3 className="text-gray-400 text-sm font-medium">TOTAL LEADS</h3>
-              <span className="text-green-400 text-xs px-2 py-1 bg-green-400/10 rounded-full flex items-center">
+              <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">TOTAL LEADS</h3>
+              <span className="text-green-600 dark:text-green-400 text-xs px-2 py-1 bg-green-100 dark:bg-green-400/10 rounded-full flex items-center">
                 <TrendingUp size={12} className="mr-1" />
-                +15%
+                +12%
               </span>
             </div>
-            <p className="text-3xl font-bold">{formatNumber(totalLeads)}</p>
-            <p className="text-gray-400 text-sm mt-1">Current period</p>
+            <p className="text-3xl font-bold">{totalLeads.toLocaleString()}</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Current period</p>
           </motion.div>
           
           <motion.div 
-            className="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl border border-gray-700"
+            className="bg-white dark:bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm"
             variants={fadeInUp}
           >
             <div className="flex justify-between mb-3">
-              <h3 className="text-gray-400 text-sm font-medium">COST PER LEAD</h3>
-              <span className="text-red-400 text-xs px-2 py-1 bg-red-400/10 rounded-full flex items-center">
+              <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">COST PER LEAD</h3>
+              <span className="text-red-600 dark:text-red-400 text-xs px-2 py-1 bg-red-100 dark:bg-red-400/10 rounded-full flex items-center">
                 <TrendingDown size={12} className="mr-1" />
-                -8%
+                -5%
               </span>
             </div>
-            <p className="text-3xl font-bold">$92</p>
-            <p className="text-gray-400 text-sm mt-1">Average cost</p>
+            <p className="text-3xl font-bold">${avgCostPerLead}</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Average cost</p>
           </motion.div>
           
           <motion.div 
-            className="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl border border-gray-700"
+            className="bg-white dark:bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm"
             variants={fadeInUp}
           >
             <div className="flex justify-between mb-3">
-              <h3 className="text-gray-400 text-sm font-medium">CONVERSION RATE</h3>
-              <span className="text-green-400 text-xs px-2 py-1 bg-green-400/10 rounded-full flex items-center">
+              <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">CONVERSION RATE</h3>
+              <span className="text-green-600 dark:text-green-400 text-xs px-2 py-1 bg-green-100 dark:bg-green-400/10 rounded-full flex items-center">
                 <TrendingUp size={12} className="mr-1" />
-                +3.5%
+                +2.5%
               </span>
             </div>
-            <p className="text-3xl font-bold">4.2%</p>
-            <p className="text-gray-400 text-sm mt-1">Lead to customer</p>
+            <p className="text-3xl font-bold">{avgConversionRate}%</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Lead to customer</p>
           </motion.div>
           
           <motion.div 
-            className="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl border border-gray-700"
+            className="bg-white dark:bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm"
             variants={fadeInUp}
           >
             <div className="flex justify-between mb-3">
-              <h3 className="text-gray-400 text-sm font-medium">TOTAL REVENUE</h3>
+              <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">ATTRIBUTED REVENUE</h3>
               <ArrowUpRight size={14} className="text-green-500" />
             </div>
-            <p className="text-3xl font-bold">$651k</p>
-            <p className="text-gray-400 text-sm mt-1">Attributed revenue</p>
+            <p className="text-3xl font-bold">${formatNumber(totalRevenue)}</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">From all sources</p>
           </motion.div>
         </motion.div>
         
-        {/* Main charts section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Lead Source Pie Chart */}
-          <motion.div 
-            className="bg-gray-800/40 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50"
-            variants={fadeInUp}
-            initial="hidden"
-            animate="visible"
-          >
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h3 className="text-xl font-semibold">Lead Source Distribution</h3>
-                <p className="text-gray-400 text-sm mt-1">Percentage breakdown by channel</p>
-              </div>
-              <div className="flex items-center text-sm text-gray-400">
-                <Calendar size={14} className="mr-1" />
-                <span>Last {activeTimeframe}</span>
-              </div>
-            </div>
-            
-            {isLoading ? (
-              <div className="h-[350px] flex items-center justify-center">
-                <RefreshCcw size={24} className="text-blue-400 animate-spin" />
-              </div>
-            ) : (
-              <div className="flex flex-col lg:flex-row items-center">
-                <div className="w-full lg:w-2/3">
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie
-                        data={pieData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={80}
-                        outerRadius={120}
-                        fill="#8884d8"
-                        paddingAngle={4}
-                        dataKey="value"
-                        onMouseEnter={(data) => setSelectedSource(data.name)}
-                        onMouseLeave={() => setSelectedSource(null)}
-                      >
-                        {pieData.map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={COLORS[index % COLORS.length]} 
-                            opacity={selectedSource && selectedSource !== entry.name ? 0.5 : 1}
-                            stroke={selectedSource === entry.name ? '#fff' : 'none'}
-                            strokeWidth={2}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip 
-                        contentStyle={{ backgroundColor: '#1f2937', borderColor: '#4b5563', borderRadius: '6px' }}
-                        itemStyle={{ color: '#fff' }}
-                        formatter={(value) => [`${value}%`, 'Percentage']}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                
-                <div className="w-full lg:w-1/3 mt-6 lg:mt-0 space-y-4">
-                  {pieData.map((entry, index) => (
-                    <div 
-                      key={index} 
-                      className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                        selectedSource === entry.name 
-                          ? 'bg-gray-700/60' 
-                          : 'bg-gray-800/30 hover:bg-gray-700/40'
-                      }`}
-                      onMouseEnter={() => setSelectedSource(entry.name)}
-                      onMouseLeave={() => setSelectedSource(null)}
-                    >
-                      <div className="flex items-center">
-                        <div 
-                          className="w-3 h-3 rounded-full mr-2"
-                          style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                        ></div>
-                        <span className="font-medium">{entry.name}</span>
-                      </div>
-                      <div className="mt-2 grid grid-cols-2 gap-2 text-sm">
-                        <div>
-                          <p className="text-gray-400">Share:</p>
-                          <p>{entry.value}%</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-400">Revenue:</p>
-                          <p>${formatNumber(entry.revenue)}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </motion.div>
-          
-          {/* Monthly Trend Chart */}
-          <motion.div 
-            className="bg-gray-800/40 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50"
-            variants={fadeInUp}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: 0.2 }}
-          >
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h3 className="text-xl font-semibold">Monthly Lead Trends</h3>
-                <p className="text-gray-400 text-sm mt-1">Channel performance over time</p>
-              </div>
-              <button className="text-sm text-gray-400 bg-gray-800/60 px-3 py-1 rounded-lg flex items-center">
-                <Filter size={12} className="mr-1" />
-                <span>Filter</span>
-              </button>
-            </div>
-            
-            {isLoading ? (
-              <div className="h-[350px] flex items-center justify-center">
-                <RefreshCcw size={24} className="text-blue-400 animate-spin" />
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={monthlyData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                  <XAxis dataKey="month" tick={{ fill: '#9ca3af' }} />
-                  <YAxis tick={{ fill: '#9ca3af' }} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#1f2937', borderColor: '#4b5563', borderRadius: '6px' }}
-                    itemStyle={{ color: '#fff' }}
-                  />
-                  <Legend />
-                  <Line 
-                    type="monotone" 
-                    name="Organic Search" 
-                    dataKey="organic" 
-                    stroke={COLORS[0]} 
-                    strokeWidth={2}
-                    dot={{ r: 4, strokeWidth: 2 }}
-                    activeDot={{ r: 6, strokeWidth: 2 }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    name="Paid Ads" 
-                    dataKey="paid" 
-                    stroke={COLORS[1]} 
-                    strokeWidth={2}
-                    dot={{ r: 4, strokeWidth: 2 }}
-                    activeDot={{ r: 6, strokeWidth: 2 }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    name="Referrals" 
-                    dataKey="referral" 
-                    stroke={COLORS[2]} 
-                    strokeWidth={2}
-                    dot={{ r: 4, strokeWidth: 2 }}
-                    activeDot={{ r: 6, strokeWidth: 2 }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    name="Social Media" 
-                    dataKey="social" 
-                    stroke={COLORS[3]} 
-                    strokeWidth={2}
-                    dot={{ r: 4, strokeWidth: 2 }}
-                    activeDot={{ r: 6, strokeWidth: 2 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            )}
-          </motion.div>
-        </div>
-        
-        {/* Conversion Metrics Chart */}
+        {/* Main Lead Source Pie Chart */}
         <motion.div 
-          className="bg-gray-800/40 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 mb-8"
+          className="bg-white dark:bg-gray-800/40 backdrop-blur-sm rounded-xl p-6 border border-gray-200 dark:border-gray-700/50 mb-8 shadow-sm"
           variants={fadeInUp}
           initial="hidden"
           animate="visible"
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.2 }}
         >
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h3 className="text-xl font-semibold">Channel Efficiency Metrics</h3>
-              <p className="text-gray-400 text-sm mt-1">Conversion rates and click-through rates by source</p>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Lead Source Distribution</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">Percentage breakdown by channel</p>
+            </div>
+            <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+              <Calendar size={14} className="mr-1" />
+              <span>Last {activeTimeframe}</span>
             </div>
           </div>
           
           {isLoading ? (
-            <div className="h-[350px] flex items-center justify-center">
-              <RefreshCcw size={24} className="text-blue-400 animate-spin" />
+            <div className="h-[400px] flex items-center justify-center">
+              <RefreshCcw size={24} className="text-blue-600 dark:text-blue-400 animate-spin" />
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={conversionData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                <XAxis dataKey="source" tick={{ fill: '#9ca3af' }} />
-                <YAxis tick={{ fill: '#9ca3af' }} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#1f2937', borderColor: '#4b5563', borderRadius: '6px' }}
-                  itemStyle={{ color: '#fff' }}
-                  formatter={(value) => [`${value}%`, '']}
-                />
-                <Legend />
-                <Bar 
-                  name="Conversion Rate (%)" 
-                  dataKey="conversion" 
-                  fill={COLORS[0]} 
-                  radius={[4, 4, 0, 0]}
-                />
-                <Bar 
-                  name="Click-Through Rate (%)" 
-                  dataKey="ctr" 
-                  fill={COLORS[1]} 
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
+            <LeadSourcePieChart />
           )}
-          
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
-            {pieData.map((entry, index) => (
-              <div key={index} className="bg-gray-800/30 rounded-lg p-3">
-                <div className="flex items-center mb-2">
-                  <div 
-                    className="w-3 h-3 rounded-full mr-2"
-                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                  ></div>
-                  <span className="font-medium text-sm">{entry.name}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <div>
-                    <p className="text-gray-400">Cost Per Lead:</p>
-                    <p className="font-medium">${entry.cpa}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-400">ROI:</p>
-                    <p className="font-medium">{((entry.revenue / (entry.cpa * entry.value * 10)) * 100).toFixed(1)}x</p>
-                  </div>
-                </div>
+        </motion.div>
+        
+        {/* Additional Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Monthly Attribution Trends Chart */}
+          <motion.div 
+            className="bg-white dark:bg-gray-800/40 backdrop-blur-sm rounded-xl p-6 border border-gray-200 dark:border-gray-700/50 shadow-sm"
+            variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.3 }}
+          >
+            <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Monthly Attribution Trends</h3>
+            
+            {isLoading ? (
+              <div className="h-[300px] flex items-center justify-center">
+                <RefreshCcw size={24} className="text-blue-600 dark:text-blue-400 animate-spin" />
               </div>
-            ))}
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart 
+                  data={monthlyLineData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#d1d5db" strokeOpacity={0.3} />
+                  <XAxis 
+                    dataKey="month" 
+                    tick={{ fill: '#64748b' }}
+                  />
+                  <YAxis 
+                    tick={{ fill: '#64748b' }}
+                    domain={[0, 30]}
+                    tickFormatter={(value) => `${value}%`}
+                  />
+                  <Tooltip 
+                    formatter={(value) => [`${value}%`, '']}
+                    contentStyle={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                      borderRadius: '8px',
+                      border: 'none',
+                      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
+                    }}
+                  />
+                  <Legend />
+                  {Object.keys(channelColors).map((channel) => (
+                    <Line
+                      key={channel}
+                      type="monotone"
+                      dataKey={channel}
+                      stroke={channelColors[channel]}
+                      strokeWidth={2}
+                      dot={{ r: 3, strokeWidth: 1 }}
+                      activeDot={{ r: 5, strokeWidth: 1 }}
+                      animationDuration={1500}
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </motion.div>
+          
+          {/* Channel Performance Metrics */}
+          <motion.div 
+            className="bg-white dark:bg-gray-800/40 backdrop-blur-sm rounded-xl p-6 border border-gray-200 dark:border-gray-700/50 shadow-sm"
+            variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.4 }}
+          >
+            <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Channel Performance Metrics</h3>
+            
+            {isLoading ? (
+              <div className="h-[300px] flex items-center justify-center">
+                <RefreshCcw size={24} className="text-blue-600 dark:text-blue-400 animate-spin" />
+              </div>
+            ) : (
+              <div className="overflow-auto max-h-[400px]">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-900">
+                    <tr>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Channel
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Conversion
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Revenue
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        ROI
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white dark:bg-transparent divide-y divide-gray-200 dark:divide-gray-800">
+                    {channelPerformance.map((channel, idx) => (
+                      <tr key={idx} className={idx % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800/30' : 'bg-white dark:bg-transparent'}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                          {channel.channel}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                          <div className="flex items-center">
+                            <span className="mr-2">{channel.conversion_rate}%</span>
+                            <div className="w-16 bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                              <div 
+                                className="bg-blue-500 h-2.5 rounded-full" 
+                                style={{ width: `${(channel.conversion_rate/20) * 100}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                          ${channel.revenue.toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                          {channel.roi}%
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </motion.div>
+        </div>
+        
+        {/* Insights and Recommendations */}
+        <motion.div 
+          className="bg-white dark:bg-gray-800/40 backdrop-blur-sm rounded-xl p-6 border border-gray-200 dark:border-gray-700/50 mb-8 shadow-sm"
+          variants={fadeInUp}
+          initial="hidden"
+          animate="visible"
+          transition={{ delay: 0.5 }}
+        >
+          <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Attribution Insights & Recommendations</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">Key Findings</h4>
+              <ul className="space-y-2 text-gray-700 dark:text-gray-300">
+                <li className="flex items-start">
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 mr-2 text-xs">1</span>
+                  <span>Partner Referrals generate {leadSources[0].percentage}% of leads, making it the most effective channel.</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 mr-2 text-xs">2</span>
+                  <span>Events show a high conversion rate of {channelPerformance[3].conversion_rate}% despite lower lead volume.</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 mr-2 text-xs">3</span>
+                  <span>Direct Outreach yields the highest average deal value at ${leadSources[2].avg_deal_value.toLocaleString()}.</span>
+                </li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">Recommended Actions</h4>
+              <ul className="space-y-2 text-gray-700 dark:text-gray-300">
+                <li className="flex items-start">
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 mr-2 text-xs">1</span>
+                  <span>Expand the partner referral program with incentives to leverage its {channelPerformance[0].roi}% ROI.</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 mr-2 text-xs">2</span>
+                  <span>Increase investment in targeted direct outreach campaigns to high-value prospects.</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 mr-2 text-xs">3</span>
+                  <span>Optimize content marketing strategy to improve its conversion rate from {channelPerformance[4].conversion_rate}%.</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </motion.div>
         
         {/* Action buttons */}
-        <div className="mt-8 flex justify-between">
+        <div className="mt-8 flex flex-col sm:flex-row justify-between gap-4">
           <Link 
             href="/projects" 
-            className="bg-gray-800 hover:bg-gray-700 text-white px-5 py-2 rounded-lg transition-colors flex items-center"
+            className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-white px-5 py-2 rounded-lg transition-colors flex items-center justify-center sm:justify-start border border-gray-200 dark:border-gray-700"
           >
             <ArrowLeft size={16} className="mr-2" />
             Back to Projects
           </Link>
           
-          <div className="flex space-x-3">
-            <button className="bg-gray-800 hover:bg-gray-700 text-white px-5 py-2 rounded-lg transition-colors flex items-center">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-white px-5 py-2 rounded-lg transition-colors flex items-center justify-center border border-gray-200 dark:border-gray-700">
               <Filter size={16} className="mr-2" />
               <span>Filter Sources</span>
             </button>
             
-            <button className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg transition-colors flex items-center">
+            <button className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg transition-colors flex items-center justify-center">
               <Download size={16} className="mr-2" />
-              <span>Export Data</span>
+              <span>Export Report</span>
               <ChevronDown size={16} className="ml-2" />
             </button>
           </div>

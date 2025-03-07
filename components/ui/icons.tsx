@@ -1,5 +1,5 @@
 import type React from 'react'
-import { type LucideIcon, Twitter, Github, Linkedin, Moon, Sun, Menu, Loader2 } from 'lucide-react'
+import { type LucideIcon, Twitter, Github, Linkedin, Moon, Sun, Menu, Loader2, Briefcase, Monitor, BarChart3, FileSpreadsheet } from 'lucide-react'
 
 export type Icon = LucideIcon
 
@@ -11,6 +11,10 @@ export const Icons = {
 	twitter: Twitter,
 	github: Github,
 	linkedin: Linkedin,
+	briefcase: Briefcase,
+	monitor: Monitor,
+	chart: BarChart3,
+	spreadsheet: FileSpreadsheet,
 	logo: ({ ...props }: React.ComponentProps<LucideIcon>) => (
 		<svg
 			xmlns='http://www.w3.org/2000/svg'

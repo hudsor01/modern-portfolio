@@ -7,7 +7,7 @@ export const siteConfig = {
 	links: {
 		github: 'https://github.com/hudsonr01',
 		linkedin: 'https://linkedin.com/in/hudsor01',
-		email: 'hello@richardhudson.com',
+		email: 'hello@richardwhudsonjr.com',
 	},
 	mainNav: [
 		{ title: 'Home', href: '/' },

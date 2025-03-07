@@ -1,50 +1,39 @@
 'use client'
 
 import Link from 'next/link'
+import { Github, Linkedin } from 'lucide-react'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-gray-100 dark:bg-[#0c0c1f] text-gray-700 dark:text-gray-300 py-8">
+    <footer className="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 py-4 border-t border-gray-200 dark:border-gray-800">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-1">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Links</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/" className="text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link href="/projects" className="text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
-                  Projects
-                </Link>
-              </li>
-              <li>
-                <Link href="/resume" className="text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
-                  Resume
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
-                  Contact
-                </Link>
-              </li>
-            </ul>
+        <div className="flex flex-col md:flex-row justify-between items-center gap-2">
+          <div className="flex items-center gap-4">
+            <a
+              href="https://linkedin.com/in/hudsor01"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-primary transition-colors duration-300"
+              aria-label="LinkedIn"
+            >
+              <Linkedin size={20} />
+            </a>
+            <a
+              href="https://github.com/hudsor01"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-primary transition-colors duration-300"
+              aria-label="GitHub"
+            >
+              <Github size={20} />
+            </a>
           </div>
-
-          <div className="md:col-span-2 flex items-center justify-center md:justify-end">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              © {currentYear} Richard Hudson | Revenue Operations Professional. All rights reserved.
-            </p>
-          </div>
+          
+          <p className="text-sm">
+            © {currentYear} Richard Hudson | Revenue Operations Professional
+          </p>
         </div>
       </div>
     </footer>

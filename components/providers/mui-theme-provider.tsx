@@ -28,7 +28,7 @@ export function MUIThemeProvider({ children }: MUIThemeProviderProps) {
 
   return (
     <MUIThemeProvider theme={currentTheme}>
-      <CssBaseline />
+      {/* Remove CssBaseline to prevent styles conflict with Tailwind */}
       {children}
     </MUIThemeProvider>
   )

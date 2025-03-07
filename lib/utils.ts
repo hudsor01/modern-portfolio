@@ -1,6 +1,7 @@
 // Split utilities into client and server files
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import type { Route } from 'next'
 
 // Create a client-safe absoluteUrl function
 export function absoluteUrl(path: string): string {
@@ -118,6 +119,11 @@ export function safeJsonParse<T>(json: string, fallback: T): T {
 		return fallback
 	}
 }
+
+/**
+ * Re-export route utilities from their dedicated module
+ */
+export * from './utils/route-utils'
 
 export function isInViewport(element: HTMLElement, offset = 0): boolean {
 	if (isServer) return false

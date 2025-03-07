@@ -1,11 +1,4 @@
-import { getProjects } from '@/lib/data/projects'
-
-// Import original components until MUI is installed
-import { HeroSection } from '@/components/hero-section-fixed'
-import { AchievementsSection } from '@/components/achievements-section'
-import { FeaturedProjectsSection } from '@/components/featured-projects-section-updated'
-import { TestimonialsSection } from '@/components/testimonials-section-updated'
-import { SkillsSection } from '@/components/skills-section'
+import { HeroSectionStatic } from '@/components/hero-section-static'
 import { CTASection } from '@/components/cta-section'
 
 export const metadata = {
@@ -14,36 +7,16 @@ export const metadata = {
 }
 
 export default async function HomePage() {
-  // Fetch projects data
-  const projects = await getProjects();
-  const featuredProjects = projects.filter(project => project.featured);
-  
   return (
-    <main className="overflow-x-hidden">
-      {/* Hero Section */}
-      <HeroSection
-        titles={[
-          'Revenue Operations Professional',
-          'Data Analytics Expert',
-          'Process Optimization Specialist',
-          'Business Intelligence Strategist'
-        ]}
-      />
-
-      {/* Achievements Section */}
-      <AchievementsSection />
-
-      {/* Featured Projects Section */}
-      <FeaturedProjectsSection projects={featuredProjects} />
-      
-      {/* Testimonials Section */}
-      <TestimonialsSection />
-
-      {/* Skills Section */}
-      <SkillsSection />
+    <main className="overflow-hidden bg-brown text-eggshell [&>section+section]:pt-0">
+      {/* Static Hero Section */}
+      <HeroSectionStatic />
 
       {/* CTA Section */}
-      <CTASection />
+      <CTASection
+        buttonTextColor="text-eggshell"
+        buttonBgColor="bg-pewter-blue"
+      />
     </main>
   )
 }

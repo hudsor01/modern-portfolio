@@ -1,6 +1,6 @@
 'use client'
 
-import * as React from 'react'
+import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -8,13 +8,15 @@ import { Button } from '@/components/ui/button'
 import { Moon, Sun, Menu } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { useTheme } from 'next-themes'
+import { UrlObject } from 'url'
 
-const routes = [
-	{ name: 'Home', path: '/' },
-	{ name: 'About', path: '/about' },
-	{ name: 'Projects', path: '/projects' },
-	{ name: 'Resume', path: '/resume' },
-	{ name: 'Contact', path: '/contact' },
+type Route = { name: string; path: string | UrlObject };
+const routes: Route[] = [
+	{ name: 'Home', path: '/' }, // Explicitly typed as string
+	{ name: 'About', path: '/about' }, // Explicitly typed as string
+	{ name: 'Projects', path: '/projects' }, // Explicitly typed as string
+	{ name: 'Resume', path: '/resume' }, // Explicitly typed as string
+	{ name: 'Contact', path: '/contact' }, // Explicitly typed as string
 ]
 
 export function MainNav({ className }: React.HTMLAttributes<HTMLElement>) {
@@ -24,7 +26,7 @@ export function MainNav({ className }: React.HTMLAttributes<HTMLElement>) {
 		<nav className={cn('flex items-center space-x-4 lg:space-x-6', className)}>
 			{routes.map(route => (
 				<Link
-					key={route.path}
+					key={route.path} // Explicitly typed as string
 					href={route.path}
 					className={cn(
 						'hover:text-primary text-sm font-medium transition-colors',
@@ -61,7 +63,7 @@ export function MobileNav() {
 					<div className='flex flex-col space-y-3 pt-6'>
 						{routes.map(route => (
 							<Link
-								key={route.path}
+								key={route.path} // Explicitly typed as string
 								href={route.path}
 								className={cn(
 									'flex items-center rounded-md px-3 py-2.5 text-base font-medium transition-colors',

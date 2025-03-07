@@ -33,15 +33,15 @@ export function TestimonialsSection() {
   const isMobile = useMediaQuery('(max-width: 768px)');
 
   return (
-    <section className="py-20 bg-muted/30">
-      <div className="container-custom">
+    <section className="py-24 md:py-32 lg:py-36 section-transition section-bg-primary">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-3xl md:text-4xl font-bold mb-4"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400"
           >
             What My Clients Say
           </motion.h2>

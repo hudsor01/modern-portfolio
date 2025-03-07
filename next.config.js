@@ -28,12 +28,12 @@ const nextConfig = {
             value: `
               default-src 'self';
               script-src 'self' 'unsafe-inline' *.calendly.com assets.calendly.com;
-              style-src 'self' 'unsafe-inline' 'unsafe-css';
+              style-src 'self' 'unsafe-inline' *.googleapis.com fonts.googleapis.com;
               img-src 'self' data: blob: https: * 'unsafe-inline';
-              font-src 'self' data:;
+              font-src 'self' fonts.gstatic.com data:;
               object-src 'none';
               media-src 'self';
-              connect-src 'self' https: ws: wss:;
+              connect-src 'self' https: fonts.googleapis.com ws: wss:;
               frame-src 'self' calendly.com *.calendly.com assets.calendly.com;
             `.replace(/\s{2,}/g, ' ').trim()
           },

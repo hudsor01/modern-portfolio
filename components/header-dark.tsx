@@ -18,8 +18,7 @@ const routes = [
 
 export function HeaderDark() {
   const pathname = usePathname()
-  const { setTheme, theme } = useTheme()
-  const [isScrolled, setIsScrolled] = useState(false)
+  const { theme, setTheme } = useTheme()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
 
@@ -27,51 +26,36 @@ export function HeaderDark() {
     setMounted(true)
   }, [])
 
-  // Handle scroll effect
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true)
-      } else {
-        setIsScrolled(false)
-      }
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
+  // Return early to avoid hydration mismatch
   if (!mounted) {
-    return null
+    return (
+      <header className="sticky top-0 z-50 w-full transition-all duration-300 bg-white/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm dark:bg-slate-900/90 dark:border-slate-800/50">
+        <div className="container mx-auto px-4">
+          <div className="flex h-20 items-center justify-between">
+            <span className="z-40 text-xl font-bold">Richard Hudson</span>
+            <nav className="hidden md:block"></nav>
+            <div className="flex items-center md:hidden"></div>
+          </div>
+        </div>
+      </header>
+    )
+  }
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark')
   }
 
   return (
-    <header className={`sticky top-0 z-50 w-full transition-all duration-200 ${
-      isScrolled 
-        ? theme === 'dark' 
-          ? 'bg-gray-900/90 backdrop-blur-md border-b border-gray-800' 
-          : 'bg-white/90 backdrop-blur-md border-b border-gray-200'
-        : theme === 'dark'
-          ? 'bg-transparent'
-          : 'bg-white'
-    }`}>
+    <header className="sticky top-0 z-50 w-full transition-all duration-300 bg-white/90 backdrop-blur-md border-b border-slate-200/50 shadow-sm dark:bg-slate-900/90 dark:border-slate-800/50">
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          <Link href="/" className={`z-40 text-xl font-bold ${
-            theme === 'dark' 
-              ? 'text-white hover:text-[#0070f3]' 
-              : 'text-gray-900 hover:text-[#0070f3]'
-          } transition-colors`}>
+        <div className="flex h-20 items-center justify-between">
+          <Link href="/" className="z-40 text-xl font-bold text-gradient transition-all hover:opacity-80">
             Richard Hudson
           </Link>
           
           {/* Desktop menu */}
-          <nav className="hidden md:flex items-center space-x-1">
-            <div className={`${
-              theme === 'dark' 
-                ? 'bg-[#1a1a1a]' 
-                : 'bg-gray-100'
-            } backdrop-blur-sm rounded-full px-1 py-1 flex items-center`}>
+          <nav className="hidden md:flex items-center space-x-2">
+            <div className="bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl px-2 py-2 flex items-center shadow-sm">
               {routes.map((route, index) => (
                 <motion.div
                   key={route.path}
@@ -81,17 +65,17 @@ export function HeaderDark() {
                 >
                   <Link
                     href={route.path}
-                    className={`relative px-4 py-2 text-sm font-medium transition-colors rounded-full ${
+                    className={`relative px-4 py-2 text-sm font-medium transition-all rounded-lg ${
                       pathname === route.path 
-                        ? theme === 'dark' ? 'text-white' : 'text-gray-900'
-                        : theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                        ? 'text-slate-900 dark:text-white'
+                        : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                     }`}
                   >
                     {pathname === route.path && (
                       <motion.div
                         layoutId="nav-pill"
-                        className="absolute inset-0 bg-[#0070f3] rounded-full -z-10"
-                        transition={{ type: 'spring', duration: 0.6 }}
+                        className="absolute inset-0 bg-blue-600 bg-gradient-to-r from-blue-600 to-blue-500 rounded-lg -z-10"
+                        transition={{ type: 'spring', duration: 0.5 }}
                       />
                     )}
                     {route.name}
@@ -101,11 +85,11 @@ export function HeaderDark() {
             </div>
 
             <Button 
-              variant="ghost" 
+              variant="outline" 
               size="icon" 
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              onClick={toggleTheme}
               aria-label="Toggle theme"
-              className={`ml-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}
+              className="ml-2 rounded-lg border border-slate-200 bg-white text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
             >
               <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
               <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -115,22 +99,22 @@ export function HeaderDark() {
           {/* Mobile menu button */}
           <div className="flex items-center md:hidden">
             <Button
-              variant="ghost"
+              variant="outline"
               size="icon"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              onClick={toggleTheme}
               aria-label="Toggle theme"
-              className={`mr-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}
+              className="mr-2 rounded-lg border border-slate-200 bg-white text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
             >
               <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
               <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             </Button>
             
             <Button
-              variant="ghost"
+              variant="outline"
               size="icon"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle menu"
-              className={theme === 'dark' ? 'text-white' : 'text-gray-900'}
+              className="rounded-lg border border-slate-200 bg-white text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
             >
               {isMobileMenuOpen ? (
                 <X className="h-5 w-5" />
@@ -149,26 +133,28 @@ export function HeaderDark() {
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.3 }}
-          className={theme === 'dark' ? 'bg-gray-900 border-t border-gray-800' : 'bg-white border-t border-gray-200'}
+          className="bg-white/95 backdrop-blur-md border-t border-slate-200/50 shadow-sm dark:bg-slate-900/95 dark:border-slate-800/50"
         >
-          <nav className="flex flex-col space-y-3 p-4 md:hidden">
-            {routes.map(route => (
-              <Link
+          <nav className="flex flex-col space-y-2 p-5 md:hidden">
+            {routes.map((route, index) => (
+              <motion.div
                 key={route.path}
-                href={route.path}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`px-3 py-2 text-sm font-medium rounded-md ${
-                  pathname === route.path 
-                    ? theme === 'dark'
-                      ? 'bg-[#0070f3]/10 text-[#0070f3]'
-                      : 'bg-[#0070f3]/10 text-[#0070f3]'
-                    : theme === 'dark'
-                      ? 'text-gray-400 hover:text-white hover:bg-gray-800'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                }`}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2, delay: index * 0.05 }}
               >
-                {route.name}
-              </Link>
+                <Link
+                  href={route.path}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`px-4 py-3 text-sm font-medium rounded-lg flex items-center transition-all ${
+                    pathname === route.path 
+                      ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600 dark:bg-blue-600/20 dark:text-blue-400'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-800/50'
+                  }`}
+                >
+                  {route.name}
+                </Link>
+              </motion.div>
             ))}
           </nav>
         </motion.div>

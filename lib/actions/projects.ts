@@ -11,8 +11,8 @@ export async function fetchProjects(): Promise<Project[]> {
 
 export async function fetchFeaturedProjects(): Promise<Project[]> {
 	try {
-		const projects = getProjects()
-		return projects.filter(project => project.featured)
+		const projects = await getProjects()
+		return projects.filter((project: Project) => project.featured)
 	} catch (error) {
 		console.error('Error fetching featured projects:', error)
 		return []

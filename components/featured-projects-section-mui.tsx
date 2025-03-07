@@ -3,14 +3,14 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { 
-  Box, 
-  Typography, 
-  Container, 
-  Grid, 
-  Card, 
-  CardContent, 
-  CardMedia, 
+import {
+  Box,
+  Typography,
+  Container,
+  Grid,
+  Card,
+  CardContent,
+  CardMedia,
   CardActionArea,
   Button,
   Chip,
@@ -29,19 +29,19 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
   const displayedProjects = projects.slice(0, 2);
 
   return (
-    <Box 
-      component="section" 
-      id="projects-section" 
-      sx={{ 
+    <Box
+      component="section"
+      id="projects-section"
+      sx={{
         py: 10,
         backgroundColor: theme => theme.palette.mode === 'light' ? 'grey.50' : 'grey.900'
       }}
     >
       <Container maxWidth="lg">
-        <Box 
-          sx={{ 
-            textAlign: 'center', 
-            mb: 6 
+        <Box
+          sx={{
+            textAlign: 'center',
+            mb: 6
           }}
         >
           <motion.div
@@ -50,23 +50,23 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Typography 
-              variant="h3" 
-              component="h2" 
+            <Typography
+              variant="h3"
+              component="h2"
               gutterBottom
-              sx={{ 
+              sx={{
                 fontWeight: 'bold',
                 mb: 1
               }}
             >
               Featured Projects
             </Typography>
-            <Typography 
-              variant="body1" 
+            <Typography
+              variant="body1"
               color="text.secondary"
-              sx={{ 
-                maxWidth: 650, 
-                mx: 'auto' 
+              sx={{
+                maxWidth: 650,
+                mx: 'auto'
               }}
             >
               Explore my work in revenue operations and business analytics
@@ -84,8 +84,8 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 whileHover={{ y: -8 }}
               >
-                <Card 
-                  sx={{ 
+                <Card
+                  sx={{
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
@@ -95,7 +95,13 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
                     }
                   }}
                 >
-                  <CardActionArea component={Link} href={`/projects/${project.slug}`}>
+                  <CardActionArea
+                    component={Link}
+                    href={`/projects/${project.slug}`}
+                    sx={{
+                      textDecoration: 'none'
+                    }}
+                  >
                     <Box sx={{ position: 'relative', height: 240 }}>
                       <CardMedia
                         component="div"
@@ -110,15 +116,15 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
                           alt={project.title}
                           fill
                           sizes="(max-width: 600px) 100vw, 600px"
-                          style={{ 
+                          style={{
                             objectFit: 'cover',
                             transition: 'transform 0.5s ease'
                           }}
                           className="group-hover:scale-105"
                         />
-                        
+
                         {/* Gradient overlay */}
-                        <Box 
+                        <Box
                           sx={{
                             position: 'absolute',
                             inset: 0,
@@ -126,7 +132,7 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
                             opacity: 0.8
                           }}
                         />
-                        
+
                         {/* Project title */}
                         <Box
                           sx={{
@@ -137,10 +143,10 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
                             p: 3
                           }}
                         >
-                          <Typography 
-                            variant="h5" 
+                          <Typography
+                            variant="h5"
                             component="h3"
-                            sx={{ 
+                            sx={{
                               fontWeight: 'bold',
                               color: 'white'
                             }}
@@ -150,10 +156,10 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
                         </Box>
                       </CardMedia>
                     </Box>
-                    
+
                     <CardContent sx={{ flexGrow: 1 }}>
-                      <Typography 
-                        variant="body2" 
+                      <Typography
+                        variant="body2"
                         color="text.secondary"
                         paragraph
                         sx={{
@@ -167,14 +173,14 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
                       >
                         {project.description}
                       </Typography>
-                      
+
                       <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 2, gap: 1 }}>
                         {project.technologies?.slice(0, 3).map((tech, techIndex) => (
-                          <Chip 
-                            key={techIndex} 
-                            label={tech} 
+                          <Chip
+                            key={techIndex}
+                            label={tech}
                             size="small"
-                            sx={{ 
+                            sx={{
                               bgcolor: theme => theme.palette.mode === 'light' ? 'grey.100' : 'grey.800',
                               color: 'text.secondary',
                               fontSize: '0.75rem'
@@ -182,10 +188,10 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
                           />
                         ))}
                         {project.technologies?.length > 3 && (
-                          <Chip 
-                            label={`+${project.technologies.length - 3} more`} 
+                          <Chip
+                            label={`+${project.technologies.length - 3} more`}
                             size="small"
-                            sx={{ 
+                            sx={{
                               bgcolor: theme => theme.palette.mode === 'light' ? 'grey.100' : 'grey.800',
                               color: 'text.secondary',
                               fontSize: '0.75rem'
@@ -193,7 +199,7 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
                           />
                         )}
                       </Stack>
-                      
+
                       <Box sx={{ display: 'flex', alignItems: 'center', color: 'primary.main', fontWeight: 500 }}>
                         View Project Details
                         <ArrowForward sx={{ ml: 1, fontSize: '1rem' }} />
@@ -213,9 +219,9 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <Button 
-              variant="outlined" 
-              component={Link} 
+            <Button
+              variant="outlined"
+              component={Link}
               href="/projects"
               size="large"
               endIcon={<ArrowForward />}

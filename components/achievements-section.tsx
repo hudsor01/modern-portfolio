@@ -61,7 +61,7 @@ const AnimatedCounter = ({ value, duration = 2, prefix = '', suffix = '' }) => {
   }, [inView, value, duration]);
   
   return (
-    <span ref={countRef} className="text-3xl font-bold">
+    <span ref={countRef} className="text-4xl font-bold text-blue-600 dark:text-blue-400 font-serif">
       {prefix}{Math.floor(count)}{suffix}
     </span>
   );
@@ -69,15 +69,15 @@ const AnimatedCounter = ({ value, duration = 2, prefix = '', suffix = '' }) => {
 
 export function AchievementsSection() {
   return (
-    <section className="py-20 bg-white dark:bg-gray-900">
-      <div className="container mx-auto max-w-7xl px-4">
+    <div className="py-24 md:py-32 lg:py-36 section-transition section-bg-primary">
+      <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400"
           >
             Key Achievements
           </motion.h2>
@@ -86,7 +86,7 @@ export function AchievementsSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-gray-600 dark:text-gray-300"
+            className="mui-body-1"
           >
             Delivering measurable results through strategic planning and execution
           </motion.p>
@@ -100,17 +100,17 @@ export function AchievementsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-gray-50 dark:bg-gray-800 rounded-xl p-8 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 dark:border-gray-700"
+              className="bg-white dark:bg-slate-800 rounded-xl p-8 shadow-md hover:shadow-lg transition-all duration-300 border border-slate-200 dark:border-slate-700 card-hover"
               whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }}
             >
               <div className="flex items-center mb-6">
                 <div className={`
-                  w-12 h-12 rounded-lg flex items-center justify-center mr-4
+                  w-14 h-14 rounded-lg flex items-center justify-center mr-4
                   ${achievement.color === 'blue' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 
                     achievement.color === 'purple' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' : 
                     'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400'}
                 `}>
-                  <achievement.icon className="w-6 h-6" />
+                  <achievement.icon className="w-7 h-7" />
                 </div>
                 <AnimatedCounter 
                   value={achievement.value} 
@@ -119,17 +119,17 @@ export function AchievementsSection() {
                 />
               </div>
 
-              <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
+              <h3 className="text-xl font-semibold mb-3 text-slate-900 dark:text-white">
                 {achievement.label}
               </h3>
 
-              <p className="text-gray-600 dark:text-gray-300">
+              <p className="mui-body-2">
                 {achievement.description}
               </p>
             </motion.div>
           ))}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

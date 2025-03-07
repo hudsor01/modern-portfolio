@@ -31,7 +31,7 @@ interface ProjectCardProps {
 // Component implementation
 function ProjectCardComponent({ project }: ProjectCardProps) {
 	return (
-		<Card className='card-hover overflow-hidden'>
+		<Card className='overflow-hidden' withGradient>
 			{project.image && (
 				<div className='relative aspect-video w-full overflow-hidden'>
 					<Image

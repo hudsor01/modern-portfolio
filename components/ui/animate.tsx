@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 interface AnimateProps {
 	children: ReactNode
 	className?: string
-	variant?: 'fade' | 'slide-up' | 'slide-down' | 'scale' | 'rotate' | 'bounce'
+	variant?: 'fade' | 'slide-up' | 'slide-down' | 'scale' | 'rotate' | 'bounce' | 'slide-in-right'
 	delay?: number
 	duration?: number
 	once?: boolean
@@ -60,6 +60,11 @@ export function Animate({
 							damping: 10,
 						},
 					},
+				}
+			case 'slide-in-right':
+				return {
+					hidden: { opacity: 0, x: 50 },
+					visible: { opacity: 1, x: 0 },
 				}
 			default:
 				return {
