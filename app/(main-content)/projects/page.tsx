@@ -27,7 +27,7 @@ export default async function ProjectsPage() {
   return (
     <main className="pb-10 overflow-auto">
       {/* Hero Section with Typewriter */}
-      <section className="section-bg-secondary py-16 sm:py-20 mb-10">
+      <section className="bg-[#0f172a] py-16 sm:py-20 mb-10">
         <div className="container mx-auto max-w-7xl px-4">
           <div className="text-center mb-4">
             {/* Static Title Instead of Typewriter */}
@@ -55,7 +55,7 @@ export default async function ProjectsPage() {
       </SectionContainer>
 
       {/* CTA Section moved from homepage */}
-      <section className="section-bg-secondary mt-16">
+      <section className="bg-[#0f172a] mt-16">
         <CTASection />
       </section>
     </main>

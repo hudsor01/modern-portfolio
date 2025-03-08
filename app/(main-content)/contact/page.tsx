@@ -8,21 +8,14 @@ import ContactForm from '@/components/contact-form';
 export const metadata: Metadata = {
   title: 'Contact | Richard Hudson',
   description:
-    'Get in touch with Richard Hudson for revenue operations consulting and professional services.',
-  images: [
-    {
-      url: 'https://images.unsplash.com/photo-1497215842964-222b430dc094?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80',
-      width: 1770,
-      height: 1180
-    }
-  ]
+    'Get in touch with Richard Hudson for revenue operations consulting and professional services.'
 }
 
 export default function ContactPage() {
   return (
     <main className="overflow-auto">
-      {/* Hero section with blue background */}
-      <section className="section-bg-secondary py-16 sm:py-20">
+      {/* Hero section with dark blue background */}
+      <section className="bg-[#0f172a] py-16 sm:py-20">
         <div className="container mx-auto max-w-7xl px-4 md:px-8">
           <div className="mb-10 text-center">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 text-white">

@@ -73,27 +73,31 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
 
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{project.title}</CardTitle>
+          <CardTitle className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{project.title}</CardTitle>
           <div className="bg-blue-100 dark:bg-blue-900/40 p-2 rounded-full">
             {getProjectIcon((project.type as string) || 'dashboard')}
           </div>
         </div>
-        <CardDescription className="mt-3 text-base sm:text-lg text-slate-600 dark:text-slate-300">{project.description}</CardDescription>
+        <CardDescription className="mt-3 text-lg sm:text-xl text-slate-600 dark:text-slate-300">{project.description}</CardDescription>
       </CardHeader>
 
       {project.technologies && project.technologies.length > 0 && (
         <CardContent className="pt-0 pb-4 flex-grow">
-          <div className="flex flex-wrap gap-2 mt-3">
-            {project.technologies.slice(0, 3).map((tag) => (
-              <span
-                key={tag}
-                className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200 rounded-full px-3 py-1 text-xs sm:text-sm font-medium shadow-sm"
-              >
-                {tag}
-              </span>
-            ))}
+          <div className="flex flex-wrap gap-3 mt-4">
+            {project.technologies.slice(0, 3).map((tag) => {
+              // Clean the tag by removing any quotes at the beginning or end
+              const cleanTag = tag.replace(/^['"]+|['"]+$/g, '');
+              return (
+                <span
+                  key={tag}
+                  className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200 rounded-full px-4 py-2 text-sm sm:text-base font-medium shadow-sm"
+                >
+                  {cleanTag}
+                </span>
+              );
+            })}
             {project.technologies.length > 3 && (
-              <span className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full px-3 py-1 text-xs font-medium shadow-sm">
+              <span className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full px-4 py-2 text-sm sm:text-base font-medium shadow-sm">
                 +{project.technologies.length - 3}
               </span>
             )}
@@ -104,7 +108,7 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
       <CardFooter className="pt-2 border-t border-slate-100 dark:border-slate-800">
         <Button
           variant="ghost"
-          className="w-full justify-center py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium"
+          className="w-full justify-center py-4 bg-blue-600 hover:bg-blue-700 text-white text-lg font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
           asChild
         >
           <Link href={projectPath as Route<string>} className="group">

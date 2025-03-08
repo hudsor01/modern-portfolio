@@ -13,7 +13,7 @@ type CTASectionProps = {
 
 export function CTASection({ buttonTextColor, buttonBgColor }: CTASectionProps) {
   return (
-    <section className="w-full section-bg-secondary py-24 md:py-32 lg:py-36">
+    <section className="w-full bg-[#0f172a] py-24 md:py-32 lg:py-36">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -27,7 +27,7 @@ export function CTASection({ buttonTextColor, buttonBgColor }: CTASectionProps) 
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 max-w-3xl mx-auto bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 max-w-3xl mx-auto text-white"
           >
             Ready to Optimize Your Business Operations?
           </motion.h2>
@@ -37,7 +37,7 @@ export function CTASection({ buttonTextColor, buttonBgColor }: CTASectionProps) 
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed font-medium"
+            className="text-lg md:text-xl text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed font-medium"
           >
             Let&apos;s discuss how my expertise in revenue operations and data analytics can help
             drive your business growth.
@@ -74,7 +74,7 @@ export function CTASection({ buttonTextColor, buttonBgColor }: CTASectionProps) 
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="text-sm text-slate-500 dark:text-slate-400 font-medium tracking-wide"
+            className="text-sm text-white/70 font-medium tracking-wide"
           >
             No commitment required. Let&apos;s start with a conversation.
           </motion.p>

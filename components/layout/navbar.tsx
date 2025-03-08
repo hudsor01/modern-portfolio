@@ -74,7 +74,7 @@ export function Navbar() {
                     Link, 
                     { 
                       href: item.href,
-                      className: `hover:text-blue-500 relative text-base md:text-lg font-medium transition-colors px-3 py-3 ${
+                      className: `hover:text-blue-500 relative text-lg md:text-xl font-medium transition-colors px-3 py-3 ${
                         pathname === item.href
                           ? 'text-blue-500'
                           : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-[rgb(var(--color-eggshell))]'

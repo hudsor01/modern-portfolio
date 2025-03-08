@@ -11,8 +11,11 @@ interface ProjectFiltersEnhancedProps {
 }
 
 export function ProjectFiltersEnhanced({ projects }: ProjectFiltersEnhancedProps) {
-  // Get all unique technologies from projects
-  const allTechnologies = ['All', ...new Set(projects.flatMap((p) => p.technologies || []))];
+  // Get all unique technologies from projects and clean any quotes
+  const cleanTechnologies = projects.flatMap((p) => {
+    return (p.technologies || []).map(tech => tech.replace(/^['"]|['"]$/g, ''));
+  });
+  const allTechnologies = ['All', ...new Set(cleanTechnologies)];
 
   const [selectedFilter, setSelectedFilter] = useState<string>('All');
   const [filteredProjects, setFilteredProjects] = useState<Project[]>(projects);
@@ -24,7 +27,13 @@ export function ProjectFiltersEnhanced({ projects }: ProjectFiltersEnhancedProps
       if (filter === 'All') {
         setFilteredProjects(projects);
       } else {
-        setFilteredProjects(projects.filter((project) => project.technologies?.includes(filter)));
+        setFilteredProjects(projects.filter((project) => {
+          // Compare without quotes to ensure proper matching
+          return project.technologies?.some(tech => {
+            const cleanTech = tech.replace(/^['"]|['"]$/g, '');
+            return cleanTech === filter;
+          });
+        }));
       }
     },
     [projects]

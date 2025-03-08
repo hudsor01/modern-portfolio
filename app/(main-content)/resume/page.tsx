@@ -18,6 +18,7 @@ import {
   GraduationCap,
   BadgeCheck,
   Github,
+  ArrowRight,
 } from 'lucide-react';
 import { ResumeViewer } from './resume-viewer';
 import type { Route } from 'next';
@@ -87,8 +88,6 @@ const skills = [
 ];
 
 const certifications = [
-  'Salesforce Certified Administrator',
-  'Google Data Analytics Professional Certificate',
   'HubSpot Revenue Operations Certification',
   'Salesforce Partner Relationship Management Specialist',
 ];
@@ -132,8 +131,8 @@ export default function ResumePage() {
 
   return (
     <div className="bg-white dark:bg-slate-900 overflow-auto">
-      {/* Hero section with brown background */}
-      <section className="section-bg-secondary py-16 sm:py-20">
+      {/* Hero section with dark navy blue background */}
+      <section className="bg-[#0f172a] py-16 sm:py-20">
         <div className="container mx-auto max-w-6xl px-4">
           <div className="flex flex-col items-center justify-center text-center">
             <motion.h1
@@ -160,31 +159,16 @@ export default function ResumePage() {
             >
               <Button
                 size="lg"
-                className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md flex items-center gap-2"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group flex items-center gap-3"
                 onClick={handleDownloadResume}
                 disabled={isDownloading}
               >
-                <FileDown className="h-5 w-5" />
-                {isDownloading ? 'Downloading...' : 'Download PDF Resume'}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={toggleView}
-                className="border-slate-300 dark:border-slate-700 rounded-xl"
-                size="lg"
-              >
-                {showPdf ? 'View Stylized Resume' : 'View PDF Preview'}
-              </Button>
-              <Button
-                variant="outline"
-                asChild
-                className="border-blue-600 text-blue-600 rounded-xl"
-                size="lg"
-              >
-                <Link href={"/contact" as Route<string>} className="flex items-center gap-2">
-                  <Mail className="h-5 w-5" />
-                  Contact Me
-                </Link>
+                <FileDown size={20} className="text-white" />
+                <span>{isDownloading ? 'Downloading...' : 'Download PDF Resume'}</span>
+                <ArrowRight
+                  size={18}
+                  className="transition-transform duration-300 group-hover:translate-x-1"
+                />
               </Button>
             </motion.div>
           </div>
@@ -249,9 +233,9 @@ export default function ResumePage() {
         </div>
       </section>
 
-      {/* Professional Experience - Brown Background */}
+      {/* Professional Experience */}
       {!showPdf && (
-        <section className="section-bg-secondary py-16 px-4">
+        <section className="bg-slate-50 dark:bg-slate-800/20 py-16 px-4">
           <div className="container mx-auto max-w-5xl">
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-8">
               <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white flex items-center">
@@ -291,9 +275,9 @@ export default function ResumePage() {
         </section>
       )}
 
-      {/* Education - White Background */}
+      {/* Education */}
       {!showPdf && (
-        <section className="section-bg-primary py-16 px-4">
+        <section className="bg-slate-50 dark:bg-slate-800/20 py-16 px-4 border-t border-slate-200 dark:border-slate-700/30">
           <div className="container mx-auto max-w-5xl">
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-8">
               <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white flex items-center">
@@ -322,9 +306,9 @@ export default function ResumePage() {
         </section>
       )}
 
-      {/* Skills & Expertise - Brown Background */}
+      {/* Skills & Expertise */}
       {!showPdf && (
-        <section className="section-bg-secondary py-16 px-4">
+        <section className="bg-slate-50 dark:bg-slate-800/20 py-16 px-4 border-t border-slate-200 dark:border-slate-700/30">
           <div className="container mx-auto max-w-5xl">
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-8">
               <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white flex items-center">
@@ -353,9 +337,9 @@ export default function ResumePage() {
         </section>
       )}
 
-      {/* Certifications - White Background */}
+      {/* Certifications */}
       {!showPdf && (
-        <section className="section-bg-primary py-16 px-4">
+        <section className="bg-slate-50 dark:bg-slate-800/20 py-16 px-4 border-t border-slate-200 dark:border-slate-700/30">
           <div className="container mx-auto max-w-5xl">
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-8">
               <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white flex items-center">
@@ -378,30 +362,27 @@ export default function ResumePage() {
       )}
 
       {/* Call to action section */}
-      <section className="section-bg-secondary py-16 px-4">
+      <section className="bg-[#0f172a] py-16 px-4">
         <div className="container mx-auto max-w-5xl">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-12 text-slate-900 dark:text-white text-center border border-slate-200 dark:border-slate-700 shadow-lg">
-            <h2 className="text-3xl font-bold mb-6">Ready to Connect?</h2>
-            <p className="text-xl mb-8 max-w-2xl mx-auto">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold mb-6 text-white">Ready to Connect?</h2>
+            <p className="text-xl mb-8 max-w-2xl mx-auto text-white/90">
               Interested in discussing how my skills and experience can help your team? Let&apos;s connect!
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Button
-                asChild
-                size="lg"
-                className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
-              >
-                <Link href={"/contact" as Route<string>}>Get in Touch</Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="border-blue-600 text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-500 dark:hover:bg-blue-900/20 rounded-xl"
-              >
-                <Link href={"/projects" as Route<string>}>View Projects</Link>
-              </Button>
-            </div>
+            <Button
+              asChild
+              size="lg"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
+            >
+              <Link href={"/contact" as Route<string>} className="flex items-center gap-3">
+                <Mail size={20} className="text-white" />
+                <span>Contact Me</span>
+                <ArrowRight
+                  size={18}
+                  className="transition-transform duration-300 group-hover:translate-x-1"
+                />
+              </Link>
+            </Button>
           </div>
         </div>
       </section>

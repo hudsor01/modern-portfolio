@@ -11,7 +11,7 @@ export function HeroSectionStatic() {
   const { theme } = useTheme();
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#0f172a] to-[#1e293b]">
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-[#0f172a]">
       {/* Background elements */}
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[length:50px_50px]"></div>
       
