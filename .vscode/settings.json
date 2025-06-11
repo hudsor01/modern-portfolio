@@ -71,7 +71,7 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[jsonc]": {
-    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"
@@ -95,5 +95,7 @@
     "comments": false,
     "strings": true
   },
-  "errorLens.problemRangeDecorationEnabled": true
+  "errorLens.problemRangeDecorationEnabled": true,
+  "zencoder.enableRepoIndexing": true,
+  "zencoder.excludeGitIgnoreFromIndexing": true
 }

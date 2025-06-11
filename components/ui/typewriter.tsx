@@ -1,96 +1,74 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { animate, motion, useMotionValue, useTransform } from 'framer-motion';
+import { useEffect, useState, useCallback } from 'react'
+import { animate, motion, useMotionValue, useTransform } from 'framer-motion'
 
-export interface TypewriterProps {
-  delay: number;
-  texts: string[];
-  baseText?: string;
+interface TypewriterProps {
+  phrases: string[]
+  speed?: number
+  delay?: number
 }
 
-export function Typewriter({ delay, texts, baseText = '' }: TypewriterProps) {
-  const [animationComplete, setAnimationComplete] = useState(false);
-  const count = useMotionValue(0);
-  const rounded = useTransform(count, (latest) => Math.round(latest));
-  const displayText = useTransform(rounded, (latest) => baseText.slice(0, latest));
+export function Typewriter({ phrases, speed = 50, delay = 2000 }: TypewriterProps) {
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  // Motion value for animating the number of characters displayed
+  const count = useMotionValue(0)
+  const baseText = phrases[currentIndex] || ''
+  const rounded = useTransform(count, (latest) => Math.round(latest))
+  const displayText = useTransform(rounded, (latest) => baseText.slice(0, latest))
+
+  // Callback to change to the next phrase
+  const changePhrase = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % phrases.length)
+  }, [phrases.length])
 
   useEffect(() => {
+    // Reset animation by animating from 0 to the length of the current phrase
+    // Store the timeout ID for cleanup
+    let timeoutId: number | null = null
+
     const controls = animate(count, baseText.length, {
       type: 'tween',
-      delay,
-      duration: 1,
+      duration: baseText.length / speed,
       ease: 'easeInOut',
-      onComplete: () => setAnimationComplete(true),
-    });
-    return () => controls.stop?.();
-  }, [count, baseText.length, delay]);
+      onComplete: () => {
+        // After animation completes, wait for the delay then change the phrase
+        timeoutId = window.setTimeout(changePhrase, delay)
+      },
+    })
+
+    // Cleanup: cancel the animation and clear the timeout if set
+    return () => {
+      controls.cancel()
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [baseText, speed, delay, changePhrase, count])
 
   return (
     <span>
       <motion.span>{displayText}</motion.span>
-      {animationComplete && <RepeatedTextAnimation texts={texts} delay={delay + 1} />}
       <BlinkingCursor />
     </span>
-  );
+  )
 }
-
-interface RepeatedTextAnimationProps {
-  delay: number;
-  texts: string[];
-}
-
-function RepeatedTextAnimation({ delay, texts }: RepeatedTextAnimationProps) {
-  const textIndex = useMotionValue(0);
-  const baseText = useTransform(textIndex, (latest) => texts[latest] || '');
-  const count = useMotionValue(0);
-  const rounded = useTransform(count, (latest) => Math.round(latest));
-  const displayText = useTransform(rounded, (latest) => baseText.get().slice(0, latest));
-  const updatedThisRound = useMotionValue(true);
-
-  useEffect(() => {
-    const animation = animate(count, 60, {
-      type: 'tween',
-      delay,
-      duration: 1,
-      ease: 'easeIn',
-      repeat: Number.POSITIVE_INFINITY,
-      repeatType: 'reverse',
-      repeatDelay: 1,
-      onUpdate(latest) {
-        if (updatedThisRound.get() && latest > 0) {
-          updatedThisRound.set(false);
-        } else if (!updatedThisRound.get() && latest === 0) {
-          textIndex.set((textIndex.get() + 1) % texts.length);
-          updatedThisRound.set(true);
-        }
-      },
-    });
-    return () => animation.stop?.();
-  }, [count, delay, textIndex, texts, updatedThisRound]);
-
-  return <motion.span className="inline">{displayText}</motion.span>;
-}
-
-const cursorVariants = {
-  blinking: {
-    opacity: [0, 0, 1, 1],
-    transition: {
-      duration: 1,
-      repeat: Number.POSITIVE_INFINITY,
-      repeatDelay: 0,
-      ease: 'linear',
-      times: [0, 0.5, 0.5, 1],
-    },
-  },
-};
 
 function BlinkingCursor() {
   return (
-    <motion.div
-      variants={cursorVariants}
-      animate="blinking"
-      className="inline-block h-5 w-px translate-y-1 bg-current"
-    />
-  );
+    <motion.span
+      initial={{ opacity: 1 }}
+      animate={{ opacity: 0 }}
+      transition={{
+        repeat: Infinity,
+        repeatType: 'reverse',
+        duration: 0.6,
+      }}
+      className="ml-0.5"
+      aria-hidden="true"
+    >
+      |
+    </motion.span>
+  )
 }

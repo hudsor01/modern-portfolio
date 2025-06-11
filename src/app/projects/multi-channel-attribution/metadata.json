@@ -1,0 +1,13 @@
+{
+  "title": "Multi-Channel Attribution Analytics Dashboard",
+  "description": "Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints, delivering 92.4% attribution accuracy and $2.3M ROI optimization.",
+  "keywords": ["Multi-Channel Attribution", "Marketing Analytics", "Customer Journey", "Attribution Modeling", "Marketing ROI", "Touchpoint Analysis", "Marketing Mix"],
+  "category": "Marketing",
+  "featured": true,
+  "metrics": {
+    "attributionAccuracy": "92.4%",
+    "roiOptimization": "$2.3M",
+    "touchpoints": 12,
+    "conversionLift": "+47.8%"
+  }
+}

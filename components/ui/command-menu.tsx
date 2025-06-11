@@ -1,44 +1,43 @@
-'use client';
+'use client'
 
-import React, { useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import type { DialogProps } from '@radix-ui/react-dialog';
-import { Search } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React, { useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import type { DialogProps } from '@radix-ui/react-dialog'
+import { Search } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import {
   CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList,
   CommandSeparator,
-} from '@/components/ui/command';
-import { asRoute } from '@/lib/utils/route-utils';
-import { siteConfig } from '../../lib/config/site';
+} from '@/components/ui/command'
+import { asRoute } from '@/lib/utils/route-utils'
+import { siteConfig } from '../../lib/config/site'
 
 export function CommandMenu({ ...props }: DialogProps) {
-  const router = useRouter();
-  const [open, setOpen] = React.useState(false);
+  const router = useRouter()
+  const [open, setOpen] = React.useState(false)
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setOpen((open) => !open);
+        e.preventDefault()
+        setOpen((open) => !open)
       }
-    };
-    document.addEventListener('keydown', down);
-    return () => document.removeEventListener('keydown', down);
-  }, []);
+    }
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [])
 
   const runCommand = useCallback(
     (command: () => unknown) => {
-      setOpen(false);
-      command();
+      setOpen(false)
+      command()
     },
     [setOpen]
-  );
+  )
 
   return (
     <>
@@ -64,7 +63,7 @@ export function CommandMenu({ ...props }: DialogProps) {
               key={item.href}
               value={item.title}
               onSelect={() => {
-                runCommand(() => router.push(asRoute(item.href)));
+                runCommand(() => router.push(asRoute(item.href)))
               }}
             >
               {item.title}
@@ -80,7 +79,7 @@ export function CommandMenu({ ...props }: DialogProps) {
                   key={item.href}
                   value={item.title}
                   onSelect={() => {
-                    runCommand(() => router.push(asRoute(item.href)));
+                    runCommand(() => router.push(asRoute(item.href)))
                   }}
                 >
                   {item.title}
@@ -91,5 +90,5 @@ export function CommandMenu({ ...props }: DialogProps) {
         )}
       </CommandDialog>
     </>
-  );
+  )
 }

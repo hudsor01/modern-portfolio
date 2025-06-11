@@ -1,14 +1,14 @@
-'use client';
+'use client'
 
-import React, { ReactNode } from 'react';
-import { cn } from '@/lib/utils';
+import React, { ReactNode } from 'react'
+import { cn } from '@/lib/utils'
 
 interface SectionContainerProps {
-  children: ReactNode;
-  className?: string;
-  variant?: 'primary' | 'secondary';
-  id?: string;
-  noGap?: boolean;
+  children: ReactNode
+  className?: string
+  variant?: 'primary' | 'secondary'
+  id?: string
+  noGap?: boolean
 }
 
 /**
@@ -43,5 +43,5 @@ export function SectionContainer({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">{children}</div>
     </section>
-  );
+  )
 }

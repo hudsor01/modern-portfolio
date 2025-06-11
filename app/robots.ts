@@ -1,12 +1,12 @@
-import { MetadataRoute } from 'next';
+import { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/api/*', '/dashboard/*'], // Add paths you don't want crawled
+      disallow: ['/api/*', '/_next/*'],
     },
     sitemap: 'https://richardwhudsonjr.com/sitemap.xml',
-  };
+  }
 }

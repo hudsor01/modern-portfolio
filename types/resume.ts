@@ -3,46 +3,46 @@
  */
 
 export interface WorkExperience {
-  title: string;
-  company: string;
-  location: string;
-  startDate: string;
-  endDate: string | null;
-  descriptions: string[];
+  title: string
+  company: string
+  location: string
+  startDate: string
+  endDate: string | null
+  descriptions: string[]
 }
 
 export interface Education {
-  degree: string;
-  institution: string;
-  location: string;
-  startDate: string;
-  endDate: string;
-  description: string | null;
+  degree: string
+  institution: string
+  location: string
+  startDate: string
+  endDate: string
+  description: string | null
 }
 
 export interface Skill {
-  category: string;
-  items: string[];
+  category: string
+  items: string[]
 }
 
 export interface Certification {
-  name: string;
-  issuer: string;
-  date: string;
-  url?: string;
+  name: string
+  issuer: string
+  date: string
+  url?: string
 }
 
 export interface ResumeData {
-  name: string;
-  title: string;
-  email: string;
-  phone: string;
-  location: string;
-  summary: string;
-  workExperience: WorkExperience[];
-  education: Education[];
-  skills: Skill[];
-  certifications: Certification[];
+  name: string
+  title: string
+  email: string
+  phone: string
+  location: string
+  summary: string
+  workExperience: WorkExperience[]
+  education: Education[]
+  skills: Skill[]
+  certifications: Certification[]
 }
 
 export const resume: ResumeData = {
@@ -170,11 +170,11 @@ export const resume: ResumeData = {
       url: 'https://www.coursera.org/professional-certificates/google-data-analytics',
     },
   ],
-};
+}
 
 /**
  * Helper function to get resume data
  */
 export function getResumeData(): ResumeData {
-  return resume;
+  return resume
 }

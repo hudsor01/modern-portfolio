@@ -1,0 +1,127 @@
+{
+  "projects": [
+    {
+      "id": "revenue-kpi",
+      "slug": "revenue-kpi",
+      "title": "Revenue KPI Dashboard",
+      "description": "An executive dashboard that provides a comprehensive view of revenue metrics and KPIs, allowing business leaders to monitor performance, identify trends, and make data-driven decisions.",
+      "category": "Analytics",
+      "tags": ["React", "TypeScript", "Recharts", "Tailwind CSS", "Next.js"],
+      "image": "/images/projects/revenue-kpi.jpg",
+      "featured": true,
+      "metrics": {
+        "revenue_growth": "35%",
+        "efficiency_gain": "40%",
+        "roi": "250%"
+      },
+      "charts": [
+        {
+          "type": "line",
+          "title": "Revenue Trend",
+          "dataKey": "revenue"
+        },
+        {
+          "type": "bar",
+          "title": "Monthly Performance",
+          "dataKey": "performance"
+        },
+        {
+          "type": "pie",
+          "title": "Revenue by Segment",
+          "dataKey": "segment"
+        }
+      ],
+      "details": {
+        "challenge": "The executive team lacked a unified view of revenue metrics across different business units, making it difficult to identify trends and make timely decisions.",
+        "solution": "Developed a comprehensive dashboard that aggregates data from multiple sources, providing real-time insights into revenue performance, growth trends, and key performance indicators.",
+        "impact": "Reduced reporting time by 80%, improved decision-making speed by 60%, and identified $2M in revenue optimization opportunities within the first quarter."
+      }
+    },
+    {
+      "id": "churn-retention",
+      "slug": "churn-retention",
+      "title": "Customer Churn & Retention Analytics",
+      "description": "A sophisticated analytics platform that helps businesses understand and reduce customer churn while improving retention rates through predictive modeling and actionable insights.",
+      "category": "Analytics",
+      "tags": ["React", "TypeScript", "Recharts", "Machine Learning", "Python"],
+      "image": "/images/projects/churn-retention.jpg",
+      "featured": true,
+      "metrics": {
+        "churn_reduction": "25%",
+        "retention_increase": "30%",
+        "accuracy": "92%"
+      },
+      "charts": [
+        {
+          "type": "line",
+          "title": "Churn Rate Trend",
+          "dataKey": "churnRate"
+        },
+        {
+          "type": "heatmap",
+          "title": "Retention Cohorts",
+          "dataKey": "cohorts"
+        }
+      ],
+      "details": {
+        "challenge": "High customer churn rate of 15% monthly with no clear understanding of contributing factors or early warning indicators.",
+        "solution": "Built a predictive analytics platform using machine learning to identify at-risk customers and provide actionable retention strategies based on behavioral patterns.",
+        "impact": "Reduced monthly churn from 15% to 11%, increased customer lifetime value by 40%, and saved $3.5M annually in customer acquisition costs."
+      }
+    },
+    {
+      "id": "deal-funnel",
+      "slug": "deal-funnel",
+      "title": "Sales Pipeline Funnel Analytics",
+      "description": "A comprehensive sales pipeline visualization tool that tracks conversion rates across different stages of the sales process, helping sales teams identify bottlenecks and optimize their approach.",
+      "category": "Sales",
+      "tags": ["React", "TypeScript", "Recharts", "Redux"],
+      "image": "/images/projects/deal-funnel.jpg",
+      "featured": true,
+      "metrics": {
+        "conversion_improvement": "35%",
+        "cycle_reduction": "20%",
+        "revenue_increase": "$5M"
+      },
+      "charts": [
+        {
+          "type": "funnel",
+          "title": "Sales Funnel",
+          "dataKey": "stages"
+        }
+      ],
+      "details": {
+        "challenge": "Sales team struggled with visibility into pipeline health, leading to inaccurate forecasting and missed opportunities at various stages of the sales process.",
+        "solution": "Created an interactive funnel visualization that tracks deals through each stage, identifies bottlenecks, and provides actionable insights for sales optimization.",
+        "impact": "Improved win rate from 18% to 24%, reduced average sales cycle by 20%, and increased quarterly revenue by $5M through better pipeline management."
+      }
+    },
+    {
+      "id": "lead-attribution",
+      "slug": "lead-attribution",
+      "title": "Lead Source Attribution Dashboard",
+      "description": "An interactive dashboard for tracking and analyzing lead sources to optimize marketing spend and improve ROI. Visualizes lead attribution data with interactive charts.",
+      "category": "Marketing",
+      "tags": ["React", "TypeScript", "Recharts", "Next.js"],
+      "image": "/images/projects/lead-attribution.jpg",
+      "featured": true,
+      "metrics": {
+        "roi_improvement": "150%",
+        "cost_reduction": "30%",
+        "lead_quality": "+45%"
+      },
+      "charts": [
+        {
+          "type": "pie",
+          "title": "Lead Sources",
+          "dataKey": "source"
+        }
+      ],
+      "details": {
+        "challenge": "Marketing team was spending $500K monthly across channels with no clear understanding of which sources generated quality leads and revenue.",
+        "solution": "Implemented multi-touch attribution tracking and visualization to show the true ROI of each marketing channel and campaign throughout the customer journey.",
+        "impact": "Reduced marketing spend by 30% while increasing qualified leads by 45%, resulting in $2M additional revenue and 150% improvement in marketing ROI."
+      }
+    }
+  ]
+}

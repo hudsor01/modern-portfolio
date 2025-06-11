@@ -1,38 +1,38 @@
-'use client';
+'use client'
 
-import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
+import { motion } from 'framer-motion'
+import { useInView } from 'react-intersection-observer'
 
 interface Skill {
-  name: string;
-  level: number;
-  category: string;
+  name: string
+  level: number
+  category: string
 }
 
 interface SkillsProgressProps {
-  skills: Skill[];
+  skills: Skill[]
 }
 
 export function SkillsProgress({ skills }: SkillsProgressProps) {
   const { ref, inView } = useInView({
     threshold: 0.1,
     triggerOnce: true,
-  });
+  })
+
+  // Categorize skills by their category property
+  const categorizedSkills = skills.reduce((acc, skill) => {
+    const key = skill.category
+    if (!acc[key]) {
+      acc[key] = []
+    }
+    // Use non-null assertion to let TypeScript know that acc[key] is defined
+    acc[key]!.push(skill)
+    return acc
+  }, {} as Record<string, Skill[]>)
 
   return (
     <div ref={ref} className="space-y-8">
-      {Object.entries(
-        skills.reduce(
-          (acc, skill) => {
-            if (!acc[skill.category]) {
-              acc[skill.category] = [];
-            }
-            acc[skill.category].push(skill);
-            return acc;
-          },
-          {} as Record<string, Skill[]>
-        )
-      ).map(([category, categorySkills]) => (
+      {Object.entries(categorizedSkills).map(([category, categorySkills]) => (
         <div key={category} className="space-y-4">
           <h3 className="text-lg font-semibold">{category}</h3>
           <div className="space-y-2">
@@ -59,5 +59,5 @@ export function SkillsProgress({ skills }: SkillsProgressProps) {
         </div>
       ))}
     </div>
-  );
+  )
 }

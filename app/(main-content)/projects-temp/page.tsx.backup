@@ -1,6 +1,0 @@
-// This directory is no longer in use
-// Content has been moved to /app/(main-content)/projects/
-
-export default function DeprecatedPage() {
-  return null;
-}

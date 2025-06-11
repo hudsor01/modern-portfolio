@@ -1,0 +1,13 @@
+{
+  "title": "Partner Performance Intelligence Dashboard",
+  "description": "Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem with real-time performance tracking.",
+  "keywords": ["Partner Performance", "Channel Analytics", "Revenue Operations", "Partner ROI", "SaaS Metrics", "Business Intelligence"],
+  "category": "Revenue Operations",
+  "featured": true,
+  "metrics": {
+    "partnerRevenue": "$904K",
+    "winRate": "83.2%",
+    "quickRatio": "4.7x",
+    "activePartners": 34
+  }
+}
