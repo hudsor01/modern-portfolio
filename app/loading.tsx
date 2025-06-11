@@ -1,20 +1,25 @@
-import { Skeleton } from '@/components/ui/skeleton';
+'use client'
+
+import { motion } from 'framer-motion'
 
 export default function Loading() {
   return (
-    <div className="container mx-auto space-y-8 p-6">
-      {/* Hero Section Skeleton */}
-      <div className="space-y-4">
-        <Skeleton className="h-12 w-3/4 max-w-2xl" variant="text" />
-        <Skeleton className="h-6 w-2/3 max-w-xl" variant="text" />
-      </div>
-
-      {/* Projects Grid Skeleton */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <Skeleton key={i} variant="card" />
-        ))}
-      </div>
+    <div className="flex items-center justify-center min-h-[70vh]">
+      <motion.div
+        className="flex flex-col items-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="relative w-16 h-16">
+          <motion.div
+            className="absolute top-0 left-0 w-full h-full rounded-full border-4 border-t-blue-500 border-r-transparent border-b-transparent border-l-transparent"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          />
+        </div>
+        <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+      </motion.div>
     </div>
-  );
+  )
 }

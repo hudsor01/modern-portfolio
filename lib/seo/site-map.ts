@@ -45,6 +45,6 @@ export const siteMap = {
       },
     ],
   },
-} as const;
+} as const
 
-export type SiteMap = typeof siteMap;
+export type SiteMap = typeof siteMap

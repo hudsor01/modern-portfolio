@@ -1,17 +1,17 @@
-'use client';
+'use client'
 
-import React from 'react';
-import { Facebook, Twitter, Linkedin, Mail, Link } from 'lucide-react';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import React from 'react'
+import { Facebook, Twitter, Linkedin, Mail, Link } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { useToast } from '@/hooks/use-sonner-toast'
 
 interface SocialShareProps {
-  url: string;
-  title: string;
-  description?: string;
-  className?: string;
-  compact?: boolean;
+  url: string
+  title: string
+  description?: string
+  className?: string
+  compact?: boolean
 }
 
 /**
@@ -30,24 +30,25 @@ export function SocialShare({
   className,
   compact = false,
 }: SocialShareProps) {
-  const encodedUrl = encodeURIComponent(url);
-  const encodedTitle = encodeURIComponent(title);
-  const encodedDescription = encodeURIComponent(description);
+  const encodedUrl = encodeURIComponent(url)
+  const encodedTitle = encodeURIComponent(title)
+  const encodedDescription = encodeURIComponent(description)
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(url).then(
-      () => {
-        toast.success('Link copied to clipboard!');
-      },
-      () => {
-        toast.error('Failed to copy link');
-      }
-    );
-  };
+  const { success, error } = useToast()
 
-  const iconSize = compact ? 18 : 20;
-  const variant = compact ? 'ghost' : 'outline';
-  const size = compact ? 'sm' : 'default';
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(url)
+      success('Link copied to clipboard!')
+    } catch (err) {
+      error('Failed to copy link')
+      console.error('Failed to copy:', err)
+    }
+  }
+
+  const iconSize = compact ? 18 : 20
+  const variant = compact ? 'ghost' : 'outline'
+  const size = compact ? 'sm' : 'default'
 
   return (
     <div className={cn('flex flex-wrap gap-2', className)}>
@@ -110,10 +111,10 @@ export function SocialShare({
         {!compact && <span className="ml-2">Email</span>}
       </Button>
 
-      <Button variant={variant} size={size} onClick={handleCopyLink} aria-label="Copy Link">
+      <Button variant={variant} size={size} onClick={copyToClipboard} aria-label="Copy Link">
         <Link size={iconSize} />
         {!compact && <span className="ml-2">Copy Link</span>}
       </Button>
     </div>
-  );
+  )
 }

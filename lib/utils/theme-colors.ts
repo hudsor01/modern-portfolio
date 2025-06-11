@@ -25,7 +25,7 @@ export const themeColors = {
     light: 'linear-gradient(135deg, rgba(0, 112, 243, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%)',
     dark: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%)',
   },
-};
+}
 
 // CSS variable utility to insert these values into globals.css
 export const themeCssVariables = `
@@ -40,4 +40,4 @@ export const themeCssVariables = `
   
   --card-gradient: ${themeColors.cardGradient.light};
   --card-gradient-dark: ${themeColors.cardGradient.dark};
-`;
+`

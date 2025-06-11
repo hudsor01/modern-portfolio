@@ -1,41 +1,92 @@
-'use client';
+'use client'
 
-import Link from 'next/link';
-import { Github, Linkedin } from 'lucide-react';
+import Link from 'next/link'
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 py-4 border-t border-gray-200 dark:border-gray-800">
+    <footer className="bg-muted/30 text-muted-foreground py-12">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-2">
-          <div className="flex items-center gap-4">
-            <a
-              href="https://linkedin.com/in/hudsor01"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-500 hover:text-primary transition-colors duration-300"
-              aria-label="LinkedIn"
-            >
-              <Linkedin size={20} />
-            </a>
-            <a
-              href="https://github.com/hudsor01"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-500 hover:text-primary transition-colors duration-300"
-              aria-label="GitHub"
-            >
-              <Github size={20} />
-            </a>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="col-span-2">
+            <h3 className="text-lg font-bold text-foreground mb-4">Links</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <ul className="space-y-2">
+                <li>
+                  <Link
+                    href="/"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/about"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    About
+                  </Link>
+                </li>
+              </ul>
+              <ul className="space-y-2">
+                <li>
+                  <Link
+                    href="/projects"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Projects
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/resume"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Resume
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/contact"
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Contact
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
 
-          <p className="text-sm">
-            © {currentYear} Richard Hudson | Revenue Operations Professional
-          </p>
+          <div className="col-span-2 flex flex-col items-start md:items-end justify-between">
+            <div className="space-y-2">
+              <a
+                href="https://linkedin.com/in/hudsor01"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center"
+              >
+                LinkedIn
+              </a>
+              <a
+                href="https://github.com/hudsor01"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors inline-flex items-center ml-4"
+              >
+                GitHub
+              </a>
+            </div>
+
+            <div className="text-right mt-8">
+              <p className="text-sm text-muted-foreground">
+                © {currentYear} Richard Hudson | All rights reserved.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
-  );
+  )
 }

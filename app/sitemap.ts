@@ -1,43 +1,50 @@
-import { MetadataRoute } from 'next';
-import { siteConfig } from '@/lib/config/site';
-import { getProjects } from '@/lib/data/projects';
+import { MetadataRoute } from 'next'
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = siteConfig.url || 'https://richardwhudsonjr.com';
-  const projects = await getProjects();
+export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = 'https://richardwhudsonjr.com'
   
-  const projectPaths = projects.map(project => ({
-    url: `${baseUrl}/projects/${project.slug}`,
+  // Define static routes
+  const staticRoutes = [
+    '',
+    '/about',
+    '/projects',
+    '/resume',
+    '/contact',
+  ]
+
+  // Define project routes
+  const projectSlugs = [
+    'churn-retention',
+    'deal-funnel', 
+    'lead-attribution',
+    'revenue-kpi'
+  ]
+
+  // Create static pages
+  const staticPages = staticRoutes.map((route) => ({
+    url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: 'monthly' as const,
-    priority: 0.7,
-  }));
-  
-  return [
+    priority: route === '' ? 1 : 0.8,
+  }))
+
+  // Create project pages
+  const projectPages = projectSlugs.map((slug) => ({
+    url: `${baseUrl}/projects/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }))
+
+  // Add resume view page
+  const additionalPages = [
     {
-      url: baseUrl,
+      url: `${baseUrl}/resume/view`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/projects`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/resume`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: new Date(),
-      changeFrequency: 'yearly',
+      changeFrequency: 'monthly' as const,
       priority: 0.5,
-    },
-    ...projectPaths
-  ];
+    }
+  ]
+
+  return [...staticPages, ...projectPages, ...additionalPages]
 }

@@ -1,37 +1,30 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-export function middleware() {
-  // Get response
-  const response = NextResponse.next();
+// This function can be marked `async` if using `await` inside
+export function middleware(_request: NextRequest) {
+  // Clone the request headers
+  const response = NextResponse.next()
 
   // Add security headers
-  const cspHeader = `
-    default-src 'self';
-    script-src 'self' 'unsafe-inline' 'unsafe-eval';
-    style-src 'self' 'unsafe-inline';
-    img-src 'self' data: blob: https:;
-    font-src 'self' data:;
-    object-src 'self' data:;
-    media-src 'self';
-    connect-src 'self' https:;
-    frame-src 'self';
-  `
-    .replace(/\s{2,}/g, ' ')
-    .trim();
+  response.headers.set('X-XSS-Protection', '1; mode=block')
+  response.headers.set('X-Frame-Options', 'SAMEORIGIN')
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
 
-  // Set the headers
-  response.headers.set('Content-Security-Policy', cspHeader);
-
-  // Additional security headers
-  response.headers.set('X-XSS-Protection', '1; mode=block');
-  response.headers.set('X-Frame-Options', 'SAMEORIGIN');
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-
-  return response;
+  return response
 }
 
 // Define which paths this middleware will run on
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
-};
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
+}

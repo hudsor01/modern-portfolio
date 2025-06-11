@@ -1,8 +1,9 @@
-'use client';
+'use client'
 
-import { Card } from '@/components/ui/card';
+import { Card } from '@/components/ui/card'
 
 export function RevenueDashboardPreview() {
+  // TODO: UPDATE FOR A PRODUCTION IMPLEMENTATION
   // This could be a simplified version of your actual project component
   // Optimized for display in a small preview area
   return (
@@ -19,5 +20,5 @@ export function RevenueDashboardPreview() {
         </div>
       </Card>
     </div>
-  );
+  )
 }

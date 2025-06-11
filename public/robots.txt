@@ -1,0 +1,11 @@
+# www.robotstxt.org
+
+User-agent: *
+Allow: /
+
+# Allow all crawlers
+Sitemap: https://richardwhudsonjr.com/sitemap.xml
+
+# Block specific paths if needed
+# Disallow: /api/
+# Disallow: /admin/

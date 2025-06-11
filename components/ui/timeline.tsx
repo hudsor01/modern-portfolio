@@ -1,20 +1,20 @@
-'use client';
+'use client'
 
-import { motion } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion'
+import { useInView } from 'react-intersection-observer'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 
 interface TimelineItem {
-  date: string;
-  title: string;
-  description: string;
-  category: 'work' | 'education' | 'project';
-  tags?: string[];
+  date: string
+  title: string
+  description: string
+  category: 'work' | 'education' | 'project'
+  tags?: string[]
 }
 
 interface TimelineProps {
-  items: TimelineItem[];
+  items: TimelineItem[]
 }
 
 export function Timeline({ items }: TimelineProps) {
@@ -25,14 +25,14 @@ export function Timeline({ items }: TimelineProps) {
         <TimelineEntry key={index} item={item} index={index} />
       ))}
     </div>
-  );
+  )
 }
 
 function TimelineEntry({ item, index }: { item: TimelineItem; index: number }) {
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
-  });
+  })
 
   return (
     <motion.div
@@ -72,5 +72,5 @@ function TimelineEntry({ item, index }: { item: TimelineItem; index: number }) {
         <div className="border-primary absolute -top-px -left-px size-4 animate-ping rounded-full border-2" />
       </div>
     </motion.div>
-  );
+  )
 }

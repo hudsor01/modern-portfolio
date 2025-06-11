@@ -1,34 +1,34 @@
-'use client';
+'use client'
 
-import React from 'react';
+import React from 'react'
 
-import { useInView } from 'react-intersection-observer';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { Card } from '@/components/ui/card';
+import { useInView } from 'react-intersection-observer'
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import { Card } from '@/components/ui/card'
 
 interface CounterProps {
-  value: number;
-  label: string;
-  prefix?: string;
-  suffix?: string;
+  value: number
+  label: string
+  prefix?: string
+  suffix?: string
 }
 
 function Counter({ value, label, prefix = '', suffix = '' }: CounterProps) {
-  const count = useMotionValue(0);
-  const rounded = useTransform(count, (latest) => Math.round(latest));
-  const springConfig = { duration: 2, bounce: 0 };
-  const spring = useSpring(count, springConfig);
+  const count = useMotionValue(0)
+  const rounded = useTransform(count, (latest) => Math.round(latest))
+  const springConfig = { duration: 2, bounce: 0 }
+  const spring = useSpring(count, springConfig)
 
   const { ref, inView } = useInView({
     threshold: 0.3,
     triggerOnce: true,
-  });
+  })
 
   React.useEffect(() => {
     if (inView) {
-      spring.set(value);
+      spring.set(value)
     }
-  }, [spring, value, inView]);
+  }, [spring, value, inView])
 
   return (
     <Card className="relative overflow-hidden p-6" ref={ref}>
@@ -41,7 +41,7 @@ function Counter({ value, label, prefix = '', suffix = '' }: CounterProps) {
         <div className="text-muted-foreground mt-2 text-sm">{label}</div>
       </div>
     </Card>
-  );
+  )
 }
 
 const stats = [
@@ -49,7 +49,7 @@ const stats = [
   { value: 50, label: 'Projects Completed', suffix: '+' },
   { value: 95, label: 'Client Satisfaction', suffix: '%' },
   { value: 1.2, label: 'Revenue Generated', prefix: '$', suffix: 'M+' },
-];
+]
 
 export default function DynamicCounters() {
   return (
@@ -58,5 +58,5 @@ export default function DynamicCounters() {
         <Counter key={index} {...stat} />
       ))}
     </div>
-  );
+  )
 }

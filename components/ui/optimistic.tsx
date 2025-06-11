@@ -1,35 +1,35 @@
-'use client';
+'use client'
 
-import * as React from 'react';
+import * as React from 'react'
 
 interface OptimisticProviderProps<T> {
-  children: React.ReactNode;
-  value: T;
+  children: React.ReactNode
+  value: T
 }
 
-const OptimisticContext = React.createContext<any>(undefined);
+const OptimisticContext = React.createContext<unknown>(undefined)
 
 export function OptimisticProvider<T>({ children, value }: OptimisticProviderProps<T>) {
-  const [optimisticValue, setOptimisticValue] = React.useState(value);
+  const [optimisticValue, setOptimisticValue] = React.useState(value)
 
   const update = React.useCallback((newValue: T) => {
-    setOptimisticValue(newValue);
-  }, []);
+    setOptimisticValue(newValue)
+  }, [])
 
   return (
     <OptimisticContext.Provider value={{ value: optimisticValue, update }}>
       {children}
     </OptimisticContext.Provider>
-  );
+  )
 }
 
 export function useOptimistic<T>() {
-  const context = React.useContext(OptimisticContext);
+  const context = React.useContext(OptimisticContext)
   if (context === undefined) {
-    throw new Error('useOptimistic must be used within an OptimisticProvider');
+    throw new Error('useOptimistic must be used within an OptimisticProvider')
   }
   return context as {
-    value: T;
-    update: () => void;
-  };
+    value: T
+    update: (newValue: T) => void
+  }
 }

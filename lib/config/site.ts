@@ -38,6 +38,6 @@ export const siteConfig = {
     name: 'Richard Hudson',
     url: 'https://richardwhudsonjr.com',
   },
-};
+}
 
-export type SiteConfig = typeof siteConfig;
+export type SiteConfig = typeof siteConfig

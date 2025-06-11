@@ -1,16 +1,16 @@
-import { siteConfig } from '../config/site';
+import { siteConfig } from '../config/site'
 
 interface MetaConfig {
-  title: string;
-  description: string;
-  keywords?: string[];
-  image?: string;
-  type?: 'website' | 'article';
-  publishedAt?: string;
-  modifiedAt?: string;
-  author?: string;
-  section?: string;
-  canonical?: string;
+  title: string
+  description: string
+  keywords?: string[]
+  image?: string
+  type?: 'website' | 'article'
+  publishedAt?: string
+  modifiedAt?: string
+  author?: string
+  section?: string
+  canonical?: string
 }
 
 export function generateMetaTags(config: MetaConfig) {
@@ -35,9 +35,9 @@ export function generateMetaTags(config: MetaConfig) {
       'article:author': config.author || siteConfig.author?.name,
       'article:section': config.section,
     }),
-  };
+  }
 
-  return tags;
+  return tags
 }
 
 export function generateStructuredData(config: MetaConfig) {
@@ -63,7 +63,7 @@ export function generateStructuredData(config: MetaConfig) {
           url: `${siteConfig.url}/logo.png`,
         },
       },
-    };
+    }
   }
 
   return {
@@ -78,5 +78,5 @@ export function generateStructuredData(config: MetaConfig) {
       url: siteConfig.url,
     },
     sameAs: [siteConfig.links.github],
-  };
+  }
 }

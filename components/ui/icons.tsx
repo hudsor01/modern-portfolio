@@ -1,4 +1,4 @@
-import type React from 'react';
+import type React from 'react'
 import {
   type LucideIcon,
   Twitter,
@@ -12,9 +12,9 @@ import {
   Monitor,
   BarChart3,
   FileSpreadsheet,
-} from 'lucide-react';
+} from 'lucide-react'
 
-export type Icon = LucideIcon;
+export type Icon = LucideIcon
 
 export const Icons = {
   spinner: Loader2,
@@ -45,4 +45,4 @@ export const Icons = {
       <polyline points="11 12 12 12 12 16 13 16" />
     </svg>
   ),
-};
+}

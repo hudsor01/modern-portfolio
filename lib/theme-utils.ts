@@ -1,7 +1,7 @@
 type ColorPalette = {
-  [key: string]: string | { [key: string]: string };
-  blue: { [key: string]: string };
-};
+  [key: string]: string | { [key: string]: string }
+  blue: { [key: string]: string }
+}
 
 export const getThemeColor = (type: string): string => {
   const colors: ColorPalette = {
@@ -27,8 +27,8 @@ export const getThemeColor = (type: string): string => {
     },
     eggshell: '#F5F5DC', // Replace with your exact eggshell color value
     'pewter-blue': '#8DA9C4', // Replace with your exact pewter-blue color value
-  };
+  }
 
-  const color = colors[type];
-  return typeof color === 'string' ? color : (colors.primary as string);
-};
+  const color = colors[type]
+  return typeof color === 'string' ? color : (colors.primary as string)
+}

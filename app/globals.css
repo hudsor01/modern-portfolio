@@ -1,586 +1,398 @@
-/* Modern Portfolio Website Styles - Richard Hudson */
+@import 'tailwindcss';
 
-/* Using system fonts defined in fonts.ts */
+/* === TAILWIND CSS V4 DARK MODE VARIANT === */
+@custom-variant dark (&:where(.dark, .dark *));
 
-/* Tailwind directives */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* === TAILWIND CSS V4 THEME CONFIGURATION === */
+@theme {
+  /* === SIGNATURE PASTEL BLUE BRAND (OKLCH) === */
+  --color-brand-primary: oklch(0.8 0.13 230); /* Signature pastel blue */
+  --color-brand-primary-soft: oklch(0.85 0.08 230); /* Powder blue (subtle) */
+  --color-brand-primary-vivid: oklch(0.7 0.18 235); /* Cornflower blue (bold) */
+  --color-brand-primary-muted: oklch(0.8 0.13 230 / 0.1); /* 10% opacity backgrounds */
+  --color-brand-primary-border: oklch(0.8 0.13 230 / 0.2); /* 20% opacity borders */
 
-/* Grid pattern utility class */
-.bg-grid-white {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(255 255 255 / 0.05)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e");
+  /* === MASCULINE PROFESSIONAL FOUNDATION (OKLCH) === */
+  /* Dark Charcoal Base (Default Dark Mode) */
+  --color-background-primary: oklch(0.09 0.01 285); /* Deep charcoal */
+  --color-background-secondary: oklch(0.12 0.01 285); /* Zinc-800 equivalent */
+  --color-background-tertiary: oklch(0.18 0.01 285); /* Zinc-700 equivalent */
+  --color-background-card: oklch(0.12 0.01 285); /* Card backgrounds */
+  --color-background-elevated: oklch(0.18 0.01 285); /* Elevated surfaces */
+
+  /* Light Mode Backgrounds (OKLCH) */
+  --color-background-light: oklch(1 0 0); /* Pure white */
+  --color-background-light-secondary: oklch(0.98 0.01 240); /* Slate-50 equivalent */
+  --color-background-light-tertiary: oklch(0.96 0.01 240); /* Slate-100 equivalent */
+
+  /* === SOPHISTICATED TEXT HIERARCHY (OKLCH) === */
+  /* Dark Mode Text */
+  --color-text-primary: oklch(0.98 0.01 285); /* Crisp white */
+  --color-text-secondary: oklch(0.85 0.01 285); /* Zinc-300 equivalent */
+  --color-text-tertiary: oklch(0.65 0.01 285); /* Zinc-400 equivalent */
+  --color-text-muted: oklch(0.47 0.01 285); /* Zinc-500 equivalent */
+
+  /* Light Mode Text */
+  --color-text-light-primary: oklch(0.15 0.02 240); /* Slate-900 equivalent */
+  --color-text-light-secondary: oklch(0.35 0.02 240); /* Slate-600 equivalent */
+  --color-text-light-tertiary: oklch(0.45 0.01 240); /* Slate-500 equivalent */
+
+  /* === STRATEGIC ACCENT COLORS (OKLCH) === */
+  --color-accent-warm: oklch(0.7 0.15 50); /* Warm orange (energy) */
+  --color-accent-warm-hover: oklch(0.6 0.18 45); /* Darker orange */
+  --color-accent-deep: oklch(0.35 0.15 240); /* Deep navy (trust) */
+  --color-accent-success: oklch(0.7 0.18 140); /* Emerald */
+  --color-accent-warning: oklch(0.7 0.15 50); /* Orange */
+  --color-accent-error: oklch(0.65 0.2 25); /* Red */
+
+  /* === REFINED NEUTRAL SCALE (OKLCH) === */
+  --color-zinc-50: oklch(0.98 0.005 285);
+  --color-zinc-100: oklch(0.96 0.005 285);
+  --color-zinc-200: oklch(0.9 0.005 285);
+  --color-zinc-300: oklch(0.85 0.005 285);
+  --color-zinc-400: oklch(0.65 0.005 285);
+  --color-zinc-500: oklch(0.47 0.005 285);
+  --color-zinc-600: oklch(0.36 0.005 285);
+  --color-zinc-700: oklch(0.28 0.005 285);
+  --color-zinc-800: oklch(0.18 0.005 285);
+  --color-zinc-900: oklch(0.12 0.005 285);
+  --color-zinc-950: oklch(0.07 0.005 285);
+
+  /* === PROFESSIONAL BORDERS & STATES === */
+  --color-border-primary: oklch(0.28 0.005 285); /* Zinc-700 equivalent */
+  --color-border-secondary: oklch(0.18 0.005 285); /* Zinc-800 equivalent */
+  --color-border-light: oklch(0.9 0.005 285); /* Zinc-200 equivalent */
+  --color-border-accent: oklch(0.8 0.13 230 / 0.3); /* Brand blue border */
+
+  /* Interaction States */
+  --color-hover-overlay: oklch(1 0 0 / 0.05); /* Subtle white overlay */
+  --color-pressed: oklch(0 0 0 / 0.1); /* Pressed state */
+  --color-focus-ring: oklch(0.8 0.13 230); /* Brand blue focus */
+  --color-disabled: oklch(0.47 0.005 285); /* Zinc-500 equivalent */
+
+  /* === CHART PALETTE (OKLCH) === */
+  --color-chart-1: oklch(0.8 0.13 230); /* Pastel blue */
+  --color-chart-2: oklch(0.7 0.15 50); /* Warm orange */
+  --color-chart-3: oklch(0.7 0.18 140); /* Success green */
+  --color-chart-4: oklch(0.65 0.005 285); /* Neutral zinc */
+  --color-chart-5: oklch(0.35 0.15 240); /* Deep navy */
+
+  /* === V4 GRADIENT SYSTEM === */
+  --gradient-hero: linear-gradient(135deg in oklch, oklch(0.09 0.01 285) 0%, oklch(0.12 0.01 285) 50%, oklch(0.35 0.15 240 / 0.1) 100%);
+  --gradient-card: linear-gradient(145deg in oklch, oklch(0.12 0.01 285) 0%, oklch(0.18 0.01 285) 100%);
+  --gradient-brand: linear-gradient(135deg in oklch, oklch(0.8 0.13 230) 0%, oklch(0.7 0.18 235) 100%);
+  --gradient-subtle: linear-gradient(135deg in oklch, oklch(0.18 0.01 285) 0%, oklch(0.28 0.005 285) 100%);
+
+  /* === V4 ENHANCED SPACING SYSTEM === */
+  --spacing-px: 1px;
+  --spacing-0: 0px;
+  --spacing-0.5: 0.125rem;
+  --spacing-1: 0.25rem;
+  --spacing-1.5: 0.375rem;
+  --spacing-2: 0.5rem;
+  --spacing-2.5: 0.625rem;
+  --spacing-3: 0.75rem;
+  --spacing-3.5: 0.875rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-7: 1.75rem;
+  --spacing-8: 2rem;
+  --spacing-9: 2.25rem;
+  --spacing-10: 2.5rem;
+  --spacing-11: 2.75rem;
+  --spacing-12: 3rem;
+  --spacing-14: 3.5rem;
+  --spacing-16: 4rem;
+  --spacing-20: 5rem;
+  --spacing-24: 6rem;
+  --spacing-28: 7rem;
+  --spacing-32: 8rem;
+  --spacing-36: 9rem;
+  --spacing-40: 10rem;
+  --spacing-44: 11rem;
+  --spacing-48: 12rem;
+  --spacing-52: 13rem;
+  --spacing-56: 14rem;
+  --spacing-60: 15rem;
+  --spacing-64: 16rem;
+  --spacing-72: 18rem;
+  --spacing-80: 20rem;
+  --spacing-96: 24rem;
+
+  /* === V4 ENHANCED RADIUS SYSTEM === */
+  --radius-none: 0px;
+  --radius-sm: 0.125rem;
+  --radius: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* === V4 ENHANCED SHADOW SYSTEM === */
+  --shadow-xs: 0 1px rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+  --shadow-none: 0 0 #0000;
+
+  /* === V4 DROP SHADOW SYSTEM (for SVGs/irregular shapes) === */
+  --drop-shadow-xs: drop-shadow(0 1px 1px rgb(0 0 0 / 0.05));
+  --drop-shadow-sm: drop-shadow(0 1px 2px rgb(0 0 0 / 0.1));
+  --drop-shadow: drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06));
+  --drop-shadow-md: drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06));
+  --drop-shadow-lg: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+  --drop-shadow-xl: drop-shadow(0 20px 13px rgb(0 0 0 / 0.03)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.08));
+  --drop-shadow-2xl: drop-shadow(0 25px 25px rgb(0 0 0 / 0.15));
+  --drop-shadow-none: drop-shadow(0 0 #0000);
+
+  /* === V4 TEXT SHADOW SYSTEM === */
+  --text-shadow-xs: 0 1px 0 rgb(0 0 0 / 0.25);
+  --text-shadow-sm: 0 1px 1px rgb(0 0 0 / 0.25);
+  --text-shadow: 0 1px 2px rgb(0 0 0 / 0.25), 0 2px 4px rgb(0 0 0 / 0.25);
+  --text-shadow-md: 0 2px 4px rgb(0 0 0 / 0.25), 0 4px 8px rgb(0 0 0 / 0.25);
+  --text-shadow-lg: 0 4px 8px rgb(0 0 0 / 0.25), 0 8px 16px rgb(0 0 0 / 0.25);
+  --text-shadow-none: 0 0 #0000;
+
+  /* === V4 TYPOGRAPHY SYSTEM === */
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  --text-6xl: 3.75rem;
+  --text-7xl: 4.5rem;
+  --text-8xl: 6rem;
+  --text-9xl: 8rem;
+
+  /* === V4 BREAKPOINT SYSTEM === */
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+
+  /* === V4 Z-INDEX SYSTEM === */
+  --z-0: 0;
+  --z-10: 10;
+  --z-20: 20;
+  --z-30: 30;
+  --z-40: 40;
+  --z-50: 50;
+  --z-auto: auto;
 }
 
+/* === V4 DARK MODE AS DEFAULT === */
+:root {
+  color-scheme: dark;
+  
+  /* V4 Enhanced Semantic Mappings */
+  --radius: var(--radius-lg);
+  
+  /* V4 Dark Mode Colors (Default) using OKLCH */
+  --background: var(--color-background-primary);
+  --foreground: var(--color-text-primary);
+  --card: var(--color-background-card);
+  --card-foreground: var(--color-text-primary);
+  --popover: var(--color-background-card);
+  --popover-foreground: var(--color-text-primary);
+  
+  /* V4 Signature Pastel Blue as Primary */
+  --primary: var(--color-brand-primary);
+  --primary-foreground: var(--color-background-primary);
+  
+  /* V4 Secondary Elements */
+  --secondary: var(--color-background-tertiary);
+  --secondary-foreground: var(--color-text-primary);
+  
+  /* V4 Muted Elements */
+  --muted: var(--color-background-tertiary);
+  --muted-foreground: var(--color-text-tertiary);
+  
+  /* V4 Warm Orange Accent */
+  --accent: var(--color-accent-warm);
+  --accent-foreground: var(--color-background-primary);
+  
+  /* V4 Error States */
+  --destructive: var(--color-accent-error);
+  --destructive-foreground: var(--color-text-primary);
+  
+  /* V4 Interactive Elements */
+  --border: var(--color-border-primary);
+  --input: var(--color-background-tertiary);
+  --ring: var(--color-focus-ring);
+  
+  /* V4 Chart Colors with Brand */
+  --chart-1: var(--color-chart-1);
+  --chart-2: var(--color-chart-2);
+  --chart-3: var(--color-chart-3);
+  --chart-4: var(--color-chart-4);
+  --chart-5: var(--color-chart-5);
+}
+
+/* === V4 LIGHT MODE TOGGLE === */
+[data-theme="light"] {
+  color-scheme: light;
+  
+  /* V4 Light Mode Colors using OKLCH */
+  --background: var(--color-background-light);
+  --foreground: var(--color-text-light-primary);
+  --card: var(--color-background-light);
+  --card-foreground: var(--color-text-light-primary);
+  --popover: var(--color-background-light);
+  --popover-foreground: var(--color-text-light-primary);
+  
+  /* V4 Primary adjusted for light mode */
+  --primary: var(--color-brand-primary-vivid);
+  --primary-foreground: var(--color-background-light);
+  
+  /* V4 Light mode secondary */
+  --secondary: var(--color-background-light-secondary);
+  --secondary-foreground: var(--color-text-light-primary);
+  
+  /* V4 Light mode muted */
+  --muted: var(--color-background-light-secondary);
+  --muted-foreground: var(--color-text-light-tertiary);
+  
+  /* V4 Accent in light mode */
+  --accent: var(--color-accent-warm);
+  --accent-foreground: var(--color-background-light);
+  
+  /* V4 Light mode interactive */
+  --border: var(--color-border-light);
+  --input: var(--color-background-light-secondary);
+  --ring: var(--color-brand-primary-vivid);
+  
+  /* V4 Light mode chart colors */
+  --chart-1: var(--color-brand-primary-vivid);
+  --chart-2: var(--color-accent-warm-hover);
+  --chart-3: var(--color-accent-success);
+  --chart-4: var(--color-zinc-500);
+  --chart-5: var(--color-accent-deep);
+}
+
+/* === V4 NATIVE GRADIENT UTILITIES === */
+/* Use bg-linear-to-br instead of portfolio-hero-gradient */
+/* Use bg-linear-to-r instead of portfolio-brand-gradient */
+
+/* === V4 REMAINING CUSTOM UTILITIES === */
+@utility portfolio-text-gradient {
+  background: linear-gradient(135deg in oklch, oklch(0.8 0.13 230) 0%, oklch(0.7 0.18 235) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Use shadow-lg instead of portfolio-shadow-light */
+/* Use shadow-xl instead of portfolio-shadow-elevated */
+/* Use drop-shadow-lg for SVGs/icons instead of portfolio-shadow-dark */
+
+/* === V4 ENHANCED BASE LAYER === */
 @layer base {
-  :root {
-    /* Custom Color Palette */
-    --color-silver-pink: 208 219 235;
-    --color-brown: 248 244 237; /* Consistent hero brown */
-    --color-black-coral: 44 52 63;
-    --color-slate-gray: 112 128 144;
-    --color-pewter-blue: 141 169 196;
-    --color-eggshell: 240 234 214;
-
-    /* Core theme colors */
-    --color-background: 255 255 255;
-    --color-foreground: 15 23 42;
-    --color-card: 255 255 255;
-    --color-card-foreground: 15 23 42;
-    --color-popover: 255 255 255;
-    --color-popover-foreground: 15 23 42;
-
-    /* Primary and accent colors - standardized blue */
-    --color-primary: 59, 130, 246; /* RGB values for #3b82f6 (blue-500) */
-    --color-primary-light: 96, 165, 250; /* RGB values for #60a5fa (blue-400) */
-    --color-primary-dark: 37, 99, 235; /* RGB values for #2563eb (blue-600) */
-    --color-primary-foreground: 240 234 214; /* eggshell */
-    --color-secondary: 241 245 249;
-    --color-secondary-foreground: 15 23 42;
-    --color-accent: 79 70 229;
-    --color-accent-foreground: 255 255 255;
-    --color-muted: 241 245 249;
-    --color-muted-foreground: 100 116 139;
-
-    /* Utility colors */
-    --color-destructive: 239 68 68;
-    --color-destructive-foreground: 255 255 255;
-    --color-success: 34 197 94;
-    --color-success-foreground: 255 255 255;
-    --color-warning: 234 179 8;
-    --color-warning-foreground: 15 23 42;
-
-    /* Border, input and ring colors */
-    --color-border: 226 232 240;
-    --color-input: 226 232 240;
-    --color-ring: 37 99 235;
-
-    /* Section background alternation */
-    --color-bg-primary: 255 255 255; /* White */
-    --color-bg-secondary: 248 244 237; /* Light brown #F8F4ED */
-
-    /* Card gradient effect */
-    --card-gradient: linear-gradient(
-      135deg,
-      rgba(37, 99, 235, 0.08) 0%,
-      rgba(59, 130, 246, 0.04) 100%
-    );
-
-    /* Layout & Spacing */
-    --container-default: 80rem;
-    --container-content: 70ch;
-    --container-large: 120rem;
-    --container-blog: 70ch;
-    --container-resume: 65rem;
-
-    /* Typography - System fonts fallback */
-    --font-sans:
-      system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-      sans-serif;
-    --font-serif: Georgia, Cambria, 'Times New Roman', Times, serif;
-    --font-mono:
-      SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-
-    /* Border Radius */
-    --radius-sm: 0.125rem;
-    --radius-md: 0.375rem;
-    --radius-lg: 0.5rem;
-    --radius-xl: 0.75rem;
-    --radius-2xl: 1rem;
-    --radius-full: 9999px;
+  * {
+    border-color: hsl(var(--border));
   }
-
-  .dark {
-    --color-background: 15 23 42;
-    --color-foreground: 241 245 249;
-    --color-card: 30 41 59;
-    --color-card-foreground: 241 245 249;
-    --color-popover: 30 41 59;
-    --color-popover-foreground: 241 245 249;
-
-    --color-primary: 141 169 196; /* pewter-blue - consistent in dark mode too */
-    --color-primary-light: 186 207 226; /* lighter pewter-blue */
-    --color-primary-dark: 112 145 178; /* darker pewter-blue */
-    --color-primary-foreground: 240 234 214; /* eggshell */
-    --color-secondary: 51 65 85;
-    --color-secondary-foreground: 241 245 249;
-    --color-accent: 79 70 229;
-    --color-accent-foreground: 255 255 255;
-    --color-muted: 51 65 85;
-    --color-muted-foreground: 148 163 184;
-
-    /* Dark mode section background alternation */
-    --color-bg-primary: 15 23 42;
-    --color-bg-secondary: 22 32 54;
-
-    /* Dark mode card gradient effect */
-    --card-gradient: linear-gradient(
-      135deg,
-      rgba(37, 99, 235, 0.15) 0%,
-      rgba(59, 130, 246, 0.05) 100%
-    );
-
-    --color-destructive: 239 68 68;
-    --color-destructive-foreground: 255 255 255;
-    --color-border: 51 65 85;
-    --color-input: 51 65 85;
-    --color-ring: 37 99 235;
+  
+  *:focus-visible {
+    @apply portfolio-focus-ring;
   }
-
-  *,
-  *::before,
-  *::after {
-    border-color: rgb(var(--color-border));
-  }
-
-  html {
-  -webkit-text-size-adjust: 100%;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  box-sizing: border-box;
-  line-height: 1.15;
-  background-color: rgb(var(--color-background));
-  font-size: 68%; /* Further increased base font size */
-  scroll-behavior: smooth;
-  overscroll-behavior-y: none;
-  }
-
-  html,
+  
   body {
-    min-height: 100vh;
-    overflow-x: hidden;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
-
-  body {
-    background-color: rgb(var(--color-background));
-    color: rgb(var(--color-foreground));
-    font-size: 1.8rem;
-    line-height: 1.65;
-    font-family: var(--font-sans);
-    width: 100%;
+  
+  /* V4 Enhanced Typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
   }
-
-  /* Typography styles */
-  h1,
-  h2 {
-    font-family: var(--font-serif);
-    font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.025em;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    color: rgb(var(--color-foreground));
-  }
-
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: var(--font-sans);
-    font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.025em;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    color: rgb(var(--color-foreground));
-  }
-
+  
   h1 {
-    font-size: 3.5rem;
-    font-weight: 800;
-    letter-spacing: -0.05em;
-    line-height: 1.1;
+    @apply text-4xl lg:text-5xl;
   }
-
+  
   h2 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    border-bottom: 1px solid rgb(var(--color-border));
-    padding-bottom: 0.5rem;
-    line-height: 1.2;
+    @apply text-3xl lg:text-4xl;
   }
-
+  
   h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
+    @apply text-2xl lg:text-3xl;
   }
-
-  h4 {
-    font-size: 1.25rem;
+  
+  /* V4 Enhanced Link Styles */
+  a {
+    @apply transition-colors duration-200;
   }
-
-  h5 {
-    font-size: 1.125rem;
+  
+  /* V4 Enhanced Button Reset */
+  button {
+    @apply transition-all duration-200;
   }
-
-  h6 {
-    font-size: 1rem;
+  
+  /* V4 Enhanced Form Elements */
+  input, textarea, select {
+    @apply transition-all duration-200;
   }
-
-  p {
-    margin-bottom: 1.5rem;
-    line-height: 1.7;
-    color: rgb(var(--color-foreground));
+  
+  /* V4 Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 0.5rem;
   }
-
-  ul,
-  ol {
-    margin-bottom: 1.5rem;
-    padding-left: 1.5rem;
+  
+  ::-webkit-scrollbar-track {
+    background-color: hsl(var(--muted));
   }
-
-  li {
-    margin-bottom: 0.5rem;
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 9999px;
   }
-
-  ul li {
-    list-style-type: disc;
-  }
-
-  ol li {
-    list-style-type: decimal;
-  }
-
-  blockquote {
-    border-left: 4px solid hsl(217, 91%, 60%);
-    padding-left: 1rem;
-    margin-left: 0;
-    margin-right: 0;
-    margin-bottom: 1.5rem;
-    font-style: italic;
-    color: rgb(var(--color-foreground));
-  }
-
-  a:not([class]) {
-    color: hsl(217, 91%, 60%); /* Match blue-500 */
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 2px;
-    transition: all 0.2s ease;
-  }
-
-  a:not([class]):hover {
-    color: hsl(221, 83%, 53%); /* Match blue-600 for hover */
-    opacity: 0.8;
-  }
-
-  pre,
-  code {
-    font-family: var(--font-mono);
-  }
-
-  code {
-    background-color: rgb(var(--color-muted));
-    padding: 0.2em 0.4em;
-    border-radius: 3px;
-    font-size: 0.875em;
-  }
-
-  pre {
-    background-color: rgb(var(--color-muted));
-    padding: 1rem;
-    border-radius: 6px;
-    overflow-x: auto;
-    margin-bottom: 1.5rem;
-  }
-
-  pre code {
-    background-color: transparent;
-    padding: 0;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 1.5rem;
-  }
-
-  th,
-  td {
-    padding: 0.75rem;
-    border: 1px solid rgb(var(--color-border));
-  }
-
-  th {
-    background-color: rgb(var(--color-muted));
-    font-weight: 600;
-    text-align: left;
-  }
-
-  img {
-    max-width: 100%;
-    height: auto;
-    border-radius: var(--radius-md);
-  }
-
-  hr {
-    border: 0;
-    height: 1px;
-    background-color: rgb(var(--color-border));
-    margin: 2rem 0;
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--accent));
   }
 }
 
-/* Custom scrollbar for webkit browsers */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgb(var(--color-background));
-}
-
-::-webkit-scrollbar-thumb {
-  background: hsl(217, 91%, 60%); /* Match blue-500 */
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(221, 83%, 53%); /* Match blue-600 for hover */
-}
-
-/* Custom animation for typewriter cursor blink */
-@keyframes blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-}
-
-.animate-blink {
-  animation: blink 1s step-end infinite;
-}
-
+/* === V4 COMPONENT LAYER === */
 @layer components {
-  /* Card hover effects */
-  .card-hover {
-    @apply transition-all duration-200 ease-out;
-    background-image: var(--card-gradient);
+  .portfolio-container {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
   }
-
-  .card-hover:hover {
-    @apply -translate-y-1 shadow-lg;
+  
+  .portfolio-section {
+    @apply py-16 sm:py-20 lg:py-24;
   }
-
-  /* Section background alternation */
-  .section-bg-primary {
-    background-color: rgb(var(--color-bg-primary));
+  
+  .portfolio-card {
+    @apply bg-card rounded-xl border border-border p-6 shadow-lg backdrop-blur-sm;
   }
-
-  .section-bg-secondary {
-    background-color: #0f172a; /* Dark navy blue */
-    color: white;
+  
+  .portfolio-badge {
+    @apply inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary;
   }
-
-  /* Hero background gradient - consistent across all pages */
-  .hero-gradient-bg {
-    @apply relative;
-    background: linear-gradient(180deg, rgba(37, 99, 235, 0.1) 0%, rgba(37, 99, 235, 0) 100%);
+  
+  .portfolio-button-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary/50 inline-flex items-center justify-center rounded-lg px-4 py-2 font-medium transition-all duration-200 focus:ring-2 focus:ring-offset-2;
   }
-
-  /* Section transition for smooth scrolling */
-  .section-transition {
-    @apply relative overflow-hidden;
-    transition:
-      transform 0.5s ease-out,
-      opacity 0.5s ease-out;
+  
+  .portfolio-button-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 focus:ring-secondary/50 inline-flex items-center justify-center rounded-lg px-4 py-2 font-medium transition-all duration-200 focus:ring-2 focus:ring-offset-2;
   }
-
-  .section-transition::after {
-    content: '';
-    @apply absolute bottom-0 left-0 w-full h-16 pointer-events-none;
-    background: linear-gradient(
-      to top,
-      rgba(var(--color-background), 1),
-      rgba(var(--color-background), 0)
-    );
-    opacity: 0.7;
-  }
-
-  /* Text gradient */
-  .text-gradient {
-    @apply bg-gradient-to-r from-blue-500 to-blue-700 bg-clip-text text-transparent;
-  }
-
-  /* Typography enhancements */
-  .prose-custom {
-    @apply prose prose-lg prose-slate max-w-none dark:prose-invert
-    prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight
-    prose-h1:text-4xl md:prose-h1:text-5xl lg:prose-h1:text-6xl
-    prose-h2:text-3xl md:prose-h2:text-4xl
-    prose-p:text-base md:prose-p:text-lg prose-p:leading-relaxed
-    prose-a:text-primary hover:prose-a:text-primary-dark dark:prose-a:text-primary-light
-    prose-img:rounded-md prose-img:shadow-md;
-  }
-
-  /* Material UI style typography classes - with .modern-portfolio namespace to avoid conflicts */
-  .modern-portfolio .mui-heading-1 {
-    @apply font-serif text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-slate-100;
-  }
-
-  .modern-portfolio .mui-heading-2 {
-    @apply font-serif text-3xl md:text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-100;
-  }
-
-  .modern-portfolio .mui-heading-3 {
-    @apply font-sans text-2xl md:text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100;
-  }
-
-  .modern-portfolio .mui-body-1 {
-    @apply text-base md:text-lg text-slate-700 dark:text-slate-300 leading-relaxed;
-  }
-
-  .modern-portfolio .mui-body-2 {
-    @apply text-sm md:text-base text-slate-600 dark:text-slate-400 leading-relaxed;
-  }
-
-  .modern-portfolio .mui-subtitle {
-    @apply text-lg text-slate-500 dark:text-slate-400 font-medium;
-  }
-}
-
-@layer utilities {
-  /* Animation utility classes */
-  .animate-in {
-    animation-duration: 0.5s;
-    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    animation-fill-mode: both;
-  }
-
-  .slide-in-from-left {
-    animation-name: slideInFromLeft;
-  }
-
-  .slide-in-from-right {
-    animation-name: slideInFromRight;
-  }
-
-  .slide-in-from-bottom {
-    animation-name: slideInFromBottom;
-  }
-
-  .fade-in-50 {
-    animation-name: fadeIn50;
-  }
-
-  /* Hero section utilities */
-  .hero-scroll-indicator {
-    @apply absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center;
-  }
-
-  .hero-image-container {
-    @apply relative bg-white dark:bg-slate-800 rounded-3xl p-2 shadow-2xl;
-  }
-
-  /* Content containers */
-  .content-container {
-    max-width: var(--container-content);
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0 1rem;
-  }
-
-  .large-container {
-    max-width: var(--container-large);
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0 1.5rem;
-  }
-
-  /* Glassmorphism utilities */
-  .backdrop-blur-sm {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-
-  .backdrop-blur-md {
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-  }
-
-  .backdrop-blur-lg {
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
-}
-
-@keyframes slideInFromLeft {
-  from {
-    transform: translateX(-20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideInFromRight {
-  from {
-    transform: translateX(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideInFromBottom {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes fadeIn50 {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes blob {
-  0% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-  100% {
-    transform: translate(0px, 0px) scale(1);
-  }
-}
-
-.animate-blob {
-  animation: blob 7s infinite;
-}
-
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-
-.animation-delay-3000 {
-  animation-delay: 3s;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
-
-.animation-delay-5000 {
-  animation-delay: 5s;
 }
