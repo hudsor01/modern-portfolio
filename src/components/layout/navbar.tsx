@@ -21,7 +21,7 @@ const navItems: NavItem[] = [
 export function Navbar() {
   const pathname = usePathname()
 
-  const navbarClasses = 'relative z-50 w-full bg-black/10 backdrop-blur-md border-b border-white/10'
+  const navbarClasses = 'relative z-50 w-full bg-white/5 backdrop-blur-md border-b border-white/10 shadow-lg'
 
   return React.createElement(
     'div',
@@ -55,9 +55,9 @@ export function Navbar() {
                   Link,
                   {
                     href: item.href,
-                    className: `hover:text-blue-400 relative text-lg md:text-xl font-semibold transition-all duration-300 px-4 py-3 rounded-lg hover:bg-white/10 ${
+                    className: `relative text-lg md:text-xl font-medium transition-all duration-300 px-4 py-3 rounded-xl hover:bg-white/10 border border-transparent hover:border-white/20 ${
                       pathname === item.href
-                        ? 'text-blue-400 bg-white/10'
+                        ? 'text-blue-400 bg-white/10 border-white/20 shadow-lg'
                         : 'text-white hover:text-blue-300'
                     }`,
                   },
@@ -66,7 +66,7 @@ export function Navbar() {
                     pathname === item.href &&
                       React.createElement('span', {
                         className:
-                          'absolute -bottom-1 left-1/2 -translate-x-1/2 h-1 w-8 bg-blue-400 rounded-full shadow-sm shadow-blue-400/50',
+                          'absolute -bottom-1 left-1/2 -translate-x-1/2 h-1 w-10 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full shadow-lg shadow-blue-400/50',
                         key: 'indicator',
                       }),
                   ]

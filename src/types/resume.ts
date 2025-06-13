@@ -49,7 +49,7 @@ export const resume: ResumeData = {
   name: 'Richard Hudson',
   title: 'Revenue Operations & Process Optimization Specialist',
   email: 'hello@richardwhudsonjr.com',
-  phone: '(555) 555-5555',
+  phone: '',
   location: 'Plano, Texas',
   summary:
     'Results-driven Revenue Operations Consultant with over 8 years of experience optimizing revenue processes and driving operational excellence. Expertise in implementing Salesforce and PartnerStack to enhance partner programs, boost efficiency, and increase profitability.',

@@ -1,16 +1,10 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
+import React from 'react'
 import { 
-  Search, 
-  Grid3X3, 
-  List, 
   ExternalLink, 
   Github, 
   TrendingUp,
-  BarChart3,
-  Database,
   Zap,
   Target,
   Award,
@@ -18,7 +12,6 @@ import {
   DollarSign,
   Clock,
   Star,
-  ChevronRight,
   ArrowRight,
   Mail
 } from 'lucide-react'
@@ -181,161 +174,102 @@ const mockProjects: MockProject[] = [
   }
 ]
 
-const categories = [
-  { id: 'all', label: 'All Projects', icon: Grid3X3 },
-  { id: 'revenue-ops', label: 'Revenue Operations', icon: DollarSign },
-  { id: 'data-analytics', label: 'Data Analytics', icon: BarChart3 },
-  { id: 'business-intelligence', label: 'Business Intelligence', icon: Database },
-  { id: 'process-optimization', label: 'Process Optimization', icon: Zap }
-]
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
+
+// Custom call-to-action messages for each project
+const getCustomCTA = (projectId: string): string => {
+  switch (projectId) {
+    case 'churn-retention':
+      return 'Come Find the Customer Churn!'
+    case 'deal-funnel':
+      return 'The Sales Pipeline is This Way!'
+    case 'lead-attribution':
+      return 'Track Those Leads Here!'
+    case 'revenue-kpi':
+      return 'See Revenue Magic Happen!'
+    default:
+      return 'Explore This Project!'
+  }
 }
 
-const ProjectCard = ({ project, index, viewMode }: { project: Project; index: number; viewMode: 'grid' | 'list' }) => {
-
+const ProjectCard = ({ project }: { project: Project }) => {
+  const projectImage = isMockProject(project) ? '/images/projects/revenue-operations.jpg' : project.image;
+  
   return (
-    <motion.div
-      variants={fadeInUp}
-      initial="initial"
-      animate="animate"
-      transition={{ delay: index * 0.1, duration: 0.5 }}
-      className={`group ${viewMode === 'list' ? 'w-full' : ''}`}
-    >
-      <div className={`bg-white/5 backdrop-blur border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300 h-full ${
-        viewMode === 'list' ? 'flex flex-row gap-6' : 'flex flex-col'
-      }`}>
+    <div className="group">
+      <div className="relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25">
         
-        {/* Project Header */}
-        <div className={`${viewMode === 'list' ? 'flex-1' : 'w-full'}`}>
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h3 className="text-xl font-bold text-white group-hover:bg-clip-text group-hover:text-transparent group-hover:bg-gradient-to-br group-hover:from-blue-300 group-hover:via-sky-400 group-hover:to-indigo-400 transition-all">
-                  {project.title}
-                </h3>
-                {project.featured && (
-                  <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-0 text-xs">
-                    <Star className="w-3 h-3 mr-1" />
-                    Featured
-                  </Badge>
-                )}
-              </div>
-              <p className="text-gray-300 mb-4 line-clamp-2">
+        <div className="p-8 flex-1 flex flex-col">
+          {/* Inner Container for Content */}
+          <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 mb-6 flex-1 flex flex-col">
+            
+            {/* Project Header */}
+            <div className="mb-6">
+              <h3 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-3 leading-tight">
+                {project.title}
+              </h3>
+              <p className="text-gray-300 text-sm md:text-base leading-relaxed">
                 {project.description}
               </p>
             </div>
+        
+            {/* Enhanced Metrics */}
+            {isMockProject(project) && (
+              <div className="grid grid-cols-3 gap-4 mb-8">
+                {project.metrics.map((metric, i) => (
+                  <div key={i} className="text-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-all duration-300 border border-white/10">
+                    <div className="flex items-center justify-center mb-3">
+                      <metric.icon className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <div className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400 mb-1">
+                      {metric.value}
+                    </div>
+                    <div className="text-sm text-gray-400">
+                      {metric.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
             
-            <div className="ml-4 flex flex-col items-end gap-2">
-              <Badge variant="secondary" className="bg-white/10 border border-white/20 text-gray-300">
-                {isMockProject(project) ? project.year : new Date(project.createdAt).getFullYear()}
-              </Badge>
-              <Badge 
-                variant="outline"
-                className="border-blue-400 text-blue-300 text-xs"
-              >
-                {categories.find(cat => cat.id === project.category)?.label}
-              </Badge>
-            </div>
+            {/* Enhanced Client Info */}
+            {isMockProject(project) && (
+              <div className="text-sm text-gray-300 mb-8 text-center p-4 bg-white/5 rounded-xl border border-white/10">
+                <span className="font-semibold text-blue-400">{project.client}</span> • {project.duration}
+              </div>
+            )}
+            
+            {/* Spacer to push content in inner container */}
+            <div className="flex-1"></div>
           </div>
           
-          {/* Metrics */}
-          {isMockProject(project) && (
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              {project.metrics.map((metric, i) => (
-                <div key={i} className="text-center p-3 bg-white/5 rounded-lg">
-                  <div className="flex items-center justify-center mb-2">
-                    <metric.icon className="w-5 h-5 text-blue-400" />
-                  </div>
-                  <div className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400">
-                    {metric.value}
-                  </div>
-                  <div className="text-xs text-gray-400">
-                    {metric.label}
-                  </div>
-                </div>
-              ))}
+          {/* Project Image - After Content Container */}
+          {projectImage && (
+            <div className="relative h-32 overflow-hidden rounded-xl mb-6">
+              <img 
+                src={projectImage} 
+                alt={project.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
             </div>
           )}
           
-          {/* Basic project info for non-mock projects */}
-          {!isMockProject(project) && (
-            <div className="mb-6 p-3 bg-white/5 rounded-lg">
-              <div className="text-sm text-gray-400">
-                {project.featured && <span className="text-blue-400">★ Featured Project • </span>}
-                Created: {new Date(project.createdAt).toLocaleDateString()}
-              </div>
-            </div>
-          )}
-          
-          {/* Technologies */}
-          {project.technologies && project.technologies.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-6">
-              {project.technologies.slice(0, 4).map((tech, i) => (
-                <Badge key={i} variant="secondary" className="text-xs bg-white/10 border border-white/20 text-gray-300">
-                  {tech}
-                </Badge>
-              ))}
-              {project.technologies.length > 4 && (
-                <Badge variant="secondary" className="text-xs bg-white/10 border border-white/20 text-gray-300">
-                  +{project.technologies.length - 4} more
-                </Badge>
-              )}
-            </div>
-          )}
-          
-          {/* Client Info */}
-          {isMockProject(project) && (
-            <div className="text-sm text-gray-400 mb-6">
-              <span className="font-medium">{project.client}</span> • {project.duration}
-            </div>
-          )}
-          
-          {/* Actions */}
-          <div className="flex gap-3">
+          {/* Centered CTA in remaining space */}
+          <div className="flex-1 flex items-center justify-center min-h-[60px]">
             <Button
-              variant="outline"
-              size="sm"
-              className="flex-1 bg-white/10 hover:bg-white/20 border border-white/20 text-white"
+              size="md"
+              className="relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
               asChild
             >
               <Link href={`/projects/${isMockProject(project) ? project.id : project.slug || project.id}`}>
-                Learn More
-                <ChevronRight className="w-4 h-4 ml-2" />
+                <span className="relative z-10">Explore Project</span>
+                <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1 relative z-10" />
               </Link>
             </Button>
-            
-            {(isMockProject(project) ? project.liveUrl : project.liveUrl) && (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
-                asChild
-              >
-                <a href={isMockProject(project) ? project.liveUrl! : project.liveUrl!} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="w-4 h-4" />
-                </a>
-              </Button>
-            )}
-            
-            {(isMockProject(project) ? project.githubUrl : project.githubUrl) && (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="bg-white/10 hover:bg-white/20 border border-white/20 text-white"
-                asChild
-              >
-                <a href={isMockProject(project) ? project.githubUrl! : project.githubUrl!} target="_blank" rel="noopener noreferrer">
-                  <Github className="w-4 h-4" />
-                </a>
-              </Button>
-            )}
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
@@ -351,40 +285,21 @@ export function ModernProjectsContent({
   onPrefetch: _onPrefetch, 
   isLoading: _externalLoading 
 }: ModernProjectsContentProps = {}) {
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [sortBy, setSortBy] = useState<'year' | 'title' | 'featured'>('featured')
-  
-  const heroRef = useRef(null)
-  const projectsRef = useRef(null)
-  const isHeroInView = useInView(heroRef, { once: true })
-  const isProjectsInView = useInView(projectsRef, { once: true })
   
   // Use external projects if provided, otherwise fall back to mock data
   const projectsData: Project[] = externalProjects || mockProjects;
   
-  const filteredProjects = projectsData
-    .filter(project => {
-      const matchesCategory = selectedCategory === 'all' || project.category === selectedCategory
-      const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           (project.technologies || []).some(tech => tech.toLowerCase().includes(searchQuery.toLowerCase()))
-      return matchesCategory && matchesSearch
-    })
+  // Sort projects by featured first, then by year
+  const sortedProjects = projectsData
     .sort((a, b) => {
-      switch (sortBy) {
-        case 'year':
-          const aYear = isMockProject(a) ? a.year : new Date(a.createdAt).getFullYear()
-          const bYear = isMockProject(b) ? b.year : new Date(b.createdAt).getFullYear()
-          return bYear - aYear
-        case 'title':
-          return a.title.localeCompare(b.title)
-        case 'featured':
-          return (b.featured ? 1 : 0) - (a.featured ? 1 : 0)
-        default:
-          return 0
-      }
+      // Featured projects first
+      if (a.featured && !b.featured) return -1
+      if (!a.featured && b.featured) return 1
+      
+      // Then by year (newest first)
+      const aYear = isMockProject(a) ? a.year : new Date(a.createdAt).getFullYear()
+      const bYear = isMockProject(b) ? b.year : new Date(b.createdAt).getFullYear()
+      return bYear - aYear
     })
 
   return (
@@ -397,71 +312,27 @@ export function ModernProjectsContent({
         aria-hidden="true"
       />
 
-      {/* Animated Blobs */}
-      <div
-        className="absolute top-0 -left-4 w-72 h-72 sm:w-96 sm:h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute top-0 -right-4 w-72 h-72 sm:w-96 sm:h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob [animation-delay:2s]"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute bottom-0 left-20 w-72 h-72 sm:w-96 sm:h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob [animation-delay:4s]"
-        aria-hidden="true"
-      />
+      {/* Enhanced Animated Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
+      </div>
 
-      <div className="container relative z-10 px-4 mx-auto max-w-7xl py-16 space-y-16">
+      <div className="container relative z-10 px-6 mx-auto max-w-7xl py-24 space-y-32">
         
         {/* Hero Section */}
-        <motion.div 
-          ref={heroRef}
-          variants={fadeInUp}
-          initial="initial"
-          animate={isHeroInView ? "animate" : "initial"}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-center space-y-8 max-w-4xl mx-auto pt-16"
-        >
-          <motion.div
-            variants={fadeInUp}
-            initial="initial"
-            animate={isHeroInView ? "animate" : "initial"}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="mb-8"
-          >
-            <span className="inline-flex items-center rounded-full bg-blue-500/10 border border-blue-500/30 px-3 py-1 text-sm font-medium text-blue-400">
-              Portfolio Showcase
-            </span>
-          </motion.div>
-
-          <motion.h1 
-            variants={fadeInUp}
-            initial="initial"
-            animate={isHeroInView ? "animate" : "initial"}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="font-bold text-5xl sm:text-6xl md:text-7xl tracking-tight mb-6 page-title-gradient"
-          >
+        <div className="text-center space-y-12 max-w-6xl mx-auto pt-12">
+          <h1 className="font-bold text-5xl sm:text-6xl md:text-7xl tracking-tight mb-6 page-title-gradient">
             Project Portfolio
-          </motion.h1>
+          </h1>
           
-          <motion.p 
-            variants={fadeInUp}
-            initial="initial"
-            animate={isHeroInView ? "animate" : "initial"}
-            transition={{ duration: 0.5, delay: 0.8 }}
-            className="text-gray-200 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed font-light"
-          >
+          <p className="text-gray-200 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed font-light">
             Transforming data into actionable insights and driving measurable business results through innovative solutions.
-          </motion.p>
+          </p>
           
           {/* Stats */}
-          <motion.div 
-            variants={fadeInUp}
-            initial="initial"
-            animate={isHeroInView ? "animate" : "initial"}
-            transition={{ duration: 0.5, delay: 1.0 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8"
-          >
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-16">
             {[
               { label: 'Projects Completed', value: '25+', icon: Award },
               { label: 'Revenue Generated', value: '$50M+', icon: DollarSign },
@@ -478,192 +349,126 @@ export function ModernProjectsContent({
                 </div>
               </div>
             ))}
-          </motion.div>
-        </motion.div>
-
-        {/* Filters and Search */}
-        <motion.div
-          ref={projectsRef}
-          variants={fadeInUp}
-          initial="initial"
-          animate={isProjectsInView ? "animate" : "initial"}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="space-y-8"
-        >
-          {/* Search Bar */}
-          <div className="max-w-2xl mx-auto">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search projects, technologies, or keywords..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-lg"
-              />
-            </div>
           </div>
+        </div>
 
-          {/* Category Filters */}
-          <div className="flex flex-wrap justify-center gap-4">
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all ${
-                  selectedCategory === category.id
-                    ? 'bg-gradient-to-r from-blue-300 via-sky-400 to-indigo-400 text-white shadow-lg'
-                    : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10'
-                }`}
-              >
-                <category.icon className="w-4 h-4" />
-                {category.label}
-              </button>
-            ))}
-          </div>
+        {/* Projects Section Header */}
+        <div className="text-center space-y-6">
+          <h2 className="font-bold text-3xl sm:text-4xl md:text-5xl tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400">
+            Featured Projects
+          </h2>
+          <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+            Explore my latest work in revenue operations and data analytics
+          </p>
+        </div>
 
-          {/* View Controls */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-400">
-                {filteredProjects.length} projects found
-              </span>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              {/* Sort Dropdown */}
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as 'year' | 'title' | 'featured')}
-                className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-sm"
-              >
-                <option value="featured">Featured First</option>
-                <option value="year">Newest First</option>
-                <option value="title">Alphabetical</option>
-              </select>
-              
-              {/* View Mode Toggle */}
-              <div className="flex bg-white/5 border border-white/10 rounded-lg p-1">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'text-gray-400'}`}
-                >
-                  <Grid3X3 className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`p-2 rounded ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'text-gray-400'}`}
-                >
-                  <List className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Projects Grid */}
-        <motion.div 
-          variants={fadeInUp}
-          initial="initial"
-          animate={isProjectsInView ? "animate" : "initial"}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="space-y-8"
-        >
-          {filteredProjects.length === 0 ? (
+        {/* Projects Grid - 2x2 Layout */}
+        <div className="space-y-16">
+          {sortedProjects.length === 0 ? (
             <div className="text-center py-16">
-              <div className="text-6xl mb-4">🔍</div>
-              <h3 className="text-xl font-semibold mb-2 text-white">No projects found</h3>
+              <div className="text-6xl mb-4">📊</div>
+              <h3 className="text-xl font-semibold mb-2 text-white">No projects available</h3>
               <p className="text-gray-400">
-                Try adjusting your search or filter criteria
+                Projects are currently being updated
               </p>
             </div>
           ) : (
-            <div className={`
-              ${viewMode === 'grid' 
-                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8' 
-                : 'space-y-8'
-              }
-            `}>
-              {filteredProjects.map((project, index) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 lg:gap-12 max-w-7xl mx-auto">
+              {sortedProjects.map((project) => (
                 <ProjectCard
                   key={project.id}
                   project={project}
-                  index={index}
-                  viewMode={viewMode}
                 />
               ))}
             </div>
           )}
-        </motion.div>
+        </div>
 
-        {/* Call to Action */}
-        <motion.div
-          variants={fadeInUp}
-          initial="initial"
-          animate={isProjectsInView ? "animate" : "initial"}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="text-center space-y-8 max-w-4xl mx-auto"
-        >
-          <div className="bg-white/5 backdrop-blur border border-white/10 rounded-xl p-8 md:p-12">
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <TrendingUp className="w-8 h-8 text-blue-400" />
-              <h3 className="font-bold text-2xl sm:text-3xl md:text-4xl tracking-tight section-heading-gradient">
-                Ready to Start Your Project?
-              </h3>
-            </div>
+        {/* Premium Call to Action Section */}
+        <div className="text-center space-y-8 max-w-6xl mx-auto">
+          <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 md:p-12 shadow-2xl">
+            {/* Subtle background gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5 rounded-3xl" />
             
-            <p className="text-gray-200 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-light mb-8">
-              Let's discuss how I can help optimize your revenue operations and drive measurable business growth.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                className="premium-button-gradient hover:premium-button-gradient-hover text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-xl shadow-lg hover:shadow-2xl hover:shadow-blue-500/25 hover:scale-110 transition-all duration-500 group border border-blue-400/20"
-                asChild
-              >
-                <Link href="/contact">
-                  <Mail className="mr-2" size={20} />
-                  Start a Project
-                  <ArrowRight size={18} className="ml-2 transition-transform duration-500 group-hover:translate-x-2" />
-                </Link>
-              </Button>
-              
-              <Button
-                size="lg"
-                variant="outline"
-                className="bg-white/10 hover:cta-hover-gradient border-2 border-white/20 hover:border-blue-400/50 text-white hover:text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-xl shadow-lg hover:shadow-2xl hover:shadow-blue-500/25 hover:scale-105 transition-all duration-500 group backdrop-blur-sm"
-                asChild
-              >
-                <Link href="/about">
-                  <Users className="mr-2" size={20} />
-                  Learn More About Me
-                  <ArrowRight size={18} className="ml-2 transition-transform duration-500 group-hover:translate-x-2" />
-                </Link>
-              </Button>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/10">
-              <div className="text-center">
-                <Clock className="w-6 h-6 text-blue-400 mx-auto mb-3" />
-                <h4 className="font-semibold text-white mb-2">Fast Delivery</h4>
-                <p className="text-blue-300 text-sm">2-6 month projects</p>
+            <div className="relative z-10">
+              {/* Enhanced Header */}
+              <div className="flex items-center justify-center gap-4 mb-8">
+                <div className="p-3 bg-white/10 backdrop-blur border border-white/20 rounded-2xl shadow-lg">
+                  <TrendingUp className="w-8 h-8 text-blue-400" />
+                </div>
+                <h3 className="font-bold text-3xl md:text-4xl tracking-tight bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent">
+                  Ready to Start Your Project?
+                </h3>
               </div>
               
-              <div className="text-center">
-                <Target className="w-6 h-6 text-blue-400 mx-auto mb-3" />
-                <h4 className="font-semibold text-white mb-2">Results Focused</h4>
-                <p className="text-blue-300 text-sm">Measurable outcomes</p>
+              <p className="text-gray-200 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-10 font-light">
+                Let's discuss how I can help optimize your revenue operations and drive measurable business growth.
+              </p>
+              
+              {/* Enhanced CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                <Button
+                  size="md"
+                  className="relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
+                  asChild
+                >
+                  <Link href="/contact">
+                    <span className="relative z-10 flex items-center">
+                      <Mail className="mr-2" size={16} />
+                      Start a Project
+                      <ArrowRight size={16} className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
+                    </span>
+                  </Link>
+                </Button>
+                
+                <Button
+                  size="md"
+                  variant="outline"
+                  className="relative bg-white/10 hover:bg-white/20 border border-white/30 hover:border-blue-400/50 text-white text-sm font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group backdrop-blur-sm"
+                  asChild
+                >
+                  <Link href="/about">
+                    <span className="relative z-10 flex items-center">
+                      <Users className="mr-2" size={16} />
+                      Learn More About Me
+                      <ArrowRight size={16} className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
+                    </span>
+                  </Link>
+                </Button>
               </div>
               
-              <div className="text-center">
-                <Award className="w-6 h-6 text-blue-400 mx-auto mb-3" />
-                <h4 className="font-semibold text-white mb-2">Proven Success</h4>
-                <p className="text-blue-300 text-sm">98% success rate</p>
+              {/* Enhanced Feature Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-white/20">
+                <div className="group text-center">
+                  <div className="relative bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 mb-4 mx-auto w-fit hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <Clock className="relative z-10 w-7 h-7 text-blue-400" />
+                  </div>
+                  <h4 className="font-bold text-white mb-2 text-xl bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">Fast Delivery</h4>
+                  <p className="text-gray-300 text-base">2-6 month projects</p>
+                </div>
+                
+                <div className="group text-center">
+                  <div className="relative bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 mb-4 mx-auto w-fit hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
+                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <Target className="relative z-10 w-7 h-7 text-blue-400" />
+                  </div>
+                  <h4 className="font-bold text-white mb-2 text-xl bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">Results Focused</h4>
+                  <p className="text-gray-300 text-base">Measurable outcomes</p>
+                </div>
+                
+                <div className="group text-center">
+                  <div className="relative bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 mb-4 mx-auto w-fit hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <Award className="relative z-10 w-7 h-7 text-blue-400" />
+                  </div>
+                  <h4 className="font-bold text-white mb-2 text-xl bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">Proven Success</h4>
+                  <p className="text-gray-300 text-base">98% success rate</p>
+                </div>
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
     </>

@@ -3,7 +3,7 @@
 import React from 'react' // Added missing React import
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowRight, Folder, FileText, Mail } from 'lucide-react'
+import { ArrowRight, Folder, FileText, Mail, TrendingUp, DollarSign, Target, Award } from 'lucide-react'
 import { HomePageSchema } from '@/components/seo/home-page-schema' // Corrected path
 
 // Animation variants for Framer Motion
@@ -24,22 +24,10 @@ const badgePop = {
   },
 }
 
-// Convert Next.js Link to a motion component using motion.custom and forwardRef
-// Note: Framer Motion's `motion()` HOC should handle ref forwarding for Next.js Link components
-// in recent versions. If `motion(Link)` is truly deprecated and causing issues,
-// the more robust way is to ensure refs are handled if Link needs one from motion.
-// However, often `motion(Link)` just works. If the error specifically said "motion.create()",
-// that's a different API. Let's stick to the common ref forwarding pattern if `motion(Link)` is problematic.
-// For now, assuming the deprecation message implies `motion(Component)` is generally discouraged
-// without proper ref handling for custom components.
-
-// Standard way to make a custom component like Next/Link animatable if it needs a ref from motion
-const CustomNextLink = React.forwardRef<HTMLAnchorElement, React.ComponentProps<typeof Link>>((props, ref) => (
+// Convert Next.js Link to a motion component using motion.create
+const MotionLink = motion.create(React.forwardRef<HTMLAnchorElement, React.ComponentProps<typeof Link>>((props, ref) => (
   <Link {...props} ref={ref} />
-));
-CustomNextLink.displayName = 'CustomNextLink'; // Good practice for dev tools
-
-const MotionLink = motion(CustomNextLink);
+)));
 
 
 export default function HomePageContent() {
@@ -59,19 +47,12 @@ export default function HomePageContent() {
         aria-hidden="true"
       ></div>
 
-      {/* Animated Blobs */}
-      <div
-        className="absolute top-0 -left-4 w-72 h-72 sm:w-96 sm:h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"
-        aria-hidden="true"
-      ></div>
-      <div
-        className="absolute top-0 -right-4 w-72 h-72 sm:w-96 sm:h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob [animation-delay:2s]"
-        aria-hidden="true"
-      ></div>
-      <div
-        className="absolute bottom-0 left-20 w-72 h-72 sm:w-96 sm:h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob [animation-delay:4s]"
-        aria-hidden="true"
-      ></div>
+      {/* Enhanced Animated Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
+      </div>
 
       {/* Content */}
       <div className="container relative z-10 px-4 mx-auto max-w-7xl text-center">
@@ -118,10 +99,38 @@ export default function HomePageContent() {
           initial="initial"
           animate="animate"
           transition={{ duration: 0.5, delay: 0.8 }}
-          className="text-gray-200 text-lg md:text-xl max-w-3xl mx-auto mb-12 leading-relaxed px-4 font-light"
+          className="text-gray-200 text-lg md:text-xl max-w-3xl mx-auto mb-8 leading-relaxed px-4 font-light"
         >
           Experienced in optimizing revenue operations through data-driven insights, process optimization, and strategic operational improvements that drive measurable business results.
         </motion.p>
+
+        {/* Key Achievements */}
+        <motion.div
+          variants={fadeInUp}
+          initial="initial"
+          animate="animate"
+          transition={{ duration: 0.5, delay: 0.9 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mb-12"
+        >
+          {[
+            { icon: DollarSign, value: '$50M+', label: 'Revenue Generated' },
+            { icon: TrendingUp, value: '94%', label: 'Forecast Accuracy' },
+            { icon: Target, value: '10+', label: 'Projects Delivered' },
+            { icon: Award, value: '98%', label: 'Success Rate' }
+          ].map((stat, index) => (
+            <div key={index} className="text-center">
+              <div className="p-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl mb-3 mx-auto w-fit">
+                <stat.icon className="w-6 h-6 text-blue-400" />
+              </div>
+              <div className="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400">
+                {stat.value}
+              </div>
+              <div className="text-sm text-gray-400">
+                {stat.label}
+              </div>
+            </div>
+          ))}
+        </motion.div>
 
         <div className="flex flex-wrap gap-4 justify-center">
           {buttons.map((item, index) => (
@@ -131,7 +140,7 @@ export default function HomePageContent() {
               variants={fadeInUp} // Use the same fadeInUp
               initial="initial"
               animate="animate"
-              transition={{ duration: 0.5, delay: 1.0 + index * 0.15 }} // Staggered delay
+              transition={{ duration: 0.5, delay: 1.1 + index * 0.15 }} // Staggered delay
               className="inline-flex items-center justify-center gap-2 whitespace-nowrap md:text-base font-medium disabled:pointer-events-none disabled:opacity-50 outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f172a] premium-button-gradient hover:premium-button-gradient-hover text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-xl shadow-lg hover:shadow-2xl hover:shadow-blue-500/25 hover:scale-110 transition-all duration-500 group border border-blue-400/20"
             >
               <item.icon size={20} className="text-white" />

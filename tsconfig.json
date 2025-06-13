@@ -58,6 +58,12 @@
       ],
       "@/styles/*": [
         "./src/styles/*"
+      ],
+      "@/content/*": [
+        "./src/content/*"
+      ],
+      "@/data/*": [
+        "./src/data/*"
       ]
     }
   },

@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, Variants } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
 import { useInView } from 'react-intersection-observer'
@@ -24,7 +24,7 @@ export default function AnimatedSection({
     rootMargin: '-50px 0px',
   })
 
-  const variants = {
+  const variants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
