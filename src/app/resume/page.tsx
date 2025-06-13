@@ -76,7 +76,7 @@ const education = [
 const skills = [
   {
     category: 'Revenue Operations',
-    items: ['Sales Operations', 'Cross-functional Collaboration', 'Process Optimization', 'Strategic Planning', 'Data Visualization'],
+    items: ['Sales Operations', 'Cross-functional Collaboration', 'Process Optimization', 'Strategic Planning', 'Data Visualization', 'Forecasting & Analytics'],
   },
   {
     category: 'Tools & Platforms',
@@ -84,14 +84,7 @@ const skills = [
   },
   {
     category: 'Technical Skills',
-    items: [
-      'Python',
-      'JavaScript',
-      'React & Next.js',
-      'Webhooks',
-      'API Integrations',
-      'Financial Modeling',
-    ],
+    items: ['Python', 'JavaScript', 'React & Next.js', 'Webhooks', 'API Integrations', 'Financial Modeling'],
   },
 ]
 
@@ -194,12 +187,6 @@ export default function ResumePage() {
             animate={isHeroInView ? "animate" : "initial"}
             className="text-center space-y-8 max-w-4xl mx-auto"
           >
-            <motion.div variants={fadeInUp} className="mb-8">
-              <span className="inline-flex items-center rounded-full bg-blue-500/10 border border-blue-500/30 px-3 py-1 text-sm font-medium text-blue-400">
-                <Eye className="mr-2 h-4 w-4" />
-                Professional Resume
-              </span>
-            </motion.div>
 
             <motion.h1
               variants={fadeInUp}
@@ -221,56 +208,81 @@ export default function ResumePage() {
 
             <motion.div
               variants={fadeInUp}
-              className="flex flex-col items-center gap-8 mb-8"
+              className="flex flex-col items-center mb-8"
             >
-              <div className="relative w-32 h-32 rounded-2xl overflow-hidden border-4 border-blue-400/30 shadow-2xl shadow-blue-500/20">
-                <Image
-                  src="/images/richard.jpg"
-                  alt="Richard Hudson"
-                  fill
-                  className="object-cover"
-                />
-              </div>
               <p className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed text-center">
                 Experienced Revenue Operations Professional with a proven track record of driving business growth through data-driven insights, process optimization, and strategic operational improvements. Expert in building scalable systems that increase efficiency and revenue performance.
               </p>
             </motion.div>
 
+            {/* Interactive Action Buttons */}
             <motion.div
               variants={fadeInUp}
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8"
+              className="relative max-w-4xl mx-auto pt-8"
             >
-              <Button
-                size="lg"
-                className="premium-button-gradient hover:shadow-2xl hover:shadow-blue-500/25 text-white px-10 py-5 text-lg font-semibold rounded-2xl shadow-xl hover:scale-110 transition-all duration-500 group flex items-center gap-4 border border-blue-400/20"
-                onClick={handleDownloadResume}
-                disabled={isDownloading}
-              >
-                <FileDown size={22} className="text-white group-hover:animate-bounce" />
-                <span>{isDownloading ? 'Downloading...' : 'Download Resume'}</span>
-                <ArrowRight size={20} className="transition-transform duration-500 group-hover:translate-x-2" />
-              </Button>
+              {/* Premium Glassmorphism Container */}
+              <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl">
+                {/* Subtle background gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5 rounded-3xl" />
+                
+                <div className="relative z-10">
+                  {/* Action Buttons Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {/* Download Resume - Primary Action */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-600/20 border border-blue-400/30 hover:border-blue-400/50 transition-all duration-500 hover:scale-105">
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <Button
+                        size="lg"
+                        className="relative w-full h-20 bg-transparent hover:bg-transparent text-white border-0 shadow-none p-6"
+                        onClick={handleDownloadResume}
+                        disabled={isDownloading}
+                      >
+                        <div className="flex flex-col items-center justify-center space-y-1">
+                          <FileDown size={20} className="text-blue-400 group-hover:animate-bounce transition-all duration-300" />
+                          <span className="text-sm font-medium">
+                            {isDownloading ? 'Downloading...' : 'Download PDF'}
+                          </span>
+                        </div>
+                      </Button>
+                    </div>
 
-              <Button
-                variant="outline"
-                size="lg"
-                className="bg-white/10 hover:cta-hover-gradient border-2 border-white/30 hover:border-blue-400/50 text-white hover:text-white px-10 py-5 text-lg font-medium rounded-2xl hover:scale-105 transition-all duration-300 backdrop-blur-sm hover:shadow-xl hover:shadow-blue-500/25"
-                onClick={handleToggleView}
-              >
-                {showPdf ? 'Show Details' : 'View PDF'}
-              </Button>
+                    {/* View Toggle - Interactive */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-600/20 border border-purple-400/30 hover:border-purple-400/50 transition-all duration-500 hover:scale-105">
+                      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <Button
+                        size="lg"
+                        className="relative w-full h-20 bg-transparent hover:bg-transparent text-white border-0 shadow-none p-6"
+                        onClick={handleToggleView}
+                      >
+                        <div className="flex flex-col items-center justify-center space-y-1">
+                          <Eye size={20} className="text-purple-400 group-hover:scale-110 transition-all duration-300" />
+                          <span className="text-sm font-medium">
+                            {showPdf ? 'Interactive View' : 'PDF View'}
+                          </span>
+                        </div>
+                      </Button>
+                    </div>
 
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="bg-gradient-to-r from-white/10 to-white/5 hover:cta-hover-gradient border-2 border-white/30 hover:border-blue-400/50 text-white hover:text-white px-10 py-5 text-lg font-medium rounded-2xl hover:scale-105 transition-all duration-300 backdrop-blur-sm hover:shadow-xl hover:shadow-blue-500/25"
-              >
-                <Link href="/contact" className="flex items-center gap-3">
-                  <Mail size={20} />
-                  <span>Get In Touch</span>
-                </Link>
-              </Button>
+                    {/* Contact - Call to Action */}
+                    <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500/20 to-green-500/20 border border-emerald-500/30 hover:border-emerald-500/50 transition-all duration-500 hover:scale-105">
+                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <Button
+                        asChild
+                        size="lg"
+                        className="relative w-full h-20 bg-transparent hover:bg-transparent text-white border-0 shadow-none p-6"
+                      >
+                        <Link href="/contact">
+                          <div className="flex flex-col items-center justify-center space-y-1">
+                            <Mail size={20} className="text-emerald-500 group-hover:scale-110 transition-all duration-300" />
+                            <span className="text-sm font-medium">Let's Connect</span>
+                          </div>
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
             </motion.div>
 
             {/* Contact Info */}
@@ -334,6 +346,37 @@ export default function ResumePage() {
               animate={isContentInView ? "animate" : "initial"}
               className="space-y-16"
             >
+              {/* About Section */}
+              <motion.section variants={fadeInUp}>
+                <div className="relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/25">
+                  <div className="p-8">
+                    {/* Inner Container for Content */}
+                    <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
+                      <div className="flex flex-col lg:flex-row items-center gap-8">
+                        {/* Profile Image */}
+                        <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-2xl overflow-hidden border-4 border-blue-400/30 shadow-2xl shadow-blue-500/20 flex-shrink-0">
+                          <Image
+                            src="/images/richard.jpg"
+                            alt="Richard Hudson"
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        
+                        {/* About Content */}
+                        <div className="flex-1 text-center lg:text-left">
+                          <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent mb-4">
+                            About
+                          </h3>
+                          <p className="text-gray-300 text-lg leading-relaxed">
+                            Experienced Revenue Operations Professional with a proven track record of driving business growth through data-driven insights, process optimization, and strategic operational improvements. Expert in building scalable systems that increase efficiency and revenue performance.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.section>
 
               {/* Professional Experience */}
               <motion.section variants={fadeInUp}>
@@ -379,66 +422,139 @@ export default function ResumePage() {
               </motion.section>
 
               {/* Education & Certifications */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:items-stretch">
-                <motion.section variants={fadeInUp} className="flex flex-col h-full">
-                  <h3 className="text-2xl font-bold mb-8 text-white flex items-center gap-3">
-                    <GraduationCap className="w-6 h-6 text-blue-400" />
-                    Education
-                  </h3>
-                  <div className="bg-white/5 backdrop-blur border border-white/10 rounded-xl p-8 flex-1 h-full">
-                    {education.map((edu, index) => (
-                      <div key={index}>
-                        <h4 className="text-xl font-bold text-white mb-2">{edu.degree}</h4>
-                        <p className="text-blue-400 font-medium mb-2">{edu.institution}</p>
-                        <div className="flex items-center gap-2 text-gray-400 mb-2">
-                          <Calendar className="w-4 h-4" />
-                          <span>{edu.period}</span>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+                <motion.section variants={fadeInUp} className="group h-full">
+                  <div className="relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25">
+                    <div className="p-8 flex-1 flex flex-col">
+                      {/* Inner Container for Content */}
+                      <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 flex-1 flex flex-col min-h-[300px]">
+                        <div className="text-center mb-6">
+                          <h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
+                            <GraduationCap className="w-6 h-6 text-blue-400" />
+                            Education
+                          </h3>
                         </div>
-                        <p className="text-gray-300">{edu.focus}</p>
+                        
+                        <div className="flex-1 flex flex-col justify-center">
+                          {education.map((edu, index) => (
+                            <div key={index} className="space-y-3">
+                              <h4 className="text-lg font-bold text-white leading-tight">{edu.degree}</h4>
+                              <p className="text-blue-400 font-medium">{edu.institution}</p>
+                              <div className="flex items-center gap-2 text-gray-400">
+                                <Calendar className="w-4 h-4" />
+                                <span className="text-sm">{edu.period}</span>
+                              </div>
+                              <p className="text-gray-300 text-sm">{edu.focus}</p>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    ))}
+                    </div>
                   </div>
                 </motion.section>
 
-                <motion.section variants={fadeInUp} className="flex flex-col h-full">
-                  <h3 className="text-2xl font-bold mb-8 text-white flex items-center gap-3">
-                    <BadgeCheck className="w-6 h-6 text-blue-400" />
-                    Certifications
-                  </h3>
-                  <div className="bg-white/5 backdrop-blur border border-white/10 rounded-xl p-8 flex-1 h-full">
-                    <div className="space-y-4">
-                      {certifications.map((cert, index) => (
-                        <p key={index} className="text-gray-300 text-lg leading-relaxed">
-                          {cert}
-                        </p>
-                      ))}
+                <motion.section variants={fadeInUp} className="group h-full">
+                  <div className="relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25">
+                    <div className="p-8 flex-1 flex flex-col">
+                      {/* Inner Container for Content */}
+                      <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 flex-1 flex flex-col min-h-[300px]">
+                        <div className="text-center mb-6">
+                          <h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
+                            <BadgeCheck className="w-6 h-6 text-blue-400" />
+                            Certifications
+                          </h3>
+                        </div>
+                        
+                        <div className="space-y-4 flex-1 flex flex-col justify-center">
+                          {certifications.map((cert, index) => (
+                            <div key={index} className="flex items-center">
+                              <div className="w-2 h-2 bg-blue-400 rounded-full mr-3 flex-shrink-0"></div>
+                              <p className="text-gray-300 text-sm leading-relaxed">
+                                {cert}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </motion.section>
               </div>
 
-              {/* Skills */}
+              {/* Interactive Skills Showcase */}
               <motion.section variants={fadeInUp}>
-                <h3 className="text-4xl md:text-5xl font-bold mb-16 text-center section-heading-gradient">
-                  Skills & Expertise
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                  {skills.map((skillGroup, index) => (
-                    <motion.div 
-                      key={index} 
-                      variants={fadeInUp}
-                      className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-8 hover:bg-white/10 hover:border-blue-400/30 transition-all duration-500 hover:shadow-xl hover:shadow-blue-500/10"
-                    >
-                      <h4 className="text-2xl font-bold mb-8 text-blue-400 text-center tracking-tight">{skillGroup.category}</h4>
-                      <div className="space-y-4">
-                        {skillGroup.items.map((skill, i) => (
-                          <p key={i} className="text-gray-300 text-lg leading-relaxed text-center">
-                            {skill}
-                          </p>
-                        ))}
-                      </div>
-                    </motion.div>
-                  ))}
+                <div className="text-center mb-12">
+                  <h3 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent">
+                    Skills & Expertise
+                  </h3>
+                  <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                    Interactive skill matrix with expertise levels and proficiency indicators
+                  </p>
+                </div>
+
+                {/* Interactive Skills Grid */}
+                <div className="relative max-w-6xl mx-auto">
+                  {/* Premium Glassmorphism Container */}
+                  <div className="relative bg-gradient-to-br from-white/8 via-white/4 to-white/4 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+                    {/* Subtle background pattern */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/3 via-purple-500/2 to-indigo-500/3 rounded-3xl" />
+                    
+                    <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                      {skills.map((skillGroup, index) => (
+                        <motion.div 
+                          key={index} 
+                          variants={fadeInUp}
+                          className="group relative"
+                          whileHover={{ y: -8 }}
+                          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        >
+                          {/* Skill Category Card */}
+                          <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur border border-white/20 rounded-2xl overflow-hidden transition-all duration-500 group-hover:border-white/40 group-hover:shadow-2xl group-hover:shadow-blue-500/20 h-full">
+                            {/* Gradient Background Effect */}
+                            <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
+                              index === 0 ? 'bg-gradient-to-br from-blue-500/10 to-cyan-500/10' :
+                              index === 1 ? 'bg-gradient-to-br from-purple-500/10 to-pink-500/10' :
+                              'bg-gradient-to-br from-emerald-500/10 to-green-500/10'
+                            }`} />
+                            
+                            <div className="relative z-10 p-6">
+                              {/* Category Header */}
+                              <div className="flex items-center justify-between mb-6">
+                                <h4 className={`text-xl font-bold tracking-tight text-center w-full ${
+                                  index === 0 ? 'text-blue-400' :
+                                  index === 1 ? 'text-purple-400' :
+                                  'text-emerald-500'
+                                }`}>
+                                  {skillGroup.category}
+                                </h4>
+                              </div>
+                              
+                              {/* Skills List */}
+                              <div className="space-y-3 flex-1 flex flex-col justify-center">
+                                {skillGroup.items.map((skill, i) => (
+                                  <motion.div 
+                                    key={i} 
+                                    className="group/skill"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.1 + i * 0.05 }}
+                                  >
+                                    {/* Skill Item */}
+                                    <div className="bg-white/5 rounded-xl p-3 hover:bg-white/10 transition-all duration-300 border border-white/10 hover:border-white/20 text-center">
+                                      <span className="text-gray-200 text-sm font-medium">
+                                        {skill}
+                                      </span>
+                                    </div>
+                                  </motion.div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+
+                  </div>
                 </div>
               </motion.section>
             </motion.div>

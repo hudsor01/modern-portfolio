@@ -291,11 +291,9 @@ class InMemoryAnalyticsStorage implements AnalyticsStorage {
 // Web Vitals service class
 export class WebVitalsService {
   private storage: AnalyticsStorage
-  private isProduction: boolean
   
   constructor(storage?: AnalyticsStorage) {
     this.storage = storage || new InMemoryAnalyticsStorage()
-    this.isProduction = process.env.NODE_ENV === 'production'
   }
   
   async collect(rawData: unknown, context: {
@@ -350,16 +348,7 @@ export class WebVitalsService {
       // Store the data
       await this.storage.store(enhancedData)
       
-      // Log in development
-      if (!this.isProduction) {
-        console.log('📊 Web Vitals collected:', {
-          metric: enhancedData.name,
-          value: enhancedData.value,
-          rating: enhancedData.rating,
-          page: enhancedData.page,
-          device: enhancedData.device.type,
-        })
-      }
+      // Production only - no development logging
       
       return { success: true }
     } catch (error) {

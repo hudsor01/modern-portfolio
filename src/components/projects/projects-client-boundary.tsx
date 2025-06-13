@@ -25,16 +25,27 @@ function convertProjectData(projectData: ProjectData[]): Project[] {
 }
 
 export default function ProjectsClientBoundary({ initialProjects }: ProjectsClientBoundaryProps) {
+  // Always call hooks at the top level
   const { data: projects, isLoading, isError, error } = useProjects();
   const prefetchProjects = usePrefetchProjects();
 
-  // Use hydrated data or fallback to initial data
+  // Use initial projects directly if available
+  if (initialProjects && initialProjects.length > 0) {
+    return (
+      <ModernProjectsContent 
+        projects={initialProjects}
+        isLoading={false}
+      />
+    );
+  }
+
+  // Use hydrated data or convert API data
   const projectsToDisplay = projects?.data 
     ? convertProjectData(projects.data) 
-    : initialProjects || [];
+    : [];
 
-  // Handle loading state (only show if no data available)
-  if (isLoading && !projects && !initialProjects?.length) {
+  // Handle loading state
+  if (isLoading) {
     return (
       <div className="text-center py-12">
         <div className="animate-pulse">
@@ -49,8 +60,8 @@ export default function ProjectsClientBoundary({ initialProjects }: ProjectsClie
     );
   }
 
-  // Handle error state (only if no data available)
-  if (isError && !projects?.data?.length && !initialProjects?.length) {
+  // Handle error state
+  if (isError) {
     return (
       <div className="text-center py-12 text-destructive">
         <h3 className="text-xl font-semibold mb-4">Error loading projects</h3>

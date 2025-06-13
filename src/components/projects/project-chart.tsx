@@ -16,7 +16,7 @@ import {
   Pie,
   Cell,
 } from 'recharts'
-import { AnimationProps, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import type { ChartData } from '@/types/project'
 
@@ -49,10 +49,10 @@ export function ProjectChart({
   animationDuration = 0.5,
   dataKey = 'value',
 }: ProjectChartProps) {
-  const animationProps: AnimationProps = {
+  const animationProps = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: animationDuration, ease: 'easeOut' },
+    transition: { duration: animationDuration },
   }
 
   // Handle labels for Bar and Line charts

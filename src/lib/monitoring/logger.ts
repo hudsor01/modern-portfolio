@@ -91,21 +91,18 @@ class ConsoleTransport implements LogTransport {
   }
   
   log(entry: LogEntry): void {
-    if (!this.shouldLog(entry.level)) return
+    if (!this.shouldLog(entry.level) || process.env.NODE_ENV === 'production') return
     
     const color = this.colors[entry.level]
     const timestamp = new Date(entry.timestamp).toISOString()
     const level = entry.level.toUpperCase().padEnd(5)
     
-    // Format the message
     let output = `${color}[${timestamp}] ${level}${this.colors.reset} ${entry.message}`
     
-    // Add context if present
     if (entry.context && Object.keys(entry.context).length > 0) {
       output += `\n  Context: ${JSON.stringify(entry.context, null, 2)}`
     }
     
-    // Add error details
     if (entry.error) {
       output += `\n  Error: ${entry.error.name}: ${entry.error.message}`
       if (entry.error.stack && entry.level === 'error') {
@@ -113,7 +110,6 @@ class ConsoleTransport implements LogTransport {
       }
     }
     
-    // Add performance metrics
     if (entry.performance) {
       output += `\n  Performance: ${entry.performance.duration}ms`
       if (entry.performance.memory) {

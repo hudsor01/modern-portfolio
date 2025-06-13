@@ -3,52 +3,38 @@
 import { useReportWebVitals } from 'next/web-vitals'
 import { Analytics as VercelAnalytics } from '@vercel/analytics/react'
 
-/**
- * WebVitals Component
- *
- * Combines Vercel Analytics with Web Vitals reporting.
- * This component should be used in the app layout.
- */
 export function WebVitals() {
-  // Use Next.js built-in web vitals reporting
   useReportWebVitals((metric) => {
-    // Log to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`Web Vital: ${metric.name}`, metric.value)
-    }
-
-    // In production, send to our API endpoint
     if (process.env.NODE_ENV === 'production') {
-      const body = {
+      const body = JSON.stringify({
         id: metric.id,
         name: metric.name,
         value: metric.value,
         rating: getRating(metric.name, metric.value),
         delta: metric.delta || 0,
         navigationType: metric.navigationType || '',
-      }
+      })
 
-      // Use sendBeacon if available, otherwise use fetch
       if (navigator.sendBeacon) {
-        navigator.sendBeacon('/api/analytics/vitals', JSON.stringify(body))
+        navigator.sendBeacon('/api/analytics/vitals', body)
       } else {
         fetch('/api/analytics/vitals', {
-          body: JSON.stringify(body),
+          body,
           method: 'POST',
           keepalive: true,
           headers: {
             'Content-Type': 'application/json',
           },
+        }).catch(() => {
+          // Silently fail in production
         })
       }
     }
   })
 
-  // Include Vercel Analytics
   return <VercelAnalytics />
 }
 
-// Helper function to determine rating based on metric name and value
 function getRating(name: string, value: number): string {
   switch (name) {
     case 'CLS':

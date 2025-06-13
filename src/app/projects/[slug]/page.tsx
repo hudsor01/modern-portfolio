@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query'
-import { getProjects, getProject } from '@/lib/content/projects'
+import { getProjects, getProject } from '@/app/projects/data/projects'
+import type { Project } from '@/types/project'
 import { Metadata } from 'next'
 import { createServerQueryClient } from '@/lib/query-config'
 import { projectKeys } from '@/lib/queryKeys'
@@ -57,6 +58,26 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     notFound()
   }
 
+  // Convert to the expected Project type for the component
+  const convertedProject: Project = {
+    id: project.id,
+    title: project.title,
+    slug: project.slug || project.id,
+    description: project.description,
+    content: project.content,
+    featured: project.featured ?? false,
+    image: project.image,
+    link: project.link,
+    github: project.github,
+    category: project.category || 'Other',
+    tags: project.tags,
+    createdAt: project.createdAt instanceof Date ? project.createdAt : new Date(project.createdAt || Date.now()),
+    updatedAt: project.updatedAt ? (project.updatedAt instanceof Date ? project.updatedAt : new Date(project.updatedAt)) : undefined,
+    technologies: project.tags,
+    liveUrl: project.link,
+    githubUrl: project.github,
+  }
+
   // Prefetch project data on the server
   await queryClient.prefetchQuery({
     queryKey: projectKeys.detail(params.slug),
@@ -68,7 +89,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     <HydrationBoundary state={dehydrate(queryClient)}>
       <ProjectDetailClientBoundary 
         slug={params.slug} 
-        initialProject={project}
+        initialProject={convertedProject}
       />
     </HydrationBoundary>
   )

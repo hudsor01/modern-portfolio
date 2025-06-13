@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { motion, useInView, useAnimation, HTMLMotionProps } from 'framer-motion' // Added HTMLMotionProps
+import { motion, useInView, useAnimation, HTMLMotionProps, Variants } from 'framer-motion' // Added HTMLMotionProps
 import { TextRevealProps } from '@/types/ui'
 
 export default function TextReveal({
@@ -20,7 +20,7 @@ export default function TextReveal({
   const words = text.split(' ')
 
   // Animation variants
-  const container = {
+  const container: Variants = {
     hidden: { opacity: 0 },
     visible: (i = 1) => ({
       opacity: 1,
@@ -28,7 +28,7 @@ export default function TextReveal({
     }),
   }
 
-  const child = {
+  const child: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,

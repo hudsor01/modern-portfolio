@@ -1,10 +1,8 @@
 import React from 'react'
-import { HydrationBoundary, dehydrate } from '@tanstack/react-query'
 import { generateMetadata } from '@/app/shared-metadata'
-import { createServerQueryClient } from '@/lib/query-config'
-import { projectKeys } from '@/lib/queryKeys'
-import { getProjects } from '@/lib/content/projects'
+import { getProjects } from '@/app/projects/data/projects'
 import ProjectsClientBoundary from '@/components/projects/projects-client-boundary'
+import type { Project } from '@/types/project'
 
 export const metadata = generateMetadata(
   "Projects | Richard Hudson's Portfolio",
@@ -13,18 +11,28 @@ export const metadata = generateMetadata(
 )
 
 export default async function ProjectsPage() {
-  const queryClient = createServerQueryClient()
+  // Get projects data directly on server
+  const projects = await getProjects()
   
-  // Prefetch projects data on the server
-  await queryClient.prefetchQuery({
-    queryKey: projectKeys.all(),
-    queryFn: () => getProjects(),
-    staleTime: 1000 * 60 * 10, // 10 minutes
-  })
+  // Convert to the expected Project type for the component
+  const convertedProjects: Project[] = projects.map(p => ({
+    id: p.id,
+    title: p.title,
+    slug: p.slug || p.id,
+    description: p.description,
+    content: p.content,
+    featured: p.featured ?? false,
+    image: p.image,
+    link: p.link,
+    github: p.github,
+    category: p.category || 'Other',
+    tags: p.tags,
+    createdAt: p.createdAt instanceof Date ? p.createdAt : new Date(p.createdAt || Date.now()),
+    updatedAt: p.updatedAt ? (p.updatedAt instanceof Date ? p.updatedAt : new Date(p.updatedAt)) : undefined,
+    technologies: p.tags,
+    liveUrl: p.link,
+    githubUrl: p.github,
+  }))
 
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProjectsClientBoundary />
-    </HydrationBoundary>
-  )
+  return <ProjectsClientBoundary initialProjects={convertedProjects} />
 }

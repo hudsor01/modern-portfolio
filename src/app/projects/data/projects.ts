@@ -1,7 +1,4 @@
 import { Project, ProjectsResponse } from '@/types/projects-types'
-import path from 'path'
-import fs from 'fs/promises'
-import matter from 'gray-matter'
 
 // Cache projects to avoid reading from disk on every request
 let projectsCache: Project[] | null = null
@@ -9,32 +6,15 @@ let projectsCache: Project[] | null = null
 export async function getProjects(): Promise<Project[]> {
   if (projectsCache) return projectsCache
 
-  try {
-    const projectsDirectory = path.join(process.cwd(), 'content/projects')
-    const fileNames = await fs.readdir(projectsDirectory)
+  // Use static project data
+  const validProjects = projects.sort((a, b) => {
+    const aDate = a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt || 0).getTime();
+    const bDate = b.createdAt instanceof Date ? b.createdAt.getTime() : new Date(b.createdAt || 0).getTime();
+    return bDate - aDate;
+  })
 
-    const projects = await Promise.all(
-      fileNames.map(async (fileName) => {
-        const slug = fileName.replace(/\.mdx$/, '')
-        return await getProjectBySlug(slug)
-      })
-    )
-
-    // Filter out any null values and sort by date
-    const validProjects = projects
-      .filter((p): p is Project => p !== null)
-      .sort((a, b) => {
-        const aDate = typeof a.createdAt !== 'undefined' ? a.createdAt : Date.now();
-        const bDate = typeof b.createdAt !== 'undefined' ? b.createdAt : Date.now();
-        return new Date(bDate).getTime() - new Date(aDate).getTime();
-      })
-
-    projectsCache = validProjects
-    return validProjects
-  } catch (error) {
-    console.error('Error loading projects:', error)
-    return []
-  }
+  projectsCache = validProjects
+  return validProjects
 }
 
 export async function getProjectsWithFilters(): Promise<ProjectsResponse> {
@@ -58,31 +38,9 @@ export async function getProjectsWithFilters(): Promise<ProjectsResponse> {
 }
 
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
-  try {
-    const fullPath = path.join(process.cwd(), 'content/projects', `${slug}.mdx`)
-    const fileContents = await fs.readFile(fullPath, 'utf8')
-
-    const { data, content } = matter(fileContents)
-
-    return {
-      id: slug,
-      slug,
-      title: data.title || '',
-      description: data.description || '',
-      content,
-      featured: data.featured || false,
-      image: data.image || '',
-      link: data.link || '',
-      github: data.github || '',
-      category: data.category || 'uncategorized',
-      tags: data.tags || [],
-      createdAt: new Date(data.date || Date.now()),
-      updatedAt: data.updatedAt ? new Date(data.updatedAt) : undefined,
-    }
-  } catch (error) {
-    console.error(`Error loading project ${slug}:`, error)
-    return null
-  }
+  // Find project from static data
+  const project = projects.find(p => p.slug === slug || p.id === slug)
+  return project || null
 }
 
 /**
@@ -94,6 +52,168 @@ export function getProjectById(slug: string): Project | undefined {
 
 // Sample project data
 const projects: Project[] = [
+  {
+    id: 'commission-optimization',
+    slug: 'commission-optimization',
+    title: 'Commission & Incentive Optimization System',
+    description:
+      'Advanced commission management and partner incentive optimization platform managing $254K+ commission structures with automated tier adjustments, 23% commission rate optimization, and ROI-driven compensation strategy delivering 34% performance improvement and 87.5% automation efficiency.',
+    image: '/images/projects/financial-analytics.jpg',
+    link: 'https://demo.commissionoptimization.example.com',
+    github: 'https://github.com/hudsonr01/commission-optimization',
+    category: 'Revenue Operations',
+    tags: [
+      'Commission Management',
+      'Incentive Optimization',
+      'Partner Compensation',
+      'Performance Analytics',
+      'Commission Structure',
+      'ROI Optimization',
+      'Revenue Operations',
+      'Automation Efficiency',
+      'React',
+      'TypeScript',
+      'Recharts',
+    ],
+    featured: true,
+    createdAt: new Date('2024-04-05'),
+    updatedAt: new Date('2024-04-08'),
+  },
+  {
+    id: 'multi-channel-attribution',
+    slug: 'multi-channel-attribution',
+    title: 'Multi-Channel Attribution Analytics Dashboard',
+    description:
+      'Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints. Delivering 92.4% attribution accuracy and $2.3M ROI optimization through data-driven attribution modeling and cross-channel insights.',
+    image: '/images/projects/multi-channel.jpg',
+    link: 'https://demo.attribution.example.com',
+    github: 'https://github.com/hudsonr01/multi-channel-attribution',
+    category: 'Marketing',
+    tags: [
+      'Multi-Channel Attribution',
+      'Marketing Analytics',
+      'Customer Journey',
+      'Attribution Modeling',
+      'Marketing ROI',
+      'Touchpoint Analysis',
+      'Marketing Mix',
+      'Machine Learning',
+      'React',
+      'TypeScript',
+      'Recharts',
+    ],
+    featured: true,
+    createdAt: new Date('2024-03-30'),
+    updatedAt: new Date('2024-04-01'),
+  },
+  {
+    id: 'revenue-operations-center',
+    slug: 'revenue-operations-center',
+    title: 'Revenue Operations Command Center',
+    description:
+      'Comprehensive executive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs. Real-time insights with 96.8% forecast accuracy and 89.7% operational efficiency across sales, marketing, and partner channels.',
+    image: '/images/projects/revenue-operations.jpg',
+    link: 'https://demo.revopscommand.example.com',
+    github: 'https://github.com/hudsonr01/revenue-operations-center',
+    category: 'Revenue Operations',
+    tags: [
+      'Revenue Operations',
+      'Executive Dashboard',
+      'Pipeline Analytics',
+      'Revenue Forecasting',
+      'Sales Operations',
+      'Business Intelligence',
+      'Real-time Analytics',
+      'Operational KPIs',
+      'React',
+      'TypeScript',
+      'Recharts',
+    ],
+    featured: true,
+    createdAt: new Date('2024-03-28'),
+    updatedAt: new Date('2024-03-30'),
+  },
+  {
+    id: 'customer-lifetime-value',
+    slug: 'customer-lifetime-value',
+    title: 'Customer Lifetime Value Predictive Analytics Dashboard',
+    description:
+      'Advanced CLV analytics platform leveraging BTYD (Buy Till You Die) predictive modeling framework. Achieving 94.3% prediction accuracy through machine learning algorithms and real-time customer behavior tracking across 5 distinct customer segments.',
+    image: '/images/projects/customer-analytics.jpg',
+    link: 'https://demo.clvanalytics.example.com',
+    github: 'https://github.com/hudsonr01/customer-lifetime-value',
+    category: 'Revenue Operations',
+    tags: [
+      'Customer Lifetime Value',
+      'Predictive Analytics',
+      'CLV Dashboard',
+      'Machine Learning',
+      'BTYD Model',
+      'Customer Segmentation',
+      'Revenue Forecasting',
+      'Behavioral Analytics',
+      'React',
+      'TypeScript',
+      'Recharts',
+    ],
+    featured: true,
+    createdAt: new Date('2024-03-25'),
+    updatedAt: new Date('2024-03-28'),
+  },
+  {
+    id: 'partner-performance',
+    slug: 'partner-performance',
+    title: 'Partner Performance Intelligence Dashboard',
+    description:
+      'Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem. Real-time performance tracking following industry-standard 80/20 partner revenue distribution.',
+    image: '/images/projects/analytics-dashboard.jpg',
+    link: 'https://demo.partnerintelligence.example.com',
+    github: 'https://github.com/hudsonr01/partner-performance',
+    category: 'Revenue Operations',
+    tags: [
+      'Partner Performance Intelligence',
+      'Channel Analytics Dashboard',
+      'Revenue Operations KPIs',
+      'Partner ROI Metrics',
+      'SaaS Quick Ratio',
+      'Channel Management',
+      'Business Intelligence',
+      'Pareto Analysis',
+      'React',
+      'TypeScript',
+      'Recharts',
+    ],
+    featured: true,
+    createdAt: new Date('2024-03-20'),
+    updatedAt: new Date('2024-03-25'),
+  },
+  {
+    id: 'cac-unit-economics',
+    slug: 'cac-unit-economics',
+    title: 'Customer Acquisition Cost Optimization & Unit Economics Dashboard',
+    description:
+      'Comprehensive CAC analysis and LTV:CAC ratio optimization achieving 32% cost reduction through strategic partner channel optimization. Industry-benchmark 3.6:1 efficiency ratio with 8.4-month payback period across multi-tier SaaS products.',
+    image: '/images/projects/analytics-dashboard.jpg',
+    link: 'https://demo.cacanalytics.example.com',
+    github: 'https://github.com/hudsonr01/cac-unit-economics',
+    category: 'Revenue Operations',
+    tags: [
+      'CAC Optimization',
+      'LTV:CAC Ratio',
+      'Unit Economics',
+      'Partner ROI',
+      'SaaS Metrics',
+      'Revenue Operations',
+      'Business Intelligence',
+      'Payback Period',
+      'React',
+      'TypeScript',
+      'Recharts',
+    ],
+    featured: true,
+    createdAt: new Date('2024-03-15'),
+    updatedAt: new Date('2024-03-25'),
+  },
   {
     id: 'churn-retention',
     slug: 'churn-retention',
@@ -154,7 +274,7 @@ const projects: Project[] = [
     title: 'Revenue KPI Dashboard',
     description:
       'An executive dashboard that provides a comprehensive view of revenue metrics and KPIs, allowing business leaders to monitor performance, identify trends, and make data-driven decisions.',
-    image: '/images/projects/revenue-kpi.jpg',
+    image: '/images/projects/business-intelligence.jpg',
     link: 'https://demo.revenuekpi.example.com',
     github: 'https://github.com/hudsonr01/revenue-kpi',
     category: 'Finance',
@@ -164,5 +284,8 @@ const projects: Project[] = [
     updatedAt: new Date('2024-01-30'),
   },
 ]
+
+// Alias for backward compatibility
+export const getProject = getProjectBySlug
 
 export { projects }
