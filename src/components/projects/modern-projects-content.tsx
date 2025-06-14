@@ -14,9 +14,9 @@ import {
   Mail,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Navbar } from '@/components/layout/navbar'
 import Link from 'next/link'
+import Image from 'next/image'
 
 import type { Project as ProjectType } from '@/types/project'
 
@@ -202,6 +202,18 @@ const getCustomCTA = (projectId: string): string => {
       return 'Track Those Leads Here!'
     case 'revenue-kpi':
       return 'See Revenue Magic Happen!'
+    case 'partner-performance':
+      return 'Meet Your Performance Partners!'
+    case 'cac-unit-economics':
+      return 'Calculate Your Customer Worth!'
+    case 'revenue-operations-center':
+      return 'Enter the Revenue Command Center!'
+    case 'customer-lifetime-value':
+      return 'Predict Your Customer Future!'
+    case 'commission-optimization':
+      return 'Optimize Those Sweet Commissions!'
+    case 'multi-channel-attribution':
+      return 'Follow the Attribution Trail!'
     default:
       return 'Explore This Project!'
   }
@@ -211,6 +223,8 @@ const ProjectCard = ({ project }: { project: Project }) => {
   const projectImage = isMockProject(project)
     ? '/images/projects/revenue-operations.jpg'
     : project.image
+
+  const customCTA = getCustomCTA(project.id)
 
   return (
     <div className="group">
@@ -263,10 +277,11 @@ const ProjectCard = ({ project }: { project: Project }) => {
           {/* Project Image - After Content Container */}
           {projectImage && (
             <div className="relative h-32 overflow-hidden rounded-xl mb-6">
-              <img
+              <Image
                 src={projectImage}
                 alt={project.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
               />
             </div>
           )}
@@ -281,7 +296,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
               <Link
                 href={`/projects/${isMockProject(project) ? project.id : project.slug || project.id}`}
               >
-                <span className="relative z-10">Explore Project</span>
+                <span className="relative z-10">{customCTA}</span>
                 <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1 relative z-10" />
               </Link>
             </Button>
@@ -456,7 +471,7 @@ export function ModernProjectsContent({
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       <Clock className="relative z-10 w-7 h-7 text-blue-400" />
                     </div>
-                    <h4 className="font-bold text-white mb-2 text-xl bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+                    <h4 className="font-bold text-white mb-2 text-xl">
                       Fast Delivery
                     </h4>
                     <p className="text-gray-300 text-base">2-6 month projects</p>
@@ -467,7 +482,7 @@ export function ModernProjectsContent({
                       <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       <Target className="relative z-10 w-7 h-7 text-blue-400" />
                     </div>
-                    <h4 className="font-bold text-white mb-2 text-xl bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+                    <h4 className="font-bold text-white mb-2 text-xl">
                       Results Focused
                     </h4>
                     <p className="text-gray-300 text-base">Measurable outcomes</p>
@@ -478,7 +493,7 @@ export function ModernProjectsContent({
                       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       <Award className="relative z-10 w-7 h-7 text-blue-400" />
                     </div>
-                    <h4 className="font-bold text-white mb-2 text-xl bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+                    <h4 className="font-bold text-white mb-2 text-xl">
                       Proven Success
                     </h4>
                     <p className="text-gray-300 text-base">98% success rate</p>

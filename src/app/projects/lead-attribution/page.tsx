@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import {
-  LineChart,
   Line,
   XAxis,
   YAxis,
@@ -10,9 +9,6 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  BarChart,
-  Bar,
-  Cell,
   Area,
   ComposedChart,
 } from 'recharts'
@@ -24,7 +20,6 @@ import {
   Users,
   Zap,
   Target,
-  MousePointer,
   Globe,
   Mail,
   Share2,
@@ -243,7 +238,7 @@ export default function LeadAttribution() {
                   <p className="text-gray-400">Conversion rates by source</p>
                 </div>
                 <div className="space-y-4">
-                  {leadConversionData.map((source, index) => {
+                  {leadConversionData.map((source, _index) => {
                     const Icon = source.icon
                     return (
                       <div key={source.source} className="flex items-center justify-between p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-all duration-300">

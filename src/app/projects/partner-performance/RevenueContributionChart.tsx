@@ -47,13 +47,17 @@ export default function RevenueContributionChart() {
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
-            formatter={(value: number, name: string, props: any) => [
-              [
-                `${value}% (${formatCurrency(props.payload.revenue)})`,
-                `${props.payload.count} partners`
-              ],
-              name
-            ]}
+            formatter={(value: number, name: string, props: unknown) => {
+              const payload = (props as { payload?: typeof data[0] })?.payload
+              if (!payload) return [String(value), name]
+              return [
+                [
+                  `${value}% (${formatCurrency(payload.revenue)})`,
+                  `${payload.count} partners`
+                ],
+                name
+              ]
+            }}
           />
           <Legend 
             verticalAlign="bottom" 

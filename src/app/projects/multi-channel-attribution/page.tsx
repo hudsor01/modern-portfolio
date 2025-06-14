@@ -5,13 +5,10 @@ import {
   ArrowLeft,
   RefreshCcw,
   TrendingUp,
-  Users,
   Target,
   DollarSign,
-  MousePointer,
   Eye,
   Share2,
-  Smartphone,
 } from 'lucide-react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'

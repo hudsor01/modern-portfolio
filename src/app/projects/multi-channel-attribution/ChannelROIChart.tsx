@@ -84,17 +84,18 @@ export default function ChannelROIChart() {
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
-            formatter={(value: number, name: string, props: any) => {
-              const data = props.payload
+            formatter={(value: number, name: string, props: unknown) => {
+              const payload = (props as { payload?: typeof normalizedData[0] })?.payload
+              if (!payload) return [String(value), name]
               return [
                 [
-                  `Attribution: ${data.attribution}%`,
-                  `ROI: ${data.roi === 999 ? '∞' : `${data.roi}x`}`,
-                  `Cost: ${formatCurrency(data.cost)}`,
-                  `Revenue: ${formatCurrency(data.revenue)}`,
-                  `Conversions: ${data.size.toLocaleString()}`
+                  `Attribution: ${payload.attribution}%`,
+                  `ROI: ${payload.roi === 999 ? '∞' : `${payload.roi}x`}`,
+                  `Cost: ${formatCurrency(payload.cost)}`,
+                  `Revenue: ${formatCurrency(payload.revenue)}`,
+                  `Conversions: ${payload.size.toLocaleString()}`
                 ],
-                data.channel
+                payload.channel
               ]
             }}
             labelFormatter={() => ''}

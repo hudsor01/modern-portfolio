@@ -15,14 +15,6 @@ interface ChartData {
   conversionRate: string;
 }
 
-interface CustomTooltipProps {
-  active?: boolean;
-  payload?: Array<{
-    name: string;
-    value: number;
-    payload: ChartData;
-  }>;
-}
 
 interface DealStageFunnelChartProps {
   stages: FunnelStage[];
@@ -65,11 +57,6 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
     '#c084fc', // Light Purple
   ];
 
-  // Calculate funnel dimensions based on stage data
-  const maxWidth = 100; // percentage
-  const minWidth = 30; // percentage
-  const stageHeight = 80; // pixels
-  const stageGap = 2; // pixels
 
   return (
     <div className="w-full">

@@ -8,8 +8,6 @@ import {
   TrendingUp, 
   DollarSign, 
   Users, 
-  BarChart3,
-  Target,
   Activity
 } from 'lucide-react'
 import { motion, Variants } from 'framer-motion'

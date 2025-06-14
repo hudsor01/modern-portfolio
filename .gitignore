@@ -42,3 +42,8 @@ vercel.json
 .next
 .vercel
 .vscode
+
+.DS_Store
+.claude.*
+CLAUDE.md
+*.csv

@@ -5,14 +5,11 @@ import {
   ArrowLeft,
   RefreshCcw,
   TrendingUp,
-  TrendingDown,
-  Users,
   Target,
   DollarSign,
   Calculator,
   Award,
   Percent,
-  BarChart3,
   Clock,
 } from 'lucide-react'
 import Link from 'next/link'
