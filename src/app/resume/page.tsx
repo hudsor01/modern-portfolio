@@ -25,7 +25,7 @@ import { ResumeViewer } from './resume-viewer'
 const experience = [
   {
     title: 'Revenue Operations Consultant',
-    company: 'Thryv',
+    company: 'Enterprise Technology Partner',
     period: 'December 2022 - November 2024',
     location: 'Dallas, TX',
     type: 'Full-time',
@@ -38,7 +38,7 @@ const experience = [
   },
   {
     title: 'Sales Operations Analyst',
-    company: 'Thryv',
+    company: 'Enterprise Technology Partner',
     period: 'March 2022 - December 2022',
     location: 'Dallas, TX',
     type: 'Full-time',
@@ -51,16 +51,16 @@ const experience = [
   },
   {
     title: 'Channel Operations Lead',
-    company: 'Thryv',
+    company: 'Enterprise Technology Partner',
     period: 'March 2020 - March 2022',
     location: 'Dallas, TX',
     type: 'Full-time',
     description: [
       'Scaled network to over 300 active affiliates, resellers, and MSPs, maintaining 99.9% data accuracy',
-      'Reduced onboarding time by 45% through PartnerStack automation and workflow optimization',
+      'Reduced onboarding time by 45% through automation and workflow optimization',
       'Built scalable infrastructure driving 432% volume growth and 67% faster processing time',
     ],
-    technologies: ['PartnerStack', 'Salesforce', 'Automation Tools', 'Data Analytics']
+    technologies: ['Partner Management Systems', 'Salesforce', 'Automation Tools', 'Data Analytics']
   },
 ]
 
@@ -157,7 +157,7 @@ export default function ResumePage() {
   return (
     <>
       <Navbar />
-      <section className="relative min-h-screen bg-[#0f172a] text-white overflow-hidden">
+      <section className="relative min-h-screen bg-[#0f172a] text-white overflow-hidden pt-20">
         {/* Grid Background */}
         <div
           className="absolute inset-0 bg-[image:linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[length:50px_50px]"
@@ -220,14 +220,11 @@ export default function ResumePage() {
               variants={fadeInUp}
               className="relative max-w-4xl mx-auto pt-8"
             >
-              {/* Premium Glassmorphism Container */}
-              <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl">
-                {/* Subtle background gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5 rounded-3xl" />
-                
-                <div className="relative z-10">
+              {/* Enhanced Action Buttons Container */}
+              <div className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl p-8 hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25">
+                <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
                   {/* Action Buttons Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     {/* Download Resume - Primary Action */}
                     <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-600/20 border border-blue-400/30 hover:border-blue-400/50 transition-all duration-500 hover:scale-105">
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -285,45 +282,51 @@ export default function ResumePage() {
               </div>
             </motion.div>
 
-            {/* Contact Info */}
+            {/* Enhanced Social Icons Container */}
             <motion.div
               variants={fadeInUp}
-              className="flex justify-center gap-6 pt-12"
+              className="max-w-2xl mx-auto pt-8"
             >
-              <a
-                href="mailto:hello@richardwhudsonjr.com"
-                className="text-gray-400 hover:text-blue-400 social-icon"
-                aria-label="Email"
-              >
-                <Mail className="h-7 w-7" />
-              </a>
-              <a
-                href="https://linkedin.com/in/hudsor01"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-blue-400 social-icon"
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="h-7 w-7" />
-              </a>
-              <a
-                href="https://github.com/hudsor01"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-blue-400 social-icon"
-                aria-label="GitHub"
-              >
-                <Github className="h-7 w-7" />
-              </a>
-              <a
-                href="https://richardwhudsonjr.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-blue-400 social-icon"
-                aria-label="Website"
-              >
-                <Globe className="h-7 w-7" />
-              </a>
+              <div className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl p-8 hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25">
+                <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
+                  <div className="flex justify-center gap-6">
+                    <a
+                      href="mailto:hello@richardwhudsonjr.com"
+                      className="text-gray-400 hover:text-blue-400 social-icon"
+                      aria-label="Email"
+                    >
+                      <Mail className="h-7 w-7" />
+                    </a>
+                    <a
+                      href="https://linkedin.com/in/hudsor01"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-400 hover:text-blue-400 social-icon"
+                      aria-label="LinkedIn"
+                    >
+                      <Linkedin className="h-7 w-7" />
+                    </a>
+                    <a
+                      href="https://github.com/hudsor01"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-400 hover:text-blue-400 social-icon"
+                      aria-label="GitHub"
+                    >
+                      <Github className="h-7 w-7" />
+                    </a>
+                    <a
+                      href="https://richardwhudsonjr.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-400 hover:text-blue-400 social-icon"
+                      aria-label="Website"
+                    >
+                      <Globe className="h-7 w-7" />
+                    </a>
+                  </div>
+                </div>
+              </div>
             </motion.div>
           </motion.div>
 

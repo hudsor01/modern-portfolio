@@ -1,6 +1,7 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
+import { ContactModal } from '@/components/ui/contact-modal'
 import { 
   ExternalLink, 
   Github, 
@@ -286,6 +287,8 @@ export function ModernProjectsContent({
   isLoading: _externalLoading 
 }: ModernProjectsContentProps = {}) {
   
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  
   // Use external projects if provided, otherwise fall back to mock data
   const projectsData: Project[] = externalProjects || mockProjects;
   
@@ -305,7 +308,7 @@ export function ModernProjectsContent({
   return (
     <>
       <Navbar />
-      <section className="relative min-h-screen bg-[#0f172a] text-white overflow-hidden">
+      <section className="relative min-h-screen bg-[#0f172a] text-white overflow-hidden pt-20">
       {/* Grid Background */}
       <div
         className="absolute inset-0 bg-[image:linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[length:50px_50px]"
@@ -392,10 +395,7 @@ export function ModernProjectsContent({
             
             <div className="relative z-10">
               {/* Enhanced Header */}
-              <div className="flex items-center justify-center gap-4 mb-8">
-                <div className="p-3 bg-white/10 backdrop-blur border border-white/20 rounded-2xl shadow-lg">
-                  <TrendingUp className="w-8 h-8 text-blue-400" />
-                </div>
+              <div className="flex items-center justify-center mb-8">
                 <h3 className="font-bold text-3xl md:text-4xl tracking-tight bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent">
                   Ready to Start Your Project?
                 </h3>
@@ -410,21 +410,18 @@ export function ModernProjectsContent({
                 <Button
                   size="md"
                   className="relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
-                  asChild
+                  onClick={() => setIsModalOpen(true)}
                 >
-                  <Link href="/contact">
-                    <span className="relative z-10 flex items-center">
-                      <Mail className="mr-2" size={16} />
-                      Start a Project
-                      <ArrowRight size={16} className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
-                    </span>
-                  </Link>
+                  <span className="relative z-10 flex items-center">
+                    <Mail className="mr-2" size={16} />
+                    Start a Project
+                    <ArrowRight size={16} className="ml-2 transition-transform duration-300 group-hover:translate-x-1" />
+                  </span>
                 </Button>
                 
                 <Button
                   size="md"
-                  variant="outline"
-                  className="relative bg-white/10 hover:bg-white/20 border border-white/30 hover:border-blue-400/50 text-white text-sm font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group backdrop-blur-sm"
+                  className="relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-medium px-6 py-3 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
                   asChild
                 >
                   <Link href="/about">
@@ -471,6 +468,9 @@ export function ModernProjectsContent({
         </div>
       </div>
     </section>
+    
+    {/* Contact Modal */}
+    <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   )
 }

@@ -53,10 +53,10 @@ const SKILLS = [
 ]
 
 const EXPERIENCE_STATS = [
-  { label: 'Years Experience', value: '10+', icon: '🚀' },
-  { label: 'Projects Completed', value: '150+', icon: '✅' },
-  { label: 'Revenue Generated', value: '$50M+', icon: '💰' },
-  { label: 'Teams Led', value: '25+', icon: '👥' },
+  { label: 'Projects Delivered', value: '8+', icon: '✅' },
+  { label: 'Revenue Generated', value: '$3.7M+', icon: '💰' },
+  { label: 'Accuracy Rate', value: '96.8%', icon: '🎯' },
+  { label: 'Automation Rate', value: '87.5%', icon: '⚡' },
 ]
 
 const PERSONAL_INFO = {
