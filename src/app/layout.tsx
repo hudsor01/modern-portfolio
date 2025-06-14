@@ -5,10 +5,12 @@ import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { ClientComponentsProvider } from '@/components/providers/client-components-provider'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from '@/components/ui/toaster'
 import { ScrollProgress } from '@/components/ui/scroll-progress'
 import { ScrollToTop } from '@/components/ui/scroll-to-top'
 import { baseMetadata } from './shared-metadata'
+import { PersonJsonLd, WebsiteJsonLd } from '@/components/seo/json-ld'
 
 // Use single font family for better performance
 const inter = Inter({ 
@@ -32,6 +34,8 @@ export default function RootLayout({
         <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <PersonJsonLd />
+        <WebsiteJsonLd />
       </head>
       <body className={inter.className}>
         <ThemeProvider
@@ -45,6 +49,7 @@ export default function RootLayout({
             <ScrollToTop />
             <Toaster position="bottom-right" closeButton richColors />
             <SpeedInsights />
+            <Analytics />
           </ClientComponentsProvider>
         </ThemeProvider>
       </body>

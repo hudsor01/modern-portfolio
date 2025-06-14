@@ -27,6 +27,7 @@ import {
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import LeadSourcePieChart from './LeadSourcePieChart'
+import { ProjectJsonLd } from '@/components/seo/json-ld'
 
 // Import real data
 import { leadAttributionData } from '@/app/projects/data/partner-analytics'
@@ -88,7 +89,15 @@ export default function LeadAttribution() {
   const monthlyGrowth = prevMonth && lastMonth ? ((lastMonth.leads - prevMonth.leads) / prevMonth.leads * 100).toFixed(1) : 0
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white">
+    <>
+      <ProjectJsonLd 
+        title="Lead Attribution & Marketing Analytics - Multi-Touch Attribution"
+        description="Comprehensive lead attribution analysis with multi-touch attribution modeling, campaign performance tracking, and ROI optimization for marketing operations and lead generation strategies."
+        slug="lead-attribution"
+        category="Marketing Analytics"
+        tags={['Lead Attribution', 'Marketing Analytics', 'Campaign Tracking', 'Multi-Touch Attribution', 'Marketing ROI', 'Lead Generation', 'Marketing Operations', 'Conversion Analytics']}
+      />
+      <div className="min-h-screen bg-[#0f172a] text-white">
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
@@ -338,6 +347,7 @@ export default function LeadAttribution() {
           </>
         )}
       </div>
-    </div>
+      </div>
+    </>
   )
 }

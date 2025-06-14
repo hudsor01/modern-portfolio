@@ -54,21 +54,21 @@ const SKILLS = [
 
 const EXPERIENCE_STATS = [
   { label: 'Projects Delivered', value: '8+', icon: '✅' },
-  { label: 'Revenue Generated', value: '$3.7M+', icon: '💰' },
-  { label: 'Accuracy Rate', value: '96.8%', icon: '🎯' },
-  { label: 'Automation Rate', value: '87.5%', icon: '⚡' },
+  { label: 'Revenue Generated', value: '$4.8M+', icon: '💰' },
+  { label: 'Transaction Growth', value: '432%', icon: '📈' },
+  { label: 'Network Expansion', value: '2,217%', icon: '🚀' },
 ]
 
 const PERSONAL_INFO = {
   name: 'Richard Hudson',
-  title: 'Revenue Operations Consultant & Full-Stack Developer',
-  location: 'Remote • Available Worldwide',
-  email: 'richard@example.com',
-  bio: `I'm a Revenue Operations professional with over 10 years of experience building scalable systems 
-        and driving business growth through data-driven insights. My unique combination of technical expertise 
-        and business acumen allows me to bridge the gap between strategy and execution, creating solutions 
-        that deliver measurable results. I'm passionate about optimizing processes, analyzing complex datasets, 
-        and implementing strategic solutions that drive sustainable growth.`,
+  title: 'Revenue Operations Consultant & Business Growth Expert',
+  location: 'Dallas, TX • Remote & On-Site Available',
+  email: 'contact@richardwhudsonjr.com',
+  bio: `I'm a Revenue Operations Consultant specializing in transforming business operations through data-driven strategies. 
+        With over 10 years of experience optimizing sales processes, implementing marketing automation, and building 
+        business intelligence solutions, I help companies achieve sustainable revenue growth. My expertise spans 
+        CRM optimization (Salesforce, HubSpot), advanced analytics, and process automation that has generated 
+        over $4.8M in revenue and achieved 432% transaction growth for my clients.`,
   highlights: [
     'Specialized in revenue operations and growth analytics with proven track record',
     'Expert in building automated reporting systems and data-driven decision frameworks',
@@ -80,8 +80,8 @@ const PERSONAL_INFO = {
 }
 
 export const metadata = generateMetadata(
-  'About | Richard Hudson',
-  'Learn more about Richard Hudson, a revenue operations consultant with expertise in business optimization and growth strategies.',
+  'About Richard Hudson | Revenue Operations Expert & Business Growth Consultant',
+  'Dallas-based Revenue Operations Consultant with 10+ years experience. Expert in Salesforce, HubSpot, data analytics, and process automation. $4.8M+ revenue generated, 432% transaction growth achieved.',
   '/about'
 )
 

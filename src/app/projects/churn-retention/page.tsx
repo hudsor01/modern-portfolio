@@ -13,6 +13,7 @@ import Link from 'next/link'
 import ChurnLineChart from './ChurnLineChart'
 import RetentionHeatmap from './RetentionHeatmap'
 import { motion } from 'framer-motion'
+import { ProjectJsonLd } from '@/components/seo/json-ld'
 
 // Import static churn data
 import {
@@ -46,7 +47,15 @@ export default function ChurnAnalysis() {
     : '0.0'
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white">
+    <>
+      <ProjectJsonLd 
+        title="Customer Churn & Retention Analysis - Predictive Analytics"
+        description="Advanced churn prediction and retention analysis dashboard with customer lifecycle metrics, retention heatmaps, and predictive modeling for customer success optimization."
+        slug="churn-retention"
+        category="Customer Analytics"
+        tags={['Churn Analysis', 'Customer Retention', 'Predictive Analytics', 'Customer Success', 'Lifecycle Management', 'Customer Analytics', 'Data Science', 'Machine Learning']}
+      />
+      <div className="min-h-screen bg-[#0f172a] text-white">
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
@@ -236,6 +245,7 @@ export default function ChurnAnalysis() {
           </>
         )}
       </div>
-    </div>
+      </div>
+    </>
   )
 }
