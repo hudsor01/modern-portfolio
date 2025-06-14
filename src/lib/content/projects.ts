@@ -89,6 +89,6 @@ export const getProjectsByCategory = cache(async (category: string): Promise<Pro
 
 export const getCategories = cache(async (): Promise<string[]> => {
   const projects = await getProjects()
-  const categories = new Set(projects.map(p => p.category))
+  const categories = new Set(projects.map(p => p.category).filter(Boolean) as string[])
   return Array.from(categories)
 })

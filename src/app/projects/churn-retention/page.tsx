@@ -34,16 +34,16 @@ export default function ChurnAnalysis() {
   // Safe calculations
   const churnDifference =
     currentMonth && previousMonth
-      ? (currentMonth.churn_rate - previousMonth.churn_rate).toFixed(1)
+      ? (currentMonth.churnRate - previousMonth.churnRate).toFixed(1)
       : '0.0'
 
 
   const totalPartners = currentMonth 
-    ? currentMonth.retained_partners + currentMonth.churned_partners 
+    ? currentMonth.retained + currentMonth.churned 
     : 0
 
   const retentionRate = currentMonth
-    ? ((currentMonth.retained_partners / totalPartners) * 100).toFixed(1)
+    ? ((currentMonth.retained / totalPartners) * 100).toFixed(1)
     : '0.0'
 
   return (
@@ -127,7 +127,7 @@ export default function ChurnAnalysis() {
                     <span className="text-xs text-gray-400 uppercase tracking-wider">Current</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
-                    {currentMonth ? `${currentMonth.churn_rate}%` : 'N/A'}
+                    {currentMonth ? `${currentMonth.churnRate}%` : 'N/A'}
                   </p>
                   <p className="text-sm text-gray-400">Churn Rate</p>
                 </div>
@@ -178,7 +178,7 @@ export default function ChurnAnalysis() {
                     <span className="text-xs text-gray-400 uppercase tracking-wider">This Month</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
-                    {currentMonth ? currentMonth.churned_partners : 'N/A'}
+                    {currentMonth ? currentMonth.churned : 'N/A'}
                   </p>
                   <p className="text-sm text-gray-400">Partners Churned</p>
                 </div>

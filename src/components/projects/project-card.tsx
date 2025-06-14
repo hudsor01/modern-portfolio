@@ -14,9 +14,7 @@ import {
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ArrowRight} from 'lucide-react'
-import { RevenueDashboardPreview } from './revenue-dashboard-preview'
 import type { Project } from '@/types/project'
-import { projectPaths } from '@/app/projects/data/projects-paths'
 
 interface ProjectCardProps {
   project: Project
@@ -25,12 +23,12 @@ interface ProjectCardProps {
 
 // Component implementation
 function ProjectCardComponent({ project, onHover }: ProjectCardProps) {
-  const projectPath = projectPaths[project.id] || '/projects'
+  const projectPath = `/projects/${project.slug || project.id}`
 
   return (
     <Card 
       className="overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full border-slate-200 dark:border-slate-700 group hover:-translate-y-2 rounded-xl bg-white dark:bg-slate-900" // Explicitly set background: white for light, slate-900 for dark
-      onMouseEnter={() => onHover?.(project.slug)}
+      onMouseEnter={() => onHover?.(project.slug || project.id)}
     >
       {project.image && (
         <div className="relative aspect-video w-full overflow-hidden">
@@ -50,8 +48,8 @@ function ProjectCardComponent({ project, onHover }: ProjectCardProps) {
       )}
 
       {project.id === 'revenue-dashboard' && !project.image && (
-        <div className="bg-slate-100 dark:bg-slate-800/50 h-48 w-full overflow-hidden relative">
-          <RevenueDashboardPreview />
+        <div className="bg-slate-100 dark:bg-slate-800/50 h-48 w-full overflow-hidden relative flex items-center justify-center">
+          <div className="text-slate-600 dark:text-slate-400 text-sm">Revenue Dashboard Preview</div>
         </div>
       )}
 

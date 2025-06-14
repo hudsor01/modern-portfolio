@@ -81,8 +81,8 @@ export function ProjectStructuredData({ project, url }: { project: Project; url:
       price: '0',
       priceCurrency: 'USD',
     },
-    datePublished: project.createdAt.toISOString(),
-    dateModified: (project.updatedAt || project.createdAt).toISOString(),
+    datePublished: project.createdAt ? new Date(project.createdAt).toISOString() : new Date().toISOString(),
+    dateModified: project.updatedAt ? new Date(project.updatedAt).toISOString() : (project.createdAt ? new Date(project.createdAt).toISOString() : new Date().toISOString()),
   };
 
   if (project.image) {

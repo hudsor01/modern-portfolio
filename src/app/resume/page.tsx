@@ -360,9 +360,11 @@ export default function ResumePage() {
                         <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-2xl overflow-hidden border-4 border-blue-400/30 shadow-2xl shadow-blue-500/20 flex-shrink-0">
                           <Image
                             src="/images/about-page.png"
-                            alt="Richard Hudson"
+                            alt="Richard Hudson - Revenue Operations Consultant specializing in Salesforce automation, data analytics, and business growth strategies in Dallas, TX"
                             fill
+                            sizes="(max-width: 768px) 128px, 160px"
                             className="object-cover"
+                            priority
                           />
                         </div>
                         

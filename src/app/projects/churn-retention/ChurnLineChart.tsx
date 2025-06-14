@@ -16,8 +16,8 @@ import { staticChurnData } from '@/app/projects/data/partner-analytics'
 // Transform data for visualization
 const data = staticChurnData.map((item) => ({
   month: item.month,
-  churn: item.churn_rate,
-  retention: 100 - item.churn_rate,
+  churn: item.churnRate,
+  retention: 100 - item.churnRate,
 }))
 
 export default function ChurnLineChart() {
