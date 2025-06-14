@@ -1,0 +1,291 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+/* === TAILWIND CSS V4 DARK MODE VARIANT === */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* === TAILWIND CSS V4 THEME CONFIGURATION === */
+@theme {
+  /* === BRAND COLORS (OKLCH) === */
+  --color-primary: oklch(0.8 0.13 230); /* Signature pastel blue */
+  --color-primary-foreground: oklch(1 0 0); /* White text on primary */
+  --color-secondary: oklch(0.85 0.08 230); /* Powder blue */
+  --color-secondary-foreground: oklch(0.15 0.02 240); /* Dark text on secondary */
+  --color-accent: oklch(0.7 0.18 235); /* Cornflower blue */
+  --color-accent-foreground: oklch(1 0 0); /* White text on accent */
+  --color-muted: oklch(0.8 0.13 230 / 0.1); /* 10% opacity backgrounds */
+  --color-muted-foreground: oklch(0.47 0.01 285); /* Muted text */
+
+  /* === SEMANTIC COLORS === */
+  --color-destructive: oklch(0.65 0.2 25); /* Error red */
+  --color-destructive-foreground: oklch(1 0 0); /* White text on destructive */
+  --color-success: oklch(0.7 0.18 140); /* Success green */
+  --color-warning: oklch(0.7 0.15 50); /* Warning orange */
+
+  /* === BACKGROUND SYSTEM === */
+  --color-background: oklch(1 0 0); /* Light mode background */
+  --color-foreground: oklch(0.15 0.02 240); /* Light mode text */
+  --color-card: oklch(1 0 0); /* Light mode card background */
+  --color-card-foreground: oklch(0.15 0.02 240); /* Light mode card text */
+  --color-popover: oklch(1 0 0); /* Light mode popover background */
+  --color-popover-foreground: oklch(0.15 0.02 240); /* Light mode popover text */
+
+  /* === BORDER AND INPUT SYSTEM === */
+  --color-border: oklch(0.9 0.005 285); /* Light mode borders */
+  --color-input: oklch(0.9 0.005 285); /* Input borders */
+  --color-ring: oklch(0.8 0.13 230); /* Focus rings */
+
+  /* === CHART COLORS === */
+  --color-chart-1: oklch(0.8 0.13 230); /* Primary blue */
+  --color-chart-2: oklch(0.7 0.15 50); /* Orange */
+  --color-chart-3: oklch(0.7 0.18 140); /* Green */
+  --color-chart-4: oklch(0.65 0.005 285); /* Neutral */
+  --color-chart-5: oklch(0.35 0.15 240); /* Deep navy */
+
+  /* === Z-INDEX SYSTEM (CUSTOM PROPERTIES FOR USE WITH z-() SYNTAX) === */
+  --z-below: -1;
+  --z-base: 0;
+  --z-raised: 10;
+  --z-overlay: 20;
+  --z-dropdown: 30;
+  --z-sticky: 40;
+  --z-modal: 50;
+  --z-popover: 60;
+  --z-tooltip: 70;
+  --z-notification: 80;
+  --z-maximum: 9999;
+}
+
+/* === V4 DARK MODE AS DEFAULT === */
+:root {
+  color-scheme: dark;
+
+  /* Dark Mode Colors (Default) */
+  --background: oklch(0.09 0.01 285); /* Deep charcoal */
+  --foreground: oklch(0.98 0.01 285); /* Crisp white */
+  --card: oklch(0.12 0.01 285); /* Dark card background */
+  --card-foreground: oklch(0.98 0.01 285); /* White text on dark cards */
+  --popover: oklch(0.12 0.01 285); /* Dark popover background */
+  --popover-foreground: oklch(0.98 0.01 285); /* White text on dark popovers */
+
+  /* Primary Brand Color */
+  --primary: var(--color-primary);
+  --primary-foreground: oklch(0.09 0.01 285); /* Dark text on brand */
+
+  /* Secondary Elements */
+  --secondary: oklch(0.18 0.01 285); /* Zinc-700 equivalent */
+  --secondary-foreground: oklch(0.98 0.01 285); /* White text */
+
+  /* Muted Elements */
+  --muted: oklch(0.18 0.01 285); /* Zinc-700 equivalent */
+  --muted-foreground: oklch(0.65 0.01 285); /* Zinc-400 equivalent */
+
+  /* Accent Elements */
+  --accent: oklch(0.7 0.15 50); /* Warm orange */
+  --accent-foreground: oklch(0.09 0.01 285); /* Dark text on accent */
+
+  /* Error States */
+  --destructive: var(--color-destructive);
+  --destructive-foreground: var(--color-destructive-foreground);
+
+  /* Interactive Elements */
+  --border: oklch(0.28 0.005 285); /* Zinc-700 equivalent */
+  --input: oklch(0.18 0.01 285); /* Zinc-700 equivalent */
+  --ring: var(--color-ring);
+
+  /* Chart Colors */
+  --chart-1: var(--color-chart-1);
+  --chart-2: var(--color-chart-2);
+  --chart-3: var(--color-chart-3);
+  --chart-4: var(--color-chart-4);
+  --chart-5: var(--color-chart-5);
+}
+
+/* === V4 LIGHT MODE TOGGLE === */
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Light Mode Colors */
+  --background: oklch(1 0 0); /* Pure white */
+  --foreground: oklch(0.15 0.02 240); /* Slate-900 equivalent */
+  --card: oklch(1 0 0); /* Pure white */
+  --card-foreground: oklch(0.15 0.02 240); /* Dark text on light cards */
+  --popover: oklch(1 0 0); /* Pure white */
+  --popover-foreground: oklch(0.15 0.02 240); /* Dark text on light popovers */
+
+  /* Primary Brand Color (more vivid in light mode) */
+  --primary: oklch(0.62 0.18 257); /* Changed to match blue-600 equivalent */
+  --primary-foreground: oklch(1 0 0); /* White text */
+
+  /* Secondary Elements */
+  --secondary: oklch(0.98 0.01 240); /* Slate-50 equivalent */
+  --secondary-foreground: oklch(0.15 0.02 240); /* Dark text */
+
+  /* Muted Elements */
+  --muted: oklch(0.98 0.01 240); /* Slate-50 equivalent */
+  --muted-foreground: oklch(0.45 0.01 240); /* Slate-500 equivalent */
+
+  /* Accent Elements */
+  --accent: oklch(0.7 0.15 50); /* Warm orange */
+  --accent-foreground: oklch(1 0 0); /* White text on accent */
+
+  /* Interactive Elements */
+  --border: oklch(0.9 0.005 285); /* Zinc-200 equivalent */
+  --input: oklch(0.98 0.01 240); /* Slate-50 equivalent */
+  --ring: oklch(0.7 0.18 235); /* Cornflower blue */
+
+  /* Chart Colors (adjusted for light mode) */
+  --chart-1: oklch(0.7 0.18 235); /* Cornflower blue */
+  --chart-2: oklch(0.6 0.18 45); /* Darker orange */
+  --chart-3: var(--color-chart-3);
+  --chart-4: oklch(0.47 0.005 285); /* Zinc-500 */
+  --chart-5: var(--color-chart-5);
+}
+
+/* === V4 ENHANCED BASE LAYER === */
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  *:focus-visible {
+    @apply outline-2 outline-blue-500 outline-offset-2;
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Enhanced Typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  h1 {
+    @apply text-4xl lg:text-5xl;
+  }
+
+  h2 {
+    @apply text-3xl lg:text-4xl;
+  }
+
+  h3 {
+    @apply text-2xl lg:text-3xl;
+  }
+
+  /* Enhanced Link Styles */
+  a {
+    @apply transition-colors duration-200;
+  }
+
+  /* Enhanced Button Reset */
+  button {
+    @apply transition-all duration-200;
+  }
+
+  /* Enhanced Form Elements */
+  input, textarea, select {
+    @apply transition-all duration-200;
+  }
+
+  /* Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: hsl(var(--muted));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--accent));
+  }
+}
+
+/* === V4 COMPONENT LAYER === */
+@layer components {
+  .portfolio-container {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .portfolio-section {
+    @apply py-16 sm:py-20 lg:py-24;
+  }
+
+  .portfolio-card {
+    @apply bg-card rounded-xl border border-border p-6 shadow-lg backdrop-blur-sm;
+  }
+
+  .portfolio-badge {
+    @apply inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary;
+  }
+
+  .portfolio-button-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary/50 inline-flex items-center justify-center rounded-lg px-4 py-2 font-medium transition-all duration-200 focus:ring-2 focus:ring-offset-2;
+  }
+
+  .portfolio-button-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 focus:ring-secondary/50 inline-flex items-center justify-center rounded-lg px-4 py-2 font-medium transition-all duration-200 focus:ring-2 focus:ring-offset-2;
+  }
+
+  /* Custom gradient utilities */
+  .portfolio-text-gradient {
+    background: linear-gradient(135deg in oklch, oklch(0.8 0.13 230) 0%, oklch(0.7 0.18 235) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  /* Hero name gradient - Blue to Sky to Indigo */
+  .hero-name-gradient {
+    background: linear-gradient(135deg, #93c5fd 0%, #38bdf8 40%, #a855f7 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  /* Premium button gradient */
+  .premium-button-gradient {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  }
+
+  /* Premium button gradient hover */
+  .premium-button-gradient-hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  }
+
+  /* Section heading gradient */
+  .section-heading-gradient {
+    background: linear-gradient(135deg, #93c5fd 0%, #38bdf8 40%, #6366f1 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  /* Page title gradient */
+  .page-title-gradient {
+    background: linear-gradient(135deg, #93c5fd 0%, #38bdf8 40%, #a855f7 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  /* CTA hover background gradient */
+  .cta-hover-gradient {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  }
+
+  /* Social icon enhanced styling */
+  .social-icon {
+    @apply p-4 rounded-2xl bg-white/5 border border-white/20 hover:bg-white/10 hover:border-blue-400/50 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-blue-500/25;
+  }
+}
