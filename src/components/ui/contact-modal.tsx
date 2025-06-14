@@ -2,15 +2,7 @@
 
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Mail, 
-  Phone, 
-  Send, 
-  CheckCircle, 
-  AlertCircle,
-  ArrowRight,
-  X
-} from 'lucide-react'
+import { Send, CheckCircle, AlertCircle, ArrowRight, X } from 'lucide-react'
 
 interface FormData {
   name: string
@@ -33,24 +25,26 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
     company: '',
     subject: '',
     message: '',
-    phone: ''
+    phone: '',
   })
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    
+
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      await new Promise((resolve) => setTimeout(resolve, 2000))
       setSubmitStatus('success')
       setFormData({
         name: '',
@@ -58,7 +52,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
         company: '',
         subject: '',
         message: '',
-        phone: ''
+        phone: '',
       })
     } catch {
       setSubmitStatus('error')
@@ -106,7 +100,9 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                     <Send className="text-white" size={20} />
                   </div>
                   <div>
-                    <h3 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent">Send a Message</h3>
+                    <h3 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent">
+                      Send a Message
+                    </h3>
                     <p className="text-sm text-gray-400">I'll get back to you within 24 hours</p>
                   </div>
                 </div>
@@ -115,9 +111,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-white">
-                        Full Name *
-                      </label>
+                      <label className="text-sm font-semibold text-white">Full Name *</label>
                       <input
                         type="text"
                         name="name"
@@ -128,11 +122,9 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                         required
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-white">
-                        Email Address *
-                      </label>
+                      <label className="text-sm font-semibold text-white">Email Address *</label>
                       <input
                         type="email"
                         name="email"
@@ -144,11 +136,9 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-white">
-                      Subject *
-                    </label>
+                    <label className="text-sm font-semibold text-white">Subject *</label>
                     <div className="relative">
                       <select
                         name="subject"
@@ -157,24 +147,42 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                         className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 focus:bg-white/15 transition-all duration-300 appearance-none cursor-pointer font-medium"
                         required
                       >
-                        <option value="" className="bg-[#0f172a] text-gray-300">Select a subject</option>
-                        <option value="revenue-ops" className="bg-[#0f172a] text-white">Revenue Operations Consulting</option>
-                        <option value="data-analytics" className="bg-[#0f172a] text-white">Data Analytics & BI</option>
-                        <option value="process-automation" className="bg-[#0f172a] text-white">Process Automation</option>
-                        <option value="general" className="bg-[#0f172a] text-white">General Inquiry</option>
+                        <option value="" className="bg-[#0f172a] text-gray-300">
+                          Select a subject
+                        </option>
+                        <option value="revenue-ops" className="bg-[#0f172a] text-white">
+                          Revenue Operations Consulting
+                        </option>
+                        <option value="data-analytics" className="bg-[#0f172a] text-white">
+                          Data Analytics & BI
+                        </option>
+                        <option value="process-automation" className="bg-[#0f172a] text-white">
+                          Process Automation
+                        </option>
+                        <option value="general" className="bg-[#0f172a] text-white">
+                          General Inquiry
+                        </option>
                       </select>
                       <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
-                        <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        <svg
+                          className="w-5 h-5 text-blue-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
                         </svg>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-white">
-                      Message *
-                    </label>
+                    <label className="text-sm font-semibold text-white">Message *</label>
                     <textarea
                       name="message"
                       value={formData.message}
@@ -185,7 +193,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                       required
                     />
                   </div>
-                  
+
                   <button
                     type="submit"
                     disabled={isSubmitting}
@@ -200,7 +208,10 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                       <>
                         <Send size={20} />
                         <span>Send Message</span>
-                        <ArrowRight size={20} className="transition-transform duration-300 group-hover:translate-x-1" />
+                        <ArrowRight
+                          size={20}
+                          className="transition-transform duration-300 group-hover:translate-x-1"
+                        />
                       </>
                     )}
                   </button>
@@ -217,7 +228,9 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                       <CheckCircle className="w-5 h-5 text-green-400" />
                       <div>
                         <h4 className="font-semibold text-green-400">Message Sent!</h4>
-                        <p className="text-green-300 text-sm">I'll get back to you within 24 hours.</p>
+                        <p className="text-green-300 text-sm">
+                          I'll get back to you within 24 hours.
+                        </p>
                       </div>
                     </div>
                   </motion.div>
@@ -233,7 +246,9 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                       <AlertCircle className="w-5 h-5 text-red-400" />
                       <div>
                         <h4 className="font-semibold text-red-400">Something went wrong</h4>
-                        <p className="text-red-300 text-sm">Please try again or contact me directly.</p>
+                        <p className="text-red-300 text-sm">
+                          Please try again or contact me directly.
+                        </p>
                       </div>
                     </div>
                   </motion.div>
