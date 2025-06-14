@@ -13,9 +13,7 @@ export function ClientComponentsProvider({ children }: { children: React.ReactNo
     <QueryClientProvider client={queryClient}>
       {children}
       <WebVitals />
-      {process.env.NODE_ENV === 'development' && (
-        <ReactQueryDevtools initialIsOpen={false} />
-      )}
+      {process.env.NODE_ENV === 'production' && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   )
 }

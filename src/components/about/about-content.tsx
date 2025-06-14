@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import {
-  Download,
   Mail,
   MapPin,
   TrendingUp,
@@ -109,7 +108,7 @@ const EnhancedSkillBar = ({ skill, index }: { skill: Skill; index: number }) => 
       className="group"
     >
       <div className="flex justify-between items-center mb-3">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <motion.span
             className="font-semibold text-white"
             animate={{ scale: isHovered ? 1.05 : 1 }}
@@ -119,7 +118,7 @@ const EnhancedSkillBar = ({ skill, index }: { skill: Skill; index: number }) => 
           </motion.span>
           <Badge
             variant="secondary"
-            className="text-xs bg-white/10 border border-white/20 text-gray-300"
+            className="text-xs bg-white/10 border border-white/20 text-gray-100"
           >
             {skill.years}y
           </Badge>
@@ -450,12 +449,12 @@ export default function AboutContent({ skills, experienceStats, personalInfo }: 
                   animate={isSkillsInView ? 'animate' : 'initial'}
                   transition={{ duration: 0.5, delay: 0.8 }}
                 >
-                  <TabsList className="grid w-full grid-cols-3 bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-2 shadow-lg">
+                  <TabsList className="grid w-full grid-cols-3 bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-0 shadow-md">
                     {skills.map((category, index) => (
                       <TabsTrigger
                         key={index}
                         value={index.toString()}
-                        className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-300 data-[state=active]:via-sky-400 data-[state=active]:to-indigo-400 data-[state=active]:text-white rounded-xl transition-all duration-300 text-white"
+                        className="flex items-center gap-4 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-300 data-[state=active]:via-sky-400 data-[state=active]:to-indigo-400 data-[state=active]:text-white rounded-xl transition-all duration-300 text-white"
                       >
                         <span className="text-xl">{category.icon}</span>
                         <span className="hidden sm:inline font-medium">{category.category}</span>
@@ -470,7 +469,7 @@ export default function AboutContent({ skills, experienceStats, personalInfo }: 
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5 }}
-                      className="mt-6 bg-white/5 backdrop-blur border border-white/10 rounded-xl overflow-hidden"
+                      className="mt-8 bg-white/5 backdrop-blur border border-white/10 rounded-xl overflow-hidden"
                     >
                       <div className="bg-white/5 p-6 border-b border-white/10">
                         <div className="flex items-center gap-4">
@@ -492,8 +491,8 @@ export default function AboutContent({ skills, experienceStats, personalInfo }: 
                         </div>
                       </div>
 
-                      <div className="p-8">
-                        <div className="space-y-8">
+                      <div className="p-6">
+                        <div className="space-y-10">
                           {category.skills.map((skill, skillIndex) => (
                             <EnhancedSkillBar key={skillIndex} skill={skill} index={skillIndex} />
                           ))}
@@ -673,7 +672,7 @@ export default function AboutContent({ skills, experienceStats, personalInfo }: 
             variants={fadeInUp}
             initial="initial"
             animate={isTestimonialsInView ? 'animate' : 'initial'}
-            transition={{ duration: 0.5, delay: 1.0 }}
+            transition={{ duration: 0.3, delay: 0.5 }}
             className="text-center space-y-8 max-w-4xl mx-auto"
           >
             <div className="bg-white/5 backdrop-blur border border-white/10 rounded-xl p-8 md:p-12">
@@ -689,7 +688,7 @@ export default function AboutContent({ skills, experienceStats, personalInfo }: 
                 achieve your business goals together.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-6 justify-center">
                 <Button
                   size="lg"
                   className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
@@ -707,7 +706,6 @@ export default function AboutContent({ skills, experienceStats, personalInfo }: 
 
                 <Button
                   size="lg"
-                  variant="outline"
                   className="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
                   asChild
                 >
@@ -732,7 +730,7 @@ export default function AboutContent({ skills, experienceStats, personalInfo }: 
                 <div className="text-center">
                   <MapPin className="w-6 h-6 text-blue-400 mx-auto mb-3" />
                   <h4 className="font-semibold text-white mb-2">Location</h4>
-                  <p className="text-blue-300 text-sm">Remote Worldwide</p>
+                  <p className="text-blue-300 text-sm">On-site | Remote | Hybrid</p>
                 </div>
 
                 <div className="text-center">
