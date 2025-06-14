@@ -15,6 +15,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import DealStageFunnelChart from './DealStageFunnelChart'
 import { getProject } from '@/lib/content/projects'
+import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip, BarChart as RechartsBarChart, Bar, Cell } from 'recharts'
 
 // Define proper types for funnel data
@@ -150,7 +151,15 @@ export default function DealFunnel() {
 
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white">
+    <>
+      <ProjectJsonLd 
+        title="Sales Pipeline Funnel Analysis - Deal Stage Optimization"
+        description="Interactive sales funnel dashboard showing deal progression, conversion rates, and sales cycle optimization. Features real-time analytics for revenue operations and sales performance tracking."
+        slug="deal-funnel"
+        category="Sales Operations"
+        tags={['Sales Funnel', 'Deal Pipeline', 'Conversion Analysis', 'Sales Operations', 'Revenue Optimization', 'Sales Analytics', 'CRM', 'Sales Performance']}
+      />
+      <div className="min-h-screen bg-[#0f172a] text-white">
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
@@ -394,6 +403,7 @@ export default function DealFunnel() {
           </>
         )}
       </div>
-    </div>
+      </div>
+    </>
   )
 }

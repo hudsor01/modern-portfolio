@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ContactModal } from '@/components/ui/contact-modal'
+import { ServiceJsonLd } from '@/components/seo/json-ld'
 import {
   Mail,
   MapPin,
@@ -19,6 +20,7 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { Navbar } from '@/components/layout/navbar'
+import { Footer } from '@/components/layout/footer'
 import Link from 'next/link'
 
 interface FormData {
@@ -127,6 +129,7 @@ export default function ContactPage() {
 
   return (
     <>
+      <ServiceJsonLd />
       <Navbar />
       <section className="relative min-h-screen bg-[#0f172a] text-white overflow-hidden pt-20">
         {/* Grid Background */}
@@ -625,6 +628,9 @@ export default function ContactPage() {
 
       {/* Contact Modal */}
       <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      
+      {/* Footer */}
+      <Footer />
     </>
   )
 }

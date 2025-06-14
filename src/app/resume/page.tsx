@@ -19,6 +19,7 @@ import {
   Eye,
 } from 'lucide-react'
 import { Navbar } from '@/components/layout/navbar'
+import { Footer } from '@/components/layout/footer'
 import { ResumeViewer } from './resume-viewer'
 
 const experience = [
@@ -563,6 +564,9 @@ export default function ResumePage() {
           )}
         </div>
       </section>
+      
+      {/* Footer */}
+      <Footer />
     </>
   )
 }

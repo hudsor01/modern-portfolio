@@ -3,8 +3,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { ContactModal } from '@/components/ui/contact-modal'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import {
   Mail,
@@ -15,8 +13,6 @@ import {
   Clock,
   ArrowRight,
   Award,
-  Users,
-  Target,
 } from 'lucide-react'
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
@@ -94,77 +90,8 @@ const AnimatedCounter = ({ value, duration = 2000 }: { value: string; duration?:
   )
 }
 
-// Enhanced Skill Bar Component
-const EnhancedSkillBar = ({ skill, index }: { skill: Skill; index: number }) => {
-  const [isHovered, setIsHovered] = useState(false)
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.1, duration: 0.5 }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      className="group"
-    >
-      <div className="flex justify-between items-center mb-3">
-        <div className="flex items-center gap-2">
-          <motion.span
-            className="font-semibold text-white"
-            animate={{ scale: isHovered ? 1.05 : 1 }}
-            transition={{ duration: 0.2 }}
-          >
-            {skill.name}
-          </motion.span>
-          <Badge
-            variant="secondary"
-            className="text-xs bg-white/10 border border-white/20 text-gray-100"
-          >
-            {skill.years}y
-          </Badge>
-        </div>
-        <motion.span
-          className="text-sm font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400"
-          animate={{ scale: isHovered ? 1.1 : 1 }}
-          transition={{ duration: 0.2 }}
-        >
-          {skill.level}%
-        </motion.span>
-      </div>
-
-      <div className="relative">
-        <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-          <motion.div
-            className="h-full bg-gradient-to-r from-blue-300 via-sky-400 to-indigo-400 rounded-full relative"
-            initial={{ width: 0 }}
-            animate={{ width: `${skill.level}%` }}
-            transition={{ delay: index * 0.1 + 0.3, duration: 1, ease: 'easeOut' }}
-          >
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent to-white/20"
-              animate={{ x: isHovered ? ['-100%', '100%'] : 0 }}
-              transition={{ duration: 0.8, ease: 'easeInOut' }}
-            />
-          </motion.div>
-        </div>
-
-        {/* Skill level indicator */}
-        <motion.div
-          className="absolute top-0 w-2 h-2 bg-white rounded-full shadow-lg"
-          style={{ left: `${skill.level}%` }}
-          animate={{
-            scale: isHovered ? 1.5 : 1,
-            y: isHovered ? -2 : -1,
-          }}
-          transition={{ duration: 0.2 }}
-        />
-      </div>
-    </motion.div>
-  )
-}
-
-export default function AboutContent({ skills, experienceStats, personalInfo }: AboutContentProps) {
-  const [activeTab, setActiveTab] = useState('0')
+export default function AboutContent({ experienceStats, personalInfo }: AboutContentProps) {
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -264,7 +191,7 @@ export default function AboutContent({ skills, experienceStats, personalInfo }: 
             </motion.div>
           </motion.div>
 
-          {/* Enhanced Experience Stats */}
+          {/* Enhanced Experience Stats - Container-in-Container Design */}
           {experienceStats && (
             <motion.div
               ref={statsRef}
@@ -281,33 +208,37 @@ export default function AboutContent({ skills, experienceStats, personalInfo }: 
                   initial="initial"
                   animate={isStatsInView ? 'animate' : 'initial'}
                   transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
-                  className="bg-white/5 backdrop-blur border border-white/10 rounded-xl p-6 text-center hover:bg-white/10 transition-all duration-300 group"
+                  className="group relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25"
                 >
-                  <motion.div
-                    className="text-4xl mb-4 filter drop-shadow-lg"
-                    animate={{
-                      scale: [1, 1.1, 1],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      delay: index * 0.2,
-                    }}
-                  >
-                    {stat.icon}
-                  </motion.div>
+                  <div className="p-6">
+                    <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 text-center h-full flex flex-col">
+                      <motion.div
+                        className="text-4xl mb-4 filter drop-shadow-lg"
+                        animate={{
+                          scale: [1, 1.1, 1],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          delay: index * 0.2,
+                        }}
+                      >
+                        {stat.icon}
+                      </motion.div>
 
-                  <div className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400 mb-2">
-                    <AnimatedCounter value={stat.value} />
+                      <div className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400 mb-2">
+                        <AnimatedCounter value={stat.value} />
+                      </div>
+
+                      <p className="text-sm font-medium text-gray-300">{stat.label}</p>
+                    </div>
                   </div>
-
-                  <p className="text-sm font-medium text-gray-300">{stat.label}</p>
                 </motion.div>
               ))}
             </motion.div>
           )}
 
-          {/* Enhanced Bio Section */}
+          {/* Enhanced Bio Section - Container-in-Container Design */}
           {personalInfo && (
             <motion.div
               ref={bioRef}
@@ -323,45 +254,38 @@ export default function AboutContent({ skills, experienceStats, personalInfo }: 
                 initial="initial"
                 animate={isBioInView ? 'animate' : 'initial'}
                 transition={{ duration: 0.5, delay: 0.4 }}
-                className="bg-white/5 backdrop-blur border border-white/10 rounded-xl p-8 hover:bg-white/10 transition-all duration-300"
+                className="group relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25"
               >
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400 rounded-lg flex items-center justify-center">
-                    <Briefcase className="text-white" size={24} />
+                <div className="p-8">
+                  <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 h-full flex flex-col">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400 rounded-lg flex items-center justify-center">
+                        <Briefcase className="text-white" size={24} />
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400">
+                          My Story
+                        </h2>
+                        <p className="text-sm text-gray-400">Professional background</p>
+                      </div>
+                    </div>
+
+                    <p className="text-lg leading-relaxed text-gray-300 mb-8 flex-grow">{personalInfo.bio}</p>
+
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <Button
+                        className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
+                        onClick={() => setIsModalOpen(true)}
+                      >
+                        <Mail className="mr-2" size={18} />
+                        Get In Touch
+                        <ArrowRight
+                          size={18}
+                          className="ml-2 transition-transform duration-300 group-hover:translate-x-1"
+                        />
+                      </Button>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400">
-                      My Story
-                    </h2>
-                    <p className="text-sm text-gray-400">Professional background</p>
-                  </div>
-                </div>
-
-                <p className="text-lg leading-relaxed text-gray-300 mb-8">{personalInfo.bio}</p>
-
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
-                    asChild
-                  >
-                    <Link href="/contact">
-                      <Mail className="mr-2" size={18} />
-                      Get In Touch
-                      <ArrowRight
-                        size={18}
-                        className="ml-2 transition-transform duration-300 group-hover:translate-x-1"
-                      />
-                    </Link>
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    className="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
-                    onClick={() => setIsModalOpen(true)}
-                  >
-                    <Mail className="mr-2" size={18} />
-                    Get In Touch
-                  </Button>
                 </div>
               </motion.div>
 
@@ -371,141 +295,134 @@ export default function AboutContent({ skills, experienceStats, personalInfo }: 
                 initial="initial"
                 animate={isBioInView ? 'animate' : 'initial'}
                 transition={{ duration: 0.5, delay: 0.6 }}
-                className="bg-white/5 backdrop-blur border border-white/10 rounded-xl p-8 hover:bg-white/10 transition-all duration-300"
+                className="group relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25"
               >
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400 rounded-lg flex items-center justify-center">
-                    <Star className="text-white" size={24} />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400">
-                      Key Highlights
-                    </h3>
-                    <p className="text-sm text-gray-400">Core competencies</p>
-                  </div>
-                </div>
+                <div className="p-8">
+                  <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 h-full flex flex-col">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400 rounded-lg flex items-center justify-center">
+                        <Star className="text-white" size={24} />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400">
+                          Key Highlights
+                        </h3>
+                        <p className="text-sm text-gray-400">Core competencies</p>
+                      </div>
+                    </div>
 
-                <div className="space-y-4">
-                  {personalInfo.highlights.map((highlight, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={isBioInView ? { opacity: 1, x: 0 } : {}}
-                      transition={{ delay: 0.8 + index * 0.1, duration: 0.5 }}
-                      className="flex items-start gap-4 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 group"
-                    >
-                      <motion.div
-                        className="w-2 h-2 bg-gradient-to-r from-blue-300 via-sky-400 to-indigo-400 rounded-full mt-3 flex-shrink-0"
-                        animate={{ scale: [1, 1.2, 1] }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          delay: index * 0.2,
-                        }}
-                      />
-                      <p className="text-gray-300 leading-relaxed">{highlight}</p>
-                    </motion.div>
-                  ))}
+                    <div className="space-y-4 flex-grow">
+                      {personalInfo.highlights.map((highlight, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={isBioInView ? { opacity: 1, x: 0 } : {}}
+                          transition={{ delay: 0.8 + index * 0.1, duration: 0.5 }}
+                          className="flex items-start gap-4 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 group"
+                        >
+                          <motion.div
+                            className="w-2 h-2 bg-gradient-to-r from-blue-300 via-sky-400 to-indigo-400 rounded-full mt-3 flex-shrink-0"
+                            animate={{ scale: [1, 1.2, 1] }}
+                            transition={{
+                              duration: 2,
+                              repeat: Infinity,
+                              delay: index * 0.2,
+                            }}
+                          />
+                          <p className="text-gray-300 leading-relaxed">{highlight}</p>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             </motion.div>
           )}
 
-          {/* Enhanced Skills Section */}
-          {skills && skills.length > 0 && (
-            <motion.div
-              ref={skillsRef}
-              variants={fadeInUp}
-              initial="initial"
-              animate={isSkillsInView ? 'animate' : 'initial'}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="space-y-12"
-            >
-              <div className="text-center space-y-4">
-                <motion.h2
-                  variants={fadeInUp}
-                  initial="initial"
-                  animate={isSkillsInView ? 'animate' : 'initial'}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                  className="font-bold text-3xl sm:text-4xl md:text-5xl tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400"
-                >
-                  Skills & Expertise
-                </motion.h2>
-                <motion.p
-                  variants={fadeInUp}
-                  initial="initial"
-                  animate={isSkillsInView ? 'animate' : 'initial'}
-                  transition={{ duration: 0.5, delay: 0.6 }}
-                  className="text-gray-200 text-lg max-w-2xl mx-auto leading-relaxed font-light"
-                >
-                  A comprehensive overview of my technical abilities and professional competencies
-                </motion.p>
-              </div>
+          {/* Revenue Operations Case Studies - SEO Optimized */}
+          <motion.div
+            ref={skillsRef}
+            variants={fadeInUp}
+            initial="initial"
+            animate={isSkillsInView ? 'animate' : 'initial'}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="space-y-12"
+          >
+            <div className="text-center space-y-4">
+              <motion.h2
+                variants={fadeInUp}
+                initial="initial"
+                animate={isSkillsInView ? 'animate' : 'initial'}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="font-bold text-3xl sm:text-4xl md:text-5xl tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400"
+              >
+                Revenue Operations Expertise
+              </motion.h2>
+              <motion.p
+                variants={fadeInUp}
+                initial="initial"
+                animate={isSkillsInView ? 'animate' : 'initial'}
+                transition={{ duration: 0.5, delay: 0.6 }}
+                className="text-gray-200 text-lg max-w-2xl mx-auto leading-relaxed font-light"
+              >
+                Proven track record in sales operations, marketing automation, and business intelligence solutions
+              </motion.p>
+            </div>
 
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                {
+                  title: 'Sales Operations Excellence',
+                  description: 'Streamlined CRM systems and sales processes, resulting in 35% increase in conversion rates and 25% reduction in sales cycle time.',
+                  features: ['Salesforce CRM Optimization', 'Pipeline Management Systems', 'Lead Scoring & Qualification', 'Revenue Forecasting Models'],
+                  icon: '📊'
+                },
+                {
+                  title: 'Marketing Automation Strategy',
+                  description: 'Implemented multi-touch attribution models and automated marketing workflows, driving 45% improvement in marketing ROI.',
+                  features: ['HubSpot Marketing Automation', 'Lead Nurturing Campaigns', 'Attribution Modeling', 'Campaign Performance Analytics'],
+                  icon: '🎯'
+                },
+                {
+                  title: 'Business Intelligence Solutions',
+                  description: 'Built comprehensive BI dashboards and reporting systems, enabling data-driven decision making across organizations.',
+                  features: ['Custom Dashboard Development', 'Real-time Performance Metrics', 'Predictive Analytics', 'Executive Reporting Systems'],
+                  icon: '📈'
+                }
+              ].map((expertise, index) => (
                 <motion.div
+                  key={index}
                   variants={fadeInUp}
                   initial="initial"
                   animate={isSkillsInView ? 'animate' : 'initial'}
-                  transition={{ duration: 0.5, delay: 0.8 }}
+                  transition={{ duration: 0.5, delay: 0.8 + index * 0.2 }}
+                  className="group relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25"
                 >
-                  <TabsList className="grid w-full grid-cols-3 bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-0 shadow-md">
-                    {skills.map((category, index) => (
-                      <TabsTrigger
-                        key={index}
-                        value={index.toString()}
-                        className="flex items-center gap-4 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-300 data-[state=active]:via-sky-400 data-[state=active]:to-indigo-400 data-[state=active]:text-white rounded-xl transition-all duration-300 text-white"
-                      >
-                        <span className="text-xl">{category.icon}</span>
-                        <span className="hidden sm:inline font-medium">{category.category}</span>
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                </motion.div>
-
-                {skills.map((category, categoryIndex) => (
-                  <TabsContent key={categoryIndex} value={categoryIndex.toString()}>
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5 }}
-                      className="mt-8 bg-white/5 backdrop-blur border border-white/10 rounded-xl overflow-hidden"
-                    >
-                      <div className="bg-white/5 p-6 border-b border-white/10">
-                        <div className="flex items-center gap-4">
-                          <motion.div
-                            className="w-16 h-16 bg-gradient-to-r from-blue-300 via-sky-400 to-indigo-400 rounded-2xl flex items-center justify-center text-3xl"
-                            whileHover={{ rotate: 360, scale: 1.1 }}
-                            transition={{ duration: 0.6 }}
-                          >
-                            {category.icon}
-                          </motion.div>
-                          <div>
-                            <h3 className="text-2xl md:text-3xl font-bold text-white">
-                              {category.category}
-                            </h3>
-                            <p className="text-gray-400 font-normal text-lg">
-                              {category.description}
-                            </p>
+                  <div className="p-8">
+                    <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 h-full flex flex-col">
+                      <div className="text-4xl mb-4">{expertise.icon}</div>
+                      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">
+                        {expertise.title}
+                      </h3>
+                      <p className="text-gray-300 mb-6 leading-relaxed flex-grow">
+                        {expertise.description}
+                      </p>
+                      <div className="space-y-2 mt-auto">
+                        {expertise.features.map((feature, i) => (
+                          <div key={i} className="flex items-center gap-3 text-sm">
+                            <div className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
+                            <span className="text-gray-300">{feature}</span>
                           </div>
-                        </div>
+                        ))}
                       </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
 
-                      <div className="p-6">
-                        <div className="space-y-10">
-                          {category.skills.map((skill, skillIndex) => (
-                            <EnhancedSkillBar key={skillIndex} skill={skill} index={skillIndex} />
-                          ))}
-                        </div>
-                      </div>
-                    </motion.div>
-                  </TabsContent>
-                ))}
-              </Tabs>
-            </motion.div>
-          )}
-
-          {/* Key Achievements Section */}
+          {/* Industry Experience & Certifications - SEO Optimized */}
           <motion.div
             ref={achievementsRef}
             variants={fadeInUp}
@@ -522,7 +439,7 @@ export default function AboutContent({ skills, experienceStats, personalInfo }: 
                 transition={{ duration: 0.5, delay: 0.4 }}
                 className="font-bold text-3xl sm:text-4xl md:text-5xl tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400"
               >
-                Key Achievements
+                Industry Experience & Credentials
               </motion.h2>
               <motion.p
                 variants={fadeInUp}
@@ -531,55 +448,92 @@ export default function AboutContent({ skills, experienceStats, personalInfo }: 
                 transition={{ duration: 0.5, delay: 0.6 }}
                 className="text-gray-200 text-lg max-w-2xl mx-auto leading-relaxed font-light"
               >
-                Delivering measurable results through strategic planning and execution
+                Deep expertise across multiple industries with proven results in revenue operations and business transformation
               </motion.p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                {
-                  value: '$3.7M+',
-                  label: 'Revenue Growth',
-                  description:
-                    'Drove significant annual revenue growth through data-driven forecasting and optimization strategies.',
-                  icon: TrendingUp,
-                },
-                {
-                  value: '2,200%',
-                  label: 'Network Expansion',
-                  description:
-                    'Grew partner network and increased transaction volume through strategic partnership development.',
-                  icon: Users,
-                },
-                {
-                  value: '40%',
-                  label: 'Process Optimization',
-                  description:
-                    'Implemented cross-functional workflow integrations, reducing processing time and improving efficiency.',
-                  icon: Target,
-                },
-              ].map((achievement, index) => (
-                <motion.div
-                  key={index}
-                  variants={fadeInUp}
-                  initial="initial"
-                  animate={isAchievementsInView ? 'animate' : 'initial'}
-                  transition={{ duration: 0.5, delay: 0.8 + index * 0.2 }}
-                  className="bg-white/5 backdrop-blur border border-white/10 rounded-xl p-8 text-center hover:bg-white/10 transition-all duration-300 group"
-                >
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <achievement.icon className="text-white" size={32} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Industry Experience */}
+              <motion.div
+                variants={fadeInUp}
+                initial="initial"
+                animate={isAchievementsInView ? 'animate' : 'initial'}
+                transition={{ duration: 0.5, delay: 0.8 }}
+                className="group relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25"
+              >
+                <div className="p-8">
+                  <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 h-full flex flex-col">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-lg flex items-center justify-center">
+                        <Briefcase className="text-white" size={24} />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent">
+                          Industry Expertise
+                        </h3>
+                        <p className="text-sm text-gray-400">10+ years across multiple sectors</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4 flex-grow">
+                      {[
+                        'SaaS & Technology Companies',
+                        'Financial Services & Fintech',
+                        'Healthcare & Life Sciences',
+                        'E-commerce & Retail',
+                        'Professional Services',
+                        'Manufacturing & Distribution'
+                      ].map((industry, i) => (
+                        <div key={i} className="flex items-center gap-3 text-sm">
+                          <div className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
+                          <span className="text-gray-300">{industry}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
+                </div>
+              </motion.div>
 
-                  <div className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400 mb-4">
-                    {achievement.value}
+              {/* Certifications & Technical Skills */}
+              <motion.div
+                variants={fadeInUp}
+                initial="initial"
+                animate={isAchievementsInView ? 'animate' : 'initial'}
+                transition={{ duration: 0.5, delay: 1.0 }}
+                className="group relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25"
+              >
+                <div className="p-8">
+                  <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 h-full flex flex-col">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-lg flex items-center justify-center">
+                        <Award className="text-white" size={24} />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent">
+                          Technical Certifications
+                        </h3>
+                        <p className="text-sm text-gray-400">Professional credentials & expertise</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4 flex-grow">
+                      {[
+                        'Salesforce Administrator & Advanced User',
+                        'HubSpot Revenue Operations',
+                        'Google Analytics & Tag Manager',
+                        'Tableau Desktop & Server',
+                        'Microsoft Power BI & Excel Expert',
+                        'SQL & Database Management'
+                      ].map((cert, i) => (
+                        <div key={i} className="flex items-center gap-3 text-sm">
+                          <div className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
+                          <span className="text-gray-300">{cert}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-
-                  <h3 className="text-xl font-bold text-white mb-3">{achievement.label}</h3>
-
-                  <p className="text-gray-300 leading-relaxed">{achievement.description}</p>
-                </motion.div>
-              ))}
+                </div>
+              </motion.div>
             </div>
           </motion.div>
 
@@ -643,23 +597,27 @@ export default function AboutContent({ skills, experienceStats, personalInfo }: 
                   initial="initial"
                   animate={isTestimonialsInView ? 'animate' : 'initial'}
                   transition={{ duration: 0.5, delay: 0.8 + index * 0.2 }}
-                  className="bg-white/5 backdrop-blur border border-white/10 rounded-xl p-8 hover:bg-white/10 transition-all duration-300 h-full"
+                  className="group relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25 h-full"
                 >
-                  <div className="flex items-center gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                    ))}
-                  </div>
+                  <div className="p-8">
+                    <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 h-full flex flex-col">
+                      <div className="flex items-center gap-1 mb-4">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                        ))}
+                      </div>
 
-                  <p className="text-gray-300 leading-relaxed mb-6 italic">"{testimonial.quote}"</p>
+                      <p className="text-gray-300 leading-relaxed mb-6 italic flex-grow">"{testimonial.quote}"</p>
 
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-300 via-sky-400 to-indigo-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                      {testimonial.avatar}
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-white">{testimonial.name}</h4>
-                      <p className="text-sm text-gray-400">{testimonial.title}</p>
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-r from-blue-300 via-sky-400 to-indigo-400 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                          {testimonial.avatar}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-white">{testimonial.name}</h4>
+                          <p className="text-sm text-gray-400">{testimonial.title}</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -667,7 +625,7 @@ export default function AboutContent({ skills, experienceStats, personalInfo }: 
             </div>
           </motion.div>
 
-          {/* Enhanced Call to Action */}
+          {/* Enhanced Call to Action - Container-in-Container Design */}
           <motion.div
             variants={fadeInUp}
             initial="initial"
@@ -675,68 +633,70 @@ export default function AboutContent({ skills, experienceStats, personalInfo }: 
             transition={{ duration: 0.3, delay: 0.5 }}
             className="text-center space-y-8 max-w-4xl mx-auto"
           >
-            <div className="bg-white/5 backdrop-blur border border-white/10 rounded-xl p-8 md:p-12">
-              <div className="flex items-center justify-center gap-4 mb-6">
-                <Award className="w-8 h-8 text-blue-400" />
-                <h3 className="font-bold text-2xl sm:text-3xl md:text-4xl tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400">
-                  Let's Work Together
-                </h3>
-              </div>
+            <div className="group relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25">
+              <div className="p-8 md:p-12">
+                <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-8">
+                  <div className="flex items-center justify-center gap-4 mb-6">
+                    <Award className="w-8 h-8 text-blue-400" />
+                    <h3 className="font-bold text-2xl sm:text-3xl md:text-4xl tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400">
+                      Let's Work Together
+                    </h3>
+                  </div>
 
-              <p className="text-gray-200 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-light mb-8">
-                Ready to optimize your revenue operations and drive growth? Let's discuss how we can
-                achieve your business goals together.
-              </p>
+                  <p className="text-gray-200 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-light mb-8">
+                    Ready to optimize your revenue operations and drive growth? Let's discuss how we can
+                    achieve your business goals together.
+                  </p>
 
-              <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                <Button
-                  size="lg"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
-                  asChild
-                >
-                  <Link href="/projects">
-                    <TrendingUp className="mr-2" size={20} />
-                    View My Projects
-                    <ArrowRight
-                      size={18}
-                      className="ml-2 transition-transform duration-300 group-hover:translate-x-1"
-                    />
-                  </Link>
-                </Button>
+                  <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                    <Button
+                      size="lg"
+                      className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
+                      asChild
+                    >
+                      <Link href="/projects">
+                        <TrendingUp className="mr-2" size={20} />
+                        View My Projects
+                        <ArrowRight
+                          size={18}
+                          className="ml-2 transition-transform duration-300 group-hover:translate-x-1"
+                        />
+                      </Link>
+                    </Button>
 
-                <Button
-                  size="lg"
-                  className="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
-                  asChild
-                >
-                  <Link href="/contact">
-                    <Mail className="mr-2" size={20} />
-                    Get In Touch
-                    <ArrowRight
-                      size={18}
-                      className="ml-2 transition-transform duration-300 group-hover:translate-x-1"
-                    />
-                  </Link>
-                </Button>
-              </div>
+                    <Button
+                      size="lg"
+                      className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
+                      onClick={() => setIsModalOpen(true)}
+                    >
+                      <Mail className="mr-2" size={20} />
+                      Get In Touch
+                      <ArrowRight
+                        size={18}
+                        className="ml-2 transition-transform duration-300 group-hover:translate-x-1"
+                      />
+                    </Button>
+                  </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/10">
-                <div className="text-center">
-                  <Clock className="w-6 h-6 text-blue-400 mx-auto mb-3" />
-                  <h4 className="font-semibold text-white mb-2">Response Time</h4>
-                  <p className="text-blue-300 text-sm">Within 24 hours</p>
-                </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/10">
+                    <div className="text-center">
+                      <Clock className="w-6 h-6 text-blue-400 mx-auto mb-3" />
+                      <h4 className="font-semibold text-white mb-2">Response Time</h4>
+                      <p className="text-blue-300 text-sm">Within 24 hours</p>
+                    </div>
 
-                <div className="text-center">
-                  <MapPin className="w-6 h-6 text-blue-400 mx-auto mb-3" />
-                  <h4 className="font-semibold text-white mb-2">Location</h4>
-                  <p className="text-blue-300 text-sm">On-site | Remote | Hybrid</p>
-                </div>
+                    <div className="text-center">
+                      <MapPin className="w-6 h-6 text-blue-400 mx-auto mb-3" />
+                      <h4 className="font-semibold text-white mb-2">Location</h4>
+                      <p className="text-blue-300 text-sm">On-site | Remote | Hybrid</p>
+                    </div>
 
-                <div className="text-center">
-                  <Award className="w-6 h-6 text-blue-400 mx-auto mb-3" />
-                  <h4 className="font-semibold text-white mb-2">Experience</h4>
-                  <p className="text-blue-300 text-sm">10+ Years</p>
+                    <div className="text-center">
+                      <Award className="w-6 h-6 text-blue-400 mx-auto mb-3" />
+                      <h4 className="font-semibold text-white mb-2">Experience</h4>
+                      <p className="text-blue-300 text-sm">10+ Years</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

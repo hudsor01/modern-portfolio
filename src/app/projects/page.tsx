@@ -2,11 +2,12 @@ import React from 'react'
 import { generateMetadata } from '@/app/shared-metadata'
 import { getProjects } from '@/app/projects/data/projects'
 import ProjectsClientBoundary from '@/components/projects/projects-client-boundary'
+import { Footer } from '@/components/layout/footer'
 import type { Project } from '@/types/project'
 
 export const metadata = generateMetadata(
-  "Projects | Richard Hudson's Portfolio",
-  "Explore Richard Hudson's portfolio of revenue operations projects and case studies demonstrating successful business optimization strategies.",
+  'Revenue Operations Projects & Case Studies | Richard Hudson',
+  'Explore proven RevOps success stories: $4.8M+ revenue generated, 25% churn reduction, 35% conversion optimization. Real-world case studies in sales automation, data analytics, and business intelligence.',
   '/projects'
 )
 
@@ -34,5 +35,10 @@ export default async function ProjectsPage() {
     githubUrl: p.github,
   }))
 
-  return <ProjectsClientBoundary initialProjects={convertedProjects} />
+  return (
+    <>
+      <ProjectsClientBoundary initialProjects={convertedProjects} />
+      <Footer />
+    </>
+  )
 }

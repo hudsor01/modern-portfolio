@@ -16,6 +16,7 @@ import RevenueLineChart from './RevenueLineChart'
 import TopPartnersChart from './TopPartnersChart'
 import PartnerGroupPieChart from './PartnerGroupPieChart'
 import { yearOverYearGrowthExtended } from '@/app/projects/data/partner-analytics'
+import { ProjectJsonLd } from '@/components/seo/json-ld'
 
 type YearOverYearGrowth = {
   year: number
@@ -99,7 +100,15 @@ export default function RevenueKPI() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white">
+    <>
+      <ProjectJsonLd 
+        title="Revenue KPI Dashboard - Partner Analytics & Business Intelligence"
+        description="Real-time revenue analytics dashboard featuring partner performance metrics, growth trends, and business intelligence for data-driven decision making. Built with React, TypeScript, and Recharts."
+        slug="revenue-kpi"
+        category="Business Intelligence"
+        tags={['Revenue Analytics', 'Partner Management', 'KPI Dashboard', 'Business Intelligence', 'Data Visualization', 'Recharts', 'React', 'TypeScript']}
+      />
+      <div className="min-h-screen bg-[#0f172a] text-white">
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
@@ -352,6 +361,7 @@ export default function RevenueKPI() {
           </>
         )}
       </div>
-    </div>
+      </div>
+    </>
   )
 }

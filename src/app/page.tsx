@@ -6,16 +6,32 @@ import HomePageContent from '@/components/layout/home-page-content' // Corrected
 
 // Define metadata for SEO
 export const metadata: Metadata = {
-  title: 'Richard Hudson - Revenue Operations Professional',
+  title: 'Richard Hudson | Revenue Operations Consultant & Business Growth Expert',
   description:
-    'Driving business growth through data-driven insights, process optimization, and strategic operational improvements.',
-  keywords: ['revenue operations', 'data analytics', 'business intelligence', 'SaaS', 'growth strategies', 'process optimization', 'strategic planning'],
+    'Expert Revenue Operations Consultant in Dallas. Specializing in sales optimization, marketing automation, and data-driven business growth strategies. $4.8M+ revenue generated.',
+  keywords: [
+    'revenue operations consultant',
+    'RevOps expert Dallas',
+    'sales operations optimization',
+    'marketing automation specialist',
+    'business intelligence consulting',
+    'SaaS revenue growth',
+    'CRM optimization expert',
+    'Salesforce consultant',
+    'HubSpot implementation',
+    'data analytics consulting',
+    'process automation expert',
+    'revenue forecasting',
+    'sales pipeline optimization',
+    'customer lifecycle management',
+    'B2B growth strategies'
+  ],
   openGraph: {
-    title: 'Richard Hudson - Revenue Operations Professional',
+    title: 'Richard Hudson | Revenue Operations Consultant & Business Growth Expert',
     description:
-      'Driving business growth through data-driven insights, process optimization, and strategic operational improvements.',
+      'Expert Revenue Operations Consultant in Dallas. Specializing in sales optimization, marketing automation, and data-driven business growth strategies. $4.8M+ revenue generated.',
     url: 'https://richardwhudsonjr.com',
-    siteName: 'Richard Hudson Portfolio',
+    siteName: 'Richard Hudson - RevOps Consultant',
     images: [
       {
         url: 'https://richardwhudsonjr.com/images/richard-og.jpg', // Placeholder, ensure this image exists
