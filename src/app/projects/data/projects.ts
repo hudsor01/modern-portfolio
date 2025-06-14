@@ -166,7 +166,7 @@ const projects: Project[] = [
     title: 'Partner Performance Intelligence Dashboard',
     description:
       'Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem. Real-time performance tracking following industry-standard 80/20 partner revenue distribution.',
-    image: '/images/projects/analytics-dashboard.jpg',
+    image: '/images/projects/partner-analytics.jpg',
     link: 'https://demo.partnerintelligence.example.com',
     github: 'https://github.com/hudsonr01/partner-performance',
     category: 'Revenue Operations',
@@ -193,7 +193,7 @@ const projects: Project[] = [
     title: 'Customer Acquisition Cost Optimization & Unit Economics Dashboard',
     description:
       'Comprehensive CAC analysis and LTV:CAC ratio optimization achieving 32% cost reduction through strategic partner channel optimization. Industry-benchmark 3.6:1 efficiency ratio with 8.4-month payback period across multi-tier SaaS products.',
-    image: '/images/projects/analytics-dashboard.jpg',
+    image: '/images/projects/financial-analytics.jpg',
     link: 'https://demo.cacanalytics.example.com',
     github: 'https://github.com/hudsonr01/cac-unit-economics',
     category: 'Revenue Operations',
