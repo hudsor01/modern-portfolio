@@ -13,51 +13,6 @@
         <lastmod>2025-06-14T07:41:35+01:00</lastmod>
         <changefreq>always</changefreq>
         <priority>1.0</priority>
-        <image:image>
-            <image:loc>
-                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Fprojects%2Ffinancial-analytics.jpg&amp;amp;w=640&amp;amp;q=75
-</image:loc>
-        </image:image>
-        <image:image>
-            <image:loc>
-                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Fprojects%2Fmulti-channel.jpg&amp;amp;w=640&amp;amp;q=75
-</image:loc>
-        </image:image>
-        <image:image>
-            <image:loc>
-                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Fprojects%2Frevenue-operations.jpg&amp;amp;w=640&amp;amp;q=75
-</image:loc>
-        </image:image>
-        <image:image>
-            <image:loc>
-                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Fprojects%2Fcustomer-analytics.jpg&amp;w=640&amp;q=75
-</image:loc>
-        </image:image>
-        <image:image>
-            <image:loc>
-                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Fprojects%2Fanalytics-dashboard.jpg&amp;w=640&amp;q=75
-</image:loc>
-        </image:image>
-        <image:image>
-            <image:loc>
-                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Fprojects%2Fchurn-retention.jpg&amp;w=640&amp;q=75
-</image:loc>
-        </image:image>
-        <image:image>
-            <image:loc>
-                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Fprojects%2Fdeal-funnel.jpg&amp;w=640&amp;q=75
-</image:loc>
-        </image:image>
-        <image:image>
-            <image:loc>
-                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Fprojects%2Flead-attribution.jpg&amp;w=640&amp;q=75
-</image:loc>
-        </image:image>
-        <image:image>
-            <image:loc>
-                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Fprojects%2Fbusiness-intelligence.jpg&amp;w=640&amp;q=75
-</image:loc>
-        </image:image>
     </url>
     <url>
         <loc>https://www.richardwhudsonjr.com/about</loc>
@@ -70,11 +25,6 @@
         <lastmod>2025-06-14T07:41:37+01:00</lastmod>
         <changefreq>yearly</changefreq>
         <priority>1.0</priority>
-        <image:image>
-            <image:loc>
-                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Frichard.jpg&amp;w=640&amp;q=75
-</image:loc>
-        </image:image>
     </url>
     <url>
         <loc>https://www.richardwhudsonjr.com/contact</loc>
