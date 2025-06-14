@@ -1,0 +1,165 @@
+<urlset
+    xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+    xmlns:xhtml="http://www.w3.org/1999/xhtml"
+    xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+    <url>
+        <loc>https://www.richardwhudsonjr.com/</loc>
+        <lastmod>2025-06-14T07:41:34+01:00</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://www.richardwhudsonjr.com/projects</loc>
+        <lastmod>2025-06-14T07:41:35+01:00</lastmod>
+        <changefreq>always</changefreq>
+        <priority>1.0</priority>
+        <image:image>
+            <image:loc>
+                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Fprojects%2Ffinancial-analytics.jpg&amp;amp;w=640&amp;amp;q=75
+</image:loc>
+        </image:image>
+        <image:image>
+            <image:loc>
+                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Fprojects%2Fmulti-channel.jpg&amp;amp;w=640&amp;amp;q=75
+</image:loc>
+        </image:image>
+        <image:image>
+            <image:loc>
+                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Fprojects%2Frevenue-operations.jpg&amp;amp;w=640&amp;amp;q=75
+</image:loc>
+        </image:image>
+        <image:image>
+            <image:loc>
+                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Fprojects%2Fcustomer-analytics.jpg&amp;w=640&amp;q=75
+</image:loc>
+        </image:image>
+        <image:image>
+            <image:loc>
+                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Fprojects%2Fanalytics-dashboard.jpg&amp;w=640&amp;q=75
+</image:loc>
+        </image:image>
+        <image:image>
+            <image:loc>
+                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Fprojects%2Fchurn-retention.jpg&amp;w=640&amp;q=75
+</image:loc>
+        </image:image>
+        <image:image>
+            <image:loc>
+                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Fprojects%2Fdeal-funnel.jpg&amp;w=640&amp;q=75
+</image:loc>
+        </image:image>
+        <image:image>
+            <image:loc>
+                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Fprojects%2Flead-attribution.jpg&amp;w=640&amp;q=75
+</image:loc>
+        </image:image>
+        <image:image>
+            <image:loc>
+                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Fprojects%2Fbusiness-intelligence.jpg&amp;w=640&amp;q=75
+</image:loc>
+        </image:image>
+    </url>
+    <url>
+        <loc>https://www.richardwhudsonjr.com/about</loc>
+        <lastmod>2025-06-14T07:41:37+01:00</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://www.richardwhudsonjr.com/resume</loc>
+        <lastmod>2025-06-14T07:41:37+01:00</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>1.0</priority>
+        <image:image>
+            <image:loc>
+                https://www.richardwhudsonjr.com/_next/image?url=%2Fimages%2Frichard.jpg&amp;w=640&amp;q=75
+</image:loc>
+        </image:image>
+    </url>
+    <url>
+        <loc>https://www.richardwhudsonjr.com/contact</loc>
+        <lastmod>2025-06-14T07:41:37+01:00</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>
+            https://www.richardwhudsonjr.com/projects/commission-optimization
+</loc>
+        <lastmod>2025-06-14T07:41:37+01:00</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>
+            https://www.richardwhudsonjr.com/projects/multi-channel-attribution
+</loc>
+        <lastmod>2025-06-14T07:41:37+01:00</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>
+            https://www.richardwhudsonjr.com/projects/revenue-operations-center
+</loc>
+        <lastmod>2025-06-14T07:41:37+01:00</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>
+            https://www.richardwhudsonjr.com/projects/customer-lifetime-value
+</loc>
+        <lastmod>2025-06-14T07:41:37+01:00</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>
+            https://www.richardwhudsonjr.com/projects/partner-performance
+</loc>
+        <lastmod>2025-06-14T07:41:37+01:00</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>
+            https://www.richardwhudsonjr.com/projects/cac-unit-economics
+</loc>
+        <lastmod>2025-06-14T07:41:37+01:00</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>
+            https://www.richardwhudsonjr.com/projects/churn-retention
+</loc>
+        <lastmod>2025-06-14T07:41:37+01:00</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>
+            https://www.richardwhudsonjr.com/projects/deal-funnel
+</loc>
+        <lastmod>2025-06-14T07:41:37+01:00</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>
+            https://www.richardwhudsonjr.com/projects/lead-attribution
+</loc>
+        <lastmod>2025-06-14T07:41:37+01:00</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>
+            https://www.richardwhudsonjr.com/projects/revenue-kpi
+</loc>
+        <lastmod>2025-06-14T07:41:37+01:00</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.8</priority>
+    </url>
+</urlset>
