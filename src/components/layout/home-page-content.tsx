@@ -12,6 +12,11 @@ const fadeInUp = {
   animate: { opacity: 1, y: 0 },
 }
 
+const fadeInOnly = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+}
+
 // Variant for the badge's subtle pop animation
 const badgePop = {
   animate: {
@@ -38,7 +43,7 @@ export default function HomePageContent() {
   ]
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center bg-[#0f172a] text-white overflow-hidden p-4">
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-[#0f172a] text-white overflow-hidden p-4 pt-24">
       <HomePageSchema />
 
       {/* Grid Background */}
@@ -47,37 +52,29 @@ export default function HomePageContent() {
         aria-hidden="true"
       ></div>
 
-      {/* Enhanced Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
-      </div>
+      {/* Animated Blobs */}
+      <div
+        className="absolute top-0 -left-4 w-72 h-72 sm:w-96 sm:h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute top-0 -right-4 w-72 h-72 sm:w-96 sm:h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob [animation-delay:2s]"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute bottom-0 left-20 w-72 h-72 sm:w-96 sm:h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob [animation-delay:4s]"
+        aria-hidden="true"
+      />
 
       {/* Content */}
       <div className="container relative z-10 px-4 mx-auto max-w-7xl text-center">
-        <motion.div // This div handles the fadeInUp for the badge container
-          variants={fadeInUp}
-          initial="initial"
-          animate="animate"
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="mb-8"
-        >
-          <motion.span // This span handles the subsequent pop animation
-            variants={badgePop}
-            animate="animate" // Will inherit initial from parent if not specified, or can be set
-            className="inline-flex items-center rounded-full bg-blue-500/10 border border-blue-500/30 px-3 py-1 text-sm font-medium text-blue-400"
-          >
-            Revenue Operations Professional
-          </motion.span>
-        </motion.div>
 
         <motion.h1
           variants={fadeInUp}
           initial="initial"
           animate="animate"
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="font-bold text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight mb-6 hero-name-gradient"
+          className="font-bold text-responsive-6xl tracking-tight mb-6 hero-name-gradient"
         >
           Richard Hudson
         </motion.h1>
@@ -89,7 +86,7 @@ export default function HomePageContent() {
           transition={{ duration: 0.5, delay: 0.6 }}
           className="mb-8"
         >
-          <h2 className="section-heading-gradient text-2xl sm:text-3xl md:text-4xl tracking-tight font-medium">
+          <h2 className="section-heading-gradient text-responsive-3xl tracking-tight font-medium">
             Driving Business Growth Through Data
           </h2>
         </motion.div>
@@ -99,56 +96,74 @@ export default function HomePageContent() {
           initial="initial"
           animate="animate"
           transition={{ duration: 0.5, delay: 0.8 }}
-          className="text-gray-200 text-lg md:text-xl max-w-3xl mx-auto mb-8 leading-relaxed px-4 font-light"
+          className="text-gray-200-enhanced text-responsive-lg max-w-3xl mx-auto mb-8 leading-relaxed px-4 font-light"
         >
           Experienced in optimizing revenue operations through data-driven insights, process optimization, and strategic operational improvements that drive measurable business results.
         </motion.p>
 
-        {/* Key Achievements */}
+        {/* Enhanced Key Achievements */}
         <motion.div
           variants={fadeInUp}
           initial="initial"
           animate="animate"
           transition={{ duration: 0.5, delay: 0.9 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mb-12"
+          className="max-w-6xl mx-auto mb-16"
         >
-          {[
-            { icon: DollarSign, value: '$50M+', label: 'Revenue Generated' },
-            { icon: TrendingUp, value: '94%', label: 'Forecast Accuracy' },
-            { icon: Target, value: '10+', label: 'Projects Delivered' },
-            { icon: Award, value: '98%', label: 'Success Rate' }
-          ].map((stat, index) => (
-            <div key={index} className="text-center">
-              <div className="p-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl mb-3 mx-auto w-fit">
-                <stat.icon className="w-6 h-6 text-blue-400" />
-              </div>
-              <div className="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400">
-                {stat.value}
-              </div>
-              <div className="text-sm text-gray-400">
-                {stat.label}
+          <div className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl p-8 hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25">
+            <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                {[
+                  { icon: DollarSign, value: '$3.7M+', label: 'Revenue Impact' },
+                  { icon: TrendingUp, value: '96.8%', label: 'Forecast Accuracy' },
+                  { icon: Target, value: '8+', label: 'Projects Delivered' },
+                  { icon: Award, value: '87.5%', label: 'Automation Rate' }
+                ].map((stat, index) => (
+                  <div key={index} className="text-center group">
+                    <div className="p-4 bg-gradient-to-br from-blue-500/20 to-indigo-600/20 backdrop-blur border border-blue-400/30 rounded-2xl mb-4 mx-auto w-fit group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-blue-500/20">
+                      <stat.icon className="w-8 h-8 text-blue-300" />
+                    </div>
+                    <div className="text-responsive-3xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent mb-2">
+                      {stat.value}
+                    </div>
+                    <div className="text-responsive-base text-gray-200-enhanced font-medium">
+                      {stat.label}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
+          </div>
         </motion.div>
 
-        <div className="flex flex-wrap gap-4 justify-center">
-          {buttons.map((item, index) => (
-            <MotionLink
-              key={item.href}
-              href={item.href}
-              variants={fadeInUp} // Use the same fadeInUp
-              initial="initial"
-              animate="animate"
-              transition={{ duration: 0.5, delay: 1.1 + index * 0.15 }} // Staggered delay
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap md:text-base font-medium disabled:pointer-events-none disabled:opacity-50 outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f172a] premium-button-gradient hover:premium-button-gradient-hover text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-xl shadow-lg hover:shadow-2xl hover:shadow-blue-500/25 hover:scale-110 transition-all duration-500 group border border-blue-400/20"
-            >
-              <item.icon size={20} className="text-white" />
-              <span>{item.label}</span>
-              <ArrowRight size={18} className="transition-transform duration-300 group-hover:translate-x-1" />
-            </MotionLink>
-          ))}
-        </div>
+        <motion.div 
+          variants={fadeInUp}
+          initial="initial"
+          animate="animate"
+          transition={{ duration: 0.5, delay: 1.1 }}
+          className="max-w-4xl mx-auto"
+        >
+          <div className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl p-8 hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25">
+            <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
+              <div className="flex flex-wrap gap-6 justify-center">
+                {buttons.map((item, index) => (
+                  <MotionLink
+                    key={item.href}
+                    href={item.href}
+                    variants={fadeInOnly}
+                    initial="initial"
+                    animate="animate"
+                    transition={{ duration: 0.5, delay: 1.3 + index * 0.15 }}
+                    className="group relative bg-gradient-to-r from-blue-500 to-indigo-600 text-white-enhanced text-responsive-base font-medium px-8 py-4 rounded-xl shadow-xl shadow-blue-500/50 border border-blue-400/20 flex items-center gap-3 before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-blue-500/30 before:to-indigo-600/30 before:blur-xl before:-z-10 before:opacity-80"
+                  >
+                    <item.icon size={20} className="text-white-enhanced" />
+                    <span className="text-white-enhanced font-medium">{item.label}</span>
+                    <ArrowRight size={18} className="transition-transform duration-300 group-hover:translate-x-1" />
+                  </MotionLink>
+                ))}
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   )
