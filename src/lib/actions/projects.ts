@@ -1,4 +1,4 @@
-import { getProjectById } from '@/app/projects/data/projects'
+import { getProjectById } from '@/data/projects'
 import { getProjects } from '@/lib/content/projects'
 import type { Project } from '@/types/project'
 

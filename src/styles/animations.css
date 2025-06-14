@@ -175,3 +175,26 @@
 .duration-1000 {
   animation-duration: 1000ms;
 }
+
+/* Mobile performance optimizations */
+@media (max-width: 768px) {
+  /* Reduce motion for better mobile performance */
+  .animate-blob {
+    animation-duration: 8s; /* Slower on mobile for better performance */
+  }
+  
+  /* Reduce complex animations on mobile devices */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-blob,
+    .animate-bounce,
+    .animate-pulse {
+      animation: none;
+    }
+  }
+  
+  /* Optimize touch interactions */
+  .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

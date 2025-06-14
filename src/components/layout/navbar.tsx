@@ -64,9 +64,9 @@ export function Navbar() {
             <div className="md:hidden flex items-center">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
+                className="p-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
               >
-                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
               </button>
             </div>
 
@@ -90,7 +90,7 @@ export function Navbar() {
                     key={getRouteKey(item.href, index)}
                     href={item.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`block w-full text-left px-4 py-3 rounded-xl border transition-all duration-300 ${
+                    className={`block w-full text-left px-4 py-4 rounded-xl border transition-all duration-300 text-base font-medium min-h-[44px] flex items-center ${
                       pathname === item.href
                         ? 'text-white bg-gradient-to-r from-blue-500/20 to-indigo-600/20 border-blue-400/30 shadow-lg shadow-blue-500/25'
                         : 'text-gray-300 hover:text-white hover:bg-white/10 border-transparent hover:border-white/20'
@@ -104,7 +104,7 @@ export function Navbar() {
                     setIsModalOpen(true)
                     setIsMobileMenuOpen(false)
                   }}
-                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-base font-medium px-4 py-3 rounded-xl transition-all duration-300 border border-blue-400/20 shadow-lg shadow-blue-500/25"
+                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-base font-medium px-4 py-4 rounded-xl transition-all duration-300 border border-blue-400/20 shadow-lg shadow-blue-500/25 min-h-[44px] flex items-center justify-center"
                 >
                   Let's Talk
                 </button>

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ProjectTabsProps } from '@/types/projects-types'
+import { ProjectTabsProps } from '@/types/project'
 import ReactSlickCarousel from './ReactSlickCarousel'
 
 export function ProjectTabs({ projects }: ProjectTabsProps) {

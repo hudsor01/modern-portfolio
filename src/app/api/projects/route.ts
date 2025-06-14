@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getProjects } from '@/app/projects/data/projects'
+import { getProjects } from '@/data/projects'
 
 export async function GET() {
   try {
@@ -8,8 +8,7 @@ export async function GET() {
       success: true,
       data: projects,
     })
-  } catch (error) {
-    console.error('Error fetching projects:', error)
+  } catch {
     return NextResponse.json(
       {
         success: false,

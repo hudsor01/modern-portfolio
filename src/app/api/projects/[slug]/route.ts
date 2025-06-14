@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getProjectBySlug } from '@/app/projects/data/projects'
+import { getProjectBySlug } from '@/data/projects'
 
 export async function GET(
   _request: Request,

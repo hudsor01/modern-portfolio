@@ -54,7 +54,7 @@ const SKILLS = [
 
 const EXPERIENCE_STATS = [
   { label: 'Projects Delivered', value: '8+', icon: '✅' },
-  { label: 'Revenue Generated', value: '$4.8M+', icon: '💰' },
+  { label: 'Revenue Generated', value: '$3.7M+', icon: '💰' },
   { label: 'Transaction Growth', value: '432%', icon: '📈' },
   { label: 'Network Expansion', value: '2,217%', icon: '🚀' },
 ]
@@ -68,20 +68,18 @@ const PERSONAL_INFO = {
         With over 10 years of experience optimizing sales processes, implementing marketing automation, and building 
         business intelligence solutions, I help companies achieve sustainable revenue growth. My expertise spans 
         CRM optimization (Salesforce, HubSpot), advanced analytics, and process automation that has generated 
-        over $4.8M in revenue and achieved 432% transaction growth for my clients.`,
+        over $3.7M in revenue and achieved 432% transaction growth for my clients.`,
   highlights: [
     'Specialized in revenue operations and growth analytics with proven track record',
     'Expert in building automated reporting systems and data-driven decision frameworks',
     'Proven track record of increasing revenue efficiency by 40%+ across multiple organizations',
-    'Experience leading cross-functional teams and strategic initiatives in fast-paced environments',
-    'Full-stack development skills enabling end-to-end solution implementation',
     'Certified in Salesforce, HubSpot, and advanced analytics platforms',
   ],
 }
 
 export const metadata = generateMetadata(
   'About Richard Hudson | Revenue Operations Expert & Business Growth Consultant',
-  'Dallas-based Revenue Operations Consultant with 10+ years experience. Expert in Salesforce, HubSpot, data analytics, and process automation. $4.8M+ revenue generated, 432% transaction growth achieved.',
+  'Dallas-based Revenue Operations Consultant with 10+ years experience. Expert in Salesforce, HubSpot, data analytics, and process automation. $3.7M+ revenue generated, 432% transaction growth achieved.',
   '/about'
 )
 

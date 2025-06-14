@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query'
-import { getProjects, getProject } from '@/app/projects/data/projects'
+import { getProjects, getProject } from '@/data/projects'
 import type { Project } from '@/types/project'
 import { Metadata } from 'next'
 import { createServerQueryClient } from '@/lib/query-config'
