@@ -16,10 +16,10 @@ import { staticChurnData } from '@/app/projects/data/partner-analytics'
 const data = staticChurnData.slice(-6).map((item) => ({
   month: item.month,
   retained: parseFloat(
-    ((item.retained_partners / (item.retained_partners + item.churned_partners)) * 100).toFixed(1)
+    ((item.retained / (item.retained + item.churned)) * 100).toFixed(1)
   ),
   churned: parseFloat(
-    ((item.churned_partners / (item.retained_partners + item.churned_partners)) * 100).toFixed(1)
+    ((item.churned / (item.retained + item.churned)) * 100).toFixed(1)
   ),
 }))
 

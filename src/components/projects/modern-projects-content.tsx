@@ -454,7 +454,7 @@ export function ModernProjectsContent({
                     <Link href="/about">
                       <span className="relative z-10 flex items-center">
                         <Users className="mr-3" size={20} />
-                        About Me
+                        Read my Blueprint
                         <ArrowRight
                           size={20}
                           className="ml-3 transition-transform duration-300 group-hover:translate-x-1"

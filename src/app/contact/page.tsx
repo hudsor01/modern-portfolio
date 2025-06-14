@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ContactModal } from '@/components/ui/contact-modal'
 import { ServiceJsonLd } from '@/components/seo/json-ld'
+import Script from 'next/script'
 import {
   Mail,
   MapPin,
@@ -127,9 +128,74 @@ export default function ContactPage() {
     }
   }
 
+  const localBusinessSchema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Richard Hudson - Revenue Operations Consultant",
+    "description": "Professional Revenue Operations consulting services specializing in Salesforce automation, data analytics, and business growth strategies",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Plano",
+      "addressRegion": "TX", 
+      "addressCountry": "US"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "33.0198",
+      "longitude": "-96.6989"
+    },
+    "url": "https://richardwhudsonjr.com",
+    "telephone": "+1-214-555-0123",
+    "email": "contact@richardwhudsonjr.com",
+    "openingHours": [
+      "Mo-Th 09:00-18:00",
+      "Fr 09:00-17:00"
+    ],
+    "areaServed": [
+      "Plano, TX",
+      "Dallas, TX", 
+      "Richardson, TX",
+      "Frisco, TX",
+      "Allen, TX",
+      "McKinney, TX",
+      "Garland, TX",
+      "Mesquite, TX",
+      "Carrollton, TX",
+      "Lewisville, TX",
+      "Flower Mound, TX",
+      "Irving, TX",
+      "Fort Worth, TX",
+      "Arlington, TX",
+      "Denton, TX",
+      "The Colony, TX",
+      "Farmers Branch, TX",
+      "Addison, TX",
+      "DFW Metroplex",
+      "North Texas",
+      "Texas",
+      "United States"
+    ],
+    "serviceArea": {
+      "@type": "GeoCircle",
+      "geoMidpoint": {
+        "@type": "GeoCoordinates",
+        "latitude": "33.0198",
+        "longitude": "-96.6989"
+      },
+      "geoRadius": "40000"
+    }
+  }
+
   return (
     <>
       <ServiceJsonLd />
+      <Script
+        id="local-business-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(localBusinessSchema),
+        }}
+      />
       <Navbar />
       <section className="relative min-h-screen bg-[#0f172a] text-white overflow-hidden pt-20">
         {/* Grid Background */}

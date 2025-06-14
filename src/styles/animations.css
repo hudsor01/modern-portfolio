@@ -183,18 +183,35 @@
     animation-duration: 8s; /* Slower on mobile for better performance */
   }
   
-  /* Reduce complex animations on mobile devices */
-  @media (prefers-reduced-motion: reduce) {
-    .animate-blob,
-    .animate-bounce,
-    .animate-pulse {
-      animation: none;
-    }
-  }
-  
   /* Optimize touch interactions */
   .mobile-touch-target {
     min-height: 44px;
     min-width: 44px;
+  }
+  
+  /* Performance optimizations for mobile */
+  * {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  .gpu-accelerated {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+}
+
+/* Reduce complex animations on mobile devices */
+@media (prefers-reduced-motion: reduce) {
+  .animate-blob,
+  .animate-bounce,
+  .animate-pulse {
+    animation: none;
+  }
+  
+  .reduced-motion {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

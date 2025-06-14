@@ -1,7 +1,7 @@
 'use client';
 
 import { useProject } from '@/hooks/use-api-queries';
-import { notFound } from 'next/navigation';
+// import { notFound } from 'next/navigation' // Removed - handled by server component;
 import type { Project } from '@/types/project';
 import type { ProjectData } from '@/types/shared-api';
 import { Navbar } from '@/components/layout/navbar';
@@ -167,9 +167,19 @@ export default function ProjectDetailClientBoundary({
     );
   }
 
-  // If no project found, show 404
+  // If no project found, show error state (server component handles notFound)
   if (!project) {
-    notFound();
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-[#0f172a] text-white flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold mb-4">Project Not Found</h1>
+            <p className="text-gray-400">The project you're looking for doesn't exist.</p>
+          </div>
+        </div>
+      </>
+    );
   }
 
   return (
@@ -412,7 +422,7 @@ export default function ProjectDetailClientBoundary({
                   </p>
                   <div className="mt-4">
                     <p className="text-sm text-gray-400">
-                      Category: {project.category} • Created: {new Date(project.createdAt).toLocaleDateString()}
+                      Category: {project.category} • Created: {project.createdAt ? new Date(project.createdAt).toLocaleDateString() : 'N/A'}
                     </p>
                   </div>
                 </section>
@@ -511,7 +521,7 @@ export default function ProjectDetailClientBoundary({
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Created</span>
-                      <span className="text-white">{new Date(project.createdAt).toLocaleDateString()}</span>
+                      <span className="text-white">{project.createdAt ? new Date(project.createdAt).toLocaleDateString() : 'N/A'}</span>
                     </div>
                   </div>
                 </section>

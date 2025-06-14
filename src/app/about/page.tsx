@@ -62,7 +62,7 @@ const EXPERIENCE_STATS = [
 const PERSONAL_INFO = {
   name: 'Richard Hudson',
   title: 'Revenue Operations Consultant & Business Growth Expert',
-  location: 'Dallas, TX • Remote & On-Site Available',
+  location: 'Plano, TX • Serving Dallas-Fort Worth Metroplex • Remote & On-Site Available',
   email: 'contact@richardwhudsonjr.com',
   bio: `I'm a Revenue Operations Consultant specializing in transforming business operations through data-driven strategies. 
         With over 10 years of experience optimizing sales processes, implementing marketing automation, and building 
@@ -79,7 +79,7 @@ const PERSONAL_INFO = {
 
 export const metadata = generateMetadata(
   'About Richard Hudson | Revenue Operations Expert & Business Growth Consultant',
-  'Dallas-based Revenue Operations Consultant with 10+ years experience. Expert in Salesforce, HubSpot, data analytics, and process automation. $3.7M+ revenue generated, 432% transaction growth achieved.',
+  'Plano, Texas Revenue Operations Consultant serving Dallas-Fort Worth metroplex with 10+ years experience. Expert in Salesforce, HubSpot, data analytics, and process automation. Helping businesses in Frisco, Richardson, Allen, McKinney, and surrounding DFW areas achieve growth. $3.7M+ revenue generated, 432% transaction growth achieved.',
   '/about'
 )
 
