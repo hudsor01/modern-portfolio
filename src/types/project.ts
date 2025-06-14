@@ -1,30 +1,39 @@
 /**
- * Comprehensive Project Types
- * Contains all project-related interfaces consolidated from across the application
+ * Unified Project Types - Consolidated from multiple type files
+ * Single source of truth for all project-related interfaces
  */
 
 /**
  * Main Project interface representing a portfolio project
+ * Combines all fields from projects.ts, projects-types.ts, and project.ts
  */
 export interface Project {
   id: string;
   title: string;
-  slug: string;
+  slug?: string;
   description: string;
   content?: string;
-  featured: boolean;
+  longDescription?: string;
+  
+  // Media & URLs
   image?: string;
   link?: string;
   github?: string;
-  category: string;
-  tags?: string[];
-  createdAt: Date;
-  updatedAt?: Date;
-  longDescription?: string;
-  technologies?: string[];
   liveUrl?: string;
   githubUrl?: string;
+  
+  // Categorization & Metadata
+  category?: string;
+  tags?: string[];
+  technologies?: string[];
+  featured?: boolean;
+  
+  // Dates
   date?: string | Date;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  
+  // Project Details
   client?: string;
   role?: string;
   testimonial?: Testimonial;

@@ -234,10 +234,10 @@ const ProjectCard = ({ project }: { project: Project }) => {
           <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 mb-6 flex-1 flex flex-col">
             {/* Project Header */}
             <div className="mb-6">
-              <h3 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-3 leading-tight">
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-3 leading-tight">
                 {project.title}
               </h3>
-              <p className="text-gray-300 text-sm md:text-base leading-relaxed">
+              <p className="text-gray-300 text-base md:text-lg leading-relaxed">
                 {project.description}
               </p>
             </div>
@@ -253,10 +253,10 @@ const ProjectCard = ({ project }: { project: Project }) => {
                     <div className="flex items-center justify-center mb-3">
                       <metric.icon className="w-6 h-6 text-blue-400" />
                     </div>
-                    <div className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400 mb-1">
+                    <div className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400 mb-1">
                       {metric.value}
                     </div>
-                    <div className="text-sm text-gray-400">{metric.label}</div>
+                    <div className="text-sm sm:text-base text-gray-400">{metric.label}</div>
                   </div>
                 ))}
               </div>
@@ -290,14 +290,14 @@ const ProjectCard = ({ project }: { project: Project }) => {
           <div className="flex-1 flex items-center justify-center min-h-[60px]">
             <Button
               size="lg"
-              className="relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
+              className="relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-base font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
               asChild
             >
               <Link
                 href={`/projects/${isMockProject(project) ? project.id : project.slug || project.id}`}
               >
-                <span className="relative z-10">{customCTA}</span>
-                <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1 relative z-10" />
+                <span className="relative z-10 text-base font-semibold">{customCTA}</span>
+                <ArrowRight className="w-5 h-5 ml-3 transition-transform duration-300 group-hover:translate-x-1 relative z-10" />
               </Link>
             </Button>
           </div>
@@ -330,8 +330,8 @@ export function ModernProjectsContent({
     if (!a.featured && b.featured) return 1
 
     // Then by year (newest first)
-    const aYear = isMockProject(a) ? a.year : new Date(a.createdAt).getFullYear()
-    const bYear = isMockProject(b) ? b.year : new Date(b.createdAt).getFullYear()
+    const aYear = isMockProject(a) ? a.year : new Date(a.createdAt || 0).getFullYear()
+    const bYear = isMockProject(b) ? b.year : new Date(b.createdAt || 0).getFullYear()
     return bYear - aYear
   })
 
@@ -352,10 +352,10 @@ export function ModernProjectsContent({
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
         </div>
 
-        <div className="container relative z-10 px-6 mx-auto max-w-7xl py-24 space-y-32">
+        <div className="container relative z-10 px-6 mx-auto max-w-7xl py-24">
           {/* Hero Section */}
-          <div className="text-center space-y-12 max-w-6xl mx-auto pt-12">
-            <h1 className="font-bold text-5xl sm:text-6xl md:text-7xl tracking-tight mb-6 page-title-gradient">
+          <div className="text-center space-y-16 max-w-6xl mx-auto pt-12 mb-24">
+            <h1 className="font-bold text-5xl sm:text-6xl md:text-7xl tracking-tight mb-6 page-title-gradient break-words leading-tight py-2">
               Project Portfolio
             </h1>
 
@@ -365,26 +365,26 @@ export function ModernProjectsContent({
             </p>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-16">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-16">
               {[
                 { label: 'Projects Completed', value: '25+', icon: Award },
-                { label: 'Revenue Generated', value: '$50M+', icon: DollarSign },
+                { label: 'Revenue Generated', value: '$3.7M+', icon: DollarSign },
                 { label: 'Clients Served', value: '15+', icon: Users },
-                { label: 'Success Rate', value: '98%', icon: Target },
+                { label: 'ROI Delivered', value: '340%', icon: TrendingUp },
               ].map((stat, i) => (
                 <div key={i} className="text-center">
-                  <stat.icon className="w-8 h-8 text-blue-400 mx-auto mb-3" />
-                  <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400">
+                  <stat.icon className="w-8 h-8 sm:w-10 sm:h-10 text-blue-400 mx-auto mb-3" />
+                  <div className="text-xl sm:text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400">
                     {stat.value}
                   </div>
-                  <div className="text-sm text-gray-300">{stat.label}</div>
+                  <div className="text-sm sm:text-base text-gray-300">{stat.label}</div>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Projects Section Header */}
-          <div className="text-center space-y-6">
+          <div className="text-center space-y-6 mb-16">
             <h2 className="font-bold text-3xl sm:text-4xl md:text-5xl tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400">
               Featured Projects
             </h2>
@@ -402,7 +402,7 @@ export function ModernProjectsContent({
                 <p className="text-gray-400">Projects are currently being updated</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 lg:gap-12 max-w-7xl mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 max-w-7xl mx-auto">
                 {sortedProjects.map((project) => (
                   <ProjectCard key={project.id} project={project} />
                 ))}
@@ -411,7 +411,7 @@ export function ModernProjectsContent({
           </div>
 
           {/* Premium Call to Action Section */}
-          <div className="text-center space-y-8 max-w-6xl mx-auto">
+          <div className="text-center space-y-8 max-w-6xl mx-auto mt-24 mb-16">
             <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 md:p-12 shadow-2xl">
               {/* Subtle background gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5 rounded-3xl" />
@@ -430,34 +430,34 @@ export function ModernProjectsContent({
                 </p>
 
                 {/* Enhanced CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 lg:gap-12 justify-center mb-12">
                   <Button
                     size="lg"
-                    className="relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
+                    className="relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-lg font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
                     onClick={() => setIsModalOpen(true)}
                   >
                     <span className="relative z-10 flex items-center">
-                      <Mail className="mr-2" size={16} />
+                      <Mail className="mr-3" size={20} />
                       Start a Project
                       <ArrowRight
-                        size={16}
-                        className="ml-2 transition-transform duration-300 group-hover:translate-x-1"
+                        size={20}
+                        className="ml-3 transition-transform duration-300 group-hover:translate-x-1"
                       />
                     </span>
                   </Button>
 
                   <Button
                     size="lg"
-                    className="relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-medium px-6 py-3 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
+                    className="relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-lg font-bold px-8 py-4 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
                     asChild
                   >
                     <Link href="/about">
                       <span className="relative z-10 flex items-center">
-                        <Users className="mr-2" size={16} />
-                        Learn More About Me
+                        <Users className="mr-3" size={20} />
+                        About Me
                         <ArrowRight
-                          size={16}
-                          className="ml-2 transition-transform duration-300 group-hover:translate-x-1"
+                          size={20}
+                          className="ml-3 transition-transform duration-300 group-hover:translate-x-1"
                         />
                       </span>
                     </Link>
@@ -494,9 +494,9 @@ export function ModernProjectsContent({
                       <Award className="relative z-10 w-7 h-7 text-blue-400" />
                     </div>
                     <h4 className="font-bold text-white mb-2 text-xl">
-                      Proven Success
+                      Proven Results
                     </h4>
-                    <p className="text-gray-300 text-base">98% success rate</p>
+                    <p className="text-gray-300 text-base">340% ROI delivered</p>
                   </div>
                 </div>
               </div>

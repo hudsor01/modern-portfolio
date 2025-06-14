@@ -56,38 +56,85 @@ const fadeInUp = {
   animate: { opacity: 1, y: 0 },
 }
 
-// Animated Counter Component
+// Animated Counter Component with proper formatting
 const AnimatedCounter = ({ value, duration = 2000 }: { value: string; duration?: number }) => {
-  const [count, setCount] = useState(0)
+  const [displayValue, setDisplayValue] = useState(value)
   const ref = React.useRef(null)
   const isInView = useInView(ref, { once: true })
 
   useEffect(() => {
     if (isInView) {
-      const numericValue = parseInt(value.replace(/\D/g, ''))
-      let startTime: number
-
-      const animate = (currentTime: number) => {
-        if (!startTime) startTime = currentTime
-        const progress = Math.min((currentTime - startTime) / duration, 1)
-
-        setCount(Math.floor(progress * numericValue))
-
-        if (progress < 1) {
+      // Handle different value formats
+      if (value.includes('$') && value.includes('M')) {
+        // Handle "$3.7M+" format
+        const numMatch = value.match(/(\d+\.?\d*)/)
+        if (numMatch && numMatch[1]) {
+          const targetNum = parseFloat(numMatch[1])
+          let startTime: number
+          
+          const animate = (currentTime: number) => {
+            if (!startTime) startTime = currentTime
+            const progress = Math.min((currentTime - startTime) / duration, 1)
+            const current = progress * targetNum
+            
+            setDisplayValue(value.replace(/\d+\.?\d*/, current.toFixed(1)))
+            
+            if (progress < 1) {
+              requestAnimationFrame(animate)
+            }
+          }
+          
+          requestAnimationFrame(animate)
+        }
+      } else if (value.includes('%')) {
+        // Handle percentage values like "432%" or "2,217%"
+        const numMatch = value.match(/(\d+,?\d*)/)
+        if (numMatch && numMatch[1]) {
+          const targetNum = parseInt(numMatch[1].replace(',', ''))
+          let startTime: number
+          
+          const animate = (currentTime: number) => {
+            if (!startTime) startTime = currentTime
+            const progress = Math.min((currentTime - startTime) / duration, 1)
+            const current = Math.floor(progress * targetNum)
+            
+            // Add comma formatting for large numbers
+            const formatted = current >= 1000 ? current.toLocaleString() : current.toString()
+            setDisplayValue(value.replace(/\d+,?\d*/, formatted))
+            
+            if (progress < 1) {
+              requestAnimationFrame(animate)
+            }
+          }
+          
+          requestAnimationFrame(animate)
+        }
+      } else {
+        // Handle simple numbers like "8+"
+        const numMatch = value.match(/(\d+)/)
+        if (numMatch && numMatch[1]) {
+          const targetNum = parseInt(numMatch[1])
+          let startTime: number
+          
+          const animate = (currentTime: number) => {
+            if (!startTime) startTime = currentTime
+            const progress = Math.min((currentTime - startTime) / duration, 1)
+            const current = Math.floor(progress * targetNum)
+            
+            setDisplayValue(value.replace(/\d+/, current.toString()))
+            
+            if (progress < 1) {
+              requestAnimationFrame(animate)
+            }
+          }
+          
           requestAnimationFrame(animate)
         }
       }
-
-      requestAnimationFrame(animate)
     }
   }, [isInView, value, duration])
 
-  return (
-    <span ref={ref}>
-      {count}
-      {value.replace(/\d/g, '')}
-    </span>
-  )
+  return <span ref={ref}>{displayValue}</span>
 }
 
 
@@ -170,7 +217,7 @@ export default function AboutContent({ experienceStats, personalInfo }: AboutCon
               transition={{ duration: 0.5, delay: 0.8 }}
               className="space-y-6"
             >
-              <h2 className="text-xl md:text-2xl text-gray-200 leading-relaxed font-light">
+              <h2 className="text-xl sm:text-2xl md:text-3xl text-gray-200 leading-relaxed font-light">
                 {personalInfo?.title || 'Revenue Operations Consultant & Full-Stack Developer'}
               </h2>
 
@@ -226,11 +273,11 @@ export default function AboutContent({ experienceStats, personalInfo }: AboutCon
                         {stat.icon}
                       </motion.div>
 
-                      <div className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400 mb-2">
+                      <div className="text-2xl sm:text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400 mb-2">
                         <AnimatedCounter value={stat.value} />
                       </div>
 
-                      <p className="text-sm font-medium text-gray-300">{stat.label}</p>
+                      <p className="text-sm sm:text-base font-medium text-gray-300">{stat.label}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -658,7 +705,7 @@ export default function AboutContent({ experienceStats, personalInfo }: AboutCon
                         <TrendingUp className="mr-2" size={20} />
                         View My Projects
                         <ArrowRight
-                          size={18}
+                          size={20}
                           className="ml-2 transition-transform duration-300 group-hover:translate-x-1"
                         />
                       </Link>
@@ -672,7 +719,7 @@ export default function AboutContent({ experienceStats, personalInfo }: AboutCon
                       <Mail className="mr-2" size={20} />
                       Get In Touch
                       <ArrowRight
-                        size={18}
+                        size={20}
                         className="ml-2 transition-transform duration-300 group-hover:translate-x-1"
                       />
                     </Button>

@@ -359,7 +359,7 @@ export default function ResumePage() {
                         {/* Profile Image */}
                         <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-2xl overflow-hidden border-4 border-blue-400/30 shadow-2xl shadow-blue-500/20 flex-shrink-0">
                           <Image
-                            src="/images/richard.jpg"
+                            src="/images/about-page.png"
                             alt="Richard Hudson"
                             fill
                             className="object-cover"
@@ -388,7 +388,7 @@ export default function ResumePage() {
                     <motion.div key={index} variants={fadeInUp} className="space-y-6">
                       {/* Job Title Outside Container */}
                       <div className="text-center">
-                        <h3 className="text-3xl md:text-4xl font-bold section-heading-gradient mb-2 tracking-tight">{job.title}</h3>
+                        <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold section-heading-gradient mb-2 tracking-tight">{job.title}</h3>
                       </div>
                       
                       {/* Job Content Container */}
@@ -430,10 +430,10 @@ export default function ResumePage() {
                   <div className="relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25">
                     <div className="p-8 flex-1 flex flex-col">
                       {/* Inner Container for Content */}
-                      <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 flex-1 flex flex-col min-h-[300px]">
+                      <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 flex-1 flex flex-col h-[320px]">
                         <div className="text-center mb-6">
-                          <h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
-                            <GraduationCap className="w-6 h-6 text-blue-400" />
+                          <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
+                            <GraduationCap className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
                             Education
                           </h3>
                         </div>
@@ -460,10 +460,10 @@ export default function ResumePage() {
                   <div className="relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25">
                     <div className="p-8 flex-1 flex flex-col">
                       {/* Inner Container for Content */}
-                      <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 flex-1 flex flex-col min-h-[300px]">
+                      <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 flex-1 flex flex-col h-[320px]">
                         <div className="text-center mb-6">
-                          <h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
-                            <BadgeCheck className="w-6 h-6 text-blue-400" />
+                          <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
+                            <BadgeCheck className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
                             Certifications
                           </h3>
                         </div>

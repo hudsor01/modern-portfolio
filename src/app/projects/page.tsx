@@ -1,6 +1,6 @@
 import React from 'react'
 import { generateMetadata } from '@/app/shared-metadata'
-import { getProjects } from '@/app/projects/data/projects'
+import { getProjects } from '@/data/projects'
 import ProjectsClientBoundary from '@/components/projects/projects-client-boundary'
 import { Footer } from '@/components/layout/footer'
 import type { Project } from '@/types/project'

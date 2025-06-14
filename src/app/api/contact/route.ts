@@ -62,7 +62,7 @@ export async function POST(request: Request) {
     // Send email using Resend
     const { name, email, message } = formData;
 
-    const emailResult = await resend.emails.send({
+    await resend.emails.send({
       from: 'Portfolio Contact <hello@richardwhudsonjr.com>',
       to: process.env.CONTACT_EMAIL || 'hudsor01@icloud.com',
       subject: `New contact from ${name}`,
@@ -78,8 +78,6 @@ export async function POST(request: Request) {
       `,
     });
 
-    console.log('Contact form submission:', formData);
-    console.log('Email sent:', emailResult);
 
     const response: ContactApiResponse = {
       success: true,
@@ -88,7 +86,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(response, { status: 200 });
   } catch (error) {
-    console.error('Error processing contact form:', error);
 
     const response: ContactApiResponse = {
       success: false,

@@ -167,7 +167,7 @@ export default function HomePageContent() {
                     <item.icon size={20} className="text-white-enhanced" />
                     <span className="text-white-enhanced font-medium">{item.label}</span>
                     <ArrowRight
-                      size={18}
+                      size={20}
                       className="transition-transform duration-300 group-hover:translate-x-2"
                     />
                   </MotionLink>
