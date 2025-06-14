@@ -151,14 +151,24 @@ export default function HomePageContent() {
                     variants={fadeInOnly}
                     initial="initial"
                     animate="animate"
+                    whileHover={{ 
+                      scale: 1.08, 
+                      y: -5,
+                      transition: { 
+                        type: "spring", 
+                        stiffness: 400, 
+                        damping: 10 
+                      }
+                    }}
+                    whileTap={{ scale: 0.95 }}
                     transition={{ duration: 0.5, delay: 1.3 + index * 0.15 }}
-                    className="group relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white-enhanced text-responsive-base font-medium px-8 py-4 rounded-xl shadow-xl shadow-blue-500/50 hover:shadow-blue-500/70 border border-blue-400/20 hover:border-blue-300/40 flex items-center gap-3 transition-all duration-300 hover:scale-105 hover:-translate-y-1 before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-blue-500/30 before:to-indigo-600/30 before:blur-xl before:-z-10 before:opacity-80 hover:before:opacity-100"
+                    className="group relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white-enhanced text-responsive-base font-medium px-8 py-4 rounded-xl shadow-xl shadow-blue-500/50 hover:shadow-blue-500/70 border border-blue-400/20 hover:border-blue-300/40 flex items-center gap-3 transition-colors duration-300 before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-blue-500/30 before:to-indigo-600/30 before:blur-xl before:-z-10 before:opacity-80 hover:before:opacity-100"
                   >
                     <item.icon size={20} className="text-white-enhanced" />
                     <span className="text-white-enhanced font-medium">{item.label}</span>
                     <ArrowRight
                       size={18}
-                      className="transition-transform duration-300 group-hover:translate-x-1"
+                      className="transition-transform duration-300 group-hover:translate-x-2"
                     />
                   </MotionLink>
                 ))}
