@@ -1,0 +1,13 @@
+{
+  "title": "Customer Lifetime Value Predictive Analytics Dashboard",
+  "description": "Advanced CLV analytics platform with predictive modeling using BTYD framework, achieving 94.3% prediction accuracy through machine learning algorithms and real-time customer behavior tracking.",
+  "keywords": ["Customer Lifetime Value", "Predictive Analytics", "CLV Dashboard", "Machine Learning", "BTYD Model", "Customer Analytics", "Revenue Forecasting"],
+  "category": "Revenue Operations",
+  "featured": true,
+  "metrics": {
+    "predictionAccuracy": "94.3%",
+    "avgCLV": "$2,847",
+    "customerSegments": 5,
+    "forecastHorizon": "24 months"
+  }
+}
