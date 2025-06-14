@@ -6,7 +6,6 @@ import {
   RefreshCcw,
   TrendingUp,
   Users,
-  Target,
   DollarSign,
   Brain,
   Calendar,

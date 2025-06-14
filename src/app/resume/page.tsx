@@ -16,7 +16,6 @@ import {
   BadgeCheck,
   Github,
   MapPin,
-  ArrowRight,
   Eye,
 } from 'lucide-react'
 import { Navbar } from '@/components/layout/navbar'

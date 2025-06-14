@@ -5,9 +5,7 @@ import {
   ArrowLeft,
   RefreshCcw,
   TrendingDown,
-  TrendingUp,
   Users,
-  UserMinus,
   Activity,
   AlertCircle,
 } from 'lucide-react'
@@ -38,17 +36,6 @@ export default function ChurnAnalysis() {
       ? (currentMonth.churn_rate - previousMonth.churn_rate).toFixed(1)
       : '0.0'
 
-  const retentionDifference =
-    currentMonth && previousMonth
-      ? (
-          (currentMonth.retained_partners /
-            (currentMonth.retained_partners + currentMonth.churned_partners)) *
-            100 -
-          (previousMonth.retained_partners /
-            (previousMonth.retained_partners + previousMonth.churned_partners)) *
-            100
-        ).toFixed(1)
-      : '0.0'
 
   const totalPartners = currentMonth 
     ? currentMonth.retained_partners + currentMonth.churned_partners 

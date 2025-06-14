@@ -1,6 +1,6 @@
 'use client'
 
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Area, ComposedChart } from 'recharts'
+import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Area, ComposedChart } from 'recharts'
 
 // CLV trend data with confidence intervals and forecasting
 const data = [
@@ -71,14 +71,14 @@ export default function CLVTrendChart() {
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
-            formatter={(value: number | null, name: string) => {
+            formatter={(value: unknown, name: string) => {
               if (value === null) return ['N/A', name]
-              if (name === 'actual') return [formatCurrency(value), 'Actual CLV']
-              if (name === 'predicted') return [formatCurrency(value), 'Predicted CLV']
-              if (name === 'confidence_high') return [formatCurrency(value), 'Upper Confidence']
-              if (name === 'confidence_low') return [formatCurrency(value), 'Lower Confidence']
-              if (name === 'customers') return [value.toLocaleString(), 'Customer Count']
-              return [value, name]
+              if (name === 'actual') return [formatCurrency(Number(value)), 'Actual CLV']
+              if (name === 'predicted') return [formatCurrency(Number(value)), 'Predicted CLV']
+              if (name === 'confidence_high') return [formatCurrency(Number(value)), 'Upper Confidence']
+              if (name === 'confidence_low') return [formatCurrency(Number(value)), 'Lower Confidence']
+              if (name === 'customers') return [Number(value).toLocaleString(), 'Customer Count']
+              return [String(value), name]
             }}
           />
           <Legend />

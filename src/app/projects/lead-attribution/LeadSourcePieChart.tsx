@@ -1,6 +1,6 @@
 'use client'
 
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 
 // Production lead source data with realistic distribution and growth metrics
 const leadSourceData = [
@@ -53,7 +53,7 @@ export default function LeadSourcePieChart() {
     return null
   }
 
-  const renderCustomLabel = (entry: any) => {
+  const renderCustomLabel = (entry: { value: number }) => {
     const percentage = ((entry.value / total) * 100).toFixed(0);
     return `${percentage}%`;
   }

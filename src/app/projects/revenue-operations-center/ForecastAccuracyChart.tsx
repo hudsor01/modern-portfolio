@@ -1,6 +1,6 @@
 'use client'
 
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Area, ComposedChart } from 'recharts'
+import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Area, ComposedChart } from 'recharts'
 
 // Forecast accuracy data with confidence intervals
 const data = [
@@ -84,14 +84,14 @@ export default function ForecastAccuracyChart() {
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
-            formatter={(value: number | null, name: string) => {
+            formatter={(value: unknown, name: string) => {
               if (value === null) return ['N/A', name]
-              if (name === 'forecast') return [formatCurrency(value), 'Forecast']
-              if (name === 'actual') return [formatCurrency(value), 'Actual Revenue']
-              if (name === 'accuracy') return [`${value}%`, 'Accuracy']
-              if (name === 'confidence_high') return [formatCurrency(value), 'Upper Confidence']
-              if (name === 'confidence_low') return [formatCurrency(value), 'Lower Confidence']
-              return [value, name]
+              if (name === 'forecast') return [formatCurrency(Number(value)), 'Forecast']
+              if (name === 'actual') return [formatCurrency(Number(value)), 'Actual Revenue']
+              if (name === 'accuracy') return [`${Number(value)}%`, 'Accuracy']
+              if (name === 'confidence_high') return [formatCurrency(Number(value)), 'Upper Confidence']
+              if (name === 'confidence_low') return [formatCurrency(Number(value)), 'Lower Confidence']
+              return [String(value), name]
             }}
           />
           <Legend />

@@ -15,7 +15,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import DealStageFunnelChart from './DealStageFunnelChart'
 import { getProject } from '@/lib/content/projects'
-import { ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip, BarChart as RechartsBarChart, Bar, Cell, PieChart, Pie, RadialBarChart, RadialBar } from 'recharts'
+import { ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip, BarChart as RechartsBarChart, Bar, Cell } from 'recharts'
 
 // Define proper types for funnel data
 interface FunnelStage {
@@ -148,12 +148,6 @@ export default function DealFunnel() {
         ]
       : []
 
-  // Partner performance data for radial chart
-  const partnerPerformance = localPartnerConversion.map((partner, index) => ({
-    name: partner.group,
-    value: 100 - (partner.avg_sales_cycle_days / 100) * 100,
-    fill: ['#3b82f6', '#10b981', '#f59e0b'][index] || '#3b82f6',
-  }))
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-white">
