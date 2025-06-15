@@ -17,12 +17,13 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files
-.env*
+.env.*
 .env.local
 .env.example
 .env.development
 .env.test
 .env.production
+.env*
 .env
 
 # vercel
@@ -44,6 +45,7 @@ vercel.json
 .vscode
 
 .DS_Store
+.DS_Store/
 .claude.*
 CLAUDE.md
 *.csv
