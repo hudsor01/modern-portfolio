@@ -10,7 +10,7 @@ import { Toaster } from '@/components/ui/toaster'
 import { ScrollProgress } from '@/components/ui/scroll-progress'
 import { ScrollToTop } from '@/components/ui/scroll-to-top'
 import { baseMetadata } from './shared-metadata'
-import { PersonJsonLd, WebsiteJsonLd } from '@/components/seo/json-ld'
+import { PersonJsonLd, WebsiteJsonLd, LocalBusinessJsonLd } from '@/components/seo/json-ld'
 import Script from 'next/script'
 
 // Use single font family for better performance
@@ -42,16 +42,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             `,
           }}
         />
-        <Script
-          id="person-jsonld"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(PersonJsonLd) }}
-        />
-        <Script
-          id="website-jsonld"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(WebsiteJsonLd) }}
-        />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
@@ -59,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <PersonJsonLd />
         <WebsiteJsonLd />
+        <LocalBusinessJsonLd />
       </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

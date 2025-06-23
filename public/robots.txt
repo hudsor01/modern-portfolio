@@ -1,53 +1,19 @@
-# www.robotstxt.org
 # Robots.txt for richardwhudsonjr.com
-# Last updated: 2025
+# Last updated: 2024-12-23
 
-# Allow all crawlers
+# Allow all legitimate crawlers
 User-agent: *
 Allow: /
-Crawl-delay: 1
 
-# Google Bot
+# Googlebot (no crawl delay needed)
 User-agent: Googlebot
 Allow: /
-Crawl-delay: 0
 
-# Bing Bot
+# Bingbot
 User-agent: Bingbot
 Allow: /
-Crawl-delay: 1
 
-# Important pages to prioritize
-Allow: /
-Allow: /about
-Allow: /projects
-Allow: /resume
-Allow: /contact
-Allow: /projects/*
-
-# Block API and internal routes
-Disallow: /api/
-Disallow: /_next/
-Disallow: /admin/
-Disallow: /*.json$
-
-# Allow access to static assets
-Allow: /images/
-Allow: /fonts/
-Allow: /*.css
-Allow: /*.js
-Allow: /*.jpg
-Allow: /*.jpeg
-Allow: /*.png
-Allow: /*.gif
-Allow: /*.svg
-Allow: /*.webp
-
-# Sitemap location
-Sitemap: https://richardwhudsonjr.com/sitemap.xml
-Sitemap: https://www.richardwhudsonjr.com/sitemap.xml
-
-# Additional search engine directives
+# Other major search engines
 User-agent: Slurp
 Allow: /
 
@@ -60,7 +26,16 @@ Allow: /
 User-agent: YandexBot
 Allow: /
 
-# Block bad bots
+# Block internal/sensitive routes
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+Disallow: /*.json$
+
+# Sitemap location
+Sitemap: https://richardwhudsonjr.com/sitemap.xml
+
+# Block unwanted bots that waste resources
 User-agent: AhrefsBot
 Disallow: /
 
@@ -73,5 +48,8 @@ Disallow: /
 User-agent: MJ12bot
 Disallow: /
 
-# Host directive for search engines that support it
-Host: https://richardwhudsonjr.com
+User-agent: Bytespider
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
