@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 const baseUrl = process.env.SITE_URL || 'https://richardwhudsonjr.com';
 const today = new Date().toISOString().split('T')[0];
@@ -11,6 +11,7 @@ const routes = [
   { path: '/projects', priority: '0.9', changefreq: 'weekly' },
   { path: '/resume', priority: '0.8', changefreq: 'monthly' },
   { path: '/contact', priority: '0.8', changefreq: 'monthly' },
+  { path: '/projects/partnership-program-implementation', priority: '0.7', changefreq: 'monthly' },
   { path: '/projects/revenue-kpi', priority: '0.7', changefreq: 'monthly' },
   { path: '/projects/deal-funnel', priority: '0.7', changefreq: 'monthly' },
   { path: '/projects/churn-retention', priority: '0.7', changefreq: 'monthly' },
