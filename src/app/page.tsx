@@ -8,28 +8,33 @@ import HomePageContent from '@/components/layout/home-page-content' // Corrected
 export const metadata: Metadata = {
   title: 'Richard Hudson | Revenue Operations Consultant & Business Growth Expert',
   description:
-    'Expert Revenue Operations Consultant in Dallas. Specializing in sales optimization, marketing automation, and data-driven business growth strategies. $4.8M+ revenue generated.',
+    'Richard Hudson: Revenue Operations Consultant and Partnership Program Developer in Dallas-Fort Worth. SalesLoft Admin certified (Level 1 & 2) & HubSpot RevOps certified. Expert in sales automation, CRM optimization, and production system implementation. $4.8M+ revenue generated across 11+ projects including first-ever partnership program implementation.',
   keywords: [
-    'revenue operations consultant',
-    'RevOps expert Dallas',
-    'sales operations optimization',
-    'marketing automation specialist',
+    'Richard Hudson',
+    'revenue operations consultant Dallas',
+    'partnership program implementation',
+    'SalesLoft Admin Level 1 certified',
+    'SalesLoft Admin Level 2 certified',
+    'HubSpot Revenue Operations certified',
+    'RevOps expert Dallas Fort Worth',
+    'production system implementation',
+    'CRM integration specialist',
+    'sales automation expert',
     'business intelligence consulting',
-    'SaaS revenue growth',
-    'CRM optimization expert',
-    'Salesforce consultant',
-    'HubSpot implementation',
+    'partner onboarding automation',
+    'commission tracking systems',
     'data analytics consulting',
     'process automation expert',
     'revenue forecasting',
-    'sales pipeline optimization',
+    'channel program development',
     'customer lifecycle management',
-    'B2B growth strategies'
+    'B2B growth strategies',
+    'enterprise system integration'
   ],
   openGraph: {
     title: 'Richard Hudson | Revenue Operations Consultant & Business Growth Expert',
     description:
-      'Expert Revenue Operations Consultant in Dallas. Specializing in sales optimization, marketing automation, and data-driven business growth strategies. $4.8M+ revenue generated.',
+      'Richard Hudson: Revenue Operations Consultant and Partnership Program Developer in Dallas-Fort Worth. SalesLoft Admin certified (Level 1 & 2) & HubSpot RevOps certified. Expert in sales automation, CRM optimization, and production system implementation. $4.8M+ revenue generated across 11+ projects.',
     url: 'https://richardwhudsonjr.com',
     siteName: 'Richard Hudson - RevOps Consultant',
     images: [
@@ -47,7 +52,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Richard Hudson - Revenue Operations Professional',
     description:
-      'Driving business growth through data-driven insights, process optimization, and strategic operational improvements.',
+      'Revenue Operations Consultant & Partnership Program Developer. SalesLoft Admin certified (Level 1 & 2) & HubSpot RevOps certified. $4.8M+ revenue generated across 11+ projects.',
     images: ['https://richardwhudsonjr.com/images/richard-twitter.jpg'], // Placeholder
   },
 }

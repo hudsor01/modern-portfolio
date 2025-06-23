@@ -56,6 +56,34 @@ export function getProjectById(slug: string): Project | undefined {
 // Master project data - consolidated from all previous sources
 const projects: Project[] = [
   {
+    id: 'partnership-program-implementation',
+    slug: 'partnership-program-implementation',
+    title: 'Enterprise Partnership Program Implementation',
+    description:
+      'Led comprehensive design and implementation of a company\'s first partnership program, creating automated partner onboarding, commission tracking, and performance analytics. Built production-ready integrations with CRM, billing systems, and partner portals, resulting in a highly successful channel program that became integral to company revenue strategy.',
+    image: '/images/projects/partnership-program.jpg',
+    link: 'https://demo.partnershipprogram.example.com',
+    github: 'https://github.com/hudsonr01/partnership-program',
+    category: 'Revenue Operations',
+    tags: [
+      'Partnership Program',
+      'Channel Operations',
+      'Partner Onboarding',
+      'Commission Automation',
+      'CRM Integration',
+      'Production Implementation',
+      'Revenue Channel Development',
+      'Partner Analytics',
+      'Process Automation',
+      'Salesforce Integration',
+      'React',
+      'TypeScript',
+    ],
+    featured: true,
+    createdAt: new Date('2024-05-01'),
+    updatedAt: new Date('2024-05-15'),
+  },
+  {
     id: 'commission-optimization',
     slug: 'commission-optimization',
     title: 'Commission & Incentive Optimization System',

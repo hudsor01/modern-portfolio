@@ -7,7 +7,7 @@ export const baseMetadata: Metadata = {
     template: '%s | Richard Hudson',
   },
   description:
-    'Richard Hudson is a revenue operations consultant helping businesses optimize their operations and drive growth through data-driven insights and strategic planning.',
+    'Revenue Operations Consultant Richard Hudson specializes in sales automation, CRM optimization, and data-driven growth strategies. $4.8M+ revenue generated, 432% growth achieved. Serving Dallas-Fort Worth.',
   keywords: [
     'revenue operations',
     'business consulting',
@@ -30,7 +30,7 @@ export const baseMetadata: Metadata = {
     siteName: 'Richard Hudson',
     title: 'Richard Hudson | Revenue Operations Consultant',
     description:
-      'Richard Hudson is a revenue operations consultant helping businesses optimize their operations and drive growth through data-driven insights and strategic planning.',
+      'Revenue Operations Consultant Richard Hudson specializes in sales automation, CRM optimization, and data-driven growth strategies. $4.8M+ revenue generated, 432% growth achieved. Serving Dallas-Fort Worth.',
     url: 'https://richardwhudsonjr.com',
     images: [
       {
@@ -46,7 +46,7 @@ export const baseMetadata: Metadata = {
     creator: '@richardhudson',
     title: 'Richard Hudson | Revenue Operations Consultant',
     description:
-      'Richard Hudson is a revenue operations consultant helping businesses optimize their operations and drive growth through data-driven insights and strategic planning.',
+      'Revenue Operations Consultant Richard Hudson specializes in sales automation, CRM optimization, and data-driven growth strategies. $4.8M+ revenue generated, 432% growth achieved. Serving Dallas-Fort Worth.',
     images: ['/images/richard.jpg'],
   },
   robots: {

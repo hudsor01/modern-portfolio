@@ -53,10 +53,34 @@ const SKILLS = [
 ]
 
 const EXPERIENCE_STATS = [
-  { label: 'Projects Delivered', value: '8+', icon: '✅' },
-  { label: 'Revenue Generated', value: '$3.7M+', icon: '💰' },
+  { label: 'Projects Delivered', value: '10+', icon: '✅' },
+  { label: 'Revenue Generated', value: '$4.8M+', icon: '💰' },
   { label: 'Transaction Growth', value: '432%', icon: '📈' },
   { label: 'Network Expansion', value: '2,217%', icon: '🚀' },
+]
+
+const CERTIFICATIONS = [
+  {
+    name: 'SalesLoft Admin Certification Level 1',
+    issuer: 'SalesLoft',
+    badge: '/images/certifications/salesloft-admin-1-badge.jpg',
+    description: 'Foundational administration and configuration of SalesLoft sales engagement platform',
+    skills: ['Platform Setup', 'User Management', 'Basic Cadences', 'Email Templates']
+  },
+  {
+    name: 'SalesLoft Admin Certification Level 2',
+    issuer: 'SalesLoft',
+    badge: '/images/certifications/salesloft-admin-2-badge.jpg',
+    description: 'Advanced administration including complex automation, integrations, and advanced analytics',
+    skills: ['Advanced Automation', 'CRM Integrations', 'Advanced Analytics', 'Complex Workflows']
+  },
+  {
+    name: 'HubSpot Revenue Operations Certification',
+    issuer: 'HubSpot Academy',
+    badge: '/images/certifications/hubspot-revops-badge.jpg',
+    description: 'Comprehensive revenue operations strategy, process optimization, and performance analysis',
+    skills: ['Revenue Operations', 'Sales Process Optimization', 'Marketing Alignment', 'Analytics & Forecasting']
+  }
 ]
 
 const PERSONAL_INFO = {
@@ -67,19 +91,19 @@ const PERSONAL_INFO = {
   bio: `I'm a Revenue Operations Consultant specializing in transforming business operations through data-driven strategies. 
         With over 10 years of experience optimizing sales processes, implementing marketing automation, and building 
         business intelligence solutions, I help companies achieve sustainable revenue growth. My expertise spans 
-        CRM optimization (Salesforce, HubSpot), advanced analytics, and process automation that has generated 
-        over $3.7M in revenue and achieved 432% transaction growth for my clients.`,
+        CRM optimization, advanced analytics, and process automation that has generated over $4.8M in revenue and 
+        achieved 432% transaction growth. I hold SalesLoft Admin Certifications (Level 1 & 2) and HubSpot Revenue Operations certification.`,
   highlights: [
     'Specialized in revenue operations and growth analytics with proven track record',
     'Expert in building automated reporting systems and data-driven decision frameworks',
     'Proven track record of increasing revenue efficiency by 40%+ across multiple organizations',
-    'Certified in Salesforce, HubSpot, and advanced analytics platforms',
+    'SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified professional',
   ],
 }
 
 export const metadata = generateMetadata(
   'About Richard Hudson | Revenue Operations Expert & Business Growth Consultant',
-  'Plano, Texas Revenue Operations Consultant serving Dallas-Fort Worth metroplex with 10+ years experience. Expert in Salesforce, HubSpot, data analytics, and process automation. Helping businesses in Frisco, Richardson, Allen, McKinney, and surrounding DFW areas achieve growth. $3.7M+ revenue generated, 432% transaction growth achieved.',
+  'Richard Hudson - Plano, Texas Revenue Operations Consultant serving Dallas-Fort Worth metroplex with 10+ years experience. SalesLoft Admin certified (Level 1 & 2) and HubSpot Revenue Operations certified. Partnership program implementation expert with production system integration experience. Expert in data analytics, process automation, and CRM optimization. $4.8M+ revenue generated across 11+ projects, 432% transaction growth achieved.',
   '/about'
 )
 
@@ -89,6 +113,7 @@ export default function AboutPage() {
       skills={SKILLS} 
       experienceStats={EXPERIENCE_STATS}
       personalInfo={PERSONAL_INFO}
+      certifications={CERTIFICATIONS}
     />
   )
 }

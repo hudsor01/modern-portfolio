@@ -15,6 +15,7 @@ import {
   Award,
 } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Navbar } from '@/components/layout/navbar'
 
 interface Skill {
@@ -45,10 +46,19 @@ interface PersonalInfo {
   highlights: string[]
 }
 
+interface Certification {
+  name: string
+  issuer: string
+  badge: string
+  description: string
+  skills: string[]
+}
+
 interface AboutContentProps {
   skills?: SkillCategory[]
   experienceStats?: ExperienceStat[]
   personalInfo?: PersonalInfo
+  certifications?: Certification[]
 }
 
 const fadeInUp = {
@@ -138,7 +148,7 @@ const AnimatedCounter = ({ value, duration = 2000 }: { value: string; duration?:
 }
 
 
-export default function AboutContent({ experienceStats, personalInfo }: AboutContentProps) {
+export default function AboutContent({ experienceStats, personalInfo, certifications }: AboutContentProps) {
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -563,20 +573,67 @@ export default function AboutContent({ experienceStats, personalInfo }: AboutCon
                       </div>
                     </div>
                     
-                    <div className="space-y-4 flex-grow">
-                      {[
-                        'Salesforce Administrator & Advanced User',
-                        'HubSpot Revenue Operations',
-                        'Google Analytics & Tag Manager',
-                        'Tableau Desktop & Server',
-                        'Microsoft Power BI & Excel Expert',
-                        'SQL & Database Management'
-                      ].map((cert, i) => (
-                        <div key={i} className="flex items-center gap-3 text-sm">
-                          <div className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
-                          <span className="text-gray-300">{cert}</span>
-                        </div>
+                    <div className="space-y-6 flex-grow">
+                      {certifications && certifications.map((cert, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={isAchievementsInView ? { opacity: 1, y: 0 } : {}}
+                          transition={{ delay: 1.2 + i * 0.2, duration: 0.5 }}
+                          className="group p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 border border-white/10 hover:border-white/20"
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className="flex-shrink-0">
+                              <Image
+                                src={cert.badge}
+                                alt={`${cert.name} Badge`}
+                                width={64}
+                                height={64}
+                                className="w-16 h-16 rounded-lg object-cover border border-white/20"
+                                onError={(e) => {
+                                  e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iOCIgZmlsbD0iIzEyNGFkZCIvPgo8cGF0aCBkPSJNMjAgMzJMMjcgMzlMMTQgNDYiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjx0ZXh0IHg9IjMyIiB5PSIyMCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q0VSVDwvdGV4dD4KICA8L3N2Zz4='
+                                }}
+                              />
+                            </div>
+                            <div className="flex-grow">
+                              <h4 className="font-semibold text-white group-hover:text-blue-400 transition-colors mb-1">
+                                {cert.name}
+                              </h4>
+                              <p className="text-sm text-blue-300 mb-2">{cert.issuer}</p>
+                              <p className="text-xs text-gray-300 mb-3 leading-relaxed">{cert.description}</p>
+                              <div className="flex flex-wrap gap-2">
+                                {cert.skills.map((skill, j) => (
+                                  <span
+                                    key={j}
+                                    className="text-xs px-2 py-1 bg-blue-500/20 text-blue-300 rounded-md border border-blue-500/30"
+                                  >
+                                    {skill}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
                       ))}
+                      
+                      {/* Fallback if no certifications provided */}
+                      {(!certifications || certifications.length === 0) && (
+                        <div className="space-y-4">
+                          {[
+                            'SalesLoft Admin Certified',
+                            'HubSpot Revenue Operations Certified',
+                            'Advanced Analytics & Reporting',
+                            'CRM Implementation & Optimization',
+                            'Process Automation & Integration',
+                            'Business Intelligence & Data Visualization'
+                          ].map((cert, i) => (
+                            <div key={i} className="flex items-center gap-3 text-sm">
+                              <div className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
+                              <span className="text-gray-300">{cert}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

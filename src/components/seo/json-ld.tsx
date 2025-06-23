@@ -170,3 +170,109 @@ export function ProjectJsonLd({
     />
   )
 }
+
+export function BreadcrumbJsonLd({ items }: { items: Array<{ name: string; url: string }> }) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  )
+}
+
+export function FAQJsonLd({ faqs }: { faqs: Array<{ question: string; answer: string }> }) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map(faq => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  )
+}
+
+export function LocalBusinessJsonLd() {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ProfessionalService',
+    name: 'Richard Hudson - Revenue Operations Consulting',
+    description: 'Professional Revenue Operations consulting services specializing in sales optimization, CRM implementation, and business intelligence solutions.',
+    url: 'https://richardwhudsonjr.com',
+    telephone: '+1-555-0123',
+    email: 'contact@richardwhudsonjr.com',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Dallas',
+      addressRegion: 'TX',
+      addressCountry: 'US',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 32.7767,
+      longitude: -96.7970,
+    },
+    areaServed: [
+      {
+        '@type': 'City',
+        name: 'Dallas',
+      },
+      {
+        '@type': 'City', 
+        name: 'Fort Worth',
+      },
+      {
+        '@type': 'City',
+        name: 'Plano',
+      },
+      {
+        '@type': 'City',
+        name: 'Frisco',
+      },
+    ],
+    serviceType: [
+      'Revenue Operations Consulting',
+      'Sales Operations Optimization',
+      'CRM Implementation',
+      'Marketing Automation',
+      'Business Intelligence',
+      'Data Analytics',
+    ],
+    priceRange: '$$',
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '5.0',
+      reviewCount: '15',
+      bestRating: '5',
+      worstRating: '1',
+    },
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  )
+}

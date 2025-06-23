@@ -7,7 +7,7 @@ import type { Project } from '@/types/project'
 
 export const metadata = generateMetadata(
   'Revenue Operations Projects & Case Studies | Richard Hudson',
-  'Explore proven RevOps success stories: $4.8M+ revenue generated, 25% churn reduction, 35% conversion optimization. Real-world case studies in sales automation, data analytics, and business intelligence.',
+  'Explore Richard Hudson\'s 11+ proven RevOps projects including first-ever partnership program implementation: $4.8M+ revenue generated, 25% churn reduction, 35% conversion optimization. Real-world case studies in sales automation, data analytics, business intelligence, and production system implementation.',
   '/projects'
 )
 
