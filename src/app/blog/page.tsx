@@ -59,9 +59,7 @@ export const metadata: Metadata = {
       ],
     },
   },
-})
-
-export default BlogHomePage
+}
 
 const BlogHomePage = React.memo(function BlogHomePage() {
   return (
@@ -78,4 +76,6 @@ const BlogHomePage = React.memo(function BlogHomePage() {
       </div>
     </>
   )
-}
+})
+
+export default BlogHomePage

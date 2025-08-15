@@ -117,7 +117,8 @@ class ConsoleTransport implements LogTransport {
       }
     }
     
-    }
+    console.log(output)
+  }
   
   private shouldLog(level: LogLevel): boolean {
     return LOG_LEVELS[level] >= LOG_LEVELS[LOG_LEVEL]

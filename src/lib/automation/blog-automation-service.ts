@@ -408,7 +408,7 @@ export class BlogAutomationService {
   private registerAdditionalHandlers(): void {
     // Register email notification handler
     jobQueue.registerHandler('email-notification', {
-      async process(job, progress) {
+      async process(_job, progress) {
         progress(10);
 
         // Mock email sending - integrate with your email service
@@ -422,7 +422,7 @@ export class BlogAutomationService {
 
     // Register analytics processing handler
     jobQueue.registerHandler('analytics-processing', {
-      async process(job, progress) {
+      async process(_job, progress) {
         progress(10);
 
         // Mock analytics processing - integrate with your analytics service
@@ -436,7 +436,7 @@ export class BlogAutomationService {
 
     // Register content scheduling handler
     jobQueue.registerHandler('content-scheduling', {
-      async process(job, progress) {
+      async process(_job, progress) {
         progress(10);
 
         // Mock content scheduling - integrate with your CMS

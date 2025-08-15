@@ -4,7 +4,7 @@ import { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Richard Hudson - Resume',
   description: 'Full resume of Richard Hudson, Revenue Operations Professional',
-})
+}
 
 const ResumeViewPage = React.memo(function ResumeViewPage() {
   return (

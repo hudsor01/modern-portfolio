@@ -217,7 +217,7 @@ export class SEOAnalysisHandler implements JobHandler<SEOAnalysisPayload> {
     }
   }
 
-  async onCompleted(job: Job<SEOAnalysisPayload>, _result: unknown): Promise<void> {
+  async onCompleted(_job: Job<SEOAnalysisPayload>, _result: unknown): Promise<void> {
     // Could trigger follow-up jobs like sending notifications
     // or updating the post with SEO recommendations
   }

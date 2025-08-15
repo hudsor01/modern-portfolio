@@ -94,6 +94,14 @@ export function BlogPostList({
     }
   }), [])
 
+  // Create callbacks before any conditional returns
+  const handleSortChange = useCallback((value: string) => {
+    const [sortBy, sortOrder] = value.split('-') as ['publishedAt' | 'title' | 'viewCount' | 'commentCount', 'asc' | 'desc']
+    onFiltersChange({ ...filters, sortBy, sortOrder })
+  }, [filters, onFiltersChange])
+
+  const skeletonArray = useMemo(() => Array.from({ length: 6 }).map((_, index) => index), [])
+
   // Empty state
   if (!isLoading && posts.length === 0) {
     return (
@@ -172,10 +180,7 @@ export function BlogPostList({
           {/* Sort Options */}
           <Select
             value={`${filters.sortBy || 'publishedAt'}-${filters.sortOrder || 'desc'}`}
-            onValueChange={useCallback((value: string) => {
-              const [sortBy, sortOrder] = value.split('-') as ['publishedAt' | 'title' | 'viewCount' | 'commentCount', 'asc' | 'desc']
-              onFiltersChange({ ...filters, sortBy, sortOrder })
-            }, [filters, onFiltersChange])}
+            onValueChange={handleSortChange}
           >
             <SelectTrigger className="w-40">
               <SelectValue />
@@ -243,9 +248,9 @@ export function BlogPostList({
                 : 'grid-cols-1'
             )}
           >
-            {useMemo(() => Array.from({ length: 6 }).map((_, index) => (
+            {skeletonArray.map((index) => (
               <BlogPostSkeleton key={index} variant={localViewMode} />
-            )), [localViewMode])}
+            ))}
           </motion.div>
         ) : (
           <motion.div

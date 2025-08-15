@@ -501,13 +501,13 @@ describe('RPC Middleware', () => {
     it('should handle middleware order correctly', async () => {
       const executionOrder: string[] = []
 
-      const middleware1 = () => async (c: import('hono').Context, next: () => Promise<void>) => {
+      const middleware1 = () => async (_c: import('hono').Context, next: () => Promise<void>) => {
         executionOrder.push('middleware1-before')
         await next()
         executionOrder.push('middleware1-after')
       }
 
-      const middleware2 = () => async (c: import('hono').Context, next: () => Promise<void>) => {
+      const middleware2 = () => async (_c: import('hono').Context, next: () => Promise<void>) => {
         executionOrder.push('middleware2-before')
         await next()
         executionOrder.push('middleware2-after')

@@ -315,12 +315,12 @@ export function JotaiProvider({
 export function useAtomDebugger() {
   const debugMode = process.env.NODE_ENV === 'development'
 
-  const logAtomValue = React.useCallback((name: string, value: LogValue) => {
+  const logAtomValue = React.useCallback((_name: string, _value: LogValue) => {
     if (debugMode) {
       }
   }, [debugMode])
 
-  const logAtomUpdate = React.useCallback((name: string, oldValue: LogValue, newValue: LogValue) => {
+  const logAtomUpdate = React.useCallback((_name: string, _oldValue: LogValue, _newValue: LogValue) => {
     if (debugMode) {
       }
   }, [debugMode])
@@ -334,12 +334,13 @@ export function useAtomDebugger() {
 export function useAtomPerformance() {
   const performanceEnabled = process.env.NODE_ENV === 'development'
 
-  const measureAtomRender = React.useCallback((atomName: string, renderFn: RenderFunction) => {
+  const measureAtomRender = React.useCallback((_atomName: string, renderFn: RenderFunction) => {
     if (!performanceEnabled) return renderFn()
 
-    const start = performance.now()
+    // Measure performance (timing values intentionally unused for now)
+    performance.now() // start
     const result = renderFn()
-    const end = performance.now()
+    performance.now() // end
 
     return result
   }, [performanceEnabled])

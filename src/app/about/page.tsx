@@ -99,7 +99,7 @@ const PERSONAL_INFO = {
     'Proven track record of increasing revenue efficiency by 40%+ across multiple organizations',
     'SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified professional',
   ],
-})
+}
 
 
 export const metadata = generateMetadata(

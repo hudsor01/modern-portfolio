@@ -279,7 +279,7 @@ export class EmailService {
     }
   }
   
-  private async handleMockEmail(data: ContactFormData): Promise<EmailServiceResult> {
+  private async handleMockEmail(_data: ContactFormData): Promise<EmailServiceResult> {
     if (this.isProduction) {
       console.error('Email service not configured in production')
       return {
@@ -289,16 +289,16 @@ export class EmailService {
     }
     
     // Development/testing mode - logs contact form submissions when email service is unavailable
-    const logMessage = [
-      '📧 Contact Form Submission (Mock Mode):',
-      '---',
-      `Name: ${data.name}`,
-      `Email: ${data.email}`,
-      data.phone ? `Phone: ${data.phone}` : null,
-      data.subject ? `Subject: ${data.subject}` : null,
-      `Message: ${data.message}`,
-      '---'
-    ].filter(Boolean).join('\n')
+    // const logMessage = [
+    //   '📧 Contact Form Submission (Mock Mode):',
+    //   '---',
+    //   `Name: ${data.name}`,
+    //   `Email: ${data.email}`,
+    //   data.phone ? `Phone: ${data.phone}` : null,
+    //   data.subject ? `Subject: ${data.subject}` : null,
+    //   `Message: ${data.message}`,
+    //   '---'
+    // ].filter(Boolean).join('\n')
     
     return {
       success: true,
