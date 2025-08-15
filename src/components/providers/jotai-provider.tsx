@@ -7,7 +7,6 @@
 
 import React, { useEffect, useMemo, useRef } from 'react'
 import { Provider as JotaiRootProvider, createStore } from 'jotai'
-import { DevTools } from 'jotai-devtools'
 import {
   initializeAnalyticsAtom,
   analyticsEnabledAtom,
@@ -115,41 +114,16 @@ export function JotaiProviderWrapper({
     }
   }, [store])
 
-  const showDevTools = useMemo(() => {
-    if (typeof window === 'undefined') return false
-    if (process.env.NODE_ENV !== 'development') return false
-
-    try {
-      return store.get(debugModeAtom)
-    } catch {
-      return false
-    }
-  }, [store])
+  // DevTools functionality removed for React 19 compatibility
 
   return (
     <JotaiRootProvider store={store}>
       {children}
-      {showDevTools && <JotaiDevTools />}
     </JotaiRootProvider>
   )
 }
 
-/**
- * Jotai DevTools component (development only)
- */
-function JotaiDevTools() {
-  if (process.env.NODE_ENV !== 'development') {
-    return null
-  }
-
-  return (
-    <DevTools
-      theme="dark"
-      position="bottom-right"
-      isInitialOpen={false}
-    />
-  )
-}
+// DevTools removed - jotai-devtools package uninstalled for React 19 compatibility
 
 /**
  * SSR-safe hook for getting initial server state
