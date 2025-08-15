@@ -74,6 +74,7 @@ const AnimatedCounter = ({
 
       return () => clearInterval(counter)
     }
+    return undefined
   }, [inView, value, duration])
 
   return (

@@ -3,113 +3,159 @@
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import type { Route } from 'next'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { ArrowRight} from 'lucide-react'
-import type { Project } from '@/types/project'
+import type { Project as ProjectType } from '@/types/project'
+
+// Mock project interface
+interface MockProject {
+  id: string
+  title: string
+  description: string
+  longDescription: string
+  category: 'revenue-ops' | 'data-analytics' | 'business-intelligence' | 'process-optimization'
+  technologies: string[]
+  metrics: {
+    label: string
+    value: string
+    icon: React.ElementType
+  }[]
+  featured: boolean
+  year: number
+  client: string
+  duration: string
+  impact: string[]
+  results: {
+    metric: string
+    before: string
+    after: string
+    improvement: string
+  }[]
+  liveUrl?: string
+  githubUrl?: string
+  caseStudyUrl?: string
+}
+
+type Project = ProjectType | MockProject
 
 interface ProjectCardProps {
   project: Project
-  onHover?: (slug: string) => void
 }
 
-// Component implementation
-function ProjectCardComponent({ project, onHover }: ProjectCardProps) {
-  const projectPath = `/projects/${project.slug || project.id}`
+function isMockProject(project: Project): project is MockProject {
+  return 'metrics' in project && Array.isArray(project.metrics)
+}
+
+// Custom call-to-action messages for each project
+const getCustomCTA = (projectId: string): string => {
+  switch (projectId) {
+    case 'churn-retention':
+      return 'Come Find the Customer Churn!'
+    case 'deal-funnel':
+      return 'The Sales Pipeline is This Way!'
+    case 'lead-attribution':
+      return 'Track Those Leads Here!'
+    case 'revenue-kpi':
+      return 'See Revenue Magic Happen!'
+    case 'partner-performance':
+      return 'Meet Your Performance Partners!'
+    case 'cac-unit-economics':
+      return 'Calculate Your Customer Worth!'
+    case 'revenue-operations-center':
+      return 'Enter the Revenue Command Center!'
+    case 'customer-lifetime-value':
+      return 'Predict Your Customer Future!'
+    case 'commission-optimization':
+      return 'Optimize Those Sweet Commissions!'
+    case 'multi-channel-attribution':
+      return 'Follow the Attribution Trail!'
+    default:
+      return 'Explore This Project!'
+  }
+}
+
+export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+  const projectImage = isMockProject(project)
+    ? '/images/projects/revenue-operations.jpg'
+    : project.image
+
+  const customCTA = getCustomCTA(project.id)
 
   return (
-    <Card 
-      className="overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full border-slate-200 dark:border-slate-700 group hover:-translate-y-2 rounded-xl bg-white dark:bg-slate-900" // Explicitly set background: white for light, slate-900 for dark
-      onMouseEnter={() => onHover?.(project.slug || project.id)}
-    >
-      {project.image && (
-        <div className="relative aspect-video w-full overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 z-10 group-hover:opacity-0 transition-opacity duration-300"></div>
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/30 to-purple-600/30 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <Image
-            src={project.image}
-            alt={project.title}
-            fill
-            className="object-cover transition-all duration-500 group-hover:scale-110"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            loading="lazy"
-            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAEogJbKxoRiQAAAABJRU5ErkJggg=="
-            placeholder="blur"
-          />
-        </div>
-      )}
+    <div className="group">
+      <div className="relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25">
+        <div className="p-8 flex-1 flex flex-col">
+          {/* Inner Container for Content */}
+          <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 mb-6 flex-1 flex flex-col">
+            {/* Project Header */}
+            <div className="mb-6">
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-3 leading-tight">
+                {project.title}
+              </h3>
+              <p className="text-gray-300 text-base md:text-lg leading-relaxed">
+                {project.description}
+              </p>
+            </div>
 
-      {project.id === 'revenue-dashboard' && !project.image && (
-        <div className="bg-slate-100 dark:bg-slate-800/50 h-48 w-full overflow-hidden relative flex items-center justify-center">
-          <div className="text-slate-600 dark:text-slate-400 text-sm">Revenue Dashboard Preview</div>
-        </div>
-      )}
+            {/* Enhanced Metrics */}
+            {isMockProject(project) && (
+              <div className="grid grid-cols-3 gap-4 mb-8">
+                {project.metrics.map((metric, i) => (
+                  <div
+                    key={i}
+                    className="text-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-all duration-300 border border-white/10"
+                  >
+                    <div className="flex items-center justify-center mb-3">
+                      <metric.icon className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <div className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400 mb-1">
+                      {metric.value}
+                    </div>
+                    <div className="text-sm sm:text-base text-gray-400">{metric.label}</div>
+                  </div>
+                ))}
+              </div>
+            )}
 
-      <CardHeader className="pb-2">
-        <CardTitle className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white text-center">
-          {project.title}
-        </CardTitle>
-        <CardDescription className="mt-3 text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-100"> {/* Changed to very dark gray (black) and bold for light mode, light gray for dark mode */}
-          {project.description}
-        </CardDescription>
-      </CardHeader>
+            {/* Enhanced Client Info */}
+            {isMockProject(project) && (
+              <div className="text-sm text-gray-300 mb-8 text-center p-4 bg-white/5 rounded-xl border border-white/10">
+                <span className="font-semibold text-blue-400">{project.client}</span> •{' '}
+                {project.duration}
+              </div>
+            )}
 
-      {((project.technologies && project.technologies.length > 0) ||
-        (project.tags && project.tags.length > 0)) && (
-        <CardContent className="pt-0 pb-4 flex-grow">
-          <div className="flex flex-wrap gap-3 mt-5">
-            {(project.technologies || project.tags || []).map((tag) => {
-              // Clean the tag by removing any quotes at the beginning or end
-              const cleanTag = tag.replace(/^['"]+|['"]+$/g, '')
-              return (
-                <span
-                  key={tag}
-                  className="bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200 rounded-full px-4 py-2 text-base sm:text-lg font-medium shadow-sm"
-                >
-                  {cleanTag}
-                </span>
-              )
-            })}
+            {/* Spacer to push content in inner container */}
+            <div className="flex-1"></div>
           </div>
-        </CardContent>
-      )}
 
-      <CardFooter className="pt-6 border-t border-slate-100 dark:border-slate-800 pb-3">
-        <div className="flex justify-center w-full">
-          <Button
-            variant="ghost"
-            className="px-12 py-6 bg-blue-600 hover:bg-blue-700 text-white text-lg font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
-            asChild
-          >
-            <Link href={projectPath as Route<string>} className="flex items-center gap-3">
-              <span>
-                {project.id === 'churn-retention' && 'View Customer Churn'}
-                {project.id === 'deal-funnel' && 'View Sales Pipeline'}
-                {project.id === 'lead-attribution' && 'View Lead Attribution'}
-                {project.id === 'revenue-kpi' && 'View Revenue KPIs'}
-                {!['churn-retention', 'deal-funnel', 'lead-attribution', 'revenue-kpi'].includes(
-                  project.id
-                ) && `View ${project.title}`}
-              </span>
-              <ArrowRight
-                size={18}
-                className="transition-transform duration-300 group-hover:translate-x-1"
+          {/* Project Image - After Content Container */}
+          {projectImage && (
+            <div className="relative h-32 overflow-hidden rounded-xl mb-6">
+              <Image
+                src={projectImage}
+                alt={project.title}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
               />
-            </Link>
-          </Button>
+            </div>
+          )}
+
+          {/* Centered CTA in remaining space */}
+          <div className="flex-1 flex items-center justify-center min-h-[60px]">
+            <Button
+              size="lg"
+              className="relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-base font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
+              asChild
+            >
+              <Link
+                href={`/projects/${isMockProject(project) ? project.id : project.slug || project.id}`}
+              >
+                <span className="relative z-10 text-base font-semibold">{customCTA}</span>
+              </Link>
+            </Button>
+          </div>
         </div>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   )
 }
-
-// Memoize the component to prevent unnecessary re-renders
-export const ProjectCard = React.memo(ProjectCardComponent)

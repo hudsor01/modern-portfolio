@@ -5,15 +5,67 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ### Development
-- `npm run dev` - Start development server (Next.js)
+- `npm run dev` - Start development server (Next.js with Turbo)
 - `npm run build` - Build for production
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
+- `npm run lint:fix` - Run ESLint with auto-fix
 - `npm run type-check` - Run TypeScript type checking (note: hyphenated, not typecheck)
+- `npm run generate-sitemap` - Generate sitemap.xml (runs automatically after build)
+
+### Enhanced Development & Quality Assurance
+- `npm run validate` - Run type-check and lint together
+- `npm run quality-check` - Run comprehensive quality assurance checks
+- `npm run clean` - Clean build artifacts and cache
+- `npm run dev:debug` - Start dev server with Node.js inspector
+- `npm run analyze` - Analyze bundle size with webpack bundle analyzer
+- `npm run build:analyze` - Build with bundle analysis
+- `npm run test:type` - TypeScript checking without incremental build
+- `npm run security:audit` - Run security audit with moderate level
+- `npm run deps:update` - Update dependencies using npm-check-updates
+- `npm run perf:lighthouse` - Run Lighthouse performance analysis
+- `npm run prebuild` - Validation steps run before each build
 
 ### Requirements
 - Node.js >=22.14.0
 - npm 11.2.0 (package manager)
+
+## Modernization & Security Enhancements (2025)
+
+### Performance Optimizations
+- **Turbo Dev Mode**: Development server with Turbo mode for faster builds
+- **Bundle Analysis**: Webpack bundle analyzer integration for performance monitoring
+- **Enhanced Image Optimization**: AVIF/WebP support with comprehensive security policies
+- **Static Asset Caching**: 1-year cache headers for immutable assets
+- **Server-Side Minification**: Enhanced build optimization with SWC minifier
+- **Output Optimization**: Standalone output for better deployment efficiency
+
+### Security Hardening
+- **Comprehensive CSP**: Content Security Policy with Vercel Analytics integration
+- **Security Headers**: HSTS, XSS Protection, Frame Options, Permissions Policy
+- **API Security**: Restricted CORS, no-cache headers, robots exclusion
+- **Image Security**: SVG sanitization and content security policies
+- **Environment Validation**: Zod-based environment variable validation
+
+### Quality Assurance System
+- **Automated Quality Checks**: Custom quality checker script (`scripts/quality-check.js`)
+- **Architecture Consistency**: Enforced patterns and import validation
+- **Type Safety**: Enhanced TypeScript configuration with strict null checks
+- **Pre-build Validation**: Automated validation pipeline before builds
+- **Security Auditing**: Integrated npm audit with configurable severity levels
+
+### Enhanced TypeScript Configuration
+- **Strict Mode**: `noImplicitReturns`, `noImplicitOverride`, `useUnknownInCatchVariables`
+- **Enhanced Error Handling**: Unknown catch variables and strict null checks
+- **Build Optimization**: Cached build info in `.next/cache/` directory
+- **Test Exclusion**: Clean separation of test files from production builds
+
+### Development Workflow Improvements
+- **Validation Pipeline**: Pre-build validation with type checking and linting
+- **Performance Monitoring**: Integrated Lighthouse performance analysis
+- **Dependency Management**: Automated dependency updates with npm-check-updates
+- **Debug Support**: Node.js inspector integration for debugging
+- **Cache Management**: Intelligent cache clearing and build artifact cleanup
 
 ## Architecture Overview
 
@@ -227,7 +279,7 @@ Chart components are reusable with:
 ## Important Development Notes
 
 ### Current Status
-- **Branch**: `implement-api-tanstack-react-query` 
+- **Branch**: `main` 
 - **Status**: ✅ PRODUCTION READY - All major features completed
 - **Migration**: ✅ COMPLETED - Full architectural modernization finished
 

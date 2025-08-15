@@ -50,6 +50,7 @@ export function Counter({
         }
       }
     }
+    return undefined
   }, [isInView, end, duration])
 
   return (

@@ -1,14 +1,7 @@
 'use client'
+import React, { memo, useMemo } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { monthlyRevenue2024, type MonthlyRevenueData } from '@/app/projects/data/partner-analytics' // Corrected path
-
-// Transform the monthly data for the bar chart
-const data = monthlyRevenue2024.map((monthData: MonthlyRevenueData) => ({ // Added type for monthData
-  month: monthData.month, // Use month for X-axis
-  revenue: Math.round(monthData.revenue / 1000000), // Convert to millions for readability
-  // Store original revenue if needed for more precise tooltips, though not strictly necessary here
-  // originalRevenue: monthData.revenue 
-}));
 
 // V4 Chart Colors using CSS Custom Properties
 const chartColors = {
@@ -17,14 +10,21 @@ const chartColors = {
   axis: 'hsl(var(--muted-foreground))',
 }
 
-export default function RevenueBarChart() {
+const RevenueBarChart = memo(() => {
+  // Memoize data transformation to prevent recalculation on every render
+  const chartData = useMemo(() => {
+    return monthlyRevenue2024.map((monthData: MonthlyRevenueData) => ({
+      month: monthData.month, // Use month for X-axis
+      revenue: Math.round(monthData.revenue / 1000000), // Convert to millions for readability
+    }))
+  }, [])
   return (
     <div className="portfolio-card">
       <h2 className="mb-4 text-xl font-semibold">
         Monthly Revenue 2024 (Millions USD) 
       </h2>
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+        <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <CartesianGrid 
             strokeDasharray="3 3" 
             stroke={chartColors.grid} 
@@ -70,4 +70,8 @@ export default function RevenueBarChart() {
       </p>
     </div>
   )
-}
+})
+
+RevenueBarChart.displayName = 'RevenueBarChart'
+
+export default RevenueBarChart

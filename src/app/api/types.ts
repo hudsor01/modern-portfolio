@@ -1,61 +1,41 @@
-// API Response Types
-export interface ApiResponse {
-  success: boolean;
-  message?: string;
-  error?: string;
-}
+/**
+ * API Types - Re-exports from shared API types for backward compatibility
+ * This file maintains existing imports while consolidating type definitions
+ */
 
-// Contact Form API Types
-export interface ContactFormData {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-  company?: string;
-  phone?: string;
-}
+// Re-export all shared API types
+export type {
+  ApiResponse,
+  ApiError,
+  PaginationParams,
+  PaginatedResponse,
+  ContactFormData,
+  ContactResponse,
+  ContactApiResponse,
+  NewsletterSubscriptionData,
+  NewsletterApiResponse,
+  ProjectData,
+  ProjectApiResponse,
+  SearchResultItem,
+  SearchApiResponse,
+  AnalyticsData,
+  PageView,
+  WebVital,
+  ResumeData,
+  HttpMethod,
+  RequestConfig,
+  ApiEndpoints,
+  ApiClientConfig,
+  ProjectCategory
+} from '@/types/shared-api';
 
-export interface ContactApiResponse extends ApiResponse {
-  data?: {
-    id: string;
-    createdAt: string;
-  };
-}
+// Re-export type guards
+export {
+  isApiResponse,
+  isApiError
+} from '@/types/shared-api';
 
-// Newsletter API Types
-export interface NewsletterSubscriptionData {
-  email: string;
-  name?: string;
-}
-
-export interface NewsletterApiResponse extends ApiResponse {
-  data?: {
-    id: string;
-    createdAt: string;
-  };
-}
-
-import type { Project } from '@/types/project';
-
-// Project API Types
-export interface ProjectApiResponse extends ApiResponse {
-  data?: {
-    projects: Project[];
-  };
-}
-
-// Search API Types
-export interface SearchResultItem {
-  id: string;
-  title: string;
-  description?: string;
-  url: string;
-  // Add other common search result fields as needed
-}
-
-export interface SearchApiResponse extends ApiResponse {
-  data?: {
-    results: SearchResultItem[];
-    totalResults: number;
-  };
-}
+// Legacy compatibility - ensure existing imports continue to work
+export type {
+  ApiResponse as LegacyApiResponse
+} from '@/types/shared-api';

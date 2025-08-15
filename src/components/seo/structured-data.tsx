@@ -36,7 +36,7 @@ export function WebsiteStructuredData() {
     sameAs: [
       siteConfig.links.github,
       siteConfig.links.linkedin,
-      siteConfig.links.email,
+      `mailto:${siteConfig.author.email}`,
     ],
   };
 
@@ -50,11 +50,11 @@ export function PersonStructuredData() {
     name: siteConfig.author.name,
     url: siteConfig.url,
     jobTitle: 'Revenue Operations Professional',
-    email: siteConfig.links.email || siteConfig.author.name,
+    email: siteConfig.author.email,
     sameAs: [
       siteConfig.links.github,
       siteConfig.links.linkedin,
-      siteConfig.links.email,
+      `mailto:${siteConfig.author.email}`,
     ],
   };
 

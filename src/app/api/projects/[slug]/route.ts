@@ -1,12 +1,24 @@
 import { NextResponse } from 'next/server'
 import { getProjectBySlug } from '@/data/projects'
+import { z } from 'zod'
+import { validationErrorResponse } from '@/lib/api/response'
+
+// Input validation schema for slug parameter
+const slugSchema = z.object({
+  slug: z.string()
+    .min(1, 'Slug cannot be empty')
+    .max(100, 'Slug too long')
+    .regex(/^[a-zA-Z0-9-_]+$/, 'Invalid slug format')
+})
 
 export async function GET(
   _request: Request,
   { params }: { params: { slug: string } }
 ) {
   try {
-    const project = await getProjectBySlug(params.slug)
+    // Validate slug parameter
+    const validatedParams = slugSchema.parse(params)
+    const project = await getProjectBySlug(validatedParams.slug)
     
     if (!project) {
       return NextResponse.json(
@@ -24,6 +36,11 @@ export async function GET(
     })
   } catch (error) {
     console.error('Error fetching project:', error)
+    
+    if (error instanceof z.ZodError) {
+      return validationErrorResponse(error)
+    }
+    
     return NextResponse.json(
       {
         success: false,

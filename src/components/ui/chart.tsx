@@ -109,14 +109,27 @@ function ChartTooltipContent({
   color,
   nameKey,
   labelKey,
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
-  React.ComponentProps<'div'> & {
-    hideLabel?: boolean
-    hideIndicator?: boolean
-    indicator?: 'line' | 'dot' | 'dashed'
-    nameKey?: string
-    labelKey?: string
-  }) {
+}: {
+  active?: boolean
+  payload?: Array<{
+    value: string | number
+    name: string
+    color: string
+    dataKey: string
+    payload: Record<string, unknown>
+  }>
+  label?: string
+  className?: string
+  hideLabel?: boolean
+  hideIndicator?: boolean
+  indicator?: 'line' | 'dot' | 'dashed'
+  nameKey?: string
+  labelKey?: string
+  labelFormatter?: (value: string | number, payload: Record<string, unknown>) => React.ReactNode
+  formatter?: (value: string | number, name: string, item: Record<string, unknown>, index: number, payload: Record<string, unknown>) => React.ReactNode
+  color?: string
+  labelClassName?: string
+}) {
   const { config } = useChart()
 
   const tooltipLabel = React.useMemo(() => {
@@ -136,8 +149,16 @@ function ChartTooltipContent({
         : itemConfig?.label
 
     if (labelFormatter) {
+      // Convert ReactNode to string/number for labelFormatter
+      const formatterValue = 
+        typeof value === 'string' || typeof value === 'number' 
+          ? value 
+          : typeof label === 'string' || typeof label === 'number'
+          ? label
+          : String(value || '')
+      
       return (
-        <div className={cn('font-medium', labelClassName)}>{labelFormatter(value, payload)}</div>
+        <div className={cn('font-medium', labelClassName)}>{labelFormatter(formatterValue, item.payload)}</div>
       )
     }
 
@@ -240,11 +261,17 @@ function ChartLegendContent({
   payload,
   verticalAlign = 'bottom',
   nameKey,
-}: React.ComponentProps<'div'> &
-  Pick<RechartsPrimitive.LegendProps, 'payload' | 'verticalAlign'> & {
-    hideIcon?: boolean
-    nameKey?: string
-  }) {
+}: {
+  className?: string
+  hideIcon?: boolean
+  payload?: Array<{
+    value: string | number
+    color: string
+    dataKey: string
+  }>
+  verticalAlign?: 'top' | 'bottom'
+  nameKey?: string
+}) {
   const { config } = useChart()
 
   if (!payload?.length) {

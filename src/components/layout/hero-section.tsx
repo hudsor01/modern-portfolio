@@ -36,12 +36,14 @@ export function HeroSection({ titles }: HeroSectionProps) {
             <div className="flex flex-wrap gap-4 pt-2">
               <Button asChild size="lg" className="group">
                 <Link href="/resume" className="flex items-center gap-2">
-                  <FileText size={18} />
-                  Resume
-                  <ArrowRight
-                    className="group-hover:translate-x-1 transition-transform"
-                    size={18}
-                  />
+                  <div className="flex items-center gap-2">
+                    <FileText size={18} />
+                    Resume
+                    <ArrowRight
+                      className="group-hover:translate-x-1 transition-transform"
+                      size={18}
+                    />
+                  </div>
                 </Link>
               </Button>
 

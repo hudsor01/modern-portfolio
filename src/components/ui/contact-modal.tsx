@@ -1,17 +1,10 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, CheckCircle, AlertCircle, ArrowRight, X } from 'lucide-react'
-
-interface FormData {
-  name: string
-  email: string
-  company: string
-  subject: string
-  message: string
-  phone: string
-}
+import { X } from 'lucide-react'
+import { EnhancedContactForm } from '@/components/ui/enhanced-contact-form'
+import { Button } from '@/components/ui/button'
 
 interface ContactModalProps {
   isOpen: boolean
@@ -19,244 +12,125 @@ interface ContactModalProps {
 }
 
 export function ContactModal({ isOpen, onClose }: ContactModalProps) {
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    email: '',
-    company: '',
-    subject: '',
-    message: '',
-    phone: '',
-  })
-
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-      setSubmitStatus('success')
-      setFormData({
-        name: '',
-        email: '',
-        company: '',
-        subject: '',
-        message: '',
-        phone: '',
-      })
-    } catch {
-      setSubmitStatus('error')
-    } finally {
-      setIsSubmitting(false)
+  // Handle escape key press
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) {
+        onClose()
+      }
     }
-  }
 
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isOpen, onClose])
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
+
+  const handleSuccess = () => {
+    // Auto-close modal after successful submission
+    setTimeout(() => {
       onClose()
-    }
+    }, 2000)
   }
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-          onClick={handleBackdropClick}
-        >
+        <>
+          {/* Backdrop */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-lg bg-[#0f172a] border border-white/10 rounded-3xl shadow-2xl overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Close Button */}
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 z-10 w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors"
-            >
-              <X size={16} className="text-gray-300" />
-            </button>
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
+            onClick={onClose}
+            aria-hidden="true"
+          />
 
-            <div className="p-8">
-              <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
-                {/* Header */}
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-lg flex items-center justify-center">
-                    <Send className="text-white" size={20} />
+          {/* Modal */}
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 300, 
+                damping: 30,
+                duration: 0.3 
+              }}
+              className="relative w-full max-w-2xl max-h-[90vh] overflow-hidden"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="contact-modal-title"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Container */}
+              <div className="relative bg-gradient-to-br from-gray-900/95 via-slate-900/95 to-blue-900/95 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl">
+                {/* Subtle background gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5 rounded-3xl" />
+                
+                {/* Close Button */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-4 right-4 z-10 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200"
+                  onClick={onClose}
+                  aria-label="Close contact form"
+                >
+                  <X size={24} />
+                </Button>
+
+                {/* Modal Content */}
+                <div className="relative z-10 p-8 overflow-y-auto max-h-[90vh]">
+                  {/* Header */}
+                  <div className="text-center mb-8">
+                    <h2 
+                      id="contact-modal-title"
+                      className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent mb-4"
+                    >
+                      Let's Work Together
+                    </h2>
+                    <p className="text-gray-300 text-lg max-w-md mx-auto leading-relaxed">
+                      Ready to optimize your revenue operations? Let's discuss your project and goals.
+                    </p>
                   </div>
-                  <div>
-                    <h3 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent">
-                      Send a Message
-                    </h3>
-                    <p className="text-sm text-gray-400">I'll get back to you within 24 hours</p>
+
+                  {/* Enhanced Contact Form */}
+                  <EnhancedContactForm
+                    onSuccess={handleSuccess}
+                    showOptionalFields={true}
+                    variant="detailed"
+                    buttonText="Send Message"
+                    successMessage="Thank you! I'll get back to you within 24 hours."
+                    className="space-y-6"
+                  />
+
+                  {/* Footer */}
+                  <div className="mt-8 pt-6 border-t border-white/10">
+                    <div className="text-center text-gray-400 text-sm">
+                      <p>
+                        Typically respond within 24 hours • All conversations are confidential
+                      </p>
+                    </div>
                   </div>
                 </div>
-
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold text-white">Full Name *</label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 focus:bg-white/15 transition-all duration-300 font-medium"
-                        placeholder="John Doe"
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold text-white">Email Address *</label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 focus:bg-white/15 transition-all duration-300 font-medium"
-                        placeholder="john@company.com"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-white">Subject *</label>
-                    <div className="relative">
-                      <select
-                        name="subject"
-                        value={formData.subject}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 focus:bg-white/15 transition-all duration-300 appearance-none cursor-pointer font-medium"
-                        required
-                      >
-                        <option value="" className="bg-[#0f172a] text-gray-300">
-                          Select a subject
-                        </option>
-                        <option value="revenue-ops" className="bg-[#0f172a] text-white">
-                          Revenue Operations Consulting
-                        </option>
-                        <option value="data-analytics" className="bg-[#0f172a] text-white">
-                          Data Analytics & BI
-                        </option>
-                        <option value="process-automation" className="bg-[#0f172a] text-white">
-                          Process Automation
-                        </option>
-                        <option value="general" className="bg-[#0f172a] text-white">
-                          General Inquiry
-                        </option>
-                      </select>
-                      <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
-                        <svg
-                          className="w-5 h-5 text-blue-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-white">Message *</label>
-                    <textarea
-                      name="message"
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      rows={4}
-                      className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 focus:bg-white/15 transition-all duration-300 resize-none font-medium"
-                      placeholder="Tell me about your project, goals, and how I can help..."
-                      required
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-base font-semibold px-8 py-4 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-[1.02] transition-all duration-300 group border border-blue-400/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>Sending Message...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send size={20} />
-                        <span>Send Message</span>
-                        <ArrowRight
-                          size={20}
-                          className="transition-transform duration-300 group-hover:translate-x-1"
-                        />
-                      </>
-                    )}
-                  </button>
-                </form>
-
-                {/* Success/Error Messages */}
-                {submitStatus === 'success' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg"
-                  >
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-400" />
-                      <div>
-                        <h4 className="font-semibold text-green-400">Message Sent!</h4>
-                        <p className="text-green-300 text-sm">
-                          I'll get back to you within 24 hours.
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                {submitStatus === 'error' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg"
-                  >
-                    <div className="flex items-center gap-3">
-                      <AlertCircle className="w-5 h-5 text-red-400" />
-                      <div>
-                        <h4 className="font-semibold text-red-400">Something went wrong</h4>
-                        <p className="text-red-300 text-sm">
-                          Please try again or contact me directly.
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
               </div>
-            </div>
-          </motion.div>
-        </motion.div>
+            </motion.div>
+          </div>
+        </>
       )}
     </AnimatePresence>
   )

@@ -170,7 +170,7 @@ export function MobileDrawer() {
                   React.createElement(
                     'a',
                     {
-                      href: `mailto:${siteConfig.links.email}`,
+                      href: `mailto:${siteConfig.author.email}`,
                       className:
                         'text-slate-600 dark:text-slate-400 hover:text-[rgb(var(--color-pewter-blue))] transition-colors',
                       'aria-label': 'Email',

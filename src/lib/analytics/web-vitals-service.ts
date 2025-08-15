@@ -1,6 +1,7 @@
 /**
  * Production-Ready Web Vitals Analytics Service
  * Collects, validates, and stores Core Web Vitals metrics
+ * Integrated with data aggregation service for advanced analytics
  */
 
 import { z } from 'zod'
@@ -8,9 +9,7 @@ import { z } from 'zod'
 // Web Vitals data validation schema
 export const WebVitalsSchema = z.object({
   id: z.string().min(1, 'ID is required'),
-  name: z.enum(['CLS', 'FID', 'FCP', 'LCP', 'TTFB', 'INP'], {
-    errorMap: () => ({ message: 'Invalid metric name' })
-  }),
+  name: z.enum(['CLS', 'FID', 'FCP', 'LCP', 'TTFB', 'INP']),
   value: z.number().min(0, 'Value must be non-negative'),
   rating: z.enum(['good', 'needs-improvement', 'poor']).optional(),
   delta: z.number().optional(),
@@ -357,7 +356,7 @@ export class WebVitalsService {
       if (error instanceof z.ZodError) {
         return {
           success: false,
-          error: `Validation error: ${error.errors.map(e => e.message).join(', ')}`,
+          error: `Validation error: ${error.issues.map((e) => e.message).join(', ')}`,
         }
       }
       
