@@ -13,7 +13,7 @@ export function ResumeViewer({ pdfUrl }: ResumeViewerProps) {
     // Update height based on viewport
     const updateHeight = () => {
       const windowHeight = window.innerHeight
-      setHeight(`${windowHeight * 0.8}px`)
+      setHeight(`${windowHeight * 0.9}px`)
     }
 
     updateHeight()
@@ -23,12 +23,26 @@ export function ResumeViewer({ pdfUrl }: ResumeViewerProps) {
   }, [])
 
   return (
-    <iframe
-      src={`${pdfUrl}#view=FitH`}
-      style={{ height }}
-      frameBorder="0"
-      title="Resume"
-      className="w-full"
-    />
+    <div className="w-full">
+      <iframe
+        src={pdfUrl}
+        style={{ height }}
+        width="100%"
+        title="Richard Hudson Resume"
+        className="border border-slate-600 rounded-lg"
+      >
+        <p className="text-center text-white p-8">
+          Your browser doesn't support PDF viewing. 
+          <a 
+            href={pdfUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-blue-400 hover:text-blue-300 underline ml-2"
+          >
+            Open PDF in new tab
+          </a>
+        </p>
+      </iframe>
+    </div>
   )
 }
