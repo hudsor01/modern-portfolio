@@ -130,7 +130,7 @@ export function BlogPostJsonLd({ post }: BlogPostJsonLdProps) {
       url: 'https://richardhudson.dev',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://richardhudson.dev/images/logo.png',
+        url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop&crop=face&q=80',
         width: 60,
         height: 60
       }

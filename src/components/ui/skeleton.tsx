@@ -32,10 +32,7 @@ function Skeleton({
 }: SkeletonProps) {
   // Determine animation classes based on props
   const animationClasses = cn({
-    'animate-pulse': pulse,
-    'animate-shimmer': shimmer && !pulse,
-    'bg-gradient-to-r from-transparent via-primary/10 to-transparent bg-[length:400%_100%]':
-      shimmer,
+    'animate-pulse': pulse && !shimmer,
   })
 
   // Determine variant-specific classes
@@ -54,7 +51,7 @@ function Skeleton({
       data-slot="skeleton"
       data-variant={variant}
       className={cn(
-        'bg-primary/10 rounded-md',
+        'bg-slate-200 dark:bg-slate-700 rounded-md',
         animationClasses,
         variantClasses[variant],
         className

@@ -11,14 +11,14 @@ import {
   errorHandler,
   requestContext,
   enhancedRateLimit
-} from './middleware'
+} from '@/server/rpc/middleware'
 
 // Import route modules
-import { contact } from './routes/contact'
-import { blog } from './routes/blog'
-import { projects } from './routes/projects'
-import { analytics } from './routes/analytics'
-import { auth } from './routes/auth'
+import { contact } from '@/server/rpc/routes/contact'
+import { blog } from '@/server/rpc/routes/blog'
+import { projectsRouter as projects } from '@/server/rpc/routes/projects'
+import { analytics } from '@/server/rpc/routes/analytics'
+// Auth route removed - not needed for portfolio
 
 // Create main RPC application
 const app = new Hono()
@@ -67,13 +67,13 @@ app.get('/', async (c) => {
         blog: {
           posts: 'GET /blog/posts',
           post: 'GET /blog/posts/:slug',
-          createPost: 'POST /blog/posts (auth required)',
-          updatePost: 'PUT /blog/posts/:id (auth required)',
-          deletePost: 'DELETE /blog/posts/:id (auth required)',
+          createPost: 'POST /blog/posts',
+          updatePost: 'PUT /blog/posts/:id',
+          deletePost: 'DELETE /blog/posts/:id',
           categories: 'GET /blog/categories',
           tags: 'GET /blog/tags',
           analytics: 'GET /blog/analytics',
-          upload: 'POST /blog/upload (auth required)',
+          upload: 'POST /blog/upload',
         },
         projects: {
           list: 'GET /projects',
@@ -91,21 +91,12 @@ app.get('/', async (c) => {
           dashboard: 'GET /analytics/dashboard',
           health: 'GET /analytics/health',
         },
-        auth: {
-          login: 'POST /auth/login',
-          register: 'POST /auth/register (admin only)',
-          logout: 'POST /auth/logout (auth required)',
-          profile: 'GET /auth/profile (auth required)',
-          refresh: 'POST /auth/refresh',
-          cspReport: 'POST /auth/csp-report',
-          securityAudit: 'GET /auth/security/audit (admin only)',
-          health: 'GET /auth/health',
-        },
+        // Auth endpoints removed - not needed for portfolio
       },
       features: [
         'Type-safe endpoints with Zod validation',
         'Rate limiting and security headers',
-        'Authentication and authorization',
+        // 'Authentication and authorization' - removed
         'Comprehensive error handling',
         'Request/response logging',
         'Health monitoring',
@@ -254,7 +245,7 @@ app.route('/contact', contact)
 app.route('/blog', blog)
 app.route('/projects', projects)
 app.route('/analytics', analytics)
-app.route('/auth', auth)
+// Auth route removed - not needed
 
 // =======================
 // 404 HANDLER

@@ -379,7 +379,7 @@ export interface UserInteraction {
   element: string
   page: string
   timestamp: Date
-  metadata?: Record<string, any>
+  metadata?: Record<string, string | number | boolean>
 }
 
 export type InteractionType = 
@@ -419,7 +419,7 @@ export interface ErrorEvent {
 export interface CustomEvent {
   id: string
   name: string
-  properties: Record<string, any>
+  properties: Record<string, string | number | boolean>
   timestamp: Date
   userId?: string
   sessionId: string
@@ -432,9 +432,9 @@ export interface CustomEvent {
 export interface StorageConfig {
   key: string
   version: number
-  migrate?: (data: any, fromVersion: number) => any
-  serialize?: (data: any) => string
-  deserialize?: (data: string) => any
+  migrate?: (data: unknown, fromVersion: number) => unknown
+  serialize?: (data: unknown) => string
+  deserialize?: (data: string) => unknown
   storage?: Storage
 }
 
@@ -442,7 +442,7 @@ export interface PersistentAtomOptions<T> {
   key: string
   storage?: Storage
   version?: number
-  migrate?: (data: any, fromVersion: number) => T
+  migrate?: (data: unknown, fromVersion: number) => T
   serialize?: (data: T) => string
   deserialize?: (data: string) => T
 }
@@ -485,18 +485,18 @@ export interface AtomConfig<T> {
   persist?: boolean
   storage?: Storage
   version?: number
-  effects?: AtomEffect<T>[]
+  effects?: AtomEffect[]
 }
 
-export interface AtomEffect<T> {
-  (get: (atom: any) => any, set: (atom: any, value: any) => void): void | (() => void)
+export interface AtomEffect {
+  (_get: (atom: unknown) => unknown, _set: (atom: unknown, value: unknown) => void): void | (() => void)
 }
 
 // =======================
 // ACTION TYPES
 // =======================
 
-export interface AtomAction<T = any> {
+export interface AtomAction<T = unknown> {
   type: string
   payload?: T
   meta?: {
@@ -506,12 +506,12 @@ export interface AtomAction<T = any> {
   }
 }
 
-export type AtomActionCreator<T = any> = (...args: any[]) => AtomAction<T>
+export type AtomActionCreator<T = unknown> = (...args: unknown[]) => AtomAction<T>
 
 export interface AtomReducer<T, A extends AtomAction = AtomAction> {
   (state: T, action: A): T
 }
 
-export interface AtomMiddleware<T = any> {
-  (get: (atom: any) => any, set: (atom: any, value: any) => void, action: AtomAction<T>): void
+export interface AtomMiddleware<T = unknown> {
+  (get: (atom: unknown) => unknown, set: (atom: unknown, value: unknown) => void, action: AtomAction<T>): void
 }

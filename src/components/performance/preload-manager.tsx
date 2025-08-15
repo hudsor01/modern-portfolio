@@ -13,14 +13,15 @@ const CRITICAL_ROUTES = [
 ] as const
 
 const CRITICAL_IMAGES = [
-  '/images/projects/revenue-operations.jpg',
-  '/images/hero-bg.jpg'
+  'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=600&fit=crop&crop=center&q=80',
+  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face&q=80'
 ] as const
 
 // DNS prefetch domains
 const DNS_PREFETCH_DOMAINS = [
   'fonts.googleapis.com',
   'fonts.gstatic.com',
+  'images.unsplash.com',
   'vercel.live',
   'va.vercel-scripts.com',
   'vitals.vercel-insights.com'

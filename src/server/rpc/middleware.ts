@@ -4,14 +4,12 @@
  */
 
 import { Context, MiddlewareHandler } from 'hono'
-import { RPCContext } from './types'
+import { RPCContext } from '@/server/rpc/types'
 import { createMiddleware } from 'hono/factory'
 import { 
   enhancedRateLimiter,
   EnhancedRateLimitConfig,
-  EnhancedRateLimitConfigs,
-  checkEnhancedApiRateLimit,
-  getRateLimitAnalytics
+  EnhancedRateLimitConfigs
 } from '@/lib/security/enhanced-rate-limiter'
 
 // =======================
@@ -28,7 +26,7 @@ interface RateLimitOptions {
 }
 
 export const enhancedRateLimit = (options: RateLimitOptions = {}): MiddlewareHandler => {
-  return async (c, next) => {
+  return async (c, next): Promise<Response | void> => {
     const identifier = getClientIdentifier(c)
     const userAgent = c.req.header('User-Agent')
     const path = new URL(c.req.url).pathname
@@ -94,6 +92,7 @@ export const enhancedRateLimit = (options: RateLimitOptions = {}): MiddlewareHan
     }
 
     await next()
+    return
   }
 }
 
@@ -143,7 +142,7 @@ function getClientIdentifier(c: Context): string {
   return `${ip}:${userAgentHash}`
 }
 
-function getEnhancedRateLimitMessage(result: any): string {
+function getEnhancedRateLimitMessage(result: { reason?: string; blocked?: boolean }): string {
   switch (result.reason) {
     case 'burst_protection':
       return 'Too many requests in a short time. Please slow down.'
@@ -158,87 +157,6 @@ function getEnhancedRateLimitMessage(result: any): string {
   }
 }
 
-// =======================
-// AUTHENTICATION MIDDLEWARE
-// =======================
-
-interface AuthOptions {
-  required?: boolean
-  roles?: string[]
-}
-
-export const auth = (options: AuthOptions = {}): MiddlewareHandler => {
-  return async (c, next) => {
-    const token = extractAuthToken(c)
-
-    if (!token && options.required) {
-      return c.json({
-        success: false,
-        error: {
-          code: 'AUTHENTICATION_REQUIRED',
-          message: 'Authentication token is required',
-        }
-      }, 401)
-    }
-
-    if (token) {
-      try {
-        const user = await validateAuthToken(token)
-        
-        if (!user) {
-          return c.json({
-            success: false,
-            error: {
-              code: 'INVALID_TOKEN',
-              message: 'Authentication token is invalid or expired',
-            }
-          }, 401)
-        }
-
-        // Check roles if specified
-        if (options.roles && !options.roles.includes(user.role)) {
-          return c.json({
-            success: false,
-            error: {
-              code: 'INSUFFICIENT_PERMISSIONS',
-              message: 'You do not have permission to access this resource',
-            }
-          }, 403)
-        }
-
-        // Add user to context
-        c.set('user', user)
-      } catch (error) {
-        return c.json({
-          success: false,
-          error: {
-            code: 'AUTHENTICATION_ERROR',
-            message: 'Failed to authenticate token',
-          }
-        }, 401)
-      }
-    }
-
-    await next()
-  }
-}
-
-function extractAuthToken(c: Context): string | undefined {
-  const authHeader = c.req.header('Authorization')
-  if (authHeader?.startsWith('Bearer ')) {
-    return authHeader.substring(7)
-  }
-  return undefined
-}
-
-async function validateAuthToken(token: string): Promise<{ id: string; role: string } | null> {
-  // TODO: Implement JWT token validation
-  // For now, return mock user for development
-  if (token === 'dev-token') {
-    return { id: 'dev-user', role: 'admin' }
-  }
-  return null
-}
 
 // =======================
 // LOGGING MIDDLEWARE
@@ -252,14 +170,15 @@ export const logger = (): MiddlewareHandler => {
     const userAgent = c.req.header('User-Agent') || 'unknown'
     const ip = getClientIdentifier(c)
 
-    console.log(`[${new Date().toISOString()}] ${method} ${url} - ${ip} - ${userAgent}`)
+    console.info(`[${new Date().toISOString()}] ${method} ${url} - ${ip} - ${userAgent}`)
 
     await next()
 
     const duration = Date.now() - start
     const status = c.res.status
 
-    console.log(`[${new Date().toISOString()}] ${method} ${url} - ${status} - ${duration}ms`)
+    console.info(`[${new Date().toISOString()}] ${method} ${url} - ${status} - ${duration}ms`)
+    return
   }
 }
 
@@ -286,10 +205,11 @@ export const cors = (): MiddlewareHandler => {
     c.header('Access-Control-Max-Age', '86400')
 
     if (c.req.method === 'OPTIONS') {
-      return c.text('', 204)
+      return new Response('', { status: 204 })
     }
 
     await next()
+    return
   }
 }
 
@@ -306,6 +226,7 @@ export const securityHeaders = (): MiddlewareHandler => {
     c.header('Permissions-Policy', 'geolocation=(), microphone=(), camera=()')
     
     await next()
+    return
   }
 }
 
@@ -322,15 +243,12 @@ export const requestContext = (): MiddlewareHandler => {
       timestamp: new Date(),
     }
 
-    // Add user ID if authenticated
-    const user = c.get('user')
-    if (user) {
-      context.userId = user.id
-    }
+    // No authentication - portfolio site doesn't need it
 
     c.set('rpcContext', context)
 
     await next()
+    return
   }
 }
 
@@ -343,7 +261,7 @@ function generateSessionId(): string {
 // =======================
 
 export const errorHandler = (): MiddlewareHandler => {
-  return async (c, next) => {
+  return async (c, next): Promise<Response | void> => {
     try {
       await next()
     } catch (error) {
@@ -377,6 +295,7 @@ export const errorHandler = (): MiddlewareHandler => {
         }
       }, 500)
     }
+    return
   }
 }
 
@@ -384,16 +303,17 @@ export const errorHandler = (): MiddlewareHandler => {
 // VALIDATION MIDDLEWARE HELPER
 // =======================
 
-export const validateInput = <T>(schema: any) => {
+export const validateInput = <T>(schema: { parse: (data: unknown) => T }) => {
   return createMiddleware<{ Variables: { validatedInput: T } }>(async (c, next) => {
     try {
       const body = await c.req.json()
       const validatedInput = schema.parse(body)
       c.set('validatedInput', validatedInput)
       await next()
+      return
     } catch (error) {
       if (error instanceof Error && 'issues' in error) {
-        const zodError = error as any
+        const zodError = error as { issues: unknown[] }
         return c.json({
           success: false,
           error: {

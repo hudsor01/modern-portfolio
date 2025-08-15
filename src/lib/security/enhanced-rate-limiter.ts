@@ -144,8 +144,8 @@ class EnhancedRateLimiter {
     this.analytics.totalRequests++
     const hour = new Date().getHours()
     const day = new Date().getDay()
-    this.analytics.trends.hourly[hour]++
-    this.analytics.trends.daily[day]++
+    this.analytics.trends.hourly[hour] = (this.analytics.trends.hourly[hour] || 0) + 1
+    this.analytics.trends.daily[day] = (this.analytics.trends.daily[day] || 0) + 1
 
     // Analyze request patterns for suspicious behavior
     const suspiciousScore = this.analyzeSuspiciousBehavior(record, context)
@@ -272,7 +272,11 @@ class EnhancedRateLimiter {
       if (recentRequests.length >= 5) {
         const intervals = []
         for (let i = 1; i < recentRequests.length; i++) {
-          intervals.push(recentRequests[i] - recentRequests[i - 1])
+          const prev = recentRequests[i - 1]
+          const curr = recentRequests[i]
+          if (prev !== undefined && curr !== undefined) {
+            intervals.push(curr - prev)
+          }
         }
         
         // Check for uniform intervals (bot behavior)
@@ -585,4 +589,4 @@ export function getClientRateLimitInfo(identifier: string): RateLimitRecord | nu
 }
 
 export { enhancedRateLimiter }
-export type { EnhancedRateLimitConfig, RateLimitAnalytics }
+// Type exports are already done via interface exports above

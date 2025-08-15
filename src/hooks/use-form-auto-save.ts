@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useCallback, useRef } from 'react'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 import { toast } from 'sonner'
@@ -21,7 +21,7 @@ const autoSaveConfigAtom = atom({
 // Auto-save state atom for tracking all active forms
 export interface AutoSaveState {
   formId: string
-  data: Record<string, any>
+  data: Record<string, unknown>
   lastSaved: Date
   isDirty: boolean
   isSaving: boolean
@@ -50,7 +50,7 @@ export const autoSaveStatusAtom = atom((get) => {
 /**
  * Hook for form auto-save functionality
  */
-export function useFormAutoSave<T extends Record<string, any>>(
+export function useFormAutoSave<T extends Record<string, unknown>>(
   formId: string,
   formData: T,
   options: {
@@ -64,7 +64,7 @@ export function useFormAutoSave<T extends Record<string, any>>(
 ) {
   const [autoSaveStates, setAutoSaveStates] = useAtom(autoSaveStatesAtom)
   const config = useAtomValue(autoSaveConfigAtom)
-  const debounceTimeoutRef = useRef<NodeJS.Timeout>()
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
   const initialLoadRef = useRef(false)
 
   const currentState = autoSaveStates[formId]
@@ -182,16 +182,29 @@ export function useFormAutoSave<T extends Record<string, any>>(
     }
   }, [formData, isEnabled, currentState?.data, updateState, debouncedAutoSave])
 
+  // Clear saved data
+  const clearSavedData = useCallback(() => {
+    setAutoSaveStates(prev => {
+      const newState = { ...prev }
+      delete newState[formId]
+      return newState
+    })
+  }, [formId, setAutoSaveStates])
+
+  // Stable reference for onRestore callback
+  const onRestoreRef = useRef(options.onRestore)
+  onRestoreRef.current = options.onRestore
+
   // Restore saved data on mount
   useEffect(() => {
-    if (!isEnabled || !options.onRestore) return
+    if (!isEnabled || !onRestoreRef.current) return
 
     const savedState = autoSaveStates[formId]
     if (savedState && savedState.data && savedState.isDirty) {
       // Only restore if the saved data is different from current data
       const isSavedDataDifferent = JSON.stringify(savedState.data) !== JSON.stringify(formData)
       if (isSavedDataDifferent) {
-        options.onRestore(savedState.data as T)
+        onRestoreRef.current(savedState.data as T)
         toast.info('Restored unsaved form data', {
           id: `restore-${formId}`,
           duration: 4000,
@@ -202,16 +215,7 @@ export function useFormAutoSave<T extends Record<string, any>>(
         })
       }
     }
-  }, [formId, autoSaveStates, formData, options.onRestore, isEnabled])
-
-  // Clear saved data
-  const clearSavedData = useCallback(() => {
-    setAutoSaveStates(prev => {
-      const newState = { ...prev }
-      delete newState[formId]
-      return newState
-    })
-  }, [formId, setAutoSaveStates])
+  }, [formId, autoSaveStates, formData, isEnabled, clearSavedData])
 
   // Manual save
   const manualSave = useCallback(async () => {

@@ -20,6 +20,15 @@ export default function BackgroundEffects({
     setMounted(true)
   }, [])
 
+  // Pre-calculated deterministic values to prevent hydration mismatches
+  const animatedElements = useMemo(() => [
+    { width: 25, height: 35, top: 15, left: 10, x: 15, y: -10, duration: 20 },
+    { width: 40, height: 20, top: 60, left: 80, x: -18, y: 15, duration: 25 },
+    { width: 30, height: 30, top: 30, left: 45, x: 12, y: -8, duration: 18 },
+    { width: 35, height: 25, top: 80, left: 20, x: -15, y: 12, duration: 22 },
+    { width: 20, height: 40, top: 10, left: 70, x: 20, y: -15, duration: 24 },
+  ], [])
+
   const backgroundElements = useMemo(() => {
     switch (variant) {
       case 'gradient':
@@ -35,22 +44,22 @@ export default function BackgroundEffects({
           <div className="absolute inset-0 z-0 overflow-hidden">
             {mounted && (
               <>
-                {[...Array(5)].map((_, i) => (
+                {animatedElements.map((element, i) => (
                   <motion.div
                     key={i}
                     className="bg-primary/10 absolute rounded-full blur-3xl"
                     style={{
-                      width: `${Math.random() * 30 + 10}%`,
-                      height: `${Math.random() * 30 + 10}%`,
-                      top: `${Math.random() * 100}%`,
-                      left: `${Math.random() * 100}%`,
+                      width: `${element.width}%`,
+                      height: `${element.height}%`,
+                      top: `${element.top}%`,
+                      left: `${element.left}%`,
                     }}
                     animate={{
-                      x: [0, Math.random() * 40 - 20, 0],
-                      y: [0, Math.random() * 40 - 20, 0],
+                      x: [0, element.x, 0],
+                      y: [0, element.y, 0],
                     }}
                     transition={{
-                      duration: Math.random() * 10 + 15,
+                      duration: element.duration,
                       repeat: Infinity,
                       repeatType: 'reverse',
                     }}
@@ -77,7 +86,7 @@ export default function BackgroundEffects({
           </div>
         )
     }
-  }, [variant, mounted])
+  }, [variant, mounted, animatedElements])
 
   return <div className={cn('relative size-full', className)}>{backgroundElements}</div>
 }

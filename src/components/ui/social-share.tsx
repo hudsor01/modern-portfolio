@@ -1,7 +1,8 @@
 'use client'
 
 import React from 'react'
-import { Facebook, Twitter, Linkedin, Mail, Link } from 'lucide-react'
+import { Mail, Link } from 'lucide-react'
+import { SiX, SiLinkedin, SiFacebook } from 'react-icons/si'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-sonner-toast'
@@ -65,7 +66,7 @@ export function SocialShare({
         }
         aria-label="Share on Twitter"
       >
-        <Twitter size={iconSize} />
+        <SiX size={iconSize} />
         {!compact && <span className="ml-2">Twitter</span>}
       </Button>
 
@@ -77,7 +78,7 @@ export function SocialShare({
         }
         aria-label="Share on Facebook"
       >
-        <Facebook size={iconSize} />
+        <SiFacebook size={iconSize} />
         {!compact && <span className="ml-2">Facebook</span>}
       </Button>
 
@@ -92,7 +93,7 @@ export function SocialShare({
         }
         aria-label="Share on LinkedIn"
       >
-        <Linkedin size={iconSize} />
+        <SiLinkedin size={iconSize} />
         {!compact && <span className="ml-2">LinkedIn</span>}
       </Button>
 

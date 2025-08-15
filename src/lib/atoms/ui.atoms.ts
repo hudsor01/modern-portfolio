@@ -4,10 +4,8 @@
  */
 
 import { atom } from 'jotai'
-import { atomWithStorage } from 'jotai/utils'
 import { 
   atomWithPersistence, 
-  atomWithReset, 
   atomWithDebounce,
   atomWithExpiry,
   createId,
@@ -486,7 +484,7 @@ export const updatePerformanceMetricsAtom = atom(
  */
 export const resetUIStateAtom = atom(
   null,
-  (get, set) => {
+  (_get, set) => {
     // Reset modal state
     set(modalStateAtom, {
       contactModal: false,

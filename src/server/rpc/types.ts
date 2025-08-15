@@ -305,7 +305,7 @@ export const HealthCheckSchema = z.object({
   timestamp: z.string(),
   uptime: z.number(),
   version: z.string(),
-  services: z.record(z.object({
+  services: z.record(z.string(), z.object({
     status: z.enum(['up', 'down']),
     latency: z.number().optional(),
     error: z.string().optional(),
@@ -321,7 +321,7 @@ export type HealthCheck = z.infer<typeof HealthCheckSchema>
 export const RPCErrorSchema = z.object({
   code: z.string(),
   message: z.string(),
-  details: z.record(z.unknown()).optional(),
+  details: z.record(z.string(), z.unknown()).optional(),
   stack: z.string().optional(),
 })
 

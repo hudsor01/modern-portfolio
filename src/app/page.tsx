@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     siteName: 'Richard Hudson - RevOps Consultant',
     images: [
       {
-        url: 'https://richardwhudsonjr.com/images/richard-og.jpg', // Placeholder, ensure this image exists
+        url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&h=630&fit=crop&crop=face&q=80',
         width: 1200,
         height: 630,
         alt: 'Richard Hudson - Revenue Operations Professional',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     title: 'Richard Hudson - Revenue Operations Professional',
     description:
       'Revenue Operations Consultant & Partnership Program Developer. SalesLoft Admin certified (Level 1 & 2) & HubSpot RevOps certified. $4.8M+ revenue generated across 11+ projects.',
-    images: ['https://richardwhudsonjr.com/images/richard-twitter.jpg'], // Placeholder
+    images: ['https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&h=630&fit=crop&crop=face&q=80'],
   },
 }
 

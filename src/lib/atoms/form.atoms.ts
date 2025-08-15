@@ -26,7 +26,7 @@ import type {
 /**
  * Contact form state with auto-save
  */
-export const contactFormStateAtom = atomWithReset<ContactFormState>({
+const contactFormInitialState: ContactFormState = {
   data: {
     name: '',
     email: '',
@@ -48,7 +48,8 @@ export const contactFormStateAtom = atomWithReset<ContactFormState>({
   submitCount: 0,
   isDirty: false,
   lastSubmissionTime: undefined
-})
+}
+export const contactFormStateAtom = atomWithReset<ContactFormState>(contactFormInitialState)
 
 /**
  * Contact form data with persistence
@@ -92,12 +93,12 @@ export const contactFormSubmissionAtom = atom(
   (get, set, update: { isSubmitting?: boolean; isSubmitted?: boolean }) => {
     const current = get(contactFormStateAtom)
     const newState = { ...current, ...update }
-    
+
     if (update.isSubmitted && !current.isSubmitted) {
       newState.submitCount = current.submitCount + 1
       newState.lastSubmissionTime = createTimestamp()
     }
-    
+
     set(contactFormStateAtom, newState)
   }
 )
@@ -118,7 +119,7 @@ export const contactFormDirtyAtom = atom(
  */
 export const updateContactFormFieldAtom = atom(
   null,
-  (get, set, update: { field: keyof ContactFormData; value: any }) => {
+  (get, set, update: { field: keyof ContactFormData; value: string | boolean }) => {
     const current = get(contactFormDataAtom)
     const newData = { ...current, [update.field]: update.value }
     set(contactFormDataAtom, newData)
@@ -127,7 +128,8 @@ export const updateContactFormFieldAtom = atom(
     // Clear field error if it exists
     const errors = get(contactFormErrorsAtom)
     if (errors[update.field]) {
-      const { [update.field]: _, ...restErrors } = errors
+      const restErrors = { ...errors }
+      delete restErrors[update.field]
       set(contactFormErrorsAtom, restErrors)
     }
   }
@@ -136,6 +138,36 @@ export const updateContactFormFieldAtom = atom(
 /**
  * Validate contact form field
  */
+const validateName = (value: string | boolean) =>
+  !value || (value as string).trim().length < 2
+    ? 'Name must be at least 2 characters long'
+    : ''
+
+const validateEmail = (value: string | boolean) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return !value || !emailRegex.test(value as string)
+    ? 'Please enter a valid email address'
+    : ''
+}
+
+const validateSubject = (value: string | boolean) =>
+  !value || (value as string).trim().length < 5
+    ? 'Subject must be at least 5 characters long'
+    : ''
+
+const validateMessage = (value: string | boolean) =>
+  !value || (value as string).trim().length < 10
+    ? 'Message must be at least 10 characters long'
+    : ''
+
+const validatePhone = (value: string | boolean) =>
+  value && !/^\+?[1-9]\d{0,15}$/.test((value as string).replace(/[\s\-()]/g, ''))
+    ? 'Please enter a valid phone number'
+    : ''
+
+const validateGdprConsent = (value: string | boolean) =>
+  !value ? 'You must agree to the privacy policy' : ''
+
 export const validateContactFormFieldAtom = atom(
   null,
   (get, set, field: keyof ContactFormData) => {
@@ -144,45 +176,32 @@ export const validateContactFormFieldAtom = atom(
     const value = data[field]
 
     let error = ''
-
     switch (field) {
       case 'name':
-        if (!value || (value as string).trim().length < 2) {
-          error = 'Name must be at least 2 characters long'
-        }
+        error = validateName(value ?? '')
         break
       case 'email':
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        if (!value || !emailRegex.test(value as string)) {
-          error = 'Please enter a valid email address'
-        }
+        error = validateEmail(value ?? '')
         break
       case 'subject':
-        if (!value || (value as string).trim().length < 5) {
-          error = 'Subject must be at least 5 characters long'
-        }
+        error = validateSubject(value ?? '')
         break
       case 'message':
-        if (!value || (value as string).trim().length < 10) {
-          error = 'Message must be at least 10 characters long'
-        }
+        error = validateMessage(value ?? '')
         break
       case 'phone':
-        if (value && !/^[\+]?[1-9][\d]{0,15}$/.test((value as string).replace(/[\s\-\(\)]/g, ''))) {
-          error = 'Please enter a valid phone number'
-        }
+        error = validatePhone(value ?? '')
         break
       case 'gdprConsent':
-        if (!value) {
-          error = 'You must agree to the privacy policy'
-        }
+        error = validateGdprConsent(value ?? false)
         break
     }
 
     if (error) {
       set(contactFormErrorsAtom, { ...errors, [field]: error })
     } else {
-      const { [field]: _, ...restErrors } = errors
+      const restErrors = { ...errors }
+      delete restErrors[field]
       set(contactFormErrorsAtom, restErrors)
     }
 
@@ -200,14 +219,14 @@ export const validateContactFormAtom = atom(
     let isValid = true
 
     for (const field of requiredFields) {
-      const fieldValid = get(validateContactFormFieldAtom, field)
+      const fieldValid = set(validateContactFormFieldAtom, field)
       if (!fieldValid) isValid = false
     }
 
     // Validate optional phone if provided
     const data = get(contactFormDataAtom)
     if (data.phone) {
-      const phoneValid = get(validateContactFormFieldAtom, 'phone')
+      const phoneValid = set(validateContactFormFieldAtom, 'phone')
       if (!phoneValid) isValid = false
     }
 
@@ -227,13 +246,12 @@ export const submitContactFormAtom = atom(
     set(contactFormSubmissionAtom, { isSubmitting: true })
 
     try {
-      const data = get(contactFormDataAtom)
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+
       set(contactFormSubmissionAtom, { isSubmitting: false, isSubmitted: true })
-      
+
       // Clear draft data after successful submission
       setTimeout(() => {
         set(contactFormDataAtom, {
@@ -256,6 +274,7 @@ export const submitContactFormAtom = atom(
 
       return true
     } catch (error) {
+      console.error(error)
       set(contactFormSubmissionAtom, { isSubmitting: false })
       set(contactFormErrorsAtom, { submit: 'Failed to send message. Please try again.' })
       return false
@@ -268,8 +287,8 @@ export const submitContactFormAtom = atom(
  */
 export const resetContactFormAtom = atom(
   null,
-  (get, set) => {
-    set(contactFormStateAtom, contactFormStateAtom.reset)
+  (_get, set) => {
+    set(contactFormStateAtom, contactFormInitialState)
     set(contactFormDataAtom, {
       name: '',
       email: '',
@@ -339,7 +358,7 @@ export const submitNewsletterFormAtom = atom(
   null,
   async (get, set) => {
     const state = get(newsletterFormStateAtom)
-    
+
     if (!state.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.email)) {
       return false
     }
@@ -349,7 +368,7 @@ export const submitNewsletterFormAtom = atom(
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+
       set(newsletterFormStateAtom, {
         ...state,
         isSubmitting: false,
@@ -358,6 +377,7 @@ export const submitNewsletterFormAtom = atom(
 
       return true
     } catch (error) {
+      console.error(error)
       set(newsletterFormStateAtom, { ...state, isSubmitting: false })
       return false
     }
@@ -611,7 +631,7 @@ export const prevProjectStepAtom = atom(
 export const validateProjectStepAtom = atom(
   (get) => (step: number) => {
     const state = get(projectInquiryFormStateAtom)
-    
+
     switch (step) {
       case 1: // Project Details
         return !!(
@@ -654,7 +674,7 @@ export const submitProjectInquiryAtom = atom(
   null,
   async (get, set) => {
     const state = get(projectInquiryFormStateAtom)
-    
+
     // Validate all steps
     for (let step = 1; step <= 5; step++) {
       const isValid = get(validateProjectStepAtom)(step)
@@ -667,10 +687,11 @@ export const submitProjectInquiryAtom = atom(
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000))
-      
+
       set(projectInquiryFormStateAtom, { ...state, isComplete: true })
       return true
     } catch (error) {
+      console.error(error)
       return false
     }
   }
@@ -686,21 +707,22 @@ export const submitProjectInquiryAtom = atom(
 export const getFormCompletionAtom = atom(
   (get) => (formType: 'contact' | 'newsletter' | 'project') => {
     switch (formType) {
-      case 'contact':
+      case 'contact': {
         const contactData = get(contactFormDataAtom)
         const requiredFields = ['name', 'email', 'subject', 'message']
-        const completedFields = requiredFields.filter(field => 
-          contactData[field as keyof ContactFormData] && 
+        const completedFields = requiredFields.filter(field =>
+          contactData[field as keyof ContactFormData] &&
           String(contactData[field as keyof ContactFormData]).trim() !== ''
         )
         return Math.round((completedFields.length / requiredFields.length) * 100)
-      
-      case 'newsletter':
+      }
+
+      case 'newsletter': {
         const newsletterData = get(newsletterFormStateAtom)
         return newsletterData.email ? 100 : 0
-      
-      case 'project':
-        const projectData = get(projectInquiryFormStateAtom)
+      }
+
+      case 'project': {
         const completedSteps = []
         for (let step = 1; step <= 5; step++) {
           if (get(validateProjectStepAtom)(step)) {
@@ -708,7 +730,8 @@ export const getFormCompletionAtom = atom(
           }
         }
         return Math.round((completedSteps.length / 5) * 100)
-      
+      }
+
       default:
         return 0
     }
@@ -720,9 +743,9 @@ export const getFormCompletionAtom = atom(
  */
 export const resetAllFormsAtom = atom(
   null,
-  (get, set) => {
+  (_get, set) => {
     set(resetContactFormAtom)
-    
+
     set(newsletterFormStateAtom, {
       email: '',
       preferences: {

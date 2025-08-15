@@ -76,6 +76,7 @@ export interface JobQueueOptions {
   retentionPeriod: number;
   enableMetrics: boolean;
   enableHealthCheck: boolean;
+  processingInterval?: number; // Add optional processing interval
 }
 
 export interface JobMetrics {
@@ -352,7 +353,7 @@ export class JobQueue {
       if (!this.isPaused && !this.isProcessing) {
         this.processJobs();
       }
-    }, 1000);
+    }, this.options.processingInterval || 1000);
   }
 
   private startCleanup(): void {

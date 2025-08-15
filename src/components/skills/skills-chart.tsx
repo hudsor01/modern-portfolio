@@ -8,9 +8,9 @@ interface SkillsChartProps {
   skills: Skill[]
 }
 
-export function SkillsChart({ skills }: SkillsChartProps) {
+export function SkillsChart({ skills }: Readonly<SkillsChartProps>) {
   const [activeCategory, setActiveCategory] = useState<string>('all')
-  
+
   const categories = [
     { id: 'all', name: 'All Skills' },
     { id: 'data', name: 'Data Skills' },
@@ -18,9 +18,9 @@ export function SkillsChart({ skills }: SkillsChartProps) {
     { id: 'business', name: 'Business Skills' },
     { id: 'technical', name: 'Technical Skills' },
   ]
-  
-  const filteredSkills = activeCategory === 'all' 
-    ? skills 
+
+  const filteredSkills = activeCategory === 'all'
+    ? skills
     : skills.filter(skill => skill.category === activeCategory)
 
   return (
@@ -30,17 +30,16 @@ export function SkillsChart({ skills }: SkillsChartProps) {
           <button
             key={category.id}
             onClick={() => setActiveCategory(category.id)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              activeCategory === category.id
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeCategory === category.id
                 ? 'bg-blue-500 text-white'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            }`}
+              }`}
           >
             {category.name}
           </button>
         ))}
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredSkills.map((skill, index) => (
           <motion.div

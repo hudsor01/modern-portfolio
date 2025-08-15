@@ -112,22 +112,13 @@ export type {
  */
 export async function initializeBlogAutomation(): Promise<void> {
   try {
-    console.log('🚀 Initializing blog automation system...');
-    
     // Initialize the blog automation service
     await blogAutomationService.initialize();
     
-    console.log('✅ Blog automation system initialized successfully');
     // Queue configuration logging
     const queueOptions = jobQueue.getOptions();
-    console.log(`📊 Queue concurrency: ${queueOptions.concurrency}`);
-    console.log(`🔄 Max retries: ${queueOptions.maxRetries}`);
-    console.log(`⏰ Default delay: ${queueOptions.defaultDelay}ms`);
-    
     // Log system health
     const health = await blogAutomationService.getAutomationHealth();
-    console.log(`💚 System health: ${health.status}`);
-    
     if (health.issues.length > 0) {
       console.warn('⚠️  Health issues detected:', health.issues);
     }
@@ -144,8 +135,6 @@ export async function initializeBlogAutomation(): Promise<void> {
  */
 export async function shutdownBlogAutomation(): Promise<void> {
   try {
-    console.log('🔄 Shutting down blog automation system...');
-    
     // Drain the job queue
     await jobQueue.drain();
     
@@ -158,9 +147,7 @@ export async function shutdownBlogAutomation(): Promise<void> {
     // Destroy rate limiter
     rateLimiter.destroy();
     
-    console.log('✅ Blog automation system shutdown complete');
-    
-  } catch (error) {
+    } catch (error) {
     console.error('❌ Error during automation system shutdown:', error);
     throw error;
   }

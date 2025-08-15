@@ -66,3 +66,25 @@ export interface PaginationMeta {
 export interface BaseFilter extends PaginationParams {
   search?: string
 }
+
+// Jotai and state management types
+export type AtomValue = string | number | boolean | object | null | undefined
+export type AtomInitialValues = Record<string, AtomValue>
+
+// Error boundary types
+export interface ErrorBoundaryProps {
+  children: React.ReactNode
+  fallback?: React.ComponentType<{ error: Error }>
+}
+
+// Performance measurement types
+export type RenderFunction = () => unknown
+
+// Storage event types
+export interface StorageEventData {
+  key: string
+  value: unknown
+}
+
+// Debug logging types
+export type LogValue = string | number | boolean | object | null | undefined

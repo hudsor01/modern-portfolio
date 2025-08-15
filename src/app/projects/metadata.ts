@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     images: [
       {
-        url: `${siteConfig.url}/og/projects.jpg`,
+        url: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=630&fit=crop&crop=center&q=80',
         width: 1200,
         height: 630,
         alt: "Richard Hudson's Portfolio Projects",
@@ -27,6 +27,6 @@ export const metadata: Metadata = {
     title: 'Projects | Richard Hudson - Revenue Operations Professional',
     description:
       "Explore Richard Hudson's portfolio of revenue operations and data analysis projects showcasing expertise in business growth strategies.",
-    images: [`${siteConfig.url}/og/projects.jpg`],
+    images: ['https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=630&fit=crop&crop=center&q=80'],
   },
 }

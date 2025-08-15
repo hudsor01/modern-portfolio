@@ -1,6 +1,6 @@
-import { Project } from '../types/project'
-import { ContactFormData } from '../types/contact'
-import { ChartData } from '../types/chart'
+import { Project } from '@/types/project'
+import { ContactFormData } from '@/types/contact'
+import { ChartData } from '@/types/chart'
 
 // Factory for creating mock project data
 export const createMockProject = (overrides: Partial<Project> = {}): Project => ({
@@ -11,7 +11,7 @@ export const createMockProject = (overrides: Partial<Project> = {}): Project => 
   technologies: ['React', 'TypeScript', 'Next.js'],
   category: 'Analytics',
   tags: ['dashboard', 'analytics', 'revenue'],
-  image: '/images/test-project.jpg',
+  image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&crop=center&q=80',
   githubUrl: 'https://github.com/test/project',
   featured: false,
   slug: 'test-project',

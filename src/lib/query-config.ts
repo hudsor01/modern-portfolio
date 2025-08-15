@@ -126,7 +126,6 @@ export function createServerQueryClient(): QueryClient {
 export const invalidationStrategies = {
   // Invalidate all project-related cache with performance tracking
   invalidateProjects: (queryClient: QueryClient) => {
-    console.log('Invalidating all project caches');
     queryClient.invalidateQueries({ 
       queryKey: ['projects'],
       type: 'all' // Invalidate both active and inactive queries
@@ -449,8 +448,7 @@ export function createEnhancedQueryClient(): QueryClient {
   // Mutation monitoring
   queryClient.getMutationCache().subscribe((event) => {
     if (event.type === 'added' && event.mutation) {
-      console.log('Mutation started:', event.mutation.options.mutationKey);
-    }
+      }
   });
 
   return queryClient;

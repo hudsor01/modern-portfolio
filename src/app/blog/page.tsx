@@ -1,3 +1,4 @@
+import React from 'react'
 import { Metadata } from 'next'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
@@ -58,9 +59,11 @@ export const metadata: Metadata = {
       ],
     },
   },
-}
+})
 
-export default function BlogHomePage() {
+export default BlogHomePage
+
+const BlogHomePage = React.memo(function BlogHomePage() {
   return (
     <>
       <BlogJsonLd />

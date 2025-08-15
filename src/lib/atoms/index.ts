@@ -95,7 +95,7 @@ export {
   keyboardNavigationAtom,
   
   // Performance atoms
-  performanceMetricsAtom,
+  performanceMetricsAtom as uiPerformanceMetricsAtom,
   updatePerformanceMetricsAtom,
   
   // Reset atoms
@@ -124,7 +124,7 @@ export {
   
   // Privacy settings
   privacySettingsAtom,
-  analyticsConsentAtom,
+  analyticsConsentAtom as userAnalyticsConsentAtom,
   cookiesConsentAtom,
   personalizationConsentAtom,
   dataCollectionConsentAtom,
@@ -149,7 +149,7 @@ export {
   
   // User session
   userSessionAtom,
-  updateSessionActivityAtom,
+  updateSessionActivityAtom as userUpdateSessionActivityAtom,
   incrementPageViewsAtom,
   incrementInteractionsAtom,
   isReturningVisitorAtom,
@@ -319,7 +319,7 @@ export {
   trackExternalLinkAtom,
   
   // Performance tracking
-  performanceMetricsAtom,
+  performanceMetricsAtom as analyticsPerformanceMetricsAtom,
   trackWebVitalAtom,
   trackLoadTimeAtom,
   trackMemoryUsageAtom,
@@ -392,103 +392,12 @@ export {
 // ATOM COLLECTIONS (for easier imports)
 // =======================
 
-// UI-related atoms for components
-export const uiAtoms = {
-  theme: {
-    state: themeStateAtom,
-    current: currentThemeAtom,
-    resolved: resolvedThemeAtom,
-    system: systemThemeAtom
-  },
-  modals: {
-    contact: contactModalAtom,
-    project: projectModalAtom,
-    resume: resumeModalAtom,
-    image: imageModalAtom,
-    anyOpen: anyModalOpenAtom
-  },
-  navigation: {
-    mobileMenu: mobileMenuAtom,
-    activeSection: activeSectionAtom,
-    scrollPosition: scrollPositionAtom,
-    headerVisible: headerVisibleAtom
-  },
-  notifications: {
-    list: notificationsAtom,
-    add: addNotificationAtom,
-    remove: removeNotificationAtom,
-    clear: clearNotificationsAtom
-  }
-}
+// UI-related atoms for components (removed - exports already available above)
 
-// User-related atoms for preferences
-export const userAtoms = {
-  preferences: userPreferencesAtom,
-  privacy: {
-    analytics: analyticsConsentAtom,
-    cookies: cookiesConsentAtom,
-    personalization: personalizationConsentAtom
-  },
-  accessibility: {
-    reducedMotion: reducedMotionPreferenceAtom,
-    highContrast: highContrastPreferenceAtom,
-    fontSize: fontSizePreferenceAtom
-  },
-  session: userSessionAtom
-}
+// User-related atoms for preferences (removed - exports already available above)
 
-// Blog-related atoms for content management
-export const blogAtoms = {
-  filters: {
-    all: blogFiltersAtom,
-    categories: categoryFiltersAtom,
-    tags: tagFiltersAtom,
-    search: searchQueryAtom
-  },
-  state: {
-    currentPage: currentPageAtom,
-    sortField: sortFieldAtom,
-    sortOrder: sortOrderAtom,
-    viewMode: viewModeAtom
-  },
-  bookmarks: {
-    list: bookmarkedPostsAtom,
-    toggle: toggleBookmarkAtom,
-    isBookmarked: isBookmarkedAtom
-  }
-}
+// Blog-related atoms for content management (removed - exports already available above)
 
-// Form-related atoms for data collection
-export const formAtoms = {
-  contact: {
-    state: contactFormStateAtom,
-    data: contactFormDataAtom,
-    errors: contactFormErrorsAtom,
-    submit: submitContactFormAtom
-  },
-  newsletter: {
-    state: newsletterFormStateAtom,
-    email: newsletterEmailAtom,
-    submit: submitNewsletterFormAtom
-  },
-  project: {
-    state: projectInquiryFormStateAtom,
-    step: projectInquiryStepAtom,
-    submit: submitProjectInquiryAtom
-  }
-}
+// Form-related atoms for data collection (removed - exports already available above)
 
-// Analytics-related atoms for tracking
-export const analyticsAtoms = {
-  state: analyticsStateAtom,
-  enabled: analyticsEnabledAtom,
-  consent: analyticsConsentAtom,
-  tracking: {
-    pageView: trackPageViewAtom,
-    click: trackClickAtom,
-    interaction: trackInteractionAtom,
-    customEvent: trackCustomEventAtom
-  },
-  session: analyticsSessionAtom,
-  performance: performanceMetricsAtom
-}
+// Analytics-related atoms for tracking (removed - exports already available above)

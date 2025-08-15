@@ -1,3 +1,4 @@
+import React from 'react'
 import { PieChart } from '@/components/charts/pie-chart' // Corrected path
 import { partnerGroupsData, type PartnerGroup } from '@/app/projects/data/partner-analytics' // Corrected path // Import new data and type
 
@@ -7,7 +8,7 @@ const chartColors = partnerGroupsData.map((group: PartnerGroup) => group.color);
 // The partnerGroupsData itself can be passed directly to the PieChart's 'data' prop
 // as it already has 'name' and 'value' fields.
 
-export default function PartnerGroupPieChart() {
+const PartnerGroupPieChart = React.memo(function PartnerGroupPieChart() {
   return (
     <div className="portfolio-card">
       <PieChart 
@@ -22,4 +23,6 @@ export default function PartnerGroupPieChart() {
       </p>
     </div>
   )
-}
+})
+
+export default PartnerGroupPieChart

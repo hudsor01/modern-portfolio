@@ -6,7 +6,8 @@ import { AnimateOnScroll } from '@/components/ui/animate-on-scroll' // Added: Us
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Github, ArrowRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
+import { SiGithub } from 'react-icons/si'
 import Link from 'next/link'
 import Image from 'next/image'
 // import { Project } from '@/app/(home)/projects/types' // Removed: @/app/(home)/projects/types does not exist
@@ -44,7 +45,7 @@ export function AnimatedProjectCard({ project }: { project: Project }) {
       <Card className="group h-full overflow-hidden">
         <div className="relative aspect-video overflow-hidden">
           <Image
-            src={image || '/images/project-placeholder.jpg'}
+            src={image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&crop=center&q=80'}
             alt={title || 'Project Image'}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -73,16 +74,16 @@ export function AnimatedProjectCard({ project }: { project: Project }) {
         </CardContent>
         <CardFooter className="flex gap-2 p-4 pt-0">
           <Button asChild variant="outline" size="sm" className="flex-1">
-            <Link href={`/projects/${slug}`}>
+            <Link href={`/projects/${slug}`} className="flex items-center justify-center">
               Details
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
           {githubUrl && (
             <Button asChild variant="outline" size="icon" className="shrink-0">
-              <Link href={githubUrl} target="_blank" rel="noreferrer">
+              <Link href={githubUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center">
                 <span className="sr-only">GitHub Repository</span>
-                <Github className="h-4 w-4" />
+                <SiGithub className="h-4 w-4" />
               </Link>
             </Button>
           )}

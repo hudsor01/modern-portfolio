@@ -13,7 +13,7 @@ export default defineConfig({
     includeSource: ['src/**/*.{js,ts,jsx,tsx}'],
     exclude: ['node_modules', 'dist', '.next', 'e2e/**/*', 'playwright-report/**/*'],
     coverage: {
-      provider: 'c8',
+      provider: 'v8',
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/',

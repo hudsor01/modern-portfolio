@@ -4,6 +4,15 @@ import React, { useState, useEffect, useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { ContactModal } from '@/components/ui/contact-modal'
 import { Button } from '@/components/ui/button'
+import { 
+  ProfessionalCard, 
+  ProfessionalCardHeader, 
+  ProfessionalCardTitle, 
+  ProfessionalCardSubtitle,
+  ProfessionalCardDescription,
+  ProfessionalCardContent,
+  ProfessionalCardBadge
+} from '@/components/ui/professional-card'
 import {
   Mail,
   MapPin,
@@ -305,93 +314,117 @@ export default function AboutContent({ experienceStats, personalInfo, certificat
               transition={{ duration: 0.5, delay: 0.2 }}
               className="grid md:grid-cols-2 gap-12"
             >
-              {/* Bio Content */}
+              {/* Professional Experience Story */}
               <motion.div
                 variants={fadeInUp}
                 initial="initial"
                 animate={isBioInView ? 'animate' : 'initial'}
                 transition={{ duration: 0.5, delay: 0.4 }}
-                className="group relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25"
               >
-                <div className="p-8">
-                  <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 h-full flex flex-col">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400 rounded-lg flex items-center justify-center">
+                <ProfessionalCard variant="elevated" size="lg" className="h-full">
+                  <ProfessionalCardHeader>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
                         <Briefcase className="text-white" size={24} />
                       </div>
                       <div>
-                        <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400">
-                          My Story
-                        </h2>
-                        <p className="text-sm text-gray-400">Professional background</p>
+                        <ProfessionalCardTitle className="text-xl">
+                          Revenue Operations Professional
+                        </ProfessionalCardTitle>
+                        <ProfessionalCardSubtitle>
+                          4+ Years at Thryv | Dallas-Fort Worth
+                        </ProfessionalCardSubtitle>
+                      </div>
+                    </div>
+                  </ProfessionalCardHeader>
+
+                  <ProfessionalCardContent className="space-y-4">
+                    <ProfessionalCardDescription className="text-base leading-relaxed">
+                      Revenue Operations Consultant with deep expertise in scaling business operations through data-driven strategies. 
+                      Specialized in partnership program development, commission automation, and revenue forecasting with proven track record 
+                      of generating $4.8M+ in business impact.
+                    </ProfessionalCardDescription>
+                    
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-wide">Core Expertise</h4>
+                      <div className="flex flex-wrap gap-2">
+                        <ProfessionalCardBadge variant="blue">Salesforce Administration</ProfessionalCardBadge>
+                        <ProfessionalCardBadge variant="blue">HubSpot Revenue Operations</ProfessionalCardBadge>
+                        <ProfessionalCardBadge variant="success">Partnership Programs</ProfessionalCardBadge>
+                        <ProfessionalCardBadge variant="secondary">Commission Automation</ProfessionalCardBadge>
                       </div>
                     </div>
 
-                    <p className="text-lg leading-relaxed text-gray-300 mb-8 flex-grow">{personalInfo.bio}</p>
-
-                    <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="pt-4">
                       <Button
-                        className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
+                        className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
                         onClick={() => setIsModalOpen(true)}
                       >
                         <Mail className="mr-2" size={18} />
-                        Get In Touch
-                        <ArrowRight
-                          size={18}
-                          className="ml-2 transition-transform duration-300 group-hover:translate-x-1"
-                        />
+                        Let's Connect
+                        <ArrowRight size={16} className="ml-2" />
                       </Button>
                     </div>
-                  </div>
-                </div>
+                  </ProfessionalCardContent>
+                </ProfessionalCard>
               </motion.div>
 
-              {/* Key Highlights */}
+              {/* Career Achievements */}
               <motion.div
                 variants={fadeInUp}
                 initial="initial"
                 animate={isBioInView ? 'animate' : 'initial'}
                 transition={{ duration: 0.5, delay: 0.6 }}
-                className="group relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25"
               >
-                <div className="p-8">
-                  <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 h-full flex flex-col">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400 rounded-lg flex items-center justify-center">
+                <ProfessionalCard variant="highlight" size="lg" className="h-full">
+                  <ProfessionalCardHeader>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 bg-emerald-600 rounded-lg flex items-center justify-center">
                         <Star className="text-white" size={24} />
                       </div>
                       <div>
-                        <h3 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400">
-                          Key Highlights
-                        </h3>
-                        <p className="text-sm text-gray-400">Core competencies</p>
+                        <ProfessionalCardTitle className="text-xl">
+                          Career Achievements
+                        </ProfessionalCardTitle>
+                        <ProfessionalCardSubtitle className="text-emerald-400">
+                          Measurable Business Impact
+                        </ProfessionalCardSubtitle>
                       </div>
                     </div>
+                  </ProfessionalCardHeader>
 
-                    <div className="space-y-4 flex-grow">
-                      {personalInfo.highlights.map((highlight, index) => (
-                        <motion.div
-                          key={index}
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={isBioInView ? { opacity: 1, x: 0 } : {}}
-                          transition={{ delay: 0.8 + index * 0.1, duration: 0.5 }}
-                          className="flex items-start gap-4 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 group"
-                        >
-                          <motion.div
-                            className="w-2 h-2 bg-gradient-to-r from-blue-300 via-sky-400 to-indigo-400 rounded-full mt-3 flex-shrink-0"
-                            animate={{ scale: [1, 1.2, 1] }}
-                            transition={{
-                              duration: 2,
-                              repeat: Infinity,
-                              delay: index * 0.2,
-                            }}
-                          />
-                          <p className="text-gray-300 leading-relaxed">{highlight}</p>
-                        </motion.div>
-                      ))}
+                  <ProfessionalCardContent className="space-y-4">
+                    {[
+                      "Drove $1.1M+ revenue growth through data-driven forecasting and optimization at Thryv",
+                      "Scaled partner network by 2,200% while maintaining 99.9% data accuracy",
+                      "Achieved 95% forecast accuracy across all divisions using Power BI and Salesforce",
+                      "Reduced commission processing time by 80% through automation implementation"
+                    ].map((achievement, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={isBioInView ? { opacity: 1, x: 0 } : {}}
+                        transition={{ delay: 0.8 + index * 0.1, duration: 0.5 }}
+                        className="flex items-start gap-3 p-3 rounded-lg bg-slate-700/30 border border-slate-600/30"
+                      >
+                        <div className="w-2 h-2 bg-emerald-400 rounded-full mt-3 flex-shrink-0" />
+                        <ProfessionalCardDescription className="text-slate-200">
+                          {achievement}
+                        </ProfessionalCardDescription>
+                      </motion.div>
+                    ))}
+                    
+                    <div className="pt-4 mt-6 border-t border-slate-700/30">
+                      <Link
+                        href="/resume"
+                        className="inline-flex items-center text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200"
+                      >
+                        View Complete Experience
+                        <ArrowRight size={16} className="ml-1" />
+                      </Link>
                     </div>
-                  </div>
-                </div>
+                  </ProfessionalCardContent>
+                </ProfessionalCard>
               </motion.div>
             </motion.div>
           )}
@@ -753,20 +786,17 @@ export default function AboutContent({ experienceStats, personalInfo, certificat
                   </p>
 
                   <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                    <Button
-                      size="lg"
-                      className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
-                      asChild
+                    <Link
+                      href="/projects"
+                      className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
                     >
-                      <Link href="/projects">
-                        <TrendingUp className="mr-2" size={20} />
-                        View My Projects
-                        <ArrowRight
-                          size={20}
-                          className="ml-2 transition-transform duration-300 group-hover:translate-x-1"
-                        />
-                      </Link>
-                    </Button>
+                      <TrendingUp className="mr-2" size={20} />
+                      View My Projects
+                      <ArrowRight
+                        size={20}
+                        className="ml-2 transition-transform duration-300 group-hover:translate-x-1"
+                      />
+                    </Link>
 
                     <Button
                       size="lg"

@@ -117,8 +117,7 @@ class ConsoleTransport implements LogTransport {
       }
     }
     
-    console.log(output)
-  }
+    }
   
   private shouldLog(level: LogLevel): boolean {
     return LOG_LEVELS[level] >= LOG_LEVELS[LOG_LEVEL]
@@ -132,7 +131,7 @@ class JSONTransport implements LogTransport {
     
     // In production, you'd send this to your logging service
     // Examples: DataDog, Splunk, ELK Stack, CloudWatch, etc.
-    console.log(JSON.stringify(entry))
+    console.info('Logging entry:', entry)
   }
   
   private shouldLog(level: LogLevel): boolean {
@@ -173,7 +172,6 @@ class FileTransport implements LogTransport {
     try {
       // In a real implementation, you'd write to a file or send to a service
       // For now, we'll just clear the buffer
-      console.log(`[FileTransport] Flushing ${this.buffer.length} log entries`)
       this.buffer = []
     } catch (error) {
       console.error('Failed to flush log buffer:', error)

@@ -50,9 +50,9 @@ export function calculateScrollProgress(
   const scrollProgress = Math.min(Math.max((scrollTop / totalScrollable) * 100, 0), 100)
 
   // Determine scroll direction
-  const lastScrollTop = (globalThis as any)._lastScrollTop || 0
+  const lastScrollTop = (globalThis as { _lastScrollTop?: number })._lastScrollTop || 0
   const scrollDirection = scrollTop > lastScrollTop ? 'down' : 'up'
-  ;(globalThis as any)._lastScrollTop = scrollTop
+  ;(globalThis as { _lastScrollTop?: number })._lastScrollTop = scrollTop
 
   // Calculate positions
   const isAtTop = scrollTop < 10
@@ -79,8 +79,8 @@ export function calculateScrollProgress(
  */
 export function getEstimatedWordCount(element: Element | HTMLElement): number {
   try {
-    const textContent = element.textContent || element.innerText || ''
-    const words = textContent.trim().split(/\s+/).filter(word => word.length > 0)
+    const textContent = element.textContent || ('innerText' in element ? element.innerText : '') || ''
+    const words = textContent.trim().split(/\s+/).filter((word: string) => word.length > 0)
     return words.length
   } catch (error) {
     console.warn('Error calculating word count:', error)
@@ -183,7 +183,9 @@ export class ReadingProgressTracker {
 
     // Calculate reading speed if we have enough data
     if (this.progressHistory.length >= 5 && this.session.timeSpent > 10000) {
-      const progressDiff = Math.max(this.progressHistory[this.progressHistory.length - 1] - this.progressHistory[0], 1)
+      const lastProgress = this.progressHistory[this.progressHistory.length - 1]
+      const firstProgress = this.progressHistory[0]
+      const progressDiff = Math.max((lastProgress ?? 0) - (firstProgress ?? 0), 1)
       const timeDiffMinutes = this.session.timeSpent / 60000
       const wordsRead = (progressDiff / 100) * this.session.totalWords
       
@@ -244,7 +246,7 @@ export function useReadingProgressTracker(
   containerSelector?: string,
   storageKey?: string
 ) {
-  const trackerRef = React.useRef<ReadingProgressTracker>()
+  const trackerRef = React.useRef<ReadingProgressTracker | undefined>(undefined)
 
   React.useEffect(() => {
     trackerRef.current = new ReadingProgressTracker(containerSelector, storageKey)

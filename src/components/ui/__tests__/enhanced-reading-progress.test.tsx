@@ -257,7 +257,7 @@ describe('useReadingProgress', () => {
       removeEventListener: vi.fn()
     }
 
-    vi.spyOn(document, 'querySelector').mockReturnValue(mockContainer as any)
+    vi.spyOn(document, 'querySelector').mockReturnValue(mockContainer as Element)
 
     const { result } = renderHook(() => useReadingProgress('.custom-container'))
 

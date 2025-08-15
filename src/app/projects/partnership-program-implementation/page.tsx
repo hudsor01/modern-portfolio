@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Calendar, Tag, ExternalLink, Github, TrendingUp, Users, Settings, BarChart } from 'lucide-react'
+import { ArrowLeft, Calendar, Tag, ExternalLink, TrendingUp, Users, Settings, BarChart } from 'lucide-react'
+import { SiGithub } from 'react-icons/si'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -15,7 +16,7 @@ const project = {
   id: 'partnership-program-implementation',
   title: 'Enterprise Partnership Program Implementation',
   description: 'Led comprehensive design and implementation of a company\'s first partnership program, creating automated partner onboarding, commission tracking, and performance analytics. Built production-ready integrations with CRM, billing systems, and partner portals, resulting in a highly successful channel program that became integral to company revenue strategy.',
-  image: '/images/projects/partnership-program.jpg',
+  image: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&h=600&fit=crop&crop=center&q=80',
   category: 'Revenue Operations',
   tags: [
     'Partnership Program',
@@ -140,28 +141,25 @@ export default function PartnershipProgramPage() {
 
                 {/* Action Buttons */}
                 <div className="flex flex-wrap gap-4">
-                  <Button
-                    asChild
-                    size="lg"
-                    className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+                  <Link
+                    href={project.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 text-base font-medium bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-lg transition-all duration-200"
                   >
-                    <Link href={project.link} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="mr-2" size={20} />
-                      View Demo
-                    </Link>
-                  </Button>
+                    <ExternalLink className="mr-2" size={20} />
+                    View Demo
+                  </Link>
                   
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="lg"
-                    className="border-blue-500/50 text-blue-400 hover:bg-blue-500/10"
+                  <Link
+                    href={project.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 text-base font-medium border border-blue-500/50 text-blue-400 hover:bg-blue-500/10 rounded-lg transition-all duration-200"
                   >
-                    <Link href={project.github} target="_blank" rel="noopener noreferrer">
-                      <Github className="mr-2" size={20} />
-                      View Code
-                    </Link>
-                  </Button>
+                    <SiGithub className="mr-2" size={20} />
+                    View Code
+                  </Link>
                 </div>
               </div>
             </motion.div>

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest } from 'next/server'
-import { GET } from '../route'
+import { GET } from '@/app/api/blog/route'
 import type { RSSFeedData } from '@/types/shared-api'
 
 // Mock Next.js

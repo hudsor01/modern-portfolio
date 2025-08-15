@@ -63,21 +63,21 @@ const CERTIFICATIONS = [
   {
     name: 'SalesLoft Admin Certification Level 1',
     issuer: 'SalesLoft',
-    badge: '/images/certifications/salesloft-admin-1-badge.jpg',
+    badge: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=150&h=150&fit=crop&crop=center&q=80',
     description: 'Foundational administration and configuration of SalesLoft sales engagement platform',
     skills: ['Platform Setup', 'User Management', 'Basic Cadences', 'Email Templates']
   },
   {
     name: 'SalesLoft Admin Certification Level 2',
     issuer: 'SalesLoft',
-    badge: '/images/certifications/salesloft-admin-2-badge.jpg',
+    badge: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=150&h=150&fit=crop&crop=center&q=80',
     description: 'Advanced administration including complex automation, integrations, and advanced analytics',
     skills: ['Advanced Automation', 'CRM Integrations', 'Advanced Analytics', 'Complex Workflows']
   },
   {
     name: 'HubSpot Revenue Operations Certification',
     issuer: 'HubSpot Academy',
-    badge: '/images/certifications/hubspot-revops-badge.jpg',
+    badge: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=150&h=150&fit=crop&crop=center&q=80',
     description: 'Comprehensive revenue operations strategy, process optimization, and performance analysis',
     skills: ['Revenue Operations', 'Sales Process Optimization', 'Marketing Alignment', 'Analytics & Forecasting']
   }
@@ -99,7 +99,8 @@ const PERSONAL_INFO = {
     'Proven track record of increasing revenue efficiency by 40%+ across multiple organizations',
     'SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified professional',
   ],
-}
+})
+
 
 export const metadata = generateMetadata(
   'About Richard Hudson | Revenue Operations Expert & Business Growth Consultant',
@@ -107,7 +108,7 @@ export const metadata = generateMetadata(
   '/about'
 )
 
-export default function AboutPage() {
+const AboutPage = React.memo(function AboutPage() {
   return (
     <AboutContent 
       skills={SKILLS} 
@@ -116,4 +117,6 @@ export default function AboutPage() {
       certifications={CERTIFICATIONS}
     />
   )
-}
+})
+
+export default AboutPage

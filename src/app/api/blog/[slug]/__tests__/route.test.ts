@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest } from 'next/server'
-import { GET, PUT, DELETE } from '../route'
+import { GET, PUT, DELETE } from '@/app/api/blog/route'
 
 // Mock Next.js
 vi.mock('next/server', async () => {

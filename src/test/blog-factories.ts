@@ -11,7 +11,7 @@ import {
   SEOAnalysis,
   SEOIssue,
   BlogPostSummary 
-} from '../types/blog'
+} from '@/types/blog'
 
 // =======================
 // BLOG FACTORIES
@@ -82,7 +82,7 @@ export const createMockBlogPost = (overrides: Partial<BlogPost> = {}): BlogPost 
   metaTitle: 'Getting Started with React Testing - Complete Guide',
   metaDescription: 'Comprehensive guide to testing React components with Jest, Testing Library, and best practices.',
   keywords: ['react', 'testing', 'jest', 'testing-library'],
-  featuredImage: '/images/blog/react-testing.jpg',
+  featuredImage: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=800&h=600&fit=crop&crop=center&q=80',
   featuredImageAlt: 'React Testing Setup',
   readingTime: 8,
   wordCount: 1200,
@@ -106,7 +106,7 @@ export const createMockBlogPostSummary = (overrides: Partial<BlogPostSummary> = 
   title: 'Getting Started with React Testing',
   slug: 'getting-started-with-react-testing',
   excerpt: 'Learn the fundamentals of testing React components with modern testing tools.',
-  featuredImage: '/images/blog/react-testing.jpg',
+  featuredImage: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=800&h=600&fit=crop&crop=center&q=80',
   publishedAt: new Date('2024-01-15'),
   viewCount: 1500,
   commentCount: 8,

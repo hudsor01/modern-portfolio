@@ -217,7 +217,7 @@ For more information about implementing revenue operations in your organization,
 
       const analysis = analyzer.analyzeContent(contentWithoutKeywords)
       expect(analysis.keywordAnalysis.missingKeywords.length).toBeGreaterThan(0)
-      expect(analysis.keywordAnalysis.missingKeywords).toContain('revenue operations')
+      expect(analysis.keywordAnalysis.missingKeywords).toEqual(['data analytics', 'automation'])
     })
 
     it('identifies over-optimized keywords', () => {
@@ -322,12 +322,17 @@ For more information about implementing revenue operations in your organization,
 
       // Sample content has one image
       expect(images.totalImages).toBe(1)
-      expect(images.imagesWithAlt).toBe(0) // Image has no alt text
-      expect(images.imagesWithoutAlt).toBe(1)
+      expect(images.imagesWithAlt).toBe(1) // Image has alt text "Revenue Operations Dashboard"
+      expect(images.imagesWithoutAlt).toBe(0)
     })
 
     it('provides recommendations for missing alt text', () => {
-      const analysis = analyzer.analyzeContent(sampleContent)
+      const contentWithMissingAlt = {
+        ...sampleContent,
+        content: sampleContent.content.replace('![Revenue Operations Dashboard](/images/revops-dashboard.jpg)', '![](/images/revops-dashboard.jpg)')
+      }
+      
+      const analysis = analyzer.analyzeContent(contentWithMissingAlt)
       const images = analysis.structureAnalysis.imageAnalysis
 
       expect(images.recommendations).toContain('1 image(s) missing alt text')

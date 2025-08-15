@@ -1070,13 +1070,15 @@ export class ContentAnalyzer {
 
     // Title score (25%)
     let titleScore = 100
-    if (title.length < 30 || title.length > 60) titleScore -= 30
-    if (keywords[0] && !title.toLowerCase().includes(keywords[0].toLowerCase())) titleScore -= 20
+    if (title.length === 0) titleScore = 0 // Empty title gets 0
+    else if (title.length < 30 || title.length > 60) titleScore -= 30
+    if (keywords[0] && title && !title.toLowerCase().includes(keywords[0].toLowerCase())) titleScore -= 20
 
     // Description score (20%)
     let descriptionScore = 100
-    if (description.length < 120 || description.length > 160) descriptionScore -= 30
-    if (keywords[0] && !description.toLowerCase().includes(keywords[0].toLowerCase())) descriptionScore -= 20
+    if (description.length === 0) descriptionScore = 0 // Empty description gets 0
+    else if (description.length < 120 || description.length > 160) descriptionScore -= 30
+    if (keywords[0] && description && !description.toLowerCase().includes(keywords[0].toLowerCase())) descriptionScore -= 20
 
     // Keywords score (25%)
     let keywordsScore = 100
@@ -1086,7 +1088,8 @@ export class ContentAnalyzer {
     // Content score (30%)
     let contentScore = 100
     const wordCount = this.extractWords(content).length
-    if (wordCount < 300) contentScore -= 40
+    if (wordCount === 0) contentScore = 0 // Empty content gets 0
+    else if (wordCount < 300) contentScore -= 40
     if (structure.headingStructure.h1Count === 0) contentScore -= 20
     if (structure.headingStructure.h2Count === 0) contentScore -= 15
     if (readability.fleschReadingEase < 50) contentScore -= 15

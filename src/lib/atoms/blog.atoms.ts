@@ -4,7 +4,7 @@
  */
 
 import { atom } from 'jotai'
-import { atomWithURL, atomWithPersistence, atomWithDebounce, createId } from './utils'
+import { atomWithURL, atomWithPersistence, atomWithDebounce } from './utils'
 import type {
   BlogState,
   BlogFilters,
@@ -12,7 +12,6 @@ import type {
   BlogSearchState,
   BlogSearchResult,
   SearchFacets,
-  FacetCount,
   BlogPaginationState
 } from './types'
 
@@ -247,7 +246,7 @@ export const toggleTagFilterAtom = atom(
  */
 export const clearAllFiltersAtom = atom(
   null,
-  (get, set) => {
+  (_get, set) => {
     set(blogFiltersAtom, {
       categories: [],
       tags: [],
@@ -318,7 +317,7 @@ export const addRecentSearchAtom = atom(
  */
 export const clearRecentSearchesAtom = atom(
   null,
-  (get, set) => {
+  (_get, set) => {
     set(recentSearchesAtom, [])
   }
 )
@@ -508,7 +507,7 @@ export const addRecentlyViewedAtom = atom(
  */
 export const clearRecentlyViewedAtom = atom(
   null,
-  (get, set) => {
+  (_get, set) => {
     set(recentlyViewedPostsAtom, [])
   }
 )
@@ -628,7 +627,7 @@ export const activeFiltersCountAtom = atom((get) => {
  */
 export const resetBlogStateAtom = atom(
   null,
-  (get, set) => {
+  (_get, set) => {
     set(clearAllFiltersAtom)
     set(searchQueryAtom, '')
     set(currentPageAtom, 1)
@@ -668,7 +667,7 @@ export const resetBlogStateAtom = atom(
  */
 export const resetFiltersOnlyAtom = atom(
   null,
-  (get, set) => {
+  (_get, set) => {
     set(clearAllFiltersAtom)
   }
 )

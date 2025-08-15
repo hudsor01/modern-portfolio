@@ -5,14 +5,14 @@
 
 import { renderHook, act } from '@testing-library/react'
 import { useFormAutoSave, useAutoSaveStatus } from '../use-form-auto-save'
-import { describe, it, expect, beforeEach, afterEach, vi, type MockedFunction } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { Provider as JotaiProvider } from 'jotai'
 import React from 'react'
 
 // Wrapper component for Jotai provider
-const JotaiTestWrapper = ({ children }: { children: React.ReactNode }) => (
-  <JotaiProvider>{children}</JotaiProvider>
-)
+const JotaiTestWrapper = ({ children }: { children: React.ReactNode }) => {
+  return React.createElement(JotaiProvider, null, children)
+}
 
 // Mock localStorage
 const localStorageMock = (() => {

@@ -872,11 +872,11 @@ async function seedSitemapEntries(posts: any[]) {
   console.log('🔄 Seeding sitemap entries...')
   
   const baseUrls = [
-    { url: 'https://modernportfolio.dev', priority: 1.0, changeFreq: 'daily' as ChangeFrequency },
-    { url: 'https://modernportfolio.dev/about', priority: 0.8, changeFreq: 'weekly' as ChangeFrequency },
-    { url: 'https://modernportfolio.dev/projects', priority: 0.9, changeFreq: 'weekly' as ChangeFrequency },
-    { url: 'https://modernportfolio.dev/contact', priority: 0.7, changeFreq: 'monthly' as ChangeFrequency },
-    { url: 'https://modernportfolio.dev/blog', priority: 0.9, changeFreq: 'daily' as ChangeFrequency }
+    { url: 'https://modernportfolio.dev', priority: 1.0, changeFreq: 'DAILY' as ChangeFrequency },
+    { url: 'https://modernportfolio.dev/about', priority: 0.8, changeFreq: 'WEEKLY' as ChangeFrequency },
+    { url: 'https://modernportfolio.dev/projects', priority: 0.9, changeFreq: 'WEEKLY' as ChangeFrequency },
+    { url: 'https://modernportfolio.dev/contact', priority: 0.7, changeFreq: 'MONTHLY' as ChangeFrequency },
+    { url: 'https://modernportfolio.dev/blog', priority: 0.9, changeFreq: 'DAILY' as ChangeFrequency }
   ]
 
   let totalEntries = 0
@@ -899,7 +899,7 @@ async function seedSitemapEntries(posts: any[]) {
         data: {
           url: `https://modernportfolio.dev/blog/${post.slug}`,
           lastMod: post.updatedAt || post.createdAt,
-          changeFreq: 'weekly' as ChangeFrequency,
+          changeFreq: 'WEEKLY' as ChangeFrequency,
           priority: 0.8,
           postId: post.id
         }

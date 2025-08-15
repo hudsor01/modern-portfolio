@@ -9,13 +9,10 @@ import { isClient } from './utils'
 
 // UI Atoms
 import {
-  themeStateAtom,
   currentThemeAtom,
   resolvedThemeAtom,
   systemThemeAtom,
   contactModalAtom,
-  projectModalAtom,
-  resumeModalAtom,
   imageModalAtom,
   anyModalOpenAtom,
   mobileMenuAtom,
@@ -26,24 +23,15 @@ import {
   removeNotificationAtom,
   clearNotificationsAtom,
   notificationsAtom,
-  uiPreferencesAtom,
-  reducedMotionAtom,
-  highContrastAtom,
-  fontSizeAtom,
-  compactModeAtom,
   resetUIStateAtom
 } from './ui.atoms'
 
 // User Atoms
 import {
   userPreferencesAtom,
-  languageAtom,
-  timezoneAtom,
   analyticsConsentAtom,
   cookiesConsentAtom,
   personalizationConsentAtom,
-  emailNotificationsAtom,
-  newsletterAtom,
   reducedMotionPreferenceAtom,
   highContrastPreferenceAtom,
   fontSizePreferenceAtom,
@@ -64,18 +52,12 @@ import {
   sortOrderAtom,
   currentPageAtom,
   viewModeAtom,
-  categoryFiltersAtom,
-  tagFiltersAtom,
   toggleCategoryFilterAtom,
   toggleTagFilterAtom,
   clearAllFiltersAtom,
   bookmarkedPostsAtom,
   toggleBookmarkAtom,
   isBookmarkedAtom,
-  recentSearchesAtom,
-  addRecentSearchAtom,
-  clearRecentSearchesAtom,
-  blogPreferencesAtom,
   hasActiveFiltersAtom,
   activeFiltersCountAtom,
   resetBlogStateAtom
@@ -90,9 +72,6 @@ import {
   validateContactFormAtom,
   submitContactFormAtom,
   resetContactFormAtom,
-  newsletterFormStateAtom,
-  newsletterEmailAtom,
-  submitNewsletterFormAtom,
   projectInquiryFormStateAtom,
   projectInquiryStepAtom,
   nextProjectStepAtom,
@@ -112,17 +91,12 @@ import {
   trackDownloadAtom,
   trackCustomEventAtom,
   updateScrollDepthAtom,
-  analyticsSummaryAtom,
   setAnalyticsConsentAtom,
   initializeAnalyticsAtom
 } from './analytics.atoms'
 
 import type {
-  ThemeState,
-  AppNotification,
-  ContactFormData,
-  UserInteraction,
-  InteractionType
+  ContactFormData
 } from './types'
 
 // =======================
@@ -142,17 +116,17 @@ export function useTheme() {
     if (!isClient()) return
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    
+
     const handleChange = (e: MediaQueryListEvent) => {
       setSystemTheme(e.matches ? 'dark' : 'light')
     }
 
     // Set initial system theme
     setSystemTheme(mediaQuery.matches ? 'dark' : 'light')
-    
+
     // Listen for changes
     mediaQuery.addEventListener('change', handleChange)
-    
+
     return () => mediaQuery.removeEventListener('change', handleChange)
   }, [setSystemTheme])
 
@@ -182,7 +156,7 @@ export function useContactModal() {
 
   const openModal = useCallback(() => setIsOpen(true), [setIsOpen])
   const closeModal = useCallback(() => setIsOpen(false), [setIsOpen])
-  const toggleModal = useCallback(() => setIsOpen(prev => !prev), [setIsOpen])
+  const toggleModal = useCallback(() => setIsOpen(!isOpen), [isOpen, setIsOpen])
 
   return {
     isOpen,
@@ -233,7 +207,7 @@ export function useMobileMenu() {
 
   const openMenu = useCallback(() => setIsOpen(true), [setIsOpen])
   const closeMenu = useCallback(() => setIsOpen(false), [setIsOpen])
-  const toggleMenu = useCallback(() => setIsOpen(prev => !prev), [setIsOpen])
+  const toggleMenu = useCallback(() => setIsOpen(!isOpen), [isOpen, setIsOpen])
 
   return {
     isOpen,
@@ -324,8 +298,8 @@ export function useUserPreferences() {
     key: K,
     value: typeof preferences[K]
   ) => {
-    setPreferences(prev => ({ ...prev, [key]: value }))
-  }, [setPreferences])
+    setPreferences({ ...preferences, [key]: value })
+  }, [preferences, setPreferences])
 
   return {
     preferences,
@@ -394,11 +368,11 @@ export function useBlogFilters() {
   const [sortOrder, setSortOrder] = useAtom(sortOrderAtom)
   const [currentPage, setCurrentPage] = useAtom(currentPageAtom)
   const [viewMode, setViewMode] = useAtom(viewModeAtom)
-  
+
   const toggleCategoryFilter = useSetAtom(toggleCategoryFilterAtom)
   const toggleTagFilter = useSetAtom(toggleTagFilterAtom)
   const clearAllFilters = useSetAtom(clearAllFiltersAtom)
-  
+
   const hasActiveFilters = useAtomValue(hasActiveFiltersAtom)
   const activeFiltersCount = useAtomValue(activeFiltersCountAtom)
 
@@ -433,13 +407,13 @@ export function useBlogBookmarks() {
 
   const addBookmark = useCallback((postId: string) => {
     if (!bookmarkedPosts.includes(postId)) {
-      setBookmarkedPosts(prev => [...prev, postId])
+      setBookmarkedPosts([...bookmarkedPosts, postId])
     }
   }, [bookmarkedPosts, setBookmarkedPosts])
 
   const removeBookmark = useCallback((postId: string) => {
-    setBookmarkedPosts(prev => prev.filter(id => id !== postId))
-  }, [setBookmarkedPosts])
+    setBookmarkedPosts(bookmarkedPosts.filter((id: string) => id !== postId))
+  }, [bookmarkedPosts, setBookmarkedPosts])
 
   return {
     bookmarkedPosts,
@@ -458,16 +432,16 @@ export function useBlogBookmarks() {
  * Hook for contact form management
  */
 export function useContactForm() {
-  const [formState, setFormState] = useAtom(contactFormStateAtom)
-  const [formData, setFormData] = useAtom(contactFormDataAtom)
+  const [formState] = useAtom(contactFormStateAtom)
+  const [formData] = useAtom(contactFormDataAtom)
   const errors = useAtomValue(contactFormErrorsAtom)
-  
+
   const updateField = useSetAtom(updateContactFormFieldAtom)
   const validateForm = useSetAtom(validateContactFormAtom)
   const submitForm = useSetAtom(submitContactFormAtom)
   const resetForm = useSetAtom(resetContactFormAtom)
 
-  const updateFormField = useCallback((field: keyof ContactFormData, value: any) => {
+  const updateFormField = useCallback((field: keyof ContactFormData, value: string | boolean) => {
     updateField({ field, value })
   }, [updateField])
 
@@ -493,9 +467,9 @@ export function useContactForm() {
  * Hook for project inquiry form management
  */
 export function useProjectInquiryForm() {
-  const [formState, setFormState] = useAtom(projectInquiryFormStateAtom)
-  const [currentStep, setCurrentStep] = useAtom(projectInquiryStepAtom)
-  
+  const [formState] = useAtom(projectInquiryFormStateAtom)
+  const [currentStep] = useAtom(projectInquiryStepAtom)
+
   const nextStep = useSetAtom(nextProjectStepAtom)
   const prevStep = useSetAtom(prevProjectStepAtom)
   const validateStep = useAtomValue(validateProjectStepAtom)
@@ -593,7 +567,7 @@ export function useScrollDepthTracking() {
           const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
           const scrollTop = window.scrollY
           const scrollPercent = scrollHeight > 0 ? Math.round((scrollTop / scrollHeight) * 100) : 0
-          
+
           updateScrollDepth(Math.min(100, Math.max(0, scrollPercent)))
           ticking = false
         })
@@ -626,7 +600,7 @@ export function useSession() {
     if (!isClient()) return
 
     const events = ['click', 'keydown', 'mousemove', 'scroll', 'touchstart']
-    
+
     const handleActivity = () => {
       updateActivity()
     }

@@ -3,13 +3,12 @@
  * Tests for enhanced rate limiting middleware integration with Hono
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { Hono } from 'hono'
 import { 
   enhancedRateLimit, 
   rateLimit, 
   auth, 
-  logger, 
   cors, 
   securityHeaders,
   errorHandler,
@@ -502,13 +501,13 @@ describe('RPC Middleware', () => {
     it('should handle middleware order correctly', async () => {
       const executionOrder: string[] = []
 
-      const middleware1 = () => async (c: any, next: any) => {
+      const middleware1 = () => async (c: import('hono').Context, next: () => Promise<void>) => {
         executionOrder.push('middleware1-before')
         await next()
         executionOrder.push('middleware1-after')
       }
 
-      const middleware2 = () => async (c: any, next: any) => {
+      const middleware2 = () => async (c: import('hono').Context, next: () => Promise<void>) => {
         executionOrder.push('middleware2-before')
         await next()
         executionOrder.push('middleware2-after')

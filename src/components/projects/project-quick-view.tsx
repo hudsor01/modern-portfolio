@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { ExternalLink, Github, X } from 'lucide-react'
+import { ExternalLink, X } from 'lucide-react'
+import { SiGithub } from 'react-icons/si'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -48,7 +49,7 @@ export function ProjectQuickView({ project, open, onOpenChangeAction }: ProjectQ
         <div className="px-4 pb-4">
           <div className="relative aspect-video w-full overflow-hidden rounded-lg">
             <Image
-              src={project.image || '/images/project-placeholder.jpg'}
+              src={project.image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&crop=center&q=80'}
               alt={project.title}
               fill
               className="object-cover"
@@ -78,7 +79,7 @@ export function ProjectQuickView({ project, open, onOpenChangeAction }: ProjectQ
 
           {project.liveUrl && (
             <Button asChild>
-              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="flex items-center">
                 <ExternalLink className="mr-2 h-4 w-4" />
                 Live Demo
               </a>
@@ -87,8 +88,8 @@ export function ProjectQuickView({ project, open, onOpenChangeAction }: ProjectQ
 
           {project.githubUrl && (
             <Button asChild variant="secondary">
-              <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-                <Github className="mr-2 h-4 w-4" />
+              <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center">
+                <SiGithub className="mr-2 h-4 w-4" />
                 Source Code
               </a>
             </Button>

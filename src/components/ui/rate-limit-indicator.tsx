@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from 'react'
 import { atom, useAtom } from 'jotai'
-import { AlertTriangle, Clock, Shield, CheckCircle2 } from 'lucide-react'
+import { AlertTriangle, Clock, Shield } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export interface RateLimitInfo {

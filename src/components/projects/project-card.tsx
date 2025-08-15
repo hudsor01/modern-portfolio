@@ -3,8 +3,19 @@
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Button } from '@/components/ui/button'
 import type { Project as ProjectType } from '@/types/project'
+import { 
+  ProfessionalCard, 
+  ProfessionalCardHeader, 
+  ProfessionalCardTitle, 
+  ProfessionalCardSubtitle,
+  ProfessionalCardDescription,
+  ProfessionalCardContent,
+  ProfessionalCardStats,
+  ProfessionalCardBadge,
+  ProfessionalCardFooter
+} from '@/components/ui/professional-card'
+import { ArrowRight, ExternalLink } from 'lucide-react'
 
 // Mock project interface
 interface MockProject {
@@ -73,89 +84,95 @@ const getCustomCTA = (projectId: string): string => {
   }
 }
 
-export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project }) => {
   const projectImage = isMockProject(project)
-    ? '/images/projects/revenue-operations.jpg'
+    ? 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=600&fit=crop&crop=center&q=80'
     : project.image
 
   const customCTA = getCustomCTA(project.id)
 
   return (
-    <div className="group">
-      <div className="relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25">
-        <div className="p-8 flex-1 flex flex-col">
-          {/* Inner Container for Content */}
-          <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 mb-6 flex-1 flex flex-col">
-            {/* Project Header */}
-            <div className="mb-6">
-              <h3 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-3 leading-tight">
-                {project.title}
-              </h3>
-              <p className="text-gray-300 text-base md:text-lg leading-relaxed">
-                {project.description}
-              </p>
-            </div>
+    <ProfessionalCard variant="interactive" size="lg" className="h-full group">
+      <ProfessionalCardHeader>
+        <ProfessionalCardTitle className="text-xl font-bold">
+          {project.title}
+        </ProfessionalCardTitle>
+        {isMockProject(project) && (
+          <ProfessionalCardSubtitle>
+            {project.client} • {project.duration}
+          </ProfessionalCardSubtitle>
+        )}
+        <ProfessionalCardDescription className="mt-3">
+          {project.description}
+        </ProfessionalCardDescription>
+      </ProfessionalCardHeader>
 
-            {/* Enhanced Metrics */}
-            {isMockProject(project) && (
-              <div className="grid grid-cols-3 gap-4 mb-8">
-                {project.metrics.map((metric, i) => (
-                  <div
-                    key={i}
-                    className="text-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-all duration-300 border border-white/10"
-                  >
-                    <div className="flex items-center justify-center mb-3">
-                      <metric.icon className="w-6 h-6 text-blue-400" />
-                    </div>
-                    <div className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400 mb-1">
-                      {metric.value}
-                    </div>
-                    <div className="text-sm sm:text-base text-gray-400">{metric.label}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Enhanced Client Info */}
-            {isMockProject(project) && (
-              <div className="text-sm text-gray-300 mb-8 text-center p-4 bg-white/5 rounded-xl border border-white/10">
-                <span className="font-semibold text-blue-400">{project.client}</span> •{' '}
-                {project.duration}
-              </div>
-            )}
-
-            {/* Spacer to push content in inner container */}
-            <div className="flex-1"></div>
-          </div>
-
-          {/* Project Image - After Content Container */}
-          {projectImage && (
-            <div className="relative h-32 overflow-hidden rounded-xl mb-6">
-              <Image
-                src={projectImage}
-                alt={project.title}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
+      <ProfessionalCardContent className="space-y-6">
+        {/* Business Metrics */}
+        {isMockProject(project) && project.metrics.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {project.metrics.slice(0, 3).map((metric, i) => (
+              <ProfessionalCardStats 
+                key={i}
+                value={metric.value}
+                label={metric.label}
+                trend="up"
               />
-            </div>
-          )}
-
-          {/* Centered CTA in remaining space */}
-          <div className="flex-1 flex items-center justify-center min-h-[60px]">
-            <Button
-              size="lg"
-              className="relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-base font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
-              asChild
-            >
-              <Link
-                href={`/projects/${isMockProject(project) ? project.id : project.slug || project.id}`}
-              >
-                <span className="relative z-10 text-base font-semibold">{customCTA}</span>
-              </Link>
-            </Button>
+            ))}
           </div>
-        </div>
-      </div>
-    </div>
+        )}
+
+        {/* Technology Tags */}
+        {project.technologies && project.technologies.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {project.technologies.slice(0, 4).map((tech, i) => (
+              <ProfessionalCardBadge key={i} variant="secondary" className="text-xs">
+                {tech}
+              </ProfessionalCardBadge>
+            ))}
+            {project.technologies.length > 4 && (
+              <ProfessionalCardBadge variant="outline" className="text-xs">
+                +{project.technologies.length - 4} more
+              </ProfessionalCardBadge>
+            )}
+          </div>
+        )}
+
+        {/* Project Image */}
+        {projectImage && (
+          <div className="relative h-40 overflow-hidden rounded-lg">
+            <Image
+              src={projectImage}
+              alt={project.title}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+          </div>
+        )}
+      </ProfessionalCardContent>
+
+      <ProfessionalCardFooter className="pt-6">
+        <Link
+          href={`/projects/${isMockProject(project) ? project.id : project.slug || project.id}`}
+          className="inline-flex items-center justify-center w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 group"
+        >
+          <span>{customCTA}</span>
+          <ArrowRight size={16} className="ml-2 transition-transform duration-200 group-hover:translate-x-1" />
+        </Link>
+        
+        {(('link' in project && project.link) || (isMockProject(project) && project.liveUrl)) && (
+          <a
+            href={('link' in project && project.link) || (isMockProject(project) ? project.liveUrl : '') || ''}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center text-slate-400 hover:text-slate-300 transition-colors duration-200"
+          >
+            <ExternalLink size={16} className="mr-1" />
+            <span className="text-sm">Live Demo</span>
+          </a>
+        )}
+      </ProfessionalCardFooter>
+    </ProfessionalCard>
   )
-}
+})

@@ -12,7 +12,8 @@ import {
 } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
 import { siteConfig } from '@/lib/config/site'
-import { Github, Linkedin, Mail, Menu } from 'lucide-react'
+import { Mail, Menu } from 'lucide-react'
+import { SiGithub, SiLinkedin } from 'react-icons/si'
 import type { NextLinkHref } from '@/types/next-types'
 import { getRouteKey } from '@/lib/utils'
 
@@ -152,7 +153,7 @@ export function MobileDrawer() {
                       'aria-label': 'GitHub',
                       key: 'github',
                     },
-                    React.createElement(Github, { className: 'h-5 w-5' })
+                    React.createElement(SiGithub, { className: 'h-5 w-5' })
                   ),
                   React.createElement(
                     'a',
@@ -165,7 +166,7 @@ export function MobileDrawer() {
                       'aria-label': 'LinkedIn',
                       key: 'linkedin',
                     },
-                    React.createElement(Linkedin, { className: 'h-5 w-5' })
+                    React.createElement(SiLinkedin, { className: 'h-5 w-5' })
                   ),
                   React.createElement(
                     'a',

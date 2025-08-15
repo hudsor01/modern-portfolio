@@ -6,7 +6,7 @@
 export interface CrossTabMessage {
   type: 'form-update' | 'form-clear' | 'form-restore'
   formId: string
-  data?: Record<string, any>
+  data?: Record<string, unknown>
   timestamp: number
   tabId: string
 }
@@ -15,7 +15,7 @@ export interface CrossTabMessage {
 const TAB_ID = crypto.randomUUID()
 
 class CrossTabSync {
-  private listeners = new Map<string, Set<(data: any) => void>>()
+  private listeners = new Map<string, Set<(data: unknown) => void>>()
   private lastUpdate = new Map<string, number>()
 
   constructor() {
@@ -33,7 +33,7 @@ class CrossTabSync {
   /**
    * Register a listener for cross-tab updates
    */
-  subscribe(formId: string, callback: (data: any) => void) {
+  subscribe(formId: string, callback: (data: unknown) => void) {
     if (!this.listeners.has(formId)) {
       this.listeners.set(formId, new Set())
     }
@@ -54,7 +54,7 @@ class CrossTabSync {
   /**
    * Broadcast form update to other tabs
    */
-  broadcastUpdate(formId: string, data: Record<string, any>) {
+  broadcastUpdate(formId: string, data: Record<string, unknown>) {
     const message: CrossTabMessage = {
       type: 'form-update',
       formId,
@@ -94,7 +94,7 @@ class CrossTabSync {
   /**
    * Get latest form data from storage
    */
-  getLatestData(formId: string): Record<string, any> | null {
+  getLatestData(formId: string): Record<string, unknown> | null {
     try {
       const stored = localStorage.getItem(`form-auto-save-${formId}`)
       if (stored) {
@@ -175,7 +175,7 @@ class CrossTabSync {
   /**
    * Check for conflicts and resolve them
    */
-  resolveConflicts(formId: string, localData: Record<string, any>, remoteData: Record<string, any>) {
+  resolveConflicts(formId: string, localData: Record<string, unknown>, remoteData: Record<string, unknown>) {
     // Simple last-write-wins strategy
     // In a more sophisticated implementation, you might:
     // - Show a conflict resolution dialog
@@ -210,13 +210,13 @@ export const crossTabSync = new CrossTabSync()
 /**
  * Hook for cross-tab synchronization
  */
-export function useCrossTabSync(formId: string, onUpdate: (data: any) => void) {
+export function useCrossTabSync(formId: string, onUpdate: (data: unknown) => void) {
   if (typeof window === 'undefined') return null
 
   const unsubscribe = crossTabSync.subscribe(formId, onUpdate)
   
   return {
-    broadcast: (data: Record<string, any>) => crossTabSync.broadcastUpdate(formId, data),
+    broadcast: (data: Record<string, unknown>) => crossTabSync.broadcastUpdate(formId, data),
     clear: () => crossTabSync.broadcastClear(formId),
     getLatest: () => crossTabSync.getLatestData(formId),
     unsubscribe,

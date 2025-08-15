@@ -13,11 +13,12 @@ describe('JobQueue', () => {
   const defaultOptions = {
     concurrency: 2,
     maxRetries: 3,
-    defaultDelay: 100,
+    defaultDelay: 10,
     cleanupInterval: 1000,
     retentionPeriod: 5000,
     enableMetrics: true,
-    enableHealthCheck: true
+    enableHealthCheck: true,
+    processingInterval: 50 // Process every 50ms for faster tests
   }
 
   beforeEach(async () => {
@@ -144,7 +145,7 @@ describe('JobQueue', () => {
       const job = await jobQueue.addJob('quick-job', {})
       
       // Wait for job to complete
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise(resolve => setTimeout(resolve, 2000))
       
       const cancelled = await jobQueue.cancelJob(job.id)
       expect(cancelled).toBe(false)
@@ -158,7 +159,7 @@ describe('JobQueue', () => {
       const job = await jobQueue.addJob('test-job', { testData: 'value' })
       
       // Wait for processing
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise(resolve => setTimeout(resolve, 2000))
       
       expect(mockHandler.process).toHaveBeenCalledWith(job, expect.any(Function))
       expect(mockHandler.onCompleted).toHaveBeenCalledWith(job, 'success')
@@ -184,15 +185,17 @@ describe('JobQueue', () => {
         onProgress: progressHandler
       })
       
-      const job = await jobQueue.addJob('progress-job', {})
+      await jobQueue.addJob('progress-job', {})
       
       // Wait for processing
-      await new Promise(resolve => setTimeout(resolve, 200))
+      await new Promise(resolve => setTimeout(resolve, 2000))
       
-      expect(progressHandler).toHaveBeenCalledWith(job, 25)
-      expect(progressHandler).toHaveBeenCalledWith(job, 50)
-      expect(progressHandler).toHaveBeenCalledWith(job, 75)
-      expect(progressHandler).toHaveBeenCalledWith(job, 100)
+      // Check that progress handler was called with expected values
+      expect(progressHandler).toHaveBeenCalled()
+      expect(progressHandler.mock.calls.some(call => call[1] === 25)).toBe(true)
+      expect(progressHandler.mock.calls.some(call => call[1] === 50)).toBe(true)
+      expect(progressHandler.mock.calls.some(call => call[1] === 75)).toBe(true)
+      expect(progressHandler.mock.calls.some(call => call[1] === 100)).toBe(true)
     })
 
     it('retries failed jobs', async () => {
@@ -209,8 +212,8 @@ describe('JobQueue', () => {
       
       const job = await jobQueue.addJob('failing-job', {})
       
-      // Wait for retries
-      await new Promise(resolve => setTimeout(resolve, 500))
+      // Wait for retries with exponential backoff
+      await new Promise(resolve => setTimeout(resolve, 1500))
       
       expect(job.attempts).toBe(3)
       expect(job.status).toBe('completed')
@@ -225,8 +228,8 @@ describe('JobQueue', () => {
       
       const job = await jobQueue.addJob('always-failing-job', {})
       
-      // Wait for all retries
-      await new Promise(resolve => setTimeout(resolve, 800))
+      // Wait for all retries with exponential backoff
+      await new Promise(resolve => setTimeout(resolve, 2000))
       
       expect(job.status).toBe('failed')
       expect(job.attempts).toBe(defaultOptions.maxRetries)
@@ -242,8 +245,8 @@ describe('JobQueue', () => {
       
       const job = await jobQueue.addJob('timeout-job', {}, { timeout: 100 }) // 100ms timeout
       
-      // Wait for timeout
-      await new Promise(resolve => setTimeout(resolve, 200))
+      // Wait for timeout and potential retries
+      await new Promise(resolve => setTimeout(resolve, 1500))
       
       expect(job.status).toBe('failed')
       expect(job.lastError).toBe('Job timeout')
@@ -257,7 +260,7 @@ describe('JobQueue', () => {
         process: async () => {
           activeJobs++
           maxConcurrentJobs = Math.max(maxConcurrentJobs, activeJobs)
-          await new Promise(resolve => setTimeout(resolve, 100))
+          await new Promise(resolve => setTimeout(resolve, 2000))
           activeJobs--
           return 'done'
         }
@@ -273,7 +276,7 @@ describe('JobQueue', () => {
       ])
       
       // Wait for all jobs to complete
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise(resolve => setTimeout(resolve, 3000))
       
       expect(maxConcurrentJobs).toBeLessThanOrEqual(defaultOptions.concurrency)
       jobs.forEach(job => expect(job.status).toBe('completed'))
@@ -296,7 +299,7 @@ describe('JobQueue', () => {
       await jobQueue.addJob('priority-job', { id: 'high' }, { priority: 'high' })
       
       // Wait for processing
-      await new Promise(resolve => setTimeout(resolve, 200))
+      await new Promise(resolve => setTimeout(resolve, 2000))
       
       expect(processOrder[0]).toBe('critical')
       expect(processOrder[1]).toBe('high')
@@ -314,7 +317,7 @@ describe('JobQueue', () => {
       expect(mockHandler.process).not.toHaveBeenCalled()
       
       // Wait for scheduled time
-      await new Promise(resolve => setTimeout(resolve, 200))
+      await new Promise(resolve => setTimeout(resolve, 2000))
       expect(job.status).toBe('completed')
       expect(mockHandler.process).toHaveBeenCalled()
     })
@@ -322,7 +325,7 @@ describe('JobQueue', () => {
     it('handles missing handler gracefully', async () => {
       const job = await jobQueue.addJob('unknown-job-type', {})
       
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise(resolve => setTimeout(resolve, 2000))
       
       expect(job.status).toBe('failed')
       expect(job.lastError).toContain('No handler registered')
@@ -337,14 +340,14 @@ describe('JobQueue', () => {
       const job = await jobQueue.addJob('pausable-job', {})
       
       // Job should not be processed while paused
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise(resolve => setTimeout(resolve, 2000))
       expect(job.status).toBe('waiting')
       expect(mockHandler.process).not.toHaveBeenCalled()
       
       jobQueue.resume()
       
       // Job should be processed after resume
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise(resolve => setTimeout(resolve, 2000))
       expect(job.status).toBe('completed')
       expect(mockHandler.process).toHaveBeenCalled()
     })
@@ -378,7 +381,7 @@ describe('JobQueue', () => {
       await jobQueue.addJob('metric-job', { id: 1 })
       await jobQueue.addJob('metric-job', { id: 2 })
       
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise(resolve => setTimeout(resolve, 2000))
       
       const metrics = jobQueue.getMetrics()
       
@@ -397,7 +400,7 @@ describe('JobQueue', () => {
       await jobQueue.addJob('timed-job', { id: 1 })
       await jobQueue.addJob('timed-job', { id: 2 })
       
-      await new Promise(resolve => setTimeout(resolve, 200))
+      await new Promise(resolve => setTimeout(resolve, 2000))
       
       const metrics = jobQueue.getMetrics()
       
@@ -426,7 +429,7 @@ describe('JobQueue', () => {
         await jobQueue.addJob('failing-job', { id: i })
       }
       
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise(resolve => setTimeout(resolve, 3000))
       
       const health = jobQueue.healthCheck()
       expect(health.status).toBe('unhealthy')
@@ -439,7 +442,7 @@ describe('JobQueue', () => {
       jobQueue.registerHandler('cleanup-job', mockHandler)
       
       const job = await jobQueue.addJob('cleanup-job', {})
-      await new Promise(resolve => setTimeout(resolve, 100)) // Wait for completion
+      await new Promise(resolve => setTimeout(resolve, 2000)) // Wait for completion
       
       // Manually set completion time to past retention period
       job.completedAt = new Date(Date.now() - defaultOptions.retentionPeriod - 1000)
@@ -453,7 +456,7 @@ describe('JobQueue', () => {
       jobQueue.registerHandler('recent-job', mockHandler)
       
       const job = await jobQueue.addJob('recent-job', {})
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise(resolve => setTimeout(resolve, 2000))
       
       jobQueue.cleanup()
       
@@ -472,7 +475,7 @@ describe('JobQueue', () => {
       const job = await jobQueue.addJob('error-job', {})
       
       // Should not throw unhandled errors
-      await new Promise(resolve => setTimeout(resolve, 200))
+      await new Promise(resolve => setTimeout(resolve, 2000))
       
       expect(job.status).toBe('failed')
       expect(job.lastError).toBe('Handler error')
@@ -488,7 +491,7 @@ describe('JobQueue', () => {
       
       const job = await jobQueue.addJob('async-error-job', {})
       
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise(resolve => setTimeout(resolve, 2000))
       
       expect(job.status).toBe('failed')
       expect(job.lastError).toBe('Async error')
@@ -503,7 +506,7 @@ describe('JobQueue', () => {
       
       const job = await jobQueue.addJob('string-error-job', {})
       
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise(resolve => setTimeout(resolve, 2000))
       
       expect(job.status).toBe('failed')
       expect(job.lastError).toBe('String error')

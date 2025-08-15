@@ -18,9 +18,7 @@ import {
   PaginatedResponse,
   AnalyticsData,
   WebVitalReport,
-  LoginInput,
-  RegisterInput,
-  AuthUser,
+  // Auth types removed - not needed
   HealthCheck,
   RPCResponse,
   UploadedFile,
@@ -51,11 +49,11 @@ interface RPCClientOptions {
 }
 
 class BaseRPCClient {
-  private baseUrl: string
-  private timeout: number
-  private defaultHeaders: Record<string, string>
-  private onError?: (error: RPCError) => void
-  private onResponse?: (response: Response) => void
+  protected baseUrl: string
+  protected timeout: number
+  protected defaultHeaders: Record<string, string>
+  protected onError?: (error: RPCError) => void
+  protected onResponse?: (response: Response) => void
 
   constructor(options: RPCClientOptions = {}) {
     this.baseUrl = options.baseUrl || '/api/rpc'
@@ -68,13 +66,7 @@ class BaseRPCClient {
     this.onResponse = options.onResponse
   }
 
-  setAuthToken(token: string | null) {
-    if (token) {
-      this.defaultHeaders.Authorization = `Bearer ${token}`
-    } else {
-      delete this.defaultHeaders.Authorization
-    }
-  }
+  // Auth token method removed - portfolio doesn't need authentication
 
   private async makeRequest<T>(
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
@@ -272,10 +264,11 @@ class BlogClient extends BaseRPCClient {
     const response = await fetch(`${this.baseUrl}/blog/upload`, {
       method: 'POST',
       headers: {
-        ...this.defaultHeaders,
+        ...Object.fromEntries(
+          Object.entries(this.defaultHeaders).filter(([key]) => key !== 'Content-Type')
+        ),
         // Remove Content-Type to let browser set multipart boundary
-        'Content-Type': undefined,
-      } as any,
+      } as Record<string, string>,
       body: formData,
     })
 
@@ -471,71 +464,7 @@ class AnalyticsClient extends BaseRPCClient {
 }
 
 // =======================
-// AUTH CLIENT
-// =======================
-
-class AuthClient extends BaseRPCClient {
-  async login(credentials: LoginInput): Promise<{
-    user: AuthUser
-    token: string
-    expiresAt: string
-  }> {
-    const result = await this.post<{
-      user: AuthUser
-      token: string
-      expiresAt: string
-    }>('/auth/login', credentials)
-    
-    // Automatically set the auth token
-    this.setAuthToken(result.token)
-    
-    return result
-  }
-
-  async register(userData: RegisterInput): Promise<AuthUser> {
-    return this.post<AuthUser>('/auth/register', userData)
-  }
-
-  async logout(): Promise<{ message: string }> {
-    const result = await this.post<{ message: string }>('/auth/logout')
-    
-    // Clear the auth token
-    this.setAuthToken(null)
-    
-    return result
-  }
-
-  async getProfile(): Promise<AuthUser> {
-    return this.get<AuthUser>('/auth/profile')
-  }
-
-  async refreshToken(): Promise<{ token: string; expiresAt: string }> {
-    const result = await this.post<{ token: string; expiresAt: string }>('/auth/refresh')
-    
-    // Update the auth token
-    this.setAuthToken(result.token)
-    
-    return result
-  }
-
-  async reportCSPViolation(report: any): Promise<{ message: string }> {
-    return this.post('/auth/csp-report', report)
-  }
-
-  async getSecurityAudit(): Promise<{
-    timestamp: string
-    users: { total: number; admins: number; lockedAccounts: number }
-    sessions: { active: number; expiredSessions: number }
-    security: { rateLimit: string; cors: string; csp: string; https: boolean }
-    recommendations: string[]
-  }> {
-    return this.get('/auth/security/audit')
-  }
-
-  async getHealth(): Promise<HealthCheck> {
-    return this.get('/auth/health')
-  }
-}
+// AUTH CLIENT REMOVED - Portfolio site doesn't need authentication
 
 // =======================
 // MAIN RPC CLIENT
@@ -546,23 +475,17 @@ export class RPCClient {
   public blog: BlogClient
   public projects: ProjectsClient
   public analytics: AnalyticsClient
-  public auth: AuthClient
+  // auth client removed - not needed for portfolio
 
   constructor(options: RPCClientOptions = {}) {
     this.contact = new ContactClient(options)
     this.blog = new BlogClient(options)
     this.projects = new ProjectsClient(options)
     this.analytics = new AnalyticsClient(options)
-    this.auth = new AuthClient(options)
+    // auth client removed - not needed
   }
 
-  setAuthToken(token: string | null) {
-    this.contact.setAuthToken(token)
-    this.blog.setAuthToken(token)
-    this.projects.setAuthToken(token)
-    this.analytics.setAuthToken(token)
-    this.auth.setAuthToken(token)
-  }
+  // Auth token method removed - portfolio doesn't need authentication
 }
 
 // =======================
@@ -591,9 +514,7 @@ export type {
   PaginatedResponse,
   AnalyticsData,
   WebVitalReport,
-  LoginInput,
-  RegisterInput,
-  AuthUser,
+  // Auth types removed - not needed
   HealthCheck,
   UploadedFile,
   RPCClientOptions,

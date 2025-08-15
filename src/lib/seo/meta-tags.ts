@@ -60,7 +60,7 @@ export function generateStructuredData(config: MetaConfig) {
         name: siteConfig.name,
         logo: {
           '@type': 'ImageObject',
-          url: `${siteConfig.url}/logo.png`,
+          url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop&crop=face&q=80',
         },
       },
     }

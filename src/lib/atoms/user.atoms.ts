@@ -4,7 +4,7 @@
  */
 
 import { atom } from 'jotai'
-import { atomWithPersistence, createTimestamp, createId } from './utils'
+import { atomWithPersistence, createTimestamp, createId } from '@/lib/atoms/utils'
 import type {
   UserPreferences,
   ContactPreferences,
@@ -12,7 +12,7 @@ import type {
   AccessibilitySettings,
   DevToolsSettings,
   UserSession
-} from './types'
+} from '@/lib/atoms/types'
 
 // =======================
 // USER PREFERENCES ATOMS
@@ -58,23 +58,23 @@ export const userPreferencesAtom = atomWithPersistence<UserPreferences>('user-pr
   }
 }, {
   version: 2,
-  migrate: (data, fromVersion) => {
+  migrate: (data, fromVersion): UserPreferences => {
     // Migration logic for different versions
     if (fromVersion === 1) {
       return {
-        ...data,
+        ...(data as object),
         accessibility: {
           reducedMotion: false,
           highContrast: false,
-          fontSize: 'medium',
+          fontSize: 'medium' as const,
           screenReader: false,
           keyboardNavigation: false,
           focusIndicators: true,
-          ...data.accessibility
+          ...((data as { accessibility?: object }).accessibility || {})
         }
-      }
+      } as UserPreferences
     }
-    return data
+    return data as UserPreferences
   }
 })
 
@@ -577,7 +577,7 @@ export const sessionDurationAtom = atom((get) => {
  */
 export const resetUserPreferencesAtom = atom(
   null,
-  (get, set) => {
+  (_get, set) => {
     set(userPreferencesAtom, {
       theme: 'system',
       language: 'en',
@@ -622,7 +622,7 @@ export const resetUserPreferencesAtom = atom(
  */
 export const resetUserSessionAtom = atom(
   null,
-  (get, set) => {
+  (_get, set) => {
     set(userSessionAtom, {
       sessionId: createId('session-'),
       startTime: createTimestamp(),

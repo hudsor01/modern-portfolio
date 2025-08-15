@@ -5,37 +5,37 @@
 
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
-import { 
+import {
   ProjectSchema,
   ProjectFiltersSchema,
   PaginationSchema,
   PaginatedResponse,
-  RPCResponse,
-  RPCContext
-} from '../types'
-import { rateLimit, requestContext } from '../middleware'
+  RPCResponse
+} from '@/server/rpc/types'
+import { rateLimit, requestContext } from '@/server/rpc/middleware'
+import { projects } from '../../../data/projects'
+import { z } from 'zod'
+import type { Project } from '@/types/project'
 
-const projects = new Hono()
+const projectsRouter = new Hono()
 
-// Import project data (would be from database in production)
-import { projectsData } from '@/data/projects'
 
 // =======================
 // PROJECTS DATA OPERATIONS
 // =======================
 
 // Get all projects with filtering and pagination
-projects.get(
+projectsRouter.get(
   '/',
   rateLimit({ windowMs: 60 * 1000, maxRequests: 100 }), // 100 requests per minute
   requestContext(),
-  zValidator('query', ProjectFiltersSchema.merge(PaginationSchema)),
+  zValidator('query', ProjectFiltersSchema.and(PaginationSchema)),
   async (c) => {
     try {
       const filters = c.req.valid('query')
       const { page, limit, ...filterOptions } = filters
 
-      let filteredProjects = [...projectsData]
+      let filteredProjects = [...projects]
 
       // Apply filters
       if (filterOptions.category) {
@@ -46,7 +46,7 @@ projects.get(
 
       if (filterOptions.technology) {
         filteredProjects = filteredProjects.filter(
-          project => project.technologies.some(tech => 
+          project => project.technologies?.some(tech =>
             tech.toLowerCase().includes(filterOptions.technology!.toLowerCase())
           )
         )
@@ -61,10 +61,10 @@ projects.get(
       if (filterOptions.search) {
         const searchTerm = filterOptions.search.toLowerCase()
         filteredProjects = filteredProjects.filter(
-          project => 
+          project =>
             project.title.toLowerCase().includes(searchTerm) ||
             project.description.toLowerCase().includes(searchTerm) ||
-            project.technologies.some(tech => 
+            project.technologies?.some(tech =>
               tech.toLowerCase().includes(searchTerm)
             )
         )
@@ -88,7 +88,7 @@ projects.get(
         }
       }))
 
-      const response: PaginatedResponse<any> = {
+      const response: PaginatedResponse<Project> = {
         data: transformedProjects,
         pagination: {
           page,
@@ -100,7 +100,7 @@ projects.get(
         }
       }
 
-      return c.json<RPCResponse<PaginatedResponse<any>>>({
+      return c.json<RPCResponse<PaginatedResponse<Project>>>({
         success: true,
         data: response,
       })
@@ -119,7 +119,7 @@ projects.get(
 )
 
 // Get single project by slug
-projects.get(
+projectsRouter.get(
   '/:slug',
   rateLimit({ windowMs: 60 * 1000, maxRequests: 200 }),
   requestContext(),
@@ -127,7 +127,7 @@ projects.get(
     try {
       const slug = c.req.param('slug')
 
-      const project = projectsData.find(p => p.id === slug)
+      const project = projects.find((p: Project) => p.id === slug)
 
       if (!project) {
         return c.json<RPCResponse>({
@@ -178,10 +178,10 @@ projects.get(
 )
 
 // Get project categories with counts
-projects.get('/categories/list', async (c) => {
+projectsRouter.get('/categories/list', async (c) => {
   try {
-    const categoryCount = projectsData.reduce((acc, project) => {
-      acc[project.category] = (acc[project.category] || 0) + 1
+    const categoryCount = projects.reduce((acc: Record<string, number>, project: Project) => {
+      acc[project.category ?? 'Uncategorized'] = (acc[project.category ?? 'Uncategorized'] || 0) + 1
       return acc
     }, {} as Record<string, number>)
 
@@ -211,23 +211,23 @@ projects.get('/categories/list', async (c) => {
 })
 
 // Get project technologies with usage counts
-projects.get('/technologies/list', async (c) => {
+projectsRouter.get('/technologies/list', async (c) => {
   try {
-    const techCount = projectsData.reduce((acc, project) => {
-      project.technologies.forEach(tech => {
+    const techCount = projects.reduce((acc: Record<string, number>, project: Project) => {
+      (project.technologies ?? []).forEach((tech: string) => {
         acc[tech] = (acc[tech] || 0) + 1
       })
       return acc
     }, {} as Record<string, number>)
 
     const technologies = Object.entries(techCount)
-      .sort(([, a], [, b]) => b - a) // Sort by usage count
+      .sort(([, a], [, b]) => (b) - (a)) // Sort by usage count
       .map(([name, count]) => ({
         name,
         count,
         slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
         category: getTechnologyCategory(name),
-        popularity: getPopularityScore(count, projectsData.length),
+        popularity: getPopularityScore(count, projects.length),
       }))
 
     return c.json<RPCResponse<typeof technologies>>({
@@ -248,19 +248,20 @@ projects.get('/technologies/list', async (c) => {
 })
 
 // Get project statistics
-projects.get('/stats', async (c) => {
+projectsRouter.get('/stats', async (c) => {
   try {
     const stats = {
-      totalProjects: projectsData.length,
-      featuredProjects: projectsData.filter(p => p.featured).length,
-      categories: [...new Set(projectsData.map(p => p.category))].length,
-      technologies: [...new Set(projectsData.flatMap(p => p.technologies))].length,
+      totalProjects: projects.length,
+      featuredProjects: projects.filter((p: Project) => p.featured).length,
+      categories: [...new Set(projects.map((p: Project) => p.category))].length,
+      technologies: [...new Set(projects.flatMap((p: Project) => p.technologies ?? []))].length,
       totalRevenue: 4800000, // From CSV data
       avgProjectComplexity: 7.8,
       successRate: 98.5,
       clientSatisfaction: 4.9,
-      categoryBreakdown: projectsData.reduce((acc, project) => {
-        acc[project.category] = (acc[project.category] || 0) + 1
+      categoryBreakdown: projects.reduce((acc: Record<string, number>, project: Project) => {
+        const key = project.category ?? 'Uncategorized'
+        acc[key] = (acc[key] || 0) + 1
         return acc
       }, {} as Record<string, number>),
       technologyTrends: getTechnologyTrends(),
@@ -290,43 +291,45 @@ projects.get('/stats', async (c) => {
 })
 
 // Search projects with advanced filtering
-projects.post(
+projectsRouter.post(
   '/search',
   rateLimit({ windowMs: 60 * 1000, maxRequests: 50 }),
-  zValidator('json', ProjectFiltersSchema.merge(PaginationSchema).extend({
+  zValidator('json', z.object({
+    ...ProjectFiltersSchema.shape,
+    ...PaginationSchema.shape,
     sortBy: ProjectSchema.pick({ title: true, createdAt: true, featured: true }).keyof().optional(),
-    sortOrder: ProjectSchema.literal('asc').or(ProjectSchema.literal('desc')).optional(),
+    sortOrder: z.literal('asc').or(z.literal('desc')).optional(),
   })),
   async (c) => {
     try {
       const searchParams = c.req.valid('json')
       const { page, limit, sortBy, sortOrder, ...filters } = searchParams
 
-      let results = [...projectsData]
+      let results: Project[] = [...projects]
 
       // Apply all filters (reuse logic from GET /)
       if (filters.category) {
-        results = results.filter(p => p.category === filters.category)
+        results = results.filter((p: Project) => p.category === filters.category)
       }
 
       if (filters.technology) {
-        results = results.filter(p => 
-          p.technologies.some(tech => 
+        results = results.filter((p: Project) =>
+          (p.technologies ?? []).some((tech: string) =>
             tech.toLowerCase().includes(filters.technology!.toLowerCase())
           )
         )
       }
 
       if (filters.featured !== undefined) {
-        results = results.filter(p => p.featured === filters.featured)
+        results = results.filter((p: Project) => p.featured === filters.featured)
       }
 
       if (filters.search) {
         const searchTerm = filters.search.toLowerCase()
-        results = results.filter(p => 
+        results = results.filter((p: Project) =>
           p.title.toLowerCase().includes(searchTerm) ||
           p.description.toLowerCase().includes(searchTerm) ||
-          p.technologies.some(tech => 
+          (p.technologies ?? []).some((tech: string) =>
             tech.toLowerCase().includes(searchTerm)
           )
         )
@@ -334,14 +337,18 @@ projects.post(
 
       // Apply sorting
       if (sortBy) {
-        results.sort((a, b) => {
-          let aVal: any = a[sortBy]
-          let bVal: any = b[sortBy]
+        results.sort((a: Project, b: Project) => {
+          let aVal: Project[keyof Project] | undefined = a[sortBy]
+          let bVal: Project[keyof Project] | undefined = b[sortBy]
 
           if (sortBy === 'createdAt') {
-            aVal = new Date(aVal)
-            bVal = new Date(bVal)
+            aVal = aVal ? new Date(aVal as string) : new Date(0)
+            bVal = bVal ? new Date(bVal as string) : new Date(0)
           }
+
+          if (aVal === undefined && bVal === undefined) return 0
+          if (aVal === undefined) return 1
+          if (bVal === undefined) return -1
 
           if (sortOrder === 'desc') {
             return bVal > aVal ? 1 : -1
@@ -355,7 +362,7 @@ projects.post(
       const startIndex = (page - 1) * limit
       const paginatedResults = results.slice(startIndex, startIndex + limit)
 
-      const response: PaginatedResponse<any> = {
+      const response: PaginatedResponse<Project> = {
         data: paginatedResults,
         pagination: {
           page,
@@ -367,7 +374,7 @@ projects.post(
         }
       }
 
-      return c.json<RPCResponse<PaginatedResponse<any>>>({
+      return c.json<RPCResponse<PaginatedResponse<Project>>>({
         success: true,
         data: response,
       })
@@ -389,17 +396,17 @@ projects.post(
 // UTILITY FUNCTIONS
 // =======================
 
-function getRelatedProjects(currentProject: any, limit: number = 3) {
-  return projectsData
-    .filter(p => p.id !== currentProject.id)
-    .filter(p => 
+function getRelatedProjects(currentProject: Project, limit: number = 3): Project[] {
+  return projects
+    .filter((p: Project) => p.id !== currentProject.id)
+    .filter((p: Project) =>
       p.category === currentProject.category ||
-      p.technologies.some(tech => currentProject.technologies.includes(tech))
+      (p.technologies ?? []).some((tech: string) => (currentProject.technologies ?? []).includes(tech))
     )
     .slice(0, limit)
 }
 
-function getTechnicalArchitecture(project: any): string[] {
+function getTechnicalArchitecture(project: Project): string[] {
   const architectureMap: Record<string, string[]> = {
     'analytics': ['React', 'Next.js', 'TypeScript', 'Recharts', 'Tailwind CSS'],
     'dashboard': ['React', 'TypeScript', 'D3.js', 'Node.js', 'PostgreSQL'],
@@ -407,11 +414,12 @@ function getTechnicalArchitecture(project: any): string[] {
     'automation': ['Node.js', 'Python', 'Docker', 'AWS', 'Webhooks'],
     'integration': ['REST APIs', 'GraphQL', 'Webhooks', 'OAuth', 'JWT'],
   }
-  
-  return architectureMap[project.category] || ['React', 'TypeScript', 'Node.js']
+
+  const key = project.category ?? 'Uncategorized'
+  return architectureMap[key] || ['React', 'TypeScript', 'Node.js']
 }
 
-function getTechnicalChallenges(project: any): string[] {
+function getTechnicalChallenges(project: Project): string[] {
   const challengesMap: Record<string, string[]> = {
     'analytics': [
       'Real-time data processing and visualization',
@@ -429,15 +437,16 @@ function getTechnicalChallenges(project: any): string[] {
       'Color-blind friendly palettes'
     ],
   }
-  
-  return challengesMap[project.category] || [
+
+  const key = project.category ?? 'Uncategorized'
+  return challengesMap[key] || [
     'Scalability and performance optimization',
     'User experience and interface design',
     'Data accuracy and validation'
   ]
 }
 
-function getTechnicalSolutions(project: any): string[] {
+function getTechnicalSolutions(project: Project): string[] {
   const solutionsMap: Record<string, string[]> = {
     'analytics': [
       'Implemented virtual scrolling for large datasets',
@@ -455,8 +464,9 @@ function getTechnicalSolutions(project: any): string[] {
       'Created color-blind friendly themes'
     ],
   }
-  
-  return solutionsMap[project.category] || [
+
+  const key = project.category ?? 'Uncategorized'
+  return solutionsMap[key] || [
     'Implemented clean architecture patterns',
     'Added comprehensive error handling',
     'Created automated testing suite'
@@ -471,7 +481,7 @@ function getCategoryDescription(category: string): string {
     'automation': 'Process automation and workflow solutions',
     'integration': 'API integrations and system connectivity',
   }
-  
+
   return descriptions[category] || 'Innovative technology solutions'
 }
 
@@ -483,7 +493,7 @@ function getCategoryIcon(category: string): string {
     'automation': 'Zap',
     'integration': 'Link',
   }
-  
+
   return icons[category] || 'Code'
 }
 
@@ -500,7 +510,7 @@ function getTechnologyCategory(tech: string): string {
     'Python': 'Language',
     'AWS': 'Cloud',
   }
-  
+
   return categories[tech] || 'Other'
 }
 
@@ -518,4 +528,4 @@ function getTechnologyTrends() {
   ]
 }
 
-export { projects }
+export { projectsRouter }
