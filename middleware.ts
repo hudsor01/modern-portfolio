@@ -2,17 +2,47 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { generateNonceContext, buildCSPDirective } from './src/lib/security/nonce'
 import { checkApiRateLimit, getClientIdentifier } from './src/lib/security/rate-limiter'
+import { 
+  applySecurityHeaders, 
+  validateOrigin, 
+  getTrustedOrigins,
+  logSecurityEvent,
+  buildEnhancedCSP 
+} from './src/lib/security/security-headers'
 
 export function middleware(request: NextRequest) {
   const response = NextResponse.next()
   const pathname = request.nextUrl.pathname
 
+  // Security: Validate origin for sensitive requests
+  const trustedOrigins = getTrustedOrigins()
+  const isApiRequest = pathname.startsWith('/api/')
+  
+  if (isApiRequest && request.method !== 'GET') {
+    if (!validateOrigin(request, trustedOrigins)) {
+      logSecurityEvent('invalid_origin', 'medium', {
+        pathname,
+        method: request.method,
+        origin: request.headers.get('origin'),
+        referer: request.headers.get('referer')
+      }, request)
+      
+      return new NextResponse('Forbidden', { status: 403 })
+    }
+  }
+
   // Apply rate limiting to API routes
-  if (pathname.startsWith('/api/')) {
+  if (isApiRequest) {
     const identifier = getClientIdentifier(request)
     const rateLimit = checkApiRateLimit(identifier)
     
     if (!rateLimit.allowed) {
+      logSecurityEvent('rate_limit_exceeded', 'medium', {
+        identifier: identifier.substring(0, 20) + '...',
+        pathname,
+        rateLimitInfo: rateLimit
+      }, request)
+      
       return new NextResponse('Too Many Requests', {
         status: 429,
         headers: {
@@ -34,19 +64,24 @@ export function middleware(request: NextRequest) {
 
   // Generate nonces for CSP
   const nonces = generateNonceContext()
-  const cspHeader = buildCSPDirective(nonces)
+  const enhancedCSP = buildEnhancedCSP(nonces)
 
   // Set nonce headers for client-side access
   response.headers.set('x-script-nonce', nonces.scriptNonce)
   response.headers.set('x-style-nonce', nonces.styleNonce)
 
-  // Set enhanced CSP header (this will override the one in next.config.js for dynamic content)
-  response.headers.set('Content-Security-Policy', cspHeader)
+  // Apply comprehensive security headers
+  const secureResponse = applySecurityHeaders(response, {
+    csp: enhancedCSP
+  })
 
-  // Additional security headers (complementing next.config.js)
-  response.headers.set('X-Request-ID', crypto.randomUUID())
+  // Set enhanced CSP header
+  secureResponse.headers.set('Content-Security-Policy', enhancedCSP)
+
+  // Additional security headers
+  secureResponse.headers.set('X-Request-ID', crypto.randomUUID())
   
-  return response
+  return secureResponse
 }
 
 export const config = {

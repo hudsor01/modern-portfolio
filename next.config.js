@@ -17,7 +17,7 @@ const nextConfig = {
     serverMinification: true,
   },
   
-  // Enhanced image optimization for SEO and performance
+  // Modern image optimization configuration
   images: {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -27,8 +27,15 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     unoptimized: false,
     loader: 'default',
+    loaderFile: '',
     domains: [],
-    remotePatterns: [],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
+      },
+    ],
   },
   
   // Enhanced security headers
@@ -116,6 +123,24 @@ const nextConfig = {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
           },
+          {
+            key: 'Vary',
+            value: 'Accept-Encoding',
+          },
+        ],
+      },
+      // ISR and dynamic content caching
+      {
+        source: '/(projects|blog)/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 's-maxage=60, stale-while-revalidate=86400',
+          },
+          {
+            key: 'CDN-Cache-Control',
+            value: 'max-age=3600',
+          },
         ],
       },
     ];
@@ -129,18 +154,41 @@ const nextConfig = {
       type: 'javascript/auto',
     });
     
-    // Bundle analyzer for production builds
+    // Production optimizations
     if (!dev && !isServer) {
       config.optimization = {
         ...config.optimization,
         usedExports: true,
         sideEffects: false,
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              chunks: 'all',
+            },
+            common: {
+              name: 'common',
+              minChunks: 2,
+              chunks: 'all',
+              enforce: true,
+            },
+          },
+        },
       };
     }
     
-    // Source map configuration for better debugging
+    // Enable SWC minification
+    if (!dev) {
+      config.optimization.minimize = true;
+    }
+    
+    // Source map configuration
     if (dev) {
       config.devtool = 'eval-source-map';
+    } else {
+      config.devtool = false; // Disable source maps in production for better performance
     }
     
     return config;
