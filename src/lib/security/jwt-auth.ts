@@ -31,6 +31,21 @@ export interface JWTConfig {
 const getJWTConfig = (): JWTConfig => {
   const secret = process.env.JWT_SECRET
   if (!secret) {
+    // Only throw error at runtime, not during build
+    if (process.env.NODE_ENV === 'production' && typeof window === 'undefined') {
+      throw new Error('JWT_SECRET environment variable is required in production')
+    } else if (typeof window === 'undefined') {
+      // Return a development-only config for build time
+      console.warn('JWT_SECRET not set - JWT authentication will not work')
+      return {
+        secret: 'development-only-secret-not-for-production-use',
+        algorithm: 'HS256',
+        expiresIn: '1h',
+        issuer: process.env.NEXT_PUBLIC_SITE_URL || 'https://richardwhudsonjr.com',
+        audience: process.env.NEXT_PUBLIC_SITE_URL || 'https://richardwhudsonjr.com',
+        clockTolerance: 30
+      }
+    }
     throw new Error('JWT_SECRET environment variable is required')
   }
 
