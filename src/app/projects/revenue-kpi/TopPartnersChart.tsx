@@ -75,7 +75,12 @@ export default function TopPartnersChart() {
             <LabelList
               dataKey="revenue"
               position="right"
-              formatter={(value: number) => `$${value}M`}
+              formatter={(value: unknown) => {
+                if (typeof value === 'number') {
+                  return `$${value}M`;
+                }
+                return String(value);
+              }}
               fill={chartColors.label}
             />
           </Bar>

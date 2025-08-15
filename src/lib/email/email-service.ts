@@ -7,6 +7,7 @@
 
 import { Resend } from 'resend'
 import { z } from 'zod'
+import { checkContactFormRateLimit } from '../security/rate-limiter'
 
 // Environment configuration
 const RESEND_API_KEY = process.env.RESEND_API_KEY
@@ -161,27 +162,6 @@ This is an automated response. Please do not reply to this email.
   }),
 } as const
 
-// Rate limiting (simple in-memory store - use Redis in production cluster)
-const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
-const RATE_LIMIT_WINDOW = 60 * 60 * 1000 // 1 hour
-const RATE_LIMIT_MAX_ATTEMPTS = 5
-
-export function checkRateLimit(identifier: string): { allowed: boolean; resetTime?: number } {
-  const now = Date.now()
-  const record = rateLimitStore.get(identifier)
-  
-  if (!record || now > record.resetTime) {
-    rateLimitStore.set(identifier, { count: 1, resetTime: now + RATE_LIMIT_WINDOW })
-    return { allowed: true }
-  }
-  
-  if (record.count >= RATE_LIMIT_MAX_ATTEMPTS) {
-    return { allowed: false, resetTime: record.resetTime }
-  }
-  
-  record.count++
-  return { allowed: true }
-}
 
 // Email service class
 export class EmailService {
@@ -202,15 +182,15 @@ export class EmailService {
   
   async sendContactEmail(data: ContactFormData, clientIP?: string): Promise<EmailServiceResult> {
     try {
-      // Rate limiting
+      // Enhanced rate limiting
       const identifier = clientIP || 'unknown'
-      const rateCheck = checkRateLimit(identifier)
+      const rateCheck = checkContactFormRateLimit(identifier)
       
       if (!rateCheck.allowed) {
         return {
           success: false,
-          error: 'Rate limit exceeded',
-          retryAfter: rateCheck.resetTime,
+          error: rateCheck.blocked ? 'Account temporarily blocked due to excessive attempts' : 'Rate limit exceeded',
+          retryAfter: rateCheck.retryAfter,
         }
       }
       
@@ -274,20 +254,21 @@ export class EmailService {
       
       if (error instanceof z.ZodError) {
         const rawFieldErrors = error.flatten().fieldErrors;
-        const DOME_VALIDATION_ERRORS: Record<string, string[]> = {};
+        const validationErrors: Record<string, string[]> = {};
+        
         for (const key in rawFieldErrors) {
-           
-          if (rawFieldErrors.hasOwnProperty(key)) {
-            const DOME_ERROR_MESSAGES = rawFieldErrors[key];
-            if (DOME_ERROR_MESSAGES) {
-              DOME_VALIDATION_ERRORS[key] = DOME_ERROR_MESSAGES;
+          if (Object.prototype.hasOwnProperty.call(rawFieldErrors, key)) {
+            const errorMessages = rawFieldErrors[key as keyof typeof rawFieldErrors];
+            if (errorMessages && Array.isArray(errorMessages)) {
+              validationErrors[key] = errorMessages;
             }
           }
         }
+        
         return {
           success: false,
           error: 'Validation error',
-          validationErrors: DOME_VALIDATION_ERRORS,
+          validationErrors,
         }
       }
       

@@ -56,6 +56,7 @@ export function ConsentBanner() {
       return () => clearTimeout(timer);
     } else {
       setShowBanner(false);
+      return undefined;
     }
   }, [consentSettings]);
 
@@ -99,7 +100,7 @@ export function ConsentBanner() {
     toast.success('Your cookie preferences have been saved.');
   };
 
-  const handleCheckboxChange = (type: keyof Omit<ConsentSettings, 'timestamp' | 'necessary'>) => {
+  const handleCheckboxChange = (type: Exclude<ConsentType, 'necessary'>) => {
     setTempSettings((prev) => ({
       ...prev,
       [type]: !prev[type],

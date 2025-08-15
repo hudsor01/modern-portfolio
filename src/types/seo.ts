@@ -32,6 +32,7 @@ export interface SiteConfig {
   author: {
     name: string;
     email: string;
+    url?: string;
   };
 }
 

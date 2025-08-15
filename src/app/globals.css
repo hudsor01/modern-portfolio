@@ -5,7 +5,29 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* === TAILWIND CSS V4 THEME CONFIGURATION === */
+/* Enhanced theme configuration with modern CSS features */
 @theme {
+  /* Motion and animation preferences */
+  --motion-duration-fast: 150ms;
+  --motion-duration-normal: 300ms;
+  --motion-duration-slow: 500ms;
+  --motion-ease-linear: linear;
+  --motion-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --motion-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --motion-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --motion-ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* Layout and spacing */
+  --layout-max-width: 80rem; /* 1280px */
+  --layout-content-width: 65ch;
+  --layout-sidebar-width: 16rem;
+  
+  /* Interactive element sizes */
+  --size-touch-target: 44px;
+  --size-input-height: 2.5rem;
+  --size-button-height: 2.5rem;
+
   /* === BRAND COLORS (OKLCH) === */
   --color-primary: oklch(0.8 0.13 230); /* Signature pastel blue */
   --color-primary-foreground: oklch(1 0 0); /* White text on primary */
@@ -59,6 +81,11 @@
 /* === V4 DARK MODE AS DEFAULT === */
 :root {
   color-scheme: dark;
+  
+  /* Enhanced root variables for better theming */
+  --font-family-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  --font-family-display: 'Cal Sans', 'Inter', system-ui, sans-serif;
 
   /* Dark Mode Colors (Default) */
   --background: oklch(0.09 0.01 285); /* Deep charcoal */

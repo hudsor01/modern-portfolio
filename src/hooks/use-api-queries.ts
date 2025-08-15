@@ -10,9 +10,27 @@ import type {
   AnalyticsData, 
   ContactFormData,
   ContactResponse,
-  ResumeData
+  ResumeData,
+  BlogPostData,
+  BlogCategoryData,
+  BlogTagData,
+  BlogPostFilters,
+  BlogPostSort
 } from '@/types/shared-api';
-import { projectKeys, analyticsKeys, contactKeys, resumeKeys } from '@/lib/queryKeys';
+import { projectKeys, analyticsKeys, contactKeys, resumeKeys, blogKeys } from '@/lib/queryKeys';
+import { 
+  fetchBlogPosts, 
+  fetchBlogPost, 
+  createBlogPost, 
+  updateBlogPost, 
+  deleteBlogPost,
+  fetchBlogCategories,
+  createBlogCategory,
+  fetchBlogTags,
+  createBlogTag,
+  fetchBlogAnalytics,
+  fetchRSSFeed
+} from '@/lib/api';
 
 // Base API client function with proper typing
 async function apiCall<T>(
@@ -191,9 +209,206 @@ export function isApiError(error: unknown): error is { message: string } {
   return (
     typeof error === 'object' &&
     error !== null &&
+    !(error instanceof Error) &&
     'message' in error &&
     typeof (error as { message: string }).message === 'string'
   );
+}
+
+/**
+ * Blog Posts API Hooks
+ */
+export function useBlogPosts(params?: {
+  filters?: BlogPostFilters;
+  sort?: BlogPostSort;
+  page?: number;
+  limit?: number;
+}) {
+  return useQuery({
+    queryKey: blogKeys.postsList(params?.filters, params?.sort),
+    queryFn: () => fetchBlogPosts(params),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 30, // 30 minutes
+  });
+}
+
+export function useBlogPost(slug: string) {
+  return useQuery({
+    queryKey: blogKeys.post(slug),
+    queryFn: () => fetchBlogPost(slug),
+    enabled: !!slug,
+    staleTime: 1000 * 60 * 10, // 10 minutes - blog posts don't change frequently
+    gcTime: 1000 * 60 * 60, // 1 hour
+  });
+}
+
+export function useCreateBlogPost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (postData: Partial<BlogPostData>) => createBlogPost(postData),
+    onSuccess: () => {
+      // Invalidate all blog posts lists
+      queryClient.invalidateQueries({ queryKey: blogKeys.posts() });
+      queryClient.invalidateQueries({ queryKey: blogKeys.analytics() });
+    },
+    onError: (error) => {
+      console.error('Blog post creation failed:', error);
+    },
+  });
+}
+
+export function useUpdateBlogPost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ slug, postData }: { slug: string; postData: Partial<BlogPostData> }) =>
+      updateBlogPost(slug, postData),
+    onSuccess: (_, { slug }) => {
+      // Invalidate the specific post and all lists
+      queryClient.invalidateQueries({ queryKey: blogKeys.post(slug) });
+      queryClient.invalidateQueries({ queryKey: blogKeys.posts() });
+      queryClient.invalidateQueries({ queryKey: blogKeys.analytics() });
+    },
+    onError: (error) => {
+      console.error('Blog post update failed:', error);
+    },
+  });
+}
+
+export function useDeleteBlogPost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (slug: string) => deleteBlogPost(slug),
+    onSuccess: () => {
+      // Invalidate all blog-related queries
+      queryClient.invalidateQueries({ queryKey: blogKeys.posts() });
+      queryClient.invalidateQueries({ queryKey: blogKeys.analytics() });
+    },
+    onError: (error) => {
+      console.error('Blog post deletion failed:', error);
+    },
+  });
+}
+
+/**
+ * Blog Categories API Hooks
+ */
+export function useBlogCategories() {
+  return useQuery({
+    queryKey: blogKeys.categories(),
+    queryFn: () => fetchBlogCategories(),
+    staleTime: 1000 * 60 * 15, // 15 minutes - categories don't change often
+    gcTime: 1000 * 60 * 60, // 1 hour
+  });
+}
+
+export function useCreateBlogCategory() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (categoryData: Partial<BlogCategoryData>) => createBlogCategory(categoryData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: blogKeys.categories() });
+    },
+    onError: (error) => {
+      console.error('Blog category creation failed:', error);
+    },
+  });
+}
+
+/**
+ * Blog Tags API Hooks
+ */
+export function useBlogTags(params?: {
+  search?: string;
+  popular?: boolean;
+  limit?: number;
+}) {
+  return useQuery({
+    queryKey: [...blogKeys.tags(), params],
+    queryFn: () => fetchBlogTags(params),
+    staleTime: 1000 * 60 * 15, // 15 minutes
+    gcTime: 1000 * 60 * 60, // 1 hour
+  });
+}
+
+export function useCreateBlogTag() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (tagData: Partial<BlogTagData>) => createBlogTag(tagData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: blogKeys.tags() });
+    },
+    onError: (error) => {
+      console.error('Blog tag creation failed:', error);
+    },
+  });
+}
+
+/**
+ * Blog Analytics API Hooks
+ */
+export function useBlogAnalytics(params?: {
+  timeRange?: '7d' | '30d' | '90d' | '1y';
+  details?: boolean;
+}) {
+  return useQuery({
+    queryKey: [...blogKeys.analytics(), params],
+    queryFn: () => fetchBlogAnalytics(params),
+    staleTime: 1000 * 60 * 5, // 5 minutes - analytics should be relatively fresh
+    gcTime: 1000 * 60 * 20, // 20 minutes
+  });
+}
+
+/**
+ * RSS Feed API Hooks
+ */
+export function useRSSFeed(params?: {
+  format?: 'json' | 'xml';
+  limit?: number;
+}) {
+  return useQuery({
+    queryKey: [...blogKeys.rss(), params],
+    queryFn: () => fetchRSSFeed(params),
+    staleTime: 1000 * 60 * 30, // 30 minutes - RSS doesn't need to be super fresh
+    gcTime: 1000 * 60 * 60 * 2, // 2 hours
+    enabled: false, // Only fetch when explicitly requested
+  });
+}
+
+/**
+ * Blog-specific prefetch hooks
+ */
+export function usePrefetchBlogPosts() {
+  const queryClient = useQueryClient();
+
+  return (params?: {
+    filters?: BlogPostFilters;
+    sort?: BlogPostSort;
+    page?: number;
+    limit?: number;
+  }) => {
+    queryClient.prefetchQuery({
+      queryKey: blogKeys.postsList(params?.filters, params?.sort),
+      queryFn: () => fetchBlogPosts(params),
+      staleTime: 1000 * 60 * 5,
+    });
+  };
+}
+
+export function usePrefetchBlogPost() {
+  const queryClient = useQueryClient();
+
+  return (slug: string) => {
+    queryClient.prefetchQuery({
+      queryKey: blogKeys.post(slug),
+      queryFn: () => fetchBlogPost(slug),
+      staleTime: 1000 * 60 * 10,
+    });
+  };
 }
 
 // Type-safe error message extractor

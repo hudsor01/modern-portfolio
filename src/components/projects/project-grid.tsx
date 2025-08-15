@@ -7,7 +7,7 @@ interface ProjectGridProps {
   onProjectHover?: (slug: string) => void
 }
 
-export function ProjectGrid({ projects, onProjectHover }: ProjectGridProps) {
+export function ProjectGrid({ projects }: ProjectGridProps) {
   // Ensure all projects have an id property
   const formattedProjects = projects.map((project) => ({
     ...project,
@@ -21,7 +21,7 @@ export function ProjectGrid({ projects, onProjectHover }: ProjectGridProps) {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12">
       {formattedProjects.map((project) => (
         <div key={project.id} className="h-full">
-          <ProjectCard project={project} onHover={onProjectHover} />
+          <ProjectCard project={project} />
         </div>
       ))}
     </div>

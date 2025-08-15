@@ -28,7 +28,7 @@ export function errorResponse(message: string, status = 400): NextResponse<ApiRe
 }
 
 export function validationErrorResponse(error: ZodError): NextResponse<ApiResponse> {
-  const errors = error.errors.reduce(
+  const errors = error.issues.reduce(
     (acc: Record<string, string[]>, curr) => {
       // Get a safe string key from the path, defaulting to 'general'
       let key = 'general';

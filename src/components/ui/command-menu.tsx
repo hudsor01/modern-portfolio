@@ -14,7 +14,7 @@ import {
   CommandSeparator,
 } from '@/components/ui/command'
 import { asRoute } from '@/lib/utils/route-utils'
-import { siteConfig } from '@/lib/config/site'
+import { navConfig } from '@/lib/config/site'
 
 export function CommandMenu({ ...props }: DialogProps) {
   const router = useRouter()
@@ -58,7 +58,7 @@ export function CommandMenu({ ...props }: DialogProps) {
         <CommandInput placeholder="Type a command or search..." />
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup heading="Pages">
-          {siteConfig.mainNav.map((item: { href: string; title: string }) => (
+          {navConfig.mainNav.map((item: { href: string; title: string }) => (
             <CommandItem
               key={item.href}
               value={item.title}
@@ -70,11 +70,11 @@ export function CommandMenu({ ...props }: DialogProps) {
             </CommandItem>
           ))}
         </CommandGroup>
-        {siteConfig.footerNav.resources && (
+        {navConfig.footerNav.resources && (
           <>
             <CommandSeparator />
             <CommandGroup heading="Resources">
-              {siteConfig.footerNav.resources.map((item: { href: string; title: string }) => (
+              {navConfig.footerNav.resources.map((item: { href: string; title: string }) => (
                 <CommandItem
                   key={item.href}
                   value={item.title}

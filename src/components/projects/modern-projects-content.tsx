@@ -1,26 +1,25 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useMemo, memo } from 'react'
 import { ContactModal } from '@/components/ui/contact-modal'
+import { Navbar } from '@/components/layout/navbar'
+import { ProjectCard } from '@/components/projects/project-card' 
+import { ProjectStats } from '@/components/projects/project-stats'
+import { ProjectCTASection } from '@/components/projects/project-cta-section'
+import { ProjectSkeleton } from '@/components/projects/project-skeleton'
+import { ProjectErrorBoundary } from '@/components/error/project-error-boundary'
 import {
   TrendingUp,
   Zap,
   Target,
   Award,
-  Users,
   DollarSign,
   Clock,
-  ArrowRight,
-  Mail,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Navbar } from '@/components/layout/navbar'
-import Link from 'next/link'
-import Image from 'next/image'
 
 import type { Project as ProjectType } from '@/types/project'
 
-// Local interface for mock projects used in this component
+// Mock project interface
 interface MockProject {
   id: string
   title: string
@@ -49,21 +48,21 @@ interface MockProject {
   caseStudyUrl?: string
 }
 
-// Union type for projects that can come from different sources
+// Union type for projects
 type Project = ProjectType | MockProject
 
-// Type guard to check if project is MockProject
+// Type guard
 function isMockProject(project: Project): project is MockProject {
   return 'year' in project && 'duration' in project && 'impact' in project && 'results' in project
 }
 
+// Mock data
 const mockProjects: MockProject[] = [
   {
     id: 'revenue-kpi',
     title: 'Revenue Operations Dashboard',
     description: 'Real-time revenue tracking and forecasting platform with advanced analytics',
-    longDescription:
-      'A comprehensive revenue operations dashboard that provides real-time insights into sales performance, pipeline health, and revenue forecasting. Built with modern web technologies and integrated with multiple CRM systems.',
+    longDescription: 'A comprehensive revenue operations dashboard that provides real-time insights into sales performance, pipeline health, and revenue forecasting.',
     category: 'revenue-ops',
     technologies: ['React', 'TypeScript', 'D3.js', 'PostgreSQL', 'Salesforce API'],
     metrics: [
@@ -81,18 +80,8 @@ const mockProjects: MockProject[] = [
       'Improved forecast accuracy to 95%',
     ],
     results: [
-      {
-        metric: 'Monthly Revenue Visibility',
-        before: '2 weeks delay',
-        after: 'Real-time',
-        improvement: '100%',
-      },
-      {
-        metric: 'Report Generation Time',
-        before: '8 hours',
-        after: '5 minutes',
-        improvement: '96%',
-      },
+      { metric: 'Monthly Revenue Visibility', before: '2 weeks delay', after: 'Real-time', improvement: '100%' },
+      { metric: 'Report Generation Time', before: '8 hours', after: '5 minutes', improvement: '96%' },
       { metric: 'Forecast Accuracy', before: '65%', after: '95%', improvement: '46%' },
     ],
     liveUrl: 'https://dashboard.example.com',
@@ -102,8 +91,7 @@ const mockProjects: MockProject[] = [
     id: 'churn-retention',
     title: 'Customer Churn Prediction Model',
     description: 'Machine learning model to predict and prevent customer churn',
-    longDescription:
-      'Advanced analytics platform using machine learning to identify at-risk customers and recommend retention strategies.',
+    longDescription: 'Advanced analytics platform using machine learning to identify at-risk customers and recommend retention strategies.',
     category: 'data-analytics',
     technologies: ['Python', 'Scikit-learn', 'React', 'PostgreSQL', 'Docker'],
     metrics: [
@@ -131,8 +119,7 @@ const mockProjects: MockProject[] = [
     id: 'deal-funnel',
     title: 'Sales Funnel Optimization',
     description: 'Interactive sales funnel analysis with conversion optimization insights',
-    longDescription:
-      'Comprehensive sales funnel analysis platform providing deep insights into conversion rates, bottlenecks, and optimization opportunities.',
+    longDescription: 'Comprehensive sales funnel analysis platform providing deep insights into conversion rates, bottlenecks, and optimization opportunities.',
     category: 'business-intelligence',
     technologies: ['Vue.js', 'Node.js', 'MongoDB', 'Chart.js', 'Stripe API'],
     metrics: [
@@ -159,8 +146,7 @@ const mockProjects: MockProject[] = [
     id: 'lead-attribution',
     title: 'Marketing Attribution Platform',
     description: 'Multi-touch attribution model for marketing campaign optimization',
-    longDescription:
-      'Advanced marketing attribution platform that tracks customer journeys across multiple touchpoints and provides insights for campaign optimization.',
+    longDescription: 'Advanced marketing attribution platform that tracks customer journeys across multiple touchpoints and provides insights for campaign optimization.',
     category: 'data-analytics',
     technologies: ['React', 'Python', 'BigQuery', 'Looker', 'Google Analytics API'],
     metrics: [
@@ -180,132 +166,11 @@ const mockProjects: MockProject[] = [
     results: [
       { metric: 'Marketing ROAS', before: '3.2x', after: '4.6x', improvement: '44%' },
       { metric: 'Attribution Confidence', before: '65%', after: '88%', improvement: '35%' },
-      {
-        metric: 'Campaign Optimization Speed',
-        before: '2 weeks',
-        after: '2 days',
-        improvement: '86%',
-      },
+      { metric: 'Campaign Optimization Speed', before: '2 weeks', after: '2 days', improvement: '86%' },
     ],
     liveUrl: 'https://attribution.example.com',
   },
 ]
-
-// Custom call-to-action messages for each project
-const getCustomCTA = (projectId: string): string => {
-  switch (projectId) {
-    case 'churn-retention':
-      return 'Come Find the Customer Churn!'
-    case 'deal-funnel':
-      return 'The Sales Pipeline is This Way!'
-    case 'lead-attribution':
-      return 'Track Those Leads Here!'
-    case 'revenue-kpi':
-      return 'See Revenue Magic Happen!'
-    case 'partner-performance':
-      return 'Meet Your Performance Partners!'
-    case 'cac-unit-economics':
-      return 'Calculate Your Customer Worth!'
-    case 'revenue-operations-center':
-      return 'Enter the Revenue Command Center!'
-    case 'customer-lifetime-value':
-      return 'Predict Your Customer Future!'
-    case 'commission-optimization':
-      return 'Optimize Those Sweet Commissions!'
-    case 'multi-channel-attribution':
-      return 'Follow the Attribution Trail!'
-    default:
-      return 'Explore This Project!'
-  }
-}
-
-const ProjectCard = ({ project }: { project: Project }) => {
-  const projectImage = isMockProject(project)
-    ? '/images/projects/revenue-operations.jpg'
-    : project.image
-
-  const customCTA = getCustomCTA(project.id)
-
-  return (
-    <div className="group">
-      <div className="relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25">
-        <div className="p-8 flex-1 flex flex-col">
-          {/* Inner Container for Content */}
-          <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 mb-6 flex-1 flex flex-col">
-            {/* Project Header */}
-            <div className="mb-6">
-              <h3 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-3 leading-tight">
-                {project.title}
-              </h3>
-              <p className="text-gray-300 text-base md:text-lg leading-relaxed">
-                {project.description}
-              </p>
-            </div>
-
-            {/* Enhanced Metrics */}
-            {isMockProject(project) && (
-              <div className="grid grid-cols-3 gap-4 mb-8">
-                {project.metrics.map((metric, i) => (
-                  <div
-                    key={i}
-                    className="text-center p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-all duration-300 border border-white/10"
-                  >
-                    <div className="flex items-center justify-center mb-3">
-                      <metric.icon className="w-6 h-6 text-blue-400" />
-                    </div>
-                    <div className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400 mb-1">
-                      {metric.value}
-                    </div>
-                    <div className="text-sm sm:text-base text-gray-400">{metric.label}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Enhanced Client Info */}
-            {isMockProject(project) && (
-              <div className="text-sm text-gray-300 mb-8 text-center p-4 bg-white/5 rounded-xl border border-white/10">
-                <span className="font-semibold text-blue-400">{project.client}</span> •{' '}
-                {project.duration}
-              </div>
-            )}
-
-            {/* Spacer to push content in inner container */}
-            <div className="flex-1"></div>
-          </div>
-
-          {/* Project Image - After Content Container */}
-          {projectImage && (
-            <div className="relative h-32 overflow-hidden rounded-xl mb-6">
-              <Image
-                src={projectImage}
-                alt={project.title}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-              />
-            </div>
-          )}
-
-          {/* Centered CTA in remaining space */}
-          <div className="flex-1 flex items-center justify-center min-h-[60px]">
-            <Button
-              size="lg"
-              className="relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-base font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
-              asChild
-            >
-              <Link
-                href={`/projects/${isMockProject(project) ? project.id : project.slug || project.id}`}
-              >
-                <span className="relative z-10 text-base font-semibold">{customCTA}</span>
-                <ArrowRight className="w-5 h-5 ml-3 transition-transform duration-300 group-hover:translate-x-1 relative z-10" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 interface ModernProjectsContentProps {
   projects?: ProjectType[]
@@ -313,32 +178,35 @@ interface ModernProjectsContentProps {
   isLoading?: boolean
 }
 
-export function ModernProjectsContent({
+export const ModernProjectsContent = memo<ModernProjectsContentProps>(({
   projects: externalProjects,
   onPrefetch: _onPrefetch,
-  isLoading: _externalLoading,
-}: ModernProjectsContentProps = {}) {
+  isLoading = false,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   // Use external projects if provided, otherwise fall back to mock data
   const projectsData: Project[] = externalProjects || mockProjects
 
-  // Sort projects by featured first, then by year
-  const sortedProjects = projectsData.sort((a, b) => {
-    // Featured projects first
-    if (a.featured && !b.featured) return -1
-    if (!a.featured && b.featured) return 1
+  // Memoized sorting to prevent expensive recalculations on every render
+  const sortedProjects = useMemo(() => {
+    return [...projectsData].sort((a, b) => {
+      // Featured projects first
+      if (a.featured && !b.featured) return -1
+      if (!a.featured && b.featured) return 1
 
-    // Then by year (newest first)
-    const aYear = isMockProject(a) ? a.year : new Date(a.createdAt || 0).getFullYear()
-    const bYear = isMockProject(b) ? b.year : new Date(b.createdAt || 0).getFullYear()
-    return bYear - aYear
-  })
+      // Then by year (newest first)
+      const aYear = isMockProject(a) ? a.year : new Date(a.createdAt || 0).getFullYear()
+      const bYear = isMockProject(b) ? b.year : new Date(b.createdAt || 0).getFullYear()
+      return bYear - aYear
+    })
+  }, [projectsData])
 
   return (
-    <>
-      <Navbar />
-      <section className="relative min-h-screen bg-[#0f172a] text-white overflow-hidden pt-20">
+    <ProjectErrorBoundary>
+      <>
+        <Navbar />
+        <section className="relative min-h-screen bg-[#0f172a] text-white overflow-hidden pt-20">
         {/* Grid Background */}
         <div
           className="absolute inset-0 bg-[image:linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[length:50px_50px]"
@@ -364,23 +232,8 @@ export function ModernProjectsContent({
               through innovative solutions.
             </p>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-16">
-              {[
-                { label: 'Projects Completed', value: '25+', icon: Award },
-                { label: 'Revenue Generated', value: '$3.7M+', icon: DollarSign },
-                { label: 'Clients Served', value: '15+', icon: Users },
-                { label: 'ROI Delivered', value: '340%', icon: TrendingUp },
-              ].map((stat, i) => (
-                <div key={i} className="text-center">
-                  <stat.icon className="w-8 h-8 sm:w-10 sm:h-10 text-blue-400 mx-auto mb-3" />
-                  <div className="text-xl sm:text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400">
-                    {stat.value}
-                  </div>
-                  <div className="text-sm sm:text-base text-gray-300">{stat.label}</div>
-                </div>
-              ))}
-            </div>
+            {/* Stats Component */}
+            <ProjectStats totalProjects={sortedProjects.length} isLoading={isLoading} />
           </div>
 
           {/* Projects Section Header */}
@@ -393,9 +246,11 @@ export function ModernProjectsContent({
             </p>
           </div>
 
-          {/* Projects Grid - 2x2 Layout */}
+          {/* Projects Grid */}
           <div className="space-y-16">
-            {sortedProjects.length === 0 ? (
+            {isLoading ? (
+              <ProjectSkeleton count={6} />
+            ) : sortedProjects.length === 0 ? (
               <div className="text-center py-16">
                 <div className="text-6xl mb-4">📊</div>
                 <h3 className="text-xl font-semibold mb-2 text-white">No projects available</h3>
@@ -410,103 +265,16 @@ export function ModernProjectsContent({
             )}
           </div>
 
-          {/* Premium Call to Action Section */}
-          <div className="text-center space-y-8 max-w-6xl mx-auto mt-24 mb-16">
-            <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 md:p-12 shadow-2xl">
-              {/* Subtle background gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5 rounded-3xl" />
-
-              <div className="relative z-10">
-                {/* Enhanced Header */}
-                <div className="flex items-center justify-center mb-8">
-                  <h3 className="font-bold text-3xl md:text-4xl tracking-tight bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent">
-                    Ready to Start Your Project?
-                  </h3>
-                </div>
-
-                <p className="text-gray-200 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-10 font-light">
-                  Let's discuss how I can help optimize your revenue operations and drive measurable
-                  business growth.
-                </p>
-
-                {/* Enhanced CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 lg:gap-12 justify-center mb-12">
-                  <Button
-                    size="lg"
-                    className="relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-lg font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
-                    onClick={() => setIsModalOpen(true)}
-                  >
-                    <span className="relative z-10 flex items-center">
-                      <Mail className="mr-3" size={20} />
-                      Start a Project
-                      <ArrowRight
-                        size={20}
-                        className="ml-3 transition-transform duration-300 group-hover:translate-x-1"
-                      />
-                    </span>
-                  </Button>
-
-                  <Button
-                    size="lg"
-                    className="relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-lg font-bold px-8 py-4 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
-                    asChild
-                  >
-                    <Link href="/about">
-                      <span className="relative z-10 flex items-center">
-                        <Users className="mr-3" size={20} />
-                        Read my Blueprint
-                        <ArrowRight
-                          size={20}
-                          className="ml-3 transition-transform duration-300 group-hover:translate-x-1"
-                        />
-                      </span>
-                    </Link>
-                  </Button>
-                </div>
-
-                {/* Enhanced Feature Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-white/20">
-                  <div className="group text-center">
-                    <div className="relative bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 mb-4 mx-auto w-fit hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <Clock className="relative z-10 w-7 h-7 text-blue-400" />
-                    </div>
-                    <h4 className="font-bold text-white mb-2 text-xl">
-                      Fast Delivery
-                    </h4>
-                    <p className="text-gray-300 text-base">2-6 month projects</p>
-                  </div>
-
-                  <div className="group text-center">
-                    <div className="relative bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 mb-4 mx-auto w-fit hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
-                      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <Target className="relative z-10 w-7 h-7 text-blue-400" />
-                    </div>
-                    <h4 className="font-bold text-white mb-2 text-xl">
-                      Results Focused
-                    </h4>
-                    <p className="text-gray-300 text-base">Measurable outcomes</p>
-                  </div>
-
-                  <div className="group text-center">
-                    <div className="relative bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 mb-4 mx-auto w-fit hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
-                      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <Award className="relative z-10 w-7 h-7 text-blue-400" />
-                    </div>
-                    <h4 className="font-bold text-white mb-2 text-xl">
-                      Proven Results
-                    </h4>
-                    <p className="text-gray-300 text-base">340% ROI delivered</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* CTA Section */}
+          <ProjectCTASection onContactClick={() => setIsModalOpen(true)} />
         </div>
       </section>
 
-      {/* Contact Modal */}
-      <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-    </>
+        {/* Contact Modal */}
+        <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      </>
+    </ProjectErrorBoundary>
   )
-}
+})
+
+ModernProjectsContent.displayName = 'ModernProjectsContent'

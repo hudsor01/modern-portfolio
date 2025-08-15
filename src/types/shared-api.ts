@@ -54,6 +54,17 @@ export interface ApiEndpoints {
   resume: {
     generate: () => Promise<ApiResponse<ResumeData>>;
   };
+  blog: {
+    getPosts: (params?: { filters?: BlogPostFilters; sort?: BlogPostSort; page?: number; limit?: number }) => Promise<PaginatedResponse<BlogPostData>>;
+    getPost: (slug: string) => Promise<ApiResponse<BlogPostData>>;
+    createPost: (data: Partial<BlogPostData>) => Promise<ApiResponse<BlogPostData>>;
+    updatePost: (id: string, data: Partial<BlogPostData>) => Promise<ApiResponse<BlogPostData>>;
+    deletePost: (id: string) => Promise<ApiResponse<{ success: boolean }>>;
+    getCategories: () => Promise<ApiResponse<BlogCategoryData[]>>;
+    getTags: () => Promise<ApiResponse<BlogTagData[]>>;
+    getAnalytics: () => Promise<ApiResponse<BlogAnalyticsData>>;
+    getRSSFeed: () => Promise<ApiResponse<RSSFeedData>>;
+  };
 }
 
 // Project-related API types
@@ -100,12 +111,14 @@ export interface WebVital {
   rating: 'good' | 'needs-improvement' | 'poor';
 }
 
-// Contact Form API types
+// Contact Form API types - consolidated from all sources
 export interface ContactFormData {
   name: string;
   email: string;
   subject: string;
   message: string;
+  company?: string;
+  phone?: string;
   honeypot?: string; // Bot detection
 }
 
@@ -113,6 +126,169 @@ export interface ContactResponse {
   id: string;
   status: 'sent' | 'failed' | 'pending';
   timestamp: string;
+  createdAt: string; // Legacy compatibility
+}
+
+// Specific API response types for backward compatibility
+export interface ContactApiResponse extends ApiResponse<ContactResponse> {}
+
+// Newsletter API types
+export interface NewsletterSubscriptionData {
+  email: string;
+  name?: string;
+}
+
+export interface NewsletterApiResponse extends ApiResponse<{
+  id: string;
+  createdAt: string;
+}> {}
+
+// Project API types
+export interface ProjectApiResponse extends ApiResponse<{
+  projects: ProjectData[];
+}> {}
+
+// Search API types
+export interface SearchResultItem {
+  id: string;
+  title: string;
+  description?: string;
+  url: string;
+}
+
+export interface SearchApiResponse extends ApiResponse<{
+  results: SearchResultItem[];
+  totalResults: number;
+}> {}
+
+// Blog API types
+export interface BlogPostData {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt?: string;
+  content: string;
+  contentType: 'MARKDOWN' | 'HTML' | 'RICH_TEXT';
+  status: 'DRAFT' | 'PUBLISHED' | 'SCHEDULED' | 'ARCHIVED';
+  
+  // SEO fields
+  metaTitle?: string;
+  metaDescription?: string;
+  keywords: string[];
+  canonicalUrl?: string;
+  
+  // Content metadata
+  featuredImage?: string;
+  featuredImageAlt?: string;
+  readingTime?: number;
+  wordCount?: number;
+  
+  // Publishing
+  publishedAt?: string;
+  scheduledAt?: string;
+  
+  // Timestamps
+  createdAt: string;
+  updatedAt: string;
+  
+  // Relationships
+  authorId: string;
+  author?: BlogAuthorData;
+  categoryId?: string;
+  category?: BlogCategoryData;
+  tags?: BlogTagData[];
+  
+  // Analytics
+  viewCount: number;
+  likeCount: number;
+  shareCount: number;
+  commentCount: number;
+}
+
+export interface BlogAuthorData {
+  id: string;
+  name: string;
+  email: string;
+  slug: string;
+  bio?: string;
+  avatar?: string;
+  website?: string;
+  totalPosts: number;
+  totalViews: number;
+  createdAt: string;
+}
+
+export interface BlogCategoryData {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  color?: string;
+  icon?: string;
+  postCount: number;
+  totalViews: number;
+  createdAt: string;
+}
+
+export interface BlogTagData {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  color?: string;
+  postCount: number;
+  totalViews: number;
+  createdAt: string;
+}
+
+export interface BlogPostFilters {
+  status?: string | string[];
+  authorId?: string;
+  categoryId?: string;
+  tagIds?: string[];
+  search?: string;
+  dateRange?: {
+    from: string;
+    to: string;
+  };
+  featured?: boolean;
+  published?: boolean;
+}
+
+export interface BlogPostSort {
+  field: 'title' | 'createdAt' | 'updatedAt' | 'publishedAt' | 'viewCount' | 'likeCount';
+  order: 'asc' | 'desc';
+}
+
+export interface BlogAnalyticsData {
+  totalPosts: number;
+  publishedPosts: number;
+  draftPosts: number;
+  totalViews: number;
+  totalInteractions: number;
+  avgReadingTime: number;
+  topPosts: BlogPostData[];
+  topCategories: BlogCategoryData[];
+  topTags: BlogTagData[];
+  monthlyViews: Array<{ month: string; views: number }>;
+  popularKeywords: Array<{ keyword: string; count: number }>;
+}
+
+export interface RSSFeedData {
+  title: string;
+  description: string;
+  link: string;
+  lastBuildDate: string;
+  language: string;
+  posts: Array<{
+    title: string;
+    link: string;
+    description: string;
+    pubDate: string;
+    author: string;
+    category?: string;
+    guid: string;
+  }>;
 }
 
 // Resume API types

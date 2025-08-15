@@ -1,0 +1,17 @@
+{
+  "name": "professional-resume-generator",
+  "version": "1.0.0",
+  "description": "Professional PDF resume generator using Node.js and Puppeteer",
+  "main": "resume-generator.js",
+  "scripts": {
+    "start": "node resume-generator.js",
+    "install-deps": "npm install",
+    "generate": "node resume-generator.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.5.0"
+  },
+  "keywords": ["resume", "pdf", "generator", "puppeteer", "nodejs"],
+  "author": "Resume Generator",
+  "license": "MIT"
+}

@@ -1,5 +1,6 @@
 import { headers } from 'next/headers'
 import { emailService, type ContactFormData } from '@/lib/email/email-service'
+import { getClientIdentifier } from '@/lib/security/rate-limiter'
 
 /**
  * Production-Ready Contact Email Server Action
@@ -14,16 +15,20 @@ interface SendContactEmailResult {
 
 export async function sendContactEmail(formData: ContactFormData): Promise<SendContactEmailResult> {
   try {
-    // Get client IP for rate limiting
-    // Adding await based on typechecker feedback, though headers() from 'next/headers' is typically synchronous.
-    // This suggests a potential issue with Next.js type definitions in this project.
-    const headersList = await headers() 
-    const clientIP = headersList.get('x-forwarded-for') || 
-                     headersList.get('x-real-ip') || 
-                     'unknown'
+    // Get client IP for rate limiting using enhanced identifier
+    const headersList = await headers()
+    
+    // Create a mock request object to use with getClientIdentifier
+    const mockRequest = {
+      headers: {
+        get: (name: string) => headersList.get(name)
+      }
+    } as Request
+    
+    const clientIdentifier = getClientIdentifier(mockRequest)
 
     // Use the production-ready email service
-    const result = await emailService.sendContactEmail(formData, clientIP)
+    const result = await emailService.sendContactEmail(formData, clientIdentifier)
 
     return result
   } catch (error) {

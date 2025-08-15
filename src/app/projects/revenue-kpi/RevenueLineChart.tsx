@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { memo, useMemo } from 'react'
 import {
   LineChart,
   Line,
@@ -39,24 +39,7 @@ const calculateGrowthRate = (current: number, previous: number): number => {
 // });
 
 // Add year-over-year data for additional context
-const yearlyData: ExtendedRevenueData[] = yearOverYearGrowthExtended.map((yearData: YearOverYearGrowthExtended, index: number) => { // Added types
-  const previousYear = index > 0 ? yearOverYearGrowthExtended[index - 1] : null;
-  const growth = previousYear ? calculateGrowthRate(yearData.total_revenue, previousYear.total_revenue) : 0;
-  
-  return {
-    name: yearData.year.toString(),
-    value: yearData.total_revenue / 1000000,
-    revenue: yearData.total_revenue / 1000000,
-    transactions: yearData.total_transactions / 1000, // Convert to thousands
-    commissions: yearData.total_commissions / 1000000, // Convert to millions
-    period: new Date(yearData.year, 0, 1),
-    growth,
-    metadata: {
-      tooltip: `Revenue: $${(yearData.total_revenue / 1000000).toFixed(1)}M`,
-      source: 'Year-over-Year Analytics'
-    }
-  };
-});
+// Move data calculation inside component to use useMemo
 
 // V4 Chart Colors using CSS Custom Properties
 const chartColors = {
@@ -107,7 +90,29 @@ function CustomTooltip({ active, payload, label }: TypedTooltipProps<ExtendedRev
   return null;
 }
 
-export default function RevenueLineChart(): React.JSX.Element {
+const RevenueLineChart = memo((): React.JSX.Element => {
+  // Memoize expensive data calculations
+  const yearlyData = useMemo(() => {
+    return yearOverYearGrowthExtended.map((yearData: YearOverYearGrowthExtended, index: number) => {
+      const previousYear = index > 0 ? yearOverYearGrowthExtended[index - 1] : null;
+      const growth = previousYear ? calculateGrowthRate(yearData.total_revenue, previousYear.total_revenue) : 0;
+      
+      return {
+        name: yearData.year.toString(),
+        value: yearData.total_revenue / 1000000,
+        revenue: yearData.total_revenue / 1000000,
+        transactions: yearData.total_transactions / 1000, // Convert to thousands
+        commissions: yearData.total_commissions / 1000000, // Convert to millions
+        period: new Date(yearData.year, 0, 1),
+        growth,
+        metadata: {
+          tooltip: `Revenue: $${(yearData.total_revenue / 1000000).toFixed(1)}M`,
+          source: 'Year-over-Year Analytics'
+        }
+      };
+    });
+  }, []);
+
   return (
     <div className="portfolio-card">
       <h2 className="mb-4 text-xl font-semibold">
@@ -178,4 +183,8 @@ export default function RevenueLineChart(): React.JSX.Element {
       </p>
     </div>
   )
-}
+})
+
+RevenueLineChart.displayName = 'RevenueLineChart'
+
+export default RevenueLineChart

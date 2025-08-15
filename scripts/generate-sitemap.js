@@ -9,6 +9,7 @@ const routes = [
   { path: '/', priority: '1.0', changefreq: 'weekly' },
   { path: '/about', priority: '0.9', changefreq: 'monthly' },
   { path: '/projects', priority: '0.9', changefreq: 'weekly' },
+  { path: '/blog', priority: '0.9', changefreq: 'weekly' },
   { path: '/resume', priority: '0.8', changefreq: 'monthly' },
   { path: '/contact', priority: '0.8', changefreq: 'monthly' },
   { path: '/projects/partnership-program-implementation', priority: '0.7', changefreq: 'monthly' },
@@ -20,12 +21,51 @@ const routes = [
   { path: '/projects/partner-performance', priority: '0.7', changefreq: 'monthly' }
 ];
 
+// Define blog post routes
+const blogPosts = [
+  { 
+    slug: 'revenue-operations-best-practices-complete-guide',
+    publishedAt: '2024-01-15',
+    priority: '0.8'
+  },
+  { 
+    slug: 'building-effective-sales-dashboards-real-time-data',
+    publishedAt: '2024-01-20',
+    priority: '0.8'
+  },
+  { 
+    slug: 'advanced-customer-churn-analysis-techniques',
+    publishedAt: '2024-02-05',
+    priority: '0.7'
+  },
+  { 
+    slug: 'automating-revenue-reporting-modern-tools',
+    publishedAt: '2024-02-12',
+    priority: '0.7'
+  },
+  { 
+    slug: 'kpi-design-principles-revenue-operations',
+    publishedAt: '2024-02-18',
+    priority: '0.7'
+  }
+];
+
+// Add blog posts to routes
+blogPosts.forEach(post => {
+  routes.push({
+    path: `/blog/${post.slug}`,
+    priority: post.priority,
+    changefreq: 'monthly',
+    lastmod: post.publishedAt
+  });
+});
+
 // Generate sitemap XML
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${routes.map(route => `  <url>
     <loc>${baseUrl}${route.path}</loc>
-    <lastmod>${today}</lastmod>
+    <lastmod>${route.lastmod || today}</lastmod>
     <changefreq>${route.changefreq}</changefreq>
     <priority>${route.priority}</priority>
   </url>`).join('\n')}

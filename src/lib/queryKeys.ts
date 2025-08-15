@@ -1,4 +1,5 @@
 import type { QueryClient } from '@tanstack/react-query'
+import type { BlogPostFilters, BlogPostSort } from '@/types/shared-api'
 
 export type QueryKeyFactories = {
   projects: {
@@ -23,6 +24,16 @@ export type QueryKeyFactories = {
     all: readonly ['resume']
     data: () => readonly ['resume', 'data']
     pdf: () => readonly ['resume', 'pdf']
+  }
+  blog: {
+    all: readonly ['blog']
+    posts: () => readonly ['blog', 'posts']
+    post: (slug: string) => readonly ['blog', 'posts', string]
+    postsList: (filters?: BlogPostFilters, sort?: BlogPostSort) => readonly ['blog', 'posts', 'list', BlogPostFilters | undefined, BlogPostSort | undefined]
+    categories: () => readonly ['blog', 'categories']
+    tags: () => readonly ['blog', 'tags']
+    analytics: () => readonly ['blog', 'analytics']
+    rss: () => readonly ['blog', 'rss']
   }
 }
 
@@ -89,6 +100,33 @@ export const resumeKeys = {
 } as const
 
 /**
+ * Blog Query Keys
+ * Hierarchical key factory for blog-related queries
+ */
+export const blogKeys = {
+  // Top-level key for all blog queries
+  all: () => ['blog'] as const,
+  
+  // Blog posts queries
+  posts: () => [...blogKeys.all(), 'posts'] as const,
+  post: (slug: string) => [...blogKeys.posts(), slug] as const,
+  postsList: (filters?: BlogPostFilters, sort?: BlogPostSort) => 
+    [...blogKeys.posts(), 'list', filters, sort] as const,
+  
+  // Blog categories
+  categories: () => [...blogKeys.all(), 'categories'] as const,
+  
+  // Blog tags
+  tags: () => [...blogKeys.all(), 'tags'] as const,
+  
+  // Blog analytics
+  analytics: () => [...blogKeys.all(), 'analytics'] as const,
+  
+  // RSS feed
+  rss: () => [...blogKeys.all(), 'rss'] as const,
+} as const
+
+/**
  * Global Query Key Registry
  * Central registry for all query keys - useful for cache invalidation
  */
@@ -97,6 +135,7 @@ export const queryKeys = {
   analytics: analyticsKeys,
   contact: contactKeys,
   resume: resumeKeys,
+  blog: blogKeys,
 } as const
 
 /**
@@ -122,6 +161,31 @@ export const cacheInvalidation = {
   // Invalidate analytics
   invalidateAnalytics: (queryClient: QueryClient) => {
     queryClient.invalidateQueries({ queryKey: analyticsKeys.all() }) // Call analyticsKeys.all()
+  },
+  
+  // Blog cache invalidation helpers
+  invalidateAllBlog: (queryClient: QueryClient) => {
+    queryClient.invalidateQueries({ queryKey: blogKeys.all() })
+  },
+  
+  invalidateBlogPosts: (queryClient: QueryClient) => {
+    queryClient.invalidateQueries({ queryKey: blogKeys.posts() })
+  },
+  
+  invalidateBlogPost: (queryClient: QueryClient, slug: string) => {
+    queryClient.invalidateQueries({ queryKey: blogKeys.post(slug) })
+  },
+  
+  invalidateBlogCategories: (queryClient: QueryClient) => {
+    queryClient.invalidateQueries({ queryKey: blogKeys.categories() })
+  },
+  
+  invalidateBlogTags: (queryClient: QueryClient) => {
+    queryClient.invalidateQueries({ queryKey: blogKeys.tags() })
+  },
+  
+  invalidateBlogAnalytics: (queryClient: QueryClient) => {
+    queryClient.invalidateQueries({ queryKey: blogKeys.analytics() })
   },
 } as const
 
@@ -154,4 +218,5 @@ export type ProjectQueryKey = ReturnType<typeof projectKeys[keyof typeof project
 export type AnalyticsQueryKey = ReturnType<typeof analyticsKeys[keyof typeof analyticsKeys]>
 export type ContactQueryKey = ReturnType<typeof contactKeys[keyof typeof contactKeys]>
 export type ResumeQueryKey = ReturnType<typeof resumeKeys[keyof typeof resumeKeys]>
-export type AnyQueryKey = ProjectQueryKey | AnalyticsQueryKey | ContactQueryKey | ResumeQueryKey
+export type BlogQueryKey = ReturnType<typeof blogKeys[keyof typeof blogKeys]>
+export type AnyQueryKey = ProjectQueryKey | AnalyticsQueryKey | ContactQueryKey | ResumeQueryKey | BlogQueryKey

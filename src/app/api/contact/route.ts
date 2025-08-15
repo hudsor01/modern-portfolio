@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
+import { 
+  checkEnhancedContactFormRateLimit
+} from '@/lib/security/enhanced-rate-limiter'
 
 // Define proper types for the contact form
 interface ContactFormData {
@@ -13,6 +16,12 @@ interface ContactApiResponse {
   message: string;
   error?: string;
   details?: Record<string, string>;
+  rateLimitInfo?: {
+    remaining?: number;
+    resetTime?: number;
+    retryAfter?: number;
+    blocked?: boolean;
+  };
 }
 
 class ValidationError extends Error {
@@ -48,11 +57,68 @@ function validateContactForm(data: unknown): ContactFormData {
   return formData as ContactFormData;
 }
 
+function getClientIdentifier(req: Request): string {
+  // Try to get IP from various headers
+  const forwarded = req.headers.get('x-forwarded-for')
+  const realIp = req.headers.get('x-real-ip')
+  const cfConnectingIp = req.headers.get('cf-connecting-ip')
+  
+  const ip = forwarded?.split(',')[0] || realIp || cfConnectingIp || 'unknown'
+  
+  // Add user agent as additional identifier
+  const userAgent = req.headers.get('user-agent') || 'unknown'
+  const userAgentHash = Buffer.from(userAgent).toString('base64').slice(0, 8)
+  
+  return `${ip}:${userAgentHash}`
+}
+
 // Initialize Resend with your API key
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: Request) {
   try {
+    // Enhanced rate limiting check first
+    const clientId = getClientIdentifier(request)
+    const userAgent = request.headers.get('user-agent')
+    const rateLimitResult = checkEnhancedContactFormRateLimit(clientId, {
+      userAgent: userAgent || undefined,
+      path: '/api/contact'
+    })
+
+    if (!rateLimitResult.allowed) {
+      const response: ContactApiResponse = {
+        success: false,
+        message: rateLimitResult.reason === 'penalty_block' 
+          ? 'Account temporarily blocked due to excessive attempts'
+          : 'Too many contact form submissions. Please try again later.',
+        error: 'RATE_LIMIT_EXCEEDED',
+        rateLimitInfo: {
+          retryAfter: rateLimitResult.retryAfter,
+          resetTime: rateLimitResult.resetTime,
+          blocked: rateLimitResult.blocked
+        }
+      }
+
+      const status = rateLimitResult.blocked ? 429 : 429
+      const headers: Record<string, string> = {
+        'X-RateLimit-Limit': '3',
+        'X-RateLimit-Remaining': '0'
+      }
+
+      if (rateLimitResult.resetTime) {
+        headers['X-RateLimit-Reset'] = rateLimitResult.resetTime.toString()
+      }
+
+      if (rateLimitResult.retryAfter) {
+        headers['Retry-After'] = Math.ceil((rateLimitResult.retryAfter - Date.now()) / 1000).toString()
+      }
+
+      return NextResponse.json(response, { 
+        status, 
+        headers 
+      })
+    }
+
     // Parse the request body
     const body = await request.json();
 
@@ -82,9 +148,26 @@ export async function POST(request: Request) {
     const response: ContactApiResponse = {
       success: true,
       message: 'Form submitted successfully',
+      rateLimitInfo: {
+        remaining: rateLimitResult.remaining,
+        resetTime: rateLimitResult.resetTime
+      }
     };
 
-    return NextResponse.json(response, { status: 200 });
+    // Add rate limit headers to successful response
+    const headers: Record<string, string> = {}
+    if (rateLimitResult.remaining !== undefined) {
+      headers['X-RateLimit-Limit'] = '3'
+      headers['X-RateLimit-Remaining'] = rateLimitResult.remaining.toString()
+    }
+    if (rateLimitResult.resetTime) {
+      headers['X-RateLimit-Reset'] = rateLimitResult.resetTime.toString()
+    }
+
+    return NextResponse.json(response, { 
+      status: 200,
+      headers 
+    });
   } catch (error) {
 
     const response: ContactApiResponse = {

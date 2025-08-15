@@ -7,10 +7,11 @@ import { ClientComponentsProvider } from '@/components/providers/client-componen
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from '@/components/ui/toaster'
-import { ScrollProgress } from '@/components/ui/scroll-progress'
+import { EnhancedReadingProgress } from '@/components/ui/enhanced-reading-progress'
 import { ScrollToTop } from '@/components/ui/scroll-to-top'
 import { baseMetadata } from './shared-metadata'
 import { PersonJsonLd, WebsiteJsonLd, LocalBusinessJsonLd } from '@/components/seo/json-ld'
+import { PreloadManager } from '@/components/performance/preload-manager'
 import Script from 'next/script'
 
 // Use single font family for better performance
@@ -54,7 +55,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ClientComponentsProvider>
-            <ScrollProgress />
+            <PreloadManager />
+            <EnhancedReadingProgress 
+              height={3}
+              showThreshold={1}
+              hideThreshold={99}
+              contentPagesOnly={true}
+            />
             {children}
             <ScrollToTop />
             <Toaster position="bottom-right" closeButton richColors />

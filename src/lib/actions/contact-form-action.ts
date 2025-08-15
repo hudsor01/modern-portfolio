@@ -64,9 +64,9 @@ export async function submitContactForm(
       message: 'Your message has been sent successfully! I\'ll get back to you soon.',
     }
 
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
-      const errorMessage = error.errors.map((e) => e.message).join(', ')
+      const errorMessage = error.issues.map((e: z.ZodIssue) => e.message).join(', ')
       
       return {
         success: false,

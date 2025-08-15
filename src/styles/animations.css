@@ -1,4 +1,6 @@
-/* Animation keyframes to be used globally */
+/* Modern Animation System with Enhanced Micro-interactions */
+
+/* === ENHANCED KEYFRAME DEFINITIONS === */
 @keyframes blink {
   0%,
   100% {
@@ -214,4 +216,31 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Additional animations for progressive loading */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes skeletonPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+.animate-skeleton {
+  animation: skeletonPulse 2s ease-in-out infinite;
 }

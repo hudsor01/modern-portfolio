@@ -17,6 +17,7 @@ const navItems: NavItem[] = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
   { label: 'Projects', href: '/projects' },
+  { label: 'Blog', href: '/blog' },
   { label: 'Resume', href: '/resume' },
   { label: 'Contact', href: '/contact' },
 ]
@@ -50,10 +51,12 @@ export function Navbar() {
                           : 'text-gray-300 hover:text-white hover:bg-white/10 border-transparent hover:border-white/20 hover:shadow-md'
                       }`}
                     >
-                      {item.label}
-                      {pathname === item.href && (
-                        <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-0.5 w-6 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full" />
-                      )}
+                      <div className="relative">
+                        {item.label}
+                        {pathname === item.href && (
+                          <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-0.5 w-6 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full" />
+                        )}
+                      </div>
                     </Link>
                   ))}
                 </div>
