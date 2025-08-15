@@ -354,7 +354,7 @@ export default function ResumePage() {
                     {/* Profile Image */}
                     <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-2xl overflow-hidden border-4 border-blue-500/40 shadow-xl shadow-blue-500/20 flex-shrink-0">
                       <Image
-                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&h=160&fit=crop&crop=face&q=80"
+                        src="/images/richard.jpg"
                         alt="Richard Hudson - Revenue Operations Consultant specializing in Salesforce automation, data analytics, and business growth strategies in Dallas, TX"
                         fill
                         sizes="(max-width: 768px) 128px, 160px"
