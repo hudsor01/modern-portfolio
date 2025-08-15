@@ -11,8 +11,7 @@ import {
   initializeAnalyticsAtom,
   analyticsEnabledAtom,
   setAnalyticsConsentAtom,
-  systemThemeAtom,
-  debugModeAtom
+  systemThemeAtom
 } from '@/lib/atoms'
 import { isClient } from '@/lib/atoms/utils'
 import type { AtomInitialValues, ErrorBoundaryProps, LogValue, RenderFunction } from '@/types/common'
