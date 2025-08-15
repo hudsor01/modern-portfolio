@@ -31,22 +31,17 @@ export interface JWTConfig {
 const getJWTConfig = (): JWTConfig => {
   const secret = process.env.JWT_SECRET
   if (!secret) {
-    // Only throw error at runtime, not during build
-    if (process.env.NODE_ENV === 'production' && typeof window === 'undefined') {
-      throw new Error('JWT_SECRET environment variable is required in production')
-    } else if (typeof window === 'undefined') {
-      // Return a development-only config for build time
-      console.warn('JWT_SECRET not set - JWT authentication will not work')
-      return {
-        secret: 'development-only-secret-not-for-production-use',
-        algorithm: 'HS256',
-        expiresIn: '1h',
-        issuer: process.env.NEXT_PUBLIC_SITE_URL || 'https://richardwhudsonjr.com',
-        audience: process.env.NEXT_PUBLIC_SITE_URL || 'https://richardwhudsonjr.com',
-        clockTolerance: 30
-      }
+    // Allow build to proceed without JWT_SECRET
+    // Only throw error when actually trying to use JWT functions at runtime
+    console.warn('JWT_SECRET not set - JWT authentication will not work')
+    return {
+      secret: 'build-time-placeholder-not-for-production-use',
+      algorithm: 'HS256',
+      expiresIn: '1h',
+      issuer: process.env.NEXT_PUBLIC_SITE_URL || 'https://richardwhudsonjr.com',
+      audience: process.env.NEXT_PUBLIC_SITE_URL || 'https://richardwhudsonjr.com',
+      clockTolerance: 30
     }
-    throw new Error('JWT_SECRET environment variable is required')
   }
 
   // Ensure secret is sufficiently long
@@ -90,6 +85,11 @@ export class JWTAuthService {
    * Generate a secure JWT token
    */
   generateToken(payload: Omit<JWTPayload, 'iat' | 'exp' | 'iss' | 'aud'>): string {
+    // Runtime check for JWT_SECRET
+    if (this.config.secret === 'build-time-placeholder-not-for-production-use') {
+      throw new Error('JWT_SECRET environment variable is required for JWT operations')
+    }
+    
     try {
       const fullPayload: JWTPayload = {
         ...payload,
@@ -124,6 +124,11 @@ export class JWTAuthService {
    * Verify and decode JWT token
    */
   verifyToken(token: string): JWTPayload {
+    // Runtime check for JWT_SECRET
+    if (this.config.secret === 'build-time-placeholder-not-for-production-use') {
+      throw new Error('JWT_SECRET environment variable is required for JWT operations')
+    }
+    
     try {
       const decoded = jwt.verify(token, this.config.secret, {
         algorithms: [this.config.algorithm],
