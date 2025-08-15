@@ -172,7 +172,7 @@ describe('JobQueue', () => {
     it('handles job progress updates', async () => {
       const progressHandler = vi.fn()
       jobQueue.registerHandler('progress-job', {
-        process: async (job, progress) => {
+        process: async (_job, progress) => {
           progress(25)
           await new Promise(resolve => setTimeout(resolve, 10))
           progress(50)

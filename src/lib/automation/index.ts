@@ -116,7 +116,7 @@ export async function initializeBlogAutomation(): Promise<void> {
     await blogAutomationService.initialize();
     
     // Queue configuration logging
-    const queueOptions = jobQueue.getOptions();
+    // const queueOptions = jobQueue.getOptions();
     // Log system health
     const health = await blogAutomationService.getAutomationHealth();
     if (health.issues.length > 0) {

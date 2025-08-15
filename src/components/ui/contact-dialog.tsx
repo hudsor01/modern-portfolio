@@ -49,8 +49,7 @@ export function ContactDialog({ open, onCloseAction }: ContactDialogProps) {
           setIsSuccess(false)
         }, 300)
       }, 1500)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_err) { 
+      } catch (_err) { 
       error('Failed to send message. Please try again.')
     } finally {
       setIsSubmitting(false)

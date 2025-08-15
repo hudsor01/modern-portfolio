@@ -1,0 +1,43 @@
+
+> modern-portfolio@0.1.0 prebuild
+> npm run validate
+
+
+> modern-portfolio@0.1.0 validate
+> npm run type-check && npm run lint
+
+
+> modern-portfolio@0.1.0 type-check
+> tsc --noEmit --incremental --tsBuildInfoFile .next/cache/tsc-check.tsbuildinfo
+
+
+> modern-portfolio@0.1.0 lint
+> next lint
+
+✔ No ESLint warnings or errors
+
+> modern-portfolio@0.1.0 build
+> next build
+
+   ▲ Next.js 15.4.5
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     ✓ optimizeCss
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 4.0s
+   Linting and checking validity of types ...
+   Collecting page data ...
+Blog automation service initialized successfully
+Blog automation service initialized successfully
+   Generating static pages (0/45) ...
+   Generating static pages (11/45) 
+   Generating static pages (22/45) 
+Blog automation service initialized successfully
+Error occurred prerendering page "/projects". Read more: https://nextjs.org/docs/messages/prerender-error
+Error: React.Children.only expected to receive a single React element child.
+    at <unknown> (.next/server/chunks/3030.js:15:84869) {
+  digest: '1155410683'
+}
+Export encountered an error on /projects/page: /projects, exiting the build.
+ ⨯ Next.js build worker exited with code: 1 and signal: null

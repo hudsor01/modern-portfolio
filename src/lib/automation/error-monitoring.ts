@@ -466,6 +466,8 @@ class ErrorMonitor {
   }
 
   private formatAlertMessage(pattern: ErrorPattern, event: ErrorEvent, occurrences: number): string {
+    const jobIdLine = event.jobId ? '**Job ID:** ' + event.jobId + '\n' : '';
+    
     return `🚨 **Alert: ${pattern.name}**
     
 **Pattern:** ${pattern.name} (${pattern.severity})
@@ -473,8 +475,7 @@ class ErrorMonitor {
 **Latest Error:** ${event.message}
 **Source:** ${event.source}
 **Time:** ${event.timestamp.toISOString()}
-${event.jobId ? `**Job ID:** ${event.jobId}` : ''}
-
+${jobIdLine}
 **Details:** ${JSON.stringify(event.details || {}, null, 2)}`;
   }
 
@@ -513,7 +514,6 @@ ${event.jobId ? `**Job ID:** ${event.jobId}` : ''}
         
       case 'email':
         // In a real implementation, integrate with your email service
-        }`);
         break;
     }
   }
@@ -530,7 +530,7 @@ ${event.jobId ? `**Job ID:** ${event.jobId}` : ''}
             level: 'error',
             category: 'job',
             source: 'job-queue',
-            message: `Job ${job.type} failed: ${job.lastError}`,
+            message: 'Job ' + job.type + ' failed: ' + (job.lastError || 'Unknown error'),
             jobId: job.id,
             details: {
               jobType: job.type,
@@ -551,7 +551,7 @@ ${event.jobId ? `**Job ID:** ${event.jobId}` : ''}
   }
 
   private generateId(): string {
-    return `err_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return 'err_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   }
 
   destroy(): void {
@@ -577,7 +577,7 @@ export function logAPIError(error: Error | unknown, context: {
   return errorMonitor.logError({
     level: 'error',
     category: 'api',
-    source: `api:${context.endpoint}`,
+    source: 'api:' + context.endpoint,
     message: errorObj.message,
     stack: errorObj.stack,
     requestId: context.requestId,
@@ -596,7 +596,7 @@ export function logJobError(error: Error | unknown, job: Job): ErrorEvent {
   return errorMonitor.logError({
     level: 'error',
     category: 'job',
-    source: `job:${job.type}`,
+    source: 'job:' + job.type,
     message: errorObj.message,
     stack: errorObj.stack,
     jobId: job.id,
