@@ -54,8 +54,7 @@ export class BlogAutomationService {
     this.registerAdditionalHandlers();
 
     this.isInitialized = true;
-    console.log('Blog automation service initialized successfully');
-  }
+    }
 
   /**
    * Trigger full automation workflow for a published blog post
@@ -413,8 +412,6 @@ export class BlogAutomationService {
         progress(10);
 
         // Mock email sending - integrate with your email service
-        console.log(`Sending email notification:`, job.payload);
-
         // Simulate email delivery
         await new Promise(resolve => setTimeout(resolve, 2000));
 
@@ -429,8 +426,6 @@ export class BlogAutomationService {
         progress(10);
 
         // Mock analytics processing - integrate with your analytics service
-        console.log(`Processing analytics:`, job.payload);
-
         // Simulate analytics processing
         await new Promise(resolve => setTimeout(resolve, 3000));
 
@@ -445,8 +440,6 @@ export class BlogAutomationService {
         progress(10);
 
         // Mock content scheduling - integrate with your CMS
-        console.log(`Processing scheduled content:`, job.payload);
-
         // Simulate content publishing
         await new Promise(resolve => setTimeout(resolve, 1000));
 

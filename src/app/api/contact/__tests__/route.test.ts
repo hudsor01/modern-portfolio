@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { POST } from '../route'
+import { POST } from '@/app/api/contact/route'
 import { NextResponse } from 'next/server'
 
 // Mock Resend - using a factory function

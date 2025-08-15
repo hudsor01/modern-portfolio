@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import type { Project } from '@/types/project' // Changed import path
 import { ExternalLink, Info, ArrowRight, Zap } from 'lucide-react' // Added ArrowRight, Zap
-import { ProjectQuickView } from './project-quick-view'
+import { ProjectQuickView } from '@/components/projects/project-quick-view'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination, Autoplay, EffectCreative } from 'swiper/modules'
 import { PrevButton, NextButton, CustomPagination } from '@/components/layout/swiper-navigation'
@@ -147,7 +147,7 @@ export function ProjectSwiper({
                             size="sm"
                             className="bg-background/95 hover:bg-background/100 text-xs backdrop-blur transition-all"
                           >
-                            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+                            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="flex items-center">
                               <ExternalLink className="mr-1 h-3 w-3" />
                               Live Demo
                             </a>

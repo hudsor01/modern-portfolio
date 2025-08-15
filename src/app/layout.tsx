@@ -1,3 +1,4 @@
+import React from 'react'
 import './globals.css'
 import '@/styles/animations.css'
 import { Metadata } from 'next'
@@ -23,7 +24,7 @@ const inter = Inter({
 
 export const metadata: Metadata = baseMetadata
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+const RootLayout = React.memo(function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
       <head>
@@ -72,4 +73,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </body>
     </html>
   )
-}
+})
+
+export default RootLayout

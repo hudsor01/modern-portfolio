@@ -365,7 +365,7 @@ describe('Enhanced Rate Limiter', () => {
 
   describe('Error Handling and Edge Cases', () => {
     it('should handle missing configuration gracefully', () => {
-      const result = enhancedRateLimiter.checkLimit('edge-client', {} as any)
+      const result = enhancedRateLimiter.checkLimit('edge-client', {} as import('../enhanced-rate-limiter').EnhancedRateLimitConfig)
       expect(result.allowed).toBe(true) // Should default to allowing
     })
 

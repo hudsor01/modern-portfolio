@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Image, { ImageProps } from 'next/image'
 import { cn } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -25,7 +25,7 @@ export function OptimizedImage({
   wrapperClassName,
   loadingClassName,
   aspectRatio,
-  fallbackSrc = '/images/image-placeholder.jpg',
+  fallbackSrc = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop&crop=center&q=80',
   blurUp = true,
   loadingComponent,
   lazy = true,
@@ -53,7 +53,7 @@ export function OptimizedImage({
     : undefined
 
   // Handle image load error
-  const handleError = () => {
+  const handleError = useCallback(() => {
     setError(true)
     setIsLoading(false)
     if (fallbackSrc && fallbackSrc !== currentSrc) {
@@ -61,7 +61,13 @@ export function OptimizedImage({
       setError(false)
       setIsLoading(true)
     }
-  }
+  }, [fallbackSrc, currentSrc])
+
+  // Handle image load success
+  const handleLoad = useCallback(() => {
+    setIsLoading(false)
+    setError(false)
+  }, [])
 
   return (
     <div
@@ -98,7 +104,7 @@ export function OptimizedImage({
         quality={quality}
         priority={priority}
         loading={priority ? undefined : (lazy ? 'lazy' : 'eager')}
-        onLoad={() => setIsLoading(false)}
+        onLoad={handleLoad}
         onError={handleError}
         {...props}
       />

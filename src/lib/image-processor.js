@@ -49,7 +49,7 @@ async function processImageFile(file, outputPath, config, cache) {
 
       // Skip if file exists and is newer than source
       if (!isFileNewer(file, outputFilename)) {
-        console.log(`Skipping ${path.basename(outputFilename)} (already up to date)`)
+        } (already up to date)`)
         continue
       }
 
@@ -70,7 +70,7 @@ async function processImageFile(file, outputPath, config, cache) {
       image.clone().resize(20).blur(10).toFormat('webp', { quality: 20 }).toFile(placeholderPath)
     )
   } else {
-    console.log(`Skipping placeholder for ${filename} (already up to date)`)
+    `)
   }
 
   // Wait for all size variants to complete

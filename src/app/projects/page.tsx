@@ -28,7 +28,7 @@ export default async function ProjectsPage() {
     github: p.github,
     category: p.category || 'Other',
     tags: p.tags,
-    createdAt: p.createdAt instanceof Date ? p.createdAt : new Date(p.createdAt || Date.now()),
+    createdAt: p.createdAt instanceof Date ? p.createdAt : new Date(p.createdAt || '2024-01-01'),
     updatedAt: p.updatedAt ? (p.updatedAt instanceof Date ? p.updatedAt : new Date(p.updatedAt)) : undefined,
     technologies: p.tags,
     liveUrl: p.link,

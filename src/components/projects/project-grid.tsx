@@ -1,5 +1,5 @@
 'use client'
-import { ProjectCard } from './project-card'
+import { ProjectCard } from '@/components/projects/project-card'
 import type { Project } from '@/types/project' // Changed import path
 
 interface ProjectGridProps {
@@ -9,10 +9,10 @@ interface ProjectGridProps {
 
 export function ProjectGrid({ projects }: ProjectGridProps) {
   // Ensure all projects have an id property
-  const formattedProjects = projects.map((project) => ({
+  const formattedProjects = projects.map((project, index) => ({
     ...project,
-    // Ensure id exists (use slug as fallback)
-    id: project.id || project.slug || `project-${Math.random().toString(36).substring(2, 9)}`,
+    // Ensure id exists (use slug as fallback, then deterministic index-based id)
+    id: project.id || project.slug || `project-${index}-${project.title?.replace(/\s+/g, '-').toLowerCase() || 'untitled'}`,
     // Ensure tags property exists
     tags: project.tags || project.technologies || [],
   }))

@@ -6,13 +6,13 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { Resend } from 'resend'
-import { 
-  ContactFormSchema, 
-  ContactResponse, 
-  RPCContext, 
-  RPCResponse 
-} from '../types'
-import { rateLimit, validateInput, requestContext } from '../middleware'
+import {
+  ContactFormSchema,
+  ContactResponse,
+  RPCContext,
+  RPCResponse
+} from '@/server/rpc/types'
+import { rateLimit, requestContext } from '@/server/rpc/middleware'
 
 const contact = new Hono()
 
@@ -31,7 +31,8 @@ contact.post(
   async (c) => {
     try {
       const formData = c.req.valid('json')
-      const context = c.get('rpcContext') as RPCContext
+      const contextData = c.get('rpcContext' as never) as RPCContext | undefined
+      const context = contextData ?? {} as RPCContext
 
       // Bot detection - check honeypot field
       if (formData.honeypot) {
@@ -190,7 +191,7 @@ contact.post(
   zValidator('json', ContactFormSchema),
   async (c) => {
     const formData = c.req.valid('json')
-    
+
     return c.json<RPCResponse>({
       success: true,
       data: {

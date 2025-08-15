@@ -11,7 +11,7 @@ interface ResumeDownloadProps {
   variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
   size?: 'default' | 'sm' | 'lg' | 'icon'
   label?: string
-  fallbackToPDF?: boolean // This prop determines the download strategy
+  fallbackToPDF?: boolean
 }
 
 export function ResumeDownload({
@@ -20,7 +20,7 @@ export function ResumeDownload({
   size = 'default',
   label = 'Download Resume',
   fallbackToPDF = false, // Default to false, meaning try API first
-}: ResumeDownloadProps) {
+}: Readonly<ResumeDownloadProps>) {
   const { success: showSuccessToast, error: showErrorToast, loading: showLoadingToast } = useToast()
 
   // Helper function for downloading files
@@ -38,7 +38,7 @@ export function ResumeDownload({
 
   const handleDownload = async () => {
     const toastId = showLoadingToast('Preparing your resume...')
-    
+
     try {
       // First try to use the API to get a fresh PDF
       if (!fallbackToPDF) {

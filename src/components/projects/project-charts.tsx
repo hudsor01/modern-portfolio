@@ -86,6 +86,9 @@ interface ProjectChartsProps {
 export function ProjectCharts({ projectId }: ProjectChartsProps) {
   const [isMounted, setIsMounted] = useState(false)
 
+  // Deterministic chart bar heights to prevent hydration mismatch
+  const chartBarHeights = [85, 92, 78, 95, 88, 82, 90, 76, 93, 87, 91, 89]
+
   useEffect(() => {
     setIsMounted(true)
   }, [])
@@ -409,12 +412,12 @@ export function ProjectCharts({ projectId }: ProjectChartsProps) {
         {/* Chart representation */}
         <div className="absolute bottom-8 left-8 right-8 h-32">
           <div className="flex items-end justify-between h-full">
-            {Array.from({ length: 12 }).map((_, i) => (
+            {chartBarHeights.map((height, i) => (
               <div
                 key={i}
                 className={`bg-gradient-to-t from-blue-500 to-cyan-400 rounded-t transition-all duration-1000 hover:from-blue-400 hover:to-cyan-300`}
                 style={{
-                  height: `${Math.random() * 80 + 20}%`,
+                  height: `${height}%`,
                   width: '6%',
                   animationDelay: `${i * 0.1}s`
                 }}

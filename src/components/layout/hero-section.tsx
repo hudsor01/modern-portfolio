@@ -4,7 +4,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
-import { ArrowRight, FileText, Github, Linkedin } from 'lucide-react'
+import { ArrowRight, FileText } from 'lucide-react'
+import { SiGithub, SiLinkedin } from 'react-icons/si'
 
 interface HeroSectionProps {
   titles: string[]
@@ -36,14 +37,12 @@ export function HeroSection({ titles }: HeroSectionProps) {
             <div className="flex flex-wrap gap-4 pt-2">
               <Button asChild size="lg" className="group">
                 <Link href="/resume" className="flex items-center gap-2">
-                  <div className="flex items-center gap-2">
-                    <FileText size={18} />
-                    Resume
-                    <ArrowRight
-                      className="group-hover:translate-x-1 transition-transform"
-                      size={18}
-                    />
-                  </div>
+                  <FileText size={18} />
+                  Resume
+                  <ArrowRight
+                    className="group-hover:translate-x-1 transition-transform"
+                    size={18}
+                  />
                 </Link>
               </Button>
 
@@ -64,7 +63,7 @@ export function HeroSection({ titles }: HeroSectionProps) {
                 className="text-white/70 hover:text-white transition-colors"
                 aria-label="LinkedIn Profile"
               >
-                <Linkedin size={24} />
+                <SiLinkedin size={24} />
               </a>
               <a
                 href="https://github.com/hudsor01"
@@ -73,7 +72,7 @@ export function HeroSection({ titles }: HeroSectionProps) {
                 className="text-white/70 hover:text-white transition-colors"
                 aria-label="GitHub Profile"
               >
-                <Github size={24} />
+                <SiGithub size={24} />
               </a>
             </div>
           </motion.div>
@@ -87,7 +86,7 @@ export function HeroSection({ titles }: HeroSectionProps) {
             <div className="relative w-full max-w-md">
               <div className="aspect-square rounded-2xl overflow-hidden">
                 <Image
-                  src="/images/profile.jpg"
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face&q=80"
                   alt="Richard Hudson"
                   fill
                   className="object-cover"

@@ -300,8 +300,6 @@ export class EmailService {
       '---'
     ].filter(Boolean).join('\n')
     
-    console.log(logMessage)
-    
     return {
       success: true,
       data: {

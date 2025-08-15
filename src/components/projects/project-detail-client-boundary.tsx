@@ -7,7 +7,8 @@ import type { ProjectData } from '@/types/shared-api';
 import { Navbar } from '@/components/layout/navbar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Github, ExternalLink, TrendingUp, Target, DollarSign, BarChart3, Users, Zap, Clock, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ExternalLink, TrendingUp, Target, DollarSign, BarChart3, Users, Zap, Clock, ArrowRight } from 'lucide-react';
+import { SiGithub } from 'react-icons/si';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ProjectCharts } from '@/components/projects/project-charts';
@@ -116,6 +117,9 @@ export default function ProjectDetailClientBoundary({
   slug, 
   initialProject 
 }: ProjectDetailClientBoundaryProps) {
+  // Deterministic progress bar widths to prevent hydration mismatch
+  const progressWidths = [85, 92, 78, 88, 82, 90, 76, 93]
+
   const { data: projectResponse, isLoading, isError, error } = useProject(slug);
   
   // Use hydrated data or fallback to initial data
@@ -268,7 +272,7 @@ export default function ProjectDetailClientBoundary({
                     rel="noopener noreferrer"
                     className="flex items-center gap-3"
                   >
-                    <Github className="h-5 w-5" />
+                    <SiGithub className="h-5 w-5" />
                     View Source Code
                   </a>
                 </Button>
@@ -281,7 +285,7 @@ export default function ProjectDetailClientBoundary({
                     rel="noopener noreferrer"
                     className="flex items-center gap-3"
                   >
-                    <Github className="h-5 w-5" />
+                    <SiGithub className="h-5 w-5" />
                     View Source Code
                   </a>
                 </Button>
@@ -462,7 +466,7 @@ export default function ProjectDetailClientBoundary({
                           <div className="mt-4 h-2 bg-white/5 rounded-full overflow-hidden">
                             <div 
                               className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full transition-all duration-1000 animate-pulse"
-                              style={{ width: `${Math.min(90, Math.random() * 100 + 60)}%` }}
+                              style={{ width: `${progressWidths[index % progressWidths.length]}%` }}
                             />
                           </div>
                         </div>

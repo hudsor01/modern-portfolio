@@ -513,8 +513,7 @@ ${event.jobId ? `**Job ID:** ${event.jobId}` : ''}
         
       case 'email':
         // In a real implementation, integrate with your email service
-        console.log(`Email alert would be sent to: ${channel.config.recipients?.join(', ')}`);
-        console.log(message);
+        }`);
         break;
     }
   }

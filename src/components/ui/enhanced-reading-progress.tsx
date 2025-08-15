@@ -56,7 +56,7 @@ export function EnhancedReadingProgress({
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isVisible, setIsVisible] = useState(false)
   const [direction, setDirection] = useState<'up' | 'down'>('down')
-  const rafRef = useRef<number>()
+  const rafRef = useRef<number | undefined>(undefined)
   const lastScrollY = useRef(0)
   const ticking = useRef(false)
 

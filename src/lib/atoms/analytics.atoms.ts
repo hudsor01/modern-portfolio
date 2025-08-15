@@ -283,7 +283,7 @@ export const trackInteractionAtom = atom(
     type: InteractionType
     element: string
     page: string
-    metadata?: Record<string, any>
+    metadata?: Record<string, string | number | boolean>
   }) => {
     if (!get(analyticsEnabledAtom)) return
 
@@ -316,7 +316,7 @@ export const trackInteractionAtom = atom(
  */
 export const trackClickAtom = atom(
   null,
-  (get, set, data: { element: string; page: string; metadata?: Record<string, any> }) => {
+  (_get, set, data: { element: string; page: string; metadata?: Record<string, string | number | boolean> }) => {
     set(trackInteractionAtom, { type: 'click', ...data })
   }
 )
@@ -326,7 +326,7 @@ export const trackClickAtom = atom(
  */
 export const trackFormSubmitAtom = atom(
   null,
-  (get, set, data: { element: string; page: string; formType: string; success: boolean }) => {
+  (_get, set, data: { element: string; page: string; formType: string; success: boolean }) => {
     set(trackInteractionAtom, {
       type: 'form_submit',
       element: data.element,
@@ -341,7 +341,7 @@ export const trackFormSubmitAtom = atom(
  */
 export const trackDownloadAtom = atom(
   null,
-  (get, set, data: { element: string; page: string; fileName: string; fileType: string }) => {
+  (_get, set, data: { element: string; page: string; fileName: string; fileType: string }) => {
     set(trackInteractionAtom, {
       type: 'file_download',
       element: data.element,
@@ -356,7 +356,7 @@ export const trackDownloadAtom = atom(
  */
 export const trackExternalLinkAtom = atom(
   null,
-  (get, set, data: { element: string; page: string; url: string; domain: string }) => {
+  (_get, set, data: { element: string; page: string; url: string; domain: string }) => {
     set(trackInteractionAtom, {
       type: 'external_link',
       element: data.element,
@@ -428,14 +428,12 @@ export const trackMemoryUsageAtom = atom(
     if (!get(analyticsEnabledAtom) || !isClient()) return
 
     if ('memory' in performance) {
-      const memory = (performance as any).memory
-      set(performanceMetricsAtom, {
-        memoryUsage: {
-          usedJSHeapSize: memory.usedJSHeapSize,
-          totalJSHeapSize: memory.totalJSHeapSize,
-          jsHeapSizeLimit: memory.jsHeapSizeLimit
-        }
-      })
+      const memory = (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory
+      if (memory) {
+        set(performanceMetricsAtom, {
+          memoryUsage: memory.usedJSHeapSize
+        })
+      }
     }
   }
 )
@@ -493,8 +491,8 @@ export const trackErrorAtom = atom(
       properties: {
         message: errorData.message,
         url: errorData.url,
-        line: errorData.line,
-        column: errorData.column
+        line: errorData.line || 0,
+        column: errorData.column || 0
       }
     })
   }
@@ -524,7 +522,7 @@ export const trackCustomEventAtom = atom(
   null,
   (get, set, eventData: {
     name: string
-    properties: Record<string, any>
+    properties: Record<string, string | number | boolean>
     userId?: string
   }) => {
     if (!get(analyticsEnabledAtom)) return
@@ -675,7 +673,7 @@ export const setAnalyticsConsentAtom = atom(
  */
 export const revokeAnalyticsConsentAtom = atom(
   null,
-  (get, set) => {
+  (_get, set) => {
     set(setAnalyticsConsentAtom, false)
     
     // Clear persisted data

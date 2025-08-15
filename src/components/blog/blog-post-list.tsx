@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Loader2, Grid, List, SortAsc, SortDesc } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -71,28 +71,28 @@ export function BlogPostList({
     setLocalViewMode(viewMode)
   }, [viewMode])
 
-  const handleViewModeChange = (mode: 'grid' | 'list') => {
+  const handleViewModeChange = useCallback((mode: 'grid' | 'list') => {
     setLocalViewMode(mode)
     onViewModeChange?.(mode)
-  }
+  }, [onViewModeChange])
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.4, staggerChildren: 0.1 }
+  const animationVariants = useMemo(() => ({
+    container: {
+      hidden: { opacity: 0 },
+      visible: {
+        opacity: 1,
+        transition: { duration: 0.4, staggerChildren: 0.1 }
+      }
+    },
+    item: {
+      hidden: { opacity: 0, y: 20 },
+      visible: { opacity: 1, y: 0 }
+    },
+    listItem: {
+      hidden: { opacity: 0, x: -20 },
+      visible: { opacity: 1, x: 0 }
     }
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
-  }
-
-  const listItemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: { opacity: 1, x: 0 }
-  }
+  }), [])
 
   // Empty state
   if (!isLoading && posts.length === 0) {
@@ -172,10 +172,10 @@ export function BlogPostList({
           {/* Sort Options */}
           <Select
             value={`${filters.sortBy || 'publishedAt'}-${filters.sortOrder || 'desc'}`}
-            onValueChange={(value) => {
+            onValueChange={useCallback((value: string) => {
               const [sortBy, sortOrder] = value.split('-') as ['publishedAt' | 'title' | 'viewCount' | 'commentCount', 'asc' | 'desc']
               onFiltersChange({ ...filters, sortBy, sortOrder })
-            }}
+            }, [filters, onFiltersChange])}
           >
             <SelectTrigger className="w-40">
               <SelectValue />
@@ -243,14 +243,14 @@ export function BlogPostList({
                 : 'grid-cols-1'
             )}
           >
-            {Array.from({ length: 6 }).map((_, index) => (
+            {useMemo(() => Array.from({ length: 6 }).map((_, index) => (
               <BlogPostSkeleton key={index} variant={localViewMode} />
-            ))}
+            )), [localViewMode])}
           </motion.div>
         ) : (
           <motion.div
             key={`${localViewMode}-${currentPage}`}
-            variants={containerVariants}
+            variants={animationVariants.container}
             initial="hidden"
             animate="visible"
             className={cn(
@@ -263,7 +263,7 @@ export function BlogPostList({
             {posts.map((post, index) => (
               <motion.div
                 key={post.id}
-                variants={localViewMode === 'grid' ? itemVariants : listItemVariants}
+                variants={localViewMode === 'grid' ? animationVariants.item : animationVariants.listItem}
                 transition={{ delay: index * 0.1 }}
               >
                 <BlogCard

@@ -1,11 +1,12 @@
+import React from 'react'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Richard Hudson - Resume',
   description: 'Full resume of Richard Hudson, Revenue Operations Professional',
-}
+})
 
-export default function ResumeViewPage() {
+const ResumeViewPage = React.memo(function ResumeViewPage() {
   return (
     <div className="mx-auto my-8 max-w-4xl px-4 print:my-0 print:px-0">
       <div className="space-y-6 print:space-y-5">
@@ -246,4 +247,6 @@ export default function ResumeViewPage() {
       </div>
     </div>
   )
-}
+})
+
+export default ResumeViewPage

@@ -43,9 +43,7 @@ export function ProjectFiltersEnhanced({ projects, onProjectHover }: ProjectFilt
   }, [projects, selectedFilter, isMounted]);
 
   // DEBUG: Log what 'projects' looks like on initial renders
-  // console.log('[ProjectFiltersEnhanced] Rendering - isMounted:', isMounted, 'Projects count:', projects?.length);
-
-  return (
+  // return (
     <div className="container mx-auto px-4 py-6">
       <div className="flex flex-wrap gap-3 mb-10 justify-center items-center">
         <Button

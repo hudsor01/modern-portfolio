@@ -7,20 +7,44 @@ import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
 import { 
-  AnalyticsDataSchema,
   WebVitalReportSchema,
   RPCResponse,
   RPCContext,
   PaginationSchema
-} from '../types'
-import { rateLimit, requestContext } from '../middleware'
+} from '@/server/rpc/types'
+import { rateLimit, requestContext } from '@/server/rpc/middleware'
 
 const analytics = new Hono()
 
+// Types for analytics data
+type StoredWebVital = {
+  name: string
+  value: number
+  timestamp: number
+  sessionId: string
+  userAgent: string
+  ipAddress: string
+  reportedAt: string
+}
+
+type PageViewData = {
+  views: number
+  uniqueViews: number
+  lastViewed: Date
+}
+
+type VitalSummary = {
+  name: string
+  value: number
+  rating: 'good' | 'needs-improvement' | 'poor'
+  count: number
+  trend: 'up' | 'down' | 'stable'
+}
+
 // In-memory storage for analytics (use database in production)
 const analyticsStore = {
-  pageViews: new Map<string, { views: number; uniqueViews: number; lastViewed: Date }>(),
-  webVitals: [] as any[],
+  pageViews: new Map<string, PageViewData>(),
+  webVitals: [] as StoredWebVital[],
   userSessions: new Map<string, { sessionId: string; startTime: Date; pages: string[] }>(),
 }
 
@@ -37,7 +61,8 @@ analytics.post(
   async (c) => {
     try {
       const vitalData = c.req.valid('json')
-      const context = c.get('rpcContext') as RPCContext
+      const contextData = c.get('rpcContext' as never) as RPCContext | undefined
+      const context = contextData ?? {} as RPCContext
 
       // Store web vital data
       const enhancedVital = {
@@ -159,8 +184,9 @@ analytics.post(
   })),
   async (c) => {
     try {
-      const { page, title, referrer } = c.req.valid('json')
-      const context = c.get('rpcContext') as RPCContext
+      const { page } = c.req.valid('json')
+      const contextData = c.get('rpcContext' as never) as RPCContext | undefined
+      const context = contextData ?? {} as RPCContext
 
       // Get or create page view record
       let pageRecord = analyticsStore.pageViews.get(page)
@@ -220,7 +246,7 @@ analytics.get(
   })),
   async (c) => {
     try {
-      const { page, limit, timeRange = '7d', sortBy = 'views' } = c.req.valid('query')
+      const { page, limit, sortBy = 'views' } = c.req.valid('query')
 
       // Convert Map to array and sort
       const pageViewsArray = Array.from(analyticsStore.pageViews.entries())
@@ -229,7 +255,9 @@ analytics.get(
           if (sortBy === 'lastViewed') {
             return b.lastViewed.getTime() - a.lastViewed.getTime()
           }
-          return (b as any)[sortBy] - (a as any)[sortBy]
+          const aVal = a[sortBy as keyof PageViewData] as number
+          const bVal = b[sortBy as keyof PageViewData] as number
+          return bVal - aVal
         })
 
       // Apply pagination
@@ -430,7 +458,8 @@ function getTimeRangeCutoff(range: string): Date {
     '90d': 90 * 24 * 60 * 60 * 1000,
   }
   
-  return new Date(now.getTime() - (cutoffs[range] || cutoffs['7d']))
+  const cutoffValue = cutoffs[range as keyof typeof cutoffs] ?? cutoffs['7d']
+  return new Date(now.getTime() - (cutoffValue || 7 * 24 * 60 * 60 * 1000))
 }
 
 function getVitalRating(vitalName: string, value: number): 'good' | 'needs-improvement' | 'poor' {
@@ -450,7 +479,7 @@ function getVitalRating(vitalName: string, value: number): 'good' | 'needs-impro
   return 'poor'
 }
 
-function calculateTrend(vitals: any[]): 'up' | 'down' | 'stable' {
+function calculateTrend(vitals: StoredWebVital[]): 'up' | 'down' | 'stable' {
   if (vitals.length < 2) return 'stable'
   
   // Simple trend calculation - compare first and second half averages
@@ -468,7 +497,7 @@ function calculateTrend(vitals: any[]): 'up' | 'down' | 'stable' {
   return 'stable'
 }
 
-function calculateOverallScore(vitals: any[]): number {
+function calculateOverallScore(vitals: VitalSummary[]): number {
   const scores = vitals.map(v => {
     if (v.rating === 'good') return 100
     if (v.rating === 'needs-improvement') return 60
@@ -478,7 +507,7 @@ function calculateOverallScore(vitals: any[]): number {
   return Math.round(scores.reduce((sum, s) => sum + s, 0) / scores.length)
 }
 
-function generateRecommendations(vitals: any[]): string[] {
+function generateRecommendations(vitals: VitalSummary[]): string[] {
   const recommendations: string[] = []
   
   vitals.forEach(vital => {
@@ -506,7 +535,7 @@ function generateRecommendations(vitals: any[]): string[] {
   return recommendations
 }
 
-function generateTrendData(metric: string, days: number) {
+function generateTrendData(_metric: string, days: number) {
   return Array.from({ length: days }, (_, i) => ({
     date: new Date(Date.now() - (days - i - 1) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     value: Math.floor(Math.random() * 1000) + 500,

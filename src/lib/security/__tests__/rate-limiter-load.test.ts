@@ -85,7 +85,7 @@ describe('Rate Limiter Load Tests', () => {
       const numConcurrent = 100
       
       // Create concurrent requests
-      const promises = Array.from({ length: numConcurrent }, (_, i) => {
+      const promises = Array.from({ length: numConcurrent }, (_, _i) => {
         return new Promise(resolve => {
           // Add small random delay to simulate real concurrent requests
           setTimeout(() => {
@@ -95,7 +95,7 @@ describe('Rate Limiter Load Tests', () => {
         })
       })
       
-      const results = await Promise.all(promises) as any[]
+      const results = await Promise.all(promises) as Array<import('../enhanced-rate-limiter').RateLimitResult>
       
       // Should have processed all requests
       expect(results).toHaveLength(numConcurrent)
@@ -234,7 +234,7 @@ describe('Rate Limiter Load Tests', () => {
         }
       }
       
-      const results: any[] = []
+      const results: Array<import('../enhanced-rate-limiter').RateLimitResult> = []
       
       // Simulate burst patterns - rapid requests from same client
       for (let burst = 0; burst < 10; burst++) {

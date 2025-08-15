@@ -4,341 +4,154 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-### Development
+### Core Development
 - `npm run dev` - Start development server (Next.js with Turbo)
 - `npm run build` - Build for production
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
 - `npm run lint:fix` - Run ESLint with auto-fix
 - `npm run type-check` - Run TypeScript type checking (note: hyphenated, not typecheck)
-- `npm run generate-sitemap` - Generate sitemap.xml (runs automatically after build)
 
-### Enhanced Development & Quality Assurance
+### Testing
+- `npm run test` - Run unit tests with Vitest
+- `npm run test:ui` - Run tests with Vitest UI
+- `npm run test:coverage` - Run tests with coverage report (80% threshold)
+- `npm run test:watch` - Run tests in watch mode
+- `npm run e2e` - Run Playwright E2E tests
+- `npm run e2e:ui` - Run E2E tests with Playwright UI
+- `npm run e2e:headed` - Run E2E tests in headed mode
+- `npm run test:all` - Run both unit and E2E tests
+
+### Database (Prisma)
+- `npm run db:generate` - Generate Prisma client
+- `npm run db:push` - Push schema changes to database
+- `npm run db:migrate` - Create and apply migrations
+- `npm run db:seed` - Seed database with initial data
+- `npm run db:studio` - Open Prisma Studio GUI
+
+### Build & Analysis
 - `npm run validate` - Run type-check and lint together
-- `npm run quality-check` - Run comprehensive quality assurance checks
+- `npm run analyze` - Build with bundle analyzer
 - `npm run clean` - Clean build artifacts and cache
 - `npm run dev:debug` - Start dev server with Node.js inspector
-- `npm run analyze` - Analyze bundle size with webpack bundle analyzer
-- `npm run build:analyze` - Build with bundle analysis
-- `npm run test:type` - TypeScript checking without incremental build
-- `npm run security:audit` - Run security audit with moderate level
-- `npm run deps:update` - Update dependencies using npm-check-updates
-- `npm run perf:lighthouse` - Run Lighthouse performance analysis
-- `npm run prebuild` - Validation steps run before each build
 
 ### Requirements
 - Node.js >=22.14.0
 - npm 11.2.0 (package manager)
+- PostgreSQL database (for Prisma features)
 
-## Modernization & Security Enhancements (2025)
-
-### Performance Optimizations
-- **Turbo Dev Mode**: Development server with Turbo mode for faster builds
-- **Bundle Analysis**: Webpack bundle analyzer integration for performance monitoring
-- **Enhanced Image Optimization**: AVIF/WebP support with comprehensive security policies
-- **Static Asset Caching**: 1-year cache headers for immutable assets
-- **Server-Side Minification**: Enhanced build optimization with SWC minifier
-- **Output Optimization**: Standalone output for better deployment efficiency
-
-### Security Hardening
-- **Comprehensive CSP**: Content Security Policy with Vercel Analytics integration
-- **Security Headers**: HSTS, XSS Protection, Frame Options, Permissions Policy
-- **API Security**: Restricted CORS, no-cache headers, robots exclusion
-- **Image Security**: SVG sanitization and content security policies
-- **Environment Validation**: Zod-based environment variable validation
-
-### Quality Assurance System
-- **Automated Quality Checks**: Custom quality checker script (`scripts/quality-check.js`)
-- **Architecture Consistency**: Enforced patterns and import validation
-- **Type Safety**: Enhanced TypeScript configuration with strict null checks
-- **Pre-build Validation**: Automated validation pipeline before builds
-- **Security Auditing**: Integrated npm audit with configurable severity levels
-
-### Enhanced TypeScript Configuration
-- **Strict Mode**: `noImplicitReturns`, `noImplicitOverride`, `useUnknownInCatchVariables`
-- **Enhanced Error Handling**: Unknown catch variables and strict null checks
-- **Build Optimization**: Cached build info in `.next/cache/` directory
-- **Test Exclusion**: Clean separation of test files from production builds
-
-### Development Workflow Improvements
-- **Validation Pipeline**: Pre-build validation with type checking and linting
-- **Performance Monitoring**: Integrated Lighthouse performance analysis
-- **Dependency Management**: Automated dependency updates with npm-check-updates
-- **Debug Support**: Node.js inspector integration for debugging
-- **Cache Management**: Intelligent cache clearing and build artifact cleanup
 
 ## Architecture Overview
 
-### Framework & Stack
-- **Next.js 15** with App Router and React 19
+### Core Stack
+- **Next.js 15.4.5** with App Router and React 19
 - **TypeScript 5.8.3** with strict mode and `noUncheckedIndexedAccess`
-- **Tailwind CSS 4.1.10** for styling with CSS variables for theming
-- **Recharts 2.15.3** for data visualizations
-- **Framer Motion 12.17.0** for animations
-- **TanStack React Query 5.80.7** for data fetching and state management
-- **shadcn/ui + Radix UI** for component primitives
-- **Sonner 2.0.5** for toast notifications
-- **date-fns 4.1.0** for date utilities
-- **Vercel Analytics** for performance monitoring
-- **Native Fetch API** for all HTTP requests (no axios)
+- **Tailwind CSS 4.1.11** for styling
+- **Prisma 6.13.0** ORM with PostgreSQL
+- **Jotai 2.13.0** for atomic state management
+- **TanStack React Query 5.84.1** for server state
+- **Hono 4.8.2** for RPC API layer (`src/server/rpc/`)
+- **Recharts 3.1.2** for data visualizations
+- **Framer Motion 12.23.12** for animations
+- **Radix UI** components with shadcn/ui patterns
+- **Zod 4.0.15** for runtime validation
 
-### Project Structure
-- **src/ directory**: All source code moved to src/ (migration from root completed)
-- **App Router** architecture with modern Next.js patterns
-- **Feature-based organization**: Components grouped by domain rather than type
-- **Centralized types**: All interfaces/types in `src/types/` directory
-- **Direct imports**: No barrel files/index exports - import directly from source files
-- **Path aliases**: 
-  - `@/` → src root
-  - `@/components/`, `@/lib/`, `@/hooks/`, `@/types/`, `@/app/`, `@/styles/`
-  - `@/content/`, `@/data/` (additional aliases for content)
+### Testing Architecture
+- **Vitest** for unit tests with 80% coverage thresholds
+- **Playwright** for E2E testing across Chrome, Firefox, Safari
+- **Test Organization**:
+  - Unit tests: `src/**/__tests__/*.test.ts(x)`
+  - E2E tests: `e2e/*.spec.ts`
+  - Test utilities: `src/test/setup.tsx`, `src/test/factories.ts`
+- **Coverage excludes**: Blog features, automation, SEO tools (see tsconfig.json)
 
-### Key Architectural Patterns
+### High-Level Architecture
 
-#### Route Organization
+#### State Management Layers
+1. **Jotai Atoms** (`src/lib/atoms/`): Client-side atomic state
+   - Form state, UI state, user preferences
+   - Cross-tab synchronization utilities
+   - Optimistic updates and local mutations
+2. **TanStack Query**: Server state and caching
+   - API data fetching with `src/hooks/use-api-queries.ts`
+   - Query key factories in `src/lib/queryKeys.ts`
+3. **Hono RPC** (`src/server/rpc/`): Type-safe API layer
+   - Routes defined in `src/server/rpc/routes/`
+   - Middleware for auth, rate limiting, validation
+   - Client available at `src/server/rpc/client.ts`
+
+#### Security & Performance
+- **CSP with Nonces**: Dynamic CSP headers in middleware.ts
+- **Rate Limiting**: Enhanced rate limiter with analytics (`src/lib/security/enhanced-rate-limiter.ts`)
+- **JWT Auth**: Token-based authentication (`src/lib/security/jwt-auth.ts`)
+- **Environment Validation**: Zod-based env validation at build time
+- **Web Vitals**: Performance monitoring service (`src/lib/analytics/web-vitals-service.ts`)
+
+#### Project Structure
 ```
-src/app/
-├── layout.tsx              # Root layout with providers and structured data
-├── page.tsx               # Home page (hero-only, no SEO content)
-├── about/                 # About section with SEO-optimized content
-├── projects/              # Projects showcase
-│   ├── [slug]/           # Dynamic project pages with structured data
-│   ├── data/             # Static project data and analytics
-│   ├── revenue-kpi/      # Revenue analytics dashboard
-│   ├── deal-funnel/      # Sales pipeline analysis
-│   ├── churn-retention/  # Customer analytics
-│   ├── lead-attribution/ # Marketing attribution
-│   ├── cac-unit-economics/ # Unit economics analysis
-│   └── partner-performance/ # Partner ROI tracking
-├── resume/               # Resume section with PDF generation
-├── contact/              # Contact forms with modal integration
-└── api/                  # API routes (REST endpoints)
-    ├── analytics/        # Vercel Analytics integration
-    ├── contact/          # Contact form handling
-    ├── projects/         # Project data endpoints
-    └── send-email/       # Email service integration
+src/
+├── app/                   # Next.js App Router
+│   ├── api/              # REST API routes
+│   │   └── rpc/[[...route]]/ # Hono RPC endpoint
+│   └── projects/         # Project showcase pages
+├── server/
+│   └── rpc/              # Hono RPC server
+│       ├── app.ts        # Hono app configuration
+│       ├── client.ts     # Type-safe RPC client
+│       ├── middleware.ts # Auth, rate limiting
+│       └── routes/       # API route handlers
+├── lib/
+│   ├── atoms/            # Jotai state atoms
+│   ├── security/         # Auth, rate limiting, CSP
+│   └── analytics/        # Web vitals, metrics
+├── components/
+│   ├── providers/        # React context providers
+│   └── ui/               # Reusable UI components
+└── test/                  # Test utilities and factories
 ```
 
-#### Component Architecture
-- **Server Components by default** - only add `'use client'` when needed for browser APIs/state
-- **Component composition**: `components/layout/`, `components/ui/`, `components/seo/`
-- **Provider pattern**: Theme provider, client components provider at root level
-- **Responsive design**: Mobile-first with Tailwind breakpoints
-- **Container-in-container design pattern**: `rounded-3xl` outer, `rounded-2xl` inner containers
-- **Glassmorphism effects**: `bg-white/5 backdrop-blur border border-white/10`
 
-#### Data Layer
-- **TanStack React Query**: Client-side data fetching and state management
-- **Static project data** in multiple locations: `src/app/projects/data/`, `src/data/`, `src/content/`
-- **Type-safe APIs** with Zod validation (`src/lib/validations/`)
-- **Server Actions** for form handling (contact forms, resume generation)
-- **Fetch-based API calls**: Native `fetch` instead of axios (see `src/lib/api.ts`)
-- **Query key factories**: Centralized in `src/lib/queryKeys.ts`
-- **Caching strategy**: TanStack Query caching + Next.js static caching
+## Business Context
+**Professional portfolio for Richard Hudson**, Revenue Operations Professional:
+- Interactive data visualization projects (Revenue KPI, Sales Analytics, etc.)
+- Real business data: $4.8M+ revenue, 432% growth, 2,217% network expansion
+- Contact forms with Resend email integration
+- Resume generation and PDF viewing
 
-### Architecture Migration Status
-**COMPLETED**: Major architectural migration and modernization:
+## Key Development Patterns
 
-1. **TanStack Query Migration**: ✅ COMPLETED
-   - ✅ Migrated from axios to native fetch
-   - ✅ Global QueryClient setup
-   - ✅ Client-side mutations refactored
-   - ✅ Type-safe query patterns implemented
-   - ✅ Query key factories centralized
+### TypeScript Configuration
+- **Strict mode** enabled with `noUncheckedIndexedAccess: true`
+- **Path aliases**: `@/` for src root, `@/components/*`, `@/lib/*`, etc.
+- **Excludes**: Blog features, automation, SEO tools excluded from compilation (see tsconfig.json)
 
-2. **Type-First Architecture**: ✅ COMPLETED
-   - ✅ Comprehensive type safety implementation
-   - ✅ All types centralized in `src/types/`
-   - ✅ Strict TypeScript configuration
-   - ✅ Runtime validation with Zod
+### API Patterns
+1. **Hono RPC** (`src/server/rpc/`): Type-safe API with Zod validation
+2. **REST API** (`src/app/api/`): Traditional Next.js API routes
+3. **Server Actions**: Form submissions and mutations
+4. **Native fetch**: No axios, use `src/lib/api.ts` utilities
 
-3. **SEO Optimization**: ✅ COMPLETED
-   - ✅ Comprehensive structured data (JSON-LD)
-   - ✅ Enhanced robots.txt and sitemap.xml
-   - ✅ Meta tags optimization
-   - ✅ Canonical URLs implementation
-   - ✅ Business backlinks integration
+### State Management
+1. **Jotai atoms** for client state (`src/lib/atoms/`)
+2. **TanStack Query** for server state (`src/hooks/use-api-queries.ts`)
+3. **Query keys** centralized in `src/lib/queryKeys.ts`
 
-4. **Design System Enhancement**: ✅ COMPLETED
-   - ✅ Container-in-container design pattern
-   - ✅ Blue gradient styling throughout
-   - ✅ ContactModal for all CTAs
-   - ✅ Glassmorphism effects
-   - ✅ Responsive design optimization
+### Testing Strategy
+- Run `npm run test` for unit tests (80% coverage target)
+- Run `npm run e2e` for Playwright tests
+- Test factories in `src/test/factories.ts`
+- Global setup in `src/test/setup.tsx`
 
-5. **Data Integration**: ✅ COMPLETED
-   - ✅ Factual statistics from CSV data ($4.8M+ revenue)
-   - ✅ Real analytics integration
-   - ✅ Performance metrics tracking
+### Environment Variables
+Required variables (see `.env.example`):
+- `DATABASE_URL`: PostgreSQL connection string
+- `RESEND_API_KEY`: Email service API key
+- `JWT_SECRET`: Authentication secret (32+ chars)
+- `CONTACT_EMAIL`: Where to send contact form submissions
 
-### Business Logic
-This is a **professional portfolio for Richard Hudson**, a Revenue Operations Professional. Key features:
-
-1. **Project Showcase**: Interactive data visualization projects
-   - Revenue KPI Dashboard (Business Intelligence)
-   - Sales Pipeline Funnel Analysis (Sales Operations) 
-   - Customer Churn & Retention Analysis (Customer Analytics)
-   - Lead Attribution Analytics (Marketing Analytics)
-   - CAC & Unit Economics Analysis
-   - Partner Performance Tracking
-
-2. **Resume System**: PDF generation and viewing capabilities
-3. **Contact Forms**: Server-side form handling with email integration
-4. **Analytics Integration**: Vercel Analytics & Speed Insights
-5. **SEO Optimization**: Comprehensive structured data and meta optimization
-
-### Performance & Security
-- **Image Optimization**: Next.js Image component with AVIF/WebP formats
-- **Security Headers**: CSP, XSS protection, frame options configured in `next.config.js`
-- **CSP Reporting**: Endpoint at `/api/csp-report` for security monitoring
-- **Caching**: 1-year cache for static assets, no-cache for API routes
-- **Bundle Optimization**: Sharp for image processing, tree-shaking enabled
-- **Core Web Vitals**: Monitoring via Vercel Analytics
-
-### Styling System
-- **Design Tokens**: CSS variables in `src/lib/design-tokens.ts`
-- **Theme System**: Dark/light mode with `next-themes`
-- **Component Styles**: Utility-first Tailwind with component variants using `class-variance-authority`
-- **Animations**: Framer Motion with CSS animations in `src/styles/animations.css`
-- **Blue Gradient Theme**: `bg-gradient-to-r from-blue-500 to-indigo-600` for CTAs
-- **Glassmorphism**: `bg-white/5 backdrop-blur border border-white/10` for containers
-
-### Development Patterns
-
-#### Type Safety
-- **Strict TypeScript**: All types in `src/types/` directory
-- **Enhanced TypeScript config**: 
-  - `target: ES2022`
-  - `strict: true`
-  - `noUncheckedIndexedAccess: true`
-  - `noUnusedLocals: true`
-  - `noUnusedParameters: true`
-  - `noImplicitAny: true`
-- **Zod Validation**: Input/output validation for forms and APIs (`src/lib/validations/`)
-- **Generic type utilities**: Shared API types and query key factories
-
-#### Component Development
-- **Single Responsibility**: Small, focused components  
-- **Composition over Inheritance**: Use component composition patterns
-- **Props Interface**: Component props typed in respective type files
-- **Server-First**: Default to Server Components, Client Components only when needed
-- **No Comments**: Avoid code comments unless explicitly requested
-
-#### API Design & Data Fetching
-- **RESTful Routes**: Follow Next.js API route conventions (`src/app/api/`)
-- **Server Actions**: For form submissions and mutations
-- **TanStack React Query**: Primary data fetching solution with hooks in `src/hooks/use-api-queries.ts`
-- **Type-Safe Responses**: Consistent response types in `src/app/api/types.ts` and `src/types/shared-api.ts`
-- **Fetch API**: Native fetch implementation in `src/lib/api.ts`
-- **Query Key Management**: Centralized query keys in `src/lib/queryKeys.ts`
-- **Error Handling**: Proper error boundaries and user feedback with typed error responses
-
-### Data Visualization
-Projects heavily feature **Recharts** for business analytics dashboards:
-- Revenue KPI tracking with partner analytics
-- Customer churn/retention analysis with predictive modeling
-- Sales pipeline funnels with conversion optimization
-- Lead attribution analytics with multi-touch attribution
-- CAC and unit economics analysis
-- Partner performance and ROI tracking
-
-Chart components are reusable with:
-- **Base chart components**: `src/components/charts/` with type-safe implementations
-- **Project-specific charts**: Located in respective project directories under `src/app/projects/`
-- **Chart utilities**: `src/lib/chart-utils.ts` for data transformation and validation
-- **Type-safe chart data**: All chart components use strongly typed data interfaces
-
-### SEO & Metadata
-- **Comprehensive SEO**: Structured data, Open Graph, Twitter cards
-- **JSON-LD Structured Data**: 
-  - Person schema for Richard Hudson
-  - Website schema for portfolio
-  - Service schema for consulting services
-  - CreativeWork schema for individual projects
-- **Dynamic Metadata**: Per-page metadata generation with keyword optimization
-- **Sitemap Generation**: Automatic sitemap.xml with all project pages
-- **Robots.txt**: Optimized crawler directives with bad bot blocking
-- **Canonical URLs**: Proper canonical URL implementation
-- **Business Backlinks**: Hudson Digital Solutions integration
-- **Performance Monitoring**: Core Web Vitals tracking
-- **Web Vitals Service**: Analytics endpoint at `/api/analytics/vitals`
-
-### Code Quality
-- **ESLint Configuration**: Next.js recommended rules (warnings, not errors)
-- **TypeScript**: Must pass `tsc --noEmit` before deployment
-- **Prettier**: Code formatting consistency
-- **No Testing Framework**: Playwright installed but not configured
-
-### Deployment Configuration
-- **Platform**: Vercel with optimized regional deployment
-- **Environment**: Production-ready configuration
-- **Build Process**: Standard Next.js build with optimization
-- **Social Redirects**: Configured in `next.config.js`
-- **Analytics**: Vercel Analytics and Speed Insights integrated
-
-## Important Development Notes
-
-### Current Status
-- **Branch**: `main` 
-- **Status**: ✅ PRODUCTION READY - All major features completed
-- **Migration**: ✅ COMPLETED - Full architectural modernization finished
-
-### Key Files to Understand
-- `src/lib/api.ts` - Centralized fetch-based API functions
-- `src/hooks/use-api-queries.ts` - TanStack Query hooks for data fetching
-- `src/lib/queryKeys.ts` - Query key factories for cache management
-- `src/types/shared-api.ts` - Comprehensive API type definitions
-- `src/components/providers/client-components-provider.tsx` - Query client setup
-- `src/lib/query-config.ts` - Query configuration
-- `src/components/seo/json-ld.tsx` - Structured data components
-- `src/components/ui/contact-modal.tsx` - Reusable contact modal
-- `src/components/layout/footer.tsx` - Footer with business backlinks
-
-### Data Sources
-- **Real CSV Data**: Project uses actual business data from CSV files
-  - `Year_Over_Year_Growth_Summary.csv` - $4.8M+ total revenue
-  - `PartnerRecordExport_*.csv` - Partner analytics and transaction data
-  - Statistics are factual: 8+ projects, $4.8M+ revenue, 432% growth, 2,217% network expansion
-
-### Design System
-- **Container Pattern**: Always use container-in-container design
-  - Outer: `bg-white/5 backdrop-blur border border-white/10 rounded-3xl`
-  - Inner: `bg-white/5 backdrop-blur border border-white/10 rounded-2xl`
-- **CTA Styling**: Blue gradient backgrounds for all call-to-action buttons
-  - `bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700`
-- **Modal Integration**: All non-functional CTAs open ContactModal
-- **No Gray Backgrounds**: Replaced all gray CTA backgrounds with blue gradients
-
-### Development Workflow
-1. **Type-first development**: Define types in `src/types/` before implementation
-2. **Query pattern**: Use TanStack Query hooks for all client-side data fetching
-3. **Server Components**: Default to Server Components, add `'use client'` only when necessary
-4. **Direct imports**: Always import directly from source files, no barrel exports
-5. **Linting**: Run `npm run lint` and `npm run type-check` before committing
-6. **SEO First**: All new pages should include appropriate structured data
-7. **Mobile First**: Always implement mobile-responsive design
-
-### Completed Features Summary
-- ✅ Modern Next.js 15 + React 19 architecture
-- ✅ TypeScript with strict configuration
-- ✅ TanStack React Query integration
-- ✅ Comprehensive SEO optimization
-- ✅ Structured data (JSON-LD) implementation
-- ✅ Enhanced design system with container patterns
-- ✅ Contact modal integration across all CTAs
-- ✅ Real business data integration ($4.8M+ revenue)
-- ✅ Vercel Analytics integration
-- ✅ Business backlink integration
-- ✅ Performance optimization
-- ✅ Security hardening
-- ✅ Mobile responsiveness
-- ✅ Code quality standards (ESLint + TypeScript)
-
-## Special Notes
-- **Home Page**: Intentionally minimal - hero-only design with no SEO content
-- **About Page**: Added to navbar for SEO benefits with optimized content
-- **Projects**: All project pages have dedicated structured data
-- **Contact Integration**: ContactModal used consistently across all CTAs
-- **Brand Removal**: All "RH" branding replaced with full name or removed
-- **Statistics**: All numbers are factual from CSV data analysis
-- **Footer**: Conditional rendering based on pathname with business backlinks
+## Design System Conventions
+- **Glassmorphism containers**: `bg-white/5 backdrop-blur border border-white/10`
+- **Container pattern**: Outer `rounded-3xl`, inner `rounded-2xl`
+- **CTA buttons**: Blue gradient `bg-gradient-to-r from-blue-500 to-indigo-600`
+- **Mobile-first**: Use Tailwind responsive prefixes (`sm:`, `md:`, `lg:`)
+- **Server Components by default**: Only use `'use client'` when necessary

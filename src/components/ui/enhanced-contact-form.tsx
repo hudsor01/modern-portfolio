@@ -18,7 +18,7 @@ import { contactFormSchema } from '@/lib/validation'
 import { ContactFormData } from '@/app/api/types'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/hooks/use-sonner-toast'
-import { useState, useTransition, startTransition, useEffect } from 'react'
+import { useState, useTransition, startTransition } from 'react'
 import { CheckCircle, Send, AlertCircle, Loader2 } from 'lucide-react'
 import { useFormAutoSave } from '@/hooks/use-form-auto-save'
 import { FormAutoSaveStatus } from '@/components/ui/auto-save-indicator'
@@ -69,7 +69,7 @@ export function EnhancedContactForm({
   const formValues = form.watch()
 
   // Auto-save hook integration
-  const autoSave = useFormAutoSave('contact-form', formValues, {
+  const autoSave = useFormAutoSave('contact-form', formValues as unknown as Record<string, unknown>, {
     enabled: true,
     debounceMs: 300,
     onSave: async (data) => {
@@ -79,11 +79,11 @@ export function EnhancedContactForm({
     },
     onRestore: (data) => {
       // Restore form data from auto-save
-      form.reset(data)
+      form.reset(data as unknown as ContactFormData)
     },
     validateBeforeSave: (data) => {
       // Only auto-save if at least name or email is provided
-      return Boolean(data.name?.trim() || data.email?.trim())
+      return Boolean((data.name as string | undefined)?.trim() || (data.email as string | undefined)?.trim())
     },
     onError: (error) => {
       console.warn('Auto-save failed:', error)

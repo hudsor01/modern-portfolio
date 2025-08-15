@@ -6,7 +6,7 @@ export function PersonJsonLd() {
     jobTitle: 'Revenue Operations Consultant',
     description: 'Expert Revenue Operations Consultant specializing in sales optimization, marketing automation, and data-driven business growth strategies.',
     url: 'https://richardwhudsonjr.com',
-    image: 'https://richardwhudsonjr.com/images/richard.jpg',
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face&q=80',
     sameAs: [
       'https://www.linkedin.com/in/hudsor01',
       'https://github.com/hudsor01',

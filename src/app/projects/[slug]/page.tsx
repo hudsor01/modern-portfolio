@@ -18,9 +18,25 @@ interface ProjectPageProps {
 // Generate static params for all projects
 export async function generateStaticParams() {
   const projects = await getProjects()
-  return projects.map((project) => ({
-    slug: project.slug,
-  }))
+  // Exclude projects that have their own dedicated pages
+  const excludedSlugs = [
+    'partnership-program-implementation',
+    'cac-unit-economics',
+    'churn-retention',
+    'commission-optimization',
+    'customer-lifetime-value',
+    'deal-funnel',
+    'lead-attribution',
+    'multi-channel-attribution',
+    'partner-performance',
+    'revenue-kpi',
+    'revenue-operations-center'
+  ]
+  return projects
+    .filter(project => !excludedSlugs.includes(project.slug || ''))
+    .map((project) => ({
+      slug: project.slug,
+    }))
 }
 
 // Fix the metadata generation function
@@ -71,7 +87,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     github: project.github,
     category: project.category || 'Other',
     tags: project.tags,
-    createdAt: project.createdAt instanceof Date ? project.createdAt : new Date(project.createdAt || Date.now()),
+    createdAt: project.createdAt instanceof Date ? project.createdAt : new Date(project.createdAt || '2024-01-01'),
     updatedAt: project.updatedAt ? (project.updatedAt instanceof Date ? project.updatedAt : new Date(project.updatedAt)) : undefined,
     technologies: project.tags,
     liveUrl: project.link,

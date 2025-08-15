@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Info, ExternalLink } from 'lucide-react'
-import { ProjectQuickView } from './project-quick-view'
+import { ProjectQuickView } from '@/components/projects/project-quick-view'
 import type { Project } from '@/types/project' // Changed import path
 
 interface ProjectCarouselProps {
@@ -54,7 +54,7 @@ export function ProjectCarousel({ title, subtitle, projects }: ProjectCarouselPr
           <div key={project.id} className="h-full rounded-lg border bg-card p-3 shadow-sm">
             <div className="group relative aspect-video overflow-hidden rounded-lg">
               <Image
-                src={project.image || '/images/project-placeholder.jpg'}
+                src={project.image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&crop=center&q=80'}
                 alt={project.title}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -88,7 +88,7 @@ export function ProjectCarousel({ title, subtitle, projects }: ProjectCarouselPr
                         size="sm"
                         className="bg-background/95 text-xs backdrop-blur-sm"
                       >
-                        <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+                        <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="flex items-center">
                           <ExternalLink className="mr-1 h-3 w-3" />
                           Live Demo
                         </a>

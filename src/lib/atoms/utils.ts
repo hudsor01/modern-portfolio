@@ -6,7 +6,6 @@
 import { atom, WritableAtom, Atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 import { 
-  StorageConfig, 
   PersistentAtomOptions, 
   AtomState, 
   AsyncAtomState,
@@ -215,22 +214,23 @@ export function atomWithValidation<T>(
  */
 export function atomWithReset<T>(
   initialValue: T
-): WritableAtom<T, [T | typeof RESET], void> & { reset: symbol } {
+): WritableAtom<T, [T | symbol], void> & { reset: symbol } {
   const RESET = Symbol('reset')
   
   const baseAtom = atom(
     initialValue,
-    (get, set, update: T | typeof RESET) => {
+    (_get, set, update: T | typeof RESET) => {
       if (update === RESET) {
         set(baseAtom, initialValue)
       } else {
         set(baseAtom, update)
       }
     }
-  ) as WritableAtom<T, [T | typeof RESET], void> & { reset: symbol }
+  )
 
-  baseAtom.reset = RESET
-  return baseAtom
+  const resetAtom = baseAtom as unknown as WritableAtom<T, [T | symbol], void> & { reset: symbol }
+  resetAtom.reset = RESET
+  return resetAtom
 }
 
 /**
@@ -244,8 +244,8 @@ export function atomWithReducer<T, A extends AtomAction>(
   
   return atom(
     (get) => get(baseAtom),
-    (get, set, action: A) => {
-      const currentState = get(baseAtom)
+    (_get, set, action: A) => {
+      const currentState = _get(baseAtom)
       const newState = reducer(currentState, action)
       set(baseAtom, newState)
     }
@@ -259,7 +259,7 @@ export function atomWithReducer<T, A extends AtomAction>(
 /**
  * Creates a computed atom that depends on multiple atoms
  */
-export function atomWithDependencies<T, Deps extends readonly Atom<any>[]>(
+export function atomWithDependencies<T, Deps extends readonly Atom<unknown>[]>(
   dependencies: Deps,
   compute: (values: { [K in keyof Deps]: Deps[K] extends Atom<infer V> ? V : never }) => T
 ): Atom<T> {
@@ -275,14 +275,14 @@ export function atomWithDependencies<T, Deps extends readonly Atom<any>[]>(
  * Creates a debounced atom that updates after a delay
  */
 export function atomWithDebounce<T>(
-  baseAtom: WritableAtom<T, any, any>,
+  baseAtom: WritableAtom<T, [T], void>,
   delay: number = 300
 ): WritableAtom<T, [T], void> {
   let timeoutId: NodeJS.Timeout | null = null
 
   return atom(
     (get) => get(baseAtom),
-    (get, set, value: T) => {
+    (_get, set, value: T) => {
       if (timeoutId) {
         clearTimeout(timeoutId)
       }
@@ -299,7 +299,7 @@ export function atomWithDebounce<T>(
  * Creates a throttled atom that updates at most once per interval
  */
 export function atomWithThrottle<T>(
-  baseAtom: WritableAtom<T, any, any>,
+  baseAtom: WritableAtom<T, [T], void>,
   interval: number = 100
 ): WritableAtom<T, [T], void> {
   let lastUpdate = 0
@@ -307,7 +307,7 @@ export function atomWithThrottle<T>(
 
   return atom(
     (get) => get(baseAtom),
-    (get, set, value: T) => {
+    (_get, set, value: T) => {
       const now = Date.now()
       
       if (now - lastUpdate >= interval) {
@@ -342,9 +342,9 @@ export function deepMerge<T>(target: T, source: DeepPartial<T>): T {
       if (typeof sourceValue === 'object' && sourceValue !== null &&
           typeof targetValue === 'object' && targetValue !== null &&
           !Array.isArray(sourceValue) && !Array.isArray(targetValue)) {
-        (result as any)[key] = deepMerge(targetValue, sourceValue)
+        (result as Record<string, unknown>)[key] = deepMerge(targetValue, sourceValue)
       } else {
-        (result as any)[key] = sourceValue
+        (result as Record<string, unknown>)[key] = sourceValue
       }
     }
   }
@@ -442,7 +442,7 @@ export function atomWithURL<T>(
   deserialize: (value: string) => T = JSON.parse
 ): WritableAtom<T, [T], void> {
   return atom(
-    (get) => {
+    (_get) => {
       if (!isClient()) return initialValue
       
       try {
@@ -454,7 +454,7 @@ export function atomWithURL<T>(
         return initialValue
       }
     },
-    (get, set, value: T) => {
+    (_get, _set, value: T) => {
       if (!isClient()) return
       
       try {
@@ -488,7 +488,7 @@ export function atomWithExpiry<T>(
   
   return atom(
     (get) => get(baseAtom),
-    (get, set, value: T) => {
+    (_get, set, value: T) => {
       set(baseAtom, value)
       
       if (timeoutId) {

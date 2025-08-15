@@ -55,7 +55,7 @@ describe('calculateScrollProgress', () => {
     mockElement.scrollHeight = 1000
     mockElement.clientHeight = 500
     // Reset global scroll tracking
-    ;(globalThis as any)._lastScrollTop = 0
+    ;(globalThis as { _lastScrollTop?: number })._lastScrollTop = 0
   })
 
   it('should calculate basic scroll progress correctly', () => {
@@ -127,7 +127,7 @@ describe('calculateScrollProgress', () => {
       textContent: 'Custom container text content.'
     }
     
-    const result = calculateScrollProgress(customContainer as any)
+    const result = calculateScrollProgress(customContainer as Element & { scrollTop: number; scrollHeight: number; clientHeight: number; textContent: string })
     
     // 100 / (600 - 300) * 100 = 33.33%
     expect(Math.round(result.scrollProgress)).toBe(33)
@@ -140,14 +140,14 @@ describe('getEstimatedWordCount', () => {
       textContent: 'This is a test sentence with exactly eight words.'
     }
     
-    const wordCount = getEstimatedWordCount(element as any)
+    const wordCount = getEstimatedWordCount(element as Element & { textContent: string })
     expect(wordCount).toBe(8)
   })
 
   it('should handle empty content', () => {
     const element = { textContent: '' }
     
-    const wordCount = getEstimatedWordCount(element as any)
+    const wordCount = getEstimatedWordCount(element as Element & { textContent: string })
     expect(wordCount).toBe(0)
   })
 
@@ -156,7 +156,7 @@ describe('getEstimatedWordCount', () => {
       textContent: '   Hello,   world!   This   has   extra   spaces.   '
     }
     
-    const wordCount = getEstimatedWordCount(element as any)
+    const wordCount = getEstimatedWordCount(element as Element & { textContent: string })
     expect(wordCount).toBe(6) // Hello, world, This, has, extra, spaces
   })
 
@@ -166,7 +166,7 @@ describe('getEstimatedWordCount', () => {
       innerText: 'Fallback text content here.'
     }
     
-    const wordCount = getEstimatedWordCount(element as any)
+    const wordCount = getEstimatedWordCount(element as Element & { textContent: string | null; innerText: string })
     expect(wordCount).toBe(4)
   })
 
@@ -176,7 +176,7 @@ describe('getEstimatedWordCount', () => {
       get innerText() { throw new Error('Access error') }
     }
     
-    const wordCount = getEstimatedWordCount(element as any)
+    const wordCount = getEstimatedWordCount(element as Element & { textContent: string; innerText: string })
     expect(wordCount).toBe(1000) // Fallback value
   })
 })
@@ -195,7 +195,7 @@ describe('ReadingProgressTracker', () => {
           scrollTop: 0,
           scrollHeight: 800,
           clientHeight: 400
-        } as any
+        } as Element & { textContent: string; scrollTop: number; scrollHeight: number; clientHeight: number }
       }
       return null
     })
@@ -249,7 +249,7 @@ describe('ReadingProgressTracker', () => {
     vi.advanceTimersByTime(10000) // 10 seconds
     
     // Manually save (simulating interval)
-    const stats1 = tracker1.getReadingStats()
+    tracker1.getReadingStats()
     
     // Create new tracker (simulating page reload)
     localStorageMock.setItem('test-session', JSON.stringify({

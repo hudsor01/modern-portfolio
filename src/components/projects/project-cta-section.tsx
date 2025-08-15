@@ -53,22 +53,17 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = ({ onContactC
               </span>
             </Button>
 
-            <Button
-              size="lg"
-              className="relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-lg font-bold px-8 py-4 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
-              asChild
+            <Link
+              href="/about"
+              className="relative inline-flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-lg font-bold px-8 py-4 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
             >
-              <Link href="/about">
-                <span className="relative z-10 flex items-center">
-                  <Users className="mr-3" size={20} />
-                  Read my Blueprint
-                  <ArrowRight
-                    size={20}
-                    className="ml-3 transition-transform duration-300 group-hover:translate-x-1"
-                  />
-                </span>
-              </Link>
-            </Button>
+              <Users className="mr-3" size={20} />
+              Read my Blueprint
+              <ArrowRight
+                size={20}
+                className="ml-3 transition-transform duration-300 group-hover:translate-x-1"
+              />
+            </Link>
           </div>
 
           {/* Enhanced Feature Cards */}

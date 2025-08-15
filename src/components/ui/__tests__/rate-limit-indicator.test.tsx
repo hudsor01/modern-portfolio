@@ -9,7 +9,6 @@ import { Provider } from 'jotai'
 import {
   RateLimitIndicator,
   ContactRateLimitIndicator,
-  GlobalRateLimitStatus,
   useRateLimitInfo,
   rateLimitInfoAtom,
   isRateLimitedAtom
@@ -17,17 +16,22 @@ import {
 import { useAtom } from 'jotai'
 
 // Mock Lucide icons
+// Define icon props interface
+interface IconProps {
+  className?: string
+}
+
 vi.mock('lucide-react', () => ({
-  AlertTriangle: ({ className }: any) => <div className={className} data-testid="alert-triangle" />,
-  Clock: ({ className }: any) => <div className={className} data-testid="clock" />,
-  Shield: ({ className }: any) => <div className={className} data-testid="shield" />,
-  CheckCircle2: ({ className }: any) => <div className={className} data-testid="check-circle" />
+  AlertTriangle: ({ className }: IconProps) => <div className={className} data-testid="alert-triangle" />,
+  Clock: ({ className }: IconProps) => <div className={className} data-testid="clock" />,
+  Shield: ({ className }: IconProps) => <div className={className} data-testid="shield" />,
+  CheckCircle2: ({ className }: IconProps) => <div className={className} data-testid="check-circle" />
 }))
 
-// Test wrapper with Jotai provider
+// Test wrapper with Jotai provider  
 function TestWrapper({ children, initialValues = [] }: { 
   children: React.ReactNode
-  initialValues?: Array<[any, any]>
+  initialValues?: Array<[import('jotai').Atom<unknown>, unknown]>
 }) {
   return <Provider initialValues={initialValues}>{children}</Provider>
 }
@@ -543,13 +547,11 @@ describe('ContactRateLimitIndicator', () => {
 
 describe('useRateLimitInfo Hook', () => {
   it('should update rate limit info from response headers', () => {
-    let updateFunction: any
-    let clearFunction: any
+    let updateFunction: ((response: Response, options?: { rateLimitInfo?: { blocked: boolean } }) => void) | undefined
 
     function TestComponent() {
-      const { updateRateLimitInfo, clearRateLimitInfo } = useRateLimitInfo()
+      const { updateRateLimitInfo } = useRateLimitInfo()
       updateFunction = updateRateLimitInfo
-      clearFunction = clearRateLimitInfo
       
       const [rateLimitInfo] = useAtom(rateLimitInfoAtom)
       const [isRateLimited] = useAtom(isRateLimitedAtom)
@@ -580,12 +582,12 @@ describe('useRateLimitInfo Hook', () => {
         ['Retry-After', '60']
       ]),
       status: 200
-    } as any
+    } as Response
 
-    mockResponse.headers.get = (key: string) => mockResponse.headers.get(key)
+    ;(mockResponse.headers as Map<string, string>).get = (key: string) => (mockResponse.headers as Map<string, string>).get(key)
 
     act(() => {
-      updateFunction(mockResponse, {
+      updateFunction?.(mockResponse, {
         rateLimitInfo: { blocked: false }
       })
     })
@@ -595,7 +597,7 @@ describe('useRateLimitInfo Hook', () => {
   })
 
   it('should handle 429 status code', () => {
-    let updateFunction: any
+    let updateFunction: ((response: Response) => void) | undefined
 
     function TestComponent() {
       const { updateRateLimitInfo } = useRateLimitInfo()
@@ -618,19 +620,19 @@ describe('useRateLimitInfo Hook', () => {
         ['X-RateLimit-Limit', '3']
       ]),
       status: 429
-    } as any
+    } as Response
 
-    mockResponse.headers.get = (key: string) => mockResponse.headers.get(key)
+    ;(mockResponse.headers as Map<string, string>).get = (key: string) => (mockResponse.headers as Map<string, string>).get(key)
 
     act(() => {
-      updateFunction(mockResponse)
+      updateFunction?.(mockResponse)
     })
 
     expect(screen.getByTestId('limited')).toHaveTextContent('true')
   })
 
   it('should clear rate limit info', () => {
-    let clearFunction: any
+    let clearFunction: (() => void) | undefined
 
     function TestComponent() {
       const { clearRateLimitInfo } = useRateLimitInfo()
@@ -662,7 +664,7 @@ describe('useRateLimitInfo Hook', () => {
     expect(screen.getByTestId('limited')).toHaveTextContent('true')
 
     act(() => {
-      clearFunction()
+      clearFunction?.()
     })
 
     expect(screen.getByTestId('info')).toHaveTextContent('null')

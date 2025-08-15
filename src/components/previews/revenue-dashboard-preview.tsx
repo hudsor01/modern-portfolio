@@ -2,6 +2,7 @@
 
 import { Card } from '@/components/ui/card'
 import { TrendingUp, DollarSign, Users, BarChart3 } from 'lucide-react'
+import { useMemo } from 'react'
 
 interface MetricCardProps {
   icon: React.ReactNode
@@ -35,6 +36,18 @@ function MetricCard({ icon, title, value, change, trend }: MetricCardProps) {
  * Optimized for preview contexts with proper responsive design
  */
 export function RevenueDashboardPreview() {
+  // Deterministic chart bar heights to prevent hydration mismatch
+  const chartBars = useMemo(() => [
+    { height: 35 },
+    { height: 42 },
+    { height: 28 },
+    { height: 48 },
+    { height: 33 },
+    { height: 45 },
+    { height: 38 },
+    { height: 40 }
+  ], [])
+
   const metrics = [
     {
       icon: <DollarSign className="h-3 w-3" />,
@@ -72,11 +85,11 @@ export function RevenueDashboardPreview() {
         <div className="relative mb-4 h-16 rounded bg-gradient-to-r from-primary/20 via-primary/30 to-primary/10 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
           <div className="absolute bottom-2 left-2 right-2 flex justify-between items-end">
-            {[...Array(8)].map((_, i) => (
+            {chartBars.map((bar, i) => (
               <div 
                 key={i}
                 className="w-1 bg-primary/60 rounded-t"
-                style={{ height: `${20 + Math.random() * 30}px` }}
+                style={{ height: `${bar.height}px` }}
               ></div>
             ))}
           </div>

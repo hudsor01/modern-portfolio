@@ -5,7 +5,7 @@ export const siteConfig: SiteConfig = {
   description:
     'Driving business growth through data-driven insights, process optimization, and strategic operational improvements.',
   url: 'https://richardwhudsonjr.com',
-  ogImage: 'https://richardwhudsonjr.com/richard.jpg',
+  ogImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&h=630&fit=crop&crop=face&q=80',
   links: {
     github: 'https://github.com/hudsonr01',
     linkedin: 'https://linkedin.com/in/hudsor01',
