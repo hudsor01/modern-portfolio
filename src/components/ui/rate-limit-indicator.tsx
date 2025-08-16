@@ -1,12 +1,12 @@
 /**
  * Rate Limit Indicator Component
  * Shows rate limit status to users with visual feedback
+ * Simplified version using React Context instead of Jotai
  */
 
 'use client'
 
-import { useState, useEffect } from 'react'
-import { atom, useAtom } from 'jotai'
+import { useState, useEffect, createContext, useContext } from 'react'
 import { AlertTriangle, Clock, Shield } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -18,9 +18,41 @@ export interface RateLimitInfo {
   limit?: number
 }
 
-// Jotai atoms for rate limiting state
-export const rateLimitInfoAtom = atom<RateLimitInfo | null>(null)
-export const isRateLimitedAtom = atom(false)
+// Rate limit context
+interface RateLimitContextType {
+  rateLimitInfo: RateLimitInfo | null
+  isRateLimited: boolean
+  setRateLimitInfo: (info: RateLimitInfo | null) => void
+  setIsRateLimited: (limited: boolean) => void
+}
+
+const RateLimitContext = createContext<RateLimitContextType | undefined>(undefined)
+
+// Rate limit provider component
+export function RateLimitProvider({ children }: { children: React.ReactNode }) {
+  const [rateLimitInfo, setRateLimitInfo] = useState<RateLimitInfo | null>(null)
+  const [isRateLimited, setIsRateLimited] = useState(false)
+
+  return (
+    <RateLimitContext.Provider value={{
+      rateLimitInfo,
+      isRateLimited,
+      setRateLimitInfo,
+      setIsRateLimited,
+    }}>
+      {children}
+    </RateLimitContext.Provider>
+  )
+}
+
+// Hook to use rate limit context
+function useRateLimit() {
+  const context = useContext(RateLimitContext)
+  if (context === undefined) {
+    throw new Error('useRateLimit must be used within a RateLimitProvider')
+  }
+  return context
+}
 
 interface RateLimitIndicatorProps {
   className?: string
@@ -29,277 +61,190 @@ interface RateLimitIndicatorProps {
   position?: 'inline' | 'floating'
 }
 
+/**
+ * Rate limit indicator component
+ */
 export function RateLimitIndicator({
   className,
   showWhenOk = false,
   variant = 'minimal',
-  position = 'inline'
+  position = 'inline',
 }: RateLimitIndicatorProps) {
-  const [rateLimitInfo] = useAtom(rateLimitInfoAtom)
-  const [isRateLimited] = useAtom(isRateLimitedAtom)
-  const [timeToReset, setTimeToReset] = useState<number | null>(null)
-  const [timeToRetry, setTimeToRetry] = useState<number | null>(null)
+  const { rateLimitInfo, isRateLimited } = useRateLimit()
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null)
 
-  // Update countdown timers
+  // Update time remaining for blocked state
   useEffect(() => {
-    if (!rateLimitInfo) return
-
-    const updateTimers = () => {
-      const now = Date.now()
-      
-      if (rateLimitInfo.resetTime) {
-        const resetMs = rateLimitInfo.resetTime - now
-        setTimeToReset(resetMs > 0 ? resetMs : null)
+      if (!rateLimitInfo?.resetTime) {
+        setTimeRemaining(null)
+        return
       }
-      
-      if (rateLimitInfo.retryAfter) {
-        const retryMs = rateLimitInfo.retryAfter - now
-        setTimeToRetry(retryMs > 0 ? retryMs : null)
+
+      const interval = setInterval(() => {
+        const now = Date.now()
+        const remaining = Math.max(0, rateLimitInfo.resetTime! - now)
+        setTimeRemaining(remaining)
+
+        if (remaining === 0) {
+          setTimeRemaining(null)
+        }
+      }, 1000)
+
+      return () => clearInterval(interval)
+    }, [rateLimitInfo?.resetTime])
+
+    // Don't show anything if not rate limited and showWhenOk is false
+    if (!isRateLimited && !showWhenOk) {
+      return null
+    }
+
+    const formatTime = (ms: number) => {
+      const seconds = Math.ceil(ms / 1000)
+      const minutes = Math.floor(seconds / 60)
+      const remainingSeconds = seconds % 60
+
+      if (minutes > 0) {
+        return `${minutes}m ${remainingSeconds}s`
       }
+      return `${seconds}s`
     }
 
-    updateTimers()
-    const interval = setInterval(updateTimers, 1000)
-
-    return () => clearInterval(interval)
-  }, [rateLimitInfo])
-
-  // Don't render if no rate limit info and not showing when OK
-  if (!rateLimitInfo && !showWhenOk) return null
-
-  // Don't render if not rate limited and not showing when OK
-  if (!isRateLimited && !showWhenOk) return null
-
-  const getRemainingPercentage = () => {
-    if (!rateLimitInfo?.remaining || !rateLimitInfo?.limit) return 100
-    return Math.round((rateLimitInfo.remaining / rateLimitInfo.limit) * 100)
-  }
-
-  const formatTime = (ms: number) => {
-    const seconds = Math.ceil(ms / 1000)
-    const minutes = Math.floor(seconds / 60)
-    const hours = Math.floor(minutes / 60)
-
-    if (hours > 0) return `${hours}h ${minutes % 60}m`
-    if (minutes > 0) return `${minutes}m ${seconds % 60}s`
-    return `${seconds}s`
-  }
-
-  const getStatusIcon = () => {
-    if (rateLimitInfo?.blocked || isRateLimited) {
-      return <AlertTriangle className="h-4 w-4 text-red-500" />
+    const getStatusIcon = () => {
+      if (isRateLimited) return AlertTriangle
+      if (rateLimitInfo?.remaining !== undefined && rateLimitInfo.remaining < 2) return Clock
+      return Shield
     }
-    
-    const remaining = getRemainingPercentage()
-    if (remaining <= 20) {
-      return <Clock className="h-4 w-4 text-yellow-500" />
-    }
-    
-    return <Shield className="h-4 w-4 text-green-500" />
-  }
 
-  const getStatusColor = () => {
-    if (rateLimitInfo?.blocked || isRateLimited) return 'border-red-200 bg-red-50 text-red-800'
-    
-    const remaining = getRemainingPercentage()
-    if (remaining <= 20) return 'border-yellow-200 bg-yellow-50 text-yellow-800'
-    
-    return 'border-green-200 bg-green-50 text-green-800'
-  }
+    const getStatusColor = () => {
+      if (isRateLimited) return 'text-red-500'
+      if (rateLimitInfo?.remaining !== undefined && rateLimitInfo.remaining < 2) return 'text-yellow-500'
+      return 'text-green-500'
+    }
 
-  const getStatusMessage = () => {
-    if (rateLimitInfo?.blocked) {
-      return timeToRetry ? `Blocked for ${formatTime(timeToRetry)}` : 'Temporarily blocked'
-    }
-    
-    if (isRateLimited) {
-      return timeToReset ? `Rate limited - resets in ${formatTime(timeToReset)}` : 'Rate limited'
-    }
-    
-    const remaining = rateLimitInfo?.remaining || 0
-    const limit = rateLimitInfo?.limit || 0
-    
-    if (remaining === 0) {
-      return timeToReset ? `No requests left - resets in ${formatTime(timeToReset)}` : 'No requests remaining'
-    }
-    
-    return `${remaining}/${limit} requests remaining`
-  }
+    const getStatusText = () => {
+      if (isRateLimited) {
+        if (timeRemaining) {
+          return `Rate limited - try again in ${formatTime(timeRemaining)}`
+        }
+        return 'Rate limited - please wait'
+      }
 
-  if (variant === 'minimal') {
+      if (rateLimitInfo?.remaining !== undefined) {
+        if (rateLimitInfo.remaining === 0) {
+          return 'No requests remaining'
+        }
+        return `${rateLimitInfo.remaining} requests remaining`
+      }
+
+      return 'Rate limit OK'
+    }
+
+    const StatusIcon = getStatusIcon()
+
+    if (variant === 'minimal') {
+      return (
+        <div className={cn(
+          'flex items-center gap-1 text-xs',
+          getStatusColor(),
+          position === 'floating' && 'fixed top-4 right-4 bg-background/80 backdrop-blur-sm border rounded-md px-2 py-1',
+          className
+        )}>
+          <StatusIcon className="h-3 w-3" />
+          <span>{rateLimitInfo?.remaining || 0}</span>
+        </div>
+      )
+    }
+
+    if (variant === 'warning' && !isRateLimited) {
+      return null
+    }
+
     return (
       <div className={cn(
         'flex items-center gap-2 text-sm',
-        position === 'floating' && 'fixed bottom-4 right-4 bg-white rounded-lg shadow-lg border p-3',
+        getStatusColor(),
+        position === 'floating' && 'fixed top-4 right-4 bg-background/90 backdrop-blur-sm border rounded-lg px-3 py-2 shadow-lg',
         className
       )}>
-        {getStatusIcon()}
-        {(isRateLimited || rateLimitInfo?.blocked || (rateLimitInfo?.remaining || 0) <= 2) && (
-          <span className="text-xs opacity-75">
-            {rateLimitInfo?.remaining || 0}/{rateLimitInfo?.limit || 0}
-          </span>
-        )}
+        <StatusIcon className="h-4 w-4" />
+        <span>{getStatusText()}</span>
       </div>
     )
-  }
+}
 
-  if (variant === 'warning' && !isRateLimited && !rateLimitInfo?.blocked && getRemainingPercentage() > 20) {
+/**
+ * Hook to update rate limit status
+ */
+export function useUpdateRateLimit() {
+  const { setRateLimitInfo, setIsRateLimited } = useRateLimit()
+
+  const updateFromResponse = (response: Response) => {
+      const remaining = response.headers.get('x-ratelimit-remaining')
+      const resetTime = response.headers.get('x-ratelimit-reset')
+      const retryAfter = response.headers.get('retry-after')
+
+      const info: RateLimitInfo = {
+        remaining: remaining ? parseInt(remaining, 10) : undefined,
+        resetTime: resetTime ? parseInt(resetTime, 10) * 1000 : undefined,
+        retryAfter: retryAfter ? parseInt(retryAfter, 10) * 1000 + Date.now() : undefined,
+        blocked: response.status === 429,
+        limit: response.headers.get('x-ratelimit-limit') ? parseInt(response.headers.get('x-ratelimit-limit')!, 10) : undefined,
+      }
+
+      setRateLimitInfo(info)
+      setIsRateLimited(response.status === 429)
+    }
+
+    const updateFromError = (error: unknown) => {
+      if (error && typeof error === 'object' && 'status' in error && error.status === 429) {
+        setIsRateLimited(true)
+      }
+    }
+
+    const reset = () => {
+      setRateLimitInfo(null)
+      setIsRateLimited(false)
+    }
+
+    return {
+      updateFromResponse,
+      updateFromError,
+      reset,
+    }
+}
+
+/**
+ * Enhanced rate limit status component
+ */
+export function RateLimitStatus({
+  className,
+}: {
+  className?: string
+}) {
+  const { rateLimitInfo } = useRateLimit()
+
+  if (!rateLimitInfo) {
     return null
   }
 
   return (
     <div className={cn(
-      'flex items-center gap-3 rounded-lg border p-3 text-sm',
-      getStatusColor(),
-      position === 'floating' && 'fixed bottom-4 right-4 shadow-lg',
+      'rounded-lg border p-4 bg-card',
       className
     )}>
-      {getStatusIcon()}
-      
-      <div className="flex-1">
-        <div className="font-medium">
-          {getStatusMessage()}
-        </div>
-        
-        {variant === 'detailed' && rateLimitInfo && (
-          <div className="mt-1 space-y-1 text-xs opacity-75">
-            {rateLimitInfo.resetTime && (
-              <div className="flex justify-between">
-                <span>Resets in:</span>
-                <span>{timeToReset ? formatTime(timeToReset) : 'Soon'}</span>
-              </div>
+      <div className="flex items-start justify-between">
+        <div className="space-y-1">
+          <p className="text-sm font-medium">Rate Limit Status</p>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            {rateLimitInfo.remaining !== undefined && (
+              <span>Remaining: {rateLimitInfo.remaining}</span>
             )}
-            
-            {rateLimitInfo.retryAfter && (
-              <div className="flex justify-between">
-                <span>Retry after:</span>
-                <span>{timeToRetry ? formatTime(timeToRetry) : 'Soon'}</span>
-              </div>
+            {rateLimitInfo.limit !== undefined && (
+              <span>Limit: {rateLimitInfo.limit}</span>
             )}
-            
-            <div className="flex justify-between">
-              <span>Limit:</span>
-              <span>{rateLimitInfo.limit || 'Unknown'} requests</span>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {variant === 'detailed' && rateLimitInfo?.remaining !== undefined && rateLimitInfo?.limit && (
-        <div className="flex flex-col items-end gap-1">
-          <div className="text-xs opacity-75">
-            {rateLimitInfo.remaining}/{rateLimitInfo.limit}
-          </div>
-          <div className="w-16 h-2 bg-black/10 rounded-full overflow-hidden">
-            <div 
-              className={cn(
-                'h-full transition-all duration-300',
-                getRemainingPercentage() <= 20 ? 'bg-red-500' : 
-                getRemainingPercentage() <= 50 ? 'bg-yellow-500' : 'bg-green-500'
-              )}
-              style={{ width: `${getRemainingPercentage()}%` }}
-            />
           </div>
         </div>
-      )}
-    </div>
-  )
-}
-
-/**
- * Hook to update rate limit info from API responses
- */
-export function useRateLimitInfo() {
-  const [, setRateLimitInfo] = useAtom(rateLimitInfoAtom)
-  const [, setIsRateLimited] = useAtom(isRateLimitedAtom)
-
-  const updateRateLimitInfo = (
-    response: Response,
-    responseData?: { rateLimitInfo?: RateLimitInfo }
-  ) => {
-    const remaining = response.headers.get('X-RateLimit-Remaining')
-    const limit = response.headers.get('X-RateLimit-Limit')
-    const reset = response.headers.get('X-RateLimit-Reset')
-    const retryAfter = response.headers.get('Retry-After')
-
-    const info: RateLimitInfo = {
-      remaining: remaining ? parseInt(remaining) : undefined,
-      limit: limit ? parseInt(limit) : undefined,
-      resetTime: reset ? parseInt(reset) : undefined,
-      retryAfter: retryAfter ? Date.now() + (parseInt(retryAfter) * 1000) : undefined,
-      blocked: response.status === 429,
-      ...responseData?.rateLimitInfo
-    }
-
-    setRateLimitInfo(info)
-    setIsRateLimited(response.status === 429)
-  }
-
-  const clearRateLimitInfo = () => {
-    setRateLimitInfo(null)
-    setIsRateLimited(false)
-  }
-
-  return {
-    updateRateLimitInfo,
-    clearRateLimitInfo
-  }
-}
-
-/**
- * Global rate limit status display component
- */
-export function GlobalRateLimitStatus() {
-  return (
-    <RateLimitIndicator
-      variant="warning"
-      position="floating"
-      className="max-w-xs"
-    />
-  )
-}
-
-/**
- * Contact form specific rate limit indicator
- */
-interface ContactRateLimitIndicatorProps {
-  className?: string
-}
-
-export function ContactRateLimitIndicator({ className }: ContactRateLimitIndicatorProps) {
-  const [rateLimitInfo] = useAtom(rateLimitInfoAtom)
-  
-  // Show for contact forms with lower thresholds
-  const shouldShow = rateLimitInfo && (
-    rateLimitInfo.blocked || 
-    (rateLimitInfo.remaining !== undefined && rateLimitInfo.remaining <= 1)
-  )
-
-  if (!shouldShow) return null
-
-  return (
-    <div className={cn(
-      'rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800',
-      className
-    )}>
-      <div className="flex items-center gap-2">
-        <AlertTriangle className="h-4 w-4 flex-shrink-0" />
-        <div>
-          <div className="font-medium">
-            Rate limit notice
-          </div>
-          <div className="mt-1 text-xs">
-            {rateLimitInfo.blocked 
-              ? 'Contact form temporarily blocked due to excessive attempts.'
-              : `You have ${rateLimitInfo.remaining} contact form submission${rateLimitInfo.remaining === 1 ? '' : 's'} remaining.`
-            }
-          </div>
-          {rateLimitInfo.resetTime && (
-            <div className="mt-1 text-xs opacity-75">
-              Limit resets at {new Date(rateLimitInfo.resetTime).toLocaleTimeString()}
-            </div>
-          )}
-        </div>
+        <Shield className="h-4 w-4 text-muted-foreground" />
       </div>
     </div>
   )

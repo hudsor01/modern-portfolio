@@ -67,9 +67,6 @@ export interface BaseFilter extends PaginationParams {
   search?: string
 }
 
-// Jotai and state management types
-export type AtomValue = string | number | boolean | object | null | undefined
-export type AtomInitialValues = Record<string, AtomValue>
 
 // Error boundary types
 export interface ErrorBoundaryProps {

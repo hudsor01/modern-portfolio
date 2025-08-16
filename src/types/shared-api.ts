@@ -71,15 +71,40 @@ export interface ApiEndpoints {
 export interface ProjectData {
   id: string;
   title: string;
+  slug?: string;
   description: string;
+  longDescription?: string;
+  content?: string;
   category: ProjectCategory;
   technologies: string[];
+  tags?: string[];
+  
+  // Media & URLs
   imageUrl?: string;
+  image?: string;
   demoUrl?: string;
+  liveUrl?: string;
   githubUrl?: string;
+  link?: string;
+  
   featured: boolean;
   createdAt: string;
   updatedAt: string;
+  
+  // Additional project details
+  client?: string;
+  role?: string;
+  metrics?: Record<string, string>;
+  details?: {
+    challenge: string;
+    solution: string;
+    impact: string;
+  };
+  charts?: Array<{
+    type: 'line' | 'bar' | 'pie' | 'funnel' | 'heatmap';
+    title: string;
+    dataKey: string;
+  }>;
 }
 
 export type ProjectCategory = 

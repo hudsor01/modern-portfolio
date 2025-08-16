@@ -3,7 +3,8 @@
  * Comprehensive data management with export, backup, and restore capabilities
  */
 
-import { ProjectDataManager } from './project-data-manager';
+import { ProjectDataManager } from '@/lib/server/project-data-manager';
+import type { Project } from '@/types/project';
 import { 
   createProjectBackup, 
   exportProjects 
@@ -262,11 +263,11 @@ export class DataExportService {
     });
 
     // Count changes (simplified - in a real app, you'd compare with previous backup)
-    changes.added = projects.filter(p => 
+    changes.added = projects.filter((p: Project) => 
       !lastBackup || (p.createdAt && new Date(p.createdAt) > lastBackup)
     ).length;
     
-    changes.modified = projects.filter(p => 
+    changes.modified = projects.filter((p: Project) => 
       lastBackup && p.updatedAt && new Date(p.updatedAt) > lastBackup
     ).length;
 
@@ -376,14 +377,14 @@ export class DataExportService {
     // Analyze projects
     const projectAnalysis = {
       total: projects.length,
-      withImages: projects.filter(p => p.image).length,
-      withDescriptions: projects.filter(p => p.description && p.description.length > 10).length,
-      withTags: projects.filter(p => p.tags && p.tags.length > 0).length,
+      withImages: projects.filter((p: Project) => p.image).length,
+      withDescriptions: projects.filter((p: Project) => p.description && p.description.length > 10).length,
+      withTags: projects.filter((p: Project) => p.tags && p.tags.length > 0).length,
       missingFields: [] as Array<{ project: string; fields: string[] }>,
     };
 
     // Check for missing fields
-    projects.forEach(project => {
+    projects.forEach((project: Project) => {
       const missingFields: string[] = [];
       
       if (!project.image) missingFields.push('image');

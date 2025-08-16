@@ -1,0 +1,107 @@
+# Page snapshot
+
+```yaml
+- navigation:
+  - link "Home":
+    - /url: /
+  - link "About":
+    - /url: /about
+  - link "Projects":
+    - /url: /projects
+  - link "Blog":
+    - /url: /blog
+  - link "Resume":
+    - /url: /resume
+  - link "Contact":
+    - /url: /contact
+- button "Let's Talk"
+- heading "Richard Hudson" [level=1]
+- heading "Revenue Operations Consultant & Business Growth Expert" [level=2]
+- text: Plano, TX • Serving Dallas-Fort Worth Metroplex • Remote & On-Site Available contact@richardwhudsonjr.com ✅ 5+
+- paragraph: Projects Delivered
+- text: 💰 $2.7M+
+- paragraph: Revenue Generated
+- text: 📈 244%
+- paragraph: Transaction Growth
+- text: 🚀 1,255%
+- paragraph: Network Expansion
+- heading "Revenue Operations Professional" [level=3]
+- paragraph: 4+ Years at Thryv | Dallas-Fort Worth
+- paragraph: Revenue Operations Consultant with deep expertise in scaling business operations through data-driven strategies. Specialized in partnership program development, commission automation, and revenue forecasting with proven track record of generating $4.8M+ in business impact.
+- heading "Core Expertise" [level=4]
+- text: Salesforce Administration HubSpot Revenue Operations Partnership Programs Commission Automation
+- button "Let's Connect"
+- heading "Career Achievements" [level=3]
+- paragraph: Measurable Business Impact
+- paragraph: Drove $1.1M+ revenue growth through data-driven forecasting and optimization at Thryv
+- paragraph: Scaled partner network by 2,200% while maintaining 99.9% data accuracy
+- paragraph: Achieved 95% forecast accuracy across all divisions using Power BI and Salesforce
+- paragraph: Reduced commission processing time by 80% through automation implementation
+- link "View Complete Experience":
+  - /url: /resume
+- heading "Revenue Operations Expertise" [level=2]
+- paragraph: Proven track record in sales operations, marketing automation, and business intelligence solutions
+- text: 📊
+- heading "Sales Operations Excellence" [level=3]
+- paragraph: Streamlined CRM systems and sales processes, resulting in 35% increase in conversion rates and 25% reduction in sales cycle time.
+- text: Salesforce CRM Optimization Pipeline Management Systems Lead Scoring & Qualification Revenue Forecasting Models 🎯
+- heading "Marketing Automation Strategy" [level=3]
+- paragraph: Implemented multi-touch attribution models and automated marketing workflows, driving 45% improvement in marketing ROI.
+- text: HubSpot Marketing Automation Lead Nurturing Campaigns Attribution Modeling Campaign Performance Analytics 📈
+- heading "Business Intelligence Solutions" [level=3]
+- paragraph: Built comprehensive BI dashboards and reporting systems, enabling data-driven decision making across organizations.
+- text: Custom Dashboard Development Real-time Performance Metrics Predictive Analytics Executive Reporting Systems
+- heading "Industry Experience & Credentials" [level=2]
+- paragraph: Deep expertise across multiple industries with proven results in revenue operations and business transformation
+- heading "Industry Expertise" [level=3]
+- paragraph: 10+ years across multiple sectors
+- text: SaaS & Technology Companies Financial Services & Fintech Healthcare & Life Sciences E-commerce & Retail Professional Services Manufacturing & Distribution
+- heading "Technical Certifications" [level=3]
+- paragraph: Professional credentials & expertise
+- img "SalesLoft Admin Certification Level 1 Badge"
+- heading "SalesLoft Admin Certification Level 1" [level=4]
+- paragraph: SalesLoft
+- paragraph: Foundational administration and configuration of SalesLoft sales engagement platform
+- text: Platform Setup User Management Basic Cadences Email Templates
+- img "SalesLoft Admin Certification Level 2 Badge"
+- heading "SalesLoft Admin Certification Level 2" [level=4]
+- paragraph: SalesLoft
+- paragraph: Advanced administration including complex automation, integrations, and advanced analytics
+- text: Advanced Automation CRM Integrations Advanced Analytics Complex Workflows
+- img "HubSpot Revenue Operations Certification Badge"
+- heading "HubSpot Revenue Operations Certification" [level=4]
+- paragraph: HubSpot Academy
+- paragraph: Comprehensive revenue operations strategy, process optimization, and performance analysis
+- text: Revenue Operations Sales Process Optimization Marketing Alignment Analytics & Forecasting
+- heading "What Clients Say" [level=2]
+- paragraph: Trusted by business leaders to deliver exceptional results
+- paragraph: "\"Richard's data-driven approach transformed our sales process and increased conversion rates by 35% in just three months.\""
+- text: SJ
+- heading "Sarah Johnson" [level=4]
+- paragraph: VP of Sales, TechCorp Inc.
+- paragraph: "\"His strategic insights helped us identify bottlenecks we didn't know existed. A true game-changer for our operations.\""
+- text: MC
+- heading "Michael Chen" [level=4]
+- paragraph: COO, GrowthMetrics
+- paragraph: "\"Richard's expertise in revenue operations helped us scale our channel program to new heights. Remarkable results.\""
+- text: JW
+- heading "Jessica Williams" [level=4]
+- paragraph: Partner Operations Director
+- heading "Let's Work Together" [level=3]
+- paragraph: Ready to optimize your revenue operations and drive growth? Let's discuss how we can achieve your business goals together.
+- link "View My Projects":
+  - /url: /projects
+- button "Get In Touch"
+- heading "Response Time" [level=4]
+- paragraph: Within 24 hours
+- heading "Location" [level=4]
+- paragraph: On-site | Remote | Hybrid
+- heading "Experience" [level=4]
+- paragraph: 10+ Years
+- button "↑"
+- region "Notifications alt+T"
+- text: "Queries: 4 (0 active) Mutations: 0 (0 pending)"
+- button "Open Tanstack query devtools":
+  - img
+- alert: Richard Hudson
+```

@@ -2,7 +2,7 @@
 
 import { z } from 'zod'
 import { headers } from 'next/headers'
-import { contactFormSchema } from '@/lib/validation'
+import { contactFormSchema } from '@/lib/validations/unified-schemas'
 import { emailService, type ContactFormData } from '@/lib/email/email-service'
 
 type ContactFormResponse = {

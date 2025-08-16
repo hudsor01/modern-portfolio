@@ -1,22 +1,20 @@
 /**
  * Rate Limit Indicator Component Tests
- * Tests for rate limiting UI components and user feedback
+ * Tests for rate limiting UI components with React Context
  */
 
+import React from 'react'
 import { render, screen, act, waitFor } from '@testing-library/react'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { Provider } from 'jotai'
 import {
   RateLimitIndicator,
-  ContactRateLimitIndicator,
-  useRateLimitInfo,
-  rateLimitInfoAtom,
-  isRateLimitedAtom
+  RateLimitProvider,
+  useUpdateRateLimit,
+  RateLimitStatus,
+  type RateLimitInfo
 } from '../rate-limit-indicator'
-import { useAtom } from 'jotai'
 
 // Mock Lucide icons
-// Define icon props interface
 interface IconProps {
   className?: string
 }
@@ -25,15 +23,67 @@ vi.mock('lucide-react', () => ({
   AlertTriangle: ({ className }: IconProps) => <div className={className} data-testid="alert-triangle" />,
   Clock: ({ className }: IconProps) => <div className={className} data-testid="clock" />,
   Shield: ({ className }: IconProps) => <div className={className} data-testid="shield" />,
-  CheckCircle2: ({ className }: IconProps) => <div className={className} data-testid="check-circle" />
 }))
 
-// Test wrapper with Jotai provider  
-function TestWrapper({ children, initialValues = [] }: { 
+// Test wrapper with RateLimitProvider
+function TestWrapper({ 
+  children, 
+  initialRateLimitInfo = null,
+  initialIsRateLimited = false
+}: { 
   children: React.ReactNode
-  initialValues?: Array<[import('jotai').Atom<unknown>, unknown]>
+  initialRateLimitInfo?: RateLimitInfo | null
+  initialIsRateLimited?: boolean
 }) {
-  return <Provider initialValues={initialValues}>{children}</Provider>
+  return (
+    <RateLimitProvider>
+      <TestUpdater 
+        rateLimitInfo={initialRateLimitInfo}
+        isRateLimited={initialIsRateLimited}
+      />
+      {children}
+    </RateLimitProvider>
+  )
+}
+
+// Helper component to update context values for testing
+function TestUpdater({ 
+  rateLimitInfo, 
+  isRateLimited 
+}: { 
+  rateLimitInfo: RateLimitInfo | null
+  isRateLimited: boolean 
+}) {
+  const { updateFromResponse } = useUpdateRateLimit()
+  
+  // Update context on mount if initial values provided
+  React.useEffect(() => {
+    if (rateLimitInfo || isRateLimited) {
+      const mockResponse = {
+        status: isRateLimited ? 429 : 200,
+        headers: {
+          get: (key: string) => {
+            switch (key) {
+              case 'x-ratelimit-remaining':
+                return rateLimitInfo?.remaining?.toString()
+              case 'x-ratelimit-limit':
+                return rateLimitInfo?.limit?.toString()
+              case 'x-ratelimit-reset':
+                return rateLimitInfo?.resetTime ? (rateLimitInfo.resetTime / 1000).toString() : undefined
+              case 'retry-after':
+                return rateLimitInfo?.retryAfter ? ((rateLimitInfo.retryAfter - Date.now()) / 1000).toString() : undefined
+              default:
+                return null
+            }
+          }
+        }
+      } as Response
+      
+      updateFromResponse(mockResponse)
+    }
+  }, [rateLimitInfo, isRateLimited, updateFromResponse])
+  
+  return null
 }
 
 describe('RateLimitIndicator', () => {
@@ -67,12 +117,7 @@ describe('RateLimitIndicator', () => {
       }
 
       render(
-        <TestWrapper 
-          initialValues={[
-            [rateLimitInfoAtom, rateLimitInfo],
-            [isRateLimitedAtom, false]
-          ]}
-        >
+        <TestWrapper initialRateLimitInfo={rateLimitInfo}>
           <RateLimitIndicator showWhenOk={true} />
         </TestWrapper>
       )
@@ -88,12 +133,7 @@ describe('RateLimitIndicator', () => {
       }
 
       render(
-        <TestWrapper 
-          initialValues={[
-            [rateLimitInfoAtom, rateLimitInfo],
-            [isRateLimitedAtom, false]
-          ]}
-        >
+        <TestWrapper initialRateLimitInfo={rateLimitInfo}>
           <RateLimitIndicator showWhenOk={true} />
         </TestWrapper>
       )
@@ -111,10 +151,8 @@ describe('RateLimitIndicator', () => {
 
       render(
         <TestWrapper 
-          initialValues={[
-            [rateLimitInfoAtom, rateLimitInfo],
-            [isRateLimitedAtom, true]
-          ]}
+          initialRateLimitInfo={rateLimitInfo}
+          initialIsRateLimited={true}
         >
           <RateLimitIndicator />
         </TestWrapper>
@@ -133,40 +171,12 @@ describe('RateLimitIndicator', () => {
       }
 
       render(
-        <TestWrapper 
-          initialValues={[
-            [rateLimitInfoAtom, rateLimitInfo],
-            [isRateLimitedAtom, false]
-          ]}
-        >
+        <TestWrapper initialRateLimitInfo={rateLimitInfo}>
           <RateLimitIndicator variant="minimal" />
         </TestWrapper>
       )
 
-      expect(screen.getByText('2/3')).toBeInTheDocument()
-    })
-
-    it('should render detailed variant with progress bar', () => {
-      const rateLimitInfo = {
-        remaining: 5,
-        limit: 10,
-        resetTime: Date.now() + 60000
-      }
-
-      render(
-        <TestWrapper 
-          initialValues={[
-            [rateLimitInfoAtom, rateLimitInfo],
-            [isRateLimitedAtom, false]
-          ]}
-        >
-          <RateLimitIndicator variant="detailed" showWhenOk={true} />
-        </TestWrapper>
-      )
-
-      expect(screen.getByText('5/10 requests remaining')).toBeInTheDocument()
-      expect(screen.getByText('5/10')).toBeInTheDocument() // In details section
-      expect(screen.getByText('10 requests')).toBeInTheDocument()
+      expect(screen.getByText('2')).toBeInTheDocument()
     })
 
     it('should not render warning variant when conditions are good', () => {
@@ -177,12 +187,7 @@ describe('RateLimitIndicator', () => {
       }
 
       const { container } = render(
-        <TestWrapper 
-          initialValues={[
-            [rateLimitInfoAtom, rateLimitInfo],
-            [isRateLimitedAtom, false]
-          ]}
-        >
+        <TestWrapper initialRateLimitInfo={rateLimitInfo}>
           <RateLimitIndicator variant="warning" />
         </TestWrapper>
       )
@@ -192,47 +197,26 @@ describe('RateLimitIndicator', () => {
   })
 
   describe('Time Formatting and Countdown', () => {
-    it('should format time correctly', () => {
+    it('should format time correctly', async () => {
       const rateLimitInfo = {
         remaining: 0,
         limit: 3,
         blocked: true,
-        retryAfter: Date.now() + (5 * 60 + 30) * 1000 // 5 minutes 30 seconds
+        resetTime: Date.now() + (5 * 60 + 30) * 1000 // 5 minutes 30 seconds
       }
 
       render(
         <TestWrapper 
-          initialValues={[
-            [rateLimitInfoAtom, rateLimitInfo],
-            [isRateLimitedAtom, true]
-          ]}
+          initialRateLimitInfo={rateLimitInfo}
+          initialIsRateLimited={true}
         >
-          <RateLimitIndicator variant="detailed" />
+          <RateLimitIndicator />
         </TestWrapper>
       )
 
-      expect(screen.getByText(/Blocked for 5m 30s/)).toBeInTheDocument()
-    })
-
-    it('should format hours correctly', () => {
-      const rateLimitInfo = {
-        remaining: 0,
-        limit: 3,
-        resetTime: Date.now() + (2 * 60 * 60 + 15 * 60) * 1000 // 2 hours 15 minutes
-      }
-
-      render(
-        <TestWrapper 
-          initialValues={[
-            [rateLimitInfoAtom, rateLimitInfo],
-            [isRateLimitedAtom, true]
-          ]}
-        >
-          <RateLimitIndicator variant="detailed" />
-        </TestWrapper>
-      )
-
-      expect(screen.getByText(/resets in 2h 15m/)).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByText(/5m 30s/)).toBeInTheDocument()
+      })
     })
 
     it('should update countdown timer', async () => {
@@ -240,21 +224,21 @@ describe('RateLimitIndicator', () => {
         remaining: 0,
         limit: 3,
         blocked: true,
-        retryAfter: Date.now() + 61000 // 1 minute 1 second
+        resetTime: Date.now() + 61000 // 1 minute 1 second
       }
 
       render(
         <TestWrapper 
-          initialValues={[
-            [rateLimitInfoAtom, rateLimitInfo],
-            [isRateLimitedAtom, true]
-          ]}
+          initialRateLimitInfo={rateLimitInfo}
+          initialIsRateLimited={true}
         >
-          <RateLimitIndicator variant="detailed" />
+          <RateLimitIndicator />
         </TestWrapper>
       )
 
-      expect(screen.getByText(/Blocked for 1m 1s/)).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByText(/1m 1s/)).toBeInTheDocument()
+      })
 
       // Advance time by 1 second
       act(() => {
@@ -262,56 +246,35 @@ describe('RateLimitIndicator', () => {
       })
 
       await waitFor(() => {
-        expect(screen.getByText(/Blocked for 1m 0s/)).toBeInTheDocument()
+        expect(screen.getByText(/1m 0s/)).toBeInTheDocument()
       })
     })
   })
 
   describe('Status Messages', () => {
-    it('should show correct message when blocked', () => {
+    it('should show correct message when blocked', async () => {
       const rateLimitInfo = {
         remaining: 0,
         limit: 3,
         blocked: true,
-        retryAfter: Date.now() + 60000
-      }
-
-      render(
-        <TestWrapper 
-          initialValues={[
-            [rateLimitInfoAtom, rateLimitInfo],
-            [isRateLimitedAtom, true]
-          ]}
-        >
-          <RateLimitIndicator />
-        </TestWrapper>
-      )
-
-      expect(screen.getByText(/Blocked for/)).toBeInTheDocument()
-    })
-
-    it('should show correct message when rate limited but not blocked', () => {
-      const rateLimitInfo = {
-        remaining: 0,
-        limit: 3,
         resetTime: Date.now() + 60000
       }
 
       render(
         <TestWrapper 
-          initialValues={[
-            [rateLimitInfoAtom, rateLimitInfo],
-            [isRateLimitedAtom, true]
-          ]}
+          initialRateLimitInfo={rateLimitInfo}
+          initialIsRateLimited={true}
         >
           <RateLimitIndicator />
         </TestWrapper>
       )
 
-      expect(screen.getByText(/No requests left/)).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByText(/Rate limited - try again in/)).toBeInTheDocument()
+      })
     })
 
-    it('should show remaining requests when not at limit', () => {
+    it('should show remaining requests when not at limit', async () => {
       const rateLimitInfo = {
         remaining: 5,
         limit: 10,
@@ -319,93 +282,19 @@ describe('RateLimitIndicator', () => {
       }
 
       render(
-        <TestWrapper 
-          initialValues={[
-            [rateLimitInfoAtom, rateLimitInfo],
-            [isRateLimitedAtom, false]
-          ]}
-        >
+        <TestWrapper initialRateLimitInfo={rateLimitInfo}>
           <RateLimitIndicator showWhenOk={true} />
         </TestWrapper>
       )
 
-      expect(screen.getByText('5/10 requests remaining')).toBeInTheDocument()
-    })
-  })
-
-  describe('Progress Bar', () => {
-    it('should show correct progress bar color for good status', () => {
-      const rateLimitInfo = {
-        remaining: 8,
-        limit: 10,
-        resetTime: Date.now() + 60000
-      }
-
-      const { container } = render(
-        <TestWrapper 
-          initialValues={[
-            [rateLimitInfoAtom, rateLimitInfo],
-            [isRateLimitedAtom, false]
-          ]}
-        >
-          <RateLimitIndicator variant="detailed" showWhenOk={true} />
-        </TestWrapper>
-      )
-
-      // 80% remaining should show green
-      const progressBar = container.querySelector('[style*="width: 80%"]')
-      expect(progressBar).toHaveClass('bg-green-500')
-    })
-
-    it('should show correct progress bar color for warning status', () => {
-      const rateLimitInfo = {
-        remaining: 3,
-        limit: 10,
-        resetTime: Date.now() + 60000
-      }
-
-      const { container } = render(
-        <TestWrapper 
-          initialValues={[
-            [rateLimitInfoAtom, rateLimitInfo],
-            [isRateLimitedAtom, false]
-          ]}
-        >
-          <RateLimitIndicator variant="detailed" showWhenOk={true} />
-        </TestWrapper>
-      )
-
-      // 30% remaining should show yellow
-      const progressBar = container.querySelector('[style*="width: 30%"]')
-      expect(progressBar).toHaveClass('bg-yellow-500')
-    })
-
-    it('should show correct progress bar color for critical status', () => {
-      const rateLimitInfo = {
-        remaining: 1,
-        limit: 10,
-        resetTime: Date.now() + 60000
-      }
-
-      const { container } = render(
-        <TestWrapper 
-          initialValues={[
-            [rateLimitInfoAtom, rateLimitInfo],
-            [isRateLimitedAtom, false]
-          ]}
-        >
-          <RateLimitIndicator variant="detailed" showWhenOk={true} />
-        </TestWrapper>
-      )
-
-      // 10% remaining should show red
-      const progressBar = container.querySelector('[style*="width: 10%"]')
-      expect(progressBar).toHaveClass('bg-red-500')
+      await waitFor(() => {
+        expect(screen.getByText('5 requests remaining')).toBeInTheDocument()
+      })
     })
   })
 
   describe('Positioning', () => {
-    it('should apply floating position classes', () => {
+    it('should apply floating position classes', async () => {
       const rateLimitInfo = {
         remaining: 1,
         limit: 3,
@@ -413,199 +302,60 @@ describe('RateLimitIndicator', () => {
       }
 
       render(
-        <TestWrapper 
-          initialValues={[
-            [rateLimitInfoAtom, rateLimitInfo],
-            [isRateLimitedAtom, false]
-          ]}
-        >
+        <TestWrapper initialRateLimitInfo={rateLimitInfo}>
           <RateLimitIndicator position="floating" />
         </TestWrapper>
       )
 
-      const element = screen.getByTestId('clock').closest('div')
-      expect(element).toHaveClass('fixed', 'bottom-4', 'right-4')
-    })
-
-    it('should not apply floating classes for inline position', () => {
-      const rateLimitInfo = {
-        remaining: 1,
-        limit: 3,
-        resetTime: Date.now() + 60000
-      }
-
-      render(
-        <TestWrapper 
-          initialValues={[
-            [rateLimitInfoAtom, rateLimitInfo],
-            [isRateLimitedAtom, false]
-          ]}
-        >
-          <RateLimitIndicator position="inline" />
-        </TestWrapper>
-      )
-
-      const element = screen.getByTestId('clock').closest('div')
-      expect(element).not.toHaveClass('fixed')
+      await waitFor(() => {
+        const element = screen.getByTestId('clock').closest('div')
+        expect(element).toHaveClass('fixed', 'top-4', 'right-4')
+      })
     })
   })
 })
 
-describe('ContactRateLimitIndicator', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
-  it('should not render when not blocked and remaining > 1', () => {
-    const rateLimitInfo = {
-      remaining: 2,
-      limit: 3,
-      resetTime: Date.now() + 60000
-    }
-
+describe('RateLimitStatus', () => {
+  it('should not render when no rate limit info', () => {
     const { container } = render(
-      <TestWrapper 
-        initialValues={[
-          [rateLimitInfoAtom, rateLimitInfo],
-          [isRateLimitedAtom, false]
-        ]}
-      >
-        <ContactRateLimitIndicator />
+      <TestWrapper>
+        <RateLimitStatus />
       </TestWrapper>
     )
 
     expect(container.firstChild).toBeNull()
   })
 
-  it('should render when remaining is 1', () => {
+  it('should render rate limit status when info is available', async () => {
     const rateLimitInfo = {
-      remaining: 1,
-      limit: 3,
+      remaining: 5,
+      limit: 10,
       resetTime: Date.now() + 60000
     }
 
     render(
-      <TestWrapper 
-        initialValues={[
-          [rateLimitInfoAtom, rateLimitInfo],
-          [isRateLimitedAtom, false]
-        ]}
-      >
-        <ContactRateLimitIndicator />
+      <TestWrapper initialRateLimitInfo={rateLimitInfo}>
+        <RateLimitStatus />
       </TestWrapper>
     )
 
-    expect(screen.getByText('Rate limit notice')).toBeInTheDocument()
-    expect(screen.getByText(/You have 1 contact form submission remaining/)).toBeInTheDocument()
-  })
-
-  it('should render when blocked', () => {
-    const rateLimitInfo = {
-      remaining: 0,
-      limit: 3,
-      blocked: true,
-      retryAfter: Date.now() + 300000
-    }
-
-    render(
-      <TestWrapper 
-        initialValues={[
-          [rateLimitInfoAtom, rateLimitInfo],
-          [isRateLimitedAtom, true]
-        ]}
-      >
-        <ContactRateLimitIndicator />
-      </TestWrapper>
-    )
-
-    expect(screen.getByText('Rate limit notice')).toBeInTheDocument()
-    expect(screen.getByText(/Contact form temporarily blocked/)).toBeInTheDocument()
-  })
-
-  it('should show reset time', () => {
-    const resetTime = Date.now() + 3600000 // 1 hour from now
-    const rateLimitInfo = {
-      remaining: 1,
-      limit: 3,
-      resetTime
-    }
-
-    render(
-      <TestWrapper 
-        initialValues={[
-          [rateLimitInfoAtom, rateLimitInfo],
-          [isRateLimitedAtom, false]
-        ]}
-      >
-        <ContactRateLimitIndicator />
-      </TestWrapper>
-    )
-
-    expect(screen.getByText(/Limit resets at/)).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Rate Limit Status')).toBeInTheDocument()
+      expect(screen.getByText('Remaining: 5')).toBeInTheDocument()
+      expect(screen.getByText('Limit: 10')).toBeInTheDocument()
+    })
   })
 })
 
-describe('useRateLimitInfo Hook', () => {
-  it('should update rate limit info from response headers', () => {
-    let updateFunction: ((response: Response, options?: { rateLimitInfo?: { blocked: boolean } }) => void) | undefined
-
-    function TestComponent() {
-      const { updateRateLimitInfo } = useRateLimitInfo()
-      updateFunction = updateRateLimitInfo
-      
-      const [rateLimitInfo] = useAtom(rateLimitInfoAtom)
-      const [isRateLimited] = useAtom(isRateLimitedAtom)
-
-      return (
-        <div>
-          <span data-testid="remaining">{rateLimitInfo?.remaining || 'none'}</span>
-          <span data-testid="limited">{isRateLimited ? 'true' : 'false'}</span>
-        </div>
-      )
-    }
-
-    render(
-      <TestWrapper>
-        <TestComponent />
-      </TestWrapper>
-    )
-
-    expect(screen.getByTestId('remaining')).toHaveTextContent('none')
-    expect(screen.getByTestId('limited')).toHaveTextContent('false')
-
-    // Mock response with rate limit headers
-    const mockResponse = {
-      headers: new Map([
-        ['X-RateLimit-Remaining', '5'],
-        ['X-RateLimit-Limit', '10'],
-        ['X-RateLimit-Reset', (Date.now() + 60000).toString()],
-        ['Retry-After', '60']
-      ]),
-      status: 200
-    } as Response
-
-    ;(mockResponse.headers as Map<string, string>).get = (key: string) => (mockResponse.headers as Map<string, string>).get(key)
-
-    act(() => {
-      updateFunction?.(mockResponse, {
-        rateLimitInfo: { blocked: false }
-      })
-    })
-
-    expect(screen.getByTestId('remaining')).toHaveTextContent('5')
-    expect(screen.getByTestId('limited')).toHaveTextContent('false')
-  })
-
-  it('should handle 429 status code', () => {
+describe('useUpdateRateLimit', () => {
+  it('should update rate limit info from response headers', async () => {
     let updateFunction: ((response: Response) => void) | undefined
 
     function TestComponent() {
-      const { updateRateLimitInfo } = useRateLimitInfo()
-      updateFunction = updateRateLimitInfo
+      const { updateFromResponse } = useUpdateRateLimit()
+      updateFunction = updateFromResponse
       
-      const [isRateLimited] = useAtom(isRateLimitedAtom)
-
-      return <span data-testid="limited">{isRateLimited ? 'true' : 'false'}</span>
+      return <RateLimitIndicator showWhenOk />
     }
 
     render(
@@ -614,60 +364,65 @@ describe('useRateLimitInfo Hook', () => {
       </TestWrapper>
     )
 
+    // Mock response with rate limit headers
     const mockResponse = {
-      headers: new Map([
-        ['X-RateLimit-Remaining', '0'],
-        ['X-RateLimit-Limit', '3']
-      ]),
-      status: 429
+      headers: {
+        get: (key: string) => {
+          switch (key) {
+            case 'x-ratelimit-remaining': return '5'
+            case 'x-ratelimit-limit': return '10'
+            case 'x-ratelimit-reset': return ((Date.now() + 60000) / 1000).toString()
+            default: return null
+          }
+        }
+      },
+      status: 200
     } as Response
-
-    ;(mockResponse.headers as Map<string, string>).get = (key: string) => (mockResponse.headers as Map<string, string>).get(key)
 
     act(() => {
       updateFunction?.(mockResponse)
     })
 
-    expect(screen.getByTestId('limited')).toHaveTextContent('true')
+    await waitFor(() => {
+      expect(screen.getByText('5 requests remaining')).toBeInTheDocument()
+    })
   })
 
-  it('should clear rate limit info', () => {
-    let clearFunction: (() => void) | undefined
+  it('should handle 429 status code', async () => {
+    let updateFunction: ((response: Response) => void) | undefined
 
     function TestComponent() {
-      const { clearRateLimitInfo } = useRateLimitInfo()
-      clearFunction = clearRateLimitInfo
+      const { updateFromResponse } = useUpdateRateLimit()
+      updateFunction = updateFromResponse
       
-      const [rateLimitInfo] = useAtom(rateLimitInfoAtom)
-      const [isRateLimited] = useAtom(isRateLimitedAtom)
-
-      return (
-        <div>
-          <span data-testid="info">{rateLimitInfo ? 'present' : 'null'}</span>
-          <span data-testid="limited">{isRateLimited ? 'true' : 'false'}</span>
-        </div>
-      )
+      return <RateLimitIndicator />
     }
 
     render(
-      <TestWrapper 
-        initialValues={[
-          [rateLimitInfoAtom, { remaining: 5, limit: 10 }],
-          [isRateLimitedAtom, true]
-        ]}
-      >
+      <TestWrapper>
         <TestComponent />
       </TestWrapper>
     )
 
-    expect(screen.getByTestId('info')).toHaveTextContent('present')
-    expect(screen.getByTestId('limited')).toHaveTextContent('true')
+    const mockResponse = {
+      headers: {
+        get: (key: string) => {
+          switch (key) {
+            case 'x-ratelimit-remaining': return '0'
+            case 'x-ratelimit-limit': return '3'
+            default: return null
+          }
+        }
+      },
+      status: 429
+    } as Response
 
     act(() => {
-      clearFunction?.()
+      updateFunction?.(mockResponse)
     })
 
-    expect(screen.getByTestId('info')).toHaveTextContent('null')
-    expect(screen.getByTestId('limited')).toHaveTextContent('false')
+    await waitFor(() => {
+      expect(screen.getByTestId('alert-triangle')).toBeInTheDocument()
+    })
   })
 })

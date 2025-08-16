@@ -3,13 +3,7 @@ import { Resend } from 'resend'
 import { 
   checkEnhancedContactFormRateLimit
 } from '@/lib/security/enhanced-rate-limiter'
-
-// Define proper types for the contact form
-interface ContactFormData {
-  name: string;
-  email: string;
-  message: string;
-}
+import { ContactFormData } from '@/types/shared-api'
 
 interface ContactApiResponse {
   success: boolean;
@@ -44,6 +38,10 @@ function validateContactForm(data: unknown): ContactFormData {
 
   if (!formData.email || !/^\S+@\S+\.\S+$/.test(formData.email)) {
     errors.email = 'Valid email is required';
+  }
+
+  if (!formData.subject || formData.subject.trim() === '') {
+    errors.subject = 'Subject is required';
   }
 
   if (!formData.message || formData.message.trim() === '') {
@@ -81,7 +79,7 @@ export async function POST(request: Request) {
     const clientId = getClientIdentifier(request)
     const userAgent = request.headers.get('user-agent')
     const rateLimitResult = checkEnhancedContactFormRateLimit(clientId, {
-      userAgent: userAgent || undefined,
+      ...(userAgent && { userAgent }),
       path: '/api/contact'
     })
 
@@ -93,9 +91,9 @@ export async function POST(request: Request) {
           : 'Too many contact form submissions. Please try again later.',
         error: 'RATE_LIMIT_EXCEEDED',
         rateLimitInfo: {
-          retryAfter: rateLimitResult.retryAfter,
-          resetTime: rateLimitResult.resetTime,
-          blocked: rateLimitResult.blocked
+          ...(rateLimitResult.retryAfter !== undefined && { retryAfter: rateLimitResult.retryAfter }),
+          ...(rateLimitResult.resetTime !== undefined && { resetTime: rateLimitResult.resetTime }),
+          ...(rateLimitResult.blocked !== undefined && { blocked: rateLimitResult.blocked })
         }
       }
 
@@ -126,18 +124,19 @@ export async function POST(request: Request) {
     const formData = validateContactForm(body);
 
     // Send email using Resend
-    const { name, email, message } = formData;
+    const { name, email, subject, message } = formData;
 
     await resend.emails.send({
       from: 'Portfolio Contact <hello@richardwhudsonjr.com>',
       to: process.env.CONTACT_EMAIL || 'hudsor01@icloud.com',
-      subject: `New contact from ${name}`,
-      text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
+      subject: `${subject} - from ${name}`,
+      text: `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\nMessage: ${message}`,
       html: `
         <div>
           <h2>New Contact Form Submission</h2>
           <p><strong>Name:</strong> ${name}</p>
           <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Subject:</strong> ${subject}</p>
           <p><strong>Message:</strong></p>
           <p>${message.replace(/\n/g, '<br>')}</p>
         </div>
@@ -149,8 +148,8 @@ export async function POST(request: Request) {
       success: true,
       message: 'Form submitted successfully',
       rateLimitInfo: {
-        remaining: rateLimitResult.remaining,
-        resetTime: rateLimitResult.resetTime
+        ...(rateLimitResult.remaining !== undefined && { remaining: rateLimitResult.remaining }),
+        ...(rateLimitResult.resetTime !== undefined && { resetTime: rateLimitResult.resetTime })
       }
     };
 
@@ -174,8 +173,7 @@ export async function POST(request: Request) {
       success: false,
       message: 'Error processing form',
       error: error instanceof ValidationError ? 'Validation failed' : 'Internal server error',
-      details:
-        error instanceof ValidationError ? error.details : undefined,
+      ...(error instanceof ValidationError && error.details && { details: error.details }),
     };
 
     return NextResponse.json(response, { status: error instanceof ValidationError ? 400 : 500 });

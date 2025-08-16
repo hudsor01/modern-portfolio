@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { webVitalsService, checkAnalyticsRateLimit } from '@/lib/analytics/web-vitals-service';
-import { v4 } from 'uuid'
 
 /**
  * Production-Ready Web Vitals API Route
@@ -25,7 +24,7 @@ export async function POST(request: NextRequest) {
     const body: VitalsRequestBody = await request.json()
 
     // Generate or extract session ID
-    const sessionId = request.cookies.get('session-id')?.value || v4() // Use v4 directly
+    const sessionId = request.cookies.get('session-id')?.value || crypto.randomUUID()
 
     // Extract viewport from body if available
     const viewport = body.viewport || { width: 1920, height: 1080 }
@@ -109,8 +108,8 @@ export async function GET(request: NextRequest) {
     const recentMetrics = await webVitalsService.getAnalytics({
       startDate: start,
       endDate: now,
-      page: page || undefined,
-      metric: allowedMetrics.includes(metric as MetricType) ? (metric as MetricType) : undefined,
+      ...(page && { page }),
+      ...(metric && allowedMetrics.includes(metric as MetricType) && { metric: metric as MetricType }),
       limit: 100,
     })
 
