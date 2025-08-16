@@ -15,7 +15,7 @@ import {
   ProfessionalCardBadge,
   ProfessionalCardFooter
 } from '@/components/ui/professional-card'
-import { ArrowRight, ExternalLink } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 
 // Mock project interface
 interface MockProject {
@@ -152,26 +152,14 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project }) 
         )}
       </ProfessionalCardContent>
 
-      <ProfessionalCardFooter className="pt-6">
+      <ProfessionalCardFooter className="pt-6 flex justify-center">
         <Link
           href={`/projects/${isMockProject(project) ? project.id : project.slug || project.id}`}
-          className="inline-flex items-center justify-center w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 group"
+          className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white font-semibold px-8 py-3 rounded-lg transition-all duration-200 group"
         >
           <span>{customCTA}</span>
           <ArrowRight size={16} className="ml-2 transition-transform duration-200 group-hover:translate-x-1" />
         </Link>
-        
-        {(('link' in project && project.link) || (isMockProject(project) && project.liveUrl)) && (
-          <a
-            href={('link' in project && project.link) || (isMockProject(project) ? project.liveUrl : '') || ''}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center text-slate-400 hover:text-slate-300 transition-colors duration-200"
-          >
-            <ExternalLink size={16} className="mr-1" />
-            <span className="text-sm">Live Demo</span>
-          </a>
-        )}
       </ProfessionalCardFooter>
     </ProfessionalCard>
   )
