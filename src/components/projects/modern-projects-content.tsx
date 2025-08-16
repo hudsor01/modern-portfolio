@@ -190,7 +190,9 @@ export const ModernProjectsContent = memo<ModernProjectsContentProps>(({
 
   // Memoized sorting to prevent expensive recalculations on every render
   const sortedProjects = useMemo(() => {
-    return [...projectsData].sort((a, b) => {
+    // Ensure projectsData is an array before spreading
+    const dataArray = Array.isArray(projectsData) ? projectsData : []
+    return [...dataArray].sort((a, b) => {
       // Featured projects first
       if (a.featured && !b.featured) return -1
       if (!a.featured && b.featured) return 1

@@ -19,7 +19,9 @@ export function useProjects(_options?: {
         headers: { 'Content-Type': 'application/json' },
       })
       if (!response.ok) throw new Error('Failed to fetch projects')
-      return response.json()
+      const result = await response.json()
+      // API returns { success: boolean, data: projects[] }
+      return result.data || []
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes
