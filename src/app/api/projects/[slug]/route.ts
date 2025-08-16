@@ -17,7 +17,8 @@ export async function GET(
 ) {
   try {
     // Validate slug parameter
-    const validatedParams = slugSchema.parse(params)
+    const resolvedParams = await params
+    const validatedParams = slugSchema.parse(resolvedParams)
     const project = await getProjectBySlug(validatedParams.slug)
     
     if (!project) {

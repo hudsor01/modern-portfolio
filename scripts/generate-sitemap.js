@@ -11,14 +11,25 @@ const routes = [
   { path: '/projects', priority: '0.9', changefreq: 'weekly' },
   { path: '/blog', priority: '0.9', changefreq: 'weekly' },
   { path: '/resume', priority: '0.8', changefreq: 'monthly' },
-  { path: '/contact', priority: '0.8', changefreq: 'monthly' },
-  { path: '/projects/partnership-program-implementation', priority: '0.7', changefreq: 'monthly' },
-  { path: '/projects/revenue-kpi', priority: '0.7', changefreq: 'monthly' },
-  { path: '/projects/deal-funnel', priority: '0.7', changefreq: 'monthly' },
-  { path: '/projects/churn-retention', priority: '0.7', changefreq: 'monthly' },
-  { path: '/projects/lead-attribution', priority: '0.7', changefreq: 'monthly' },
-  { path: '/projects/cac-unit-economics', priority: '0.7', changefreq: 'monthly' },
-  { path: '/projects/partner-performance', priority: '0.7', changefreq: 'monthly' }
+  { path: '/contact', priority: '0.9', changefreq: 'monthly' },
+  // Location pages for local SEO
+  { path: '/locations', priority: '0.9', changefreq: 'monthly' },
+  { path: '/locations/dallas', priority: '0.85', changefreq: 'monthly' },
+  { path: '/locations/fort-worth', priority: '0.85', changefreq: 'monthly' },
+  { path: '/locations/plano', priority: '0.85', changefreq: 'monthly' },
+  { path: '/locations/frisco', priority: '0.85', changefreq: 'monthly' },
+  // Project pages
+  { path: '/projects/partnership-program-implementation', priority: '0.8', changefreq: 'monthly' },
+  { path: '/projects/revenue-kpi', priority: '0.8', changefreq: 'monthly' },
+  { path: '/projects/revenue-operations-center', priority: '0.8', changefreq: 'monthly' },
+  { path: '/projects/commission-optimization', priority: '0.8', changefreq: 'monthly' },
+  { path: '/projects/multi-channel-attribution', priority: '0.8', changefreq: 'monthly' },
+  { path: '/projects/customer-lifetime-value', priority: '0.75', changefreq: 'monthly' },
+  { path: '/projects/partner-performance', priority: '0.75', changefreq: 'monthly' },
+  { path: '/projects/deal-funnel', priority: '0.75', changefreq: 'monthly' },
+  { path: '/projects/churn-retention', priority: '0.75', changefreq: 'monthly' },
+  { path: '/projects/lead-attribution', priority: '0.75', changefreq: 'monthly' },
+  { path: '/projects/cac-unit-economics', priority: '0.75', changefreq: 'monthly' }
 ];
 
 // Define blog post routes

@@ -34,49 +34,103 @@
     <loc>https://richardwhudsonjr.com/contact</loc>
     <lastmod>2025-08-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://richardwhudsonjr.com/locations</loc>
+    <lastmod>2025-08-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://richardwhudsonjr.com/locations/dallas</loc>
+    <lastmod>2025-08-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://richardwhudsonjr.com/locations/fort-worth</loc>
+    <lastmod>2025-08-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://richardwhudsonjr.com/locations/plano</loc>
+    <lastmod>2025-08-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://richardwhudsonjr.com/locations/frisco</loc>
+    <lastmod>2025-08-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
   </url>
   <url>
     <loc>https://richardwhudsonjr.com/projects/partnership-program-implementation</loc>
     <lastmod>2025-08-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://richardwhudsonjr.com/projects/revenue-kpi</loc>
     <lastmod>2025-08-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://richardwhudsonjr.com/projects/deal-funnel</loc>
+    <loc>https://richardwhudsonjr.com/projects/revenue-operations-center</loc>
     <lastmod>2025-08-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://richardwhudsonjr.com/projects/churn-retention</loc>
+    <loc>https://richardwhudsonjr.com/projects/commission-optimization</loc>
     <lastmod>2025-08-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://richardwhudsonjr.com/projects/lead-attribution</loc>
+    <loc>https://richardwhudsonjr.com/projects/multi-channel-attribution</loc>
     <lastmod>2025-08-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://richardwhudsonjr.com/projects/cac-unit-economics</loc>
+    <loc>https://richardwhudsonjr.com/projects/customer-lifetime-value</loc>
     <lastmod>2025-08-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
   </url>
   <url>
     <loc>https://richardwhudsonjr.com/projects/partner-performance</loc>
     <lastmod>2025-08-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://richardwhudsonjr.com/projects/deal-funnel</loc>
+    <lastmod>2025-08-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://richardwhudsonjr.com/projects/churn-retention</loc>
+    <lastmod>2025-08-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://richardwhudsonjr.com/projects/lead-attribution</loc>
+    <lastmod>2025-08-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://richardwhudsonjr.com/projects/cac-unit-economics</loc>
+    <lastmod>2025-08-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
   </url>
   <url>
     <loc>https://richardwhudsonjr.com/blog/revenue-operations-best-practices-complete-guide</loc>

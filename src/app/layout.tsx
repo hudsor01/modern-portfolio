@@ -10,7 +10,7 @@ import { Toaster } from '@/components/ui/toaster'
 import { EnhancedReadingProgress } from '@/components/ui/enhanced-reading-progress'
 import { ScrollToTop } from '@/components/ui/scroll-to-top'
 import { baseMetadata } from './shared-metadata'
-import { PersonJsonLd, WebsiteJsonLd, LocalBusinessJsonLd } from '@/components/seo/json-ld'
+import { PersonJsonLd, WebsiteJsonLd, LocalBusinessJsonLd, OrganizationJsonLd } from '@/components/seo/json-ld'
 import { PreloadManager } from '@/components/performance/preload-manager'
 
 // Use single font family for better performance
@@ -31,9 +31,20 @@ const RootLayout = React.memo(function RootLayout({ children }: { children: Reac
         <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        
+        {/* Preconnect hints for performance */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://images.unsplash.com" />
+        <link rel="preconnect" href="https://api.vercel.com" />
+        <link rel="dns-prefetch" href="https://vitals.vercel-analytics.com" />
+        <link rel="dns-prefetch" href="https://va.vercel-scripts.com" />
+        
+        {/* Structured Data */}
         <PersonJsonLd />
         <WebsiteJsonLd />
         <LocalBusinessJsonLd />
+        <OrganizationJsonLd />
       </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
