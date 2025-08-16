@@ -3,7 +3,7 @@
 import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
-import { EnhancedContactForm } from '@/components/ui/enhanced-contact-form'
+import { ShadcnContactForm } from '@/components/forms/shadcn-contact-form'
 import { Button } from '@/components/ui/button'
 import { ProfessionalCard, ProfessionalCardHeader, ProfessionalCardTitle, ProfessionalCardDescription, ProfessionalCardContent } from '@/components/ui/professional-card'
 
@@ -101,14 +101,16 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                 </ProfessionalCardHeader>
 
                 <ProfessionalCardContent className="space-y-6">
-                  {/* Enhanced Contact Form */}
-                  <EnhancedContactForm
+                  {/* shadcn/ui Contact Form */}
+                  <ShadcnContactForm
                     onSuccess={handleSuccess}
                     showOptionalFields={true}
                     variant="detailed"
-                    buttonText="Send Message"
-                    successMessage="Thank you! I'll get back to you within 24 hours."
-                    className="space-y-6"
+                    title="Let's Connect"
+                    description="Ready to optimize your revenue operations? Let's discuss how I can help drive your business growth."
+                    enableAutoSave={true}
+                    enableRateLimit={true}
+                    className="border-0 shadow-none"
                   />
 
                   {/* Professional Footer */}

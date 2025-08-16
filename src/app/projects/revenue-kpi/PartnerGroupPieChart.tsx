@@ -1,27 +1,39 @@
+'use client'
 import React from 'react'
-import { PieChart } from '@/components/charts/pie-chart' // Corrected path
-import { partnerGroupsData, type PartnerGroup } from '@/app/projects/data/partner-analytics' // Corrected path // Import new data and type
+import { ShadcnChartContainer } from '@/components/charts/shadcn-chart-container'
+import { partnerGroupsData, type PartnerGroup } from '@/app/projects/data/partner-analytics'
+import { chartColors as defaultChartColors } from '@/lib/constants/chart'
+import type { ChartConfig } from '@/components/ui/chart'
 
-// Extract colors from the imported data for the PieChart component's 'colors' prop
-const chartColors = partnerGroupsData.map((group: PartnerGroup) => group.color);
+// Transform data for chart
+const data = partnerGroupsData.map((group: PartnerGroup) => ({
+  name: group.name,
+  value: group.value,
+  revenue: group.value, // Use value as revenue for the chart
+}))
 
-// The partnerGroupsData itself can be passed directly to the PieChart's 'data' prop
-// as it already has 'name' and 'value' fields.
+// Chart configuration
+const chartConfig: ChartConfig = {
+  revenue: {
+    label: 'Revenue %',
+    color: defaultChartColors.primary,
+  },
+}
 
 const PartnerGroupPieChart = React.memo(function PartnerGroupPieChart() {
   return (
-    <div className="portfolio-card">
-      <PieChart 
-        data={partnerGroupsData} // Use imported data
-        title="Partner Revenue Contribution (%)" // Updated title
-        valueFormatterAction={(value: number) => `${value}%`} // Values are percentages
-        colors={chartColors} // Use extracted colors
-        className="h-80"
-      />
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
-        Percentage of total revenue contributed by each partner group.
-      </p>
-    </div>
+    <ShadcnChartContainer
+      title="Partner Revenue Contribution (%)"
+      description="Percentage of total revenue contributed by each partner group"
+      staticData={data}
+      dataKey="revenue"
+      xAxisKey="name"
+      chartConfig={chartConfig}
+      variant="default"
+      height={320}
+      valueFormatter={(value) => `${value}%`}
+      className="portfolio-card"
+    />
   )
 })
 

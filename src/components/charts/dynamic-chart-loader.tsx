@@ -1,16 +1,11 @@
 'use client'
 
 import React, { Suspense, lazy, memo } from 'react'
-import { Loader2 } from 'lucide-react'
+import { ChartSkeletonWrapper } from '@/components/ui/shadcn-skeleton-wrapper'
 
-// Chart loading component
+// Modern chart loading component using shadcn/ui skeleton
 const ChartLoader = memo(() => (
-  <div className="flex items-center justify-center p-8 bg-white/5 backdrop-blur border border-white/10 rounded-xl">
-    <div className="flex flex-col items-center space-y-3">
-      <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
-      <p className="text-gray-300 text-sm">Loading chart...</p>
-    </div>
-  </div>
+  <ChartSkeletonWrapper variant="detailed" />
 ))
 
 ChartLoader.displayName = 'ChartLoader'

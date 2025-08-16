@@ -1,54 +1,58 @@
-'use client';
+'use client'
 
-import { useProjects, usePrefetchProjects } from '@/hooks/use-api-queries';
-import { ModernProjectsContent } from '@/components/projects/modern-projects-content';
-import type { Project } from '@/types/project';
-import type { ProjectData } from '@/types/shared-api';
+import { useProjects } from '@/hooks/use-api-queries'
+import { ModernProjectsContent } from '@/components/projects/modern-projects-content'
+import { Skeleton } from '@/components/ui/skeleton'
+import type { Project } from '@/types/project'
 
 interface ProjectsClientBoundaryProps {
-  initialProjects?: Project[]; // Optional: SSR data for hydration
-}
-
-// Function to convert ProjectData to Project for compatibility
-function convertProjectData(projectData: ProjectData[]): Project[] {
-  return projectData.map(p => ({
-    ...p,
-    slug: p.id, // Use id as slug for compatibility
-    createdAt: new Date(p.createdAt),
-    updatedAt: p.updatedAt ? new Date(p.updatedAt) : undefined,
-    category: p.category,
-    technologies: p.technologies,
-    image: p.imageUrl,
-    liveUrl: p.demoUrl,
-    githubUrl: p.githubUrl,
-  }));
+  initialProjects?: Project[]
 }
 
 export default function ProjectsClientBoundary({ initialProjects }: ProjectsClientBoundaryProps) {
-  // Always call hooks at the top level - no conditional returns before hooks
-  const { data: projects, isLoading } = useProjects();
-  const prefetchProjects = usePrefetchProjects();
+  // Use modern hook directly - no conversion needed
+  const { data: projects, isLoading, error } = useProjects({
+    prefetchRelated: true, // Modern: always prefetch related data
+    suspense: false
+  })
 
-  // Determine the data source and loading state
-  const hasInitialProjects = initialProjects && initialProjects.length > 0;
-  const shouldUseInitialProjects = hasInitialProjects && !projects?.data;
-  
-  // Use hydrated data or convert API data, or fall back to initial projects
-  const projectsToDisplay = shouldUseInitialProjects 
-    ? initialProjects 
-    : projects?.data 
-      ? convertProjectData(projects.data) 
-      : [];
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-[400px] flex items-center justify-center">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold mb-2">Failed to load projects</h3>
+          <p className="text-muted-foreground">Please try again later</p>
+        </div>
+      </div>
+    )
+  }
 
-  // Determine the actual loading state
-  const isActuallyLoading = isLoading && !hasInitialProjects;
+  // Show loading with skeleton
+  if (isLoading && !initialProjects) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="space-y-4">
+            <Skeleton className="h-48 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+          </div>
+        ))}
+      </div>
+    )
+  }
 
-  // Always render ModernProjectsContent - let it handle different states
+  // Use projects data or fallback to initial projects
+  const displayProjects = projects || initialProjects || []
+
   return (
     <ModernProjectsContent 
-      projects={projectsToDisplay}
-      onPrefetch={prefetchProjects}
-      isLoading={isActuallyLoading}
+      projects={displayProjects as Project[]}
+      onPrefetch={() => {
+        // Modern prefetch is handled automatically by the ultimate hooks
+      }}
+      isLoading={isLoading && !initialProjects}
     />
-  );
+  )
 }

@@ -27,7 +27,6 @@ const EnvironmentSchema = z.object({
   
   // External Service API Keys
   VERCEL_ANALYTICS_ID: z.string().optional(),
-  GOOGLE_ANALYTICS_ID: z.string().optional(),
   
   // Security Configuration
   JWT_SECRET: z.string().min(32).optional(),
@@ -120,7 +119,6 @@ const RuntimeConfigSchema = z.object({
   
   analytics: z.object({
     vercelId: z.string().optional(),
-    googleId: z.string().optional(),
   }),
 });
 
@@ -242,7 +240,6 @@ export class EnvConfigManager {
         
         analytics: {
           vercelId: this.envVars.VERCEL_ANALYTICS_ID,
-          googleId: this.envVars.GOOGLE_ANALYTICS_ID,
         },
       };
 

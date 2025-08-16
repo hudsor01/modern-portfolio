@@ -1,5 +1,5 @@
 import { Project } from '@/types/project'
-import { ContactFormData } from '@/types/contact'
+import { ContactFormData } from '@/types/shared-api'
 import { ChartData } from '@/types/chart'
 
 // Factory for creating mock project data

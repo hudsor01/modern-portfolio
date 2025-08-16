@@ -178,8 +178,8 @@ export function ConsentBanner() {
                 <Checkbox
                   id={`consent-${option.id}`}
                   checked={tempSettings[option.id]}
-                  onCheckedChange={option.disabled ? undefined : () => handleCheckboxChange(option.id as Exclude<ConsentType, 'necessary'>)}
-                  disabled={option.disabled}
+                  {...(!option.disabled && { onCheckedChange: () => handleCheckboxChange(option.id as Exclude<ConsentType, 'necessary'>) })}
+                  {...(option.disabled && { disabled: option.disabled })}
                   aria-labelledby={`consent-label-${option.id}`}
                 />
                 <div className="grid gap-1.5 leading-none">

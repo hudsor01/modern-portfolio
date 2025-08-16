@@ -1,10 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { JobQueue, type JobHandler, type Job, JobUtils } from '../job-queue'
 
-// Mock UUID to make tests deterministic
-vi.mock('uuid', () => ({
-  v4: vi.fn().mockImplementation(() => 'mock-uuid-' + Math.random().toString(36).substr(2, 9))
-}))
+// Mock crypto.randomUUID to make tests deterministic
+global.crypto = {
+  ...global.crypto,
+  randomUUID: vi.fn().mockImplementation(() => 'mock-uuid-' + Math.random().toString(36).substr(2, 9))
+} as Crypto
 
 describe('JobQueue', () => {
   let jobQueue: JobQueue

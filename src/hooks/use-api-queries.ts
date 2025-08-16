@@ -1,423 +1,265 @@
 /**
- * Type-safe React Query hooks for API communication
- * Part of the comprehensive type architecture strategy
+ * CLEAN API Query Hooks
+ * Direct TanStack Query implementation with proper types
+ * No duplication - clean, focused implementations
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { 
-  ApiResponse, 
-  ProjectData, 
-  AnalyticsData, 
-  ContactFormData,
-  ContactResponse,
-  ResumeData,
-  BlogPostData,
-  BlogCategoryData,
-  BlogTagData,
-  BlogPostFilters,
-  BlogPostSort
-} from '@/types/shared-api';
-import { projectKeys, analyticsKeys, contactKeys, resumeKeys, blogKeys } from '@/lib/queryKeys';
-import { 
-  fetchBlogPosts, 
-  fetchBlogPost, 
-  createBlogPost, 
-  updateBlogPost, 
-  deleteBlogPost,
-  fetchBlogCategories,
-  createBlogCategory,
-  fetchBlogTags,
-  createBlogTag,
-  fetchBlogAnalytics,
-  fetchRSSFeed
-} from '@/lib/api';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import type { ProjectData, ContactFormData, ContactResponse, AnalyticsData, ResumeData, BlogPostData, BlogCategoryData, BlogTagData } from '@/types/shared-api'
 
-// Base API client function with proper typing
-async function apiCall<T>(
-  endpoint: string, 
-  options: RequestInit = {}
-): Promise<ApiResponse<T>> {
-  const response = await fetch(endpoint, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
+// Projects
+export function useProjects(_options?: {
+  prefetchRelated?: boolean
+  suspense?: boolean
+}) {
+  return useQuery({
+    queryKey: ['projects'],
+    queryFn: async (): Promise<ProjectData[]> => {
+      const response = await fetch('/api/projects', {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      if (!response.ok) throw new Error('Failed to fetch projects')
+      return response.json()
     },
-    ...options,
-  });
-
-  if (!response.ok) {
-    throw new Error(`API Error: ${response.status} ${response.statusText}`);
-  }
-
-  return response.json() as Promise<ApiResponse<T>>;
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
+  })
 }
 
-/**
- * Projects API Hooks
- */
-export function useProjects() {
+export function useProject(id: string, _options?: {
+  prefetchAnalytics?: boolean
+  prefetchRelated?: boolean
+}) {
   return useQuery({
-    queryKey: projectKeys.all(),
-    queryFn: () => apiCall<ProjectData[]>('/api/projects'),
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 30, // 30 minutes (formerly cacheTime)
-  });
-}
-
-export function useProject(id: string) {
-  return useQuery({
-    queryKey: projectKeys.detail(id),
-    queryFn: () => apiCall<ProjectData>(`/api/projects/${id}`),
+    queryKey: ['project', id],
+    queryFn: async (): Promise<ProjectData> => {
+      const response = await fetch(`/api/projects/${id}`, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      if (!response.ok) throw new Error('Failed to fetch project')
+      return response.json()
+    },
     enabled: !!id,
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 30,
-  });
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  })
 }
 
-/**
- * Analytics API Hooks
- */
-export function useAnalytics() {
+// Analytics
+export function useAnalytics(type?: string) {
+  const endpoint = type ? `/api/analytics/${type}/realtime` : '/api/analytics/vitals'
+  
   return useQuery({
-    queryKey: analyticsKeys.all(),
-    queryFn: () => apiCall<AnalyticsData>('/api/analytics/vitals'),
-    staleTime: 1000 * 60 * 2, // 2 minutes for fresh analytics
-    gcTime: 1000 * 60 * 10,
-  });
+    queryKey: ['analytics', type || 'vitals'],
+    queryFn: async (): Promise<AnalyticsData> => {
+      const response = await fetch(endpoint, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      if (!response.ok) throw new Error('Failed to fetch analytics')
+      return response.json()
+    },
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 10 * 60 * 1000,
+  })
 }
 
-/**
- * Contact Form API Hooks
- */
+// Contact Form
 export function useContactMutation() {
-  const queryClient = useQueryClient();
-
+  const queryClient = useQueryClient()
+  
   return useMutation({
-    mutationFn: (data: ContactFormData) => 
-      apiCall<ContactResponse>('/api/contact', {
+    mutationFn: async (data: ContactFormData): Promise<ContactResponse> => {
+      const response = await fetch('/api/contact', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-      }),
+      })
+      if (!response.ok) throw new Error('Failed to send message')
+      return response.json()
+    },
     onSuccess: () => {
-      // Invalidate and refetch any contact-related queries
-      queryClient.invalidateQueries({ queryKey: contactKeys.all() });
+      queryClient.invalidateQueries({ queryKey: ['contact-submissions'] })
     },
-    onError: (error) => {
-      console.error('Contact form submission failed:', error);
-    },
-  });
+    retry: 2,
+  })
 }
 
-/**
- * Resume API Hooks
- */
+// Resume
 export function useResumeGeneration() {
   return useMutation({
-    mutationFn: () => apiCall<ResumeData>('/api/generate-resume-pdf', {
-      method: 'POST',
-    }),
-    onError: (error) => {
-      console.error('Resume generation failed:', error);
+    mutationFn: async (): Promise<ResumeData> => {
+      const response = await fetch('/api/generate-resume-pdf', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      if (!response.ok) throw new Error('Resume generation failed')
+      return response.json()
     },
-  });
+    retry: 2,
+  })
 }
 
 export function useResumeDownload() {
   return useQuery({
-    queryKey: resumeKeys.pdf(),
-    queryFn: () => apiCall<ResumeData>('/api/pdf'),
-    enabled: false, // Only fetch when explicitly called
-    staleTime: 1000 * 60 * 10, // 10 minutes
-    gcTime: 1000 * 60 * 60, // 1 hour
-  });
-}
-
-/**
- * Generic hooks for common patterns
- */
-
-// Generic mutation hook with proper typing
-export function useGenericMutation<TData, TVariables>(
-  mutationFn: (variables: TVariables) => Promise<ApiResponse<TData>>,
-  options?: {
-    onSuccess?: (data: ApiResponse<TData>) => void;
-    onError?: (error: Error) => void;
-    invalidateKeys?: readonly (readonly unknown[])[];
-  }
-) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn,
-    onSuccess: (data) => {
-      // Invalidate specified query keys
-      if (options?.invalidateKeys) {
-        options.invalidateKeys.forEach(key => {
-          queryClient.invalidateQueries({ queryKey: key });
-        });
-      }
-      options?.onSuccess?.(data);
+    queryKey: ['resume', 'pdf'],
+    queryFn: async (): Promise<ResumeData> => {
+      const response = await fetch('/api/pdf')
+      if (!response.ok) throw new Error('Resume download failed')
+      return response.json()
     },
-    onError: options?.onError,
-  });
+    enabled: false, // Only fetch when explicitly called
+    staleTime: 10 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
+  })
 }
 
-// Generic query hook with proper typing
+// Blog
+export function useBlogPosts() {
+  return useQuery({
+    queryKey: ['blog', 'posts'],
+    queryFn: async (): Promise<BlogPostData[]> => {
+      const response = await fetch('/api/blog?page=1&limit=10&sort=newest')
+      if (!response.ok) throw new Error('Failed to fetch blog posts')
+      return response.json()
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  })
+}
+
+export function useBlogPost(slug: string) {
+  return useQuery({
+    queryKey: ['blog', 'post', slug],
+    queryFn: async (): Promise<BlogPostData> => {
+      const response = await fetch(`/api/blog/${slug}`)
+      if (!response.ok) throw new Error('Failed to fetch blog post')
+      return response.json()
+    },
+    enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  })
+}
+
+export function useBlogCategories() {
+  return useQuery({
+    queryKey: ['blog', 'categories'],
+    queryFn: async (): Promise<BlogCategoryData[]> => {
+      const response = await fetch('/api/blog/categories')
+      if (!response.ok) throw new Error('Failed to fetch categories')
+      return response.json()
+    },
+    staleTime: 15 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
+  })
+}
+
+export function useBlogTags() {
+  return useQuery({
+    queryKey: ['blog', 'tags'],
+    queryFn: async (): Promise<BlogTagData[]> => {
+      const response = await fetch('/api/blog/tags')
+      if (!response.ok) throw new Error('Failed to fetch tags')
+      return response.json()
+    },
+    staleTime: 15 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
+  })
+}
+
+// Generic utilities
 export function useGenericQuery<T>(
   key: readonly unknown[],
-  queryFn: () => Promise<ApiResponse<T>>,
+  queryFn: () => Promise<T>,
   options?: {
-    enabled?: boolean;
-    staleTime?: number;
-    gcTime?: number;
+    enabled?: boolean
+    staleTime?: number
+    gcTime?: number
   }
 ) {
   return useQuery({
     queryKey: key,
     queryFn,
     enabled: options?.enabled,
-    staleTime: options?.staleTime ?? 1000 * 60 * 5,
-    gcTime: options?.gcTime ?? 1000 * 60 * 30,
-  });
+    staleTime: options?.staleTime || 5 * 60 * 1000,
+    gcTime: options?.gcTime || 30 * 60 * 1000,
+  })
 }
 
-/**
- * Query client helpers
- */
+export function useGenericMutation<TData, TVariables>(
+  mutationFn: (variables: TVariables) => Promise<TData>,
+  options?: {
+    onSuccess?: (data: TData) => void
+    onError?: (error: Error) => void
+    invalidateKeys?: readonly (readonly unknown[])[]
+  }
+) {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn,
+    onSuccess: (data) => {
+      options?.invalidateKeys?.forEach(key => {
+        queryClient.invalidateQueries({ queryKey: key })
+      })
+      options?.onSuccess?.(data)
+    },
+    onError: options?.onError,
+    retry: 2,
+  })
+}
+
+// Prefetch utilities
 export function usePrefetchProjects() {
-  const queryClient = useQueryClient();
-
-  return () => {
-    queryClient.prefetchQuery({
-      queryKey: projectKeys.all(),
-      queryFn: () => apiCall<ProjectData[]>('/api/projects'),
-      staleTime: 1000 * 60 * 5,
-    });
-  };
+  const queryClient = useQueryClient()
+  
+  return {
+    prefetchOnHover: (type: 'project' | 'blog', slug: string) => {
+      if (type === 'project') {
+        queryClient.prefetchQuery({
+          queryKey: ['project', slug],
+          queryFn: () => fetch(`/api/projects/${slug}`).then(res => res.json()),
+          staleTime: 5 * 60 * 1000,
+        })
+      }
+    },
+    prefetchOnVisible: (urls: string[]) => {
+      urls.forEach(url => {
+        queryClient.prefetchQuery({
+          queryKey: ['generic', url],
+          queryFn: () => fetch(url).then(res => res.json()),
+          staleTime: 5 * 60 * 1000,
+        })
+      })
+    },
+    prefetchNextPage: (currentPage: number, totalPages: number) => {
+      if (currentPage < totalPages) {
+        queryClient.prefetchQuery({
+          queryKey: ['projects', 'page', currentPage + 1],
+          queryFn: () => fetch(`/api/projects?page=${currentPage + 1}`).then(res => res.json()),
+          staleTime: 5 * 60 * 1000,
+        })
+      }
+    },
+  }
 }
 
-export function useInvalidateQuery() {
-  const queryClient = useQueryClient();
-
-  return (key: readonly unknown[]) => {
-    queryClient.invalidateQueries({ queryKey: key });
-  };
-}
-
-// Error handling helper
-export function isApiError(error: unknown): error is { message: string } {
+// Error handling
+export function isApiError(error: unknown): error is { message: string; status?: number; code?: string } {
   return (
     typeof error === 'object' &&
     error !== null &&
-    !(error instanceof Error) &&
     'message' in error &&
     typeof (error as { message: string }).message === 'string'
-  );
+  )
 }
 
-/**
- * Blog Posts API Hooks
- */
-export function useBlogPosts(params?: {
-  filters?: BlogPostFilters;
-  sort?: BlogPostSort;
-  page?: number;
-  limit?: number;
-}) {
-  return useQuery({
-    queryKey: blogKeys.postsList(params?.filters, params?.sort),
-    queryFn: () => fetchBlogPosts(params),
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 30, // 30 minutes
-  });
-}
-
-export function useBlogPost(slug: string) {
-  return useQuery({
-    queryKey: blogKeys.post(slug),
-    queryFn: () => fetchBlogPost(slug),
-    enabled: !!slug,
-    staleTime: 1000 * 60 * 10, // 10 minutes - blog posts don't change frequently
-    gcTime: 1000 * 60 * 60, // 1 hour
-  });
-}
-
-export function useCreateBlogPost() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (postData: Partial<BlogPostData>) => createBlogPost(postData),
-    onSuccess: () => {
-      // Invalidate all blog posts lists
-      queryClient.invalidateQueries({ queryKey: blogKeys.posts() });
-      queryClient.invalidateQueries({ queryKey: blogKeys.analytics() });
-    },
-    onError: (error) => {
-      console.error('Blog post creation failed:', error);
-    },
-  });
-}
-
-export function useUpdateBlogPost() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ slug, postData }: { slug: string; postData: Partial<BlogPostData> }) =>
-      updateBlogPost(slug, postData),
-    onSuccess: (_, { slug }) => {
-      // Invalidate the specific post and all lists
-      queryClient.invalidateQueries({ queryKey: blogKeys.post(slug) });
-      queryClient.invalidateQueries({ queryKey: blogKeys.posts() });
-      queryClient.invalidateQueries({ queryKey: blogKeys.analytics() });
-    },
-    onError: (error) => {
-      console.error('Blog post update failed:', error);
-    },
-  });
-}
-
-export function useDeleteBlogPost() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (slug: string) => deleteBlogPost(slug),
-    onSuccess: () => {
-      // Invalidate all blog-related queries
-      queryClient.invalidateQueries({ queryKey: blogKeys.posts() });
-      queryClient.invalidateQueries({ queryKey: blogKeys.analytics() });
-    },
-    onError: (error) => {
-      console.error('Blog post deletion failed:', error);
-    },
-  });
-}
-
-/**
- * Blog Categories API Hooks
- */
-export function useBlogCategories() {
-  return useQuery({
-    queryKey: blogKeys.categories(),
-    queryFn: () => fetchBlogCategories(),
-    staleTime: 1000 * 60 * 15, // 15 minutes - categories don't change often
-    gcTime: 1000 * 60 * 60, // 1 hour
-  });
-}
-
-export function useCreateBlogCategory() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (categoryData: Partial<BlogCategoryData>) => createBlogCategory(categoryData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: blogKeys.categories() });
-    },
-    onError: (error) => {
-      console.error('Blog category creation failed:', error);
-    },
-  });
-}
-
-/**
- * Blog Tags API Hooks
- */
-export function useBlogTags(params?: {
-  search?: string;
-  popular?: boolean;
-  limit?: number;
-}) {
-  return useQuery({
-    queryKey: [...blogKeys.tags(), params],
-    queryFn: () => fetchBlogTags(params),
-    staleTime: 1000 * 60 * 15, // 15 minutes
-    gcTime: 1000 * 60 * 60, // 1 hour
-  });
-}
-
-export function useCreateBlogTag() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (tagData: Partial<BlogTagData>) => createBlogTag(tagData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: blogKeys.tags() });
-    },
-    onError: (error) => {
-      console.error('Blog tag creation failed:', error);
-    },
-  });
-}
-
-/**
- * Blog Analytics API Hooks
- */
-export function useBlogAnalytics(params?: {
-  timeRange?: '7d' | '30d' | '90d' | '1y';
-  details?: boolean;
-}) {
-  return useQuery({
-    queryKey: [...blogKeys.analytics(), params],
-    queryFn: () => fetchBlogAnalytics(params),
-    staleTime: 1000 * 60 * 5, // 5 minutes - analytics should be relatively fresh
-    gcTime: 1000 * 60 * 20, // 20 minutes
-  });
-}
-
-/**
- * RSS Feed API Hooks
- */
-export function useRSSFeed(params?: {
-  format?: 'json' | 'xml';
-  limit?: number;
-}) {
-  return useQuery({
-    queryKey: [...blogKeys.rss(), params],
-    queryFn: () => fetchRSSFeed(params),
-    staleTime: 1000 * 60 * 30, // 30 minutes - RSS doesn't need to be super fresh
-    gcTime: 1000 * 60 * 60 * 2, // 2 hours
-    enabled: false, // Only fetch when explicitly requested
-  });
-}
-
-/**
- * Blog-specific prefetch hooks
- */
-export function usePrefetchBlogPosts() {
-  const queryClient = useQueryClient();
-
-  return (params?: {
-    filters?: BlogPostFilters;
-    sort?: BlogPostSort;
-    page?: number;
-    limit?: number;
-  }) => {
-    queryClient.prefetchQuery({
-      queryKey: blogKeys.postsList(params?.filters, params?.sort),
-      queryFn: () => fetchBlogPosts(params),
-      staleTime: 1000 * 60 * 5,
-    });
-  };
-}
-
-export function usePrefetchBlogPost() {
-  const queryClient = useQueryClient();
-
-  return (slug: string) => {
-    queryClient.prefetchQuery({
-      queryKey: blogKeys.post(slug),
-      queryFn: () => fetchBlogPost(slug),
-      staleTime: 1000 * 60 * 10,
-    });
-  };
-}
-
-// Type-safe error message extractor
 export function getErrorMessage(error: unknown): string {
   if (isApiError(error)) {
-    return error.message;
+    return error.message
   }
   if (error instanceof Error) {
-    return error.message;
+    return error.message
   }
-  return 'An unexpected error occurred';
+  return 'An unexpected error occurred'
 }

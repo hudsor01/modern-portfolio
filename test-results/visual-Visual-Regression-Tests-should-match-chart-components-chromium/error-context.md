@@ -1,0 +1,66 @@
+# Page snapshot
+
+```yaml
+- progressbar "Reading progress"
+- link "Back to Projects":
+  - /url: /projects
+- button "2020"
+- button "2022"
+- button "2024"
+- button "All"
+- button
+- heading "Revenue KPI Dashboard" [level=1]
+- paragraph: Real-time revenue analytics, partner performance metrics, and business intelligence for data-driven growth strategies.
+- text: "Revenue: $$3,720,000 Partners: 58 Growth: +26.5% Accuracy: 94% Revenue"
+- paragraph: $3,720,000
+- paragraph: +26.5% vs last year
+- text: Partners
+- paragraph: "58"
+- paragraph: +28.9% growth
+- text: Volume
+- paragraph: 1,580
+- paragraph: +26.4% transactions
+- text: Growth
+- paragraph: +26.5%
+- paragraph: Commission Growth
+- heading "Revenue Growth Trends" [level=2]
+- paragraph: Monthly revenue progression and forecasting
+- heading "Revenue Growth Metrics" [level=2]
+- list:
+  - listitem:
+    - img "Commissions ($M) legend icon"
+    - text: Commissions ($M)
+  - listitem:
+    - img "Revenue ($M) legend icon"
+    - text: Revenue ($M)
+  - listitem:
+    - img "Transactions (K) legend icon"
+    - text: Transactions (K)
+- application: 2023 2024 0 0.9 1.9 2.9 3.8
+- paragraph: Year-over-year tracking of key metrics (Revenue in $M, Transactions in K, Commissions in $M)
+- heading "Monthly Revenue Analysis" [level=2]
+- paragraph: Revenue breakdown by time period
+- text: Monthly Revenue 2024
+- paragraph: Monthly revenue breakdown for the current year (in millions USD)
+- button
+- application: Jan Feb Mar Apr May Jun $0M $1M $2M $3M $4M
+- text: Jan $0M Feb $0M Mar $0M Apr $0M
+- heading "Top Revenue Partners" [level=2]
+- paragraph: Highest performing business partners
+- text: Top 5 Partners by Revenue ($M) 43.5%
+- paragraph: Revenue contribution from top 5 partner organizations
+- button
+- application: TechCorp Solutions Enterprise Systems Cloud Solutions $0M $0.025M $0.05M $0.075M $0.1M
+- heading "Partner Group Distribution" [level=2]
+- paragraph: Revenue contribution by partner type
+- text: Partner Revenue Contribution (%) 84.6%
+- paragraph: Percentage of total revenue contributed by each partner group
+- button
+- application: Enterprise Mid-Market SMB 0% 20% 40% 60% 80%
+- heading "Revenue Operations Excellence & Strategic Impact" [level=2]
+- text: $4,200,000 Additional Revenue Generated 94% Forecast Accuracy & Operational Efficiency 65% Time Reduction in Manual Reporting
+- region "Notifications alt+T"
+- button "Open Tanstack query devtools":
+  - img
+- alert
+```

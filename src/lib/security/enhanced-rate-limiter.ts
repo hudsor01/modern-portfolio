@@ -3,7 +3,6 @@
  * Advanced rate limiting with analytics, adaptive thresholds, and smart blocking
  */
 
-import { atom } from 'jotai'
 
 export interface RateLimitRecord {
   count: number
@@ -58,20 +57,8 @@ export interface RateLimitResult {
   }
 }
 
-// Jotai atoms for state management
-export const rateLimitStoreAtom = atom(new Map<string, RateLimitRecord>())
-export const rateLimitAnalyticsAtom = atom<RateLimitAnalytics>({
-  totalRequests: 0,
-  blockedRequests: 0,
-  uniqueClients: 0,
-  avgRequestsPerClient: 0,
-  suspiciousActivities: 0,
-  topClients: [],
-  trends: {
-    hourly: new Array(24).fill(0),
-    daily: new Array(7).fill(0)
-  }
-})
+// Simple in-memory store for rate limiting (could be replaced with Redis in production)  
+// Note: This store is not used directly in the current implementation
 
 class EnhancedRateLimiter {
   private store = new Map<string, RateLimitRecord>()

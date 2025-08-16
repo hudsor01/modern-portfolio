@@ -3,7 +3,7 @@
  * Implements reliable background job processing with retry logic and monitoring
  */
 
-import { v4 as uuidv4 } from 'uuid';
+// Using native crypto.randomUUID() instead of uuid package
 
 export interface JobPayload {
   [key: string]: unknown;
@@ -168,7 +168,7 @@ export class JobQueue {
     }
 
     const job: Job<T> = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       type,
       payload,
       priority: options.priority || 'normal',

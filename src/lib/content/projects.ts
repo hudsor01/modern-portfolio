@@ -1,20 +1,17 @@
 import { cache } from 'react'
 import type { Project } from '@/types/project'
-import { 
-  getProjects as getProjectsFromDataManager, 
-  getProjectBySlug
-} from '@/lib/data/project-data-manager'
+import { ProjectDataManager } from '@/lib/server/project-data-manager'
 
 // Re-export the Project type for components to use
 export type { Project }
 
 // Cache the getProjects function for the duration of the request
 export const getProjects = cache(async (): Promise<Project[]> => {
-  return await getProjectsFromDataManager()
+  return await ProjectDataManager.getProjects()
 })
 
 export const getProject = cache(async (slug: string): Promise<Project | null> => {
-  return await getProjectBySlug(slug)
+  return await ProjectDataManager.getProjectBySlug(slug)
 })
 
 export const getFeaturedProjects = cache(async (): Promise<Project[]> => {

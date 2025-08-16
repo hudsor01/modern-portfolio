@@ -1,73 +1,46 @@
 'use client'
 import React, { memo, useMemo } from 'react'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
-import { monthlyRevenue2024, type MonthlyRevenueData } from '@/app/projects/data/partner-analytics' // Corrected path
+import { ShadcnChartContainer } from '@/components/charts/shadcn-chart-container'
+import { monthlyRevenue2024, type MonthlyRevenueData } from '@/app/projects/data/partner-analytics'
+import type { ChartConfig } from '@/components/ui/chart'
 
-// V4 Chart Colors using CSS Custom Properties
-const chartColors = {
-  primary: 'hsl(var(--chart-1))',
-  grid: 'hsl(var(--border))',
-  axis: 'hsl(var(--muted-foreground))',
-}
+// shadcn/ui chart configuration
+const chartConfig = {
+  revenue: {
+    label: 'Revenue',
+    color: 'hsl(var(--chart-1))',
+  },
+} satisfies ChartConfig
 
 const RevenueBarChart = memo(() => {
   // Memoize data transformation to prevent recalculation on every render
   const chartData = useMemo(() => {
     return monthlyRevenue2024.map((monthData: MonthlyRevenueData) => ({
-      month: monthData.month, // Use month for X-axis
+      name: monthData.month, // Use 'name' for chart component
       revenue: Math.round(monthData.revenue / 1000000), // Convert to millions for readability
+      value: Math.round(monthData.revenue / 1000000), // Required by ChartData type
     }))
   }, [])
+
   return (
-    <div className="portfolio-card">
-      <h2 className="mb-4 text-xl font-semibold">
-        Monthly Revenue 2024 (Millions USD) 
-      </h2>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke={chartColors.grid} 
-            strokeOpacity={0.3} 
-          />
-          <XAxis
-            dataKey="month" // Changed dataKey to month
-            stroke={chartColors.axis}
-            fontSize={12}
-            tickLine={false}
-            axisLine={{ stroke: chartColors.axis, strokeOpacity: 0.5 }}
-          />
-          <YAxis
-            stroke={chartColors.axis}
-            fontSize={12}
-            tickLine={false}
-            axisLine={{ stroke: chartColors.axis, strokeOpacity: 0.5 }}
-            tickFormatter={(value) => `$${value}M`}
-          />
-          <Tooltip
-            formatter={(value) => { // 'value' here is the 'revenue' from the 'data' object (already in millions)
-              return [`$${value}M`, 'Revenue'];
-            }}
-            labelFormatter={(label) => `Month: ${label}`} // 'label' is the 'month'
-            contentStyle={{
-              backgroundColor: 'hsl(var(--card))',
-              borderRadius: 'var(--radius-lg)',
-              border: 'none',
-              boxShadow: 'var(--shadow-dark-lg)', // Assuming you have this shadow defined or it's from a library
-              color: 'hsl(var(--card-foreground))',
-            }}
-          />
-          <Bar 
-            dataKey="revenue" 
-            fill={chartColors.primary} 
-            radius={[4, 4, 0, 0]} 
-            animationDuration={1500} 
-          />
-        </BarChart>
-      </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
-        Monthly revenue breakdown for the current year (2024).
-      </p>
+    <div className="w-full">
+      <ShadcnChartContainer
+        staticData={chartData}
+        title="Monthly Revenue 2024"
+        description="Monthly revenue breakdown for the current year (in millions USD)"
+        dataKey="revenue"
+        xAxisKey="name"
+        chartConfig={chartConfig}
+        variant="detailed"
+        height={300}
+        showGrid={true}
+        showTrend={true}
+        valueFormatter={(value) => `$${value}M`}
+        onDataLoad={(data) => {
+          console.log('Revenue chart data loaded:', data.length, 'data points')
+        }}
+        className="border-0 shadow-none bg-transparent"
+      />
     </div>
   )
 })

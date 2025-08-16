@@ -6,7 +6,7 @@ import { Navbar } from '@/components/layout/navbar'
 import { ProjectCard } from '@/components/projects/project-card' 
 import { ProjectStats } from '@/components/projects/project-stats'
 import { ProjectCTASection } from '@/components/projects/project-cta-section'
-import { ProjectSkeleton } from '@/components/projects/project-skeleton'
+import { ShadcnSkeletonWrapper } from '@/components/ui/shadcn-skeleton-wrapper'
 import { ProjectErrorBoundary } from '@/components/error/project-error-boundary'
 import {
   TrendingUp,
@@ -249,7 +249,7 @@ export const ModernProjectsContent = memo<ModernProjectsContentProps>(({
           {/* Projects Grid */}
           <div className="space-y-16">
             {isLoading ? (
-              <ProjectSkeleton count={6} />
+              <ShadcnSkeletonWrapper layout="card" count={6} variant="default" />
             ) : sortedProjects.length === 0 ? (
               <div className="text-center py-16">
                 <div className="text-6xl mb-4">📊</div>

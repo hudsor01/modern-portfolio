@@ -5,7 +5,6 @@ import { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { ClientComponentsProvider } from '@/components/providers/client-components-provider'
-import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from '@/components/ui/toaster'
 import { EnhancedReadingProgress } from '@/components/ui/enhanced-reading-progress'
@@ -13,7 +12,6 @@ import { ScrollToTop } from '@/components/ui/scroll-to-top'
 import { baseMetadata } from './shared-metadata'
 import { PersonJsonLd, WebsiteJsonLd, LocalBusinessJsonLd } from '@/components/seo/json-ld'
 import { PreloadManager } from '@/components/performance/preload-manager'
-import Script from 'next/script'
 
 // Use single font family for better performance
 const inter = Inter({
@@ -28,22 +26,6 @@ const RootLayout = React.memo(function RootLayout({ children }: { children: Reac
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
       <head>
-        <Script
-          strategy="afterInteractive"
-          src="https://www.googletagmanager.com/gtag/js?id=G-QYS7BCX5RD"
-        />
-        <Script
-          id="gtag-init"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-QYS7BCX5RD');
-            `,
-          }}
-        />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
@@ -66,7 +48,6 @@ const RootLayout = React.memo(function RootLayout({ children }: { children: Reac
             {children}
             <ScrollToTop />
             <Toaster position="bottom-right" closeButton richColors />
-            <SpeedInsights />
             <Analytics />
           </ClientComponentsProvider>
         </ThemeProvider>

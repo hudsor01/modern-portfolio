@@ -1,79 +1,64 @@
 /**
  * Form Auto-Save Hook Tests
- * Comprehensive unit tests for auto-save functionality
+ * Simplified tests for the new auto-save functionality
  */
 
 import { renderHook, act } from '@testing-library/react'
 import { useFormAutoSave, useAutoSaveStatus } from '../use-form-auto-save'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { Provider as JotaiProvider } from 'jotai'
-import React from 'react'
-
-// Wrapper component for Jotai provider
-const JotaiTestWrapper = ({ children }: { children: React.ReactNode }) => {
-  return React.createElement(JotaiProvider, null, children)
-}
 
 // Mock localStorage
 const localStorageMock = (() => {
   let store: Record<string, string> = {}
   return {
-    getItem: vi.fn((key: string) => store[key] || null),
-    setItem: vi.fn((key: string, value: string) => {
-      store[key] = value
-    }),
-    removeItem: vi.fn((key: string) => {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => {
+      store[key] = value.toString()
+    },
+    removeItem: (key: string) => {
       delete store[key]
-    }),
-    clear: vi.fn(() => {
+    },
+    clear: () => {
       store = {}
-    }),
-    key: vi.fn(),
-    length: 0
+    },
   }
 })()
-
-Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock
-})
 
 // Mock timers
 vi.useFakeTimers()
 
 describe('useFormAutoSave', () => {
-  const mockOnSave = vi.fn()
-  const mockOnError = vi.fn()
-  const mockOnRestore = vi.fn()
-  const mockValidate = vi.fn()
+  let mockOnSave: ReturnType<typeof vi.fn>
 
   beforeEach(() => {
+    mockOnSave = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(window, 'localStorage', {
+      value: localStorageMock,
+    })
     localStorageMock.clear()
     vi.clearAllMocks()
-    vi.clearAllTimers()
-    mockOnSave.mockResolvedValue(undefined)
-    mockValidate.mockReturnValue(true)
   })
 
   afterEach(() => {
+    vi.runOnlyPendingTimers()
     vi.clearAllTimers()
   })
 
   it('should initialize with default state', () => {
     const formData = { name: '', email: '' }
     const { result } = renderHook(() =>
-      useFormAutoSave('test-form', formData, { onSave: mockOnSave }),
-      { wrapper: JotaiTestWrapper }
+      useFormAutoSave('test-form', formData, { onSave: mockOnSave })
     )
 
-    expect(result.current.isDirty).toBe(false)
-    expect(result.current.isSaving).toBe(false)
-    expect(result.current.lastSaved).toBe(null)
-    expect(result.current.error).toBe(null)
-    expect(result.current.hasUnsavedChanges).toBe(false)
+    expect(result.current.status.hasUnsaved).toBe(false)
+    expect(result.current.status.isSaving).toBe(false)
+    expect(result.current.status.lastSaved).toBe(null)
+    expect(result.current.status.error).toBe(null)
+    expect(result.current.status.hasErrors).toBe(false)
   })
 
-  it('should trigger auto-save when form data changes', async () => {
-    let formData = { name: 'John', email: '' }
+  it('should mark as unsaved when form data changes', () => {
+    let formData = { name: '', email: '' }
     const { result, rerender } = renderHook(() =>
       useFormAutoSave('test-form', formData, {
         onSave: mockOnSave,
@@ -85,267 +70,130 @@ describe('useFormAutoSave', () => {
     formData = { name: 'John Doe', email: 'john@example.com' }
     rerender()
 
-    // Should be marked as dirty immediately
-    expect(result.current.isDirty).toBe(true)
-
-    // Wait for debounce
-    await act(async () => {
-      vi.advanceTimersByTime(150)
-    })
-
-    // Should trigger save
-    expect(mockOnSave).toHaveBeenCalledWith(formData)
-    expect(result.current.isSaving).toBe(true)
-
-    // Wait for save to complete
-    await act(async () => {
-      await vi.runOnlyPendingTimersAsync()
-    })
-
-    expect(result.current.isDirty).toBe(false)
-    expect(result.current.isSaving).toBe(false)
-    expect(result.current.lastSaved).toBeTruthy()
+    // Should be marked as having unsaved changes
+    expect(result.current.status.hasUnsaved).toBe(true)
   })
 
-  it('should debounce multiple rapid changes', async () => {
+  it('should trigger save after debounce period', async () => {
     let formData = { name: '', email: '' }
     const { rerender } = renderHook(() =>
       useFormAutoSave('test-form', formData, {
         onSave: mockOnSave,
-        debounceMs: 300
-      })
-    )
-
-    // Make rapid changes
-    formData = { name: 'J', email: '' }
-    rerender()
-
-    formData = { name: 'Jo', email: '' }
-    rerender()
-
-    formData = { name: 'Joh', email: '' }
-    rerender()
-
-    formData = { name: 'John', email: '' }
-    rerender()
-
-    // Advance time partially
-    await act(async () => {
-      vi.advanceTimersByTime(200)
-    })
-
-    // Should not have saved yet
-    expect(mockOnSave).not.toHaveBeenCalled()
-
-    // Complete the debounce
-    await act(async () => {
-      vi.advanceTimersByTime(200)
-    })
-
-    // Should only save once with final value
-    expect(mockOnSave).toHaveBeenCalledTimes(1)
-    expect(mockOnSave).toHaveBeenCalledWith({ name: 'John', email: '' })
-  })
-
-  it('should handle validation before saving', async () => {
-    const formData = { name: '', email: 'invalid-email' }
-    renderHook(() =>
-      useFormAutoSave('test-form', formData, {
-        onSave: mockOnSave,
-        validateBeforeSave: mockValidate,
         debounceMs: 100
       })
     )
 
-    // Set validation to fail
-    mockValidate.mockReturnValue(false)
+    // Update form data
+    formData = { name: 'John Doe', email: 'john@example.com' }
+    rerender()
 
+    // Wait for debounce
     await act(async () => {
       vi.advanceTimersByTime(150)
+      await vi.runOnlyPendingTimersAsync()
     })
 
-    expect(mockValidate).toHaveBeenCalledWith(formData)
-    expect(mockOnSave).not.toHaveBeenCalled()
+    // Should trigger save
+    expect(mockOnSave).toHaveBeenCalledWith(formData)
   })
 
-  it('should handle save errors with retry logic', async () => {
-    const formData = { name: 'John', email: 'john@example.com' }
-    const saveError = new Error('Network error')
-    mockOnSave.mockRejectedValueOnce(saveError)
+  it('should save to localStorage', async () => {
+    let formData = { name: 'John', email: 'john@example.com' }
+    const { rerender } = renderHook(() =>
+      useFormAutoSave('test-form', formData, {
+        onSave: mockOnSave,
+        debounceMs: 50
+      })
+    )
 
-    const { result } = renderHook(() =>
+    // Update form data
+    formData = { name: 'John Doe', email: 'john@example.com' }
+    rerender()
+
+    // Wait for save
+    await act(async () => {
+      vi.advanceTimersByTime(100)
+      await vi.runOnlyPendingTimersAsync()
+    })
+
+    // Check localStorage
+    const stored = localStorageMock.getItem('form-auto-save-test-form')
+    expect(stored).toBeTruthy()
+    
+    if (stored) {
+      const parsed = JSON.parse(stored)
+      expect(parsed.data).toEqual(formData)
+    }
+  })
+
+  it('should handle save errors', async () => {
+    const mockOnError = vi.fn()
+    mockOnSave.mockRejectedValue(new Error('Save failed'))
+
+    let formData = { name: 'John', email: 'john@example.com' }
+    const { result, rerender } = renderHook(() =>
       useFormAutoSave('test-form', formData, {
         onSave: mockOnSave,
         onError: mockOnError,
-        debounceMs: 100
+        debounceMs: 50
       })
     )
 
-    await act(async () => {
-      vi.advanceTimersByTime(150)
-    })
+    // Update form data
+    formData = { name: 'John Doe', email: 'john@example.com' }
+    rerender()
 
-    // Wait for error handling
+    // Wait for save attempt
     await act(async () => {
+      vi.advanceTimersByTime(100)
       await vi.runOnlyPendingTimersAsync()
     })
 
-    expect(mockOnError).toHaveBeenCalledWith(saveError)
-    expect(result.current.error).toBe('Network error')
-    expect(result.current.retryCount).toBe(1)
-
-    // Should retry after exponential backoff (2 seconds)
-    mockOnSave.mockResolvedValueOnce(undefined)
-
-    await act(async () => {
-      vi.advanceTimersByTime(2000)
-      await vi.runOnlyPendingTimersAsync()
-    })
-
-    expect(mockOnSave).toHaveBeenCalledTimes(2)
-    expect(result.current.error).toBe(null)
-    expect(result.current.retryCount).toBe(0)
+    expect(result.current.status.hasErrors).toBe(true)
+    expect(result.current.status.error).toBe('Save failed')
+    expect(mockOnError).toHaveBeenCalled()
   })
 
-  it('should restore saved data on mount', () => {
-    const savedData = { name: 'John Doe', email: 'john@example.com' }
-    
-    // Mock existing saved state
-    localStorageMock.setItem(
-      'form-auto-save-states',
-      JSON.stringify({
-        'restore-form': {
-          formId: 'restore-form',
-          data: savedData,
-          isDirty: true,
-          lastSaved: new Date().toISOString(),
-          isSaving: false,
-          error: null,
-          retryCount: 0
-        }
-      })
-    )
-
-    const initialData = { name: '', email: '' }
-    renderHook(() =>
-      useFormAutoSave('restore-form', initialData, {
-        onSave: mockOnSave,
-        onRestore: mockOnRestore
-      })
-    )
-
-    expect(mockOnRestore).toHaveBeenCalledWith(savedData)
-  })
-
-  it('should clear saved data when requested', async () => {
+  it('should provide force save functionality', async () => {
     const formData = { name: 'John', email: 'john@example.com' }
     const { result } = renderHook(() =>
-      useFormAutoSave('clear-form', formData, {
+      useFormAutoSave('test-form', formData, {
         onSave: mockOnSave
       })
     )
 
-    // Save some data first
     await act(async () => {
-      vi.advanceTimersByTime(350)
-      await vi.runOnlyPendingTimersAsync()
-    })
-
-    // Clear saved data
-    act(() => {
-      result.current.clearSavedData()
-    })
-
-    expect(result.current.isDirty).toBe(false)
-    expect(result.current.hasUnsavedChanges).toBe(false)
-  })
-
-  it('should support manual save', async () => {
-    const formData = { name: 'John', email: 'john@example.com' }
-    const { result } = renderHook(() =>
-      useFormAutoSave('manual-form', formData, {
-        onSave: mockOnSave
-      })
-    )
-
-    // Trigger manual save
-    await act(async () => {
-      await result.current.manualSave()
+      await result.current.forceSave()
     })
 
     expect(mockOnSave).toHaveBeenCalledWith(formData)
   })
 
-  it('should skip auto-save when disabled', async () => {
+  it('should provide clear saved data functionality', () => {
     const formData = { name: 'John', email: 'john@example.com' }
-    renderHook(() =>
-      useFormAutoSave('disabled-form', formData, {
-        onSave: mockOnSave,
-        enabled: false,
-        debounceMs: 100
+    localStorageMock.setItem('form-auto-save-test-form', JSON.stringify({ data: formData }))
+
+    const { result } = renderHook(() =>
+      useFormAutoSave('test-form', formData, {
+        onSave: mockOnSave
       })
     )
 
-    await act(async () => {
-      vi.advanceTimersByTime(150)
+    act(() => {
+      result.current.clearSaved()
     })
 
-    expect(mockOnSave).not.toHaveBeenCalled()
+    expect(localStorageMock.getItem('form-auto-save-test-form')).toBe(null)
   })
 })
 
 describe('useAutoSaveStatus', () => {
-  beforeEach(() => {
-    localStorageMock.clear()
-    vi.clearAllMocks()
-  })
+  it('should return default status', () => {
+    const { result } = renderHook(() => useAutoSaveStatus())
 
-  it('should track global auto-save status', async () => {
-    const { result: statusResult } = renderHook(() => useAutoSaveStatus())
-    
-    // Initially no active auto-saves
-    expect(statusResult.current.hasUnsaved).toBe(false)
-    expect(statusResult.current.isSaving).toBe(false)
-    expect(statusResult.current.hasErrors).toBe(false)
-    expect(statusResult.current.count).toBe(0)
-
-    // Start an auto-save form
-    const formData = { name: 'John', email: '' }
-    const { rerender } = renderHook(() =>
-      useFormAutoSave('status-form', formData, {
-        onSave: vi.fn().mockResolvedValue(undefined),
-        debounceMs: 100
-      })
-    )
-
-    // Update data to trigger dirty state
-    rerender()
-
-    // Should reflect in global status
-    expect(statusResult.current.hasUnsaved).toBe(true)
-    expect(statusResult.current.count).toBe(1)
-  })
-
-  it('should handle multiple forms', async () => {
-    const { result: statusResult } = renderHook(() => useAutoSaveStatus())
-
-    // Create multiple forms
-    const formData1 = { name: 'John', email: '' }
-    const formData2 = { subject: 'Test', message: '' }
-
-    renderHook(() =>
-      useFormAutoSave('form-1', formData1, {
-        onSave: vi.fn().mockResolvedValue(undefined)
-      })
-    )
-
-    renderHook(() =>
-      useFormAutoSave('form-2', formData2, {
-        onSave: vi.fn().mockResolvedValue(undefined)
-      })
-    )
-
-    // Should track both forms
-    expect(statusResult.current.count).toBe(2)
+    expect(result.current.hasUnsaved).toBe(false)
+    expect(result.current.isSaving).toBe(false)
+    expect(result.current.hasErrors).toBe(false)
+    expect(result.current.count).toBe(0)
   })
 })

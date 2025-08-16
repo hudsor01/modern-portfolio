@@ -3,8 +3,7 @@ import { HydrationBoundary, dehydrate } from '@tanstack/react-query'
 import { getProjects, getProject } from '@/data/projects'
 import type { Project } from '@/types/project'
 import { Metadata } from 'next'
-import { createServerQueryClient } from '@/lib/query-config'
-import { projectKeys } from '@/lib/queryKeys'
+import { createQueryClient } from '@/lib/query-config'
 import ProjectDetailClientBoundary from '@/components/projects/project-detail-client-boundary'
 
 // Define our own ProjectPageProps instead of extending PageProps
@@ -67,7 +66,7 @@ export async function generateMetadata({
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
-  const queryClient = createServerQueryClient()
+  const queryClient = createQueryClient()
   const project = await getProject(params.slug)
   
   if (!project) {
@@ -80,23 +79,23 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     title: project.title,
     slug: project.slug || project.id,
     description: project.description,
-    content: project.content,
+    ...(project.content && { content: project.content }),
     featured: project.featured ?? false,
-    image: project.image,
-    link: project.link,
-    github: project.github,
+    ...(project.image && { image: project.image }),
+    ...(project.link && { link: project.link }),
+    ...(project.github && { github: project.github }),
     category: project.category || 'Other',
-    tags: project.tags,
+    ...(project.tags && { tags: project.tags }),
     createdAt: project.createdAt instanceof Date ? project.createdAt : new Date(project.createdAt || '2024-01-01'),
-    updatedAt: project.updatedAt ? (project.updatedAt instanceof Date ? project.updatedAt : new Date(project.updatedAt)) : undefined,
-    technologies: project.tags,
-    liveUrl: project.link,
-    githubUrl: project.github,
+    ...(project.updatedAt && { updatedAt: project.updatedAt instanceof Date ? project.updatedAt : new Date(project.updatedAt) }),
+    ...(project.tags && { technologies: project.tags }),
+    ...(project.link && { liveUrl: project.link }),
+    ...(project.github && { githubUrl: project.github }),
   }
 
   // Prefetch project data on the server
   await queryClient.prefetchQuery({
-    queryKey: projectKeys.detail(params.slug),
+    queryKey: ['projects', 'detail', params.slug],
     queryFn: () => getProject(params.slug),
     staleTime: 1000 * 60 * 10, // 10 minutes
   })

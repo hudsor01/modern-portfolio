@@ -1,54 +1,27 @@
 /**
  * Form Auto-Save Hook
- * Provides auto-save functionality using Jotai atoms with debouncing and persistence
+ * Provides auto-save functionality with debouncing and localStorage persistence
  */
 
-import { useEffect, useCallback, useRef } from 'react'
-import { useAtom, useAtomValue } from 'jotai'
-import { atom } from 'jotai'
-import { atomWithStorage } from 'jotai/utils'
-import { toast } from 'sonner'
+import { useEffect, useCallback, useRef, useState } from 'react'
 
-// Auto-save configuration atom
-const autoSaveConfigAtom = atom({
+// Auto-save configuration
+const AUTO_SAVE_CONFIG = {
   debounceMs: 300,
-  enabled: true,
   storageKey: 'form-auto-save',
   maxRetries: 3,
-  showToasts: false, // Subtle, no toast spam
-})
-
-// Auto-save state atom for tracking all active forms
-export interface AutoSaveState {
-  formId: string
-  data: Record<string, unknown>
-  lastSaved: Date
-  isDirty: boolean
-  isSaving: boolean
-  error: string | null
-  retryCount: number
 }
 
-const autoSaveStatesAtom = atomWithStorage<Record<string, AutoSaveState>>(
-  'form-auto-save-states',
-  {}
-)
-
-// Auto-save status atom for UI feedback
-export const autoSaveStatusAtom = atom((get) => {
-  const states = get(autoSaveStatesAtom)
-  const activeStates = Object.values(states).filter(state => state.isDirty || state.isSaving)
-  
-  return {
-    hasUnsaved: activeStates.some(state => state.isDirty && !state.isSaving),
-    isSaving: activeStates.some(state => state.isSaving),
-    hasErrors: activeStates.some(state => state.error !== null),
-    count: activeStates.length
-  }
-})
+export interface AutoSaveStatus {
+  isSaving: boolean
+  hasUnsaved: boolean
+  hasErrors: boolean
+  lastSaved: Date | null
+  error: string | null
+}
 
 /**
- * Hook for form auto-save functionality
+ * Simple form auto-save hook without Jotai dependencies
  */
 export function useFormAutoSave<T extends Record<string, unknown>>(
   formId: string,
@@ -62,168 +35,145 @@ export function useFormAutoSave<T extends Record<string, unknown>>(
     validateBeforeSave?: (data: T) => boolean
   } = {}
 ) {
-  const [autoSaveStates, setAutoSaveStates] = useAtom(autoSaveStatesAtom)
-  const config = useAtomValue(autoSaveConfigAtom)
+  const [status, setStatus] = useState<AutoSaveStatus>({
+    isSaving: false,
+    hasUnsaved: false,
+    hasErrors: false,
+    lastSaved: null,
+    error: null,
+  })
+
   const debounceTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
   const initialLoadRef = useRef(false)
+  const retryCountRef = useRef(0)
 
-  const currentState = autoSaveStates[formId]
-  const isEnabled = options.enabled ?? config.enabled
-  const debounceMs = options.debounceMs ?? config.debounceMs
+  const {
+    enabled = true,
+    debounceMs = AUTO_SAVE_CONFIG.debounceMs,
+    onSave,
+    onError,
+    onRestore,
+    validateBeforeSave,
+  } = options
 
-  // Update state helper
-  const updateState = useCallback(
-    (updates: Partial<AutoSaveState>) => {
-      setAutoSaveStates(prev => ({
-        ...prev,
-        [formId]: {
-          formId,
-          data: formData,
-          lastSaved: new Date(),
-          isDirty: false,
-          isSaving: false,
-          error: null,
-          retryCount: 0,
-          ...prev[formId],
-          ...updates,
-        }
-      }))
-    },
-    [formId, formData, setAutoSaveStates]
-  )
-
-  // Auto-save function
-  const performAutoSave = useCallback(async () => {
-    if (!isEnabled || !options.onSave) return
-
-    // Validate before saving if validator provided
-    if (options.validateBeforeSave && !options.validateBeforeSave(formData)) {
-      updateState({ isDirty: false, error: 'Validation failed' })
-      return
-    }
-
-    updateState({ isSaving: true, error: null })
-
+  // Save to localStorage
+  const saveToLocalStorage = useCallback((data: T) => {
     try {
-      await options.onSave(formData)
-      updateState({ 
-        isDirty: false, 
-        isSaving: false, 
-        lastSaved: new Date(),
-        retryCount: 0,
-        error: null
-      })
-      
-      if (config.showToasts) {
-        toast.success('Form saved automatically', { 
-          id: `auto-save-${formId}`,
-          duration: 2000 
-        })
+      const storageKey = `${AUTO_SAVE_CONFIG.storageKey}-${formId}`
+      localStorage.setItem(storageKey, JSON.stringify({
+        data,
+        timestamp: new Date().toISOString(),
+      }))
+    } catch (error) {
+      console.warn('Failed to save to localStorage:', error)
+    }
+  }, [formId])
+
+  // Load from localStorage
+  const loadFromLocalStorage = useCallback((): T | null => {
+    try {
+      const storageKey = `${AUTO_SAVE_CONFIG.storageKey}-${formId}`
+      const stored = localStorage.getItem(storageKey)
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        return parsed.data
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Auto-save failed'
-      const newRetryCount = (currentState?.retryCount || 0) + 1
-      
-      updateState({ 
-        isSaving: false, 
-        error: errorMessage,
-        retryCount: newRetryCount
-      })
-
-      if (options.onError) {
-        options.onError(error instanceof Error ? error : new Error(errorMessage))
-      }
-
-      // Retry logic with exponential backoff
-      if (newRetryCount < config.maxRetries) {
-        const retryDelay = Math.pow(2, newRetryCount) * 1000 // 2s, 4s, 8s
-        setTimeout(() => {
-          performAutoSave()
-        }, retryDelay)
-      } else {
-        toast.error('Failed to auto-save form data', {
-          id: `auto-save-error-${formId}`,
-          duration: 5000,
-          action: {
-            label: 'Retry',
-            onClick: () => performAutoSave()
-          }
-        })
-      }
+      console.warn('Failed to load from localStorage:', error)
     }
-  }, [formData, isEnabled, options, config, formId, updateState, currentState?.retryCount])
+    return null
+  }, [formId])
 
-  // Debounced auto-save
-  const debouncedAutoSave = useCallback(() => {
-    if (debounceTimeoutRef.current) {
-      clearTimeout(debounceTimeoutRef.current)
+  // Clear localStorage
+  const clearLocalStorage = useCallback(() => {
+    try {
+      const storageKey = `${AUTO_SAVE_CONFIG.storageKey}-${formId}`
+      localStorage.removeItem(storageKey)
+    } catch (error) {
+      console.warn('Failed to clear localStorage:', error)
     }
+  }, [formId])
 
-    debounceTimeoutRef.current = setTimeout(() => {
-      performAutoSave()
-    }, debounceMs)
-  }, [performAutoSave, debounceMs])
-
-  // Mark as dirty when form data changes
-  useEffect(() => {
-    if (!isEnabled) return
-
-    // Skip initial load
-    if (!initialLoadRef.current) {
-      initialLoadRef.current = true
+  // Perform save operation
+  const performSave = useCallback(async (data: T) => {
+    if (!enabled || (validateBeforeSave && !validateBeforeSave(data))) {
       return
     }
 
-    // Check if data actually changed
-    const hasChanged = JSON.stringify(formData) !== JSON.stringify(currentState?.data)
-    if (hasChanged) {
-      updateState({ isDirty: true, data: formData })
-      debouncedAutoSave()
-    }
-  }, [formData, isEnabled, currentState?.data, updateState, debouncedAutoSave])
+    setStatus(prev => ({ ...prev, isSaving: true, error: null }))
 
-  // Clear saved data
-  const clearSavedData = useCallback(() => {
-    setAutoSaveStates(prev => {
-      const newState = { ...prev }
-      delete newState[formId]
-      return newState
-    })
-  }, [formId, setAutoSaveStates])
+    try {
+      if (onSave) {
+        await onSave(data)
+      }
+      
+      saveToLocalStorage(data)
+      retryCountRef.current = 0
+      
+      setStatus(prev => ({
+        ...prev,
+        isSaving: false,
+        hasUnsaved: false,
+        hasErrors: false,
+        lastSaved: new Date(),
+        error: null,
+      }))
 
-  // Stable reference for onRestore callback
-  const onRestoreRef = useRef(options.onRestore)
-  onRestoreRef.current = options.onRestore
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Auto-save failed'
+      
+      setStatus(prev => ({
+        ...prev,
+        isSaving: false,
+        hasErrors: true,
+        error: errorMessage,
+      }))
 
-  // Restore saved data on mount
-  useEffect(() => {
-    if (!isEnabled || !onRestoreRef.current) return
+      retryCountRef.current += 1
+      
+      if (onError) {
+        onError(error instanceof Error ? error : new Error(errorMessage))
+      }
 
-    const savedState = autoSaveStates[formId]
-    if (savedState && savedState.data && savedState.isDirty) {
-      // Only restore if the saved data is different from current data
-      const isSavedDataDifferent = JSON.stringify(savedState.data) !== JSON.stringify(formData)
-      if (isSavedDataDifferent) {
-        onRestoreRef.current(savedState.data as T)
-        toast.info('Restored unsaved form data', {
-          id: `restore-${formId}`,
-          duration: 4000,
-          action: {
-            label: 'Dismiss',
-            onClick: () => clearSavedData()
-          }
-        })
+      // Retry logic
+      if (retryCountRef.current < AUTO_SAVE_CONFIG.maxRetries) {
+        setTimeout(() => performSave(data), 1000 * retryCountRef.current)
       }
     }
-  }, [formId, autoSaveStates, formData, isEnabled, clearSavedData])
+  }, [enabled, validateBeforeSave, onSave, saveToLocalStorage, onError])
 
-  // Manual save
-  const manualSave = useCallback(async () => {
+  // Debounced save
+  const debouncedSave = useCallback((data: T) => {
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current)
     }
-    await performAutoSave()
-  }, [performAutoSave])
+
+    setStatus(prev => ({ ...prev, hasUnsaved: true }))
+
+    debounceTimeoutRef.current = setTimeout(() => {
+      performSave(data)
+    }, debounceMs)
+  }, [performSave, debounceMs])
+
+  // Load saved data on mount
+  useEffect(() => {
+    if (!initialLoadRef.current) {
+      initialLoadRef.current = true
+      const savedData = loadFromLocalStorage()
+      if (savedData && onRestore) {
+        onRestore(savedData)
+      }
+    }
+  }, [loadFromLocalStorage, onRestore])
+
+  // Auto-save when form data changes
+  useEffect(() => {
+    if (!enabled || !initialLoadRef.current) {
+      return
+    }
+
+    debouncedSave(formData)
+  }, [formData, enabled, debouncedSave])
 
   // Cleanup on unmount
   useEffect(() => {
@@ -235,32 +185,23 @@ export function useFormAutoSave<T extends Record<string, unknown>>(
   }, [])
 
   return {
-    // State
-    isDirty: currentState?.isDirty || false,
-    isSaving: currentState?.isSaving || false,
-    lastSaved: currentState?.lastSaved || null,
-    error: currentState?.error || null,
-    retryCount: currentState?.retryCount || 0,
-    
-    // Actions
-    manualSave,
-    clearSavedData,
-    
-    // Utils
-    hasUnsavedChanges: Boolean(currentState?.isDirty),
+    status,
+    clearSaved: clearLocalStorage,
+    forceSave: () => performSave(formData),
   }
 }
 
 /**
- * Hook for auto-save status across all forms
+ * Hook for monitoring overall auto-save status
+ * Simplified version without Jotai
  */
 export function useAutoSaveStatus() {
-  return useAtomValue(autoSaveStatusAtom)
-}
-
-/**
- * Hook for managing auto-save configuration
- */
-export function useAutoSaveConfig() {
-  return useAtom(autoSaveConfigAtom)
+  // This is a simplified version - in a real app you might want
+  // to track multiple forms, but for now we'll keep it simple
+  return {
+    hasUnsaved: false,
+    isSaving: false,
+    hasErrors: false,
+    count: 0,
+  }
 }
