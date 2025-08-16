@@ -30,12 +30,12 @@ jobs:
       - name: Generate sitemap
         run: npm run generate-sitemap
 
-      - name: Commit and push sitemap
+      - name: Verify sitemap generated
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add public/sitemap.xml
-          git diff --staged --quiet || git commit -m "Update sitemap [skip ci]"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          if [ -f "public/sitemap.xml" ]; then
+            echo "✅ Sitemap generated successfully"
+            ls -la public/sitemap.xml
+          else
+            echo "❌ Sitemap generation failed"
+            exit 1
+          fi
