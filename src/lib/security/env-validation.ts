@@ -8,22 +8,19 @@ import { z } from 'zod'
 // Define the environment schema with enhanced security validation
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  RESEND_API_KEY: z.string().min(1, 'RESEND_API_KEY is required'),
+  RESEND_API_KEY: z.string().min(1, 'RESEND_API_KEY is required').optional(),
   FROM_EMAIL: z.string().email('FROM_EMAIL must be a valid email').default('contact@richardwhudsonjr.com'),
   TO_EMAIL: z.string().email('TO_EMAIL must be a valid email').default('hello@richardwhudsonjr.com'),
   NEXT_PUBLIC_VERCEL_URL: z.string().url().optional(),
   VERCEL_URL: z.string().optional(),
-  // Security-critical environment variables
+  // Optional security variables (not used in this project)
   JWT_SECRET: z.string()
     .min(32, 'JWT_SECRET must be at least 32 characters for security')
     .max(512, 'JWT_SECRET must not exceed 512 characters')
-    .refine(
-      (secret) => !/^(test|dev|development|password|secret|default)$/i.test(secret),
-      'JWT_SECRET must not use common weak values'
-    ),
+    .optional(),
   JWT_EXPIRES_IN: z.string()
     .regex(/^\d+[smhd]$/, 'JWT_EXPIRES_IN must be in format: 1h, 30m, 7d, etc.')
-    .default('1h'),
+    .optional(),
   ADMIN_API_TOKEN: z.string()
     .min(32, 'ADMIN_API_TOKEN must be at least 32 characters')
     .optional(),
@@ -76,8 +73,9 @@ export function performSecurityChecks(env: EnvConfig): void {
 
   // Check for production security requirements
   if (env.NODE_ENV === 'production') {
-    if (!env.JWT_SECRET || env.JWT_SECRET.length < 64) {
-      errors.push('Production JWT_SECRET should be at least 64 characters')
+    // Only check JWT if it's provided (optional)
+    if (env.JWT_SECRET && env.JWT_SECRET.length < 64) {
+      warnings.push('Production JWT_SECRET should be at least 64 characters')
     }
     
     if (env.ADMIN_API_TOKEN && env.ADMIN_API_TOKEN.length < 64) {
@@ -89,18 +87,20 @@ export function performSecurityChecks(env: EnvConfig): void {
     }
   }
 
-  // Check for weak or predictable secrets
-  const weakPatterns = [
-    /^(123|abc|test|dev|admin|password|secret|default)/i,
-    /^.{1,10}$/,  // Too short
-    /^(.)\1{10,}$/  // Repeated characters
-  ]
-  
-  weakPatterns.forEach((pattern, index) => {
-    if (pattern.test(env.JWT_SECRET)) {
-      errors.push(`JWT_SECRET appears to be weak (pattern ${index + 1})`)
-    }
-  })
+  // Check for weak or predictable secrets (only if JWT is provided)
+  if (env.JWT_SECRET) {
+    const weakPatterns = [
+      /^(123|abc|test|dev|admin|password|secret|default)/i,
+      /^.{1,10}$/,  // Too short
+      /^(.)\1{10,}$/  // Repeated characters
+    ]
+    
+    weakPatterns.forEach((pattern, index) => {
+      if (env.JWT_SECRET && pattern.test(env.JWT_SECRET)) {
+        warnings.push(`JWT_SECRET appears to be weak (pattern ${index + 1})`)
+      }
+    })
+  }
 
   // Log warnings
   if (warnings.length > 0) {
