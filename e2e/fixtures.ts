@@ -6,6 +6,7 @@ type TestFixtures = {
   homePage: HomePage
   projectsPage: ProjectsPage
   contactPage: ContactPage
+  projectDetailPage: ProjectDetailPage
 }
 
 // Page Object Models
@@ -56,8 +57,19 @@ class ProjectsPage {
     return this.page.locator('a[href*="/projects/"]')
   }
 
+  async getBlueCTAButtons() {
+    return this.page.locator('a').filter({ 
+      hasText: /See Revenue Magic|Come Find|Pipeline|Track|Meet|Calculate|Enter|Predict|Optimize|Follow|Explore/ 
+    })
+  }
+
   async clickProject(slug: string) {
     await this.page.locator(`a[href*="/projects/${slug}"]`).first().click()
+  }
+
+  async clickBlueCTAButton(buttonText: string | RegExp) {
+    const button = this.page.locator('a').filter({ hasText: buttonText })
+    await button.click()
   }
 
   async filterByCategory(category: string) {
@@ -71,6 +83,81 @@ class ProjectsPage {
     const searchInput = this.page.locator('input[placeholder*="search" i]')
     if (await searchInput.isVisible()) {
       await searchInput.fill(query)
+    }
+  }
+
+  async verifyProjectCardCount() {
+    const cards = await this.getProjectCards()
+    const count = await cards.count()
+    return count > 0
+  }
+
+  async getAllBlueCTAButtonTexts() {
+    const buttons = await this.getBlueCTAButtons()
+    const count = await buttons.count()
+    const texts: string[] = []
+    
+    for (let i = 0; i < count; i++) {
+      const text = await buttons.nth(i).textContent()
+      if (text) texts.push(text.trim())
+    }
+    
+    return texts
+  }
+}
+
+class ProjectDetailPage {
+  constructor(public readonly page: Page) {}
+
+  async goto(slug: string) {
+    await this.page.goto(`/projects/${slug}`)
+    await this.page.waitForLoadState('networkidle')
+    await this.page.waitForSelector('h1', { timeout: 30000 })
+  }
+
+  async getPageTitle() {
+    return this.page.locator('h1').first()
+  }
+
+  async clickBackToProjects() {
+    const backButton = this.page.locator('a', { hasText: /Back to Projects/i })
+    await backButton.click()
+  }
+
+  async getCharts() {
+    return this.page.locator('svg, canvas, [class*="recharts"], [class*="chart"]')
+  }
+
+  async getMetricsCards() {
+    return this.page.locator('[class*="bg-white/5"]')
+  }
+
+  async getTimeframeButtons() {
+    return this.page.locator('button', { hasText: /2020|2022|2024|All/ })
+  }
+
+  async getRefreshButton() {
+    return this.page.locator('button:has(svg)')
+  }
+
+  async verifyDashboardElements() {
+    const title = await this.getPageTitle()
+    await expect(title).toBeVisible()
+    
+    const charts = await this.getCharts()
+    if (await charts.count() > 0) {
+      await expect(charts.first()).toBeVisible()
+    }
+    
+    const backButton = this.page.locator('a', { hasText: /Back to Projects/i })
+    await expect(backButton).toBeVisible()
+  }
+
+  async verifyLoadingState() {
+    // Check for loading indicators
+    const loadingIndicators = this.page.locator('[class*="loading"], [class*="spinner"], [class*="animate-spin"]')
+    if (await loadingIndicators.count() > 0) {
+      await expect(loadingIndicators.first()).not.toBeVisible({ timeout: 10000 })
     }
   }
 }
@@ -134,6 +221,11 @@ export const test = base.extend<TestFixtures>({
   contactPage: async ({ page }, use) => {
     const contactPage = new ContactPage(page)
     await use(contactPage)
+  },
+
+  projectDetailPage: async ({ page }, use) => {
+    const projectDetailPage = new ProjectDetailPage(page)
+    await use(projectDetailPage)
   },
 })
 
