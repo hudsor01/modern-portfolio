@@ -208,24 +208,24 @@ class ContactPage {
 
 // Extend the base test with custom fixtures
 export const test = base.extend<TestFixtures>({
-  homePage: async ({ page }, use) => {
+  homePage: async ({ page }, useFixture) => {
     const homePage = new HomePage(page)
-    await use(homePage)
+    await useFixture(homePage)
   },
 
-  projectsPage: async ({ page }, use) => {
+  projectsPage: async ({ page }, useFixture) => {
     const projectsPage = new ProjectsPage(page)
-    await use(projectsPage)
+    await useFixture(projectsPage)
   },
 
-  contactPage: async ({ page }, use) => {
+  contactPage: async ({ page }, useFixture) => {
     const contactPage = new ContactPage(page)
-    await use(contactPage)
+    await useFixture(contactPage)
   },
 
-  projectDetailPage: async ({ page }, use) => {
+  projectDetailPage: async ({ page }, useFixture) => {
     const projectDetailPage = new ProjectDetailPage(page)
-    await use(projectDetailPage)
+    await useFixture(projectDetailPage)
   },
 })
 

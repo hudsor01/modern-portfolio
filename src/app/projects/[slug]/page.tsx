@@ -44,7 +44,8 @@ export async function generateMetadata({
 }: {
   params: { slug: string }
 }): Promise<Metadata> {
-  const project = await getProject(params.slug)
+  const resolvedParams = await params
+  const project = await getProject(resolvedParams.slug)
 
   if (!project) {
     return {
@@ -59,7 +60,7 @@ export async function generateMetadata({
     openGraph: {
       title: project.title,
       description: project.description,
-      url: `/projects/${params.slug}`,
+      url: `/projects/${resolvedParams.slug}`,
       images: project.image ? [{ url: project.image }] : undefined,
     },
   }
@@ -67,7 +68,8 @@ export async function generateMetadata({
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const queryClient = createQueryClient()
-  const project = await getProject(params.slug)
+  const resolvedParams = await params
+  const project = await getProject(resolvedParams.slug)
   
   if (!project) {
     notFound()
@@ -95,15 +97,15 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   // Prefetch project data on the server
   await queryClient.prefetchQuery({
-    queryKey: ['projects', 'detail', params.slug],
-    queryFn: () => getProject(params.slug),
+    queryKey: ['projects', 'detail', resolvedParams.slug],
+    queryFn: () => getProject(resolvedParams.slug),
     staleTime: 1000 * 60 * 10, // 10 minutes
   })
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <ProjectDetailClientBoundary 
-        slug={params.slug} 
+        slug={resolvedParams.slug} 
         initialProject={convertedProject}
       />
     </HydrationBoundary>

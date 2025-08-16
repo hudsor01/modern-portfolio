@@ -39,7 +39,9 @@ export function useProject(id: string, _options?: {
         headers: { 'Content-Type': 'application/json' },
       })
       if (!response.ok) throw new Error('Failed to fetch project')
-      return response.json()
+      const result = await response.json()
+      // API returns { success: boolean, data: project }
+      return result.data || result
     },
     enabled: !!id,
     staleTime: 5 * 60 * 1000,

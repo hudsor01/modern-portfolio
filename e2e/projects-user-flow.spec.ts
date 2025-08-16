@@ -2,7 +2,7 @@ import { test, expect } from './fixtures'
 
 test.describe('Complete Projects User Flow Tests', () => {
   
-  test('should complete full user journey from home to projects to individual dashboard and back', async ({ page, homePage, projectsPage }) => {
+  test('should complete full user journey from home to projects to individual dashboard and back', async ({ page, homePage }) => {
     // Start from home page
     await homePage.goto()
     
@@ -272,7 +272,6 @@ test.describe('Complete Projects User Flow Tests', () => {
     await page.keyboard.press('Tab')
     
     let focusedElement = page.locator(':focus')
-    const initiallyFocused = await focusedElement.getAttribute('class')
     
     // Should be able to tab to buttons
     for (let i = 0; i < 5; i++) {

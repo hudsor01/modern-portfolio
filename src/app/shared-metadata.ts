@@ -7,14 +7,30 @@ export const baseMetadata: Metadata = {
     template: '%s | Richard Hudson',
   },
   description:
-    'Revenue Operations Consultant Richard Hudson specializes in sales automation, CRM optimization, and data-driven growth strategies. $4.8M+ revenue generated, 432% growth achieved. Serving Dallas-Fort Worth.',
+    'Revenue Operations Consultant Richard Hudson specializes in sales automation, CRM optimization, and partnership program development across Dallas-Fort Worth metroplex. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. $4.8M+ revenue generated, 432% growth achieved. Serving Dallas, Fort Worth, Plano, Frisco, and surrounding DFW areas.',
   keywords: [
     'revenue operations',
     'business consulting',
     'RevOps expert',
     'Dallas consultant',
+    'Fort Worth consultant',
+    'Plano consultant',
+    'Frisco consultant',
+    'DFW consultant',
     'business optimization',
     'growth strategy',
+    'sales automation',
+    'CRM optimization',
+    'partnership program development',
+    'business intelligence',
+    'marketing automation',
+    'sales process optimization',
+    'Revenue Operations Consultant Dallas',
+    'RevOps Expert Fort Worth',
+    'Sales Automation Specialist Texas',
+    'Partnership Program Developer DFW',
+    'SalesLoft Admin Certified',
+    'HubSpot Revenue Operations Certified',
   ],
   authors: [{ name: 'Richard Hudson', url: 'https://richardwhudsonjr.com' }],
   creator: 'Richard Hudson',
@@ -30,7 +46,7 @@ export const baseMetadata: Metadata = {
     siteName: 'Richard Hudson',
     title: 'Richard Hudson | Revenue Operations Consultant',
     description:
-      'Revenue Operations Consultant Richard Hudson specializes in sales automation, CRM optimization, and data-driven growth strategies. $4.8M+ revenue generated, 432% growth achieved. Serving Dallas-Fort Worth.',
+      'Revenue Operations Consultant Richard Hudson specializes in sales automation, CRM optimization, and partnership program development across Dallas-Fort Worth metroplex. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. $4.8M+ revenue generated, 432% growth achieved. Serving Dallas, Fort Worth, Plano, Frisco, and surrounding DFW areas.',
     url: 'https://richardwhudsonjr.com',
     images: [
       {
@@ -46,7 +62,7 @@ export const baseMetadata: Metadata = {
     creator: '@richardhudson',
     title: 'Richard Hudson | Revenue Operations Consultant',
     description:
-      'Revenue Operations Consultant Richard Hudson specializes in sales automation, CRM optimization, and data-driven growth strategies. $4.8M+ revenue generated, 432% growth achieved. Serving Dallas-Fort Worth.',
+      'Revenue Operations Consultant Richard Hudson specializes in sales automation, CRM optimization, and partnership program development across Dallas-Fort Worth metroplex. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. $4.8M+ revenue generated, 432% growth achieved. Serving Dallas, Fort Worth, Plano, Frisco, and surrounding DFW areas.',
     images: ['https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&h=630&fit=crop&crop=face&q=80'],
   },
   robots: {
@@ -64,12 +80,15 @@ export const baseMetadata: Metadata = {
     canonical: 'https://richardwhudsonjr.com',
   },
   verification: {
-    google: 'your-google-verification-code',
+    google: 'google-site-verification-code-placeholder',
   },
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png',
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/apple-touch-icon.png', sizes: '152x152', type: 'image/png', rel: 'apple-touch-icon-precomposed' }
+    ],
   },
   manifest: '/manifest.webmanifest', // Corrected path
 }

@@ -9,7 +9,6 @@ test.describe('Debug Projects Page', () => {
     await page.screenshot({ path: 'debug-projects.png' })
     
     // Check what's actually on the page
-    const pageContent = await page.content()
     console.log('Page title:', await page.title())
     
     // Look for any buttons or links

@@ -31,7 +31,7 @@ const fadeInOnly = {
   animate: { opacity: 1 },
 }
 
-// Convert Next.js Link to a motion component using motion.create
+// Convert Next.js Link to a motion component
 const MotionLink = motion.create(
   React.forwardRef<HTMLAnchorElement, React.ComponentProps<typeof Link>>((props, ref) => (
     <Link {...props} ref={ref} />
@@ -111,12 +111,46 @@ export default function HomePageContent() {
           initial="initial"
           animate="animate"
           transition={{ duration: 0.5, delay: 0.8 }}
-          className="text-gray-200-enhanced text-responsive-lg max-w-3xl mx-auto mb-8 leading-relaxed px-4 font-light"
+          className="text-gray-200-enhanced text-responsive-lg max-w-3xl mx-auto mb-4 leading-relaxed px-4 font-light"
         >
           Experienced in optimizing revenue operations through data-driven insights, process
           optimization, and strategic operational improvements that drive measurable business
           results.
         </motion.p>
+
+        {/* Location Information */}
+        <motion.div
+          variants={fadeInUp}
+          initial="initial"
+          animate="animate"
+          transition={{ duration: 0.5, delay: 0.85 }}
+          className="mb-8"
+        >
+          <p className="text-blue-200 text-lg font-medium mb-2">
+            📍 Based in Plano, TX • Serving Dallas-Fort Worth Metroplex
+          </p>
+          <div className="flex flex-wrap justify-center gap-3 text-sm text-gray-300">
+            <Link href="/locations/dallas" className="hover:text-blue-300 transition-colors">
+              Dallas
+            </Link>
+            <span>•</span>
+            <Link href="/locations/fort-worth" className="hover:text-blue-300 transition-colors">
+              Fort Worth
+            </Link>
+            <span>•</span>
+            <Link href="/locations/plano" className="hover:text-blue-300 transition-colors">
+              Plano
+            </Link>
+            <span>•</span>
+            <Link href="/locations/frisco" className="hover:text-blue-300 transition-colors">
+              Frisco
+            </Link>
+            <span>•</span>
+            <Link href="/locations" className="hover:text-blue-300 transition-colors font-medium">
+              View All Locations
+            </Link>
+          </div>
+        </motion.div>
 
         {/* Key Business Achievements - Professional Display */}
         <motion.div
