@@ -25,7 +25,7 @@ import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useChartData, useChartInteraction } from '@/hooks/use-component-consolidation-queries'
 import type { ChartDataPoint } from '@/types/chart'
-import type { ChartData } from '@/types/project'
+import type { ChartData } from '@/types/chart'
 
 interface ShadcnChartContainerProps {
   // Data configuration

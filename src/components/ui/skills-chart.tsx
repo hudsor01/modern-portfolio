@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { ProjectChart } from '@/components/projects/project-chart'
-import type { ChartData } from '@/types/project'
+import type { ChartData } from '@/types/chart'
 
 interface SkillsChartProps {
   title?: string

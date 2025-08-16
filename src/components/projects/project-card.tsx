@@ -4,17 +4,6 @@ import React from 'react'
 import Link from 'next/link'
 import { OptimizedImage } from '@/components/ui/optimized-image'
 import type { Project as ProjectType } from '@/types/project'
-import { 
-  ProfessionalCard, 
-  ProfessionalCardHeader, 
-  ProfessionalCardTitle, 
-  ProfessionalCardSubtitle,
-  ProfessionalCardDescription,
-  ProfessionalCardContent,
-  ProfessionalCardStats,
-  ProfessionalCardBadge,
-  ProfessionalCardFooter
-} from '@/components/ui/professional-card'
 import { ArrowRight } from 'lucide-react'
 
 // Mock project interface
@@ -92,50 +81,60 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project }) 
   const customCTA = getCustomCTA(project.id)
 
   return (
-    <ProfessionalCard variant="interactive" size="lg" className="h-full group">
-      <ProfessionalCardHeader>
-        <ProfessionalCardTitle className="text-xl font-bold">
+    <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-8 hover:border-cyan-500/50 transition-all duration-300 hover:-translate-y-2 h-full group">
+      {/* Header */}
+      <div className="mb-6">
+        <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
           {project.title}
-        </ProfessionalCardTitle>
+        </h3>
         {isMockProject(project) && (
-          <ProfessionalCardSubtitle>
+          <p className="text-cyan-400 text-sm font-medium">
             {project.client} • {project.duration}
-          </ProfessionalCardSubtitle>
+          </p>
         )}
-        <ProfessionalCardDescription className="mt-3">
+        <p className="text-base md:text-lg text-gray-300 leading-relaxed mt-3">
           {project.description}
-        </ProfessionalCardDescription>
-      </ProfessionalCardHeader>
+        </p>
+      </div>
 
-      <ProfessionalCardContent className="space-y-6">
-        {/* Business Metrics */}
-        {isMockProject(project) && project.metrics.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {project.metrics.slice(0, 3).map((metric, i) => (
-              <ProfessionalCardStats 
-                key={i}
-                value={metric.value}
-                label={metric.label}
-                trend="up"
-              />
-            ))}
-          </div>
-        )}
+      {/* Challenge-Solution-Results Format */}
+      <div className="space-y-6 mb-6">
+        {isMockProject(project) && (
+          <>
+            {/* Challenge */}
+            <div className="p-4 bg-red-900/20 border border-red-500/30 rounded-lg">
+              <h4 className="text-sm font-bold text-red-300 mb-2">🎯 CHALLENGE</h4>
+              <p className="text-sm text-gray-300">{project.longDescription}</p>
+            </div>
 
-        {/* Technology Tags */}
-        {project.technologies && project.technologies.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {project.technologies.slice(0, 4).map((tech, i) => (
-              <ProfessionalCardBadge key={i} variant="secondary" className="text-xs">
-                {tech}
-              </ProfessionalCardBadge>
-            ))}
-            {project.technologies.length > 4 && (
-              <ProfessionalCardBadge variant="outline" className="text-xs">
-                +{project.technologies.length - 4} more
-              </ProfessionalCardBadge>
-            )}
-          </div>
+            {/* Solution */}
+            <div className="p-4 bg-green-900/20 border border-green-500/30 rounded-lg">
+              <h4 className="text-sm font-bold text-green-300 mb-2">⚡ SOLUTION</h4>
+              <div className="flex flex-wrap gap-2">
+                {project.technologies.slice(0, 4).map((tech, i) => (
+                  <span key={i} className="bg-cyan-500/10 text-cyan-400 px-2 py-1 rounded text-xs border border-cyan-500/20">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Results */}
+            <div className="p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
+              <h4 className="text-sm font-bold text-blue-300 mb-3">📊 RESULTS</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {project.metrics.slice(0, 3).map((metric, i) => (
+                  <div key={i} className="text-center">
+                    <div className="text-cyan-400 mb-1 flex justify-center">
+                      <metric.icon className="w-4 h-4" />
+                    </div>
+                    <div className="text-lg font-bold text-white">{metric.value}</div>
+                    <div className="text-xs text-gray-400">{metric.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
         )}
 
         {/* Project Image */}
@@ -150,20 +149,21 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project }) 
               quality={85}
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
           </div>
         )}
-      </ProfessionalCardContent>
+      </div>
 
-      <ProfessionalCardFooter className="pt-6 flex justify-center">
+      {/* CTA Button */}
+      <div className="flex justify-center">
         <Link
           href={`/projects/${isMockProject(project) ? project.id : project.slug || project.id}`}
-          className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white font-semibold px-8 py-3 rounded-lg transition-all duration-200 group"
+          className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black font-bold px-6 py-4 min-h-[44px] rounded-lg shadow-lg hover:shadow-xl hover:shadow-cyan-500/25 transition-all duration-300 flex items-center gap-2"
         >
           <span>{customCTA}</span>
-          <ArrowRight size={16} className="ml-2 transition-transform duration-200 group-hover:translate-x-1" />
+          <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" />
         </Link>
-      </ProfessionalCardFooter>
-    </ProfessionalCard>
+      </div>
+    </div>
   )
 })

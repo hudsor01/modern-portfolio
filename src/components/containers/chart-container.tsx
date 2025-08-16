@@ -5,7 +5,7 @@ import { ShadcnChartContainer } from '@/components/charts/shadcn-chart-container
 import { ShadcnSkeletonWrapper } from '@/components/ui/shadcn-skeleton-wrapper'
 import { useChartData } from '@/hooks/use-component-consolidation-queries'
 import type { ChartDataPoint } from '@/types/chart'
-import type { ChartData } from '@/types/project'
+import type { ChartData } from '@/types/chart'
 
 interface ChartContainerProps {
   // Data source configuration

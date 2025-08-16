@@ -4,6 +4,7 @@
  */
 
 import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/monitoring/logger'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -22,7 +23,7 @@ export async function connectDB() {
   try {
     await db.$connect()
     } catch (error) {
-    console.error('❌ Database connection failed:', error)
+    logger.error('Database connection failed', error instanceof Error ? error : new Error('Unknown error'))
     throw error
   }
 }
@@ -32,7 +33,7 @@ export async function disconnectDB() {
   try {
     await db.$disconnect()
     } catch (error) {
-    console.error('❌ Database disconnection failed:', error)
+    logger.error('Database disconnection failed', error instanceof Error ? error : new Error('Unknown error'))
     throw error
   }
 }

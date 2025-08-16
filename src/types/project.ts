@@ -131,15 +131,7 @@ export interface ProjectPageProps {
   searchParams?: Record<string, string | string[] | undefined>;
 }
 
-/**
- * Chart data for project visualizations
- */
-export interface ChartData {
-  name: string;
-  value: number;
-  color?: string;
-  [key: string]: string | number | undefined;
-}
+// Chart data types moved to @/types/chart for centralization
 
 /**
  * Chart event handler for interactive charts

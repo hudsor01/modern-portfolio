@@ -7,6 +7,7 @@ import { BlogContent } from '@/components/blog/blog-content'
 import { ReadingProgress } from '@/components/blog/reading-progress'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
+import { usePageAnalytics } from '@/hooks/use-page-analytics'
 
 // Layout components
 import { PostBreadcrumb } from './layout/post-breadcrumb'
@@ -38,6 +39,13 @@ export function BlogPostLayout({
   showAuthorBio = true,
   showSocialShare = true
 }: BlogPostLayoutProps) {
+  // Track page analytics
+  usePageAnalytics({
+    type: 'blog',
+    slug: post.slug,
+    trackReadingTime: true,
+    trackScrollDepth: true
+  })
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {

@@ -35,14 +35,14 @@ function Skeleton({
     'animate-pulse': pulse && !shimmer,
   })
 
-  // Determine variant-specific classes
+  // Determine variant-specific classes with modern design
   const variantClasses = {
     default: 'h-4 w-full',
     text: 'h-4 w-full',
     card: 'h-[320px] w-full rounded-xl',
     avatar: 'h-12 w-12 rounded-full',
-    button: 'h-10 w-24 rounded-md',
-    image: 'aspect-video w-full rounded-md',
+    button: 'h-10 w-24 rounded-lg',
+    image: 'aspect-video w-full rounded-lg',
     table: 'h-8 w-full',
   }
 
@@ -51,9 +51,10 @@ function Skeleton({
       data-slot="skeleton"
       data-variant={variant}
       className={cn(
-        'bg-slate-200 dark:bg-slate-700 rounded-md',
+        'bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-lg',
         animationClasses,
         variantClasses[variant],
+        shimmer && 'relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-gray-600/20 before:to-transparent',
         className
       )}
       {...props}

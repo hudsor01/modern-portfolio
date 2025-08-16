@@ -1,10 +1,9 @@
-import type { ChartData as GlobalChartData } from '@/types/project';
+import type { ChartData } from '@/types/chart'
 
-// Re-exporting GlobalChartData for consistency if these types are used elsewhere,
-// or these can be removed if the individual chart components directly use GlobalChartData.
-export type PieChartData = GlobalChartData;
-export type LineChartData = GlobalChartData;
-export type BarChartData = GlobalChartData;
+// Re-exporting ChartData for legacy component compatibility
+export type PieChartData = ChartData;
+export type LineChartData = ChartData;
+export type BarChartData = ChartData;
 
 export interface FunnelData {
   stage: string

@@ -1,6 +1,7 @@
 'use client'
 
 import { useProject } from '@/hooks/use-api-queries'
+import { usePageAnalytics } from '@/hooks/use-page-analytics'
 import { Navbar } from '@/components/layout/navbar'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -62,6 +63,14 @@ export default function ProjectDetailClientBoundary({
   slug, 
   initialProject 
 }: ProjectDetailClientBoundaryProps) {
+  // Track page analytics for projects
+  usePageAnalytics({
+    type: 'project',
+    slug: slug,
+    trackReadingTime: true,
+    trackScrollDepth: true
+  })
+
   // Use modern hook with automatic prefetching
   const { data: project, isLoading, error } = useProject(slug, {
     prefetchAnalytics: true, // Modern: prefetch analytics

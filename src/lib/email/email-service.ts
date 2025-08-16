@@ -8,6 +8,7 @@
 import { Resend } from 'resend'
 import { z } from 'zod'
 import { checkContactFormRateLimit } from '../security/rate-limiter'
+import { logger } from '@/lib/monitoring/logger'
 
 // Environment configuration
 const RESEND_API_KEY = process.env.RESEND_API_KEY
@@ -217,7 +218,7 @@ export class EmailService {
       })
       
       if (contactResult.error) {
-        console.error('Failed to send contact notification:', contactResult.error)
+        logger.error('Failed to send contact notification', new Error(String(contactResult.error) || 'Unknown error'))
         return {
           success: false,
           error: 'Failed to send notification email',

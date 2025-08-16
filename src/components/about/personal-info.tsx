@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { 
   Mail, 
   MapPin, 
@@ -76,13 +75,12 @@ export function PersonalInfo({
             {personalInfo.bio}
           </motion.p>
 
-          <HighlightsList highlights={personalInfo.highlights} />
-
           {onContactClick && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
+              transition={{ duration: 0.6, delay: 0.7 }}
+              className="pt-4"
             >
               <Button
                 onClick={onContactClick}
@@ -126,30 +124,6 @@ function ContactInfo({ personalInfo }: ContactInfoProps) {
   )
 }
 
-interface HighlightsListProps {
-  highlights: string[]
-}
-
-function HighlightsList({ highlights }: HighlightsListProps) {
-  return (
-    <motion.div 
-      className="flex flex-wrap gap-3"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.7 }}
-    >
-      {highlights.map((highlight) => (
-        <Badge 
-          key={highlight}
-          variant="secondary" 
-          className="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 border-0 font-medium"
-        >
-          {highlight}
-        </Badge>
-      ))}
-    </motion.div>
-  )
-}
 
 function ProfileImage() {
   return (
@@ -163,7 +137,7 @@ function ProfileImage() {
         <CardContent className="p-8">
           <div className="relative mx-auto w-80 h-80 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20">
             <Image
-              src="/images/richard-hudson-professional.jpg"
+              src="/images/richard.jpg"
               alt="Richard Hudson - Revenue Operations Professional"
               fill
               className="object-cover"

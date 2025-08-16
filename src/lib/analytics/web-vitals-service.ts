@@ -5,6 +5,7 @@
  */
 
 import { z } from 'zod'
+import { logger } from '@/lib/monitoring/logger'
 
 // Web Vitals data validation schema
 export const WebVitalsSchema = z.object({
@@ -351,7 +352,7 @@ export class WebVitalsService {
       
       return { success: true }
     } catch (error) {
-      console.error('Web Vitals collection error:', error)
+      logger.error('Web Vitals collection error', error instanceof Error ? error : new Error('Unknown error'))
       
       if (error instanceof z.ZodError) {
         return {

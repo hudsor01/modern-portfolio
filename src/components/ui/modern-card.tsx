@@ -3,30 +3,33 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const modernCardVariants = cva(
-  'relative rounded-xl border transition-all duration-200 ease-out',
+  'relative rounded-xl border transition-all duration-300 ease-out backdrop-blur-sm',
   {
     variants: {
       variant: {
-        // Clean slate cards - primary style
-        default: 'bg-slate-800/90 border-slate-700 shadow-lg hover:bg-slate-700/90 hover:border-slate-600',
+        // Glassmorphism default cards
+        default: 'bg-gray-800/50 border-gray-700 shadow-lg hover:border-cyan-500/50 hover:-translate-y-1',
         
-        // Elevated cards for important content
-        elevated: 'bg-slate-800/95 border-slate-600 shadow-xl hover:bg-slate-700/95 hover:border-slate-500 hover:shadow-2xl',
+        // Elevated glassmorphism cards
+        elevated: 'bg-gray-800/60 border-gray-700 shadow-xl hover:border-cyan-500/50 hover:-translate-y-2 hover:shadow-2xl hover:shadow-cyan-500/10',
         
-        // Subtle cards for background elements
-        subtle: 'bg-slate-900/50 border-slate-800 shadow-sm hover:bg-slate-800/60 hover:border-slate-700',
+        // Subtle background cards
+        subtle: 'bg-gray-900/30 border-gray-800 shadow-sm hover:bg-gray-800/40 hover:border-gray-700',
         
-        // Interactive cards with hover states
-        interactive: 'bg-slate-800/90 border-slate-700 shadow-lg hover:bg-slate-700/90 hover:border-blue-600 hover:shadow-xl cursor-pointer',
+        // Interactive cards with modern hover states
+        interactive: 'bg-gray-800/50 border-gray-700 shadow-lg hover:border-cyan-500/50 hover:-translate-y-1 hover:shadow-lg hover:shadow-cyan-500/20 cursor-pointer',
         
-        // Primary accent cards for key features
-        primary: 'bg-gradient-to-br from-blue-900/40 via-slate-800/90 to-slate-800/90 border-blue-800/50 shadow-lg hover:border-blue-600 hover:shadow-blue-500/20',
+        // Primary accent cards with cyan gradients
+        primary: 'bg-gradient-to-br from-cyan-900/20 via-gray-800/50 to-gray-800/50 border-cyan-500/30 shadow-lg hover:border-cyan-400 hover:shadow-cyan-500/25',
+        
+        // Highlight cards for key content
+        highlight: 'bg-gradient-to-br from-blue-900/20 via-gray-800/60 to-gray-800/60 border-blue-500/30 shadow-xl hover:border-blue-400 hover:shadow-blue-500/25',
         
         // Success state cards
-        success: 'bg-gradient-to-br from-emerald-900/40 via-slate-800/90 to-slate-800/90 border-emerald-800/50 shadow-lg hover:border-emerald-600',
+        success: 'bg-gradient-to-br from-emerald-900/20 via-gray-800/50 to-gray-800/50 border-emerald-500/30 shadow-lg hover:border-emerald-400',
         
-        // Outline style for minimal design
-        outline: 'bg-transparent border-slate-600 hover:bg-slate-800/30 hover:border-slate-500'
+        // Outline style with modern glassmorphism
+        outline: 'bg-gray-900/20 border-gray-600 hover:bg-gray-800/30 hover:border-cyan-500/50'
       },
       size: {
         sm: 'p-4',
@@ -87,7 +90,7 @@ const ModernCardTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <h3
     ref={ref}
-    className={cn('text-xl font-semibold leading-none tracking-tight text-white', className)}
+    className={cn('text-xl md:text-2xl font-bold leading-none tracking-tight text-white', className)}
     {...props}
   />
 ))
@@ -100,7 +103,7 @@ const ModernCardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn('text-sm text-slate-300 leading-relaxed', className)}
+    className={cn('text-base md:text-lg text-gray-300 leading-relaxed', className)}
     {...props}
   />
 ))
@@ -122,7 +125,7 @@ const ModernCardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('flex items-center pt-4 border-t border-slate-700/50', className)}
+    className={cn('flex items-center pt-4 border-t border-gray-700/30', className)}
     {...props}
   />
 ))

@@ -17,7 +17,7 @@ import {
 } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { ContactFormData } from '@/types/shared-api'
-import type { ChartData } from '@/types/project'
+import type { ChartData } from '@/types/chart'
 
 // ============================================================================
 // CONTACT FORM CONSOLIDATION QUERIES

@@ -162,33 +162,33 @@ export function BlogHomeLayout({ className }: BlogHomeLayoutProps) {
                 </div>
               </motion.div>
               
-              {/* Search and CTA */}
+              {/* Search and CTA - Improved Readability */}
               <motion.div 
                 className="max-w-3xl mx-auto"
                 variants={itemVariants}
               >
-                <div className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl p-6 hover:bg-white/10 hover:border-white/20 transition-all duration-500">
-                  <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-4">
+                <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 hover:bg-white/15 hover:border-white/30 transition-all duration-500 shadow-2xl">
+                  <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6">
                     <div className="flex flex-col md:flex-row gap-4 items-center">
                       <div className="flex-1">
                         <BlogSearch
                           placeholder="Search insights, frameworks, analytics..."
                           onSearch={handleSearch}
-                          className="w-full"
+                          className="w-full bg-white/20 border-white/30 text-white placeholder:text-gray-300 focus:bg-white/25 focus:border-white/40"
                         />
                       </div>
                       <div className="flex gap-3">
                         <Button
                           variant="outline"
                           onClick={() => setShowFilters(!showFilters)}
-                          className="flex items-center gap-2 border-white/20 hover:border-white/30"
+                          className="flex items-center gap-2 bg-white/10 border-white/30 text-white hover:bg-white/20 hover:border-white/40 hover:text-white"
                         >
                           <Filter className="h-4 w-4" />
                           Filters
                         </Button>
                         <Button
                           onClick={() => setIsContactModalOpen(true)}
-                          className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white border border-blue-400/20 hover:border-blue-300/40 flex items-center gap-2"
+                          className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white border border-blue-400/20 hover:border-blue-300/40 flex items-center gap-2 shadow-lg hover:shadow-xl"
                         >
                           Get Consulting
                           <ArrowRight className="h-4 w-4" />
@@ -305,15 +305,15 @@ export function BlogHomeLayout({ className }: BlogHomeLayoutProps) {
             ) : postsData?.data && postsData.data.length > 0 ? (
               <motion.div 
                 className={cn(
-                  'grid gap-6',
+                  'grid gap-6 justify-center',
                   viewMode === 'grid' 
-                    ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                    ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 place-items-center'
                     : 'grid-cols-1'
                 )}
                 variants={containerVariants}
               >
                 {postsData.data.map((post) => (
-                  <motion.div key={post.id} variants={itemVariants}>
+                  <motion.div key={post.id} variants={itemVariants} className="w-full max-w-sm">
                     <BlogCard
                       post={post}
                       variant={viewMode === 'list' ? 'compact' : 'default'}
