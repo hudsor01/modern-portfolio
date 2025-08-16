@@ -70,8 +70,18 @@ function getClientIdentifier(req: Request): string {
   return `${ip}:${userAgentHash}`
 }
 
-// Initialize Resend with your API key
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Initialize Resend lazily to avoid build-time errors
+let resend: Resend | null = null
+
+function getResendClient(): Resend {
+  if (!resend) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error('RESEND_API_KEY is not configured')
+    }
+    resend = new Resend(process.env.RESEND_API_KEY)
+  }
+  return resend
+}
 
 export async function POST(request: Request) {
   try {
@@ -126,7 +136,7 @@ export async function POST(request: Request) {
     // Send email using Resend
     const { name, email, subject, message } = formData;
 
-    await resend.emails.send({
+    await getResendClient().emails.send({
       from: 'Portfolio Contact <hello@richardwhudsonjr.com>',
       to: process.env.CONTACT_EMAIL || 'hudsor01@icloud.com',
       subject: `${subject} - from ${name}`,
