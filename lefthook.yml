@@ -1,0 +1,29 @@
+# Lefthook configuration for pre-push validation
+# Faster than act, runs only what's needed
+
+pre-push:
+  commands:
+    quick-check:
+      run: npm run ci:quick
+      tags: [frontend]
+      stage_fixed: true
+
+pre-commit:
+  parallel: true
+  commands:
+    lint-staged:
+      glob: "*.{ts,tsx,js,jsx}"
+      run: npx eslint --fix {staged_files}
+
+# Simulate CI locally
+ci:
+  parallel: false
+  commands:
+    install:
+      run: npm ci --no-audit
+    lint:
+      run: npm run lint
+    type-check:
+      run: npm run type-check
+    build:
+      run: npm run build

@@ -32,20 +32,40 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE and config files
 .prettierrc.json
 .prettierignore
 .npmrc
 components.json
 eslint.config.js
-next-env.d.ts
 vercel.json
-.github/
-.next
-.vercel
-.vscode
+.vscode/
+.idea/
 
+# Build and cache
+.next/
+.vercel/
+coverage/
+.nyc_output/
+
+# Test outputs
+playwright-report/
+test-results/
+
+# CI/CD tools  
+.actrc
+bin/dagger
+turbo.json
+
+# OS
 .DS_Store
 .DS_Store/
+
+# Claude and docs
 .claude.*
 CLAUDE.md
 *.csv
+
+# GitHub workflows (managed separately)
+.github/
