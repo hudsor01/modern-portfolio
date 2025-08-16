@@ -9,6 +9,7 @@ const compat = new FlatCompat({
 export default [
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
+    ignores: ['e2e/**/*'],
     rules: {
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',

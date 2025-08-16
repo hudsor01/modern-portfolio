@@ -53,6 +53,9 @@ coverage/
 playwright-report/
 test-results/
 
+# E2E tests
+e2e/
+
 # CI/CD tools  
 .actrc
 bin/dagger
