@@ -118,6 +118,8 @@ export async function generateStaticParams() {
   return [
     { slug: 'revenue-operations-best-practices-complete-guide' },
     { slug: 'building-effective-sales-dashboards-real-time-data' },
-    // Add more slugs as posts are created
+    { slug: 'advanced-customer-churn-analysis-techniques' },
+    { slug: 'automating-revenue-reporting-modern-tools' },
+    { slug: 'kpi-design-principles-revenue-operations' },
   ]
 }

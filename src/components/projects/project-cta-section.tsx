@@ -21,12 +21,12 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = ({ onContactC
     <div className="text-center space-y-8 max-w-6xl mx-auto mt-24 mb-16">
       <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 md:p-12 shadow-2xl">
         {/* Subtle background gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5 rounded-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-blue-500/5 rounded-3xl" />
 
         <div className="relative z-10">
           {/* Enhanced Header */}
           <div className="flex items-center justify-center mb-8">
-            <h3 className="font-bold text-3xl md:text-4xl tracking-tight bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent">
+            <h3 className="text-3xl md:text-4xl font-bold tracking-tight section-heading-gradient glow-blue">
               Ready to Start Your Project?
             </h3>
           </div>
@@ -36,14 +36,14 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = ({ onContactC
             business growth.
           </p>
 
-          {/* Enhanced CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 lg:gap-12 justify-center mb-12">
+          {/* Enhanced CTA Buttons - Fixed Symmetry */}
+          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12 max-w-2xl mx-auto">
             <Button
               size="lg"
-              className="relative bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-lg font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
+              className="relative bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black text-lg font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-cyan-500/25 hover:scale-105 transition-all duration-300 group border border-cyan-500/20 flex-1 sm:min-w-[240px]"
               onClick={onContactClick}
             >
-              <span className="relative z-10 flex items-center">
+              <span className="relative z-10 flex items-center justify-center">
                 <Mail className="mr-3" size={20} />
                 Start a Project
                 <ArrowRight
@@ -55,7 +55,7 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = ({ onContactC
 
             <Link
               href="/about"
-              className="relative inline-flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-lg font-bold px-8 py-4 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 transition-all duration-300 group border border-blue-400/20"
+              className="relative inline-flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black text-lg font-bold px-8 py-4 rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105 transition-all duration-300 group border border-cyan-500/20 flex-1 sm:min-w-[240px]"
             >
               <Users className="mr-3" size={20} />
               Read my Blueprint
@@ -70,8 +70,8 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = ({ onContactC
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-white/20">
             <div className="group text-center">
               <div className="relative bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 mb-4 mx-auto w-fit hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <Clock className="relative z-10 w-7 h-7 text-blue-400" />
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <Clock className="relative z-10 w-7 h-7 text-cyan-400" />
               </div>
               <h4 className="font-bold text-white mb-2 text-xl">
                 Fast Delivery
@@ -81,7 +81,7 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = ({ onContactC
 
             <div className="group text-center">
               <div className="relative bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 mb-4 mx-auto w-fit hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <Target className="relative z-10 w-7 h-7 text-blue-400" />
               </div>
               <h4 className="font-bold text-white mb-2 text-xl">
@@ -93,7 +93,7 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = ({ onContactC
             <div className="group text-center">
               <div className="relative bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 mb-4 mx-auto w-fit hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <Award className="relative z-10 w-7 h-7 text-blue-400" />
+                <Award className="relative z-10 w-7 h-7 text-cyan-400" />
               </div>
               <h4 className="font-bold text-white mb-2 text-xl">
                 Proven Results

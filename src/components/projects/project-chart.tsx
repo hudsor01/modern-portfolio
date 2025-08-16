@@ -18,7 +18,7 @@ import {
 } from 'recharts'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import type { ChartData } from '@/types/project'
+import type { ChartData } from '@/types/chart'
 
 type ChartType = 'bar' | 'line' | 'doughnut'
 

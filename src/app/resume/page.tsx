@@ -125,8 +125,8 @@ export default function ResumePage() {
   const isContentInView = useInView(contentRef, { once: true })
 
   useEffect(() => {
-    // Set the PDF URL once on client side
-    setPdfUrl('/Richard Hudson - Resume.pdf')
+    // Set the PDF URL once on client side with proper encoding
+    setPdfUrl('/Richard%20Hudson%20-%20Resume.pdf')
   }, [])
 
   const handleDownloadResume = async () => {
@@ -134,9 +134,9 @@ export default function ResumePage() {
     toast.loading('Preparing your resume...', { id: 'resume-download', duration: 3000 })
 
     try {
-      // Direct download of the PDF file
+      // Direct download of the PDF file with proper encoding
       const a = document.createElement('a')
-      a.href = '/Richard Hudson - Resume.pdf'
+      a.href = '/Richard%20Hudson%20-%20Resume.pdf'
       a.download = 'Richard_Hudson_Resume.pdf'
       document.body.appendChild(a)
       a.click()

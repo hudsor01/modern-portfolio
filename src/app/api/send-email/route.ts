@@ -1,26 +1,49 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { sendContactEmail } from './action'
 import { ContactFormSchema } from '@/lib/email/email-service'
-import { validationErrorResponse, errorResponse } from '@/lib/api/response'
+import {
+  validateRequest,
+  ValidationError,
+  createApiError,
+  getClientIdentifier,
+  getRequestMetadata,
+  parseRequestBody,
+  logApiRequest,
+  logApiResponse,
+} from '@/lib/api'
 import { z } from 'zod'
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const startTime = Date.now()
+  const clientId = getClientIdentifier(request)
+  const metadata = getRequestMetadata(request)
+  
+  logApiRequest('POST', '/api/send-email', clientId, metadata)
+  
   try {
-    const body = await request.json()
-    
-    // Validate input data with proper schema
-    const validatedData = ContactFormSchema.parse(body)
+    // Parse and validate request body
+    const body = await parseRequestBody(request)
+    const validatedData = validateRequest(ContactFormSchema, body)
     
     const result = await sendContactEmail(validatedData)
 
+    logApiResponse('POST', '/api/send-email', clientId, 200, true, Date.now() - startTime)
     return NextResponse.json(result)
+    
   } catch (error) {
-    console.error('Error in send-email API route:', error)
+    const isValidationError = error instanceof ValidationError || error instanceof z.ZodError
+    const status = isValidationError ? 400 : 500
     
-    if (error instanceof z.ZodError) {
-      return validationErrorResponse(error)
-    }
+    const response = createApiError(
+      isValidationError ? 'Validation failed' : 'Failed to process request',
+      isValidationError ? 'VALIDATION_ERROR' : 'INTERNAL_ERROR',
+      isValidationError && error instanceof ValidationError ? error.details : undefined
+    )
+
+    logApiResponse('POST', '/api/send-email', clientId, status, false, Date.now() - startTime, {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
     
-    return errorResponse('Failed to process request', 500)
+    return NextResponse.json(response, { status })
   }
 }

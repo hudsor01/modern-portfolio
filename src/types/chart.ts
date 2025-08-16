@@ -19,11 +19,8 @@ export interface ChartDataPoint {
   color?: ChartColor;
   category?: string;
   date?: Date;
-  metadata?: {
-    tooltip?: string;
-    link?: string;
-    source?: string;
-  };
+  metadata?: Record<string, unknown>;
+  [key: string]: unknown; // Allow dynamic property access for chart flexibility
 }
 
 /**
@@ -100,7 +97,7 @@ export interface SkillChartData {
 }
 
 // Timeline chart data
-export interface TimelineData extends ChartDataPoint {
+export interface TimelineData extends Omit<ChartDataPoint, 'icon' | 'duration'> {
   date: Date;
   title: string;
   description: string;

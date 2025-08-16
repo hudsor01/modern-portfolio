@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ProjectTabsProps } from '@/types/project'
-import ReactSlickCarousel from './ReactSlickCarousel'
+import { ProjectSwiper } from './project-swiper'
 
 export function ProjectTabs({ projects }: ProjectTabsProps) {
   // Extract unique categories from projects
@@ -23,20 +23,12 @@ export function ProjectTabs({ projects }: ProjectTabsProps) {
     return projects.filter((project) => project.technologies?.includes(activeCategory))
   }, [projects, activeCategory])
 
-  // Convert projects to the format expected by ReactSlickCarousel
+  // Ensure projects have required fields for ProjectSwiper
   const formattedProjects = React.useMemo(() => {
     return filteredProjects.map((project) => ({
       ...project,
       image: project.image || '',
-      id: typeof project.id === 'string' ? project.id : '',
-      createdAt: project.createdAt && (typeof project.createdAt === 'string' || typeof project.createdAt === 'number')
-        ? new Date(project.createdAt)
-        : new Date(),
-      updatedAt: project.updatedAt
-        ? (typeof project.updatedAt === 'string' || typeof project.updatedAt === 'number'
-          ? new Date(project.updatedAt)
-          : project.updatedAt instanceof Date ? project.updatedAt : undefined)
-        : undefined,
+      id: project.id || '',
       slug: project.slug || '',
       featured: project.featured ?? false,
       category: project.category || '',
@@ -73,7 +65,7 @@ export function ProjectTabs({ projects }: ProjectTabsProps) {
           transition={{ duration: 0.3 }}
         >
           {filteredProjects.length > 0 ? (
-            <ReactSlickCarousel projects={formattedProjects} />
+            <ProjectSwiper projects={formattedProjects} showViewAll={false} />
           ) : (
             <div className="text-center py-16">
               <p className="text-lg text-muted-foreground">

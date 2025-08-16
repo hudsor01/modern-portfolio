@@ -208,28 +208,29 @@ export const ModernProjectsContent = memo<ModernProjectsContentProps>(({
     <ProjectErrorBoundary>
       <>
         <Navbar />
-        <section className="relative min-h-screen bg-[#0f172a] text-white overflow-hidden pt-20">
-        {/* Grid Background */}
-        <div
-          className="absolute inset-0 bg-[image:linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[length:50px_50px]"
-          aria-hidden="true"
-        />
-
-        {/* Enhanced Animated Background */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
+        <section className="relative min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white overflow-hidden pt-20">
+        {/* Modern Animated Background */}
+        <div className="fixed inset-0 -z-10">
+          {/* Floating Orbs */}
+          <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute bottom-1/3 left-1/3 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl animate-float-delayed"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-cyan-400/3 rounded-full blur-3xl animate-pulse-glow"></div>
+          
+          {/* Grid Pattern */}
+          <div
+            className="absolute inset-0 bg-[image:linear-gradient(rgba(34,211,238,0.03)_1px,transparent_1px),linear-gradient(to_right,rgba(34,211,238,0.03)_1px,transparent_1px)] bg-[length:50px_50px]"
+            aria-hidden="true"
+          ></div>
         </div>
 
         <div className="container relative z-10 px-6 mx-auto max-w-7xl py-24">
           {/* Hero Section */}
           <div className="text-center space-y-16 max-w-6xl mx-auto pt-12 mb-24">
-            <h1 className="font-bold text-5xl sm:text-6xl md:text-7xl tracking-tight mb-6 page-title-gradient break-words leading-tight py-2">
+            <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-6 page-title-gradient glow-cyan break-words leading-tight py-2">
               Project Portfolio
             </h1>
 
-            <p className="text-gray-200 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed font-light">
+            <p className="text-base md:text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed">
               Transforming data into actionable insights and driving measurable business results
               through innovative solutions.
             </p>
@@ -240,10 +241,10 @@ export const ModernProjectsContent = memo<ModernProjectsContentProps>(({
 
           {/* Projects Section Header */}
           <div className="text-center space-y-6 mb-16">
-            <h2 className="font-bold text-3xl sm:text-4xl md:text-5xl tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight section-heading-gradient glow-blue">
               Featured Projects
             </h2>
-            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+            <p className="text-base md:text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
               Explore my latest work in revenue operations and data analytics
             </p>
           </div>
@@ -259,7 +260,7 @@ export const ModernProjectsContent = memo<ModernProjectsContentProps>(({
                 <p className="text-gray-400">Projects are currently being updated</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 max-w-7xl mx-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 max-w-7xl mx-auto">
                 {sortedProjects.map((project) => (
                   <ProjectCard key={project.id} project={project} />
                 ))}

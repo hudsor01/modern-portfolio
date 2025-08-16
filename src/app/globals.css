@@ -78,54 +78,57 @@
   --z-maximum: 9999;
 }
 
-/* === V4 DARK MODE AS DEFAULT === */
+/* === MODERN DARK MODE DESIGN SYSTEM === */
 :root {
   color-scheme: dark;
   
   /* Enhanced root variables for better theming */
   --font-family-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-family-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
-  --font-family-display: 'Cal Sans', 'Inter', system-ui, sans-serif;
+  --font-family-display: 'Inter', system-ui, sans-serif;
 
-  /* Dark Mode Colors (Default) */
-  --background: oklch(0.09 0.01 285); /* Deep charcoal */
-  --foreground: oklch(0.99 0.005 285); /* Enhanced crisp white */
-  --card: oklch(0.12 0.01 285); /* Dark card background */
-  --card-foreground: oklch(0.99 0.005 285); /* Enhanced white text on dark cards */
-  --popover: oklch(0.12 0.01 285); /* Dark popover background */
-  --popover-foreground: oklch(0.99 0.005 285); /* Enhanced white text on dark popovers */
+  /* Modern Dark Mode Colors - Black to Gray Gradients */
+  --background: oklch(0.05 0.005 285); /* Pure black to gray-900 */
+  --foreground: oklch(0.98 0.002 285); /* Crisp white */
+  --card: oklch(0.08 0.005 285); /* Dark gray-800/50 equivalent */
+  --card-foreground: oklch(0.98 0.002 285); /* White text on cards */
+  --popover: oklch(0.08 0.005 285); /* Dark popover background */
+  --popover-foreground: oklch(0.98 0.002 285); /* White text on popovers */
 
-  /* Primary Brand Color */
-  --primary: var(--color-primary);
-  --primary-foreground: oklch(0.09 0.01 285); /* Dark text on brand */
+  /* Modern Cyan Primary Color */
+  --primary: oklch(0.7 0.15 200); /* Cyan-400 */
+  --primary-hover: oklch(0.65 0.18 200); /* Cyan-500 for hover */
+  --primary-foreground: oklch(0.05 0.005 285); /* Black text on cyan */
 
-  /* Secondary Elements */
-  --secondary: oklch(0.18 0.01 285); /* Zinc-700 equivalent */
-  --secondary-foreground: oklch(0.99 0.005 285); /* Enhanced white text */
+  /* Blue Secondary Color */
+  --secondary: oklch(0.65 0.15 240); /* Blue-400 */
+  --secondary-hover: oklch(0.6 0.18 240); /* Blue-500 for hover */
+  --secondary-foreground: oklch(0.05 0.005 285); /* Black text on blue */
 
-  /* Muted Elements */
-  --muted: oklch(0.18 0.01 285); /* Zinc-700 equivalent */
-  --muted-foreground: oklch(0.65 0.01 285); /* Zinc-400 equivalent */
+  /* Muted Elements - Gray Scale */
+  --muted: oklch(0.15 0.005 285); /* Gray-800 equivalent */
+  --muted-foreground: oklch(0.7 0.005 285); /* Gray-300 for body text */
 
   /* Accent Elements */
-  --accent: oklch(0.7 0.15 50); /* Warm orange */
-  --accent-foreground: oklch(0.09 0.01 285); /* Dark text on accent */
+  --accent: oklch(0.7 0.15 200); /* Cyan-400 */
+  --accent-foreground: oklch(0.05 0.005 285); /* Black text on accent */
 
   /* Error States */
-  --destructive: var(--color-destructive);
-  --destructive-foreground: var(--color-destructive-foreground);
+  --destructive: oklch(0.65 0.2 25); /* Error red */
+  --destructive-foreground: oklch(0.98 0.002 285); /* White text on destructive */
 
-  /* Interactive Elements */
-  --border: oklch(0.28 0.005 285); /* Zinc-700 equivalent */
-  --input: oklch(0.18 0.01 285); /* Zinc-700 equivalent */
-  --ring: var(--color-ring);
+  /* Interactive Elements - Gray-700 borders */
+  --border: oklch(0.25 0.005 285); /* Gray-700 equivalent */
+  --border-hover: oklch(0.7 0.15 200 / 0.5); /* Cyan-500/50 on hover */
+  --input: oklch(0.15 0.005 285); /* Gray-800 equivalent */
+  --ring: oklch(0.7 0.15 200); /* Cyan-400 focus rings */
 
   /* Chart Colors */
-  --chart-1: var(--color-chart-1);
-  --chart-2: var(--color-chart-2);
-  --chart-3: var(--color-chart-3);
-  --chart-4: var(--color-chart-4);
-  --chart-5: var(--color-chart-5);
+  --chart-1: oklch(0.7 0.15 200); /* Cyan-400 */
+  --chart-2: oklch(0.65 0.15 240); /* Blue-400 */
+  --chart-3: oklch(0.7 0.18 140); /* Green */
+  --chart-4: oklch(0.6 0.005 285); /* Gray-400 */
+  --chart-5: oklch(0.35 0.15 240); /* Deep navy */
 }
 
 /* === V4 LIGHT MODE TOGGLE === */
@@ -187,21 +190,26 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  /* Enhanced Typography */
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
-  }
-
+  /* Modern Typography Hierarchy */
   h1 {
-    @apply text-4xl lg:text-5xl;
+    @apply text-5xl md:text-7xl font-black tracking-tight text-white;
   }
 
   h2 {
-    @apply text-3xl lg:text-4xl;
+    @apply text-3xl md:text-4xl font-bold tracking-tight text-white;
   }
 
   h3 {
-    @apply text-2xl lg:text-3xl;
+    @apply text-xl md:text-2xl font-bold tracking-tight text-white;
+  }
+
+  h4, h5, h6 {
+    @apply text-lg md:text-xl font-bold tracking-tight text-white;
+  }
+
+  p, body {
+    @apply text-base md:text-lg leading-relaxed;
+    color: oklch(0.7 0.005 285); /* text-gray-300 equivalent */
   }
 
   /* Enhanced Link Styles */
@@ -238,7 +246,7 @@
   }
 }
 
-/* === V4 COMPONENT LAYER === */
+/* === MODERN COMPONENT LAYER === */
 @layer components {
   .portfolio-container {
     @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
@@ -248,51 +256,56 @@
     @apply py-16 sm:py-20 lg:py-24;
   }
 
+  /* Modern Glassmorphism Cards */
   .portfolio-card {
-    @apply bg-card rounded-xl border border-border p-6 shadow-lg backdrop-blur-sm;
+    @apply bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6 hover:border-cyan-500/50 transition-all duration-300 hover:-translate-y-1;
+  }
+
+  .portfolio-card-large {
+    @apply bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-8 hover:border-cyan-500/50 transition-all duration-300 hover:-translate-y-2;
   }
 
   .portfolio-badge {
-    @apply inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary;
+    @apply inline-flex items-center rounded-full bg-cyan-500/10 px-3 py-1 text-sm font-medium text-cyan-400 border border-cyan-500/20;
   }
 
+  /* Modern Button Components */
   .portfolio-button-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary/50 inline-flex items-center justify-center rounded-lg px-4 py-2 font-medium transition-all duration-200 focus:ring-2 focus:ring-offset-2;
+    @apply bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-bold rounded-lg px-6 py-3 hover:shadow-lg hover:shadow-cyan-500/25 transition-all duration-300 flex items-center gap-2;
   }
 
   .portfolio-button-secondary {
-    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 focus:ring-secondary/50 inline-flex items-center justify-center rounded-lg px-4 py-2 font-medium transition-all duration-200 focus:ring-2 focus:ring-offset-2;
+    @apply border border-gray-600 text-gray-300 hover:border-cyan-500 hover:text-cyan-400 rounded-lg px-6 py-3 transition-all duration-300 flex items-center gap-2;
   }
 
-  /* Custom gradient utilities */
-  .portfolio-text-gradient {
-    background: linear-gradient(135deg in oklch, oklch(0.8 0.13 230) 0%, oklch(0.7 0.18 235) 100%);
+  /* Glow Effects */
+  .glow-cyan {
+    text-shadow: 0 0 20px rgba(34, 211, 238, 0.5);
+  }
+
+  .glow-blue {
+    text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+  }
+
+  /* Modern Gradient Utilities */
+  .modern-text-gradient {
+    background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
   }
 
-  /* Hero name gradient - Blue to Sky to Indigo */
+  /* Hero name gradient - Cyan to Blue */
   .hero-name-gradient {
-    background: linear-gradient(135deg, #93c5fd 0%, #38bdf8 40%, #a855f7 100%);
+    background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 50%, #1d4ed8 100%);
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
-  }
-
-  /* Premium button gradient */
-  .premium-button-gradient {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  }
-
-  /* Premium button gradient hover */
-  .premium-button-gradient-hover {
-    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
   }
 
   /* Section heading gradient */
   .section-heading-gradient {
-    background: linear-gradient(135deg, #93c5fd 0%, #38bdf8 40%, #6366f1 100%);
+    background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
@@ -300,20 +313,71 @@
 
   /* Page title gradient */
   .page-title-gradient {
-    background: linear-gradient(135deg, #93c5fd 0%, #38bdf8 40%, #a855f7 100%);
+    background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
   }
 
-  /* CTA hover background gradient */
-  .cta-hover-gradient {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  /* Button Gradients */
+  .modern-button-gradient {
+    background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
+  }
+
+  .modern-button-gradient:hover {
+    background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);
   }
 
   /* Social icon enhanced styling */
   .social-icon {
     @apply p-4 rounded-2xl bg-white/5 border border-white/20 hover:bg-white/10 hover:border-blue-400/50 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-blue-500/25;
+  }
+}
+
+/* === MODERN ANIMATIONS === */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.05);
+  }
+}
+
+@keyframes float-delayed {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-15px) scale(1.03);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 8s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
   }
 }
 

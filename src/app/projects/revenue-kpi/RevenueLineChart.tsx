@@ -3,13 +3,17 @@ import React, { memo, useMemo } from 'react'
 import {
   LineChart,
   Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
   Legend,
-} from 'recharts'
+  ChartWrapper,
+  ChartGrid,
+  ChartXAxis,
+  ChartYAxis,
+  StandardTooltip,
+  chartColors,
+  chartConfig,
+  formatters,
+  chartTypeConfigs,
+} from '@/lib/charts'
 // Corrected path and added type import for YearOverYearGrowthExtended
 import { yearOverYearGrowthExtended, type YearOverYearGrowthExtended } from '@/app/projects/data/partner-analytics'
 import type { ExtendedRevenueData, TypedTooltipProps } from '@/types/chart'
@@ -41,53 +45,27 @@ const calculateGrowthRate = (current: number, previous: number): number => {
 // Add year-over-year data for additional context
 // Move data calculation inside component to use useMemo
 
-// V4 Chart Colors using CSS Custom Properties
-const chartColors = {
-  revenue: 'hsl(var(--chart-1))',
-  transactions: 'hsl(var(--chart-2))',
-  commissions: 'hsl(var(--chart-3))',
-  grid: 'hsl(var(--border))',
-  axis: 'hsl(var(--muted-foreground))',
-}
+// Using centralized chart colors
 
-// Type-safe tooltip component
+// Custom tooltip for revenue data
 function CustomTooltip({ active, payload, label }: TypedTooltipProps<ExtendedRevenueData>) {
-  if (active && payload && payload.length > 0) {
-    const dataPoint = payload[0]?.payload;
-    if (!dataPoint) return null;
-    
-    return (
-      <div
-        className="rounded-lg border bg-card p-3 shadow-lg"
-        style={{
-          backgroundColor: 'hsl(var(--card))',
-          borderColor: 'hsl(var(--border))',
-          color: 'hsl(var(--card-foreground))',
-        }}
-      >
-        <p className="font-medium">{`Period: ${label}`}</p>
-        <p className="text-sm">
-          Revenue: <span className="font-semibold">${dataPoint.revenue.toFixed(1)}M</span>
-        </p>
-        {dataPoint.growth !== undefined && dataPoint.growth !== 0 && (
-          <p className="text-sm">
-            Growth: <span className="font-semibold">{dataPoint.growth.toFixed(1)}%</span>
-          </p>
-        )}
-        {dataPoint.transactions && (
-          <p className="text-sm">
-            Transactions: <span className="font-semibold">{dataPoint.transactions.toFixed(1)}K</span>
-          </p>
-        )}
-        {dataPoint.commissions && (
-          <p className="text-sm">
-            Commissions: <span className="font-semibold">${dataPoint.commissions.toFixed(1)}M</span>
-          </p>
-        )}
-      </div>
-    );
-  }
-  return null;
+  if (!active || !payload || payload.length === 0) return null
+  
+  const dataPoint = payload[0]?.payload
+  if (!dataPoint) return null
+  
+  return (
+    <StandardTooltip
+      active={active}
+      payload={[
+        { name: 'Revenue', value: formatters.currency(dataPoint.revenue), color: chartColors.revenue },
+        ...(dataPoint.transactions ? [{ name: 'Transactions', value: formatters.thousands(dataPoint.transactions), color: chartColors.transactions }] : []),
+        ...(dataPoint.commissions ? [{ name: 'Commissions', value: formatters.currency(dataPoint.commissions), color: chartColors.commissions }] : []),
+        ...(dataPoint.growth !== undefined && dataPoint.growth !== 0 ? [{ name: 'Growth', value: formatters.percentage(dataPoint.growth), color: chartColors.positive }] : []),
+      ]}
+      label={label}
+    />
+  )
 }
 
 const RevenueLineChart = memo((): React.JSX.Element => {
@@ -115,72 +93,48 @@ const RevenueLineChart = memo((): React.JSX.Element => {
 
   return (
     <div className="portfolio-card">
-      <h2 className="mb-4 text-xl font-semibold">
-        Revenue Growth Metrics
-      </h2>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={yearlyData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke={chartColors.grid} 
-            strokeOpacity={0.3} 
-          />
-          <XAxis
-            dataKey="name"
-            stroke={chartColors.axis}
-            fontSize={12}
-            tickLine={false}
-            axisLine={{ stroke: chartColors.axis, strokeOpacity: 0.5 }}
-          />
-          <YAxis
-            stroke={chartColors.axis}
-            fontSize={12}
-            tickLine={false}
-            axisLine={{ stroke: chartColors.axis, strokeOpacity: 0.5 }}
-            tickFormatter={(value) => {
-              // Determine if the number is in whole units
-              return Number.isInteger(value) ? `${value}` : value.toFixed(1)
-            }}
-          />
-          <Tooltip content={<CustomTooltip />} />
+      <ChartWrapper
+        title="Revenue Growth Metrics"
+        caption="Year-over-year tracking of key metrics (Revenue in $M, Transactions in K, Commissions in $M)"
+        height="standard"
+      >
+        <LineChart data={yearlyData} margin={chartConfig.margins.medium}>
+          <ChartGrid />
+          <ChartXAxis dataKey="name" />
+          <ChartYAxis tickFormatter={(value) => formatters.number(typeof value === 'string' ? parseFloat(value) : value)} />
+          <CustomTooltip />
           <Legend />
           <Line
-            type="monotone"
+            {...chartTypeConfigs.line}
             dataKey="revenue"
             stroke={chartColors.revenue}
-            strokeWidth={2}
-            dot={{ stroke: chartColors.revenue, strokeWidth: 2, r: 4, fill: 'hsl(var(--background))' }}
-            activeDot={{ r: 6, stroke: chartColors.revenue, strokeWidth: 2, fill: chartColors.revenue }}
-            animationDuration={1500}
+            dot={{ ...chartTypeConfigs.line.dot, stroke: chartColors.revenue }}
+            activeDot={{ ...chartTypeConfigs.line.activeDot, stroke: chartColors.revenue, fill: chartColors.revenue }}
+            animationDuration={chartConfig.animation.duration}
             name="Revenue ($M)"
           />
           <Line
-            type="monotone"
+            {...chartTypeConfigs.line}
             dataKey="transactions"
             stroke={chartColors.transactions}
-            strokeWidth={2}
-            dot={{ stroke: chartColors.transactions, strokeWidth: 2, r: 4, fill: 'hsl(var(--background))' }}
-            activeDot={{ r: 6, stroke: chartColors.transactions, strokeWidth: 2, fill: chartColors.transactions }}
-            animationDuration={1500}
-            animationBegin={300}
+            dot={{ ...chartTypeConfigs.line.dot, stroke: chartColors.transactions }}
+            activeDot={{ ...chartTypeConfigs.line.activeDot, stroke: chartColors.transactions, fill: chartColors.transactions }}
+            animationDuration={chartConfig.animation.duration}
+            animationBegin={chartConfig.animation.delay}
             name="Transactions (K)"
           />
           <Line
-            type="monotone"
+            {...chartTypeConfigs.line}
             dataKey="commissions"
             stroke={chartColors.commissions}
-            strokeWidth={2}
-            dot={{ stroke: chartColors.commissions, strokeWidth: 2, r: 4, fill: 'hsl(var(--background))' }}
-            activeDot={{ r: 6, stroke: chartColors.commissions, strokeWidth: 2, fill: chartColors.commissions }}
-            animationDuration={1500}
-            animationBegin={600}
+            dot={{ ...chartTypeConfigs.line.dot, stroke: chartColors.commissions }}
+            activeDot={{ ...chartTypeConfigs.line.activeDot, stroke: chartColors.commissions, fill: chartColors.commissions }}
+            animationDuration={chartConfig.animation.duration}
+            animationBegin={chartConfig.animation.stagger}
             name="Commissions ($M)"
           />
         </LineChart>
-      </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
-        Year-over-year tracking of key metrics (Revenue in $M, Transactions in K, Commissions in $M)
-      </p>
+      </ChartWrapper>
     </div>
   )
 })

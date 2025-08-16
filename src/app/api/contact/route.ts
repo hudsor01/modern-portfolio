@@ -1,74 +1,29 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { 
   checkEnhancedContactFormRateLimit
 } from '@/lib/security/enhanced-rate-limiter'
-import { ContactFormData } from '@/types/shared-api'
+import {
+  contactFormSchema,
+  validateRequest,
+  ValidationError,
+  createApiError,
+  createApiSuccess,
+  getClientIdentifier,
+  getRequestMetadata,
+  parseRequestBody,
+  createResponseHeaders,
+  logApiRequest,
+  logApiResponse,
+} from '@/lib/api'
 
-interface ContactApiResponse {
-  success: boolean;
-  message: string;
-  error?: string;
-  details?: Record<string, string>;
-  rateLimitInfo?: {
-    remaining?: number;
-    resetTime?: number;
-    retryAfter?: number;
-    blocked?: boolean;
-  };
-}
+// Using centralized ApiResponse type
 
-class ValidationError extends Error {
-  details: Record<string, string>;
+// Using centralized ValidationError class
 
-  constructor(message: string, details: Record<string, string>) {
-    super(message);
-    this.name = 'ValidationError';
-    this.details = details;
-  }
-}
+// Using centralized Zod validation
 
-function validateContactForm(data: unknown): ContactFormData {
-  const errors: Record<string, string> = {};
-  const formData = data as Partial<ContactFormData>;
-
-  if (!formData.name || formData.name.trim() === '') {
-    errors.name = 'Name is required';
-  }
-
-  if (!formData.email || !/^\S+@\S+\.\S+$/.test(formData.email)) {
-    errors.email = 'Valid email is required';
-  }
-
-  if (!formData.subject || formData.subject.trim() === '') {
-    errors.subject = 'Subject is required';
-  }
-
-  if (!formData.message || formData.message.trim() === '') {
-    errors.message = 'Message is required';
-  }
-
-  if (Object.keys(errors).length > 0) {
-    throw new ValidationError('Validation failed', errors);
-  }
-
-  return formData as ContactFormData;
-}
-
-function getClientIdentifier(req: Request): string {
-  // Try to get IP from various headers
-  const forwarded = req.headers.get('x-forwarded-for')
-  const realIp = req.headers.get('x-real-ip')
-  const cfConnectingIp = req.headers.get('cf-connecting-ip')
-  
-  const ip = forwarded?.split(',')[0] || realIp || cfConnectingIp || 'unknown'
-  
-  // Add user agent as additional identifier
-  const userAgent = req.headers.get('user-agent') || 'unknown'
-  const userAgentHash = Buffer.from(userAgent).toString('base64').slice(0, 8)
-  
-  return `${ip}:${userAgentHash}`
-}
+// Using centralized client identification
 
 // Initialize Resend lazily to avoid build-time errors
 let resend: Resend | null = null
@@ -83,58 +38,51 @@ function getResendClient(): Resend {
   return resend
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const startTime = Date.now()
+  const clientId = getClientIdentifier(request)
+  const metadata = getRequestMetadata(request)
+  
+  logApiRequest('POST', '/api/contact', clientId, metadata)
+  
   try {
     // Enhanced rate limiting check first
-    const clientId = getClientIdentifier(request)
-    const userAgent = request.headers.get('user-agent')
     const rateLimitResult = checkEnhancedContactFormRateLimit(clientId, {
-      ...(userAgent && { userAgent }),
+      userAgent: metadata.userAgent,
       path: '/api/contact'
     })
 
     if (!rateLimitResult.allowed) {
-      const response: ContactApiResponse = {
-        success: false,
-        message: rateLimitResult.reason === 'penalty_block' 
+      const response = createApiError(
+        rateLimitResult.reason === 'penalty_block' 
           ? 'Account temporarily blocked due to excessive attempts'
           : 'Too many contact form submissions. Please try again later.',
-        error: 'RATE_LIMIT_EXCEEDED',
-        rateLimitInfo: {
-          ...(rateLimitResult.retryAfter !== undefined && { retryAfter: rateLimitResult.retryAfter }),
-          ...(rateLimitResult.resetTime !== undefined && { resetTime: rateLimitResult.resetTime }),
-          ...(rateLimitResult.blocked !== undefined && { blocked: rateLimitResult.blocked })
+        'RATE_LIMIT_EXCEEDED',
+        undefined,
+        {
+          retryAfter: rateLimitResult.retryAfter,
+          resetTime: rateLimitResult.resetTime,
+          blocked: rateLimitResult.blocked
         }
-      }
+      )
 
-      const status = rateLimitResult.blocked ? 429 : 429
-      const headers: Record<string, string> = {
-        'X-RateLimit-Limit': '3',
-        'X-RateLimit-Remaining': '0'
-      }
-
-      if (rateLimitResult.resetTime) {
-        headers['X-RateLimit-Reset'] = rateLimitResult.resetTime.toString()
-      }
-
-      if (rateLimitResult.retryAfter) {
-        headers['Retry-After'] = Math.ceil((rateLimitResult.retryAfter - Date.now()) / 1000).toString()
-      }
-
-      return NextResponse.json(response, { 
-        status, 
-        headers 
+      const headers = createResponseHeaders({
+        limit: 3,
+        remaining: 0,
+        resetTime: rateLimitResult.resetTime,
+        retryAfter: rateLimitResult.retryAfter,
       })
+
+      logApiResponse('POST', '/api/contact', clientId, 429, false, Date.now() - startTime)
+      return NextResponse.json(response, { status: 429, headers })
     }
 
-    // Parse the request body
-    const body = await request.json();
-
-    // Validate the data using our centralized validation
-    const formData = validateContactForm(body);
+    // Parse and validate request body
+    const body = await parseRequestBody(request)
+    const formData = validateRequest(contactFormSchema, body)
 
     // Send email using Resend
-    const { name, email, subject, message } = formData;
+    const { name, email, subject, message } = formData
 
     await getResendClient().emails.send({
       from: 'Portfolio Contact <hello@richardwhudsonjr.com>',
@@ -151,41 +99,40 @@ export async function POST(request: Request) {
           <p>${message.replace(/\n/g, '<br>')}</p>
         </div>
       `,
-    });
+    })
 
-
-    const response: ContactApiResponse = {
-      success: true,
-      message: 'Form submitted successfully',
-      rateLimitInfo: {
-        ...(rateLimitResult.remaining !== undefined && { remaining: rateLimitResult.remaining }),
-        ...(rateLimitResult.resetTime !== undefined && { resetTime: rateLimitResult.resetTime })
+    const response = createApiSuccess(
+      'Form submitted successfully',
+      undefined,
+      {
+        remaining: rateLimitResult.remaining,
+        resetTime: rateLimitResult.resetTime
       }
-    };
+    )
 
-    // Add rate limit headers to successful response
-    const headers: Record<string, string> = {}
-    if (rateLimitResult.remaining !== undefined) {
-      headers['X-RateLimit-Limit'] = '3'
-      headers['X-RateLimit-Remaining'] = rateLimitResult.remaining.toString()
-    }
-    if (rateLimitResult.resetTime) {
-      headers['X-RateLimit-Reset'] = rateLimitResult.resetTime.toString()
-    }
+    const headers = createResponseHeaders({
+      limit: 3,
+      remaining: rateLimitResult.remaining,
+      resetTime: rateLimitResult.resetTime,
+    })
 
-    return NextResponse.json(response, { 
-      status: 200,
-      headers 
-    });
+    logApiResponse('POST', '/api/contact', clientId, 200, true, Date.now() - startTime)
+    return NextResponse.json(response, { status: 200, headers })
+    
   } catch (error) {
+    const isValidationError = error instanceof ValidationError
+    const status = isValidationError ? 400 : 500
+    
+    const response = createApiError(
+      isValidationError ? 'Validation failed' : 'Error processing form',
+      isValidationError ? 'VALIDATION_ERROR' : 'INTERNAL_ERROR',
+      isValidationError ? error.details : undefined
+    )
 
-    const response: ContactApiResponse = {
-      success: false,
-      message: 'Error processing form',
-      error: error instanceof ValidationError ? 'Validation failed' : 'Internal server error',
-      ...(error instanceof ValidationError && error.details && { details: error.details }),
-    };
-
-    return NextResponse.json(response, { status: error instanceof ValidationError ? 400 : 500 });
+    logApiResponse('POST', '/api/contact', clientId, status, false, Date.now() - startTime, {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
+    
+    return NextResponse.json(response, { status })
   }
 }
