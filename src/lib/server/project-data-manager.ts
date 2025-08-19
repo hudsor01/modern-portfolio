@@ -19,7 +19,7 @@ const MASTER_PROJECT_DATA: Project[] = [
     title: 'Enterprise Partnership Program Implementation',
     description:
       'Led comprehensive design and implementation of a company\'s first partnership program, creating automated partner onboarding, commission tracking, and performance analytics. Built production-ready integrations with CRM, billing systems, and partner portals, resulting in a highly successful channel program that became integral to company revenue strategy.',
-    image: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&h=600&fit=crop&crop=center&q=80',
+    image: '/images/projects/partner-analytics.jpg',
     link: 'https://demo.partnershipprogram.example.com',
     github: 'https://github.com/hudsonr01/partnership-program',
     category: 'Revenue Operations',
@@ -47,7 +47,7 @@ const MASTER_PROJECT_DATA: Project[] = [
     title: 'Commission & Incentive Optimization System',
     description:
       'Advanced commission management and partner incentive optimization platform managing $254K+ commission structures with automated tier adjustments, 23% commission rate optimization, and ROI-driven compensation strategy delivering 34% performance improvement and 87.5% automation efficiency.',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&crop=center&q=80',
+    image: '/images/projects/commission-dashboard.jpg',
     link: 'https://demo.commissionoptimization.example.com',
     github: 'https://github.com/hudsonr01/commission-optimization',
     category: 'Revenue Operations',
@@ -74,7 +74,7 @@ const MASTER_PROJECT_DATA: Project[] = [
     title: 'Multi-Channel Attribution Analytics Dashboard',
     description:
       'Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints. Delivering 92.4% attribution accuracy and $2.3M ROI optimization through data-driven attribution modeling and cross-channel insights.',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop&crop=center&q=80',
+    image: '/images/projects/multi-channel.jpg',
     link: 'https://demo.attribution.example.com',
     github: 'https://github.com/hudsonr01/multi-channel-attribution',
     category: 'Marketing',
@@ -101,7 +101,7 @@ const MASTER_PROJECT_DATA: Project[] = [
     title: 'Revenue Operations Command Center',
     description:
       'Comprehensive executive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs. Real-time insights with 96.8% forecast accuracy and 89.7% operational efficiency across sales, marketing, and partner channels.',
-    image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=600&fit=crop&crop=center&q=80',
+    image: '/images/projects/revenue-operations.jpg',
     link: 'https://demo.revopscommand.example.com',
     github: 'https://github.com/hudsonr01/revenue-operations-center',
     category: 'Revenue Operations',
@@ -128,7 +128,7 @@ const MASTER_PROJECT_DATA: Project[] = [
     title: 'Customer Lifetime Value Predictive Analytics Dashboard',
     description:
       'Advanced CLV analytics platform leveraging BTYD (Buy Till You Die) predictive modeling framework. Achieving 94.3% prediction accuracy through machine learning algorithms and real-time customer behavior tracking across 5 distinct customer segments.',
-    image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=600&fit=crop&crop=center&q=80',
+    image: '/images/projects/customer-analytics.jpg',
     link: 'https://demo.clvanalytics.example.com',
     github: 'https://github.com/hudsonr01/customer-lifetime-value',
     category: 'Revenue Operations',
@@ -155,7 +155,7 @@ const MASTER_PROJECT_DATA: Project[] = [
     title: 'Partner Performance Intelligence Dashboard',
     description:
       'Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem. Real-time performance tracking following industry-standard 80/20 partner revenue distribution.',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop&crop=center&q=80',
+    image: '/images/projects/partner-intelligence.jpg',
     link: 'https://demo.partnerintelligence.example.com',
     github: 'https://github.com/hudsonr01/partner-performance',
     category: 'Revenue Operations',
@@ -182,7 +182,7 @@ const MASTER_PROJECT_DATA: Project[] = [
     title: 'Customer Acquisition Cost Optimization & Unit Economics Dashboard',
     description:
       'Comprehensive CAC analysis and LTV:CAC ratio optimization achieving 32% cost reduction through strategic partner channel optimization. Industry-benchmark 3.6:1 efficiency ratio with 8.4-month payback period across multi-tier SaaS products.',
-    image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&h=600&fit=crop&crop=center&q=80',
+    image: '/images/projects/cac-analytics.jpg',
     link: 'https://demo.cacanalytics.example.com',
     github: 'https://github.com/hudsonr01/cac-unit-economics',
     category: 'Revenue Operations',
@@ -209,7 +209,7 @@ const MASTER_PROJECT_DATA: Project[] = [
     title: 'Customer Churn & Retention Analytics',
     description:
       'A sophisticated analytics platform that helps businesses understand and reduce customer churn while improving retention rates through predictive modeling and actionable insights.',
-    image: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=600&fit=crop&crop=center&q=80',
+    image: '/images/projects/churn-retention.jpg',
     link: 'https://demo.churnanalytics.example.com',
     github: 'https://github.com/hudsonr01/churn-retention',
     category: 'Analytics',
@@ -233,7 +233,7 @@ const MASTER_PROJECT_DATA: Project[] = [
     title: 'Sales Pipeline Funnel Analytics',
     description:
       'A comprehensive sales pipeline visualization tool that tracks conversion rates across different stages of the sales process, helping sales teams identify bottlenecks and optimize their approach.',
-    image: 'https://images.unsplash.com/photo-1590479773265-7464e5d48118?w=800&h=600&fit=crop&crop=center&q=80',
+    image: '/images/projects/deal-funnel.jpg',
     link: 'https://demo.salesfunnel.example.com',
     github: 'https://github.com/hudsonr01/deal-funnel',
     category: 'Sales',
@@ -248,7 +248,7 @@ const MASTER_PROJECT_DATA: Project[] = [
     title: 'Lead Source Attribution Dashboard',
     description:
       'An interactive dashboard for tracking and analyzing lead sources to optimize marketing spend and improve ROI. Visualizes lead attribution data with interactive charts.',
-    image: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&h=600&fit=crop&crop=center&q=80',
+    image: '/images/projects/lead-attribution.jpg',
     link: 'https://demo.leadattribution.example.com',
     github: 'https://github.com/hudsonr01/lead-attribution',
     category: 'Marketing',
@@ -263,7 +263,7 @@ const MASTER_PROJECT_DATA: Project[] = [
     title: 'Revenue KPI Dashboard',
     description:
       'An executive dashboard that provides a comprehensive view of revenue metrics and KPIs, allowing business leaders to monitor performance, identify trends, and make data-driven decisions.',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&crop=center&q=80',
+    image: '/images/projects/revenue-kpi.jpg',
     link: 'https://demo.revenuekpi.example.com',
     github: 'https://github.com/hudsonr01/revenue-kpi',
     category: 'Finance',

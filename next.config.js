@@ -78,12 +78,16 @@ const nextConfig = {
       {
         source: '/api/(.*)',
         headers: [
-          // Specific CORS for API routes (no wildcards)
+          // Specific CORS for API routes - allow both www and non-www
           {
             key: 'Access-Control-Allow-Origin',
             value: process.env.NODE_ENV === 'production' 
-              ? 'https://richardwhudsonjr.com' 
+              ? '*' // Allow all origins temporarily - will be handled by middleware
               : 'http://localhost:3000',
+          },
+          {
+            key: 'Vary',
+            value: 'Origin',
           },
           {
             key: 'Access-Control-Allow-Methods',

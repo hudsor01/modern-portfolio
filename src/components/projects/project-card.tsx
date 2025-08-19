@@ -75,7 +75,7 @@ const getCustomCTA = (projectId: string): string => {
 
 export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project }) => {
   const projectImage = isMockProject(project)
-    ? 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=600&fit=crop&crop=center&q=80'
+    ? '/images/projects/data-visualization.jpg'
     : project.image
 
   const customCTA = getCustomCTA(project.id)

@@ -139,25 +139,17 @@ export default function HomePageContent() {
             📍 Based in Plano, TX • Serving Dallas-Fort Worth Metroplex
           </p>
           <div className="flex flex-wrap justify-center gap-3 text-sm text-gray-300">
-            <Link href="/locations/dallas" className="hover:text-cyan-400 transition-all duration-300">
-              Dallas
-            </Link>
+            <span>Dallas</span>
             <span>•</span>
-            <Link href="/locations/fort-worth" className="hover:text-cyan-400 transition-all duration-300">
-              Fort Worth
-            </Link>
+            <span>Fort Worth</span>
             <span>•</span>
-            <Link href="/locations/plano" className="hover:text-cyan-400 transition-all duration-300">
-              Plano
-            </Link>
+            <span>Plano</span>
             <span>•</span>
-            <Link href="/locations/frisco" className="hover:text-cyan-400 transition-all duration-300">
-              Frisco
-            </Link>
+            <span>Frisco</span>
             <span>•</span>
-            <Link href="/locations" className="hover:text-cyan-400 transition-all duration-300 font-medium">
-              View All Locations
-            </Link>
+            <span>Richardson</span>
+            <span>•</span>
+            <span>McKinney</span>
           </div>
           </MotionDiv>
         </Suspense>
@@ -194,9 +186,8 @@ export default function HomePageContent() {
               <div className="mt-8 pt-6 border-t border-gray-700/30">
                 <div className="flex flex-wrap gap-3 justify-center">
                   <span className="bg-cyan-500/10 text-cyan-400 px-3 py-1 rounded-full text-sm border border-cyan-500/20">Revenue Operations</span>
-                  <span className="bg-green-500/10 text-green-400 px-3 py-1 rounded-full text-sm border border-green-500/20">Salesforce Certified</span>
                   <span className="bg-cyan-500/10 text-cyan-400 px-3 py-1 rounded-full text-sm border border-cyan-500/20">HubSpot Certified</span>
-                  <span className="bg-gray-500/10 text-gray-400 px-3 py-1 rounded-full text-sm border border-gray-500/20">Data Analytics</span>
+                  <span className="bg-gray-500/10 text-gray-400 px-3 py-1 rounded-full text-sm border border-gray-500/20">Business Analytics</span>
                 </div>
               </div>
             </ModernCardContent>
