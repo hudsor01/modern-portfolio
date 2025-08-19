@@ -14,7 +14,6 @@ interface ProjectsContainerProps {
   
   // Layout configuration
   itemsPerPage?: number
-  showLoadMore?: boolean
   className?: string
   
   // Filter options
@@ -69,7 +68,6 @@ interface ProjectsContainerRenderProps {
 export function ProjectsContainer({
   enablePrefetch = true,
   itemsPerPage = 6,
-  showLoadMore = true,
   className,
   categoryFilter,
   sortBy = 'date',
@@ -148,13 +146,6 @@ export function ProjectsContainer({
     return result
   }, [projectsQuery.data, filters])
 
-  // Container logic - pagination
-  const paginatedProjects = useMemo(() => {
-    if (!showLoadMore) {
-      return filteredProjects.slice(0, currentPage * itemsPerPage)
-    }
-    return filteredProjects.slice(0, currentPage * itemsPerPage)
-  }, [filteredProjects, currentPage, itemsPerPage, showLoadMore])
 
   const totalPages = Math.ceil(filteredProjects.length / itemsPerPage)
   const hasNextPage = currentPage < totalPages
@@ -280,22 +271,6 @@ export function ProjectsContainer({
         selectProject: handleProjectSelect,
       })}
 
-      {/* Debug info for development */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="mt-8 p-4 bg-gray-800/50 rounded-lg text-xs text-gray-400">
-          <h4 className="font-semibold mb-2">Container Debug Info:</h4>
-          <div className="grid grid-cols-2 gap-2">
-            <div>Total Projects: {((projectsQuery.data as Project[]) || []).length}</div>
-            <div>Filtered: {filteredProjects.length}</div>
-            <div>Displayed: {paginatedProjects.length}</div>
-            <div>Current Page: {currentPage}</div>
-            <div>Total Pages: {totalPages}</div>
-            <div>Has Next: {hasNextPage ? 'Yes' : 'No'}</div>
-            <div>Selected: {selectedProject?.title || 'None'}</div>
-            <div>Filters: {JSON.stringify(filters)}</div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
