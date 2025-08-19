@@ -1,7 +1,6 @@
 'use client'
 
-import React, { useState, useMemo, memo } from 'react'
-import { ContactModal } from '@/components/ui/contact-modal'
+import React, { useMemo, memo } from 'react'
 import { Navbar } from '@/components/layout/navbar'
 import { ProjectCard } from '@/components/projects/project-card' 
 import { ProjectStats } from '@/components/projects/project-stats'
@@ -183,7 +182,6 @@ export const ModernProjectsContent = memo<ModernProjectsContentProps>(({
   onPrefetch: _onPrefetch,
   isLoading = false,
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
 
   // Use external projects if provided, otherwise fall back to mock data
   const projectsData: Project[] = externalProjects || mockProjects
@@ -269,12 +267,10 @@ export const ModernProjectsContent = memo<ModernProjectsContentProps>(({
           </div>
 
           {/* CTA Section */}
-          <ProjectCTASection onContactClick={() => setIsModalOpen(true)} />
+          <ProjectCTASection />
         </div>
       </section>
 
-        {/* Contact Modal */}
-        <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </>
     </ProjectErrorBoundary>
   )

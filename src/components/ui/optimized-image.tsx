@@ -104,7 +104,7 @@ export function OptimizedImage({
         quality={quality}
         priority={priority}
         loading={priority ? undefined : (lazy ? 'lazy' : 'eager')}
-        onLoad={handleLoad}
+        onLoadingComplete={handleLoad}
         onError={handleError}
         {...props}
       />
