@@ -78,11 +78,11 @@ const nextConfig = {
       {
         source: '/api/(.*)',
         headers: [
-          // Specific CORS for API routes - allow both www and non-www
+          // Specific CORS for API routes - only allow our domains
           {
             key: 'Access-Control-Allow-Origin',
             value: process.env.NODE_ENV === 'production' 
-              ? '*' // Allow all origins temporarily - will be handled by middleware
+              ? 'https://richardwhudsonjr.com'
               : 'http://localhost:3000',
           },
           {
@@ -148,54 +148,6 @@ const nextConfig = {
         ],
       },
     ];
-  },
-  // Enhanced webpack configuration
-  webpack(config, { dev, isServer }) {
-    // Handle .mjs files
-    config.module.rules.push({
-      test: /\.mjs$/,
-      include: /node_modules/,
-      type: 'javascript/auto',
-    });
-    
-    // Production optimizations
-    if (!dev && !isServer) {
-      config.optimization = {
-        ...config.optimization,
-        usedExports: true,
-        sideEffects: false,
-        splitChunks: {
-          chunks: 'all',
-          cacheGroups: {
-            vendor: {
-              test: /[\\/]node_modules[\\/]/,
-              name: 'vendors',
-              chunks: 'all',
-            },
-            common: {
-              name: 'common',
-              minChunks: 2,
-              chunks: 'all',
-              enforce: true,
-            },
-          },
-        },
-      };
-    }
-    
-    // Enable SWC minification
-    if (!dev) {
-      config.optimization.minimize = true;
-    }
-    
-    // Source map configuration
-    if (dev) {
-      config.devtool = 'eval-source-map';
-    } else {
-      config.devtool = false; // Disable source maps in production for better performance
-    }
-    
-    return config;
   },
   
   // Enhanced output configuration

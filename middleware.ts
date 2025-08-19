@@ -41,6 +41,15 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // Handle CORS for API routes
+  if (isApiRequest) {
+    const origin = request.headers.get('origin')
+    if (origin && trustedOrigins.includes(origin)) {
+      response.headers.set('Access-Control-Allow-Origin', origin)
+      response.headers.set('Vary', 'Origin')
+    }
+  }
+
   // Apply rate limiting to API routes
   if (isApiRequest) {
     const identifier = getClientIdentifier(request)
