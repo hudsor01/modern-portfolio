@@ -25,7 +25,7 @@ export function OptimizedImage({
   wrapperClassName,
   loadingClassName,
   aspectRatio,
-  fallbackSrc = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop&crop=center&q=80',
+  fallbackSrc = '/images/projects/data-visualization.jpg',
   blurUp = true,
   loadingComponent,
   lazy = true,

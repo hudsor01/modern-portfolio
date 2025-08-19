@@ -44,7 +44,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ]
   
-  // Location pages for local SEO
+  // Location-based SEO metadata (important for local search visibility)
+  // These help with "Revenue Operations Dallas", "RevOps Fort Worth", etc. searches
   const locationPages = [
     'locations',
     'locations/dallas',

@@ -11,6 +11,16 @@ import {
 } from './src/lib/security/security-headers'
 
 export function middleware(request: NextRequest) {
+  const url = request.nextUrl
+  const hostname = request.headers.get('host') || ''
+  
+  // Redirect www to non-www in production
+  if (process.env.NODE_ENV === 'production' && hostname.startsWith('www.')) {
+    const newUrl = new URL(url)
+    newUrl.host = hostname.replace('www.', '')
+    return NextResponse.redirect(newUrl, 301)
+  }
+  
   const response = NextResponse.next()
   const pathname = request.nextUrl.pathname
 

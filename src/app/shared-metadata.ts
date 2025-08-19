@@ -50,7 +50,7 @@ export const baseMetadata: Metadata = {
     url: 'https://richardwhudsonjr.com',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&h=630&fit=crop&crop=face&q=80',
+        url: '/images/richard.jpg',
         width: 1200,
         height: 630,
         alt: 'Richard Hudson - Revenue Operations Consultant',
@@ -63,7 +63,7 @@ export const baseMetadata: Metadata = {
     title: 'Richard Hudson | Revenue Operations Consultant',
     description:
       'Revenue Operations Consultant Richard Hudson specializes in sales automation, CRM optimization, and partnership program development across Dallas-Fort Worth metroplex. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. $4.8M+ revenue generated, 432% growth achieved. Serving Dallas, Fort Worth, Plano, Frisco, and surrounding DFW areas.',
-    images: ['https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&h=630&fit=crop&crop=face&q=80'],
+    images: ['/images/richard.jpg'],
   },
   robots: {
     index: true,
