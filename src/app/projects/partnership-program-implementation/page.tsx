@@ -16,7 +16,7 @@ const project = {
   id: 'partnership-program-implementation',
   title: 'Enterprise Partnership Program Implementation',
   description: 'Led comprehensive design and implementation of a company\'s first partnership program, creating automated partner onboarding, commission tracking, and performance analytics. Built production-ready integrations with CRM, billing systems, and partner portals, resulting in a highly successful channel program that became integral to company revenue strategy.',
-  image: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&h=600&fit=crop&crop=center&q=80',
+  image: '/images/projects/partner-analytics.jpg',
   category: 'Revenue Operations',
   tags: [
     'Partnership Program',

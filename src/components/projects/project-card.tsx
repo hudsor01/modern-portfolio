@@ -81,7 +81,7 @@ const getCustomCTA = (projectId: string): string => {
 export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, priority = false, index = 0 }) => {
   const projectImage = isMockProject(project)
     ? '/images/projects/data-visualization.jpg'
-    : project.image
+    : project.image || '/images/projects/analytics-dashboard.jpg'
 
   // Memoize expensive calculations
   const customCTA = useMemo(() => getCustomCTA(project.id), [project.id])

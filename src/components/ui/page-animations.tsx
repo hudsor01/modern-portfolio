@@ -45,7 +45,7 @@ export function AnimatedProjectCard({ project }: { project: Project }) {
       <Card className="group h-full overflow-hidden">
         <div className="relative aspect-video overflow-hidden">
           <Image
-            src={image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&crop=center&q=80'}
+            src={image || '/images/projects/analytics-dashboard.jpg'}
             alt={title || 'Project Image'}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"

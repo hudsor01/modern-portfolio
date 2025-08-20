@@ -118,13 +118,76 @@ export function useResumeDownload() {
 }
 
 // Blog
-export function useBlogPosts() {
+interface UseBlogPostsOptions {
+  filters?: {
+    status?: string
+    authorId?: string
+    categoryId?: string
+    tagIds?: string[]
+    search?: string
+    published?: boolean
+    dateRange?: {
+      from: string
+      to: string
+    }
+  }
+  sort?: {
+    field: 'title' | 'createdAt' | 'updatedAt' | 'publishedAt' | 'viewCount' | 'likeCount'
+    order: 'asc' | 'desc'
+  }
+  page?: number
+  limit?: number
+}
+
+interface BlogPostsResponse {
+  data: BlogPostData[]
+  success: boolean
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+    hasNext: boolean
+    hasPrev: boolean
+  }
+}
+
+export function useBlogPosts(options: UseBlogPostsOptions = {}) {
+  const { filters = {}, sort, page = 1, limit = 10 } = options
+  
   return useQuery({
-    queryKey: ['blog', 'posts'],
-    queryFn: async (): Promise<BlogPostData[]> => {
-      const response = await fetch('/api/blog?page=1&limit=10&sort=newest')
+    queryKey: ['blog', 'posts', filters, sort, page, limit],
+    queryFn: async (): Promise<BlogPostsResponse> => {
+      const searchParams = new URLSearchParams()
+      
+      // Add pagination
+      searchParams.append('page', page.toString())
+      searchParams.append('limit', limit.toString())
+      
+      // Add sorting
+      if (sort) {
+        searchParams.append('sortBy', sort.field)
+        searchParams.append('sortOrder', sort.order)
+      }
+      
+      // Add filters
+      if (filters.status) searchParams.append('status', filters.status)
+      if (filters.authorId) searchParams.append('authorId', filters.authorId)
+      if (filters.categoryId) searchParams.append('categoryId', filters.categoryId)
+      if (filters.tagIds?.length) searchParams.append('tagIds', filters.tagIds.join(','))
+      if (filters.search) searchParams.append('search', filters.search)
+      if (filters.published !== undefined) searchParams.append('published', filters.published.toString())
+      if (filters.dateRange) {
+        searchParams.append('dateFrom', filters.dateRange.from)
+        searchParams.append('dateTo', filters.dateRange.to)
+      }
+      
+      const response = await fetch(`/api/blog?${searchParams.toString()}`)
       if (!response.ok) throw new Error('Failed to fetch blog posts')
-      return response.json()
+      const result = await response.json()
+      
+      // Return the full response structure that matches the API
+      return result
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
@@ -137,7 +200,9 @@ export function useBlogPost(slug: string) {
     queryFn: async (): Promise<BlogPostData> => {
       const response = await fetch(`/api/blog/${slug}`)
       if (!response.ok) throw new Error('Failed to fetch blog post')
-      return response.json()
+      const result = await response.json()
+      // Handle API response structure
+      return result.success ? result.data : result
     },
     enabled: !!slug,
     staleTime: 5 * 60 * 1000,
@@ -151,20 +216,35 @@ export function useBlogCategories() {
     queryFn: async (): Promise<BlogCategoryData[]> => {
       const response = await fetch('/api/blog/categories')
       if (!response.ok) throw new Error('Failed to fetch categories')
-      return response.json()
+      const result = await response.json()
+      // Handle API response structure
+      return result.success ? result.data : result
     },
     staleTime: 15 * 60 * 1000,
     gcTime: 60 * 60 * 1000,
   })
 }
 
-export function useBlogTags() {
+interface UseBlogTagsOptions {
+  popular?: boolean
+  limit?: number
+}
+
+export function useBlogTags(options: UseBlogTagsOptions = {}) {
+  const { popular, limit } = options
+  
   return useQuery({
-    queryKey: ['blog', 'tags'],
+    queryKey: ['blog', 'tags', popular, limit],
     queryFn: async (): Promise<BlogTagData[]> => {
-      const response = await fetch('/api/blog/tags')
+      const searchParams = new URLSearchParams()
+      if (popular) searchParams.append('popular', 'true')
+      if (limit) searchParams.append('limit', limit.toString())
+      
+      const response = await fetch(`/api/blog/tags?${searchParams.toString()}`)
       if (!response.ok) throw new Error('Failed to fetch tags')
-      return response.json()
+      const result = await response.json()
+      // Handle API response structure
+      return result.success ? result.data : result
     },
     staleTime: 15 * 60 * 1000,
     gcTime: 60 * 60 * 1000,
