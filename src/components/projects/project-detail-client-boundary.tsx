@@ -212,9 +212,9 @@ export default function ProjectDetailClientBoundary({
 
         {/* CTA Section */}
         <div className="mt-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl p-8 text-center text-white">
-          <h2 className="text-3xl font-bold mb-4">Interested in Similar Work?</h2>
+          <h2 className="text-3xl font-bold mb-4">Impressed by This Case Study?</h2>
           <p className="text-xl mb-6 opacity-90">
-            Let's discuss how I can help bring your vision to life
+            Connect with me to discuss professional opportunities and revenue operations collaboration
           </p>
           <Button 
             size="lg" 

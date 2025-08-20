@@ -5,6 +5,7 @@ import { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { ClientComponentsProvider } from '@/components/providers/client-components-provider'
+import { OptimizedMotionProvider } from '@/lib/motion/optimized-motion'
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from '@/components/ui/toaster'
 import { EnhancedReadingProgress } from '@/components/ui/enhanced-reading-progress'
@@ -48,19 +49,21 @@ const RootLayout = React.memo(function RootLayout({ children }: { children: Reac
       </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <ClientComponentsProvider>
-            <PreloadManager />
-            <EnhancedReadingProgress 
-              height={3}
-              showThreshold={1}
-              hideThreshold={99}
-              contentPagesOnly={true}
-            />
-            {children}
-            <ScrollToTop />
-            <Toaster position="bottom-right" closeButton richColors />
-            <Analytics />
-          </ClientComponentsProvider>
+          <OptimizedMotionProvider>
+            <ClientComponentsProvider>
+              <PreloadManager />
+              <EnhancedReadingProgress 
+                height={3}
+                showThreshold={1}
+                hideThreshold={99}
+                contentPagesOnly={true}
+              />
+              {children}
+              <ScrollToTop />
+              <Toaster position="bottom-right" closeButton richColors />
+              <Analytics />
+            </ClientComponentsProvider>
+          </OptimizedMotionProvider>
         </ThemeProvider>
       </body>
     </html>

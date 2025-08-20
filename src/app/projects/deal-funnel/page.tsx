@@ -12,7 +12,7 @@ import {
   Zap,
 } from 'lucide-react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { m as motion } from 'framer-motion'
 import DealStageFunnelChart from './DealStageFunnelChart'
 import { getProject } from '@/lib/content/projects'
 import { ProjectJsonLd } from '@/components/seo/json-ld'

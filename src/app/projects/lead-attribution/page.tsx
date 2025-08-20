@@ -25,7 +25,7 @@ import {
   Share2,
   DollarSign,
 } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { m as motion } from 'framer-motion'
 import LeadSourcePieChart from './LeadSourcePieChart'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 

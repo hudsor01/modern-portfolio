@@ -159,7 +159,7 @@ export function ContactFormFields({
             </FormLabel>
             <FormControl>
               <Textarea
-                placeholder="Tell me about your project, goals, and how I can help..."
+                placeholder="Tell me about your professional inquiry, project opportunity, or how we might collaborate..."
                 className={cn(
                   "min-h-32 resize-none",
                   variant === 'detailed' && "min-h-48",

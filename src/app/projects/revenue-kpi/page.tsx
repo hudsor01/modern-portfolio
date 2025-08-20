@@ -10,11 +10,13 @@ import {
   Users, 
   Activity
 } from 'lucide-react'
-import { motion, Variants } from 'framer-motion'
-import RevenueBarChart from './RevenueBarChart'
-import RevenueLineChart from './RevenueLineChart'
-import TopPartnersChart from './TopPartnersChart'
-import PartnerGroupPieChart from './PartnerGroupPieChart'
+import { m as motion, Variants } from 'framer-motion'
+import { 
+  RevenueBarChart, 
+  RevenueLineChart, 
+  TopPartnersChart, 
+  PartnerGroupPieChart 
+} from '@/components/projects/charts/chart-imports'
 import { yearOverYearGrowthExtended } from '@/app/projects/data/partner-analytics'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 

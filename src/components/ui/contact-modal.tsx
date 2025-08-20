@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m as motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
 import { ShadcnContactForm } from '@/components/forms/shadcn-contact-form'
 import { Button } from '@/components/ui/button'
@@ -93,10 +93,10 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
                 <ProfessionalCardHeader className="text-center pb-6">
                   <ProfessionalCardTitle className="text-2xl md:text-3xl font-bold mb-3">
-                    Let's Connect
+                    Professional Connect
                   </ProfessionalCardTitle>
                   <ProfessionalCardDescription className="text-base max-w-md mx-auto">
-                    Ready to optimize your revenue operations? Let's discuss how I can help drive your business growth.
+                    Connect with me for professional opportunities, networking, or revenue operations discussions.
                   </ProfessionalCardDescription>
                 </ProfessionalCardHeader>
 
@@ -106,8 +106,8 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                     onSuccess={handleSuccess}
                     showOptionalFields={true}
                     variant="detailed"
-                    title="Let's Connect"
-                    description="Ready to optimize your revenue operations? Let's discuss how I can help drive your business growth."
+                    title="Professional Connect"
+                    description="Connect with me for professional opportunities, networking, or revenue operations discussions."
                     enableAutoSave={true}
                     enableRateLimit={true}
                     className="border-0 shadow-none"

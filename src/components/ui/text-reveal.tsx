@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { motion, useInView, useAnimation, HTMLMotionProps, Variants } from 'framer-motion' // Added HTMLMotionProps
+import { m, useInView, useAnimation, HTMLMotionProps, Variants } from 'framer-motion' // Added HTMLMotionProps
 import { TextRevealProps } from '@/types/ui'
 
 export default function TextReveal({
@@ -50,9 +50,9 @@ export default function TextReveal({
   }, [controls, isInView])
 
   // Explicitly type 'Component'. 'Tag' is of type keyof JSX.IntrinsicElements.
-  // motion[Tag] should resolve to the correct motion-wrapped HTML element.
+  // m[Tag] should resolve to the correct motion-wrapped HTML element.
   // Casting to React.ComponentType<HTMLMotionProps<typeof Tag>> provides stronger typing.
-  const Component = motion[Tag] as React.ComponentType<HTMLMotionProps<typeof Tag>>
+  const Component = m[Tag] as React.ComponentType<HTMLMotionProps<typeof Tag>>
 
   return (
     <Component
@@ -65,9 +65,9 @@ export default function TextReveal({
       {words.map((word, wordIndex) => (
         <span key={wordIndex} className="inline-block mr-1">
           {Array.from(word).map((letter, letterIndex) => (
-            <motion.span key={letterIndex} variants={child} className="inline-block">
+            <m.span key={letterIndex} variants={child} className="inline-block">
               {letter}
-            </motion.span>
+            </m.span>
           ))}
           {wordIndex !== words.length - 1 && ' '}
         </span>

@@ -2,21 +2,21 @@ import { Metadata } from 'next'
 
 export const pageMetadata = {
   home: {
-    title: 'Richard Hudson | Revenue Operations Consultant & Business Growth Expert',
-    description: 'Revenue Operations Consultant in Dallas-Fort Worth. Expert in sales automation, CRM optimization, and data-driven growth strategies. $4.8M+ revenue generated across 8+ projects.',
+    title: 'Richard Hudson | Revenue Operations Expert | Dallas-Fort Worth',
+    description: 'Revenue Operations Expert in Dallas-Fort Worth. Proven expertise in sales automation, CRM optimization, and data-driven growth strategies. $4.8M+ revenue impact across 10+ successful projects.',
     keywords: [
-      'revenue operations consultant',
-      'RevOps expert Dallas',
-      'sales operations optimization',
-      'marketing automation specialist',
-      'business intelligence consulting',
-      'SaaS revenue growth',
-      'CRM optimization expert',
-      'Salesforce consultant',
-      'HubSpot implementation',
-      'data analytics consulting',
-      'process automation expert',
-      'revenue forecasting',
+      'revenue operations expert',
+      'revenue operations Dallas',
+      'RevOps expert',
+      'sales operations',
+      'strategic revenue operations',
+      'RevOps specialist',
+      'CRM optimization',
+      'Salesforce specialist',
+      'strategic HubSpot implementation',
+      'data analytics expertise',
+      'process automation',
+      'strategic revenue forecasting',
       'sales pipeline optimization',
       'customer lifecycle management',
       'B2B growth strategies'
@@ -24,18 +24,18 @@ export const pageMetadata = {
   },
   about: {
     title: 'About Richard Hudson | Revenue Operations Expert in Dallas-Fort Worth',
-    description: 'Meet Richard Hudson, Revenue Operations Consultant based in Plano, Texas. 10+ years experience in Salesforce, HubSpot, data analytics, and process automation. Serving Dallas-Fort Worth metroplex with proven results: $4.8M+ revenue generated, 432% growth achieved.',
+    description: 'Meet Richard Hudson, Revenue Operations Expert based in Plano, Texas. Experienced professional with 10+ years experience in Salesforce, HubSpot, data analytics, and process automation. Serving Dallas-Fort Worth metroplex with proven results: $4.8M+ revenue impact, 432% growth achieved.',
     keywords: [
-      'Richard Hudson biography',
-      'Revenue Operations consultant Dallas',
-      'Plano Texas RevOps expert',
-      'Dallas Fort Worth business consultant',
-      'Salesforce certified consultant',
-      'HubSpot implementation specialist',
-      'business process automation',
+      'Richard Hudson professional biography',
+      'Revenue Operations Dallas',
+      'RevOps Plano Texas',
+      'Dallas Fort Worth RevOps professional',
+      'Salesforce specialist',
+      'strategic HubSpot implementation',
+      'process automation',
       'revenue growth strategies',
-      'CRM optimization expert',
-      'data analytics consultant'
+      'CRM optimization',
+      'data analytics'
     ]
   },
   projects: {
@@ -55,8 +55,8 @@ export const pageMetadata = {
     ]
   },
   resume: {
-    title: 'Richard Hudson Resume | Revenue Operations Professional Experience',
-    description: 'Download Richard Hudson\'s resume: 10+ years Revenue Operations experience, expert in Salesforce, HubSpot, Tableau, SQL, Python. Proven track record with $4.8M+ revenue generated and 432% growth achieved. Professional PDF resume available.',
+    title: 'Richard Hudson Resume | Revenue Operations Expert Experience',
+    description: 'Download Richard Hudson\'s resume: 10+ years Revenue Operations experience, expert in Salesforce, HubSpot, Tableau, SQL, Python. Proven track record with $4.8M+ revenue generated and 432% growth achieved. Expert-level PDF resume available.',
     keywords: [
       'Richard Hudson resume',
       'Revenue Operations experience',
@@ -71,26 +71,26 @@ export const pageMetadata = {
     ]
   },
   contact: {
-    title: 'Contact Richard Hudson | Revenue Operations Consulting Services',
-    description: 'Schedule a consultation with Richard Hudson, Revenue Operations Expert in Dallas-Fort Worth. Free 30-minute discovery call available. Get expert guidance on sales optimization, marketing automation, CRM implementation, and business growth strategies.',
+    title: 'Contact Richard Hudson | Revenue Operations Expert',
+    description: 'Connect with Richard Hudson, Revenue Operations Expert in Dallas-Fort Worth. Experienced RevOps professional available for professional opportunities, consulting discussions, and networking.',
     keywords: [
-      'revenue operations consultation',
-      'RevOps consulting services',
-      'Dallas business consultant',
-      'sales optimization expert',
-      'marketing automation consultant',
-      'CRM implementation services',
-      'business growth strategies',
-      'free consultation call',
       'revenue operations expert',
-      'process automation consultant'
+      'revenue operations Dallas',
+      'RevOps expert',
+      'professional networking',
+      'revenue operations leadership',
+      'strategic revenue operations',
+      'professional opportunities',
+      'professional networking',
+      'revenue operations specialist',
+      'RevOps talent'
     ]
   },
   projectPages: {
     'revenue-kpi': {
       title: 'Revenue KPI Dashboard | Business Intelligence Analytics Project',
-      description: 'Interactive Revenue KPI Dashboard showcasing real-time business metrics, partner performance analytics, and revenue forecasting. Built with advanced data visualization techniques for executive-level reporting and strategic decision-making.',
-      keywords: ['revenue KPI dashboard', 'business intelligence', 'data visualization', 'executive reporting', 'revenue analytics']
+      description: 'Interactive Revenue KPI Dashboard showcasing real-time business metrics, partner performance analytics, and revenue forecasting. Built with advanced data visualization techniques for professional reporting and strategic decision-making.',
+      keywords: ['revenue KPI dashboard', 'business intelligence', 'data visualization', 'professional reporting', 'revenue analytics']
     },
     'deal-funnel': {
       title: 'Sales Pipeline Funnel Analysis | Conversion Optimization Project',

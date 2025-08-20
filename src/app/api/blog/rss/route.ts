@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
           category: 'Revenue Operations',
           guid: 'https://richardhudson.dev/blog/kpi-design-principles-revenue-operations'
         }
-      ].slice(0, limit)
+      ].sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime()).slice(0, limit)
     };
     
     if (format === 'xml') {

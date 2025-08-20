@@ -11,7 +11,7 @@ import {
   Share2,
 } from 'lucide-react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { m as motion } from 'framer-motion'
 import AttributionModelChart from './AttributionModelChart'
 import CustomerJourneyChart from './CustomerJourneyChart'
 import ChannelROIChart from './ChannelROIChart'

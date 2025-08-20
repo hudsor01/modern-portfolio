@@ -3,7 +3,7 @@
 import React from 'react'
 
 import { useInView } from 'react-intersection-observer'
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import { m, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { Card } from '@/components/ui/card'
 
 interface CounterProps {
@@ -35,7 +35,7 @@ function Counter({ value, label, prefix = '', suffix = '' }: CounterProps) {
       <div className="text-center">
         <div className="text-3xl font-bold">
           {prefix}
-          <motion.span>{rounded}</motion.span>
+          <m.span>{rounded}</m.span>
           {suffix}
         </div>
         <div className="text-muted-foreground mt-2 text-sm">{label}</div>

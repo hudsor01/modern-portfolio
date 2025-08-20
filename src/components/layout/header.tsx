@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { Moon, Sun, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 
 const routes = [
   { name: 'Home', path: '/' },
@@ -108,7 +108,7 @@ export function Header() {
       {/* Mobile menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -120,7 +120,7 @@ export function Header() {
           >
             <nav className="flex flex-col items-center space-y-6 mt-8" aria-label="Mobile Navigation">
               {routes.map((route, index) => (
-                <motion.div
+                <m.div
                   key={route.path}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -136,10 +136,10 @@ export function Header() {
                   >
                     {route.name}
                   </Link>
-                </motion.div>
+                </m.div>
               ))}
             </nav>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </header>

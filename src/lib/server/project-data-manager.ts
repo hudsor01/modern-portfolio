@@ -100,14 +100,14 @@ const MASTER_PROJECT_DATA: Project[] = [
     slug: 'revenue-operations-center',
     title: 'Revenue Operations Command Center',
     description:
-      'Comprehensive executive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs. Real-time insights with 96.8% forecast accuracy and 89.7% operational efficiency across sales, marketing, and partner channels.',
+      'Comprehensive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs. Real-time insights with 96.8% forecast accuracy and 89.7% operational efficiency across sales, marketing, and partner channels.',
     image: '/images/projects/revenue-operations.jpg',
     link: 'https://demo.revopscommand.example.com',
     github: 'https://github.com/hudsonr01/revenue-operations-center',
     category: 'Revenue Operations',
     tags: [
       'Revenue Operations',
-      'Executive Dashboard',
+      'Operations Dashboard',
       'Pipeline Analytics',
       'Revenue Forecasting',
       'Sales Operations',
@@ -262,7 +262,7 @@ const MASTER_PROJECT_DATA: Project[] = [
     slug: 'revenue-kpi',
     title: 'Revenue KPI Dashboard',
     description:
-      'An executive dashboard that provides a comprehensive view of revenue metrics and KPIs, allowing business leaders to monitor performance, identify trends, and make data-driven decisions.',
+      'A comprehensive dashboard that provides a complete view of revenue metrics and KPIs, allowing business leaders to monitor performance, identify trends, and make data-driven decisions.',
     image: '/images/projects/revenue-kpi.jpg',
     link: 'https://demo.revenuekpi.example.com',
     github: 'https://github.com/hudsonr01/revenue-kpi',

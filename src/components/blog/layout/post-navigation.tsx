@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { m as motion } from 'framer-motion'
 import { BlogPostData } from '@/types/shared-api'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { MotionVariant } from '@/types/ui'

@@ -13,24 +13,23 @@ const localStorageMock = (() => {
   return {
     getItem: vi.fn((key: string) => store[key] || null),
     setItem: vi.fn((key: string, value: string) => {
+      const oldValue = store[key] || null
       store[key] = value
-      // Trigger storage event manually for testing
+      // Trigger storage event manually for testing (without storageArea to avoid JSDOM issues)
       window.dispatchEvent(new StorageEvent('storage', {
         key,
         newValue: value,
-        oldValue: store[key] || null,
-        storageArea: localStorage
+        oldValue
       }))
     }),
     removeItem: vi.fn((key: string) => {
-      const oldValue = store[key]
+      const oldValue = store[key] || null
       delete store[key]
       // Trigger storage event
       window.dispatchEvent(new StorageEvent('storage', {
         key,
         newValue: null,
-        oldValue: oldValue || null,
-        storageArea: localStorage
+        oldValue
       }))
     }),
     clear: vi.fn(() => {
@@ -131,8 +130,7 @@ describe('CrossTabSync', () => {
     window.dispatchEvent(new StorageEvent('storage', {
       key: `cross-tab-sync-${formId}`,
       newValue: JSON.stringify(message),
-      oldValue: null,
-      storageArea: localStorage
+      oldValue: null
     }))
 
     expect(callback).toHaveBeenCalledWith({
@@ -165,8 +163,7 @@ describe('CrossTabSync', () => {
     window.dispatchEvent(new StorageEvent('storage', {
       key: `cross-tab-sync-${formId}`,
       newValue: JSON.stringify(message),
-      oldValue: null,
-      storageArea: localStorage
+      oldValue: null
     }))
 
     expect(callback).not.toHaveBeenCalled()
@@ -190,8 +187,7 @@ describe('CrossTabSync', () => {
     window.dispatchEvent(new StorageEvent('storage', {
       key: `cross-tab-sync-${formId}`,
       newValue: JSON.stringify(message),
-      oldValue: null,
-      storageArea: localStorage
+      oldValue: null
     }))
 
     expect(callback).toHaveBeenCalledWith({
@@ -225,8 +221,7 @@ describe('CrossTabSync', () => {
     window.dispatchEvent(new StorageEvent('storage', {
       key: `cross-tab-sync-${formId}`,
       newValue: JSON.stringify(message),
-      oldValue: null,
-      storageArea: localStorage
+      oldValue: null
     }))
 
     expect(callback1).not.toHaveBeenCalled()
@@ -310,6 +305,11 @@ describe('useCrossTabSync', () => {
 
     expect(result.current?.unsubscribe).toBeTypeOf('function')
 
+    // Manually unsubscribe before unmounting to ensure cleanup
+    if (result.current?.unsubscribe) {
+      result.current.unsubscribe()
+    }
+
     // Should cleanup on unmount
     unmount()
 
@@ -325,8 +325,7 @@ describe('useCrossTabSync', () => {
     window.dispatchEvent(new StorageEvent('storage', {
       key: `cross-tab-sync-${formId}`,
       newValue: JSON.stringify(message),
-      oldValue: null,
-      storageArea: localStorage
+      oldValue: null
     }))
 
     expect(onUpdate).not.toHaveBeenCalled()

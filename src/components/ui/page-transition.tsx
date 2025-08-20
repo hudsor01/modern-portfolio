@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import { usePathname } from 'next/navigation'
 import { ReactNode } from 'react'
 
@@ -19,7 +19,7 @@ export default function PageTransition({ children }: PageTransitionProps) {
 
   return (
     <AnimatePresence mode="wait">
-      <motion.main
+      <m.main
         key={pathname}
         initial="hidden"
         animate="enter"
@@ -29,20 +29,20 @@ export default function PageTransition({ children }: PageTransitionProps) {
         className="min-h-screen"
       >
         {children}
-      </motion.main>
+      </m.main>
     </AnimatePresence>
   )
 }
 
 export function SimplePageTransition({ children }: { children: React.ReactNode }) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.3 }}
     >
       {children}
-    </motion.div>
+    </m.div>
   )
 }

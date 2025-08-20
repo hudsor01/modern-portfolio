@@ -12,7 +12,7 @@ import {
 import Link from 'next/link'
 import ChurnLineChart from './ChurnLineChart'
 import RetentionHeatmap from './RetentionHeatmap'
-import { motion } from 'framer-motion'
+import { m as motion } from 'framer-motion'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 
 // Import static churn data

@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { m as motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { BarChart2, Users, Lightbulb } from 'lucide-react'
 

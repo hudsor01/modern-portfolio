@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { m as motion } from 'framer-motion'
 import { ArrowLeft, Calendar, Tag, ExternalLink, TrendingUp, Users, Settings, BarChart } from 'lucide-react'
 import { SiGithub } from 'react-icons/si'
 import Link from 'next/link'

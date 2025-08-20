@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { ReactNode } from 'react'
 
@@ -54,7 +54,7 @@ export function AnimateOnScroll({
   const selectedAnimation = animations[animation]
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       initial="hidden"
       animate={inView ? 'visible' : 'hidden'}
@@ -63,6 +63,6 @@ export function AnimateOnScroll({
       className={className}
     >
       {children}
-    </motion.div>
+    </m.div>
   )
 }

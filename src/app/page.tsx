@@ -6,24 +6,24 @@ import HomePageContent from '@/components/layout/home-page-content' // Corrected
 
 // Define metadata for SEO
 export const metadata: Metadata = {
-  title: 'Richard Hudson | Revenue Operations Consultant & Business Growth Expert',
+  title: 'Richard Hudson | Revenue Operations Professional | Dallas-Fort Worth',
   description:
-    'Richard Hudson: Revenue Operations Consultant and Partnership Program Developer in Dallas-Fort Worth. SalesLoft Admin certified (Level 1 & 2) & HubSpot RevOps certified. Expert in sales automation, CRM optimization, and production system implementation. $4.8M+ revenue generated across 11+ projects including first-ever partnership program implementation.',
+    'Richard Hudson: Revenue Operations Professional in Dallas-Fort Worth. Experienced RevOps specialist with $4.8M+ revenue impact and 432% growth delivered. Salesloft Certified Administrator & HubSpot RevOps certified. Expert in sales automation, CRM optimization, and system implementation across 10+ successful projects.',
   keywords: [
     'Richard Hudson',
-    'revenue operations consultant Dallas',
+    'revenue operations professional Dallas',
     'partnership program implementation',
-    'SalesLoft Admin Level 1 certified',
-    'SalesLoft Admin Level 2 certified',
+    'Salesloft Certified Administrator',
+    'Salesloft Administrator Certification',
     'HubSpot Revenue Operations certified',
-    'RevOps expert Dallas Fort Worth',
+    'revenue operations Dallas Fort Worth',
     'production system implementation',
     'CRM integration specialist',
     'sales automation expert',
-    'business intelligence consulting',
+    'revenue operations leadership',
     'partner onboarding automation',
     'commission tracking systems',
-    'data analytics consulting',
+    'data analytics expertise',
     'process automation expert',
     'revenue forecasting',
     'channel program development',
@@ -32,11 +32,11 @@ export const metadata: Metadata = {
     'enterprise system integration'
   ],
   openGraph: {
-    title: 'Richard Hudson | Revenue Operations Consultant & Business Growth Expert',
+    title: 'Richard Hudson | Revenue Operations Professional | Dallas-Fort Worth',
     description:
-      'Richard Hudson: Revenue Operations Consultant and Partnership Program Developer in Dallas-Fort Worth. SalesLoft Admin certified (Level 1 & 2) & HubSpot RevOps certified. Expert in sales automation, CRM optimization, and production system implementation. $4.8M+ revenue generated across 11+ projects.',
+      'Richard Hudson: Revenue Operations Professional in Dallas-Fort Worth. Experienced RevOps specialist with $4.8M+ revenue impact and 432% growth delivered. Salesloft Certified Administrator & HubSpot RevOps certified. Expert in sales automation and CRM optimization across 10+ successful projects.',
     url: 'https://richardwhudsonjr.com',
-    siteName: 'Richard Hudson - RevOps Consultant',
+    siteName: 'Richard Hudson - Revenue Operations Professional',
     images: [
       {
         url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&h=630&fit=crop&crop=face&q=80',
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Richard Hudson - Revenue Operations Professional',
     description:
-      'Revenue Operations Consultant & Partnership Program Developer. SalesLoft Admin certified (Level 1 & 2) & HubSpot RevOps certified. $4.8M+ revenue generated across 11+ projects.',
+      'Revenue Operations Professional & Strategic Partnership Specialist. Salesloft Certified Administrator & HubSpot RevOps certified. $4.8M+ revenue impact and 432% growth delivered across 10+ successful projects.',
     images: ['https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&h=630&fit=crop&crop=face&q=80'],
   },
 }

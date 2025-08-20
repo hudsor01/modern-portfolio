@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { m as motion, useInView } from 'framer-motion'
 import { ContactModal } from '@/components/ui/contact-modal'
 import { Button } from '@/components/ui/button'
 import { 
@@ -776,7 +776,7 @@ export default function AboutContent({ experienceStats, personalInfo, certificat
                   <div className="flex items-center justify-center gap-4 mb-6">
                     <Award className="w-8 h-8 text-blue-400" />
                     <h3 className="font-bold text-2xl sm:text-3xl md:text-4xl tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-blue-300 via-sky-400 to-indigo-400">
-                      Let's Work Together
+                      Professional Connect
                     </h3>
                   </div>
 

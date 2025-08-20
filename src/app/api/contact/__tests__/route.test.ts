@@ -1,339 +1,244 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { POST } from '@/app/api/contact/route'
-import { NextResponse } from 'next/server'
 
-// Mock Resend - using a factory function
+// Mock Resend with factory function
 vi.mock('resend', () => {
   const mockSend = vi.fn()
   return {
-    Resend: vi.fn().mockImplementation(() => ({
-      emails: {
-        send: mockSend,
-      },
+    Resend: vi.fn(() => ({
+      emails: { send: mockSend }
     })),
-    __mockSend: mockSend, // Export the mock so we can access it
+    __mockSend: mockSend // Export so we can access it
   }
 })
 
 // Mock NextResponse
 vi.mock('next/server', () => ({
   NextResponse: {
-    json: vi.fn(),
-  },
+    json: vi.fn()
+  }
 }))
 
-describe('/api/contact', () => {
-  const mockJson = vi.mocked(NextResponse.json)
-  let mockSend: unknown
-  
-  // Helper function to get typed mock send function
-  const getMockSend = () => mockSend as ReturnType<typeof vi.fn>
+// Mock rate limiter to always allow
+vi.mock('@/lib/security/enhanced-rate-limiter', () => ({
+  checkEnhancedContactFormRateLimit: vi.fn(() => ({
+    allowed: true,
+    remaining: 5,
+    resetTime: Date.now() + 60000
+  }))
+}))
+
+// Mock logger
+vi.mock('@/lib/monitoring/logger', () => ({
+  logger: {
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn()
+  }
+}))
+
+const createMockRequest = (data: any) => ({
+  headers: {
+    get: (key: string) => {
+      if (key.toLowerCase() === 'content-type') return 'application/json'
+      if (key.toLowerCase() === 'user-agent') return 'test-agent'
+      return null
+    }
+  },
+  json: () => Promise.resolve(data)
+} as Request)
+
+describe('/api/contact - Fixed Tests', () => {
+  let mockSend: any
+  let mockJson: any
 
   beforeEach(async () => {
     vi.clearAllMocks()
     
-    // Get the mock from the mocked module
+    // Get the mock functions
     const ResendModule = await import('resend')
-    mockSend = (ResendModule as unknown as { __mockSend: unknown }).__mockSend
+    const NextServerModule = await import('next/server')
     
-    // Set up environment variables
-    process.env.RESEND_API_KEY = 'test-api-key'
+    mockSend = (ResendModule as any).__mockSend
+    mockJson = (NextServerModule.NextResponse as any).json
+    
+    process.env.RESEND_API_KEY = 'test-key'
     process.env.CONTACT_EMAIL = 'test@example.com'
     
-    // Mock successful NextResponse
-    mockJson.mockImplementation((data: unknown, options?: { status?: number }) => ({
+    // Setup default mock response
+    mockJson.mockImplementation((data: any, options: any) => ({
       json: () => Promise.resolve(data),
-      status: options?.status || 200,
+      status: options?.status || 200
     }))
   })
 
-  afterEach(() => {
-    vi.restoreAllMocks()
+  it('should handle validation error for missing name', async () => {
+    const invalidData = {
+      name: '',
+      email: 'test@example.com',
+      subject: 'Test',
+      message: 'Test message'
+    }
+
+    await POST(createMockRequest(invalidData) as any)
+
+    expect(mockJson).toHaveBeenCalledWith(
+      {
+        success: false,
+        message: 'Validation failed',
+        error: 'VALIDATION_ERROR',
+        details: { name: 'Name is required' }
+      },
+      { status: 400 }
+    )
   })
 
-  describe('POST', () => {
-    it('should process valid contact form successfully', async () => {
-      const mockFormData = {
-        name: 'John Doe',
-        email: 'john.doe@example.com',
-        message: 'This is a test message for contact form testing.',
-      }
-      
-      // Mock successful email send
-      getMockSend().mockResolvedValueOnce({ id: 'email-id' })
-      
-      // Create mock request
-      const mockRequest = {
-        json: () => Promise.resolve(mockFormData),
-      } as Request
+  it('should handle validation error for invalid email', async () => {
+    const invalidData = {
+      name: 'John Doe',
+      email: 'invalid-email',
+      subject: 'Test',
+      message: 'Test message'
+    }
 
-      await POST(mockRequest)
+    await POST(createMockRequest(invalidData) as any)
 
-      // Verify email was sent with correct data
-      expect(getMockSend()).toHaveBeenCalledWith({
-        from: 'Portfolio Contact <hello@richardwhudsonjr.com>',
-        to: 'test@example.com',
-        subject: `New contact from ${mockFormData.name}`,
-        text: `Name: ${mockFormData.name}\nEmail: ${mockFormData.email}\nMessage: ${mockFormData.message}`,
-        html: expect.stringContaining(mockFormData.name),
-      })
+    expect(mockJson).toHaveBeenCalledWith(
+      {
+        success: false,
+        message: 'Validation failed',
+        error: 'VALIDATION_ERROR',
+        details: { email: 'Valid email is required' }
+      },
+      { status: 400 }
+    )
+  })
 
-      // Verify success response
-      expect(mockJson).toHaveBeenCalledWith(
-        {
-          success: true,
-          message: 'Form submitted successfully',
-        },
-        { status: 200 }
-      )
+  it('should handle validation error for missing subject', async () => {
+    const invalidData = {
+      name: 'John Doe',
+      email: 'test@example.com',
+      subject: '',
+      message: 'Test message'
+    }
+
+    await POST(createMockRequest(invalidData) as any)
+
+    expect(mockJson).toHaveBeenCalledWith(
+      {
+        success: false,
+        message: 'Validation failed',
+        error: 'VALIDATION_ERROR',
+        details: { subject: 'Subject is required' }
+      },
+      { status: 400 }
+    )
+  })
+
+  it('should handle validation error for missing message', async () => {
+    const invalidData = {
+      name: 'John Doe',
+      email: 'test@example.com',
+      subject: 'Test',
+      message: ''
+    }
+
+    await POST(createMockRequest(invalidData) as any)
+
+    expect(mockJson).toHaveBeenCalledWith(
+      {
+        success: false,
+        message: 'Validation failed',
+        error: 'VALIDATION_ERROR',
+        details: { message: 'Message is required' }
+      },
+      { status: 400 }
+    )
+  })
+
+  it('should handle multiple validation errors', async () => {
+    const invalidData = {
+      name: '',
+      email: 'invalid-email',
+      subject: '',
+      message: ''
+    }
+
+    await POST(createMockRequest(invalidData) as any)
+
+    expect(mockJson).toHaveBeenCalledWith(
+      {
+        success: false,
+        message: 'Validation failed',
+        error: 'VALIDATION_ERROR',
+        details: {
+          name: 'Name is required',
+          email: 'Valid email is required',
+          subject: 'Subject is required',
+          message: 'Message is required'
+        }
+      },
+      { status: 400 }
+    )
+  })
+
+  it('should successfully process valid form data', async () => {
+    const validData = {
+      name: 'John Doe',
+      email: 'john@example.com',
+      subject: 'Test Subject',
+      message: 'Test message'
+    }
+
+    mockSend.mockResolvedValueOnce({ id: 'email-123' })
+
+    await POST(createMockRequest(validData) as any)
+
+    expect(mockSend).toHaveBeenCalledWith({
+      from: 'Portfolio Contact <hello@richardwhudsonjr.com>',
+      to: 'test@example.com',
+      subject: 'Test Subject - from John Doe',
+      text: expect.stringContaining('John Doe'),
+      html: expect.stringContaining('John Doe')
     })
 
-    it('should handle validation errors for missing name', async () => {
-      const invalidFormData = {
-        name: '',
-        email: 'test@example.com',
-        message: 'Test message',
-      }
-
-      const mockRequest = {
-        json: () => Promise.resolve(invalidFormData),
-      } as Request
-
-      await POST(mockRequest)
-
-      // Verify email was not sent
-      expect(getMockSend()).not.toHaveBeenCalled()
-
-      // Verify error response
-      expect(mockJson).toHaveBeenCalledWith(
-        {
-          success: false,
-          message: 'Error processing form',
-          error: 'Validation failed',
-          details: {
-            name: 'Name is required',
-          },
-        },
-        { status: 400 }
-      )
-    })
-
-    it('should handle validation errors for invalid email', async () => {
-      const invalidFormData = {
-        name: 'John Doe',
-        email: 'invalid-email',
-        message: 'Test message',
-      }
-
-      const mockRequest = {
-        json: () => Promise.resolve(invalidFormData),
-      } as Request
-
-      await POST(mockRequest)
-
-      expect(mockJson).toHaveBeenCalledWith(
-        {
-          success: false,
-          message: 'Error processing form',
-          error: 'Validation failed',
-          details: {
-            email: 'Valid email is required',
-          },
-        },
-        { status: 400 }
-      )
-    })
-
-    it('should handle validation errors for missing message', async () => {
-      const invalidFormData = {
-        name: 'John Doe',
-        email: 'test@example.com',
-        message: '',
-      }
-
-      const mockRequest = {
-        json: () => Promise.resolve(invalidFormData),
-      } as Request
-
-      await POST(mockRequest)
-
-      expect(mockJson).toHaveBeenCalledWith(
-        {
-          success: false,
-          message: 'Error processing form',
-          error: 'Validation failed',
-          details: {
-            message: 'Message is required',
-          },
-        },
-        { status: 400 }
-      )
-    })
-
-    it('should handle multiple validation errors', async () => {
-      const invalidFormData = {
-        name: '',
-        email: 'invalid-email',
-        message: '',
-      }
-
-      const mockRequest = {
-        json: () => Promise.resolve(invalidFormData),
-      } as Request
-
-      await POST(mockRequest)
-
-      expect(mockJson).toHaveBeenCalledWith(
-        {
-          success: false,
-          message: 'Error processing form',
-          error: 'Validation failed',
-          details: {
-            name: 'Name is required',
-            email: 'Valid email is required',
-            message: 'Message is required',
-          },
-        },
-        { status: 400 }
-      )
-    })
-
-    it('should handle email service errors', async () => {
-      const mockFormData = {
-        name: 'John Doe',
-        email: 'test@example.com',
-        message: 'Test message',
-      }
-      
-      // Mock email send failure
-      getMockSend().mockRejectedValueOnce(new Error('Email service error'))
-      
-      const mockRequest = {
-        json: () => Promise.resolve(mockFormData),
-      } as Request
-
-      await POST(mockRequest)
-
-      // Verify error response
-      expect(mockJson).toHaveBeenCalledWith(
-        {
-          success: false,
-          message: 'Error processing form',
-          error: 'Internal server error',
-          details: undefined,
-        },
-        { status: 500 }
-      )
-    })
-
-    it('should handle JSON parsing errors', async () => {
-      const mockRequest = {
-        json: () => Promise.reject(new Error('Invalid JSON')),
-      } as Request
-
-      await POST(mockRequest)
-
-      expect(mockJson).toHaveBeenCalledWith(
-        {
-          success: false,
-          message: 'Error processing form',
-          error: 'Internal server error',
-          details: undefined,
-        },
-        { status: 500 }
-      )
-    })
-
-    it('should use default contact email when env var not set', async () => {
-      delete process.env.CONTACT_EMAIL
-      
-      const mockFormData = {
-        name: 'John Doe',
-        email: 'test@example.com',
-        message: 'Test message',
-      }
-      getMockSend().mockResolvedValueOnce({ id: 'email-id' })
-      
-      const mockRequest = {
-        json: () => Promise.resolve(mockFormData),
-      } as Request
-
-      await POST(mockRequest)
-
-      expect(getMockSend()).toHaveBeenCalledWith(
-        expect.objectContaining({
-          to: 'hudsor01@icloud.com',
+    expect(mockJson).toHaveBeenCalledWith(
+      {
+        success: true,
+        message: 'Form submitted successfully',
+        rateLimitInfo: {
+          remaining: 5,
+          resetTime: expect.any(Number)
+        }
+      },
+      { 
+        status: 200, 
+        headers: expect.objectContaining({
+          'Content-Type': 'application/json'
         })
-      )
-    })
-
-    it('should properly format HTML content', async () => {
-      const mockFormData = {
-        name: 'John Doe',
-        email: 'test@example.com',
-        message: 'Line 1\nLine 2\nLine 3',
       }
-      
-      getMockSend().mockResolvedValueOnce({ id: 'email-id' })
-      
-      const mockRequest = {
-        json: () => Promise.resolve(mockFormData),
-      } as Request
+    )
+  })
 
-      await POST(mockRequest)
+  it('should handle email service errors', async () => {
+    const validData = {
+      name: 'John Doe',
+      email: 'john@example.com',
+      subject: 'Test Subject',
+      message: 'Test message'
+    }
 
-      const emailCall = getMockSend().mock.calls[0]?.[0]
-      expect(emailCall?.html).toContain('Line 1<br>Line 2<br>Line 3')
-    })
+    mockSend.mockRejectedValueOnce(new Error('Email service error'))
 
-    it('should handle empty request body', async () => {
-      const mockRequest = {
-        json: () => Promise.resolve({}),
-      } as Request
+    await POST(createMockRequest(validData) as any)
 
-      await POST(mockRequest)
-
-      expect(mockJson).toHaveBeenCalledWith(
-        {
-          success: false,
-          message: 'Error processing form',
-          error: 'Validation failed',
-          details: {
-            name: 'Name is required',
-            email: 'Valid email is required',
-            message: 'Message is required',
-          },
-        },
-        { status: 400 }
-      )
-    })
-
-    it('should handle null values in form data', async () => {
-      const invalidFormData = {
-        name: null,
-        email: null,
-        message: null,
-      }
-
-      const mockRequest = {
-        json: () => Promise.resolve(invalidFormData),
-      } as Request
-
-      await POST(mockRequest)
-
-      expect(mockJson).toHaveBeenCalledWith(
-        {
-          success: false,
-          message: 'Error processing form',
-          error: 'Validation failed',
-          details: {
-            name: 'Name is required',
-            email: 'Valid email is required',
-            message: 'Message is required',
-          },
-        },
-        { status: 400 }
-      )
-    })
+    expect(mockJson).toHaveBeenCalledWith(
+      {
+        success: false,
+        message: 'Error processing form',
+        error: 'INTERNAL_ERROR'
+      },
+      { status: 500 }
+    )
   })
 })

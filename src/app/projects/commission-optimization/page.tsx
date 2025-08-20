@@ -13,7 +13,7 @@ import {
   Clock,
 } from 'lucide-react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { m as motion } from 'framer-motion'
 import CommissionStructureChart from './CommissionStructureChart'
 import PerformanceIncentiveChart from './PerformanceIncentiveChart'
 import ROIOptimizationChart from './ROIOptimizationChart'

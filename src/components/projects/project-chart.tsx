@@ -16,7 +16,7 @@ import {
   Pie,
   Cell,
 } from 'recharts'
-import { motion } from 'framer-motion'
+import { m as motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import type { ChartData } from '@/types/chart'
 

@@ -1,7 +1,7 @@
 {
   "title": "Revenue Operations Command Center",
-  "description": "Comprehensive executive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs with real-time insights and predictive analytics.",
-  "keywords": ["Revenue Operations", "Executive Dashboard", "Pipeline Analytics", "Revenue Forecasting", "Sales Operations", "Business Intelligence", "Real-time Analytics"],
+  "description": "Comprehensive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs with real-time insights and predictive analytics.",
+  "keywords": ["Revenue Operations", "Operations Dashboard", "Pipeline Analytics", "Revenue Forecasting", "Sales Operations", "Business Intelligence", "Real-time Analytics"],
   "category": "Revenue Operations",
   "featured": true,
   "metrics": {

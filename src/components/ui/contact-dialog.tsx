@@ -4,7 +4,7 @@ import React from 'react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-sonner-toast'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { Send, Check } from 'lucide-react'
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@radix-ui/react-dialog'
 import { DialogClose } from '@radix-ui/react-dialog'
@@ -65,7 +65,7 @@ export function ContactDialog({ open, onCloseAction }: ContactDialogProps) {
         </DialogDescription>
 
         {isSuccess ? (
-          <motion.div
+          <m.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="flex flex-col items-center justify-center py-8 text-center"
@@ -77,7 +77,7 @@ export function ContactDialog({ open, onCloseAction }: ContactDialogProps) {
             <p className="text-muted-foreground">
               Thank you for reaching out. I&apos;ll respond to your inquiry shortly.
             </p>
-          </motion.div>
+          </m.div>
         ) : (
           <form onSubmit={handleSubmit} className="mt-4 space-y-4">
             <div className="space-y-2">

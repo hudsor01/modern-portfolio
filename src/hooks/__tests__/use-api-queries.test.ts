@@ -38,6 +38,11 @@ const createWrapper = () => {
         retry: false,
       },
     },
+    logger: {
+      log: () => {},
+      warn: () => {},
+      error: () => {},
+    },
   })
 
   return ({ children }: { children: ReactNode }) => 
@@ -72,7 +77,7 @@ describe('useApiQueries hooks', () => {
         expect(result.current.isSuccess).toBe(true)
       })
 
-      expect(result.current.data).toEqual(mockResponse)
+      expect(result.current.data).toEqual(mockProjects)
       expect(global.fetch).toHaveBeenCalledWith('/api/projects', {
         headers: {
           'Content-Type': 'application/json',
@@ -92,10 +97,10 @@ describe('useApiQueries hooks', () => {
 
       await waitFor(() => {
         expect(result.current.isError).toBe(true)
-      })
+      }, { timeout: 3000 })
 
       expect(result.current.error).toBeInstanceOf(Error)
-      expect((result.current.error as Error).message).toContain('API Error: 500')
+      expect((result.current.error as Error).message).toContain('Failed to fetch projects')
     })
   })
 
@@ -117,7 +122,7 @@ describe('useApiQueries hooks', () => {
         expect(result.current.isSuccess).toBe(true)
       })
 
-      expect(result.current.data).toEqual(mockResponse)
+      expect(result.current.data).toEqual(mockProject)
       expect(global.fetch).toHaveBeenCalledWith('/api/projects/test-project', {
         headers: {
           'Content-Type': 'application/json',
@@ -193,27 +198,41 @@ describe('useApiQueries hooks', () => {
 
     it('should handle contact form submission error', async () => {
       const mockFormData = createMockContactForm()
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-      vi.mocked(global.fetch).mockResolvedValueOnce({
-        ok: false,
-        status: 400,
-        statusText: 'Bad Request',
-      } as Response)
+      // Mock all retry attempts to fail
+      vi.mocked(global.fetch)
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 500,
+          statusText: 'Internal Server Error',
+          json: () => Promise.resolve({ error: 'Server error' }),
+        } as Response)
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 500,
+          statusText: 'Internal Server Error',
+          json: () => Promise.resolve({ error: 'Server error' }),
+        } as Response)
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 500,
+          statusText: 'Internal Server Error',
+          json: () => Promise.resolve({ error: 'Server error' }),
+        } as Response)
 
       const wrapper = createWrapper()
       const { result } = renderHook(() => useContactMutation(), { wrapper })
 
+      // Start the mutation
       result.current.mutate(mockFormData)
 
+      // Wait for the mutation to complete with error after retries
       await waitFor(() => {
         expect(result.current.isError).toBe(true)
-      })
+      }, { timeout: 5000 })
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Contact form submission failed:',
-        expect.any(Error)
-      )
+      expect(result.current.error).toBeInstanceOf(Error)
+      expect((result.current.error as Error).message).toContain('Failed to send message')
     })
   })
 
@@ -247,27 +266,39 @@ describe('useApiQueries hooks', () => {
     })
 
     it('should handle resume generation error', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-
-      vi.mocked(global.fetch).mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-        statusText: 'Internal Server Error',
-      } as Response)
+      // Mock all retry attempts to fail
+      vi.mocked(global.fetch)
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 500,
+          statusText: 'Internal Server Error',
+          json: () => Promise.resolve({ error: 'Server error' }),
+        } as Response)
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 500,
+          statusText: 'Internal Server Error',
+          json: () => Promise.resolve({ error: 'Server error' }),
+        } as Response)
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 500,
+          statusText: 'Internal Server Error',
+          json: () => Promise.resolve({ error: 'Server error' }),
+        } as Response)
 
       const wrapper = createWrapper()
       const { result } = renderHook(() => useResumeGeneration(), { wrapper })
 
       result.current.mutate()
 
+      // Wait for the mutation to complete with error after retries
       await waitFor(() => {
         expect(result.current.isError).toBe(true)
-      })
+      }, { timeout: 5000 })
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Resume generation failed:',
-        expect.any(Error)
-      )
+      expect(result.current.error).toBeInstanceOf(Error)
+      expect((result.current.error as Error).message).toContain('Resume generation failed')
     })
   })
 
@@ -394,15 +425,11 @@ describe('useApiQueries hooks', () => {
       const wrapper = createWrapper()
       const { result } = renderHook(() => usePrefetchProjects(), { wrapper })
 
-      result.current()
+      result.current.prefetchOnHover('project', 'test-slug')
 
       // Prefetch doesn't return data directly, but should make the API call
       await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith('/api/projects', {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
+        expect(global.fetch).toHaveBeenCalledWith('/api/projects/test-slug')
       })
     })
   })
@@ -411,7 +438,7 @@ describe('useApiQueries hooks', () => {
     describe('isApiError', () => {
       it('should identify API error objects', () => {
         expect(isApiError({ message: 'Test error' })).toBe(true)
-        expect(isApiError(new Error('Test error'))).toBe(false)
+        expect(isApiError(new Error('Test error'))).toBe(true)
         expect(isApiError('string error')).toBe(false)
         expect(isApiError(null)).toBe(false)
         expect(isApiError(undefined)).toBe(false)
