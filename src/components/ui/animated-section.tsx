@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, Variants } from 'framer-motion'
+import { m, Variants } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
 import { useInView } from 'react-intersection-observer'
@@ -37,7 +37,7 @@ export default function AnimatedSection({
     },
   }
 
-  const Component = as === 'section' ? motion.section : motion.div
+  const Component = as === 'section' ? m.section : m.div
 
   return (
     <Component

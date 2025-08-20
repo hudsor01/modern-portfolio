@@ -83,10 +83,10 @@ export default function ContactPageClient() {
           {/* Header - No animation */}
           <div className="text-center mb-12">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Let's Work Together
+              Get in Touch
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Ready to transform your revenue operations? Let's discuss how we can optimize your sales processes.
+              Connect with me for professional inquiries, collaboration opportunities, or revenue operations discussions.
             </p>
           </div>
 
@@ -144,10 +144,10 @@ export default function ContactPageClient() {
                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
                 >
                   <option value="">Select a topic *</option>
+                  <option value="Job Opportunity">Job Opportunity</option>
+                  <option value="Professional Networking">Professional Networking</option>
                   <option value="Revenue Operations Consulting">Revenue Operations Consulting</option>
-                  <option value="Sales Process Optimization">Sales Process Optimization</option>
-                  <option value="Data Analytics & Reporting">Data Analytics & Reporting</option>
-                  <option value="Process Automation">Process Automation</option>
+                  <option value="Project Collaboration">Project Collaboration</option>
                   <option value="Other">Other</option>
                 </select>
 

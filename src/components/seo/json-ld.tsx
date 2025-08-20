@@ -4,8 +4,8 @@ export function PersonJsonLd() {
     '@type': 'Person',
     name: 'Richard Hudson',
     alternateName: 'Richard W. Hudson Jr.',
-    jobTitle: 'Revenue Operations Consultant',
-    description: 'Expert Revenue Operations Consultant in Dallas-Fort Worth specializing in sales automation, partnership program development, and data-driven growth strategies. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. $4.8M+ revenue generated, 432% transaction growth achieved.',
+    jobTitle: 'Senior Revenue Operations Specialist',
+    description: 'Senior Revenue Operations Specialist in Dallas-Fort Worth with proven expertise in sales automation, partnership program development, and data-driven growth strategies. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. $4.8M+ revenue generated, 432% transaction growth achieved.',
     url: 'https://richardwhudsonjr.com',
     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face&q=80',
     sameAs: [
@@ -117,8 +117,8 @@ export function WebsiteJsonLd() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Richard Hudson - Revenue Operations Consultant',
-    description: 'Portfolio and services of Richard Hudson, Revenue Operations Consultant specializing in business growth strategies.',
+    name: 'Richard Hudson - Senior Revenue Operations Specialist',
+    description: 'Portfolio and experience of Richard Hudson, Senior Revenue Operations Specialist with proven track record in business growth strategies.',
     url: 'https://richardwhudsonjr.com',
     author: {
       '@type': 'Person',
@@ -144,8 +144,8 @@ export function OrganizationJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Hudson Digital Solutions',
-    alternateName: 'Richard Hudson Revenue Operations Consulting',
-    description: 'Leading Revenue Operations consulting firm serving Dallas-Fort Worth metroplex. Specializing in sales automation, partnership program development, and data-driven growth strategies.',
+    alternateName: 'Richard Hudson Senior Revenue Operations Specialist',
+    description: 'Professional portfolio of Richard Hudson, Senior Revenue Operations Specialist serving Dallas-Fort Worth metroplex. Specializing in sales automation, strategic partnership program development, and data-driven growth strategies.',
     url: 'https://richardwhudsonjr.com',
     logo: 'https://richardwhudsonjr.com/images/logo.png',
     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop&crop=face&q=80',
@@ -189,7 +189,7 @@ export function OrganizationJsonLd() {
     founder: {
       '@type': 'Person',
       name: 'Richard Hudson',
-      jobTitle: 'Revenue Operations Consultant',
+      jobTitle: 'Senior Revenue Operations Specialist',
     },
     foundingDate: '2014',
     numberOfEmployees: {
@@ -201,18 +201,18 @@ export function OrganizationJsonLd() {
       'https://github.com/hudsor01',
     ],
     serviceType: [
-      'Revenue Operations Consulting',
-      'Sales Automation',
+      'Revenue Operations Leadership',
+      'Strategic Sales Automation',
       'Partnership Program Development',
       'CRM Implementation',
-      'Business Intelligence',
+      'Strategic Business Intelligence',
       'Data Analytics',
     ],
     award: [
-      '$4.8M+ Revenue Generated for Clients',
+      '$4.8M+ Revenue Impact in Professional Roles',
       '432% Transaction Growth Achieved',
-      'SalesLoft Certified Partner',
-      'HubSpot Certified Agency',
+      'SalesLoft Admin Certified (Level 1 & 2)',
+      'HubSpot Revenue Operations Certified',
     ],
   }
 
@@ -228,12 +228,12 @@ export function ServiceJsonLd() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    name: 'Revenue Operations Consulting',
+    name: 'Revenue Operations Leadership',
     provider: {
       '@type': 'Person',
       name: 'Richard Hudson',
     },
-    description: 'Professional revenue operations consulting services including sales optimization, marketing automation, and business intelligence solutions.',
+    description: 'Senior Revenue Operations Specialist with proven track record in strategic sales optimization, marketing automation, and business intelligence solutions.',
     areaServed: {
       '@type': 'Country',
       name: 'United States',
@@ -375,9 +375,9 @@ export function LocalBusinessJsonLd() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ProfessionalService',
-    name: 'Richard Hudson - Revenue Operations Consulting',
-    alternateName: 'Hudson Digital Solutions',
-    description: 'Expert Revenue Operations consulting services in Dallas-Fort Worth metroplex. Specializing in sales automation, CRM optimization, partnership program development, and data-driven growth strategies. Certified SalesLoft Admin and HubSpot RevOps professional.',
+    name: 'Richard Hudson - Senior Revenue Operations Specialist',
+    alternateName: 'Senior Revenue Operations Professional',
+    description: 'Senior Revenue Operations Specialist in Dallas-Fort Worth metroplex. Specializing in sales automation, CRM optimization, partnership program development, and data-driven growth strategies. Certified SalesLoft Admin and HubSpot RevOps professional.',
     url: 'https://richardwhudsonjr.com',
     telephone: '+1-555-REVOPS',
     email: 'contact@richardwhudsonjr.com',
@@ -494,7 +494,7 @@ export function LocalBusinessJsonLd() {
     founder: {
       '@type': 'Person',
       name: 'Richard Hudson',
-      jobTitle: 'Revenue Operations Consultant',
+      jobTitle: 'Senior Revenue Operations Specialist',
       worksFor: {
         '@type': 'Organization',
         name: 'Hudson Digital Solutions',

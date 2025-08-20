@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest } from 'next/server'
-import { GET } from '@/app/api/blog/route'
+import { GET } from '@/app/api/blog/analytics/route'
 
 // Import proper types from the types directory
 import type { BlogPost, BlogCategory, BlogTag } from '@/types/blog'

@@ -16,7 +16,7 @@ import {
   Clock,
 } from 'lucide-react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { m as motion } from 'framer-motion'
 import RevenueOverviewChart from './RevenueOverviewChart'
 import PipelineHealthChart from './PipelineHealthChart'
 import ForecastAccuracyChart from './ForecastAccuracyChart'
@@ -162,13 +162,13 @@ export default function RevenueOperationsCenter() {
             Revenue Operations Command Center
           </h1>
           <p className="text-xl text-gray-400 max-w-3xl mb-6">
-            Comprehensive executive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs. Real-time insights with 96.8% forecast accuracy and 89.7% operational efficiency across sales, marketing, and partner channels.
+            Comprehensive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs. Real-time insights with 96.8% forecast accuracy and 89.7% operational efficiency across sales, marketing, and partner channels.
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
             <span className="bg-violet-500/20 text-violet-400 px-3 py-1 rounded-full">Forecast Accuracy: 96.8%</span>
             <span className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full">Pipeline Health: 92.4%</span>
             <span className="bg-indigo-500/20 text-indigo-400 px-3 py-1 rounded-full">Revenue Growth: +34.2%</span>
-            <span className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full">Executive Dashboard</span>
+            <span className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full">Operations Dashboard</span>
           </div>
         </motion.div>
 

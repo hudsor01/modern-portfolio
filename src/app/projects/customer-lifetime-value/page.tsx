@@ -11,7 +11,7 @@ import {
   Calendar,
 } from 'lucide-react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { m as motion } from 'framer-motion'
 import CLVPredictionChart from './CLVPredictionChart'
 import CustomerSegmentChart from './CustomerSegmentChart'
 import CLVTrendChart from './CLVTrendChart'

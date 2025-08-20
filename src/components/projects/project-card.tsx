@@ -1,10 +1,12 @@
 'use client'
 
-import React from 'react'
+import React, { useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Project as ProjectType } from '@/types/project'
 import { ArrowRight } from 'lucide-react'
+import { MotionDiv, optimizedVariants } from '@/lib/motion/optimized-motion'
+import { useMotionConfig } from '@/lib/motion/reduced-motion'
 
 // Mock project interface
 interface MockProject {
@@ -14,11 +16,12 @@ interface MockProject {
   longDescription: string
   category: 'revenue-ops' | 'data-analytics' | 'business-intelligence' | 'process-optimization'
   technologies: string[]
-  metrics: {
+  displayMetrics: {
     label: string
     value: string
     icon: React.ElementType
   }[]
+  metrics?: Record<string, string>
   featured: boolean
   year: number
   client: string
@@ -39,10 +42,12 @@ type Project = ProjectType | MockProject
 
 interface ProjectCardProps {
   project: Project
+  priority?: boolean
+  index?: number
 }
 
 function isMockProject(project: Project): project is MockProject {
-  return 'metrics' in project && Array.isArray(project.metrics)
+  return 'displayMetrics' in project && Array.isArray((project as MockProject).displayMetrics)
 }
 
 // Custom call-to-action messages for each project
@@ -73,14 +78,16 @@ const getCustomCTA = (projectId: string): string => {
   }
 }
 
-export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project }) => {
+export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, priority = false, index = 0 }) => {
   const projectImage = isMockProject(project)
     ? '/images/projects/data-visualization.jpg'
     : project.image
 
-  const customCTA = getCustomCTA(project.id)
+  // Memoize expensive calculations
+  const customCTA = useMemo(() => getCustomCTA(project.id), [project.id])
+  const { shouldAnimate, getMotionProps } = useMotionConfig()
 
-  return (
+  const cardContent = (
     <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-8 hover:border-cyan-500/50 transition-all duration-300 hover:-translate-y-2 h-full group">
       {/* Header */}
       <div className="mb-6">
@@ -123,7 +130,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project }) 
             <div className="p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
               <h4 className="text-sm font-bold text-blue-300 mb-3">📊 RESULTS</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {project.metrics.slice(0, 3).map((metric, i) => (
+                {project.displayMetrics.slice(0, 3).map((metric, i) => (
                   <div key={i} className="text-center">
                     <div className="text-cyan-400 mb-1 flex justify-center">
                       <metric.icon className="w-4 h-4" />
@@ -147,7 +154,9 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project }) 
               className="object-cover transition-transform duration-300 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               quality={85}
-              priority={false}
+              priority={priority || index < 2}
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8A0XqoC2QtJQFgx+GktulvNKyWnLWJdZJvVy2PqwEEgT+OFOccNaJJcGqDYB4LCqTU69jQFf/Z"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
           </div>
@@ -165,5 +174,18 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project }) 
         </Link>
       </div>
     </div>
+  )
+
+  // Use optimized motion props to prevent layout shifts
+  const motionProps = getMotionProps(optimizedVariants.card)
+  
+  return (
+    <MotionDiv
+      {...motionProps}
+      whileHover={shouldAnimate ? "hover" : undefined}
+      transition={shouldAnimate ? { delay: index * 0.1 } : undefined}
+    >
+      {cardContent}
+    </MotionDiv>
   )
 })

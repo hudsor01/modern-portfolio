@@ -1,32 +1,33 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest } from 'next/server'
-import { GET } from '@/app/api/blog/route'
+import { GET } from '@/app/api/blog/rss/route'
 import type { RSSFeedData } from '@/types/shared-api'
 
 // Mock Next.js
 vi.mock('next/server', async () => {
   const actual = await vi.importActual('next/server')
   
-  const mockNextResponse = vi.fn((content, options) => ({
-    status: options?.status || 200,
-    headers: options?.headers || {},
-    text: async () => content,
-  }))
-  
   return {
     ...actual,
-    NextResponse: {
-      json: vi.fn((data, options) => ({
-        json: async () => data,
-        status: options?.status || 200,
-        headers: options?.headers || {},
-        ok: (options?.status || 200) < 400,
-      })),
-      // Mock constructor for XML response
-      constructor: mockNextResponse,
-    },
+    NextResponse: vi.fn((content, options) => ({
+      status: options?.status || 200,
+      headers: options?.headers || {},
+      text: async () => content,
+      json: async () => (typeof content === 'string' ? JSON.parse(content) : content),
+      ok: (options?.status || 200) < 400,
+    })),
   }
 })
+
+// Override NextResponse.json to work with the constructor pattern
+const { NextResponse: MockedNextResponse } = await import('next/server')
+MockedNextResponse.json = vi.fn((data, options) => new MockedNextResponse(JSON.stringify(data), {
+  ...options,
+  headers: {
+    'Content-Type': 'application/json',
+    ...options?.headers,
+  },
+}))
 
 const createMockRequest = (url: string, options: RequestInit = {}) => {
   return {

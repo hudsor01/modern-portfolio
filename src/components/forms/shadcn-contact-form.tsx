@@ -36,8 +36,8 @@ interface ShadcnContactFormProps {
 
 export function ShadcnContactForm({
   variant = 'default',
-  title = "Let's Connect",
-  description = "Ready to optimize your revenue operations? Let's discuss how I can help drive your business growth.",
+  title = "Professional Connect",
+  description = "Connect with me for executive opportunities, professional networking, or strategic revenue operations discussions.",
   enableAutoSave = true,
   enableRateLimit = true,
   showOptionalFields = false,

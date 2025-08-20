@@ -2,16 +2,17 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { Button } from '@/components/ui/button'
+import { RichardTypewriterTitle } from '@/components/ui/typewriter-title'
 import { ArrowRight, FileText } from 'lucide-react'
 import { SiGithub, SiLinkedin } from 'react-icons/si'
 
 interface HeroSectionProps {
-  titles: string[]
+  titles?: string[]
 }
 
-export function HeroSection({ titles }: HeroSectionProps) {
+export function HeroSection({}: HeroSectionProps) {
   return (
     <section className="min-h-[85vh] relative overflow-hidden py-20">
       {/* Simple background */}
@@ -19,7 +20,7 @@ export function HeroSection({ titles }: HeroSectionProps) {
 
       <div className="container mx-auto max-w-7xl px-4 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -27,7 +28,9 @@ export function HeroSection({ titles }: HeroSectionProps) {
           >
             <h1 className="text-5xl font-bold">Richard Hudson</h1>
 
-            <p className="text-2xl text-primary">{titles[0]}</p>
+            <div className="text-2xl text-primary min-h-[2.5rem] flex items-center">
+              <RichardTypewriterTitle />
+            </div>
 
             <p className="text-xl text-muted-foreground max-w-lg">
               Driving business growth through data-driven insights and strategic operational
@@ -75,9 +78,9 @@ export function HeroSection({ titles }: HeroSectionProps) {
                 <SiGithub size={24} />
               </a>
             </div>
-          </motion.div>
+          </m.div>
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -94,7 +97,7 @@ export function HeroSection({ titles }: HeroSectionProps) {
                 />
               </div>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </section>

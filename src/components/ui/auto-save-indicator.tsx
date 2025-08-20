@@ -6,7 +6,7 @@
 'use client'
 
 import React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m as motion, AnimatePresence } from 'framer-motion'
 import { Check, Loader2, AlertCircle, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAutoSaveStatus } from '@/hooks/use-form-auto-save'
@@ -31,6 +31,10 @@ interface AutoSaveIndicatorProps {
    * Custom className
    */
   className?: string
+  /**
+   * Test ID for testing
+   */
+  'data-testid'?: string
 }
 
 export function AutoSaveIndicator({
@@ -40,7 +44,8 @@ export function AutoSaveIndicator({
   error,
   variant = 'minimal',
   position = 'inline',
-  className
+  className,
+  'data-testid': testId
 }: AutoSaveIndicatorProps) {
   // Use global status if no specific state provided
   const globalStatus = useAutoSaveStatus()
@@ -139,6 +144,7 @@ export function AutoSaveIndicator({
         variant === 'detailed' && 'px-3 py-1.5 rounded-full border backdrop-blur',
         variant === 'badge' && 'px-2 py-0.5 rounded-md border backdrop-blur'
       )}
+      data-testid={testId}
     >
       <motion.div
         animate={state === 'saving' ? { rotate: 360 } : { rotate: 0 }}
@@ -166,7 +172,13 @@ export function AutoSaveIndicator({
  * Global Auto-Save Status Badge
  * Shows overall auto-save status for all forms
  */
-export function GlobalAutoSaveStatus({ className }: { className?: string }) {
+export function GlobalAutoSaveStatus({ 
+  className, 
+  'data-testid': testId 
+}: { 
+  className?: string
+  'data-testid'?: string 
+}) {
   const status = useAutoSaveStatus()
   
   if (status.count === 0) return null
@@ -176,6 +188,7 @@ export function GlobalAutoSaveStatus({ className }: { className?: string }) {
       variant="badge"
       position="floating"
       className={className}
+      data-testid={testId}
     />
   )
 }
@@ -191,6 +204,7 @@ interface FormAutoSaveStatusProps {
   error?: string | null
   variant?: 'minimal' | 'detailed' | 'badge'
   className?: string
+  'data-testid'?: string
 }
 
 export function FormAutoSaveStatus({
@@ -199,7 +213,8 @@ export function FormAutoSaveStatus({
   lastSaved,
   error,
   variant = 'detailed',
-  className
+  className,
+  'data-testid': testId
 }: FormAutoSaveStatusProps) {
   return (
     <AutoSaveIndicator
@@ -210,6 +225,7 @@ export function FormAutoSaveStatus({
       variant={variant}
       position="inline"
       className={className}
+      data-testid={testId}
     />
   )
 }

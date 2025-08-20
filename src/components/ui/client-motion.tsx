@@ -1,9 +1,10 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 
-// Re-export motion for client components
-export default motion
+// Re-export m for client components (LazyMotion compatible)
+export default m
+export const motion = m // For backwards compatibility
 
 // Export animation utility variants
 export const fadeIn = {
@@ -15,6 +16,11 @@ export const fadeIn = {
       duration: 0.6,
     },
   },
+}
+
+export const fadeInUp = {
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
 }
 
 export const staggerContainer = {

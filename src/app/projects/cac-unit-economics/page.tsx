@@ -10,7 +10,7 @@ import {
   Calculator,
 } from 'lucide-react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { m as motion } from 'framer-motion'
 import CACBreakdownChart from './CACBreakdownChart'
 import UnitEconomicsChart from './UnitEconomicsChart'
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
 interface BackgroundEffectsProps {
@@ -45,7 +45,7 @@ export default function BackgroundEffects({
             {mounted && (
               <>
                 {animatedElements.map((element, i) => (
-                  <motion.div
+                  <m.div
                     key={i}
                     className="bg-primary/10 absolute rounded-full blur-3xl"
                     style={{

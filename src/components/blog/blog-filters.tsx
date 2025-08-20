@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m as motion, AnimatePresence } from 'framer-motion'
 import { BlogFilters as BlogFiltersType, BlogCategory, BlogTag, BlogAuthor } from '@/types/blog'
 
 // Filter components

@@ -1,12 +1,23 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest } from 'next/server'
-import { GET, POST } from '@/app/api/blog/route'
+import { GET, POST } from '@/app/api/blog/categories/route'
 
 // Import proper types from the types directory
 import type { BlogCategory } from '@/types/blog'
 
 // Use the actual category type
 type CategoryData = BlogCategory
+
+// Mock the database
+vi.mock('@/lib/db', () => ({
+  db: {
+    category: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      create: vi.fn(),
+    }
+  }
+}))
 
 // Mock Next.js
 vi.mock('next/server', async () => {
@@ -33,8 +44,66 @@ const createMockRequest = (url: string, options: RequestInit = {}) => {
 }
 
 describe('/api/blog/categories', () => {
-  beforeEach(() => {
+  let mockDb: any
+
+  beforeEach(async () => {
     vi.clearAllMocks()
+    
+    // Get the mocked database
+    const dbModule = await import('@/lib/db')
+    mockDb = dbModule.db
+    
+    // Setup default mock data
+    const mockCategories = [
+      {
+        id: '1',
+        name: 'Revenue Operations',
+        slug: 'revenue-operations',
+        description: 'Revenue operations topics',
+        color: '#3B82F6',
+        icon: '📊',
+        postCount: 5,
+        totalViews: 100,
+        createdAt: new Date('2023-01-01'),
+      },
+      {
+        id: '2', 
+        name: 'Data Visualization',
+        slug: 'data-visualization',
+        description: 'Data visualization topics',
+        color: '#10B981',
+        icon: '📈',
+        postCount: 3,
+        totalViews: 75,
+        createdAt: new Date('2023-01-02'),
+      },
+      {
+        id: '3',
+        name: 'Sales Analytics', 
+        slug: 'sales-analytics',
+        description: 'Sales analytics topics',
+        color: '#F59E0B',
+        icon: '💰',
+        postCount: 4,
+        totalViews: 90,
+        createdAt: new Date('2023-01-03'),
+      },
+      {
+        id: '4',
+        name: 'Process Automation',
+        slug: 'process-automation', 
+        description: 'Process automation topics',
+        color: '#8B5CF6',
+        icon: '⚙️',
+        postCount: 2,
+        totalViews: 50,
+        createdAt: new Date('2023-01-04'),
+      }
+    ]
+    
+    // Set default mock implementations
+    mockDb.category.findMany.mockResolvedValue(mockCategories)
+    mockDb.category.findUnique.mockResolvedValue(null) // No conflicts by default
   })
 
   describe('GET', () => {
@@ -126,6 +195,21 @@ describe('/api/blog/categories', () => {
         icon: '🧪',
       }
 
+      // Mock the database create response
+      const createdCategory = {
+        id: 'new-test-id',
+        name: 'Test Category',
+        slug: 'test-category',
+        description: 'A test category for testing',
+        color: '#FF5733',
+        icon: '🧪',
+        postCount: 0,
+        totalViews: 0,
+        createdAt: new Date('2023-01-05'),
+      }
+      
+      mockDb.category.create.mockResolvedValue(createdCategory)
+
       const request = createMockRequest('http://localhost:3000/api/blog/categories', {
         method: 'POST',
         body: JSON.stringify(categoryData),
@@ -156,6 +240,21 @@ describe('/api/blog/categories', () => {
         description: 'Test category',
       }
 
+      // Mock the database create response
+      const createdCategory = {
+        id: 'advanced-test-id',
+        name: 'Advanced Analytics & Machine Learning!',
+        slug: 'advanced-analytics-machine-learning',
+        description: 'Test category',
+        color: '#6B7280',
+        icon: null,
+        postCount: 0,
+        totalViews: 0,
+        createdAt: new Date('2023-01-06'),
+      }
+      
+      mockDb.category.create.mockResolvedValue(createdCategory)
+
       const request = createMockRequest('http://localhost:3000/api/blog/categories', {
         method: 'POST',
         body: JSON.stringify(categoryData),
@@ -172,6 +271,21 @@ describe('/api/blog/categories', () => {
         name: 'Default Color Category',
         description: 'Category without color',
       }
+
+      // Mock the database create response with default color
+      const createdCategory = {
+        id: 'default-color-id',
+        name: 'Default Color Category',
+        slug: 'default-color-category',
+        description: 'Category without color',
+        color: '#6B7280', // Default color
+        icon: null,
+        postCount: 0,
+        totalViews: 0,
+        createdAt: new Date('2023-01-07'),
+      }
+      
+      mockDb.category.create.mockResolvedValue(createdCategory)
 
       const request = createMockRequest('http://localhost:3000/api/blog/categories', {
         method: 'POST',
@@ -190,6 +304,21 @@ describe('/api/blog/categories', () => {
         description: 'Fresh category',
       }
 
+      // Mock the database create response
+      const createdCategory = {
+        id: 'counters-test-id',
+        name: 'New Category',
+        slug: 'new-category',
+        description: 'Fresh category',
+        color: '#6B7280',
+        icon: null,
+        postCount: 0,
+        totalViews: 0,
+        createdAt: new Date('2023-01-08'),
+      }
+      
+      mockDb.category.create.mockResolvedValue(createdCategory)
+
       const request = createMockRequest('http://localhost:3000/api/blog/categories', {
         method: 'POST',
         body: JSON.stringify(categoryData),
@@ -207,6 +336,21 @@ describe('/api/blog/categories', () => {
         name: 'Cache Test Category',
         description: 'Testing cache headers',
       }
+
+      // Mock the database create response
+      const createdCategory = {
+        id: 'cache-test-id',
+        name: 'Cache Test Category',
+        slug: 'cache-test-category',
+        description: 'Testing cache headers',
+        color: '#6B7280',
+        icon: null,
+        postCount: 0,
+        totalViews: 0,
+        createdAt: new Date('2023-01-12'),
+      }
+      
+      mockDb.category.create.mockResolvedValue(createdCategory)
 
       const request = createMockRequest('http://localhost:3000/api/blog/categories', {
         method: 'POST',
@@ -244,6 +388,20 @@ describe('/api/blog/categories', () => {
         description: 'First category',
       }
 
+      const createdCategory1 = {
+        id: 'unique-category-id',
+        name: 'Unique Category',
+        slug: 'unique-category',
+        description: 'First category',
+        color: '#6B7280',
+        icon: null,
+        postCount: 0,
+        totalViews: 0,
+        createdAt: new Date('2023-01-13'),
+      }
+
+      mockDb.category.create.mockResolvedValueOnce(createdCategory1)
+
       const request1 = createMockRequest('http://localhost:3000/api/blog/categories', {
         method: 'POST',
         body: JSON.stringify(categoryData1),
@@ -256,6 +414,9 @@ describe('/api/blog/categories', () => {
         name: 'Unique Category',
         description: 'Duplicate category',
       }
+
+      // Mock findUnique to return the existing category for the duplicate check
+      mockDb.category.findUnique.mockResolvedValue(createdCategory1)
 
       const request2 = createMockRequest('http://localhost:3000/api/blog/categories', {
         method: 'POST',
@@ -280,6 +441,35 @@ describe('/api/blog/categories', () => {
         name: 'Data Analytics',
         description: 'Data analytics topics',
       }
+
+      // Mock first category creation
+      const createdCategory1 = {
+        id: 'data-science-id',
+        name: 'Data Science',
+        slug: 'data-science',
+        description: 'Data science topics',
+        color: '#6B7280',
+        icon: null,
+        postCount: 0,
+        totalViews: 0,
+        createdAt: new Date('2023-01-09'),
+      }
+      
+      // Mock second category creation
+      const createdCategory2 = {
+        id: 'data-analytics-id',
+        name: 'Data Analytics',
+        slug: 'data-analytics',
+        description: 'Data analytics topics',
+        color: '#6B7280',
+        icon: null,
+        postCount: 0,
+        totalViews: 0,
+        createdAt: new Date('2023-01-10'),
+      }
+
+      mockDb.category.create.mockResolvedValueOnce(createdCategory1)
+      mockDb.category.create.mockResolvedValueOnce(createdCategory2)
 
       const request1 = createMockRequest('http://localhost:3000/api/blog/categories', {
         method: 'POST',
@@ -310,6 +500,21 @@ describe('/api/blog/categories', () => {
         description: '',
         icon: '',
       }
+
+      // Mock the database create response
+      const createdCategory = {
+        id: 'minimal-category-id',
+        name: 'Minimal Category',
+        slug: 'minimal-category',
+        description: '',
+        color: '#6B7280',
+        icon: '',
+        postCount: 0,
+        totalViews: 0,
+        createdAt: new Date('2023-01-11'),
+      }
+      
+      mockDb.category.create.mockResolvedValue(createdCategory)
 
       const request = createMockRequest('http://localhost:3000/api/blog/categories', {
         method: 'POST',

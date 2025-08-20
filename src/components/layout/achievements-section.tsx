@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { motion, useInView } from 'framer-motion'
+import { m as motion, useInView } from 'framer-motion'
 import { BarChart2, Users2, Lightbulb } from 'lucide-react'
 import { typographyClasses } from '@/lib/typography'
 

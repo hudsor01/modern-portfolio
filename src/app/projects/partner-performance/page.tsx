@@ -10,7 +10,7 @@ import {
   DollarSign,
 } from 'lucide-react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { m as motion } from 'framer-motion'
 import PartnerTierChart from './PartnerTierChart'
 import RevenueContributionChart from './RevenueContributionChart'
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { BlogPostData } from '@/types/shared-api'
 import { BlogComment } from '@/types/blog'
 import { BlogContent } from '@/components/blog/blog-content'
@@ -67,7 +67,7 @@ export function BlogPostLayout({
   }
 
   return (
-    <motion.article
+    <m.article
       className={cn('min-h-screen', className)}
       initial="hidden"
       animate="visible"
@@ -81,7 +81,7 @@ export function BlogPostLayout({
         <PostFeaturedImage post={post} itemVariants={itemVariants} />
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <motion.main 
+          <m.main 
             className="lg:col-span-3"
             variants={itemVariants}
           >
@@ -98,18 +98,18 @@ export function BlogPostLayout({
             <PostAuthorBio post={post} itemVariants={itemVariants} show={showAuthorBio} />
             <PostNavigation post={post} itemVariants={itemVariants} />
             <PostComments comments={comments} itemVariants={itemVariants} show={showComments} />
-          </motion.main>
+          </m.main>
 
-          <motion.aside 
+          <m.aside 
             className="lg:col-span-1"
             variants={itemVariants}
           >
             <PostTableOfContents content={post.content} />
-          </motion.aside>
+          </m.aside>
         </div>
 
         <PostRelatedPosts post={post} itemVariants={itemVariants} show={showRelatedPosts} />
       </div>
-    </motion.article>
+    </m.article>
   )
 }

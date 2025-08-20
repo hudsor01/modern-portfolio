@@ -50,3 +50,61 @@ export const LeadSourcePieChart = dynamic(() => import('@/app/projects/lead-attr
   ssr: false,
   loading: () => <ChartLoader message="Loading lead attribution..." />
 })
+
+// Customer Lifetime Value Charts
+export const CLVPredictionChart = dynamic(() => import('@/app/projects/customer-lifetime-value/CLVPredictionChart'), {
+  ssr: false,
+  loading: () => <ChartLoader message="Loading CLV predictions..." />
+})
+
+export const CustomerSegmentChart = dynamic(() => import('@/app/projects/customer-lifetime-value/CustomerSegmentChart'), {
+  ssr: false,
+  loading: () => <ChartLoader message="Loading customer segments..." />
+})
+
+export const CLVTrendChart = dynamic(() => import('@/app/projects/customer-lifetime-value/CLVTrendChart'), {
+  ssr: false,
+  loading: () => <ChartLoader message="Loading CLV trends..." />
+})
+
+// Commission Optimization Charts
+export const CommissionStructureChart = dynamic(() => import('@/app/projects/commission-optimization/CommissionStructureChart'), {
+  ssr: false,
+  loading: () => <ChartLoader message="Loading commission structure..." />
+})
+
+export const PerformanceIncentiveChart = dynamic(() => import('@/app/projects/commission-optimization/PerformanceIncentiveChart'), {
+  ssr: false,
+  loading: () => <ChartLoader message="Loading incentive analysis..." />
+})
+
+export const ROIOptimizationChart = dynamic(() => import('@/app/projects/commission-optimization/ROIOptimizationChart'), {
+  ssr: false,
+  loading: () => <ChartLoader message="Loading ROI optimization..." />
+})
+
+export const CommissionTierChart = dynamic(() => import('@/app/projects/commission-optimization/CommissionTierChart'), {
+  ssr: false,
+  loading: () => <ChartLoader message="Loading commission tiers..." />
+})
+
+// Multi-Channel Attribution Charts
+export const AttributionModelChart = dynamic(() => import('@/app/projects/multi-channel-attribution/AttributionModelChart'), {
+  ssr: false,
+  loading: () => <ChartLoader message="Loading attribution models..." />
+})
+
+export const CustomerJourneyChart = dynamic(() => import('@/app/projects/multi-channel-attribution/CustomerJourneyChart'), {
+  ssr: false,
+  loading: () => <ChartLoader message="Loading customer journey..." />
+})
+
+export const ChannelROIChart = dynamic(() => import('@/app/projects/multi-channel-attribution/ChannelROIChart'), {
+  ssr: false,
+  loading: () => <ChartLoader message="Loading channel ROI..." />
+})
+
+export const TouchpointAnalysisChart = dynamic(() => import('@/app/projects/multi-channel-attribution/TouchpointAnalysisChart'), {
+  ssr: false,
+  loading: () => <ChartLoader message="Loading touchpoint analysis..." />
+})

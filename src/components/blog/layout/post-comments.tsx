@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { m as motion } from 'framer-motion'
 import { BlogComment } from '@/types/blog'
 import { MessageCircle } from 'lucide-react'
 import { MotionVariant } from '@/types/ui'

@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { m as motion } from 'framer-motion'
 import { BlogPostData } from '@/types/shared-api'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { MotionVariant } from '@/types/ui'

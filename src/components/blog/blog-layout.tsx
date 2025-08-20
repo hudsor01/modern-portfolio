@@ -1,7 +1,7 @@
 'use client'
 
 import React, { ReactNode, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { m, AnimatePresence } from 'framer-motion'
 import { Menu, X, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -128,7 +128,7 @@ export function BlogLayout({
         {/* Mobile Menu Overlay */}
         <AnimatePresence>
           {isMobileMenuOpen && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
@@ -142,13 +142,13 @@ export function BlogLayout({
                   onNavigate={() => setIsMobileMenuOpen(false)}
                 />
               </div>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </header>
 
       {/* Main Content */}
-      <motion.main
+      <m.main
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -156,9 +156,9 @@ export function BlogLayout({
       >
         {/* Breadcrumbs */}
         {showBreadcrumbs && currentPath && (
-          <motion.div variants={itemVariants} className="mb-6">
+          <m.div variants={itemVariants} className="mb-6">
             <BlogBreadcrumbs path={currentPath} />
-          </motion.div>
+          </m.div>
         )}
 
         <div className={cn(
@@ -166,7 +166,7 @@ export function BlogLayout({
           showSidebar ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1'
         )}>
           {/* Main Content Area */}
-          <motion.div
+          <m.div
             variants={itemVariants}
             className={cn(showSidebar ? 'lg:col-span-2' : 'col-span-1')}
           >
@@ -175,11 +175,11 @@ export function BlogLayout({
                 {children}
               </div>
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Sidebar */}
           {showSidebar && (
-            <motion.aside variants={itemVariants} className="space-y-6">
+            <m.aside variants={itemVariants} className="space-y-6">
               {sidebarContent || (
                 <BlogSidebar
                   categories={categories}
@@ -187,10 +187,10 @@ export function BlogLayout({
                   authors={authors}
                 />
               )}
-            </motion.aside>
+            </m.aside>
           )}
         </div>
-      </motion.main>
+      </m.main>
 
       {/* Footer */}
       <footer className="bg-white/5 backdrop-blur border-t border-white/10 mt-16">
