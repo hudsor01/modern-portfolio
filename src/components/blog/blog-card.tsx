@@ -181,25 +181,27 @@ export function BlogCard({
         )}
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {post.tags.slice(0, 3).map((tag) => (
-            <Badge
-              key={tag.id}
-              variant="outline"
-              className="text-xs px-2 py-1"
-            >
-              {tag.name}
-            </Badge>
-          ))}
-          {post.tags.length > 3 && (
-            <Badge
-              variant="outline"
-              className="text-xs px-2 py-1"
-            >
-              +{post.tags.length - 3} more
-            </Badge>
-          )}
-        </div>
+        {post.tags && post.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {post.tags.slice(0, 3).map((tag) => (
+              <Badge
+                key={tag.id}
+                variant="outline"
+                className="text-xs px-2 py-1"
+              >
+                {tag.name}
+              </Badge>
+            ))}
+            {post.tags.length > 3 && (
+              <Badge
+                variant="outline"
+                className="text-xs px-2 py-1"
+              >
+                +{post.tags.length - 3} more
+              </Badge>
+            )}
+          </div>
+        )}
 
         {/* Reading Time */}
         <div className="flex items-center gap-1 text-sm text-gray-500">

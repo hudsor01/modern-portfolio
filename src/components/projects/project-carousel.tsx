@@ -54,7 +54,7 @@ export function ProjectCarousel({ title, subtitle, projects }: ProjectCarouselPr
           <div key={project.id} className="h-full rounded-lg border bg-card p-3 shadow-sm">
             <div className="group relative aspect-video overflow-hidden rounded-lg">
               <Image
-                src={project.image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&crop=center&q=80'}
+                src={project.image || '/images/projects/analytics-dashboard.jpg'}
                 alt={project.title}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"

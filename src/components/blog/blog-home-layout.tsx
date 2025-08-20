@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { m as motion } from 'framer-motion'
 import { 
   BlogPostFilters,
@@ -25,6 +26,7 @@ interface BlogHomeLayoutProps {
 type ViewMode = 'grid' | 'list'
 
 export function BlogHomeLayout({ className }: BlogHomeLayoutProps) {
+  const router = useRouter()
   const [filters, setFilters] = useState<BlogPostFilters>({
     published: true,
   })
@@ -76,6 +78,10 @@ export function BlogHomeLayout({ className }: BlogHomeLayoutProps) {
     if (postsSection) {
       postsSection.scrollIntoView({ behavior: 'smooth' })
     }
+  }
+
+  const handleBlogPostClick = (post: any) => {
+    router.push(`/blog/${post.slug}`)
   }
 
   const containerVariants = {
@@ -317,6 +323,7 @@ export function BlogHomeLayout({ className }: BlogHomeLayoutProps) {
                     <BlogCard
                       post={post}
                       variant={viewMode === 'list' ? 'compact' : 'default'}
+                      onClick={handleBlogPostClick}
                     />
                   </motion.div>
                 ))}

@@ -49,7 +49,7 @@ export function ProjectQuickView({ project, open, onOpenChangeAction }: ProjectQ
         <div className="px-4 pb-4">
           <div className="relative aspect-video w-full overflow-hidden rounded-lg">
             <Image
-              src={project.image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&crop=center&q=80'}
+              src={project.image || '/images/projects/analytics-dashboard.jpg'}
               alt={project.title}
               fill
               className="object-cover"
