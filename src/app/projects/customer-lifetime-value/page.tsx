@@ -434,6 +434,188 @@ export default function CustomerLifetimeValueAnalytics() {
                 </div>
               </div>
             </motion.div>
+
+            {/* Professional Narrative Sections */}
+            <div className="space-y-12 mt-12">
+              {/* Project Overview */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 1.0 }}
+                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+              >
+                <h2 className="text-2xl font-bold mb-6 text-blue-400">Project Overview</h2>
+                <div className="space-y-4 text-gray-300">
+                  <p className="text-lg leading-relaxed">
+                    Developed a comprehensive customer lifetime value prediction model using advanced analytics and machine learning to enable data-driven customer segmentation and retention strategies. This initiative was critical for optimizing marketing spend and improving customer acquisition ROI.
+                  </p>
+                  <p className="leading-relaxed">
+                    The CLV model became the foundation for strategic decision-making across sales, marketing, and customer success teams, enabling personalized customer journeys and targeted retention campaigns that significantly improved long-term revenue sustainability.
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Challenge */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 1.1 }}
+                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+              >
+                <h2 className="text-2xl font-bold mb-6 text-amber-400">Challenge</h2>
+                <div className="space-y-4 text-gray-300">
+                  <p className="leading-relaxed">
+                    The organization lacked a scientific approach to understanding customer value and predicting future behavior, resulting in inefficient resource allocation and missed revenue opportunities:
+                  </p>
+                  <ul className="list-disc list-inside space-y-2 ml-4">
+                    <li>Marketing campaigns targeted all customers equally, wasting budget on low-value segments</li>
+                    <li>Sales teams couldn't prioritize leads based on predicted lifetime value</li>
+                    <li>Customer success resources were spread thin without risk-based prioritization</li>
+                    <li>Retention efforts were reactive rather than predictive</li>
+                    <li>No systematic way to measure the long-term impact of customer acquisition channels</li>
+                  </ul>
+                  <p className="leading-relaxed">
+                    With 4,287 active customers and no predictive analytics framework, the team was essentially flying blind when making strategic decisions about customer investment.
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Solution */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 1.2 }}
+                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+              >
+                <h2 className="text-2xl font-bold mb-6 text-green-400">Solution</h2>
+                <div className="space-y-4 text-gray-300">
+                  <p className="leading-relaxed">
+                    Built a comprehensive CLV prediction system using machine learning algorithms and RFM analysis to segment customers and predict future value with 94.3% accuracy:
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                      <h3 className="font-semibold text-blue-400 mb-3">Analytical Framework</h3>
+                      <ul className="list-disc list-inside space-y-1 text-sm">
+                        <li>RFM analysis (Recency, Frequency, Monetary) segmentation</li>
+                        <li>Predictive modeling using customer behavior patterns</li>
+                        <li>Cohort analysis and retention curve modeling</li>
+                        <li>Churn probability scoring with early warning system</li>
+                        <li>Dynamic customer journey mapping and optimization</li>
+                      </ul>
+                    </div>
+                    <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                      <h3 className="font-semibold text-green-400 mb-3">Technical Implementation</h3>
+                      <ul className="list-disc list-inside space-y-1 text-sm">
+                        <li>Interactive dashboard with drill-down capabilities</li>
+                        <li>Real-time customer scoring and alerts</li>
+                        <li>Automated segment assignment and recommendations</li>
+                        <li>Integration with CRM and marketing automation platforms</li>
+                        <li>24-month forecasting with confidence intervals</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Results & Impact */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 1.3 }}
+                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+              >
+                <h2 className="text-2xl font-bold mb-6 text-emerald-400">Results & Impact</h2>
+                <div className="space-y-6 text-gray-300">
+                  <p className="leading-relaxed">
+                    The CLV prediction model transformed how the organization approaches customer relationships, enabling data-driven decisions that significantly improved both customer satisfaction and revenue performance:
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-blue-400 mb-2">{formatCurrency(1276000)}</div>
+                      <div className="text-sm text-gray-300">Predicted Revenue Impact</div>
+                    </div>
+                    <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-sm border border-indigo-500/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-indigo-400 mb-2">94.3%</div>
+                      <div className="text-sm text-gray-300">Prediction Accuracy</div>
+                    </div>
+                    <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-sm border border-cyan-500/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-cyan-400 mb-2">42%</div>
+                      <div className="text-sm text-gray-300">Improvement in Marketing ROI</div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-emerald-400">Quantified Business Outcomes:</h3>
+                    <ul className="list-disc list-inside space-y-2 ml-4">
+                      <li>Increased customer retention rate by 18% through proactive intervention</li>
+                      <li>Reduced churn probability from 21% to 12.8% for at-risk segments</li>
+                      <li>Improved marketing campaign efficiency by 42% through better targeting</li>
+                      <li>Enabled 5-tier customer segmentation with 96.7% model confidence</li>
+                      <li>Identified 1,156 high-value customers contributing 67% of revenue</li>
+                      <li>Reduced customer acquisition cost by 28% through channel optimization</li>
+                    </ul>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Key Learnings */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 1.4 }}
+                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+              >
+                <h2 className="text-2xl font-bold mb-6 text-purple-400">Key Learnings</h2>
+                <div className="space-y-4 text-gray-300">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <h3 className="font-semibold text-purple-400">Strategic Insights</h3>
+                      <ul className="list-disc list-inside space-y-2 text-sm">
+                        <li>Customer behavior patterns are more predictable than initially assumed when proper data science techniques are applied</li>
+                        <li>The top 20% of customers (Champions + Loyal) contribute 60%+ of total revenue, validating the Pareto principle</li>
+                        <li>Predictive models need regular retraining as customer behavior evolves with market conditions</li>
+                        <li>Early intervention is 3x more cost-effective than reactive retention efforts</li>
+                      </ul>
+                    </div>
+                    <div className="space-y-3">
+                      <h3 className="font-semibold text-blue-400">Technical Insights</h3>
+                      <ul className="list-disc list-inside space-y-2 text-sm">
+                        <li>RFM analysis combined with behavioral data significantly outperforms demographic-only segmentation</li>
+                        <li>24-month prediction horizon provides optimal balance between accuracy and actionability</li>
+                        <li>Real-time scoring enables dynamic customer journey optimization</li>
+                        <li>Visual dashboards increase adoption when they answer specific business questions, not just display data</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <p className="leading-relaxed mt-4">
+                    This project demonstrated that sophisticated analytics can be made accessible and actionable for business teams. The key is translating complex predictions into simple, clear recommendations that drive immediate action.
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Technologies Used */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 1.5 }}
+                className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-gray-500/20 rounded-3xl p-8"
+              >
+                <h2 className="text-2xl font-bold mb-6 text-gray-300">Technologies Used</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[
+                    'React 19', 'TypeScript', 'Machine Learning', 'RFM Analysis',
+                    'Predictive Modeling', 'Cohort Analysis', 'Data Visualization', 'Statistical Analysis',
+                    'Customer Segmentation', 'Behavioral Analytics', 'Retention Modeling', 'Churn Prediction'
+                  ].map((tech, index) => (
+                    <span key={index} className="bg-white/10 text-gray-300 px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
           </>
         )}
       </div>

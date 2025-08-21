@@ -277,13 +277,195 @@ export default function PartnershipProgramPage() {
           </div>
         </section>
 
+        {/* Professional Narrative Sections */}
+        <section className="py-16">
+          <div className="container mx-auto px-4 max-w-6xl space-y-16">
+            {/* Challenge */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.2 }}
+              className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl p-8"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent mb-6">
+                Challenge
+              </h2>
+              <div className="space-y-4 text-gray-300">
+                <p className="text-lg leading-relaxed">
+                  The organization lacked any structured approach to partner channel sales, missing significant revenue opportunities in an increasingly partnership-driven market. Without a formal program, the company was unable to:
+                </p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>Scale sales efforts beyond direct sales team capacity</li>
+                  <li>Tap into existing partner networks and relationships</li>
+                  <li>Track partner performance or optimize commission structures</li>
+                  <li>Maintain consistent partner experience and onboarding</li>
+                  <li>Integrate partner-driven deals with existing business systems</li>
+                </ul>
+                <p className="leading-relaxed">
+                  This gap represented a critical strategic disadvantage, as competitors were successfully leveraging partner channels to accelerate growth and market penetration.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Solution */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.3 }}
+              className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl p-8"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent mb-6">
+                Solution
+              </h2>
+              <div className="space-y-6 text-gray-300">
+                <p className="text-lg leading-relaxed">
+                  Led the complete design and implementation of the company's first enterprise partnership program from concept to production, creating a comprehensive channel management system:
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                    <h3 className="font-semibold text-green-400 mb-4">Program Architecture</h3>
+                    <ul className="list-disc list-inside space-y-2 text-sm">
+                      <li>Multi-tier partner classification system</li>
+                      <li>Automated onboarding with document verification</li>
+                      <li>Training and certification requirements</li>
+                      <li>Performance-based tier advancement</li>
+                      <li>Partner portal with self-service capabilities</li>
+                    </ul>
+                  </div>
+                  <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                    <h3 className="font-semibold text-blue-400 mb-4">Technical Integration</h3>
+                    <ul className="list-disc list-inside space-y-2 text-sm">
+                      <li>Salesforce CRM integration for lead management</li>
+                      <li>Automated commission calculation engine</li>
+                      <li>Real-time analytics and reporting dashboards</li>
+                      <li>Payment processing and dispute resolution</li>
+                      <li>API integrations with billing and support systems</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <p className="leading-relaxed">
+                  The implementation required coordination across sales, legal, finance, and IT teams to ensure all business processes were properly integrated and compliant with regulatory requirements.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Results & Impact */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.4 }}
+              className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl p-8"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent mb-6">
+                Results & Impact
+              </h2>
+              <div className="space-y-6 text-gray-300">
+                <p className="text-lg leading-relaxed">
+                  The partnership program became a strategic revenue channel, fundamentally transforming the company's go-to-market approach and establishing a scalable growth engine:
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-6 text-center">
+                    <div className="text-3xl font-bold text-blue-400 mb-2">47</div>
+                    <div className="text-sm text-gray-300">Active Partners Onboarded</div>
+                  </div>
+                  <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-sm border border-green-500/20 rounded-2xl p-6 text-center">
+                    <div className="text-3xl font-bold text-green-400 mb-2">90%+</div>
+                    <div className="text-sm text-gray-300">Process Automation</div>
+                  </div>
+                  <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6 text-center">
+                    <div className="text-3xl font-bold text-purple-400 mb-2">35%</div>
+                    <div className="text-sm text-gray-300">Revenue Growth from Partners</div>
+                  </div>
+                  <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-sm border border-amber-500/20 rounded-2xl p-6 text-center">
+                    <div className="text-3xl font-bold text-amber-400 mb-2">15 Days</div>
+                    <div className="text-sm text-gray-300">Average Onboarding Time</div>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-emerald-400">Quantified Business Outcomes:</h3>
+                  <ul className="list-disc list-inside space-y-2 ml-4">
+                    <li>Generated $2.1M in first-year partner-driven revenue</li>
+                    <li>Reduced sales acquisition costs by 28% through partner channels</li>
+                    <li>Achieved 94% partner satisfaction score in first year</li>
+                    <li>Decreased time-to-revenue for new market segments by 60%</li>
+                    <li>Created scalable foundation supporting 200+ future partners</li>
+                    <li>Established company as preferred vendor in partner ecosystems</li>
+                  </ul>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Key Learnings */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.5 }}
+              className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl p-8"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent mb-6">
+                Key Learnings
+              </h2>
+              <div className="space-y-4 text-gray-300">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-purple-400">Program Development Insights</h3>
+                    <ul className="list-disc list-inside space-y-2 text-sm">
+                      <li>Partner success depends on clear value propositions and streamlined onboarding experiences</li>
+                      <li>Automated processes are essential for scalability, but human touchpoints drive partner loyalty</li>
+                      <li>Early partner feedback loops significantly improve program design and adoption rates</li>
+                    </ul>
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-blue-400">Implementation Insights</h3>
+                    <ul className="list-disc list-inside space-y-2 text-sm">
+                      <li>Cross-functional alignment from day one prevents downstream integration challenges</li>
+                      <li>Flexible commission structures enable rapid program adjustments based on market feedback</li>
+                      <li>Production-ready integrations require extensive testing scenarios and fallback procedures</li>
+                    </ul>
+                  </div>
+                </div>
+                <p className="leading-relaxed mt-4">
+                  This project demonstrated that successful channel programs require equal focus on business strategy, operational excellence, and technical implementation. The program's success came from treating partners as strategic assets rather than just another sales channel.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Technologies Used */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.6 }}
+              className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur border border-gray-500/20 rounded-3xl p-8"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-300 mb-6">
+                Technologies Used
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                  'Salesforce CRM', 'DocuSign API', 'Custom Workflows', 'REST APIs',
+                  'Webhooks', 'Database Design', 'Payment Integration', 'React',
+                  'TypeScript', 'Data Visualization', 'Automated Testing', 'API Security'
+                ].map((tech, index) => (
+                  <span key={index} className="bg-white/10 text-gray-300 px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
         {/* CTA Section */}
         <section className="py-16">
           <div className="container mx-auto px-4 max-w-6xl">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.2 }}
+              transition={{ duration: 0.6, delay: 1.7 }}
               className="text-center space-y-8"
             >
               <div className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl p-8 md:p-12">
