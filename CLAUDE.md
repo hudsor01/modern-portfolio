@@ -115,8 +115,10 @@ src/
 **Professional portfolio for Richard Hudson**, Revenue Operations Professional:
 - Interactive data visualization projects (Revenue KPI, Sales Analytics, etc.)
 - Real business data: $4.8M+ revenue, 432% growth, 2,217% network expansion
-- Contact forms with Resend email integration
-- Resume generation and PDF viewing
+- Contact forms with Resend email integration (enhanced with real-time validation)
+- Resume generation and PDF viewing (with iframe viewer and download functionality)
+- Blog system with functional article pages and navigation
+- Modern glassmorphism UI with gradient backgrounds
 
 ## Key Development Patterns
 
@@ -155,3 +157,10 @@ Required variables (see `.env.example`):
 - **CTA buttons**: Blue gradient `bg-gradient-to-r from-blue-500 to-indigo-600`
 - **Mobile-first**: Use Tailwind responsive prefixes (`sm:`, `md:`, `lg:`)
 - **Server Components by default**: Only use `'use client'` when necessary
+
+## Recent Updates (Aug 2025)
+- **PDF Resume Viewer**: Fixed with proper iframe implementation and download functionality
+- **Blog System**: Restored functionality with proper API integration and navigation
+- **Contact Form**: Enhanced with enterprise-level features (real-time validation, progress tracking, visual subject selection)
+- **Project Cleanup**: Removed temporary database scripts and development artifacts
+- **Performance**: Optimized build process and cleaned cache artifacts
