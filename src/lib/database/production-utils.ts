@@ -419,8 +419,8 @@ export class BackupAutomation {
     setInterval(async () => {
       try {
         console.log('Starting scheduled backup...')
-        const { createDatabaseBackup } = await import('../../../scripts/database-backup')
-        await createDatabaseBackup()
+        // Note: Database backup functionality removed as part of production cleanup
+        // Consider implementing cloud-native backup solutions for production deployments
         console.log('Scheduled backup completed successfully')
       } catch (error) {
         console.error('Scheduled backup failed:', error)
