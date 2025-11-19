@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     logger.info('CSRF token requested')
 
     // Apply CSRF middleware (generates new token for GET)
-    const { valid, token, error } = await csrfProtectionMiddleware(request, [])
+    const { valid, token: _token, error } = await csrfProtectionMiddleware(request, [])
 
     if (!valid) {
       logger.warn('CSRF protection validation failed', { error })
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
       }
     )
   } catch (error) {
-    logger.error('CSRF token generation error', error)
+    logger.error('CSRF token generation error', error instanceof Error ? error : new Error(String(error)))
     return NextResponse.json(
       { error: 'Failed to generate CSRF token' },
       { status: 500 }

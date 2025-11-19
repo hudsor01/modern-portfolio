@@ -231,7 +231,7 @@ export async function GET(
       }
     })
 
-    const views = posts.map(post => ({
+    const views = posts.map((post: any) => ({
       slug: post.slug.startsWith('project-') ? post.slug.replace('project-', '') : post.slug,
       type: post.slug.startsWith('project-') ? 'project' : 'blog',
       totalViews: post.viewCount
