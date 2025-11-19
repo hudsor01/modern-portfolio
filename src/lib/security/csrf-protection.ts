@@ -2,7 +2,7 @@ import { cookies } from 'next/headers'
 import crypto from 'crypto'
 
 const CSRF_TOKEN_LENGTH = 32
-const CSRF_COOKIE_NAME = '__csrf_token'
+const CSRF_TOKEN_NAME = '__csrf_token'
 const CSRF_HEADER_NAME = 'x-csrf-token'
 
 /**
