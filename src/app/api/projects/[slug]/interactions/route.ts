@@ -3,6 +3,9 @@ import { PrismaClient } from '@prisma/client'
 import { InteractionType } from '@prisma/client'
 import { ApiResponse } from '@/types/shared-api'
 import { validateProjectInteraction, ProjectInteractionInput, ValidationError } from '@/lib/validations/unified-schemas'
+import { createContextLogger } from '@/lib/logging/logger';
+
+const logger = createContextLogger('InteractionsAPI');
 
 const prisma = new PrismaClient()
 
@@ -103,7 +106,7 @@ export async function POST(
     return NextResponse.json(response, { status: 201 })
 
   } catch (error) {
-    console.error('Project interaction error:', error)
+    logger.error('Project interaction error:', error instanceof Error ? error : new Error(String(error)))
     
     return NextResponse.json(
       {
@@ -147,7 +150,7 @@ export async function GET(
     return NextResponse.json(response)
 
   } catch (error) {
-    console.error('Get project interactions error:', error)
+    logger.error('Get project interactions error:', error instanceof Error ? error : new Error(String(error)))
     
     return NextResponse.json(
       {
