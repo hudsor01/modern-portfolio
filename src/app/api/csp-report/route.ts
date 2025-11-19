@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logSecurityEvent } from '@/lib/security/security-headers'
+import { createContextLogger } from '@/lib/logging/logger';
+
+const logger = createContextLogger('CspreportAPI');
 
 interface CSPViolationReport {
   'csp-report': {
@@ -85,7 +88,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error processing CSP report:', error)
+    logger.error('Error processing CSP report:', error instanceof Error ? error : new Error(String(error)))
     
     // Log the error but don't reveal details to client
     logSecurityEvent('csp_report_processing_error', 'low', {

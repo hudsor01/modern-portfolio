@@ -35,7 +35,7 @@ async function getBlogAnalytics(slug: string) {
       commentCount: 0 // Would be implemented separately
     }
   } catch (error) {
-    console.error('Failed to fetch analytics:', error)
+    logger.error('Failed to fetch analytics', error instanceof Error ? error : new Error(String(error)))
     return { viewCount: 0, likeCount: 0, shareCount: 0, commentCount: 0 }
   }
 }

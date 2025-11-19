@@ -1,6 +1,9 @@
 import { headers } from 'next/headers'
 import { emailService, type ContactFormData } from '@/lib/email/email-service'
 import { getClientIdentifier } from '@/lib/security/rate-limiter'
+import { createContextLogger } from '@/lib/logging/logger';
+
+const logger = createContextLogger('SendemailAPI');
 
 /**
  * Production-Ready Contact Email Server Action
@@ -32,7 +35,7 @@ export async function sendContactEmail(formData: ContactFormData): Promise<SendC
 
     return result
   } catch (error) {
-    console.error('Contact form server action error:', error)
+    logger.error('Contact form server action error:', error instanceof Error ? error : new Error(String(error)))
     
     return {
       success: false,
