@@ -6,7 +6,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jobQueue, type Job, type JobType } from '@/lib/automation/job-queue';
 import { z } from 'zod';
+import { createContextLogger } from '@/lib/logging/logger';
 import type { ApiResponse } from '@/types/shared-api';
+
+const logger = createContextLogger('JobStatusAPI');
 
 // Query parameters validation
 const JobStatusQuerySchema = z.object({
@@ -109,7 +112,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Job status API error:', error);
+    logger.error('Job status API error', error instanceof Error ? error : new Error(String(error)));
 
     if (error instanceof z.ZodError) {
       return NextResponse.json<ApiResponse<null>>({

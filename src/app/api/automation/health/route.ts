@@ -6,7 +6,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jobQueue } from '@/lib/automation/job-queue';
 import { blogAutomationService } from '@/lib/automation/blog-automation-service';
+import { createContextLogger } from '@/lib/logging/logger';
 import type { ApiResponse } from '@/types/shared-api';
+
+const logger = createContextLogger('AutomationHealthCheck');
 
 export async function GET(request: NextRequest) {
   try {
@@ -121,7 +124,7 @@ export async function GET(request: NextRequest) {
     }, { status: httpStatus });
 
   } catch (error) {
-    console.error('Health check error:', error);
+    logger.error('Health check error', error instanceof Error ? error : new Error(String(error)));
 
     return NextResponse.json<ApiResponse<{
       status: string;

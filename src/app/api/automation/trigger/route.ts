@@ -7,7 +7,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { blogAutomationService } from '@/lib/automation/blog-automation-service';
 import { jobQueue } from '@/lib/automation/job-queue';
 import { z } from 'zod';
+import { createContextLogger } from '@/lib/logging/logger';
 import type { ApiResponse } from '@/types/shared-api';
+
+const logger = createContextLogger('AutomationTriggerAPI');
 
 // Validation schemas for different trigger types
 const BlogPublishedTriggerSchema = z.object({
@@ -117,7 +120,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Automation trigger error:', error);
+    logger.error('Automation trigger error', error instanceof Error ? error : new Error(String(error)));
 
     if (error instanceof z.ZodError) {
       return NextResponse.json<ApiResponse<null>>({
@@ -435,7 +438,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Get trigger types error:', error);
+    logger.error('Get trigger types error', error instanceof Error ? error : new Error(String(error)));
 
     return NextResponse.json<ApiResponse<null>>({
       success: false,

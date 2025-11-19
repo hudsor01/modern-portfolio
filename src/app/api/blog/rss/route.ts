@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ApiResponse, RSSFeedData } from '@/types/shared-api';
+import { createContextLogger } from '@/lib/logging/logger';
+
+const logger = createContextLogger('RssAPI');
 
 /**
  * Blog RSS Feed API Route Handler
@@ -126,7 +129,7 @@ export async function GET(request: NextRequest) {
     });
     
   } catch (error) {
-    console.error('Blog RSS API Error:', error);
+    logger.error('Blog RSS API Error:', error instanceof Error ? error : new Error(String(error)));
     
     const errorResponse: ApiResponse<never> = {
       data: undefined as never,
