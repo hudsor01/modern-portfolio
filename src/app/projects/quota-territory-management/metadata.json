@@ -1,0 +1,63 @@
+{
+  "id": "quota-territory-management",
+  "title": "Intelligent Quota Management & Territory Planning",
+  "slug": "quota-territory-management",
+  "description": "Advanced quota setting and territory assignment system using predictive analytics and fairness algorithms. Optimized territory design increased forecast accuracy by 28% and reduced quota attainment variance by 32%.",
+  "image": "/images/projects/quota-management.jpg",
+  "category": "Revenue Operations",
+  "featured": true,
+  "metrics": {
+    "forecastAccuracyImprovement": "28%",
+    "quotaVarianceReduction": "32%",
+    "territoriesOptimized": 47,
+    "salesRepsCovered": 240,
+    "dataPointsAnalyzed": "2.5M+"
+  },
+  "technologies": [
+    "Python",
+    "Machine Learning",
+    "Next.js",
+    "React",
+    "D3.js",
+    "Recharts",
+    "PostgreSQL",
+    "Predictive Analytics",
+    "Geospatial Analysis"
+  ],
+  "businessImpact": [
+    "28% improvement in forecast accuracy through optimized territories",
+    "32% reduction in quota attainment variance across sales teams",
+    "Reduced sales rep churn by 18% through fair territory assignments",
+    "Increased territory efficiency by 23% on average",
+    "$8.7M incremental revenue from optimized territory management",
+    "Analyzed 2.5M+ data points across 240 sales representatives"
+  ],
+  "keyFeatures": [
+    "Predictive modeling for territory revenue potential",
+    "Fairness algorithms for equitable quota distribution",
+    "Geographic clustering and optimization",
+    "Historical performance analysis and trending",
+    "What-if scenario planning tools",
+    "Automated territory balancing recommendations",
+    "Real-time territory monitoring and adjustments",
+    "Integration with CRM and forecasting systems"
+  ],
+  "careerLearnings": [
+    "Building predictive models for sales forecasting",
+    "Understanding fairness in algorithmic decision-making",
+    "Territory design and geographic analytics",
+    "Quota setting methodologies and best practices",
+    "Stakeholder management and change adoption",
+    "Data-driven compensation and incentive design"
+  ],
+  "teamSize": 6,
+  "duration": "6 months",
+  "tags": [
+    "Revenue Operations",
+    "Territory Management",
+    "Quota Planning",
+    "Predictive Analytics",
+    "Sales Operations",
+    "Data Science"
+  ]
+}
