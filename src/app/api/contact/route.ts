@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { 
+import {
   checkEnhancedContactFormRateLimit
 } from '@/lib/security/enhanced-rate-limiter'
+import { escapeHtml } from '@/lib/security/html-escape'
 import {
   contactFormSchema,
   validateRequest,
@@ -84,19 +85,33 @@ export async function POST(request: NextRequest) {
     // Send email using Resend
     const { name, email, subject, message } = formData
 
+    // Validate that CONTACT_EMAIL is configured
+    const contactEmail = process.env.CONTACT_EMAIL
+    if (!contactEmail) {
+      console.error('[CRITICAL] CONTACT_EMAIL environment variable not configured')
+      return NextResponse.json(
+        createApiError(
+          'Email service misconfigured. Please try again later.',
+          'SERVICE_ERROR',
+          undefined
+        ),
+        { status: 500 }
+      )
+    }
+
     await getResendClient().emails.send({
       from: 'Portfolio Contact <hello@richardwhudsonjr.com>',
-      to: process.env.CONTACT_EMAIL || 'hudsor01@icloud.com',
-      subject: `${subject} - from ${name}`,
+      to: contactEmail,
+      subject: `${escapeHtml(subject)} - from ${escapeHtml(name)}`,
       text: `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\nMessage: ${message}`,
       html: `
         <div>
           <h2>New Contact Form Submission</h2>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Subject:</strong> ${subject}</p>
+          <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+          <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+          <p><strong>Subject:</strong> ${escapeHtml(subject)}</p>
           <p><strong>Message:</strong></p>
-          <p>${message.replace(/\n/g, '<br>')}</p>
+          <p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>
         </div>
       `,
     })

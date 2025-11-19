@@ -1,12 +1,14 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { m as motion } from 'framer-motion'
 import { Copy, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
+import { escapeHtml } from '@/lib/security/html-escape'
 import { ContentType } from '@/types/blog'
+import DOMPurify from 'dompurify'
 
 interface BlogContentProps {
   content: string
@@ -26,53 +28,64 @@ export function BlogContent({
   const { theme } = useTheme()
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
 
-  // Markdown to HTML conversion (basic implementation)
-  const parseMarkdown = (markdown: string): string => {
-    let html = markdown
+  // Markdown to HTML conversion with XSS protection (memoized)
+  const parseMarkdown = useMemo(() => {
+    return (markdown: string): string => {
+      // SECURITY: Escape HTML entities first to prevent XSS
+      let html = escapeHtml(markdown)
 
-    // Headers
-    html = html.replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold mt-6 mb-3 text-gray-900 dark:text-white">$1</h3>')
-    html = html.replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mt-8 mb-4 text-gray-900 dark:text-white">$1</h2>')
-    html = html.replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mt-10 mb-6 text-gray-900 dark:text-white">$1</h1>')
+      // Headers
+      html = html.replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold mt-6 mb-3 text-gray-900 dark:text-white">$1</h3>')
+      html = html.replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mt-8 mb-4 text-gray-900 dark:text-white">$1</h2>')
+      html = html.replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mt-10 mb-6 text-gray-900 dark:text-white">$1</h1>')
 
-    // Bold
-    html = html.replace(/\*\*(.*)\*\*/gim, '<strong class="font-semibold">$1</strong>')
-    html = html.replace(/\_\_(.*\_\_)/gim, '<strong class="font-semibold">$1</strong>')
+      // Bold
+      html = html.replace(/\*\*(.*)\*\*/gim, '<strong class="font-semibold">$1</strong>')
+      html = html.replace(/\_\_(.*\_\_)/gim, '<strong class="font-semibold">$1</strong>')
 
-    // Italic
-    html = html.replace(/\*(.*)\*/gim, '<em class="italic">$1</em>')
-    html = html.replace(/\_(.*\_)/gim, '<em class="italic">$1</em>')
+      // Italic
+      html = html.replace(/\*(.*)\*/gim, '<em class="italic">$1</em>')
+      html = html.replace(/\_(.*\_)/gim, '<em class="italic">$1</em>')
 
-    // Code blocks
-    html = html.replace(/```(\w+)?\n([\s\S]*?)```/gim, (_match: string, lang: string, code: string) => {
-      return `<pre data-language="${lang || 'text'}"><code>${code.trim()}</code></pre>`
-    })
+      // Code blocks
+      html = html.replace(/```(\w+)?\n([\s\S]*?)```/gim, (_match: string, lang: string, code: string) => {
+        return `<pre data-language="${lang || 'text'}"><code>${code.trim()}</code></pre>`
+      })
 
-    // Inline code
-    html = html.replace(/`([^`]+)`/gim, '<code class="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-sm font-mono">$1</code>')
+      // Inline code
+      html = html.replace(/`([^`]+)`/gim, '<code class="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-sm font-mono">$1</code>')
 
-    // Links
-    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" class="text-blue-600 dark:text-blue-400 hover:underline" target="_blank" rel="noopener noreferrer">$1 <svg class="inline w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></a>')
+      // Links - with URL validation
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/gim, (_match, text, url) => {
+        // Only allow safe URLs
+        const isExternalUrl = url.startsWith('http') || url.startsWith('mailto:')
+        const isRelativeUrl = url.startsWith('/')
+        if (!isExternalUrl && !isRelativeUrl) {
+          return text // Just return text if URL looks suspicious
+        }
+        return `<a href="${escapeHtml(url)}" class="text-blue-600 dark:text-blue-400 hover:underline" target="_blank" rel="noopener noreferrer">${text} <svg class="inline w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></a>`
+      })
 
-    // Images
-    html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/gim, '<img src="$2" alt="$1" class="rounded-lg my-4 max-w-full h-auto" loading="lazy" />')
+      // Images
+      html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/gim, '<img src="$2" alt="$1" class="rounded-lg my-4 max-w-full h-auto" loading="lazy" />')
 
-    // Lists
-    html = html.replace(/^\* (.*$)/gim, '<li class="ml-4">$1</li>')
-    html = html.replace(/^\d+\. (.*$)/gim, '<li class="ml-4">$1</li>')
+      // Lists
+      html = html.replace(/^\* (.*$)/gim, '<li class="ml-4">$1</li>')
+      html = html.replace(/^\d+\. (.*$)/gim, '<li class="ml-4">$1</li>')
 
-    // Blockquotes
-    html = html.replace(/^> (.*$)/gim, '<blockquote class="border-l-4 border-blue-500 pl-4 py-2 my-4 bg-blue-50 dark:bg-blue-900/20 italic text-gray-700 dark:text-gray-300">$1</blockquote>')
+      // Blockquotes
+      html = html.replace(/^> (.*$)/gim, '<blockquote class="border-l-4 border-blue-500 pl-4 py-2 my-4 bg-blue-50 dark:bg-blue-900/20 italic text-gray-700 dark:text-gray-300">$1</blockquote>')
 
-    // Line breaks
-    html = html.replace(/\n\n/gim, '</p><p class="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">')
-    html = html.replace(/\n/gim, '<br />')
+      // Line breaks
+      html = html.replace(/\n\n/gim, '</p><p class="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">')
+      html = html.replace(/\n/gim, '<br />')
 
-    // Wrap in paragraphs
-    html = `<p class="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">${html}</p>`
+      // Wrap in paragraphs
+      html = `<p class="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">${html}</p>`
 
-    return html
-  }
+      return html
+    }
+  }, [])
 
   // Copy code functionality
   const copyToClipboard = async (code: string) => {
@@ -149,11 +162,17 @@ export function BlogContent({
         )
       }
       
-        // Regular HTML content
+        // Regular HTML content - sanitize with DOMPurify to prevent XSS
+      const sanitizedHtml = DOMPurify.sanitize(part, {
+        ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'em', 'strong', 'a', 'code', 'pre', 'blockquote', 'ul', 'ol', 'li', 'img', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'div', 'span'],
+        ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'data-language', 'target', 'rel', 'loading'],
+        ALLOW_DATA_ATTR: false,
+      })
+
       return (
         <div
           key={index}
-          dangerouslySetInnerHTML={{ __html: part }}
+          dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
           className="prose prose-lg dark:prose-invert max-w-none"
         />
       )
