@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { webVitalsService, checkAnalyticsRateLimit } from '@/lib/analytics/web-vitals-service';
+import { createContextLogger } from '@/lib/logging/logger';
+
+const logger = createContextLogger('WebVitalsAPI');
 
 /**
  * Production-Ready Web Vitals API Route
@@ -55,7 +58,7 @@ export async function POST(request: NextRequest) {
 
     return response
   } catch (error) {
-    console.error('Error processing Web Vitals:', error)
+    logger.error('Error processing Web Vitals', error instanceof Error ? error : new Error(String(error)))
 
     return NextResponse.json({ error: 'Failed to process Web Vitals data' }, { status: 500 })
   }
@@ -122,7 +125,7 @@ export async function GET(request: NextRequest) {
       realtime: realtimeData,
     })
   } catch (error) {
-    console.error('Error fetching Web Vitals analytics:', error)
+    logger.error('Error fetching Web Vitals analytics', error instanceof Error ? error : new Error(String(error)))
 
     return NextResponse.json({ error: 'Failed to fetch analytics data' }, { status: 500 })
   }

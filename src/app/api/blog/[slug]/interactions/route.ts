@@ -3,6 +3,9 @@ import { PrismaClient } from '@prisma/client'
 import { InteractionType } from '@prisma/client'
 import { ApiResponse } from '@/types/shared-api'
 import { validateBlogInteraction, BlogInteractionInput, ValidationError } from '@/lib/validations/unified-schemas'
+import { createContextLogger } from '@/lib/logging/logger';
+
+const logger = createContextLogger('InteractionsAPI');
 
 const prisma = new PrismaClient()
 

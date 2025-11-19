@@ -4,6 +4,8 @@ import {
   checkEnhancedContactFormRateLimit
 } from '@/lib/security/enhanced-rate-limiter'
 import { escapeHtml } from '@/lib/security/html-escape'
+import { validateCSRFToken } from '@/lib/security/csrf-protection'
+import { createContextLogger } from '@/lib/logging/logger'
 import {
   contactFormSchema,
   validateRequest,
@@ -17,6 +19,8 @@ import {
   logApiRequest,
   logApiResponse,
 } from '@/lib/api'
+
+const logger = createContextLogger('ContactAPI')
 
 // Using centralized ApiResponse type
 
@@ -43,11 +47,27 @@ export async function POST(request: NextRequest) {
   const startTime = Date.now()
   const clientId = getClientIdentifier(request)
   const metadata = getRequestMetadata(request)
-  
+
   logApiRequest('POST', '/api/contact', clientId, metadata)
-  
+
   try {
-    // Enhanced rate limiting check first
+    // CSRF token validation
+    const csrfToken = request.headers.get('x-csrf-token')
+    const isCSRFValid = await validateCSRFToken(csrfToken ?? undefined)
+
+    if (!isCSRFValid) {
+      logger.warn('CSRF validation failed for contact form', { clientId })
+      const response = createApiError(
+        'Security validation failed. Please refresh and try again.',
+        'CSRF_VALIDATION_FAILED',
+        undefined
+      )
+
+      logApiResponse('POST', '/api/contact', clientId, 403, false, Date.now() - startTime)
+      return NextResponse.json(response, { status: 403 })
+    }
+
+    // Enhanced rate limiting check
     const rateLimitResult = checkEnhancedContactFormRateLimit(clientId, {
       userAgent: metadata.userAgent,
       path: '/api/contact'
@@ -88,7 +108,7 @@ export async function POST(request: NextRequest) {
     // Validate that CONTACT_EMAIL is configured
     const contactEmail = process.env.CONTACT_EMAIL
     if (!contactEmail) {
-      console.error('[CRITICAL] CONTACT_EMAIL environment variable not configured')
+      logger.error('CONTACT_EMAIL environment variable not configured')
       return NextResponse.json(
         createApiError(
           'Email service misconfigured. Please try again later.',
