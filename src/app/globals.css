@@ -80,13 +80,13 @@
   --form-input-disabled: oklch(0.15 0.005 285 / 0.5);
 
   /* === ELEVATION/SHADOW TOKENS === */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  --shadow-input-focus: 0 0 0 3px rgba(112, 168, 219, 0.1);
-  --shadow-error: 0 0 0 3px rgba(239, 68, 68, 0.1);
-  --shadow-success: 0 0 0 3px rgba(34, 197, 94, 0.1);
+  --shadow-sm: 0 1px 2px 0 oklch(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px oklch(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px oklch(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px oklch(0 0 0 / 0.1);
+  --shadow-input-focus: 0 0 0 3px oklch(0.7 0.15 200 / 0.1);
+  --shadow-error: 0 0 0 3px oklch(0.65 0.2 25 / 0.1);
+  --shadow-success: 0 0 0 3px oklch(0.7 0.18 140 / 0.1);
 
   /* === SPACING/SIZING RHYTHM === */
   --spacing-xs: 0.25rem;
@@ -241,16 +241,17 @@
 /* === V4 ENHANCED BASE LAYER === */
 @layer base {
   * {
-    border-color: hsl(var(--border));
+    border-color: var(--border);
   }
 
   *:focus-visible {
-    @apply outline-2 outline-blue-500 outline-offset-2;
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
 
   body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
+    background-color: var(--background);
+    color: var(--foreground);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-feature-settings: "rlig" 1, "calt" 1;
@@ -258,24 +259,28 @@
 
   /* Modern Typography Hierarchy */
   h1 {
-    @apply text-5xl md:text-7xl font-black tracking-tight text-white;
+    @apply text-5xl md:text-7xl font-black tracking-tight;
+    color: var(--foreground);
   }
 
   h2 {
-    @apply text-3xl md:text-4xl font-bold tracking-tight text-white;
+    @apply text-3xl md:text-4xl font-bold tracking-tight;
+    color: var(--foreground);
   }
 
   h3 {
-    @apply text-xl md:text-2xl font-bold tracking-tight text-white;
+    @apply text-xl md:text-2xl font-bold tracking-tight;
+    color: var(--foreground);
   }
 
   h4, h5, h6 {
-    @apply text-lg md:text-xl font-bold tracking-tight text-white;
+    @apply text-lg md:text-xl font-bold tracking-tight;
+    color: var(--foreground);
   }
 
-  p, body {
+  p {
     @apply text-base md:text-lg leading-relaxed;
-    color: oklch(0.7 0.005 285); /* text-gray-300 equivalent */
+    color: var(--muted-foreground);
   }
 
   /* Enhanced Link Styles */
@@ -299,16 +304,16 @@
   }
 
   ::-webkit-scrollbar-track {
-    background-color: hsl(var(--muted));
+    background-color: var(--muted);
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: hsl(var(--border));
+    background-color: var(--border);
     border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background-color: hsl(var(--accent));
+    background-color: var(--accent);
   }
 }
 
@@ -324,38 +329,91 @@
 
   /* Modern Glassmorphism Cards */
   .portfolio-card {
-    @apply bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6 hover:border-cyan-500/50 transition-all duration-300 hover:-translate-y-1;
+    background-color: oklch(0.08 0.005 285 / 0.5);
+    backdrop-filter: blur(0.5rem);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .portfolio-card:hover {
+    border-color: oklch(0.7 0.15 200 / 0.5);
+    transform: translateY(-0.25rem);
   }
 
   .portfolio-card-large {
-    @apply bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-8 hover:border-cyan-500/50 transition-all duration-300 hover:-translate-y-2;
+    background-color: oklch(0.08 0.005 285 / 0.5);
+    backdrop-filter: blur(0.5rem);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .portfolio-card-large:hover {
+    border-color: oklch(0.7 0.15 200 / 0.5);
+    transform: translateY(-0.5rem);
   }
 
   .portfolio-badge {
-    @apply inline-flex items-center rounded-full bg-cyan-500/10 px-3 py-1 text-sm font-medium text-cyan-400 border border-cyan-500/20;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    background-color: oklch(0.7 0.15 200 / 0.1);
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: oklch(0.7 0.15 200);
+    border: 1px solid oklch(0.7 0.15 200 / 0.2);
   }
 
   /* Modern Button Components */
   .portfolio-button-primary {
-    @apply bg-gradient-to-r from-cyan-500 to-blue-500 text-black font-bold rounded-lg px-6 py-3 hover:shadow-lg hover:shadow-cyan-500/25 transition-all duration-300 flex items-center gap-2;
+    background: linear-gradient(135deg, oklch(0.7 0.15 200) 0%, oklch(0.65 0.15 240) 100%);
+    color: oklch(0.05 0.005 285);
+    font-weight: 700;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .portfolio-button-primary:hover {
+    box-shadow: 0 0 30px oklch(0.7 0.15 200 / 0.25);
   }
 
   .portfolio-button-secondary {
-    @apply border border-gray-600 text-gray-300 hover:border-cyan-500 hover:text-cyan-400 rounded-lg px-6 py-3 transition-all duration-300 flex items-center gap-2;
+    border: 1px solid oklch(0.25 0.005 285);
+    color: oklch(0.6 0.005 285);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: transparent;
+  }
+
+  .portfolio-button-secondary:hover {
+    border-color: oklch(0.7 0.15 200);
+    color: oklch(0.7 0.15 200);
   }
 
   /* Glow Effects */
   .glow-cyan {
-    text-shadow: 0 0 20px rgba(34, 211, 238, 0.5);
+    text-shadow: 0 0 20px oklch(0.7 0.15 200 / 0.5);
   }
 
   .glow-blue {
-    text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+    text-shadow: 0 0 20px oklch(0.65 0.15 240 / 0.5);
   }
 
   /* Modern Gradient Utilities */
   .modern-text-gradient {
-    background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
+    background: linear-gradient(135deg, oklch(0.7 0.15 200) 0%, oklch(0.65 0.15 240) 100%);
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
@@ -363,7 +421,7 @@
 
   /* Hero name gradient - Cyan to Blue */
   .hero-name-gradient {
-    background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 50%, #1d4ed8 100%);
+    background: linear-gradient(135deg, oklch(0.7 0.15 200) 0%, oklch(0.65 0.15 240) 50%, oklch(0.55 0.2 240) 100%);
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
@@ -371,7 +429,7 @@
 
   /* Section heading gradient */
   .section-heading-gradient {
-    background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
+    background: linear-gradient(135deg, oklch(0.7 0.15 200) 0%, oklch(0.65 0.15 240) 100%);
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
@@ -379,7 +437,7 @@
 
   /* Page title gradient */
   .page-title-gradient {
-    background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
+    background: linear-gradient(135deg, oklch(0.7 0.15 200) 0%, oklch(0.65 0.15 240) 100%);
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
@@ -387,16 +445,27 @@
 
   /* Button Gradients */
   .modern-button-gradient {
-    background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
+    background: linear-gradient(135deg, oklch(0.7 0.15 200) 0%, oklch(0.65 0.15 240) 100%);
   }
 
   .modern-button-gradient:hover {
-    background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);
+    background: linear-gradient(135deg, oklch(0.65 0.18 200) 0%, oklch(0.6 0.18 240) 100%);
   }
 
   /* Social icon enhanced styling */
   .social-icon {
-    @apply p-4 rounded-2xl bg-white/5 border border-white/20 hover:bg-white/10 hover:border-blue-400/50 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-blue-500/25;
+    padding: 1rem;
+    border-radius: 1.25rem;
+    background-color: oklch(0.98 0.002 285 / 0.05);
+    border: 1px solid oklch(0.98 0.002 285 / 0.2);
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .social-icon:hover {
+    background-color: oklch(0.98 0.002 285 / 0.1);
+    border-color: oklch(0.65 0.15 240 / 0.5);
+    transform: scale(1.1);
+    box-shadow: 0 0 30px oklch(0.65 0.15 240 / 0.25);
   }
 }
 
