@@ -205,30 +205,28 @@ export const optimizedVariants = {
 // Utility hook for responsive animations based on screen size
 export function useResponsiveAnimation() {
   const [responsive, setResponsive] = useState(true)
-  
+
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    
     const updateResponsive = () => {
       const isMobile = window.innerWidth < 768
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
       setResponsive(!isMobile && !prefersReducedMotion)
     }
-    
+
     // Initial check
     updateResponsive()
-    
+
     // Listen for changes
     window.addEventListener('resize', updateResponsive)
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     mediaQuery.addEventListener('change', updateResponsive)
-    
+
     // Cleanup listeners
     return () => {
       window.removeEventListener('resize', updateResponsive)
       mediaQuery.removeEventListener('change', updateResponsive)
     }
   }, [])
-  
+
   return responsive
 }

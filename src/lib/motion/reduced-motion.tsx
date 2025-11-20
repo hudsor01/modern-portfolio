@@ -26,9 +26,9 @@ export function ReducedMotionProvider({ children }: ReducedMotionProviderProps) 
 
   useEffect(() => {
     setIsClient(true)
-    
-    // Safely check user's motion preference
-    if (typeof window !== 'undefined' && window.matchMedia) {
+
+    // Check user's motion preference (useEffect only runs client-side)
+    if (window.matchMedia) {
       const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
       setPrefersReducedMotion(mediaQuery.matches)
 
@@ -40,7 +40,7 @@ export function ReducedMotionProvider({ children }: ReducedMotionProviderProps) 
       mediaQuery.addEventListener('change', handleChange)
       return () => mediaQuery.removeEventListener('change', handleChange)
     }
-    
+
     // Return empty cleanup function if window.matchMedia is not available
     return () => {}
   }, [])

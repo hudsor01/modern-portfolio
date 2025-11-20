@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 import { createContextLogger } from '@/lib/logging/logger'
+import { useClientOnly } from '@/hooks/use-client-only'
 
 const logger = createContextLogger('BlogShareButtons')
 
@@ -39,8 +40,9 @@ export function BlogShareButtons({
 }: BlogShareButtonsProps) {
   const [copied, setCopied] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
+  const isClient = useClientOnly()
 
-  const fullUrl = typeof window !== 'undefined' ? `${window.location.origin}${url}` : url
+  const fullUrl = isClient ? `${window.location.origin}${url}` : url
   const shareText = excerpt || title
 
   const shareUrls = {
