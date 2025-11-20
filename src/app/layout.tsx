@@ -23,7 +23,7 @@ const inter = Inter({
 
 export const metadata: Metadata = baseMetadata
 
-const RootLayout = React.memo(function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
       <head>
@@ -52,10 +52,7 @@ const RootLayout = React.memo(function RootLayout({ children }: { children: Reac
           <OptimizedMotionProvider>
             <ClientComponentsProvider>
               <PreloadManager />
-              <EnhancedReadingProgress 
-                height={3}
-                showThreshold={1}
-                hideThreshold={99}
+              <EnhancedReadingProgress
                 contentPagesOnly={true}
               />
               {children}
@@ -68,6 +65,4 @@ const RootLayout = React.memo(function RootLayout({ children }: { children: Reac
       </body>
     </html>
   )
-})
-
-export default RootLayout
+}
