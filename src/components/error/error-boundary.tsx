@@ -40,15 +40,18 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       this.props.onError(error, errorInfo)
     }
 
-    // Production error logging
+    // Error logging
     if (process.env.NODE_ENV === 'production') {
+      // Production: log basic error info
       logger.error('Error Boundary caught error', error)
     } else {
-      logger.error('Error Boundary caught error', error, {
+      // Development: include additional context in error data
+      const errorData = {
+        ...(error instanceof Error ? { name: error.name, message: error.message } : error),
         componentStack: errorInfo.componentStack,
         componentName: this.props.componentName || 'Unknown',
-        stack: error.stack,
-      } as any)
+      }
+      logger.error('Error Boundary caught error (Dev)', errorData)
     }
   }
 
