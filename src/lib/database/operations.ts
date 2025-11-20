@@ -1,20 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
  * Type-safe database operations with comprehensive error handling
  * Provides a robust abstraction layer over Prisma for production use
  */
 
 import { db } from '../db'
-import { Prisma } from '@prisma/client'
-import type { 
-  BlogPost, 
-  Author, 
-  Category, 
-  Tag, 
-  // PostView, 
+import { Prisma } from '@/types/prisma-generated'
+import type {
+  BlogPost,
+  Author,
+  Category,
+  Tag,
+  // PostView,
   // PostInteraction,
   // SEOKeyword,
   PostStatus
-} from '@prisma/client'
+} from '@/types/prisma-generated'
 
 // =======================
 // ERROR TYPES & HANDLING
@@ -410,7 +412,7 @@ export class AnalyticsOperations {
             increment: 1
           }
         }
-      }).catch(error => {
+      }).catch((error: unknown) => {
         console.error('Failed to update view count:', error)
       })
       
@@ -453,7 +455,7 @@ export class AnalyticsOperations {
               increment: 1
             }
           }
-        }).catch(error => {
+        }).catch((error: unknown) => {
           console.error('Failed to update interaction count:', error)
         })
       }
@@ -483,14 +485,14 @@ export class AnalyticsOperations {
           by: ['visitorId'],
           where: whereClause,
           _count: true
-        }).then(results => results.length),
-        
+        }).then((results: unknown[]) => results.length),
+
         // Average reading time
         db.postView.aggregate({
           where: { ...whereClause, readingTime: { not: null } },
           _avg: { readingTime: true }
         }),
-        
+
         // Top countries
         db.postView.groupBy({
           by: ['country'],
@@ -501,20 +503,23 @@ export class AnalyticsOperations {
         })
       ])
 
-      const bounceRate = views > 0 ? 
+      const bounceRate = views > 0 ?
         await db.postView.count({
           where: { ...whereClause, readingTime: { lt: 30 } }
-        }).then(bounces => bounces / views) : 0
+        }).then((bounces: number) => bounces / views) : 0
 
       return {
         totalViews: views,
         uniqueViews,
         averageReadingTime: avgReadingTime._avg.readingTime || 0,
         bounceRate,
-        topCountries: countryStats.map(stat => ({
-          country: stat.country || 'Unknown',
-          views: stat._count
-        }))
+        topCountries: countryStats.map((stat: unknown) => {
+          const s = stat as Record<string, unknown>
+          return {
+            country: (s.country as string | null) || 'Unknown',
+            views: (s._count as Record<string, number>).country || 0
+          }
+        })
       }
       
     } catch (error) {
@@ -598,7 +603,7 @@ export class TransactionOperations {
           wordCount: postData.content.split(/\s+/).length,
           readingTime: Math.ceil(postData.content.split(/\s+/).length / 200),
           tags: {
-            create: tags.map(tag => ({ tagId: tag.id }))
+            create: tags.map((tag: any) => ({ tagId: tag.id }))
           }
         }
       })

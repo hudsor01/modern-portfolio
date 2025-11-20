@@ -4,7 +4,7 @@
  */
 
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query'
-import { InteractionType } from '@prisma/client'
+import { InteractionType } from '@/types/prisma-generated'
 import { ApiResponse } from '@/types/shared-api'
 
 // Types based on API responses
