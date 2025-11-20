@@ -15,6 +15,9 @@ import {
   useContactFormSubmission,
   useRateLimitStatus,
 } from '@/hooks/use-component-consolidation-queries'
+import { createContextLogger } from '@/lib/logging/logger'
+
+const logger = createContextLogger('TanStackContactForm')
 
 interface TanStackContactFormProps {
   variant?: 'default' | 'minimal' | 'detailed'
@@ -140,7 +143,7 @@ export function TanStackContactForm({
           if (data.company) form.setFieldValue('company', data.company)
           if (data.phone) form.setFieldValue('phone', data.phone)
         } catch (error) {
-          console.error('Failed to load auto-saved form data:', error)
+          logger.error('Failed to load auto-saved form data', error instanceof Error ? error : new Error(String(error)))
         }
       }
     }

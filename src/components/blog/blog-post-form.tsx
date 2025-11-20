@@ -11,6 +11,9 @@ import { PublishingOptions } from './form/publishing-options'
 import { FormActions } from './form/form-actions'
 import { useBlogPostForm, type BlogPostFormData } from '@/hooks/use-blog-post-form'
 import type { BlogPost, BlogCategory, BlogTag, BlogAuthor } from '@/types/blog'
+import { createContextLogger } from '@/lib/logging/logger'
+
+const logger = createContextLogger('BlogPostForm')
 
 interface BlogPostFormProps {
   post?: Partial<BlogPost>
@@ -54,7 +57,7 @@ export function BlogPostForm({
     try {
       await onSubmit(data)
     } catch (error) {
-      console.error('Form submission error:', error)
+      logger.error('Form submission error', error instanceof Error ? error : new Error(String(error)))
     }
   }
 
@@ -64,7 +67,7 @@ export function BlogPostForm({
       try {
         await onSaveDraft({ ...data, status: 'DRAFT' })
       } catch (error) {
-        console.error('Save draft error:', error)
+        logger.error('Save draft error', error instanceof Error ? error : new Error(String(error)))
       }
     }
   }

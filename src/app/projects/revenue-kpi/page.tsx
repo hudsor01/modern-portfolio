@@ -19,6 +19,9 @@ import {
 } from '@/components/projects/charts/chart-imports'
 import { yearOverYearGrowthExtended } from '@/app/projects/data/partner-analytics'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
+import { createContextLogger } from '@/lib/logging/logger'
+
+const logger = createContextLogger('RevenueKPIPage')
 
 type YearOverYearGrowth = {
   year: number
@@ -47,7 +50,7 @@ export default function RevenueKPI() {
 
   // Handle undefined data for currentYearData or prevYearData
   if (!currentYearData) {
-    console.error('currentYearData is undefined. Cannot render Revenue KPI dashboard.')
+    logger.error('currentYearData is undefined. Cannot render Revenue KPI dashboard', new Error('Missing current year data'))
     return <div>Error: Current year data not available.</div>
   }
 

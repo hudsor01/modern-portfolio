@@ -9,6 +9,9 @@ import { cn } from '@/lib/utils'
 import { escapeHtml } from '@/lib/security/html-escape'
 import { ContentType } from '@/types/blog'
 import DOMPurify from 'dompurify'
+import { createContextLogger } from '@/lib/logging/logger'
+
+const logger = createContextLogger('BlogContent')
 
 interface BlogContentProps {
   content: string
@@ -94,7 +97,7 @@ export function BlogContent({
       setCopiedCode(code)
       setTimeout(() => setCopiedCode(null), 2000)
     } catch (err) {
-      console.error('Failed to copy code: ', err)
+      logger.error('Failed to copy code', err instanceof Error ? err : new Error(String(err)))
     }
   }
 

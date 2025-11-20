@@ -8,6 +8,9 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import type { BlogPostSummary } from '@/types/blog'
 import type { BlogPostData } from '@/types/shared-api'
 import { cn } from '@/lib/utils'
+import { createContextLogger } from '@/lib/logging/logger'
+
+const logger = createContextLogger('BlogCard')
 
 interface BlogCardProps {
   post: BlogPostData | BlogPostSummary
@@ -70,7 +73,7 @@ export function BlogCard({
         day: 'numeric',
       }).format(dateObj)
     } catch (error) {
-      console.error('Error formatting date:', error)
+      logger.error('Error formatting date', error instanceof Error ? error : new Error(String(error)))
       return 'Invalid date'
     }
   }

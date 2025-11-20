@@ -17,6 +17,9 @@ import DealStageFunnelChart from './DealStageFunnelChart'
 import { getProject } from '@/lib/content/projects'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip, BarChart as RechartsBarChart, Bar, Cell } from 'recharts'
+import { createContextLogger } from '@/lib/logging/logger'
+
+const logger = createContextLogger('DealFunnelPage')
 
 // Define proper types for funnel data
 interface FunnelStage {
@@ -97,7 +100,7 @@ export default function DealFunnel() {
         // Simulate loading
         setTimeout(() => setIsLoading(false), 800)
       } catch (error) {
-        console.error('Error loading project data:', error)
+        logger.error('Error loading project data', error instanceof Error ? error : new Error(String(error)))
         setIsLoading(false)
       }
     }
