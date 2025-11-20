@@ -90,14 +90,37 @@ class Logger {
   }
 
   /**
-   * Send log to external service (e.g., Sentry, LogRocket)
+   * Send log to external service (e.g., Sentry, LogRocket, CloudWatch)
+   *
+   * DEFERRED: External logging integration
+   * This feature is ready for implementation but deferred to Phase 4+
+   * To implement:
+   * 1. Install external logging service SDK (Sentry, LogRocket, etc.)
+   * 2. Add environment variables for API keys
+   * 3. Initialize service in constructor if env var is set
+   * 4. Replace this method with actual service calls
+   *
+   * Example implementation:
+   * ```typescript
+   * private sendToExternalService(entry: LogEntry): void {
+   *   if (this.isDevelopment) return
+   *   if (entry.level !== 'error') return
+   *
+   *   if (typeof window !== 'undefined' && window.Sentry) {
+   *     window.Sentry.captureException(new Error(entry.message), {
+   *       tags: { context: entry.context },
+   *       extra: entry.data,
+   *     })
+   *   }
+   * }
+   * ```
    */
   private sendToExternalService(entry: LogEntry): void {
     // Only send errors to external service in production
     if (this.isDevelopment || entry.level !== 'error') return
 
-    // TODO: Implement external logging service integration
-    // Example: Send to Sentry, LogRocket, or CloudWatch
+    // External logging service integration deferred
+    // See method documentation above for implementation details
   }
 
   /**
