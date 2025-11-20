@@ -42,10 +42,10 @@ export async function GET(request: NextRequest) {
     const cutoffTime = new Date(Date.now() - timeRangeMs);
 
     // Get all jobs for analysis
-    const allJobs = Array.from((jobQueue as unknown as { jobs: Map<string, Job> }).jobs.values()) as Job[];
-    
+    const allJobs = jobQueue.getAllJobs();
+
     // Filter jobs by time range
-    const recentJobs = allJobs.filter((job: Job) => 
+    const recentJobs = allJobs.filter((job: Job) =>
       job.createdAt >= cutoffTime
     );
 

@@ -54,14 +54,14 @@ export async function GET(request: NextRequest) {
 
     // Get jobs based on filters
     let jobs: Job[] = [];
-    
+
     if (queryParams.status) {
       jobs = jobQueue.getJobsByStatus(queryParams.status) as Job[];
     } else if (queryParams.type) {
       jobs = jobQueue.getJobsByType(queryParams.type as JobType) as Job[];
     } else {
       // Get all jobs (this would need pagination in a real app)
-      jobs = Array.from((jobQueue as unknown as { jobs: Map<string, Job> }).jobs.values()) as Job[];
+      jobs = jobQueue.getAllJobs();
     }
 
     // Filter by tags if provided

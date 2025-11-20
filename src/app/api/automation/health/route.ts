@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
 
     // Add recent job samples if requested
     if (includeJobs) {
-      const recentJobs = Array.from((jobQueue as unknown as { jobs: Map<string, { id: string; type: string; status: string; progress: number; createdAt: Date; startedAt?: Date; completedAt?: Date; }> }).jobs.values())
+      const recentJobs = jobQueue.getAllJobs()
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .slice(0, 10)
         .map((job) => ({
@@ -105,10 +105,10 @@ export async function GET(request: NextRequest) {
           status: job.status,
           progress: job.progress,
           createdAt: job.createdAt.toISOString(),
-          duration: job.startedAt && job.completedAt ? 
+          duration: job.startedAt && job.completedAt ?
             job.completedAt.getTime() - job.startedAt.getTime() : null
         }));
-      
+
       healthResponse.recentJobs = recentJobs;
     }
 
