@@ -210,8 +210,8 @@ export class BlogPostOperations {
       })
 
       return posts as BlogPostWithRelations[]
-      
-    } catch (error) {
+
+    } catch (error: unknown) {
       handlePrismaError(error, 'BLOG_POST_FIND_MANY')
     }
   }
@@ -250,8 +250,8 @@ export class BlogPostOperations {
       }
 
       return post as BlogPostWithRelations
-      
-    } catch (error) {
+
+    } catch (error: unknown) {
       if (error instanceof NotFoundError) throw error
       handlePrismaError(error, 'BLOG_POST_FIND_BY_SLUG')
     }
@@ -289,8 +289,8 @@ export class BlogPostOperations {
       })
 
       return post
-      
-    } catch (error) {
+
+    } catch (error: unknown) {
       if (error instanceof ValidationError) throw error
       handlePrismaError(error, 'BLOG_POST_CREATE')
     }
@@ -327,8 +327,8 @@ export class BlogPostOperations {
       })
 
       return post
-      
-    } catch (error) {
+
+    } catch (error: unknown) {
       if (error instanceof ValidationError) throw error
       handlePrismaError(error, 'BLOG_POST_UPDATE')
     }
@@ -343,8 +343,8 @@ export class BlogPostOperations {
       await db.blogPost.delete({
         where: { id }
       })
-      
-    } catch (error) {
+
+    } catch (error: unknown) {
       if (error instanceof ValidationError) throw error
       handlePrismaError(error, 'BLOG_POST_DELETE')
     }
@@ -415,8 +415,8 @@ export class AnalyticsOperations {
       }).catch((error: unknown) => {
         console.error('Failed to update view count:', error)
       })
-      
-    } catch (error) {
+
+    } catch (error: unknown) {
       if (error instanceof NotFoundError || error instanceof ValidationError) throw error
       handlePrismaError(error, 'ANALYTICS_RECORD_VIEW')
     }
@@ -459,8 +459,8 @@ export class AnalyticsOperations {
           console.error('Failed to update interaction count:', error)
         })
       }
-      
-    } catch (error) {
+
+    } catch (error: unknown) {
       handlePrismaError(error, 'ANALYTICS_RECORD_INTERACTION')
     }
   }
@@ -521,8 +521,8 @@ export class AnalyticsOperations {
           }
         })
       }
-      
-    } catch (error) {
+
+    } catch (error: unknown) {
       handlePrismaError(error, 'ANALYTICS_GET_ANALYTICS')
     }
   }
@@ -536,7 +536,7 @@ export class UserContextOperations {
   static async setAdminContext(): Promise<void> {
     try {
       await db.$executeRaw`SELECT set_user_context('admin', 'admin')`
-    } catch (error) {
+    } catch (error: unknown) {
       handlePrismaError(error, 'SET_ADMIN_CONTEXT')
     }
   }
@@ -546,9 +546,9 @@ export class UserContextOperations {
       if (!authorId?.trim()) {
         throw new ValidationError('authorId', authorId, 'Author ID is required')
       }
-      
+
       await db.$executeRaw`SELECT set_user_context(${authorId}, 'author')`
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof ValidationError) throw error
       handlePrismaError(error, 'SET_AUTHOR_CONTEXT')
     }
@@ -557,7 +557,7 @@ export class UserContextOperations {
   static async clearContext(): Promise<void> {
     try {
       await db.$executeRaw`SELECT clear_user_context()`
-    } catch (error) {
+    } catch (error: unknown) {
       handlePrismaError(error, 'CLEAR_CONTEXT')
     }
   }
@@ -573,7 +573,7 @@ export class TransactionOperations {
   ): Promise<T> {
     try {
       return await db.$transaction(operation)
-    } catch (error) {
+    } catch (error: unknown) {
       handlePrismaError(error, 'TRANSACTION')
     }
   }

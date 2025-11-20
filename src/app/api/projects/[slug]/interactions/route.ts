@@ -36,7 +36,7 @@ export async function POST(
     let validatedData: ProjectInteractionInput
     try {
       validatedData = validateProjectInteraction(body)
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof ValidationError) {
         return NextResponse.json(
           {
@@ -107,9 +107,9 @@ export async function POST(
 
     return NextResponse.json(response, { status: 201 })
 
-  } catch (error) {
+  } catch (error: unknown) {
     logger.error('Project interaction error:', error instanceof Error ? error : new Error(String(error)))
-    
+
     return NextResponse.json(
       {
         success: false,
@@ -151,9 +151,9 @@ export async function GET(
 
     return NextResponse.json(response)
 
-  } catch (error) {
+  } catch (error: unknown) {
     logger.error('Get project interactions error:', error instanceof Error ? error : new Error(String(error)))
-    
+
     return NextResponse.json(
       {
         success: false,
