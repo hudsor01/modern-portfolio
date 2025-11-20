@@ -5,14 +5,14 @@
  */
 
 import { z } from 'zod'
-import { 
-  PostStatus, 
-  ContentType, 
-  InteractionType, 
-  SEOEventType, 
+import {
+  PostStatus,
+  ContentType,
+  InteractionType,
+  SEOEventType,
   SEOSeverity,
-  ChangeFrequency 
-} from '@prisma/client'
+  ChangeFrequency
+} from '@/types/prisma-generated'
 
 // =======================
 // BASE PRIMITIVE SCHEMAS
