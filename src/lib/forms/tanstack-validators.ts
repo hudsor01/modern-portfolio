@@ -1,5 +1,5 @@
-import { FieldApi } from '@tanstack/react-form'
 import { z } from 'zod'
+import type { TanStackFieldApi } from './form-types'
 
 /**
  * Zod validation adapter for TanStack Form
@@ -12,7 +12,7 @@ export function zodValidator(schema: z.ZodType<any>) {
       return undefined
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return error.errors[0]?.message ?? 'Invalid value'
+        return error.issues[0]?.message ?? 'Invalid value'
       }
       return 'Invalid value'
     }
@@ -30,7 +30,7 @@ export async function asyncZodValidator(schema: z.ZodType<any>) {
       return undefined
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return error.errors[0]?.message ?? 'Invalid value'
+        return error.issues[0]?.message ?? 'Invalid value'
       }
       return 'Invalid value'
     }
@@ -70,27 +70,27 @@ export const ValidationSchemas = {
 /**
  * Helper to get field error message
  */
-export function getFieldError(field: FieldApi<any, any, any, any>): string | undefined {
+export function getFieldError(field: TanStackFieldApi): string | undefined {
   return field.state.meta.errors?.[0]?.toString()
 }
 
 /**
  * Helper to check if field has error
  */
-export function hasFieldError(field: FieldApi<any, any, any, any>): boolean {
+export function hasFieldError(field: TanStackFieldApi): boolean {
   return field.state.meta.errors && field.state.meta.errors.length > 0 && field.state.meta.touchedOrDirty
 }
 
 /**
  * Helper to check if field is touched
  */
-export function isFieldTouched(field: FieldApi<any, any, any, any>): boolean {
+export function isFieldTouched(field: TanStackFieldApi): boolean {
   return field.state.meta.touched
 }
 
 /**
  * Helper to check if field is dirty
  */
-export function isFieldDirty(field: FieldApi<any, any, any, any>): boolean {
+export function isFieldDirty(field: TanStackFieldApi): boolean {
   return field.state.meta.dirty
 }

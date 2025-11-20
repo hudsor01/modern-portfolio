@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import { FieldApi, FieldInfo } from '@tanstack/react-form'
 import { AlertCircle, Eye, EyeOff } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -15,12 +14,13 @@ import {
 import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib/utils'
 import { getFieldError, hasFieldError, isFieldTouched } from '@/lib/forms/tanstack-validators'
+import type { TanStackFieldApi } from '@/lib/forms/form-types'
 
 /**
  * Base field wrapper for TanStack Form fields
  */
 interface FieldWrapperProps {
-  field: FieldApi<any, any, any, any>
+  field: TanStackFieldApi
   label?: string
   description?: string
   hint?: string
@@ -91,7 +91,7 @@ export function TanStackFieldWrapper({
  * TanStack text input field component
  */
 interface TanStackInputFieldProps {
-  field: FieldApi<string, any, any, any>
+  field: TanStackFieldApi
   label?: string
   description?: string
   hint?: string
@@ -139,7 +139,6 @@ export function TanStackInputField({
     onShowPasswordChange?.(newState)
   }
 
-  const error = getFieldError(field)
   const hasError = hasFieldError(field)
 
   return (
@@ -199,7 +198,7 @@ export function TanStackInputField({
  * TanStack textarea field component
  */
 interface TanStackTextareaFieldProps {
-  field: FieldApi<string, any, any, any>
+  field: TanStackFieldApi
   label?: string
   description?: string
   hint?: string
@@ -231,7 +230,6 @@ export function TanStackTextareaField({
   labelClassName,
   textareaClassName,
 }: TanStackTextareaFieldProps) {
-  const error = getFieldError(field)
   const hasError = hasFieldError(field)
   const currentLength = field.state.value?.length || 0
   const remainingLength = maxLength ? maxLength - currentLength : undefined
@@ -297,7 +295,7 @@ export function TanStackTextareaField({
  * TanStack select field component
  */
 interface TanStackSelectFieldProps {
-  field: FieldApi<string, any, any, any>
+  field: TanStackFieldApi
   label?: string
   description?: string
   hint?: string
@@ -325,7 +323,6 @@ export function TanStackSelectField({
   containerClassName,
   labelClassName,
 }: TanStackSelectFieldProps) {
-  const error = getFieldError(field)
   const hasError = hasFieldError(field)
 
   return (
@@ -374,7 +371,7 @@ export function TanStackSelectField({
  * TanStack checkbox field component
  */
 interface TanStackCheckboxFieldProps {
-  field: FieldApi<boolean, any, any, any>
+  field: TanStackFieldApi
   label: string
   description?: string
   required?: boolean
@@ -392,7 +389,6 @@ export function TanStackCheckboxField({
   containerClassName,
   labelClassName,
 }: TanStackCheckboxFieldProps) {
-  const error = getFieldError(field)
   const hasError = hasFieldError(field)
 
   return (
@@ -421,7 +417,7 @@ export function TanStackCheckboxField({
  * TanStack radio group component
  */
 interface TanStackRadioGroupProps {
-  field: FieldApi<string, any, any, any>
+  field: TanStackFieldApi
   label?: string
   description?: string
   required?: boolean
@@ -448,7 +444,6 @@ export function TanStackRadioGroup({
   containerClassName,
   labelClassName,
 }: TanStackRadioGroupProps) {
-  const error = getFieldError(field)
   const hasError = hasFieldError(field)
 
   return (
