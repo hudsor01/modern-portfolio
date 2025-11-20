@@ -385,14 +385,14 @@ export interface SitemapEntry {
 // ===== NAMESPACE FOR PRISMA TYPE EXPORTS =====
 // This allows code that imports from @prisma/client to still work
 export namespace Prisma {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   export type BlogPostWhereInput = any
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   export type BlogPostOrderByWithRelationInput = any
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   export type PostViewWhereInput = any
   export type InputJsonValue = unknown
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   export type TransactionClient = any
 
   export class PrismaClientKnownRequestError extends Error {
