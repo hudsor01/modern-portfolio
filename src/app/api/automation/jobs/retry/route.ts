@@ -135,10 +135,10 @@ async function handleSingleRetry(payload: z.infer<typeof SingleRetrySchema>) {
 
 async function handleBulkRetry(payload: z.infer<typeof BulkRetrySchema>) {
   const { filter, options } = payload;
-  
+
   // Get all jobs that match the filter
-  const allJobs = Array.from((jobQueue as unknown as { jobs: Map<string, Job> }).jobs.values()) as Job[];
-  let eligibleJobs = allJobs.filter((job: Job) => 
+  const allJobs = jobQueue.getAllJobs();
+  let eligibleJobs = allJobs.filter((job: Job) =>
     ['failed', 'cancelled'].includes(job.status)
   );
 
@@ -303,7 +303,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Return general retry statistics
-    const allJobs = Array.from((jobQueue as unknown as { jobs: Map<string, Job> }).jobs.values()) as Job[];
+    const allJobs = jobQueue.getAllJobs();
     const failedJobs = allJobs.filter((job: Job) => job.status === 'failed');
     const cancelledJobs = allJobs.filter((job: Job) => job.status === 'cancelled');
     const retryableJobs = [...failedJobs, ...cancelledJobs].filter((job: Job) => 
