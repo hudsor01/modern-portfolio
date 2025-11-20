@@ -44,13 +44,11 @@ export function TanStackContactForm({
 }: TanStackContactFormProps) {
   const [submitState, setSubmitState] = useState<'idle' | 'success' | 'error'>('idle')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [rateLimitId, setRateLimitId] = useState('contact-anonymous')
 
   // TanStack Query hooks
   const contactMutation = useContactFormSubmission()
-  const rateLimitQuery = useRateLimitStatus(
-    `contact-${typeof window !== 'undefined' ? localStorage.getItem('contact-email') || 'anonymous' : 'anonymous'}`,
-    enableRateLimit
-  )
+  const rateLimitQuery = useRateLimitStatus(rateLimitId, enableRateLimit)
 
   // Form submission handler
   const handleFormSubmit = useCallback(
@@ -67,9 +65,8 @@ export function TanStackContactForm({
         setSubmitState('success')
 
         // Save email for rate limiting
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('contact-email', values.email)
-        }
+        localStorage.setItem('contact-email', values.email)
+        setRateLimitId(`contact-${values.email}`)
 
         toast.success('Message sent successfully! I\'ll get back to you soon.')
 
@@ -117,9 +114,7 @@ export function TanStackContactForm({
           phone: form.getFieldValue('phone' as any),
         }
 
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('contact-form-draft', JSON.stringify(data))
-        }
+        localStorage.setItem('contact-form-draft', JSON.stringify(data))
         setLastSaved(new Date().toLocaleTimeString())
       }
     }, 500)
@@ -131,21 +126,25 @@ export function TanStackContactForm({
   React.useEffect(() => {
     if (!enableAutoSave) return
 
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('contact-form-draft')
-      if (saved) {
-        try {
-          const data = JSON.parse(saved) as ContactFormData
-          form.setFieldValue('name', data.name)
-          form.setFieldValue('email', data.email)
-          form.setFieldValue('subject', data.subject)
-          form.setFieldValue('message', data.message)
-          if (data.company) form.setFieldValue('company', data.company)
-          if (data.phone) form.setFieldValue('phone', data.phone)
-        } catch (error) {
-          logger.error('Failed to load auto-saved form data', error instanceof Error ? error : new Error(String(error)))
-        }
+    const saved = localStorage.getItem('contact-form-draft')
+    if (saved) {
+      try {
+        const data = JSON.parse(saved) as ContactFormData
+        form.setFieldValue('name', data.name)
+        form.setFieldValue('email', data.email)
+        form.setFieldValue('subject', data.subject)
+        form.setFieldValue('message', data.message)
+        if (data.company) form.setFieldValue('company', data.company)
+        if (data.phone) form.setFieldValue('phone', data.phone)
+      } catch (error) {
+        logger.error('Failed to load auto-saved form data', error instanceof Error ? error : new Error(String(error)))
       }
+    }
+
+    // Initialize rate limit ID from localStorage
+    const email = localStorage.getItem('contact-email')
+    if (email) {
+      setRateLimitId(`contact-${email}`)
     }
   }, [enableAutoSave, form])
 
