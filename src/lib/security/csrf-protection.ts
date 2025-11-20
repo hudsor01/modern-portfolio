@@ -74,7 +74,7 @@ export async function csrfProtectionMiddleware(
   }
 
   // Get token from headers or form
-  let requestToken = request.headers.get(CSRF_HEADER_NAME)
+  let requestToken: string | undefined = request.headers.get(CSRF_HEADER_NAME) ?? undefined
 
   // If not in headers, try to parse from form data
   if (!requestToken && request.method === 'POST') {
@@ -85,9 +85,10 @@ export async function csrfProtectionMiddleware(
         requestToken = body._csrf_token
       } else if (contentType?.includes('application/x-www-form-urlencoded')) {
         const formData = await request.formData()
-        requestToken = formData.get('_csrf_token') as string
+        const tokenValue = formData.get('_csrf_token')
+        requestToken = tokenValue ? String(tokenValue) : undefined
       }
-    } catch (error) {
+    } catch (_error) {
       return {
         valid: false,
         error: 'Failed to parse request body for CSRF token',

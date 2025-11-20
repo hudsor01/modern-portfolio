@@ -1,16 +1,18 @@
 'use client'
 
+/* eslint-disable react/no-children-prop, @typescript-eslint/no-explicit-any */
+
 import React from 'react'
-import { FormApi } from '@tanstack/react-form'
 import { Separator } from '@/components/ui/separator'
 import type { ContactFormData } from '@/app/api/types'
 import {
   TanStackInputField,
   TanStackTextareaField,
 } from '@/components/forms/tanstack-form-fields'
+import type { TanStackFormApi } from '@/lib/forms/form-types'
 
 interface TanStackContactFormFieldsProps {
-  form: FormApi<ContactFormData, any>
+  form: TanStackFormApi<ContactFormData>
   variant: 'default' | 'minimal' | 'detailed'
   showOptionalFields: boolean
 }
@@ -24,7 +26,6 @@ export function TanStackContactFormFields({
     <div className="space-y-6">
       {/* Name and Email row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         <form.Field
           name="name"
           children={(field: any) => (
