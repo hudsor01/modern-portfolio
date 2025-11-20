@@ -3,6 +3,7 @@
  * Comprehensive health monitoring for the blog automation system
  */
 
+import { loadavg, cpus } from 'os';
 import { NextRequest, NextResponse } from 'next/server';
 import { jobQueue } from '@/lib/automation/job-queue';
 import { blogAutomationService } from '@/lib/automation/blog-automation-service';
@@ -175,8 +176,8 @@ async function performSystemChecks(): Promise<{
   }
 
   // CPU load check (Node.js specific)
-  const loadAvg = require('os').loadavg();
-  const cpuCount = require('os').cpus().length;
+  const loadAvg = loadavg();
+  const cpuCount = cpus().length;
   const normalizedLoad = loadAvg[0] / cpuCount;
 
   if (normalizedLoad > 0.8) {
