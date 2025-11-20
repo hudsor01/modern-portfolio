@@ -1,6 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { createContextLogger } from '@/lib/logging/logger'
+
+const logger = createContextLogger('useCSRFToken')
 
 /**
  * Hook to manage CSRF token fetching and management
@@ -33,7 +36,7 @@ export function useCSRFToken() {
       } catch (err) {
         const error = err instanceof Error ? err : new Error(String(err))
         setError(error)
-        console.error('CSRF token fetch error:', error)
+        logger.error('CSRF token fetch error', error)
       } finally {
         setIsLoading(false)
       }

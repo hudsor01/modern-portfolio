@@ -10,6 +10,9 @@ import { z } from 'zod'
 import { checkContactFormRateLimit } from '../security/rate-limiter'
 import { escapeHtml } from '@/lib/security/html-escape'
 import { logger } from '@/lib/monitoring/logger'
+import { createContextLogger } from '@/lib/logging/logger'
+
+const emailLogger = createContextLogger('EmailService')
 
 // Environment configuration
 const RESEND_API_KEY = process.env.RESEND_API_KEY
@@ -241,7 +244,7 @@ export class EmailService {
       
       // Auto-reply failure is not critical
       if (autoReplyResult.error) {
-        console.warn('Failed to send auto-reply:', autoReplyResult.error)
+        emailLogger.warn('Failed to send auto-reply', { error: String(autoReplyResult.error) })
       }
       
       return {
@@ -252,7 +255,7 @@ export class EmailService {
         },
       }
     } catch (error) {
-      console.error('Email service error:', error)
+      emailLogger.error('Email service error', error instanceof Error ? error : new Error(String(error)))
       
       if (error instanceof z.ZodError) {
         const rawFieldErrors = error.flatten().fieldErrors;
@@ -283,7 +286,7 @@ export class EmailService {
   
   private async handleMockEmail(_data: ContactFormData): Promise<EmailServiceResult> {
     if (this.isProduction) {
-      console.error('Email service not configured in production')
+      emailLogger.error('Email service not configured in production', new Error('Resend API key not configured'))
       return {
         success: false,
         error: 'Email service not available',

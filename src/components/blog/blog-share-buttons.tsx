@@ -12,6 +12,9 @@ import { SiX, SiLinkedin, SiFacebook } from 'react-icons/si'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
+import { createContextLogger } from '@/lib/logging/logger'
+
+const logger = createContextLogger('BlogShareButtons')
 
 interface BlogShareButtonsProps {
   url: string
@@ -91,7 +94,9 @@ export function BlogShareButtons({
         title,
         text: shareText,
         url: fullUrl,
-      }).catch(console.error)
+      }).catch((error) => {
+        logger.error('Native share failed', error instanceof Error ? error : new Error(String(error)))
+      })
       return
     }
 
@@ -106,7 +111,7 @@ export function BlogShareButtons({
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      console.error('Failed to copy: ', err)
+      logger.error('Failed to copy', err instanceof Error ? err : new Error(String(err)))
     }
   }
 

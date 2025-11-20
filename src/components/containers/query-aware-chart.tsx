@@ -6,6 +6,9 @@ import { ShadcnChartContainer } from '@/components/charts/shadcn-chart-container
 import { toast } from 'sonner'
 import type { ChartConfig } from '@/components/ui/chart'
 import type { ChartDataPoint } from '@/types/chart'
+import { createContextLogger } from '@/lib/logging/logger'
+
+const logger = createContextLogger('QueryAwareChart')
 
 interface QueryAwareChartProps {
   // Required props
@@ -83,7 +86,7 @@ export function QueryAwareChart({
   // Handle query errors in TanStack Query v5 style
   React.useEffect(() => {
     if (chartQuery?.error) {
-      console.error('Chart query error:', chartQuery.error)
+      logger.error('Chart query error', chartQuery.error as Error)
       onError?.(chartQuery.error as Error)
       toast.error(`Chart loading failed: ${(chartQuery.error as Error).message}`)
     }
@@ -99,7 +102,7 @@ export function QueryAwareChart({
           const newData = JSON.parse(e.newValue)
           queryClient.setQueryData(queryKey, newData)
         } catch (error) {
-          console.warn('Failed to sync chart data across tabs:', error)
+          logger.warn('Failed to sync chart data across tabs', { error: String(error) })
         }
       }
     }

@@ -5,6 +5,9 @@ import { Button } from '@/components/ui/button'
 import { FileDown } from 'lucide-react'
 import { useToast } from '@/hooks/use-sonner-toast'
 import { cn } from '@/lib/utils'
+import { createContextLogger } from '@/lib/logging/logger'
+
+const logger = createContextLogger('ResumeDownload')
 
 interface ResumeDownloadProps {
   className?: string
@@ -59,7 +62,7 @@ export function ResumeDownload({
       downloadFile(pdfPath, 'Richard_Hudson_Resume.pdf')
       showSuccessToast('Resume downloaded successfully!', { id: toastId })
     } catch (error) {
-      console.error('Error downloading resume:', error)
+      logger.error('Error downloading resume', error instanceof Error ? error : new Error(String(error)))
       const errorMessage = error instanceof Error ? error.message : 'Failed to download resume'
       showErrorToast(errorMessage, { id: toastId })
     }

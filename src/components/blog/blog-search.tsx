@@ -9,6 +9,9 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import type { BlogPostSummary, BlogCategory, BlogTag, BlogAuthor, BlogFilters } from '@/types/blog'
+import { createContextLogger } from '@/lib/logging/logger'
+
+const logger = createContextLogger('BlogSearch')
 
 interface SearchResult {
   type: 'post' | 'category' | 'tag' | 'author'
@@ -419,7 +422,7 @@ export function useSearchSuggestions(query: string, delay: number = 300) {
         const data = await response.json()
         setSuggestions(data.suggestions || [])
       } catch (error) {
-        console.error('Failed to fetch suggestions:', error)
+        logger.error('Failed to fetch suggestions', error instanceof Error ? error : new Error(String(error)))
         setSuggestions([])
       } finally {
         setIsLoading(false)
