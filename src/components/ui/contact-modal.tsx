@@ -3,7 +3,7 @@
 import React, { useEffect, useCallback } from 'react'
 import { m as motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
-import { ShadcnContactForm } from '@/components/forms/shadcn-contact-form'
+import { ShadcnContactForm } from '@/app/contact/components/shadcn-contact-form'
 import { Button } from '@/components/ui/button'
 import { ProfessionalCard, ProfessionalCardHeader, ProfessionalCardTitle, ProfessionalCardDescription, ProfessionalCardContent } from '@/components/ui/professional-card'
 

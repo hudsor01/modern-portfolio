@@ -8,7 +8,7 @@ import type { ContactFormData } from '@/app/api/types'
 import {
   TanStackInputField,
   TanStackTextareaField,
-} from '@/components/forms/tanstack-form-fields'
+} from '../tanstack-form-fields'
 import type { TanStackFormApi } from '@/lib/forms/form-types'
 
 interface TanStackContactFormFieldsProps {
