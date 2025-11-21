@@ -70,7 +70,6 @@ export function QueryAwareContactForm({
   return (
     <ShadcnContactForm
       enableAutoSave={enableCrossTabAutoSave}
-      enableRateLimit={enableRateLimitCheck}
       onSuccess={() => handleSuccess({ name: '', email: '', subject: '', message: '' })}
       onError={handleError}
       {...formProps}

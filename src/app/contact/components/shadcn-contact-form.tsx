@@ -9,14 +9,12 @@ import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { contactFormSchema } from '@/lib/validation'
 import type { ContactFormData } from '@/app/api/types'
+import { submitContactForm } from '@/app/contact/actions'
 import {
-  useContactFormSubmission,
-  useRateLimitStatus,
   useFormAutoSave,
 } from '@/hooks/use-component-consolidation-queries'
 
 // Contact form sub-components
-import { RateLimitIndicator } from './contact/rate-limit-indicator'
 import { AutoSaveIndicator } from './contact/auto-save-indicator'
 import { FormProgressSection } from './contact/form-progress-section'
 import { ContactFormFields } from './contact/contact-form-fields'
@@ -27,7 +25,6 @@ interface ShadcnContactFormProps {
   title?: string
   description?: string
   enableAutoSave?: boolean
-  enableRateLimit?: boolean
   showOptionalFields?: boolean
   className?: string
   onSuccess?: () => void
@@ -39,13 +36,13 @@ export function ShadcnContactForm({
   title = "Professional Connect",
   description = "Connect with me for executive opportunities, professional networking, or strategic revenue operations discussions.",
   enableAutoSave = true,
-  enableRateLimit = true,
   showOptionalFields = false,
   className,
   onSuccess,
   onError,
 }: ShadcnContactFormProps) {
   const [submitState, setSubmitState] = useState<'idle' | 'success' | 'error'>('idle')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Form setup with react-hook-form and Zod validation
   const form = useForm<ContactFormData>({
@@ -64,14 +61,6 @@ export function ShadcnContactForm({
   // Watch form values for auto-save
   const formValues = form.watch()
 
-  // TanStack Query hooks with advanced features
-  const contactMutation = useContactFormSubmission()
-  
-  const rateLimitQuery = useRateLimitStatus(
-    `contact-${formValues.email || 'anonymous'}`,
-    enableRateLimit
-  )
-  
   const autoSave = useFormAutoSave(
     'shadcn-contact-form',
     formValues as unknown as Record<string, unknown>,
@@ -85,42 +74,50 @@ export function ShadcnContactForm({
   const handleSuccess = useCallback(() => {
     setSubmitState('success')
     form.reset()
-    
+
     if (enableAutoSave) {
       autoSave.clearData()
     }
-    
+
     toast.success('Message sent successfully! I\'ll get back to you soon.')
-    
+
     // Reset success state
     setTimeout(() => setSubmitState('idle'), 3000)
-    
+
     onSuccess?.()
   }, [form, enableAutoSave, autoSave, onSuccess])
 
   // Handle submission error
-  const handleError = useCallback((error: Error) => {
+  const handleError = useCallback((error: string | undefined) => {
     setSubmitState('error')
-    toast.error(error.message || 'Failed to send message. Please try again.')
-    
+    const errorMessage = error || 'Failed to send message. Please try again.'
+    toast.error(errorMessage)
+
     // Reset error state
     setTimeout(() => setSubmitState('idle'), 3000)
-    
-    onError?.(error)
+
+    onError?.(new Error(errorMessage))
   }, [onError])
 
-  // Form submission handler
-  const onSubmit = useCallback((data: ContactFormData) => {
-    if (enableRateLimit && rateLimitQuery.data?.blocked) {
-      toast.error('Rate limit exceeded. Please wait before sending another message.')
-      return
-    }
+  // Form submission handler using Server Action
+  const onSubmit = useCallback(async (data: ContactFormData) => {
+    setIsSubmitting(true)
+    setSubmitState('idle')
 
-    contactMutation.mutate(data, {
-      onSuccess: handleSuccess,
-      onError: handleError,
-    })
-  }, [contactMutation, enableRateLimit, rateLimitQuery.data?.blocked, handleSuccess, handleError])
+    try {
+      const result = await submitContactForm(data)
+
+      if (result.success) {
+        handleSuccess()
+      } else {
+        handleError(result.error)
+      }
+    } catch (error) {
+      handleError(error instanceof Error ? error.message : 'An unexpected error occurred')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }, [handleSuccess, handleError])
 
   // Auto-save restoration
   useEffect(() => {
@@ -136,9 +133,6 @@ export function ShadcnContactForm({
     return (completed / fields.length) * 100
   })() : 0
 
-  const isSubmitting = contactMutation.isPending
-  const isBlocked = enableRateLimit && rateLimitQuery.data?.blocked
-
   return (
     <Card className={cn('w-full max-w-2xl mx-auto', className)}>
       {/* Card Header */}
@@ -150,7 +144,7 @@ export function ShadcnContactForm({
               {description}
             </CardDescription>
           )}
-          
+
           {/* Form progress for detailed variant */}
           {variant === 'detailed' && (
             <FormProgressSection progress={formProgress} />
@@ -159,15 +153,11 @@ export function ShadcnContactForm({
       )}
 
       <CardContent className="space-y-6">
-        {/* Status indicators */}
-        {(enableRateLimit || enableAutoSave) && (
-          <div className="flex items-center justify-between">
-            <RateLimitIndicator 
-              enabled={enableRateLimit} 
-              data={rateLimitQuery.data} 
-            />
-            <AutoSaveIndicator 
-              enabled={enableAutoSave} 
+        {/* Auto-save indicator */}
+        {enableAutoSave && (
+          <div className="flex items-center justify-end">
+            <AutoSaveIndicator
+              enabled={enableAutoSave}
               isAutoSaving={autoSave.isAutoSaving}
               lastSaved={autoSave.lastSaved}
             />
@@ -177,7 +167,7 @@ export function ShadcnContactForm({
         {/* shadcn/ui Form */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <ContactFormFields 
+            <ContactFormFields
               form={form}
               variant={variant}
               showOptionalFields={showOptionalFields}
@@ -185,7 +175,7 @@ export function ShadcnContactForm({
 
             <ContactFormSubmitButton
               isSubmitting={isSubmitting}
-              isBlocked={isBlocked}
+              isBlocked={false}
               submitState={submitState}
             />
           </form>

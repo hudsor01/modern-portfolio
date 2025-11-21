@@ -109,7 +109,6 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                     title="Professional Connect"
                     description="Connect with me for professional opportunities, networking, or revenue operations discussions."
                     enableAutoSave={true}
-                    enableRateLimit={true}
                     className="border-0 shadow-none"
                   />
 
