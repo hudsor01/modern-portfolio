@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { ShadcnContactForm } from '@/components/forms/shadcn-contact-form'
+import { ShadcnContactForm } from '@/app/contact/components/shadcn-contact-form'
 import { ContactFormData } from '@/types/shared-api'
 
 interface QueryAwareContactFormProps {

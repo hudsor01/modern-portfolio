@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { BlogShareButtons } from '@/components/blog/blog-share-buttons'
+import { BlogShareButtons } from '../blog-share-buttons'
 import { BlogPostData } from '@/types/shared-api'
 import { Heart, Bookmark, Printer } from 'lucide-react'
 import { cn } from '@/lib/utils'

@@ -10,8 +10,8 @@
 // ============================================================================
 
 // Forms - Using shadcn/ui Form
-export { ShadcnContactForm as UnifiedContactForm } from '@/components/forms/shadcn-contact-form'
-export { ShadcnContactForm as ContactForm } from '@/components/forms/shadcn-contact-form'
+export { ShadcnContactForm as UnifiedContactForm } from '@/app/contact/components/shadcn-contact-form'
+export { ShadcnContactForm as ContactForm } from '@/app/contact/components/shadcn-contact-form'
 
 // Charts - Using shadcn/ui Chart
 export { ShadcnChartContainer as UnifiedChart } from '@/components/charts/shadcn-chart-container'

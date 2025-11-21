@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
-import { BlogPostLayout } from '@/components/blog/blog-post-layout'
+import { BlogPostLayout } from '../components/blog-post-layout'
 import { BlogPostJsonLd } from '@/components/seo/blog-json-ld'
 import { createContextLogger } from '@/lib/logging/logger'
 
