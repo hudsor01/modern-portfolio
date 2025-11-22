@@ -6,6 +6,7 @@ import { X } from 'lucide-react'
 import { ShadcnContactForm } from '@/app/contact/components/shadcn-contact-form'
 import { Button } from '@/components/ui/button'
 import { ProfessionalCard, ProfessionalCardHeader, ProfessionalCardTitle, ProfessionalCardDescription, ProfessionalCardContent } from '@/components/ui/professional-card'
+import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 
 interface ContactModalProps {
   isOpen: boolean
@@ -42,7 +43,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
     // Auto-close modal after successful submission
     setTimeout(() => {
       onClose()
-    }, 2000)
+    }, TIMING_CONSTANTS.AUTO_SAVE_DISPLAY)
   }, [onClose])
 
   return (
@@ -54,7 +55,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: TIMING_CONSTANTS.DROPDOWN_ANIMATION / 1000 }}
             className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
             onClick={onClose}
             aria-hidden="true"
@@ -66,11 +67,11 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 300, 
+              transition={{
+                type: "spring",
+                stiffness: 300,
                 damping: 30,
-                duration: 0.3 
+                duration: TIMING_CONSTANTS.MODAL_ANIMATION / 1000
               }}
               className="relative w-full max-w-2xl max-h-[90vh] overflow-hidden"
               role="dialog"

@@ -16,6 +16,7 @@ import {
   useRateLimitStatus,
 } from '@/hooks/use-component-consolidation-queries'
 import { createContextLogger } from '@/lib/logging/logger'
+import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 
 const logger = createContextLogger('TanStackContactForm')
 
@@ -71,7 +72,7 @@ export function TanStackContactForm({
         toast.success('Message sent successfully! I\'ll get back to you soon.')
 
         // Reset success state
-        setTimeout(() => setSubmitState('idle'), 3000)
+        setTimeout(() => setSubmitState('idle'), TIMING_CONSTANTS.FORM_SUCCESS_DISPLAY)
 
         onSuccess?.()
       } catch (error) {
@@ -80,7 +81,7 @@ export function TanStackContactForm({
         toast.error(errorMessage)
 
         // Reset error state
-        setTimeout(() => setSubmitState('idle'), 3000)
+        setTimeout(() => setSubmitState('idle'), TIMING_CONSTANTS.FORM_SUCCESS_DISPLAY)
 
         if (error instanceof Error) {
           onError?.(error)
@@ -117,7 +118,7 @@ export function TanStackContactForm({
         localStorage.setItem('contact-form-draft', JSON.stringify(data))
         setLastSaved(new Date().toLocaleTimeString())
       }
-    }, 500)
+    }, TIMING_CONSTANTS.FORM_DEBOUNCE)
 
     return () => clearTimeout(autoSaveTimer)
   }, [form, enableAutoSave])

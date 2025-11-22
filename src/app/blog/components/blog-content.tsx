@@ -10,6 +10,7 @@ import { escapeHtml } from '@/lib/security/html-escape'
 import { ContentType } from '@/types/blog'
 import DOMPurify from 'dompurify'
 import { createContextLogger } from '@/lib/logging/logger'
+import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 
 const logger = createContextLogger('BlogContent')
 
@@ -95,7 +96,7 @@ export function BlogContent({
     try {
       await navigator.clipboard.writeText(code)
       setCopiedCode(code)
-      setTimeout(() => setCopiedCode(null), 2000)
+      setTimeout(() => setCopiedCode(null), TIMING_CONSTANTS.CLIPBOARD_COPY_DISPLAY)
     } catch (err) {
       logger.error('Failed to copy code', err instanceof Error ? err : new Error(String(err)))
     }

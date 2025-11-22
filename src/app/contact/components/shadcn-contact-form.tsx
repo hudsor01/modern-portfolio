@@ -10,6 +10,7 @@ import { toast } from 'sonner'
 import { contactFormSchema } from '@/lib/validation'
 import type { ContactFormData } from '@/app/api/types'
 import { submitContactForm } from '@/app/contact/actions'
+import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 import {
   useFormAutoSave,
 } from '@/hooks/use-component-consolidation-queries'
@@ -65,7 +66,7 @@ export function ShadcnContactForm({
     'shadcn-contact-form',
     formValues as unknown as Record<string, unknown>,
     {
-      debounceMs: enableAutoSave ? 500 : undefined,
+      debounceMs: enableAutoSave ? TIMING_CONSTANTS.FORM_DEBOUNCE : undefined,
       enabled: enableAutoSave,
     }
   )
@@ -82,7 +83,7 @@ export function ShadcnContactForm({
     toast.success('Message sent successfully! I\'ll get back to you soon.')
 
     // Reset success state
-    setTimeout(() => setSubmitState('idle'), 3000)
+    setTimeout(() => setSubmitState('idle'), TIMING_CONSTANTS.FORM_SUCCESS_DISPLAY)
 
     onSuccess?.()
   }, [form, enableAutoSave, autoSave, onSuccess])
@@ -94,7 +95,7 @@ export function ShadcnContactForm({
     toast.error(errorMessage)
 
     // Reset error state
-    setTimeout(() => setSubmitState('idle'), 3000)
+    setTimeout(() => setSubmitState('idle'), TIMING_CONSTANTS.FORM_ERROR_DISPLAY)
 
     onError?.(new Error(errorMessage))
   }, [onError])

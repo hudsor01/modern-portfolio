@@ -14,6 +14,7 @@ import ChurnLineChart from './ChurnLineChart'
 import RetentionHeatmap from './RetentionHeatmap'
 import { m as motion } from 'framer-motion'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
+import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 
 // Import static churn data
 import {
@@ -24,7 +25,7 @@ export default function ChurnAnalysis() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    setTimeout(() => setIsLoading(false), 500)
+    setTimeout(() => setIsLoading(false), TIMING_CONSTANTS.LOADING_STATE_RESET)
   }, [])
 
   // Ensure data exists before accessing indices
@@ -76,7 +77,7 @@ export default function ChurnAnalysis() {
           <button 
             onClick={() => {
               setIsLoading(true)
-              setTimeout(() => setIsLoading(false), 500)
+              setTimeout(() => setIsLoading(false), TIMING_CONSTANTS.LOADING_STATE_RESET)
             }}
             className="p-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300"
           >
