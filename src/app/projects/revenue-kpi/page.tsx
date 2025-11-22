@@ -20,6 +20,7 @@ import {
 import { yearOverYearGrowthExtended } from '@/app/projects/data/partner-analytics'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { createContextLogger } from '@/lib/logging/logger'
+import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 
 const logger = createContextLogger('RevenueKPIPage')
 
@@ -38,7 +39,7 @@ export default function RevenueKPI() {
 
   // Simulate data loading completion
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 500)
+    const timer = setTimeout(() => setIsLoading(false), TIMING_CONSTANTS.LOADING_STATE_RESET)
     return () => clearTimeout(timer)
   }, [])
 
@@ -151,7 +152,7 @@ export default function RevenueKPI() {
             <button 
               onClick={() => {
                 setIsLoading(true)
-                setTimeout(() => setIsLoading(false), 500)
+                setTimeout(() => setIsLoading(false), TIMING_CONSTANTS.LOADING_STATE_RESET)
               }}
               className="p-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300"
             >

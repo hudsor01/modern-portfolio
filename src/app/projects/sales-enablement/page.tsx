@@ -5,12 +5,13 @@ import Link from 'next/link'
 import { ArrowLeft, TrendingUp, Users, Zap, Award, BookOpen } from 'lucide-react'
 import { m as motion } from 'framer-motion'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
+import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 
 export default function SalesEnablementProject() {
   const [_isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 500)
+    const timer = setTimeout(() => setIsLoading(false), TIMING_CONSTANTS.LOADING_STATE_RESET)
     return () => clearTimeout(timer)
   }, [])
 

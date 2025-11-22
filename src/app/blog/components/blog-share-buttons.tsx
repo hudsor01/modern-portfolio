@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils'
 import { createContextLogger } from '@/lib/logging/logger'
 import { useClientOnly } from '@/hooks/use-client-only'
+import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 
 const logger = createContextLogger('BlogShareButtons')
 
@@ -111,7 +112,7 @@ export function BlogShareButtons({
     try {
       await navigator.clipboard.writeText(fullUrl)
       setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      setTimeout(() => setCopied(false), TIMING_CONSTANTS.CLIPBOARD_COPY_DISPLAY)
     } catch (err) {
       logger.error('Failed to copy', err instanceof Error ? err : new Error(String(err)))
     }

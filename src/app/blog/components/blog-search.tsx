@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 import type { BlogPostSummary, BlogCategory, BlogTag, BlogAuthor, BlogFilters } from '@/types/blog'
 import { createContextLogger } from '@/lib/logging/logger'
 
+import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 const logger = createContextLogger('BlogSearch')
 
 interface SearchResult {
@@ -70,7 +71,7 @@ export function BlogSearch({
       if (searchQuery.trim() && !searchHistory.includes(searchQuery.trim())) {
         setSearchHistory(prev => [searchQuery.trim(), ...prev.slice(0, 4)])
       }
-    }, 300)
+    }, TIMING_CONSTANTS.SEARCH_DEBOUNCE)
   }, [onSearch, searchHistory])
 
   useEffect(() => {

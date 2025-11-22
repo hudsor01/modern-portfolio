@@ -28,6 +28,7 @@ import {
 import { m as motion } from 'framer-motion'
 import LeadSourcePieChart from './LeadSourcePieChart'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
+import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 
 // Import real data
 import { leadAttributionData } from '@/app/projects/data/partner-analytics'
@@ -61,7 +62,7 @@ export default function LeadAttribution() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    setTimeout(() => setIsLoading(false), 500)
+    setTimeout(() => setIsLoading(false), TIMING_CONSTANTS.LOADING_STATE_RESET)
   }, [])
 
   // Calculate totals safely
@@ -118,7 +119,7 @@ export default function LeadAttribution() {
           <button 
             onClick={() => {
               setIsLoading(true)
-              setTimeout(() => setIsLoading(false), 500)
+              setTimeout(() => setIsLoading(false), TIMING_CONSTANTS.LOADING_STATE_RESET)
             }}
             className="p-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300"
           >
