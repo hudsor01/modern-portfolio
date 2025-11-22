@@ -81,7 +81,7 @@ export function TanStackContactForm({
         toast.error(errorMessage)
 
         // Reset error state
-        setTimeout(() => setSubmitState('idle'), TIMING_CONSTANTS.FORM_SUCCESS_DISPLAY)
+        setTimeout(() => setSubmitState('idle'), TIMING_CONSTANTS.FORM_ERROR_DISPLAY)
 
         if (error instanceof Error) {
           onError?.(error)
