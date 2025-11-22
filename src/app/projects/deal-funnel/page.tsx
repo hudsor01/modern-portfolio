@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import {
   ArrowLeft,
   RefreshCcw,
@@ -13,11 +14,17 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { m as motion } from 'framer-motion'
-import DealStageFunnelChart from './DealStageFunnelChart'
+import { ChartSkeleton } from '@/components/projects/charts/chart-skeleton'
 import { getProject } from '@/lib/content/projects'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip, BarChart as RechartsBarChart, Bar, Cell } from 'recharts'
 import { createContextLogger } from '@/lib/logging/logger'
+
+// Lazy-load chart component with Suspense fallback
+const DealStageFunnelChart = dynamic(() => import('./DealStageFunnelChart'), {
+  loading: () => <ChartSkeleton height={400} showTitle={false} />,
+  ssr: true
+})
 
 const logger = createContextLogger('DealFunnelPage')
 

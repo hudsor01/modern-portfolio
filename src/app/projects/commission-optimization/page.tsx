@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import {
   ArrowLeft,
   RefreshCcw,
@@ -14,10 +15,25 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { m as motion } from 'framer-motion'
-import CommissionStructureChart from './CommissionStructureChart'
-import PerformanceIncentiveChart from './PerformanceIncentiveChart'
-import ROIOptimizationChart from './ROIOptimizationChart'
-import CommissionTierChart from './CommissionTierChart'
+import { ChartSkeleton } from '@/components/projects/charts/chart-skeleton'
+
+// Lazy-load chart components with Suspense fallback
+const CommissionStructureChart = dynamic(() => import('./CommissionStructureChart'), {
+  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  ssr: true
+})
+const PerformanceIncentiveChart = dynamic(() => import('./PerformanceIncentiveChart'), {
+  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  ssr: true
+})
+const ROIOptimizationChart = dynamic(() => import('./ROIOptimizationChart'), {
+  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  ssr: true
+})
+const CommissionTierChart = dynamic(() => import('./CommissionTierChart'), {
+  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  ssr: true
+})
 
 // Commission management metrics
 const commissionMetrics = {
