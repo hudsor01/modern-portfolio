@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import {
   Line,
   XAxis,
@@ -26,9 +27,15 @@ import {
   DollarSign,
 } from 'lucide-react'
 import { m as motion } from 'framer-motion'
-import LeadSourcePieChart from './LeadSourcePieChart'
+import { ChartSkeleton } from '@/components/projects/charts/chart-skeleton'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
+
+// Lazy-load chart components with Suspense fallback
+const LeadSourcePieChart = dynamic(() => import('./LeadSourcePieChart'), {
+  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  ssr: true
+})
 
 // Import real data
 import { leadAttributionData } from '@/app/projects/data/partner-analytics'

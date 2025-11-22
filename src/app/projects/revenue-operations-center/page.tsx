@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import {
   ArrowLeft,
   RefreshCcw,
@@ -17,10 +18,25 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { m as motion } from 'framer-motion'
-import RevenueOverviewChart from './RevenueOverviewChart'
-import PipelineHealthChart from './PipelineHealthChart'
-import ForecastAccuracyChart from './ForecastAccuracyChart'
-import OperationalMetricsChart from './OperationalMetricsChart'
+import { ChartSkeleton } from '@/components/projects/charts/chart-skeleton'
+
+// Lazy-load chart components with Suspense fallback
+const RevenueOverviewChart = dynamic(() => import('./RevenueOverviewChart'), {
+  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  ssr: true
+})
+const PipelineHealthChart = dynamic(() => import('./PipelineHealthChart'), {
+  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  ssr: true
+})
+const ForecastAccuracyChart = dynamic(() => import('./ForecastAccuracyChart'), {
+  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  ssr: true
+})
+const OperationalMetricsChart = dynamic(() => import('./OperationalMetricsChart'), {
+  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  ssr: true
+})
 
 // Comprehensive revenue operations metrics
 const revenueMetrics = {

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import {
   ArrowLeft,
   RefreshCcw,
@@ -10,11 +11,20 @@ import {
   AlertCircle,
 } from 'lucide-react'
 import Link from 'next/link'
-import ChurnLineChart from './ChurnLineChart'
-import RetentionHeatmap from './RetentionHeatmap'
+import { ChartSkeleton } from '@/components/projects/charts/chart-skeleton'
 import { m as motion } from 'framer-motion'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
+
+// Lazy-load chart components with Suspense fallback
+const ChurnLineChart = dynamic(() => import('./ChurnLineChart'), {
+  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  ssr: true
+})
+const RetentionHeatmap = dynamic(() => import('./RetentionHeatmap'), {
+  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  ssr: true
+})
 
 // Import static churn data
 import {
