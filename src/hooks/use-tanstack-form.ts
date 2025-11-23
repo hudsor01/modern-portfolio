@@ -5,9 +5,9 @@ import { zodValidator } from '@/lib/forms/tanstack-validators'
 /**
  * Hook to create a TanStack form with Zod validation
  */
-export function useTanStackForm<T extends Record<string, any>>(options: {
+export function useTanStackForm<T extends Record<string, unknown>>(options: {
   defaultValues: T
-  validationSchema?: Record<keyof T, z.ZodType<any>>
+  validationSchema?: Record<keyof T, z.ZodTypeAny>
   onSubmit: (values: T) => Promise<void> | void
   onError?: (error: Error) => void
 }) {
@@ -17,7 +17,7 @@ export function useTanStackForm<T extends Record<string, any>>(options: {
           acc[key] = () => zodValidator(schema)
           return acc
         },
-        {} as Record<string, () => any>
+        {} as Record<string, () => (value: unknown) => string | undefined>
       )
     : {}
 

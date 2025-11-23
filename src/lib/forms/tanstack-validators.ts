@@ -5,7 +5,7 @@ import type { TanStackFieldApi } from './form-types'
  * Zod validation adapter for TanStack Form
  * Validates field values using Zod schemas
  */
-export function zodValidator(schema: z.ZodType<any>) {
+export function zodValidator(schema: z.ZodTypeAny) {
   return (value: unknown): string | undefined => {
     try {
       schema.parse(value)
@@ -23,7 +23,7 @@ export function zodValidator(schema: z.ZodType<any>) {
  * Async Zod validation adapter for TanStack Form
  * Validates field values asynchronously using Zod schemas
  */
-export async function asyncZodValidator(schema: z.ZodType<any>) {
+export async function asyncZodValidator(schema: z.ZodTypeAny) {
   return async (value: unknown): Promise<string | undefined> => {
     try {
       await schema.parseAsync(value)
