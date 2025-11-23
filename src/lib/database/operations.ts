@@ -6,7 +6,7 @@
  */
 
 import { db } from '../db'
-import { Prisma } from '@/types/prisma-generated'
+import { Prisma } from '@prisma/client'
 import type {
   BlogPost,
   Author,
@@ -16,7 +16,7 @@ import type {
   // PostInteraction,
   // SEOKeyword,
   PostStatus
-} from '@/types/prisma-generated'
+} from '@prisma/client'
 
 // =======================
 // ERROR TYPES & HANDLING
@@ -438,7 +438,7 @@ export class AnalyticsOperations {
           postId,
           type,
           ...visitorData,
-          metadata: visitorData.metadata as Prisma.InputJsonValue ?? null
+          metadata: visitorData.metadata as Prisma.InputJsonValue | undefined
         }
       })
 
