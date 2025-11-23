@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
  * Type-safe database operations with comprehensive error handling
  * Provides a robust abstraction layer over Prisma for production use
@@ -5,12 +7,12 @@
 
 import { db } from '../db'
 import { Prisma } from '@prisma/client'
-import type { 
-  BlogPost, 
-  Author, 
-  Category, 
-  Tag, 
-  // PostView, 
+import type {
+  BlogPost,
+  Author,
+  Category,
+  Tag,
+  // PostView,
   // PostInteraction,
   // SEOKeyword,
   PostStatus
@@ -208,8 +210,8 @@ export class BlogPostOperations {
       })
 
       return posts as BlogPostWithRelations[]
-      
-    } catch (error) {
+
+    } catch (error: unknown) {
       handlePrismaError(error, 'BLOG_POST_FIND_MANY')
     }
   }
@@ -248,8 +250,8 @@ export class BlogPostOperations {
       }
 
       return post as BlogPostWithRelations
-      
-    } catch (error) {
+
+    } catch (error: unknown) {
       if (error instanceof NotFoundError) throw error
       handlePrismaError(error, 'BLOG_POST_FIND_BY_SLUG')
     }
@@ -287,8 +289,8 @@ export class BlogPostOperations {
       })
 
       return post
-      
-    } catch (error) {
+
+    } catch (error: unknown) {
       if (error instanceof ValidationError) throw error
       handlePrismaError(error, 'BLOG_POST_CREATE')
     }
@@ -325,8 +327,8 @@ export class BlogPostOperations {
       })
 
       return post
-      
-    } catch (error) {
+
+    } catch (error: unknown) {
       if (error instanceof ValidationError) throw error
       handlePrismaError(error, 'BLOG_POST_UPDATE')
     }
@@ -341,8 +343,8 @@ export class BlogPostOperations {
       await db.blogPost.delete({
         where: { id }
       })
-      
-    } catch (error) {
+
+    } catch (error: unknown) {
       if (error instanceof ValidationError) throw error
       handlePrismaError(error, 'BLOG_POST_DELETE')
     }
@@ -410,11 +412,11 @@ export class AnalyticsOperations {
             increment: 1
           }
         }
-      }).catch(error => {
+      }).catch((error: unknown) => {
         console.error('Failed to update view count:', error)
       })
-      
-    } catch (error) {
+
+    } catch (error: unknown) {
       if (error instanceof NotFoundError || error instanceof ValidationError) throw error
       handlePrismaError(error, 'ANALYTICS_RECORD_VIEW')
     }
@@ -436,7 +438,7 @@ export class AnalyticsOperations {
           postId,
           type,
           ...visitorData,
-          metadata: visitorData.metadata as Prisma.InputJsonValue ?? null
+          metadata: visitorData.metadata as Prisma.InputJsonValue | undefined
         }
       })
 
@@ -453,12 +455,12 @@ export class AnalyticsOperations {
               increment: 1
             }
           }
-        }).catch(error => {
+        }).catch((error: unknown) => {
           console.error('Failed to update interaction count:', error)
         })
       }
-      
-    } catch (error) {
+
+    } catch (error: unknown) {
       handlePrismaError(error, 'ANALYTICS_RECORD_INTERACTION')
     }
   }
@@ -483,14 +485,14 @@ export class AnalyticsOperations {
           by: ['visitorId'],
           where: whereClause,
           _count: true
-        }).then(results => results.length),
-        
+        }).then((results: unknown[]) => results.length),
+
         // Average reading time
         db.postView.aggregate({
           where: { ...whereClause, readingTime: { not: null } },
           _avg: { readingTime: true }
         }),
-        
+
         // Top countries
         db.postView.groupBy({
           by: ['country'],
@@ -501,23 +503,26 @@ export class AnalyticsOperations {
         })
       ])
 
-      const bounceRate = views > 0 ? 
+      const bounceRate = views > 0 ?
         await db.postView.count({
           where: { ...whereClause, readingTime: { lt: 30 } }
-        }).then(bounces => bounces / views) : 0
+        }).then((bounces: number) => bounces / views) : 0
 
       return {
         totalViews: views,
         uniqueViews,
         averageReadingTime: avgReadingTime._avg.readingTime || 0,
         bounceRate,
-        topCountries: countryStats.map(stat => ({
-          country: stat.country || 'Unknown',
-          views: stat._count
-        }))
+        topCountries: countryStats.map((stat: unknown) => {
+          const s = stat as Record<string, unknown>
+          return {
+            country: (s.country as string | null) || 'Unknown',
+            views: (s._count as Record<string, number>).country || 0
+          }
+        })
       }
-      
-    } catch (error) {
+
+    } catch (error: unknown) {
       handlePrismaError(error, 'ANALYTICS_GET_ANALYTICS')
     }
   }
@@ -531,7 +536,7 @@ export class UserContextOperations {
   static async setAdminContext(): Promise<void> {
     try {
       await db.$executeRaw`SELECT set_user_context('admin', 'admin')`
-    } catch (error) {
+    } catch (error: unknown) {
       handlePrismaError(error, 'SET_ADMIN_CONTEXT')
     }
   }
@@ -541,9 +546,9 @@ export class UserContextOperations {
       if (!authorId?.trim()) {
         throw new ValidationError('authorId', authorId, 'Author ID is required')
       }
-      
+
       await db.$executeRaw`SELECT set_user_context(${authorId}, 'author')`
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof ValidationError) throw error
       handlePrismaError(error, 'SET_AUTHOR_CONTEXT')
     }
@@ -552,7 +557,7 @@ export class UserContextOperations {
   static async clearContext(): Promise<void> {
     try {
       await db.$executeRaw`SELECT clear_user_context()`
-    } catch (error) {
+    } catch (error: unknown) {
       handlePrismaError(error, 'CLEAR_CONTEXT')
     }
   }
@@ -568,7 +573,7 @@ export class TransactionOperations {
   ): Promise<T> {
     try {
       return await db.$transaction(operation)
-    } catch (error) {
+    } catch (error: unknown) {
       handlePrismaError(error, 'TRANSACTION')
     }
   }
@@ -598,7 +603,7 @@ export class TransactionOperations {
           wordCount: postData.content.split(/\s+/).length,
           readingTime: Math.ceil(postData.content.split(/\s+/).length / 200),
           tags: {
-            create: tags.map(tag => ({ tagId: tag.id }))
+            create: tags.map((tag: any) => ({ tagId: tag.id }))
           }
         }
       })

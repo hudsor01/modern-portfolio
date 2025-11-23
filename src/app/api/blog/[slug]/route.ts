@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ApiResponse, BlogPostData } from '@/types/shared-api';
+import { createContextLogger } from '@/lib/logging/logger';
+
+const logger = createContextLogger('SlugAPI');
 
 /**
  * Individual Blog Post API Route Handler
@@ -32,7 +35,7 @@ async function getBlogAnalytics(slug: string) {
       commentCount: 0 // Would be implemented separately
     }
   } catch (error) {
-    console.error('Failed to fetch analytics:', error)
+    logger.error('Failed to fetch analytics', error instanceof Error ? error : new Error(String(error)))
     return { viewCount: 0, likeCount: 0, shareCount: 0, commentCount: 0 }
   }
 }
@@ -1094,7 +1097,7 @@ export async function GET(
     });
     
   } catch (error) {
-    console.error('Blog Post API Error:', error);
+    logger.error('Blog Post API Error:', error instanceof Error ? error : new Error(String(error)));
     
     const errorResponse: ApiResponse<never> = {
       data: undefined as never,
@@ -1181,7 +1184,7 @@ export async function PUT(
     });
     
   } catch (error) {
-    console.error('Blog Post Update Error:', error);
+    logger.error('Blog Post Update Error:', error instanceof Error ? error : new Error(String(error)));
     
     const errorResponse: ApiResponse<never> = {
       data: undefined as never,
@@ -1240,7 +1243,7 @@ export async function DELETE(
     });
     
   } catch (error) {
-    console.error('Blog Post Deletion Error:', error);
+    logger.error('Blog Post Deletion Error:', error instanceof Error ? error : new Error(String(error)));
     
     const errorResponse: ApiResponse<never> = {
       data: undefined as never,

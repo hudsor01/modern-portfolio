@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-import { InteractionType } from '@prisma/client'
+import { PrismaClient, InteractionType } from '@prisma/client'
 import { ApiResponse } from '@/types/shared-api'
 import { validateProjectInteraction, ProjectInteractionInput, ValidationError } from '@/lib/validations/unified-schemas'
+import { createContextLogger } from '@/lib/logging/logger';
+
+const logger = createContextLogger('InteractionsAPI');
 
 const prisma = new PrismaClient()
 
@@ -31,7 +35,7 @@ export async function POST(
     let validatedData: ProjectInteractionInput
     try {
       validatedData = validateProjectInteraction(body)
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof ValidationError) {
         return NextResponse.json(
           {
@@ -84,10 +88,10 @@ export async function POST(
     })
 
     const totalInteractions = {
-      likes: totalCounts.find(c => c.type === 'LIKE')?._count.id || 0,
-      shares: totalCounts.find(c => c.type === 'SHARE')?._count.id || 0,
-      bookmarks: totalCounts.find(c => c.type === 'BOOKMARK')?._count.id || 0,
-      downloads: totalCounts.find(c => c.type === 'DOWNLOAD')?._count.id || 0,
+      likes: totalCounts.find((c: any) => c.type === 'LIKE')?._count.id || 0,
+      shares: totalCounts.find((c: any) => c.type === 'SHARE')?._count.id || 0,
+      bookmarks: totalCounts.find((c: any) => c.type === 'BOOKMARK')?._count.id || 0,
+      downloads: totalCounts.find((c: any) => c.type === 'DOWNLOAD')?._count.id || 0,
     }
 
     const response: ApiResponse<ProjectInteractionResponse> = {
@@ -102,9 +106,9 @@ export async function POST(
 
     return NextResponse.json(response, { status: 201 })
 
-  } catch (error) {
-    console.error('Project interaction error:', error)
-    
+  } catch (error: unknown) {
+    logger.error('Project interaction error:', error instanceof Error ? error : new Error(String(error)))
+
     return NextResponse.json(
       {
         success: false,
@@ -134,7 +138,7 @@ export async function GET(
       }
     })
 
-    const totalInteractions = totalCounts.reduce((acc, count) => {
+    const totalInteractions = totalCounts.reduce((acc: Record<string, number>, count: any) => {
       acc[count.type.toLowerCase()] = count._count.id
       return acc
     }, {} as Record<string, number>)
@@ -146,9 +150,9 @@ export async function GET(
 
     return NextResponse.json(response)
 
-  } catch (error) {
-    console.error('Get project interactions error:', error)
-    
+  } catch (error: unknown) {
+    logger.error('Get project interactions error:', error instanceof Error ? error : new Error(String(error)))
+
     return NextResponse.json(
       {
         success: false,

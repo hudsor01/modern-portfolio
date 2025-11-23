@@ -19,6 +19,10 @@ import {
 } from '@/components/projects/charts/chart-imports'
 import { yearOverYearGrowthExtended } from '@/app/projects/data/partner-analytics'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
+import { createContextLogger } from '@/lib/logging/logger'
+import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
+
+const logger = createContextLogger('RevenueKPIPage')
 
 type YearOverYearGrowth = {
   year: number
@@ -35,7 +39,7 @@ export default function RevenueKPI() {
 
   // Simulate data loading completion
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 500)
+    const timer = setTimeout(() => setIsLoading(false), TIMING_CONSTANTS.LOADING_STATE_RESET)
     return () => clearTimeout(timer)
   }, [])
 
@@ -47,7 +51,7 @@ export default function RevenueKPI() {
 
   // Handle undefined data for currentYearData or prevYearData
   if (!currentYearData) {
-    console.error('currentYearData is undefined. Cannot render Revenue KPI dashboard.')
+    logger.error('currentYearData is undefined. Cannot render Revenue KPI dashboard', new Error('Missing current year data'))
     return <div>Error: Current year data not available.</div>
   }
 
@@ -148,7 +152,7 @@ export default function RevenueKPI() {
             <button 
               onClick={() => {
                 setIsLoading(true)
-                setTimeout(() => setIsLoading(false), 500)
+                setTimeout(() => setIsLoading(false), TIMING_CONSTANTS.LOADING_STATE_RESET)
               }}
               className="p-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300"
             >

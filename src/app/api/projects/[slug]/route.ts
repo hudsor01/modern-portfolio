@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server'
 import { getProjectBySlug } from '@/data/projects'
 import { z } from 'zod'
 import { validationErrorResponse } from '@/lib/api/response'
+import { createContextLogger } from '@/lib/logging/logger';
+
+const logger = createContextLogger('SlugAPI');
 
 // Input validation schema for slug parameter
 const slugSchema = z.object({
@@ -36,7 +39,7 @@ export async function GET(
       data: project,
     })
   } catch (error) {
-    console.error('Error fetching project:', error)
+    logger.error('Error fetching project:', error instanceof Error ? error : new Error(String(error)))
     
     if (error instanceof z.ZodError) {
       return validationErrorResponse(error)

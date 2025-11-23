@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import {
   ArrowLeft,
   RefreshCcw,
@@ -12,9 +13,21 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { m as motion } from 'framer-motion'
-import CLVPredictionChart from './CLVPredictionChart'
-import CustomerSegmentChart from './CustomerSegmentChart'
-import CLVTrendChart from './CLVTrendChart'
+import { ChartSkeleton } from '@/components/projects/charts/chart-skeleton'
+
+// Lazy-load chart components with Suspense fallback
+const CLVPredictionChart = dynamic(() => import('./CLVPredictionChart'), {
+  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  ssr: true
+})
+const CustomerSegmentChart = dynamic(() => import('./CustomerSegmentChart'), {
+  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  ssr: true
+})
+const CLVTrendChart = dynamic(() => import('./CLVTrendChart'), {
+  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  ssr: true
+})
 
 // Advanced CLV metrics based on predictive analytics
 const clvMetrics = {

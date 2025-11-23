@@ -3,6 +3,9 @@ import { PrismaClient } from '@prisma/client'
 import { InteractionType } from '@prisma/client'
 import { ApiResponse } from '@/types/shared-api'
 import { validateBlogInteraction, BlogInteractionInput, ValidationError } from '@/lib/validations/unified-schemas'
+import { createContextLogger } from '@/lib/logging/logger';
+
+const logger = createContextLogger('InteractionsAPI');
 
 const prisma = new PrismaClient()
 
@@ -155,8 +158,8 @@ export async function POST(
     return NextResponse.json(response, { status: 201 })
 
   } catch (error) {
-    console.error('Blog interaction error:', error)
-    
+    logger.error('Blog interaction error', error instanceof Error ? error : new Error(String(error)))
+
     return NextResponse.json(
       {
         success: false,
@@ -228,8 +231,8 @@ export async function GET(
     return NextResponse.json(response)
 
   } catch (error) {
-    console.error('Get blog interactions error:', error)
-    
+    logger.error('Get blog interactions error', error instanceof Error ? error : new Error(String(error)))
+
     return NextResponse.json(
       {
         success: false,

@@ -5,13 +5,13 @@
  */
 
 import { z } from 'zod'
-import { 
-  PostStatus, 
-  ContentType, 
-  InteractionType, 
-  SEOEventType, 
+import {
+  PostStatus,
+  ContentType,
+  InteractionType,
+  SEOEventType,
   SEOSeverity,
-  ChangeFrequency 
+  ChangeFrequency
 } from '@prisma/client'
 
 // =======================

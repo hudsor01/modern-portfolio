@@ -7,6 +7,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { jobQueue } from '@/lib/automation/job-queue';
 import { z } from 'zod';
 import type { ApiResponse } from '@/types/shared-api';
+import { createContextLogger } from '@/lib/logging/logger';
+
+const logger = createContextLogger('SeoanalysiscompleteAPI');
 
 // Webhook payload validation schema
 const SEOAnalysisCompleteWebhookSchema = z.object({
@@ -205,7 +208,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('SEO analysis complete webhook error:', error);
+    logger.error('SEO analysis complete webhook error:', error instanceof Error ? error : new Error(String(error)));
 
     if (error instanceof z.ZodError) {
       return NextResponse.json<ApiResponse<null>>({

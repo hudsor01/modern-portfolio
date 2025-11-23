@@ -13,7 +13,7 @@
 export { ShadcnChartContainer } from '@/components/charts/shadcn-chart-container'
 
 // Forms
-export { ShadcnContactForm } from '@/components/forms/shadcn-contact-form'
+export { ShadcnContactForm } from '@/app/contact/components/shadcn-contact-form'
 
 // Query-Aware Business Logic Containers
 export { 
@@ -75,9 +75,9 @@ export { toast } from 'sonner'
 // ============================================================================
 
 // Contact Forms
-export { ShadcnContactForm as ContactForm } from '@/components/forms/shadcn-contact-form'
-export { ShadcnContactForm as EnhancedContactForm } from '@/components/forms/shadcn-contact-form'
-export { ShadcnContactForm as UnifiedContactForm } from '@/components/forms/shadcn-contact-form'
+export { ShadcnContactForm as ContactForm } from '@/app/contact/components/shadcn-contact-form'
+export { ShadcnContactForm as EnhancedContactForm } from '@/app/contact/components/shadcn-contact-form'
+export { ShadcnContactForm as UnifiedContactForm } from '@/app/contact/components/shadcn-contact-form'
 
 // Charts
 export { ShadcnChartContainer as BarChart } from '@/components/charts/shadcn-chart-container'
@@ -95,7 +95,7 @@ export { ShadcnSkeletonWrapper as UnifiedSkeletonLoader } from '@/components/ui/
 // ============================================================================
 
 import React from 'react'
-import { ShadcnContactForm } from '@/components/forms/shadcn-contact-form'
+import { ShadcnContactForm } from '@/app/contact/components/shadcn-contact-form'
 import { ShadcnChartContainer } from '@/components/charts/shadcn-chart-container'
 import { ShadcnSkeletonWrapper } from '@/components/ui/shadcn-skeleton-wrapper'
 import { 
@@ -240,8 +240,8 @@ export function isShadcnEnabled(componentType: keyof typeof SHADCN_MIGRATION_ENA
 /**
  * Lazy load shadcn components for better performance
  */
-export const LazyContactForm = React.lazy(() => 
-  import('@/components/forms/shadcn-contact-form').then(m => ({ default: m.ShadcnContactForm }))
+export const LazyContactForm = React.lazy(() =>
+  import('@/app/contact/components/shadcn-contact-form').then(m => ({ default: m.ShadcnContactForm }))
 )
 
 export const LazyChartContainer = React.lazy(() => 

@@ -3,6 +3,9 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
+import { createContextLogger } from '@/lib/logging/logger'
+
+const logger = createContextLogger('ErrorBoundary')
 
 interface ErrorBoundaryProps {
   children: ReactNode
@@ -37,16 +40,18 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       this.props.onError(error, errorInfo)
     }
 
-    // Production error logging
+    // Error logging
     if (process.env.NODE_ENV === 'production') {
-      console.error('Error Boundary:', error.message)
+      // Production: log basic error info
+      logger.error('Error Boundary caught error', error)
     } else {
-      console.group('🚨 Error Boundary Caught Error')
-      console.error('Error:', error.message)
-      console.error('Stack:', error.stack)
-      console.error('Component Stack:', errorInfo.componentStack)
-      console.error('Component Name:', this.props.componentName || 'Unknown')
-      console.groupEnd()
+      // Development: include additional context in error data
+      const errorData = {
+        ...(error instanceof Error ? { name: error.name, message: error.message } : error),
+        componentStack: errorInfo.componentStack,
+        componentName: this.props.componentName || 'Unknown',
+      }
+      logger.error('Error Boundary caught error (Dev)', errorData)
     }
   }
 

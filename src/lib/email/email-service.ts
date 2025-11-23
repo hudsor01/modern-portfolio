@@ -8,7 +8,11 @@
 import { Resend } from 'resend'
 import { z } from 'zod'
 import { checkContactFormRateLimit } from '../security/rate-limiter'
+import { escapeHtml } from '@/lib/security/html-escape'
 import { logger } from '@/lib/monitoring/logger'
+import { createContextLogger } from '@/lib/logging/logger'
+
+const emailLogger = createContextLogger('EmailService')
 
 // Environment configuration
 const RESEND_API_KEY = process.env.RESEND_API_KEY
@@ -41,7 +45,7 @@ export type ContactFormData = z.infer<typeof ContactFormSchema>
 // Email templates
 export const EmailTemplates = {
   contact: (data: ContactFormData) => ({
-    subject: data.subject ? `Portfolio Contact: ${data.subject}` : `Portfolio Contact from ${data.name}`,
+    subject: data.subject ? `Portfolio Contact: ${escapeHtml(data.subject)}` : `Portfolio Contact from ${escapeHtml(data.name)}`,
     text: `
 New contact form submission from your portfolio:
 
@@ -62,43 +66,43 @@ Time: ${new Date().toISOString()}
         <h2 style="color: #1f2937; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;">
           New Portfolio Contact
         </h2>
-        
+
         <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <table style="width: 100%; border-collapse: collapse;">
             <tr>
               <td style="padding: 8px 0; font-weight: 600; color: #374151; width: 80px;">Name:</td>
-              <td style="padding: 8px 0; color: #1f2937;">${data.name}</td>
+              <td style="padding: 8px 0; color: #1f2937;">${escapeHtml(data.name)}</td>
             </tr>
             <tr>
               <td style="padding: 8px 0; font-weight: 600; color: #374151;">Email:</td>
               <td style="padding: 8px 0;">
-                <a href="mailto:${data.email}" style="color: #3b82f6; text-decoration: none;">
-                  ${data.email}
+                <a href="mailto:${escapeHtml(data.email)}" style="color: #3b82f6; text-decoration: none;">
+                  ${escapeHtml(data.email)}
                 </a>
               </td>
             </tr>
             ${data.phone ? `
             <tr>
               <td style="padding: 8px 0; font-weight: 600; color: #374151;">Phone:</td>
-              <td style="padding: 8px 0; color: #1f2937;">${data.phone}</td>
+              <td style="padding: 8px 0; color: #1f2937;">${escapeHtml(data.phone)}</td>
             </tr>
             ` : ''}
             ${data.subject ? `
             <tr>
               <td style="padding: 8px 0; font-weight: 600; color: #374151;">Subject:</td>
-              <td style="padding: 8px 0; color: #1f2937;">${data.subject}</td>
+              <td style="padding: 8px 0; color: #1f2937;">${escapeHtml(data.subject)}</td>
             </tr>
             ` : ''}
           </table>
         </div>
-        
+
         <div style="margin: 20px 0;">
           <h3 style="color: #374151; margin-bottom: 10px;">Message:</h3>
           <div style="background: white; padding: 20px; border-left: 4px solid #3b82f6; border-radius: 4px;">
-            ${data.message.replace(/\n/g, '<br>')}
+            ${escapeHtml(data.message).replace(/\n/g, '<br>')}
           </div>
         </div>
-        
+
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 14px; color: #6b7280;">
           <p>Sent from Portfolio Contact Form</p>
           <p>Time: ${new Date().toISOString()}</p>
@@ -132,7 +136,7 @@ This is an automated response. Please do not reply to this email.
         </h2>
         
         <p style="color: #374151; font-size: 16px; line-height: 1.6;">
-          Hi ${data.name},
+          Hi ${escapeHtml(data.name)},
         </p>
         
         <p style="color: #374151; font-size: 16px; line-height: 1.6;">
@@ -142,7 +146,7 @@ This is an automated response. Please do not reply to this email.
         <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3b82f6;">
           <h3 style="color: #374151; margin-top: 0;">Your message:</h3>
           <p style="color: #1f2937; font-style: italic; margin-bottom: 0;">
-            "${data.message}"
+            "${escapeHtml(data.message)}"
           </p>
         </div>
         
@@ -240,7 +244,7 @@ export class EmailService {
       
       // Auto-reply failure is not critical
       if (autoReplyResult.error) {
-        console.warn('Failed to send auto-reply:', autoReplyResult.error)
+        emailLogger.warn('Failed to send auto-reply', { error: String(autoReplyResult.error) })
       }
       
       return {
@@ -251,7 +255,7 @@ export class EmailService {
         },
       }
     } catch (error) {
-      console.error('Email service error:', error)
+      emailLogger.error('Email service error', error instanceof Error ? error : new Error(String(error)))
       
       if (error instanceof z.ZodError) {
         const rawFieldErrors = error.flatten().fieldErrors;
@@ -282,7 +286,7 @@ export class EmailService {
   
   private async handleMockEmail(_data: ContactFormData): Promise<EmailServiceResult> {
     if (this.isProduction) {
-      console.error('Email service not configured in production')
+      emailLogger.error('Email service not configured in production', new Error('Resend API key not configured'))
       return {
         success: false,
         error: 'Email service not available',

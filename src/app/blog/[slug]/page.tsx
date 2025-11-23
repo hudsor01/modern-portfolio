@@ -2,8 +2,11 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
-import { BlogPostLayout } from '@/components/blog/blog-post-layout'
+import { BlogPostLayout } from '../components/blog-post-layout'
 import { BlogPostJsonLd } from '@/components/seo/blog-json-ld'
+import { createContextLogger } from '@/lib/logging/logger'
+
+const logger = createContextLogger('BlogPostPage')
 
 /**
  * Dynamic Blog Post Page - Server Component
@@ -35,7 +38,7 @@ async function getBlogPost(slug: string) {
     const data = await response.json()
     return data.success ? data.data : null
   } catch (error) {
-    console.error('Error fetching blog post:', error)
+    logger.error('Error fetching blog post', error instanceof Error ? error : new Error(String(error)))
     return null
   }
 }

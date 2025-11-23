@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import {
   ArrowLeft,
   RefreshCcw,
@@ -11,8 +12,17 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { m as motion } from 'framer-motion'
-import PartnerTierChart from './PartnerTierChart'
-import RevenueContributionChart from './RevenueContributionChart'
+import { ChartSkeleton } from '@/components/projects/charts/chart-skeleton'
+
+// Lazy-load chart components with Suspense fallback
+const PartnerTierChart = dynamic(() => import('./PartnerTierChart'), {
+  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  ssr: true
+})
+const RevenueContributionChart = dynamic(() => import('./RevenueContributionChart'), {
+  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  ssr: true
+})
 
 // Real data based on CSV analysis: 83.2% win rate, $1.1M partner revenue
 const partnerMetrics = {

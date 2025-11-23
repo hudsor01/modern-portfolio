@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ProjectDataManager } from '@/lib/server/project-data-manager'
+import { createContextLogger } from '@/lib/logging/logger';
+
+const logger = createContextLogger('DataAPI');
 
 export async function GET(request: NextRequest) {
   try {
@@ -35,7 +38,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ projects })
 
   } catch (error) {
-    console.error('Projects API error:', error)
+    logger.error('Projects API error:', error instanceof Error ? error : new Error(String(error)))
     return NextResponse.json(
       { error: 'Failed to fetch projects' },
       { status: 500 }
