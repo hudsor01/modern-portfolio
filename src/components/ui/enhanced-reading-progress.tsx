@@ -7,6 +7,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
+import { READING_PROGRESS } from '@/lib/constants/ui-thresholds'
 
 interface EnhancedReadingProgressProps {
   /**
@@ -45,12 +46,12 @@ interface EnhancedReadingProgressProps {
 
 export function EnhancedReadingProgress({
   position = 'top',
-  height = 3,
+  height = READING_PROGRESS.DEFAULT_HEIGHT,
   showPercentage = false,
   className,
   contentPagesOnly = false,
-  showThreshold = 1,
-  hideThreshold = 99,
+  showThreshold = READING_PROGRESS.SHOW_THRESHOLD,
+  hideThreshold = READING_PROGRESS.HIDE_THRESHOLD,
   containerSelector
 }: EnhancedReadingProgressProps) {
   const [scrollProgress, setScrollProgress] = useState(0)

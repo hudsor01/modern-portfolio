@@ -1,6 +1,4 @@
 import React from 'react';
-import Head from 'next/head';
-import { useRouter } from 'next/router';
 import { siteConfig } from '@/lib/config/site';
 
 interface GlobalSEOProps {
@@ -21,39 +19,32 @@ interface GlobalSEOProps {
 }
 
 /**
- * GlobalSEO Component
- * 
- * A comprehensive SEO component that handles all meta tags, Open Graph, Twitter Cards,
- * canonical URLs, and structured data for the entire site.
+ * GlobalSEO Component (App Router)
+ *
+ * Provides structured data and SEO utilities for the application.
+ *
+ * NOTE: In Next.js 15 App Router, meta tags should be set via the metadata API
+ * in layout.ts or generateMetadata() functions, not from client components.
+ * This component now focuses on structured data and SEO utilities.
+ *
+ * For per-page metadata, use the generateMetadata() function from
+ * src/app/shared-metadata.ts in your route's layout.ts or page.ts.
  */
 export function GlobalSEO({
   title,
   description,
-  keywords,
+  keywords: _keywords,
   ogImage,
   ogType = 'website',
   article,
-  noIndex = false,
-  canonicalUrl,
+  noIndex: _noIndex = false,
+  canonicalUrl: _canonicalUrl,
 }: GlobalSEOProps) {
-  const router = useRouter();
-  
-  // Construct page title
-  const pageTitle = title 
-    ? `${title} | ${siteConfig.name}`
-    : siteConfig.name;
-  
   // Use provided description or default
   const pageDescription = description || siteConfig.description;
-  
+
   // Use provided image or default
   const pageImage = ogImage || siteConfig.ogImage;
-  
-  // Construct canonical URL
-  const canonical = canonicalUrl || `${siteConfig.url}${router.asPath}`;
-  
-  // Construct keywords string
-  const keywordsString = keywords?.join(', ') || '';
 
   // JSON-LD structured data
   const structuredData = {
@@ -88,62 +79,13 @@ export function GlobalSEO({
   };
 
   return (
-    <Head>
-      {/* Basic Meta Tags */}
-      <title>{pageTitle}</title>
-      <meta name="description" content={pageDescription} />
-      {keywordsString && <meta name="keywords" content={keywordsString} />}
-      
-      {/* Robots Meta Tags */}
-      {noIndex ? (
-        <meta name="robots" content="noindex, nofollow" />
-      ) : (
-        <meta name="robots" content="index, follow" />
-      )}
-      
-      {/* Canonical URL */}
-      <link rel="canonical" href={canonical} />
-      
-      {/* Open Graph Meta Tags */}
-      <meta property="og:title" content={pageTitle} />
-      <meta property="og:description" content={pageDescription} />
-      <meta property="og:type" content={ogType} />
-      <meta property="og:url" content={canonical} />
-      <meta property="og:image" content={pageImage} />
-      <meta property="og:site_name" content={siteConfig.name} />
-      
-      {/* Article-specific Open Graph Tags */}
-      {ogType === 'article' && article && (
-        <>
-          {article.publishedTime && (
-            <meta property="article:published_time" content={article.publishedTime} />
-          )}
-          {article.modifiedTime && (
-            <meta property="article:modified_time" content={article.modifiedTime} />
-          )}
-          {article.section && (
-            <meta property="article:section" content={article.section} />
-          )}
-          {article.tags?.map((tag, index) => (
-            <meta key={`tag-${index}`} property="article:tag" content={tag} />
-          ))}
-          {article.authors?.map((author, index) => (
-            <meta key={`author-${index}`} property="article:author" content={author} />
-          ))}
-        </>
-      )}
-      
-      {/* Twitter Card Meta Tags */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={pageTitle} />
-      <meta name="twitter:description" content={pageDescription} />
-      <meta name="twitter:image" content={pageImage} />
-      
-      {/* Structured Data */}
+    <>
+      {/* Structured Data (JSON-LD) */}
       <script
         type="application/ld+json"
+        suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-    </Head>
+    </>
   );
 }

@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ApiResponse, BlogAnalyticsData } from '@/types/shared-api';
+import { createContextLogger } from '@/lib/logging/logger';
+
+const logger = createContextLogger('AnalyticsAPI');
 
 /**
  * Blog Analytics API Route Handler
@@ -209,7 +212,7 @@ export async function GET(request: NextRequest) {
     });
     
   } catch (error) {
-    console.error('Blog Analytics API Error:', error);
+    logger.error('Blog Analytics API Error:', error instanceof Error ? error : new Error(String(error)));
     
     const errorResponse: ApiResponse<never> = {
       data: undefined as never,

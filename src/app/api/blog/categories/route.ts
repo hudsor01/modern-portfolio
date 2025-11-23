@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ApiResponse, BlogCategoryData } from '@/types/shared-api';
 import { db } from '@/lib/db';
+import { createContextLogger } from '@/lib/logging/logger';
+
+const logger = createContextLogger('CategoriesAPI');
 
 /**
  * Blog Categories API Route Handler
@@ -44,7 +47,7 @@ export async function GET(_request: NextRequest) {
     });
     
   } catch (error) {
-    console.error('Blog Categories API Error:', error);
+    logger.error('Blog Categories API Error:', error instanceof Error ? error : new Error(String(error)));
     
     const errorResponse: ApiResponse<never> = {
       data: undefined as never,
@@ -137,7 +140,7 @@ export async function POST(request: NextRequest) {
     });
     
   } catch (error) {
-    console.error('Blog Category Creation Error:', error);
+    logger.error('Blog Category Creation Error:', error instanceof Error ? error : new Error(String(error)));
     
     const errorResponse: ApiResponse<never> = {
       data: undefined as never,

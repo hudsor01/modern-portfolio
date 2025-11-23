@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ApiResponse, BlogTagData } from '@/types/shared-api';
+import { createContextLogger } from '@/lib/logging/logger';
+
+const logger = createContextLogger('TagsAPI');
 
 /**
  * Blog Tags API Route Handler
@@ -136,7 +139,7 @@ export async function GET(request: NextRequest) {
     });
     
   } catch (error) {
-    console.error('Blog Tags API Error:', error);
+    logger.error('Blog Tags API Error:', error instanceof Error ? error : new Error(String(error)));
     
     const errorResponse: ApiResponse<never> = {
       data: undefined as never,
@@ -219,7 +222,7 @@ export async function POST(request: NextRequest) {
     });
     
   } catch (error) {
-    console.error('Blog Tag Creation Error:', error);
+    logger.error('Blog Tag Creation Error:', error instanceof Error ? error : new Error(String(error)));
     
     const errorResponse: ApiResponse<never> = {
       data: undefined as never,

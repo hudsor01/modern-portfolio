@@ -1,0 +1,63 @@
+{
+  "id": "forecast-pipeline-intelligence",
+  "title": "Forecast Accuracy & Pipeline Intelligence System",
+  "slug": "forecast-pipeline-intelligence",
+  "description": "Enterprise forecasting and pipeline intelligence platform combining predictive analytics, deal health monitoring, and early warning systems. Improved forecast accuracy by 31%, reduced slippage by 26%, and enabled proactive pipeline management.",
+  "image": "/images/projects/forecast-intelligence.jpg",
+  "category": "Revenue Operations",
+  "featured": true,
+  "metrics": {
+    "forecastAccuracyImprovement": "31%",
+    "slippageReduction": "26%",
+    "dealsMonitored": "4,200+",
+    "earliestWarnings": "89%",
+    "forecastingAccuracy": "94%"
+  },
+  "technologies": [
+    "Python",
+    "Machine Learning",
+    "React",
+    "Next.js",
+    "Recharts",
+    "Plotly",
+    "PostgreSQL",
+    "Time Series Analysis",
+    "Predictive Analytics"
+  ],
+  "businessImpact": [
+    "31% improvement in revenue forecast accuracy",
+    "26% reduction in deal slippage through early detection",
+    "89% of pipeline risks identified before escalation",
+    "94% overall forecasting accuracy (vs 65% baseline)",
+    "$12.5M revenue protected through proactive pipeline management",
+    "Monitored 4,200+ deals across entire sales organization"
+  ],
+  "keyFeatures": [
+    "AI-powered deal health scoring system",
+    "Predictive deal close date modeling",
+    "Early warning system for at-risk deals",
+    "Pipeline integrity and data quality monitoring",
+    "Deal stage probability optimization",
+    "Buyer engagement scoring and tracking",
+    "Competitive risk assessment",
+    "Executive dashboard with drill-down capabilities"
+  ],
+  "careerLearnings": [
+    "Implementing predictive analytics for sales forecasting",
+    "Deal health scoring methodologies",
+    "Time series forecasting and trend analysis",
+    "Risk modeling and early warning systems",
+    "Sales operations and pipeline management",
+    "Executive communication and data storytelling"
+  ],
+  "teamSize": 5,
+  "duration": "7 months",
+  "tags": [
+    "Revenue Operations",
+    "Forecasting",
+    "Pipeline Management",
+    "Predictive Analytics",
+    "Sales Operations",
+    "Data Science"
+  ]
+}

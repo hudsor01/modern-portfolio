@@ -6,17 +6,19 @@
 import { PrismaClient } from '@prisma/client'
 import { logger } from '@/lib/monitoring/logger'
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
+// Extend global type to include prisma client for development hot-reload prevention
+declare global {
+  // eslint-disable-next-line no-var
+  var prisma: PrismaClient | undefined
 }
 
 export const db =
-  globalForPrisma.prisma ??
+  global.prisma ??
   new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   })
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db
+if (process.env.NODE_ENV !== 'production') global.prisma = db
 
 // Database connection helper
 export async function connectDB() {

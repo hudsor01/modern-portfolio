@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createContextLogger } from '@/lib/logging/logger';
+
+const logger = createContextLogger('BlogAPI');
 import { 
   PaginatedResponse, 
   BlogPostData, 
@@ -348,7 +351,7 @@ export async function GET(request: NextRequest) {
     });
     
   } catch (error) {
-    console.error('Blog API Error:', error);
+    logger.error('Blog API Error:', error instanceof Error ? error : new Error(String(error)));
     
     const errorResponse: ApiResponse<never> = {
       data: undefined as never,
@@ -442,7 +445,7 @@ export async function POST(request: NextRequest) {
     });
     
   } catch (error) {
-    console.error('Blog Creation Error:', error);
+    logger.error('Blog Creation Error:', error instanceof Error ? error : new Error(String(error)));
     
     const errorResponse: ApiResponse<never> = {
       data: undefined as never,

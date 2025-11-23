@@ -20,6 +20,9 @@ import { SiGithub, SiLinkedin } from 'react-icons/si'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { ResumeViewer } from './resume-viewer'
+import { createContextLogger } from '@/lib/logging/logger'
+
+const logger = createContextLogger('ResumePage')
 
 const experience = [
   {
@@ -144,7 +147,7 @@ export default function ResumePage() {
 
       toast.success('Resume downloaded successfully!', { id: 'resume-download' })
     } catch (error) {
-      console.error('Download error:', error)
+      logger.error('Download error', error instanceof Error ? error : new Error(String(error)))
       toast.error('Failed to download resume. Please try again.', { id: 'resume-download' })
     } finally {
       setIsDownloading(false)

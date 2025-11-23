@@ -3,13 +3,14 @@
  * Comprehensive data management with export, backup, and restore capabilities
  */
 
+import { createHash } from 'crypto';
 import { ProjectDataManager } from '@/lib/server/project-data-manager';
 import type { Project } from '@/types/project';
-import { 
-  createProjectBackup, 
-  exportProjects 
+import {
+  createProjectBackup,
+  exportProjects
 } from './data-migration-utils';
-import { 
+import {
   AnalyticsDataProcessor
 } from '@/lib/analytics/data-aggregation-service';
 
@@ -508,8 +509,7 @@ export class DataExportService {
     }
     
     // Fallback for Node.js environment
-    const nodeCrypto = require('crypto');
-    return nodeCrypto.createHash('sha256').update(content).digest('hex');
+    return createHash('sha256').update(content).digest('hex');
   }
 }
 

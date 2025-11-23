@@ -3,10 +3,14 @@
  * Comprehensive health monitoring for the blog automation system
  */
 
+import { loadavg, cpus } from 'os';
 import { NextRequest, NextResponse } from 'next/server';
 import { jobQueue } from '@/lib/automation/job-queue';
 import { blogAutomationService } from '@/lib/automation/blog-automation-service';
+import { createContextLogger } from '@/lib/logging/logger';
 import type { ApiResponse } from '@/types/shared-api';
+
+const logger = createContextLogger('AutomationHealthCheck');
 
 export async function GET(request: NextRequest) {
   try {
@@ -92,7 +96,7 @@ export async function GET(request: NextRequest) {
 
     // Add recent job samples if requested
     if (includeJobs) {
-      const recentJobs = Array.from((jobQueue as unknown as { jobs: Map<string, { id: string; type: string; status: string; progress: number; createdAt: Date; startedAt?: Date; completedAt?: Date; }> }).jobs.values())
+      const recentJobs = jobQueue.getAllJobs()
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .slice(0, 10)
         .map((job) => ({
@@ -101,10 +105,10 @@ export async function GET(request: NextRequest) {
           status: job.status,
           progress: job.progress,
           createdAt: job.createdAt.toISOString(),
-          duration: job.startedAt && job.completedAt ? 
+          duration: job.startedAt && job.completedAt ?
             job.completedAt.getTime() - job.startedAt.getTime() : null
         }));
-      
+
       healthResponse.recentJobs = recentJobs;
     }
 
@@ -121,7 +125,7 @@ export async function GET(request: NextRequest) {
     }, { status: httpStatus });
 
   } catch (error) {
-    console.error('Health check error:', error);
+    logger.error('Health check error', error instanceof Error ? error : new Error(String(error)));
 
     return NextResponse.json<ApiResponse<{
       status: string;
@@ -172,8 +176,8 @@ async function performSystemChecks(): Promise<{
   }
 
   // CPU load check (Node.js specific)
-  const loadAvg = require('os').loadavg();
-  const cpuCount = require('os').cpus().length;
+  const loadAvg = loadavg();
+  const cpuCount = cpus().length;
   const normalizedLoad = loadAvg[0] / cpuCount;
 
   if (normalizedLoad > 0.8) {

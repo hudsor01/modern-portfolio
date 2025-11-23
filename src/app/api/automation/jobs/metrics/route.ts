@@ -6,7 +6,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jobQueue, type Job } from '@/lib/automation/job-queue';
 import { z } from 'zod';
+import { createContextLogger } from '@/lib/logging/logger';
 import type { ApiResponse } from '@/types/shared-api';
+
+const logger = createContextLogger('JobMetricsAPI');
 
 // Query parameters validation
 const MetricsQuerySchema = z.object({
@@ -39,10 +42,10 @@ export async function GET(request: NextRequest) {
     const cutoffTime = new Date(Date.now() - timeRangeMs);
 
     // Get all jobs for analysis
-    const allJobs = Array.from((jobQueue as unknown as { jobs: Map<string, Job> }).jobs.values()) as Job[];
-    
+    const allJobs = jobQueue.getAllJobs();
+
     // Filter jobs by time range
-    const recentJobs = allJobs.filter((job: Job) => 
+    const recentJobs = allJobs.filter((job: Job) =>
       job.createdAt >= cutoffTime
     );
 
@@ -196,7 +199,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Job metrics API error:', error);
+    logger.error('Job metrics API error', error instanceof Error ? error : new Error(String(error)));
 
     if (error instanceof z.ZodError) {
       return NextResponse.json<ApiResponse<null>>({

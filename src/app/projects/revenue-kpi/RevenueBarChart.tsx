@@ -3,6 +3,9 @@ import React, { memo, useMemo } from 'react'
 import { ShadcnChartContainer } from '@/components/charts/shadcn-chart-container'
 import { monthlyRevenue2024, type MonthlyRevenueData } from '@/app/projects/data/partner-analytics'
 import type { ChartConfig } from '@/components/ui/chart'
+import { createContextLogger } from '@/lib/logging/logger'
+
+const logger = createContextLogger('RevenueBarChart')
 
 // shadcn/ui chart configuration
 const chartConfig = {
@@ -37,7 +40,7 @@ const RevenueBarChart = memo(() => {
         showTrend={true}
         valueFormatter={(value) => `$${value}M`}
         onDataLoad={(data) => {
-          console.log('Revenue chart data loaded:', data.length, 'data points')
+          logger.info('Revenue chart data loaded', { dataPoints: data.length })
         }}
         className="border-0 shadow-none bg-transparent"
       />

@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { ApiResponse } from '@/types/shared-api'
 import { validateViewTracking, ViewTrackingInput, ValidationError } from '@/lib/validations/unified-schemas'
+import { createContextLogger } from '@/lib/logging/logger'
 
 const prisma = new PrismaClient()
+const logger = createContextLogger('ViewTrackingAPI')
 
 // Using centralized validation schema from unified-schemas
 
@@ -183,8 +185,8 @@ export async function POST(
     )
 
   } catch (error) {
-    console.error('View tracking error:', error)
-    
+    logger.error('View tracking error', error instanceof Error ? error : new Error(String(error)))
+
     return NextResponse.json(
       {
         success: false,
@@ -229,7 +231,7 @@ export async function GET(
       }
     })
 
-    const views = posts.map(post => ({
+    const views = posts.map((post: any) => ({
       slug: post.slug.startsWith('project-') ? post.slug.replace('project-', '') : post.slug,
       type: post.slug.startsWith('project-') ? 'project' : 'blog',
       totalViews: post.viewCount
@@ -243,8 +245,8 @@ export async function GET(
     return NextResponse.json(response)
 
   } catch (error) {
-    console.error('Get views error:', error)
-    
+    logger.error('Get views error', error instanceof Error ? error : new Error(String(error)))
+
     return NextResponse.json(
       {
         success: false,

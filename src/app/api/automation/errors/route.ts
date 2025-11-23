@@ -6,7 +6,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { errorMonitor } from '@/lib/automation/error-monitoring';
 import { z, ZodError } from 'zod';
+import { createContextLogger } from '@/lib/logging/logger';
 import type { ApiResponse } from '@/types/shared-api';
+
+const logger = createContextLogger('ErrorMonitoringAPI');
 
 // Query parameters validation
 const ErrorQuerySchema = z.object({
@@ -89,7 +92,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error monitoring API error:', error);
+    logger.error('Error monitoring API error', error instanceof Error ? error : new Error(String(error)));
 
     if (error instanceof ZodError) {
       return NextResponse.json<ApiResponse<null>>({
@@ -156,7 +159,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Manual error logging failed:', error);
+    logger.error('Manual error logging failed', error instanceof Error ? error : new Error(String(error)));
 
     if (error instanceof ZodError) {
       return NextResponse.json<ApiResponse<null>>({
@@ -221,7 +224,7 @@ export async function DELETE(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error clearing failed:', error);
+    logger.error('Error clearing failed', error instanceof Error ? error : new Error(String(error)));
 
     return NextResponse.json<ApiResponse<null>>({
       success: false,

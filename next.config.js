@@ -1,10 +1,5 @@
 /** @type {import('next').NextConfig} */
 
-// Bundle analyzer - Skip for now to avoid ES module issues
-// const withBundleAnalyzer = require('@next/bundle-analyzer')({
-//   enabled: process.env.ANALYZE === 'true',
-// });
-
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,

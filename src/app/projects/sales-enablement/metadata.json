@@ -1,0 +1,64 @@
+{
+  "id": "sales-enablement-coaching",
+  "title": "Sales Enablement & Coaching Platform",
+  "slug": "sales-enablement",
+  "description": "Comprehensive sales enablement and coaching platform that transformed sales team performance through structured training, real-time coaching, and continuous skill development. Increased win rates by 34% and reduced ramp time by 45%.",
+  "image": "/images/projects/sales-enablement.jpg",
+  "liveUrl": "https://richardwhudsonjr.com/projects/sales-enablement",
+  "category": "Sales Operations",
+  "featured": true,
+  "metrics": {
+    "winRateImprovement": "34%",
+    "rampTimeReduction": "45%",
+    "coachingSessionsCompleted": 2847,
+    "salesTeamSize": 125,
+    "contentPiecesCreated": 450
+  },
+  "technologies": [
+    "React",
+    "Next.js",
+    "TypeScript",
+    "Data Visualization",
+    "Learning Management",
+    "Recharts",
+    "Tailwind CSS",
+    "Node.js",
+    "PostgreSQL"
+  ],
+  "businessImpact": [
+    "34% increase in deal win rates across all sales teams",
+    "45% reduction in new hire ramp time to full productivity",
+    "82% adoption rate for coaching materials within 3 months",
+    "$3.2M additional revenue attributed to improved sales skills",
+    "Reduced turnover by 28% through career development",
+    "Created 450+ pieces of technical, product, and deal-specific content"
+  ],
+  "keyFeatures": [
+    "Personalized learning paths based on skills assessment and role",
+    "Real-time coaching library with video demonstrations and best practices",
+    "Deal-specific playbooks for every sales stage and industry vertical",
+    "Role-based content delivery (AE, SDR, BDR, Sales Manager)",
+    "Progress tracking and competency scoring",
+    "Peer learning community with forums and success stories",
+    "Mobile-first design for on-the-go learning",
+    "Integration with CRM for contextual training moments"
+  ],
+  "careerLearnings": [
+    "Building scalable learning systems for high-growth sales teams",
+    "Understanding psychology of adult learning and behavior change",
+    "Creating engaging content that drives adoption and engagement",
+    "Measuring training ROI and linking to business outcomes",
+    "Change management and overcoming sales team resistance",
+    "Coaching techniques for managers and sales leaders"
+  ],
+  "teamSize": 8,
+  "duration": "8 months",
+  "tags": [
+    "Sales Operations",
+    "Sales Enablement",
+    "Training",
+    "Coaching",
+    "Learning Management",
+    "Skill Development"
+  ]
+}

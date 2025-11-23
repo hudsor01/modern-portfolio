@@ -2,7 +2,7 @@ import React from 'react'
 import { Metadata } from 'next'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
-import { BlogHomeLayout } from '@/components/blog/blog-home-layout'
+import { BlogHomeLayout } from './components/blog-home-layout'
 import { BlogJsonLd } from '@/components/seo/blog-json-ld'
 
 /**
