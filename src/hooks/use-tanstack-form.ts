@@ -24,7 +24,7 @@ export function useTanStackForm<T extends Record<string, any>>(options: {
   const form = useForm({
     defaultValues: options.defaultValues,
     validators,
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value }: { value: T }) => {
       try {
         await options.onSubmit(value)
       } catch (error) {
