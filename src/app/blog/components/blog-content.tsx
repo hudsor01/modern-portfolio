@@ -8,7 +8,7 @@ import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 import { escapeHtml } from '@/lib/security/html-escape'
 import { ContentType } from '@/types/blog'
-import DOMPurify from 'isomorphic-dompurify'
+import DOMPurify from 'dompurify'
 import { createContextLogger } from '@/lib/logging/logger'
 import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 
