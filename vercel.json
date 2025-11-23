@@ -2,7 +2,6 @@
   "framework": "nextjs",
   "buildCommand": "pnpm run build",
   "devCommand": "pnpm run dev",
-  "installCommand": "corepack enable && pnpm install",
   "regions": ["iad1"],
   "redirects": [
     {
