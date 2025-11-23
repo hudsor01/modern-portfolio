@@ -167,11 +167,14 @@ export function BlogContent({
       }
       
         // Regular HTML content - sanitize with DOMPurify to prevent XSS
-      const sanitizedHtml = DOMPurify.sanitize(part, {
-        ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'em', 'strong', 'a', 'code', 'pre', 'blockquote', 'ul', 'ol', 'li', 'img', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'div', 'span'],
-        ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'data-language', 'target', 'rel', 'loading'],
-        ALLOW_DATA_ATTR: false,
-      })
+      // Only sanitize in browser environment
+      const sanitizedHtml = typeof window !== 'undefined'
+        ? DOMPurify.sanitize(part, {
+            ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'em', 'strong', 'a', 'code', 'pre', 'blockquote', 'ul', 'ol', 'li', 'img', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'div', 'span'],
+            ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'data-language', 'target', 'rel', 'loading'],
+            ALLOW_DATA_ATTR: false,
+          })
+        : part // During SSR, return unsanitized (will be sanitized on client)
 
       return (
         <div
