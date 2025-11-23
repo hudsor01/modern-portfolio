@@ -69,6 +69,3 @@ turbo.json
 .claude.*
 CLAUDE.md
 *.csv
-
-# GitHub workflows (managed separately)
-.github/

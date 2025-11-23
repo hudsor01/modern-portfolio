@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-import { InteractionType } from '@/types/prisma-generated'
+import { PrismaClient, InteractionType } from '@prisma/client'
 import { ApiResponse } from '@/types/shared-api'
 import { validateProjectInteraction, ProjectInteractionInput, ValidationError } from '@/lib/validations/unified-schemas'
 import { createContextLogger } from '@/lib/logging/logger';
