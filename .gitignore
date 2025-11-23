@@ -1,6 +1,4 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
 /node_modules
 
 # next.js
@@ -12,8 +10,6 @@
 
 # debug
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 .pnpm-debug.log*
 
 # env files (secrets)
@@ -22,24 +18,11 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
-
-# Allow .env.example to be committed (template file)
-!.env.example
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+.env.example
 
 # IDE and config files
-.prettierrc.json
-.prettierignore
-.npmrc
-components.json
-eslint.config.js
 .vscode/
 .idea/
-
-# Build and cache
 .next/
 coverage/
 .nyc_output/
@@ -47,14 +30,8 @@ coverage/
 # Test outputs
 playwright-report/
 test-results/
-
-# E2E tests
 e2e/
-
-# CI/CD tools  
 .actrc
-bin/dagger
-turbo.json
 
 # OS
 .DS_Store
@@ -64,4 +41,3 @@ turbo.json
 .claude.*
 CLAUDE.md
 *.csv
-.vercel
