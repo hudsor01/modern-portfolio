@@ -10,7 +10,7 @@ export interface LogEntry {
   message: string
   timestamp: string
   context?: string
-  data?: Record<string, any>
+  data?: Record<string, unknown>
   stack?: string
 }
 
@@ -36,7 +36,7 @@ class Logger {
     level: LogLevel,
     message: string,
     context?: string,
-    data?: Record<string, any>,
+    data?: Record<string, unknown>,
     stack?: string
   ): LogEntry {
     return {
@@ -126,7 +126,7 @@ class Logger {
   /**
    * Debug level logging
    */
-  debug(message: string, data?: Record<string, any>, context?: string): void {
+  debug(message: string, data?: Record<string, unknown>, context?: string): void {
     const entry = this.createLogEntry('debug', message, context, data)
     this.outputToConsole(entry)
     this.storeLogEntry(entry)
@@ -135,7 +135,7 @@ class Logger {
   /**
    * Info level logging
    */
-  info(message: string, data?: Record<string, any>, context?: string): void {
+  info(message: string, data?: Record<string, unknown>, context?: string): void {
     const entry = this.createLogEntry('info', message, context, data)
     this.outputToConsole(entry)
     this.storeLogEntry(entry)
@@ -144,7 +144,7 @@ class Logger {
   /**
    * Warning level logging
    */
-  warn(message: string, data?: Record<string, any>, context?: string): void {
+  warn(message: string, data?: Record<string, unknown>, context?: string): void {
     const entry = this.createLogEntry('warn', message, context, data)
     this.outputToConsole(entry)
     this.storeLogEntry(entry)
@@ -155,7 +155,7 @@ class Logger {
    */
   error(
     message: string,
-    error?: Error | Record<string, any>,
+    error?: Error | Record<string, unknown>,
     context?: string
   ): void {
     const data = error instanceof Error
@@ -207,13 +207,13 @@ export const logger = new Logger()
  */
 export function createContextLogger(context: string) {
   return {
-    debug: (message: string, data?: Record<string, any>) =>
+    debug: (message: string, data?: Record<string, unknown>) =>
       logger.debug(message, data, context),
-    info: (message: string, data?: Record<string, any>) =>
+    info: (message: string, data?: Record<string, unknown>) =>
       logger.info(message, data, context),
-    warn: (message: string, data?: Record<string, any>) =>
+    warn: (message: string, data?: Record<string, unknown>) =>
       logger.warn(message, data, context),
-    error: (message: string, error?: Error | Record<string, any>) =>
+    error: (message: string, error?: Error | Record<string, unknown>) =>
       logger.error(message, error, context),
   }
 }
