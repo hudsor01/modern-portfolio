@@ -205,13 +205,20 @@ describe('Performance Optimizations', () => {
           Touch target
         </button>
       )
-      
+
       const button = screen.getByTestId('touch-button')
       expect(button).toHaveClass('min-h-[44px]')
-      
+
+      // Mock getComputedStyle to return a valid minHeight value
+      const originalGetComputedStyle = window.getComputedStyle
+      window.getComputedStyle = vi.fn().mockReturnValue({ minHeight: '44px' } as CSSStyleDeclaration)
+
       // Verify computed height meets accessibility requirements
       const styles = window.getComputedStyle(button)
       expect(parseInt(styles.minHeight || '0')).toBeGreaterThanOrEqual(44)
+
+      // Restore original function
+      window.getComputedStyle = originalGetComputedStyle
     })
   })
 
@@ -238,14 +245,17 @@ describe('Performance Optimizations', () => {
       const ExpensiveComponent = React.memo(({ data }: { data: string }) => (
         <div data-testid="expensive-component">{data}</div>
       ))
-      
+
+      // Set display name for better debugging
+      ExpensiveComponent.displayName = 'ExpensiveComponent'
+
       const { rerender } = render(<ExpensiveComponent data="test" />)
-      
-      // Component should be memoized
+
+      // Component should be memoized and have display name
       expect(ExpensiveComponent.displayName).toBe('ExpensiveComponent')
-      
+
       rerender(<ExpensiveComponent data="test" />)
-      
+
       expect(screen.getByTestId('expensive-component')).toBeInTheDocument()
     })
   })

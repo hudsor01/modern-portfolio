@@ -121,8 +121,12 @@ export class ReadingProgressTracker {
 
   private getContainer(): Element | HTMLElement {
     if (this.containerSelector) {
-      const container = document.querySelector(this.containerSelector)
-      if (container) return container as HTMLElement
+      try {
+        const container = document.querySelector(this.containerSelector)
+        if (container) return container as HTMLElement
+      } catch (error) {
+        console.warn('Error querying container selector:', error)
+      }
     }
     return document.documentElement
   }

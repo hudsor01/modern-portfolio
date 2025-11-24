@@ -45,6 +45,7 @@ export function useFormAutoSave<T extends Record<string, unknown>>(
 
   const debounceTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
   const initialLoadRef = useRef(false)
+  const isFirstRenderRef = useRef(true)
   const retryCountRef = useRef(0)
 
   const {
@@ -158,16 +159,22 @@ export function useFormAutoSave<T extends Record<string, unknown>>(
   // Load saved data on mount
   useEffect(() => {
     if (!initialLoadRef.current) {
-      initialLoadRef.current = true
       const savedData = loadFromLocalStorage()
       if (savedData && onRestore) {
         onRestore(savedData)
       }
+      initialLoadRef.current = true
     }
   }, [loadFromLocalStorage, onRestore])
 
   // Auto-save when form data changes
   useEffect(() => {
+    // Skip on initial render - only save on subsequent changes
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false
+      return
+    }
+
     if (!enabled || !initialLoadRef.current) {
       return
     }
