@@ -8,7 +8,6 @@ import { logger } from '@/lib/monitoring/logger'
 
 // Extend global type to include prisma client for development hot-reload prevention
 declare global {
-  // eslint-disable-next-line no-var
   var prisma: PrismaClient | undefined
 }
 

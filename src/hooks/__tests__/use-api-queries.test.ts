@@ -385,7 +385,9 @@ describe('useApiQueries hooks', () => {
         expect(result.current.isSuccess).toBe(true)
       })
 
-      expect(mutationFn).toHaveBeenCalledWith('test-data')
+      // TanStack Query passes (variables, context) to mutationFn
+      expect(mutationFn).toHaveBeenCalled()
+      expect(mutationFn.mock.calls[0]?.[0]).toBe('test-data')
       expect(result.current.data).toEqual(mockResponse)
     })
 
@@ -407,7 +409,9 @@ describe('useApiQueries hooks', () => {
         expect(result.current.isSuccess).toBe(true)
       })
 
-      expect(onSuccess).toHaveBeenCalledWith(mockResponse)
+      // Verify onSuccess was called with at least the response data
+      expect(onSuccess).toHaveBeenCalled()
+      expect(onSuccess.mock.calls[0]?.[0]).toEqual(mockResponse)
     })
   })
 

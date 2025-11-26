@@ -28,34 +28,37 @@ beforeAll(() => {
   }))
 
   // Mock Framer Motion to avoid animation issues in tests
+  const motionMock = {
+    div: React.forwardRef<HTMLDivElement, React.ComponentProps<'div'>>((props, ref) =>
+      React.createElement('div', { ...props, ref, 'data-testid': 'motion-div' })
+    ),
+    section: React.forwardRef<HTMLElement, React.ComponentProps<'section'>>((props, ref) =>
+      React.createElement('section', { ...props, ref, 'data-testid': 'motion-section' })
+    ),
+    h1: React.forwardRef<HTMLHeadingElement, React.ComponentProps<'h1'>>((props, ref) =>
+      React.createElement('h1', { ...props, ref, 'data-testid': 'motion-h1' })
+    ),
+    h2: React.forwardRef<HTMLHeadingElement, React.ComponentProps<'h2'>>((props, ref) =>
+      React.createElement('h2', { ...props, ref, 'data-testid': 'motion-h2' })
+    ),
+    h3: React.forwardRef<HTMLHeadingElement, React.ComponentProps<'h3'>>((props, ref) =>
+      React.createElement('h3', { ...props, ref, 'data-testid': 'motion-h3' })
+    ),
+    p: React.forwardRef<HTMLParagraphElement, React.ComponentProps<'p'>>((props, ref) =>
+      React.createElement('p', { ...props, ref, 'data-testid': 'motion-p' })
+    ),
+    span: React.forwardRef<HTMLSpanElement, React.ComponentProps<'span'>>((props, ref) =>
+      React.createElement('span', { ...props, ref, 'data-testid': 'motion-span' })
+    ),
+    button: React.forwardRef<HTMLButtonElement, React.ComponentProps<'button'>>((props, ref) =>
+      React.createElement('button', { ...props, ref, 'data-testid': 'motion-button' })
+    ),
+  }
+
   vi.mock('framer-motion', () => ({
-    motion: {
-      div: React.forwardRef<HTMLDivElement, React.ComponentProps<'div'>>((props, ref) => 
-        React.createElement('div', { ...props, ref, 'data-testid': 'motion-div' })
-      ),
-      section: React.forwardRef<HTMLElement, React.ComponentProps<'section'>>((props, ref) => 
-        React.createElement('section', { ...props, ref, 'data-testid': 'motion-section' })
-      ),
-      h1: React.forwardRef<HTMLHeadingElement, React.ComponentProps<'h1'>>((props, ref) => 
-        React.createElement('h1', { ...props, ref, 'data-testid': 'motion-h1' })
-      ),
-      h2: React.forwardRef<HTMLHeadingElement, React.ComponentProps<'h2'>>((props, ref) => 
-        React.createElement('h2', { ...props, ref, 'data-testid': 'motion-h2' })
-      ),
-      h3: React.forwardRef<HTMLHeadingElement, React.ComponentProps<'h3'>>((props, ref) => 
-        React.createElement('h3', { ...props, ref, 'data-testid': 'motion-h3' })
-      ),
-      p: React.forwardRef<HTMLParagraphElement, React.ComponentProps<'p'>>((props, ref) => 
-        React.createElement('p', { ...props, ref, 'data-testid': 'motion-p' })
-      ),
-      span: React.forwardRef<HTMLSpanElement, React.ComponentProps<'span'>>((props, ref) => 
-        React.createElement('span', { ...props, ref, 'data-testid': 'motion-span' })
-      ),
-      button: React.forwardRef<HTMLButtonElement, React.ComponentProps<'button'>>((props, ref) => 
-        React.createElement('button', { ...props, ref, 'data-testid': 'motion-button' })
-      ),
-    },
-    AnimatePresence: ({ children }: { children: React.ReactNode }) => 
+    motion: motionMock,
+    m: motionMock, // Add 'm' export which is an alias for motion
+    AnimatePresence: ({ children }: { children: React.ReactNode }) =>
       React.createElement('div', { 'data-testid': 'animate-presence' }, children),
     useAnimation: () => ({
       start: vi.fn(),
