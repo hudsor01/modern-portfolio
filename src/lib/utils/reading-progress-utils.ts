@@ -24,9 +24,7 @@ export interface ReadingSession {
 /**
  * Calculate scroll progress with better accuracy
  */
-export function calculateScrollProgress(
-  container?: Element | HTMLElement
-): ReadingProgressMetrics {
+export function calculateScrollProgress(container?: Element | HTMLElement): ReadingProgressMetrics {
   const scrollContainer = container || document.documentElement
   const scrollElement = container || document.documentElement
 
@@ -42,7 +40,7 @@ export function calculateScrollProgress(
       isAtTop: true,
       isAtBottom: false,
       estimatedTimeRemaining: 0,
-      readingSpeed: 200 // default WPM
+      readingSpeed: 200, // default WPM
     }
   }
 
@@ -70,7 +68,7 @@ export function calculateScrollProgress(
     isAtTop,
     isAtBottom,
     estimatedTimeRemaining,
-    readingSpeed: averageWPM
+    readingSpeed: averageWPM,
   }
 }
 
@@ -79,8 +77,12 @@ export function calculateScrollProgress(
  */
 export function getEstimatedWordCount(element: Element | HTMLElement): number {
   try {
-    const textContent = element.textContent || ('innerText' in element ? element.innerText : '') || ''
-    const words = textContent.trim().split(/\s+/).filter((word: string) => word.length > 0)
+    const textContent =
+      element.textContent || ('innerText' in element ? element.innerText : '') || ''
+    const words = textContent
+      .trim()
+      .split(/\s+/)
+      .filter((word: string) => word.length > 0)
     return words.length
   } catch (error) {
     console.warn('Error calculating word count:', error)
@@ -115,7 +117,7 @@ export class ReadingProgressTracker {
       currentProgress: 0,
       averageReadingSpeed: 200,
       timeSpent: 0,
-      isActive: true
+      isActive: true,
     }
   }
 
@@ -156,10 +158,19 @@ export class ReadingProgressTracker {
   }
 
   private startTracking(): void {
+    // Prevent duplicate intervals
+    if (this.saveInterval) {
+      return
+    }
+
     // Save session every 10 seconds
     this.saveInterval = setInterval(() => {
       if (this.session.isActive) {
-        this.saveSession()
+        try {
+          this.saveSession()
+        } catch (error) {
+          console.warn('Failed to save reading session:', error)
+        }
       }
     }, 10000)
 
@@ -192,7 +203,7 @@ export class ReadingProgressTracker {
       const progressDiff = Math.max((lastProgress ?? 0) - (firstProgress ?? 0), 1)
       const timeDiffMinutes = this.session.timeSpent / 60000
       const wordsRead = (progressDiff / 100) * this.session.totalWords
-      
+
       if (timeDiffMinutes > 0 && wordsRead > 0) {
         this.session.averageReadingSpeed = Math.round(wordsRead / timeDiffMinutes)
       }
@@ -213,7 +224,7 @@ export class ReadingProgressTracker {
       timeSpent: this.session.timeSpent,
       averageSpeed: this.session.averageReadingSpeed,
       estimatedTimeRemaining: this.getEstimatedTimeRemaining(),
-      totalWords: this.session.totalWords
+      totalWords: this.session.totalWords,
     }
   }
 
@@ -229,7 +240,7 @@ export class ReadingProgressTracker {
   public stopTracking(): void {
     this.session.isActive = false
     this.saveSession()
-    
+
     if (this.saveInterval) {
       clearInterval(this.saveInterval)
       this.saveInterval = null
@@ -246,15 +257,12 @@ export class ReadingProgressTracker {
 /**
  * Hook for reading progress tracking
  */
-export function useReadingProgressTracker(
-  containerSelector?: string,
-  storageKey?: string
-) {
+export function useReadingProgressTracker(containerSelector?: string, storageKey?: string) {
   const trackerRef = React.useRef<ReadingProgressTracker | undefined>(undefined)
 
   React.useEffect(() => {
     trackerRef.current = new ReadingProgressTracker(containerSelector, storageKey)
-    
+
     return () => {
       trackerRef.current?.stopTracking()
     }
@@ -265,13 +273,15 @@ export function useReadingProgressTracker(
   }, [])
 
   const getStats = React.useCallback(() => {
-    return trackerRef.current?.getReadingStats() || {
-      progress: 0,
-      timeSpent: 0,
-      averageSpeed: 200,
-      estimatedTimeRemaining: 0,
-      totalWords: 0
-    }
+    return (
+      trackerRef.current?.getReadingStats() || {
+        progress: 0,
+        timeSpent: 0,
+        averageSpeed: 200,
+        estimatedTimeRemaining: 0,
+        totalWords: 0,
+      }
+    )
   }, [])
 
   return {
@@ -279,7 +289,7 @@ export function useReadingProgressTracker(
     getStats,
     pauseTracking: () => trackerRef.current?.pauseTracking(),
     resumeTracking: () => trackerRef.current?.resumeTracking(),
-    resetSession: () => trackerRef.current?.resetSession()
+    resetSession: () => trackerRef.current?.resetSession(),
   }
 }
 
@@ -294,26 +304,26 @@ export const pageReadingConfig = {
     containerSelector: 'article, .blog-content, main',
     showThreshold: 5,
     hideThreshold: 95,
-    estimatedWPM: 200
+    estimatedWPM: 200,
   },
   projects: {
     containerSelector: '.project-content, main, article',
     showThreshold: 3,
     hideThreshold: 97,
-    estimatedWPM: 180 // Slower for technical content
+    estimatedWPM: 180, // Slower for technical content
   },
   resume: {
     containerSelector: 'main, .resume-content',
     showThreshold: 2,
     hideThreshold: 98,
-    estimatedWPM: 220 // Faster for structured content
+    estimatedWPM: 220, // Faster for structured content
   },
   about: {
     containerSelector: 'main, .about-content',
     showThreshold: 2,
     hideThreshold: 98,
-    estimatedWPM: 200
-  }
+    estimatedWPM: 200,
+  },
 }
 
 /**
@@ -321,17 +331,17 @@ export const pageReadingConfig = {
  */
 export function getPageReadingConfig() {
   const pathname = window.location.pathname
-  
+
   if (pathname.includes('/blog/')) return pageReadingConfig.blog
   if (pathname.includes('/projects/')) return pageReadingConfig.projects
   if (pathname.includes('/resume')) return pageReadingConfig.resume
   if (pathname.includes('/about')) return pageReadingConfig.about
-  
+
   // Default configuration
   return {
     containerSelector: 'main, article',
     showThreshold: 5,
     hideThreshold: 95,
-    estimatedWPM: 200
+    estimatedWPM: 200,
   }
 }
