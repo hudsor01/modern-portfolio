@@ -403,7 +403,7 @@ describe('Error Handling', () => {
     vi.useRealTimers()
   })
 
-  it('should handle localStorage errors gracefully', async () => {
+  it('should handle localStorage errors gracefully', () => {
     const tracker = new ReadingProgressTracker()
 
     // Mock localStorage to throw errors after tracker is created
@@ -414,11 +414,14 @@ describe('Error Handling', () => {
     tracker.updateProgress(25)
 
     // Should not throw despite localStorage errors
+    // Use advanceTimersByTime instead of runAllTimers to avoid infinite loop
+    // from the setInterval in the tracker
     expect(() => {
-      vi.advanceTimersByTime(11000) // Trigger auto-save
-      // Run all pending timers
-      vi.runAllTimers()
+      vi.advanceTimersByTime(11000) // Trigger one auto-save cycle
     }).not.toThrow()
+
+    // Stop the tracker to clean up the interval
+    tracker.stopTracking()
 
     // Clean up the mock
     localStorageMock.setItem.mockRestore()

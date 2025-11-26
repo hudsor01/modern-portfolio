@@ -164,6 +164,7 @@ export function EnhancedReadingProgress({
     return () => {
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current)
+        rafRef.current = undefined
       }
 
       if (containerSelector) {
