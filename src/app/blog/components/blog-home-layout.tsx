@@ -80,7 +80,7 @@ export function BlogHomeLayout({ className }: BlogHomeLayoutProps) {
     }
   }
 
-  const handleBlogPostClick = (post: any) => {
+  const handleBlogPostClick = (post: { slug: string }) => {
     router.push(`/blog/${post.slug}`)
   }
 

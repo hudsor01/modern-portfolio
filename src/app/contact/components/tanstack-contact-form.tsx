@@ -104,15 +104,15 @@ export function TanStackContactForm({
     if (!enableAutoSave) return
 
     const autoSaveTimer = setTimeout(() => {
-      const name = form.getFieldValue('name' as any)
+      const name = form.getFieldValue('name')
       if (name) {
         const data: ContactFormData = {
-          name: form.getFieldValue('name' as any) || '',
-          email: form.getFieldValue('email' as any) || '',
-          subject: form.getFieldValue('subject' as any) || '',
-          message: form.getFieldValue('message' as any) || '',
-          company: form.getFieldValue('company' as any),
-          phone: form.getFieldValue('phone' as any),
+          name: form.getFieldValue('name') || '',
+          email: form.getFieldValue('email') || '',
+          subject: form.getFieldValue('subject') || '',
+          message: form.getFieldValue('message') || '',
+          company: form.getFieldValue('company'),
+          phone: form.getFieldValue('phone'),
         }
 
         localStorage.setItem('contact-form-draft', JSON.stringify(data))
@@ -153,7 +153,7 @@ export function TanStackContactForm({
   const formProgress = variant === 'detailed' ? (() => {
     const fields = ['name', 'email', 'subject', 'message'] as const
     const completed = fields.filter(field => {
-      const value = form.getFieldValue(field as any)
+      const value = form.getFieldValue(field)
       return value && value.toString().trim()
     }).length
     return (completed / fields.length) * 100

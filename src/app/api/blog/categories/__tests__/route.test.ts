@@ -44,7 +44,13 @@ const createMockRequest = (url: string, options: RequestInit = {}) => {
 }
 
 describe('/api/blog/categories', () => {
-  let mockDb: any
+  let mockDb: {
+    category: {
+      findMany: ReturnType<typeof vi.fn>
+      findUnique: ReturnType<typeof vi.fn>
+      create: ReturnType<typeof vi.fn>
+    }
+  }
 
   beforeEach(async () => {
     vi.clearAllMocks()
