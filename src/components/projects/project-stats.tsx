@@ -21,7 +21,7 @@ export const ProjectStats: React.FC<ProjectStatsProps> = ({ totalProjects, isLoa
 
   return (
     <div className="max-w-3xl mx-auto text-center mb-16">
-      <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white">
+      <h2 className="heading-section glow-secondary mb-6">
         Revenue Operations Portfolio
       </h2>
       <p className="text-body-lg mb-8">
