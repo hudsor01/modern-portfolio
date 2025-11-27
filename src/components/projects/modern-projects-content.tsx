@@ -98,7 +98,7 @@ export const ModernProjectsContent = memo<ModernProjectsContentProps>(({
           </div>
 
           {/* Projects Grid */}
-          <div className="space-y-16">
+          <div className="mt-16">
             {isLoading ? (
               <ShadcnSkeletonWrapper layout="card" count={6} variant="default" />
             ) : sortedProjects.length === 0 ? (
