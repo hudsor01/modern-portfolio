@@ -21,16 +21,14 @@ export const ProjectStats: React.FC<ProjectStatsProps> = ({ totalProjects, isLoa
 
   return (
     <div className="max-w-3xl mx-auto text-center mb-16">
-      <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white">
+      <h2 className="heading-section glow-secondary mb-6">
         Revenue Operations Portfolio
       </h2>
-      <p className="text-xl md:text-2xl text-gray-300 mb-8">
-        <span className="font-bold bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent">
-          {totalProjects}
-        </span>{' '}
+      <p className="text-body-lg mb-8">
+        <span className="stat-value">{totalProjects}</span>{' '}
         Data-Driven Projects • $4.8M+ Revenue Optimized
       </p>
-      <p className="text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
+      <p className="text-body-sm max-w-2xl mx-auto">
         Transforming revenue operations through analytics, automation, and strategic insights.
         Each project delivers measurable business impact.
       </p>
