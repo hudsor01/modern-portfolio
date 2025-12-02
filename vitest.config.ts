@@ -12,6 +12,23 @@ export default defineConfig({
     css: true,
     includeSource: ['src/**/*.{js,ts,jsx,tsx}'],
     exclude: ['node_modules', 'dist', '.next', 'e2e/**/*', 'playwright-report/**/*'],
+    // Timeout configurations to prevent hanging
+    testTimeout: 10000, // 10 seconds per test
+    hookTimeout: 10000, // 10 seconds for beforeEach/afterEach
+    teardownTimeout: 10000, // 10 seconds for cleanup
+    // Pool options for proper worker cleanup
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true, // Use single fork for better stability in CI
+      },
+    },
+    // Ensure proper cleanup
+    restoreMocks: true,
+    clearMocks: true,
+    resetMocks: true,
+    unstubEnvs: true,
+    unstubGlobals: true,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
