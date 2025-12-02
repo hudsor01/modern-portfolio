@@ -75,7 +75,7 @@ export default function HomePageContent() {
   ]
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center text-foreground overflow-hidden p-4 pt-24">
+    <section className="relative min-h-screen text-foreground overflow-hidden p-4 pt-24">
       <HomePageSchema />
 
       {/* Modern Gradient Background - Hydration Safe */}
