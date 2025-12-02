@@ -20,19 +20,19 @@ const normalizedData = data.map(d => ({
 
 const getChannelColor = (channel: string) => {
   const colors: Record<string, string> = {
-    'Email Marketing': '#10b981',
-    'Organic Search': '#3b82f6',
-    'Paid Search': '#f59e0b',
-    'Social Media': '#8b5cf6',
-    'Direct Traffic': '#ef4444',
-    'Display Ads': '#6366f1'
+    'Email Marketing': 'var(--color-success)',
+    'Organic Search': 'var(--color-primary)',
+    'Paid Search': 'var(--color-warning)',
+    'Social Media': 'var(--color-secondary)',
+    'Direct Traffic': 'var(--color-destructive)',
+    'Display Ads': 'var(--color-secondary)'
   }
-  return colors[channel] || '#64748b'
+  return colors[channel] || 'var(--color-muted-foreground)'
 }
 
 const chartColors = {
-  grid: 'rgba(255, 255, 255, 0.05)',
-  axis: 'rgba(255, 255, 255, 0.4)',
+  grid: 'var(--color-border)',
+  axis: 'var(--color-muted-foreground)',
 }
 
 export default function ChannelROIChart() {
@@ -78,9 +78,9 @@ export default function ChannelROIChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              backgroundColor: 'var(--color-popover)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid var(--color-border)',
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
@@ -111,7 +111,7 @@ export default function ChannelROIChart() {
           </Scatter>
         </ScatterChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-gray-400">
+      <p className="mt-4 text-center text-sm italic text-muted-foreground">
         Channel attribution vs ROI scatter analysis revealing optimal investment allocation and performance optimization opportunities
       </p>
     </div>

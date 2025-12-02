@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import type { NextLinkHref } from '@/types/next-types'
 import { getRouteKey } from '@/lib/utils'
-import { ContactModal } from '@/components/ui/contact-modal'
+import { ContactModal } from '@/components/layout/contact-modal'
 
 type NavItem = {
   label: string
@@ -27,7 +27,7 @@ export function Navbar() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
-  const navbarClasses = 'fixed top-0 left-0 right-0 z-50 w-full bg-gradient-to-r from-[#0f172a]/95 via-[#0f172a]/98 to-[#0f172a]/95 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-blue-500/5'
+  const navbarClasses = 'fixed top-0 left-0 right-0 z-50 w-full bg-gradient-to-r from-[#0f172a]/95 via-[#0f172a]/98 to-[#0f172a]/95 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-primary/5'
 
   return (
     <>
@@ -39,7 +39,7 @@ export function Navbar() {
 
             {/* Desktop Navigation - centered */}
             <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center justify-center">
-              <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl px-3 py-3 shadow-lg">
+              <div className="glass rounded-2xl px-3 py-3 shadow-lg">
                 <div className="flex items-center space-x-1">
                   {navItems.map((item, index) => (
                     <Link
@@ -47,8 +47,8 @@ export function Navbar() {
                       href={item.href}
                       className={`relative text-base font-medium transition-all duration-300 px-5 py-3 rounded-xl border ${
                         pathname === item.href
-                          ? 'text-white bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-400/30 shadow-lg shadow-cyan-500/25'
-                          : 'text-gray-300 hover:text-white hover:bg-white/10 border-transparent hover:border-white/20 hover:shadow-md'
+                          ? 'text-white bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-primary/30 shadow-lg shadow-cyan-500/25'
+                          : 'text-muted-foreground hover:text-white hover:bg-white/10 border-transparent hover:border-white/20 hover:shadow-md'
                       }`}
                     >
                       <div className="relative">
@@ -67,7 +67,7 @@ export function Navbar() {
             <div className="md:hidden flex items-center">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                className="p-3 rounded-lg text-muted-foreground hover:text-white hover:bg-white/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
               >
                 {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
               </button>
@@ -77,7 +77,7 @@ export function Navbar() {
             <div className="hidden md:flex items-center w-32 justify-end">
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black text-base font-medium px-5 py-3 rounded-xl transition-all duration-300 border border-cyan-500/20 shadow-lg shadow-cyan-500/25"
+                className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black text-base font-medium px-5 py-3 rounded-xl transition-all duration-300 border border-primary/20 shadow-lg shadow-cyan-500/25"
               >
                 Let's Talk
               </button>
@@ -86,7 +86,7 @@ export function Navbar() {
 
           {/* Mobile Navigation Menu */}
           {isMobileMenuOpen && (
-            <div className="md:hidden absolute top-20 left-0 right-0 bg-[#0f172a]/98 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-blue-500/5">
+            <div className="md:hidden absolute top-20 left-0 right-0 bg-[#0f172a]/98 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-primary/5">
               <div className="px-4 py-6 space-y-4">
                 {navItems.map((item, index) => (
                   <Link
@@ -95,8 +95,8 @@ export function Navbar() {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`block w-full text-left px-4 py-4 rounded-xl border transition-all duration-300 text-base font-medium min-h-[44px] flex items-center ${
                       pathname === item.href
-                        ? 'text-white bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-400/30 shadow-lg shadow-cyan-500/25'
-                        : 'text-gray-300 hover:text-white hover:bg-white/10 border-transparent hover:border-white/20'
+                        ? 'text-white bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-primary/30 shadow-lg shadow-cyan-500/25'
+                        : 'text-muted-foreground hover:text-white hover:bg-white/10 border-transparent hover:border-white/20'
                     }`}
                   >
                     {item.label}
@@ -107,7 +107,7 @@ export function Navbar() {
                     setIsModalOpen(true)
                     setIsMobileMenuOpen(false)
                   }}
-                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black text-base font-medium px-4 py-4 rounded-xl transition-all duration-300 border border-cyan-500/20 shadow-lg shadow-cyan-500/25 min-h-[44px] flex items-center justify-center"
+                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black text-base font-medium px-4 py-4 rounded-xl transition-all duration-300 border border-primary/20 shadow-lg shadow-cyan-500/25 min-h-[44px] flex items-center justify-center"
                 >
                   Let's Talk
                 </button>

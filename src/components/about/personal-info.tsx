@@ -55,7 +55,7 @@ export function PersonalInfo({
             </motion.h1>
             
             <motion.h2 
-              className="text-2xl lg:text-3xl font-semibold text-gray-700 dark:text-gray-200 mb-6"
+              className="text-2xl lg:text-3xl font-semibold text-muted-foreground dark:text-foreground mb-6"
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
@@ -67,7 +67,7 @@ export function PersonalInfo({
           </div>
 
           <motion.p 
-            className="text-xl leading-relaxed text-gray-600 dark:text-gray-300"
+            className="text-xl leading-relaxed text-muted-foreground dark:text-muted-foreground"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.6 }}
@@ -85,7 +85,7 @@ export function PersonalInfo({
               <Button
                 onClick={onContactClick}
                 size="lg"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-foreground px-8 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Let's Connect
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -106,16 +106,16 @@ interface ContactInfoProps {
 
 function ContactInfo({ personalInfo }: ContactInfoProps) {
   return (
-    <div className="flex flex-wrap items-center gap-6 text-gray-600 dark:text-gray-300">
+    <div className="flex flex-wrap items-center gap-6 text-muted-foreground dark:text-muted-foreground">
       <div className="flex items-center gap-2">
-        <MapPin className="h-5 w-5 text-blue-600" />
+        <MapPin className="h-5 w-5 text-primary" />
         <span>{personalInfo.location}</span>
       </div>
       <div className="flex items-center gap-2">
-        <Mail className="h-5 w-5 text-blue-600" />
+        <Mail className="h-5 w-5 text-primary" />
         <a 
           href={`mailto:${personalInfo.email}`}
-          className="hover:text-blue-600 transition-colors"
+          className="hover:text-primary transition-colors"
         >
           {personalInfo.email}
         </a>

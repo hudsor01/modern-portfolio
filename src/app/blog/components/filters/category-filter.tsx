@@ -43,7 +43,7 @@ export function CategoryFilter({
             >
               {category.name}
               {category.postCount && (
-                <span className="text-xs text-gray-500 ml-1">
+                <span className="text-xs text-muted-foreground ml-1">
                   ({category.postCount})
                 </span>
               )}

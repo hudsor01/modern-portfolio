@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { TanStackQueryProvider } from '@/components/providers/tanstack-query-provider'
-import { WebVitals } from '@/components/ui/web-vitals'
+import { WebVitals } from '@/components/providers/web-vitals'
 
 /**
  * ULTIMATE Client Components Provider

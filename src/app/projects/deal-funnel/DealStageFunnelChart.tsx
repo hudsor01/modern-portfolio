@@ -50,11 +50,11 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
 
   // Gradient colors for funnel stages
   const funnelColors = [
-    '#3b82f6', // Blue
-    '#6366f1', // Indigo
-    '#8b5cf6', // Purple
-    '#a855f7', // Purple
-    '#c084fc', // Light Purple
+    'var(--color-primary)', // Blue
+    'var(--color-secondary)', // Indigo
+    'var(--color-secondary)', // Purple
+    'var(--color-chart-5)', // Purple
+    'var(--color-chart-5)', // Light Purple
   ];
 
 
@@ -173,7 +173,7 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all duration-300"
+                className="glass rounded-xl p-4 hover:bg-white/10 transition-all duration-300"
               >
                 <div className="flex items-center gap-2 mb-3">
                   <div
@@ -183,14 +183,14 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
                   <p className="text-xs font-medium text-white">{stage.stage}</p>
                 </div>
                 <p className="text-xl font-bold text-white">{stage.conversionRate}</p>
-                <p className="text-sm text-gray-400">{stage.count.toLocaleString()} deals</p>
+                <p className="text-sm text-muted-foreground">{stage.count.toLocaleString()} deals</p>
               </motion.div>
             ))}
           </div>
         </>
       ) : (
         <div className="h-40 flex items-center justify-center">
-          <p className="text-gray-400">No data available</p>
+          <p className="text-muted-foreground">No data available</p>
         </div>
       )}
     </div>

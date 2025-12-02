@@ -10,7 +10,7 @@ const data = [
     clv: 4850, 
     probability: 92,
     revenue: 3045800,
-    color: '#10b981'
+    color: 'var(--color-success)'
   },
   { 
     segment: 'Loyal', 
@@ -18,7 +18,7 @@ const data = [
     clv: 3420, 
     probability: 87,
     revenue: 2876220,
-    color: '#3b82f6'
+    color: 'var(--color-primary)'
   },
   { 
     segment: 'Potential', 
@@ -26,7 +26,7 @@ const data = [
     clv: 2640, 
     probability: 74,
     revenue: 3051840,
-    color: '#8b5cf6'
+    color: 'var(--color-secondary)'
   },
   { 
     segment: 'At Risk', 
@@ -34,7 +34,7 @@ const data = [
     clv: 1890, 
     probability: 45,
     revenue: 1686480,
-    color: '#f59e0b'
+    color: 'var(--color-warning)'
   },
   { 
     segment: 'Can\'t Lose', 
@@ -42,13 +42,13 @@ const data = [
     clv: 3850, 
     probability: 68,
     revenue: 2964500,
-    color: '#ef4444'
+    color: 'var(--color-destructive)'
   },
 ]
 
 const chartColors = {
-  grid: 'rgba(255, 255, 255, 0.05)',
-  axis: 'rgba(255, 255, 255, 0.4)',
+  grid: 'var(--color-border)',
+  axis: 'var(--color-muted-foreground)',
 }
 
 export default function CustomerSegmentChart() {
@@ -99,9 +99,9 @@ export default function CustomerSegmentChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              backgroundColor: 'var(--color-popover)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid var(--color-border)',
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
@@ -130,7 +130,7 @@ export default function CustomerSegmentChart() {
           />
         </BarChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-gray-400">
+      <p className="mt-4 text-center text-sm italic text-muted-foreground">
         RFM-based customer segmentation showing distribution of customers and average CLV per segment
       </p>
     </div>

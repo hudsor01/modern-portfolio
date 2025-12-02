@@ -11,10 +11,7 @@ interface ProjectsClientBoundaryProps {
 
 export default function ProjectsClientBoundary({ initialProjects }: ProjectsClientBoundaryProps) {
   // Use modern hook directly - no conversion needed
-  const { data: projects, isLoading, error } = useProjects({
-    prefetchRelated: true, // Modern: always prefetch related data
-    suspense: false
-  })
+  const { data: projects, isLoading, error } = useProjects()
 
   // Show error state
   if (error) {

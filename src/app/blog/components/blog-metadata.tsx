@@ -111,9 +111,9 @@ export function BlogMetadata({
   }
 
   const statsItems = [
-    { icon: Eye, value: viewCount, label: 'views', color: 'text-blue-600' },
-    { icon: Heart, value: likeCount, label: 'likes', color: 'text-red-600' },
-    { icon: MessageCircle, value: commentCount, label: 'comments', color: 'text-green-600' },
+    { icon: Eye, value: viewCount, label: 'views', color: 'text-primary' },
+    { icon: Heart, value: likeCount, label: 'likes', color: 'text-destructive' },
+    { icon: MessageCircle, value: commentCount, label: 'comments', color: 'text-success' },
     { icon: Share2, value: shareCount, label: 'shares', color: 'text-purple-600' }
   ]
 
@@ -123,7 +123,7 @@ export function BlogMetadata({
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className={cn('flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400', className)}
+        className={cn('flex items-center gap-3 text-sm text-muted-foreground dark:text-muted-foreground', className)}
       >
         {showAuthor && author && (
           <motion.div variants={itemVariants} className="flex items-center gap-2">
@@ -177,15 +177,15 @@ export function BlogMetadata({
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <h4 className="font-semibold text-lg text-gray-900 dark:text-white">
+                <h4 className="font-semibold text-lg text-foreground dark:text-white">
                   {author.name}
                 </h4>
                 {author.bio && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                  <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1 line-clamp-2">
                     {author.bio}
                   </p>
                 )}
-                <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                   <span>{author.totalPosts} posts</span>
                   <span>{author.totalViews.toLocaleString()} views</span>
                   {author.website && (
@@ -193,7 +193,7 @@ export function BlogMetadata({
                       asChild
                       variant="link"
                       size="sm"
-                      className="h-auto p-0 text-blue-600"
+                      className="h-auto p-0 text-primary"
                       onClick={() => onAuthorClick?.(author.slug)}
                     >
                       <Link href={`/blog/author/${author.slug}`}>
@@ -212,10 +212,10 @@ export function BlogMetadata({
           <div className="grid grid-cols-2 gap-4">
             {publishedAt && (
               <div className="flex items-center gap-2 text-sm">
-                <Calendar className="w-4 h-4 text-gray-400" />
+                <Calendar className="w-4 h-4 text-muted-foreground" />
                 <div>
                   <div className="font-medium">Published</div>
-                  <time dateTime={publishedAt.toISOString()} className="text-gray-600 dark:text-gray-400">
+                  <time dateTime={publishedAt.toISOString()} className="text-muted-foreground dark:text-muted-foreground">
                     {formatDate(publishedAt, false)}
                   </time>
                 </div>
@@ -224,10 +224,10 @@ export function BlogMetadata({
             
             {showUpdatedDate && updatedAt && publishedAt && updatedAt > publishedAt && (
               <div className="flex items-center gap-2 text-sm">
-                <Edit className="w-4 h-4 text-gray-400" />
+                <Edit className="w-4 h-4 text-muted-foreground" />
                 <div>
                   <div className="font-medium">Updated</div>
-                  <time dateTime={updatedAt.toISOString()} className="text-gray-600 dark:text-gray-400">
+                  <time dateTime={updatedAt.toISOString()} className="text-muted-foreground dark:text-muted-foreground">
                     {formatDate(updatedAt, false)}
                   </time>
                 </div>
@@ -242,14 +242,14 @@ export function BlogMetadata({
                   <div key={label} className="flex items-center gap-1 text-sm">
                     <Icon className={cn('w-4 h-4', color)} />
                     <span className="font-medium">{value.toLocaleString()}</span>
-                    <span className="text-gray-600 dark:text-gray-400">{label}</span>
+                    <span className="text-muted-foreground dark:text-muted-foreground">{label}</span>
                   </div>
                 )
               ))}
               <div className="flex items-center gap-1 text-sm">
                 <Clock className="w-4 h-4 text-orange-600" />
                 <span className="font-medium">{readingTime}</span>
-                <span className="text-gray-600 dark:text-gray-400">min read</span>
+                <span className="text-muted-foreground dark:text-muted-foreground">min read</span>
               </div>
             </div>
           )}
@@ -287,10 +287,10 @@ export function BlogMetadata({
                 </AvatarFallback>
               </Avatar>
               <div className="text-left">
-                <div className="font-medium text-gray-900 dark:text-white">
+                <div className="font-medium text-foreground dark:text-white">
                   {author.name}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+                <div className="text-sm text-muted-foreground dark:text-muted-foreground">
                   {author.totalPosts} posts
                 </div>
               </div>
@@ -305,7 +305,7 @@ export function BlogMetadata({
       )}
 
       {/* Date & Reading Time */}
-      <motion.div variants={itemVariants} className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+      <motion.div variants={itemVariants} className="flex items-center gap-4 text-sm text-muted-foreground dark:text-muted-foreground">
         {publishedAt && (
           <div className="flex items-center gap-1">
             <Calendar className="w-4 h-4" />
@@ -323,7 +323,7 @@ export function BlogMetadata({
 
       {/* Stats */}
       {showStats && (
-        <motion.div variants={itemVariants} className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+        <motion.div variants={itemVariants} className="flex items-center gap-3 text-sm text-muted-foreground dark:text-muted-foreground">
           {viewCount > 0 && (
             <div className="flex items-center gap-1">
               <Eye className="w-4 h-4" />
@@ -372,7 +372,7 @@ export function BlogMetadata({
               onClick={() => onTagClick?.(tag.slug)}
             >
               <Link href={`/blog/tag/${tag.slug}`}>
-                <Badge variant="secondary" className="hover:bg-gray-200 dark:hover:bg-gray-700">
+                <Badge variant="secondary" className="hover:bg-muted dark:hover:bg-muted">
                   {tag.name}
                 </Badge>
               </Link>

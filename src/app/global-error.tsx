@@ -17,8 +17,8 @@ export default function GlobalError({
         <div className="flex items-center justify-center min-h-screen p-4">
           <div className="w-full max-w-md text-center">
             <div className="p-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm">
-              <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 bg-red-100 dark:bg-red-900/20 rounded-full">
-                <AlertTriangle className="w-8 h-8 text-red-600 dark:text-red-400" />
+              <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 bg-destructive/10 dark:bg-destructive/20/20 rounded-full">
+                <AlertTriangle className="w-8 h-8 text-destructive dark:text-destructive" />
               </div>
 
               <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">

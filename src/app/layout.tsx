@@ -8,11 +8,11 @@ import { ClientComponentsProvider } from '@/components/providers/client-componen
 import { OptimizedMotionProvider } from '@/lib/motion/optimized-motion'
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from '@/components/ui/toaster'
-import { EnhancedReadingProgress } from '@/components/ui/enhanced-reading-progress'
-import { ScrollToTop } from '@/components/ui/scroll-to-top'
+import { EnhancedReadingProgress } from '@/components/layout/enhanced-reading-progress'
+import { ScrollToTop } from '@/components/layout/scroll-to-top'
 import { baseMetadata } from './shared-metadata'
 import { PersonJsonLd, WebsiteJsonLd, LocalBusinessJsonLd, OrganizationJsonLd } from '@/components/seo/json-ld'
-import { PreloadManager } from '@/components/performance/preload-manager'
+import { PreloadManager } from '@/components/providers/preload-manager'
 
 // Use single font family for better performance
 const inter = Inter({

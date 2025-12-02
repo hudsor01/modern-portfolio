@@ -23,7 +23,7 @@ export function PostHeader({ post, itemVariants }: PostHeaderProps) {
         {post.category && (
           <Badge 
             variant="secondary"
-            className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white"
+            className="gradient-cta text-white"
           >
             {post.category.name}
           </Badge>
@@ -34,7 +34,7 @@ export function PostHeader({ post, itemVariants }: PostHeaderProps) {
           </Badge>
         ))}
         {post.featured && (
-          <Badge className="bg-yellow-500/20 text-yellow-700 dark:text-yellow-300">
+          <Badge className="bg-warning/20 text-warning dark:text-warning">
             Featured
           </Badge>
         )}
@@ -44,7 +44,7 @@ export function PostHeader({ post, itemVariants }: PostHeaderProps) {
         {post.title}
       </h1>
 
-      <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+      <p className="text-xl text-muted-foreground dark:text-muted-foreground mb-8 leading-relaxed">
         {post.excerpt}
       </p>
 
@@ -60,14 +60,14 @@ export function PostHeader({ post, itemVariants }: PostHeaderProps) {
           <div>
             <div className="font-semibold">{post.author.name}</div>
             {post.author.title && (
-              <div className="text-sm text-gray-500 dark:text-gray-400">
+              <div className="text-sm text-muted-foreground dark:text-muted-foreground">
                 {post.author.title}
               </div>
             )}
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500 dark:text-gray-400">
+        <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground dark:text-muted-foreground">
           <div className="flex items-center gap-1">
             <Calendar className="h-4 w-4" />
             {post.publishedAt 

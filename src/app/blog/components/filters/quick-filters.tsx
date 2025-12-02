@@ -31,7 +31,7 @@ export function QuickFilters({
           onClick={() => onCategoryChange(category.slug)}
           className={cn(
             "flex items-center gap-2",
-            filters.category === category.slug && "bg-gradient-to-r from-blue-500 to-indigo-600"
+            filters.category === category.slug && "gradient-cta"
           )}
           disabled={isLoading}
         >
@@ -50,7 +50,7 @@ export function QuickFilters({
         onClick={onFeaturedToggle}
         className={cn(
           "flex items-center gap-2",
-          filters.featured && "bg-yellow-500 hover:bg-yellow-600"
+          filters.featured && "bg-warning hover:bg-warning"
         )}
         disabled={isLoading}
       >

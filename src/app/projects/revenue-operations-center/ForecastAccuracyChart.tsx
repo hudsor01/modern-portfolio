@@ -20,12 +20,12 @@ const data = [
 ]
 
 const chartColors = {
-  forecast: '#3b82f6',
-  actual: '#10b981',
-  accuracy: '#f59e0b',
-  confidence: 'rgba(59, 130, 246, 0.2)',
-  grid: 'rgba(255, 255, 255, 0.05)',
-  axis: 'rgba(255, 255, 255, 0.4)',
+  forecast: 'var(--color-primary)',
+  actual: 'var(--color-success)',
+  accuracy: 'var(--color-warning)',
+  confidence: 'color-mix(in oklch, var(--color-primary) 20%, transparent)',
+  grid: 'var(--color-border)',
+  axis: 'var(--color-muted-foreground)',
 }
 
 export default function ForecastAccuracyChart() {
@@ -78,9 +78,9 @@ export default function ForecastAccuracyChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              backgroundColor: 'var(--color-popover)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid var(--color-border)',
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
@@ -153,7 +153,7 @@ export default function ForecastAccuracyChart() {
           />
         </ComposedChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-gray-400">
+      <p className="mt-4 text-center text-sm italic text-muted-foreground">
         Revenue forecasting accuracy analysis showing 96.8% average accuracy with predictive confidence intervals
       </p>
     </div>

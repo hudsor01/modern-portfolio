@@ -58,7 +58,7 @@ export function BasicContentFields({ form, onTitleChange }: BasicContentFieldsPr
                 className="font-mono text-sm"
               />
             </FormControl>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               URL: /blog/{field.value || 'your-slug'}
             </p>
             <FormMessage />
@@ -81,7 +81,7 @@ export function BasicContentFields({ form, onTitleChange }: BasicContentFieldsPr
                 maxLength={500}
               />
             </FormControl>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               {field.value?.length || 0}/500 characters
             </p>
             <FormMessage />
@@ -104,7 +104,7 @@ export function BasicContentFields({ form, onTitleChange }: BasicContentFieldsPr
                 className="font-mono text-sm"
               />
             </FormControl>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               {field.value?.length || 0} characters (minimum 100)
             </p>
             <FormMessage />

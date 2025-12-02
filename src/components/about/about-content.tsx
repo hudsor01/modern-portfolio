@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ContactModal } from '@/components/ui/contact-modal'
+import { ContactModal } from '@/components/layout/contact-modal'
 import { Navbar } from '@/components/layout/navbar'
 import { PersonalInfo } from './personal-info'
 import { SkillsSection } from './skills-section'
@@ -38,7 +38,7 @@ export function AboutContent({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-page-light dark:bg-page">
       <Navbar />
       
       <main className="container mx-auto px-6 py-12 space-y-24">

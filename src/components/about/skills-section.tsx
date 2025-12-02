@@ -40,7 +40,7 @@ export function SkillsSection({ skills, className = '' }: SkillsSectionProps) {
         <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           Core Competencies
         </h2>
-        <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+        <p className="text-xl text-muted-foreground dark:text-muted-foreground max-w-3xl mx-auto">
           Revenue operations expertise spanning analytics, automation, and strategic optimization
         </p>
       </motion.div>
@@ -70,13 +70,13 @@ function SkillCategoryCard({ category, index }: SkillCategoryCardProps) {
       animate={fadeInUp.animate}
       transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
     >
-      <Card className="h-full border-0 shadow-lg bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+      <Card className="h-full border-0 shadow-lg bg-white/50 dark:bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
         <CardHeader className="text-center pb-4">
           <div className="text-4xl mb-4">{category.icon}</div>
-          <CardTitle className="text-xl font-bold text-gray-800 dark:text-white">
+          <CardTitle className="text-xl font-bold text-foreground dark:text-white">
             {category.category}
           </CardTitle>
-          <p className="text-sm text-gray-600 dark:text-gray-300">
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground">
             {category.description}
           </p>
         </CardHeader>
@@ -100,14 +100,14 @@ function SkillItem({ skill }: SkillItemProps) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="font-medium text-gray-800 dark:text-white">
+        <span className="font-medium text-foreground dark:text-white">
           {skill.name}
         </span>
         <div className="flex items-center gap-2">
           <Badge variant="secondary" className="text-xs">
             {skill.years}y
           </Badge>
-          <span className="text-sm text-gray-600 dark:text-gray-300">
+          <span className="text-sm text-muted-foreground dark:text-muted-foreground">
             {skill.level}%
           </span>
         </div>

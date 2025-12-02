@@ -13,19 +13,18 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { m as motion } from 'framer-motion'
-import { ChartSkeleton } from '@/components/projects/charts/chart-skeleton'
 
 // Lazy-load chart components with Suspense fallback
 const CLVPredictionChart = dynamic(() => import('./CLVPredictionChart'), {
-  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 const CustomerSegmentChart = dynamic(() => import('./CustomerSegmentChart'), {
-  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 const CLVTrendChart = dynamic(() => import('./CLVTrendChart'), {
-  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 
@@ -48,7 +47,7 @@ const customerSegments = [
     clv: 4850, 
     probability: 0.92, 
     characteristics: 'High frequency, recent purchases, high value',
-    color: '#10b981'
+    color: 'var(--color-success)'
   },
   { 
     segment: 'Loyal Customers', 
@@ -56,7 +55,7 @@ const customerSegments = [
     clv: 3420, 
     probability: 0.87, 
     characteristics: 'Regular buyers, consistent engagement',
-    color: '#3b82f6'
+    color: 'var(--color-primary)'
   },
   { 
     segment: 'Potential Loyalists', 
@@ -64,7 +63,7 @@ const customerSegments = [
     clv: 2640, 
     probability: 0.74, 
     characteristics: 'Recent customers with growth potential',
-    color: '#8b5cf6'
+    color: 'var(--color-secondary)'
   },
   { 
     segment: 'At Risk', 
@@ -72,7 +71,7 @@ const customerSegments = [
     clv: 1890, 
     probability: 0.45, 
     characteristics: 'Declining engagement, need intervention',
-    color: '#f59e0b'
+    color: 'var(--color-warning)'
   },
   { 
     segment: 'Can\'t Lose Them', 
@@ -80,13 +79,13 @@ const customerSegments = [
     clv: 3850, 
     probability: 0.68, 
     characteristics: 'High value but decreased activity',
-    color: '#ef4444'
+    color: 'var(--color-destructive)'
   },
 ]
 
 const predictiveMetrics = [
-  { metric: 'Next Purchase Probability', value: '87.3%', trend: '+12%', color: 'text-green-400' },
-  { metric: 'Expected Purchase Value', value: '$342', trend: '+8%', color: 'text-blue-400' },
+  { metric: 'Next Purchase Probability', value: '87.3%', trend: '+12%', color: 'text-success' },
+  { metric: 'Expected Purchase Value', value: '$342', trend: '+8%', color: 'text-primary' },
   { metric: 'Days to Next Purchase', value: '14.2', trend: '-3%', color: 'text-purple-400' },
   { metric: 'Churn Probability', value: '12.8%', trend: '-15%', color: 'text-amber-400' },
 ]
@@ -117,7 +116,7 @@ export default function CustomerLifetimeValueAnalytics() {
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
       </div>
 
@@ -126,21 +125,21 @@ export default function CustomerLifetimeValueAnalytics() {
         <div className="flex items-center justify-between mb-12">
           <Link 
             href="/projects"
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors duration-300"
+            className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors duration-300"
           >
             <ArrowLeft className="h-5 w-5" />
             <span className="text-sm font-medium">Back to Projects</span>
           </Link>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-1">
+            <div className="flex items-center gap-1 glass rounded-xl p-1">
               {['overview', 'segments', 'predictions'].map((tab) => (
                 <button
                   key={tab}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 capitalize ${
                     activeTab === tab 
-                      ? 'bg-emerald-500 text-white shadow-lg' 
-                      : 'text-gray-400 hover:text-white hover:bg-white/10'
+                      ? 'bg-emerald-500 text-foreground shadow-lg' 
+                      : 'text-muted-foreground hover:text-white hover:bg-white/10'
                   }`}
                   onClick={() => setActiveTab(tab)}
                 >
@@ -153,9 +152,9 @@ export default function CustomerLifetimeValueAnalytics() {
                 setIsLoading(true)
                 setTimeout(() => setIsLoading(false), 600)
               }}
-              className="p-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300"
+              className="p-2 rounded-xl glass-interactive"
             >
-              <RefreshCcw className="h-5 w-5 text-gray-300" />
+              <RefreshCcw className="h-5 w-5 text-muted-foreground" />
             </button>
           </div>
         </div>
@@ -170,14 +169,14 @@ export default function CustomerLifetimeValueAnalytics() {
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-400 to-teal-600 bg-clip-text text-transparent mb-3">
             Customer Lifetime Value Predictive Analytics Dashboard
           </h1>
-          <p className="text-lg text-gray-400 max-w-3xl mb-4">
+          <p className="text-lg text-muted-foreground max-w-3xl mb-4">
             Advanced CLV analytics platform leveraging BTYD (Buy Till You Die) predictive modeling framework. Achieving 94.3% prediction accuracy through machine learning algorithms and real-time customer behavior tracking across 5 distinct customer segments.
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
             <span className="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full">Prediction Accuracy: 94.3%</span>
             <span className="bg-teal-500/20 text-teal-400 px-3 py-1 rounded-full">Avg CLV: {formatCurrency(clvMetrics.averageCLV)}</span>
-            <span className="bg-cyan-500/20 text-cyan-400 px-3 py-1 rounded-full">Machine Learning</span>
-            <span className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full">BTYD Framework</span>
+            <span className="bg-primary/20 text-primary px-3 py-1 rounded-full">Machine Learning</span>
+            <span className="bg-primary/20 text-primary px-3 py-1 rounded-full">BTYD Framework</span>
           </div>
         </motion.div>
 
@@ -201,17 +200,17 @@ export default function CustomerLifetimeValueAnalytics() {
                 className="relative group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-3 bg-emerald-500/20 rounded-2xl">
                       <DollarSign className="h-6 w-6 text-emerald-400" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Average CLV</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Average CLV</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {formatCurrency(clvMetrics.averageCLV)}
                   </p>
-                  <p className="text-sm text-gray-400">Predicted Value</p>
+                  <p className="text-sm text-muted-foreground">Predicted Value</p>
                 </div>
               </motion.div>
 
@@ -223,17 +222,17 @@ export default function CustomerLifetimeValueAnalytics() {
                 className="relative group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-teal-600 to-cyan-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-3 bg-teal-500/20 rounded-2xl">
                       <Brain className="h-6 w-6 text-teal-400" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">ML Accuracy</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">ML Accuracy</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {formatPercent(clvMetrics.predictionAccuracy)}
                   </p>
-                  <p className="text-sm text-gray-400">Model Performance</p>
+                  <p className="text-sm text-muted-foreground">Model Performance</p>
                 </div>
               </motion.div>
 
@@ -245,17 +244,17 @@ export default function CustomerLifetimeValueAnalytics() {
                 className="relative group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-cyan-500/20 rounded-2xl">
-                      <Users className="h-6 w-6 text-cyan-400" />
+                    <div className="p-3 bg-primary/20 rounded-2xl">
+                      <Users className="h-6 w-6 text-primary" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">High Value</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">High Value</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {clvMetrics.highValueCustomers.toLocaleString()}
                   </p>
-                  <p className="text-sm text-gray-400">Premium Customers</p>
+                  <p className="text-sm text-muted-foreground">Premium Customers</p>
                 </div>
               </motion.div>
 
@@ -267,17 +266,17 @@ export default function CustomerLifetimeValueAnalytics() {
                 className="relative group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-blue-500/20 rounded-2xl">
-                      <Calendar className="h-6 w-6 text-blue-400" />
+                    <div className="p-3 bg-primary/20 rounded-2xl">
+                      <Calendar className="h-6 w-6 text-primary" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Forecast</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Forecast</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {clvMetrics.forecastHorizon} mo
                   </p>
-                  <p className="text-sm text-gray-400">Prediction Window</p>
+                  <p className="text-sm text-muted-foreground">Prediction Window</p>
                 </div>
               </motion.div>
             </div>
@@ -290,11 +289,11 @@ export default function CustomerLifetimeValueAnalytics() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+                  className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
                 >
                   <div className="mb-4">
                     <h2 className="text-xl font-bold mb-1">CLV Prediction vs Actual Performance</h2>
-                    <p className="text-sm text-gray-400">BTYD model accuracy analysis showing 94.3% prediction success rate across customer segments</p>
+                    <p className="text-sm text-muted-foreground">BTYD model accuracy analysis showing 94.3% prediction success rate across customer segments</p>
                   </div>
                   <div className="h-[250px]">
                     <CLVPredictionChart />
@@ -306,11 +305,11 @@ export default function CustomerLifetimeValueAnalytics() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.6 }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+                  className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
                 >
                   <div className="mb-4">
                     <h2 className="text-xl font-bold mb-1">CLV Trend Analysis & Forecasting</h2>
-                    <p className="text-sm text-gray-400">24-month predictive CLV trending with confidence intervals and seasonal adjustments</p>
+                    <p className="text-sm text-muted-foreground">24-month predictive CLV trending with confidence intervals and seasonal adjustments</p>
                   </div>
                   <div className="h-[250px]">
                     <CLVTrendChart />
@@ -326,11 +325,11 @@ export default function CustomerLifetimeValueAnalytics() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+                  className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
                 >
                   <div className="mb-4">
                     <h2 className="text-xl font-bold mb-1">Customer Segment Distribution & CLV Analysis</h2>
-                    <p className="text-sm text-gray-400">RFM-based customer segmentation with predictive CLV modeling across behavioral clusters</p>
+                    <p className="text-sm text-muted-foreground">RFM-based customer segmentation with predictive CLV modeling across behavioral clusters</p>
                   </div>
                   <div className="h-[250px]">
                     <CustomerSegmentChart />
@@ -342,11 +341,11 @@ export default function CustomerLifetimeValueAnalytics() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.6 }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+                  className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
                 >
                   <div className="mb-4">
                     <h2 className="text-xl font-bold mb-1">Customer Segment Intelligence & Behavioral Insights</h2>
-                    <p className="text-sm text-gray-400">Detailed segment analysis with CLV predictions and engagement probability scores</p>
+                    <p className="text-sm text-muted-foreground">Detailed segment analysis with CLV predictions and engagement probability scores</p>
                   </div>
                   
                   <div className="overflow-x-auto">
@@ -376,14 +375,14 @@ export default function CustomerLifetimeValueAnalytics() {
                             <td className="py-4 px-4">{formatCurrency(segment.clv)}</td>
                             <td className="py-4 px-4">
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                segment.probability >= 0.8 ? 'bg-green-500/20 text-green-400' :
-                                segment.probability >= 0.6 ? 'bg-yellow-500/20 text-yellow-400' :
-                                'bg-red-500/20 text-red-400'
+                                segment.probability >= 0.8 ? 'bg-success/20 text-success' :
+                                segment.probability >= 0.6 ? 'bg-warning/20 text-warning' :
+                                'bg-destructive/20 text-destructive'
                               }`}>
                                 {formatPercent(segment.probability * 100)}
                               </span>
                             </td>
-                            <td className="py-4 px-4 text-sm text-gray-400">{segment.characteristics}</td>
+                            <td className="py-4 px-4 text-sm text-muted-foreground">{segment.characteristics}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -398,17 +397,17 @@ export default function CustomerLifetimeValueAnalytics() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300 mb-8"
+                className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300 mb-8"
               >
                 <div className="mb-4">
                   <h2 className="text-xl font-bold mb-1">Real-Time Predictive Analytics Dashboard</h2>
-                  <p className="text-sm text-gray-400">Advanced machine learning predictions for customer behavior and purchase patterns</p>
+                  <p className="text-sm text-muted-foreground">Advanced machine learning predictions for customer behavior and purchase patterns</p>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {predictiveMetrics.map((metric, index) => (
                     <div key={index} className="bg-white/5 rounded-2xl p-4 border border-white/10">
-                      <h3 className="text-xs font-medium text-gray-400 mb-2">{metric.metric}</h3>
+                      <h3 className="text-xs font-medium text-muted-foreground mb-2">{metric.metric}</h3>
                       <div className="flex items-end justify-between">
                         <div>
                           <p className="text-lg font-bold mb-1">{metric.value}</p>
@@ -433,17 +432,17 @@ export default function CustomerLifetimeValueAnalytics() {
             >
               <h2 className="text-xl font-bold mb-4 text-emerald-400">Advanced CLV Analytics & Predictive Intelligence Impact</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 text-center">
+                <div className="glass rounded-2xl p-4 text-center">
                   <div className="text-2xl font-bold text-emerald-400 mb-1">94.3%</div>
-                  <div className="text-xs text-gray-300">Machine Learning Prediction Accuracy (Industry: 75-85%)</div>
+                  <div className="text-xs text-muted-foreground">Machine Learning Prediction Accuracy (Industry: 75-85%)</div>
                 </div>
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 text-center">
+                <div className="glass rounded-2xl p-4 text-center">
                   <div className="text-2xl font-bold text-teal-400 mb-1">{formatCurrency(clvMetrics.revenueImpact / 1000)}K</div>
-                  <div className="text-xs text-gray-300">Predicted Revenue Impact (24-month forecast)</div>
+                  <div className="text-xs text-muted-foreground">Predicted Revenue Impact (24-month forecast)</div>
                 </div>
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 text-center">
-                  <div className="text-2xl font-bold text-cyan-400 mb-1">5</div>
-                  <div className="text-xs text-gray-300">Customer Segments (RFM + Behavioral Analysis)</div>
+                <div className="glass rounded-2xl p-4 text-center">
+                  <div className="text-2xl font-bold text-primary mb-1">5</div>
+                  <div className="text-xs text-muted-foreground">Customer Segments (RFM + Behavioral Analysis)</div>
                 </div>
               </div>
             </motion.div>
@@ -455,10 +454,10 @@ export default function CustomerLifetimeValueAnalytics() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.0 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-blue-400">Project Overview</h2>
-                <div className="space-y-4 text-gray-300">
+                <h2 className="text-2xl font-bold mb-6 text-primary">Project Overview</h2>
+                <div className="space-y-4 text-muted-foreground">
                   <p className="text-lg leading-relaxed">
                     Developed a comprehensive customer lifetime value prediction model using advanced analytics and machine learning to enable data-driven customer segmentation and retention strategies. This initiative was critical for optimizing marketing spend and improving customer acquisition ROI.
                   </p>
@@ -473,10 +472,10 @@ export default function CustomerLifetimeValueAnalytics() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.1 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-amber-400">Challenge</h2>
-                <div className="space-y-4 text-gray-300">
+                <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
                     The organization lacked a scientific approach to understanding customer value and predicting future behavior, resulting in inefficient resource allocation and missed revenue opportunities:
                   </p>
@@ -498,17 +497,17 @@ export default function CustomerLifetimeValueAnalytics() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.2 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-green-400">Solution</h2>
-                <div className="space-y-4 text-gray-300">
+                <h2 className="text-2xl font-bold mb-6 text-success">Solution</h2>
+                <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
                     Built a comprehensive CLV prediction system using machine learning algorithms and RFM analysis to segment customers and predict future value with 94.3% accuracy:
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                      <h3 className="font-semibold text-blue-400 mb-3">Analytical Framework</h3>
+                      <h3 className="font-semibold text-primary mb-3">Analytical Framework</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
                         <li>RFM analysis (Recency, Frequency, Monetary) segmentation</li>
                         <li>Predictive modeling using customer behavior patterns</li>
@@ -518,7 +517,7 @@ export default function CustomerLifetimeValueAnalytics() {
                       </ul>
                     </div>
                     <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                      <h3 className="font-semibold text-green-400 mb-3">Technical Implementation</h3>
+                      <h3 className="font-semibold text-success mb-3">Technical Implementation</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
                         <li>Interactive dashboard with drill-down capabilities</li>
                         <li>Real-time customer scoring and alerts</li>
@@ -536,26 +535,26 @@ export default function CustomerLifetimeValueAnalytics() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.3 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-emerald-400">Results & Impact</h2>
-                <div className="space-y-6 text-gray-300">
+                <div className="space-y-6 text-muted-foreground">
                   <p className="leading-relaxed">
                     The CLV prediction model transformed how the organization approaches customer relationships, enabling data-driven decisions that significantly improved both customer satisfaction and revenue performance:
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-blue-400 mb-2">{formatCurrency(1276000)}</div>
-                      <div className="text-sm text-gray-300">Predicted Revenue Impact</div>
+                    <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-primary mb-2">{formatCurrency(1276000)}</div>
+                      <div className="text-sm text-muted-foreground">Predicted Revenue Impact</div>
                     </div>
-                    <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-sm border border-indigo-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-indigo-400 mb-2">94.3%</div>
-                      <div className="text-sm text-gray-300">Prediction Accuracy</div>
+                    <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-sm border border-secondary/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-secondary mb-2">94.3%</div>
+                      <div className="text-sm text-muted-foreground">Prediction Accuracy</div>
                     </div>
-                    <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-sm border border-cyan-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-cyan-400 mb-2">42%</div>
-                      <div className="text-sm text-gray-300">Improvement in Marketing ROI</div>
+                    <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-primary mb-2">42%</div>
+                      <div className="text-sm text-muted-foreground">Improvement in Marketing ROI</div>
                     </div>
                   </div>
 
@@ -578,10 +577,10 @@ export default function CustomerLifetimeValueAnalytics() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.4 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-purple-400">Key Learnings</h2>
-                <div className="space-y-4 text-gray-300">
+                <div className="space-y-4 text-muted-foreground">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
                       <h3 className="font-semibold text-purple-400">Strategic Insights</h3>
@@ -593,7 +592,7 @@ export default function CustomerLifetimeValueAnalytics() {
                       </ul>
                     </div>
                     <div className="space-y-3">
-                      <h3 className="font-semibold text-blue-400">Technical Insights</h3>
+                      <h3 className="font-semibold text-primary">Technical Insights</h3>
                       <ul className="list-disc list-inside space-y-2 text-sm">
                         <li>RFM analysis combined with behavioral data significantly outperforms demographic-only segmentation</li>
                         <li>24-month prediction horizon provides optimal balance between accuracy and actionability</li>
@@ -613,16 +612,16 @@ export default function CustomerLifetimeValueAnalytics() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.5 }}
-                className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-gray-500/20 rounded-3xl p-8"
+                className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-border/20 rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-gray-300">Technologies Used</h2>
+                <h2 className="text-2xl font-bold mb-6 text-muted-foreground">Technologies Used</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
                     'React 19', 'TypeScript', 'Machine Learning', 'RFM Analysis',
                     'Predictive Modeling', 'Cohort Analysis', 'Data Visualization', 'Statistical Analysis',
                     'Customer Segmentation', 'Behavioral Analytics', 'Retention Modeling', 'Churn Prediction'
                   ].map((tech, index) => (
-                    <span key={index} className="bg-white/10 text-gray-300 px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
+                    <span key={index} className="bg-white/10 text-muted-foreground px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
                       {tech}
                     </span>
                   ))}

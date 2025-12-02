@@ -53,7 +53,7 @@ describe('ProjectCard - Challenge-Solution-Results Format', () => {
     
     const challengeSection = screen.getByText('🎯 CHALLENGE')
     expect(challengeSection).toBeInTheDocument()
-    expect(challengeSection.closest('div')).toHaveClass('bg-red-900/20', 'border-red-500/30', 'rounded-lg')
+    expect(challengeSection.closest('div')).toHaveClass('bg-destructive/20/20', 'border-destructive/30', 'rounded-lg')
     
     // Challenge content should display the long description
     expect(screen.getByText(/comprehensive revenue operations dashboard/)).toBeInTheDocument()
@@ -64,7 +64,7 @@ describe('ProjectCard - Challenge-Solution-Results Format', () => {
     
     const solutionSection = screen.getByText('⚡ SOLUTION')
     expect(solutionSection).toBeInTheDocument()
-    expect(solutionSection.closest('div')).toHaveClass('bg-green-900/20', 'border-green-500/30', 'rounded-lg')
+    expect(solutionSection.closest('div')).toHaveClass('bg-success/20/20', 'border-success/30', 'rounded-lg')
     
     // Technology badges should be displayed
     expect(screen.getByText('React')).toBeInTheDocument()
@@ -74,7 +74,7 @@ describe('ProjectCard - Challenge-Solution-Results Format', () => {
     
     // Technology badges should have proper styling
     const techBadge = screen.getByText('React')
-    expect(techBadge).toHaveClass('bg-cyan-500/10', 'text-cyan-400', 'border-cyan-500/20')
+    expect(techBadge).toHaveClass('bg-primary/10', 'text-primary', 'border-primary/20')
   })
 
   it('renders Results section with metrics grid', () => {
@@ -82,7 +82,7 @@ describe('ProjectCard - Challenge-Solution-Results Format', () => {
     
     const resultsSection = screen.getByText('📊 RESULTS')
     expect(resultsSection).toBeInTheDocument()
-    expect(resultsSection.closest('div')).toHaveClass('bg-blue-900/20', 'border-blue-500/30', 'rounded-lg')
+    expect(resultsSection.closest('div')).toHaveClass('bg-primary/20/20', 'border-primary/30', 'rounded-lg')
     
     // Metrics should be displayed
     expect(screen.getByText('$3.7M')).toBeInTheDocument()
@@ -129,11 +129,11 @@ describe('ProjectCard - Challenge-Solution-Results Format', () => {
     
     const cardContainer = container.firstChild
     expect(cardContainer).toHaveClass(
-      'bg-gray-800/50',
+      'bg-card/50',
       'backdrop-blur-sm',
-      'border-gray-700',
+      'border-border',
       'rounded-xl',
-      'hover:border-cyan-500/50',
+      'hover:border-primary/50',
       'transition-all',
       'duration-300',
       'hover:-translate-y-2'
@@ -174,11 +174,11 @@ describe('ProjectCard - Challenge-Solution-Results Format', () => {
     
     // Client info should use proper styling
     const clientInfo = screen.getByText('TechCorp Inc. • 6 months')
-    expect(clientInfo).toHaveClass('text-cyan-400', 'text-sm', 'font-medium')
+    expect(clientInfo).toHaveClass('text-primary', 'text-sm', 'font-medium')
     
     // Description should use proper body text styling
     const description = screen.getByText('Real-time revenue tracking and forecasting platform')
-    expect(description).toHaveClass('text-base', 'md:text-lg', 'text-gray-300', 'leading-relaxed')
+    expect(description).toHaveClass('text-base', 'md:text-lg', 'text-muted-foreground', 'leading-relaxed')
   })
 
   it('ensures proper contrast for accessibility', () => {
@@ -186,15 +186,15 @@ describe('ProjectCard - Challenge-Solution-Results Format', () => {
     
     // Challenge section should have proper red contrast
     const challengeHeader = screen.getByText('🎯 CHALLENGE')
-    expect(challengeHeader).toHaveClass('text-red-300')
+    expect(challengeHeader).toHaveClass('text-destructive')
     
     // Solution section should have proper green contrast
     const solutionHeader = screen.getByText('⚡ SOLUTION')
-    expect(solutionHeader).toHaveClass('text-green-300')
+    expect(solutionHeader).toHaveClass('text-success')
     
     // Results section should have proper blue contrast
     const resultsHeader = screen.getByText('📊 RESULTS')
-    expect(resultsHeader).toHaveClass('text-blue-300')
+    expect(resultsHeader).toHaveClass('text-primary/70')
   })
 
   it('renders with proper semantic structure', () => {
