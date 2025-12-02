@@ -21,16 +21,16 @@ export function PostNavigation({ post, itemVariants }: PostNavigationProps) {
       {post.previousPost && (
         <a
           href={`/blog/${post.previousPost.slug}`}
-          className="group p-6 bg-white/5 backdrop-blur border border-white/10 rounded-2xl hover:bg-white/10 transition-colors"
+          className="group p-6 glass rounded-2xl hover:bg-white/10 transition-colors"
         >
-          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-2">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground mb-2">
             <ChevronLeft className="h-4 w-4" />
             Previous Post
           </div>
-          <h3 className="font-semibold group-hover:text-blue-500 transition-colors">
+          <h3 className="font-semibold group-hover:text-primary transition-colors">
             {post.previousPost.title}
           </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1 line-clamp-2">
             {post.previousPost.excerpt}
           </p>
         </a>
@@ -39,16 +39,16 @@ export function PostNavigation({ post, itemVariants }: PostNavigationProps) {
       {post.nextPost && (
         <a
           href={`/blog/${post.nextPost.slug}`}
-          className="group p-6 bg-white/5 backdrop-blur border border-white/10 rounded-2xl hover:bg-white/10 transition-colors text-right"
+          className="group p-6 glass rounded-2xl hover:bg-white/10 transition-colors text-right"
         >
-          <div className="flex items-center justify-end gap-2 text-sm text-gray-500 dark:text-gray-400 mb-2">
+          <div className="flex items-center justify-end gap-2 text-sm text-muted-foreground dark:text-muted-foreground mb-2">
             Next Post
             <ChevronRight className="h-4 w-4" />
           </div>
-          <h3 className="font-semibold group-hover:text-blue-500 transition-colors">
+          <h3 className="font-semibold group-hover:text-primary transition-colors">
             {post.nextPost.title}
           </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1 line-clamp-2">
             {post.nextPost.excerpt}
           </p>
         </a>

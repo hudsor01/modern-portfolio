@@ -88,18 +88,18 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, pr
   const { shouldAnimate, getMotionProps } = useMotionConfig()
 
   const cardContent = (
-    <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-8 hover:border-cyan-500/50 transition-all duration-300 hover:-translate-y-2 h-full group">
+    <div className="bg-card/50 backdrop-blur-sm border border-border rounded-xl p-8 hover:border-primary/50 transition-all duration-300 hover:-translate-y-2 h-full group">
       {/* Header */}
       <div className="mb-6">
-        <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
+        <h3 className="text-xl md:text-2xl font-bold text-foreground mb-2">
           {project.title}
         </h3>
         {isMockProject(project) && (
-          <p className="text-cyan-400 text-sm font-medium">
+          <p className="text-primary text-sm font-medium">
             {project.client} • {project.duration}
           </p>
         )}
-        <p className="text-base md:text-lg text-gray-300 leading-relaxed mt-3">
+        <p className="text-base md:text-lg text-muted-foreground leading-relaxed mt-3">
           {project.description}
         </p>
       </div>
@@ -109,17 +109,17 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, pr
         {isMockProject(project) && (
           <>
             {/* Challenge */}
-            <div className="p-4 bg-red-900/20 border border-red-500/30 rounded-lg">
-              <h4 className="text-sm font-bold text-red-300 mb-2">🎯 CHALLENGE</h4>
-              <p className="text-sm text-gray-300">{project.longDescription}</p>
+            <div className="p-4 bg-destructive/20/20 border border-destructive/30 rounded-lg">
+              <h4 className="text-sm font-bold text-destructive mb-2">🎯 CHALLENGE</h4>
+              <p className="text-sm text-muted-foreground">{project.longDescription}</p>
             </div>
 
             {/* Solution */}
-            <div className="p-4 bg-green-900/20 border border-green-500/30 rounded-lg">
-              <h4 className="text-sm font-bold text-green-300 mb-2">⚡ SOLUTION</h4>
+            <div className="p-4 bg-success/20/20 border border-success/30 rounded-lg">
+              <h4 className="text-sm font-bold text-success mb-2">⚡ SOLUTION</h4>
               <div className="flex flex-wrap gap-2">
                 {project.technologies.slice(0, 4).map((tech, i) => (
-                  <span key={i} className="bg-cyan-500/10 text-cyan-400 px-2 py-1 rounded text-xs border border-cyan-500/20">
+                  <span key={i} className="bg-primary/10 text-primary px-2 py-1 rounded text-xs border border-primary/20">
                     {tech}
                   </span>
                 ))}
@@ -127,16 +127,16 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, pr
             </div>
 
             {/* Results */}
-            <div className="p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
-              <h4 className="text-sm font-bold text-blue-300 mb-3">📊 RESULTS</h4>
+            <div className="p-4 bg-primary/20/20 border border-primary/30 rounded-lg">
+              <h4 className="text-sm font-bold text-primary/70 mb-3">📊 RESULTS</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {project.displayMetrics.slice(0, 3).map((metric, i) => (
                   <div key={i} className="text-center">
-                    <div className="text-cyan-400 mb-1 flex justify-center">
+                    <div className="text-primary mb-1 flex justify-center">
                       <metric.icon className="w-4 h-4" />
                     </div>
                     <div className="text-lg font-bold text-white">{metric.value}</div>
-                    <div className="text-xs text-gray-400">{metric.label}</div>
+                    <div className="text-xs text-muted-foreground">{metric.label}</div>
                   </div>
                 ))}
               </div>

@@ -53,7 +53,7 @@ export function PostSocialActions({ post, showSocialShare = true }: PostSocialAc
   }
 
   return (
-    <div className="flex items-center justify-between mb-8 p-4 bg-white/5 backdrop-blur border border-white/10 rounded-2xl">
+    <div className="flex items-center justify-between mb-8 p-4 glass rounded-2xl">
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
@@ -61,7 +61,7 @@ export function PostSocialActions({ post, showSocialShare = true }: PostSocialAc
           onClick={handleLike}
           className={cn(
             "flex items-center gap-2",
-            isLiked && "text-red-500"
+            isLiked && "text-destructive"
           )}
         >
           <Heart className={cn("h-4 w-4", isLiked && "fill-current")} />
@@ -73,7 +73,7 @@ export function PostSocialActions({ post, showSocialShare = true }: PostSocialAc
           onClick={handleBookmark}
           className={cn(
             "flex items-center gap-2",
-            isBookmarked && "text-blue-500"
+            isBookmarked && "text-primary"
           )}
         >
           <Bookmark className={cn("h-4 w-4", isBookmarked && "fill-current")} />

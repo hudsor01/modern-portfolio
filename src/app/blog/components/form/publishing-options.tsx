@@ -24,11 +24,11 @@ interface PublishingOptionsProps {
 }
 
 const statusOptions = [
-  { value: 'DRAFT', label: 'Draft', color: 'bg-gray-100 text-gray-800' },
-  { value: 'REVIEW', label: 'Review', color: 'bg-yellow-100 text-yellow-800' },
-  { value: 'SCHEDULED', label: 'Scheduled', color: 'bg-blue-100 text-blue-800' },
-  { value: 'PUBLISHED', label: 'Published', color: 'bg-green-100 text-green-800' },
-  { value: 'ARCHIVED', label: 'Archived', color: 'bg-gray-100 text-gray-600' },
+  { value: 'DRAFT', label: 'Draft', color: 'bg-muted text-foreground' },
+  { value: 'REVIEW', label: 'Review', color: 'bg-warning/10 text-warning' },
+  { value: 'SCHEDULED', label: 'Scheduled', color: 'bg-primary/10 text-primary' },
+  { value: 'PUBLISHED', label: 'Published', color: 'bg-success/10 text-success' },
+  { value: 'ARCHIVED', label: 'Archived', color: 'bg-muted text-muted-foreground' },
 ]
 
 export function PublishingOptions({ 
@@ -80,7 +80,7 @@ export function PublishingOptions({
           <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
             <div className="space-y-0.5">
               <FormLabel className="text-base">Featured Post</FormLabel>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 Show this post prominently on the homepage
               </p>
             </div>
@@ -141,7 +141,7 @@ export function PublishingOptions({
                       type="checkbox"
                       checked={selectedTags.includes(tag.id)}
                       onChange={() => onToggleTag(tag.id)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-border text-primary focus:ring-primary"
                     />
                     <span className="text-sm">{tag.name}</span>
                   </label>
@@ -198,7 +198,7 @@ export function PublishingOptions({
                 maxLength={200}
               />
             </FormControl>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               {field.value?.length || 0}/200 characters
             </p>
             <FormMessage />

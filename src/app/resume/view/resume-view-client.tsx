@@ -38,7 +38,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
             <h1 className="text-4xl font-bold text-white mb-4">
               Richard Hudson - Resume
             </h1>
-            <p className="text-gray-300 text-lg mb-6">
+            <p className="text-muted-foreground text-lg mb-6">
               Revenue Operations Professional | Plano, TX
             </p>
             
@@ -55,7 +55,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
               <Button
                 variant="outline"
                 asChild
-                className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/10 px-6 py-3 rounded-lg transition-all duration-300"
+                className="border-primary text-primary hover:bg-primary/10 px-6 py-3 rounded-lg transition-all duration-300"
               >
                 <a href="/resume" className="flex items-center">
                   <FileText className="mr-2 h-5 w-5" />
@@ -66,7 +66,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
               <Button
                 variant="outline"
                 asChild
-                className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/10 px-6 py-3 rounded-lg transition-all duration-300"
+                className="border-primary text-primary hover:bg-primary/10 px-6 py-3 rounded-lg transition-all duration-300"
               >
                 <a 
                   href="/Richard Hudson - Resume.pdf" 
@@ -87,8 +87,8 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
               {isLoading && (
                 <div className="flex items-center justify-center h-96">
                   <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading PDF...</p>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                    <p className="text-muted-foreground">Loading PDF...</p>
                   </div>
                 </div>
               )}
@@ -96,9 +96,9 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
               {error && (
                 <div className="flex items-center justify-center h-96">
                   <div className="text-center">
-                    <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600 mb-4">Unable to display PDF in browser</p>
-                    <Button onClick={handleDownload} className="bg-cyan-500 hover:bg-cyan-600">
+                    <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground mb-4">Unable to display PDF in browser</p>
+                    <Button onClick={handleDownload} className="bg-primary hover:bg-primary">
                       <Download className="mr-2 h-4 w-4" />
                       Download Instead
                     </Button>
@@ -119,8 +119,8 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
             </div>
             
             {/* Mobile Fallback Message */}
-            <div className="md:hidden mt-6 p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
-              <p className="text-blue-300 text-sm text-center">
+            <div className="md:hidden mt-6 p-4 bg-primary/20/20 border border-primary/30 rounded-lg">
+              <p className="text-primary/70 text-sm text-center">
                 💡 For the best mobile experience, tap "Download PDF" or "Open in New Tab" above
               </p>
             </div>

@@ -16,11 +16,11 @@ export function Footer() {
   if (!showFooter) return null
 
   return (
-    <footer className="bg-[#0f172a] text-white border-t border-white/10 py-3">
+    <footer className="bg-[#0f172a] text-foreground border-t border-white/10 py-3">
       <div className="container mx-auto px-4 max-w-7xl">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-gray-400">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-muted-foreground">
           <p>© {currentYear} Richard Hudson. All rights reserved.</p>
-          <a href="https://hudsondigitalsolutions.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
+          <a href="https://hudsondigitalsolutions.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
             Built by Hudson Digital Solutions
           </a>
         </div>

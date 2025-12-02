@@ -15,23 +15,22 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { m as motion } from 'framer-motion'
-import { ChartSkeleton } from '@/components/projects/charts/chart-skeleton'
 
 // Lazy-load chart components with Suspense fallback
 const CommissionStructureChart = dynamic(() => import('./CommissionStructureChart'), {
-  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 const PerformanceIncentiveChart = dynamic(() => import('./PerformanceIncentiveChart'), {
-  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 const ROIOptimizationChart = dynamic(() => import('./ROIOptimizationChart'), {
-  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 const CommissionTierChart = dynamic(() => import('./CommissionTierChart'), {
-  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 
@@ -162,7 +161,7 @@ export default function CommissionOptimization() {
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-green-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-success rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
       </div>
 
@@ -171,21 +170,21 @@ export default function CommissionOptimization() {
         <div className="flex items-center justify-between mb-12">
           <Link 
             href="/projects"
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors duration-300"
+            className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors duration-300"
           >
             <ArrowLeft className="h-5 w-5" />
             <span className="text-sm font-medium">Back to Projects</span>
           </Link>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-1">
+            <div className="flex items-center gap-1 glass rounded-xl p-1">
               {['overview', 'tiers', 'incentives', 'automation'].map((tab) => (
                 <button
                   key={tab}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 capitalize ${
                     activeTab === tab 
-                      ? 'bg-emerald-500 text-white shadow-lg' 
-                      : 'text-gray-400 hover:text-white hover:bg-white/10'
+                      ? 'bg-emerald-500 text-foreground shadow-lg' 
+                      : 'text-muted-foreground hover:text-white hover:bg-white/10'
                   }`}
                   onClick={() => setActiveTab(tab)}
                 >
@@ -198,9 +197,9 @@ export default function CommissionOptimization() {
                 setIsLoading(true)
                 setTimeout(() => setIsLoading(false), 600)
               }}
-              className="p-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300"
+              className="p-2 rounded-xl glass-interactive"
             >
-              <RefreshCcw className="h-5 w-5 text-gray-300" />
+              <RefreshCcw className="h-5 w-5 text-muted-foreground" />
             </button>
           </div>
         </div>
@@ -215,14 +214,14 @@ export default function CommissionOptimization() {
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-400 to-green-600 bg-clip-text text-transparent mb-3">
             Commission & Incentive Optimization System
           </h1>
-          <p className="text-lg text-gray-400 max-w-3xl mb-4">
+          <p className="text-lg text-muted-foreground max-w-3xl mb-4">
             Advanced commission management and partner incentive optimization platform managing $254K+ commission structures. Automated tier adjustments with 23% average commission rate optimization and ROI-driven compensation strategy delivering 34% performance improvement and 87.5% automation efficiency.
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
             <span className="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full">Commission Pool: {formatCurrency(commissionMetrics.totalCommissionPool)}</span>
-            <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full">Avg Rate: {formatPercent(commissionMetrics.averageCommissionRate)}</span>
+            <span className="bg-success/20 text-success px-3 py-1 rounded-full">Avg Rate: {formatPercent(commissionMetrics.averageCommissionRate)}</span>
             <span className="bg-teal-500/20 text-teal-400 px-3 py-1 rounded-full">Performance: +{formatPercent(commissionMetrics.performanceImprovement)}</span>
-            <span className="bg-cyan-500/20 text-cyan-400 px-3 py-1 rounded-full">Automation: {formatPercent(commissionMetrics.automationEfficiency)}</span>
+            <span className="bg-primary/20 text-primary px-3 py-1 rounded-full">Automation: {formatPercent(commissionMetrics.automationEfficiency)}</span>
           </div>
         </motion.div>
 
@@ -246,17 +245,17 @@ export default function CommissionOptimization() {
                 className="relative group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-green-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-3 bg-emerald-500/20 rounded-2xl">
                       <DollarSign className="h-6 w-6 text-emerald-400" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Commission Pool</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Commission Pool</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {formatCurrency(commissionMetrics.totalCommissionPool)}
                   </p>
-                  <p className="text-sm text-gray-400">Annual Management</p>
+                  <p className="text-sm text-muted-foreground">Annual Management</p>
                 </div>
               </motion.div>
 
@@ -268,17 +267,17 @@ export default function CommissionOptimization() {
                 className="relative group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-teal-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-green-500/20 rounded-2xl">
-                      <Percent className="h-6 w-6 text-green-400" />
+                    <div className="p-3 bg-success/20 rounded-2xl">
+                      <Percent className="h-6 w-6 text-success" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Avg Rate</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Avg Rate</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {formatPercent(commissionMetrics.averageCommissionRate)}
                   </p>
-                  <p className="text-sm text-gray-400">Commission Rate</p>
+                  <p className="text-sm text-muted-foreground">Commission Rate</p>
                 </div>
               </motion.div>
 
@@ -290,17 +289,17 @@ export default function CommissionOptimization() {
                 className="relative group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-teal-600 to-cyan-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-3 bg-teal-500/20 rounded-2xl">
                       <TrendingUp className="h-6 w-6 text-teal-400" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Performance</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Performance</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     +{formatPercent(commissionMetrics.performanceImprovement)}
                   </p>
-                  <p className="text-sm text-gray-400">Improvement</p>
+                  <p className="text-sm text-muted-foreground">Improvement</p>
                 </div>
               </motion.div>
 
@@ -312,17 +311,17 @@ export default function CommissionOptimization() {
                 className="relative group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-cyan-500/20 rounded-2xl">
-                      <Calculator className="h-6 w-6 text-cyan-400" />
+                    <div className="p-3 bg-primary/20 rounded-2xl">
+                      <Calculator className="h-6 w-6 text-primary" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Automation</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Automation</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {formatPercent(commissionMetrics.automationEfficiency)}
                   </p>
-                  <p className="text-sm text-gray-400">Efficiency</p>
+                  <p className="text-sm text-muted-foreground">Efficiency</p>
                 </div>
               </motion.div>
             </div>
@@ -332,15 +331,15 @@ export default function CommissionOptimization() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
-              className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 mb-12"
+              className="glass rounded-3xl p-6 mb-12"
             >
               <h3 className="text-lg font-semibold mb-6">Commission Processing & Automation Metrics</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {commissionCalculationMetrics.map((metric, index) => (
                   <div key={index} className="bg-white/5 rounded-2xl p-4 border border-white/10">
-                    <p className="text-sm text-gray-400 mb-2">{metric.metric}</p>
+                    <p className="text-sm text-muted-foreground mb-2">{metric.metric}</p>
                     <p className="text-2xl font-bold mb-1">{metric.value}</p>
-                    <p className="text-sm flex items-center gap-1 text-green-400">
+                    <p className="text-sm flex items-center gap-1 text-success">
                       <TrendingUp className="w-4 h-4" />
                       {metric.improvement}
                     </p>
@@ -357,11 +356,11 @@ export default function CommissionOptimization() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.6 }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+                  className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
                 >
                   <div className="mb-4">
                     <h2 className="text-xl font-bold mb-1">Commission Structure & Payout Analysis</h2>
-                    <p className="text-sm text-gray-400">Tier-based commission optimization with automated calculations and performance tracking</p>
+                    <p className="text-sm text-muted-foreground">Tier-based commission optimization with automated calculations and performance tracking</p>
                   </div>
                   <div className="h-[280px]">
                     <CommissionStructureChart />
@@ -373,11 +372,11 @@ export default function CommissionOptimization() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.7 }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+                  className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
                 >
                   <div className="mb-4">
                     <h2 className="text-xl font-bold mb-1">ROI Optimization & Performance Impact</h2>
-                    <p className="text-sm text-gray-400">Commission ROI analysis showing investment efficiency across partner tiers</p>
+                    <p className="text-sm text-muted-foreground">Commission ROI analysis showing investment efficiency across partner tiers</p>
                   </div>
                   <div className="h-[280px]">
                     <ROIOptimizationChart />
@@ -393,11 +392,11 @@ export default function CommissionOptimization() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.6 }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+                  className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
                 >
                   <div className="mb-6">
                     <h2 className="text-2xl font-bold mb-2">Commission Tier Performance & ROI Analysis</h2>
-                    <p className="text-gray-400">Multi-tier commission structure optimization with performance-based adjustments</p>
+                    <p className="text-muted-foreground">Multi-tier commission structure optimization with performance-based adjustments</p>
                   </div>
                   <CommissionTierChart />
                 </motion.div>
@@ -407,11 +406,11 @@ export default function CommissionOptimization() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.7 }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+                  className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
                 >
                   <div className="mb-6">
                     <h2 className="text-2xl font-bold mb-2">Partner Commission Tier Structure & Requirements</h2>
-                    <p className="text-gray-400">Detailed commission tier analysis with earnings, requirements, and ROI metrics</p>
+                    <p className="text-muted-foreground">Detailed commission tier analysis with earnings, requirements, and ROI metrics</p>
                   </div>
                   
                   <div className="overflow-x-auto">
@@ -437,14 +436,14 @@ export default function CommissionOptimization() {
                             <td className="py-4 px-4">{formatCurrency(tier.avgEarnings)}</td>
                             <td className="py-4 px-4">
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                tier.roi >= 4 ? 'bg-green-500/20 text-green-400' :
-                                tier.roi >= 3 ? 'bg-yellow-500/20 text-yellow-400' :
-                                'bg-red-500/20 text-red-400'
+                                tier.roi >= 4 ? 'bg-success/20 text-success' :
+                                tier.roi >= 3 ? 'bg-warning/20 text-warning' :
+                                'bg-destructive/20 text-destructive'
                               }`}>
                                 {tier.roi.toFixed(1)}x
                               </span>
                             </td>
-                            <td className="py-4 px-4 text-sm text-gray-400">{tier.requirements}</td>
+                            <td className="py-4 px-4 text-sm text-muted-foreground">{tier.requirements}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -461,11 +460,11 @@ export default function CommissionOptimization() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.6 }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+                  className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
                 >
                   <div className="mb-6">
                     <h2 className="text-2xl font-bold mb-2">Performance Incentive Program Effectiveness</h2>
-                    <p className="text-gray-400">Targeted incentive programs driving partner performance with ROI-optimized bonus structures</p>
+                    <p className="text-muted-foreground">Targeted incentive programs driving partner performance with ROI-optimized bonus structures</p>
                   </div>
                   <PerformanceIncentiveChart />
                 </motion.div>
@@ -475,11 +474,11 @@ export default function CommissionOptimization() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.7 }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+                  className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
                 >
                   <div className="mb-6">
                     <h2 className="text-2xl font-bold mb-2">Incentive Program Performance & ROI Analysis</h2>
-                    <p className="text-gray-400">Comprehensive incentive program analysis with effectiveness metrics and performance impact</p>
+                    <p className="text-muted-foreground">Comprehensive incentive program analysis with effectiveness metrics and performance impact</p>
                   </div>
                   
                   <div className="overflow-x-auto">
@@ -504,15 +503,15 @@ export default function CommissionOptimization() {
                             <td className="py-4 px-4">{formatCurrency(program.payout)}</td>
                             <td className="py-4 px-4">
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                program.effectiveness >= 85 ? 'bg-green-500/20 text-green-400' :
-                                program.effectiveness >= 75 ? 'bg-yellow-500/20 text-yellow-400' :
-                                'bg-red-500/20 text-red-400'
+                                program.effectiveness >= 85 ? 'bg-success/20 text-success' :
+                                program.effectiveness >= 75 ? 'bg-warning/20 text-warning' :
+                                'bg-destructive/20 text-destructive'
                               }`}>
                                 {formatPercent(program.effectiveness)}
                               </span>
                             </td>
                             <td className="py-4 px-4">{formatCurrency(program.avgBonus)}</td>
-                            <td className="py-4 px-4 text-green-400">+{formatPercent(program.performanceLift)}</td>
+                            <td className="py-4 px-4 text-success">+{formatPercent(program.performanceLift)}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -527,11 +526,11 @@ export default function CommissionOptimization() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300 mb-12"
+                className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300 mb-12"
               >
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold mb-2">Automated Commission Processing System</h2>
-                  <p className="text-gray-400">Real-time commission calculation and payout automation with 87.5% efficiency improvement</p>
+                  <p className="text-muted-foreground">Real-time commission calculation and payout automation with 87.5% efficiency improvement</p>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -542,36 +541,36 @@ export default function CommissionOptimization() {
                     </h3>
                     <div className="space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Processing Time:</span>
+                        <span className="text-muted-foreground">Processing Time:</span>
                         <span className="font-medium">2.3 hours</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Previous Time:</span>
-                        <span className="font-medium text-gray-500">8.5 hours</span>
+                        <span className="text-muted-foreground">Previous Time:</span>
+                        <span className="font-medium text-muted-foreground">8.5 hours</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Time Savings:</span>
-                        <span className="font-medium text-green-400">73% faster</span>
+                        <span className="text-muted-foreground">Time Savings:</span>
+                        <span className="font-medium text-success">73% faster</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                      <Target className="w-5 h-5 text-green-400" />
+                      <Target className="w-5 h-5 text-success" />
                       Accuracy Metrics
                     </h3>
                     <div className="space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Calculation Accuracy:</span>
+                        <span className="text-muted-foreground">Calculation Accuracy:</span>
                         <span className="font-medium">99.8%</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Error Reduction:</span>
-                        <span className="font-medium text-green-400">95% fewer errors</span>
+                        <span className="text-muted-foreground">Error Reduction:</span>
+                        <span className="font-medium text-success">95% fewer errors</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Dispute Rate:</span>
+                        <span className="text-muted-foreground">Dispute Rate:</span>
                         <span className="font-medium">1.2%</span>
                       </div>
                     </div>
@@ -584,15 +583,15 @@ export default function CommissionOptimization() {
                     </h3>
                     <div className="space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Satisfaction Score:</span>
+                        <span className="text-muted-foreground">Satisfaction Score:</span>
                         <span className="font-medium">94.7%</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Improvement:</span>
-                        <span className="font-medium text-green-400">+19%</span>
+                        <span className="text-muted-foreground">Improvement:</span>
+                        <span className="font-medium text-success">+19%</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Response Time:</span>
+                        <span className="text-muted-foreground">Response Time:</span>
                         <span className="font-medium">&lt; 24 hours</span>
                       </div>
                     </div>
@@ -608,10 +607,10 @@ export default function CommissionOptimization() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.8 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-emerald-400">Project Overview</h2>
-                <div className="space-y-4 text-gray-300">
+                <div className="space-y-4 text-muted-foreground">
                   <p className="text-lg leading-relaxed">
                     Designed and implemented a comprehensive commission optimization system to manage {formatCurrency(commissionMetrics.totalCommissionPool)} annual commission pool across multi-tier partner structures. This strategic initiative transformed commission management from manual processes to automated optimization.
                   </p>
@@ -626,10 +625,10 @@ export default function CommissionOptimization() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.9 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-amber-400">Challenge</h2>
-                <div className="space-y-4 text-gray-300">
+                <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
                     The existing commission structure was hindering partner performance and creating operational inefficiencies. Key problems included:
                   </p>
@@ -652,10 +651,10 @@ export default function CommissionOptimization() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.0 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-green-400">Solution</h2>
-                <div className="space-y-4 text-gray-300">
+                <h2 className="text-2xl font-bold mb-6 text-success">Solution</h2>
+                <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
                     Developed a comprehensive commission optimization platform with automated tier management, real-time calculations, and performance-based incentive programs:
                   </p>
@@ -672,7 +671,7 @@ export default function CommissionOptimization() {
                       </ul>
                     </div>
                     <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                      <h3 className="font-semibold text-green-400 mb-3">Analytics & Optimization</h3>
+                      <h3 className="font-semibold text-success mb-3">Analytics & Optimization</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
                         <li>ROI analysis for each commission tier and program</li>
                         <li>Performance impact measurement and forecasting</li>
@@ -694,10 +693,10 @@ export default function CommissionOptimization() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.1 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-cyan-400">Results & Impact</h2>
-                <div className="space-y-6 text-gray-300">
+                <h2 className="text-2xl font-bold mb-6 text-primary">Results & Impact</h2>
+                <div className="space-y-6 text-muted-foreground">
                   <p className="leading-relaxed">
                     The commission optimization system delivered significant operational improvements and partner performance gains:
                   </p>
@@ -705,20 +704,20 @@ export default function CommissionOptimization() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="bg-gradient-to-br from-emerald-500/10 to-green-500/10 backdrop-blur-sm border border-emerald-500/20 rounded-2xl p-6 text-center">
                       <div className="text-3xl font-bold text-emerald-400 mb-2">{formatCurrency(commissionMetrics.totalCommissionPool)}</div>
-                      <div className="text-sm text-gray-300">Annual Commission Pool Management</div>
+                      <div className="text-sm text-muted-foreground">Annual Commission Pool Management</div>
                     </div>
-                    <div className="bg-gradient-to-br from-green-500/10 to-teal-500/10 backdrop-blur-sm border border-green-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-green-400 mb-2">+{formatPercent(commissionMetrics.performanceImprovement)}</div>
-                      <div className="text-sm text-gray-300">Partner Performance Improvement</div>
+                    <div className="bg-gradient-to-br from-green-500/10 to-teal-500/10 backdrop-blur-sm border border-success/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-success mb-2">+{formatPercent(commissionMetrics.performanceImprovement)}</div>
+                      <div className="text-sm text-muted-foreground">Partner Performance Improvement</div>
                     </div>
                     <div className="bg-gradient-to-br from-teal-500/10 to-cyan-500/10 backdrop-blur-sm border border-teal-500/20 rounded-2xl p-6 text-center">
                       <div className="text-3xl font-bold text-teal-400 mb-2">{formatPercent(commissionMetrics.automationEfficiency)}</div>
-                      <div className="text-sm text-gray-300">Automation & Processing Efficiency</div>
+                      <div className="text-sm text-muted-foreground">Automation & Processing Efficiency</div>
                     </div>
                   </div>
 
                   <div className="space-y-3">
-                    <h3 className="font-semibold text-cyan-400">Quantified Business Outcomes:</h3>
+                    <h3 className="font-semibold text-primary">Quantified Business Outcomes:</h3>
                     <ul className="list-disc list-inside space-y-2 ml-4">
                       <li>Reduced commission processing time from 8.5 to 2.3 hours (73% improvement)</li>
                       <li>Decreased dispute rate from 3.8% to 1.2% through improved transparency</li>
@@ -732,19 +731,19 @@ export default function CommissionOptimization() {
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
                     <div className="bg-white/5 rounded-2xl p-4 border border-white/10 text-center">
                       <div className="text-2xl font-bold text-emerald-400 mb-1">73%</div>
-                      <div className="text-xs text-gray-300">Processing Time Reduction</div>
+                      <div className="text-xs text-muted-foreground">Processing Time Reduction</div>
                     </div>
                     <div className="bg-white/5 rounded-2xl p-4 border border-white/10 text-center">
-                      <div className="text-2xl font-bold text-green-400 mb-1">68%</div>
-                      <div className="text-xs text-gray-300">Dispute Rate Reduction</div>
+                      <div className="text-2xl font-bold text-success mb-1">68%</div>
+                      <div className="text-xs text-muted-foreground">Dispute Rate Reduction</div>
                     </div>
                     <div className="bg-white/5 rounded-2xl p-4 border border-white/10 text-center">
                       <div className="text-2xl font-bold text-teal-400 mb-1">99.8%</div>
-                      <div className="text-xs text-gray-300">Calculation Accuracy</div>
+                      <div className="text-xs text-muted-foreground">Calculation Accuracy</div>
                     </div>
                     <div className="bg-white/5 rounded-2xl p-4 border border-white/10 text-center">
-                      <div className="text-2xl font-bold text-cyan-400 mb-1">94.7%</div>
-                      <div className="text-xs text-gray-300">Partner Satisfaction</div>
+                      <div className="text-2xl font-bold text-primary mb-1">94.7%</div>
+                      <div className="text-xs text-muted-foreground">Partner Satisfaction</div>
                     </div>
                   </div>
                 </div>
@@ -755,10 +754,10 @@ export default function CommissionOptimization() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.2 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-purple-400">Key Learnings</h2>
-                <div className="space-y-4 text-gray-300">
+                <div className="space-y-4 text-muted-foreground">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
                       <h3 className="font-semibold text-purple-400">Business Strategy Insights</h3>
@@ -769,7 +768,7 @@ export default function CommissionOptimization() {
                       </ul>
                     </div>
                     <div className="space-y-3">
-                      <h3 className="font-semibold text-green-400">Technical Implementation Insights</h3>
+                      <h3 className="font-semibold text-success">Technical Implementation Insights</h3>
                       <ul className="list-disc list-inside space-y-2 text-sm">
                         <li>Real-time calculation engines require robust error handling and rollback mechanisms</li>
                         <li>Automated audit trails are essential for compliance and dispute resolution</li>
@@ -788,16 +787,16 @@ export default function CommissionOptimization() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.3 }}
-                className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-gray-500/20 rounded-3xl p-8"
+                className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-border/20 rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-gray-300">Technologies Used</h2>
+                <h2 className="text-2xl font-bold mb-6 text-muted-foreground">Technologies Used</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
                     'React 19', 'TypeScript', 'Recharts', 'Automated Calculations',
                     'Commission Engine', 'ROI Analytics', 'Performance Tracking', 'Dispute Resolution',
                     'Real-time Processing', 'Data Validation', 'Audit Trails', 'Business Intelligence'
                   ].map((tech, index) => (
-                    <span key={index} className="bg-white/10 text-gray-300 px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
+                    <span key={index} className="bg-white/10 text-muted-foreground px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
                       {tech}
                     </span>
                   ))}

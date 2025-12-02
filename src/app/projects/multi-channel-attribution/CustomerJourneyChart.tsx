@@ -13,11 +13,11 @@ const data = [
 ]
 
 const chartColors = {
-  touchpoints: '#3b82f6',
-  conversions: '#10b981',
-  conversionRate: '#f59e0b',
-  grid: 'rgba(255, 255, 255, 0.05)',
-  axis: 'rgba(255, 255, 255, 0.4)',
+  touchpoints: 'var(--color-primary)',
+  conversions: 'var(--color-success)',
+  conversionRate: 'var(--color-warning)',
+  grid: 'var(--color-border)',
+  axis: 'var(--color-muted-foreground)',
 }
 
 export default function CustomerJourneyChart() {
@@ -49,9 +49,9 @@ export default function CustomerJourneyChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              backgroundColor: 'var(--color-popover)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid var(--color-border)',
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
@@ -84,7 +84,7 @@ export default function CustomerJourneyChart() {
           />
         </AreaChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-gray-400">
+      <p className="mt-4 text-center text-sm italic text-muted-foreground">
         Customer journey funnel analysis showing touchpoint density and conversion optimization across 6 key stages
       </p>
     </div>

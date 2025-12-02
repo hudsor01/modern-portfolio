@@ -95,7 +95,7 @@ export function BlogNavigation({
                 size={isMobile ? 'default' : 'sm'}
                 className={cn(
                   'flex items-center gap-2',
-                  item.isActive && 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white',
+                  item.isActive && 'gradient-cta text-white',
                   isMobile && 'w-full justify-start'
                 )}
                 onClick={handleNavClick}
@@ -112,7 +112,7 @@ export function BlogNavigation({
 
       {/* Separator */}
       {!isMobile && (
-        <div className="hidden md:block w-px h-6 bg-gray-300 dark:bg-gray-600 mx-2" />
+        <div className="hidden md:block w-px h-6 bg-muted dark:bg-muted mx-2" />
       )}
 
       {/* Categories */}
@@ -122,8 +122,8 @@ export function BlogNavigation({
       )}>
         {isMobile && (
           <div className="flex items-center gap-2 mb-2">
-            <Folder className="h-4 w-4 text-gray-500" />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Folder className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium text-muted-foreground dark:text-muted-foreground">
               Categories
             </span>
           </div>
@@ -147,7 +147,7 @@ export function BlogNavigation({
                 size={isMobile ? 'default' : 'sm'}
                 className={cn(
                   'flex items-center gap-2',
-                  isActive && 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-blue-500',
+                  isActive && 'gradient-cta text-foreground border-primary',
                   isMobile && 'w-full justify-start pl-6',
                   !isMobile && 'h-8'
                 )}
@@ -186,7 +186,7 @@ export function BlogNavigation({
               variant="ghost"
               size={isMobile ? 'default' : 'sm'}
               className={cn(
-                'flex items-center gap-2 text-gray-600 dark:text-gray-400',
+                'flex items-center gap-2 text-muted-foreground dark:text-muted-foreground',
                 isMobile && 'w-full justify-start pl-6'
               )}
               onClick={handleNavClick}

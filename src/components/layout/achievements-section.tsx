@@ -78,7 +78,7 @@ const AnimatedCounter = ({
   }, [inView, value, duration])
 
   return (
-    <span ref={countRef} className="text-4xl font-bold text-blue-600 dark:text-blue-400 font-serif">
+    <span ref={countRef} className="text-4xl font-bold text-primary dark:text-primary font-serif">
       {prefix}
       {Math.floor(count)}
       {suffix}
@@ -132,7 +132,7 @@ export function AchievementsSection() {
                   w-14 h-14 rounded-lg flex items-center justify-center mr-4
                   ${
                     achievement.color === 'blue'
-                      ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                      ? 'bg-primary/10 dark:bg-primary/20/30 text-primary dark:text-primary'
                       : achievement.color === 'purple'
                         ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400'
                         : 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400'

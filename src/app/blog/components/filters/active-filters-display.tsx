@@ -46,7 +46,7 @@ export function ActiveFiltersDisplay({
             Category: {categories.find(c => c.slug === filters.category)?.name}
             <button
               onClick={() => onFilterChange({ category: undefined })}
-              className="ml-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full p-0.5"
+              className="ml-1 hover:bg-muted dark:hover:bg-muted rounded-full p-0.5"
             >
               <X className="h-3 w-3" />
             </button>
@@ -60,7 +60,7 @@ export function ActiveFiltersDisplay({
               {tag.name}
               <button
                 onClick={() => onTagToggle(tagSlug)}
-                className="ml-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full p-0.5"
+                className="ml-1 hover:bg-muted dark:hover:bg-muted rounded-full p-0.5"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -73,7 +73,7 @@ export function ActiveFiltersDisplay({
             Author: {authors.find(a => a.id === filters.author)?.name}
             <button
               onClick={() => onFilterChange({ author: undefined })}
-              className="ml-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full p-0.5"
+              className="ml-1 hover:bg-muted dark:hover:bg-muted rounded-full p-0.5"
             >
               <X className="h-3 w-3" />
             </button>
@@ -81,11 +81,11 @@ export function ActiveFiltersDisplay({
         )}
         
         {filters.featured && (
-          <Badge variant="secondary" className="flex items-center gap-1 bg-yellow-500/20 text-yellow-700 dark:text-yellow-300">
+          <Badge variant="secondary" className="flex items-center gap-1 bg-warning/20 text-warning dark:text-warning">
             Featured Posts
             <button
               onClick={() => onFilterChange({ featured: undefined })}
-              className="ml-1 hover:bg-yellow-200 dark:hover:bg-yellow-700 rounded-full p-0.5"
+              className="ml-1 hover:bg-warning/20 dark:hover:bg-warning rounded-full p-0.5"
             >
               <X className="h-3 w-3" />
             </button>
@@ -99,7 +99,7 @@ export function ActiveFiltersDisplay({
             {filters.dateTo && format(filters.dateTo, "MMM dd, yyyy")}
             <button
               onClick={() => onDateRangeChange({})}
-              className="ml-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full p-0.5"
+              className="ml-1 hover:bg-muted dark:hover:bg-muted rounded-full p-0.5"
             >
               <X className="h-3 w-3" />
             </button>
@@ -111,7 +111,7 @@ export function ActiveFiltersDisplay({
             Search: "{filters.search}"
             <button
               onClick={() => onFilterChange({ search: undefined })}
-              className="ml-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full p-0.5"
+              className="ml-1 hover:bg-muted dark:hover:bg-muted rounded-full p-0.5"
             >
               <X className="h-3 w-3" />
             </button>

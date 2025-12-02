@@ -161,7 +161,7 @@ export default function ResumePage() {
   return (
     <>
       <Navbar />
-      <section className="relative min-h-screen bg-[#0f172a] text-white overflow-hidden pt-20">
+      <section className="relative min-h-screen bg-[#0f172a] text-foreground overflow-hidden pt-20">
         {/* Grid Background */}
         <div
           className="absolute inset-0 bg-[image:linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[length:50px_50px]"
@@ -170,15 +170,15 @@ export default function ResumePage() {
 
         {/* Animated Blobs */}
         <div
-          className="absolute top-0 -left-4 w-72 h-72 sm:w-96 sm:h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"
+          className="absolute top-0 -left-4 w-72 h-72 sm:w-96 sm:h-96 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"
           aria-hidden="true"
         />
         <div
-          className="absolute top-0 -right-4 w-72 h-72 sm:w-96 sm:h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob [animation-delay:2s]"
+          className="absolute top-0 -right-4 w-72 h-72 sm:w-96 sm:h-96 bg-primary-hover rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob [animation-delay:2s]"
           aria-hidden="true"
         />
         <div
-          className="absolute bottom-0 left-20 w-72 h-72 sm:w-96 sm:h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob [animation-delay:4s]"
+          className="absolute bottom-0 left-20 w-72 h-72 sm:w-96 sm:h-96 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob [animation-delay:4s]"
           aria-hidden="true"
         />
 
@@ -205,7 +205,7 @@ export default function ResumePage() {
               variants={fadeInUp}
               className="text-2xl sm:text-3xl md:text-4xl font-light max-w-4xl mx-auto mb-6"
             >
-              <span className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-500/20 to-blue-600/20 border border-blue-400/40 px-6 py-3 text-blue-300 font-medium backdrop-blur-sm shadow-lg shadow-blue-500/25">
+              <span className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-500/20 to-blue-600/20 border border-primary/50/40 px-6 py-3 text-primary/70 font-medium backdrop-blur-sm shadow-lg shadow-primary/25">
                 Revenue Operations Professional
               </span>
             </motion.h2>
@@ -214,7 +214,7 @@ export default function ResumePage() {
               variants={fadeInUp}
               className="flex flex-col items-center mb-8"
             >
-              <p className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed text-center">
+              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed text-center">
                 Experienced Revenue Operations Professional with a proven track record of driving business growth through data-driven insights, process optimization, and strategic operational improvements. Expert in building scalable systems that increase efficiency and revenue performance.
               </p>
             </motion.div>
@@ -225,21 +225,21 @@ export default function ResumePage() {
               className="relative max-w-4xl mx-auto pt-8"
             >
               {/* Enhanced Action Buttons Container */}
-              <div className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl p-8 hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25">
-                <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
+              <div className="glass-interactive rounded-3xl p-8 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/25">
+                <div className="glass rounded-2xl p-6">
                   {/* Action Buttons Grid */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     {/* Download Resume - Primary Action */}
-                    <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-600/20 border border-blue-400/30 hover:border-blue-400/50 transition-all duration-500 hover:scale-105">
+                    <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-600/20 border border-primary/50/30 hover:border-primary/50/50 transition-all duration-500 hover:scale-105">
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                       <Button
                         size="lg"
-                        className="relative w-full h-20 bg-transparent hover:bg-transparent text-white border-0 shadow-none p-6"
+                        className="relative w-full h-20 bg-transparent hover:bg-transparent text-foreground border-0 shadow-none p-6"
                         onClick={handleDownloadResume}
                         disabled={isDownloading}
                       >
                         <div className="flex flex-col items-center justify-center space-y-1">
-                          <FileDown size={20} className="text-blue-400 group-hover:animate-bounce transition-all duration-300" />
+                          <FileDown size={20} className="text-primary group-hover:animate-bounce transition-all duration-300" />
                           <span className="text-sm font-medium">
                             {isDownloading ? 'Downloading...' : 'Download PDF'}
                           </span>
@@ -252,7 +252,7 @@ export default function ResumePage() {
                       <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                       <Button
                         size="lg"
-                        className="relative w-full h-20 bg-transparent hover:bg-transparent text-white border-0 shadow-none p-6"
+                        className="relative w-full h-20 bg-transparent hover:bg-transparent text-foreground border-0 shadow-none p-6"
                         onClick={handleToggleView}
                       >
                         <div className="flex flex-col items-center justify-center space-y-1">
@@ -269,7 +269,7 @@ export default function ResumePage() {
                       <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                       <Link
                         href="/contact"
-                        className="relative block w-full h-20 bg-transparent hover:bg-transparent text-white p-6 rounded-lg transition-all duration-200"
+                        className="relative block w-full h-20 bg-transparent hover:bg-transparent text-foreground p-6 rounded-lg transition-all duration-200"
                       >
                         <div className="flex flex-col items-center justify-center space-y-1 h-full">
                           <Mail size={20} className="text-emerald-500 group-hover:scale-110 transition-all duration-300" />
@@ -288,12 +288,12 @@ export default function ResumePage() {
               variants={fadeInUp}
               className="max-w-2xl mx-auto pt-8"
             >
-              <div className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl p-8 hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25">
-                <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
+              <div className="glass-interactive rounded-3xl p-8 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/25">
+                <div className="glass rounded-2xl p-6">
                   <div className="flex justify-center gap-6">
                     <a
                       href="mailto:hello@richardwhudsonjr.com"
-                      className="text-gray-400 hover:text-blue-400 social-icon"
+                      className="text-muted-foreground hover:text-primary social-icon"
                       aria-label="Email"
                     >
                       <Mail className="h-7 w-7" />
@@ -302,7 +302,7 @@ export default function ResumePage() {
                       href="https://linkedin.com/in/hudsor01"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-400 hover:text-blue-400 social-icon"
+                      className="text-muted-foreground hover:text-primary social-icon"
                       aria-label="LinkedIn"
                     >
                       <SiLinkedin className="h-7 w-7" />
@@ -311,7 +311,7 @@ export default function ResumePage() {
                       href="https://github.com/hudsor01"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-400 hover:text-blue-400 social-icon"
+                      className="text-muted-foreground hover:text-primary social-icon"
                       aria-label="GitHub"
                     >
                       <SiGithub className="h-7 w-7" />
@@ -320,7 +320,7 @@ export default function ResumePage() {
                       href="https://richardwhudsonjr.com"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-400 hover:text-blue-400 social-icon"
+                      className="text-muted-foreground hover:text-primary social-icon"
                       aria-label="Website"
                     >
                       <Globe className="h-7 w-7" />
@@ -337,7 +337,7 @@ export default function ResumePage() {
               variants={fadeInUp}
               initial="initial"
               animate="animate"
-              className="bg-white/5 backdrop-blur border border-white/10 rounded-xl overflow-hidden"
+              className="glass rounded-xl overflow-hidden"
             >
               {pdfUrl && <ResumeViewer pdfUrl={pdfUrl} />}
             </motion.div>
@@ -355,7 +355,7 @@ export default function ResumePage() {
                 <div className="bg-slate-800/95 border border-slate-700 rounded-xl p-8 shadow-lg hover:bg-slate-700/95 hover:border-slate-600 transition-all duration-200">
                   <div className="flex flex-col lg:flex-row items-center gap-8">
                     {/* Profile Image */}
-                    <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-2xl overflow-hidden border-4 border-blue-500/40 shadow-xl shadow-blue-500/20 flex-shrink-0">
+                    <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-2xl overflow-hidden border-4 border-primary/40 shadow-xl shadow-primary/20 flex-shrink-0">
                       <Image
                         src="/images/richard.jpg"
                         alt="Richard Hudson - Revenue Operations Consultant specializing in Salesforce automation, data analytics, and business growth strategies in Dallas, TX"
@@ -368,10 +368,10 @@ export default function ResumePage() {
 
                     {/* About Content */}
                     <div className="flex-1 text-center lg:text-left space-y-4">
-                      <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                      <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
                         Revenue Operations Professional
                       </h3>
-                      <p className="text-blue-400 font-medium">
+                      <p className="text-primary font-medium">
                         4+ Years Experience | Dallas-Fort Worth, TX
                       </p>
                       <p className="text-slate-300 text-base leading-relaxed">
@@ -381,10 +381,10 @@ export default function ResumePage() {
                       </p>
                       
                       <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-                        <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-blue-900/50 text-blue-300 border border-blue-800/50">
+                        <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-primary/20/50 text-primary/70 border border-primary/80/50">
                           Salesforce Certified
                         </span>
-                        <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-blue-900/50 text-blue-300 border border-blue-800/50">
+                        <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-primary/20/50 text-primary/70 border border-primary/80/50">
                           HubSpot Certified
                         </span>
                         <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-emerald-900/50 text-emerald-300 border border-emerald-800/50">
@@ -414,7 +414,7 @@ export default function ResumePage() {
                             <h4 className="text-xl font-semibold text-white">
                               {job.company}
                             </h4>
-                            <p className="text-blue-400 flex items-center gap-2 mt-1">
+                            <p className="text-primary flex items-center gap-2 mt-1">
                               <MapPin className="w-4 h-4" />
                               {job.location} • {job.period}
                             </p>
@@ -445,13 +445,13 @@ export default function ResumePage() {
               {/* Education & Certifications */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
                 <motion.section variants={fadeInUp} className="group h-full">
-                  <div className="relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25">
+                  <div className="relative glass-interactive rounded-3xl overflow-hidden transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/25">
                     <div className="p-8 flex-1 flex flex-col">
                       {/* Inner Container for Content */}
-                      <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 flex-1 flex flex-col h-[320px]">
+                      <div className="glass rounded-2xl p-6 flex-1 flex flex-col h-[320px]">
                         <div className="text-center mb-6">
                           <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
-                            <GraduationCap className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
+                            <GraduationCap className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                             Education
                           </h3>
                         </div>
@@ -459,13 +459,13 @@ export default function ResumePage() {
                         <div className="flex-1 flex flex-col justify-center">
                           {education.map((edu, index) => (
                             <div key={index} className="space-y-3">
-                              <h4 className="text-lg font-bold text-white leading-tight">{edu.degree}</h4>
-                              <p className="text-blue-400 font-medium">{edu.institution}</p>
-                              <div className="flex items-center gap-2 text-gray-400">
+                              <h4 className="text-lg font-bold text-foreground leading-tight">{edu.degree}</h4>
+                              <p className="text-primary font-medium">{edu.institution}</p>
+                              <div className="flex items-center gap-2 text-muted-foreground">
                                 <Calendar className="w-4 h-4" />
                                 <span className="text-sm">{edu.period}</span>
                               </div>
-                              <p className="text-gray-300 text-sm">{edu.focus}</p>
+                              <p className="text-muted-foreground text-sm">{edu.focus}</p>
                             </div>
                           ))}
                         </div>
@@ -475,13 +475,13 @@ export default function ResumePage() {
                 </motion.section>
 
                 <motion.section variants={fadeInUp} className="group h-full">
-                  <div className="relative bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/25">
+                  <div className="relative glass-interactive rounded-3xl overflow-hidden transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/25">
                     <div className="p-8 flex-1 flex flex-col">
                       {/* Inner Container for Content */}
-                      <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 flex-1 flex flex-col h-[320px]">
+                      <div className="glass rounded-2xl p-6 flex-1 flex flex-col h-[320px]">
                         <div className="text-center mb-6">
                           <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
-                            <BadgeCheck className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
+                            <BadgeCheck className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                             Certifications
                           </h3>
                         </div>
@@ -489,8 +489,8 @@ export default function ResumePage() {
                         <div className="space-y-4 flex-1 flex flex-col justify-center">
                           {certifications.map((cert, index) => (
                             <div key={index} className="flex items-center">
-                              <div className="w-2 h-2 bg-blue-400 rounded-full mr-3 flex-shrink-0"></div>
-                              <p className="text-gray-300 text-sm leading-relaxed">
+                              <div className="w-2 h-2 bg-primary/70 rounded-full mr-3 flex-shrink-0"></div>
+                              <p className="text-muted-foreground text-sm leading-relaxed">
                                 {cert}
                               </p>
                             </div>
@@ -508,7 +508,7 @@ export default function ResumePage() {
                   <h3 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent">
                     Skills & Expertise
                   </h3>
-                  <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                  <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                     Interactive skill matrix with expertise levels and proficiency indicators
                   </p>
                 </div>
@@ -530,7 +530,7 @@ export default function ResumePage() {
                           transition={{ type: "spring", stiffness: 300, damping: 20 }}
                         >
                           {/* Skill Category Card */}
-                          <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur border border-white/20 rounded-2xl overflow-hidden transition-all duration-500 group-hover:border-white/40 group-hover:shadow-2xl group-hover:shadow-blue-500/20 h-full">
+                          <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur border border-white/20 rounded-2xl overflow-hidden transition-all duration-500 group-hover:border-white/40 group-hover:shadow-2xl group-hover:shadow-primary/20 h-full">
                             {/* Gradient Background Effect */}
                             <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${index === 0 ? 'bg-gradient-to-br from-blue-500/10 to-cyan-500/10' :
                               index === 1 ? 'bg-gradient-to-br from-purple-500/10 to-pink-500/10' :
@@ -540,7 +540,7 @@ export default function ResumePage() {
                             <div className="relative z-10 p-6">
                               {/* Category Header */}
                               <div className="flex items-center justify-between mb-6">
-                                <h4 className={`text-xl font-bold tracking-tight text-center w-full ${index === 0 ? 'text-blue-400' :
+                                <h4 className={`text-xl font-bold tracking-tight text-center w-full ${index === 0 ? 'text-primary' :
                                   index === 1 ? 'text-purple-400' :
                                     'text-emerald-500'
                                   }`}>
@@ -560,7 +560,7 @@ export default function ResumePage() {
                                   >
                                     {/* Skill Item */}
                                     <div className="bg-white/5 rounded-xl p-3 hover:bg-white/10 transition-all duration-300 border border-white/10 hover:border-white/20 text-center">
-                                      <span className="text-gray-200 text-sm font-medium">
+                                      <span className="text-foreground text-sm font-medium">
                                         {skill}
                                       </span>
                                     </div>

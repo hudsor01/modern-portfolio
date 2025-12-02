@@ -35,21 +35,21 @@ describe('Design System Integration', () => {
       const oldPatterns = [
         'from-blue-500 to-indigo-600',
         'from-blue-600 to-indigo-700',
-        'border-blue-400/20',
-        'shadow-blue-500/25'
+        'border-primary/50/20',
+        'shadow-primary/25'
       ]
       
       const newPatterns = [
         'from-cyan-500 to-blue-500',
         'from-cyan-400 to-blue-400', 
-        'border-cyan-500/20',
+        'border-primary/20',
         'shadow-cyan-500/25'
       ]
       
       // Verify transformation pattern
       expect(newPatterns[0]).toBe('from-cyan-500 to-blue-500')
       expect(newPatterns[1]).toBe('from-cyan-400 to-blue-400')
-      expect(newPatterns[2]).toBe('border-cyan-500/20')
+      expect(newPatterns[2]).toBe('border-primary/20')
       expect(newPatterns[3]).toBe('shadow-cyan-500/25')
       
       // Ensure old patterns are not used
@@ -113,7 +113,7 @@ describe('Design System Integration', () => {
         border: 'border-gray-700',
         borderRadius: 'rounded-xl',
         hover: {
-          border: 'hover:border-cyan-500/50',
+          border: 'hover:border-primary/50',
           transform: 'hover:-translate-y-1'
         }
       }
@@ -122,7 +122,7 @@ describe('Design System Integration', () => {
       expect(glassmorphismPattern.background).toBe('bg-gray-800/50')
       expect(glassmorphismPattern.backdrop).toBe('backdrop-blur-sm')
       expect(glassmorphismPattern.border).toBe('border-gray-700')
-      expect(glassmorphismPattern.hover.border).toBe('hover:border-cyan-500/50')
+      expect(glassmorphismPattern.hover.border).toBe('hover:border-primary/50')
     })
 
     it('applies proper opacity levels', () => {
@@ -168,20 +168,20 @@ describe('Design System Integration', () => {
   })
 
   describe('Component Architecture', () => {
-    it('uses Modern Card as single card system', () => {
+    it('uses Card with CVA variants', () => {
       const cardVariants = [
         'default',
-        'elevated', 
+        'glass',
+        'elevated',
+        'subtle',
         'interactive',
         'primary',
-        'highlight',
-        'success',
         'outline'
       ]
-      
+
       // Verify all variants are supported
       expect(cardVariants).toContain('default')
-      expect(cardVariants).toContain('highlight')
+      expect(cardVariants).toContain('glass')
       expect(cardVariants).toContain('interactive')
       expect(cardVariants.length).toBeGreaterThan(5)
     })
@@ -191,23 +191,23 @@ describe('Design System Integration', () => {
         challenge: {
           emoji: '🎯',
           label: 'CHALLENGE',
-          background: 'bg-red-900/20',
-          border: 'border-red-500/30',
-          textColor: 'text-red-300'
+          background: 'bg-destructive/20/20',
+          border: 'border-destructive/30',
+          textColor: 'text-destructive'
         },
         solution: {
           emoji: '⚡',
           label: 'SOLUTION', 
-          background: 'bg-green-900/20',
-          border: 'border-green-500/30',
-          textColor: 'text-green-300'
+          background: 'bg-success/20/20',
+          border: 'border-success/30',
+          textColor: 'text-success'
         },
         results: {
           emoji: '📊',
           label: 'RESULTS',
-          background: 'bg-blue-900/20',
-          border: 'border-blue-500/30',
-          textColor: 'text-blue-300'
+          background: 'bg-primary/20/20',
+          border: 'border-primary/30',
+          textColor: 'text-primary/70'
         }
       }
       
@@ -217,9 +217,9 @@ describe('Design System Integration', () => {
       expect(csrStructure.results.label).toBe('RESULTS')
       
       // Verify color coding
-      expect(csrStructure.challenge.background).toBe('bg-red-900/20')
-      expect(csrStructure.solution.background).toBe('bg-green-900/20')
-      expect(csrStructure.results.background).toBe('bg-blue-900/20')
+      expect(csrStructure.challenge.background).toBe('bg-destructive/20/20')
+      expect(csrStructure.solution.background).toBe('bg-success/20/20')
+      expect(csrStructure.results.background).toBe('bg-primary/20/20')
     })
   })
 
@@ -278,7 +278,7 @@ describe('Design System Integration', () => {
     it('uses tree-shakeable imports', () => {
       const importPatterns = {
         icons: 'import { DollarSign, TrendingUp } from "lucide-react"',
-        components: 'import { ModernCard } from "@/components/ui/modern-card"',
+        components: 'import { Card } from "@/components/ui/card"',
         utilities: 'import { cn } from "@/lib/utils"'
       }
       
@@ -289,7 +289,7 @@ describe('Design System Integration', () => {
 
     it('implements dynamic imports for code splitting', () => {
       const dynamicImportPattern = /dynamic\(\s*\(\)\s*=>\s*import\(/
-      const mockDynamicImport = "dynamic(() => import('@/components/ui/modern-card'))"
+      const mockDynamicImport = "dynamic(() => import('@/components/ui/card'))"
       
       expect(mockDynamicImport).toMatch(dynamicImportPattern)
     })

@@ -57,7 +57,7 @@ export function HeroWithImage({
           </div>
 
           <div className={`relative h-[300px] sm:h-[400px] md:h-[500px] ${imageOrder}`}>
-            <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-purple-600/20 rounded-xl z-10"></div>
+            <div className="absolute inset-0 bg-linear-to-tr from-blue-600/20 to-purple-600/20 rounded-xl z-10"></div>
             <div className="absolute inset-0 rounded-xl overflow-hidden">
               <Image
                 src={imageSrc}

@@ -14,24 +14,24 @@ const calloutVariants = cva(
     variants: {
       variant: {
         info: [
-          "border-blue-200 bg-blue-50 text-blue-800",
-          "dark:border-blue-800 dark:bg-blue-950 dark:text-blue-200",
-          "[&>svg]:text-blue-600 dark:[&>svg]:text-blue-400",
+          "border-primary/20 bg-primary/5 text-blue-800",
+          "dark:border-primary/80 dark:bg-blue-950 dark:text-blue-200",
+          "[&>svg]:text-primary dark:[&>svg]:text-primary",
         ],
         warning: [
           "border-yellow-200 bg-yellow-50 text-yellow-800",
           "dark:border-yellow-800 dark:bg-yellow-950 dark:text-yellow-200",
-          "[&>svg]:text-yellow-600 dark:[&>svg]:text-yellow-400",
+          "[&>svg]:text-yellow-600 dark:[&>svg]:text-warning",
         ],
         error: [
           "border-red-200 bg-red-50 text-red-800",
           "dark:border-red-800 dark:bg-red-950 dark:text-red-200",
-          "[&>svg]:text-red-600 dark:[&>svg]:text-red-400",
+          "[&>svg]:text-destructive dark:[&>svg]:text-destructive",
         ],
         success: [
           "border-green-200 bg-green-50 text-green-800",
           "dark:border-green-800 dark:bg-green-950 dark:text-green-200",
-          "[&>svg]:text-green-600 dark:[&>svg]:text-green-400",
+          "[&>svg]:text-success dark:[&>svg]:text-success",
         ],
         tip: [
           "border-purple-200 bg-purple-50 text-purple-800",

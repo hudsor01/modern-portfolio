@@ -27,17 +27,17 @@ const data = [
 ]
 
 const segmentColors = {
-  'Champions': '#10b981',
-  'Loyal': '#3b82f6',
-  'Potential': '#8b5cf6',
-  'At Risk': '#f59e0b',
-  'Can\'t Lose': '#ef4444'
+  'Champions': 'var(--color-success)',
+  'Loyal': 'var(--color-primary)',
+  'Potential': 'var(--color-secondary)',
+  'At Risk': 'var(--color-warning)',
+  'Can\'t Lose': 'var(--color-destructive)'
 }
 
 const chartColors = {
-  grid: 'rgba(255, 255, 255, 0.05)',
-  axis: 'rgba(255, 255, 255, 0.4)',
-  reference: 'rgba(255, 255, 255, 0.3)',
+  grid: 'var(--color-border)',
+  axis: 'var(--color-muted-foreground)',
+  reference: 'var(--color-muted-foreground)',
 }
 
 export default function CLVPredictionChart() {
@@ -89,9 +89,9 @@ export default function CLVPredictionChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              backgroundColor: 'var(--color-popover)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid var(--color-border)',
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
@@ -122,7 +122,7 @@ export default function CLVPredictionChart() {
           ))}
         </ScatterChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-gray-400">
+      <p className="mt-4 text-center text-sm italic text-muted-foreground">
         Scatter plot showing BTYD model predictions vs actual CLV performance with 94.3% average accuracy
       </p>
     </div>

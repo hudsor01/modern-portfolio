@@ -33,7 +33,7 @@ export function FormActions({
   const isDirty = formState.isDirty
 
   return (
-    <div className="sticky bottom-0 bg-white dark:bg-gray-900 border-t p-4 flex items-center justify-between gap-4">
+    <div className="sticky bottom-0 bg-white dark:bg-background border-t p-4 flex items-center justify-between gap-4">
       {/* Form Status */}
       <div className="flex items-center gap-3">
         {hasErrors ? (
@@ -95,7 +95,7 @@ export function FormActions({
         <Button
           type="submit"
           disabled={isLoading || hasErrors}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+          className="flex items-center gap-2 bg-primary-hover hover:bg-primary"
         >
           {isLoading ? (
             <>

@@ -4,14 +4,14 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, PieLabelRenderProps 
 
 // Production lead source data with realistic distribution and growth metrics
 const leadSourceData = [
-  { name: 'Organic Search', value: 3420, growth: '+18.5%', color: '#3b82f6' },
-  { name: 'Paid Search', value: 2150, growth: '+12.3%', color: '#6366f1' },
-  { name: 'Social Media', value: 1680, growth: '+24.7%', color: '#8b5cf6' },
-  { name: 'Email Marketing', value: 1290, growth: '+8.9%', color: '#a855f7' },
-  { name: 'Direct Traffic', value: 980, growth: '+5.2%', color: '#c084fc' },
-  { name: 'Referrals', value: 740, growth: '+31.4%', color: '#e879f9' },
-  { name: 'Content Marketing', value: 580, growth: '+19.8%', color: '#ec4899' },
-  { name: 'Partnerships', value: 420, growth: '+42.1%', color: '#f472b6' },
+  { name: 'Organic Search', value: 3420, growth: '+18.5%', color: 'var(--color-primary)' },
+  { name: 'Paid Search', value: 2150, growth: '+12.3%', color: 'var(--color-secondary)' },
+  { name: 'Social Media', value: 1680, growth: '+24.7%', color: 'var(--color-secondary)' },
+  { name: 'Email Marketing', value: 1290, growth: '+8.9%', color: 'var(--color-chart-5)' },
+  { name: 'Direct Traffic', value: 980, growth: '+5.2%', color: 'var(--color-chart-5)' },
+  { name: 'Referrals', value: 740, growth: '+31.4%', color: 'var(--color-accent)' },
+  { name: 'Content Marketing', value: 580, growth: '+19.8%', color: 'var(--color-accent)' },
+  { name: 'Partnerships', value: 420, growth: '+42.1%', color: 'var(--color-accent)' },
 ]
 
 interface CustomTooltipProps {
@@ -38,14 +38,14 @@ export default function LeadSourcePieChart() {
       return (
         <div className="p-3 rounded-xl bg-[#0f172a]/90 backdrop-blur-sm border border-white/10">
           <p className="font-medium text-white">{data.name}</p>
-          <p className="text-sm text-gray-300">
+          <p className="text-sm text-muted-foreground">
             Leads: <span className="font-medium text-white">{data.value.toLocaleString()}</span>
           </p>
-          <p className="text-sm text-gray-300">
+          <p className="text-sm text-muted-foreground">
             Share: <span className="font-medium text-white">{percentage}%</span>
           </p>
-          <p className="text-sm text-gray-300">
-            Growth: <span className="font-medium text-green-400">{data.growth}</span>
+          <p className="text-sm text-muted-foreground">
+            Growth: <span className="font-medium text-success">{data.growth}</span>
           </p>
         </div>
       )
@@ -99,8 +99,8 @@ export default function LeadSourcePieChart() {
                 style={{ backgroundColor: source.color }}
               />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">{source.name}</p>
-                <p className="text-xs text-gray-400">{percentage}% • {source.growth}</p>
+                <p className="text-sm font-medium text-foreground truncate">{source.name}</p>
+                <p className="text-xs text-muted-foreground">{percentage}% • {source.growth}</p>
               </div>
             </div>
           )

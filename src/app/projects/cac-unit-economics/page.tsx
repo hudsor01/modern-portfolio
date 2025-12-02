@@ -12,15 +12,14 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { m as motion } from 'framer-motion'
-import { ChartSkeleton } from '@/components/projects/charts/chart-skeleton'
 
 // Lazy-load chart components with Suspense fallback
 const CACBreakdownChart = dynamic(() => import('./CACBreakdownChart'), {
-  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 const UnitEconomicsChart = dynamic(() => import('./UnitEconomicsChart'), {
-  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 
@@ -72,8 +71,8 @@ export default function CACUnitEconomics() {
     <div className="min-h-screen bg-[#0f172a] text-white">
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-success rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
       </div>
 
@@ -82,21 +81,21 @@ export default function CACUnitEconomics() {
         <div className="flex items-center justify-between mb-12">
           <Link 
             href="/projects"
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors duration-300"
+            className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors duration-300"
           >
             <ArrowLeft className="h-5 w-5" />
             <span className="text-sm font-medium">Back to Projects</span>
           </Link>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-1">
+            <div className="flex items-center gap-1 glass rounded-xl p-1">
               {['overview', 'channels', 'products'].map((tab) => (
                 <button
                   key={tab}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 capitalize ${
                     activeTab === tab 
-                      ? 'bg-green-500 text-white shadow-lg' 
-                      : 'text-gray-400 hover:text-white hover:bg-white/10'
+                      ? 'bg-success text-foreground shadow-lg' 
+                      : 'text-muted-foreground hover:text-white hover:bg-white/10'
                   }`}
                   onClick={() => setActiveTab(tab)}
                 >
@@ -109,9 +108,9 @@ export default function CACUnitEconomics() {
                 setIsLoading(true)
                 setTimeout(() => setIsLoading(false), 600)
               }}
-              className="p-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300"
+              className="p-2 rounded-xl glass-interactive"
             >
-              <RefreshCcw className="h-5 w-5 text-gray-300" />
+              <RefreshCcw className="h-5 w-5 text-muted-foreground" />
             </button>
           </div>
         </div>
@@ -126,12 +125,12 @@ export default function CACUnitEconomics() {
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-green-400 to-emerald-600 bg-clip-text text-transparent mb-4">
             Customer Acquisition Cost Optimization & Unit Economics Dashboard
           </h1>
-          <p className="text-xl text-gray-400 max-w-3xl mb-6">
+          <p className="text-xl text-muted-foreground max-w-3xl mb-6">
             Comprehensive CAC analysis and LTV:CAC ratio optimization that achieved 32% cost reduction through strategic partner channel optimization. Industry-benchmark 3.6:1 efficiency ratio with 8.4-month payback period across multi-tier SaaS products.
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
-            <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full">CAC Reduction: 32%</span>
-            <span className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full">LTV:CAC Ratio: 3.6:1</span>
+            <span className="bg-success/20 text-success px-3 py-1 rounded-full">CAC Reduction: 32%</span>
+            <span className="bg-primary/20 text-primary px-3 py-1 rounded-full">LTV:CAC Ratio: 3.6:1</span>
             <span className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full">ROI Optimization</span>
             <span className="bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full">Unit Economics</span>
           </div>
@@ -141,8 +140,8 @@ export default function CACUnitEconomics() {
         {isLoading ? (
           <div className="flex items-center justify-center h-64">
             <div className="relative">
-              <div className="w-16 h-16 border-4 border-green-500/20 rounded-full" />
-              <div className="absolute top-0 left-0 w-16 h-16 border-4 border-green-500 rounded-full animate-spin border-t-transparent" />
+              <div className="w-16 h-16 border-4 border-success/20 rounded-full" />
+              <div className="absolute top-0 left-0 w-16 h-16 border-4 border-success rounded-full animate-spin border-t-transparent" />
             </div>
           </div>
         ) : (
@@ -157,17 +156,17 @@ export default function CACUnitEconomics() {
                 className="relative group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-green-500/20 rounded-2xl">
-                      <DollarSign className="h-6 w-6 text-green-400" />
+                    <div className="p-3 bg-success/20 rounded-2xl">
+                      <DollarSign className="h-6 w-6 text-success" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Blended CAC</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Blended CAC</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {formatCurrency(cacMetrics.blendedCAC)}
                   </p>
-                  <p className="text-sm text-gray-400">Cost to Acquire</p>
+                  <p className="text-sm text-muted-foreground">Cost to Acquire</p>
                 </div>
               </motion.div>
 
@@ -179,17 +178,17 @@ export default function CACUnitEconomics() {
                 className="relative group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-blue-500/20 rounded-2xl">
-                      <TrendingUp className="h-6 w-6 text-blue-400" />
+                    <div className="p-3 bg-primary/20 rounded-2xl">
+                      <TrendingUp className="h-6 w-6 text-primary" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Lifetime Value</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Lifetime Value</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {formatCurrency(cacMetrics.averageLTV)}
                   </p>
-                  <p className="text-sm text-gray-400">Average LTV</p>
+                  <p className="text-sm text-muted-foreground">Average LTV</p>
                 </div>
               </motion.div>
 
@@ -201,17 +200,17 @@ export default function CACUnitEconomics() {
                 className="relative group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-3 bg-purple-500/20 rounded-2xl">
                       <Calculator className="h-6 w-6 text-purple-400" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">LTV:CAC</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">LTV:CAC</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {cacMetrics.ltv_cac_ratio.toFixed(1)}:1
                   </p>
-                  <p className="text-sm text-gray-400">Efficiency Ratio</p>
+                  <p className="text-sm text-muted-foreground">Efficiency Ratio</p>
                 </div>
               </motion.div>
 
@@ -223,17 +222,17 @@ export default function CACUnitEconomics() {
                 className="relative group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-3 bg-amber-500/20 rounded-2xl">
                       <Target className="h-6 w-6 text-amber-400" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Payback</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Payback</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {cacMetrics.paybackPeriod} mo
                   </p>
-                  <p className="text-sm text-gray-400">Payback Period</p>
+                  <p className="text-sm text-muted-foreground">Payback Period</p>
                 </div>
               </motion.div>
             </div>
@@ -246,11 +245,11 @@ export default function CACUnitEconomics() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+                  className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
                 >
                   <div className="mb-4">
                     <h2 className="text-xl font-bold mb-1">Customer Acquisition Cost Breakdown by Channel</h2>
-                    <p className="text-sm text-gray-400">Strategic CAC analysis revealing certified partners deliver 70% lower acquisition costs ($98 vs $289) compared to direct sales channels</p>
+                    <p className="text-sm text-muted-foreground">Strategic CAC analysis revealing certified partners deliver 70% lower acquisition costs ($98 vs $289) compared to direct sales channels</p>
                   </div>
                   <div className="h-[250px]">
                     <CACBreakdownChart />
@@ -262,11 +261,11 @@ export default function CACUnitEconomics() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.6 }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+                  className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
                 >
                   <div className="mb-4">
                     <h2 className="text-xl font-bold mb-1">Unit Economics Performance Dashboard</h2>
-                    <p className="text-sm text-gray-400">LTV:CAC ratio trending from 2.8:1 to 4.0:1 through systematic partner optimization and payback period reduction strategies</p>
+                    <p className="text-sm text-muted-foreground">LTV:CAC ratio trending from 2.8:1 to 4.0:1 through systematic partner optimization and payback period reduction strategies</p>
                   </div>
                   <div className="h-[250px]">
                     <UnitEconomicsChart />
@@ -280,11 +279,11 @@ export default function CACUnitEconomics() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300 mb-8"
+                className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300 mb-8"
               >
                 <div className="mb-4">
                   <h2 className="text-xl font-bold mb-1">Partner Channel ROI & Acquisition Efficiency Analysis</h2>
-                  <p className="text-sm text-gray-400">Data-driven partner channel optimization revealing certified partners achieve 7:1 LTV:CAC efficiency vs 1.8:1 for direct sales</p>
+                  <p className="text-sm text-muted-foreground">Data-driven partner channel optimization revealing certified partners achieve 7:1 LTV:CAC efficiency vs 1.8:1 for direct sales</p>
                 </div>
                 
                 <div className="overflow-x-auto">
@@ -307,9 +306,9 @@ export default function CACUnitEconomics() {
                           <td className="py-4 px-4">{channel.customers.toLocaleString()}</td>
                           <td className="py-4 px-4">
                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              channel.efficiency >= 5 ? 'bg-green-500/20 text-green-400' :
-                              channel.efficiency >= 3 ? 'bg-yellow-500/20 text-yellow-400' :
-                              'bg-red-500/20 text-red-400'
+                              channel.efficiency >= 5 ? 'bg-success/20 text-success' :
+                              channel.efficiency >= 3 ? 'bg-warning/20 text-warning' :
+                              'bg-destructive/20 text-destructive'
                             }`}>
                               {channel.efficiency.toFixed(1)}:1
                             </span>
@@ -327,11 +326,11 @@ export default function CACUnitEconomics() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300 mb-8"
+                className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300 mb-8"
               >
                 <div className="mb-4">
                   <h2 className="text-xl font-bold mb-1">SaaS Product Tier Unit Economics & Profitability</h2>
-                  <p className="text-sm text-gray-400">Multi-tier pricing strategy analysis showing $349 Enterprise Pro achieving 83.2% gross margin with 6.2-month payback optimization</p>
+                  <p className="text-sm text-muted-foreground">Multi-tier pricing strategy analysis showing $349 Enterprise Pro achieving 83.2% gross margin with 6.2-month payback optimization</p>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -340,19 +339,19 @@ export default function CACUnitEconomics() {
                       <h3 className="text-base font-semibold mb-3">{product.tier}</h3>
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">CAC:</span>
+                          <span className="text-muted-foreground">CAC:</span>
                           <span className="font-medium">{formatCurrency(product.cac)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">LTV:</span>
+                          <span className="text-muted-foreground">LTV:</span>
                           <span className="font-medium">{formatCurrency(product.ltv)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Margin:</span>
+                          <span className="text-muted-foreground">Margin:</span>
                           <span className="font-medium">{product.margin}%</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Payback:</span>
+                          <span className="text-muted-foreground">Payback:</span>
                           <span className="font-medium">{product.payback} mo</span>
                         </div>
                       </div>
@@ -367,21 +366,21 @@ export default function CACUnitEconomics() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.8 }}
-              className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-sm border border-green-500/20 rounded-3xl p-6"
+              className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-sm border border-success/20 rounded-3xl p-6"
             >
-              <h2 className="text-xl font-bold mb-4 text-green-400">Proven Revenue Operations Impact & ROI Results</h2>
+              <h2 className="text-xl font-bold mb-4 text-success">Proven Revenue Operations Impact & ROI Results</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 text-center">
-                  <div className="text-2xl font-bold text-green-400 mb-1">32%</div>
-                  <div className="text-xs text-gray-300">CAC Reduction Through Strategic Partner Channel Optimization</div>
+                <div className="glass rounded-2xl p-4 text-center">
+                  <div className="text-2xl font-bold text-success mb-1">32%</div>
+                  <div className="text-xs text-muted-foreground">CAC Reduction Through Strategic Partner Channel Optimization</div>
                 </div>
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 text-center">
+                <div className="glass rounded-2xl p-4 text-center">
                   <div className="text-2xl font-bold text-emerald-400 mb-1">3.6:1</div>
-                  <div className="text-xs text-gray-300">Industry-Leading LTV:CAC Efficiency Ratio (Benchmark: 3:1+)</div>
+                  <div className="text-xs text-muted-foreground">Industry-Leading LTV:CAC Efficiency Ratio (Benchmark: 3:1+)</div>
                 </div>
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 text-center">
-                  <div className="text-2xl font-bold text-cyan-400 mb-1">8.4 mo</div>
-                  <div className="text-xs text-gray-300">Optimized Customer Payback Period (Target: &lt;12mo)</div>
+                <div className="glass rounded-2xl p-4 text-center">
+                  <div className="text-2xl font-bold text-primary mb-1">8.4 mo</div>
+                  <div className="text-xs text-muted-foreground">Optimized Customer Payback Period (Target: &lt;12mo)</div>
                 </div>
               </div>
             </motion.div>
@@ -393,10 +392,10 @@ export default function CACUnitEconomics() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.0 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-blue-400">Project Overview</h2>
-                <div className="space-y-4 text-gray-300">
+                <h2 className="text-2xl font-bold mb-6 text-primary">Project Overview</h2>
+                <div className="space-y-4 text-muted-foreground">
                   <p className="text-lg leading-relaxed">
                     Developed a comprehensive Customer Acquisition Cost (CAC) and unit economics analysis system to optimize customer acquisition efficiency and establish sustainable growth metrics for long-term business planning.
                   </p>
@@ -411,10 +410,10 @@ export default function CACUnitEconomics() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.1 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-amber-400">Challenge</h2>
-                <div className="space-y-4 text-gray-300">
+                <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
                     The organization was struggling with unsustainable customer acquisition costs and lacked visibility into the true unit economics of their business model:
                   </p>
@@ -437,17 +436,17 @@ export default function CACUnitEconomics() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.2 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-green-400">Solution</h2>
-                <div className="space-y-4 text-gray-300">
+                <h2 className="text-2xl font-bold mb-6 text-success">Solution</h2>
+                <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
                     Built a comprehensive unit economics analytics platform that provides real-time visibility into CAC, LTV, and payback metrics with sophisticated segmentation and optimization capabilities:
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                      <h3 className="font-semibold text-blue-400 mb-3">Unit Economics Framework</h3>
+                      <h3 className="font-semibold text-primary mb-3">Unit Economics Framework</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
                         <li>Standardized CAC calculation methodology across all acquisition channels</li>
                         <li>Cohort-based LTV analysis with predictive modeling and confidence intervals</li>
@@ -457,7 +456,7 @@ export default function CACUnitEconomics() {
                       </ul>
                     </div>
                     <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                      <h3 className="font-semibold text-green-400 mb-3">Optimization Tools</h3>
+                      <h3 className="font-semibold text-success mb-3">Optimization Tools</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
                         <li>Real-time channel performance monitoring and alerting</li>
                         <li>Budget allocation optimization based on unit economics efficiency</li>
@@ -475,26 +474,26 @@ export default function CACUnitEconomics() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.3 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-emerald-400">Results & Impact</h2>
-                <div className="space-y-6 text-gray-300">
+                <div className="space-y-6 text-muted-foreground">
                   <p className="leading-relaxed">
                     The unit economics optimization system enabled data-driven growth strategies that significantly improved acquisition efficiency and long-term profitability:
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-blue-400 mb-2">32%</div>
-                      <div className="text-sm text-gray-300">CAC Reduction Achievement</div>
+                    <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-primary mb-2">32%</div>
+                      <div className="text-sm text-muted-foreground">CAC Reduction Achievement</div>
                     </div>
-                    <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-sm border border-indigo-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-indigo-400 mb-2">3.6:1</div>
-                      <div className="text-sm text-gray-300">LTV:CAC Ratio Achieved</div>
+                    <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-sm border border-secondary/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-secondary mb-2">3.6:1</div>
+                      <div className="text-sm text-muted-foreground">LTV:CAC Ratio Achieved</div>
                     </div>
-                    <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-sm border border-cyan-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-cyan-400 mb-2">8.4 mo</div>
-                      <div className="text-sm text-gray-300">Customer Payback Period</div>
+                    <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-primary mb-2">8.4 mo</div>
+                      <div className="text-sm text-muted-foreground">Customer Payback Period</div>
                     </div>
                   </div>
 
@@ -518,10 +517,10 @@ export default function CACUnitEconomics() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.4 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-purple-400">Key Learnings</h2>
-                <div className="space-y-4 text-gray-300">
+                <div className="space-y-4 text-muted-foreground">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
                       <h3 className="font-semibold text-purple-400">Unit Economics Strategy</h3>
@@ -533,7 +532,7 @@ export default function CACUnitEconomics() {
                       </ul>
                     </div>
                     <div className="space-y-3">
-                      <h3 className="font-semibold text-blue-400">Implementation Success Factors</h3>
+                      <h3 className="font-semibold text-primary">Implementation Success Factors</h3>
                       <ul className="list-disc list-inside space-y-2 text-sm">
                         <li>Standardized calculation methodologies are essential for consistent decision-making across teams</li>
                         <li>Real-time monitoring enables quick intervention before unit economics deteriorate significantly</li>
@@ -553,16 +552,16 @@ export default function CACUnitEconomics() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.5 }}
-                className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-gray-500/20 rounded-3xl p-8"
+                className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-border/20 rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-gray-300">Technologies Used</h2>
+                <h2 className="text-2xl font-bold mb-6 text-muted-foreground">Technologies Used</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
                     'React 19', 'TypeScript', 'Unit Economics', 'CAC Analysis',
                     'LTV Modeling', 'Cohort Analysis', 'Financial Modeling', 'Contribution Margin Analysis',
                     'Payback Period Tracking', 'Channel Optimization', 'Profitability Analysis', 'Business Intelligence'
                   ].map((tech, index) => (
-                    <span key={index} className="bg-white/10 text-gray-300 px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
+                    <span key={index} className="bg-white/10 text-muted-foreground px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
                       {tech}
                     </span>
                   ))}

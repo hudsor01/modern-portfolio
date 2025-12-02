@@ -63,7 +63,7 @@ export function ProjectsTypewriter({
     <div className="relative inline-block min-h-[3.5rem] max-w-full overflow-hidden">
       <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight opacity-100 transition-opacity duration-500">
         <span className="text-gradient">{currentText}</span>
-        <span className="inline-block w-2 h-8 bg-blue-600 ml-1 animate-blink align-middle"></span>
+        <span className="inline-block w-2 h-8 bg-primary-hover ml-1 animate-blink align-middle"></span>
       </h1>
     </div>
   )

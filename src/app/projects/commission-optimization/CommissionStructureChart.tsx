@@ -39,11 +39,11 @@ const data = [
 ]
 
 const chartColors = {
-  earnings: '#10b981',
-  commissionRate: '#3b82f6',
-  bonus: '#f59e0b',
-  grid: 'rgba(255, 255, 255, 0.05)',
-  axis: 'rgba(255, 255, 255, 0.4)',
+  earnings: 'var(--color-success)',
+  commissionRate: 'var(--color-primary)',
+  bonus: 'var(--color-warning)',
+  grid: 'var(--color-border)',
+  axis: 'var(--color-muted-foreground)',
 }
 
 export default function CommissionStructureChart() {
@@ -91,9 +91,9 @@ export default function CommissionStructureChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              backgroundColor: 'var(--color-popover)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid var(--color-border)',
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
@@ -123,7 +123,7 @@ export default function CommissionStructureChart() {
           />
         </BarChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-gray-400">
+      <p className="mt-4 text-center text-sm italic text-muted-foreground">
         Commission tier structure showing earnings distribution and rate optimization across partner performance levels
       </p>
     </div>
