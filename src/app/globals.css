@@ -745,11 +745,11 @@ label {
   backdrop-filter: blur(0.5rem);
   border: 1px solid color-mix(in oklch, var(--color-foreground) 10%, transparent);
   transition: all var(--transition-base);
-}
 
-@utility glass-interactive:hover {
-  background-color: color-mix(in oklch, var(--color-foreground) 10%, transparent);
-  border-color: color-mix(in oklch, var(--color-foreground) 20%, transparent);
+  &:hover {
+    background-color: color-mix(in oklch, var(--color-foreground) 10%, transparent);
+    border-color: color-mix(in oklch, var(--color-foreground) 20%, transparent);
+  }
 }
 
 @utility glass-card {
