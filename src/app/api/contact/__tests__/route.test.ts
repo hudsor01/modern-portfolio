@@ -69,22 +69,28 @@ describe('/api/contact - Fixed Tests', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks()
-    
+
     // Get the mock functions
     const ResendModule = await import('resend') as { __mockSend: ReturnType<typeof vi.fn> }
     const NextServerModule = await import('next/server')
 
     mockSend = ResendModule.__mockSend
     mockJson = (NextServerModule.NextResponse as { json: ReturnType<typeof vi.fn> }).json
-    
+
     process.env.RESEND_API_KEY = 'test-key'
     process.env.CONTACT_EMAIL = 'test@example.com'
-    
+
     // Setup default mock response
     mockJson.mockImplementation((data: unknown, options?: { status?: number }) => ({
       json: () => Promise.resolve(data),
       status: options?.status || 200
     }))
+  })
+
+  afterEach(() => {
+    vi.clearAllMocks()
+    vi.clearAllTimers()
+    vi.restoreAllMocks()
   })
 
   it('should handle validation error for missing name', async () => {
