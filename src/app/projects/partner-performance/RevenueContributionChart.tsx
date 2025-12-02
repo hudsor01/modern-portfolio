@@ -4,9 +4,9 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recha
 
 // Partner revenue distribution demonstrating 80/20 rule
 const data = [
-  { name: 'Top 20% Partners', value: 80.2, revenue: 725840, count: 7, color: '#3b82f6' },
-  { name: 'Middle 60% Partners', value: 17.1, revenue: 154689, count: 20, color: '#6366f1' },
-  { name: 'Bottom 20% Partners', value: 2.7, revenue: 23858, count: 7, color: '#8b5cf6' },
+  { name: 'Top 20% Partners', value: 80.2, revenue: 725840, count: 7, color: 'var(--color-primary)' },
+  { name: 'Middle 60% Partners', value: 17.1, revenue: 154689, count: 20, color: 'var(--color-secondary)' },
+  { name: 'Bottom 20% Partners', value: 2.7, revenue: 23858, count: 7, color: 'var(--color-secondary)' },
 ]
 
 const COLORS = data.map(item => item.color)
@@ -41,9 +41,9 @@ export default function RevenueContributionChart() {
           </Pie>
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              backgroundColor: 'var(--color-popover)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid var(--color-border)',
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
@@ -62,11 +62,11 @@ export default function RevenueContributionChart() {
           <Legend 
             verticalAlign="bottom" 
             height={36}
-            wrapperStyle={{ color: 'rgba(255, 255, 255, 0.7)' }}
+            wrapperStyle={{ color: 'var(--color-muted-foreground)' }}
           />
         </PieChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-gray-400">
+      <p className="mt-4 text-center text-sm italic text-muted-foreground">
         Channel revenue distribution following Pareto Principle: top 20% of partners generate 80.2% of revenue
       </p>
     </div>

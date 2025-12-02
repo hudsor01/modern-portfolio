@@ -14,7 +14,6 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { m as motion } from 'framer-motion'
-import { ChartSkeleton } from '@/components/projects/charts/chart-skeleton'
 import { getProject } from '@/lib/content/projects'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip, BarChart as RechartsBarChart, Bar, Cell } from 'recharts'
@@ -22,7 +21,7 @@ import { createContextLogger } from '@/lib/logging/logger'
 
 // Lazy-load chart component with Suspense fallback
 const DealStageFunnelChart = dynamic(() => import('./DealStageFunnelChart'), {
-  loading: () => <ChartSkeleton height={400} showTitle={false} />,
+  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 
@@ -139,22 +138,22 @@ export default function DealFunnel() {
         {
           stage: 'Leads → Qualified',
           conversion: localConversionRates[localConversionRates.length - 1]?.lead_to_qualified ?? 0,
-          color: '#3b82f6',
+          color: 'var(--color-primary)',
         },
         {
           stage: 'Qualified → Proposal',
           conversion: localConversionRates[localConversionRates.length - 1]?.qualified_to_proposal ?? 0,
-          color: '#6366f1',
+          color: 'var(--color-secondary)',
         },
         {
           stage: 'Proposal → Negotiation',
           conversion: localConversionRates[localConversionRates.length - 1]?.proposal_to_negotiation ?? 0,
-          color: '#8b5cf6',
+          color: 'var(--color-secondary)',
         },
         {
           stage: 'Negotiation → Closed',
           conversion: localConversionRates[localConversionRates.length - 1]?.negotiation_to_closed ?? 0,
-          color: '#a855f7',
+          color: 'var(--color-chart-5)',
         },
         ]
       : []
@@ -173,8 +172,8 @@ export default function DealFunnel() {
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto p-8">
@@ -182,7 +181,7 @@ export default function DealFunnel() {
         <div className="flex items-center justify-between mb-12">
           <Link 
             href="/projects"
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors duration-300"
+            className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors duration-300"
           >
             <ArrowLeft className="h-5 w-5" />
             <span className="text-sm font-medium">Back to Projects</span>
@@ -192,9 +191,9 @@ export default function DealFunnel() {
               setIsLoading(true)
               setTimeout(() => setIsLoading(false), 800)
             }}
-            className="p-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300"
+            className="p-2 rounded-xl glass-interactive"
           >
-            <RefreshCcw className="h-5 w-5 text-gray-300" />
+            <RefreshCcw className="h-5 w-5 text-muted-foreground" />
           </button>
         </div>
 
@@ -208,7 +207,7 @@ export default function DealFunnel() {
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent mb-4">
             Deal Pipeline Analytics
           </h1>
-          <p className="text-xl text-gray-400 max-w-3xl">
+          <p className="text-xl text-muted-foreground max-w-3xl">
             Track deal progression through your sales funnel, identify bottlenecks, and optimize conversion rates at each stage.
           </p>
         </motion.div>
@@ -233,60 +232,60 @@ export default function DealFunnel() {
               {/* Total Pipeline */}
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-blue-500/20 rounded-2xl">
-                      <BarChart3 className="h-6 w-6 text-blue-400" />
+                    <div className="p-3 bg-primary/20 rounded-2xl">
+                      <BarChart3 className="h-6 w-6 text-primary" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Pipeline</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Pipeline</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">{totalOpportunities.toLocaleString()}</p>
-                  <p className="text-sm text-gray-400">Total Opportunities</p>
+                  <p className="text-sm text-muted-foreground">Total Opportunities</p>
                 </div>
               </div>
 
               {/* Closed Deals */}
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-green-500/20 rounded-2xl">
-                      <Target className="h-6 w-6 text-green-400" />
+                    <div className="p-3 bg-success/20 rounded-2xl">
+                      <Target className="h-6 w-6 text-success" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Won</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Won</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">{closedDeals.toLocaleString()}</p>
-                  <p className="text-sm text-gray-400">Closed Deals</p>
+                  <p className="text-sm text-muted-foreground">Closed Deals</p>
                 </div>
               </div>
 
               {/* Average Deal Size */}
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-3 bg-purple-500/20 rounded-2xl">
                       <DollarSign className="h-6 w-6 text-purple-400" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Average</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Average</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">${(avgDealSize / 1000).toFixed(0)}K</p>
-                  <p className="text-sm text-gray-400">Deal Size</p>
+                  <p className="text-sm text-muted-foreground">Deal Size</p>
                 </div>
               </div>
 
               {/* Sales Velocity */}
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-3 bg-amber-500/20 rounded-2xl">
                       <Clock className="h-6 w-6 text-amber-400" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Average</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Average</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">{avgSalesCycle}</p>
-                  <p className="text-sm text-gray-400">Days to Close</p>
+                  <p className="text-sm text-muted-foreground">Days to Close</p>
                 </div>
               </div>
             </motion.div>
@@ -296,16 +295,16 @@ export default function DealFunnel() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300 mb-8"
+              className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300 mb-8"
             >
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2 className="text-2xl font-bold mb-2">Sales Pipeline Funnel</h2>
-                  <p className="text-gray-400">Deal progression through stages</p>
+                  <p className="text-muted-foreground">Deal progression through stages</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-400">Overall Conversion</p>
-                  <p className="text-2xl font-bold text-green-400">{overallConversionRate}%</p>
+                  <p className="text-sm text-muted-foreground">Overall Conversion</p>
+                  <p className="text-2xl font-bold text-success">{overallConversionRate}%</p>
                 </div>
               </div>
               <DealStageFunnelChart stages={localFunnelStages} />
@@ -318,20 +317,20 @@ export default function DealFunnel() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+                className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
               >
                 <h2 className="text-2xl font-bold mb-6">Stage Conversion Rates</h2>
                 <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsBarChart data={stageConversions} layout="horizontal">
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
-                      <XAxis dataKey="stage" stroke="rgba(255, 255, 255, 0.4)" fontSize={12} angle={-45} textAnchor="end" height={80} />
-                      <YAxis type="number" domain={[0, 100]} tickFormatter={(value) => `${value}%`} stroke="rgba(255, 255, 255, 0.4)" fontSize={12} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+                      <XAxis dataKey="stage" stroke="var(--color-muted-foreground)" fontSize={12} angle={-45} textAnchor="end" height={80} />
+                      <YAxis type="number" domain={[0, 100]} tickFormatter={(value) => `${value}%`} stroke="var(--color-muted-foreground)" fontSize={12} />
                       <Tooltip 
                         contentStyle={{
-                          backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                          backgroundColor: 'var(--color-popover)',
                           borderRadius: '12px',
-                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          border: '1px solid var(--color-border)',
                           backdropFilter: 'blur(10px)',
                         }}
                         formatter={(value: number) => [`${value.toFixed(1)}%`, 'Conversion Rate']}
@@ -351,18 +350,18 @@ export default function DealFunnel() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.8 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+                className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
               >
                 <h2 className="text-2xl font-bold mb-6">Sales Velocity by Segment</h2>
                 <div className="space-y-6">
                   {localPartnerConversion.map((partner, index) => {
-                    const colors = ['bg-blue-500', 'bg-green-500', 'bg-amber-500']
+                    const colors = ['bg-primary', 'bg-success', 'bg-amber-500']
                     const velocity = 100 - (partner.avg_sales_cycle_days / 100) * 100
                     return (
                       <div key={partner.group}>
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-sm font-medium">{partner.group}</span>
-                          <span className="text-sm text-gray-400">{partner.avg_sales_cycle_days} days</span>
+                          <span className="text-sm text-muted-foreground">{partner.avg_sales_cycle_days} days</span>
                         </div>
                         <div className="w-full bg-white/10 rounded-full h-3">
                           <motion.div 
@@ -376,12 +375,12 @@ export default function DealFunnel() {
                     )
                   })}
                 </div>
-                <div className="mt-6 p-4 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-blue-500/20 rounded-2xl">
+                <div className="mt-6 p-4 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl">
                   <div className="flex items-center gap-2 mb-2">
-                    <Zap className="h-5 w-5 text-blue-400" />
-                    <h3 className="font-semibold text-blue-400">Quick Win</h3>
+                    <Zap className="h-5 w-5 text-primary" />
+                    <h3 className="font-semibold text-primary">Quick Win</h3>
                   </div>
-                  <p className="text-sm text-gray-300">
+                  <p className="text-sm text-muted-foreground">
                     SMB deals close 47% faster than Enterprise. Consider segment-specific sales strategies.
                   </p>
                 </div>
@@ -395,10 +394,10 @@ export default function DealFunnel() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.0 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-blue-400">Project Overview</h2>
-                <div className="space-y-4 text-gray-300">
+                <h2 className="text-2xl font-bold mb-6 text-primary">Project Overview</h2>
+                <div className="space-y-4 text-muted-foreground">
                   <p className="text-lg leading-relaxed">
                     Designed and implemented a comprehensive deal funnel analytics system to provide real-time visibility into sales pipeline performance, conversion rates, and revenue velocity across different market segments and deal sizes.
                   </p>
@@ -413,10 +412,10 @@ export default function DealFunnel() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.1 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-amber-400">Challenge</h2>
-                <div className="space-y-4 text-gray-300">
+                <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
                     The sales organization lacked comprehensive visibility into pipeline performance across different segments, making it difficult to optimize conversion rates and identify process improvements:
                   </p>
@@ -438,17 +437,17 @@ export default function DealFunnel() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.2 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-green-400">Solution</h2>
-                <div className="space-y-4 text-gray-300">
+                <h2 className="text-2xl font-bold mb-6 text-success">Solution</h2>
+                <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
                     Built a comprehensive deal funnel analytics dashboard that provides real-time visibility into sales performance with advanced segmentation and velocity tracking:
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                      <h3 className="font-semibold text-blue-400 mb-3">Analytics Framework</h3>
+                      <h3 className="font-semibold text-primary mb-3">Analytics Framework</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
                         <li>Multi-stage funnel tracking with conversion rate analysis</li>
                         <li>Segment-based performance comparisons (Enterprise, SMB, etc.)</li>
@@ -458,7 +457,7 @@ export default function DealFunnel() {
                       </ul>
                     </div>
                     <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                      <h3 className="font-semibold text-green-400 mb-3">Interactive Features</h3>
+                      <h3 className="font-semibold text-success mb-3">Interactive Features</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
                         <li>Dynamic filtering by segment, stage, and deal size</li>
                         <li>Drill-down capabilities from overview to individual deals</li>
@@ -476,26 +475,26 @@ export default function DealFunnel() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.3 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-emerald-400">Results & Impact</h2>
-                <div className="space-y-6 text-gray-300">
+                <div className="space-y-6 text-muted-foreground">
                   <p className="leading-relaxed">
                     The deal funnel analytics system transformed sales performance visibility and enabled data-driven optimization that significantly improved conversion rates and revenue velocity:
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-blue-400 mb-2">27%</div>
-                      <div className="text-sm text-gray-300">Overall Conversion Rate Improvement</div>
+                    <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-primary mb-2">27%</div>
+                      <div className="text-sm text-muted-foreground">Overall Conversion Rate Improvement</div>
                     </div>
-                    <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-sm border border-indigo-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-indigo-400 mb-2">31 Days</div>
-                      <div className="text-sm text-gray-300">Reduction in Average Sales Cycle</div>
+                    <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-sm border border-secondary/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-secondary mb-2">31 Days</div>
+                      <div className="text-sm text-muted-foreground">Reduction in Average Sales Cycle</div>
                     </div>
-                    <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-sm border border-cyan-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-cyan-400 mb-2">$2.8M</div>
-                      <div className="text-sm text-gray-300">Additional Pipeline Value Captured</div>
+                    <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-primary mb-2">$2.8M</div>
+                      <div className="text-sm text-muted-foreground">Additional Pipeline Value Captured</div>
                     </div>
                   </div>
 
@@ -518,10 +517,10 @@ export default function DealFunnel() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.4 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-purple-400">Key Learnings</h2>
-                <div className="space-y-4 text-gray-300">
+                <div className="space-y-4 text-muted-foreground">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
                       <h3 className="font-semibold text-purple-400">Sales Process Insights</h3>
@@ -533,7 +532,7 @@ export default function DealFunnel() {
                       </ul>
                     </div>
                     <div className="space-y-3">
-                      <h3 className="font-semibold text-blue-400">Technical Implementation Insights</h3>
+                      <h3 className="font-semibold text-primary">Technical Implementation Insights</h3>
                       <ul className="list-disc list-inside space-y-2 text-sm">
                         <li>Real-time data updates are crucial for actionable sales coaching and intervention</li>
                         <li>Segment-based views prevent "average" metrics from hiding important performance variations</li>
@@ -553,16 +552,16 @@ export default function DealFunnel() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.5 }}
-                className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-gray-500/20 rounded-3xl p-8"
+                className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-border/20 rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-gray-300">Technologies Used</h2>
+                <h2 className="text-2xl font-bold mb-6 text-muted-foreground">Technologies Used</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
                     'React 19', 'TypeScript', 'Recharts', 'Sales Analytics',
                     'Pipeline Management', 'Conversion Tracking', 'Velocity Analysis', 'Funnel Optimization',
                     'CRM Integration', 'Real-time Dashboards', 'Mobile Design', 'Performance Metrics'
                   ].map((tech, index) => (
-                    <span key={index} className="bg-white/10 text-gray-300 px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
+                    <span key={index} className="bg-white/10 text-muted-foreground px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
                       {tech}
                     </span>
                   ))}
@@ -583,7 +582,7 @@ export default function DealFunnel() {
                   <p className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                     ${(totalRevenue / 1000000).toFixed(1)}M
                   </p>
-                  <p className="text-gray-400 mt-2">Based on closed deals × average deal size</p>
+                  <p className="text-muted-foreground mt-2">Based on closed deals × average deal size</p>
                 </div>
                 <div className="text-right">
                   <div className="p-4 bg-purple-500/20 rounded-2xl">

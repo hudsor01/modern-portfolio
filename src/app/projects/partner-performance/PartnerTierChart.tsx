@@ -11,10 +11,10 @@ const data = [
 ]
 
 const chartColors = {
-  revenue: '#3b82f6',
-  roi: '#10b981',
-  grid: 'rgba(255, 255, 255, 0.05)',
-  axis: 'rgba(255, 255, 255, 0.4)',
+  revenue: 'var(--color-primary)',
+  roi: 'var(--color-success)',
+  grid: 'var(--color-border)',
+  axis: 'var(--color-muted-foreground)',
 }
 
 export default function PartnerTierChart() {
@@ -56,9 +56,9 @@ export default function PartnerTierChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              backgroundColor: 'var(--color-popover)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid var(--color-border)',
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
@@ -84,7 +84,7 @@ export default function PartnerTierChart() {
           />
         </BarChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-gray-400">
+      <p className="mt-4 text-center text-sm italic text-muted-foreground">
         Partner tier performance showing certified partners deliver 8.2x ROI vs 2.4x for new partner acquisitions
       </p>
     </div>

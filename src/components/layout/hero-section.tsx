@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { m } from 'framer-motion'
 import { Button } from '@/components/ui/button'
-import { RichardTypewriterTitle } from '@/components/ui/typewriter-title'
+import { RichardTypewriterTitle } from '@/components/layout/typewriter-title'
 import { ArrowRight, FileText } from 'lucide-react'
 import { SiGithub, SiLinkedin } from 'react-icons/si'
 

@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 import { createContextLogger } from '@/lib/logging/logger'
-import { useClientOnly } from '@/hooks/use-client-only'
+import { useMounted } from '@/hooks/use-mounted'
 import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 
 const logger = createContextLogger('BlogShareButtons')
@@ -41,7 +41,7 @@ export function BlogShareButtons({
 }: BlogShareButtonsProps) {
   const [copied, setCopied] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
-  const isClient = useClientOnly()
+  const isClient = useMounted()
 
   const fullUrl = isClient ? `${window.location.origin}${url}` : url
   const shareText = excerpt || title
@@ -58,29 +58,29 @@ export function BlogShareButtons({
       name: 'Twitter',
       icon: SiX,
       url: shareUrls.twitter,
-      color: 'text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20',
-      bgColor: 'bg-blue-500'
+      color: 'text-primary hover:bg-primary/5 dark:hover:bg-primary/20/20',
+      bgColor: 'bg-primary'
     },
     {
       name: 'Facebook',
       icon: SiFacebook,
       url: shareUrls.facebook,
-      color: 'text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20',
-      bgColor: 'bg-blue-600'
+      color: 'text-primary hover:bg-primary/5 dark:hover:bg-primary/20/20',
+      bgColor: 'bg-primary-hover'
     },
     {
       name: 'LinkedIn',
       icon: SiLinkedin,
       url: shareUrls.linkedin,
-      color: 'text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20',
-      bgColor: 'bg-blue-700'
+      color: 'text-primary hover:bg-primary/5 dark:hover:bg-primary/20/20',
+      bgColor: 'bg-primary'
     },
     {
       name: 'Email',
       icon: Mail,
       url: shareUrls.email,
-      color: 'text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/20',
-      bgColor: 'bg-gray-600'
+      color: 'text-muted-foreground hover:bg-background dark:hover:bg-muted/20',
+      bgColor: 'bg-muted'
     }
   ]
 

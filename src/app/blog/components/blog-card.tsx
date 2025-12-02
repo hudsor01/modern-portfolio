@@ -83,8 +83,8 @@ export function BlogCard({
       data-testid="blog-card"
       className={cn(
         'group cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg',
-        'bg-white/5 backdrop-blur border border-white/10 rounded-3xl',
-        'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+        'glass rounded-3xl',
+        'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
         variant === 'compact' && 'blog-card--compact'
       )}
       onClick={handleCardClick}
@@ -108,9 +108,9 @@ export function BlogCard({
           ) : (
             <div 
               data-testid="image-placeholder"
-              className="flex h-full w-full items-center justify-center bg-gray-200 dark:bg-gray-700"
+              className="flex h-full w-full items-center justify-center bg-muted dark:bg-muted"
             >
-              <Tag className="h-12 w-12 text-gray-400" />
+              <Tag className="h-12 w-12 text-muted-foreground" />
             </div>
           )}
           
@@ -118,7 +118,7 @@ export function BlogCard({
           {post.featured && (
             <Badge
               data-testid="featured-badge"
-              className="absolute top-3 right-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-0"
+              className="absolute top-3 right-3 gradient-cta text-foreground border-0"
             >
               <Star className="h-3 w-3 mr-1" />
               Featured
@@ -153,7 +153,7 @@ export function BlogCard({
 
       <CardContent className="p-6">
         {/* Category & Date */}
-        <div className="flex items-center justify-between mb-3 text-sm text-gray-600 dark:text-gray-400">
+        <div className="flex items-center justify-between mb-3 text-sm text-muted-foreground dark:text-muted-foreground">
           {post.category && (
             <Badge variant="secondary" className="text-xs">
               {post.category.name}
@@ -168,7 +168,7 @@ export function BlogCard({
         {/* Title */}
         <h3 
           data-testid="blog-card-title"
-          className="text-xl font-semibold mb-3 group-hover:text-blue-600 transition-colors line-clamp-2"
+          className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors line-clamp-2"
         >
           {post.title}
         </h3>
@@ -177,7 +177,7 @@ export function BlogCard({
         {post.excerpt && (
           <p 
             data-testid="blog-excerpt"
-            className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3"
+            className="text-muted-foreground dark:text-muted-foreground mb-4 line-clamp-3"
           >
             {truncateExcerpt(post.excerpt)}
           </p>
@@ -207,7 +207,7 @@ export function BlogCard({
         )}
 
         {/* Reading Time */}
-        <div className="flex items-center gap-1 text-sm text-gray-500">
+        <div className="flex items-center gap-1 text-sm text-muted-foreground">
           <Clock className="h-3 w-3" />
           <span>{post.readingTime || 5} min read</span>
         </div>

@@ -39,7 +39,7 @@ export function CertificationsSection({
         <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
           Certifications & Recognition
         </h2>
-        <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+        <p className="text-xl text-muted-foreground dark:text-muted-foreground max-w-3xl mx-auto">
           Professional certifications validating expertise in revenue operations and analytics
         </p>
       </motion.div>
@@ -69,15 +69,15 @@ function CertificationCard({ certification, index }: CertificationCardProps) {
       animate={fadeInUp.animate}
       transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
     >
-      <Card className="h-full border-0 shadow-lg bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+      <Card className="h-full border-0 shadow-lg bg-white/50 dark:bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
         <CardHeader className="pb-4">
           <div className="flex items-start gap-4">
             <CertificationBadge badge={certification.badge} name={certification.name} />
             <div className="flex-1">
-              <CardTitle className="text-lg font-bold text-gray-800 dark:text-white mb-2">
+              <CardTitle className="text-lg font-bold text-foreground dark:text-white mb-2">
                 {certification.name}
               </CardTitle>
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground">
                 <Award className="h-4 w-4" />
                 <span>{certification.issuer}</span>
               </div>
@@ -85,7 +85,7 @@ function CertificationCard({ certification, index }: CertificationCardProps) {
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
+          <p className="text-muted-foreground dark:text-muted-foreground mb-4">
             {certification.description}
           </p>
           <SkillTags skills={certification.skills} />

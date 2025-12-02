@@ -542,17 +542,14 @@ describe('BlogCard', () => {
 
     it('applies glassmorphism styling', () => {
       render(
-        <BlogCard 
-          post={defaultPost} 
-          onClick={mockOnClick} 
+        <BlogCard
+          post={defaultPost}
+          onClick={mockOnClick}
         />
       )
 
       const card = screen.getByTestId('blog-card')
-      expect(card).toHaveClass('bg-white/5')
-      expect(card).toHaveClass('backdrop-blur')
-      expect(card).toHaveClass('border')
-      expect(card).toHaveClass('border-white/10')
+      expect(card).toHaveClass('glass')
       expect(card).toHaveClass('rounded-3xl')
     })
 
@@ -567,7 +564,7 @@ describe('BlogCard', () => {
       const card = screen.getByTestId('blog-card')
       expect(card).toHaveClass('focus:outline-none')
       expect(card).toHaveClass('focus:ring-2')
-      expect(card).toHaveClass('focus:ring-blue-500')
+      expect(card).toHaveClass('focus:ring-primary')
     })
   })
 })

@@ -118,15 +118,15 @@ export function BlogPostList({
         )}
         
         <div className="text-center py-16">
-          <div className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl p-12">
+          <div className="glass rounded-3xl p-12">
             <div className="max-w-md mx-auto">
-              <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-                <List className="w-12 h-12 text-gray-400" />
+              <div className="w-24 h-24 mx-auto mb-6 bg-muted dark:bg-card rounded-full flex items-center justify-center">
+                <List className="w-12 h-12 text-muted-foreground" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              <h3 className="text-xl font-semibold text-foreground dark:text-white mb-2">
                 No Posts Found
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
+              <p className="text-muted-foreground dark:text-muted-foreground mb-6">
                 {emptyStateMessage}
               </p>
               {emptyStateAction}
@@ -165,11 +165,11 @@ export function BlogPostList({
         className="flex items-center justify-between"
       >
         <div className="flex items-center gap-4">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-xl font-semibold text-foreground dark:text-white">
             {totalCount === 1 ? '1 Post' : `${totalCount.toLocaleString()} Posts`}
           </h2>
           {isLoading && (
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="w-4 h-4 animate-spin" />
               Loading...
             </div>
@@ -206,14 +206,14 @@ export function BlogPostList({
           </Select>
 
           {/* View Mode Toggle */}
-          <div className="flex border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+          <div className="flex border border-border dark:border-border rounded-lg overflow-hidden">
             <Button
               variant={localViewMode === 'grid' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => handleViewModeChange('grid')}
               className={cn(
                 'rounded-none border-0',
-                localViewMode === 'grid' && 'bg-gradient-to-r from-blue-500 to-indigo-600'
+                localViewMode === 'grid' && 'gradient-cta'
               )}
             >
               <Grid className="w-4 h-4" />
@@ -224,7 +224,7 @@ export function BlogPostList({
               onClick={() => handleViewModeChange('list')}
               className={cn(
                 'rounded-none border-0',
-                localViewMode === 'list' && 'bg-gradient-to-r from-blue-500 to-indigo-600'
+                localViewMode === 'list' && 'gradient-cta'
               )}
             >
               <List className="w-4 h-4" />
@@ -314,7 +314,7 @@ export function BlogPostList({
           <Button
             onClick={() => onPageChange(currentPage + 1)}
             size="lg"
-            className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+            className="gradient-cta hover:gradient-cta-hover"
             disabled={isLoading}
           >
             {isLoading ? (

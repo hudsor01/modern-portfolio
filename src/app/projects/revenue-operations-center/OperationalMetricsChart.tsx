@@ -55,11 +55,11 @@ const data = [
 ]
 
 const chartColors = {
-  current: '#10b981',
-  target: '#3b82f6',
-  industry: '#8b5cf6',
-  grid: 'rgba(255, 255, 255, 0.1)',
-  axis: 'rgba(255, 255, 255, 0.4)',
+  current: 'var(--color-success)',
+  target: 'var(--color-primary)',
+  industry: 'var(--color-secondary)',
+  grid: 'var(--color-muted)',
+  axis: 'var(--color-muted-foreground)',
 }
 
 export default function OperationalMetricsChart() {
@@ -108,11 +108,11 @@ export default function OperationalMetricsChart() {
             strokeDasharray="3 3"
           />
           <Legend 
-            wrapperStyle={{ color: 'rgba(255, 255, 255, 0.7)' }}
+            wrapperStyle={{ color: 'var(--color-muted-foreground)' }}
           />
         </RadarChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-gray-400">
+      <p className="mt-4 text-center text-sm italic text-muted-foreground">
         Operational efficiency radar showing 89.7% average performance vs 85% target and 78% industry benchmark
       </p>
     </div>

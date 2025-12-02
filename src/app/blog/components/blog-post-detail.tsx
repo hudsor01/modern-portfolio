@@ -106,7 +106,7 @@ export function BlogPostDetail({
             {post.category && (
               <div className="absolute top-4 left-4">
                 <Badge
-                  className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-0"
+                  className="gradient-cta text-foreground border-0"
                 >
                   {post.category.name}
                 </Badge>
@@ -114,7 +114,7 @@ export function BlogPostDetail({
             )}
             {post.featured && (
               <div className="absolute top-4 right-4">
-                <Badge className="bg-yellow-500 text-yellow-900 border-0">
+                <Badge className="bg-warning text-warning border-0">
                   Featured
                 </Badge>
               </div>
@@ -123,13 +123,13 @@ export function BlogPostDetail({
         )}
 
         {/* Title */}
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+        <h1 className="text-4xl md:text-5xl font-bold text-foreground dark:text-white mb-6 leading-tight">
           {post.title}
         </h1>
 
         {/* Excerpt */}
         {post.excerpt && (
-          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+          <p className="text-xl text-muted-foreground dark:text-muted-foreground mb-8 leading-relaxed">
             {post.excerpt}
           </p>
         )}
@@ -151,7 +151,7 @@ export function BlogPostDetail({
               <Badge
                 key={tag.id}
                 variant="outline"
-                className="hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 dark:hover:bg-blue-900/20 transition-colors cursor-pointer"
+                className="hover:bg-primary/5 hover:border-primary/30 hover:text-primary dark:hover:bg-primary/20/20 transition-colors cursor-pointer"
               >
                 <Tag className="w-3 h-3 mr-1" />
                 {tag.name}
@@ -171,7 +171,7 @@ export function BlogPostDetail({
       {/* Action Buttons */}
       <motion.div
         variants={itemVariants}
-        className="flex items-center justify-between py-6 border-y border-gray-200 dark:border-gray-700 mb-8"
+        className="flex items-center justify-between py-6 border-y border-border dark:border-border mb-8"
       >
         <div className="flex items-center gap-4">
           <Button
@@ -180,7 +180,7 @@ export function BlogPostDetail({
             onClick={handleLike}
             className={cn(
               'flex items-center gap-2',
-              isLiked && 'text-red-600 border-red-300 bg-red-50 dark:bg-red-900/20'
+              isLiked && 'text-destructive border-destructive/30 bg-destructive/5 dark:bg-destructive/20/20'
             )}
           >
             <Heart className={cn('w-4 h-4', isLiked && 'fill-current')} />
@@ -193,7 +193,7 @@ export function BlogPostDetail({
             onClick={handleBookmark}
             className={cn(
               'flex items-center gap-2',
-              isBookmarked && 'text-blue-600 border-blue-300 bg-blue-50 dark:bg-blue-900/20'
+              isBookmarked && 'text-primary border-primary/30 bg-primary/5 dark:bg-primary/20/20'
             )}
           >
             <Bookmark className={cn('w-4 h-4', isBookmarked && 'fill-current')} />
@@ -217,7 +217,7 @@ export function BlogPostDetail({
       {/* Author Bio */}
       {post.author && (
         <motion.div variants={itemVariants}>
-          <Card className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl mb-12">
+          <Card className="glass rounded-2xl mb-12">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 {post.author.avatar && (
@@ -234,11 +234,11 @@ export function BlogPostDetail({
                     About {post.author.name}
                   </h3>
                   {post.author.bio && (
-                    <p className="text-gray-600 dark:text-gray-300 mb-4">
+                    <p className="text-muted-foreground dark:text-muted-foreground mb-4">
                       {post.author.bio}
                     </p>
                   )}
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
                     <span>{post.author.totalPosts} posts</span>
                     <span>{post.author.totalViews} views</span>
                     {post.author.website && (
@@ -246,7 +246,7 @@ export function BlogPostDetail({
                         href={post.author.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-blue-600 hover:text-blue-700 transition-colors"
+                        className="flex items-center gap-1 text-primary hover:text-primary transition-colors"
                       >
                         Website
                         <ExternalLink className="w-3 h-3" />
@@ -265,9 +265,9 @@ export function BlogPostDetail({
         <motion.div variants={itemVariants} className="mb-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {previousPost && (
-              <Card className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl hover:scale-105 transition-transform duration-300">
+              <Card className="glass rounded-2xl hover:scale-105 transition-transform duration-300">
                 <CardContent className="p-6">
-                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                     <ArrowLeft className="w-4 h-4" />
                     Previous Post
                   </div>
@@ -275,11 +275,11 @@ export function BlogPostDetail({
                     href={`/blog/${previousPost.slug}`}
                     className="block group"
                   >
-                    <h4 className="font-semibold text-lg group-hover:text-blue-600 transition-colors line-clamp-2">
+                    <h4 className="font-semibold text-lg group-hover:text-primary transition-colors line-clamp-2">
                       {previousPost.title}
                     </h4>
                     {previousPost.excerpt && (
-                      <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 line-clamp-2">
+                      <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-2 line-clamp-2">
                         {previousPost.excerpt}
                       </p>
                     )}
@@ -289,9 +289,9 @@ export function BlogPostDetail({
             )}
 
             {nextPost && (
-              <Card className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl hover:scale-105 transition-transform duration-300">
+              <Card className="glass rounded-2xl hover:scale-105 transition-transform duration-300">
                 <CardContent className="p-6">
-                  <div className="flex items-center justify-end gap-2 text-sm text-gray-500 mb-2">
+                  <div className="flex items-center justify-end gap-2 text-sm text-muted-foreground mb-2">
                     Next Post
                     <ArrowRight className="w-4 h-4" />
                   </div>
@@ -299,11 +299,11 @@ export function BlogPostDetail({
                     href={`/blog/${nextPost.slug}`}
                     className="block group text-right"
                   >
-                    <h4 className="font-semibold text-lg group-hover:text-blue-600 transition-colors line-clamp-2">
+                    <h4 className="font-semibold text-lg group-hover:text-primary transition-colors line-clamp-2">
                       {nextPost.title}
                     </h4>
                     {nextPost.excerpt && (
-                      <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 line-clamp-2">
+                      <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-2 line-clamp-2">
                         {nextPost.excerpt}
                       </p>
                     )}
@@ -323,7 +323,7 @@ export function BlogPostDetail({
             {relatedPosts.slice(0, 3).map((relatedPost) => (
               <Card
                 key={relatedPost.id}
-                className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl hover:scale-105 transition-transform duration-300"
+                className="glass rounded-2xl hover:scale-105 transition-transform duration-300"
               >
                 <CardContent className="p-0">
                   {relatedPost.featuredImage && (
@@ -341,15 +341,15 @@ export function BlogPostDetail({
                       href={`/blog/${relatedPost.slug}`}
                       className="block group"
                     >
-                      <h4 className="font-semibold line-clamp-2 group-hover:text-blue-600 transition-colors mb-2">
+                      <h4 className="font-semibold line-clamp-2 group-hover:text-primary transition-colors mb-2">
                         {relatedPost.title}
                       </h4>
                       {relatedPost.excerpt && (
-                        <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-3">
+                        <p className="text-sm text-muted-foreground dark:text-muted-foreground line-clamp-2 mb-3">
                           {relatedPost.excerpt}
                         </p>
                       )}
-                      <div className="flex items-center gap-3 text-xs text-gray-500">
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
                           <span>

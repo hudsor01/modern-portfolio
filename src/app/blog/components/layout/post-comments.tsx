@@ -16,12 +16,12 @@ export function PostComments({ comments = [], itemVariants, show = true }: PostC
 
   return (
     <motion.div variants={itemVariants}>
-      <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
+      <div className="glass rounded-2xl p-6">
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <MessageCircle className="h-5 w-5" />
           Comments ({comments?.length || 0})
         </h3>
-        <p className="text-gray-600 dark:text-gray-300">
+        <p className="text-muted-foreground dark:text-muted-foreground">
           Comments system is coming soon.
         </p>
       </div>

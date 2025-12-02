@@ -18,7 +18,7 @@ export function PostFeaturedImage({ post, itemVariants }: PostFeaturedImageProps
       className="mb-12"
       variants={itemVariants}
     >
-      <div className="relative aspect-video rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800">
+      <div className="relative aspect-video rounded-2xl overflow-hidden bg-muted dark:bg-card">
         <Image
           src={post.featuredImage.url}
           alt={post.featuredImage.alt}
@@ -29,7 +29,7 @@ export function PostFeaturedImage({ post, itemVariants }: PostFeaturedImageProps
         />
       </div>
       {post.featuredImage.caption && (
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-3 text-center">
+        <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-3 text-center">
           {post.featuredImage.caption}
         </p>
       )}

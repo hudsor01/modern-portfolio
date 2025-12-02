@@ -42,7 +42,7 @@ export function PostTableOfContents({ content }: PostTableOfContentsProps) {
 
   return (
     <div className="sticky top-8">
-      <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 mb-8">
+      <div className="glass rounded-2xl p-6 mb-8">
         <h3 className="font-semibold mb-4">Table of Contents</h3>
         <nav className="space-y-2">
           {tableOfContents.map((item) => (
@@ -50,10 +50,10 @@ export function PostTableOfContents({ content }: PostTableOfContentsProps) {
               key={item.id}
               onClick={() => scrollToHeading(item.id)}
               className={cn(
-                "block w-full text-left text-sm hover:text-blue-500 transition-colors",
+                "block w-full text-left text-sm hover:text-primary transition-colors",
                 `ml-${(item.level - 1) * 4}`,
                 item.level === 1 && "font-medium",
-                item.level > 1 && "text-gray-600 dark:text-gray-400"
+                item.level > 1 && "text-muted-foreground dark:text-muted-foreground"
               )}
             >
               {item.text}

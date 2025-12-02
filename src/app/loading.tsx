@@ -18,7 +18,7 @@ export default function Loading() {
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
           />
         </div>
-        <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+        <p className="mt-4 text-muted-foreground dark:text-muted-foreground">Loading...</p>
       </m.div>
     </div>
   )

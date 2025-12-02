@@ -62,12 +62,12 @@ export function BlogLayout({
   return (
     <div className={cn('min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800', className)}>
       {/* Header with Navigation */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-gray-200 dark:bg-gray-900/80 dark:border-gray-700">
+      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-border dark:bg-background/80 dark:border-border">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             {/* Logo/Title */}
             <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-2xl font-bold text-foreground dark:text-white">
                 Blog
               </h1>
             </div>
@@ -75,12 +75,12 @@ export function BlogLayout({
             {/* Desktop Search */}
             <div className="hidden md:flex items-center gap-4 flex-1 max-w-md mx-8">
               <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Search posts..."
                   value={searchValue}
                   onChange={(e) => onSearchChange?.(e.target.value)}
-                  className="pl-10 bg-white/50 backdrop-blur-sm border-gray-300 focus:border-blue-500"
+                  className="pl-10 bg-white/50 backdrop-blur-sm border-border focus:border-primary"
                 />
               </div>
             </div>
@@ -114,12 +114,12 @@ export function BlogLayout({
           {/* Mobile Search */}
           <div className="md:hidden mt-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search posts..."
                 value={searchValue}
                 onChange={(e) => onSearchChange?.(e.target.value)}
-                className="pl-10 bg-white/50 backdrop-blur-sm border-gray-300 focus:border-blue-500"
+                className="pl-10 bg-white/50 backdrop-blur-sm border-border focus:border-primary"
               />
             </div>
           </div>
@@ -132,7 +132,7 @@ export function BlogLayout({
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700"
+              className="md:hidden bg-white dark:bg-background border-t border-border dark:border-border"
             >
               <div className="container mx-auto px-4 py-4">
                 <BlogNavigation
@@ -170,7 +170,7 @@ export function BlogLayout({
             variants={itemVariants}
             className={cn(showSidebar ? 'lg:col-span-2' : 'col-span-1')}
           >
-            <div className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl">
+            <div className="glass rounded-3xl">
               <div className="p-6">
                 {children}
               </div>
@@ -196,7 +196,7 @@ export function BlogLayout({
       <footer className="bg-white/5 backdrop-blur border-t border-white/10 mt-16">
         <div className="container mx-auto px-4 py-8">
           <Separator className="mb-6 opacity-20" />
-          <div className="text-center text-gray-600 dark:text-gray-400">
+          <div className="text-center text-muted-foreground dark:text-muted-foreground">
             <p>&copy; {new Date().getFullYear()} Blog. All rights reserved.</p>
           </div>
         </div>

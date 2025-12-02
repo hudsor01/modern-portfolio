@@ -116,7 +116,7 @@ export function BlogBreadcrumbs({
             {/* Separator */}
             {index > 0 && (
               <ChevronRight
-                className="h-4 w-4 text-gray-400 dark:text-gray-500"
+                className="h-4 w-4 text-muted-foreground dark:text-muted-foreground"
                 aria-hidden="true"
               />
             )}
@@ -125,7 +125,7 @@ export function BlogBreadcrumbs({
             {item.href && !item.isActive ? (
               <Link
                 href={item.href}
-                className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors font-medium"
+                className="text-muted-foreground hover:text-primary dark:text-muted-foreground dark:hover:text-primary transition-colors font-medium"
               >
                 {index === 0 && showHome ? (
                   <div className="flex items-center gap-1">
@@ -141,8 +141,8 @@ export function BlogBreadcrumbs({
                 className={cn(
                   'font-medium',
                   item.isActive
-                    ? 'text-gray-900 dark:text-white'
-                    : 'text-gray-500 dark:text-gray-400'
+                    ? 'text-foreground dark:text-white'
+                    : 'text-muted-foreground dark:text-muted-foreground'
                 )}
                 aria-current={item.isActive ? 'page' : undefined}
               >

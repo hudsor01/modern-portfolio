@@ -16,7 +16,7 @@ export function PostAuthorBio({ post, itemVariants, show = true }: PostAuthorBio
 
   return (
     <motion.div variants={itemVariants} className="mb-8">
-      <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6">
+      <div className="glass rounded-2xl p-6">
         <div className="flex items-center gap-4 mb-4">
           <Avatar className="h-16 w-16">
             <AvatarImage src={post.author.avatar} alt={post.author.name} />
@@ -26,7 +26,7 @@ export function PostAuthorBio({ post, itemVariants, show = true }: PostAuthorBio
           </Avatar>
           <div>
             <h3 className="text-lg font-semibold">{post.author.name}</h3>
-            <p className="text-gray-600 dark:text-gray-300">
+            <p className="text-muted-foreground dark:text-muted-foreground">
               {post.author.bio}
             </p>
           </div>

@@ -15,11 +15,11 @@ const data = [
 ]
 
 const chartColors = {
-  ltv: '#10b981',
-  cac: '#ef4444', 
-  ratio: '#3b82f6',
-  grid: 'rgba(255, 255, 255, 0.05)',
-  axis: 'rgba(255, 255, 255, 0.4)',
+  ltv: 'var(--color-success)',
+  cac: 'var(--color-destructive)', 
+  ratio: 'var(--color-primary)',
+  grid: 'var(--color-border)',
+  axis: 'var(--color-muted-foreground)',
 }
 
 export default function UnitEconomicsChart() {
@@ -58,9 +58,9 @@ export default function UnitEconomicsChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              backgroundColor: 'var(--color-popover)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid var(--color-border)',
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
@@ -100,7 +100,7 @@ export default function UnitEconomicsChart() {
           />
         </LineChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-gray-400">
+      <p className="mt-4 text-center text-sm italic text-muted-foreground">
         LTV:CAC ratio optimization achieving industry-benchmark 3.6:1+ efficiency through strategic partner channel management
       </p>
     </div>

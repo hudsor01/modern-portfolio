@@ -18,23 +18,22 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { m as motion } from 'framer-motion'
-import { ChartSkeleton } from '@/components/projects/charts/chart-skeleton'
 
 // Lazy-load chart components with Suspense fallback
 const RevenueOverviewChart = dynamic(() => import('./RevenueOverviewChart'), {
-  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 const PipelineHealthChart = dynamic(() => import('./PipelineHealthChart'), {
-  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 const ForecastAccuracyChart = dynamic(() => import('./ForecastAccuracyChart'), {
-  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 const OperationalMetricsChart = dynamic(() => import('./OperationalMetricsChart'), {
-  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 
@@ -91,10 +90,10 @@ const departmentMetrics = [
 ]
 
 const alertTypeStyles = {
-  success: 'bg-green-500/20 text-green-400 border-green-500/30',
+  success: 'bg-success/20 text-success border-success/30',
   warning: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-  error: 'bg-red-500/20 text-red-400 border-red-500/30',
-  info: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+  error: 'bg-destructive/20 text-destructive border-destructive/30',
+  info: 'bg-primary/20 text-primary border-primary/30',
 }
 
 export default function RevenueOperationsCenter() {
@@ -124,7 +123,7 @@ export default function RevenueOperationsCenter() {
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-violet-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
       </div>
 
@@ -133,21 +132,21 @@ export default function RevenueOperationsCenter() {
         <div className="flex items-center justify-between mb-12">
           <Link
             href="/projects"
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors duration-300"
+            className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors duration-300"
           >
             <ArrowLeft className="h-5 w-5" />
             <span className="text-sm font-medium">Back to Projects</span>
           </Link>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-1">
+            <div className="flex items-center gap-1 glass rounded-xl p-1">
               {['overview', 'pipeline', 'forecasting', 'operations'].map((tab) => (
                 <button
                   key={tab}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 capitalize ${
                     activeTab === tab
-                      ? 'bg-violet-500 text-white shadow-lg'
-                      : 'text-gray-400 hover:text-white hover:bg-white/10'
+                      ? 'bg-violet-500 text-foreground shadow-lg'
+                      : 'text-muted-foreground hover:text-white hover:bg-white/10'
                   }`}
                   onClick={() => setActiveTab(tab)}
                 >
@@ -160,9 +159,9 @@ export default function RevenueOperationsCenter() {
                 setIsLoading(true)
                 setTimeout(() => setIsLoading(false), 600)
               }}
-              className="p-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300"
+              className="p-2 rounded-xl glass-interactive"
             >
-              <RefreshCcw className="h-5 w-5 text-gray-300" />
+              <RefreshCcw className="h-5 w-5 text-muted-foreground" />
             </button>
           </div>
         </div>
@@ -177,14 +176,14 @@ export default function RevenueOperationsCenter() {
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-violet-400 to-purple-600 bg-clip-text text-transparent mb-4">
             Revenue Operations Command Center
           </h1>
-          <p className="text-xl text-gray-400 max-w-3xl mb-6">
+          <p className="text-xl text-muted-foreground max-w-3xl mb-6">
             Comprehensive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs. Real-time insights with 96.8% forecast accuracy and 89.7% operational efficiency across sales, marketing, and partner channels.
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
             <span className="bg-violet-500/20 text-violet-400 px-3 py-1 rounded-full">Forecast Accuracy: 96.8%</span>
             <span className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full">Pipeline Health: 92.4%</span>
-            <span className="bg-indigo-500/20 text-indigo-400 px-3 py-1 rounded-full">Revenue Growth: +34.2%</span>
-            <span className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full">Operations Dashboard</span>
+            <span className="bg-secondary/20 text-secondary px-3 py-1 rounded-full">Revenue Growth: +34.2%</span>
+            <span className="bg-primary/20 text-primary px-3 py-1 rounded-full">Operations Dashboard</span>
           </div>
         </motion.div>
 
@@ -208,18 +207,18 @@ export default function RevenueOperationsCenter() {
                 className="relative group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-3 bg-violet-500/20 rounded-2xl">
                       <DollarSign className="h-6 w-6 text-violet-400" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Total Revenue</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Total Revenue</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {formatCurrency(revenueMetrics.totalRevenue)}
                   </p>
-                  <p className="text-sm text-gray-400 flex items-center gap-1">
-                    <TrendingUp className="w-4 h-4 text-green-400" />
+                  <p className="text-sm text-muted-foreground flex items-center gap-1">
+                    <TrendingUp className="w-4 h-4 text-success" />
                     +{formatPercent(revenueMetrics.revenueGrowth)} YoY
                   </p>
                 </div>
@@ -233,17 +232,17 @@ export default function RevenueOperationsCenter() {
                 className="relative group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-3 bg-purple-500/20 rounded-2xl">
                       <Target className="h-6 w-6 text-purple-400" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Forecast</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Forecast</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {formatPercent(revenueMetrics.forecastAccuracy)}
                   </p>
-                  <p className="text-sm text-gray-400">Accuracy Rate</p>
+                  <p className="text-sm text-muted-foreground">Accuracy Rate</p>
                 </div>
               </motion.div>
 
@@ -255,17 +254,17 @@ export default function RevenueOperationsCenter() {
                 className="relative group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-blue-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-indigo-500/20 rounded-2xl">
-                      <BarChart3 className="h-6 w-6 text-indigo-400" />
+                    <div className="p-3 bg-secondary/20 rounded-2xl">
+                      <BarChart3 className="h-6 w-6 text-secondary" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Pipeline</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Pipeline</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {formatPercent(revenueMetrics.pipelineHealth)}
                   </p>
-                  <p className="text-sm text-gray-400">Health Score</p>
+                  <p className="text-sm text-muted-foreground">Health Score</p>
                 </div>
               </motion.div>
 
@@ -277,17 +276,17 @@ export default function RevenueOperationsCenter() {
                 className="relative group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-blue-500/20 rounded-2xl">
-                      <Users className="h-6 w-6 text-blue-400" />
+                    <div className="p-3 bg-primary/20 rounded-2xl">
+                      <Users className="h-6 w-6 text-primary" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Active Deals</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Active Deals</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {revenueMetrics.activeDeals}
                   </p>
-                  <p className="text-sm text-gray-400">{formatCurrency(revenueMetrics.avgDealSize)} avg</p>
+                  <p className="text-sm text-muted-foreground">{formatCurrency(revenueMetrics.avgDealSize)} avg</p>
                 </div>
               </motion.div>
 
@@ -299,17 +298,17 @@ export default function RevenueOperationsCenter() {
                 className="relative group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-teal-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-cyan-500/20 rounded-2xl">
-                      <Activity className="h-6 w-6 text-cyan-400" />
+                    <div className="p-3 bg-primary/20 rounded-2xl">
+                      <Activity className="h-6 w-6 text-primary" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Target</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Target</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {formatPercent(revenueMetrics.targetAttainment)}
                   </p>
-                  <p className="text-sm text-gray-400">Attainment</p>
+                  <p className="text-sm text-muted-foreground">Attainment</p>
                 </div>
               </motion.div>
             </div>
@@ -319,7 +318,7 @@ export default function RevenueOperationsCenter() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.6 }}
-              className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 mb-12"
+              className="glass rounded-3xl p-6 mb-12"
             >
               <h3 className="text-lg font-semibold mb-4">Real-Time Revenue Operations Alerts</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -343,11 +342,11 @@ export default function RevenueOperationsCenter() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.7 }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+                  className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
                 >
                   <div className="mb-6">
                     <h2 className="text-2xl font-bold mb-2">Revenue Performance Overview</h2>
-                    <p className="text-gray-400">Multi-channel revenue tracking with growth trends and target progress</p>
+                    <p className="text-muted-foreground">Multi-channel revenue tracking with growth trends and target progress</p>
                   </div>
                   <RevenueOverviewChart />
                 </motion.div>
@@ -357,11 +356,11 @@ export default function RevenueOperationsCenter() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.8 }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+                  className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
                 >
                   <div className="mb-6">
                     <h2 className="text-2xl font-bold mb-2">Operational Efficiency Metrics</h2>
-                    <p className="text-gray-400">Key operational KPIs across sales, marketing, and partner channels</p>
+                    <p className="text-muted-foreground">Key operational KPIs across sales, marketing, and partner channels</p>
                   </div>
                   <OperationalMetricsChart />
                 </motion.div>
@@ -373,11 +372,11 @@ export default function RevenueOperationsCenter() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.7 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300 mb-12"
+                className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300 mb-12"
               >
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold mb-2">Pipeline Health & Velocity Analysis</h2>
-                  <p className="text-gray-400">Real-time pipeline tracking with stage progression and bottleneck identification</p>
+                  <p className="text-muted-foreground">Real-time pipeline tracking with stage progression and bottleneck identification</p>
                 </div>
                 <PipelineHealthChart />
               </motion.div>
@@ -388,11 +387,11 @@ export default function RevenueOperationsCenter() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.7 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300 mb-12"
+                className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300 mb-12"
               >
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold mb-2">Revenue Forecasting & Accuracy Analysis</h2>
-                  <p className="text-gray-400">Predictive revenue modeling with confidence intervals and scenario planning</p>
+                  <p className="text-muted-foreground">Predictive revenue modeling with confidence intervals and scenario planning</p>
                 </div>
                 <ForecastAccuracyChart />
               </motion.div>
@@ -406,15 +405,15 @@ export default function RevenueOperationsCenter() {
                 className="space-y-8 mb-12"
               >
                 {departmentMetrics.map((dept, index) => (
-                  <div key={index} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300">
+                  <div key={index} className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300">
                     <h3 className="text-xl font-bold mb-6">{dept.department} Operations</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       {dept.metrics.map((metric, metricIndex) => (
                         <div key={metricIndex} className="bg-white/5 rounded-2xl p-4 border border-white/10">
-                          <p className="text-sm text-gray-400 mb-2">{metric.name}</p>
+                          <p className="text-sm text-muted-foreground mb-2">{metric.name}</p>
                           <p className="text-2xl font-bold mb-1">{metric.value}</p>
                           <p className={`text-sm flex items-center gap-1 ${
-                            metric.positive ? 'text-green-400' : 'text-red-400'
+                            metric.positive ? 'text-success' : 'text-destructive'
                           }`}>
                             {metric.positive ?
                               <TrendingUp className="w-4 h-4" /> :
@@ -439,17 +438,17 @@ export default function RevenueOperationsCenter() {
             >
               <h2 className="text-2xl font-bold mb-6 text-violet-400">Revenue Operations Excellence & Strategic Impact</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center">
+                <div className="glass rounded-2xl p-6 text-center">
                   <div className="text-3xl font-bold text-violet-400 mb-2">96.8%</div>
-                  <div className="text-sm text-gray-300">Revenue Forecast Accuracy (Industry: 75-85%)</div>
+                  <div className="text-sm text-muted-foreground">Revenue Forecast Accuracy (Industry: 75-85%)</div>
                 </div>
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center">
+                <div className="glass rounded-2xl p-6 text-center">
                   <div className="text-3xl font-bold text-purple-400 mb-2">+34.2%</div>
-                  <div className="text-sm text-gray-300">YoY Revenue Growth (Target: 25%)</div>
+                  <div className="text-sm text-muted-foreground">YoY Revenue Growth (Target: 25%)</div>
                 </div>
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center">
-                  <div className="text-3xl font-bold text-indigo-400 mb-2">89.7%</div>
-                  <div className="text-sm text-gray-300">Operational Efficiency Score</div>
+                <div className="glass rounded-2xl p-6 text-center">
+                  <div className="text-3xl font-bold text-secondary mb-2">89.7%</div>
+                  <div className="text-sm text-muted-foreground">Operational Efficiency Score</div>
                 </div>
               </div>
             </motion.div>
@@ -461,10 +460,10 @@ export default function RevenueOperationsCenter() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.0 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-blue-400">Project Overview</h2>
-                <div className="space-y-4 text-gray-300">
+                <h2 className="text-2xl font-bold mb-6 text-primary">Project Overview</h2>
+                <div className="space-y-4 text-muted-foreground">
                   <p className="text-lg leading-relaxed">
                     Architected and implemented a comprehensive Revenue Operations Center that serves as the central hub for all revenue-related data, processes, and strategic decision-making across sales, marketing, and customer success teams.
                   </p>
@@ -479,10 +478,10 @@ export default function RevenueOperationsCenter() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.1 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-amber-400">Challenge</h2>
-                <div className="space-y-4 text-gray-300">
+                <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
                     The organization was struggling with fragmented revenue operations across departments, creating inefficiencies and limiting growth potential:
                   </p>
@@ -506,17 +505,17 @@ export default function RevenueOperationsCenter() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.2 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-green-400">Solution</h2>
-                <div className="space-y-4 text-gray-300">
+                <h2 className="text-2xl font-bold mb-6 text-success">Solution</h2>
+                <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
                     Built a comprehensive Revenue Operations Center that unifies all revenue-related functions into a single, intelligent platform with advanced analytics and automation capabilities:
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                      <h3 className="font-semibold text-blue-400 mb-3">Unified Data Platform</h3>
+                      <h3 className="font-semibold text-primary mb-3">Unified Data Platform</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
                         <li>Real-time data integration from 12 source systems with automated ETL pipelines</li>
                         <li>360-degree customer journey tracking from first touch to renewal</li>
@@ -526,7 +525,7 @@ export default function RevenueOperationsCenter() {
                       </ul>
                     </div>
                     <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                      <h3 className="font-semibold text-green-400 mb-3">Intelligence & Automation</h3>
+                      <h3 className="font-semibold text-success mb-3">Intelligence & Automation</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
                         <li>Predictive revenue forecasting with 96.8% accuracy using ML models</li>
                         <li>Automated workflow orchestration for lead routing and follow-up</li>
@@ -544,26 +543,26 @@ export default function RevenueOperationsCenter() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.3 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-emerald-400">Results & Impact</h2>
-                <div className="space-y-6 text-gray-300">
+                <div className="space-y-6 text-muted-foreground">
                   <p className="leading-relaxed">
                     The Revenue Operations Center transformed how the organization manages and optimizes revenue, delivering unprecedented visibility and efficiency across all revenue functions:
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-blue-400 mb-2">96.8%</div>
-                      <div className="text-sm text-gray-300">Revenue Forecast Accuracy</div>
+                    <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-primary mb-2">96.8%</div>
+                      <div className="text-sm text-muted-foreground">Revenue Forecast Accuracy</div>
                     </div>
-                    <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-sm border border-indigo-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-indigo-400 mb-2">34.2%</div>
-                      <div className="text-sm text-gray-300">YoY Revenue Growth</div>
+                    <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-sm border border-secondary/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-secondary mb-2">34.2%</div>
+                      <div className="text-sm text-muted-foreground">YoY Revenue Growth</div>
                     </div>
-                    <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-sm border border-cyan-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-cyan-400 mb-2">89.7%</div>
-                      <div className="text-sm text-gray-300">Operational Efficiency Score</div>
+                    <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-primary mb-2">89.7%</div>
+                      <div className="text-sm text-muted-foreground">Operational Efficiency Score</div>
                     </div>
                   </div>
 
@@ -588,10 +587,10 @@ export default function RevenueOperationsCenter() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.4 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-purple-400">Key Learnings</h2>
-                <div className="space-y-4 text-gray-300">
+                <div className="space-y-4 text-muted-foreground">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
                       <h3 className="font-semibold text-purple-400">Revenue Operations Strategy</h3>
@@ -604,7 +603,7 @@ export default function RevenueOperationsCenter() {
                       </ul>
                     </div>
                     <div className="space-y-3">
-                      <h3 className="font-semibold text-blue-400">Implementation Excellence</h3>
+                      <h3 className="font-semibold text-primary">Implementation Excellence</h3>
                       <ul className="list-disc list-inside space-y-2 text-sm">
                         <li>Data governance must be established before building analytics layers</li>
                         <li>User adoption requires intuitive interfaces and immediate value demonstration</li>
@@ -625,16 +624,16 @@ export default function RevenueOperationsCenter() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.5 }}
-                className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-gray-500/20 rounded-3xl p-8"
+                className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-border/20 rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-gray-300">Technologies Used</h2>
+                <h2 className="text-2xl font-bold mb-6 text-muted-foreground">Technologies Used</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
                     'React 19', 'TypeScript', 'Revenue Operations', 'Data Integration',
                     'Predictive Analytics', 'Process Automation', 'Business Intelligence', 'Machine Learning',
                     'ETL Pipelines', 'Data Governance', 'Workflow Orchestration', 'Executive Dashboards'
                   ].map((tech, index) => (
-                    <span key={index} className="bg-white/10 text-gray-300 px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
+                    <span key={index} className="bg-white/10 text-muted-foreground px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
                       {tech}
                     </span>
                   ))}

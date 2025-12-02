@@ -21,7 +21,7 @@ export function SocialMediaFields({ form }: SocialMediaFieldsProps) {
     <div className="space-y-8">
       {/* Open Graph (Facebook) */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <h3 className="text-lg font-semibold text-foreground dark:text-white">
           Open Graph (Facebook)
         </h3>
         
@@ -38,7 +38,7 @@ export function SocialMediaFields({ form }: SocialMediaFieldsProps) {
                   maxLength={100}
                 />
               </FormControl>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 {field.value?.length || 0}/100 characters
               </p>
               <FormMessage />
@@ -60,7 +60,7 @@ export function SocialMediaFields({ form }: SocialMediaFieldsProps) {
                   maxLength={300}
                 />
               </FormControl>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 {field.value?.length || 0}/300 characters
               </p>
               <FormMessage />
@@ -81,7 +81,7 @@ export function SocialMediaFields({ form }: SocialMediaFieldsProps) {
                   type="url"
                 />
               </FormControl>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 Recommended: 1200x630px for optimal Facebook display
               </p>
               <FormMessage />
@@ -92,7 +92,7 @@ export function SocialMediaFields({ form }: SocialMediaFieldsProps) {
 
       {/* Twitter */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <h3 className="text-lg font-semibold text-foreground dark:text-white">
           Twitter Card
         </h3>
         
@@ -109,7 +109,7 @@ export function SocialMediaFields({ form }: SocialMediaFieldsProps) {
                   maxLength={100}
                 />
               </FormControl>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 {field.value?.length || 0}/100 characters
               </p>
               <FormMessage />
@@ -131,7 +131,7 @@ export function SocialMediaFields({ form }: SocialMediaFieldsProps) {
                   maxLength={200}
                 />
               </FormControl>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 {field.value?.length || 0}/200 characters
               </p>
               <FormMessage />
@@ -152,7 +152,7 @@ export function SocialMediaFields({ form }: SocialMediaFieldsProps) {
                   type="url"
                 />
               </FormControl>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 Recommended: 1200x600px for Twitter Card
               </p>
               <FormMessage />

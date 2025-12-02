@@ -13,12 +13,12 @@ const data = [
 ]
 
 const chartColors = {
-  certified: '#10b981',
-  legacy: '#3b82f6',
-  newPartners: '#8b5cf6',
-  quickRatio: '#f59e0b',
-  grid: 'rgba(255, 255, 255, 0.05)',
-  axis: 'rgba(255, 255, 255, 0.4)',
+  certified: 'var(--color-success)',
+  legacy: 'var(--color-primary)',
+  newPartners: 'var(--color-secondary)',
+  quickRatio: 'var(--color-warning)',
+  grid: 'var(--color-border)',
+  axis: 'var(--color-muted-foreground)',
 }
 
 export default function PartnerROIChart() {
@@ -57,9 +57,9 @@ export default function PartnerROIChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              backgroundColor: 'var(--color-popover)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid var(--color-border)',
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
@@ -113,7 +113,7 @@ export default function PartnerROIChart() {
           />
         </LineChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-gray-400">
+      <p className="mt-4 text-center text-sm italic text-muted-foreground">
         Partner ROI optimization achieving 4.7x SaaS Quick Ratio benchmark through strategic tier management
       </p>
     </div>

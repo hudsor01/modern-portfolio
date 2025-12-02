@@ -1,13 +1,16 @@
 'use client'
-import React, { memo, useMemo } from 'react'
-import { ShadcnChartContainer } from '@/components/charts/shadcn-chart-container'
+
+import { useMemo } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from '@/components/ui/chart'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
 import { monthlyRevenue2024, type MonthlyRevenueData } from '@/app/projects/data/partner-analytics'
-import type { ChartConfig } from '@/components/ui/chart'
-import { createContextLogger } from '@/lib/logging/logger'
 
-const logger = createContextLogger('RevenueBarChart')
-
-// shadcn/ui chart configuration
 const chartConfig = {
   revenue: {
     label: 'Revenue',
@@ -15,39 +18,48 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-const RevenueBarChart = memo(() => {
-  // Memoize data transformation to prevent recalculation on every render
+export default function RevenueBarChart() {
   const chartData = useMemo(() => {
     return monthlyRevenue2024.map((monthData: MonthlyRevenueData) => ({
-      name: monthData.month, // Use 'name' for chart component
-      revenue: Math.round(monthData.revenue / 1000000), // Convert to millions for readability
-      value: Math.round(monthData.revenue / 1000000), // Required by ChartData type
+      name: monthData.month,
+      revenue: Math.round(monthData.revenue / 1000000),
     }))
   }, [])
 
   return (
-    <div className="w-full">
-      <ShadcnChartContainer
-        staticData={chartData}
-        title="Monthly Revenue 2024"
-        description="Monthly revenue breakdown for the current year (in millions USD)"
-        dataKey="revenue"
-        xAxisKey="name"
-        chartConfig={chartConfig}
-        variant="detailed"
-        height={300}
-        showGrid={true}
-        showTrend={true}
-        valueFormatter={(value) => `$${value}M`}
-        onDataLoad={(data) => {
-          logger.info('Revenue chart data loaded', { dataPoints: data.length })
-        }}
-        className="border-0 shadow-none bg-transparent"
-      />
-    </div>
+    <Card className="w-full border-0 shadow-none bg-transparent">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-xl">Monthly Revenue 2024</CardTitle>
+        <CardDescription>
+          Monthly revenue breakdown for the current year (in millions USD)
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+          <BarChart
+            data={chartData}
+            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis
+              dataKey="name"
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => `$${value}M`}
+            />
+            <ChartTooltip content={<ChartTooltipContent />} />
+            <Bar
+              dataKey="revenue"
+              fill="var(--color-revenue)"
+              radius={[4, 4, 0, 0]}
+            />
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
   )
-})
-
-RevenueBarChart.displayName = 'RevenueBarChart'
-
-export default RevenueBarChart
+}

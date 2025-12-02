@@ -46,7 +46,7 @@ export function SeoFields({
                 maxLength={100}
               />
             </FormControl>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               {field.value?.length || 0}/100 characters
             </p>
             <FormMessage />
@@ -69,7 +69,7 @@ export function SeoFields({
                 maxLength={160}
               />
             </FormControl>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               {field.value?.length || 0}/160 characters
             </p>
             <FormMessage />
@@ -120,7 +120,7 @@ export function SeoFields({
                       <button
                         type="button"
                         onClick={() => onRemoveKeyword(keyword)}
-                        className="ml-1 hover:text-red-500"
+                        className="ml-1 hover:text-destructive"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -129,7 +129,7 @@ export function SeoFields({
                 </div>
               )}
               
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 {field.value?.length || 0}/10 keywords
               </p>
             </div>
@@ -152,7 +152,7 @@ export function SeoFields({
                 type="url"
               />
             </FormControl>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Optional: Use if this content was originally published elsewhere
             </p>
             <FormMessage />

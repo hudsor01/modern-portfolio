@@ -167,7 +167,7 @@ export function BlogSearch({
     return (
       <div className={cn('relative', className)}>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
             ref={inputRef}
             type="text"
@@ -175,7 +175,7 @@ export function BlogSearch({
             value={query}
             onChange={(e) => handleInputChange(e.target.value)}
             onFocus={() => setIsExpanded(true)}
-            className="pl-10 pr-10 bg-white/50 backdrop-blur-sm border-gray-300 focus:border-blue-500"
+            className="pl-10 pr-10 bg-white/50 backdrop-blur-sm border-border focus:border-primary"
           />
           {query && (
             <Button
@@ -196,7 +196,7 @@ export function BlogSearch({
     <div className={cn('relative w-full max-w-2xl', className)}>
       {/* Search Input */}
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
         <Input
           ref={inputRef}
           type="text"
@@ -206,15 +206,15 @@ export function BlogSearch({
           onFocus={() => setIsExpanded(true)}
           className={cn(
             'pl-12 pr-12 h-12 bg-white/10 backdrop-blur-sm border border-white/20',
-            'focus:border-blue-500 focus:bg-white/20 transition-all duration-300',
+            'focus:border-primary focus:bg-white/20 transition-all duration-300',
             'rounded-2xl text-lg',
-            variant === 'expanded' && 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+            variant === 'expanded' && 'bg-white dark:bg-card border-border dark:border-border'
           )}
         />
         
         <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
           {isLoading && (
-            <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent" />
+            <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent" />
           )}
           {query && (
             <Button
@@ -250,7 +250,7 @@ export function BlogSearch({
               'absolute top-full left-0 right-0 mt-2 z-50',
               'bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl',
               'shadow-xl overflow-hidden',
-              variant === 'expanded' && 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+              variant === 'expanded' && 'bg-white dark:bg-card border-border dark:border-border'
             )}
           >
             <Card className="border-0 bg-transparent">
@@ -260,7 +260,7 @@ export function BlogSearch({
                   <div className="p-4">
                     {searchHistory.length > 0 && (
                       <motion.div variants={itemVariants} className="mb-4">
-                        <div className="flex items-center gap-2 mb-2 text-sm text-gray-600 dark:text-gray-400">
+                        <div className="flex items-center gap-2 mb-2 text-sm text-muted-foreground dark:text-muted-foreground">
                           <Clock className="h-4 w-4" />
                           Recent Searches
                         </div>
@@ -269,7 +269,7 @@ export function BlogSearch({
                             <Badge
                               key={index}
                               variant="secondary"
-                              className="cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/20"
+                              className="cursor-pointer hover:bg-primary/10 dark:hover:bg-primary/20/20"
                               onClick={() => handleSuggestionClick(search)}
                             >
                               {search}
@@ -281,7 +281,7 @@ export function BlogSearch({
 
                     {popularSearches.length > 0 && (
                       <motion.div variants={itemVariants}>
-                        <div className="flex items-center gap-2 mb-2 text-sm text-gray-600 dark:text-gray-400">
+                        <div className="flex items-center gap-2 mb-2 text-sm text-muted-foreground dark:text-muted-foreground">
                           <TrendingUp className="h-4 w-4" />
                           Popular Searches
                         </div>
@@ -290,7 +290,7 @@ export function BlogSearch({
                             <Badge
                               key={index}
                               variant="outline"
-                              className="cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/20"
+                              className="cursor-pointer hover:bg-primary/10 dark:hover:bg-primary/20/20"
                               onClick={() => handleSuggestionClick(search)}
                             >
                               {search}
@@ -308,7 +308,7 @@ export function BlogSearch({
                     {results.length === 0 && !isLoading && (
                       <motion.div
                         variants={itemVariants}
-                        className="p-6 text-center text-gray-500"
+                        className="p-6 text-center text-muted-foreground"
                       >
                         <Search className="h-12 w-12 mx-auto mb-2 opacity-50" />
                         <p>No results found for "{query}"</p>
@@ -319,7 +319,7 @@ export function BlogSearch({
                     {results.length > 0 && (
                       <>
                         <div className="p-3 bg-white/5 backdrop-blur border-b border-white/10">
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                          <span className="text-sm text-muted-foreground dark:text-muted-foreground">
                             {totalResults} results found
                           </span>
                         </div>
@@ -333,19 +333,19 @@ export function BlogSearch({
                               key={`${result.type}-${index}`}
                               variants={itemVariants}
                               href={formatted.href}
-                              className="block p-4 hover:bg-white/10 dark:hover:bg-gray-700/20 transition-colors border-b border-white/5 last:border-0"
+                              className="block p-4 hover:bg-white/10 dark:hover:bg-muted/20 transition-colors border-b border-white/5 last:border-0"
                               onClick={() => setIsExpanded(false)}
                             >
                               <div className="flex items-start gap-3">
                                 <div className="flex-shrink-0 mt-1">
-                                  <Icon className="h-4 w-4 text-gray-400" />
+                                  <Icon className="h-4 w-4 text-muted-foreground" />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <div className="font-medium text-gray-900 dark:text-white line-clamp-1">
+                                  <div className="font-medium text-foreground dark:text-white line-clamp-1">
                                     {formatted.title}
                                   </div>
                                   {formatted.subtitle && (
-                                    <div className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">
+                                    <div className="text-sm text-muted-foreground dark:text-muted-foreground line-clamp-2 mt-1">
                                       {formatted.subtitle}
                                     </div>
                                   )}
@@ -357,7 +357,7 @@ export function BlogSearch({
                                       {result.type}
                                     </Badge>
                                     {formatted.meta && (
-                                      <span className="text-xs text-gray-500">
+                                      <span className="text-xs text-muted-foreground">
                                         {formatted.meta}
                                       </span>
                                     )}
@@ -377,7 +377,7 @@ export function BlogSearch({
                                 onSearch(query)
                                 setIsExpanded(false)
                               }}
-                              className="text-blue-600 hover:text-blue-700"
+                              className="text-primary hover:text-primary"
                             >
                               View all {totalResults} results
                             </Button>

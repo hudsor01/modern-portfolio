@@ -112,7 +112,7 @@ export function BlogPagination({
           Previous
         </Button>
         
-        <span className="text-sm text-gray-600 dark:text-gray-400">
+        <span className="text-sm text-muted-foreground dark:text-muted-foreground">
           Page {currentPage} of {totalPages}
         </span>
         
@@ -146,7 +146,7 @@ export function BlogPagination({
           <ChevronLeft className="w-4 h-4" />
         </Button>
         
-        <span className="px-3 py-1 text-sm bg-white/5 backdrop-blur border border-white/10 rounded-lg">
+        <span className="px-3 py-1 text-sm glass rounded-lg">
           {currentPage}/{totalPages}
         </span>
         
@@ -193,7 +193,7 @@ export function BlogPagination({
             <motion.div key={`${page}-${index}`} variants={itemVariants}>
               {page === 'ellipsis' ? (
                 <div className="px-3 py-2 flex items-center">
-                  <MoreHorizontal className="w-4 h-4 text-gray-400" />
+                  <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
                 </div>
               ) : (
                 <Button
@@ -202,7 +202,7 @@ export function BlogPagination({
                   onClick={() => onPageChange(page)}
                   className={cn(
                     'min-w-[2.5rem] px-3',
-                    page === currentPage && 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700'
+                    page === currentPage && 'gradient-cta text-foreground hover:from-blue-600 hover:to-indigo-700'
                   )}
                   aria-current={page === currentPage ? 'page' : undefined}
                 >
@@ -229,7 +229,7 @@ export function BlogPagination({
       </div>
 
       {/* Page Info */}
-      <div className="hidden md:flex items-center ml-6 text-sm text-gray-600 dark:text-gray-400">
+      <div className="hidden md:flex items-center ml-6 text-sm text-muted-foreground dark:text-muted-foreground">
         <span>
           Page {currentPage} of {totalPages} ({totalPages * 10} total results)
         </span>
@@ -280,7 +280,7 @@ export function QuickJumpPagination({
           value={jumpPage}
           onChange={(e) => setJumpPage(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleJump()}
-          className="w-16 px-2 py-1 text-center border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-gray-800"
+          className="w-16 px-2 py-1 text-center border border-border dark:border-border rounded bg-white dark:bg-card"
           placeholder={currentPage.toString()}
         />
         <Button size="sm" onClick={handleJump} disabled={!jumpPage}>
