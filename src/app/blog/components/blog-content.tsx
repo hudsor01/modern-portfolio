@@ -39,9 +39,9 @@ export function BlogContent({
       let html = escapeHtml(markdown)
 
       // Headers
-      html = html.replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold mt-6 mb-3 text-gray-900 dark:text-white">$1</h3>')
-      html = html.replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mt-8 mb-4 text-gray-900 dark:text-white">$1</h2>')
-      html = html.replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mt-10 mb-6 text-gray-900 dark:text-white">$1</h1>')
+      html = html.replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold mt-6 mb-3 text-foreground dark:text-white">$1</h3>')
+      html = html.replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mt-8 mb-4 text-foreground dark:text-white">$1</h2>')
+      html = html.replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mt-10 mb-6 text-foreground dark:text-white">$1</h1>')
 
       // Bold
       html = html.replace(/\*\*(.*)\*\*/gim, '<strong class="font-semibold">$1</strong>')
@@ -57,7 +57,7 @@ export function BlogContent({
       })
 
       // Inline code
-      html = html.replace(/`([^`]+)`/gim, '<code class="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-sm font-mono">$1</code>')
+      html = html.replace(/`([^`]+)`/gim, '<code class="px-1.5 py-0.5 bg-muted dark:bg-card rounded text-sm font-mono">$1</code>')
 
       // Links - with URL validation
       html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/gim, (_match, text, url) => {
@@ -67,7 +67,7 @@ export function BlogContent({
         if (!isExternalUrl && !isRelativeUrl) {
           return text // Just return text if URL looks suspicious
         }
-        return `<a href="${escapeHtml(url)}" class="text-blue-600 dark:text-blue-400 hover:underline" target="_blank" rel="noopener noreferrer">${text} <svg class="inline w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></a>`
+        return `<a href="${escapeHtml(url)}" class="text-primary dark:text-primary hover:underline" target="_blank" rel="noopener noreferrer">${text} <svg class="inline w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></a>`
       })
 
       // Images
@@ -78,14 +78,14 @@ export function BlogContent({
       html = html.replace(/^\d+\. (.*$)/gim, '<li class="ml-4">$1</li>')
 
       // Blockquotes
-      html = html.replace(/^> (.*$)/gim, '<blockquote class="border-l-4 border-blue-500 pl-4 py-2 my-4 bg-blue-50 dark:bg-blue-900/20 italic text-gray-700 dark:text-gray-300">$1</blockquote>')
+      html = html.replace(/^> (.*$)/gim, '<blockquote class="border-l-4 border-primary pl-4 py-2 my-4 bg-primary/5 dark:bg-primary/20/20 italic text-muted-foreground dark:text-muted-foreground">$1</blockquote>')
 
       // Line breaks
-      html = html.replace(/\n\n/gim, '</p><p class="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">')
+      html = html.replace(/\n\n/gim, '</p><p class="mb-4 text-muted-foreground dark:text-muted-foreground leading-relaxed">')
       html = html.replace(/\n/gim, '<br />')
 
       // Wrap in paragraphs
-      html = `<p class="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">${html}</p>`
+      html = `<p class="mb-4 text-muted-foreground dark:text-muted-foreground leading-relaxed">${html}</p>`
 
       return html
     }
@@ -128,7 +128,7 @@ export function BlogContent({
         )}
         <pre className={cn(
           "rounded-lg text-sm p-4 overflow-x-auto",
-          theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-100 text-gray-900'
+          theme === 'dark' ? 'bg-background text-foreground' : 'bg-muted text-foreground'
         )}>
           <code className={`language-${language}`}>
             {codeString}
@@ -205,14 +205,14 @@ export function BlogContent({
       className={cn(
         'blog-content',
         'prose prose-lg dark:prose-invert max-w-none',
-        'prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white',
-        'prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed',
-        'prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline',
-        'prose-strong:text-gray-900 dark:prose-strong:text-white prose-strong:font-semibold',
-        'prose-code:text-pink-600 dark:prose-code:text-pink-400 prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded',
-        'prose-blockquote:border-l-blue-500 prose-blockquote:bg-blue-50 dark:prose-blockquote:bg-blue-900/20 prose-blockquote:text-gray-700 dark:prose-blockquote:text-gray-300',
-        'prose-ul:text-gray-700 dark:prose-ul:text-gray-300 prose-ol:text-gray-700 dark:prose-ol:text-gray-300',
-        'prose-li:text-gray-700 dark:prose-li:text-gray-300',
+        'prose-headings:font-bold prose-headings:text-foreground dark:prose-headings:text-white',
+        'prose-p:text-muted-foreground dark:prose-p:text-muted-foreground prose-p:leading-relaxed',
+        'prose-a:text-primary dark:prose-a:text-primary prose-a:no-underline hover:prose-a:underline',
+        'prose-strong:text-foreground dark:prose-strong:text-white prose-strong:font-semibold',
+        'prose-code:text-pink-600 dark:prose-code:text-pink-400 prose-code:bg-muted dark:prose-code:bg-card prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded',
+        'prose-blockquote:border-l-blue-500 prose-blockquote:bg-primary/5 dark:prose-blockquote:bg-primary/20/20 prose-blockquote:text-muted-foreground dark:prose-blockquote:text-muted-foreground',
+        'prose-ul:text-muted-foreground dark:prose-ul:text-muted-foreground prose-ol:text-muted-foreground dark:prose-ol:text-muted-foreground',
+        'prose-li:text-muted-foreground dark:prose-li:text-muted-foreground',
         'prose-img:rounded-lg prose-img:shadow-lg',
         className
       )}
@@ -225,46 +225,46 @@ export function BlogContent({
       
       <style jsx global>{`
         .blog-content h1 {
-          @apply text-3xl font-bold mt-8 mb-6 text-gray-900 dark:text-white;
+          @apply text-3xl font-bold mt-8 mb-6 text-foreground dark:text-white;
         }
         .blog-content h2 {
-          @apply text-2xl font-bold mt-8 mb-4 text-gray-900 dark:text-white;
+          @apply text-2xl font-bold mt-8 mb-4 text-foreground dark:text-white;
         }
         .blog-content h3 {
-          @apply text-xl font-semibold mt-6 mb-3 text-gray-900 dark:text-white;
+          @apply text-xl font-semibold mt-6 mb-3 text-foreground dark:text-white;
         }
         .blog-content h4 {
-          @apply text-lg font-semibold mt-6 mb-3 text-gray-900 dark:text-white;
+          @apply text-lg font-semibold mt-6 mb-3 text-foreground dark:text-white;
         }
         .blog-content p {
-          @apply mb-4 text-gray-700 dark:text-gray-300 leading-relaxed;
+          @apply mb-4 text-muted-foreground dark:text-muted-foreground leading-relaxed;
         }
         .blog-content ul {
-          @apply list-disc list-inside mb-4 text-gray-700 dark:text-gray-300;
+          @apply list-disc list-inside mb-4 text-muted-foreground dark:text-muted-foreground;
         }
         .blog-content ol {
-          @apply list-decimal list-inside mb-4 text-gray-700 dark:text-gray-300;
+          @apply list-decimal list-inside mb-4 text-muted-foreground dark:text-muted-foreground;
         }
         .blog-content li {
           @apply mb-2;
         }
         .blog-content blockquote {
-          @apply border-l-4 border-blue-500 pl-4 py-2 my-4 bg-blue-50 dark:bg-blue-900/20 italic text-gray-700 dark:text-gray-300;
+          @apply border-l-4 border-primary pl-4 py-2 my-4 bg-primary/5 dark:bg-primary/20/20 italic text-muted-foreground dark:text-muted-foreground;
         }
         .blog-content img {
           @apply rounded-lg my-6 max-w-full h-auto shadow-lg;
         }
         .blog-content table {
-          @apply w-full border-collapse border border-gray-300 dark:border-gray-700 my-6 rounded-lg overflow-hidden;
+          @apply w-full border-collapse border border-border dark:border-border my-6 rounded-lg overflow-hidden;
         }
         .blog-content th, .blog-content td {
-          @apply border border-gray-300 dark:border-gray-700 px-4 py-2 text-left;
+          @apply border border-border dark:border-border px-4 py-2 text-left;
         }
         .blog-content th {
-          @apply bg-gray-100 dark:bg-gray-800 font-semibold;
+          @apply bg-muted dark:bg-card font-semibold;
         }
         .blog-content hr {
-          @apply my-8 border-gray-300 dark:border-gray-700;
+          @apply my-8 border-border dark:border-border;
         }
       `}</style>
     </motion.div>

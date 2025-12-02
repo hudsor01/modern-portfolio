@@ -199,7 +199,7 @@ describe('EnhancedReadingProgress', () => {
     
     // Should start with one of the shadow classes
     expect(
-      progressFill!.classList.contains('shadow-blue-500/40') || 
+      progressFill!.classList.contains('shadow-primary/40') || 
       progressFill!.classList.contains('shadow-indigo-500/40')
     ).toBe(true)
   })

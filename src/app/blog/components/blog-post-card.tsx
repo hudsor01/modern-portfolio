@@ -80,10 +80,10 @@ export function BlogPostCard({
         onClick={handleCardClick}
       >
         <Link href={`/blog/${post.slug}`} className="block">
-          <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 h-full hover:bg-white/10 transition-colors">
+          <div className="glass rounded-2xl p-6 h-full hover:bg-white/10 transition-colors">
             <div className="flex gap-4">
               {post.featuredImage && (
-                <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
+                <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-muted dark:bg-card flex-shrink-0">
                   <motion.div variants={imageVariants}>
                     <Image
                       src={post.featuredImage}
@@ -100,21 +100,21 @@ export function BlogPostCard({
                 {showCategory && post.category && (
                   <Badge 
                     variant="secondary"
-                    className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white mb-2"
+                    className="gradient-cta text-foreground mb-2"
                   >
                     {post.category.name}
                   </Badge>
                 )}
                 
-                <h3 className="font-semibold text-lg leading-tight mb-2 group-hover:text-blue-500 transition-colors line-clamp-2">
+                <h3 className="font-semibold text-lg leading-tight mb-2 group-hover:text-primary transition-colors line-clamp-2">
                   {post.title}
                 </h3>
                 
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-3 line-clamp-2">
+                <p className="text-muted-foreground dark:text-muted-foreground text-sm leading-relaxed mb-3 line-clamp-2">
                   {post.excerpt}
                 </p>
                 
-                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                <div className="flex items-center justify-between text-xs text-muted-foreground dark:text-muted-foreground">
                   <div className="flex items-center gap-3">
                     {showAuthor && post.author && (
                       <div className="flex items-center gap-1">
@@ -168,21 +168,21 @@ export function BlogPostCard({
               </Badge>
             )}
             {post.publishedAt && (
-              <time className="text-xs text-gray-500 dark:text-gray-400">
+              <time className="text-xs text-muted-foreground dark:text-muted-foreground">
                 {formatDistanceToNow(post.publishedAt, { addSuffix: true })}
               </time>
             )}
           </div>
           
-          <h3 className="font-semibold mb-2 group-hover:text-blue-500 transition-colors line-clamp-2">
+          <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors line-clamp-2">
             {post.title}
           </h3>
           
-          <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-3">
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground line-clamp-2 mb-3">
             {post.excerpt}
           </p>
           
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+          <div className="flex items-center justify-between text-xs text-muted-foreground dark:text-muted-foreground">
             {showAuthor && post.author && (
               <span>{post.author.name}</span>
             )}
@@ -208,10 +208,10 @@ export function BlogPostCard({
       onClick={handleCardClick}
     >
       <Link href={`/blog/${post.slug}`} className="block">
-        <div className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl overflow-hidden h-full hover:bg-white/10 transition-all duration-300">
+        <div className="glass rounded-3xl overflow-hidden h-full hover:bg-white/10 transition-all duration-300">
           {/* Featured Image */}
           {post.featuredImage && (
-            <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
+            <div className="relative aspect-video overflow-hidden bg-muted dark:bg-card">
               <motion.div variants={imageVariants}>
                 <Image
                   src={post.featuredImage}
@@ -238,13 +238,13 @@ export function BlogPostCard({
               {/* Badges */}
               <div className="absolute top-4 left-4 flex flex-wrap gap-2">
                 {post.featured && (
-                  <Badge className="bg-yellow-500/90 text-white backdrop-blur">
+                  <Badge className="bg-warning/90 text-foreground backdrop-blur">
                     <TrendingUp className="h-3 w-3 mr-1" />
                     Featured
                   </Badge>
                 )}
                 {showCategory && (
-                  <Badge className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white backdrop-blur">
+                  <Badge className="gradient-cta text-foreground backdrop-blur">
                     {post.category.name}
                   </Badge>
                 )}
@@ -253,7 +253,7 @@ export function BlogPostCard({
               {/* Reading time */}
               {showReadingTime && (
                 <div className="absolute top-4 right-4">
-                  <Badge variant="secondary" className="bg-black/50 text-white backdrop-blur">
+                  <Badge variant="secondary" className="bg-black/50 text-foreground backdrop-blur">
                     <Clock className="h-3 w-3 mr-1" />
                     {post.readingTime} min
                   </Badge>
@@ -281,12 +281,12 @@ export function BlogPostCard({
             )}
             
             {/* Title */}
-            <h3 className="font-bold text-xl leading-tight mb-3 group-hover:text-blue-500 transition-colors line-clamp-2">
+            <h3 className="font-bold text-xl leading-tight mb-3 group-hover:text-primary transition-colors line-clamp-2">
               {post.title}
             </h3>
             
             {/* Excerpt */}
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4 line-clamp-3">
+            <p className="text-muted-foreground dark:text-muted-foreground leading-relaxed mb-4 line-clamp-3">
               {post.excerpt}
             </p>
             
@@ -302,14 +302,14 @@ export function BlogPostCard({
                   </Avatar>
                   <div>
                     <div className="font-medium text-sm">{post.author.name}</div>
-                    <time className="text-xs text-gray-500 dark:text-gray-400">
+                    <time className="text-xs text-muted-foreground dark:text-muted-foreground">
                       {formatDistanceToNow(post.publishedAt, { addSuffix: true })}
                     </time>
                   </div>
                 </div>
               )}
               
-              <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+              <div className="flex items-center gap-4 text-xs text-muted-foreground dark:text-muted-foreground">
                 {showViewCount && (
                   <div className="flex items-center gap-1">
                     <Eye className="h-3 w-3" />
@@ -328,10 +328,10 @@ export function BlogPostCard({
             {/* Read More */}
             <div className="mt-4 pt-4 border-t border-white/10">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-blue-500 group-hover:text-blue-400">
+                <span className="text-sm font-medium text-primary group-hover:text-primary">
                   Read More
                 </span>
-                <ArrowRight className="h-4 w-4 text-blue-500 group-hover:text-blue-400 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="h-4 w-4 text-primary group-hover:text-primary group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
           </div>

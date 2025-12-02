@@ -92,8 +92,8 @@ export function TestimonialsSection() {
                             className="object-cover"
                           />
                         ) : (
-                          <div className="bg-blue-100 dark:bg-blue-900 w-full h-full flex items-center justify-center">
-                            <span className="text-lg font-bold text-blue-500 dark:text-blue-300">
+                          <div className="bg-primary/10 dark:bg-primary/20 w-full h-full flex items-center justify-center">
+                            <span className="text-lg font-bold text-primary dark:text-primary/70">
                               {testimonial.name.charAt(0)}
                             </span>
                           </div>
@@ -123,7 +123,7 @@ export function TestimonialsSection() {
                   onClick={() => setActiveIndex(index)}
                   className={`w-full text-left p-4 rounded-lg transition-all duration-200 ${
                     activeIndex === index
-                      ? 'bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 dark:border-blue-400'
+                      ? 'bg-primary/5 dark:bg-primary/20/30 border-l-4 border-primary dark:border-primary/50'
                       : 'bg-muted hover:bg-muted/80'
                   }`}
                 >

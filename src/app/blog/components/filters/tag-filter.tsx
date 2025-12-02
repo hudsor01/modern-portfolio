@@ -43,7 +43,7 @@ export function TagFilter({
             >
               {tag.name}
               {tag.postCount && (
-                <span className="text-xs text-gray-500 ml-1">
+                <span className="text-xs text-muted-foreground ml-1">
                   ({tag.postCount})
                 </span>
               )}

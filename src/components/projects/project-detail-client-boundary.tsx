@@ -14,7 +14,6 @@ import {
 import { SiGithub } from 'react-icons/si'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ProjectCharts } from '@/components/projects/project-charts'
 import type { Project } from '@/types/project'
 
 interface ProjectDetailClientBoundaryProps {
@@ -24,7 +23,7 @@ interface ProjectDetailClientBoundaryProps {
 
 function ProjectDetailSkeleton() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-page-light dark:bg-page">
       <div className="container mx-auto px-6 py-8">
         <div className="mb-8">
           <Skeleton className="h-10 w-32 mb-4" />
@@ -72,10 +71,7 @@ export default function ProjectDetailClientBoundary({
   })
 
   // Use modern hook with automatic prefetching
-  const { data: project, isLoading, error } = useProject(slug, {
-    prefetchAnalytics: true, // Modern: prefetch analytics
-    prefetchRelated: true // Modern: prefetch related projects
-  })
+  const { data: project, isLoading, error } = useProject(slug)
 
   // Show loading skeleton
   if (isLoading && !initialProject) {
@@ -85,7 +81,7 @@ export default function ProjectDetailClientBoundary({
   // Show error state
   if (error && !initialProject) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+      <div className="min-h-screen bg-page-light dark:bg-page">
         <Navbar />
         <div className="container mx-auto px-6 py-8">
           <div className="min-h-[400px] flex items-center justify-center">
@@ -113,7 +109,7 @@ export default function ProjectDetailClientBoundary({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-page-light dark:bg-page">
       <Navbar />
       
       <main className="container mx-auto px-6 py-8">
@@ -127,10 +123,10 @@ export default function ProjectDetailClientBoundary({
 
         {/* Project Header */}
         <div className="mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-foreground dark:text-white mb-4">
             {displayProject.title}
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl">
+          <p className="text-xl text-muted-foreground dark:text-muted-foreground max-w-3xl">
             {displayProject.description}
           </p>
         </div>
@@ -153,8 +149,8 @@ export default function ProjectDetailClientBoundary({
             )}
 
             {/* Project Description */}
-            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-              <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
+            <div className="bg-white/70 dark:bg-card/70 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+              <h2 className="text-2xl font-semibold mb-4 text-foreground dark:text-white">
                 About This Project
               </h2>
               <div className="prose prose-gray dark:prose-invert max-w-none">
@@ -166,8 +162,8 @@ export default function ProjectDetailClientBoundary({
           {/* Right Column */}
           <div className="space-y-8">
             {/* Technologies & Links */}
-            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-              <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+            <div className="bg-white/70 dark:bg-card/70 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+              <h3 className="text-xl font-semibold mb-4 text-foreground dark:text-white">
                 Technologies Used
               </h3>
               <div className="flex flex-wrap gap-2 mb-6">
@@ -175,7 +171,7 @@ export default function ProjectDetailClientBoundary({
                   <Badge 
                     key={index} 
                     variant="secondary" 
-                    className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100"
+                    className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-foreground"
                   >
                     {tech}
                   </Badge>
@@ -202,23 +198,18 @@ export default function ProjectDetailClientBoundary({
                 )}
               </div>
             </div>
-
-            {/* Project Metrics */}
-            {displayProject.metrics && displayProject.slug && (
-              <ProjectCharts projectId={displayProject.slug} />
-            )}
           </div>
         </div>
 
         {/* CTA Section */}
-        <div className="mt-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl p-8 text-center text-white">
+        <div className="mt-16 gradient-cta rounded-3xl p-8 text-center text-white">
           <h2 className="text-3xl font-bold mb-4">Impressed by This Case Study?</h2>
           <p className="text-xl mb-6 opacity-90">
             Connect with me to discuss professional opportunities and revenue operations collaboration
           </p>
           <Button 
             size="lg" 
-            className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-8"
+            className="bg-white text-primary hover:bg-muted font-semibold px-8"
             asChild
           >
             <Link href="/contact">

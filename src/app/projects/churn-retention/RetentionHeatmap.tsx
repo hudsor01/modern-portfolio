@@ -34,8 +34,8 @@ export default function RetentionHeatmap() {
     return (
       <div className="h-[350px] flex items-center justify-center">
         <div className="relative">
-          <div className="w-12 h-12 border-4 border-blue-500/20 rounded-full" />
-          <div className="absolute top-0 left-0 w-12 h-12 border-4 border-blue-500 rounded-full animate-spin border-t-transparent" />
+          <div className="w-12 h-12 border-4 border-primary/20 rounded-full" />
+          <div className="absolute top-0 left-0 w-12 h-12 border-4 border-primary rounded-full animate-spin border-t-transparent" />
         </div>
       </div>
     )
@@ -57,30 +57,30 @@ export default function RetentionHeatmap() {
           </defs>
           <CartesianGrid 
             strokeDasharray="3 3" 
-            stroke="rgba(255, 255, 255, 0.05)" 
+            stroke="var(--color-border)" 
             vertical={false}
           />
           <XAxis
             dataKey="month"
-            stroke="rgba(255, 255, 255, 0.4)"
+            stroke="var(--color-muted-foreground)"
             fontSize={12}
             tickLine={false}
-            axisLine={{ stroke: 'rgba(255, 255, 255, 0.1)' }}
+            axisLine={{ stroke: 'var(--color-muted)' }}
           />
           <YAxis
-            stroke="rgba(255, 255, 255, 0.4)"
+            stroke="var(--color-muted-foreground)"
             fontSize={12}
             tickLine={false}
-            axisLine={{ stroke: 'rgba(255, 255, 255, 0.1)' }}
+            axisLine={{ stroke: 'var(--color-muted)' }}
             domain={[0, 100]}
             ticks={[0, 25, 50, 75, 100]}
             tickFormatter={(value) => `${value}%`}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              backgroundColor: 'var(--color-popover)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid var(--color-border)',
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}

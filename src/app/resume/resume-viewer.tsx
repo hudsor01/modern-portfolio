@@ -31,13 +31,13 @@ export function ResumeViewer({ pdfUrl }: ResumeViewerProps) {
         title="Richard Hudson Resume"
         className="border border-slate-600 rounded-lg"
       >
-        <p className="text-center text-white p-8">
+        <p className="text-center text-foreground p-8">
           Your browser doesn't support PDF viewing. 
           <a 
             href={pdfUrl} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-blue-400 hover:text-blue-300 underline ml-2"
+            className="text-primary hover:text-primary/70 underline ml-2"
           >
             Open PDF in new tab
           </a>

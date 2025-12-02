@@ -11,12 +11,12 @@ import {
   Activity
 } from 'lucide-react'
 import { m as motion, Variants } from 'framer-motion'
-import { 
-  RevenueBarChart, 
-  RevenueLineChart, 
-  TopPartnersChart, 
-  PartnerGroupPieChart 
-} from '@/components/projects/charts/chart-imports'
+import dynamic from 'next/dynamic'
+
+const RevenueBarChart = dynamic(() => import('./RevenueBarChart'), { ssr: false })
+const RevenueLineChart = dynamic(() => import('./RevenueLineChart'), { ssr: false })
+const TopPartnersChart = dynamic(() => import('./TopPartnersChart'), { ssr: false })
+const PartnerGroupPieChart = dynamic(() => import('./PartnerGroupPieChart'), { ssr: false })
 import { yearOverYearGrowthExtended } from '@/app/projects/data/partner-analytics'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { createContextLogger } from '@/lib/logging/logger'
@@ -117,9 +117,9 @@ export default function RevenueKPI() {
       <div className="min-h-screen bg-[#0f172a] text-white">
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto p-6">
@@ -127,21 +127,21 @@ export default function RevenueKPI() {
         <div className="flex items-center justify-between mb-12">
           <Link 
             href="/projects"
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors duration-300"
+            className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors duration-300"
           >
             <ArrowLeft className="h-5 w-5" />
             <span className="text-sm font-medium">Back to Projects</span>
           </Link>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-1">
+            <div className="flex items-center gap-1 glass rounded-xl p-1">
               {['2020', '2022', '2024', 'All'].map((timeframe) => (
                 <button
                   key={timeframe}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                     activeTimeframe === timeframe 
-                      ? 'bg-blue-500 text-white shadow-lg' 
-                      : 'text-gray-400 hover:text-white hover:bg-white/10'
+                      ? 'bg-primary text-foreground shadow-lg' 
+                      : 'text-muted-foreground hover:text-white hover:bg-white/10'
                   }`}
                   onClick={() => setActiveTimeframe(timeframe)}
                 >
@@ -154,9 +154,9 @@ export default function RevenueKPI() {
                 setIsLoading(true)
                 setTimeout(() => setIsLoading(false), TIMING_CONSTANTS.LOADING_STATE_RESET)
               }}
-              className="p-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300"
+              className="p-2 rounded-xl glass-interactive"
             >
-              <RefreshCcw className="h-5 w-5 text-gray-300" />
+              <RefreshCcw className="h-5 w-5 text-muted-foreground" />
             </button>
           </div>
         </div>
@@ -171,12 +171,12 @@ export default function RevenueKPI() {
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-3">
             Revenue KPI Dashboard
           </h1>
-          <p className="text-lg text-gray-400 max-w-3xl mb-4">
+          <p className="text-lg text-muted-foreground max-w-3xl mb-4">
             Real-time revenue analytics, partner performance metrics, and business intelligence for data-driven growth strategies.
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
-            <span className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full">Revenue: ${formatCurrency(currentYearData.total_revenue)}</span>
-            <span className="bg-indigo-500/20 text-indigo-400 px-3 py-1 rounded-full">Partners: {currentYearData.partner_count}</span>
+            <span className="bg-primary/20 text-primary px-3 py-1 rounded-full">Revenue: ${formatCurrency(currentYearData.total_revenue)}</span>
+            <span className="bg-secondary/20 text-secondary px-3 py-1 rounded-full">Partners: {currentYearData.partner_count}</span>
             <span className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full">Growth: +{currentYearData.commission_growth_percentage.toFixed(1)}%</span>
             <span className="bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full">Accuracy: 94%</span>
           </div>
@@ -186,8 +186,8 @@ export default function RevenueKPI() {
         {isLoading ? (
           <div className="flex items-center justify-center h-64">
             <div className="relative">
-              <div className="w-16 h-16 border-4 border-blue-500/20 rounded-full" />
-              <div className="absolute top-0 left-0 w-16 h-16 border-4 border-blue-500 rounded-full animate-spin border-t-transparent" />
+              <div className="w-16 h-16 border-4 border-primary/20 rounded-full" />
+              <div className="absolute top-0 left-0 w-16 h-16 border-4 border-primary rounded-full animate-spin border-t-transparent" />
             </div>
           </div>
         ) : (
@@ -202,17 +202,17 @@ export default function RevenueKPI() {
               {/* Total Revenue */}
               <motion.div variants={fadeInUp} className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-blue-500/20 rounded-2xl">
-                      <DollarSign className="h-6 w-6 text-blue-400" />
+                    <div className="p-3 bg-primary/20 rounded-2xl">
+                      <DollarSign className="h-6 w-6 text-primary" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Revenue</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Revenue</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {formatCurrency(currentYearData.total_revenue)}
                   </p>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     {revenueGrowth > 0 ? '+' : ''}{revenueGrowth.toFixed(1)}% vs last year
                   </p>
                 </div>
@@ -221,17 +221,17 @@ export default function RevenueKPI() {
               {/* Partner Count */}
               <motion.div variants={fadeInUp} className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-indigo-500/20 rounded-2xl">
-                      <Users className="h-6 w-6 text-indigo-400" />
+                    <div className="p-3 bg-secondary/20 rounded-2xl">
+                      <Users className="h-6 w-6 text-secondary" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Partners</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Partners</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {currentYearData.partner_count.toLocaleString()}
                   </p>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     {partnerGrowth > 0 ? '+' : ''}{partnerGrowth.toFixed(1)}% growth
                   </p>
                 </div>
@@ -240,17 +240,17 @@ export default function RevenueKPI() {
               {/* Total Transactions */}
               <motion.div variants={fadeInUp} className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-3 bg-purple-500/20 rounded-2xl">
                       <Activity className="h-6 w-6 text-purple-400" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Volume</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Volume</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     {currentYearData.total_transactions.toLocaleString()}
                   </p>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     {transactionGrowth > 0 ? '+' : ''}{transactionGrowth.toFixed(1)}% transactions
                   </p>
                 </div>
@@ -259,17 +259,17 @@ export default function RevenueKPI() {
               {/* Commission Growth */}
               <motion.div variants={fadeInUp} className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-3 bg-amber-500/20 rounded-2xl">
                       <TrendingUp className="h-6 w-6 text-amber-400" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Growth</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Growth</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">
                     +{currentYearData.commission_growth_percentage.toFixed(1)}%
                   </p>
-                  <p className="text-sm text-gray-400">Commission Growth</p>
+                  <p className="text-sm text-muted-foreground">Commission Growth</p>
                 </div>
               </motion.div>
             </motion.div>
@@ -281,11 +281,11 @@ export default function RevenueKPI() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+                className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
               >
                 <div className="mb-4">
                   <h2 className="text-xl font-bold mb-1">Revenue Growth Trends</h2>
-                  <p className="text-sm text-gray-400">Monthly revenue progression and forecasting</p>
+                  <p className="text-sm text-muted-foreground">Monthly revenue progression and forecasting</p>
                 </div>
                 <div className="h-[200px]">
                   <RevenueLineChart />
@@ -297,11 +297,11 @@ export default function RevenueKPI() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+                className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
               >
                 <div className="mb-4">
                   <h2 className="text-xl font-bold mb-1">Monthly Revenue Analysis</h2>
-                  <p className="text-sm text-gray-400">Revenue breakdown by time period</p>
+                  <p className="text-sm text-muted-foreground">Revenue breakdown by time period</p>
                 </div>
                 <div className="h-[200px]">
                   <RevenueBarChart />
@@ -313,11 +313,11 @@ export default function RevenueKPI() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.8 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+                className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
               >
                 <div className="mb-4">
                   <h2 className="text-xl font-bold mb-1">Top Revenue Partners</h2>
-                  <p className="text-sm text-gray-400">Highest performing business partners</p>
+                  <p className="text-sm text-muted-foreground">Highest performing business partners</p>
                 </div>
                 <div className="h-[200px]">
                   <TopPartnersChart />
@@ -329,11 +329,11 @@ export default function RevenueKPI() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.0 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+                className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
               >
                 <div className="mb-4">
                   <h2 className="text-xl font-bold mb-1">Partner Group Distribution</h2>
-                  <p className="text-sm text-gray-400">Revenue contribution by partner type</p>
+                  <p className="text-sm text-muted-foreground">Revenue contribution by partner type</p>
                 </div>
                 <div className="h-[200px]">
                   <PartnerGroupPieChart />
@@ -348,10 +348,10 @@ export default function RevenueKPI() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.2 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-blue-400">Project Overview</h2>
-                <div className="space-y-4 text-gray-300">
+                <h2 className="text-2xl font-bold mb-6 text-primary">Project Overview</h2>
+                <div className="space-y-4 text-muted-foreground">
                   <p className="text-lg leading-relaxed">
                     Developed and implemented a comprehensive real-time revenue analytics dashboard to consolidate partner performance data across multiple business channels. This strategic initiative was critical for executive decision-making and revenue optimization during a period of rapid business growth.
                   </p>
@@ -366,10 +366,10 @@ export default function RevenueKPI() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.3 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-amber-400">Challenge</h2>
-                <div className="space-y-4 text-gray-300">
+                <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
                     The organization was experiencing rapid growth but lacked visibility into partner performance across different revenue channels. Revenue data was scattered across multiple systems, making it impossible to:
                   </p>
@@ -391,17 +391,17 @@ export default function RevenueKPI() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.4 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-green-400">Solution</h2>
-                <div className="space-y-4 text-gray-300">
+                <h2 className="text-2xl font-bold mb-6 text-success">Solution</h2>
+                <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
                     Designed and built a comprehensive revenue KPI dashboard using React, TypeScript, and Recharts, integrating data from CRM, billing systems, and partner management platforms:
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                      <h3 className="font-semibold text-blue-400 mb-3">Technical Implementation</h3>
+                      <h3 className="font-semibold text-primary mb-3">Technical Implementation</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
                         <li>Real-time data integration from multiple sources</li>
                         <li>Automated revenue calculations and forecasting</li>
@@ -411,7 +411,7 @@ export default function RevenueKPI() {
                       </ul>
                     </div>
                     <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                      <h3 className="font-semibold text-green-400 mb-3">Business Features</h3>
+                      <h3 className="font-semibold text-success mb-3">Business Features</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
                         <li>Partner performance tracking and rankings</li>
                         <li>Commission tier analysis and optimization</li>
@@ -429,26 +429,26 @@ export default function RevenueKPI() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.5 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-emerald-400">Results & Impact</h2>
-                <div className="space-y-6 text-gray-300">
+                <div className="space-y-6 text-muted-foreground">
                   <p className="leading-relaxed">
                     The revenue KPI dashboard transformed how the organization manages and optimizes partner relationships, delivering measurable improvements across all key metrics:
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-blue-400 mb-2">{formatCurrency(4200000)}</div>
-                      <div className="text-sm text-gray-300">Additional Revenue Generated</div>
+                    <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-primary mb-2">{formatCurrency(4200000)}</div>
+                      <div className="text-sm text-muted-foreground">Additional Revenue Generated</div>
                     </div>
-                    <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-sm border border-indigo-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-indigo-400 mb-2">94%</div>
-                      <div className="text-sm text-gray-300">Forecast Accuracy Achievement</div>
+                    <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-sm border border-secondary/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-secondary mb-2">94%</div>
+                      <div className="text-sm text-muted-foreground">Forecast Accuracy Achievement</div>
                     </div>
-                    <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-sm border border-cyan-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-cyan-400 mb-2">65%</div>
-                      <div className="text-sm text-gray-300">Reduction in Manual Reporting Time</div>
+                    <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-primary mb-2">65%</div>
+                      <div className="text-sm text-muted-foreground">Reduction in Manual Reporting Time</div>
                     </div>
                   </div>
 
@@ -470,10 +470,10 @@ export default function RevenueKPI() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.6 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-purple-400">Key Learnings</h2>
-                <div className="space-y-4 text-gray-300">
+                <div className="space-y-4 text-muted-foreground">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
                       <h3 className="font-semibold text-purple-400">Strategic Insights</h3>
@@ -484,7 +484,7 @@ export default function RevenueKPI() {
                       </ul>
                     </div>
                     <div className="space-y-3">
-                      <h3 className="font-semibold text-blue-400">Technical Insights</h3>
+                      <h3 className="font-semibold text-primary">Technical Insights</h3>
                       <ul className="list-disc list-inside space-y-2 text-sm">
                         <li>Modular chart components enable rapid iteration and customization for different stakeholder needs</li>
                         <li>Data consistency validation is essential when integrating multiple business systems</li>
@@ -503,16 +503,16 @@ export default function RevenueKPI() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.7 }}
-                className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-gray-500/20 rounded-3xl p-8"
+                className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-border/20 rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-gray-300">Technologies Used</h2>
+                <h2 className="text-2xl font-bold mb-6 text-muted-foreground">Technologies Used</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
                     'React 19', 'TypeScript', 'Recharts', 'Next.js',
                     'Tailwind CSS', 'Framer Motion', 'API Integration', 'Real-time Data',
                     'Responsive Design', 'Performance Optimization', 'Data Visualization', 'Business Intelligence'
                   ].map((tech, index) => (
-                    <span key={index} className="bg-white/10 text-gray-300 px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
+                    <span key={index} className="bg-white/10 text-muted-foreground px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
                       {tech}
                     </span>
                   ))}

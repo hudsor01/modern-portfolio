@@ -8,10 +8,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { ProjectData, ContactFormData, ContactResponse, AnalyticsData, ResumeData, BlogPostData, BlogCategoryData, BlogTagData } from '@/types/shared-api'
 
 // Projects
-export function useProjects(_options?: {
-  prefetchRelated?: boolean
-  suspense?: boolean
-}) {
+export function useProjects() {
   return useQuery({
     queryKey: ['projects'],
     queryFn: async (): Promise<ProjectData[]> => {
@@ -28,10 +25,7 @@ export function useProjects(_options?: {
   })
 }
 
-export function useProject(id: string, _options?: {
-  prefetchAnalytics?: boolean
-  prefetchRelated?: boolean
-}) {
+export function useProject(id: string) {
   return useQuery({
     queryKey: ['project', id],
     queryFn: async (): Promise<ProjectData> => {

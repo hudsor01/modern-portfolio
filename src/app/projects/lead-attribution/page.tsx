@@ -27,13 +27,12 @@ import {
   DollarSign,
 } from 'lucide-react'
 import { m as motion } from 'framer-motion'
-import { ChartSkeleton } from '@/components/projects/charts/chart-skeleton'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 
 // Lazy-load chart components with Suspense fallback
 const LeadSourcePieChart = dynamic(() => import('./LeadSourcePieChart'), {
-  loading: () => <ChartSkeleton height={350} showTitle={false} />,
+  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 
@@ -108,9 +107,9 @@ export default function LeadAttribution() {
       <div className="min-h-screen bg-[#0f172a] text-white">
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-success rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-secondary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto p-8">
@@ -118,7 +117,7 @@ export default function LeadAttribution() {
         <div className="flex items-center justify-between mb-12">
           <Link 
             href="/projects"
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors duration-300"
+            className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors duration-300"
           >
             <ArrowLeft className="h-5 w-5" />
             <span className="text-sm font-medium">Back to Projects</span>
@@ -128,9 +127,9 @@ export default function LeadAttribution() {
               setIsLoading(true)
               setTimeout(() => setIsLoading(false), TIMING_CONSTANTS.LOADING_STATE_RESET)
             }}
-            className="p-2 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300"
+            className="p-2 rounded-xl glass-interactive"
           >
-            <RefreshCcw className="h-5 w-5 text-gray-300" />
+            <RefreshCcw className="h-5 w-5 text-muted-foreground" />
           </button>
         </div>
 
@@ -144,7 +143,7 @@ export default function LeadAttribution() {
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-green-400 to-blue-600 bg-clip-text text-transparent mb-4">
             Lead Attribution Analytics
           </h1>
-          <p className="text-xl text-gray-400 max-w-3xl">
+          <p className="text-xl text-muted-foreground max-w-3xl">
             Understand your lead sources, optimize marketing spend, and improve conversion rates across all channels.
           </p>
         </motion.div>
@@ -153,8 +152,8 @@ export default function LeadAttribution() {
         {isLoading ? (
           <div className="flex items-center justify-center h-64">
             <div className="relative">
-              <div className="w-16 h-16 border-4 border-green-500/20 rounded-full" />
-              <div className="absolute top-0 left-0 w-16 h-16 border-4 border-green-500 rounded-full animate-spin border-t-transparent" />
+              <div className="w-16 h-16 border-4 border-success/20 rounded-full" />
+              <div className="absolute top-0 left-0 w-16 h-16 border-4 border-success rounded-full animate-spin border-t-transparent" />
             </div>
           </div>
         ) : (
@@ -169,60 +168,60 @@ export default function LeadAttribution() {
               {/* Total Leads */}
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-blue-500/20 rounded-2xl">
-                      <Users className="h-6 w-6 text-blue-400" />
+                    <div className="p-3 bg-primary/20 rounded-2xl">
+                      <Users className="h-6 w-6 text-primary" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Total</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Total</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">{totalLeads.toLocaleString()}</p>
-                  <p className="text-sm text-gray-400">Leads Generated</p>
+                  <p className="text-sm text-muted-foreground">Leads Generated</p>
                 </div>
               </div>
 
               {/* Total Conversions */}
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-green-500/20 rounded-2xl">
-                      <Target className="h-6 w-6 text-green-400" />
+                    <div className="p-3 bg-success/20 rounded-2xl">
+                      <Target className="h-6 w-6 text-success" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Success</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Success</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">{totalConversions.toLocaleString()}</p>
-                  <p className="text-sm text-gray-400">Total Conversions</p>
+                  <p className="text-sm text-muted-foreground">Total Conversions</p>
                 </div>
               </div>
 
               {/* Conversion Rate */}
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-3 bg-purple-500/20 rounded-2xl">
                       <Zap className="h-6 w-6 text-purple-400" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">Overall</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Overall</span>
                   </div>
                   <p className="text-3xl font-bold mb-1">{overallConversionRate.toFixed(1)}%</p>
-                  <p className="text-sm text-gray-400">Conversion Rate</p>
+                  <p className="text-sm text-muted-foreground">Conversion Rate</p>
                 </div>
               </div>
 
               {/* Monthly Growth */}
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 hover:bg-white/10 transition-all duration-300">
+                <div className="relative glass-interactive rounded-3xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="p-3 bg-amber-500/20 rounded-2xl">
                       <TrendingUp className="h-6 w-6 text-amber-400" />
                     </div>
-                    <span className="text-xs text-gray-400 uppercase tracking-wider">MoM</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">MoM</span>
                   </div>
-                  <p className="text-3xl font-bold mb-1 text-green-400">+{monthlyGrowth}%</p>
-                  <p className="text-sm text-gray-400">Monthly Growth</p>
+                  <p className="text-3xl font-bold mb-1 text-success">+{monthlyGrowth}%</p>
+                  <p className="text-sm text-muted-foreground">Monthly Growth</p>
                 </div>
               </div>
             </motion.div>
@@ -234,11 +233,11 @@ export default function LeadAttribution() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+                className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
               >
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold mb-2">Lead Source Distribution</h2>
-                  <p className="text-gray-400">Breakdown of leads by acquisition channel</p>
+                  <p className="text-muted-foreground">Breakdown of leads by acquisition channel</p>
                 </div>
                 <LeadSourcePieChart />
               </motion.div>
@@ -248,11 +247,11 @@ export default function LeadAttribution() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+                className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
               >
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold mb-2">Channel Performance</h2>
-                  <p className="text-gray-400">Conversion rates by source</p>
+                  <p className="text-muted-foreground">Conversion rates by source</p>
                 </div>
                 <div className="space-y-4">
                   {leadConversionData.map((source, _index) => {
@@ -265,13 +264,13 @@ export default function LeadAttribution() {
                           </div>
                           <div>
                             <p className="font-medium">{source.source}</p>
-                            <p className="text-xs text-gray-400">{source.conversions} conversions</p>
+                            <p className="text-xs text-muted-foreground">{source.conversions} conversions</p>
                           </div>
                         </div>
                         <div className="text-right">
                           <p className="text-lg font-bold">{(source.conversion_rate * 100).toFixed(1)}%</p>
                           {source.source === bestSource.source && (
-                            <span className="text-xs text-green-400">Best Performer</span>
+                            <span className="text-xs text-success">Best Performer</span>
                           )}
                         </div>
                       </div>
@@ -286,11 +285,11 @@ export default function LeadAttribution() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.8 }}
-              className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+              className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
             >
               <div className="mb-6">
                 <h2 className="text-2xl font-bold mb-2">Lead Generation Trends</h2>
-                <p className="text-gray-400">Monthly lead volume and conversion tracking</p>
+                <p className="text-muted-foreground">Monthly lead volume and conversion tracking</p>
               </div>
               <div className="h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -305,22 +304,22 @@ export default function LeadAttribution() {
                         <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" vertical={false} />
-                    <XAxis dataKey="month" stroke="rgba(255, 255, 255, 0.4)" fontSize={12} />
-                    <YAxis stroke="rgba(255, 255, 255, 0.4)" fontSize={12} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+                    <XAxis dataKey="month" stroke="var(--color-muted-foreground)" fontSize={12} />
+                    <YAxis stroke="var(--color-muted-foreground)" fontSize={12} />
                     <Tooltip 
                       contentStyle={{
-                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        backgroundColor: 'var(--color-popover)',
                         borderRadius: '12px',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        border: '1px solid var(--color-border)',
                         backdropFilter: 'blur(10px)',
                       }}
                     />
                     <Legend />
                     <Area type="monotone" dataKey="leads" stroke="transparent" fill="url(#leadGradient)" />
-                    <Line type="monotone" dataKey="leads" stroke="#3b82f6" strokeWidth={3} dot={{ fill: '#3b82f6', r: 4 }} />
+                    <Line type="monotone" dataKey="leads" stroke="#3b82f6" strokeWidth={3} dot={{ fill: 'var(--color-primary)', r: 4 }} />
                     <Area type="monotone" dataKey="conversions" stroke="transparent" fill="url(#conversionGradient)" />
-                    <Line type="monotone" dataKey="conversions" stroke="#10b981" strokeWidth={3} dot={{ fill: '#10b981', r: 4 }} />
+                    <Line type="monotone" dataKey="conversions" stroke="#10b981" strokeWidth={3} dot={{ fill: 'var(--color-success)', r: 4 }} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
@@ -333,21 +332,21 @@ export default function LeadAttribution() {
               transition={{ duration: 0.5, delay: 1 }}
               className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6"
             >
-              <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-blue-500/20 rounded-3xl p-6">
-                <h3 className="text-lg font-semibold mb-2 text-blue-400">Key Insight</h3>
-                <p className="text-gray-300 text-sm">
+              <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-3xl p-6">
+                <h3 className="text-lg font-semibold mb-2 text-primary">Key Insight</h3>
+                <p className="text-muted-foreground text-sm">
                   Email campaigns show the highest conversion rate at {(bestSource.conversion_rate * 100).toFixed(1)}%, despite lower volume.
                 </p>
               </div>
-              <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-sm border border-green-500/20 rounded-3xl p-6">
-                <h3 className="text-lg font-semibold mb-2 text-green-400">Growth Opportunity</h3>
-                <p className="text-gray-300 text-sm">
+              <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-sm border border-success/20 rounded-3xl p-6">
+                <h3 className="text-lg font-semibold mb-2 text-success">Growth Opportunity</h3>
+                <p className="text-muted-foreground text-sm">
                   Social media traffic has room for improvement with only 9.4% conversion. Consider A/B testing landing pages.
                 </p>
               </div>
               <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-sm border border-amber-500/20 rounded-3xl p-6">
                 <h3 className="text-lg font-semibold mb-2 text-amber-400">Seasonal Trend</h3>
-                <p className="text-gray-300 text-sm">
+                <p className="text-muted-foreground text-sm">
                   Q4 shows strongest performance with 20% higher lead volume. Plan campaigns accordingly.
                 </p>
               </div>
@@ -360,10 +359,10 @@ export default function LeadAttribution() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.0 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-blue-400">Project Overview</h2>
-                <div className="space-y-4 text-gray-300">
+                <h2 className="text-2xl font-bold mb-6 text-primary">Project Overview</h2>
+                <div className="space-y-4 text-muted-foreground">
                   <p className="text-lg leading-relaxed">
                     Developed a comprehensive multi-touch lead attribution model to accurately track and measure the effectiveness of marketing channels throughout the customer journey, enabling data-driven budget allocation and campaign optimization.
                   </p>
@@ -378,10 +377,10 @@ export default function LeadAttribution() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.1 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-amber-400">Challenge</h2>
-                <div className="space-y-4 text-gray-300">
+                <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
                     The marketing organization was operating with limited visibility into which channels and touchpoints were driving qualified leads and conversions, resulting in suboptimal budget allocation:
                   </p>
@@ -403,17 +402,17 @@ export default function LeadAttribution() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.2 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-green-400">Solution</h2>
-                <div className="space-y-4 text-gray-300">
+                <h2 className="text-2xl font-bold mb-6 text-success">Solution</h2>
+                <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
                     Built a comprehensive multi-touch attribution system that tracks the complete customer journey and assigns weighted credit to each marketing touchpoint based on its influence on conversion:
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                      <h3 className="font-semibold text-blue-400 mb-3">Attribution Methodology</h3>
+                      <h3 className="font-semibold text-primary mb-3">Attribution Methodology</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
                         <li>Time-decay attribution model weighing recent touchpoints higher</li>
                         <li>Cross-device and cross-channel journey tracking</li>
@@ -423,7 +422,7 @@ export default function LeadAttribution() {
                       </ul>
                     </div>
                     <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
-                      <h3 className="font-semibold text-green-400 mb-3">Analytics & Reporting</h3>
+                      <h3 className="font-semibold text-success mb-3">Analytics & Reporting</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
                         <li>Real-time conversion path visualization and analysis</li>
                         <li>Channel performance benchmarking and ROI calculation</li>
@@ -441,26 +440,26 @@ export default function LeadAttribution() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.3 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-emerald-400">Results & Impact</h2>
-                <div className="space-y-6 text-gray-300">
+                <div className="space-y-6 text-muted-foreground">
                   <p className="leading-relaxed">
                     The multi-touch attribution model revolutionized marketing decision-making and enabled data-driven optimization that significantly improved both lead quality and conversion rates:
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-blue-400 mb-2">34%</div>
-                      <div className="text-sm text-gray-300">Improvement in Marketing ROI</div>
+                    <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-primary mb-2">34%</div>
+                      <div className="text-sm text-muted-foreground">Improvement in Marketing ROI</div>
                     </div>
-                    <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-sm border border-indigo-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-indigo-400 mb-2">$480K</div>
-                      <div className="text-sm text-gray-300">Annual Budget Optimization Savings</div>
+                    <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-sm border border-secondary/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-secondary mb-2">$480K</div>
+                      <div className="text-sm text-muted-foreground">Annual Budget Optimization Savings</div>
                     </div>
-                    <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-sm border border-cyan-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-cyan-400 mb-2">29%</div>
-                      <div className="text-sm text-gray-300">Increase in Lead-to-Customer Rate</div>
+                    <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
+                      <div className="text-3xl font-bold text-primary mb-2">29%</div>
+                      <div className="text-sm text-muted-foreground">Increase in Lead-to-Customer Rate</div>
                     </div>
                   </div>
 
@@ -483,10 +482,10 @@ export default function LeadAttribution() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.4 }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8"
+                className="glass rounded-3xl p-8"
               >
                 <h2 className="text-2xl font-bold mb-6 text-purple-400">Key Learnings</h2>
-                <div className="space-y-4 text-gray-300">
+                <div className="space-y-4 text-muted-foreground">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
                       <h3 className="font-semibold text-purple-400">Marketing Attribution Insights</h3>
@@ -498,7 +497,7 @@ export default function LeadAttribution() {
                       </ul>
                     </div>
                     <div className="space-y-3">
-                      <h3 className="font-semibold text-blue-400">Implementation Insights</h3>
+                      <h3 className="font-semibold text-primary">Implementation Insights</h3>
                       <ul className="list-disc list-inside space-y-2 text-sm">
                         <li>Cross-device tracking requires careful privacy compliance and data governance</li>
                         <li>Attribution model choice significantly impacts budget allocation decisions</li>
@@ -518,16 +517,16 @@ export default function LeadAttribution() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.5 }}
-                className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-gray-500/20 rounded-3xl p-8"
+                className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-border/20 rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-gray-300">Technologies Used</h2>
+                <h2 className="text-2xl font-bold mb-6 text-muted-foreground">Technologies Used</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
                     'React 19', 'TypeScript', 'Attribution Modeling', 'Customer Journey Mapping',
                     'Cross-Device Tracking', 'Conversion Analysis', 'Marketing Analytics', 'ROI Optimization',
                     'Multi-Touch Attribution', 'Data Visualization', 'Campaign Performance', 'Lead Scoring'
                   ].map((tech, index) => (
-                    <span key={index} className="bg-white/10 text-gray-300 px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
+                    <span key={index} className="bg-white/10 text-muted-foreground px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
                       {tech}
                     </span>
                   ))}

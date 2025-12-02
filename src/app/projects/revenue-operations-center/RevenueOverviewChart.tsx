@@ -15,13 +15,13 @@ const data = [
 ]
 
 const chartColors = {
-  direct: '#3b82f6',
-  partners: '#10b981',
-  marketing: '#8b5cf6',
-  total: '#f59e0b',
-  target: '#ef4444',
-  grid: 'rgba(255, 255, 255, 0.05)',
-  axis: 'rgba(255, 255, 255, 0.4)',
+  direct: 'var(--color-primary)',
+  partners: 'var(--color-success)',
+  marketing: 'var(--color-secondary)',
+  total: 'var(--color-warning)',
+  target: 'var(--color-destructive)',
+  grid: 'var(--color-border)',
+  axis: 'var(--color-muted-foreground)',
 }
 
 export default function RevenueOverviewChart() {
@@ -60,9 +60,9 @@ export default function RevenueOverviewChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              backgroundColor: 'var(--color-popover)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid var(--color-border)',
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
@@ -121,7 +121,7 @@ export default function RevenueOverviewChart() {
           />
         </LineChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-gray-400">
+      <p className="mt-4 text-center text-sm italic text-muted-foreground">
         Multi-channel revenue performance tracking showing 34.2% YoY growth with consistent target outperformance
       </p>
     </div>

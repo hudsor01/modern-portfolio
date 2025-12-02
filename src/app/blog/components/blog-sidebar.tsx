@@ -74,10 +74,10 @@ export function BlogSidebar({
       {/* Recent Posts */}
       {recentPosts.length > 0 && (
         <motion.div variants={itemVariants}>
-          <Card className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl">
+          <Card className="glass rounded-3xl">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
-                <Clock className="h-5 w-5 text-blue-500" />
+                <Clock className="h-5 w-5 text-primary" />
                 Recent Posts
               </CardTitle>
             </CardHeader>
@@ -101,10 +101,10 @@ export function BlogSidebar({
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-sm line-clamp-2 group-hover:text-blue-600 transition-colors">
+                        <h4 className="font-medium text-sm line-clamp-2 group-hover:text-primary transition-colors">
                           {post.title}
                         </h4>
-                        <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                        <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                           <Calendar className="h-3 w-3" />
                           <span>{post.publishedAt ? formatDate(post.publishedAt) : 'Draft'}</span>
                           <Eye className="h-3 w-3" />
@@ -122,7 +122,7 @@ export function BlogSidebar({
                 asChild
                 variant="ghost"
                 size="sm"
-                className="w-full mt-4 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                className="w-full mt-4 text-primary hover:bg-primary/5 dark:hover:bg-primary/20/20"
               >
                 <Link href="/blog" className="flex items-center justify-center">
                   View All Posts
@@ -137,10 +137,10 @@ export function BlogSidebar({
       {/* Popular Posts */}
       {popularPosts.length > 0 && (
         <motion.div variants={itemVariants}>
-          <Card className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl">
+          <Card className="glass rounded-3xl">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
-                <TrendingUp className="h-5 w-5 text-green-500" />
+                <TrendingUp className="h-5 w-5 text-success" />
                 Popular Posts
               </CardTitle>
             </CardHeader>
@@ -152,14 +152,14 @@ export function BlogSidebar({
                     className="group block"
                   >
                     <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 flex items-center justify-center text-foreground text-xs font-bold flex-shrink-0">
                         {index + 1}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-sm line-clamp-2 group-hover:text-green-600 transition-colors">
+                        <h4 className="font-medium text-sm line-clamp-2 group-hover:text-success transition-colors">
                           {post.title}
                         </h4>
-                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                        <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                           <div className="flex items-center gap-1">
                             <Eye className="h-3 w-3" />
                             <span>{post.viewCount}</span>
@@ -185,10 +185,10 @@ export function BlogSidebar({
       {/* Featured Posts */}
       {featuredPosts.length > 0 && (
         <motion.div variants={itemVariants}>
-          <Card className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl">
+          <Card className="glass rounded-3xl">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
-                <Star className="h-5 w-5 text-yellow-500" />
+                <Star className="h-5 w-5 text-warning" />
                 Featured Posts
               </CardTitle>
             </CardHeader>
@@ -211,10 +211,10 @@ export function BlogSidebar({
                           />
                         </div>
                       )}
-                      <h4 className="font-medium text-sm line-clamp-2 group-hover:text-yellow-600 transition-colors">
+                      <h4 className="font-medium text-sm line-clamp-2 group-hover:text-warning transition-colors">
                         {post.title}
                       </h4>
-                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <span>{post.author.name}</span>
                         <span>•</span>
                         <span>{post.publishedAt ? formatDate(post.publishedAt) : 'Draft'}</span>
@@ -233,7 +233,7 @@ export function BlogSidebar({
 
       {/* Categories */}
       <motion.div variants={itemVariants}>
-        <Card className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl">
+        <Card className="glass rounded-3xl">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
               <Folder className="h-5 w-5 text-purple-500" />
@@ -280,7 +280,7 @@ export function BlogSidebar({
 
       {/* Tags */}
       <motion.div variants={itemVariants}>
-        <Card className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl">
+        <Card className="glass rounded-3xl">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
               <Tag className="h-5 w-5 text-orange-500" />
@@ -325,10 +325,10 @@ export function BlogSidebar({
       {/* Authors */}
       {authors.length > 0 && (
         <motion.div variants={itemVariants}>
-          <Card className="bg-white/5 backdrop-blur border border-white/10 rounded-3xl">
+          <Card className="glass rounded-3xl">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
-                <User className="h-5 w-5 text-indigo-500" />
+                <User className="h-5 w-5 text-secondary" />
                 Authors
               </CardTitle>
             </CardHeader>
@@ -352,7 +352,7 @@ export function BlogSidebar({
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium group-hover:text-indigo-600 transition-colors truncate">
+                      <span className="text-sm font-medium group-hover:text-secondary transition-colors truncate">
                         {author.name}
                       </span>
                       <Badge variant="secondary" className="text-xs">
@@ -360,7 +360,7 @@ export function BlogSidebar({
                       </Badge>
                     </div>
                     {author.bio && (
-                      <p className="text-xs text-gray-500 line-clamp-1 mt-1">
+                      <p className="text-xs text-muted-foreground line-clamp-1 mt-1">
                         {author.bio}
                       </p>
                     )}
@@ -372,7 +372,7 @@ export function BlogSidebar({
                   asChild
                   variant="ghost"
                   size="sm"
-                  className="w-full mt-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
+                  className="w-full mt-2 text-secondary hover:bg-secondary/5 dark:hover:bg-secondary/20/20"
                 >
                   <Link href="/blog/authors" className="flex items-center justify-center">
                     View All Authors

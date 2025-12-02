@@ -20,11 +20,11 @@ const data = [
 ]
 
 const chartColors = {
-  actual: '#10b981',
-  predicted: '#3b82f6',
-  confidence: 'rgba(59, 130, 246, 0.2)',
-  grid: 'rgba(255, 255, 255, 0.05)',
-  axis: 'rgba(255, 255, 255, 0.4)',
+  actual: 'var(--color-success)',
+  predicted: 'var(--color-primary)',
+  confidence: 'color-mix(in oklch, var(--color-primary) 20%, transparent)',
+  grid: 'var(--color-border)',
+  axis: 'var(--color-muted-foreground)',
 }
 
 export default function CLVTrendChart() {
@@ -65,9 +65,9 @@ export default function CLVTrendChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              backgroundColor: 'var(--color-popover)',
               borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid var(--color-border)',
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
@@ -124,7 +124,7 @@ export default function CLVTrendChart() {
           />
         </ComposedChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-gray-400">
+      <p className="mt-4 text-center text-sm italic text-muted-foreground">
         CLV trend analysis with 24-month forecasting and 95% confidence intervals using BTYD predictive modeling
       </p>
     </div>

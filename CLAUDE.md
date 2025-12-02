@@ -5,56 +5,59 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ### Core Development
-- `npm run dev` - Start development server (Next.js with Turbo)
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Run ESLint with auto-fix
-- `npm run type-check` - Run TypeScript type checking (note: hyphenated, not typecheck)
+- `pnpm dev` - Start development server (Next.js with Turbo)
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+- `pnpm lint` - Run ESLint
+- `pnpm lint:fix` - Run ESLint with auto-fix
+- `pnpm type-check` - Run TypeScript type checking (note: hyphenated, not typecheck)
 
 ### Testing
-- `npm run test` - Run unit tests with Vitest
-- `npm run test:ui` - Run tests with Vitest UI
-- `npm run test:coverage` - Run tests with coverage report (80% threshold)
-- `npm run test:watch` - Run tests in watch mode
-- `npm run e2e` - Run Playwright E2E tests
-- `npm run e2e:ui` - Run E2E tests with Playwright UI
-- `npm run e2e:headed` - Run E2E tests in headed mode
-- `npm run test:all` - Run both unit and E2E tests
+- `pnpm test` - Run unit tests with Vitest
+- `pnpm test:ui` - Run tests with Vitest UI
+- `pnpm test:coverage` - Run tests with coverage report (80% threshold)
+- `pnpm test:watch` - Run tests in watch mode
+- `pnpm e2e` - Run Playwright E2E tests
+- `pnpm e2e:ui` - Run E2E tests with Playwright UI
+- `pnpm e2e:headed` - Run E2E tests in headed mode
+- `pnpm test:all` - Run both unit and E2E tests
 
 ### Database (Prisma)
-- `npm run db:generate` - Generate Prisma client
-- `npm run db:push` - Push schema changes to database
-- `npm run db:migrate` - Create and apply migrations
-- `npm run db:seed` - Seed database with initial data
-- `npm run db:studio` - Open Prisma Studio GUI
+- `pnpm db:generate` - Generate Prisma client
+- `pnpm db:push` - Push schema changes to database
+- `pnpm db:migrate` - Create and apply migrations
+- `pnpm db:seed` - Seed database with initial data
+- `pnpm db:studio` - Open Prisma Studio GUI
 
 ### Build & Analysis
-- `npm run validate` - Run type-check and lint together
-- `npm run analyze` - Build with bundle analyzer
-- `npm run clean` - Clean build artifacts and cache
-- `npm run dev:debug` - Start dev server with Node.js inspector
+- `pnpm validate` - Run type-check and lint together
+- `pnpm analyze` - Build with bundle analyzer
+- `pnpm clean` - Clean build artifacts and cache
+- `pnpm dev:debug` - Start dev server with Node.js inspector
+
+### CI Commands
+- `pnpm ci:quick` - Run lint and type-check in parallel (pre-push check)
+- `pnpm ci:local` - Run lint, type-check, and tests in parallel
+- `pnpm ci:full` - Run ci:quick then build
 
 ### Requirements
 - Node.js >=22.14.0
-- npm 11.2.0 (package manager)
+- pnpm >=9.0.0 (package manager)
 - PostgreSQL database (for Prisma features)
 
 
 ## Architecture Overview
 
 ### Core Stack
-- **Next.js 15.4.5** with App Router and React 19
-- **TypeScript 5.8.3** with strict mode and `noUncheckedIndexedAccess`
-- **Tailwind CSS 4.1.11** for styling
-- **Prisma 6.13.0** ORM with PostgreSQL
-- **Jotai 2.13.0** for atomic state management
-- **TanStack React Query 5.84.1** for server state
-- **Hono 4.8.2** for RPC API layer (`src/server/rpc/`)
-- **Recharts 3.1.2** for data visualizations
-- **Framer Motion 12.23.12** for animations
+- **Next.js 15** with App Router and React 19
+- **TypeScript 5.8** with strict mode and `noUncheckedIndexedAccess`
+- **Tailwind CSS 4** for styling
+- **Prisma 6** ORM with PostgreSQL
+- **TanStack React Query** for server state
+- **Recharts** for data visualizations
+- **Framer Motion** for animations
 - **Radix UI** components with shadcn/ui patterns
-- **Zod 4.0.15** for runtime validation
+- **Zod** for runtime validation
 
 ### Testing Architecture
 - **Vitest** for unit tests with 80% coverage thresholds
@@ -67,47 +70,37 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### High-Level Architecture
 
-#### State Management Layers
-1. **Jotai Atoms** (`src/lib/atoms/`): Client-side atomic state
-   - Form state, UI state, user preferences
-   - Cross-tab synchronization utilities
-   - Optimistic updates and local mutations
-2. **TanStack Query**: Server state and caching
-   - API data fetching with `src/hooks/use-api-queries.ts`
-   - Query key factories in `src/lib/queryKeys.ts`
-3. **Hono RPC** (`src/server/rpc/`): Type-safe API layer
-   - Routes defined in `src/server/rpc/routes/`
-   - Middleware for auth, rate limiting, validation
-   - Client available at `src/server/rpc/client.ts`
+#### State Management
+- **TanStack Query**: Server state and caching
+  - API data fetching with `src/hooks/use-api-queries.ts`
+  - Query key factories in `src/lib/queryKeys.ts`
+- **React Hook Form** with Zod validation for forms
 
 #### Security & Performance
-- **CSP with Nonces**: Dynamic CSP headers in middleware.ts
-- **Rate Limiting**: Enhanced rate limiter with analytics (`src/lib/security/enhanced-rate-limiter.ts`)
+- **Rate Limiting**: Enhanced rate limiter (`src/lib/security/`)
 - **JWT Auth**: Token-based authentication (`src/lib/security/jwt-auth.ts`)
-- **Environment Validation**: Zod-based env validation at build time
-- **Web Vitals**: Performance monitoring service (`src/lib/analytics/web-vitals-service.ts`)
+- **Web Vitals**: Performance monitoring (`src/lib/analytics/`)
 
 #### Project Structure
 ```
 src/
 ├── app/                   # Next.js App Router
 │   ├── api/              # REST API routes
-│   │   └── rpc/[[...route]]/ # Hono RPC endpoint
-│   └── projects/         # Project showcase pages
-├── server/
-│   └── rpc/              # Hono RPC server
-│       ├── app.ts        # Hono app configuration
-│       ├── client.ts     # Type-safe RPC client
-│       ├── middleware.ts # Auth, rate limiting
-│       └── routes/       # API route handlers
+│   ├── projects/         # Project showcase pages
+│   ├── blog/             # Blog system
+│   ├── contact/          # Contact form
+│   └── resume/           # Resume/PDF viewing
 ├── lib/
-│   ├── atoms/            # Jotai state atoms
-│   ├── security/         # Auth, rate limiting, CSP
-│   └── analytics/        # Web vitals, metrics
+│   ├── security/         # Auth, rate limiting
+│   ├── analytics/        # Web vitals, metrics
+│   ├── validations/      # Zod schemas
+│   ├── forms/            # Form utilities
+│   └── utils/            # Shared utilities
+├── hooks/                # Custom React hooks
 ├── components/
 │   ├── providers/        # React context providers
 │   └── ui/               # Reusable UI components
-└── test/                  # Test utilities and factories
+└── test/                 # Test utilities and factories
 ```
 
 
@@ -120,7 +113,46 @@ src/
 - Blog system with functional article pages and navigation
 - Modern glassmorphism UI with gradient backgrounds
 
+## Development Principles
+
+### DRY (Don't Repeat Yourself)
+- Extract shared logic into reusable hooks (`src/hooks/`) or utilities (`src/lib/utils/`)
+- Use shared Zod schemas in `src/lib/validations/` across API routes and forms
+- Centralize query keys in `src/lib/queryKeys.ts`
+- Reuse UI components from `src/components/ui/`
+
+### KISS (Keep It Simple, Stupid)
+- Prefer simple, readable solutions over clever abstractions
+- Avoid premature optimization—solve the current problem first
+- Use Server Components by default; only add `'use client'` when necessary
+- Keep components focused on a single responsibility
+
+### TDD (Test-Driven Development)
+- Write tests before implementing features when possible
+- Follow the Red-Green-Refactor cycle:
+  1. Write a failing test that defines expected behavior
+  2. Write minimal code to make the test pass
+  3. Refactor while keeping tests green
+- Maintain 80% coverage threshold (enforced by `pnpm test:coverage`)
+- Use test factories in `src/test/factories.ts` for consistent test data
+
 ## Key Development Patterns
+
+### shadcn/ui Component Usage
+- **Use base components directly**: Import from `@/components/ui/` and use CVA for variants
+- **No barrel files**: Components export themselves directly, no `index.ts` re-exports
+- **No wrapper abstractions**: Don't create wrapper components around shadcn/ui base components
+- **CVA for variants**: Use `class-variance-authority` to create component variants
+- **Composition over abstraction**: Compose base components in your pages/features instead of creating abstraction layers
+
+Example pattern:
+```tsx
+// CORRECT: Use shadcn/ui base components directly
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
+
+// WRONG: Don't create wrappers like <MyCustomChartCard> or <QueryAwareChart>
+```
 
 ### TypeScript Configuration
 - **Strict mode** enabled with `noUncheckedIndexedAccess: true`
@@ -128,24 +160,23 @@ src/
 - **Excludes**: Blog features, automation, SEO tools excluded from compilation (see tsconfig.json)
 
 ### API Patterns
-1. **Hono RPC** (`src/server/rpc/`): Type-safe API with Zod validation
-2. **REST API** (`src/app/api/`): Traditional Next.js API routes
-3. **Server Actions**: Form submissions and mutations
-4. **Native fetch**: No axios, use `src/lib/api.ts` utilities
+1. **REST API** (`src/app/api/`): Next.js API routes with Zod validation
+2. **Server Actions** (`src/lib/actions/`): Form submissions and mutations
+3. **Native fetch**: No axios, use `src/lib/api/` utilities
 
 ### State Management
-1. **Jotai atoms** for client state (`src/lib/atoms/`)
-2. **TanStack Query** for server state (`src/hooks/use-api-queries.ts`)
-3. **Query keys** centralized in `src/lib/queryKeys.ts`
+1. **TanStack Query** for server state (`src/hooks/use-api-queries.ts`)
+2. **Query keys** centralized in `src/lib/queryKeys.ts`
+3. **React Hook Form** for form state with Zod schemas
 
 ### Testing Strategy
-- Run `npm run test` for unit tests (80% coverage target)
-- Run `npm run e2e` for Playwright tests
+- Run `pnpm test` for unit tests (80% coverage target)
+- Run `pnpm e2e` for Playwright tests
 - Test factories in `src/test/factories.ts`
 - Global setup in `src/test/setup.tsx`
 
 ### Environment Variables
-Required variables (see `.env.example`):
+Required variables:
 - `DATABASE_URL`: PostgreSQL connection string
 - `RESEND_API_KEY`: Email service API key
 - `JWT_SECRET`: Authentication secret (32+ chars)
@@ -158,9 +189,8 @@ Required variables (see `.env.example`):
 - **Mobile-first**: Use Tailwind responsive prefixes (`sm:`, `md:`, `lg:`)
 - **Server Components by default**: Only use `'use client'` when necessary
 
-## Recent Updates (Aug 2025)
-- **PDF Resume Viewer**: Fixed with proper iframe implementation and download functionality
-- **Blog System**: Restored functionality with proper API integration and navigation
-- **Contact Form**: Enhanced with enterprise-level features (real-time validation, progress tracking, visual subject selection)
-- **Project Cleanup**: Removed temporary database scripts and development artifacts
-- **Performance**: Optimized build process and cleaned cache artifacts
+## Key Features
+- **PDF Resume Viewer**: Iframe implementation with download functionality
+- **Blog System**: API integration with navigation
+- **Contact Form**: Real-time validation, progress tracking, visual subject selection
+- **Project Showcase**: Interactive data visualization projects with Recharts

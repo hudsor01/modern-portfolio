@@ -29,7 +29,7 @@ describe('Performance Optimizations', () => {
   describe('Dynamic Imports', () => {
     it('shows loading skeleton while dynamic components load', async () => {
       const LoadingComponent = () => (
-        <div className="animate-pulse h-96 bg-gray-800/50 rounded-xl" data-testid="loading-skeleton">
+        <div className="animate-pulse h-96 bg-card/50 rounded-xl" data-testid="loading-skeleton">
           Loading...
         </div>
       )
@@ -46,27 +46,27 @@ describe('Performance Optimizations', () => {
 
     it('loading skeletons use glassmorphism styling', () => {
       const skeleton = render(
-        <div className="animate-pulse h-96 bg-gray-800/50 rounded-xl" data-testid="skeleton" />
+        <div className="animate-pulse h-96 bg-card/50 rounded-xl" data-testid="skeleton" />
       ).getByTestId('skeleton')
       
-      expect(skeleton).toHaveClass('animate-pulse', 'bg-gray-800/50', 'rounded-xl')
+      expect(skeleton).toHaveClass('animate-pulse', 'bg-card/50', 'rounded-xl')
     })
 
     it('provides different skeleton sizes for different components', () => {
       const { rerender } = render(
-        <div className="animate-pulse h-20 bg-gray-800/50 rounded-lg" data-testid="title-skeleton" />
+        <div className="animate-pulse h-20 bg-card/50 rounded-lg" data-testid="title-skeleton" />
       )
       
       expect(screen.getByTestId('title-skeleton')).toHaveClass('h-20')
       
       rerender(
-        <div className="animate-pulse h-6 bg-gray-800/50 rounded" data-testid="text-skeleton" />
+        <div className="animate-pulse h-6 bg-card/50 rounded" data-testid="text-skeleton" />
       )
       
       expect(screen.getByTestId('text-skeleton')).toHaveClass('h-6')
       
       rerender(
-        <div className="animate-pulse h-12 bg-gray-800/50 rounded-lg" data-testid="button-skeleton" />
+        <div className="animate-pulse h-12 bg-card/50 rounded-lg" data-testid="button-skeleton" />
       )
       
       expect(screen.getByTestId('button-skeleton')).toHaveClass('h-12')
@@ -171,7 +171,7 @@ describe('Performance Optimizations', () => {
       const dynamicImportPattern = /dynamic\(\s*\(\)\s*=>\s*import\(/
       
       // Mock dynamic import usage
-      const mockDynamicImport = "dynamic(() => import('@/components/ui/modern-card'))"
+      const mockDynamicImport = "dynamic(() => import('@/components/ui/card'))"
       expect(mockDynamicImport).toMatch(dynamicImportPattern)
     })
   })

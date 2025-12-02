@@ -52,7 +52,7 @@ export const NewsletterSignup = React.forwardRef<HTMLDivElement, NewsletterSignu
           )}
           {...props}
         >
-          <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
+          <CheckCircle className="h-8 w-8 text-success mx-auto mb-2" />
           <h3 className="font-semibold text-foreground mb-1">
             Thanks for subscribing!
           </h3>

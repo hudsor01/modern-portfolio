@@ -2,11 +2,11 @@
 
 import React, { useMemo, memo } from 'react'
 import { Navbar } from '@/components/layout/navbar'
-import { ProjectCard } from '@/components/projects/project-card' 
+import { ProjectCard } from '@/components/projects/project-card'
 import { ProjectStats } from '@/components/projects/project-stats'
 import { ProjectCTASection } from '@/components/projects/project-cta-section'
-import { ShadcnSkeletonWrapper } from '@/components/ui/shadcn-skeleton-wrapper'
-import { ProjectErrorBoundary } from '@/components/error/project-error-boundary'
+import { Skeleton } from '@/components/ui/skeleton'
+import { ErrorBoundary } from '@/components/error/error-boundary'
 import { mockProjects, type MockProject } from '@/data/mock-projects'
 import type { Project as ProjectType } from '@/types/project'
 import { MotionDiv, optimizedVariants } from '@/lib/motion/optimized-motion'
@@ -17,7 +17,13 @@ type Project = ProjectType | MockProject
 
 // Type guard
 function isMockProject(project: Project): project is MockProject {
-  return 'year' in project && 'duration' in project && 'impact' in project && 'results' in project && 'displayMetrics' in project
+  return (
+    'year' in project &&
+    'duration' in project &&
+    'impact' in project &&
+    'results' in project &&
+    'displayMetrics' in project
+  )
 }
 
 interface ModernProjectsContentProps {
@@ -26,120 +32,119 @@ interface ModernProjectsContentProps {
   isLoading?: boolean
 }
 
-export const ModernProjectsContent = memo<ModernProjectsContentProps>(({
-  projects: externalProjects,
-  onPrefetch: _onPrefetch,
-  isLoading = false,
-}) => {
-  const { shouldAnimate } = useMotionConfig()
+export const ModernProjectsContent = memo<ModernProjectsContentProps>(
+  ({ projects: externalProjects, onPrefetch: _onPrefetch, isLoading = false }) => {
+    const { shouldAnimate } = useMotionConfig()
 
-  // Use external projects if provided, otherwise fall back to mock data
-  const projectsData: Project[] = externalProjects || mockProjects
+    // Use external projects if provided, otherwise fall back to mock data
+    const projectsData: Project[] = externalProjects || mockProjects
 
-  // Memoized sorting to prevent expensive recalculations on every render
-  const sortedProjects = useMemo(() => {
-    // Ensure projectsData is an array before spreading
-    const dataArray = Array.isArray(projectsData) ? projectsData : []
-    return [...dataArray].sort((a, b) => {
-      // Featured projects first
-      if (a.featured && !b.featured) return -1
-      if (!a.featured && b.featured) return 1
+    // Memoized sorting to prevent expensive recalculations on every render
+    const sortedProjects = useMemo(() => {
+      // Ensure projectsData is an array before spreading
+      const dataArray = Array.isArray(projectsData) ? projectsData : []
+      return [...dataArray].sort((a, b) => {
+        // Featured projects first
+        if (a.featured && !b.featured) return -1
+        if (!a.featured && b.featured) return 1
 
-      // Then by year (newest first)
-      const aYear = isMockProject(a) ? a.year : new Date(a.createdAt || 0).getFullYear()
-      const bYear = isMockProject(b) ? b.year : new Date(b.createdAt || 0).getFullYear()
-      return bYear - aYear
-    })
-  }, [projectsData])
+        // Then by year (newest first)
+        const aYear = isMockProject(a) ? a.year : new Date(a.createdAt || 0).getFullYear()
+        const bYear = isMockProject(b) ? b.year : new Date(b.createdAt || 0).getFullYear()
+        return bYear - aYear
+      })
+    }, [projectsData])
 
-  return (
-    <ProjectErrorBoundary>
-      <>
-        <Navbar />
-        <section className="relative min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white overflow-hidden pt-20">
-        {/* Modern Animated Background */}
-        <div className="fixed inset-0 -z-10">
-          {/* Floating Orbs */}
-          <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl animate-float"></div>
-          <div className="absolute bottom-1/3 left-1/3 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl animate-float-delayed"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-cyan-400/3 rounded-full blur-3xl animate-pulse-glow"></div>
-          
-          {/* Grid Pattern */}
-          <div
-            className="absolute inset-0 bg-[image:linear-gradient(rgba(34,211,238,0.03)_1px,transparent_1px),linear-gradient(to_right,rgba(34,211,238,0.03)_1px,transparent_1px)] bg-[length:50px_50px]"
-            aria-hidden="true"
-          ></div>
-        </div>
+    return (
+      <ErrorBoundary>
+        <>
+          <Navbar />
+          <section className="relative min-h-screen bg-linear-to-br from-gray-900 via-black to-gray-900 text-foreground overflow-hidden pt-20">
+            {/* Modern Animated Background */}
+            <div className="fixed inset-0 -z-10">
+              {/* Floating Orbs */}
+              <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float"></div>
+              <div className="absolute bottom-1/3 left-1/3 w-64 h-64 bg-primary/5 rounded-full blur-3xl animate-float-delayed"></div>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-primary/3 rounded-full blur-3xl animate-pulse-glow"></div>
 
-        <div className="container relative z-10 px-6 mx-auto max-w-7xl py-24">
-          {/* Hero Section */}
-          <div className="section-hero">
-            <h1 className="heading-page glow-primary mb-8">
-              Project Portfolio
-            </h1>
+              {/* Grid Pattern */}
+              <div
+                className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.03)_1px,transparent_1px),linear-gradient(to_right,rgba(34,211,238,0.03)_1px,transparent_1px)] bg-size-[50px_50px]"
+                aria-hidden="true"
+              ></div>
+            </div>
 
-            <p className="text-body max-w-3xl mx-auto mb-16">
-              Transforming data into actionable insights and driving measurable business results
-              through innovative solutions.
-            </p>
+            <div className="container relative z-10 px-6 mx-auto max-w-7xl py-24">
+              {/* Hero Section */}
+              <div className="section-hero">
+                <h1 className="heading-page glow-primary mb-8">Project Portfolio</h1>
 
-            {/* Stats Component */}
-            <ProjectStats totalProjects={sortedProjects.length} isLoading={isLoading} />
-          </div>
+                <p className="text-body max-w-3xl mx-auto mb-16">
+                  Transforming data into actionable insights and driving measurable business results
+                  through innovative solutions.
+                </p>
 
-          {/* Projects Section Header */}
-          <div className="section-header">
-            <h2 className="heading-section glow-secondary mb-6">
-              Featured Projects
-            </h2>
-            <p className="text-body max-w-2xl mx-auto">
-              Explore my latest work in revenue operations and data analytics
-            </p>
-          </div>
-
-          {/* Projects Grid */}
-          <div className="mt-16">
-            {isLoading ? (
-              <ShadcnSkeletonWrapper layout="card" count={6} variant="default" />
-            ) : sortedProjects.length === 0 ? (
-              <div className="text-center py-16">
-                <div className="text-6xl mb-4">📊</div>
-                <h3 className="text-xl font-semibold mb-2 text-white">No projects available</h3>
-                <p className="text-gray-400">Projects are currently being updated</p>
+                {/* Stats Component */}
+                <ProjectStats totalProjects={sortedProjects.length} isLoading={isLoading} />
               </div>
-            ) : shouldAnimate ? (
-              <MotionDiv
-                variants={optimizedVariants.staggerContainer}
-                initial="initial"
-                animate="animate"
-                className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 max-w-7xl mx-auto"
-              >
-                {sortedProjects.map((project, index) => (
+
+              {/* Projects Section Header */}
+              <div className="section-header">
+                <h2 className="heading-section glow-secondary mb-6">Featured Projects</h2>
+                <p className="text-body max-w-2xl mx-auto">
+                  Explore my latest work in revenue operations and data analytics
+                </p>
+              </div>
+
+              {/* Projects Grid */}
+              <div className="mt-16">
+                {isLoading ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 max-w-7xl mx-auto">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <div key={i} className="space-y-4 p-6 border border-border rounded-xl">
+                        <Skeleton className="h-48 w-full rounded-lg" />
+                        <Skeleton className="h-6 w-3/4" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-2/3" />
+                      </div>
+                    ))}
+                  </div>
+                ) : sortedProjects.length === 0 ? (
+                  <div className="text-center py-16">
+                    <div className="text-6xl mb-4">📊</div>
+                    <h3 className="text-xl font-semibold mb-2 text-white">No projects available</h3>
+                    <p className="text-muted-foreground">Projects are currently being updated</p>
+                  </div>
+                ) : shouldAnimate ? (
                   <MotionDiv
-                    key={project.id}
-                    variants={optimizedVariants.staggerItem}
+                    variants={optimizedVariants.staggerContainer}
+                    initial="initial"
+                    animate="animate"
+                    className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 max-w-7xl mx-auto"
                   >
-                    <ProjectCard project={project} index={index} />
+                    {sortedProjects.map((project, index) => (
+                      <MotionDiv key={project.id} variants={optimizedVariants.staggerItem}>
+                        <ProjectCard project={project} index={index} />
+                      </MotionDiv>
+                    ))}
                   </MotionDiv>
-                ))}
-              </MotionDiv>
-            ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 max-w-7xl mx-auto">
-                {sortedProjects.map((project, index) => (
-                  <ProjectCard key={project.id} project={project} index={index} />
-                ))}
+                ) : (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 max-w-7xl mx-auto">
+                    {sortedProjects.map((project, index) => (
+                      <ProjectCard key={project.id} project={project} index={index} />
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          {/* CTA Section */}
-          <ProjectCTASection />
-        </div>
-      </section>
-
-      </>
-    </ProjectErrorBoundary>
-  )
-})
+              {/* CTA Section */}
+              <ProjectCTASection />
+            </div>
+          </section>
+        </>
+      </ErrorBoundary>
+    )
+  }
+)
 
 ModernProjectsContent.displayName = 'ModernProjectsContent'
