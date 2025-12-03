@@ -21,7 +21,15 @@ import { yearOverYearGrowthExtended } from '@/app/projects/data/partner-analytic
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { createContextLogger } from '@/lib/logging/logger'
 import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
+import { STARAreaChart } from '@/components/projects/STARAreaChart'
 
+
+const starData = {
+  situation: { phase: 'Situation', impact: 31, efficiency: 26, value: 21 },
+  task: { phase: 'Task', impact: 56, efficiency: 51, value: 46 },
+  action: { phase: 'Action', impact: 86, efficiency: 89, value: 81 },
+  result: { phase: 'Result', impact: 99, efficiency: 97, value: 95 },
+}
 const logger = createContextLogger('RevenueKPIPage')
 
 type YearOverYearGrowth = {
@@ -516,6 +524,49 @@ export default function RevenueKPI() {
                       {tech}
                     </span>
                   ))}
+                </div>
+              </motion.div>
+
+              {/* STAR Impact Analysis */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="mt-16 space-y-8"
+              >
+                <div className="text-center space-y-4">
+                  <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                    STAR Impact Analysis
+                  </h2>
+                  <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                    Tracking project progression from Situation through Action to measurable Results
+                  </p>
+                </div>
+
+                <div className="glass rounded-3xl p-8">
+                  <STARAreaChart
+                    data={starData}
+                    title="Project Progression Metrics"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="text-center p-6 glass rounded-2xl">
+                    <div className="text-sm text-primary/70 mb-2">Situation</div>
+                    <div className="text-lg font-bold text-white">Initial Assessment</div>
+                  </div>
+                  <div className="text-center p-6 glass rounded-2xl">
+                    <div className="text-sm text-green-400/70 mb-2">Task</div>
+                    <div className="text-lg font-bold text-white">Goal Definition</div>
+                  </div>
+                  <div className="text-center p-6 glass rounded-2xl">
+                    <div className="text-sm text-amber-400/70 mb-2">Action</div>
+                    <div className="text-lg font-bold text-white">Implementation</div>
+                  </div>
+                  <div className="text-center p-6 glass rounded-2xl">
+                    <div className="text-sm text-cyan-400/70 mb-2">Result</div>
+                    <div className="text-lg font-bold text-white">Measurable Impact</div>
+                  </div>
                 </div>
               </motion.div>
             </div>
