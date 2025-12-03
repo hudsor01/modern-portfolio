@@ -2,32 +2,32 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { generateNonceContext, buildCSPDirective } from './src/lib/security/nonce'
 import { checkApiRateLimit, getClientIdentifier } from './src/lib/security/rate-limiter'
-import { 
-  applySecurityHeaders, 
-  validateOrigin, 
+import {
+  applySecurityHeaders,
+  validateOrigin,
   getTrustedOrigins,
   logSecurityEvent,
-  buildEnhancedCSP 
+  buildEnhancedCSP
 } from './src/lib/security/security-headers'
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const url = request.nextUrl
   const hostname = request.headers.get('host') || ''
-  
+
   // Redirect www to non-www in production
   if (process.env.NODE_ENV === 'production' && hostname.startsWith('www.')) {
     const newUrl = new URL(url)
     newUrl.host = hostname.replace('www.', '')
     return NextResponse.redirect(newUrl, 301)
   }
-  
+
   const response = NextResponse.next()
   const pathname = request.nextUrl.pathname
 
   // Security: Validate origin for sensitive requests
   const trustedOrigins = getTrustedOrigins()
   const isApiRequest = pathname.startsWith('/api/')
-  
+
   if (isApiRequest && request.method !== 'GET') {
     if (!validateOrigin(request, trustedOrigins)) {
       logSecurityEvent('invalid_origin', 'medium', {
@@ -36,7 +36,7 @@ export function middleware(request: NextRequest) {
         origin: request.headers.get('origin'),
         referer: request.headers.get('referer')
       }, request)
-      
+
       return new NextResponse('Forbidden', { status: 403 })
     }
   }
@@ -54,14 +54,14 @@ export function middleware(request: NextRequest) {
   if (isApiRequest) {
     const identifier = getClientIdentifier(request)
     const rateLimit = checkApiRateLimit(identifier)
-    
+
     if (!rateLimit.allowed) {
       logSecurityEvent('rate_limit_exceeded', 'medium', {
         identifier: identifier.substring(0, 20) + '...',
         pathname,
         rateLimitInfo: rateLimit
       }, request)
-      
+
       return new NextResponse('Too Many Requests', {
         status: 429,
         headers: {
@@ -99,7 +99,7 @@ export function middleware(request: NextRequest) {
 
   // Additional security headers
   secureResponse.headers.set('X-Request-ID', crypto.randomUUID())
-  
+
   return secureResponse
 }
 

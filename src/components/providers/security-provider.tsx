@@ -66,22 +66,23 @@ export function useSecurityContext() {
 export function useSecureScript(script: string, dependencies: React.DependencyList = []) {
   const { nonces } = useSecurityContext()
   const scriptNonce = nonces?.scriptNonce
-  
+  // Serialize dependencies to a stable string for effect comparison
+  const depsKey = JSON.stringify(dependencies)
+
   useEffect(() => {
     if (!scriptNonce) return
-    
+
     const scriptElement = document.createElement('script')
     scriptElement.setAttribute('nonce', scriptNonce)
     scriptElement.textContent = script
     document.head.appendChild(scriptElement)
-    
+
     return () => {
       if (scriptElement.parentNode) {
         scriptElement.parentNode.removeChild(scriptElement)
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [script, scriptNonce, ...dependencies])
+  }, [script, scriptNonce, depsKey])
 }
 
 /**
@@ -90,20 +91,21 @@ export function useSecureScript(script: string, dependencies: React.DependencyLi
 export function useSecureStyle(css: string, dependencies: React.DependencyList = []) {
   const { nonces } = useSecurityContext()
   const styleNonce = nonces?.styleNonce
-  
+  // Serialize dependencies to a stable string for effect comparison
+  const depsKey = JSON.stringify(dependencies)
+
   useEffect(() => {
     if (!styleNonce) return
-    
+
     const styleElement = document.createElement('style')
     styleElement.setAttribute('nonce', styleNonce)
     styleElement.textContent = css
     document.head.appendChild(styleElement)
-    
+
     return () => {
       if (styleElement.parentNode) {
         styleElement.parentNode.removeChild(styleElement)
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [css, styleNonce, ...dependencies])
+  }, [css, styleNonce, depsKey])
 }

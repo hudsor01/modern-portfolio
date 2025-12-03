@@ -493,21 +493,43 @@ interface MinimalRequest {
 
 // Request logger middleware utility
 export function createRequestLogger(operation: string) {
-  return (request: MinimalRequest, context?: LogContext) => { // Changed request: any to request: MinimalRequest
+  return (request: MinimalRequest, context?: LogContext) => {
     const requestLogger = logger.child({
       requestId: crypto.randomUUID(),
       operation,
       ...context,
     })
-    
+
     requestLogger.request({
       id: crypto.randomUUID(),
       method: request.method,
       url: request.url,
-      userAgent: request.headers?.get?.('user-agent') || undefined, // Handle null
-      ip: (request.headers?.get?.('x-forwarded-for') || request.headers?.get?.('x-real-ip')) || undefined, // Handle null
+      userAgent: request.headers?.get?.('user-agent') || undefined,
+      ip: (request.headers?.get?.('x-forwarded-for') || request.headers?.get?.('x-real-ip')) || undefined,
     })
-    
+
     return requestLogger
+  }
+}
+
+/**
+ * Context-specific logger factory
+ * Creates a logger with a fixed context name for better log organization
+ */
+export function createContextLogger(context: string) {
+  return {
+    debug: (message: string, data?: LogContext) =>
+      logger.debug(message, { ...data, context }),
+    info: (message: string, data?: LogContext) =>
+      logger.info(message, { ...data, context }),
+    warn: (message: string, data?: LogContext) =>
+      logger.warn(message, { ...data, context }),
+    error: (message: string, error?: Error | LogContext, data?: LogContext) => {
+      if (error instanceof Error) {
+        logger.error(message, error, { ...data, context })
+      } else {
+        logger.error(message, undefined, { ...error, ...data, context })
+      }
+    },
   }
 }

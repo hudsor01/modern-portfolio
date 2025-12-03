@@ -33,7 +33,7 @@ export function PostHeader({ post, itemVariants }: PostHeaderProps) {
             {typeof tag === 'object' && 'name' in tag ? tag.name : String(tag)}
           </Badge>
         ))}
-        {post.featured && (
+        {'featured' in post && post.featured && (
           <Badge className="bg-warning/20 text-warning dark:text-warning">
             Featured
           </Badge>
@@ -50,28 +50,30 @@ export function PostHeader({ post, itemVariants }: PostHeaderProps) {
 
       {/* Author and Meta Info */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
-          <Avatar className="h-12 w-12">
-            <AvatarImage src={post.author.avatar} alt={post.author.name} />
-            <AvatarFallback>
-              {post.author.name.split(' ').map(n => n[0]).join('')}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <div className="font-semibold">{post.author.name}</div>
-            {post.author.title && (
-              <div className="text-sm text-muted-foreground dark:text-muted-foreground">
-                {post.author.title}
-              </div>
-            )}
+        {post.author && (
+          <div className="flex items-center gap-4">
+            <Avatar className="h-12 w-12">
+              <AvatarImage src={post.author.avatar} alt={post.author.name} />
+              <AvatarFallback>
+                {post.author.name.split(' ').map(n => n[0]).join('')}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="font-semibold">{post.author.name}</div>
+              {post.author.bio && (
+                <div className="text-sm text-muted-foreground dark:text-muted-foreground line-clamp-1">
+                  {post.author.bio}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground dark:text-muted-foreground">
           <div className="flex items-center gap-1">
             <Calendar className="h-4 w-4" />
-            {post.publishedAt 
-              ? formatDistanceToNow(post.publishedAt, { addSuffix: true })
+            {post.publishedAt
+              ? formatDistanceToNow(new Date(post.publishedAt), { addSuffix: true })
               : 'Draft'
             }
           </div>

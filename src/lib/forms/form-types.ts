@@ -1,25 +1,70 @@
 /**
  * Form Type Definitions
- * Provides properly typed FormApi for TanStack Form v6
- *
- * NOTE: TanStack Form v6 has complex generic signatures with 23+ type parameters.
- * Since we handle validation with Zod at runtime, we use `any` for type parameters
- * to maintain flexibility and avoid over-complicating the type system.
+ * Provides properly typed FormApi for TanStack Form
  */
+
+/** Field metadata state */
+export interface FieldMeta {
+  errors?: (string | Error)[]
+  touchedOrDirty: boolean
+  touched: boolean
+  dirty: boolean
+  isPristine: boolean
+  isValidating: boolean
+}
+
+/** Field state containing value and metadata */
+export interface FieldState<TValue = unknown> {
+  value: TValue
+  meta: FieldMeta
+}
 
 /**
  * Simplified FieldApi type for use in components
- * TanStack Form v6 requires many generic parameters, but they're managed at runtime
+ * Represents the essential properties accessed from TanStack Form's FieldApi
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type TanStackFieldApi = any
+export interface TanStackFieldApi<TValue = unknown> {
+  state: FieldState<TValue>
+  name: string
+  getValue: () => TValue
+  setValue: (value: TValue) => void
+  handleChange: (value: TValue) => void
+  handleBlur: () => void
+}
+
+/** Form metadata state */
+export interface FormMeta {
+  isValid: boolean
+  isValidating: boolean
+  isSubmitting: boolean
+  isSubmitted: boolean
+  submitCount: number
+  errors: string[]
+}
+
+/** Form state containing values and metadata */
+export interface FormState<TFormData extends Record<string, unknown> = Record<string, unknown>> {
+  values: TFormData
+  meta: FormMeta
+  isSubmitting: boolean
+  isValid: boolean
+}
 
 /**
  * Simplified FormApi type for use in components
- * Works with generic form data at runtime
+ * Represents the essential properties accessed from TanStack Form's FormApi
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type TanStackFormApi<_T extends Record<string, any> = any> = any
+export interface TanStackFormApi<TFormData extends Record<string, unknown> = Record<string, unknown>> {
+  state: FormState<TFormData>
+  Field: React.ComponentType<{
+    name: keyof TFormData
+    children: (field: TanStackFieldApi) => React.ReactNode
+  }>
+  handleSubmit: () => void
+  reset: () => void
+  setFieldValue: <K extends keyof TFormData>(name: K, value: TFormData[K]) => void
+  getFieldValue: <K extends keyof TFormData>(name: K) => TFormData[K]
+}
 
 /**
  * Contact form field names type-safe union

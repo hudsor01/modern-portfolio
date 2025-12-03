@@ -12,7 +12,7 @@ import { SiX, SiLinkedin, SiFacebook } from 'react-icons/si'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-import { createContextLogger } from '@/lib/logging/logger'
+import { createContextLogger } from '@/lib/monitoring/logger'
 import { useMounted } from '@/hooks/use-mounted'
 import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 

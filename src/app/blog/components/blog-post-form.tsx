@@ -11,7 +11,8 @@ import { PublishingOptions } from './form/publishing-options'
 import { FormActions } from './form/form-actions'
 import { useBlogPostForm, type BlogPostFormData } from '@/hooks/use-blog-post-form'
 import type { BlogPost, BlogCategory, BlogTag, BlogAuthor } from '@/types/blog'
-import { createContextLogger } from '@/lib/logging/logger'
+import { ContentType } from '@/types/blog'
+import { createContextLogger } from '@/lib/monitoring/logger'
 
 const logger = createContextLogger('BlogPostForm')
 
@@ -85,18 +86,9 @@ export function BlogPostForm({
             <CardTitle>Preview</CardTitle>
           </CardHeader>
           <CardContent>
-            <BlogContent 
-              post={{
-                ...formData,
-                id: post?.id || 'preview',
-                author: _authors[0] || { id: '1', name: 'Author', email: 'author@example.com' },
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                viewCount: 0,
-                likeCount: 0,
-                shareCount: 0,
-                commentCount: 0,
-              }}
+            <BlogContent
+              content={formData.content}
+              contentType={ContentType[formData.contentType as keyof typeof ContentType]}
             />
           </CardContent>
         </Card>

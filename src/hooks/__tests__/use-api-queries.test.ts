@@ -38,11 +38,6 @@ const createWrapper = () => {
         retry: false,
       },
     },
-    logger: {
-      log: () => {},
-      warn: () => {},
-      error: () => {},
-    },
   })
 
   return ({ children }: { children: ReactNode }) => 
@@ -385,9 +380,10 @@ describe('useApiQueries hooks', () => {
         expect(result.current.isSuccess).toBe(true)
       })
 
-      // TanStack Query passes (variables, context) to mutationFn
+      // TanStack Query passes variables to mutationFn
       expect(mutationFn).toHaveBeenCalled()
-      expect(mutationFn.mock.calls[0]?.[0]).toBe('test-data')
+      // Verify first argument is the test data
+      expect((mutationFn.mock.calls as unknown[][])[0]?.[0]).toBe('test-data')
       expect(result.current.data).toEqual(mockResponse)
     })
 

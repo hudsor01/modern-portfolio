@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { blogAutomationService } from '@/lib/automation/blog-automation-service';
 import { jobQueue } from '@/lib/automation/job-queue';
 import { z } from 'zod';
-import { createContextLogger } from '@/lib/logging/logger';
+import { createContextLogger } from '@/lib/monitoring/logger';
 import type { ApiResponse } from '@/types/shared-api';
 
 const logger = createContextLogger('AutomationTriggerAPI');

@@ -33,6 +33,7 @@ export default async function ProjectsPage() {
     ...(p.tags && { technologies: p.tags }),
     ...(p.link && { liveUrl: p.link }),
     ...(p.github && { githubUrl: p.github }),
+    ...('starData' in p && p.starData && { starData: p.starData }),
   }))
 
   return (

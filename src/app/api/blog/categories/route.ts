@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ApiResponse, BlogCategoryData } from '@/types/shared-api';
 import { db } from '@/lib/db';
-import { createContextLogger } from '@/lib/logging/logger';
+import { createContextLogger } from '@/lib/monitoring/logger';
 
 const logger = createContextLogger('CategoriesAPI');
 
@@ -27,9 +27,9 @@ export async function GET(_request: NextRequest) {
       id: category.id,
       name: category.name,
       slug: category.slug,
-      description: category.description,
-      color: category.color,
-      icon: category.icon,
+      description: category.description ?? undefined,
+      color: category.color ?? undefined,
+      icon: category.icon ?? undefined,
       postCount: category.postCount,
       totalViews: category.totalViews,
       createdAt: category.createdAt.toISOString()
@@ -118,9 +118,9 @@ export async function POST(request: NextRequest) {
       id: newCategory.id,
       name: newCategory.name,
       slug: newCategory.slug,
-      description: newCategory.description,
-      color: newCategory.color,
-      icon: newCategory.icon,
+      description: newCategory.description ?? undefined,
+      color: newCategory.color ?? undefined,
+      icon: newCategory.icon ?? undefined,
       postCount: newCategory.postCount,
       totalViews: newCategory.totalViews,
       createdAt: newCategory.createdAt.toISOString()

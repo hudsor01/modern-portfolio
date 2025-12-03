@@ -1,15 +1,9 @@
-/* eslint-disable @typescript-eslint/no-namespace, @typescript-eslint/no-explicit-any */
-
 /**
  * Manually generated Prisma type definitions
  * This file serves as a fallback when Prisma client cannot be generated
  * (e.g., when DATABASE_URL is not available in the environment)
  *
  * These types mirror the schema defined in prisma/schema.prisma
- *
- * Note: This file uses namespace syntax to maintain compatibility with code
- * that imports from @prisma/client. The any type is used for complex query input
- * types that would otherwise require extensive generic parameter definitions.
  */
 
 // ===== ENUMS =====
@@ -382,45 +376,111 @@ export interface SitemapEntry {
   updatedAt: Date
 }
 
-// ===== NAMESPACE FOR PRISMA TYPE EXPORTS =====
-// This allows code that imports from @prisma/client to still work
-export namespace Prisma {
-   
-  export type BlogPostWhereInput = any
-   
-  export type BlogPostOrderByWithRelationInput = any
-   
-  export type PostViewWhereInput = any
-  export type InputJsonValue = unknown
-   
-  export type TransactionClient = any
+// ===== PRISMA QUERY INPUT TYPES =====
 
-  export class PrismaClientKnownRequestError extends Error {
-    code: string
-    clientVersion: string
+/** Filter conditions for BlogPost queries */
+export interface BlogPostWhereInput {
+  id?: string | { in?: string[]; notIn?: string[] }
+  status?: PostStatus | { in?: PostStatus[] }
+  authorId?: string
+  categoryId?: string | null
+  title?: string | { contains?: string; mode?: 'insensitive' | 'default' }
+  excerpt?: string | { contains?: string; mode?: 'insensitive' | 'default' } | null
+  content?: string | { contains?: string; mode?: 'insensitive' | 'default' }
+  publishedAt?: Date | { gte?: Date; lte?: Date } | null
+  tags?: { some?: { tagId?: { in?: string[] } } }
+  OR?: BlogPostWhereInput[]
+  AND?: BlogPostWhereInput[]
+  NOT?: BlogPostWhereInput | BlogPostWhereInput[]
+}
 
-    constructor(message: string, code: string, clientVersion: string) {
-      super(message)
-      this.name = 'PrismaClientKnownRequestError'
-      this.code = code
-      this.clientVersion = clientVersion
-    }
+/** Sort direction type */
+type SortOrder = 'asc' | 'desc'
+
+/** Order by options for BlogPost queries */
+export interface BlogPostOrderByWithRelationInput {
+  id?: SortOrder
+  title?: SortOrder
+  createdAt?: SortOrder
+  updatedAt?: SortOrder
+  publishedAt?: SortOrder
+  viewCount?: SortOrder
+  likeCount?: SortOrder
+}
+
+/** Filter conditions for PostView queries */
+export interface PostViewWhereInput {
+  id?: string | { in?: string[] }
+  postId?: string
+  visitorId?: string | null
+  sessionId?: string | null
+  viewedAt?: Date | { gte?: Date; lte?: Date }
+}
+
+/** JSON value type for Prisma */
+export type InputJsonValue = string | number | boolean | null | { [key: string]: InputJsonValue } | InputJsonValue[]
+
+/** Transaction client interface */
+export interface TransactionClient {
+  blogPost: {
+    findMany: (args: unknown) => Promise<BlogPost[]>
+    findUnique: (args: unknown) => Promise<BlogPost | null>
+    create: (args: unknown) => Promise<BlogPost>
+    update: (args: unknown) => Promise<BlogPost>
+    delete: (args: unknown) => Promise<BlogPost>
   }
-
-  export class PrismaClientUnknownRequestError extends Error {
-    clientVersion: string
-
-    constructor(message: string, clientVersion: string) {
-      super(message)
-      this.name = 'PrismaClientUnknownRequestError'
-      this.clientVersion = clientVersion
-    }
+  tag: {
+    upsert: (args: unknown) => Promise<Tag>
+    findMany: (args: unknown) => Promise<Tag[]>
   }
-
-  export class PrismaClientValidationError extends Error {
-    constructor(message: string) {
-      super(message)
-      this.name = 'PrismaClientValidationError'
-    }
+  category: {
+    findMany: (args: unknown) => Promise<Category[]>
   }
+}
+
+// ===== PRISMA ERROR CLASSES =====
+
+export class PrismaClientKnownRequestError extends Error {
+  code: string
+  clientVersion: string
+
+  constructor(message: string, code: string, clientVersion: string) {
+    super(message)
+    this.name = 'PrismaClientKnownRequestError'
+    this.code = code
+    this.clientVersion = clientVersion
+  }
+}
+
+export class PrismaClientUnknownRequestError extends Error {
+  clientVersion: string
+
+  constructor(message: string, clientVersion: string) {
+    super(message)
+    this.name = 'PrismaClientUnknownRequestError'
+    this.clientVersion = clientVersion
+  }
+}
+
+export class PrismaClientValidationError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'PrismaClientValidationError'
+  }
+}
+
+// ===== NAMESPACE FOR BACKWARDS COMPATIBILITY =====
+// Allows code that imports Prisma.* types to continue working
+export const Prisma = {
+  PrismaClientKnownRequestError,
+  PrismaClientUnknownRequestError,
+  PrismaClientValidationError,
+}
+
+// Re-export types under Prisma namespace for compatibility
+export type {
+  BlogPostWhereInput as PrismaBlogPostWhereInput,
+  BlogPostOrderByWithRelationInput as PrismaBlogPostOrderByWithRelationInput,
+  PostViewWhereInput as PrismaPostViewWhereInput,
+  TransactionClient as PrismaTransactionClient,
 }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { webVitalsService, checkAnalyticsRateLimit } from '@/lib/analytics/web-vitals-service';
-import { createContextLogger } from '@/lib/logging/logger';
+import { createContextLogger } from '@/lib/monitoring/logger';
 
 const logger = createContextLogger('WebVitalsAPI');
 

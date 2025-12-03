@@ -97,26 +97,52 @@ export const createMockBlogPost = (overrides: Partial<BlogPost> = {}): BlogPost 
   shareCount: 20,
   commentCount: 8,
   seoScore: 85,
+  featured: false,
   ...overrides,
 })
 
 // Factory for creating mock blog post summaries
-export const createMockBlogPostSummary = (overrides: Partial<BlogPostSummary> = {}): BlogPostSummary => ({
-  id: 'post-1',
-  title: 'Getting Started with React Testing',
-  slug: 'getting-started-with-react-testing',
-  excerpt: 'Learn the fundamentals of testing React components with modern testing tools.',
-  featuredImage: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=800&h=600&fit=crop&crop=center&q=80',
-  publishedAt: new Date('2024-01-15'),
-  viewCount: 1500,
-  commentCount: 8,
-  readingTime: 8,
-  author: createMockAuthor(),
-  category: createMockCategory(),
-  tags: [createMockTag()],
-  featured: false,
-  ...overrides,
-})
+export const createMockBlogPostSummary = (overrides: Partial<BlogPostSummary> = {}): BlogPostSummary => {
+  const author = createMockAuthor()
+  const category = createMockCategory()
+  const tag = createMockTag()
+
+  return {
+    id: 'post-1',
+    title: 'Getting Started with React Testing',
+    slug: 'getting-started-with-react-testing',
+    excerpt: 'Learn the fundamentals of testing React components with modern testing tools.',
+    featuredImage: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=800&h=600&fit=crop&crop=center&q=80',
+    publishedAt: new Date('2024-01-15').toISOString(),
+    viewCount: 1500,
+    commentCount: 8,
+    readingTime: 8,
+    author: {
+      id: author.id,
+      name: author.name,
+      email: author.email,
+      slug: author.slug,
+      bio: author.bio,
+      avatar: author.avatar,
+      website: author.website,
+      totalPosts: author.totalPosts,
+      totalViews: author.totalViews,
+      createdAt: author.createdAt.toISOString(),
+    },
+    category: {
+      ...category,
+      createdAt: category.createdAt.toISOString(),
+      updatedAt: category.updatedAt.toISOString(),
+    },
+    tags: [{
+      ...tag,
+      createdAt: tag.createdAt.toISOString(),
+      updatedAt: tag.updatedAt.toISOString(),
+    }],
+    featured: false,
+    ...overrides,
+  }
+}
 
 // Factory for creating mock blog post create input
 export const createMockBlogPostInput = (overrides: Partial<BlogPostCreateInput> = {}): BlogPostCreateInput => ({
@@ -258,45 +284,50 @@ export const createMockBlogPosts = (count = 5): BlogPost[] => {
   const categories = ['Technology', 'Development', 'Design', 'Business']
   const tags = ['React', 'TypeScript', 'Next.js', 'Testing', 'SEO']
   
-  return Array.from({ length: count }, (_, index) => 
-    createMockBlogPost({
+  return Array.from({ length: count }, (_, index) => {
+    const categoryIndex = index % categories.length
+    const tagIndex1 = index % tags.length
+    const tagIndex2 = (index + 1) % tags.length
+    return createMockBlogPost({
       id: `post-${index + 1}`,
-      title: `Blog Post ${index + 1}: ${categories[index % categories.length]} Insights`,
+      title: `Blog Post ${index + 1}: ${categories[categoryIndex] || 'General'} Insights`,
       slug: `blog-post-${index + 1}`,
       categoryId: `category-${(index % categories.length) + 1}`,
-      keywords: [tags[index % tags.length], tags[(index + 1) % tags.length]],
+      keywords: [tags[tagIndex1] || 'tech', tags[tagIndex2] || 'dev'],
       viewCount: Math.floor(Math.random() * 5000) + 100,
       publishedAt: new Date(2024, 0, index + 1),
     })
-  )
+  })
 }
 
 // Factory for creating multiple mock categories
 export const createMockCategories = (count = 4): Category[] => {
   const names = ['Technology', 'Development', 'Design', 'Business']
   
-  return Array.from({ length: count }, (_, index) => 
-    createMockCategory({
+  return Array.from({ length: count }, (_, index) => {
+    const name = names[index] || `Category ${index + 1}`
+    return createMockCategory({
       id: `category-${index + 1}`,
-      name: names[index],
-      slug: names[index].toLowerCase(),
+      name: name,
+      slug: name.toLowerCase(),
       postCount: Math.floor(Math.random() * 20) + 5,
     })
-  )
+  })
 }
 
 // Factory for creating multiple mock tags
 export const createMockTags = (count = 5): Tag[] => {
   const names = ['React', 'TypeScript', 'Next.js', 'Testing', 'SEO']
   
-  return Array.from({ length: count }, (_, index) => 
-    createMockTag({
+  return Array.from({ length: count }, (_, index) => {
+    const name = names[index] || `Tag ${index + 1}`
+    return createMockTag({
       id: `tag-${index + 1}`,
-      name: names[index],
-      slug: names[index].toLowerCase(),
+      name: name,
+      slug: name.toLowerCase(),
       postCount: Math.floor(Math.random() * 15) + 2,
     })
-  )
+  })
 }
 
 // Factory for creating mock API errors

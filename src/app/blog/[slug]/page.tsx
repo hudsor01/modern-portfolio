@@ -4,7 +4,7 @@ import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { BlogPostLayout } from '../components/blog-post-layout'
 import { BlogPostJsonLd } from '@/components/seo/blog-json-ld'
-import { createContextLogger } from '@/lib/logging/logger'
+import { createContextLogger } from '@/lib/monitoring/logger'
 
 const logger = createContextLogger('BlogPostPage')
 
@@ -77,7 +77,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       modifiedTime: post.updatedAt,
       authors: [post.author?.name || 'Richard Hudson'],
       section: post.category?.name,
-      tags: post.tags?.map(tag => tag.name),
+      tags: post.tags?.map((tag: { name: string }) => tag.name),
     },
     twitter: {
       card: 'summary_large_image',

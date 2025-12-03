@@ -227,4 +227,6 @@ beforeAll(() => {
 afterEach(() => {
   cleanup()
   vi.clearAllMocks()
+  vi.clearAllTimers()
+  vi.useRealTimers() // Ensure real timers are restored
 })

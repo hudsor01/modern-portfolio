@@ -4,7 +4,7 @@ import { Resend } from 'resend'
 import { revalidatePath } from 'next/cache'
 import { checkEnhancedContactFormRateLimit } from '@/lib/security/enhanced-rate-limiter'
 import { escapeHtml } from '@/lib/security/html-escape'
-import { createContextLogger } from '@/lib/logging/logger'
+import { createContextLogger } from '@/lib/monitoring/logger'
 import { contactFormSchema } from '@/lib/validations/unified-schemas'
 
 const logger = createContextLogger('ContactFormAction')

@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import { escapeHtml } from '@/lib/security/html-escape'
 import { ContentType } from '@/types/blog'
 import DOMPurify from 'dompurify'
-import { createContextLogger } from '@/lib/logging/logger'
+import { createContextLogger } from '@/lib/monitoring/logger'
 import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 
 const logger = createContextLogger('BlogContent')

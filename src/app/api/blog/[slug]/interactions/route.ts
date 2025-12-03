@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import { InteractionType } from '@prisma/client'
 import { ApiResponse } from '@/types/shared-api'
 import { validateBlogInteraction, BlogInteractionInput, ValidationError } from '@/lib/validations/unified-schemas'
-import { createContextLogger } from '@/lib/logging/logger';
+import { createContextLogger } from '@/lib/monitoring/logger';
 
 const logger = createContextLogger('InteractionsAPI');
 
@@ -91,8 +91,8 @@ export async function POST(
     })
 
     // Update the blog post counters based on interaction type
-    const updateData: Record<string, number> = {}
-    
+    const updateData: Partial<{ likeCount: { increment: number }; shareCount: { increment: number }; commentCount: { increment: number } }> = {}
+
     switch (type) {
       case 'LIKE':
         updateData.likeCount = { increment: 1 }

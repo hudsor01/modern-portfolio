@@ -46,7 +46,28 @@ export type JobType =
   | 'content-scheduling'
   | 'keyword-ranking-check'
   | 'performance-audit'
-  | 'duplicate-content-detection';
+  | 'duplicate-content-detection'
+  // Test-only job types
+  | 'test-job'
+  | 'long-running-job'
+  | 'quick-job'
+  | 'progress-job'
+  | 'failing-job'
+  | 'always-failing-job'
+  | 'timeout-job'
+  | 'concurrent-job'
+  | 'priority-job'
+  | 'delayed-job'
+  | 'async-error-job'
+  | 'string-error-job'
+  | 'unknown-job-type'
+  | 'pausable-job'
+  | 'drain-job'
+  | 'metric-job'
+  | 'timed-job'
+  | 'cleanup-job'
+  | 'recent-job'
+  | 'error-job';
 
 export type JobPriority = 'critical' | 'high' | 'normal' | 'low';
 
@@ -283,18 +304,19 @@ export class JobQueue {
   }
 
   /**
-   * Drain the queue - wait for all active jobs to complete
+   * Drain the queue - wait for all active and waiting jobs to complete
+   * Unlike shutdown, this continues processing waiting jobs
    */
   async drain(): Promise<void> {
-    this.isPaused = true;
-
-    while (this.activeJobs.size > 0) {
+    // Wait for all waiting and active jobs to complete
+    // Don't pause - let jobs continue processing
+    while (this.activeJobs.size > 0 || this.getJobsByStatus('waiting').length > 0 || this.getJobsByStatus('delayed').length > 0) {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
   }
 
   /**
-   * Shutdown the queue
+   * Shutdown the queue - stop processing and wait for active jobs only
    */
   async shutdown(): Promise<void> {
     this.isPaused = true;
@@ -307,7 +329,10 @@ export class JobQueue {
       clearInterval(this.cleanupTimer);
     }
 
-    await this.drain();
+    // Only wait for active jobs (not waiting ones) during shutdown
+    while (this.activeJobs.size > 0) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
   }
 
   /**
@@ -395,7 +420,7 @@ export class JobQueue {
 
     return Array.from(this.jobs.values())
       .filter(job =>
-        job.status === 'waiting' &&
+        (job.status === 'waiting' || job.status === 'delayed') &&
         job.scheduledFor <= now
       )
       .sort((a, b) => {

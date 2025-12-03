@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 /**
  * Type-safe database operations with comprehensive error handling
  * Provides a robust abstraction layer over Prisma for production use
@@ -603,7 +601,7 @@ export class TransactionOperations {
           wordCount: postData.content.split(/\s+/).length,
           readingTime: Math.ceil(postData.content.split(/\s+/).length / 200),
           tags: {
-            create: tags.map((tag: any) => ({ tagId: tag.id }))
+            create: tags.map((tag: Tag) => ({ tagId: tag.id }))
           }
         }
       })

@@ -94,7 +94,7 @@ export function PostSocialActions({ post, showSocialShare = true }: PostSocialAc
         <BlogShareButtons
           url={`https://richardwhudsonjr.com/blog/${post.slug}`}
           title={post.title}
-          description={post.excerpt || ''}
+          excerpt={post.excerpt || ''}
         />
       )}
     </div>

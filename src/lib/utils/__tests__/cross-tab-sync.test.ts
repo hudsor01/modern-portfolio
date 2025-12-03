@@ -72,7 +72,8 @@ describe('CrossTabSync', () => {
       expect.stringContaining('"type":"form-update"')
     )
 
-    const storedValue = localStorageMock.setItem.mock.calls[0][1]
+    const storedValue = localStorageMock.setItem.mock.calls[0]?.[1]
+    if (!storedValue) throw new Error('Expected storedValue to be defined')
     const parsed = JSON.parse(storedValue)
 
     expect(parsed.type).toBe('form-update')

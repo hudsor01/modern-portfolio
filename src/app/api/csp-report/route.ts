@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logSecurityEvent } from '@/lib/security/security-headers'
-import { createContextLogger } from '@/lib/logging/logger';
+import { createContextLogger } from '@/lib/monitoring/logger';
 
 const logger = createContextLogger('CspreportAPI');
 

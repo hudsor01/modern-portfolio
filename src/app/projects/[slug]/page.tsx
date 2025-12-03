@@ -93,6 +93,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     ...(project.tags && { technologies: project.tags }),
     ...(project.link && { liveUrl: project.link }),
     ...(project.github && { githubUrl: project.github }),
+    ...('starData' in project && project.starData && { starData: project.starData }),
   }
 
   // Prefetch project data on the server
