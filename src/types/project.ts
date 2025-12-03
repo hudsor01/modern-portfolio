@@ -4,6 +4,26 @@
  */
 
 /**
+ * STAR format metric data for project achievements
+ */
+export interface STARMetric {
+  phase: string;
+  impact: number;
+  efficiency: number;
+  value: number;
+}
+
+/**
+ * STAR format data (Situation, Task, Action, Result)
+ */
+export interface STARData {
+  situation: STARMetric;
+  task: STARMetric;
+  action: STARMetric;
+  result: STARMetric;
+}
+
+/**
  * Main Project interface representing a portfolio project
  * Combines all fields from projects.ts, projects-types.ts, and project.ts
  */
@@ -14,31 +34,32 @@ export interface Project {
   description: string;
   content?: string;
   longDescription?: string;
-  
+
   // Media & URLs
   image?: string;
   link?: string;
   github?: string;
   liveUrl?: string;
   githubUrl?: string;
-  
+
   // Categorization & Metadata
   category?: string;
   tags?: string[];
   technologies?: string[];
   featured?: boolean;
-  
+
   // Dates
   date?: string | Date;
   createdAt?: Date | string;
   updatedAt?: Date | string;
-  
+
   // Project Details
   client?: string;
   role?: string;
   testimonial?: Testimonial;
   gallery?: ProjectImage[];
   metrics?: Record<string, string>;
+  starData?: STARData;
   details?: {
     challenge: string;
     solution: string;

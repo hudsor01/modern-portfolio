@@ -6,15 +6,16 @@ import { Navbar } from '@/components/layout/navbar'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { 
-  ArrowLeft, 
-  ExternalLink, 
-  ArrowRight 
+import {
+  ArrowLeft,
+  ExternalLink,
+  ArrowRight
 } from 'lucide-react'
 import { SiGithub } from 'react-icons/si'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Project } from '@/types/project'
+import { STARAreaChart } from './STARAreaChart'
 
 interface ProjectDetailClientBoundaryProps {
   slug: string
@@ -198,6 +199,20 @@ export default function ProjectDetailClientBoundary({
                 )}
               </div>
             </div>
+
+            {/* STAR Impact Analysis Chart */}
+            {displayProject.starData && (
+              <div className="bg-white/70 dark:bg-card/70 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+                <h3 className="text-xl font-semibold mb-4 text-foreground dark:text-white">
+                  Impact Analysis
+                </h3>
+                <STARAreaChart
+                  data={displayProject.starData}
+                  title="STAR Framework Metrics"
+                  className="mt-4"
+                />
+              </div>
+            )}
           </div>
         </div>
 
