@@ -150,50 +150,6 @@ export function BlogPostCard({
     )
   }
 
-  if (variant === 'compact') {
-    return (
-      <motion.article
-        className={cn("group cursor-pointer", className)}
-        variants={cardVariants}
-        initial="hidden"
-        animate="visible"
-        whileHover="hover"
-        onClick={handleCardClick}
-      >
-        <Link href={`/blog/${post.slug}`} className="block p-4 hover:bg-white/5 rounded-xl transition-colors">
-          <div className="flex items-start justify-between mb-2">
-            {showCategory && post.category && (
-              <Badge variant="outline" className="text-xs">
-                {post.category.name}
-              </Badge>
-            )}
-            {post.publishedAt && (
-              <time className="text-xs text-muted-foreground dark:text-muted-foreground">
-                {formatDistanceToNow(post.publishedAt, { addSuffix: true })}
-              </time>
-            )}
-          </div>
-          
-          <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors line-clamp-2">
-            {post.title}
-          </h3>
-          
-          <p className="text-sm text-muted-foreground dark:text-muted-foreground line-clamp-2 mb-3">
-            {post.excerpt}
-          </p>
-          
-          <div className="flex items-center justify-between text-xs text-muted-foreground dark:text-muted-foreground">
-            {showAuthor && post.author && (
-              <span>{post.author.name}</span>
-            )}
-            {showReadingTime && (
-              <span>{post.readingTime} min read</span>
-            )}
-          </div>
-        </Link>
-      </motion.article>
-    )
-  }
 
   return (
     <motion.article
@@ -237,13 +193,13 @@ export function BlogPostCard({
               
               {/* Badges */}
               <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                {post.featured && (
+                {'featured' in post && post.featured && (
                   <Badge className="bg-warning/90 text-foreground backdrop-blur">
                     <TrendingUp className="h-3 w-3 mr-1" />
                     Featured
                   </Badge>
                 )}
-                {showCategory && (
+                {showCategory && post.category && (
                   <Badge className="gradient-cta text-foreground backdrop-blur">
                     {post.category.name}
                   </Badge>
@@ -292,7 +248,7 @@ export function BlogPostCard({
             
             {/* Author and Meta */}
             <div className="flex items-center justify-between">
-              {showAuthor && (
+              {showAuthor && post.author && (
                 <div className="flex items-center gap-3">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={post.author.avatar} alt={post.author.name} />
@@ -302,9 +258,11 @@ export function BlogPostCard({
                   </Avatar>
                   <div>
                     <div className="font-medium text-sm">{post.author.name}</div>
-                    <time className="text-xs text-muted-foreground dark:text-muted-foreground">
-                      {formatDistanceToNow(post.publishedAt, { addSuffix: true })}
-                    </time>
+                    {post.publishedAt && (
+                      <time className="text-xs text-muted-foreground dark:text-muted-foreground">
+                        {formatDistanceToNow(new Date(post.publishedAt), { addSuffix: true })}
+                      </time>
+                    )}
                   </div>
                 </div>
               )}

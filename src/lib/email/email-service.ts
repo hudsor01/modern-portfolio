@@ -10,7 +10,7 @@ import { z } from 'zod'
 import { checkContactFormRateLimit } from '../security/rate-limiter'
 import { escapeHtml } from '@/lib/security/html-escape'
 import { logger } from '@/lib/monitoring/logger'
-import { createContextLogger } from '@/lib/logging/logger'
+import { createContextLogger } from '@/lib/monitoring/logger'
 
 const emailLogger = createContextLogger('EmailService')
 

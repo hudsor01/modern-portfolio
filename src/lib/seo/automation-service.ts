@@ -52,7 +52,7 @@ export class SEOAutomationService {
   private readonly maxTitleLength = 60
   private readonly maxDescriptionLength = 160
   // private readonly minContentLength = 300 // Unused for now
-  private readonly keywordDensityRange = { min: 0.5, max: 2.5 }
+  // private readonly keywordDensityRange = { min: 0.5, max: 2.5 } // Reserved for future use
 
   /**
    * Generate comprehensive SEO optimization for content
@@ -182,14 +182,19 @@ export class SEOAutomationService {
     // Extract phrases (2-3 words)
     const phrases: Record<string, number> = {}
     for (let i = 0; i < words.length - 1; i++) {
-      const twoWord = `${words[i]} ${words[i + 1]}`
-      const threeWord = i < words.length - 2 ? `${words[i]} ${words[i + 1]} ${words[i + 2]}` : ''
-      
-      if (twoWord.length > 6 && !stopWords.has(words[i]) && !stopWords.has(words[i + 1])) {
+      const word1 = words[i];
+      const word2 = words[i + 1];
+      if (!word1 || !word2) continue;
+
+      const twoWord = `${word1} ${word2}`
+      const word3 = words[i + 2];
+      const threeWord = i < words.length - 2 && word3 ? `${word1} ${word2} ${word3}` : ''
+
+      if (twoWord.length > 6 && !stopWords.has(word1) && !stopWords.has(word2)) {
         phrases[twoWord] = (phrases[twoWord] || 0) + 1
       }
-      
-      if (threeWord && threeWord.length > 10 && words[i + 2] && !stopWords.has(words[i + 2])) {
+
+      if (threeWord && threeWord.length > 10 && word3 && !stopWords.has(word3)) {
         phrases[threeWord] = (phrases[threeWord] || 0) + 1
       }
     }
@@ -357,6 +362,8 @@ export class SEOAutomationService {
     while ((match = imageRegex.exec(content)) !== null) {
       const alt = match[1]
       const src = match[2]
+      if (!src) continue;
+
       const hasAlt = Boolean(alt && alt.trim().length > 0)
 
       const optimization: ImageOptimization = {
@@ -379,91 +386,94 @@ export class SEOAutomationService {
     return images
   }
 
-  /**
-   * Generate additional content suggestions
-   */
-  private generateContentSuggestions(content: string, keywords: string[]): SEOSuggestion[] {
-    const suggestions: SEOSuggestion[] = []
-    const wordCount = content.trim().split(/\s+/).length
+  // Commented out - reserved for future use
+  // /**
+  //  * Generate additional content suggestions
+  //  * @internal Reserved for future use
+  //  */
+  // private generateContentSuggestions(content: string, keywords: string[]): SEOSuggestion[] {
+  //   const suggestions: SEOSuggestion[] = []
+  //   const wordCount = content.trim().split(/\s+/).length
 
-    // Keyword density analysis
-    keywords.slice(0, 3).forEach(keyword => {
-      const occurrences = (content.toLowerCase().match(new RegExp(keyword.toLowerCase(), 'g')) || []).length
-      const density = (occurrences / wordCount) * 100
+  //   // Keyword density analysis
+  //   keywords.slice(0, 3).forEach(keyword => {
+  //     const occurrences = (content.toLowerCase().match(new RegExp(keyword.toLowerCase(), 'g')) || []).length
+  //     const density = (occurrences / wordCount) * 100
 
-      if (density < this.keywordDensityRange.min) {
-        suggestions.push({
-          type: 'content',
-          message: `Increase usage of keyword "${keyword}" (current density: ${density.toFixed(1)}%)`,
-          priority: 'medium'
-        })
-      } else if (density > this.keywordDensityRange.max) {
-        suggestions.push({
-          type: 'content',
-          message: `Reduce usage of keyword "${keyword}" to avoid over-optimization (current density: ${density.toFixed(1)}%)`,
-          priority: 'high'
-        })
-      }
-    })
+  //     if (density < this.keywordDensityRange.min) {
+  //       suggestions.push({
+  //         type: 'content',
+  //         message: `Increase usage of keyword "${keyword}" (current density: ${density.toFixed(1)}%)`,
+  //         priority: 'medium'
+  //       })
+  //     } else if (density > this.keywordDensityRange.max) {
+  //       suggestions.push({
+  //         type: 'content',
+  //         message: `Reduce usage of keyword "${keyword}" to avoid over-optimization (current density: ${density.toFixed(1)}%)`,
+  //         priority: 'high'
+  //       })
+  //     }
+  //   })
 
-    // Content structure analysis
-    const headingCount = (content.match(/^#{1,6}\s/gm) || []).length
-    if (headingCount === 0 && wordCount > 500) {
-      suggestions.push({
-        type: 'content',
-        message: 'Add headings (H2, H3) to improve content structure and readability',
-        priority: 'high'
-      })
-    }
+  //   // Content structure analysis
+  //   const headingCount = (content.match(/^#{1,6}\s/gm) || []).length
+  //   if (headingCount === 0 && wordCount > 500) {
+  //     suggestions.push({
+  //       type: 'content',
+  //       message: 'Add headings (H2, H3) to improve content structure and readability',
+  //       priority: 'high'
+  //     })
+  //   }
 
-    // List usage
-    if (wordCount > 300 && !content.includes('- ') && !content.includes('* ')) {
-      suggestions.push({
-        type: 'content',
-        message: 'Consider adding bullet points or numbered lists to improve scannability',
-        priority: 'medium'
-      })
-    }
+  //   // List usage
+  //   if (wordCount > 300 && !content.includes('- ') && !content.includes('* ')) {
+  //     suggestions.push({
+  //       type: 'content',
+  //       message: 'Consider adding bullet points or numbered lists to improve scannability',
+  //       priority: 'medium'
+  //     })
+  //   }
 
-    return suggestions
-  }
+  //   return suggestions
+  // }
 
-  /**
-   * Generate technical SEO suggestions
-   */
-  private generateTechnicalSuggestions(
-    images: ImageOptimization[], 
-    internalLinks: string[]
-  ): SEOSuggestion[] {
-    const suggestions: SEOSuggestion[] = []
+  // /**
+  //  * Generate technical SEO suggestions
+  //  * @internal Reserved for future use
+  //  */
+  // private generateTechnicalSuggestions(
+  //   images: ImageOptimization[],
+  //   internalLinks: string[]
+  // ): SEOSuggestion[] {
+  //   const suggestions: SEOSuggestion[] = []
 
-    // Image optimization suggestions
-    const imagesWithoutAlt = images.filter(img => !img.hasAlt)
-    if (imagesWithoutAlt.length > 0) {
-      suggestions.push({
-        type: 'content',
-        message: `${imagesWithoutAlt.length} image(s) missing alt text. Add descriptive alt attributes.`,
-        priority: 'high'
-      })
-    }
+  //   // Image optimization suggestions
+  //   const imagesWithoutAlt = images.filter(img => !img.hasAlt)
+  //   if (imagesWithoutAlt.length > 0) {
+  //     suggestions.push({
+  //       type: 'content',
+  //       message: `${imagesWithoutAlt.length} image(s) missing alt text. Add descriptive alt attributes.`,
+  //       priority: 'high'
+  //     })
+  //   }
 
-    // Internal linking suggestions
-    if (internalLinks.length === 0) {
-      suggestions.push({
-        type: 'content',
-        message: 'Add internal links to related content to improve site structure and SEO',
-        priority: 'medium'
-      })
-    } else if (internalLinks.length > 10) {
-      suggestions.push({
-        type: 'content',
-        message: 'Too many internal links may dilute link equity. Consider reducing to 5-10 relevant links.',
-        priority: 'low'
-      })
-    }
+  //   // Internal linking suggestions
+  //   if (internalLinks.length === 0) {
+  //     suggestions.push({
+  //       type: 'content',
+  //       message: 'Add internal links to related content to improve site structure and SEO',
+  //       priority: 'medium'
+  //     })
+  //   } else if (internalLinks.length > 10) {
+  //     suggestions.push({
+  //       type: 'content',
+  //       message: 'Too many internal links may dilute link equity. Consider reducing to 5-10 relevant links.',
+  //       priority: 'low'
+  //     })
+  //   }
 
-    return suggestions
-  }
+  //   return suggestions
+  // }
 
   /**
    * Generate structured data for content

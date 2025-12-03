@@ -739,11 +739,13 @@ export class ContentAnalyzer {
     while ((match = linkRegex.exec(content)) !== null) {
       const anchor = match[1]
       const url = match[2]
+      if (!anchor || !url) continue;
+
       const context = content.substring(Math.max(0, match.index - 50), match.index + 50)
-      
-      if (url && (url.startsWith('/') || url.includes('localhost') || url.includes('richardhudson.dev'))) {
+
+      if (url.startsWith('/') || url.includes('localhost') || url.includes('richardhudson.dev')) {
         internalLinks.push({ url, anchor, context })
-      } else if (url) {
+      } else {
         externalLinks.push({ url, anchor, context })
       }
     }
@@ -781,19 +783,18 @@ export class ContentAnalyzer {
     
     let match
     while ((match = imageRegex.exec(content)) !== null) {
-      const alt = match[1]
+      const alt = match[1] ?? ''
       const src = match[2]
-      
+      if (!src) continue;
+
       let quality: 'good' | 'fair' | 'poor' = 'poor'
-      if (alt && alt.length > 10) {
+      if (alt.length > 10) {
         quality = 'good'
-      } else if (alt && alt.length > 0) {
+      } else if (alt.length > 0) {
         quality = 'fair'
       }
-      
-      if (src) {
-        images.push({ src, alt, quality })
-      }
+
+      images.push({ src, alt, quality })
     }
     
     const totalImages = images.length

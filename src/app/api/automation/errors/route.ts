@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { errorMonitor } from '@/lib/automation/error-monitoring';
 import { z, ZodError } from 'zod';
-import { createContextLogger } from '@/lib/logging/logger';
+import { createContextLogger } from '@/lib/monitoring/logger';
 import type { ApiResponse } from '@/types/shared-api';
 
 const logger = createContextLogger('ErrorMonitoringAPI');

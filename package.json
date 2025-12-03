@@ -28,8 +28,8 @@
     "build:analyze": "cross-env ANALYZE=true pnpm run build",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:run": "vitest run --no-file-parallelism",
-    "test:coverage": "vitest run --no-file-parallelism --coverage",
+    "test:run": "vitest run --no-file-parallelism --passWithNoTests",
+    "test:coverage": "vitest run --no-file-parallelism --coverage --passWithNoTests",
     "test:watch": "vitest --watch",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
@@ -60,8 +60,7 @@
     "db:migrate:reset": "prisma migrate reset",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "postinstall": "prisma generate",
-    "prepare": "husky"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { ProjectDataManager } from '@/lib/server/project-data-manager'
-import { createContextLogger } from '@/lib/logging/logger';
+import { createContextLogger } from '@/lib/monitoring/logger';
 
 const logger = createContextLogger('StatsAPI');
 

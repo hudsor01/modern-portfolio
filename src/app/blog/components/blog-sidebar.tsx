@@ -4,13 +4,14 @@ import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { m as motion } from 'framer-motion'
-import { 
-  Calendar, 
-  Tag, 
-  User, 
-  TrendingUp, 
-  Clock, 
-  Eye, 
+import { formatDistanceToNow } from 'date-fns'
+import {
+  Calendar,
+  Tag,
+  User,
+  TrendingUp,
+  Clock,
+  Eye,
   MessageCircle,
   Folder,
   Star,
@@ -56,14 +57,6 @@ export function BlogSidebar({
     visible: { opacity: 1, y: 0 }
   }
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    }).format(date)
-  }
-
   return (
     <motion.div
       variants={containerVariants}
@@ -106,7 +99,7 @@ export function BlogSidebar({
                         </h4>
                         <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                           <Calendar className="h-3 w-3" />
-                          <span>{post.publishedAt ? formatDate(post.publishedAt) : 'Draft'}</span>
+                          <span>{post.publishedAt ? formatDistanceToNow(new Date(post.publishedAt), { addSuffix: true }) : 'Draft'}</span>
                           <Eye className="h-3 w-3" />
                           <span>{post.viewCount}</span>
                         </div>
@@ -217,7 +210,7 @@ export function BlogSidebar({
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <span>{post.author.name}</span>
                         <span>•</span>
-                        <span>{post.publishedAt ? formatDate(post.publishedAt) : 'Draft'}</span>
+                        <span>{post.publishedAt ? formatDistanceToNow(new Date(post.publishedAt), { addSuffix: true }) : 'Draft'}</span>
                       </div>
                     </div>
                   </Link>

@@ -58,27 +58,21 @@ export type {
   DuplicateContentDetectionPayload
 } from './blog-automation-handlers';
 
-// Rate limiting
-import { 
-  rateLimiter, 
-  rateLimitConfigs, 
-  applyRateLimit, 
-  withRateLimit 
-} from './rate-limiter';
-import type { 
-  RateLimitConfig, 
-  RateLimitResult 
-} from './rate-limiter';
+// Rate limiting - using global rate limiter from lib/security
+import {
+  rateLimiter
+} from '@/lib/security/rate-limiter';
+import type {
+  RateLimitConfig,
+  RateLimitResult
+} from '@/lib/security/rate-limiter';
 
-export { 
-  rateLimiter, 
-  rateLimitConfigs, 
-  applyRateLimit, 
-  withRateLimit 
+export {
+  rateLimiter
 };
-export type { 
-  RateLimitConfig, 
-  RateLimitResult 
+export type {
+  RateLimitConfig,
+  RateLimitResult
 };
 
 // Error monitoring
@@ -175,23 +169,15 @@ interface ErrorMonitorHealth {
   recommendations: string[];
 }
 
-interface RateLimiterStats {
-  totalKeys: number;
-  totalRequests: number;
-  memoryUsage: number;
-}
-
 export async function getSystemStatus(): Promise<{
   automation: AutomationHealth;
   jobQueue: QueueHealth;
   errorMonitor: ErrorMonitorHealth;
-  rateLimiter: RateLimiterStats;
 }> {
   return {
     automation: await blogAutomationService.getAutomationHealth(),
     jobQueue: jobQueue.healthCheck(),
-    errorMonitor: errorMonitor.getHealthStatus(),
-    rateLimiter: rateLimiter.getStats()
+    errorMonitor: errorMonitor.getHealthStatus()
   };
 }
 

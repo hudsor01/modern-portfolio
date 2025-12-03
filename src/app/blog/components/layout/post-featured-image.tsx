@@ -14,25 +14,20 @@ export function PostFeaturedImage({ post, itemVariants }: PostFeaturedImageProps
   if (!post.featuredImage) return null
 
   return (
-    <motion.div 
+    <motion.div
       className="mb-12"
       variants={itemVariants}
     >
       <div className="relative aspect-video rounded-2xl overflow-hidden bg-muted dark:bg-card">
         <Image
-          src={post.featuredImage.url}
-          alt={post.featuredImage.alt}
+          src={post.featuredImage}
+          alt={post.featuredImageAlt || post.title}
           fill
           className="object-cover"
           priority
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
         />
       </div>
-      {post.featuredImage.caption && (
-        <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-3 text-center">
-          {post.featuredImage.caption}
-        </p>
-      )}
     </motion.div>
   )
 }

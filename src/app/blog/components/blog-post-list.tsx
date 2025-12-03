@@ -11,6 +11,7 @@ import { BlogFilters } from './blog-filters'
 import { BlogPostSkeleton } from './blog-post-skeleton'
 import { cn } from '@/lib/utils'
 import type { BlogPostSummary, BlogCategory, BlogTag, BlogAuthor, BlogFilters as BlogFiltersType } from '@/types/blog'
+import type { BlogPostData } from '@/types/shared-api'
 
 interface BlogPostListProps {
   posts: BlogPostSummary[]
@@ -26,9 +27,9 @@ interface BlogPostListProps {
   filters?: BlogFiltersType
   onPageChange: (page: number) => void
   onFiltersChange: (filters: BlogFiltersType) => void
-  onPostClick: (post: BlogPostSummary) => void
-  onPostEdit?: (post: BlogPostSummary) => void
-  onPostDelete?: (post: BlogPostSummary) => void
+  onPostClick: (post: BlogPostSummary | BlogPostData) => void
+  onPostEdit?: (post: BlogPostSummary | BlogPostData) => void
+  onPostDelete?: (post: BlogPostSummary | BlogPostData) => void
   showFilters?: boolean
   showPagination?: boolean
   showActions?: boolean
@@ -249,7 +250,7 @@ export function BlogPostList({
             )}
           >
             {skeletonArray.map((index) => (
-              <BlogPostSkeleton key={index} variant={localViewMode} />
+              <BlogPostSkeleton key={index} />
             ))}
           </motion.div>
         ) : (

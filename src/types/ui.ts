@@ -7,13 +7,10 @@ import { JSX, ReactNode } from 'react'
 import { ImageProps } from 'next/image'
 import { ButtonHTMLAttributes } from 'react'
 import { ContactFormData } from '@/types/shared-api'
+import { Variants } from 'framer-motion'
 
-// Framer Motion types
-export interface MotionVariant {
-  [key: string]: {
-    [property: string]: string | number | boolean;
-  };
-}
+// Framer Motion types - using Variants from framer-motion for compatibility
+export type MotionVariant = Variants
 
 
 // Animation related interfaces

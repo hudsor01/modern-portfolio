@@ -57,7 +57,7 @@ describe('/api/blog/categories', () => {
     
     // Get the mocked database
     const dbModule = await import('@/lib/db')
-    mockDb = dbModule.db
+    mockDb = dbModule.db as unknown as typeof mockDb
     
     // Setup default mock data
     const mockCategories = [
@@ -171,7 +171,7 @@ describe('/api/blog/categories', () => {
       const request = createMockRequest('http://localhost:3000/api/blog/categories')
       const response = await GET(request)
 
-      expect(response.headers['Cache-Control']).toBe('public, max-age=300, s-maxage=600')
+      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('public, max-age=300, s-maxage=600')
     })
 
     it('handles errors gracefully', async () => {
@@ -355,7 +355,7 @@ describe('/api/blog/categories', () => {
         totalViews: 0,
         createdAt: new Date('2023-01-12'),
       }
-      
+
       mockDb.category.create.mockResolvedValue(createdCategory)
 
       const request = createMockRequest('http://localhost:3000/api/blog/categories', {
@@ -365,7 +365,7 @@ describe('/api/blog/categories', () => {
 
       const response = await POST(request)
 
-      expect(response.headers['Cache-Control']).toBe('no-cache')
+      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('no-cache')
     })
 
     it('validates required name field', async () => {
@@ -538,13 +538,14 @@ describe('/api/blog/categories', () => {
     })
 
     it('handles JSON parsing errors', async () => {
-      const request = createMockRequest('http://localhost:3000/api/blog/categories', {
+      const request = {
+        url: 'http://localhost:3000/api/blog/categories',
         method: 'POST',
         body: 'invalid-json',
         json: async () => {
           throw new Error('Invalid JSON')
         },
-      })
+      } as unknown as NextRequest
 
       const response = await POST(request)
       const data = await response.json()

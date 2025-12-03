@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jobQueue, type Job, type JobType } from '@/lib/automation/job-queue';
 import { z } from 'zod';
-import { createContextLogger } from '@/lib/logging/logger';
+import { createContextLogger } from '@/lib/monitoring/logger';
 import type { ApiResponse } from '@/types/shared-api';
 
 const logger = createContextLogger('JobStatusAPI');

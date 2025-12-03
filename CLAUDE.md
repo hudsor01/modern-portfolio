@@ -66,7 +66,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - Unit tests: `src/**/__tests__/*.test.ts(x)`
   - E2E tests: `e2e/*.spec.ts`
   - Test utilities: `src/test/setup.tsx`, `src/test/factories.ts`
-- **Coverage excludes**: Blog features, automation, SEO tools (see tsconfig.json)
+- **Coverage**: 80% threshold enforced via `pnpm test:coverage`
 
 ### High-Level Architecture
 
@@ -136,6 +136,72 @@ src/
 - Maintain 80% coverage threshold (enforced by `pnpm test:coverage`)
 - Use test factories in `src/test/factories.ts` for consistent test data
 
+## Coding Standards (Mandatory)
+
+### YAGNI (You Aren't Gonna Need It)
+- **Do not implement features, functionality, or infrastructure that is not immediately required**
+- No speculative coding, no "just in case" implementations, no premature optimization
+- If it's not needed now, it will not be developed
+- Applies to: libraries, frameworks, database schemas, API endpoints, and business logic
+- Remove dead code immediately—don't comment it out "for later"
+
+### Composition Over Inheritance
+- Build all system components using composition rather than inheritance hierarchies
+- **Avoid deep inheritance trees**—prefer flat component structures
+- Build functionality by combining smaller, independent components
+- Never create parent-child class relationships for code reuse
+- Use hooks for shared behavior, not base classes
+
+### Explicit Data Flow & Type Safety
+- All data must have clearly defined, strongly typed interfaces
+- **No `any` types, no dynamic types, no implicit conversions**
+- No untyped objects passed between functions
+- All inputs, outputs, and transformations must be explicitly declared with proper type annotations
+- Data crossing module boundaries must be validated with Zod and typed
+- **Never disable ESLint type-checking rules** (`@typescript-eslint/no-explicit-any`)
+
+### Small, Focused Modules (High Cohesion, Low Coupling)
+- Each module, class, function, and component must have a single, well-defined purpose
+- **Maximum component size: 300 lines** (split larger components)
+- **Maximum function size: 50 lines** (extract helper functions)
+- Modules should only contain code directly related to their primary responsibility
+- Dependencies between modules must be minimal and clearly defined through explicit interfaces
+- Extract related state into custom hooks (e.g., `useContactForm` instead of 7 separate `useState`)
+
+### Fail Fast, Log Precisely
+- Validate inputs immediately and throw clear, specific errors when invalid data is encountered
+- **Do not attempt to recover from invalid states silently**
+- Never swallow errors or use empty catch blocks
+- All error conditions must be logged with sufficient context to identify root cause
+- Error messages must be actionable—include what failed, why, and how to fix
+- **No fire-and-forget promises**—always handle rejections explicitly
+
+### Idempotency Everywhere
+- All operations that modify state or interact with external systems must be idempotent
+- Running the same operation multiple times must produce the same result as running it once
+- Applies to: database operations, API calls, file operations, and any state-changing functions
+- Use unique identifiers and upsert patterns where appropriate
+
+### Predictable State Management
+- All application state must be managed in a deterministic, traceable manner
+- **No hidden global state, no implicit side effects, no shared mutable state**
+- State changes must follow clear, predictable patterns
+- Derive computed values with `useMemo`—never use `useEffect` + `setState` for derived state
+- Use TanStack Query for server state, local state only for UI concerns
+
+### Single Responsibility Principle
+- Every function, class, module, and service must have exactly one reason to change
+- If a component handles multiple concerns, split it into separate components
+- Separate: business logic, data access, presentation, and infrastructure concerns
+- One file = one export = one purpose
+
+### Prefer Readability Over Cleverness
+- Code must be written for human understanding first, performance second
+- **No clever tricks, no overly compact syntax, no "smart" solutions that sacrifice clarity**
+- The codebase must be understandable by any team member without extensive documentation
+- Use descriptive variable names, even if longer
+- Prefer explicit over implicit behavior
+
 ## Key Development Patterns
 
 ### shadcn/ui Component Usage
@@ -157,7 +223,6 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/
 ### TypeScript Configuration
 - **Strict mode** enabled with `noUncheckedIndexedAccess: true`
 - **Path aliases**: `@/` for src root, `@/components/*`, `@/lib/*`, etc.
-- **Excludes**: Blog features, automation, SEO tools excluded from compilation (see tsconfig.json)
 
 ### API Patterns
 1. **REST API** (`src/app/api/`): Next.js API routes with Zod validation
