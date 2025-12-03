@@ -67,6 +67,9 @@ export interface ApiEndpoints {
   };
 }
 
+// Import STAR types from project types
+import type { STARData } from './project';
+
 // Project-related API types
 export interface ProjectData {
   id: string;
@@ -78,7 +81,7 @@ export interface ProjectData {
   category: ProjectCategory;
   technologies: string[];
   tags?: string[];
-  
+
   // Media & URLs
   imageUrl?: string;
   image?: string;
@@ -86,15 +89,16 @@ export interface ProjectData {
   liveUrl?: string;
   githubUrl?: string;
   link?: string;
-  
+
   featured: boolean;
   createdAt: string;
   updatedAt: string;
-  
+
   // Additional project details
   client?: string;
   role?: string;
   metrics?: Record<string, string>;
+  starData?: STARData;
   details?: {
     challenge: string;
     solution: string;

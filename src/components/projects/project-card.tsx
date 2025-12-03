@@ -7,6 +7,7 @@ import type { Project as ProjectType } from '@/types/project'
 import { ArrowRight } from 'lucide-react'
 import { MotionDiv, optimizedVariants } from '@/lib/motion/optimized-motion'
 import { useMotionConfig } from '@/lib/motion/reduced-motion'
+import { STARAreaChart } from './STARAreaChart'
 
 // Mock project interface
 interface MockProject {
@@ -159,6 +160,17 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, pr
               blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8A0XqoC2QtJQFgx+GktulvNKyWnLWJdZJvVy2PqwEEgT+OFOccNaJJcGqDYB4LCqTU69jQFf/Z"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+          </div>
+        )}
+
+        {/* STAR Chart */}
+        {'starData' in project && project.starData && (
+          <div className="p-4 bg-black/20 border border-white/10 rounded-lg">
+            <STARAreaChart
+              data={project.starData}
+              title="Project Impact Analysis"
+              className="mt-2"
+            />
           </div>
         )}
       </div>
