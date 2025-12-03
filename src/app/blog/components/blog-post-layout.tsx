@@ -2,7 +2,7 @@
 
 import { m } from 'framer-motion'
 import { BlogPostData } from '@/types/shared-api'
-import { BlogComment } from '@/types/blog'
+import { BlogComment, ContentType } from '@/types/blog'
 import { BlogContent } from './blog-content'
 import { ReadingProgress } from './reading-progress'
 import { Separator } from '@/components/ui/separator'
@@ -87,9 +87,9 @@ export function BlogPostLayout({
           >
             <PostSocialActions post={post} showSocialShare={showSocialShare} />
 
-            <BlogContent 
+            <BlogContent
               content={post.content}
-              contentType={post.contentType}
+              contentType={ContentType[post.contentType as keyof typeof ContentType]}
               className="mb-8"
             />
 

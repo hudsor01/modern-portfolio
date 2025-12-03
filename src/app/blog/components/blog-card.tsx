@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import type { BlogPostSummary } from '@/types/blog'
 import type { BlogPostData } from '@/types/shared-api'
 import { cn } from '@/lib/utils'
-import { createContextLogger } from '@/lib/logging/logger'
+import { createContextLogger } from '@/lib/monitoring/logger'
 
 const logger = createContextLogger('BlogCard')
 
@@ -115,7 +115,7 @@ export function BlogCard({
           )}
           
           {/* Featured Badge */}
-          {post.featured && (
+          {'featured' in post && post.featured && (
             <Badge
               data-testid="featured-badge"
               className="absolute top-3 right-3 gradient-cta text-foreground border-0"

@@ -85,7 +85,7 @@ describe('/api/blog', () => {
       const data = await response.json()
 
       expect(data.success).toBe(true)
-      data.data.forEach((post: BlogPostSummary) => {
+      data.data.forEach((post: { status: string }) => {
         expect(post.status).toBe('PUBLISHED')
       })
     })
@@ -98,7 +98,7 @@ describe('/api/blog', () => {
       const data = await response.json()
 
       expect(data.success).toBe(true)
-      data.data.forEach((post: BlogPostSummary) => {
+      data.data.forEach((post: { authorId: string }) => {
         expect(post.authorId).toBe('richard-hudson')
       })
     })
@@ -111,7 +111,7 @@ describe('/api/blog', () => {
       const data = await response.json()
 
       expect(data.success).toBe(true)
-      data.data.forEach((post: BlogPostSummary) => {
+      data.data.forEach((post: { categoryId: string }) => {
         expect(post.categoryId).toBe('revenue-operations')
       })
     })
@@ -139,7 +139,7 @@ describe('/api/blog', () => {
       const data = await response.json()
 
       expect(data.success).toBe(true)
-      data.data.forEach((post: BlogPostSummary) => {
+      data.data.forEach((post: { title: string; excerpt?: string; content: string; keywords: string[] }) => {
         const searchableText = [
           post.title,
           post.excerpt,
@@ -158,7 +158,7 @@ describe('/api/blog', () => {
       const data = await response.json()
 
       expect(data.success).toBe(true)
-      data.data.forEach((post: BlogPostSummary) => {
+      data.data.forEach((post: { status: string }) => {
         expect(post.status).toBe('PUBLISHED')
       })
     })
@@ -200,7 +200,7 @@ describe('/api/blog', () => {
       const data = await response.json()
 
       expect(data.success).toBe(true)
-      data.data.forEach((post: BlogPostSummary) => {
+      data.data.forEach((post: { publishedAt?: string; createdAt: string }) => {
         const publishedAt = new Date(post.publishedAt || post.createdAt)
         expect(publishedAt.getTime()).toBeGreaterThanOrEqual(new Date('2024-01-01').getTime())
         expect(publishedAt.getTime()).toBeLessThanOrEqual(new Date('2024-01-31').getTime())
@@ -221,7 +221,7 @@ describe('/api/blog', () => {
       const request = createMockRequest('http://localhost:3000/api/blog')
       const response = await GET(request)
 
-      expect(response.headers['Cache-Control']).toBe('public, max-age=60, s-maxage=300')
+      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('public, max-age=60, s-maxage=300')
     })
 
     it('handles errors gracefully', async () => {
@@ -387,7 +387,7 @@ describe('/api/blog', () => {
 
       const response = await POST(request)
 
-      expect(response.headers['Cache-Control']).toBe('no-cache')
+      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('no-cache')
     })
 
     it('validates required fields - missing title', async () => {
@@ -448,13 +448,14 @@ describe('/api/blog', () => {
     })
 
     it('handles JSON parsing errors', async () => {
-      const request = createMockRequest('http://localhost:3000/api/blog', {
+      const request = {
+        url: 'http://localhost:3000/api/blog',
         method: 'POST',
         body: 'invalid-json',
         json: async () => {
           throw new Error('Invalid JSON')
         },
-      })
+      } as unknown as NextRequest
 
       const response = await POST(request)
       const data = await response.json()

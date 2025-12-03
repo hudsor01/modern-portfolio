@@ -188,7 +188,7 @@ describe('/api/blog/tags', () => {
       const request = createMockRequest('http://localhost:3000/api/blog/tags')
       const response = await GET(request)
 
-      expect(response.headers['Cache-Control']).toBe('public, max-age=300, s-maxage=600')
+      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('public, max-age=300, s-maxage=600')
     })
 
     it('handles malformed limit parameter gracefully', async () => {
@@ -317,7 +317,7 @@ describe('/api/blog/tags', () => {
 
       const response = await POST(request)
 
-      expect(response.headers['Cache-Control']).toBe('no-cache')
+      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('no-cache')
     })
 
     it('validates required name field', async () => {
@@ -427,13 +427,14 @@ describe('/api/blog/tags', () => {
     })
 
     it('handles JSON parsing errors', async () => {
-      const request = createMockRequest('http://localhost:3000/api/blog/tags', {
+      const request = {
+        url: 'http://localhost:3000/api/blog/tags',
         method: 'POST',
         body: 'invalid-json',
         json: async () => {
           throw new Error('Invalid JSON')
         },
-      })
+      } as unknown as NextRequest
 
       const response = await POST(request)
       const data = await response.json()

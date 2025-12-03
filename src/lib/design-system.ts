@@ -1,12 +1,29 @@
 // Comprehensive Design System Integration
 // Combines main design tokens with specialized component tokens
 
-import { designSystem, components } from './design-tokens'
+import { DESIGN_SYSTEM, SPACING, SHADOWS, RADIUS } from './design-tokens'
 import { blogTokens } from './blog-design-tokens'
+
+// Component tokens derived from design system
+const components = {
+  button: {
+    padding: SPACING.md,
+    borderRadius: RADIUS.md,
+  },
+  card: {
+    padding: SPACING.lg,
+    borderRadius: RADIUS.lg,
+    shadow: SHADOWS.md,
+  },
+  input: {
+    padding: SPACING.sm,
+    borderRadius: RADIUS.sm,
+  },
+}
 
 // Extended design system with blog-specific tokens
 export const extendedDesignSystem = {
-  ...designSystem,
+  ...DESIGN_SYSTEM,
   blog: blogTokens,
   components: {
     ...components,
@@ -39,25 +56,20 @@ export const extendedDesignSystem = {
 // Type-safe design token accessors
 export const tokens = {
   // Main design system
-  spacing: designSystem.spacing,
-  colors: designSystem.colors,
-  typography: designSystem.typography,
-  borderRadius: designSystem.borderRadius,
-  boxShadow: designSystem.boxShadow,
-  animation: designSystem.animation,
-  
+  spacing: DESIGN_SYSTEM.spacing,
+  colors: DESIGN_SYSTEM.colors,
+  shadows: DESIGN_SYSTEM.shadows,
+  radius: DESIGN_SYSTEM.radius,
+  transitions: DESIGN_SYSTEM.transitions,
+  zIndex: DESIGN_SYSTEM.zIndex,
+
   // Blog-specific tokens
   blog: blogTokens,
-  
+
   // Component tokens
   button: components.button,
   card: components.card,
   input: components.input,
-  
-  // Accessibility tokens
-  accessibility: designSystem.accessibility,
-  focusRing: designSystem.focusRing,
-  touchTarget: designSystem.touchTarget,
 } as const
 
 // Utility functions for token consumption
@@ -65,41 +77,41 @@ export const getTokenValue = <T extends keyof typeof tokens>(
   category: T,
   path: string[]
 ): unknown => {
-  return path.reduce((obj, key) => obj?.[key], tokens[category] as Record<string, unknown>)
+  let current: unknown = tokens[category]
+  for (const key of path) {
+    if (current && typeof current === 'object' && key in current) {
+      current = (current as Record<string, unknown>)[key]
+    } else {
+      return undefined
+    }
+  }
+  return current
 }
 
 // CSS custom property generators
-export const generateCSSVariables = () => {
+export const generateCSSVariables = (): Record<string, string> => {
   const cssVars: Record<string, string> = {}
-  
+
   // Generate spacing variables
   Object.entries(tokens.spacing).forEach(([key, value]) => {
-    cssVars[`--spacing-${key}`] = value
+    cssVars[`--spacing-${key}`] = String(value)
   })
-  
-  // Generate color variables
-  Object.entries(tokens.colors.primary).forEach(([key, value]) => {
-    cssVars[`--color-primary-${key}`] = value
+
+  // Generate shadow variables
+  Object.entries(tokens.shadows).forEach(([key, value]) => {
+    cssVars[`--shadow-${key}`] = String(value)
   })
-  
-  Object.entries(tokens.colors.neutral).forEach(([key, value]) => {
-    cssVars[`--color-neutral-${key}`] = value
+
+  // Generate radius variables
+  Object.entries(tokens.radius).forEach(([key, value]) => {
+    cssVars[`--radius-${key}`] = String(value)
   })
-  
-  // Generate typography variables
-  Object.entries(tokens.typography.fontSize).forEach(([key, value]) => {
-    const [fontSize, options] = Array.isArray(value) ? value : [value, {}]
-    cssVars[`--font-size-${key}`] = typeof fontSize === 'string' ? fontSize : String(fontSize)
-    if (typeof options === 'object' && options && 'lineHeight' in options) {
-      cssVars[`--line-height-${key}`] = String(options.lineHeight)
-    }
-  })
-  
+
   // Generate blog-specific variables
   Object.entries(tokens.blog.colors.content).forEach(([key, value]) => {
-    cssVars[`--blog-color-${key}`] = value
+    cssVars[`--blog-color-${key}`] = String(value)
   })
-  
+
   return cssVars
 }
 
@@ -130,30 +142,24 @@ export const motion = {
   // Respect user preferences
   respectsMotion: '@media (prefers-reduced-motion: no-preference)',
   reduceMotion: '@media (prefers-reduced-motion: reduce)',
-  
-  // Common easing functions
-  easing: tokens.animation.timing,
-  
-  // Duration presets
-  duration: tokens.animation.duration,
-  
-  // Animation presets
-  presets: tokens.animation.presets,
+
+  // Transition presets from design tokens
+  transitions: tokens.transitions,
 } as const
 
 // Focus management utilities
 export const focus = {
   ring: {
-    width: tokens.focusRing.width,
-    offset: tokens.focusRing.offset,
-    color: tokens.focusRing.color,
-    style: tokens.focusRing.style,
+    width: '2px',
+    offset: '2px',
+    color: 'ring',
+    style: 'solid',
   },
   visible: 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
   styles: `
     focus-visible:outline-none
     focus-visible:ring-2
-    focus-visible:ring-${tokens.focusRing.color}
+    focus-visible:ring-ring
     focus-visible:ring-offset-2
   `.trim(),
 } as const
@@ -174,7 +180,7 @@ export const theme = {
 
 // Export everything for convenience
 export {
-  designSystem,
+  DESIGN_SYSTEM,
   blogTokens,
   components,
 }

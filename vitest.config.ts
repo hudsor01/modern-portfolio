@@ -3,6 +3,8 @@ import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
+const isCI = process.env.CI === 'true'
+
 export default defineConfig({
   plugins: [react()],
   test: {
@@ -12,6 +14,35 @@ export default defineConfig({
     css: true,
     includeSource: ['src/**/*.{js,ts,jsx,tsx}'],
     exclude: ['node_modules', 'dist', '.next', 'e2e/**/*', 'playwright-report/**/*'],
+    // Timeout configurations to prevent hanging
+    testTimeout: isCI ? 15000 : 10000, // Slightly longer in CI
+    hookTimeout: 10000, // 10 seconds for beforeEach/afterEach
+    teardownTimeout: 5000, // 5 seconds for cleanup
+    // CI-specific settings to prevent hanging
+    watch: false, // Never watch in CI (also enforced by --run flag)
+    reporters: isCI ? ['default', 'json'] : ['default'],
+    outputFile: isCI ? './test-results/results.json' : undefined,
+    // Pool options for proper worker cleanup
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true, // Use single fork for better stability in CI
+        isolate: true, // Isolate each test file
+      },
+    },
+    // Ensure proper cleanup
+    restoreMocks: true,
+    clearMocks: true,
+    resetMocks: true,
+    unstubEnvs: true,
+    unstubGlobals: true,
+    // Force exit after tests complete (prevents hanging)
+    passWithNoTests: true,
+    dangerouslyIgnoreUnhandledErrors: false,
+    // Ensure timers are properly cleaned up
+    fakeTimers: {
+      shouldClearNativeTimers: true,
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

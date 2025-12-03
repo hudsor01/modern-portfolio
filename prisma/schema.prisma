@@ -522,3 +522,34 @@ enum ChangeFrequency {
   YEARLY
   NEVER
 }
+
+// =======================
+// PORTFOLIO PROJECTS
+// =======================
+
+model Project {
+  id              String          @id @default(cuid())
+  slug            String          @unique
+  title           String
+  description     String          @db.Text
+  image           String          // Project screenshot/hero image
+  link            String?         // Live demo URL
+  github          String?         // GitHub repository URL
+  category        String          // e.g., "Revenue Operations", "Marketing"
+  tags            String[]        // Array of technology and feature tags
+  featured        Boolean         @default(false)
+
+  // Analytics
+  viewCount       Int             @default(0)
+  clickCount      Int             @default(0)
+
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@map("projects")
+  @@index([slug])
+  @@index([category])
+  @@index([featured])
+  @@index([createdAt(sort: Desc)])
+}

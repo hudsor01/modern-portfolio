@@ -175,8 +175,8 @@ describe('getEstimatedWordCount', () => {
       get textContent() { throw new Error('Access error') },
       get innerText() { throw new Error('Access error') }
     }
-    
-    const wordCount = getEstimatedWordCount(element as Element & { textContent: string; innerText: string })
+
+    const wordCount = getEstimatedWordCount(element as unknown as Element & { textContent: string; innerText: string })
     expect(wordCount).toBe(1000) // Fallback value
   })
 })

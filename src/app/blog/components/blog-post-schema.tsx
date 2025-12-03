@@ -12,12 +12,12 @@ export function BlogPostSchema({ post }: BlogPostSchemaProps) {
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.excerpt,
-    image: post.featuredImage?.url || '',
-    author: {
+    image: post.featuredImage || '',
+    author: post.author ? {
       '@type': 'Person',
       name: post.author.name,
       url: post.author.website || '',
-    },
+    } : undefined,
     publisher: {
       '@type': 'Organization',
       name: 'Richard Hudson Portfolio',

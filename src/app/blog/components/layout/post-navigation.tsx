@@ -30,9 +30,6 @@ export function PostNavigation({ post, itemVariants }: PostNavigationProps) {
           <h3 className="font-semibold group-hover:text-primary transition-colors">
             {post.previousPost.title}
           </h3>
-          <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1 line-clamp-2">
-            {post.previousPost.excerpt}
-          </p>
         </a>
       )}
 
@@ -48,9 +45,6 @@ export function PostNavigation({ post, itemVariants }: PostNavigationProps) {
           <h3 className="font-semibold group-hover:text-primary transition-colors">
             {post.nextPost.title}
           </h3>
-          <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1 line-clamp-2">
-            {post.nextPost.excerpt}
-          </p>
         </a>
       )}
     </motion.div>

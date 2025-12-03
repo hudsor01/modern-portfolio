@@ -23,12 +23,6 @@ type TagAnalytics = BlogTag & {
   totalPosts: number
 }
 
-interface MonthlyViewData {
-  month: string
-  year: number
-  totalViews: number
-  uniqueViews: number
-}
 
 interface KeywordData {
   keyword: string
@@ -157,7 +151,7 @@ describe('/api/blog/analytics', () => {
       expect(data.data.monthlyViews).toBeInstanceOf(Array)
       expect(data.data.monthlyViews.length).toBeGreaterThan(0)
       
-      data.data.monthlyViews.forEach((monthData: MonthlyViewData) => {
+      data.data.monthlyViews.forEach((monthData: { month: string; views: number }) => {
         expect(monthData).toHaveProperty('month')
         expect(monthData).toHaveProperty('views')
         expect(monthData.month).toMatch(/^\d{4}-\d{2}$/) // YYYY-MM format
@@ -262,7 +256,7 @@ describe('/api/blog/analytics', () => {
       const request = createMockRequest('http://localhost:3000/api/blog/analytics')
       const response = await GET(request)
 
-      expect(response.headers['Cache-Control']).toBe('public, max-age=60, s-maxage=120')
+      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('public, max-age=60, s-maxage=120')
     })
 
     it('has consistent data relationships', async () => {
@@ -304,7 +298,7 @@ describe('/api/blog/analytics', () => {
       expect(data.data.totalInteractions).toBeGreaterThanOrEqual(0)
       expect(data.data.avgReadingTime).toBeGreaterThan(0)
       
-      data.data.monthlyViews.forEach((month: MonthlyViewData) => {
+      data.data.monthlyViews.forEach((month: { month: string; views: number }) => {
         expect(month.views).toBeGreaterThanOrEqual(0)
       })
       

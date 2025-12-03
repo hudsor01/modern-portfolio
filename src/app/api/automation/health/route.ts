@@ -7,7 +7,7 @@ import { loadavg, cpus } from 'os';
 import { NextRequest, NextResponse } from 'next/server';
 import { jobQueue } from '@/lib/automation/job-queue';
 import { blogAutomationService } from '@/lib/automation/blog-automation-service';
-import { createContextLogger } from '@/lib/logging/logger';
+import { createContextLogger } from '@/lib/monitoring/logger';
 import type { ApiResponse } from '@/types/shared-api';
 
 const logger = createContextLogger('AutomationHealthCheck');
@@ -178,7 +178,7 @@ async function performSystemChecks(): Promise<{
   // CPU load check (Node.js specific)
   const loadAvg = loadavg();
   const cpuCount = cpus().length;
-  const normalizedLoad = loadAvg[0] / cpuCount;
+  const normalizedLoad = loadAvg[0] !== undefined ? loadAvg[0] / cpuCount : 0;
 
   if (normalizedLoad > 0.8) {
     issues.push(`High CPU load: ${(normalizedLoad * 100).toFixed(1)}%`);

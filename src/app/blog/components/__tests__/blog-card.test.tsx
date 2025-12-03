@@ -12,7 +12,7 @@ describe('BlogCard', () => {
     title: 'Test Blog Post',
     excerpt: 'This is a test excerpt for the blog post',
     featuredImage: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=800&h=600&fit=crop&crop=center&q=80',
-    publishedAt: new Date('2024-01-15'),
+    publishedAt: new Date('2024-01-15').toISOString(),
     readingTime: 5,
     featured: false,
     category: {
@@ -21,12 +21,12 @@ describe('BlogCard', () => {
       slug: 'test-category',
       postCount: 5,
       totalViews: 1000,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     },
     tags: [
-      { id: 'tag1', name: 'React', slug: 'react', postCount: 10, totalViews: 500, createdAt: new Date() },
-      { id: 'tag2', name: 'TypeScript', slug: 'typescript', postCount: 8, totalViews: 400, createdAt: new Date() },
+      { id: 'tag1', name: 'React', slug: 'react', postCount: 10, totalViews: 500, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+      { id: 'tag2', name: 'TypeScript', slug: 'typescript', postCount: 8, totalViews: 400, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
     ]
   })
 
@@ -162,11 +162,11 @@ describe('BlogCard', () => {
       const postWithManyTags = createMockBlogPostSummary({
         ...defaultPost,
         tags: [
-          { id: 'tag1', name: 'React', slug: 'react', postCount: 10, totalViews: 500, createdAt: new Date() },
-          { id: 'tag2', name: 'TypeScript', slug: 'typescript', postCount: 8, totalViews: 400, createdAt: new Date() },
-          { id: 'tag3', name: 'Next.js', slug: 'nextjs', postCount: 6, totalViews: 300, createdAt: new Date() },
-          { id: 'tag4', name: 'Testing', slug: 'testing', postCount: 4, totalViews: 200, createdAt: new Date() },
-          { id: 'tag5', name: 'Vitest', slug: 'vitest', postCount: 2, totalViews: 100, createdAt: new Date() },
+          { id: 'tag1', name: 'React', slug: 'react', postCount: 10, totalViews: 500, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+          { id: 'tag2', name: 'TypeScript', slug: 'typescript', postCount: 8, totalViews: 400, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+          { id: 'tag3', name: 'Next.js', slug: 'nextjs', postCount: 6, totalViews: 300, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+          { id: 'tag4', name: 'Testing', slug: 'testing', postCount: 4, totalViews: 200, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
+          { id: 'tag5', name: 'Vitest', slug: 'vitest', postCount: 2, totalViews: 100, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
         ]
       })
 

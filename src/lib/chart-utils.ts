@@ -52,8 +52,8 @@ export function formatValue(
 /**
  * Chart data validators - ensure type safety at runtime
  */
-export function isValidChartData<T extends ChartDataPoint>(data: unknown[]): data is T[] {
-  return Array.isArray(data) && data.every(item => 
+export function isValidChartData<T extends ChartDataPoint>(data: unknown): data is T[] {
+  return Array.isArray(data) && data.every(item =>
     typeof item === 'object' &&
     item !== null &&
     'name' in item &&
@@ -63,8 +63,8 @@ export function isValidChartData<T extends ChartDataPoint>(data: unknown[]): dat
   );
 }
 
-export function isRevenueData(data: unknown[]): data is RevenueData[] {
-  return isValidChartData(data) && data.every(item =>
+export function isRevenueData(data: unknown): data is RevenueData[] {
+  return isValidChartData(data) && (data as ChartDataPoint[]).every(item =>
     'revenue' in item &&
     'period' in item &&
     typeof (item as RevenueData).revenue === 'number' &&
@@ -72,8 +72,8 @@ export function isRevenueData(data: unknown[]): data is RevenueData[] {
   );
 }
 
-export function isFunnelData(data: unknown[]): data is FunnelStageData[] {
-  return isValidChartData(data) && data.every(item =>
+export function isFunnelData(data: unknown): data is FunnelStageData[] {
+  return isValidChartData(data) && (data as ChartDataPoint[]).every(item =>
     'stage' in item &&
     'count' in item &&
     typeof (item as FunnelStageData).stage === 'string' &&
@@ -81,8 +81,8 @@ export function isFunnelData(data: unknown[]): data is FunnelStageData[] {
   );
 }
 
-export function isLeadSourceData(data: unknown[]): data is LeadSourceData[] {
-  return isValidChartData(data) && data.every(item =>
+export function isLeadSourceData(data: unknown): data is LeadSourceData[] {
+  return isValidChartData(data) && (data as ChartDataPoint[]).every(item =>
     'source' in item &&
     'leads' in item &&
     'conversions' in item &&

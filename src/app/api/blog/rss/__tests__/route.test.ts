@@ -21,7 +21,7 @@ vi.mock('next/server', async () => {
 
 // Override NextResponse.json to work with the constructor pattern
 const { NextResponse: MockedNextResponse } = await import('next/server')
-MockedNextResponse.json = vi.fn((data, options) => new MockedNextResponse(JSON.stringify(data), {
+;(MockedNextResponse as unknown as { json: ReturnType<typeof vi.fn> }).json = vi.fn((data, options) => new MockedNextResponse(JSON.stringify(data), {
   ...options,
   headers: {
     'Content-Type': 'application/json',
@@ -139,7 +139,7 @@ describe('/api/blog/rss', () => {
       const request = createMockRequest('http://localhost:3000/api/blog/rss')
       const response = await GET(request)
 
-      expect(response.headers['Cache-Control']).toBe('public, max-age=3600, s-maxage=7200')
+      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('public, max-age=3600, s-maxage=7200')
     })
 
     it('returns posts in chronological order', async () => {
@@ -199,8 +199,8 @@ describe('/api/blog/rss', () => {
       const response = await GET(request)
 
       expect(response.status).toBe(200)
-      expect(response.headers['Content-Type']).toBe('application/rss+xml; charset=utf-8')
-      expect(response.headers['Cache-Control']).toBe('public, max-age=3600, s-maxage=7200')
+      expect((response.headers as unknown as Record<string, string>)['Content-Type']).toBe('application/rss+xml; charset=utf-8')
+      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('public, max-age=3600, s-maxage=7200')
     })
 
     it('generates valid XML RSS structure', async () => {
@@ -262,8 +262,8 @@ describe('/api/blog/rss', () => {
 
       const response = await GET(request)
 
-      expect(response.headers['Content-Type']).toBe('application/rss+xml; charset=utf-8')
-      expect(response.headers['Cache-Control']).toBe('public, max-age=3600, s-maxage=7200')
+      expect((response.headers as unknown as Record<string, string>)['Content-Type']).toBe('application/rss+xml; charset=utf-8')
+      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('public, max-age=3600, s-maxage=7200')
     })
 
     it('respects limit parameter in XML format', async () => {
@@ -284,7 +284,7 @@ describe('/api/blog/rss', () => {
       const response = await GET(request)
 
       expect(response.status).toBe(200)
-      expect(response.headers['Content-Type']).toBe('application/rss+xml; charset=utf-8')
+      expect((response.headers as unknown as Record<string, string>)['Content-Type']).toBe('application/rss+xml; charset=utf-8')
     })
   })
 

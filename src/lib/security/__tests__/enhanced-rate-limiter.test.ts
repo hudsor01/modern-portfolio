@@ -160,11 +160,11 @@ describe('Enhanced Rate Limiter', () => {
       }
 
       // First 3 should be allowed, then burst protection kicks in
-      expect(results[0].allowed).toBe(true)
-      expect(results[1].allowed).toBe(true)
-      expect(results[2].allowed).toBe(true)
-      expect(results[3].allowed).toBe(false)
-      expect(results[3].reason).toBe('burst_protection')
+      expect(results[0]?.allowed).toBe(true)
+      expect(results[1]?.allowed).toBe(true)
+      expect(results[2]?.allowed).toBe(true)
+      expect(results[3]?.allowed).toBe(false)
+      expect(results[3]?.reason).toBe('burst_protection')
     })
   })
 
@@ -294,8 +294,8 @@ describe('Enhanced Rate Limiter', () => {
       const analytics = enhancedRateLimiter.getAnalytics()
       
       expect(analytics.topClients).toHaveLength(2)
-      expect(analytics.topClients[0].requests).toBe(5)
-      expect(analytics.topClients[1].requests).toBe(2)
+      expect(analytics.topClients[0]?.requests).toBe(5)
+      expect(analytics.topClients[1]?.requests).toBe(2)
     })
   })
 
