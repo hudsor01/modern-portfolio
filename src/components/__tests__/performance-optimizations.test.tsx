@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-import { Suspense } from 'react'
+import React, { Suspense } from 'react'
 
 // Mock dynamic imports
 vi.mock('next/dynamic', () => ({
-  default: (_importFn: () => Promise<unknown>, options?: { loading?: () => JSX.Element }) => {
+  default: (_importFn: () => Promise<unknown>, options?: { loading?: () => React.ReactElement }) => {
     // Return a component that shows loading state initially, then resolves
     return function DynamicComponent(props: Record<string, unknown>) {
       const [isLoaded, setIsLoaded] = React.useState(false)
@@ -22,8 +22,6 @@ vi.mock('next/dynamic', () => ({
     }
   }
 }))
-
-import React from 'react'
 
 describe('Performance Optimizations', () => {
   describe('Dynamic Imports', () => {

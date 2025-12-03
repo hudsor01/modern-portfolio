@@ -465,6 +465,19 @@ class EnhancedRateLimiter {
       this.cleanupInterval = null
     }
     this.store.clear()
+    // Reset analytics to prevent state accumulation between test runs
+    this.analytics = {
+      totalRequests: 0,
+      blockedRequests: 0,
+      uniqueClients: 0,
+      avgRequestsPerClient: 0,
+      suspiciousActivities: 0,
+      topClients: [],
+      trends: {
+        hourly: new Array(24).fill(0),
+        daily: new Array(7).fill(0)
+      }
+    }
   }
 }
 

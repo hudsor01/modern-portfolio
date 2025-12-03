@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { getProjectBySlug } from '@/data/projects'
 import { z } from 'zod'
 import { validationErrorResponse } from '@/lib/api/response'
-import { createContextLogger } from '@/lib/logging/logger';
+import { createContextLogger } from '@/lib/monitoring/logger';
 
 const logger = createContextLogger('SlugAPI');
 

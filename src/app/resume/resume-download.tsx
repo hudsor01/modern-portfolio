@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { FileDown } from 'lucide-react'
 import { useToast } from '@/hooks/use-sonner-toast'
 import { cn } from '@/lib/utils'
-import { createContextLogger } from '@/lib/logging/logger'
+import { createContextLogger } from '@/lib/monitoring/logger'
 
 const logger = createContextLogger('ResumeDownload')
 

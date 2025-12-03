@@ -17,7 +17,7 @@ import { m as motion } from 'framer-motion'
 import { getProject } from '@/lib/content/projects'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip, BarChart as RechartsBarChart, Bar, Cell } from 'recharts'
-import { createContextLogger } from '@/lib/logging/logger'
+import { createContextLogger } from '@/lib/monitoring/logger'
 import { STARAreaChart } from '@/components/projects/STARAreaChart'
 
 

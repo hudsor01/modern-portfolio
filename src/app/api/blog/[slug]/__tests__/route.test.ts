@@ -145,12 +145,16 @@ vi.mock('@/app/api/blog/[slug]/route', async () => {
       }
       
       const postIndex = mockBlogPosts.findIndex(p => p.slug === slug);
-      
+
       if (postIndex === -1) {
         return { json: async () => ({ success: false, error: 'Blog post not found' }), status: 404, headers: {} }
       }
-      
+
       const currentPost = mockBlogPosts[postIndex];
+      if (!currentPost) {
+        return { json: async () => ({ success: false, error: 'Blog post not found' }), status: 404, headers: {} }
+      }
+
       const updatedPost = {
         ...currentPost,
         ...body,
@@ -159,8 +163,8 @@ vi.mock('@/app/api/blog/[slug]/route', async () => {
         updatedAt: new Date().toISOString(),
         readingTime: body.content ? Math.ceil(body.content.split(' ').length / 200) : currentPost.readingTime,
         wordCount: body.content ? body.content.split(' ').length : currentPost.wordCount,
-        publishedAt: body.status === 'PUBLISHED' && !currentPost.publishedAt 
-          ? new Date().toISOString() 
+        publishedAt: body.status === 'PUBLISHED' && !currentPost.publishedAt
+          ? new Date().toISOString()
           : body.publishedAt || currentPost.publishedAt
       };
       
@@ -288,10 +292,10 @@ describe('/api/blog/[slug]', () => {
     it('includes cache headers in response', async () => {
       const request = createMockRequest('http://localhost:3000/api/blog/revenue-operations-best-practices-complete-guide')
       const params = createMockParams('revenue-operations-best-practices-complete-guide')
-      
+
       const response = await GET(request, params)
 
-      expect(response.headers['Cache-Control']).toBe('public, max-age=300, s-maxage=600')
+      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('public, max-age=300, s-maxage=600')
     })
 
     it('includes all expected fields in response', async () => {
@@ -480,10 +484,10 @@ describe('/api/blog/[slug]', () => {
         body: JSON.stringify(updateData),
       })
       const params = createMockParams('revenue-operations-best-practices-complete-guide')
-      
+
       const response = await PUT(request, params)
 
-      expect(response.headers['Cache-Control']).toBe('no-cache')
+      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('no-cache')
     })
 
     it('handles JSON parsing errors', async () => {
@@ -494,9 +498,9 @@ describe('/api/blog/[slug]', () => {
         json: async () => {
           throw new Error('Invalid JSON')
         },
-      } as NextRequest
+      } as unknown as NextRequest
       const params = createMockParams('revenue-operations-best-practices-complete-guide')
-      
+
       const response = await PUT(request, params)
       const data = await response.json()
 
@@ -555,10 +559,10 @@ describe('/api/blog/[slug]', () => {
         method: 'DELETE',
       })
       const params = createMockParams('revenue-operations-best-practices-complete-guide')
-      
+
       const response = await DELETE(request, params)
 
-      expect(response.headers['Cache-Control']).toBe('no-cache')
+      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('no-cache')
     })
 
     it('actually removes the post from the collection', async () => {

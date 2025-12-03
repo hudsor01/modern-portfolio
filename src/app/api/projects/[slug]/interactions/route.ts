@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient, InteractionType } from '@prisma/client'
 import { ApiResponse } from '@/types/shared-api'
 import { validateProjectInteraction, ProjectInteractionInput, ValidationError } from '@/lib/validations/unified-schemas'
-import { createContextLogger } from '@/lib/logging/logger';
+import { createContextLogger } from '@/lib/monitoring/logger';
 
 const logger = createContextLogger('InteractionsAPI');
 
@@ -87,11 +85,12 @@ export async function POST(
       }
     })
 
+    type InteractionCount = { type: InteractionType; _count: { id: number } }
     const totalInteractions = {
-      likes: totalCounts.find((c: any) => c.type === 'LIKE')?._count.id || 0,
-      shares: totalCounts.find((c: any) => c.type === 'SHARE')?._count.id || 0,
-      bookmarks: totalCounts.find((c: any) => c.type === 'BOOKMARK')?._count.id || 0,
-      downloads: totalCounts.find((c: any) => c.type === 'DOWNLOAD')?._count.id || 0,
+      likes: totalCounts.find((c: InteractionCount) => c.type === 'LIKE')?._count.id || 0,
+      shares: totalCounts.find((c: InteractionCount) => c.type === 'SHARE')?._count.id || 0,
+      bookmarks: totalCounts.find((c: InteractionCount) => c.type === 'BOOKMARK')?._count.id || 0,
+      downloads: totalCounts.find((c: InteractionCount) => c.type === 'DOWNLOAD')?._count.id || 0,
     }
 
     const response: ApiResponse<ProjectInteractionResponse> = {
@@ -138,7 +137,8 @@ export async function GET(
       }
     })
 
-    const totalInteractions = totalCounts.reduce((acc: Record<string, number>, count: any) => {
+    type InteractionCountGet = { type: InteractionType; _count: { id: number } }
+    const totalInteractions = totalCounts.reduce((acc: Record<string, number>, count: InteractionCountGet) => {
       acc[count.type.toLowerCase()] = count._count.id
       return acc
     }, {} as Record<string, number>)

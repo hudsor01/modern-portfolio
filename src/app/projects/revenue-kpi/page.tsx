@@ -19,7 +19,7 @@ const TopPartnersChart = dynamic(() => import('./TopPartnersChart'), { ssr: fals
 const PartnerGroupPieChart = dynamic(() => import('./PartnerGroupPieChart'), { ssr: false })
 import { yearOverYearGrowthExtended } from '@/app/projects/data/partner-analytics'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
-import { createContextLogger } from '@/lib/logging/logger'
+import { createContextLogger } from '@/lib/monitoring/logger'
 import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 import { STARAreaChart } from '@/components/projects/STARAreaChart'
 

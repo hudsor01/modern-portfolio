@@ -199,34 +199,40 @@ export interface BlogPostData {
   content: string;
   contentType: 'MARKDOWN' | 'HTML' | 'RICH_TEXT';
   status: 'DRAFT' | 'PUBLISHED' | 'SCHEDULED' | 'ARCHIVED';
-  
+  featured?: boolean;
+
   // SEO fields
   metaTitle?: string;
   metaDescription?: string;
   keywords: string[];
   canonicalUrl?: string;
-  
+
   // Content metadata
   featuredImage?: string;
   featuredImageAlt?: string;
   readingTime?: number;
   wordCount?: number;
-  
+
   // Publishing
   publishedAt?: string;
   scheduledAt?: string;
-  
+
   // Timestamps
   createdAt: string;
   updatedAt: string;
-  
+
   // Relationships
   authorId: string;
   author?: BlogAuthorData;
   categoryId?: string;
   category?: BlogCategoryData;
   tags?: BlogTagData[];
-  
+
+  // Optional navigation properties
+  previousPost?: { id: string; title: string; slug: string };
+  nextPost?: { id: string; title: string; slug: string };
+  relatedPosts?: Array<{ id: string; title: string; slug: string; excerpt?: string; featuredImage?: string }>;
+
   // Analytics
   viewCount: number;
   likeCount: number;
@@ -257,6 +263,8 @@ export interface BlogCategoryData {
   postCount: number;
   totalViews: number;
   createdAt: string;
+  keywords?: string[];
+  updatedAt?: string;
 }
 
 export interface BlogTagData {
@@ -268,6 +276,25 @@ export interface BlogTagData {
   postCount: number;
   totalViews: number;
   createdAt: string;
+  updatedAt?: string;
+}
+
+// BlogPostSummary is a lighter version of BlogPostData used in lists
+export interface BlogPostSummary {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt?: string;
+  featuredImage?: string;
+  featuredImageAlt?: string;
+  publishedAt?: string;
+  viewCount: number;
+  commentCount: number;
+  readingTime?: number;
+  author: BlogAuthorData;
+  category?: BlogCategoryData;
+  tags: BlogTagData[];
+  featured?: boolean;
 }
 
 export interface BlogPostFilters {

@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import type { BlogPostSummary, BlogCategory, BlogTag, BlogAuthor, BlogFilters } from '@/types/blog'
-import { createContextLogger } from '@/lib/logging/logger'
+import { createContextLogger } from '@/lib/monitoring/logger'
 
 import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 const logger = createContextLogger('BlogSearch')

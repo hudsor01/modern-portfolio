@@ -3,11 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { m as motion } from 'framer-motion'
-import { 
-  BlogPostFilters,
-  BlogPostSort
-} from '@/types/shared-api'
-import { BlogFilters as BlogFiltersType, Category, Tag } from '@/types/blog'
+import { BlogPostSort } from '@/types/shared-api'
+import { BlogFilters as BlogFiltersType } from '@/types/blog'
 import { useBlogPosts, useBlogCategories, useBlogTags } from '@/hooks/use-api-queries'
 import { BlogCard } from './blog-card'
 import { BlogFilters } from './blog-filters'
@@ -27,7 +24,15 @@ type ViewMode = 'grid' | 'list'
 
 export function BlogHomeLayout({ className }: BlogHomeLayoutProps) {
   const router = useRouter()
-  const [filters, setFilters] = useState<BlogPostFilters>({
+  const [filters, setFilters] = useState<{
+    status?: string
+    authorId?: string
+    categoryId?: string
+    tagIds?: string[]
+    search?: string
+    published?: boolean
+    dateRange?: { from: string; to: string }
+  }>({
     published: true,
   })
   const [blogFilters, setBlogFilters] = useState<BlogFiltersType>({})
@@ -56,10 +61,9 @@ export function BlogHomeLayout({ className }: BlogHomeLayoutProps) {
   const handleBlogFiltersChange = (newFilters: BlogFiltersType) => {
     setBlogFilters(newFilters)
     // Convert blog filters to API filters
-    const apiFilters: Partial<BlogPostFilters> = {
+    const apiFilters: typeof filters = {
       search: newFilters.search,
       categoryId: newFilters.category,
-      featured: newFilters.featured,
     }
     setFilters(prev => ({ ...prev, ...apiFilters }))
     setPage(1)
@@ -221,8 +225,17 @@ export function BlogHomeLayout({ className }: BlogHomeLayoutProps) {
               <div className="glass rounded-3xl p-6">
                 <div className="glass rounded-2xl p-4">
                   <BlogFilters
-                    categories={categories as Category[]}
-                    tags={tags as Tag[]}
+                    categories={categories.map(cat => ({
+                      ...cat,
+                      keywords: cat.keywords ?? [],
+                      updatedAt: cat.updatedAt ? new Date(cat.updatedAt) : new Date(cat.createdAt),
+                      createdAt: new Date(cat.createdAt)
+                    }))}
+                    tags={tags.map(tag => ({
+                      ...tag,
+                      updatedAt: tag.updatedAt ? new Date(tag.updatedAt) : new Date(tag.createdAt),
+                      createdAt: new Date(tag.createdAt)
+                    }))}
                     filters={blogFilters}
                     onFiltersChange={handleBlogFiltersChange}
                     isLoading={postsLoading}

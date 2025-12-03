@@ -78,7 +78,7 @@ export function getFieldError(field: TanStackFieldApi): string | undefined {
  * Helper to check if field has error
  */
 export function hasFieldError(field: TanStackFieldApi): boolean {
-  return field.state.meta.errors && field.state.meta.errors.length > 0 && field.state.meta.touchedOrDirty
+  return Boolean(field.state.meta.errors && field.state.meta.errors.length > 0 && field.state.meta.touchedOrDirty)
 }
 
 /**

@@ -1,4 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { NextRequest } from 'next/server'
 import { POST } from '@/app/api/contact/route'
 
 // Mock Resend with factory function
@@ -40,15 +41,12 @@ vi.mock('@/lib/monitoring/logger', () => ({
     info: vi.fn(),
     warn: vi.fn(),
     error: vi.fn()
-  }
-}))
-
-// Mock centralized logging utilities
-vi.mock('@/lib/logging/logger', () => ({
+  },
   createContextLogger: vi.fn(() => ({
     info: vi.fn(),
     warn: vi.fn(),
-    error: vi.fn()
+    error: vi.fn(),
+    debug: vi.fn()
   }))
 }))
 
@@ -61,7 +59,7 @@ const createMockRequest = (data: Record<string, unknown>) => ({
     }
   },
   json: () => Promise.resolve(data)
-} as Request)
+} as unknown as NextRequest)
 
 describe('/api/contact - Fixed Tests', () => {
   let mockSend: ReturnType<typeof vi.fn>
@@ -71,11 +69,11 @@ describe('/api/contact - Fixed Tests', () => {
     vi.clearAllMocks()
 
     // Get the mock functions
-    const ResendModule = await import('resend') as { __mockSend: ReturnType<typeof vi.fn> }
+    const ResendModule = await import('resend') as unknown as { __mockSend: ReturnType<typeof vi.fn> }
     const NextServerModule = await import('next/server')
 
     mockSend = ResendModule.__mockSend
-    mockJson = (NextServerModule.NextResponse as { json: ReturnType<typeof vi.fn> }).json
+    mockJson = (NextServerModule.NextResponse as unknown as { json: ReturnType<typeof vi.fn> }).json
 
     process.env.RESEND_API_KEY = 'test-key'
     process.env.CONTACT_EMAIL = 'test@example.com'
@@ -101,7 +99,7 @@ describe('/api/contact - Fixed Tests', () => {
       message: 'Test message'
     }
 
-    await POST(createMockRequest(invalidData) as Request)
+    await POST(createMockRequest(invalidData))
 
     expect(mockJson).toHaveBeenCalledWith(
       {
@@ -122,7 +120,7 @@ describe('/api/contact - Fixed Tests', () => {
       message: 'Test message'
     }
 
-    await POST(createMockRequest(invalidData) as Request)
+    await POST(createMockRequest(invalidData))
 
     expect(mockJson).toHaveBeenCalledWith(
       {
@@ -143,7 +141,7 @@ describe('/api/contact - Fixed Tests', () => {
       message: 'Test message'
     }
 
-    await POST(createMockRequest(invalidData) as Request)
+    await POST(createMockRequest(invalidData))
 
     expect(mockJson).toHaveBeenCalledWith(
       {
@@ -164,7 +162,7 @@ describe('/api/contact - Fixed Tests', () => {
       message: ''
     }
 
-    await POST(createMockRequest(invalidData) as Request)
+    await POST(createMockRequest(invalidData))
 
     expect(mockJson).toHaveBeenCalledWith(
       {
@@ -185,7 +183,7 @@ describe('/api/contact - Fixed Tests', () => {
       message: ''
     }
 
-    await POST(createMockRequest(invalidData) as Request)
+    await POST(createMockRequest(invalidData))
 
     expect(mockJson).toHaveBeenCalledWith(
       {
@@ -213,7 +211,7 @@ describe('/api/contact - Fixed Tests', () => {
 
     mockSend.mockResolvedValueOnce({ id: 'email-123' })
 
-    await POST(createMockRequest(validData) as Request)
+    await POST(createMockRequest(validData))
 
     expect(mockSend).toHaveBeenCalledWith({
       from: 'Portfolio Contact <hello@richardwhudsonjr.com>',
@@ -251,7 +249,7 @@ describe('/api/contact - Fixed Tests', () => {
 
     mockSend.mockRejectedValueOnce(new Error('Email service error'))
 
-    await POST(createMockRequest(validData) as Request)
+    await POST(createMockRequest(validData))
 
     expect(mockJson).toHaveBeenCalledWith(
       {

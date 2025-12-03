@@ -20,7 +20,7 @@ import { SiGithub, SiLinkedin } from 'react-icons/si'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { ResumeViewer } from './resume-viewer'
-import { createContextLogger } from '@/lib/logging/logger'
+import { createContextLogger } from '@/lib/monitoring/logger'
 
 const logger = createContextLogger('ResumePage')
 

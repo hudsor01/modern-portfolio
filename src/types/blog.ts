@@ -718,6 +718,9 @@ export type BlogPostUpdateData = Partial<BlogPostCreateData> & {
 // COMPONENT TYPE ALIASES
 // =======================
 
+// Import API types for consistency
+import type { BlogPostData, BlogPostSummary as APIBlogPostSummary } from './shared-api';
+
 // Type aliases used by existing blog components
 export interface BlogFilters {
   category?: string;
@@ -735,31 +738,17 @@ export type BlogCategory = Category;
 export type BlogTag = Tag;
 export type BlogAuthor = Author;
 
-// Additional filter types for UI components
-export interface BlogPostSummary {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt?: string;
-  featuredImage?: string;
-  publishedAt?: Date;
-  viewCount: number;
-  commentCount: number;
-  readingTime?: number;
-  author: BlogAuthor;
-  category?: BlogCategory;
-  tags: BlogTag[];
-  featured?: boolean;
-}
+// Re-export API types for component use
+export type { BlogPostData, APIBlogPostSummary as BlogPostSummary };
 
 export interface BlogListResponse {
-  posts: BlogPostSummary[];
+  posts: APIBlogPostSummary[];
   totalCount: number;
   hasMore: boolean;
 }
 
 export interface BlogPostCardProps {
-  post: BlogPost | BlogPostSummary;
+  post: BlogPostData | APIBlogPostSummary;
   variant?: 'default' | 'compact' | 'featured';
   showCategory?: boolean;
   showTags?: boolean;
@@ -768,7 +757,7 @@ export interface BlogPostCardProps {
   showCommentCount?: boolean;
   showAuthor?: boolean;
   className?: string;
-  onClick?: (post: BlogPost | BlogPostSummary) => void;
+  onClick?: (post: BlogPostData | APIBlogPostSummary) => void;
 }
 
 export interface BlogComment {

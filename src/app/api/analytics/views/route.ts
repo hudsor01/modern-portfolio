@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { ApiResponse } from '@/types/shared-api'
 import { validateViewTracking, ViewTrackingInput, ValidationError } from '@/lib/validations/unified-schemas'
-import { createContextLogger } from '@/lib/logging/logger'
+import { createContextLogger } from '@/lib/monitoring/logger'
 
 const prisma = new PrismaClient()
 const logger = createContextLogger('ViewTrackingAPI')
