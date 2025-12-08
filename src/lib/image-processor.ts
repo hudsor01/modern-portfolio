@@ -1,11 +1,31 @@
-import sharp from 'sharp'
+import sharp, { type Sharp, type Metadata } from 'sharp'
 import fs from 'fs'
 import path from 'path'
 
+interface ImageProcessorConfig {
+  formats: string[]
+  sizes: number[]
+  quality: number
+}
+
+interface ImageProcessorCache {
+  metadata: Map<string, Metadata>
+}
+
+interface ProcessResult {
+  success: boolean
+  file: string
+}
+
 // Helper function to get memoized metadata
-async function getMemoizedMetadata(image, filePath, cache) {
-  if (cache.metadata.has(filePath)) {
-    return cache.metadata.get(filePath)
+async function getMemoizedMetadata(
+  image: Sharp,
+  filePath: string,
+  cache: ImageProcessorCache
+): Promise<Metadata> {
+  const cached = cache.metadata.get(filePath)
+  if (cached) {
+    return cached
   }
 
   const metadata = await image.metadata()
@@ -14,7 +34,7 @@ async function getMemoizedMetadata(image, filePath, cache) {
 }
 
 // Helper function to check if file exists and is newer
-function isFileNewer(sourcePath, targetPath) {
+function isFileNewer(sourcePath: string, targetPath: string): boolean {
   if (!fs.existsSync(targetPath)) return true
 
   const sourceStats = fs.statSync(sourcePath)
@@ -25,23 +45,24 @@ function isFileNewer(sourcePath, targetPath) {
 
 /**
  * Process a single image file
- * @param {string} file - Path to the image file
- * @param {string} outputPath - Path to output directory
- * @param {object} config - Configuration options
- * @param {object} cache - Cache object for memoization
- * @returns {Promise<object>} - Processing result
  */
-async function processImageFile(file, outputPath, config, cache) {
+async function processImageFile(
+  file: string,
+  outputPath: string,
+  config: ImageProcessorConfig,
+  cache: ImageProcessorCache
+): Promise<ProcessResult> {
   const filename = path.basename(file)
 
   const image = sharp(file)
   const metadata = await getMemoizedMetadata(image, file, cache)
 
   // Generate responsive sizes
-  const sizePromises = []
+  const sizePromises: Promise<sharp.OutputInfo>[] = []
+  const imageWidth = metadata.width ?? 0
 
   for (const format of config.formats) {
-    for (const width of config.sizes.filter((w) => w <= metadata.width)) {
+    for (const width of config.sizes.filter((w) => w <= imageWidth)) {
       const outputFilename = path.join(
         outputPath,
         `${path.parse(filename).name}-${width}.${format}`
@@ -57,7 +78,7 @@ async function processImageFile(file, outputPath, config, cache) {
         image
           .clone() // Clone to avoid multiple operations on same pipeline
           .resize(width)
-          .toFormat(format, { quality: config.quality })
+          .toFormat(format as keyof sharp.FormatEnum, { quality: config.quality })
           .toFile(outputFilename)
       )
     }
@@ -84,3 +105,5 @@ export {
   isFileNewer,
   getMemoizedMetadata,
 }
+
+export type { ImageProcessorConfig, ImageProcessorCache, ProcessResult }
