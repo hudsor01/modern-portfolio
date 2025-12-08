@@ -168,7 +168,6 @@ export interface TechnicalOptimization {
 
 export class ContentAnalyzer {
   private readonly optimalKeywordDensity = { min: 0.5, max: 2.5 }
-  // private readonly optimalContentLength = { min: 300, max: 3000 } // Unused for now
   private readonly optimalParagraphLength = { min: 50, max: 150 }
 
   /**
@@ -275,7 +274,6 @@ export class ContentAnalyzer {
   private analyzeKeywords(content: string, targetKeywords: string[], title: string): KeywordAnalysis {
     const words = this.extractWords(content)
     const contentLower = content.toLowerCase()
-    // const titleLower = title.toLowerCase() // unused for now
 
     // Analyze primary and secondary keywords
     const primaryKeywords = this.analyzeKeywordMetrics(targetKeywords.slice(0, 3), content, title)
@@ -442,7 +440,6 @@ export class ContentAnalyzer {
    */
   private analyzeKeywordMetrics(keywords: string[], content: string, title: string): KeywordMetrics[] {
     const contentLower = content.toLowerCase()
-    // const titleLower = title.toLowerCase() // unused for now
     const words = this.extractWords(content)
 
     return keywords.map(keyword => {

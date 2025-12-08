@@ -614,7 +614,6 @@ ${urlElements}
   private async generateRSSReport() {
     // Mock RSS items - in production, this would come from actual blog posts
     const mockItems: RSSItem[] = []
-    // const rss = await this.generateRSSFeed(mockItems) // unused for now
 
     return {
       generated: true,
