@@ -110,10 +110,11 @@ export class TimeAggregator {
         return `${year}-${month + 1}-${day}-${hour}`;
       case 'day':
         return `${year}-${month + 1}-${day}`;
-      case 'week':
+      case 'week': {
         const weekStart = new Date(date);
         weekStart.setDate(date.getDate() - date.getDay());
         return `${weekStart.getFullYear()}-W${this.getWeekNumber(weekStart)}`;
+      }
       case 'month':
         return `${year}-${month + 1}`;
       default:

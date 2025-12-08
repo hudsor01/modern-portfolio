@@ -12,7 +12,7 @@ interface HeroSectionProps {
   titles?: string[]
 }
 
-export function HeroSection({}: HeroSectionProps) {
+export function HeroSection(_props: HeroSectionProps) {
   return (
     <section className="min-h-[85vh] relative overflow-hidden py-20">
       {/* Simple background */}

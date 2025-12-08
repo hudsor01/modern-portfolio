@@ -102,7 +102,7 @@ export function BlogSearch({
 
   const formatResult = (result: SearchResult) => {
     switch (result.type) {
-      case 'post':
+      case 'post': {
         const post = result.item as BlogPostSummary
         return {
           title: post.title,
@@ -111,7 +111,8 @@ export function BlogSearch({
           href: `/blog/${post.slug}`,
           meta: `${post.viewCount} views • ${post.readingTime || 5} min read`
         }
-      case 'category':
+      }
+      case 'category': {
         const category = result.item as BlogCategory
         return {
           title: category.name,
@@ -120,7 +121,8 @@ export function BlogSearch({
           href: `/blog/category/${category.slug}`,
           meta: `${category.postCount} posts`
         }
-      case 'tag':
+      }
+      case 'tag': {
         const tag = result.item as BlogTag
         return {
           title: tag.name,
@@ -129,7 +131,8 @@ export function BlogSearch({
           href: `/blog/tag/${tag.slug}`,
           meta: `${tag.postCount} posts`
         }
-      case 'author':
+      }
+      case 'author': {
         const author = result.item as BlogAuthor
         return {
           title: author.name,
@@ -138,6 +141,7 @@ export function BlogSearch({
           href: `/blog/author/${author.slug}`,
           meta: `${author.totalPosts} posts`
         }
+      }
       default:
         return {
           title: '',

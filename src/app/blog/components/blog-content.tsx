@@ -45,11 +45,11 @@ export function BlogContent({
 
       // Bold
       html = html.replace(/\*\*(.*)\*\*/gim, '<strong class="font-semibold">$1</strong>')
-      html = html.replace(/\_\_(.*\_\_)/gim, '<strong class="font-semibold">$1</strong>')
+      html = html.replace(/__(.*)__/gim, '<strong class="font-semibold">$1</strong>')
 
       // Italic
       html = html.replace(/\*(.*)\*/gim, '<em class="italic">$1</em>')
-      html = html.replace(/\_(.*\_)/gim, '<em class="italic">$1</em>')
+      html = html.replace(/_(.*)_/gim, '<em class="italic">$1</em>')
 
       // Code blocks
       html = html.replace(/```(\w+)?\n([\s\S]*?)```/gim, (_match: string, lang: string, code: string) => {

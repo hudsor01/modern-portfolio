@@ -1,6 +1,6 @@
-const sharp = require('sharp')
-const fs = require('fs')
-const path = require('path')
+import sharp from 'sharp'
+import fs from 'fs'
+import path from 'path'
 
 // Helper function to get memoized metadata
 async function getMemoizedMetadata(image, filePath, cache) {
@@ -79,7 +79,7 @@ async function processImageFile(file, outputPath, config, cache) {
   return { success: true, file }
 }
 
-module.exports = {
+export {
   processImageFile,
   isFileNewer,
   getMemoizedMetadata,

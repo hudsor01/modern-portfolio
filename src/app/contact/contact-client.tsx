@@ -111,11 +111,12 @@ export default function ContactPageClient() {
     switch (name) {
       case 'name':
         return value.length < 2 ? 'Name must be at least 2 characters' : ''
-      case 'email':
+      case 'email': {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         return !emailRegex.test(value) ? 'Please enter a valid email address' : ''
+      }
       case 'phone':
-        if (value && !/^[\d\s\-\+\(\)]+$/.test(value)) {
+        if (value && !/^[\d\s+()-]+$/.test(value)) {
           return 'Please enter a valid phone number'
         }
         return ''

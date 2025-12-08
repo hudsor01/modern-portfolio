@@ -46,7 +46,7 @@ export const ValidationSchemas = {
   email: z.string().email('Please enter a valid email address').max(100, 'Email must not exceed 100 characters').trim(),
 
   phone: z.string()
-    .regex(/^[\d\s\-\+\(\)\.]+$/, 'Please enter a valid phone number')
+    .regex(/^[\d\s+().-]+$/, 'Please enter a valid phone number')
     .max(20, 'Phone number must not exceed 20 characters')
     .optional()
     .or(z.literal('')),

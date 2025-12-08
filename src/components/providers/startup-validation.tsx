@@ -79,8 +79,6 @@ export function StartupValidation({ children }: { children: React.ReactNode }) {
       if (warnings.length > 0) {
         console.warn('Security validation warnings:', warnings)
       }
-      if (errors.length === 0 && warnings.length === 0) {
-        }
     }
   }, [])
 
