@@ -51,8 +51,6 @@ export interface ImageOptimization {
 export class SEOAutomationService {
   private readonly maxTitleLength = 60
   private readonly maxDescriptionLength = 160
-  // private readonly minContentLength = 300 // Unused for now
-  // private readonly keywordDensityRange = { min: 0.5, max: 2.5 } // Reserved for future use
 
   /**
    * Generate comprehensive SEO optimization for content
@@ -385,95 +383,6 @@ export class SEOAutomationService {
 
     return images
   }
-
-  // Commented out - reserved for future use
-  // /**
-  //  * Generate additional content suggestions
-  //  * @internal Reserved for future use
-  //  */
-  // private generateContentSuggestions(content: string, keywords: string[]): SEOSuggestion[] {
-  //   const suggestions: SEOSuggestion[] = []
-  //   const wordCount = content.trim().split(/\s+/).length
-
-  //   // Keyword density analysis
-  //   keywords.slice(0, 3).forEach(keyword => {
-  //     const occurrences = (content.toLowerCase().match(new RegExp(keyword.toLowerCase(), 'g')) || []).length
-  //     const density = (occurrences / wordCount) * 100
-
-  //     if (density < this.keywordDensityRange.min) {
-  //       suggestions.push({
-  //         type: 'content',
-  //         message: `Increase usage of keyword "${keyword}" (current density: ${density.toFixed(1)}%)`,
-  //         priority: 'medium'
-  //       })
-  //     } else if (density > this.keywordDensityRange.max) {
-  //       suggestions.push({
-  //         type: 'content',
-  //         message: `Reduce usage of keyword "${keyword}" to avoid over-optimization (current density: ${density.toFixed(1)}%)`,
-  //         priority: 'high'
-  //       })
-  //     }
-  //   })
-
-  //   // Content structure analysis
-  //   const headingCount = (content.match(/^#{1,6}\s/gm) || []).length
-  //   if (headingCount === 0 && wordCount > 500) {
-  //     suggestions.push({
-  //       type: 'content',
-  //       message: 'Add headings (H2, H3) to improve content structure and readability',
-  //       priority: 'high'
-  //     })
-  //   }
-
-  //   // List usage
-  //   if (wordCount > 300 && !content.includes('- ') && !content.includes('* ')) {
-  //     suggestions.push({
-  //       type: 'content',
-  //       message: 'Consider adding bullet points or numbered lists to improve scannability',
-  //       priority: 'medium'
-  //     })
-  //   }
-
-  //   return suggestions
-  // }
-
-  // /**
-  //  * Generate technical SEO suggestions
-  //  * @internal Reserved for future use
-  //  */
-  // private generateTechnicalSuggestions(
-  //   images: ImageOptimization[],
-  //   internalLinks: string[]
-  // ): SEOSuggestion[] {
-  //   const suggestions: SEOSuggestion[] = []
-
-  //   // Image optimization suggestions
-  //   const imagesWithoutAlt = images.filter(img => !img.hasAlt)
-  //   if (imagesWithoutAlt.length > 0) {
-  //     suggestions.push({
-  //       type: 'content',
-  //       message: `${imagesWithoutAlt.length} image(s) missing alt text. Add descriptive alt attributes.`,
-  //       priority: 'high'
-  //     })
-  //   }
-
-  //   // Internal linking suggestions
-  //   if (internalLinks.length === 0) {
-  //     suggestions.push({
-  //       type: 'content',
-  //       message: 'Add internal links to related content to improve site structure and SEO',
-  //       priority: 'medium'
-  //     })
-  //   } else if (internalLinks.length > 10) {
-  //     suggestions.push({
-  //       type: 'content',
-  //       message: 'Too many internal links may dilute link equity. Consider reducing to 5-10 relevant links.',
-  //       priority: 'low'
-  //     })
-  //   }
-
-  //   return suggestions
-  // }
 
   /**
    * Generate structured data for content

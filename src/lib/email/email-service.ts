@@ -292,19 +292,7 @@ export class EmailService {
         error: 'Email service not available',
       }
     }
-    
-    // Development/testing mode - logs contact form submissions when email service is unavailable
-    // const logMessage = [
-    //   '📧 Contact Form Submission (Mock Mode):',
-    //   '---',
-    //   `Name: ${data.name}`,
-    //   `Email: ${data.email}`,
-    //   data.phone ? `Phone: ${data.phone}` : null,
-    //   data.subject ? `Subject: ${data.subject}` : null,
-    //   `Message: ${data.message}`,
-    //   '---'
-    // ].filter(Boolean).join('\n')
-    
+
     return {
       success: true,
       data: {
