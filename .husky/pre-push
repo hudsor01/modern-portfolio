@@ -1,1 +1,1 @@
-pnpm run ci:quick
+bun run ci:quick
