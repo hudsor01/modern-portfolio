@@ -5,7 +5,10 @@ const nextConfig = {
   poweredByHeader: false,
   compress: true,
   basePath: '',
-  
+
+  // React Compiler for automatic memoization (Next.js 16+)
+  reactCompiler: true,
+
   // Enhanced experimental features for performance
   experimental: {
     optimizeCss: true,

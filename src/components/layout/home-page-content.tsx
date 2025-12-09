@@ -1,6 +1,6 @@
 'use client'
 
-import React, { Suspense } from 'react'
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Folder, FileText, Mail } from 'lucide-react'
 import { HomePageSchema } from '@/components/seo/home-page-schema'

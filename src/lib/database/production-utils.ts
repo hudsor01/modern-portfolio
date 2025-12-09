@@ -267,11 +267,6 @@ export class ConnectionManager {
 // QUERY OPTIMIZATION
 // =======================
 
-// Type for PostgreSQL EXPLAIN ANALYZE output
-interface ExplainAnalyzeResult {
-  'QUERY PLAN': string;
-}
-
 // Type for pg_stat_statements result
 interface SlowQueryResult {
   query: string;
@@ -283,14 +278,8 @@ interface SlowQueryResult {
 }
 
 export class QueryOptimizer {
-  static async analyzeQuery(sql: string): Promise<ExplainAnalyzeResult[]> {
-    try {
-      return await db.$queryRawUnsafe(`EXPLAIN ANALYZE ${sql}`)
-    } catch (error) {
-      console.error('Query analysis failed:', error)
-      return []
-    }
-  }
+  // Note: analyzeQuery with raw SQL removed for security (SQL injection risk)
+  // Use Prisma's built-in query logging instead: https://www.prisma.io/docs/orm/prisma-client/observability-and-logging/logging
 
   static async getSlowQueries(limit = 10): Promise<SlowQueryResult[]> {
     try {

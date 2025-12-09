@@ -5,7 +5,7 @@
 
 'use client'
 
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { READING_PROGRESS } from '@/lib/constants/ui-thresholds'
 

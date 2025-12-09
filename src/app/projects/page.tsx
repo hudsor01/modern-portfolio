@@ -1,4 +1,3 @@
-import React from 'react'
 import { generateMetadata } from '@/app/shared-metadata'
 import { getProjects } from '@/data/projects'
 import ProjectsClientBoundary from '@/components/projects/projects-client-boundary'
