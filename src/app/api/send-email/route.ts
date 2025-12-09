@@ -5,12 +5,14 @@ import {
   validateRequest,
   ValidationError,
   createApiError,
+} from '@/lib/api/validation'
+import {
   getClientIdentifier,
   getRequestMetadata,
   parseRequestBody,
   logApiRequest,
   logApiResponse,
-} from '@/lib/api'
+} from '@/lib/api/utils'
 import { z } from 'zod'
 
 export async function POST(request: NextRequest) {

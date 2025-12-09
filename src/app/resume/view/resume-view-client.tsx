@@ -32,7 +32,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
     <div>
       <Navbar />
       <main className="min-h-screen bg-slate-950 pt-20">
-        <div className="container mx-auto px-4 py-8">
+        <div className="w-full mx-auto px-4 py-8">
           {/* Header */}
           <div className="mb-8 text-center">
             <h1 className="text-4xl font-bold text-white mb-4">

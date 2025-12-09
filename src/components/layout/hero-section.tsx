@@ -18,7 +18,7 @@ export function HeroSection(_props: HeroSectionProps) {
       {/* Simple background */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-gray-800"></div>
 
-      <div className="container mx-auto max-w-7xl px-4 relative z-10">
+      <div className="w-full mx-auto max-w-7xl px-4 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <m.div
             initial={{ opacity: 0 }}

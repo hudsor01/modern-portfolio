@@ -43,7 +43,7 @@ export function ProjectFiltersEnhanced({ projects, onProjectHover }: ProjectFilt
   }, [projects, selectedFilter, isMounted]);
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="w-full mx-auto px-4 py-6">
       <div className="flex flex-wrap gap-3 mb-10 justify-center items-center">
         <Button
           variant={isMounted && selectedFilter === 'all' ? 'default' : 'outline'}

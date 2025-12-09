@@ -12,7 +12,6 @@ import { EnhancedReadingProgress } from '@/components/layout/enhanced-reading-pr
 import { ScrollToTop } from '@/components/layout/scroll-to-top'
 import { baseMetadata } from './shared-metadata'
 import { PersonJsonLd, WebsiteJsonLd, LocalBusinessJsonLd, OrganizationJsonLd } from '@/components/seo/json-ld'
-import { PreloadManager } from '@/components/providers/preload-manager'
 
 // Use single font family for better performance
 const inter = Inter({
@@ -51,7 +50,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <OptimizedMotionProvider>
             <ClientComponentsProvider>
-              <PreloadManager />
               <EnhancedReadingProgress
                 contentPagesOnly={true}
               />

@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { m as motion, useInView } from 'framer-motion'
 import { BarChart2, Users2, Lightbulb } from 'lucide-react'
-import { typographyClasses } from '@/lib/typography'
 
 // Stats data
 const achievements = [
@@ -89,7 +88,7 @@ const AnimatedCounter = ({
 export function AchievementsSection() {
   return (
     <div className="py-24 md:py-32 lg:py-36 section-transition section-bg-primary">
-      <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="w-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -105,7 +104,7 @@ export function AchievementsSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className={typographyClasses.p}
+            className="text-lg text-muted-foreground"
           >
             Delivering measurable results through strategic planning and execution
           </motion.p>
@@ -152,7 +151,7 @@ export function AchievementsSection() {
                 {achievement.label}
               </h3>
 
-              <p className={typographyClasses.muted}>{achievement.description}</p>
+              <p className="text-sm text-muted-foreground">{achievement.description}</p>
             </motion.div>
           ))}
         </div>

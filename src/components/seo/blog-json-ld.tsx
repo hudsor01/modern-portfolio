@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * Blog JSON-LD Structured Data Components
  * Integrates with existing SEO architecture and follows Google's guidelines

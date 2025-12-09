@@ -27,23 +27,44 @@ const starData = {
   action: { phase: 'Action', impact: 85, efficiency: 88, value: 80 },
   result: { phase: 'Result', impact: 99, efficiency: 97, value: 95 },
 }
-// Lazy-load chart components with Suspense fallback
-const RevenueOverviewChart = dynamic(() => import('./RevenueOverviewChart'), {
-  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
-  ssr: true
-})
-const PipelineHealthChart = dynamic(() => import('./PipelineHealthChart'), {
-  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
-  ssr: true
-})
-const ForecastAccuracyChart = dynamic(() => import('./ForecastAccuracyChart'), {
-  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
-  ssr: true
-})
-const OperationalMetricsChart = dynamic(() => import('./OperationalMetricsChart'), {
-  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
-  ssr: true
-})
+// Error fallback component for dynamic imports
+function ChartLoadError() {
+  return (
+    <div className="h-[350px] w-full flex items-center justify-center bg-destructive/10 rounded-lg border border-destructive/20">
+      <p className="text-destructive text-sm">Failed to load chart</p>
+    </div>
+  )
+}
+
+// Lazy-load chart components with error fallbacks
+const RevenueOverviewChart = dynamic(
+  () => import('./RevenueOverviewChart').catch(() => ({ default: ChartLoadError })),
+  {
+    loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
+    ssr: true
+  }
+)
+const PipelineHealthChart = dynamic(
+  () => import('./PipelineHealthChart').catch(() => ({ default: ChartLoadError })),
+  {
+    loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
+    ssr: true
+  }
+)
+const ForecastAccuracyChart = dynamic(
+  () => import('./ForecastAccuracyChart').catch(() => ({ default: ChartLoadError })),
+  {
+    loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
+    ssr: true
+  }
+)
+const OperationalMetricsChart = dynamic(
+  () => import('./OperationalMetricsChart').catch(() => ({ default: ChartLoadError })),
+  {
+    loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
+    ssr: true
+  }
+)
 
 // Comprehensive revenue operations metrics
 const revenueMetrics = {
@@ -104,6 +125,21 @@ const alertTypeStyles = {
   info: 'bg-primary/20 text-primary border-primary/30',
 }
 
+// Utility functions - module level to avoid recreation on each render
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: value >= 1000000 ? 1 : 0,
+    notation: value >= 1000000 ? 'compact' : 'standard',
+  }).format(value)
+}
+
+function formatPercent(value: number) {
+  return `${value.toFixed(1)}%`
+}
+
 export default function RevenueOperationsCenter() {
   const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('overview')
@@ -111,20 +147,6 @@ export default function RevenueOperationsCenter() {
   useEffect(() => {
     setTimeout(() => setIsLoading(false), 600)
   }, [])
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: value >= 1000000 ? 1 : 0,
-      notation: value >= 1000000 ? 'compact' : 'standard',
-    }).format(value)
-  }
-
-  const formatPercent = (value: number) => {
-    return `${value.toFixed(1)}%`
-  }
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-white">

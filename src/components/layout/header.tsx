@@ -44,7 +44,7 @@ export function Header() {
           : 'bg-transparent'
       }`}
     >
-      <div className="container mx-auto px-4">
+      <div className="w-full mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <Link
             href="/"

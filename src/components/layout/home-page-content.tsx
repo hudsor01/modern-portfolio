@@ -2,50 +2,18 @@
 
 import React, { Suspense } from 'react'
 import Link from 'next/link'
-import {
-  ArrowRight,
-  Folder,
-  FileText,
-  Mail,
-  DollarSign,
-  TrendingUp,
-  Target,
-  Award,
-  type LucideIcon,
-} from 'lucide-react'
+import { ArrowRight, Folder, FileText, Mail } from 'lucide-react'
 import { HomePageSchema } from '@/components/seo/home-page-schema'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
 // Optimized motion imports for better performance
 import {
   MotionDiv,
   MotionH1,
-  MotionP,
   optimizedVariants
 } from '@/lib/motion/optimized-motion'
 import { fadeInUp } from '@/lib/motion/client-motion'
-
-// Inline metric component - simple, no abstraction needed
-function Metric({
-  icon: Icon,
-  value,
-  label,
-}: {
-  icon: LucideIcon
-  value: string
-  label: string
-}) {
-  return (
-    <div className="p-6 bg-card/50 backdrop-blur-sm border border-border rounded-xl hover:border-primary/50 transition-all duration-300 text-center">
-      <div className="mb-2 flex justify-center text-primary">
-        <Icon className="w-6 h-6" />
-      </div>
-      <div className="text-3xl font-bold text-foreground mb-1">{value}</div>
-      <div className="text-sm text-muted-foreground">{label}</div>
-    </div>
-  )
-}
 
 export default function HomePageContent() {
   const buttons = [
@@ -67,15 +35,8 @@ export default function HomePageContent() {
     }
   }
 
-  const metrics = [
-    { icon: DollarSign, value: "$4.8M+", label: "Revenue Generated" },
-    { icon: TrendingUp, value: "432%", label: "Transaction Growth" },
-    { icon: Target, value: "10+", label: "Projects Delivered" },
-    { icon: Award, value: "2,217%", label: "Network Expansion" },
-  ]
-
   return (
-    <section className="relative min-h-screen text-foreground overflow-hidden p-4 pt-24">
+    <section className="landing-screen relative text-foreground overflow-hidden">
       <HomePageSchema />
 
       {/* Modern Gradient Background - Hydration Safe */}
@@ -95,7 +56,7 @@ export default function HomePageContent() {
       </div>
 
       {/* Content */}
-      <div className="container relative z-10 px-4 mx-auto max-w-7xl text-center">
+      <div className="relative z-10 px-4 mx-auto max-w-7xl text-center w-full">
         <MotionH1
           variants={optimizedVariants.fadeInUp}
           initial="initial"
@@ -117,19 +78,11 @@ export default function HomePageContent() {
           </h2>
         </MotionDiv>
 
-        <Suspense fallback={<div className="animate-pulse h-6 bg-muted/50 rounded" />}>
-          <MotionP
-            variants={fadeInUp}
-            initial="initial"
-            animate="animate"
-            transition={{ duration: 0.5, delay: 0.8 }}
-            className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto mb-4 leading-relaxed px-4"
-          >
+        <p className="text-centered-md text-base md:text-lg text-muted-foreground leading-relaxed mb-4 px-4">
             Experienced Revenue Operations professional with proven track record of delivering $4.8M+
             revenue impact through strategic operational improvements, data-driven insights, and
             scalable process optimization for growing organizations.
-          </MotionP>
-        </Suspense>
+          </p>
 
         {/* Location Information */}
         <Suspense fallback={<div className="animate-pulse h-12 bg-muted/50 rounded" />}>
@@ -156,52 +109,6 @@ export default function HomePageContent() {
               <span>-</span>
               <span>McKinney</span>
             </div>
-          </MotionDiv>
-        </Suspense>
-
-        {/* Key Business Achievements */}
-        <Suspense fallback={<div className="animate-pulse h-96 bg-muted/50 rounded-xl" />}>
-          <MotionDiv
-            variants={fadeInUp}
-            initial="initial"
-            animate="animate"
-            transition={{ duration: 0.5, delay: 0.9 }}
-            className="max-w-6xl mx-auto mb-16"
-          >
-            <Card variant="primary" size="lg">
-              <CardHeader className="text-center">
-                <CardTitle className="text-2xl">Professional Impact</CardTitle>
-                <CardDescription>
-                  Strategic revenue operations achievements across professional roles
-                </CardDescription>
-              </CardHeader>
-
-              <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {metrics.map((metric, index) => (
-                    <Metric
-                      key={index}
-                      icon={metric.icon}
-                      value={metric.value}
-                      label={metric.label}
-                    />
-                  ))}
-                </div>
-
-                <div className="mt-8 pt-6 border-t border-border">
-                  <div className="flex flex-wrap gap-3 justify-center">
-                    {['Revenue Operations', 'HubSpot Certified', 'Business Analytics', 'Salesloft Certified Administrator'].map((skill) => (
-                      <span
-                        key={skill}
-                        className="bg-primary/10 backdrop-blur text-primary px-4 py-1.5 rounded-full text-sm font-bold border border-primary/20"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </MotionDiv>
         </Suspense>
 

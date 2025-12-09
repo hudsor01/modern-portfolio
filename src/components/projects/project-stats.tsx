@@ -10,7 +10,7 @@ interface ProjectStatsProps {
 export const ProjectStats: React.FC<ProjectStatsProps> = ({ totalProjects, isLoading }) => {
   if (isLoading) {
     return (
-      <div className="max-w-3xl mx-auto text-center mb-16">
+      <div className="text-centered-md text-center mb-16">
         <div className="animate-pulse">
           <div className="h-8 bg-white/5 rounded w-64 mx-auto mb-4"></div>
           <div className="h-6 bg-white/5 rounded w-48 mx-auto"></div>
@@ -20,7 +20,7 @@ export const ProjectStats: React.FC<ProjectStatsProps> = ({ totalProjects, isLoa
   }
 
   return (
-    <div className="max-w-3xl mx-auto text-center mb-16">
+    <div className="text-centered-md text-center mb-16">
       <h2 className="heading-section glow-secondary mb-6">
         Revenue Operations Portfolio
       </h2>
@@ -28,7 +28,7 @@ export const ProjectStats: React.FC<ProjectStatsProps> = ({ totalProjects, isLoa
         <span className="stat-value">{totalProjects}</span>{' '}
         Data-Driven Projects • $4.8M+ Revenue Optimized
       </p>
-      <p className="text-body-sm max-w-2xl mx-auto">
+      <p className="text-body-sm text-centered-sm">
         Transforming revenue operations through analytics, automation, and strategic insights.
         Each project delivers measurable business impact.
       </p>
