@@ -73,7 +73,7 @@ export function ProjectQuickView({ project, open, onOpenChangeAction }: ProjectQ
         </div>
 
         <DrawerFooter className="flex flex-row justify-end space-x-2">
-          <Button asChild variant="outline">
+          <Button asChild variant="ghost">
             <Link href={`/projects/${project.id}`}>View Details</Link>
           </Button>
 

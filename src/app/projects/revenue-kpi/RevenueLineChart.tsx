@@ -1,19 +1,14 @@
 'use client'
 import React, { memo, useMemo } from 'react'
+import { LineChart, Line, Legend } from 'recharts'
 import {
-  LineChart,
-  Line,
-  Legend,
   ChartWrapper,
   ChartGrid,
   ChartXAxis,
   ChartYAxis,
   StandardTooltip,
-  chartColors,
-  chartConfig,
-  formatters,
-  chartTypeConfigs,
-} from '@/lib/charts'
+} from '@/lib/charts/chart-components'
+import { chartColors, chartConfig, chartTypeConfigs, formatters } from '@/lib/charts/chart-theme'
 // Corrected path and added type import for YearOverYearGrowthExtended
 import { yearOverYearGrowthExtended, type YearOverYearGrowthExtended } from '@/app/projects/data/partner-analytics'
 import type { ExtendedRevenueData, TypedTooltipProps } from '@/types/chart'

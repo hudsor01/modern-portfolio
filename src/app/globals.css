@@ -642,6 +642,39 @@ label {
   gap: var(--spacing-xl, 2rem);
 }
 
+/* Fix for Tailwind CSS 4 max-width + centering */
+.text-centered-sm {
+  display: block;
+  width: 100%;
+  max-width: 36rem;
+  margin-inline: auto;
+}
+
+.text-centered-md {
+  display: block;
+  width: 100%;
+  max-width: 48rem;
+  margin-inline: auto;
+}
+
+.text-centered-lg {
+  display: block;
+  width: 100%;
+  max-width: 64rem;
+  margin-inline: auto;
+}
+
+/* Full-screen centered landing layout */
+.landing-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  text-align: center;
+  padding: 1rem;
+}
+
 .glow-primary {
   text-shadow: 0 0 20px oklch(0.7 0.15 200 / 0.5);
 }

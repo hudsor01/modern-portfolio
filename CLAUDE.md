@@ -5,50 +5,51 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ### Core Development
-- `pnpm dev` - Start development server (Next.js with Turbo)
-- `pnpm build` - Build for production
-- `pnpm start` - Start production server
-- `pnpm lint` - Run ESLint
-- `pnpm lint:fix` - Run ESLint with auto-fix
-- `pnpm type-check` - Run TypeScript type checking (note: hyphenated, not typecheck)
+- `bun dev` - Start development server (Next.js with Turbo)
+- `bun run build` - Build for production
+- `bun start` - Start production server
+- `bun run lint` - Run ESLint
+- `bun run lint:fix` - Run ESLint with auto-fix
+- `bun run type-check` - Run TypeScript type checking (note: hyphenated, not typecheck)
 
 ### Testing
-- `pnpm test` - Run unit tests with Vitest
-- `pnpm test:ui` - Run tests with Vitest UI
-- `pnpm test:coverage` - Run tests with coverage report (80% threshold)
-- `pnpm test:watch` - Run tests in watch mode
-- `pnpm e2e` - Run Playwright E2E tests
-- `pnpm e2e:ui` - Run E2E tests with Playwright UI
-- `pnpm e2e:headed` - Run E2E tests in headed mode
-- `pnpm test:all` - Run both unit and E2E tests
+- `bun test` - Run unit tests with Vitest
+- `bun run test:ui` - Run tests with Vitest UI
+- `bun run test:coverage` - Run tests with coverage report (80% threshold)
+- `bun run test:watch` - Run tests in watch mode
+- `bun run e2e` - Run Playwright E2E tests
+- `bun run e2e:ui` - Run E2E tests with Playwright UI
+- `bun run e2e:headed` - Run E2E tests in headed mode
+- `bun run test:all` - Run both unit and E2E tests
 
 ### Database (Prisma)
-- `pnpm db:generate` - Generate Prisma client
-- `pnpm db:push` - Push schema changes to database
-- `pnpm db:migrate` - Create and apply migrations
-- `pnpm db:seed` - Seed database with initial data
-- `pnpm db:studio` - Open Prisma Studio GUI
+- `bun run db:generate` - Generate Prisma client
+- `bun run db:push` - Push schema changes to database
+- `bun run db:migrate` - Create and apply migrations
+- `bun run db:seed` - Seed database with initial data
+- `bun run db:studio` - Open Prisma Studio GUI
 
 ### Build & Analysis
-- `pnpm validate` - Run type-check and lint together
-- `pnpm analyze` - Build with bundle analyzer
-- `pnpm clean` - Clean build artifacts and cache
-- `pnpm dev:debug` - Start dev server with Node.js inspector
+- `bun run validate` - Run type-check and lint together
+- `bun run analyze` - Build with bundle analyzer
+- `bun run clean` - Clean build artifacts and cache
+- `bun run dev:debug` - Start dev server with Bun inspector
 
 ### CI Commands
-- `pnpm ci:quick` - Run lint and type-check in parallel (pre-push check)
-- `pnpm ci:local` - Run lint, type-check, and tests in parallel
-- `pnpm ci:full` - Run ci:quick then build
+- `bun run ci:quick` - Run lint and type-check in parallel (pre-push check)
+- `bun run ci:local` - Run lint, type-check, and tests in parallel
+- `bun run ci:full` - Run ci:quick then build
 
 ### Requirements
-- Node.js >=22.14.0
-- pnpm >=9.0.0 (package manager)
+- Bun >= 1.1.0 (runtime and package manager)
+- Node.js >= 22.0.0 (for compatibility)
 - PostgreSQL database (for Prisma features)
 
 
 ## Architecture Overview
 
 ### Core Stack
+- **Bun 1.1+** as runtime and package manager
 - **Next.js 15** with App Router and React 19
 - **TypeScript 5.8** with strict mode and `noUncheckedIndexedAccess`
 - **Tailwind CSS 4** for styling
@@ -66,7 +67,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - Unit tests: `src/**/__tests__/*.test.ts(x)`
   - E2E tests: `e2e/*.spec.ts`
   - Test utilities: `src/test/setup.tsx`, `src/test/factories.ts`
-- **Coverage**: 80% threshold enforced via `pnpm test:coverage`
+- **Coverage**: 80% threshold enforced via `bun run test:coverage`
 
 ### High-Level Architecture
 
@@ -133,7 +134,7 @@ src/
   1. Write a failing test that defines expected behavior
   2. Write minimal code to make the test pass
   3. Refactor while keeping tests green
-- Maintain 80% coverage threshold (enforced by `pnpm test:coverage`)
+- Maintain 80% coverage threshold (enforced by `bun run test:coverage`)
 - Use test factories in `src/test/factories.ts` for consistent test data
 
 ## Coding Standards (Mandatory)
@@ -235,8 +236,8 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/
 3. **React Hook Form** for form state with Zod schemas
 
 ### Testing Strategy
-- Run `pnpm test` for unit tests (80% coverage target)
-- Run `pnpm e2e` for Playwright tests
+- Run `bun test` for unit tests (80% coverage target)
+- Run `bun run e2e` for Playwright tests
 - Test factories in `src/test/factories.ts`
 - Global setup in `src/test/setup.tsx`
 

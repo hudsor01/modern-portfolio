@@ -129,7 +129,7 @@ class CrossTabSync {
 
       // Handle different message types
       switch (message.type) {
-        case 'form-update':
+        case 'form-update': {
           if (message.data) {
             // Only update if the data is newer
             listeners.forEach(callback => {
@@ -142,8 +142,9 @@ class CrossTabSync {
             this.lastUpdate.set(formId, message.timestamp)
           }
           break
+        }
 
-        case 'form-clear':
+        case 'form-clear': {
           listeners.forEach(callback => {
             callback({
               type: 'clear',
@@ -152,8 +153,9 @@ class CrossTabSync {
           })
           this.lastUpdate.delete(formId)
           break
+        }
 
-        case 'form-restore':
+        case 'form-restore': {
           // Handle restoration requests
           const latestData = this.getLatestData(formId)
           if (latestData) {
@@ -166,6 +168,7 @@ class CrossTabSync {
             })
           }
           break
+        }
       }
     } catch (error) {
       console.warn('Failed to handle cross-tab message:', error)

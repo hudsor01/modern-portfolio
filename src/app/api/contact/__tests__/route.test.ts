@@ -95,8 +95,8 @@ describe('/api/contact - Fixed Tests', () => {
     const invalidData = {
       name: '',
       email: 'test@example.com',
-      subject: 'Test',
-      message: 'Test message'
+      subject: 'Test Subject',
+      message: 'Test message that is long enough'
     }
 
     await POST(createMockRequest(invalidData))
@@ -106,7 +106,7 @@ describe('/api/contact - Fixed Tests', () => {
         success: false,
         message: 'Validation failed',
         error: 'VALIDATION_ERROR',
-        details: { name: 'Name is required' }
+        details: { name: 'Name must be at least 2 characters long' }
       },
       { status: 400 }
     )
@@ -116,8 +116,8 @@ describe('/api/contact - Fixed Tests', () => {
     const invalidData = {
       name: 'John Doe',
       email: 'invalid-email',
-      subject: 'Test',
-      message: 'Test message'
+      subject: 'Test Subject',
+      message: 'Test message that is long enough'
     }
 
     await POST(createMockRequest(invalidData))
@@ -127,7 +127,7 @@ describe('/api/contact - Fixed Tests', () => {
         success: false,
         message: 'Validation failed',
         error: 'VALIDATION_ERROR',
-        details: { email: 'Valid email is required' }
+        details: { email: 'Please enter a valid email address' }
       },
       { status: 400 }
     )
@@ -138,7 +138,7 @@ describe('/api/contact - Fixed Tests', () => {
       name: 'John Doe',
       email: 'test@example.com',
       subject: '',
-      message: 'Test message'
+      message: 'Test message that is long enough'
     }
 
     await POST(createMockRequest(invalidData))
@@ -148,7 +148,7 @@ describe('/api/contact - Fixed Tests', () => {
         success: false,
         message: 'Validation failed',
         error: 'VALIDATION_ERROR',
-        details: { subject: 'Subject is required' }
+        details: { subject: 'Subject must be at least 5 characters long' }
       },
       { status: 400 }
     )
@@ -158,7 +158,7 @@ describe('/api/contact - Fixed Tests', () => {
     const invalidData = {
       name: 'John Doe',
       email: 'test@example.com',
-      subject: 'Test',
+      subject: 'Test Subject',
       message: ''
     }
 
@@ -169,7 +169,7 @@ describe('/api/contact - Fixed Tests', () => {
         success: false,
         message: 'Validation failed',
         error: 'VALIDATION_ERROR',
-        details: { message: 'Message is required' }
+        details: { message: 'Message must be at least 10 characters long' }
       },
       { status: 400 }
     )
@@ -191,10 +191,10 @@ describe('/api/contact - Fixed Tests', () => {
         message: 'Validation failed',
         error: 'VALIDATION_ERROR',
         details: {
-          name: 'Name is required',
-          email: 'Valid email is required',
-          subject: 'Subject is required',
-          message: 'Message is required'
+          name: 'Name must be at least 2 characters long',
+          email: 'Please enter a valid email address',
+          subject: 'Subject must be at least 5 characters long',
+          message: 'Message must be at least 10 characters long'
         }
       },
       { status: 400 }
@@ -206,7 +206,7 @@ describe('/api/contact - Fixed Tests', () => {
       name: 'John Doe',
       email: 'john@example.com',
       subject: 'Test Subject',
-      message: 'Test message'
+      message: 'Test message that is long enough to pass validation'
     }
 
     mockSend.mockResolvedValueOnce({ id: 'email-123' })
@@ -244,7 +244,7 @@ describe('/api/contact - Fixed Tests', () => {
       name: 'John Doe',
       email: 'john@example.com',
       subject: 'Test Subject',
-      message: 'Test message'
+      message: 'Test message that is long enough to pass validation'
     }
 
     mockSend.mockRejectedValueOnce(new Error('Email service error'))

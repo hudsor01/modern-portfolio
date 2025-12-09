@@ -182,7 +182,7 @@ export default function ResumePage() {
           aria-hidden="true"
         />
 
-        <div className="container relative z-10 px-4 mx-auto max-w-6xl py-16 space-y-16">
+        <div className="w-full relative z-10 px-4 mx-auto max-w-6xl py-16 space-y-16">
           {/* Hero Header */}
           <motion.div
             ref={heroRef}

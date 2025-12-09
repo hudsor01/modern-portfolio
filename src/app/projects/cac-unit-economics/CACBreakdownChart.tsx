@@ -1,17 +1,14 @@
 'use client'
 
+import { BarChart, Bar } from 'recharts'
 import {
-  BarChart,
-  Bar,
   ChartWrapper,
   ChartGrid,
   ChartXAxis,
   ChartYAxis,
   StandardTooltip,
-  chartColors,
-  chartConfig,
-  chartTypeConfigs,
-} from '@/lib/charts'
+} from '@/lib/charts/chart-components'
+import { chartColors, chartConfig, chartTypeConfigs } from '@/lib/charts/chart-theme'
 
 // Real data based on partner analysis
 const data = [

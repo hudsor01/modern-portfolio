@@ -1,4 +1,3 @@
-import React from 'react'
 import { generateMetadata } from '@/app/shared-metadata'
 import AboutContent from '@/components/about/about-content'
 
@@ -116,15 +115,13 @@ export const metadata = generateMetadata(
   '/about'
 )
 
-const AboutPage = React.memo(function AboutPage() {
+export default function AboutPage() {
   return (
-    <AboutContent 
-      skills={SKILLS} 
+    <AboutContent
+      skills={SKILLS}
       experienceStats={EXPERIENCE_STATS}
       personalInfo={PERSONAL_INFO}
       certifications={CERTIFICATIONS}
     />
   )
-})
-
-export default AboutPage
+}

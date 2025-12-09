@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import { Badge } from '@/components/ui/badge'
 import { MapPin, Phone, Mail } from 'lucide-react'
@@ -27,7 +29,7 @@ export function LocationHero({
 }: LocationHeroProps) {
   return (
     <section className="relative min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="container mx-auto px-4 py-12 lg:py-20">
+      <div className="w-full mx-auto px-4 py-12 lg:py-20">
         <div className="text-center max-w-4xl mx-auto">
           {/* Location Badge */}
           <div className="flex items-center justify-center gap-2 mb-6">

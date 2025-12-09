@@ -41,7 +41,7 @@ export function AboutContent({
     <div className="min-h-screen bg-page-light dark:bg-page">
       <Navbar />
       
-      <main className="container mx-auto px-6 py-12 space-y-24">
+      <main className="w-full mx-auto px-6 py-12 space-y-24">
         {/* Personal Information Section */}
         {personalInfo && (
           <PersonalInfo 
