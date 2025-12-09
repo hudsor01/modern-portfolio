@@ -2,17 +2,15 @@
 
 import React from 'react'
 import { TanStackQueryProvider } from '@/components/providers/tanstack-query-provider'
-import { WebVitals } from '@/components/providers/web-vitals'
 
 /**
- * ULTIMATE Client Components Provider
- * Uses the maximized TanStack Query implementation
+ * Client Components Provider
+ * Wraps TanStack Query for data fetching
  */
 export function ClientComponentsProvider({ children }: { children: React.ReactNode }) {
   return (
-    <TanStackQueryProvider showDevtools={true} showPerformance={true}>
+    <TanStackQueryProvider showDevtools={false} showPerformance={false}>
       {children}
-      <WebVitals />
     </TanStackQueryProvider>
   )
 }

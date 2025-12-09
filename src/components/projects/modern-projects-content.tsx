@@ -74,12 +74,12 @@ export const ModernProjectsContent = memo<ModernProjectsContentProps>(
               ></div>
             </div>
 
-            <div className="container relative z-10 px-6 mx-auto max-w-7xl py-24">
+            <div className="w-full relative z-10 px-6 mx-auto max-w-7xl py-24">
               {/* Hero Section */}
               <div className="section-hero">
                 <h1 className="heading-page glow-primary mb-8">Project Portfolio</h1>
 
-                <p className="text-body max-w-3xl mx-auto mb-16">
+                <p className="text-body text-centered-md mb-16">
                   Transforming data into actionable insights and driving measurable business results
                   through innovative solutions.
                 </p>
@@ -91,7 +91,7 @@ export const ModernProjectsContent = memo<ModernProjectsContentProps>(
               {/* Projects Section Header */}
               <div className="section-header">
                 <h2 className="heading-section glow-secondary mb-6">Featured Projects</h2>
-                <p className="text-body max-w-2xl mx-auto">
+                <p className="text-body text-centered-sm">
                   Explore my latest work in revenue operations and data analytics
                 </p>
               </div>

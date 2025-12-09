@@ -1,3 +1,5 @@
+'use client'
+
 import { siteConfig } from '@/lib/config/site'
 
 export function HomePageSchema() {

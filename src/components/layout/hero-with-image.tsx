@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -31,7 +33,7 @@ export function HeroWithImage({
 
   return (
     <section className="py-12 md:py-20 overflow-hidden">
-      <div className="container mx-auto px-4 md:px-6">
+      <div className="w-full mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
           <div className={`space-y-6 ${contentOrder}`}>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-white">

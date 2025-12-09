@@ -191,12 +191,7 @@
     min-width: 44px;
   }
   
-  /* Performance optimizations for mobile */
-  * {
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-  }
-  
+  /* Targeted GPU acceleration - use .gpu-accelerated class only where needed */
   .gpu-accelerated {
     will-change: transform;
     transform: translateZ(0);

@@ -25,7 +25,7 @@ interface ProjectDetailClientBoundaryProps {
 function ProjectDetailSkeleton() {
   return (
     <div className="min-h-screen bg-page-light dark:bg-page">
-      <div className="container mx-auto px-6 py-8">
+      <div className="w-full mx-auto px-6 py-8">
         <div className="mb-8">
           <Skeleton className="h-10 w-32 mb-4" />
           <Skeleton className="h-12 w-96 mb-2" />
@@ -84,7 +84,7 @@ export default function ProjectDetailClientBoundary({
     return (
       <div className="min-h-screen bg-page-light dark:bg-page">
         <Navbar />
-        <div className="container mx-auto px-6 py-8">
+        <div className="w-full mx-auto px-6 py-8">
           <div className="min-h-[400px] flex items-center justify-center">
             <div className="text-center">
               <h3 className="text-lg font-semibold mb-2">Project not found</h3>
@@ -113,7 +113,7 @@ export default function ProjectDetailClientBoundary({
     <div className="min-h-screen bg-page-light dark:bg-page">
       <Navbar />
       
-      <main className="container mx-auto px-6 py-8">
+      <main className="w-full mx-auto px-6 py-8">
         {/* Back Button */}
         <Button variant="ghost" size="sm" asChild className="mb-6">
           <Link href="/projects" className="flex items-center gap-2 text-sm">

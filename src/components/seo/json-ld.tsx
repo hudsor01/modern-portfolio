@@ -1,3 +1,5 @@
+'use client'
+
 export function PersonJsonLd() {
   const jsonLd = {
     '@context': 'https://schema.org',
