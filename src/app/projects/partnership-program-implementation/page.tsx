@@ -110,7 +110,7 @@ export default function PartnershipProgramPage() {
       <main className="min-h-screen bg-[#0f172a] text-foreground pt-20">
         {/* Hero Section */}
         <section className="relative py-16 md:py-24">
-          <div className="container mx-auto px-4 max-w-6xl">
+          <div className="w-full mx-auto px-4 max-w-6xl">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -176,7 +176,7 @@ export default function PartnershipProgramPage() {
 
         {/* Project Image */}
         <section className="py-8">
-          <div className="container mx-auto px-4 max-w-6xl">
+          <div className="w-full mx-auto px-4 max-w-6xl">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -199,7 +199,7 @@ export default function PartnershipProgramPage() {
 
         {/* Key Achievements */}
         <section className="py-16">
-          <div className="container mx-auto px-4 max-w-6xl">
+          <div className="w-full mx-auto px-4 max-w-6xl">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -241,7 +241,7 @@ export default function PartnershipProgramPage() {
 
         {/* Technical Implementation */}
         <section className="py-16">
-          <div className="container mx-auto px-4 max-w-6xl">
+          <div className="w-full mx-auto px-4 max-w-6xl">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -287,7 +287,7 @@ export default function PartnershipProgramPage() {
 
         {/* Professional Narrative Sections */}
         <section className="py-16">
-          <div className="container mx-auto px-4 max-w-6xl space-y-16">
+          <div className="w-full mx-auto px-4 max-w-6xl space-y-16">
             {/* Challenge */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -469,7 +469,7 @@ export default function PartnershipProgramPage() {
 
         {/* CTA Section */}
         <section className="py-16">
-          <div className="container mx-auto px-4 max-w-6xl">
+          <div className="w-full mx-auto px-4 max-w-6xl">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -498,7 +498,7 @@ export default function PartnershipProgramPage() {
 
         {/* STAR Impact Analysis */}
         <section className="py-16 bg-gradient-to-b from-transparent to-black/20">
-          <div className="container mx-auto px-4 max-w-6xl">
+          <div className="w-full mx-auto px-4 max-w-6xl">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}

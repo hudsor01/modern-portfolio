@@ -2,17 +2,8 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
-import { BlogPostLayout } from '../components/blog-post-layout'
+import { PostLayout } from '../components/post-layout'
 import { BlogPostJsonLd } from '@/components/seo/blog-json-ld'
-import { createContextLogger } from '@/lib/monitoring/logger'
-
-const logger = createContextLogger('BlogPostPage')
-
-/**
- * Dynamic Blog Post Page - Server Component
- * Displays individual blog posts with SEO optimization
- * Integrates with existing portfolio architecture and design system
- */
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -23,22 +14,21 @@ interface BlogPostPageProps {
 // Function to fetch post data from API
 async function getBlogPost(slug: string) {
   try {
-    const baseUrl = process.env.NODE_ENV === 'production' 
-      ? 'https://richardwhudsonjr.com' 
+    const baseUrl = process.env.NODE_ENV === 'production'
+      ? 'https://richardwhudsonjr.com'
       : 'http://localhost:3000'
-    
+
     const response = await fetch(`${baseUrl}/api/blog/${slug}`, {
-      next: { revalidate: 3600 }, // Revalidate every hour
+      next: { revalidate: 3600 },
     })
-    
+
     if (!response.ok) {
       return null
     }
-    
+
     const data = await response.json()
     return data.success ? data.data : null
-  } catch (error) {
-    logger.error('Error fetching blog post', error instanceof Error ? error : new Error(String(error)))
+  } catch {
     return null
   }
 }
@@ -94,21 +84,19 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params
   const post = await getBlogPost(slug)
-  
+
   if (!post) {
     notFound()
   }
-  
+
   return (
     <>
       <BlogPostJsonLd post={post} />
-      <div className="min-h-screen bg-[#0f172a] text-white">
+      <div className="min-h-screen bg-background">
         <Navbar />
-        
         <main className="pt-20">
-          <BlogPostLayout post={post} />
+          <PostLayout post={post} />
         </main>
-        
         <Footer />
       </div>
     </>

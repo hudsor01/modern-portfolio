@@ -25,7 +25,7 @@ export const ContactFormSchema = z.object({
   name: z.string()
     .min(2, 'Name must be at least 2 characters')
     .max(50, 'Name must be less than 50 characters')
-    .regex(/^[a-zA-Z\s\-'\.]+$/, 'Name contains invalid characters'),
+    .regex(/^[a-zA-Z\s\-'.]+$/, 'Name contains invalid characters'),
   email: z.string()
     .email('Please enter a valid email address')
     .max(100, 'Email must be less than 100 characters'),
@@ -292,19 +292,7 @@ export class EmailService {
         error: 'Email service not available',
       }
     }
-    
-    // Development/testing mode - logs contact form submissions when email service is unavailable
-    // const logMessage = [
-    //   '📧 Contact Form Submission (Mock Mode):',
-    //   '---',
-    //   `Name: ${data.name}`,
-    //   `Email: ${data.email}`,
-    //   data.phone ? `Phone: ${data.phone}` : null,
-    //   data.subject ? `Subject: ${data.subject}` : null,
-    //   `Message: ${data.message}`,
-    //   '---'
-    // ].filter(Boolean).join('\n')
-    
+
     return {
       success: true,
       data: {

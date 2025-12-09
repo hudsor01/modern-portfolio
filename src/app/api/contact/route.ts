@@ -7,18 +7,20 @@ import { escapeHtml } from '@/lib/security/html-escape'
 import { validateCSRFToken } from '@/lib/security/csrf-protection'
 import { createContextLogger } from '@/lib/monitoring/logger'
 import {
-  contactFormSchema,
   validateRequest,
   ValidationError,
   createApiError,
   createApiSuccess,
+} from '@/lib/api/validation'
+import {
   getClientIdentifier,
   getRequestMetadata,
   parseRequestBody,
   createResponseHeaders,
   logApiRequest,
   logApiResponse,
-} from '@/lib/api'
+} from '@/lib/api/utils'
+import { contactFormSchema } from '@/lib/validations/contact-form-schema'
 
 const logger = createContextLogger('ContactAPI')
 

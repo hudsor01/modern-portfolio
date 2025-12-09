@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useLocalStorage } from '@/hooks/use-local-storage'
 import { Button } from '@/components/ui/button'
 import {
@@ -145,7 +145,7 @@ export function ConsentBanner() {
     <>
       {showBanner && (
         <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 shadow-lg z-50">
-          <div className="container mx-auto max-w-7xl">
+          <div className="w-full mx-auto max-w-7xl">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div className="flex-1">
                 <h3 className="text-lg font-semibold mb-1">Cookie Consent</h3>

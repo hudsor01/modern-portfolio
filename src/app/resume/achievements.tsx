@@ -38,7 +38,7 @@ export function Achievements() {
 
   return (
     <section className="py-20 bg-muted/30">
-      <div className="container mx-auto max-w-7xl px-4">
+      <div className="w-full mx-auto max-w-7xl px-4">
         <div className="text-center mb-16">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}

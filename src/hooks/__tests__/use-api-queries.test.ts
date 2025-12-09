@@ -47,7 +47,7 @@ const createWrapper = () => {
 describe('useApiQueries hooks', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    global.fetch = vi.fn()
+    global.fetch = vi.fn() as unknown as typeof fetch
   })
 
   afterEach(() => {

@@ -1,4 +1,5 @@
-import React from 'react';
+'use client'
+
 import { siteConfig } from '@/lib/config/site';
 import { Project } from '@/types/project';
 
