@@ -1,15 +1,16 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { generateNonceContext, buildCSPDirective } from './src/lib/security/nonce'
 import { checkApiRateLimit, getClientIdentifier } from './src/lib/security/rate-limiter'
 import {
-  applySecurityHeaders,
   validateOrigin,
   getTrustedOrigins,
-  logSecurityEvent,
-  buildEnhancedCSP
+  logSecurityEvent
 } from './src/lib/security/security-headers'
 
+/**
+ * Simplified proxy for portfolio site (no auth required)
+ * Handles: www redirect, CORS, rate limiting, basic security headers
+ */
 export function proxy(request: NextRequest) {
   const url = request.nextUrl
   const hostname = request.headers.get('host') || ''
@@ -23,84 +24,44 @@ export function proxy(request: NextRequest) {
 
   const response = NextResponse.next()
   const pathname = request.nextUrl.pathname
-
-  // Security: Validate origin for sensitive requests
-  const trustedOrigins = getTrustedOrigins()
   const isApiRequest = pathname.startsWith('/api/')
 
+  // Validate origin for non-GET API requests (contact form, etc.)
   if (isApiRequest && request.method !== 'GET') {
+    const trustedOrigins = getTrustedOrigins()
     if (!validateOrigin(request, trustedOrigins)) {
       logSecurityEvent('invalid_origin', 'medium', {
         pathname,
         method: request.method,
-        origin: request.headers.get('origin'),
-        referer: request.headers.get('referer')
+        origin: request.headers.get('origin')
       }, request)
-
       return new NextResponse('Forbidden', { status: 403 })
     }
   }
 
-  // Handle CORS for API routes
-  if (isApiRequest) {
-    const origin = request.headers.get('origin')
-    if (origin && trustedOrigins.includes(origin)) {
-      response.headers.set('Access-Control-Allow-Origin', origin)
-      response.headers.set('Vary', 'Origin')
-    }
-  }
-
-  // Apply rate limiting to API routes
+  // Rate limiting for API routes
   if (isApiRequest) {
     const identifier = getClientIdentifier(request)
     const rateLimit = checkApiRateLimit(identifier)
 
     if (!rateLimit.allowed) {
-      logSecurityEvent('rate_limit_exceeded', 'medium', {
-        identifier: identifier.substring(0, 20) + '...',
-        pathname,
-        rateLimitInfo: rateLimit
-      }, request)
-
       return new NextResponse('Too Many Requests', {
         status: 429,
         headers: {
           'Retry-After': String(Math.ceil((rateLimit.retryAfter || Date.now()) / 1000)),
           'X-RateLimit-Limit': '100',
           'X-RateLimit-Remaining': '0',
-          'X-RateLimit-Reset': String(Math.ceil((rateLimit.resetTime || Date.now()) / 1000)),
         },
       })
     }
 
-    // Add rate limit headers for API responses
+    // Add rate limit info headers
     if (rateLimit.remaining !== undefined) {
-      response.headers.set('X-RateLimit-Limit', '100')
       response.headers.set('X-RateLimit-Remaining', String(rateLimit.remaining))
-      response.headers.set('X-RateLimit-Reset', String(Math.ceil((rateLimit.resetTime || Date.now()) / 1000)))
     }
   }
 
-  // Generate nonces for CSP
-  const nonces = generateNonceContext()
-  const enhancedCSP = buildEnhancedCSP(nonces)
-
-  // Set nonce headers for client-side access
-  response.headers.set('x-script-nonce', nonces.scriptNonce)
-  response.headers.set('x-style-nonce', nonces.styleNonce)
-
-  // Apply comprehensive security headers
-  const secureResponse = applySecurityHeaders(response, {
-    csp: enhancedCSP
-  })
-
-  // Set enhanced CSP header
-  secureResponse.headers.set('Content-Security-Policy', enhancedCSP)
-
-  // Additional security headers
-  secureResponse.headers.set('X-Request-ID', crypto.randomUUID())
-
-  return secureResponse
+  return response
 }
 
 export const config = {

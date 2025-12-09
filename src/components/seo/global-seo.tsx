@@ -1,6 +1,5 @@
 'use client'
 
-import React from 'react';
 import { siteConfig } from '@/lib/config/site';
 
 interface GlobalSEOProps {

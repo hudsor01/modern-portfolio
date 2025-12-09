@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo, memo } from 'react'
+import { useMemo, memo } from 'react'
 import { Navbar } from '@/components/layout/navbar'
 import { ProjectCard } from '@/components/projects/project-card'
 import { ProjectStats } from '@/components/projects/project-stats'

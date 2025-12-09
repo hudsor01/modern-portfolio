@@ -12,11 +12,7 @@ const cardVariants = cva(
       variant: {
         default: "bg-card shadow-sm",
         glass: "bg-card/50 backdrop-blur-sm border-border hover:border-primary/50 hover:-translate-y-1",
-        elevated: "bg-card/60 shadow-xl hover:border-primary/50 hover:-translate-y-2 hover:shadow-2xl",
-        subtle: "bg-muted/30 border-muted shadow-sm hover:bg-muted/40",
-        interactive: "bg-card/50 backdrop-blur-sm shadow-lg hover:border-primary/50 hover:-translate-y-1 cursor-pointer",
         primary: "bg-gradient-to-br from-primary/20 via-card/50 to-card/50 border-primary/30 shadow-lg hover:border-primary",
-        outline: "bg-transparent border-border hover:bg-muted/30 hover:border-primary/50",
       },
       size: {
         sm: "gap-4 py-4",
@@ -31,11 +27,12 @@ const cardVariants = cva(
   }
 )
 
-interface CardProps
-  extends React.ComponentProps<"div">,
-    VariantProps<typeof cardVariants> {}
-
-function Card({ className, variant, size, ...props }: CardProps) {
+function Card({
+  className,
+  variant,
+  size,
+  ...props
+}: React.ComponentProps<"div"> & VariantProps<typeof cardVariants>) {
   return (
     <div
       data-slot="card"
@@ -78,19 +75,6 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-function CardAction({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-action"
-      className={cn(
-        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
 function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -116,7 +100,6 @@ export {
   CardHeader,
   CardFooter,
   CardTitle,
-  CardAction,
   CardDescription,
   CardContent,
   cardVariants,

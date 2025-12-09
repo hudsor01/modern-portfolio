@@ -190,7 +190,7 @@ export default function ProjectDetailClientBoundary({
                   </Button>
                 )}
                 {displayProject.githubUrl && (
-                  <Button asChild variant="outline" className="flex-1">
+                  <Button asChild variant="ghost" className="flex-1">
                     <a href={displayProject.githubUrl} target="_blank" rel="noopener noreferrer">
                       <SiGithub className="w-4 h-4 mr-2" />
                       View Code
