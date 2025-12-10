@@ -30,8 +30,13 @@ coverage/
 # Test outputs
 playwright-report/
 test-results/
-e2e/
 .actrc
+
+# Development artifacts
+screenshots/
+PERFORMANCE_ANALYSIS.md
+PROGRESS.md
+UPGRADE_TRACKER.md
 
 # OS
 .DS_Store
