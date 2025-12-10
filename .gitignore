@@ -31,6 +31,12 @@ coverage/
 playwright-report/
 test-results/
 e2e/
+screenshots/
+
+# Tracking docs
+PERFORMANCE_ANALYSIS.md
+PROGRESS.md
+UPGRADE_TRACKER.md
 .actrc
 
 # OS
