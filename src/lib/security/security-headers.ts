@@ -5,6 +5,9 @@
 
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { createContextLogger } from '@/lib/monitoring/logger'
+
+const securityLogger = createContextLogger('SecurityHeaders')
 
 export interface SecurityHeadersConfig {
   csp?: string
@@ -267,10 +270,10 @@ export function logSecurityEvent(
   }
 
   // In production, you would send this to a monitoring service
-  console.info(`[${severity.toUpperCase()}] Security Event`, JSON.stringify(logEntry, null, 2))
+  securityLogger.info(`[${severity.toUpperCase()}] Security Event`, { logEntry })
 
   // For critical events, you might want to alert immediately
   if (severity === 'critical') {
-    console.error('[CRITICAL SECURITY EVENT]', logEntry)
+    securityLogger.error('[CRITICAL SECURITY EVENT]', undefined, { logEntry })
   }
 }

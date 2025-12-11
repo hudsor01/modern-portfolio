@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, RefreshCcw, TrendingUp, DollarSign, Users, Activity } from 'lucide-react'
-import { m as motion } from 'framer-motion'
+
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { createContextLogger } from '@/lib/monitoring/logger'
 import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 import { yearOverYearGrowthExtended } from '@/app/projects/data/partner-analytics'
 
-import { staggerContainer, timeframes, type YearOverYearGrowth } from './data/constants'
+import { timeframes, type YearOverYearGrowth } from './data/constants'
 import { formatCurrency, calculateGrowth } from './utils'
 import { MetricCard } from './components/MetricCard'
 import { ChartsGrid } from './components/ChartsGrid'
@@ -112,16 +112,11 @@ export default function RevenueKPI() {
           </div>
 
           {/* Title Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-8"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-3">
+          <div className="mb-8 animate-fade-in-up">
+            <h1 className="text-4xl md:typography-h1 text-5xl bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-3">
               Revenue KPI Dashboard
             </h1>
-            <p className="text-lg text-muted-foreground max-w-3xl mb-4">
+            <p className="typography-lead max-w-3xl mb-4">
               Real-time revenue analytics, partner performance metrics, and business intelligence
               for data-driven growth strategies.
             </p>
@@ -139,7 +134,7 @@ export default function RevenueKPI() {
                 Accuracy: 94%
               </span>
             </div>
-          </motion.div>
+          </div>
 
           {/* Loading State */}
           {isLoading ? (
@@ -152,12 +147,7 @@ export default function RevenueKPI() {
           ) : (
             <>
               {/* KPI Cards */}
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                variants={staggerContainer}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
-              >
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 <MetricCard
                   icon={DollarSign}
                   label="Revenue"
@@ -198,7 +188,7 @@ export default function RevenueKPI() {
                   iconBgClass="bg-amber-500/20"
                   iconColorClass="text-amber-400"
                 />
-              </motion.div>
+              </div>
 
               {/* Charts Grid */}
               <ChartsGrid />

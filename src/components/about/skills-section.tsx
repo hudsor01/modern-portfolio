@@ -1,6 +1,6 @@
 'use client'
 
-import { m as motion } from 'framer-motion'
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
@@ -23,34 +23,28 @@ interface SkillsSectionProps {
   className?: string
 }
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
-}
 
 export function SkillsSection({ skills, className = '' }: SkillsSectionProps) {
   return (
     <section className={className}>
-      <motion.div
-        initial={fadeInUp.initial}
-        animate={fadeInUp.animate}
-        transition={{ duration: 0.6, delay: 0.2 }}
+      <div
+        
+        
         className="text-center mb-12"
       >
-        <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        <h2 className="typography-h1 text-4xl mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           Core Competencies
         </h2>
-        <p className="text-xl text-muted-foreground dark:text-muted-foreground max-w-3xl mx-auto">
+        <p className="typography-lead dark:text-muted-foreground max-w-3xl mx-auto">
           Revenue operations expertise spanning analytics, automation, and strategic optimization
         </p>
-      </motion.div>
+      </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {skills.map((category, index) => (
-          <SkillCategoryCard 
+        {skills.map((category) => (
+          <SkillCategoryCard
             key={category.category}
             category={category}
-            index={index}
           />
         ))}
       </div>
@@ -60,23 +54,21 @@ export function SkillsSection({ skills, className = '' }: SkillsSectionProps) {
 
 interface SkillCategoryCardProps {
   category: SkillCategory
-  index: number
 }
 
-function SkillCategoryCard({ category, index }: SkillCategoryCardProps) {
+function SkillCategoryCard({ category }: SkillCategoryCardProps) {
   return (
-    <motion.div
-      initial={fadeInUp.initial}
-      animate={fadeInUp.animate}
-      transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
+    <div
+      
+      
     >
       <Card className="h-full border-0 shadow-lg bg-white/50 dark:bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
         <CardHeader className="text-center pb-4">
           <div className="text-4xl mb-4">{category.icon}</div>
-          <CardTitle className="text-xl font-bold text-foreground dark:text-white">
+          <CardTitle className="typography-h4 text-foreground dark:text-white">
             {category.category}
           </CardTitle>
-          <p className="text-sm text-muted-foreground dark:text-muted-foreground">
+          <p className="typography-small text-muted-foreground dark:text-muted-foreground">
             {category.description}
           </p>
         </CardHeader>
@@ -88,7 +80,7 @@ function SkillCategoryCard({ category, index }: SkillCategoryCardProps) {
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   )
 }
 
@@ -107,7 +99,7 @@ function SkillItem({ skill }: SkillItemProps) {
           <Badge variant="secondary" className="text-xs">
             {skill.years}y
           </Badge>
-          <span className="text-sm text-muted-foreground dark:text-muted-foreground">
+          <span className="typography-small text-muted-foreground dark:text-muted-foreground">
             {skill.level}%
           </span>
         </div>

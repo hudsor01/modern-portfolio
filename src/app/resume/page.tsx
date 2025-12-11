@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { m as motion, useInView } from 'framer-motion'
+
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,8 +15,9 @@ import {
   BadgeCheck,
   MapPin,
   Eye,
+  Github,
+  Linkedin,
 } from 'lucide-react'
-import { SiGithub, SiLinkedin } from 'react-icons/si'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { ResumeViewer } from './resume-viewer'
@@ -100,18 +101,33 @@ const certifications = [
   'Atlassian Agile Project Management',
 ]
 
-// Animation variants
-const fadeInUp = {
-  initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
-}
+// Custom useInView hook using IntersectionObserver
+function useInView(ref: React.RefObject<HTMLElement | null>, options?: { once?: boolean }) {
+  const [isInView, setIsInView] = useState(false)
 
-const staggerContainer = {
-  animate: {
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
+  useEffect(() => {
+    const element = ref.current
+    if (!element) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setIsInView(true)
+          if (options?.once) {
+            observer.disconnect()
+          }
+        } else if (!options?.once) {
+          setIsInView(false)
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [ref, options?.once])
+
+  return isInView
 }
 
 export default function ResumePage() {
@@ -184,53 +200,38 @@ export default function ResumePage() {
 
         <div className="w-full relative z-10 px-4 mx-auto max-w-6xl py-16 space-y-16">
           {/* Hero Header */}
-          <motion.div
+          <div
             ref={heroRef}
-            variants={staggerContainer}
-            initial="initial"
-            animate={isHeroInView ? "animate" : "initial"}
-            className="text-center space-y-8 max-w-4xl mx-auto"
+            className={`text-center space-y-8 max-w-4xl mx-auto animate-fade-in-up ${isHeroInView ? 'opacity-100' : 'opacity-0'}`}
           >
 
-            <motion.h1
-              variants={fadeInUp}
-              className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8"
-            >
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8">
               <span className="block hero-name-gradient">
                 Richard Hudson
               </span>
-            </motion.h1>
+            </h1>
 
-            <motion.h2
-              variants={fadeInUp}
-              className="text-2xl sm:text-3xl md:text-4xl font-light max-w-4xl mx-auto mb-6"
-            >
-              <span className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-500/20 to-blue-600/20 border border-primary/50/40 px-6 py-3 text-primary/70 font-medium backdrop-blur-sm shadow-lg shadow-primary/25">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-light max-w-4xl mx-auto mb-6">
+              <span className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-500/20 to-blue-600/20 border border-primary/40 px-6 py-3 text-primary/70 font-medium backdrop-blur-sm shadow-lg shadow-primary/25">
                 Revenue Operations Professional
               </span>
-            </motion.h2>
+            </h2>
 
-            <motion.div
-              variants={fadeInUp}
-              className="flex flex-col items-center mb-8"
-            >
-              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed text-center">
+            <div className="flex flex-col items-center mb-8">
+              <p className="text-lg md:typography-lead max-w-3xl mx-auto leading-relaxed text-center">
                 Experienced Revenue Operations Professional with a proven track record of driving business growth through data-driven insights, process optimization, and strategic operational improvements. Expert in building scalable systems that increase efficiency and revenue performance.
               </p>
-            </motion.div>
+            </div>
 
             {/* Interactive Action Buttons */}
-            <motion.div
-              variants={fadeInUp}
-              className="relative max-w-4xl mx-auto pt-8"
-            >
+            <div className="relative max-w-4xl mx-auto pt-8">
               {/* Enhanced Action Buttons Container */}
               <div className="glass-interactive rounded-3xl p-8 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/25">
                 <div className="glass rounded-2xl p-6">
                   {/* Action Buttons Grid */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     {/* Download Resume - Primary Action */}
-                    <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-600/20 border border-primary/50/30 hover:border-primary/50/50 transition-all duration-500 hover:scale-105">
+                    <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-600/20 border border-primary/30 hover:border-primary/50 transition-all duration-500 hover:scale-105">
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                       <Button
                         size="lg"
@@ -281,13 +282,10 @@ export default function ResumePage() {
 
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Enhanced Social Icons Container */}
-            <motion.div
-              variants={fadeInUp}
-              className="max-w-2xl mx-auto pt-8"
-            >
+            <div className="max-w-2xl mx-auto pt-8">
               <div className="glass-interactive rounded-3xl p-8 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/25">
                 <div className="glass rounded-2xl p-6">
                   <div className="flex justify-center gap-6">
@@ -305,7 +303,7 @@ export default function ResumePage() {
                       className="text-muted-foreground hover:text-primary social-icon"
                       aria-label="LinkedIn"
                     >
-                      <SiLinkedin className="h-7 w-7" />
+                      <Linkedin className="h-7 w-7" />
                     </a>
                     <a
                       href="https://github.com/hudsor01"
@@ -314,7 +312,7 @@ export default function ResumePage() {
                       className="text-muted-foreground hover:text-primary social-icon"
                       aria-label="GitHub"
                     >
-                      <SiGithub className="h-7 w-7" />
+                      <Github className="h-7 w-7" />
                     </a>
                     <a
                       href="https://richardwhudsonjr.com"
@@ -328,30 +326,22 @@ export default function ResumePage() {
                   </div>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
           {showPdf ? (
             // PDF viewer
-            <motion.div
-              variants={fadeInUp}
-              initial="initial"
-              animate="animate"
-              className="glass rounded-xl overflow-hidden"
-            >
+            <div className="glass rounded-xl overflow-hidden animate-fade-in-up">
               {pdfUrl && <ResumeViewer pdfUrl={pdfUrl} />}
-            </motion.div>
+            </div>
           ) : (
             // Resume content
-            <motion.div
+            <div
               ref={contentRef}
-              variants={staggerContainer}
-              initial="initial"
-              animate={isContentInView ? "animate" : "initial"}
-              className="space-y-16"
+              className={`space-y-16 animate-fade-in-up ${isContentInView ? 'opacity-100' : 'opacity-0'}`}
             >
               {/* About Section - Clean Professional Style */}
-              <motion.section variants={fadeInUp}>
+              <section >
                 <div className="bg-slate-800/95 border border-slate-700 rounded-xl p-8 shadow-lg hover:bg-slate-700/95 hover:border-slate-600 transition-all duration-200">
                   <div className="flex flex-col lg:flex-row items-center gap-8">
                     {/* Profile Image */}
@@ -368,7 +358,7 @@ export default function ResumePage() {
 
                     {/* About Content */}
                     <div className="flex-1 text-center lg:text-left space-y-4">
-                      <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+                      <h3 className="text-2xl md:typography-h2 border-none pb-0 text-3xl text-foreground mb-4">
                         Revenue Operations Professional
                       </h3>
                       <p className="text-primary font-medium">
@@ -381,10 +371,10 @@ export default function ResumePage() {
                       </p>
                       
                       <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-                        <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-primary/20/50 text-primary/70 border border-primary/80/50">
+                        <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-primary/20 text-primary/70 border border-primary/50">
                           Salesforce Certified
                         </span>
-                        <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-primary/20/50 text-primary/70 border border-primary/80/50">
+                        <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-primary/20 text-primary/70 border border-primary/50">
                           HubSpot Certified
                         </span>
                         <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-emerald-900/50 text-emerald-300 border border-emerald-800/50">
@@ -394,16 +384,16 @@ export default function ResumePage() {
                     </div>
                   </div>
                 </div>
-              </motion.section>
+              </section>
 
               {/* Professional Experience */}
-              <motion.section variants={fadeInUp}>
+              <section >
                 <div className="space-y-12">
                   {experience.map((job) => (
-                    <motion.div key={job.title} variants={fadeInUp} className="space-y-6">
+                    <div key={job.title}  className="space-y-6">
                       {/* Job Title Outside Container */}
                       <div className="text-center">
-                        <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold section-heading-gradient mb-2 tracking-tight">{job.title}</h3>
+                        <h3 className="text-2xl sm:typography-h2 border-none pb-0 text-3xl md:text-4xl section-heading-gradient mb-2 tracking-tight">{job.title}</h3>
                       </div>
 
                       {/* Job Content Container - Clean Professional Style */}
@@ -411,7 +401,7 @@ export default function ResumePage() {
                         {/* Company and Details Header */}
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
                           <div>
-                            <h4 className="text-xl font-semibold text-white">
+                            <h4 className="typography-h4 text-white">
                               {job.company}
                             </h4>
                             <p className="text-primary flex items-center gap-2 mt-1">
@@ -437,20 +427,20 @@ export default function ResumePage() {
                           ))}
                         </div>
                       </div>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
-              </motion.section>
+              </section>
 
               {/* Education & Certifications */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-                <motion.section variants={fadeInUp} className="group h-full">
+                <section  className="group h-full">
                   <div className="relative glass-interactive rounded-3xl overflow-hidden transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/25">
                     <div className="p-8 flex-1 flex flex-col">
                       {/* Inner Container for Content */}
                       <div className="glass rounded-2xl p-6 flex-1 flex flex-col h-[320px]">
                         <div className="text-center mb-6">
-                          <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
+                          <h3 className="text-2xl sm:typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
                             <GraduationCap className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                             Education
                           </h3>
@@ -459,7 +449,7 @@ export default function ResumePage() {
                         <div className="flex-1 flex flex-col justify-center">
                           {education.map((edu, index) => (
                             <div key={index} className="space-y-3">
-                              <h4 className="text-lg font-bold text-foreground leading-tight">{edu.degree}</h4>
+                              <h4 className="typography-large text-foreground leading-tight">{edu.degree}</h4>
                               <p className="text-primary font-medium">{edu.institution}</p>
                               <div className="flex items-center gap-2 text-muted-foreground">
                                 <Calendar className="w-4 h-4" />
@@ -472,15 +462,15 @@ export default function ResumePage() {
                       </div>
                     </div>
                   </div>
-                </motion.section>
+                </section>
 
-                <motion.section variants={fadeInUp} className="group h-full">
+                <section  className="group h-full">
                   <div className="relative glass-interactive rounded-3xl overflow-hidden transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/25">
                     <div className="p-8 flex-1 flex flex-col">
                       {/* Inner Container for Content */}
                       <div className="glass rounded-2xl p-6 flex-1 flex flex-col h-[320px]">
                         <div className="text-center mb-6">
-                          <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
+                          <h3 className="text-2xl sm:typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
                             <BadgeCheck className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                             Certifications
                           </h3>
@@ -499,13 +489,13 @@ export default function ResumePage() {
                       </div>
                     </div>
                   </div>
-                </motion.section>
+                </section>
               </div>
 
               {/* Interactive Skills Showcase */}
-              <motion.section variants={fadeInUp}>
+              <section >
                 <div className="text-center mb-12">
-                  <h3 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent">
+                  <h3 className="typography-h2 border-none pb-0 text-3xl md:text-4xl mb-4 bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent">
                     Skills & Expertise
                   </h3>
                   <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -522,12 +512,10 @@ export default function ResumePage() {
 
                     <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
                       {skills.map((skillGroup, index) => (
-                        <motion.div
+                        <div
                           key={index}
-                          variants={fadeInUp}
+                          
                           className="group relative"
-                          whileHover={{ y: -8 }}
-                          transition={{ type: "spring", stiffness: 300, damping: 20 }}
                         >
                           {/* Skill Category Card */}
                           <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur border border-white/20 rounded-2xl overflow-hidden transition-all duration-500 group-hover:border-white/40 group-hover:shadow-2xl group-hover:shadow-primary/20 h-full">
@@ -540,7 +528,7 @@ export default function ResumePage() {
                             <div className="relative z-10 p-6">
                               {/* Category Header */}
                               <div className="flex items-center justify-between mb-6">
-                                <h4 className={`text-xl font-bold tracking-tight text-center w-full ${index === 0 ? 'text-primary' :
+                                <h4 className={`typography-h4 tracking-tight text-center w-full ${index === 0 ? 'text-primary' :
                                   index === 1 ? 'text-purple-400' :
                                     'text-emerald-500'
                                   }`}>
@@ -551,12 +539,9 @@ export default function ResumePage() {
                               {/* Skills List */}
                               <div className="space-y-3 flex-1 flex flex-col justify-center">
                                 {skillGroup.items.map((skill, i) => (
-                                  <motion.div
+                                  <div
                                     key={i}
                                     className="group/skill"
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.1 + i * 0.05 }}
                                   >
                                     {/* Skill Item */}
                                     <div className="bg-white/5 rounded-xl p-3 hover:bg-white/10 transition-all duration-300 border border-white/10 hover:border-white/20 text-center">
@@ -564,19 +549,19 @@ export default function ResumePage() {
                                         {skill}
                                       </span>
                                     </div>
-                                  </motion.div>
+                                  </div>
                                 ))}
                               </div>
                             </div>
                           </div>
-                        </motion.div>
+                        </div>
                       ))}
                     </div>
 
                   </div>
                 </div>
-              </motion.section>
-            </motion.div>
+              </section>
+            </div>
           )}
         </div>
       </section>

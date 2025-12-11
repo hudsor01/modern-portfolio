@@ -36,8 +36,8 @@ export function GlobalLoading({
         <Card variant="primary" className="max-w-md">
           <CardContent className="text-center space-y-4">
             <LoadingSpinner size="lg" className="mx-auto" />
-            <h2 className="text-xl font-bold text-white">{message}</h2>
-            <p className="text-muted-foreground">
+            <h2 className="typography-h4 text-white">{message}</h2>
+            <p className="typography-muted">
               Please wait while we prepare your content...
             </p>
           </CardContent>
@@ -50,7 +50,7 @@ export function GlobalLoading({
     <div className="flex items-center justify-center p-8">
       <div className="text-center space-y-3">
         <LoadingSpinner size="lg" className="mx-auto" />
-        <p className="text-muted-foreground">{message}</p>
+        <p className="typography-muted">{message}</p>
       </div>
     </div>
   )
@@ -70,7 +70,7 @@ export function PageLoading({
       <div className="text-center space-y-6">
         <div className="space-y-3">
           <LoadingSpinner size="lg" className="mx-auto" />
-          <h1 className="text-3xl font-bold text-white">{title}</h1>
+          <h1 className="typography-h2 border-none pb-0 text-3xl text-white">{title}</h1>
           <p className="text-muted-foreground max-w-md">{description}</p>
         </div>
         
@@ -98,7 +98,7 @@ export function ComponentLoading({
     <div className={`${height} ${className} flex items-center justify-center bg-card/20 rounded-xl border border-border/50`}>
       <div className="text-center space-y-3">
         <LoadingSpinner className="mx-auto" />
-        <p className="text-sm text-muted-foreground">Loading component...</p>
+        <p className="typography-small text-muted-foreground">Loading component...</p>
       </div>
     </div>
   )

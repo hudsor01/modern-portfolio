@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query'
-import { getProjects, getProject } from '@/data/projects'
+import { getProjects, getProject } from '@/lib/content/projects'
 import type { Project } from '@/types/project'
 import { Metadata } from 'next'
 import { createQueryClient } from '@/lib/query-config'
@@ -83,7 +83,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     description: project.description,
     ...(project.content && { content: project.content }),
     featured: project.featured ?? false,
-    ...(project.image && { image: project.image }),
+    image: project.image,
     ...(project.link && { link: project.link }),
     ...(project.github && { github: project.github }),
     category: project.category || 'Other',
@@ -94,6 +94,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     ...(project.link && { liveUrl: project.link }),
     ...(project.github && { githubUrl: project.github }),
     ...('starData' in project && project.starData && { starData: project.starData }),
+    viewCount: project.viewCount ?? 0,
+    clickCount: project.clickCount ?? 0,
   }
 
   // Prefetch project data on the server

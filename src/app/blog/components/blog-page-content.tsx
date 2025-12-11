@@ -102,7 +102,7 @@ export function BlogPageContent() {
         </div>
       ) : (
         <div className="py-16 text-center">
-          <p className="text-muted-foreground">No posts found.</p>
+          <p className="typography-muted">No posts found.</p>
         </div>
       )}
     </div>

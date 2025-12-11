@@ -7,16 +7,14 @@ import { ProjectStats } from '@/components/projects/project-stats'
 import { ProjectCTASection } from '@/components/projects/project-cta-section'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ErrorBoundary } from '@/components/error/error-boundary'
-import { mockProjects, type MockProject } from '@/data/mock-projects'
+import { showcaseProjects, type ShowcaseProject } from '@/data/projects'
 import type { Project as ProjectType } from '@/types/project'
-import { MotionDiv, optimizedVariants } from '@/lib/motion/optimized-motion'
-import { useMotionConfig } from '@/lib/motion/reduced-motion'
 
 // Union type for projects
-type Project = ProjectType | MockProject
+type Project = ProjectType | ShowcaseProject
 
 // Type guard
-function isMockProject(project: Project): project is MockProject {
+function isShowcaseProject(project: Project): project is ShowcaseProject {
   return (
     'year' in project &&
     'duration' in project &&
@@ -34,10 +32,8 @@ interface ModernProjectsContentProps {
 
 export const ModernProjectsContent = memo<ModernProjectsContentProps>(
   ({ projects: externalProjects, onPrefetch: _onPrefetch, isLoading = false }) => {
-    const { shouldAnimate } = useMotionConfig()
-
-    // Use external projects if provided, otherwise fall back to mock data
-    const projectsData: Project[] = externalProjects || mockProjects
+    // Use external projects if provided, otherwise fall back to showcase data
+    const projectsData: Project[] = externalProjects || showcaseProjects
 
     // Memoized sorting to prevent expensive recalculations on every render
     const sortedProjects = useMemo(() => {
@@ -49,8 +45,8 @@ export const ModernProjectsContent = memo<ModernProjectsContentProps>(
         if (!a.featured && b.featured) return 1
 
         // Then by year (newest first)
-        const aYear = isMockProject(a) ? a.year : new Date(a.createdAt || 0).getFullYear()
-        const bYear = isMockProject(b) ? b.year : new Date(b.createdAt || 0).getFullYear()
+        const aYear = isShowcaseProject(a) ? a.year : new Date(a.createdAt || 0).getFullYear()
+        const bYear = isShowcaseProject(b) ? b.year : new Date(b.createdAt || 0).getFullYear()
         return bYear - aYear
       })
     }, [projectsData])
@@ -112,22 +108,9 @@ export const ModernProjectsContent = memo<ModernProjectsContentProps>(
                 ) : sortedProjects.length === 0 ? (
                   <div className="text-center py-16">
                     <div className="text-6xl mb-4">📊</div>
-                    <h3 className="text-xl font-semibold mb-2 text-white">No projects available</h3>
-                    <p className="text-muted-foreground">Projects are currently being updated</p>
+                    <h3 className="typography-h4 mb-2 text-white">No projects available</h3>
+                    <p className="typography-muted">Projects are currently being updated</p>
                   </div>
-                ) : shouldAnimate ? (
-                  <MotionDiv
-                    variants={optimizedVariants.staggerContainer}
-                    initial="initial"
-                    animate="animate"
-                    className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 max-w-7xl mx-auto"
-                  >
-                    {sortedProjects.map((project, index) => (
-                      <MotionDiv key={project.id} variants={optimizedVariants.staggerItem}>
-                        <ProjectCard project={project} index={index} />
-                      </MotionDiv>
-                    ))}
-                  </MotionDiv>
                 ) : (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 max-w-7xl mx-auto">
                     {sortedProjects.map((project, index) => (

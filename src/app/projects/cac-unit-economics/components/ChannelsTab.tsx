@@ -1,20 +1,17 @@
 'use client'
 
-import { m as motion } from 'framer-motion'
+
 import { channelPerformance } from '../data/constants'
 import { formatCurrency } from '../utils'
 
 export function ChannelsTab() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.4 }}
+    <div
       className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300 mb-8"
     >
       <div className="mb-4">
-        <h2 className="text-xl font-bold mb-1">Partner Channel ROI & Acquisition Efficiency Analysis</h2>
-        <p className="text-sm text-muted-foreground">Data-driven partner channel optimization revealing certified partners achieve 7:1 LTV:CAC efficiency vs 1.8:1 for direct sales</p>
+        <h2 className="typography-h4 mb-1">Partner Channel ROI & Acquisition Efficiency Analysis</h2>
+        <p className="typography-small text-muted-foreground">Data-driven partner channel optimization revealing certified partners achieve 7:1 LTV:CAC efficiency vs 1.8:1 for direct sales</p>
       </div>
 
       <div className="overflow-x-auto">
@@ -49,6 +46,6 @@ export function ChannelsTab() {
           </tbody>
         </table>
       </div>
-    </motion.div>
+    </div>
   )
 }

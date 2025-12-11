@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { ArrowLeft, RefreshCcw, DollarSign, Target, BarChart3, Users, Activity, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
-import { m as motion } from 'framer-motion'
+
 
 import { revenueMetrics } from './data/constants'
 import { formatCurrency, formatPercent } from './utils'
@@ -76,16 +76,13 @@ export default function RevenueOperationsCenter() {
         </div>
 
         {/* Title Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+        <div
           className="mb-12"
         >
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-violet-400 to-purple-600 bg-clip-text text-transparent mb-4">
             Revenue Operations Command Center
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mb-6">
+          <p className="typography-lead max-w-3xl mb-6">
             Comprehensive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs. Real-time insights with 96.8% forecast accuracy and 89.7% operational efficiency across sales, marketing, and partner channels.
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
@@ -94,7 +91,7 @@ export default function RevenueOperationsCenter() {
             <span className="bg-secondary/20 text-secondary px-3 py-1 rounded-full">Revenue Growth: +34.2%</span>
             <span className="bg-primary/20 text-primary px-3 py-1 rounded-full">Operations Dashboard</span>
           </div>
-        </motion.div>
+        </div>
 
         {/* Loading State */}
         {isLoading ? (
@@ -113,7 +110,7 @@ export default function RevenueOperationsCenter() {
                 label="Total Revenue"
                 value={formatCurrency(revenueMetrics.totalRevenue)}
                 subtitle={
-                  <p className="text-sm text-muted-foreground flex items-center gap-1">
+                  <p className="typography-small text-muted-foreground flex items-center gap-1">
                     <TrendingUp className="w-4 h-4 text-success" />
                     +{formatPercent(revenueMetrics.revenueGrowth)} YoY
                   </p>
@@ -122,7 +119,7 @@ export default function RevenueOperationsCenter() {
                 gradientTo="to-purple-600"
                 iconBgClass="bg-violet-500/20"
                 iconColorClass="text-violet-400"
-                delay={0.1}
+                
               />
               <MetricCard
                 icon={Target}
@@ -133,7 +130,7 @@ export default function RevenueOperationsCenter() {
                 gradientTo="to-indigo-600"
                 iconBgClass="bg-purple-500/20"
                 iconColorClass="text-purple-400"
-                delay={0.2}
+                
               />
               <MetricCard
                 icon={BarChart3}
@@ -144,7 +141,7 @@ export default function RevenueOperationsCenter() {
                 gradientTo="to-blue-600"
                 iconBgClass="bg-secondary/20"
                 iconColorClass="text-secondary"
-                delay={0.3}
+                
               />
               <MetricCard
                 icon={Users}
@@ -155,7 +152,7 @@ export default function RevenueOperationsCenter() {
                 gradientTo="to-cyan-600"
                 iconBgClass="bg-primary/20"
                 iconColorClass="text-primary"
-                delay={0.4}
+                
               />
               <MetricCard
                 icon={Activity}
@@ -166,7 +163,7 @@ export default function RevenueOperationsCenter() {
                 gradientTo="to-teal-600"
                 iconBgClass="bg-primary/20"
                 iconColorClass="text-primary"
-                delay={0.5}
+                
               />
             </div>
 

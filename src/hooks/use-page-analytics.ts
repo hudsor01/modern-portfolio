@@ -1,6 +1,9 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { createContextLogger } from '@/lib/monitoring/logger'
+
+const analyticsLogger = createContextLogger('PageAnalytics')
 
 interface PageAnalyticsOptions {
   type: 'blog' | 'project'
@@ -109,10 +112,10 @@ async function trackPageView(data: Omit<ViewTrackingData, 'readingTime' | 'scrol
     })
     
     if (!response.ok) {
-      console.warn('Failed to track page view:', response.statusText)
+      analyticsLogger.warn('Failed to track page view', { status: response.statusText })
     }
   } catch (error) {
-    console.warn('Error tracking page view:', error)
+    analyticsLogger.warn('Error tracking page view', { error })
   }
 }
 
@@ -139,7 +142,7 @@ function trackEngagement(data: ViewTrackingData) {
       })
     }
   } catch (error) {
-    console.warn('Error tracking engagement:', error)
+    analyticsLogger.warn('Error tracking engagement', { error })
   }
 }
 

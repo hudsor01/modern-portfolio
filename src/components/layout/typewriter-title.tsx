@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { m as motion } from 'framer-motion'
+
 
 interface TypewriterTitleProps {
   titles: string[]
@@ -19,7 +19,7 @@ export function TypewriterTitle({
   const [currentTitleIndex, setCurrentTitleIndex] = useState(0)
   const [displayedText, setDisplayedText] = useState('')
   const [isTyping, setIsTyping] = useState(true)
-  const [showCursor, setShowCursor] = useState(true)
+  const [cursorVisible, setCursorVisible] = useState(true)
 
   useEffect(() => {
     if (titles.length === 0) return
@@ -59,7 +59,7 @@ export function TypewriterTitle({
   // Cursor blinking effect
   useEffect(() => {
     const cursorTimer = setInterval(() => {
-      setShowCursor(prev => !prev)
+      setCursorVisible(prev => !prev)
     }, 500)
     return () => clearInterval(cursorTimer)
   }, [])
@@ -67,10 +67,8 @@ export function TypewriterTitle({
   return (
     <span className={className}>
       {displayedText}
-      <motion.span
-        animate={{ opacity: showCursor ? 1 : 0 }}
-        transition={{ duration: 0.1 }}
-        className="inline-block w-0.5 h-[1em] bg-current ml-1"
+      <span
+        className={`inline-block w-0.5 h-[1em] bg-current ml-1 transition-opacity ${cursorVisible ? 'opacity-100' : 'opacity-0'}`}
       />
     </span>
   )

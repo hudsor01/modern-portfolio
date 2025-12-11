@@ -24,7 +24,10 @@
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
 
+  --line-height-none: 1;
   --line-height-tight: 1.25;
   --line-height-snug: 1.375;
   --line-height-normal: 1.5;
@@ -97,6 +100,19 @@
   --color-chart-3: oklch(0.7 0.18 140);
   --color-chart-4: oklch(0.6 0.005 285);
   --color-chart-5: oklch(0.35 0.15 240);
+
+  /* Semantic background colors with built-in opacity */
+  /* Use these instead of invalid /20/20 syntax */
+  --color-destructive-bg: oklch(0.65 0.2 25 / 0.2);
+  --color-destructive-border: oklch(0.65 0.2 25 / 0.3);
+  --color-success-bg: oklch(0.7 0.18 140 / 0.2);
+  --color-success-border: oklch(0.7 0.18 140 / 0.3);
+  --color-primary-bg: oklch(0.7 0.15 200 / 0.2);
+  --color-primary-border: oklch(0.7 0.15 200 / 0.3);
+  --color-warning-bg: oklch(0.7 0.15 50 / 0.2);
+  --color-warning-border: oklch(0.7 0.15 50 / 0.3);
+  --color-info-bg: oklch(0.65 0.15 240 / 0.2);
+  --color-info-border: oklch(0.65 0.15 240 / 0.3);
 
   --color-form-label: oklch(0.98 0.002 285);
   --color-form-input-background: oklch(0.15 0.005 285);
@@ -845,3 +861,410 @@ label {
 @utility hover-glow {
   transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* ============================================
+   Semantic Animation Tokens - Framer Motion Replacements
+   ============================================ */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scale-in-up {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Slide animations */
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger delay utilities for children */
+@utility stagger-1 { animation-delay: 50ms; }
+@utility stagger-2 { animation-delay: 100ms; }
+@utility stagger-3 { animation-delay: 150ms; }
+@utility stagger-4 { animation-delay: 200ms; }
+@utility stagger-5 { animation-delay: 250ms; }
+@utility stagger-6 { animation-delay: 300ms; }
+@utility stagger-7 { animation-delay: 350ms; }
+@utility stagger-8 { animation-delay: 400ms; }
+
+/* Animation fill mode utility */
+@utility animate-fill-both { animation-fill-mode: both; }
+@utility animate-fill-forwards { animation-fill-mode: forwards; }
+
+/* Semantic animation classes */
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+.animate-fade-in-down {
+  animation: fade-in-down 0.5s ease-out forwards;
+}
+
+.animate-fade-in-left {
+  animation: fade-in-left 0.5s ease-out forwards;
+}
+
+.animate-fade-in-right {
+  animation: fade-in-right 0.5s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.4s ease-out forwards;
+}
+
+.animate-scale-in-up {
+  animation: scale-in-up 0.5s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out forwards;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.6s ease-out forwards;
+}
+
+/* Duration modifiers */
+.animate-duration-fast { animation-duration: 0.2s; }
+.animate-duration-normal { animation-duration: 0.4s; }
+.animate-duration-slow { animation-duration: 0.6s; }
+.animate-duration-slower { animation-duration: 0.8s; }
+
+/* Delay modifiers */
+.animate-delay-100 { animation-delay: 100ms; }
+.animate-delay-200 { animation-delay: 200ms; }
+.animate-delay-300 { animation-delay: 300ms; }
+.animate-delay-400 { animation-delay: 400ms; }
+.animate-delay-500 { animation-delay: 500ms; }
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   shadcn/ui Typography System
+   Based on: https://ui.shadcn.com/docs/components/typography
+   ============================================ */
+
+/* Heading utilities - shadcn/ui compatible */
+.typography-h1 {
+  scroll-margin-top: 5rem;
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: var(--letter-spacing-tight);
+  text-wrap: balance;
+}
+
+.typography-h2 {
+  scroll-margin-top: 5rem;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.5rem;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.typography-h2:first-child {
+  margin-top: 0;
+}
+
+.typography-h3 {
+  scroll-margin-top: 5rem;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.typography-h4 {
+  scroll-margin-top: 5rem;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+/* Paragraph utility */
+.typography-p {
+  line-height: var(--line-height-relaxed);
+}
+
+.typography-p:not(:first-child) {
+  margin-top: 1.5rem;
+}
+
+/* Blockquote utility */
+.typography-blockquote {
+  margin-top: 1.5rem;
+  border-left: 2px solid var(--color-border);
+  padding-left: 1.5rem;
+  font-style: italic;
+}
+
+/* List utilities */
+.typography-list {
+  margin-block: 1.5rem;
+  margin-left: 1.5rem;
+  list-style-type: disc;
+}
+
+.typography-list > li {
+  margin-top: 0.5rem;
+}
+
+/* Inline code utility */
+.typography-code {
+  position: relative;
+  border-radius: var(--radius-md);
+  background-color: var(--color-muted);
+  padding: 0.2rem 0.3rem;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Lead text - larger intro paragraph */
+.typography-lead {
+  font-size: var(--font-size-xl);
+  color: var(--color-muted-foreground);
+}
+
+/* Large text */
+.typography-large {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Small text */
+.typography-small {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-none);
+}
+
+/* Muted text */
+.typography-muted {
+  font-size: var(--font-size-sm);
+  color: var(--color-muted-foreground);
+}
+
+/* Table typography */
+.typography-table {
+  width: 100%;
+}
+
+.typography-table tr {
+  margin: 0;
+  border-top: 1px solid var(--color-border);
+  padding: 0;
+}
+
+.typography-table tr:nth-child(even) {
+  background-color: var(--color-muted);
+}
+
+.typography-table th,
+.typography-table td {
+  border: 1px solid var(--color-border);
+  padding: 0.5rem 1rem;
+  text-align: left;
+}
+
+.typography-table th[align="center"],
+.typography-table td[align="center"] {
+  text-align: center;
+}
+
+.typography-table th[align="right"],
+.typography-table td[align="right"] {
+  text-align: right;
+}
+
+.typography-table th {
+  font-weight: var(--font-weight-bold);
+}
+
+/* Tailwind utility versions */
+@utility typography-h1 {
+  scroll-margin-top: 5rem;
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: var(--letter-spacing-tight);
+  text-wrap: balance;
+}
+
+@utility typography-h2 {
+  scroll-margin-top: 5rem;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.5rem;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+@utility typography-h3 {
+  scroll-margin-top: 5rem;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+@utility typography-h4 {
+  scroll-margin-top: 5rem;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+@utility typography-p {
+  line-height: var(--line-height-relaxed);
+}
+
+@utility typography-blockquote {
+  margin-top: 1.5rem;
+  border-left: 2px solid var(--color-border);
+  padding-left: 1.5rem;
+  font-style: italic;
+}
+
+@utility typography-code {
+  position: relative;
+  border-radius: var(--radius-md);
+  background-color: var(--color-muted);
+  padding: 0.2rem 0.3rem;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+@utility typography-lead {
+  font-size: var(--font-size-xl);
+  color: var(--color-muted-foreground);
+}
+
+@utility typography-large {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+@utility typography-small {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-none);
+}
+
+@utility typography-muted {
+  font-size: var(--font-size-sm);
+  color: var(--color-muted-foreground);
+}
+
+/* Font weight utilities using semantic tokens */
+@utility font-bold { font-weight: var(--font-weight-bold); }
+@utility font-extrabold { font-weight: var(--font-weight-extrabold); }
+
+/* Line height utilities using semantic tokens */
+@utility leading-none { line-height: var(--line-height-none); }
+@utility leading-tight { line-height: var(--line-height-tight); }
+@utility leading-snug { line-height: var(--line-height-snug); }
+@utility leading-normal { line-height: var(--line-height-normal); }
+@utility leading-relaxed { line-height: var(--line-height-relaxed); }
+@utility leading-loose { line-height: var(--line-height-loose); }
+
+/* Letter spacing utilities using semantic tokens */
+@utility tracking-tighter { letter-spacing: var(--letter-spacing-tighter); }
+@utility tracking-tight { letter-spacing: var(--letter-spacing-tight); }
+@utility tracking-normal { letter-spacing: var(--letter-spacing-normal); }
+@utility tracking-wide { letter-spacing: var(--letter-spacing-wide); }
+@utility tracking-wider { letter-spacing: var(--letter-spacing-wider); }

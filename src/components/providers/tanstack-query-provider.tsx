@@ -1,8 +1,8 @@
 'use client'
 
 /**
- * ULTIMATE TanStack Query Provider
- * Production-grade setup with all advanced features
+ * TanStack Query Provider
+ * Production-grade setup with advanced features
  */
 
 import React, { useState, useEffect } from 'react'
@@ -14,8 +14,10 @@ import {
   onlineManager,
   focusManager,
 } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ErrorBoundary } from 'react-error-boundary'
+import { createContextLogger } from '@/lib/monitoring/logger'
+
+const queryLogger = createContextLogger('TanStackQuery')
 
 // ============================================================================
 // QUERY CLIENT FACTORY
@@ -74,7 +76,7 @@ function makeQueryClient() {
       const query = event.query
       const fetchTime = Date.now() - query.state.dataUpdatedAt
       if (fetchTime > 3000) {
-        console.warn('Slow query detected:', {
+        queryLogger.warn('Slow query detected', {
           queryKey: query.queryKey,
           duration: fetchTime,
         })
@@ -86,7 +88,7 @@ function makeQueryClient() {
   client.getMutationCache().subscribe((event) => {
     if (event.type === 'updated' && event.action?.type === 'pending') {
       if (!navigator.onLine) {
-        console.info('Mutation queued for offline sync:', event.mutation)
+        queryLogger.info('Mutation queued for offline sync', { mutation: event.mutation })
       }
     }
   })
@@ -120,8 +122,8 @@ function QueryErrorFallback({
 }) {
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="bg-destructive/5 dark:bg-destructive/20/20 p-8 rounded-lg max-w-md">
-        <h2 className="text-xl font-bold text-destructive dark:text-destructive-foreground mb-4">
+      <div className="bg-destructive/5 dark:bg-destructive-bg p-8 rounded-lg max-w-md">
+        <h2 className="typography-h4 text-destructive dark:text-destructive-foreground mb-4">
           Data Fetching Error
         </h2>
         <p className="text-destructive dark:text-destructive mb-4">
@@ -160,13 +162,13 @@ function NetworkStatusManager() {
     const handleOnline = () => {
       setIsOnline(true)
       onlineManager.setOnline(true)
-      console.info('Back online - resuming queries')
+      queryLogger.info('Back online - resuming queries')
     }
 
     const handleOffline = () => {
       setIsOnline(false)
       onlineManager.setOnline(false)
-      console.info('Gone offline - pausing queries')
+      queryLogger.info('Gone offline - pausing queries')
     }
 
     window.addEventListener('online', handleOnline)
@@ -229,59 +231,13 @@ function FocusManager() {
 }
 
 // ============================================================================
-// PERFORMANCE MONITOR
-// ============================================================================
-
-interface PerformanceMetrics {
-  queriesCount: number
-  mutationsCount: number
-  timestamp: number
-}
-
-function PerformanceMonitor() {
-  const [metrics, setMetrics] = useState<PerformanceMetrics | null>(null)
-
-  useEffect(() => {
-    if (process.env.NODE_ENV !== 'production') {
-      const interval = setInterval(() => {
-        const client = getQueryClient()
-        const cache = client.getQueryCache()
-        const mutations = client.getMutationCache()
-
-        setMetrics({
-          queriesCount: cache.getAll().length,
-          mutationsCount: mutations.getAll().length,
-          timestamp: Date.now(),
-        })
-      }, 5000)
-
-      return () => clearInterval(interval)
-    }
-    return undefined
-  }, [])
-
-  if (process.env.NODE_ENV === 'production' || !metrics) return null
-
-  return (
-    <div className="fixed top-4 right-4 bg-black/80 text-foreground text-xs p-2 rounded z-50">
-      <div>Queries: {metrics.queriesCount}</div>
-      <div>Mutations: {metrics.mutationsCount}</div>
-    </div>
-  )
-}
-
-// ============================================================================
 // MAIN PROVIDER COMPONENT
 // ============================================================================
 
 export function TanStackQueryProvider({
   children,
-  showDevtools = process.env.NODE_ENV === 'development',
-  showPerformance = process.env.NODE_ENV === 'development',
 }: {
   children: React.ReactNode
-  showDevtools?: boolean
-  showPerformance?: boolean
 }) {
   const [queryClient] = useState(() => getQueryClient())
 
@@ -293,14 +249,12 @@ export function TanStackQueryProvider({
             onReset={reset}
             FallbackComponent={QueryErrorFallback}
             onError={(error) => {
-              console.error('Query Error Boundary:', error)
+              queryLogger.error('Query Error Boundary', error)
             }}
           >
             {children}
             <NetworkStatusManager />
             <FocusManager />
-            {showPerformance && <PerformanceMonitor />}
-            {showDevtools && <ReactQueryDevtools initialIsOpen={false} />}
           </ErrorBoundary>
         )}
       </QueryErrorResetBoundary>

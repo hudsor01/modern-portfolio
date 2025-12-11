@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { m as motion } from 'framer-motion'
+
 import type { FunnelStage } from '../data/constants'
 
 function ChartLoadError() {
@@ -27,23 +27,20 @@ interface FunnelChartProps {
 
 export function FunnelChart({ stages, overallConversionRate }: FunnelChartProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.4 }}
+    <div
       className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300 mb-8"
     >
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold mb-2">Sales Pipeline Funnel</h2>
-          <p className="text-muted-foreground">Deal progression through stages</p>
+          <h2 className="typography-h3 mb-2">Sales Pipeline Funnel</h2>
+          <p className="typography-muted">Deal progression through stages</p>
         </div>
         <div className="text-right">
-          <p className="text-sm text-muted-foreground">Overall Conversion</p>
-          <p className="text-2xl font-bold text-success">{overallConversionRate}%</p>
+          <p className="typography-small text-muted-foreground">Overall Conversion</p>
+          <p className="typography-h3 text-success">{overallConversionRate}%</p>
         </div>
       </div>
       <DealStageFunnelChart stages={stages} />
-    </motion.div>
+    </div>
   )
 }

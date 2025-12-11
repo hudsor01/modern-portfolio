@@ -1,6 +1,6 @@
 'use client'
 
-import { m as motion } from 'framer-motion'
+
 import { STARAreaChart } from '@/components/projects/STARAreaChart'
 import { starData, attributionMetrics, technologies } from '../data/constants'
 import { formatCurrency } from '../utils'
@@ -9,13 +9,10 @@ export function NarrativeSections() {
   return (
     <div className="space-y-12 mt-12">
       {/* Project Overview */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.0 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-primary">Project Overview</h2>
+        <h2 className="typography-h3 mb-6 text-primary">Project Overview</h2>
         <div className="space-y-4 text-muted-foreground">
           <p className="text-lg leading-relaxed">
             Engineered an advanced multi-channel attribution system using machine learning to accurately measure the cross-channel impact of marketing efforts, enabling sophisticated budget optimization and campaign strategy refinement.
@@ -24,16 +21,13 @@ export function NarrativeSections() {
             This system evolved beyond traditional attribution models to provide AI-powered insights into channel interactions, customer journey patterns, and optimal budget allocation strategies that drove significant improvements in marketing efficiency and ROI.
           </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* Challenge */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.1 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-amber-400">Challenge</h2>
+        <h2 className="typography-h3 mb-6 text-amber-400">Challenge</h2>
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
             Traditional attribution models were failing to capture the complex interactions between channels in an increasingly sophisticated multi-channel marketing environment:
@@ -50,16 +44,13 @@ export function NarrativeSections() {
             With 12 active marketing channels, complex B2B customer journeys, and a $3.2M annual marketing budget, the organization needed a sophisticated attribution solution that could handle multi-channel complexity.
           </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* Solution */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.2 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-success">Solution</h2>
+        <h2 className="typography-h3 mb-6 text-success">Solution</h2>
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
             Developed a machine learning-powered multi-channel attribution platform that uses advanced algorithms to understand channel interactions and predict optimal marketing strategies:
@@ -88,16 +79,13 @@ export function NarrativeSections() {
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Results & Impact */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.3 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-emerald-400">Results & Impact</h2>
+        <h2 className="typography-h3 mb-6 text-emerald-400">Results & Impact</h2>
         <div className="space-y-6 text-muted-foreground">
           <p className="leading-relaxed">
             The ML-powered attribution system delivered unprecedented insights into channel performance and enabled data-driven optimizations that significantly improved marketing efficiency:
@@ -105,16 +93,16 @@ export function NarrativeSections() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold text-primary mb-2">92.4%</div>
-              <div className="text-sm text-muted-foreground">ML Attribution Accuracy</div>
+              <div className="typography-h2 border-none pb-0 text-3xl text-primary mb-2">92.4%</div>
+              <div className="typography-small text-muted-foreground">ML Attribution Accuracy</div>
             </div>
             <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-sm border border-secondary/20 rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold text-secondary mb-2">47.8%</div>
-              <div className="text-sm text-muted-foreground">Conversion Rate Improvement</div>
+              <div className="typography-h2 border-none pb-0 text-3xl text-secondary mb-2">47.8%</div>
+              <div className="typography-small text-muted-foreground">Conversion Rate Improvement</div>
             </div>
             <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold text-primary mb-2">{formatCurrency(attributionMetrics.totalROI)}</div>
-              <div className="text-sm text-muted-foreground">Marketing ROI Optimization</div>
+              <div className="typography-h2 border-none pb-0 text-3xl text-primary mb-2">{formatCurrency(attributionMetrics.totalROI)}</div>
+              <div className="typography-small text-muted-foreground">Marketing ROI Optimization</div>
             </div>
           </div>
 
@@ -131,16 +119,13 @@ export function NarrativeSections() {
             </ul>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Key Learnings */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.4 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-purple-400">Key Learnings</h2>
+        <h2 className="typography-h3 mb-6 text-purple-400">Key Learnings</h2>
         <div className="space-y-4 text-muted-foreground">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
@@ -166,16 +151,13 @@ export function NarrativeSections() {
             This project established that advanced attribution modeling is not just about measurement—it's about enabling predictive marketing intelligence that can guide strategic decisions and optimize performance before campaigns even launch.
           </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* Technologies Used */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.5 }}
+      <div
         className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-border/20 rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-muted-foreground">Technologies Used</h2>
+        <h2 className="typography-h3 mb-6 text-muted-foreground">Technologies Used</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {technologies.map((tech, index) => (
             <span key={index} className="bg-white/10 text-muted-foreground px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
@@ -183,17 +165,14 @@ export function NarrativeSections() {
             </span>
           ))}
         </div>
-      </motion.div>
+      </div>
 
       {/* STAR Impact Analysis */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+      <div
         className="mt-16 space-y-8"
       >
         <div className="text-center space-y-4">
-          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+          <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
             STAR Impact Analysis
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -211,22 +190,22 @@ export function NarrativeSections() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="text-center p-6 glass rounded-2xl">
             <div className="text-sm text-primary/70 mb-2">Situation</div>
-            <div className="text-lg font-bold text-white">Initial Assessment</div>
+            <div className="typography-large text-white">Initial Assessment</div>
           </div>
           <div className="text-center p-6 glass rounded-2xl">
             <div className="text-sm text-green-400/70 mb-2">Task</div>
-            <div className="text-lg font-bold text-white">Goal Definition</div>
+            <div className="typography-large text-white">Goal Definition</div>
           </div>
           <div className="text-center p-6 glass rounded-2xl">
             <div className="text-sm text-amber-400/70 mb-2">Action</div>
-            <div className="text-lg font-bold text-white">Implementation</div>
+            <div className="typography-large text-white">Implementation</div>
           </div>
           <div className="text-center p-6 glass rounded-2xl">
             <div className="text-sm text-cyan-400/70 mb-2">Result</div>
-            <div className="text-lg font-bold text-white">Measurable Impact</div>
+            <div className="typography-large text-white">Measurable Impact</div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }

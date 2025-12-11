@@ -2,11 +2,10 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { m } from 'framer-motion'
+
 import { Button } from '@/components/ui/button'
 import { RichardTypewriterTitle } from '@/components/layout/typewriter-title'
-import { ArrowRight, FileText } from 'lucide-react'
-import { SiGithub, SiLinkedin } from 'react-icons/si'
+import { ArrowRight, FileText, Github, Linkedin } from 'lucide-react'
 
 interface HeroSectionProps {
   titles?: string[]
@@ -20,19 +19,16 @@ export function HeroSection(_props: HeroSectionProps) {
 
       <div className="w-full mx-auto max-w-7xl px-4 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <m.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
+          <div
             className="text-white space-y-6"
           >
-            <h1 className="text-5xl font-bold">Richard Hudson</h1>
+            <h1 className="typography-h1 text-5xl">Richard Hudson</h1>
 
-            <div className="text-2xl text-primary min-h-[2.5rem] flex items-center">
+            <div className="typography-h2 border-none pb-0 text-2xl text-primary min-h-[2.5rem] flex items-center">
               <RichardTypewriterTitle />
             </div>
 
-            <p className="text-xl text-muted-foreground max-w-lg">
+            <p className="typography-lead max-w-lg">
               Driving business growth through data-driven insights and strategic operational
               improvements.
             </p>
@@ -66,7 +62,7 @@ export function HeroSection(_props: HeroSectionProps) {
                 className="text-white/70 hover:text-white transition-colors"
                 aria-label="LinkedIn Profile"
               >
-                <SiLinkedin size={24} />
+                <Linkedin size={24} />
               </a>
               <a
                 href="https://github.com/hudsor01"
@@ -75,15 +71,12 @@ export function HeroSection(_props: HeroSectionProps) {
                 className="text-white/70 hover:text-white transition-colors"
                 aria-label="GitHub Profile"
               >
-                <SiGithub size={24} />
+                <Github size={24} />
               </a>
             </div>
-          </m.div>
+          </div>
 
-          <m.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+          <div
             className="flex justify-center"
           >
             <div className="relative w-full max-w-md">
@@ -97,7 +90,7 @@ export function HeroSection(_props: HeroSectionProps) {
                 />
               </div>
             </div>
-          </m.div>
+          </div>
         </div>
       </div>
     </section>

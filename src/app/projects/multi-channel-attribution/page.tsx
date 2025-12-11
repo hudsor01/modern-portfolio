@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { ArrowLeft, RefreshCcw, Target, Eye, Share2, DollarSign, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
-import { m as motion } from 'framer-motion'
+
 
 import { attributionMetrics } from './data/constants'
 import { formatCurrency, formatPercent } from './utils'
@@ -75,16 +75,13 @@ export default function MultiChannelAttribution() {
         </div>
 
         {/* Title Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+        <div
           className="mb-8"
         >
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-orange-400 to-red-600 bg-clip-text text-transparent mb-3">
+          <h1 className="text-4xl md:typography-h1 text-5xl bg-gradient-to-r from-orange-400 to-red-600 bg-clip-text text-transparent mb-3">
             Multi-Channel Attribution Analytics Dashboard
           </h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mb-4">
+          <p className="typography-lead max-w-3xl mb-4">
             Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints. Delivering 92.4% attribution accuracy and $2.3M ROI optimization through data-driven attribution modeling and cross-channel insights.
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
@@ -93,7 +90,7 @@ export default function MultiChannelAttribution() {
             <span className="bg-pink-500/20 text-pink-400 px-3 py-1 rounded-full">ML Attribution Models</span>
             <span className="bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full">Customer Journey Analytics</span>
           </div>
-        </motion.div>
+        </div>
 
         {/* Loading State */}
         {isLoading ? (
@@ -112,7 +109,7 @@ export default function MultiChannelAttribution() {
                 label="Conversions"
                 value={attributionMetrics.totalConversions.toLocaleString()}
                 subtitle={
-                  <p className="text-sm text-muted-foreground flex items-center gap-1">
+                  <p className="typography-small text-muted-foreground flex items-center gap-1">
                     <TrendingUp className="w-4 h-4 text-success" />
                     +{formatPercent(attributionMetrics.conversionLift)} lift
                   </p>
@@ -121,7 +118,7 @@ export default function MultiChannelAttribution() {
                 gradientTo="to-red-600"
                 iconBgClass="bg-orange-500/20"
                 iconColorClass="text-orange-400"
-                delay={0.1}
+                
               />
               <MetricCard
                 icon={Eye}
@@ -132,7 +129,7 @@ export default function MultiChannelAttribution() {
                 gradientTo="to-pink-600"
                 iconBgClass="bg-destructive/20"
                 iconColorClass="text-destructive"
-                delay={0.2}
+                
               />
               <MetricCard
                 icon={Share2}
@@ -143,7 +140,7 @@ export default function MultiChannelAttribution() {
                 gradientTo="to-purple-600"
                 iconBgClass="bg-pink-500/20"
                 iconColorClass="text-pink-400"
-                delay={0.3}
+                
               />
               <MetricCard
                 icon={DollarSign}
@@ -154,7 +151,7 @@ export default function MultiChannelAttribution() {
                 gradientTo="to-orange-600"
                 iconBgClass="bg-amber-500/20"
                 iconColorClass="text-amber-400"
-                delay={0.4}
+                
               />
             </div>
 

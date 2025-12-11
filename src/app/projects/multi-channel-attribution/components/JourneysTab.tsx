@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { m as motion } from 'framer-motion'
+
 import { customerJourneyStages } from '../data/constants'
 import { formatPercent } from '../utils'
 
@@ -14,31 +14,25 @@ export function JourneysTab() {
   return (
     <div className="space-y-6 mb-8">
       {/* Customer Journey Visualization */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
+      <div
         className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-4">
-          <h2 className="text-xl font-bold mb-1">Customer Journey Stage Analysis</h2>
-          <p className="text-sm text-muted-foreground">Multi-touchpoint customer journey mapping with conversion optimization insights</p>
+          <h2 className="typography-h4 mb-1">Customer Journey Stage Analysis</h2>
+          <p className="typography-small text-muted-foreground">Multi-touchpoint customer journey mapping with conversion optimization insights</p>
         </div>
         <div className="h-[250px]">
           <CustomerJourneyChart />
         </div>
-      </motion.div>
+      </div>
 
       {/* Journey Stages Details */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
+      <div
         className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-4">
-          <h2 className="text-xl font-bold mb-1">Journey Stage Performance Metrics</h2>
-          <p className="text-sm text-muted-foreground">Detailed conversion funnel analysis with touchpoint optimization opportunities</p>
+          <h2 className="typography-h4 mb-1">Journey Stage Performance Metrics</h2>
+          <p className="typography-small text-muted-foreground">Detailed conversion funnel analysis with touchpoint optimization opportunities</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -47,26 +41,26 @@ export function JourneysTab() {
               <h3 className="text-base font-semibold mb-3">{stage.stage}</h3>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Touchpoints:</span>
+                  <span className="typography-muted">Touchpoints:</span>
                   <span className="font-medium">{stage.touchpoints.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Channels:</span>
+                  <span className="typography-muted">Channels:</span>
                   <span className="font-medium">{stage.channels}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Avg Time:</span>
+                  <span className="typography-muted">Avg Time:</span>
                   <span className="font-medium">{stage.avgTime} days</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Conversion:</span>
+                  <span className="typography-muted">Conversion:</span>
                   <span className="font-medium">{formatPercent(stage.conversionRate)}</span>
                 </div>
               </div>
             </div>
           ))}
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }

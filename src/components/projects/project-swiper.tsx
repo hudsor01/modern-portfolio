@@ -56,7 +56,7 @@ export function ProjectSwiper({
         <div className="mb-10 flex flex-col md:flex-row md:items-end md:justify-between">
           <div>
             {title && (
-              <h2 className="flex items-center gap-2 text-3xl font-bold">
+              <h2 className="flex items-center gap-2 typography-h2 border-none pb-0 text-3xl">
                 <Zap className="text-primary h-6 w-6 animate-pulse" />
                 {title}
               </h2>
@@ -158,7 +158,7 @@ export function ProjectSwiper({
                   </div>
                 </div>
                 {/* Project title and description with improved styling */}
-                <h3 className="mt-4 line-clamp-1 text-lg font-semibold">{project.title}</h3>
+                <h3 className="mt-4 line-clamp-1 typography-large">{project.title}</h3>
                 <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
                   {project.description}
                 </p>

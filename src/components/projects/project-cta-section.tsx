@@ -25,7 +25,7 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = () => {
         <div className="relative z-10">
           {/* Portfolio Header */}
           <div className="flex items-center justify-center mb-8">
-            <h3 className="text-3xl md:text-4xl font-bold tracking-tight section-heading-gradient glow-blue">
+            <h3 className="typography-h2 border-none pb-0 text-3xl md:text-4xl tracking-tight section-heading-gradient glow-blue">
               Explore More of My Work
             </h3>
           </div>
@@ -39,7 +39,7 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = () => {
           <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12 max-w-2xl mx-auto">
             <Link
               href="/about"
-              className="relative inline-flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black text-lg font-bold px-8 py-4 rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105 transition-all duration-300 group border border-primary/20 flex-1 sm:min-w-[240px]"
+              className="relative inline-flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black typography-large px-8 py-4 rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105 transition-all duration-300 group border border-primary/20 flex-1 sm:min-w-[240px]"
             >
               <FileText className="mr-3" size={20} />
               About My Experience
@@ -51,7 +51,7 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = () => {
 
             <Link
               href="/blog"
-              className="relative inline-flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black text-lg font-bold px-8 py-4 rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105 transition-all duration-300 group border border-primary/20 flex-1 sm:min-w-[240px]"
+              className="relative inline-flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black typography-large px-8 py-4 rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105 transition-all duration-300 group border border-primary/20 flex-1 sm:min-w-[240px]"
             >
               <Brain className="mr-3" size={20} />
               Technical Insights

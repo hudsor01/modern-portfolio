@@ -1,6 +1,6 @@
 'use client'
 
-import { m as motion } from 'framer-motion'
+
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { 
@@ -25,10 +25,6 @@ interface PersonalInfoProps {
   className?: string
 }
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
-}
 
 export function PersonalInfo({ 
   personalInfo, 
@@ -38,48 +34,35 @@ export function PersonalInfo({
   return (
     <section className={className}>
       <div className="grid lg:grid-cols-2 gap-12 items-center">
-        <motion.div
-          initial={fadeInUp.initial}
-          animate={fadeInUp.animate}
-          transition={{ duration: 0.6 }}
+        <div
+          
+          
           className="space-y-8"
         >
           <div>
-            <motion.h1 
+            <h1 
               className="text-5xl lg:text-6xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
             >
               {personalInfo.name}
-            </motion.h1>
+            </h1>
             
-            <motion.h2 
+            <h2 
               className="text-2xl lg:text-3xl font-semibold text-muted-foreground dark:text-foreground mb-6"
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
             >
               {personalInfo.title}
-            </motion.h2>
+            </h2>
             
             <ContactInfo personalInfo={personalInfo} />
           </div>
 
-          <motion.p 
+          <p 
             className="text-xl leading-relaxed text-muted-foreground dark:text-muted-foreground"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
           >
             {personalInfo.bio}
-          </motion.p>
+          </p>
 
           {onContactClick && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.7 }}
+            <div
               className="pt-4"
             >
               <Button
@@ -90,9 +73,9 @@ export function PersonalInfo({
                 Let's Connect
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-            </motion.div>
+            </div>
           )}
-        </motion.div>
+        </div>
 
         <ProfileImage />
       </div>
@@ -127,10 +110,7 @@ function ContactInfo({ personalInfo }: ContactInfoProps) {
 
 function ProfileImage() {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.8, delay: 0.5 }}
+    <div
       className="relative"
     >
       <Card className="border-0 shadow-2xl bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 overflow-hidden">
@@ -148,6 +128,6 @@ function ProfileImage() {
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   )
 }

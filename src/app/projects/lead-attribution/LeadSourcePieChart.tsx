@@ -38,13 +38,13 @@ export default function LeadSourcePieChart() {
       return (
         <div className="p-3 rounded-xl bg-[#0f172a]/90 backdrop-blur-sm border border-white/10">
           <p className="font-medium text-white">{data.name}</p>
-          <p className="text-sm text-muted-foreground">
+          <p className="typography-small text-muted-foreground">
             Leads: <span className="font-medium text-white">{data.value.toLocaleString()}</span>
           </p>
-          <p className="text-sm text-muted-foreground">
+          <p className="typography-small text-muted-foreground">
             Share: <span className="font-medium text-white">{percentage}%</span>
           </p>
-          <p className="text-sm text-muted-foreground">
+          <p className="typography-small text-muted-foreground">
             Growth: <span className="font-medium text-success">{data.growth}</span>
           </p>
         </div>
@@ -100,7 +100,7 @@ export default function LeadSourcePieChart() {
               />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">{source.name}</p>
-                <p className="text-xs text-muted-foreground">{percentage}% • {source.growth}</p>
+                <p className="typography-small text-muted-foreground">{percentage}% • {source.growth}</p>
               </div>
             </div>
           )

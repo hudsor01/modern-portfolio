@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { m as motion } from 'framer-motion'
+
 import { Skill } from '@/data/skills'
 
 interface SkillsChartProps {
@@ -41,27 +41,21 @@ export function SkillsChart({ skills }: Readonly<SkillsChartProps>) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {filteredSkills.map((skill, index) => (
-          <motion.div
+        {filteredSkills.map((skill) => (
+          <div
             key={skill.name}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.05 }}
             className="bg-card p-4 rounded-lg shadow-lg"
           >
             <div className="flex justify-between items-center mb-2">
               <h3 className="font-medium">{skill.name}</h3>
-              <span className="text-sm text-muted-foreground">{skill.proficiency}%</span>
+              <span className="typography-small text-muted-foreground">{skill.proficiency}%</span>
             </div>
             <div className="w-full bg-muted rounded-full h-2.5">
-              <motion.div
+              <div
                 className="bg-primary h-2.5 rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${skill.proficiency}%` }}
-                transition={{ duration: 0.8, delay: 0.1 }}
               />
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>

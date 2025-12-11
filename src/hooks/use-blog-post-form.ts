@@ -38,14 +38,13 @@ export const blogPostFormSchema = z.object({
   // Relationships
   categoryId: z.string().optional(),
   tagIds: z.array(z.string()),
-  featured: z.boolean(),
 })
 
 export type BlogPostFormData = z.infer<typeof blogPostFormSchema>
 
 export function useBlogPostForm(post?: Partial<BlogPost>) {
   const [selectedTags, setSelectedTags] = useState<string[]>(
-    post?.tags?.map(t => (typeof t === 'string' ? t : t?.id)).filter((id): id is string => Boolean(id)) || []
+    post?.tags?.map(t => (typeof t === 'string' ? t : t?.tagId)).filter((id): id is string => Boolean(id)) || []
   )
   const [newKeyword, setNewKeyword] = useState('')
   const [previewMode, setPreviewMode] = useState(false)
@@ -75,7 +74,6 @@ export function useBlogPostForm(post?: Partial<BlogPost>) {
       scheduledAt: post?.scheduledAt ? new Date(post.scheduledAt) : undefined,
       categoryId: typeof post?.category === 'string' ? post.category : post?.category?.id || '',
       tagIds: selectedTags || [] as string[],
-      featured: post?.featured || false as boolean,
     },
   })
 

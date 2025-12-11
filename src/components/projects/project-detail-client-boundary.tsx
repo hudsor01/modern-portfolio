@@ -9,9 +9,9 @@ import { Skeleton } from '@/components/ui/skeleton'
 import {
   ArrowLeft,
   ExternalLink,
-  ArrowRight
+  ArrowRight,
+  Github
 } from 'lucide-react'
-import { SiGithub } from 'react-icons/si'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Project } from '@/types/project'
@@ -87,7 +87,7 @@ export default function ProjectDetailClientBoundary({
         <div className="w-full mx-auto px-6 py-8">
           <div className="min-h-[400px] flex items-center justify-center">
             <div className="text-center">
-              <h3 className="text-lg font-semibold mb-2">Project not found</h3>
+              <h3 className="typography-large mb-2">Project not found</h3>
               <p className="text-muted-foreground mb-4">The project you're looking for doesn't exist.</p>
               <Button asChild>
                 <Link href="/projects">
@@ -124,10 +124,10 @@ export default function ProjectDetailClientBoundary({
 
         {/* Project Header */}
         <div className="mb-12">
-          <h1 className="text-4xl font-bold text-foreground dark:text-white mb-4">
+          <h1 className="typography-h1 text-4xl text-foreground dark:text-white mb-4">
             {displayProject.title}
           </h1>
-          <p className="text-xl text-muted-foreground dark:text-muted-foreground max-w-3xl">
+          <p className="typography-lead dark:text-muted-foreground max-w-3xl">
             {displayProject.description}
           </p>
         </div>
@@ -151,7 +151,7 @@ export default function ProjectDetailClientBoundary({
 
             {/* Project Description */}
             <div className="bg-white/70 dark:bg-card/70 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-              <h2 className="text-2xl font-semibold mb-4 text-foreground dark:text-white">
+              <h2 className="typography-h3 mb-4 text-foreground dark:text-white">
                 About This Project
               </h2>
               <div className="prose prose-gray dark:prose-invert max-w-none">
@@ -164,7 +164,7 @@ export default function ProjectDetailClientBoundary({
           <div className="space-y-8">
             {/* Technologies & Links */}
             <div className="bg-white/70 dark:bg-card/70 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-              <h3 className="text-xl font-semibold mb-4 text-foreground dark:text-white">
+              <h3 className="typography-h4 mb-4 text-foreground dark:text-white">
                 Technologies Used
               </h3>
               <div className="flex flex-wrap gap-2 mb-6">
@@ -192,7 +192,7 @@ export default function ProjectDetailClientBoundary({
                 {displayProject.githubUrl && (
                   <Button asChild variant="ghost" className="flex-1">
                     <a href={displayProject.githubUrl} target="_blank" rel="noopener noreferrer">
-                      <SiGithub className="w-4 h-4 mr-2" />
+                      <Github className="w-4 h-4 mr-2" />
                       View Code
                     </a>
                   </Button>
@@ -203,7 +203,7 @@ export default function ProjectDetailClientBoundary({
             {/* STAR Impact Analysis Chart */}
             {displayProject.starData && (
               <div className="bg-white/70 dark:bg-card/70 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-                <h3 className="text-xl font-semibold mb-4 text-foreground dark:text-white">
+                <h3 className="typography-h4 mb-4 text-foreground dark:text-white">
                   Impact Analysis
                 </h3>
                 <STARAreaChart
@@ -218,7 +218,7 @@ export default function ProjectDetailClientBoundary({
 
         {/* CTA Section */}
         <div className="mt-16 gradient-cta rounded-3xl p-8 text-center text-white">
-          <h2 className="text-3xl font-bold mb-4">Impressed by This Case Study?</h2>
+          <h2 className="typography-h2 border-none pb-0 text-3xl mb-4">Impressed by This Case Study?</h2>
           <p className="text-xl mb-6 opacity-90">
             Connect with me to discuss professional opportunities and revenue operations collaboration
           </p>
