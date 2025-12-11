@@ -4,16 +4,7 @@ import { Suspense } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Folder, FileText, Mail } from 'lucide-react'
 import { HomePageSchema } from '@/components/seo/home-page-schema'
-import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-
-// Optimized motion imports for better performance
-import {
-  MotionDiv,
-  MotionH1,
-  optimizedVariants
-} from '@/lib/motion/optimized-motion'
-import { fadeInUp } from '@/lib/motion/client-motion'
 
 export default function HomePageContent() {
   const buttons = [
@@ -57,46 +48,29 @@ export default function HomePageContent() {
 
       {/* Content */}
       <div className="relative z-10 px-4 mx-auto max-w-7xl text-center w-full">
-        <MotionH1
-          variants={optimizedVariants.fadeInUp}
-          initial="initial"
-          animate="animate"
-          className="text-5xl md:text-7xl font-black tracking-tight mb-6 text-white"
-        >
+        <h1 className="typography-h1 text-5xl md:text-7xl text-white mb-6 animate-fade-in-up">
           Richard Hudson
-        </MotionH1>
+        </h1>
 
-        <MotionDiv
-          variants={optimizedVariants.fadeInUp}
-          initial="initial"
-          animate="animate"
-          transition={{ delay: 0.2 }}
-          className="mb-8"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-600">
+        <div className="mb-8 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+          <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl gradient-text">
             Revenue Operations Professional
           </h2>
-        </MotionDiv>
+        </div>
 
-        <p className="text-centered-md text-base md:text-lg text-muted-foreground leading-relaxed mb-4 px-4">
-            Experienced Revenue Operations professional with proven track record of delivering $4.8M+
-            revenue impact through strategic operational improvements, data-driven insights, and
-            scalable process optimization for growing organizations.
-          </p>
+        <p className="typography-lead text-centered-md mb-4 px-4 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+          Experienced Revenue Operations professional with proven track record of delivering $4.8M+
+          revenue impact through strategic operational improvements, data-driven insights, and
+          scalable process optimization for growing organizations.
+        </p>
 
         {/* Location Information */}
         <Suspense fallback={<div className="animate-pulse h-12 bg-muted/50 rounded" />}>
-          <MotionDiv
-            variants={fadeInUp}
-            initial="initial"
-            animate="animate"
-            transition={{ duration: 0.5, delay: 0.85 }}
-            className="mb-8"
-          >
-            <p className="text-primary text-lg font-medium mb-2">
+          <div className="mb-8 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+            <p className="typography-large text-primary mb-2">
               Based in Plano, TX - Serving Dallas-Fort Worth Metroplex
             </p>
-            <div className="flex flex-wrap justify-center gap-3 text-sm text-muted-foreground">
+            <div className="flex flex-wrap justify-center gap-3 typography-muted">
               <span>Dallas</span>
               <span>-</span>
               <span>Fort Worth</span>
@@ -109,49 +83,39 @@ export default function HomePageContent() {
               <span>-</span>
               <span>McKinney</span>
             </div>
-          </MotionDiv>
+          </div>
         </Suspense>
 
         {/* Professional Navigation */}
-        <Suspense fallback={<div className="animate-pulse h-32 bg-muted/50 rounded-xl" />}>
-          <MotionDiv
-            variants={fadeInUp}
-            initial="initial"
-            animate="animate"
-            transition={{ duration: 0.5, delay: 1.1 }}
-            className="max-w-4xl mx-auto"
-          >
-            <Card variant="glass" size="lg">
-              <CardContent>
-                <div className="flex flex-wrap gap-4 justify-center">
-                  {buttons.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={cn(
-                        "group bg-gradient-to-r from-primary to-secondary",
-                        "hover:from-primary/90 hover:to-secondary/90",
-                        "text-primary-foreground font-bold px-6 py-4 min-h-[44px] rounded-lg",
-                        "shadow-lg hover:shadow-xl hover:shadow-primary/25",
-                        "border border-primary/20 hover:border-primary/40",
-                        "flex items-center gap-3 transition-all duration-300 hover:scale-105"
-                      )}
-                    >
-                      <div className="flex items-center gap-2">
-                        {renderIcon(item.icon)}
-                        <span>{item.label}</span>
-                        <ArrowRight
-                          size={16}
-                          className="transition-transform duration-200 group-hover:translate-x-1"
-                          aria-hidden="true"
-                        />
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </MotionDiv>
+        <Suspense fallback={<div className="animate-pulse h-16 bg-muted/50 rounded-xl" />}>
+          <div className="max-w-4xl mx-auto animate-fade-in-up" style={{ animationDelay: '400ms' }}>
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center items-center">
+              {buttons.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "group bg-gradient-to-r from-primary to-secondary",
+                    "hover:from-primary/90 hover:to-secondary/90",
+                    "text-primary-foreground font-bold px-6 py-4 min-h-[44px] rounded-lg",
+                    "shadow-lg hover:shadow-xl hover:shadow-primary/25",
+                    "border border-primary/20 hover:border-primary/40",
+                    "flex items-center gap-3 transition-all duration-300 hover:scale-105"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    {renderIcon(item.icon)}
+                    <span>{item.label}</span>
+                    <ArrowRight
+                      size={16}
+                      className="transition-transform duration-200 group-hover:translate-x-1"
+                      aria-hidden="true"
+                    />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
         </Suspense>
       </div>
     </section>

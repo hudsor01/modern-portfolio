@@ -1,6 +1,6 @@
 'use client'
 
-import { m as motion } from 'framer-motion'
+
 import { STARAreaChart } from '@/components/projects/STARAreaChart'
 import { starData, technologies } from '../data/constants'
 import { formatCurrency } from '../utils'
@@ -13,13 +13,10 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
   return (
     <div className="space-y-12 mt-12">
       {/* Project Overview */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.2 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-primary">Project Overview</h2>
+        <h2 className="typography-h3 mb-6 text-primary">Project Overview</h2>
         <div className="space-y-4 text-muted-foreground">
           <p className="text-lg leading-relaxed">
             Developed and implemented a comprehensive real-time revenue analytics dashboard to
@@ -33,16 +30,13 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
             and {formatCurrency(totalRevenue)} in annual revenue management.
           </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* Challenge */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.3 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-amber-400">Challenge</h2>
+        <h2 className="typography-h3 mb-6 text-amber-400">Challenge</h2>
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
             The organization was experiencing rapid growth but lacked visibility into partner
@@ -62,16 +56,13 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
             opportunities.
           </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* Solution */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.4 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-success">Solution</h2>
+        <h2 className="typography-h3 mb-6 text-success">Solution</h2>
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
             Designed and built a comprehensive revenue KPI dashboard using React, TypeScript, and
@@ -101,16 +92,13 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Results & Impact */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.5 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-emerald-400">Results & Impact</h2>
+        <h2 className="typography-h3 mb-6 text-emerald-400">Results & Impact</h2>
         <div className="space-y-6 text-muted-foreground">
           <p className="leading-relaxed">
             The revenue KPI dashboard transformed how the organization manages and optimizes partner
@@ -119,18 +107,18 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold text-primary mb-2">
+              <div className="typography-h2 border-none pb-0 text-3xl text-primary mb-2">
                 {formatCurrency(4200000)}
               </div>
-              <div className="text-sm text-muted-foreground">Additional Revenue Generated</div>
+              <div className="typography-small text-muted-foreground">Additional Revenue Generated</div>
             </div>
             <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-sm border border-secondary/20 rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold text-secondary mb-2">94%</div>
-              <div className="text-sm text-muted-foreground">Forecast Accuracy Achievement</div>
+              <div className="typography-h2 border-none pb-0 text-3xl text-secondary mb-2">94%</div>
+              <div className="typography-small text-muted-foreground">Forecast Accuracy Achievement</div>
             </div>
             <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold text-primary mb-2">65%</div>
-              <div className="text-sm text-muted-foreground">Reduction in Manual Reporting Time</div>
+              <div className="typography-h2 border-none pb-0 text-3xl text-primary mb-2">65%</div>
+              <div className="typography-small text-muted-foreground">Reduction in Manual Reporting Time</div>
             </div>
           </div>
 
@@ -145,16 +133,13 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
             </ul>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Key Learnings */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.6 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-purple-400">Key Learnings</h2>
+        <h2 className="typography-h3 mb-6 text-purple-400">Key Learnings</h2>
         <div className="space-y-4 text-muted-foreground">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
@@ -198,16 +183,13 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
             action.
           </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* Technologies Used */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.7 }}
+      <div
         className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-border/20 rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-muted-foreground">Technologies Used</h2>
+        <h2 className="typography-h3 mb-6 text-muted-foreground">Technologies Used</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {technologies.map((tech, index) => (
             <span
@@ -218,17 +200,14 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
             </span>
           ))}
         </div>
-      </motion.div>
+      </div>
 
       {/* STAR Impact Analysis */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+      <div
         className="mt-16 space-y-8"
       >
         <div className="text-center space-y-4">
-          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+          <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
             STAR Impact Analysis
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -243,22 +222,22 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="text-center p-6 glass rounded-2xl">
             <div className="text-sm text-primary/70 mb-2">Situation</div>
-            <div className="text-lg font-bold text-white">Initial Assessment</div>
+            <div className="typography-large text-white">Initial Assessment</div>
           </div>
           <div className="text-center p-6 glass rounded-2xl">
             <div className="text-sm text-green-400/70 mb-2">Task</div>
-            <div className="text-lg font-bold text-white">Goal Definition</div>
+            <div className="typography-large text-white">Goal Definition</div>
           </div>
           <div className="text-center p-6 glass rounded-2xl">
             <div className="text-sm text-amber-400/70 mb-2">Action</div>
-            <div className="text-lg font-bold text-white">Implementation</div>
+            <div className="typography-large text-white">Implementation</div>
           </div>
           <div className="text-center p-6 glass rounded-2xl">
             <div className="text-sm text-cyan-400/70 mb-2">Result</div>
-            <div className="text-lg font-bold text-white">Measurable Impact</div>
+            <div className="typography-large text-white">Measurable Impact</div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }

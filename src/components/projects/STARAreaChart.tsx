@@ -54,7 +54,7 @@ export function STARAreaChart({ data, title, className = '' }: STARAreaChartProp
   return (
     <div className={`w-full ${className}`}>
       {title && (
-        <h3 className="text-lg font-semibold mb-4 text-white/90">{title}</h3>
+        <h3 className="typography-large mb-4 text-white/90">{title}</h3>
       )}
       <ResponsiveContainer width="100%" height={300}>
         <AreaChart

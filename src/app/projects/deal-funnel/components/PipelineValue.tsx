@@ -1,6 +1,6 @@
 'use client'
 
-import { m as motion } from 'framer-motion'
+
 import { TrendingUp } from 'lucide-react'
 
 interface PipelineValueProps {
@@ -9,16 +9,13 @@ interface PipelineValueProps {
 
 export function PipelineValue({ totalRevenue }: PipelineValueProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 1 }}
+    <div
       className="mt-8 bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-sm border border-purple-500/20 rounded-3xl p-8"
     >
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold mb-2">Total Pipeline Value</h2>
-          <p className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <h2 className="typography-h3 mb-2">Total Pipeline Value</h2>
+          <p className="typography-h1 text-4xl bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
             ${(totalRevenue / 1000000).toFixed(1)}M
           </p>
           <p className="text-muted-foreground mt-2">Based on closed deals × average deal size</p>
@@ -29,6 +26,6 @@ export function PipelineValue({ totalRevenue }: PipelineValueProps) {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }

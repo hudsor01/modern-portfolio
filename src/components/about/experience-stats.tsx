@@ -1,6 +1,6 @@
 'use client'
 
-import { m as motion } from 'framer-motion'
+
 import { Card, CardContent } from '@/components/ui/card'
 import { AnimatedCounter } from './animated-counter'
 import { 
@@ -21,10 +21,6 @@ interface ExperienceStatsProps {
   className?: string
 }
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
-}
 
 const iconMap = {
   'trending-up': TrendingUp,
@@ -36,26 +32,24 @@ const iconMap = {
 export function ExperienceStats({ stats, className = '' }: ExperienceStatsProps) {
   return (
     <section className={className}>
-      <motion.div
-        initial={fadeInUp.initial}
-        animate={fadeInUp.animate}
-        transition={{ duration: 0.6, delay: 0.4 }}
+      <div
+        
+        
         className="text-center mb-12"
       >
-        <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+        <h2 className="typography-h1 text-4xl mb-4 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
           Impact & Experience
         </h2>
-        <p className="text-xl text-muted-foreground dark:text-muted-foreground max-w-3xl mx-auto">
+        <p className="typography-lead dark:text-muted-foreground max-w-3xl mx-auto">
           Proven track record of driving revenue growth and operational excellence
         </p>
-      </motion.div>
+      </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
-          <ExperienceStatCard 
+        {stats.map((stat) => (
+          <ExperienceStatCard
             key={stat.label}
             stat={stat}
-            index={index}
           />
         ))}
       </div>
@@ -65,26 +59,24 @@ export function ExperienceStats({ stats, className = '' }: ExperienceStatsProps)
 
 interface ExperienceStatCardProps {
   stat: ExperienceStat
-  index: number
 }
 
-function ExperienceStatCard({ stat, index }: ExperienceStatCardProps) {
+function ExperienceStatCard({ stat }: ExperienceStatCardProps) {
   const IconComponent = iconMap[stat.icon as keyof typeof iconMap] || TrendingUp
 
   return (
-    <motion.div
-      initial={fadeInUp.initial}
-      animate={fadeInUp.animate}
-      transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
+    <div
+      
+      
     >
       <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 hover:shadow-xl transition-all duration-300">
         <CardContent className="p-6 text-center">
           <div className="mb-4 flex justify-center">
-            <div className="p-3 rounded-full bg-primary/10 dark:bg-primary/20/30">
+            <div className="p-3 rounded-full bg-primary/10 dark:bg-primary-bg">
               <IconComponent className="h-8 w-8 text-primary dark:text-primary" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-foreground dark:text-white mb-2">
+          <div className="typography-h2 border-none pb-0 text-3xl text-foreground dark:text-white mb-2">
             <AnimatedCounter 
               value={stat.value}
               duration={2000}
@@ -95,6 +87,6 @@ function ExperienceStatCard({ stat, index }: ExperienceStatCardProps) {
           </p>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   )
 }

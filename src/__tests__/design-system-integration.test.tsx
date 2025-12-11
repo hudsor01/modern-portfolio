@@ -31,27 +31,27 @@ describe('Design System Integration', () => {
       expect(colorPalette.gradients.buttonHover).toBe('from-cyan-400 to-blue-400')
     })
 
-    it('replaces old blue/indigo patterns', () => {
+    it('replaces old patterns with semantic tokens', () => {
       const oldPatterns = [
         'from-blue-500 to-indigo-600',
         'from-blue-600 to-indigo-700',
-        'border-primary/50/20',
-        'shadow-primary/25'
+        'bg-destructive/20/20',  // Invalid double-slash opacity
+        'bg-primary/20/20'       // Invalid double-slash opacity
       ]
-      
+
       const newPatterns = [
         'from-cyan-500 to-blue-500',
-        'from-cyan-400 to-blue-400', 
-        'border-primary/20',
-        'shadow-cyan-500/25'
+        'from-cyan-400 to-blue-400',
+        'bg-destructive-bg',  // Semantic token with built-in opacity
+        'bg-primary-bg'       // Semantic token with built-in opacity
       ]
-      
+
       // Verify transformation pattern
       expect(newPatterns[0]).toBe('from-cyan-500 to-blue-500')
       expect(newPatterns[1]).toBe('from-cyan-400 to-blue-400')
-      expect(newPatterns[2]).toBe('border-primary/20')
-      expect(newPatterns[3]).toBe('shadow-cyan-500/25')
-      
+      expect(newPatterns[2]).toBe('bg-destructive-bg')
+      expect(newPatterns[3]).toBe('bg-primary-bg')
+
       // Ensure old patterns are not used
       oldPatterns.forEach(pattern => {
         expect(newPatterns).not.toContain(pattern)
@@ -191,35 +191,35 @@ describe('Design System Integration', () => {
         challenge: {
           emoji: '🎯',
           label: 'CHALLENGE',
-          background: 'bg-destructive/20/20',
-          border: 'border-destructive/30',
+          background: 'bg-destructive-bg',
+          border: 'border-destructive-border',
           textColor: 'text-destructive'
         },
         solution: {
           emoji: '⚡',
-          label: 'SOLUTION', 
-          background: 'bg-success/20/20',
-          border: 'border-success/30',
+          label: 'SOLUTION',
+          background: 'bg-success-bg',
+          border: 'border-success-border',
           textColor: 'text-success'
         },
         results: {
           emoji: '📊',
           label: 'RESULTS',
-          background: 'bg-primary/20/20',
-          border: 'border-primary/30',
+          background: 'bg-primary-bg',
+          border: 'border-primary-border',
           textColor: 'text-primary/70'
         }
       }
-      
+
       // Verify CSR structure
       expect(csrStructure.challenge.label).toBe('CHALLENGE')
       expect(csrStructure.solution.label).toBe('SOLUTION')
       expect(csrStructure.results.label).toBe('RESULTS')
-      
-      // Verify color coding
-      expect(csrStructure.challenge.background).toBe('bg-destructive/20/20')
-      expect(csrStructure.solution.background).toBe('bg-success/20/20')
-      expect(csrStructure.results.background).toBe('bg-primary/20/20')
+
+      // Verify color coding using semantic tokens
+      expect(csrStructure.challenge.background).toBe('bg-destructive-bg')
+      expect(csrStructure.solution.background).toBe('bg-success-bg')
+      expect(csrStructure.results.background).toBe('bg-primary-bg')
     })
   })
 

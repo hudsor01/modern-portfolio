@@ -9,7 +9,7 @@ import { TanStackQueryProvider } from '@/components/providers/tanstack-query-pro
  */
 export function ClientComponentsProvider({ children }: { children: React.ReactNode }) {
   return (
-    <TanStackQueryProvider showDevtools={false} showPerformance={false}>
+    <TanStackQueryProvider>
       {children}
     </TanStackQueryProvider>
   )

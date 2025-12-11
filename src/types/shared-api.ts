@@ -70,27 +70,32 @@ export interface ApiEndpoints {
 // Import STAR types from project types
 import type { STARData } from './project';
 
-// Project-related API types
+// Project-related API types - aligned with Prisma schema
 export interface ProjectData {
   id: string;
   title: string;
-  slug?: string;
+  slug: string; // Required per Prisma
   description: string;
   longDescription?: string;
   content?: string;
-  category: ProjectCategory;
+  category: string; // Required per Prisma
   technologies: string[];
   tags?: string[];
 
   // Media & URLs
   imageUrl?: string;
-  image?: string;
+  image: string; // Required per Prisma
   demoUrl?: string;
   liveUrl?: string;
   githubUrl?: string;
   link?: string;
 
   featured: boolean;
+
+  // Analytics per Prisma schema
+  viewCount: number;
+  clickCount: number;
+
   createdAt: string;
   updatedAt: string;
 
@@ -190,7 +195,7 @@ export interface SearchApiResponse extends ApiResponse<{
   totalResults: number;
 }> {}
 
-// Blog API types
+// Blog API types - aligned with Prisma schema (BlogPost has no `featured` field)
 export interface BlogPostData {
   id: string;
   title: string;
@@ -198,8 +203,7 @@ export interface BlogPostData {
   excerpt?: string;
   content: string;
   contentType: 'MARKDOWN' | 'HTML' | 'RICH_TEXT';
-  status: 'DRAFT' | 'PUBLISHED' | 'SCHEDULED' | 'ARCHIVED';
-  featured?: boolean;
+  status: 'DRAFT' | 'REVIEW' | 'SCHEDULED' | 'PUBLISHED' | 'ARCHIVED' | 'DELETED';
 
   // SEO fields
   metaTitle?: string;
@@ -294,7 +298,6 @@ export interface BlogPostSummary {
   author: BlogAuthorData;
   category?: BlogCategoryData;
   tags: BlogTagData[];
-  featured?: boolean;
 }
 
 export interface BlogPostFilters {
@@ -307,7 +310,6 @@ export interface BlogPostFilters {
     from: string;
     to: string;
   };
-  featured?: boolean;
   published?: boolean;
 }
 

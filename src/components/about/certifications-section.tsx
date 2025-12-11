@@ -1,6 +1,6 @@
 'use client'
 
-import { m as motion } from 'framer-motion'
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Award } from 'lucide-react'
@@ -19,10 +19,6 @@ interface CertificationsSectionProps {
   className?: string
 }
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
-}
 
 export function CertificationsSection({ 
   certifications, 
@@ -30,26 +26,24 @@ export function CertificationsSection({
 }: CertificationsSectionProps) {
   return (
     <section className={className}>
-      <motion.div
-        initial={fadeInUp.initial}
-        animate={fadeInUp.animate}
-        transition={{ duration: 0.6, delay: 0.6 }}
+      <div
+        
+        
         className="text-center mb-12"
       >
-        <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+        <h2 className="typography-h1 text-4xl mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
           Certifications & Recognition
         </h2>
-        <p className="text-xl text-muted-foreground dark:text-muted-foreground max-w-3xl mx-auto">
+        <p className="typography-lead dark:text-muted-foreground max-w-3xl mx-auto">
           Professional certifications validating expertise in revenue operations and analytics
         </p>
-      </motion.div>
+      </div>
 
       <div className="grid md:grid-cols-2 gap-8">
-        {certifications.map((cert, index) => (
-          <CertificationCard 
+        {certifications.map((cert) => (
+          <CertificationCard
             key={cert.name}
             certification={cert}
-            index={index}
           />
         ))}
       </div>
@@ -59,25 +53,23 @@ export function CertificationsSection({
 
 interface CertificationCardProps {
   certification: Certification
-  index: number
 }
 
-function CertificationCard({ certification, index }: CertificationCardProps) {
+function CertificationCard({ certification }: CertificationCardProps) {
   return (
-    <motion.div
-      initial={fadeInUp.initial}
-      animate={fadeInUp.animate}
-      transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
+    <div
+      
+      
     >
       <Card className="h-full border-0 shadow-lg bg-white/50 dark:bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
         <CardHeader className="pb-4">
           <div className="flex items-start gap-4">
             <CertificationBadge badge={certification.badge} name={certification.name} />
             <div className="flex-1">
-              <CardTitle className="text-lg font-bold text-foreground dark:text-white mb-2">
+              <CardTitle className="typography-large text-foreground dark:text-white mb-2">
                 {certification.name}
               </CardTitle>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-muted-foreground">
+              <div className="flex items-center gap-2 typography-small text-muted-foreground dark:text-muted-foreground">
                 <Award className="h-4 w-4" />
                 <span>{certification.issuer}</span>
               </div>
@@ -91,7 +83,7 @@ function CertificationCard({ certification, index }: CertificationCardProps) {
           <SkillTags skills={certification.skills} />
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   )
 }
 

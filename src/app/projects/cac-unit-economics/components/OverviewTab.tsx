@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { m as motion } from 'framer-motion'
+
 
 function ChartLoadError() {
   return (
@@ -31,36 +31,30 @@ export function OverviewTab() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       {/* CAC Breakdown */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
+      <div
         className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-4">
-          <h2 className="text-xl font-bold mb-1">Customer Acquisition Cost Breakdown by Channel</h2>
-          <p className="text-sm text-muted-foreground">Strategic CAC analysis revealing certified partners deliver 70% lower acquisition costs ($98 vs $289) compared to direct sales channels</p>
+          <h2 className="typography-h4 mb-1">Customer Acquisition Cost Breakdown by Channel</h2>
+          <p className="typography-small text-muted-foreground">Strategic CAC analysis revealing certified partners deliver 70% lower acquisition costs ($98 vs $289) compared to direct sales channels</p>
         </div>
         <div className="h-[250px]">
           <CACBreakdownChart />
         </div>
-      </motion.div>
+      </div>
 
       {/* Unit Economics */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
+      <div
         className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-4">
-          <h2 className="text-xl font-bold mb-1">Unit Economics Performance Dashboard</h2>
-          <p className="text-sm text-muted-foreground">LTV:CAC ratio trending from 2.8:1 to 4.0:1 through systematic partner optimization and payback period reduction strategies</p>
+          <h2 className="typography-h4 mb-1">Unit Economics Performance Dashboard</h2>
+          <p className="typography-small text-muted-foreground">LTV:CAC ratio trending from 2.8:1 to 4.0:1 through systematic partner optimization and payback period reduction strategies</p>
         </div>
         <div className="h-[250px]">
           <UnitEconomicsChart />
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }

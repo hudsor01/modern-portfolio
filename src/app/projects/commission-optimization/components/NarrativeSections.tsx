@@ -1,6 +1,6 @@
 'use client'
 
-import { m as motion } from 'framer-motion'
+
 import { STARAreaChart } from '@/components/projects/STARAreaChart'
 import { starData, commissionMetrics, technologies } from '../data/constants'
 import { formatCurrency, formatPercent } from '../utils'
@@ -9,13 +9,10 @@ export function NarrativeSections() {
   return (
     <div className="space-y-12 mt-12">
       {/* Project Overview */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.8 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-emerald-400">Project Overview</h2>
+        <h2 className="typography-h3 mb-6 text-emerald-400">Project Overview</h2>
         <div className="space-y-4 text-muted-foreground">
           <p className="text-lg leading-relaxed">
             Designed and implemented a comprehensive commission optimization system to manage {formatCurrency(commissionMetrics.totalCommissionPool)} annual commission pool across multi-tier partner structures. This strategic initiative transformed commission management from manual processes to automated optimization.
@@ -24,16 +21,13 @@ export function NarrativeSections() {
             The system enabled data-driven commission strategy decisions that improved partner performance by {formatPercent(commissionMetrics.performanceImprovement)} while achieving {formatPercent(commissionMetrics.automationEfficiency)} automation efficiency across all commission operations.
           </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* Challenge */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.9 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-amber-400">Challenge</h2>
+        <h2 className="typography-h3 mb-6 text-amber-400">Challenge</h2>
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
             The existing commission structure was hindering partner performance and creating operational inefficiencies. Key problems included:
@@ -50,16 +44,13 @@ export function NarrativeSections() {
             These inefficiencies were not only costly operationally but also negatively impacting partner motivation and retention rates.
           </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* Solution */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.0 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-success">Solution</h2>
+        <h2 className="typography-h3 mb-6 text-success">Solution</h2>
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
             Developed a comprehensive commission optimization platform with automated tier management, real-time calculations, and performance-based incentive programs:
@@ -92,16 +83,13 @@ export function NarrativeSections() {
             The solution included comprehensive dashboards for different stakeholders: executives focused on ROI metrics, operations teams managing day-to-day processing, and partners tracking their earnings and performance.
           </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* Results & Impact */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.1 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-primary">Results & Impact</h2>
+        <h2 className="typography-h3 mb-6 text-primary">Results & Impact</h2>
         <div className="space-y-6 text-muted-foreground">
           <p className="leading-relaxed">
             The commission optimization system delivered significant operational improvements and partner performance gains:
@@ -109,16 +97,16 @@ export function NarrativeSections() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-gradient-to-br from-emerald-500/10 to-green-500/10 backdrop-blur-sm border border-emerald-500/20 rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold text-emerald-400 mb-2">{formatCurrency(commissionMetrics.totalCommissionPool)}</div>
-              <div className="text-sm text-muted-foreground">Annual Commission Pool Management</div>
+              <div className="typography-h2 border-none pb-0 text-3xl text-emerald-400 mb-2">{formatCurrency(commissionMetrics.totalCommissionPool)}</div>
+              <div className="typography-small text-muted-foreground">Annual Commission Pool Management</div>
             </div>
             <div className="bg-gradient-to-br from-green-500/10 to-teal-500/10 backdrop-blur-sm border border-success/20 rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold text-success mb-2">+{formatPercent(commissionMetrics.performanceImprovement)}</div>
-              <div className="text-sm text-muted-foreground">Partner Performance Improvement</div>
+              <div className="typography-h2 border-none pb-0 text-3xl text-success mb-2">+{formatPercent(commissionMetrics.performanceImprovement)}</div>
+              <div className="typography-small text-muted-foreground">Partner Performance Improvement</div>
             </div>
             <div className="bg-gradient-to-br from-teal-500/10 to-cyan-500/10 backdrop-blur-sm border border-teal-500/20 rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold text-teal-400 mb-2">{formatPercent(commissionMetrics.automationEfficiency)}</div>
-              <div className="text-sm text-muted-foreground">Automation & Processing Efficiency</div>
+              <div className="typography-h2 border-none pb-0 text-3xl text-teal-400 mb-2">{formatPercent(commissionMetrics.automationEfficiency)}</div>
+              <div className="typography-small text-muted-foreground">Automation & Processing Efficiency</div>
             </div>
           </div>
 
@@ -136,33 +124,30 @@ export function NarrativeSections() {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
             <div className="bg-white/5 rounded-2xl p-4 border border-white/10 text-center">
-              <div className="text-2xl font-bold text-emerald-400 mb-1">73%</div>
-              <div className="text-xs text-muted-foreground">Processing Time Reduction</div>
+              <div className="typography-h3 text-emerald-400 mb-1">73%</div>
+              <div className="typography-small text-muted-foreground">Processing Time Reduction</div>
             </div>
             <div className="bg-white/5 rounded-2xl p-4 border border-white/10 text-center">
-              <div className="text-2xl font-bold text-success mb-1">68%</div>
-              <div className="text-xs text-muted-foreground">Dispute Rate Reduction</div>
+              <div className="typography-h3 text-success mb-1">68%</div>
+              <div className="typography-small text-muted-foreground">Dispute Rate Reduction</div>
             </div>
             <div className="bg-white/5 rounded-2xl p-4 border border-white/10 text-center">
-              <div className="text-2xl font-bold text-teal-400 mb-1">99.8%</div>
-              <div className="text-xs text-muted-foreground">Calculation Accuracy</div>
+              <div className="typography-h3 text-teal-400 mb-1">99.8%</div>
+              <div className="typography-small text-muted-foreground">Calculation Accuracy</div>
             </div>
             <div className="bg-white/5 rounded-2xl p-4 border border-white/10 text-center">
-              <div className="text-2xl font-bold text-primary mb-1">94.7%</div>
-              <div className="text-xs text-muted-foreground">Partner Satisfaction</div>
+              <div className="typography-h3 text-primary mb-1">94.7%</div>
+              <div className="typography-small text-muted-foreground">Partner Satisfaction</div>
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Key Learnings */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.2 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-purple-400">Key Learnings</h2>
+        <h2 className="typography-h3 mb-6 text-purple-400">Key Learnings</h2>
         <div className="space-y-4 text-muted-foreground">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
@@ -186,16 +171,13 @@ export function NarrativeSections() {
             This project demonstrated that commission optimization is both an art and a science. The most successful strategies combined data-driven insights with deep understanding of partner psychology and motivation patterns.
           </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* Technologies Used */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.3 }}
+      <div
         className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-border/20 rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-muted-foreground">Technologies Used</h2>
+        <h2 className="typography-h3 mb-6 text-muted-foreground">Technologies Used</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {technologies.map((tech, index) => (
             <span key={index} className="bg-white/10 text-muted-foreground px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
@@ -203,17 +185,14 @@ export function NarrativeSections() {
             </span>
           ))}
         </div>
-      </motion.div>
+      </div>
 
       {/* STAR Impact Analysis */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+      <div
         className="mt-16 space-y-8"
       >
         <div className="text-center space-y-4">
-          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+          <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
             STAR Impact Analysis
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -231,22 +210,22 @@ export function NarrativeSections() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="text-center p-6 glass rounded-2xl">
             <div className="text-sm text-primary/70 mb-2">Situation</div>
-            <div className="text-lg font-bold text-white">Initial Assessment</div>
+            <div className="typography-large text-white">Initial Assessment</div>
           </div>
           <div className="text-center p-6 glass rounded-2xl">
             <div className="text-sm text-green-400/70 mb-2">Task</div>
-            <div className="text-lg font-bold text-white">Goal Definition</div>
+            <div className="typography-large text-white">Goal Definition</div>
           </div>
           <div className="text-center p-6 glass rounded-2xl">
             <div className="text-sm text-amber-400/70 mb-2">Action</div>
-            <div className="text-lg font-bold text-white">Implementation</div>
+            <div className="typography-large text-white">Implementation</div>
           </div>
           <div className="text-center p-6 glass rounded-2xl">
             <div className="text-sm text-cyan-400/70 mb-2">Result</div>
-            <div className="text-lg font-bold text-white">Measurable Impact</div>
+            <div className="typography-large text-white">Measurable Impact</div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }

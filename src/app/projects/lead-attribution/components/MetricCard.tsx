@@ -31,10 +31,10 @@ export function MetricCard({
           <div className={`p-3 ${iconBgClass} rounded-2xl`}>
             <Icon className={`h-6 w-6 ${iconColorClass}`} />
           </div>
-          <span className="text-xs text-muted-foreground uppercase tracking-wider">{label}</span>
+          <span className="typography-small text-muted-foreground uppercase tracking-wider">{label}</span>
         </div>
-        <p className="text-3xl font-bold mb-1">{value}</p>
-        <p className="text-sm text-muted-foreground">{subtitle}</p>
+        <p className="typography-h2 border-none pb-0 text-3xl mb-1">{value}</p>
+        <p className="typography-small text-muted-foreground">{subtitle}</p>
       </div>
     </div>
   )

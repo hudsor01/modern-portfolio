@@ -18,8 +18,8 @@ export default function ProjectsClientBoundary({ initialProjects }: ProjectsClie
     return (
       <div className="min-h-[400px] flex items-center justify-center">
         <div className="text-center">
-          <h3 className="text-lg font-semibold mb-2">Failed to load projects</h3>
-          <p className="text-muted-foreground">Please try again later</p>
+          <h3 className="typography-large mb-2">Failed to load projects</h3>
+          <p className="typography-muted">Please try again later</p>
         </div>
       </div>
     )

@@ -15,7 +15,7 @@ import {
   Pie,
   Cell,
 } from 'recharts'
-import { m as motion } from 'framer-motion'
+
 import { cn } from '@/lib/utils'
 import type { ChartData } from '@/types/chart'
 
@@ -158,12 +158,12 @@ export function ProjectChart({
   }
 
   return (
-    <motion.div
+    <div
       className={cn('bg-card w-full rounded-lg p-4 shadow-sm', className)}
       {...animationProps}
     >
-      {title && <h3 className="mb-4 text-lg font-semibold">{title}</h3>}
+      {title && <h3 className="mb-4 typography-large">{title}</h3>}
       {renderChart()}
-    </motion.div>
+    </div>
   )
 }

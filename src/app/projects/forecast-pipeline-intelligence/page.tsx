@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, TrendingUp, AlertTriangle, Zap, CheckCircle, BarChart3 } from 'lucide-react'
-import { m as motion } from 'framer-motion'
+
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 
@@ -78,10 +78,7 @@ export default function ForecastPipelineIntelligenceProject() {
       <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
         <div className="max-w-6xl mx-auto px-4 py-12">
           {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+          <div
             className="mb-12"
           >
             <Link
@@ -92,19 +89,16 @@ export default function ForecastPipelineIntelligenceProject() {
               Back to Projects
             </Link>
 
-            <h1 className="text-5xl font-bold text-foreground mb-4">
+            <h1 className="typography-h1 text-5xl text-foreground mb-4">
               Forecast Accuracy & Pipeline Intelligence System
             </h1>
             <p className="text-xl text-slate-300 max-w-3xl">
               Enterprise forecasting and pipeline intelligence platform combining predictive analytics, deal health monitoring, and early warning systems. Improved forecast accuracy by 31% and reduced slippage by 26%.
             </p>
-          </motion.div>
+          </div>
 
           {/* Key Metrics */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+          <div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
           >
             {metrics.map((metric) => {
@@ -117,28 +111,25 @@ export default function ForecastPipelineIntelligenceProject() {
                   <div className="flex items-center justify-between mb-4">
                     <Icon className={`h-8 w-8 ${metric.color}`} />
                   </div>
-                  <div className="text-3xl font-bold text-foreground mb-2">{metric.value}</div>
+                  <div className="typography-h2 border-none pb-0 text-3xl text-foreground mb-2">{metric.value}</div>
                   <div className="text-sm text-slate-400">{metric.label}</div>
                 </div>
               )
             })}
-          </motion.div>
+          </div>
 
           {/* Intelligence Modules */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+          <div
             className="mb-16"
           >
-            <h2 className="text-3xl font-bold text-foreground mb-8">Intelligence Modules</h2>
+            <h2 className="typography-h2 border-none pb-0 text-3xl text-foreground mb-8">Intelligence Modules</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {intelligenceModules.map((module, index) => (
                 <div
                   key={index}
                   className="glass rounded-xl p-8 hover:border-primary/50 transition-all"
                 >
-                  <h3 className="text-xl font-bold text-foreground mb-3">{module.title}</h3>
+                  <h3 className="typography-h4 text-foreground mb-3">{module.title}</h3>
                   <p className="text-slate-300 mb-6">{module.description}</p>
                   <ul className="space-y-2">
                     {module.capabilities.map((capability, idx) => (
@@ -151,48 +142,42 @@ export default function ForecastPipelineIntelligenceProject() {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </div>
 
           {/* Business Impact */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+          <div
             className="bg-gradient-to-r from-green-600/20 to-blue-600/20 border border-success/30 rounded-xl p-12 mb-16"
           >
-            <h2 className="text-3xl font-bold text-foreground mb-8">Business Impact</h2>
+            <h2 className="typography-h2 border-none pb-0 text-3xl text-foreground mb-8">Business Impact</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <div className="text-4xl font-bold text-success mb-2">$12.5M</div>
+                <div className="typography-h1 text-4xl text-success mb-2">$12.5M</div>
                 <p className="text-slate-300">Revenue protected through proactive pipeline management</p>
               </div>
               <div>
-                <div className="text-4xl font-bold text-primary mb-2">94%</div>
+                <div className="typography-h1 text-4xl text-primary mb-2">94%</div>
                 <p className="text-slate-300">Overall forecasting accuracy achieved</p>
               </div>
               <div>
-                <div className="text-4xl font-bold text-purple-400 mb-2">31%</div>
+                <div className="typography-h1 text-4xl text-purple-400 mb-2">31%</div>
                 <p className="text-slate-300">Improvement in revenue forecast accuracy</p>
               </div>
               <div>
-                <div className="text-4xl font-bold text-amber-400 mb-2">26%</div>
+                <div className="typography-h1 text-4xl text-amber-400 mb-2">26%</div>
                 <p className="text-slate-300">Reduction in deal slippage</p>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Analytics Approach */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+          <div
             className="mb-16"
           >
-            <h2 className="text-3xl font-bold text-foreground mb-8">Analytics & Signals</h2>
+            <h2 className="typography-h2 border-none pb-0 text-3xl text-foreground mb-8">Analytics & Signals</h2>
             <div className="glass rounded-xl p-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <h3 className="text-lg font-semibold text-foreground mb-4">Deal Health Signals (50+)</h3>
+                  <h3 className="typography-large text-foreground mb-4">Deal Health Signals (50+)</h3>
                   <ul className="space-y-2 text-slate-300 text-sm">
                     <li>• Engagement level and trend</li>
                     <li>• Buying committee consensus</li>
@@ -203,7 +188,7 @@ export default function ForecastPipelineIntelligenceProject() {
                   </ul>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-foreground mb-4">Forecasting Signals</h3>
+                  <h3 className="typography-large text-foreground mb-4">Forecasting Signals</h3>
                   <ul className="space-y-2 text-slate-300 text-sm">
                     <li>• Historical stage progression rates</li>
                     <li>• Seasonal patterns and trends</li>
@@ -215,16 +200,13 @@ export default function ForecastPipelineIntelligenceProject() {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Technologies */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
+          <div
             className="mb-16"
           >
-            <h2 className="text-3xl font-bold text-foreground mb-8">Technologies & Tools</h2>
+            <h2 className="typography-h2 border-none pb-0 text-3xl text-foreground mb-8">Technologies & Tools</h2>
             <div className="flex flex-wrap gap-3">
               {['Python', 'Machine Learning', 'Time Series Analysis', 'Plotly', 'Recharts', 'PostgreSQL', 'Next.js', 'Predictive Analytics'].map((tech) => (
                 <span
@@ -235,7 +217,7 @@ export default function ForecastPipelineIntelligenceProject() {
                 </span>
               ))}
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </>

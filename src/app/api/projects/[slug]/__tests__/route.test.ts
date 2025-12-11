@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { GET } from '../route'
 
 // Mock the data layer
-vi.mock('@/data/projects', () => ({
-  getProjectBySlug: vi.fn()
+vi.mock('@/lib/content/projects', () => ({
+  getProject: vi.fn()
 }))
 
 // Mock the logger
@@ -31,14 +31,18 @@ describe('/api/projects/[slug]', () => {
 
   describe('GET', () => {
     it('should return project when found', async () => {
-      const { getProjectBySlug } = await import('@/data/projects')
+      const { getProject } = await import('@/lib/content/projects')
       const mockProject = {
         id: '1',
         title: 'Test Project',
         slug: 'test-project',
-        description: 'A test project'
+        description: 'A test project',
+        image: 'https://example.com/image.jpg',
+        category: 'Analytics',
+        viewCount: 0,
+        clickCount: 0
       }
-      vi.mocked(getProjectBySlug).mockResolvedValueOnce(mockProject)
+      vi.mocked(getProject).mockResolvedValueOnce(mockProject)
 
       const response = await GET(createMockRequest(), { params: { slug: 'test-project' } })
       const data = await response.json()
@@ -46,12 +50,12 @@ describe('/api/projects/[slug]', () => {
       expect(response.status).toBe(200)
       expect(data.success).toBe(true)
       expect(data.data).toEqual(mockProject)
-      expect(getProjectBySlug).toHaveBeenCalledWith('test-project')
+      expect(getProject).toHaveBeenCalledWith('test-project')
     })
 
     it('should return 404 when project not found', async () => {
-      const { getProjectBySlug } = await import('@/data/projects')
-      vi.mocked(getProjectBySlug).mockResolvedValueOnce(null)
+      const { getProject } = await import('@/lib/content/projects')
+      vi.mocked(getProject).mockResolvedValueOnce(null)
 
       const response = await GET(createMockRequest(), { params: { slug: 'nonexistent' } })
       const data = await response.json()
@@ -78,8 +82,8 @@ describe('/api/projects/[slug]', () => {
     })
 
     it('should handle database errors', async () => {
-      const { getProjectBySlug } = await import('@/data/projects')
-      vi.mocked(getProjectBySlug).mockRejectedValueOnce(new Error('Database error'))
+      const { getProject } = await import('@/lib/content/projects')
+      vi.mocked(getProject).mockRejectedValueOnce(new Error('Database error'))
 
       const response = await GET(createMockRequest(), { params: { slug: 'test-project' } })
       const data = await response.json()

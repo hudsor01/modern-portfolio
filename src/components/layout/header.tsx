@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation'
 import { Moon, Sun, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
-import { m, AnimatePresence } from 'framer-motion'
 
 const routes = [
   { name: 'Home', path: '/' },
@@ -48,7 +47,7 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           <Link
             href="/"
-            className="z-40 text-xl font-bold portfolio-text-gradient"
+            className="z-40 typography-h4 portfolio-text-gradient"
             aria-label="Richard Hudson - Home"
           >
             Richard Hudson
@@ -106,42 +105,35 @@ export function Header() {
       </div>
 
       {/* Mobile menu */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <m.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-30 bg-background pt-16 px-4 pb-8 md:hidden"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Mobile navigation menu"
-          >
-            <nav className="flex flex-col items-center space-y-6 mt-8" aria-label="Mobile Navigation">
-              {routes.map((route, index) => (
-                <m.div
-                  key={route.path}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-background pt-16 px-4 pb-8 md:hidden animate-fade-in-down"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mobile navigation menu"
+        >
+          <nav className="flex flex-col items-center space-y-6 mt-8" aria-label="Mobile Navigation">
+            {routes.map((route, index) => (
+              <div
+                key={route.path}
+                className="animate-fade-in-up"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <Link
+                  href={route.path}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`typography-large ${
+                    pathname === route.path ? 'text-primary' : 'text-foreground/70'
+                  }`}
+                  aria-current={pathname === route.path ? 'page' : undefined}
                 >
-                  <Link
-                    href={route.path}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`text-lg font-medium ${
-                      pathname === route.path ? 'text-primary' : 'text-foreground/70'
-                    }`}
-                    aria-current={pathname === route.path ? 'page' : undefined}
-                  >
-                    {route.name}
-                  </Link>
-                </m.div>
-              ))}
-            </nav>
-          </m.div>
-        )}
-      </AnimatePresence>
+                  {route.name}
+                </Link>
+              </div>
+            ))}
+          </nav>
+        </div>
+      )}
     </header>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { m as motion } from 'framer-motion'
+
 import { customerSegments } from '../data/constants'
 import { formatCurrency, formatPercent } from '../utils'
 
@@ -25,31 +25,25 @@ export function SegmentsTab() {
   return (
     <div className="space-y-6 mb-8">
       {/* Customer Segment Chart */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
+      <div
         className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-4">
-          <h2 className="text-xl font-bold mb-1">Customer Segment Distribution & CLV Analysis</h2>
-          <p className="text-sm text-muted-foreground">RFM-based customer segmentation with predictive CLV modeling across behavioral clusters</p>
+          <h2 className="typography-h4 mb-1">Customer Segment Distribution & CLV Analysis</h2>
+          <p className="typography-small text-muted-foreground">RFM-based customer segmentation with predictive CLV modeling across behavioral clusters</p>
         </div>
         <div className="h-[250px]">
           <CustomerSegmentChart />
         </div>
-      </motion.div>
+      </div>
 
       {/* Segment Details Table */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
+      <div
         className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-4">
-          <h2 className="text-xl font-bold mb-1">Customer Segment Intelligence & Behavioral Insights</h2>
-          <p className="text-sm text-muted-foreground">Detailed segment analysis with CLV predictions and engagement probability scores</p>
+          <h2 className="typography-h4 mb-1">Customer Segment Intelligence & Behavioral Insights</h2>
+          <p className="typography-small text-muted-foreground">Detailed segment analysis with CLV predictions and engagement probability scores</p>
         </div>
 
         <div className="overflow-x-auto">
@@ -86,13 +80,13 @@ export function SegmentsTab() {
                       {formatPercent(segment.probability * 100)}
                     </span>
                   </td>
-                  <td className="py-4 px-4 text-sm text-muted-foreground">{segment.characteristics}</td>
+                  <td className="py-4 px-4 typography-small text-muted-foreground">{segment.characteristics}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }

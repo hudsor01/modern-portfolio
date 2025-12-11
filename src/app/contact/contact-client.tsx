@@ -68,12 +68,12 @@ export default function ContactPageClient() {
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent">
               Let's Connect
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+            <p className="typography-lead max-w-3xl mx-auto mb-8">
               Ready to optimize your revenue operations? Let's discuss how we can drive growth together.
             </p>
 
             {/* Quick Stats */}
-            <div className="flex flex-wrap justify-center gap-8 text-sm text-muted-foreground">
+            <div className="flex flex-wrap justify-center gap-8 typography-small text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Zap className="w-4 h-4 text-warning" />
                 <span>24hr Response Time</span>
@@ -93,9 +93,9 @@ export default function ContactPageClient() {
             {/* Enhanced Contact Form */}
             <div className="glass rounded-3xl p-8">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold">Send a Message</h2>
+                <h2 className="typography-h3">Send a Message</h2>
                 <div className="flex items-center gap-2">
-                  <div className="text-sm text-muted-foreground">Form Progress</div>
+                  <div className="typography-small text-muted-foreground">Form Progress</div>
                   <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-300"
@@ -195,7 +195,7 @@ export default function ContactPageClient() {
                     }`}
                     placeholder="Tell me about your project or requirements... *"
                   />
-                  <div className="absolute bottom-3 right-3 text-xs text-muted-foreground">
+                  <div className="absolute bottom-3 right-3 typography-small text-muted-foreground">
                     {formData.message.length}/500
                   </div>
                   {errors.message && <span className="text-destructive text-sm mt-1 block">{errors.message}</span>}
@@ -378,7 +378,7 @@ function PrivacyAgreement({ agreed, onAgree, showPrivacy, onTogglePrivacy, error
           {' '}and consent to processing my data for this inquiry. *
         </label>
         {showPrivacy && (
-          <div className="mt-2 p-3 bg-white/5 rounded text-xs text-muted-foreground border border-white/10">
+          <div className="mt-2 p-3 bg-white/5 rounded typography-small text-muted-foreground border border-white/10">
             Your information will be used solely to respond to your inquiry. We don't share personal data with third parties and you can request deletion at any time.
           </div>
         )}
@@ -417,7 +417,7 @@ function ContactSidebar() {
     <div className="space-y-8">
       {/* Contact Info Card */}
       <div className="glass rounded-3xl p-8">
-        <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+        <h3 className="typography-h4 mb-6 flex items-center gap-2">
           <Zap className="w-5 h-5 text-warning" />
           Contact Information
         </h3>
@@ -428,21 +428,21 @@ function ContactSidebar() {
               <a href={`mailto:${contactInfo.email}`} className="text-muted-foreground hover:text-primary font-medium">
                 {contactInfo.email}
               </a>
-              <div className="text-xs text-muted-foreground">Primary contact</div>
+              <div className="typography-small text-muted-foreground">Primary contact</div>
             </div>
           </div>
           <div className="flex items-center gap-4 p-3 bg-white/5 rounded-xl">
             <MapPin className="w-6 h-6 text-primary" />
             <div>
-              <span className="text-muted-foreground">{contactInfo.location}</span>
-              <div className="text-xs text-muted-foreground">Available for remote work</div>
+              <span className="typography-muted">{contactInfo.location}</span>
+              <div className="typography-small text-muted-foreground">Available for remote work</div>
             </div>
           </div>
           <div className="flex items-center gap-4 p-3 bg-white/5 rounded-xl">
             <Clock className="w-6 h-6 text-success" />
             <div>
-              <span className="text-muted-foreground">{contactInfo.availability}</span>
-              <div className="text-xs text-muted-foreground">Response within {contactInfo.response}</div>
+              <span className="typography-muted">{contactInfo.availability}</span>
+              <div className="typography-small text-muted-foreground">Response within {contactInfo.response}</div>
             </div>
           </div>
         </div>
@@ -450,7 +450,7 @@ function ContactSidebar() {
 
       {/* Social Links Card */}
       <div className="glass rounded-3xl p-8">
-        <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+        <h3 className="typography-h4 mb-6 flex items-center gap-2">
           <MessageSquare className="w-5 h-5 text-primary" />
           Connect Socially
         </h3>
@@ -464,7 +464,7 @@ function ContactSidebar() {
             <Linkedin className="w-6 h-6 text-primary group-hover:text-primary" />
             <div className="flex-1">
               <span className="font-medium">LinkedIn</span>
-              <div className="text-xs text-muted-foreground">Professional network</div>
+              <div className="typography-small text-muted-foreground">Professional network</div>
             </div>
             <ArrowRight className="w-4 h-4 ml-auto group-hover:translate-x-1 transition-transform" />
           </a>
@@ -477,7 +477,7 @@ function ContactSidebar() {
             <Github className="w-6 h-6 text-muted-foreground group-hover:text-purple-400" />
             <div className="flex-1">
               <span className="font-medium">GitHub</span>
-              <div className="text-xs text-muted-foreground">Code repositories</div>
+              <div className="typography-small text-muted-foreground">Code repositories</div>
             </div>
             <ArrowRight className="w-4 h-4 ml-auto group-hover:translate-x-1 transition-transform" />
           </a>
@@ -486,7 +486,7 @@ function ContactSidebar() {
 
       {/* Success Stories Card */}
       <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-primary/20 rounded-3xl p-8">
-        <h4 className="text-lg font-bold mb-4 text-primary">Recent Success</h4>
+        <h4 className="typography-large mb-4 text-primary">Recent Success</h4>
         <div className="space-y-3 text-sm">
           <div className="flex items-center gap-2">
             <CheckCircle className="w-4 h-4 text-success" />
@@ -501,7 +501,7 @@ function ContactSidebar() {
             <span>2,217% network expansion</span>
           </div>
         </div>
-        <div className="mt-4 text-xs text-muted-foreground">
+        <div className="mt-4 typography-small text-muted-foreground">
           Real results from recent partnerships
         </div>
       </div>

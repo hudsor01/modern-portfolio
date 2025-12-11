@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { ArrowLeft, RefreshCcw, DollarSign, Brain, Users, Calendar } from 'lucide-react'
 import Link from 'next/link'
-import { m as motion } from 'framer-motion'
+
 
 import { clvMetrics } from './data/constants'
 import { formatCurrency, formatPercent } from './utils'
@@ -74,16 +74,13 @@ export default function CustomerLifetimeValueAnalytics() {
         </div>
 
         {/* Title Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+        <div
           className="mb-8"
         >
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-400 to-teal-600 bg-clip-text text-transparent mb-3">
+          <h1 className="text-4xl md:typography-h1 text-5xl bg-gradient-to-r from-emerald-400 to-teal-600 bg-clip-text text-transparent mb-3">
             Customer Lifetime Value Predictive Analytics Dashboard
           </h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mb-4">
+          <p className="typography-lead max-w-3xl mb-4">
             Advanced CLV analytics platform leveraging BTYD (Buy Till You Die) predictive modeling framework. Achieving 94.3% prediction accuracy through machine learning algorithms and real-time customer behavior tracking across 5 distinct customer segments.
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
@@ -92,7 +89,7 @@ export default function CustomerLifetimeValueAnalytics() {
             <span className="bg-primary/20 text-primary px-3 py-1 rounded-full">Machine Learning</span>
             <span className="bg-primary/20 text-primary px-3 py-1 rounded-full">BTYD Framework</span>
           </div>
-        </motion.div>
+        </div>
 
         {/* Loading State */}
         {isLoading ? (
@@ -115,7 +112,7 @@ export default function CustomerLifetimeValueAnalytics() {
                 gradientTo="to-teal-600"
                 iconBgClass="bg-emerald-500/20"
                 iconColorClass="text-emerald-400"
-                delay={0.1}
+                
               />
               <MetricCard
                 icon={Brain}
@@ -126,7 +123,7 @@ export default function CustomerLifetimeValueAnalytics() {
                 gradientTo="to-cyan-600"
                 iconBgClass="bg-teal-500/20"
                 iconColorClass="text-teal-400"
-                delay={0.2}
+                
               />
               <MetricCard
                 icon={Users}
@@ -137,7 +134,7 @@ export default function CustomerLifetimeValueAnalytics() {
                 gradientTo="to-blue-600"
                 iconBgClass="bg-primary/20"
                 iconColorClass="text-primary"
-                delay={0.3}
+                
               />
               <MetricCard
                 icon={Calendar}
@@ -148,7 +145,7 @@ export default function CustomerLifetimeValueAnalytics() {
                 gradientTo="to-purple-600"
                 iconBgClass="bg-primary/20"
                 iconColorClass="text-primary"
-                delay={0.4}
+                
               />
             </div>
 

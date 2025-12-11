@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { ArrowLeft, RefreshCcw, TrendingUp, DollarSign, Target, Calculator } from 'lucide-react'
 import Link from 'next/link'
-import { m as motion } from 'framer-motion'
+
 
 import { cacMetrics } from './data/constants'
 import { formatCurrency } from './utils'
@@ -74,16 +74,13 @@ export default function CACUnitEconomics() {
         </div>
 
         {/* Title Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+        <div
           className="mb-8"
         >
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-green-400 to-emerald-600 bg-clip-text text-transparent mb-4">
             Customer Acquisition Cost Optimization & Unit Economics Dashboard
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mb-6">
+          <p className="typography-lead max-w-3xl mb-6">
             Comprehensive CAC analysis and LTV:CAC ratio optimization that achieved 32% cost reduction through strategic partner channel optimization. Industry-benchmark 3.6:1 efficiency ratio with 8.4-month payback period across multi-tier SaaS products.
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
@@ -92,7 +89,7 @@ export default function CACUnitEconomics() {
             <span className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full">ROI Optimization</span>
             <span className="bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full">Unit Economics</span>
           </div>
-        </motion.div>
+        </div>
 
         {/* Loading State */}
         {isLoading ? (
@@ -115,7 +112,7 @@ export default function CACUnitEconomics() {
                 gradientTo="to-emerald-600"
                 iconBgClass="bg-success/20"
                 iconColorClass="text-success"
-                delay={0.1}
+                
               />
               <MetricCard
                 icon={TrendingUp}
@@ -126,7 +123,7 @@ export default function CACUnitEconomics() {
                 gradientTo="to-cyan-600"
                 iconBgClass="bg-primary/20"
                 iconColorClass="text-primary"
-                delay={0.1}
+                
               />
               <MetricCard
                 icon={Calculator}
@@ -137,7 +134,7 @@ export default function CACUnitEconomics() {
                 gradientTo="to-pink-600"
                 iconBgClass="bg-purple-500/20"
                 iconColorClass="text-purple-400"
-                delay={0.1}
+                
               />
               <MetricCard
                 icon={Target}
@@ -148,7 +145,7 @@ export default function CACUnitEconomics() {
                 gradientTo="to-orange-600"
                 iconBgClass="bg-amber-500/20"
                 iconColorClass="text-amber-400"
-                delay={0.1}
+                
               />
             </div>
 

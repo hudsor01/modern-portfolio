@@ -1,6 +1,6 @@
 'use client'
 
-import { m as motion } from 'framer-motion'
+
 import { useInView } from 'react-intersection-observer'
 import { BarChart2, Users, Lightbulb } from 'lucide-react'
 
@@ -40,32 +40,24 @@ export function Achievements() {
     <section className="py-20 bg-muted/30">
       <div className="w-full mx-auto max-w-7xl px-4">
         <div className="text-center mb-16">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-3xl font-bold mb-4"
+          <h2
+            className="typography-h2 border-none pb-0 text-3xl mb-4"
           >
             Key Achievements
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+          </h2>
+          <p
             className="text-muted-foreground max-w-2xl mx-auto"
           >
             Results-driven professional with a proven track record of success in revenue operations
-          </motion.p>
+          </p>
         </div>
 
         <div ref={ref} className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {achievements.map((achievement, index) => (
-            <motion.div
+            <div
               key={achievement.title}
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-card rounded-xl p-8 shadow-lg border border-border"
+              className={`bg-card rounded-xl p-8 shadow-lg border border-border animate-fade-in-up ${inView ? 'opacity-100' : 'opacity-0'}`}
+              style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className="flex items-center mb-4">
                 <div
@@ -74,15 +66,15 @@ export function Achievements() {
                 >
                   <achievement.icon size={24} color={achievement.color} />
                 </div>
-                <h3 className="text-4xl font-bold" style={{ color: achievement.color }}>
+                <h3 className="typography-h1 text-4xl" style={{ color: achievement.color }}>
                   {achievement.stat}
                 </h3>
               </div>
 
-              <h4 className="text-xl font-semibold mb-3">{achievement.title}</h4>
+              <h4 className="typography-h4 mb-3">{achievement.title}</h4>
 
-              <p className="text-muted-foreground">{achievement.description}</p>
-            </motion.div>
+              <p className="typography-muted">{achievement.description}</p>
+            </div>
           ))}
         </div>
       </div>

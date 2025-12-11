@@ -1,20 +1,17 @@
 'use client'
 
-import { m as motion } from 'framer-motion'
+
 import { attributionModels } from '../data/constants'
 import { formatCurrency, formatPercent } from '../utils'
 
 export function ModelsTab() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.4 }}
+    <div
       className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300 mb-8"
     >
       <div className="mb-4">
-        <h2 className="text-xl font-bold mb-1">Attribution Model Performance & ROI Comparison</h2>
-        <p className="text-sm text-muted-foreground">Comprehensive analysis of attribution methodologies from traditional to machine learning approaches</p>
+        <h2 className="typography-h4 mb-1">Attribution Model Performance & ROI Comparison</h2>
+        <p className="typography-small text-muted-foreground">Comprehensive analysis of attribution methodologies from traditional to machine learning approaches</p>
       </div>
 
       <div className="overflow-x-auto">
@@ -47,6 +44,6 @@ export function ModelsTab() {
           </tbody>
         </table>
       </div>
-    </motion.div>
+    </div>
   )
 }
