@@ -8,6 +8,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { READING_PROGRESS } from '@/lib/constants/ui-thresholds'
+import { createContextLogger } from '@/lib/monitoring/logger'
+
+const readingProgressLogger = createContextLogger('ReadingProgress')
 
 interface EnhancedReadingProgressProps {
   /**
@@ -121,7 +124,7 @@ export function EnhancedReadingProgress({
       setIsVisible(shouldBeVisible)
 
     } catch (error) {
-      console.warn('Error calculating scroll progress:', error)
+      readingProgressLogger.warn('Error calculating scroll progress', { error })
     }
   }, [showThreshold, hideThreshold, containerSelector, shouldShowOnPage])
 

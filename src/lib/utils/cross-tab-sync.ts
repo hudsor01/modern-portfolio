@@ -3,6 +3,10 @@
  * Synchronizes form data across browser tabs using localStorage events
  */
 
+import { createContextLogger } from '@/lib/monitoring/logger'
+
+const syncLogger = createContextLogger('CrossTabSync')
+
 export interface CrossTabMessage {
   type: 'form-update' | 'form-clear' | 'form-restore'
   formId: string
@@ -67,7 +71,7 @@ class CrossTabSync {
       localStorage.setItem(`cross-tab-sync-${formId}`, JSON.stringify(message))
       this.lastUpdate.set(formId, message.timestamp)
     } catch (error) {
-      console.warn('Failed to broadcast cross-tab update:', error)
+      syncLogger.warn('Failed to broadcast cross-tab update', { error })
     }
   }
 
@@ -87,7 +91,7 @@ class CrossTabSync {
       localStorage.removeItem(`form-auto-save-${formId}`)
       this.lastUpdate.delete(formId)
     } catch (error) {
-      console.warn('Failed to broadcast cross-tab clear:', error)
+      syncLogger.warn('Failed to broadcast cross-tab clear', { error })
     }
   }
 
@@ -101,7 +105,7 @@ class CrossTabSync {
         return JSON.parse(stored)
       }
     } catch (error) {
-      console.warn('Failed to get latest form data:', error)
+      syncLogger.warn('Failed to get latest form data', { error })
     }
     return null
   }
@@ -171,7 +175,7 @@ class CrossTabSync {
         }
       }
     } catch (error) {
-      console.warn('Failed to handle cross-tab message:', error)
+      syncLogger.warn('Failed to handle cross-tab message', { error })
     }
   }
 

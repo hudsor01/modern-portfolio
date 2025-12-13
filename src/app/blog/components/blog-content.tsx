@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useMemo } from 'react'
-import { m as motion } from 'framer-motion'
+
 import { Copy, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
@@ -39,9 +39,9 @@ export function BlogContent({
       let html = escapeHtml(markdown)
 
       // Headers
-      html = html.replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold mt-6 mb-3 text-foreground dark:text-white">$1</h3>')
-      html = html.replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mt-8 mb-4 text-foreground dark:text-white">$1</h2>')
-      html = html.replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mt-10 mb-6 text-foreground dark:text-white">$1</h1>')
+      html = html.replace(/^### (.*$)/gim, '<h3 class="typography-large mt-6 mb-3 text-foreground dark:text-white">$1</h3>')
+      html = html.replace(/^## (.*$)/gim, '<h2 class="typography-h4 mt-8 mb-4 text-foreground dark:text-white">$1</h2>')
+      html = html.replace(/^# (.*$)/gim, '<h1 class="typography-h3 mt-10 mb-6 text-foreground dark:text-white">$1</h1>')
 
       // Bold
       html = html.replace(/\*\*(.*)\*\*/gim, '<strong class="font-semibold">$1</strong>')
@@ -78,14 +78,14 @@ export function BlogContent({
       html = html.replace(/^\d+\. (.*$)/gim, '<li class="ml-4">$1</li>')
 
       // Blockquotes
-      html = html.replace(/^> (.*$)/gim, '<blockquote class="border-l-4 border-primary pl-4 py-2 my-4 bg-primary/5 dark:bg-primary/20/20 italic text-muted-foreground dark:text-muted-foreground">$1</blockquote>')
+      html = html.replace(/^> (.*$)/gim, '<blockquote class="border-l-4 border-primary pl-4 py-2 my-4 bg-primary/5 dark:bg-primary-bg italic text-muted-foreground dark:text-muted-foreground">$1</blockquote>')
 
       // Line breaks
-      html = html.replace(/\n\n/gim, '</p><p class="mb-4 text-muted-foreground dark:text-muted-foreground leading-relaxed">')
+      html = html.replace(/\n\n/gim, '</p><p class="mb-4 text-muted-foreground dark:typography-muted">')
       html = html.replace(/\n/gim, '<br />')
 
       // Wrap in paragraphs
-      html = `<p class="mb-4 text-muted-foreground dark:text-muted-foreground leading-relaxed">${html}</p>`
+      html = `<p class="mb-4 text-muted-foreground dark:typography-muted">${html}</p>`
 
       return html
     }
@@ -109,7 +109,7 @@ export function BlogContent({
     language?: string
   }> = ({ children, className, language = 'text' }) => {
     const codeString = String(children).replace(/\n$/, '')
-    
+
     return (
       <div className={cn("relative group my-6", className)}>
         {allowCopy && (
@@ -154,18 +154,18 @@ export function BlogContent({
   // Extract and render code blocks for markdown
   const renderMarkdownWithCodeBlocks = (html: string) => {
     const parts = html.split(/(<pre data-language="([^"]*?)"><code>([\s\S]*?)<\/code><\/pre>)/g)
-    
+
     return parts.map((part, index) => {
       // Check if this part is a code block
       const codeBlockMatch = part.match(/^<pre data-language="([^"]*?)"><code>([\s\S]*?)<\/code><\/pre>$/)
-      
+
       if (codeBlockMatch) {
         const [, language, code] = codeBlockMatch
         return (
           <CodeBlock key={index} language={language || 'text'} className="my-6">{code || ''}</CodeBlock>
         )
       }
-      
+
         // Regular HTML content - sanitize with DOMPurify to prevent XSS
       // Only sanitize in browser environment
       const sanitizedHtml = typeof window !== 'undefined'
@@ -186,31 +186,19 @@ export function BlogContent({
     })
   }
 
-  const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, staggerChildren: 0.1 }
-    }
-  }
-
   const processedContent = processContent()
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
+    <div
       className={cn(
-        'blog-content',
+        'blog-content animate-fade-in-up',
         'prose prose-lg dark:prose-invert max-w-none',
         'prose-headings:font-bold prose-headings:text-foreground dark:prose-headings:text-white',
         'prose-p:text-muted-foreground dark:prose-p:text-muted-foreground prose-p:leading-relaxed',
         'prose-a:text-primary dark:prose-a:text-primary prose-a:no-underline hover:prose-a:underline',
         'prose-strong:text-foreground dark:prose-strong:text-white prose-strong:font-semibold',
         'prose-code:text-pink-600 dark:prose-code:text-pink-400 prose-code:bg-muted dark:prose-code:bg-card prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded',
-        'prose-blockquote:border-l-blue-500 prose-blockquote:bg-primary/5 dark:prose-blockquote:bg-primary/20/20 prose-blockquote:text-muted-foreground dark:prose-blockquote:text-muted-foreground',
+        'prose-blockquote:border-l-blue-500 prose-blockquote:bg-primary/5 dark:prose-blockquote:bg-primary-bg prose-blockquote:text-muted-foreground dark:prose-blockquote:text-muted-foreground',
         'prose-ul:text-muted-foreground dark:prose-ul:text-muted-foreground prose-ol:text-muted-foreground dark:prose-ol:text-muted-foreground',
         'prose-li:text-muted-foreground dark:prose-li:text-muted-foreground',
         'prose-img:rounded-lg prose-img:shadow-lg',
@@ -222,22 +210,22 @@ export function BlogContent({
       ) : (
         <div dangerouslySetInnerHTML={{ __html: processedContent }} />
       )}
-      
+
       <style jsx global>{`
         .blog-content h1 {
-          @apply text-3xl font-bold mt-8 mb-6 text-foreground dark:text-white;
+          @apply typography-h2 border-none pb-0 text-3xl mt-8 mb-6 text-foreground dark:text-white;
         }
         .blog-content h2 {
-          @apply text-2xl font-bold mt-8 mb-4 text-foreground dark:text-white;
+          @apply typography-h3 mt-8 mb-4 text-foreground dark:text-white;
         }
         .blog-content h3 {
-          @apply text-xl font-semibold mt-6 mb-3 text-foreground dark:text-white;
+          @apply typography-h4 mt-6 mb-3 text-foreground dark:text-white;
         }
         .blog-content h4 {
-          @apply text-lg font-semibold mt-6 mb-3 text-foreground dark:text-white;
+          @apply typography-large mt-6 mb-3 text-foreground dark:text-white;
         }
         .blog-content p {
-          @apply mb-4 text-muted-foreground dark:text-muted-foreground leading-relaxed;
+          @apply mb-4 text-muted-foreground dark:typography-muted;
         }
         .blog-content ul {
           @apply list-disc list-inside mb-4 text-muted-foreground dark:text-muted-foreground;
@@ -249,7 +237,7 @@ export function BlogContent({
           @apply mb-2;
         }
         .blog-content blockquote {
-          @apply border-l-4 border-primary pl-4 py-2 my-4 bg-primary/5 dark:bg-primary/20/20 italic text-muted-foreground dark:text-muted-foreground;
+          @apply border-l-4 border-primary pl-4 py-2 my-4 bg-primary/5 dark:bg-primary-bg italic text-muted-foreground dark:text-muted-foreground;
         }
         .blog-content img {
           @apply rounded-lg my-6 max-w-full h-auto shadow-lg;
@@ -267,6 +255,6 @@ export function BlogContent({
           @apply my-8 border-border dark:border-border;
         }
       `}</style>
-    </motion.div>
+    </div>
   )
 }

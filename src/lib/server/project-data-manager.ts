@@ -11,6 +11,9 @@ import {
   type ValidatedProject
 } from '@/lib/validations/project-schema'
 import type { STARData } from '@/components/projects/STARAreaChart'
+import { createContextLogger } from '@/lib/monitoring/logger'
+
+const projectLogger = createContextLogger('ProjectDataManager')
 
 // Master project data - server-side only
 const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
@@ -45,6 +48,8 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       result: { phase: 'Result', impact: 95, efficiency: 98, value: 92 },
     },
     featured: true,
+    viewCount: 0,
+    clickCount: 0,
     createdAt: new Date('2024-05-01'),
     updatedAt: new Date('2024-05-15'),
   },
@@ -78,6 +83,8 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       result: { phase: 'Result', impact: 98, efficiency: 95, value: 94 },
     },
     featured: true,
+    viewCount: 0,
+    clickCount: 0,
     createdAt: new Date('2024-04-05'),
     updatedAt: new Date('2024-04-08'),
   },
@@ -111,6 +118,8 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       result: { phase: 'Result', impact: 92, efficiency: 96, value: 94 },
     },
     featured: true,
+    viewCount: 0,
+    clickCount: 0,
     createdAt: new Date('2024-03-30'),
     updatedAt: new Date('2024-04-01'),
   },
@@ -144,6 +153,8 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       result: { phase: 'Result', impact: 97, efficiency: 98, value: 95 },
     },
     featured: true,
+    viewCount: 0,
+    clickCount: 0,
     createdAt: new Date('2024-03-28'),
     updatedAt: new Date('2024-03-30'),
   },
@@ -177,6 +188,8 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       result: { phase: 'Result', impact: 94, efficiency: 97, value: 96 },
     },
     featured: true,
+    viewCount: 0,
+    clickCount: 0,
     createdAt: new Date('2024-03-25'),
     updatedAt: new Date('2024-03-28'),
   },
@@ -210,6 +223,8 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       result: { phase: 'Result', impact: 93, efficiency: 95, value: 94 },
     },
     featured: true,
+    viewCount: 0,
+    clickCount: 0,
     createdAt: new Date('2024-03-20'),
     updatedAt: new Date('2024-03-25'),
   },
@@ -243,6 +258,8 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       result: { phase: 'Result', impact: 96, efficiency: 94, value: 95 },
     },
     featured: true,
+    viewCount: 0,
+    clickCount: 0,
     createdAt: new Date('2024-03-15'),
     updatedAt: new Date('2024-03-25'),
   },
@@ -273,6 +290,8 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       result: { phase: 'Result', impact: 96, efficiency: 97, value: 96 },
     },
     featured: true,
+    viewCount: 0,
+    clickCount: 0,
     createdAt: new Date('2024-01-15'),
     updatedAt: new Date('2024-03-10'),
   },
@@ -294,6 +313,8 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       result: { phase: 'Result', impact: 94, efficiency: 95, value: 94 },
     },
     featured: true,
+    viewCount: 0,
+    clickCount: 0,
     createdAt: new Date('2023-11-05'),
     updatedAt: new Date('2024-02-20'),
   },
@@ -315,6 +336,8 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       result: { phase: 'Result', impact: 90, efficiency: 92, value: 91 },
     },
     featured: true,
+    viewCount: 0,
+    clickCount: 0,
     createdAt: new Date('2023-09-18'),
     updatedAt: new Date('2024-02-05'),
   },
@@ -336,6 +359,8 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       result: { phase: 'Result', impact: 95, efficiency: 97, value: 96 },
     },
     featured: true,
+    viewCount: 0,
+    clickCount: 0,
     createdAt: new Date('2023-07-25'),
     updatedAt: new Date('2024-01-30'),
   },
@@ -416,7 +441,7 @@ export class ProjectDataManager {
       const validation = safeValidateProjectsArray(MASTER_PROJECT_DATA)
       
       if (!validation.success && validation.errors.length > 0) {
-        console.warn('Project validation errors:', validation.errors)
+        projectLogger.warn('Project validation errors', { errors: validation.errors })
       }
 
       this.validatedProjects = validation.data.map(sanitizeProjectForAPI)

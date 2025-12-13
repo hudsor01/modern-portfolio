@@ -4,6 +4,9 @@
  */
 
 import { QueryClient } from '@tanstack/react-query'
+import { createContextLogger } from '@/lib/monitoring/logger'
+
+const queryLogger = createContextLogger('QueryConfig')
 
 // Modern cache times optimized for different data types
 export const MODERN_CACHE_CONFIG = {
@@ -153,7 +156,7 @@ export function setupPerformanceMonitoring(queryClient: QueryClient) {
           performanceData.slowQueries.shift()
         }
         
-        console.warn('Slow query detected:', {
+        queryLogger.warn('Slow query detected', {
           queryKey: query.queryKey,
           duration: `${duration}ms`,
         })

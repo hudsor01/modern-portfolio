@@ -4,7 +4,10 @@
  */
 
 import { db } from '../db'
+import { createContextLogger } from '@/lib/monitoring/logger'
 // import type { Prisma } from '@prisma/client'
+
+const dbUtilsLogger = createContextLogger('DatabaseUtils')
 
 // =======================
 // MONITORING & HEALTH
@@ -197,7 +200,7 @@ export function withPerformanceMonitoring<T>(
       
       // Log slow queries
       if (duration > 1000) {
-        console.warn(`Slow query detected: ${operation} took ${duration}ms`)
+        dbUtilsLogger.warn(`Slow query detected: ${operation} took ${duration}ms`, { operation, duration })
       }
       
       return result
@@ -223,7 +226,7 @@ export class ConnectionManager {
       await db.$queryRaw`SELECT 1`
       this.reconnectAttempts = 0
     } catch (error) {
-      console.error('Database connection lost, attempting to reconnect...', error)
+      dbUtilsLogger.error('Database connection lost, attempting to reconnect...', error instanceof Error ? error : undefined)
       await this.reconnect()
     }
   }
@@ -235,30 +238,30 @@ export class ConnectionManager {
 
     this.reconnectAttempts++
     const delay = this.RECONNECT_DELAY * Math.pow(2, this.reconnectAttempts - 1)
-    
-    console.log(`Reconnection attempt ${this.reconnectAttempts}/${this.MAX_RECONNECT_ATTEMPTS} in ${delay}ms`)
-    
+
+    dbUtilsLogger.info(`Reconnection attempt ${this.reconnectAttempts}/${this.MAX_RECONNECT_ATTEMPTS} in ${delay}ms`)
+
     await new Promise(resolve => setTimeout(resolve, delay))
-    
+
     try {
       await db.$connect()
       await db.$queryRaw`SELECT 1`
-      console.log('Database reconnection successful')
+      dbUtilsLogger.info('Database reconnection successful')
       this.reconnectAttempts = 0
     } catch (error) {
-      console.error(`Reconnection attempt ${this.reconnectAttempts} failed:`, error)
+      dbUtilsLogger.error(`Reconnection attempt ${this.reconnectAttempts} failed`, error instanceof Error ? error : undefined)
       await this.reconnect()
     }
   }
 
   static async gracefulShutdown(): Promise<void> {
-    console.log('Initiating graceful database shutdown...')
-    
+    dbUtilsLogger.info('Initiating graceful database shutdown...')
+
     try {
       await db.$disconnect()
-      console.log('Database disconnected successfully')
+      dbUtilsLogger.info('Database disconnected successfully')
     } catch (error) {
-      console.error('Error during database disconnect:', error)
+      dbUtilsLogger.error('Error during database disconnect', error instanceof Error ? error : undefined)
     }
   }
 }
@@ -296,7 +299,7 @@ export class QueryOptimizer {
         LIMIT ${limit}
       `
     } catch (_error) {
-      console.warn('pg_stat_statements not available for slow query analysis')
+      dbUtilsLogger.warn('pg_stat_statements not available for slow query analysis')
       return []
     }
   }
@@ -304,9 +307,9 @@ export class QueryOptimizer {
   static async updateTableStatistics(): Promise<void> {
     try {
       await db.$executeRaw`ANALYZE`
-      console.log('Table statistics updated')
+      dbUtilsLogger.info('Table statistics updated')
     } catch (error) {
-      console.error('Failed to update table statistics:', error)
+      dbUtilsLogger.error('Failed to update table statistics', error instanceof Error ? error : undefined)
     }
   }
 }
@@ -403,16 +406,16 @@ export function createDatabaseMiddleware() {
 
 export class BackupAutomation {
   static async scheduleBackup(intervalHours = 24): Promise<void> {
-    console.log(`Scheduling automatic backups every ${intervalHours} hours`)
-    
+    dbUtilsLogger.info(`Scheduling automatic backups every ${intervalHours} hours`)
+
     setInterval(async () => {
       try {
-        console.log('Starting scheduled backup...')
+        dbUtilsLogger.info('Starting scheduled backup...')
         // Note: Database backup functionality removed as part of production cleanup
         // Consider implementing cloud-native backup solutions for production deployments
-        console.log('Scheduled backup completed successfully')
+        dbUtilsLogger.info('Scheduled backup completed successfully')
       } catch (error) {
-        console.error('Scheduled backup failed:', error)
+        dbUtilsLogger.error('Scheduled backup failed', error instanceof Error ? error : undefined)
         DatabaseMonitor.recordError('SCHEDULED_BACKUP', error)
       }
     }, intervalHours * 60 * 60 * 1000)
@@ -436,12 +439,12 @@ export class BackupAutomation {
           
           if (stats.mtime < cutoffDate) {
             fs.unlinkSync(filePath)
-            console.log(`Deleted old backup: ${file}`)
+            dbUtilsLogger.info(`Deleted old backup: ${file}`)
           }
         }
       }
     } catch (error) {
-      console.error('Backup retention cleanup failed:', error)
+      dbUtilsLogger.error('Backup retention cleanup failed', error instanceof Error ? error : undefined)
     }
   }
 }
@@ -464,7 +467,7 @@ export function validateDatabaseEnvironment(): void {
     throw new Error('DATABASE_URL must be a valid PostgreSQL connection string')
   }
 
-  console.log('✅ Database environment validation passed')
+  dbUtilsLogger.info('Database environment validation passed')
 }
 
 // All classes and functions are already exported above

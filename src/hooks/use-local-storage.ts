@@ -1,6 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createContextLogger } from '@/lib/monitoring/logger';
+
+const storageLogger = createContextLogger('LocalStorage');
 
 /**
  * useLocalStorage Hook
@@ -29,7 +32,7 @@ export function useLocalStorage<T>(
       setStoredValue(value);
     } catch (error) {
       // If error, use initial value
-      console.error(`Error reading localStorage key "${key}":`, error);
+      storageLogger.error(`Error reading localStorage key "${key}"`, error instanceof Error ? error : undefined, { key });
       setStoredValue(initialValue);
     }
   }, [key, initialValue]);
@@ -51,7 +54,7 @@ export function useLocalStorage<T>(
       }
     } catch (error) {
       // Log errors
-      console.error(`Error setting localStorage key "${key}":`, error);
+      storageLogger.error(`Error setting localStorage key "${key}"`, error instanceof Error ? error : undefined, { key });
     }
   };
 
@@ -81,7 +84,7 @@ export function useSessionStorage<T>(
       setStoredValue(value);
     } catch (error) {
       // If error, use initial value
-      console.error(`Error reading sessionStorage key "${key}":`, error);
+      storageLogger.error(`Error reading sessionStorage key "${key}"`, error instanceof Error ? error : undefined, { key });
       setStoredValue(initialValue);
     }
   }, [key, initialValue]);
@@ -93,17 +96,17 @@ export function useSessionStorage<T>(
       // Allow value to be a function so we have the same API as useState
       const valueToStore =
         value instanceof Function ? value(storedValue) : value;
-      
+
       // Save state
       setStoredValue(valueToStore);
-      
+
       // Save to session storage
       if (typeof window !== 'undefined') {
         window.sessionStorage.setItem(key, JSON.stringify(valueToStore));
       }
     } catch (error) {
       // Log errors
-      console.error(`Error setting sessionStorage key "${key}":`, error);
+      storageLogger.error(`Error setting sessionStorage key "${key}"`, error instanceof Error ? error : undefined, { key });
     }
   };
 

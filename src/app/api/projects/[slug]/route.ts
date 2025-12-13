@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getProjectBySlug } from '@/data/projects'
+import { getProject } from '@/lib/content/projects'
 import { z } from 'zod'
 import { validationErrorResponse } from '@/lib/api/response'
 import { createContextLogger } from '@/lib/monitoring/logger';
@@ -22,7 +22,7 @@ export async function GET(
     // Validate slug parameter
     const resolvedParams = await params
     const validatedParams = slugSchema.parse(resolvedParams)
-    const project = await getProjectBySlug(validatedParams.slug)
+    const project = await getProject(validatedParams.slug)
     
     if (!project) {
       return NextResponse.json(

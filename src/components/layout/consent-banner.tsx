@@ -148,8 +148,8 @@ export function ConsentBanner() {
           <div className="w-full mx-auto max-w-7xl">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div className="flex-1">
-                <h3 className="text-lg font-semibold mb-1">Cookie Consent</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="typography-large mb-1">Cookie Consent</h3>
+                <p className="typography-small text-muted-foreground">
                   This website uses cookies to enhance your browsing experience, analyze site
                   traffic, and personalize content. By clicking "Accept All", you consent to our use
                   of cookies.
@@ -201,7 +201,7 @@ export function ConsentBanner() {
                   >
                     {option.label}
                   </Label>
-                  <p className="text-sm text-muted-foreground">{option.description}</p>
+                  <p className="typography-small text-muted-foreground">{option.description}</p>
                 </div>
               </div>
             ))}

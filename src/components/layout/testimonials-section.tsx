@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { Quote } from 'lucide-react'
-import { m as motion } from 'framer-motion'
 
 // Testimonials data
 const testimonials = [
@@ -37,48 +36,30 @@ export function TestimonialsSection() {
     <section className="py-20 bg-muted/30">
       <div className="w-full mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-3xl md:text-4xl font-bold mb-4 text-foreground"
-          >
+          <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl text-foreground animate-fade-in-up">
             What My Clients Say
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-muted-foreground"
-          >
+          </h2>
+          <p className="typography-muted animate-fade-in-up animate-delay-100">
             I&apos;ve helped businesses across various industries optimize their revenue operations
             and drive growth.
-          </motion.p>
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Testimonial Cards */}
           <div className="lg:col-span-8">
-            <div className="relative">
+            <div className="relative min-h-[300px]">
               {testimonials.map((testimonial, index) => (
-                <motion.div
+                <div
                   key={index}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{
-                    opacity: activeIndex === index ? 1 : 0,
-                    x: activeIndex === index ? 0 : 20,
-                    scale: activeIndex === index ? 1 : 0.95,
-                  }}
-                  transition={{ duration: 0.4 }}
-                  className={`bg-card rounded-xl p-8 shadow-lg border border-border absolute inset-0 ${
-                    activeIndex === index ? 'z-10' : 'z-0'
+                  className={`bg-card rounded-xl p-8 shadow-lg border border-border absolute inset-0 transition-all duration-300 ${
+                    activeIndex === index
+                      ? 'opacity-100 translate-x-0 scale-100 z-10'
+                      : 'opacity-0 translate-x-5 scale-95 z-0 pointer-events-none'
                   }`}
-                  style={{ display: activeIndex === index ? 'block' : 'none' }}
                 >
                   <Quote className="text-primary w-12 h-12 mb-4 opacity-20" />
-                  <blockquote className="text-xl text-foreground mb-6 leading-relaxed">
+                  <blockquote className="typography-blockquote text-foreground mb-6">
                     &quot;{testimonial.quote}&quot;
                   </blockquote>
                   <div className="flex items-center">
@@ -93,7 +74,7 @@ export function TestimonialsSection() {
                           />
                         ) : (
                           <div className="bg-primary/10 dark:bg-primary/20 w-full h-full flex items-center justify-center">
-                            <span className="text-lg font-bold text-primary dark:text-primary/70">
+                            <span className="typography-large text-primary dark:text-primary/70">
                               {testimonial.name.charAt(0)}
                             </span>
                           </div>
@@ -101,15 +82,15 @@ export function TestimonialsSection() {
                       </div>
                     </div>
                     <div>
-                      <h4 className="font-bold text-foreground">
+                      <h4 className="typography-large text-foreground">
                         {testimonial.name}
                       </h4>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="typography-small text-muted-foreground">
                         {testimonial.title}
                       </p>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
@@ -123,12 +104,12 @@ export function TestimonialsSection() {
                   onClick={() => setActiveIndex(index)}
                   className={`w-full text-left p-4 rounded-lg transition-all duration-200 ${
                     activeIndex === index
-                      ? 'bg-primary/5 dark:bg-primary/20/30 border-l-4 border-primary dark:border-primary/50'
+                      ? 'bg-primary/5 dark:bg-primary-bg border-l-4 border-primary dark:border-primary/50'
                       : 'bg-muted hover:bg-muted/80'
                   }`}
                 >
-                  <h4 className="font-bold text-foreground">{testimonial.name}</h4>
-                  <p className="text-sm text-muted-foreground">{testimonial.title}</p>
+                  <h4 className="typography-large text-foreground">{testimonial.name}</h4>
+                  <p className="typography-small text-muted-foreground">{testimonial.title}</p>
                 </button>
               ))}
             </div>

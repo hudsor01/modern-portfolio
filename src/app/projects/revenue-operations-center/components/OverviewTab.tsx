@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { m as motion } from 'framer-motion'
+
 
 function ChartLoadError() {
   return (
@@ -31,32 +31,26 @@ export function OverviewTab() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
       {/* Revenue Overview */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.7 }}
+      <div
         className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-2">Revenue Performance Overview</h2>
-          <p className="text-muted-foreground">Multi-channel revenue tracking with growth trends and target progress</p>
+          <h2 className="typography-h3 mb-2">Revenue Performance Overview</h2>
+          <p className="typography-muted">Multi-channel revenue tracking with growth trends and target progress</p>
         </div>
         <RevenueOverviewChart />
-      </motion.div>
+      </div>
 
       {/* Operational Efficiency */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.8 }}
+      <div
         className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-2">Operational Efficiency Metrics</h2>
-          <p className="text-muted-foreground">Key operational KPIs across sales, marketing, and partner channels</p>
+          <h2 className="typography-h3 mb-2">Operational Efficiency Metrics</h2>
+          <p className="typography-muted">Key operational KPIs across sales, marketing, and partner channels</p>
         </div>
         <OperationalMetricsChart />
-      </motion.div>
+      </div>
     </div>
   )
 }

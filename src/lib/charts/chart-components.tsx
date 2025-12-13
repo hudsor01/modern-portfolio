@@ -180,7 +180,7 @@ export function ChartWrapper({
   return (
     <div className={`space-y-4 ${className}`}>
       {title && (
-        <h3 className="text-xl font-semibold text-center">{title}</h3>
+        <h3 className="typography-h4 text-center">{title}</h3>
       )}
       
       <ChartContainer height={height}>

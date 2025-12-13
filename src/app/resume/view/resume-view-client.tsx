@@ -35,7 +35,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
         <div className="w-full mx-auto px-4 py-8">
           {/* Header */}
           <div className="mb-8 text-center">
-            <h1 className="text-4xl font-bold text-white mb-4">
+            <h1 className="typography-h1 text-4xl text-white mb-4">
               Richard Hudson - Resume
             </h1>
             <p className="text-muted-foreground text-lg mb-6">
@@ -88,7 +88,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
                 <div className="flex items-center justify-center h-96">
                   <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                    <p className="text-muted-foreground">Loading PDF...</p>
+                    <p className="typography-muted">Loading PDF...</p>
                   </div>
                 </div>
               )}
@@ -119,7 +119,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
             </div>
             
             {/* Mobile Fallback Message */}
-            <div className="md:hidden mt-6 p-4 bg-primary/20/20 border border-primary/30 rounded-lg">
+            <div className="md:hidden mt-6 p-4 bg-primary-bg border border-primary-border rounded-lg">
               <p className="text-primary/70 text-sm text-center">
                 💡 For the best mobile experience, tap "Download PDF" or "Open in New Tab" above
               </p>

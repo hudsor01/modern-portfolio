@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, TrendingUp, Map, Database, Zap, Code } from 'lucide-react'
-import { m as motion } from 'framer-motion'
+
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 
@@ -74,10 +74,7 @@ export default function QuotaTerritoryManagementProject() {
       <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
         <div className="max-w-6xl mx-auto px-4 py-12">
           {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+          <div
             className="mb-12"
           >
             <Link
@@ -88,19 +85,16 @@ export default function QuotaTerritoryManagementProject() {
               Back to Projects
             </Link>
 
-            <h1 className="text-5xl font-bold text-foreground mb-4">
+            <h1 className="typography-h1 text-5xl text-foreground mb-4">
               Intelligent Quota Management & Territory Planning
             </h1>
             <p className="text-xl text-slate-300 max-w-3xl">
               Advanced quota setting and territory assignment system using predictive analytics and fairness algorithms. Optimized territory design increased forecast accuracy by 28% and reduced quota attainment variance by 32%.
             </p>
-          </motion.div>
+          </div>
 
           {/* Key Metrics */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+          <div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
           >
             {metrics.map((metric) => {
@@ -113,28 +107,25 @@ export default function QuotaTerritoryManagementProject() {
                   <div className="flex items-center justify-between mb-4">
                     <Icon className={`h-8 w-8 ${metric.color}`} />
                   </div>
-                  <div className="text-3xl font-bold text-foreground mb-2">{metric.value}</div>
+                  <div className="typography-h2 border-none pb-0 text-3xl text-foreground mb-2">{metric.value}</div>
                   <div className="text-sm text-slate-400">{metric.label}</div>
                 </div>
               )
             })}
-          </motion.div>
+          </div>
 
           {/* Algorithmic Approaches */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+          <div
             className="mb-16"
           >
-            <h2 className="text-3xl font-bold text-foreground mb-8">Algorithmic Approaches</h2>
+            <h2 className="typography-h2 border-none pb-0 text-3xl text-foreground mb-8">Algorithmic Approaches</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {algorithmicApproaches.map((approach, index) => (
                 <div
                   key={index}
                   className="glass rounded-xl p-8 hover:border-primary/50 transition-all"
                 >
-                  <h3 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
+                  <h3 className="typography-h4 text-foreground mb-3 flex items-center gap-2">
                     <Code className="h-5 w-5 text-primary" />
                     {approach.name}
                   </h3>
@@ -150,47 +141,41 @@ export default function QuotaTerritoryManagementProject() {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </div>
 
           {/* Impact Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+          <div
             className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-primary/30 rounded-xl p-12 mb-16"
           >
-            <h2 className="text-3xl font-bold text-foreground mb-8">Revenue Impact</h2>
+            <h2 className="typography-h2 border-none pb-0 text-3xl text-foreground mb-8">Revenue Impact</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <div className="text-4xl font-bold text-success mb-2">$8.7M</div>
+                <div className="typography-h1 text-4xl text-success mb-2">$8.7M</div>
                 <p className="text-slate-300">Incremental revenue from optimized territories</p>
               </div>
               <div>
-                <div className="text-4xl font-bold text-primary mb-2">28%</div>
+                <div className="typography-h1 text-4xl text-primary mb-2">28%</div>
                 <p className="text-slate-300">Improvement in forecast accuracy</p>
               </div>
               <div>
-                <div className="text-4xl font-bold text-purple-400 mb-2">32%</div>
+                <div className="typography-h1 text-4xl text-purple-400 mb-2">32%</div>
                 <p className="text-slate-300">Reduction in quota attainment variance</p>
               </div>
               <div>
-                <div className="text-4xl font-bold text-amber-400 mb-2">23%</div>
+                <div className="typography-h1 text-4xl text-amber-400 mb-2">23%</div>
                 <p className="text-slate-300">Average territory efficiency increase</p>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Technical Implementation */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+          <div
             className="mb-16"
           >
-            <h2 className="text-3xl font-bold text-foreground mb-8">Technical Stack & Methodologies</h2>
+            <h2 className="typography-h2 border-none pb-0 text-3xl text-foreground mb-8">Technical Stack & Methodologies</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="glass rounded-xl p-8">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Machine Learning Models</h3>
+                <h3 className="typography-large text-foreground mb-4">Machine Learning Models</h3>
                 <ul className="space-y-2 text-slate-300">
                   <li>• Regression models for revenue prediction</li>
                   <li>• Classification for territory potential</li>
@@ -199,7 +184,7 @@ export default function QuotaTerritoryManagementProject() {
                 </ul>
               </div>
               <div className="glass rounded-xl p-8">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Data & Analytics</h3>
+                <h3 className="typography-large text-foreground mb-4">Data & Analytics</h3>
                 <ul className="space-y-2 text-slate-300">
                   <li>• 2.5M+ data points analyzed</li>
                   <li>• Multi-dimensional territory analysis</li>
@@ -208,16 +193,13 @@ export default function QuotaTerritoryManagementProject() {
                 </ul>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Technologies */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
+          <div
             className="mb-16"
           >
-            <h2 className="text-3xl font-bold text-foreground mb-8">Technologies & Tools</h2>
+            <h2 className="typography-h2 border-none pb-0 text-3xl text-foreground mb-8">Technologies & Tools</h2>
             <div className="flex flex-wrap gap-3">
               {['Python', 'Machine Learning', 'Predictive Analytics', 'D3.js', 'Recharts', 'PostgreSQL', 'Next.js', 'Geospatial Analysis'].map((tech) => (
                 <span
@@ -228,7 +210,7 @@ export default function QuotaTerritoryManagementProject() {
                 </span>
               ))}
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </>

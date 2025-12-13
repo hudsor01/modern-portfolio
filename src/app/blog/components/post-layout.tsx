@@ -35,11 +35,11 @@ export function PostLayout({ post }: PostLayoutProps) {
           {post.category && (
             <span className="portfolio-badge">{post.category.name}</span>
           )}
-          {publishedDate && <time className="text-muted-foreground">{publishedDate}</time>}
+          {publishedDate && <time className="typography-muted">{publishedDate}</time>}
           {post.readingTime && (
             <>
-              <span className="text-muted-foreground">·</span>
-              <span className="text-muted-foreground">{post.readingTime} min read</span>
+              <span className="typography-muted">·</span>
+              <span className="typography-muted">{post.readingTime} min read</span>
             </>
           )}
         </div>

@@ -5,7 +5,6 @@ import { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { ClientComponentsProvider } from '@/components/providers/client-components-provider'
-import { OptimizedMotionProvider } from '@/lib/motion/optimized-motion'
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from '@/components/ui/toaster'
 import { EnhancedReadingProgress } from '@/components/layout/enhanced-reading-progress'
@@ -31,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        
+
         {/* Preconnect hints for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -39,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://api.vercel.com" />
         <link rel="dns-prefetch" href="https://vitals.vercel-analytics.com" />
         <link rel="dns-prefetch" href="https://va.vercel-scripts.com" />
-        
+
         {/* Structured Data */}
         <PersonJsonLd />
         <WebsiteJsonLd />
@@ -48,17 +47,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <OptimizedMotionProvider>
-            <ClientComponentsProvider>
-              <EnhancedReadingProgress
-                contentPagesOnly={true}
-              />
-              {children}
-              <ScrollToTop />
-              <Toaster position="bottom-right" closeButton richColors />
-              <Analytics />
-            </ClientComponentsProvider>
-          </OptimizedMotionProvider>
+          <ClientComponentsProvider>
+            <EnhancedReadingProgress
+              contentPagesOnly={true}
+            />
+            {children}
+            <ScrollToTop />
+            <Toaster position="bottom-right" closeButton richColors />
+            <Analytics />
+          </ClientComponentsProvider>
         </ThemeProvider>
       </body>
     </html>

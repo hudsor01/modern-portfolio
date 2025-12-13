@@ -84,16 +84,16 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         <div className="flex items-center justify-center min-h-[400px] p-6">
           <div className="w-full max-w-md text-center">
             <div className="p-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm">
-              <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 bg-destructive/10 dark:bg-destructive/20/20 rounded-full">
+              <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 bg-destructive/10 dark:bg-destructive-bg rounded-full">
                 <AlertTriangle className="w-8 h-8 text-destructive dark:text-destructive" />
               </div>
               
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
+              <h3 className="typography-h4 text-slate-900 dark:text-white mb-4">
                 Something went wrong
               </h3>
 
               {this.props.showErrorDetails && this.state.error && process.env.NODE_ENV === 'development' && (
-                <div className="mb-6 p-4 bg-destructive/5 dark:bg-destructive/20/20 border border-destructive/20 dark:border-destructive/80 rounded-lg text-left">
+                <div className="mb-6 p-4 bg-destructive/5 dark:bg-destructive-bg border border-destructive/20 dark:border-destructive/80 rounded-lg text-left">
                   <p className="text-sm text-destructive dark:text-destructive mb-2 font-mono">
                     {this.state.error.message}
                   </p>

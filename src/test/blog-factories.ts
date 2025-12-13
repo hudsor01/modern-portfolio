@@ -97,7 +97,6 @@ export const createMockBlogPost = (overrides: Partial<BlogPost> = {}): BlogPost 
   shareCount: 20,
   commentCount: 8,
   seoScore: 85,
-  featured: false,
   ...overrides,
 })
 
@@ -139,7 +138,6 @@ export const createMockBlogPostSummary = (overrides: Partial<BlogPostSummary> = 
       createdAt: tag.createdAt.toISOString(),
       updatedAt: tag.updatedAt.toISOString(),
     }],
-    featured: false,
     ...overrides,
   }
 }
@@ -164,7 +162,6 @@ export const createMockBlogPostInput = (overrides: Partial<BlogPostCreateInput> 
 export const createMockBlogFilter = (overrides: Partial<BlogPostFilter> = {}): BlogPostFilter => ({
   status: PostStatus.PUBLISHED,
   search: '',
-  featured: false,
   published: true,
   ...overrides,
 })

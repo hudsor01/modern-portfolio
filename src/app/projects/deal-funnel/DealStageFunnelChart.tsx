@@ -1,6 +1,6 @@
 'use client'
 
-import { m as motion } from 'framer-motion'
+
 
 // Define proper types for the data
 interface FunnelStage {
@@ -96,11 +96,8 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
                 const bottomXOffset = (400 - bottomWidth) / 2;
                 
                 return (
-                  <motion.g
+                  <g
                     key={stage.stage}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.6, delay: index * 0.15 }}
                   >
                     {/* Funnel segment (trapezoid) */}
                     <path
@@ -132,7 +129,7 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
                       y={yPosition + height / 2 - 8}
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      className="fill-white text-xl font-bold"
+                      className="fill-white typography-h4"
                     >
                       {stage.count.toLocaleString()}
                     </text>
@@ -159,7 +156,7 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
                     >
                       {stage.conversionRate}
                     </text>
-                  </motion.g>
+                  </g>
                 );
               })}
             </svg>
@@ -168,11 +165,8 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
           {/* Stage cards below funnel */}
           <div className="mt-8 grid grid-cols-5 gap-4">
             {data.map((stage, index) => (
-              <motion.div 
+              <div 
                 key={index} 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
                 className="glass rounded-xl p-4 hover:bg-white/10 transition-all duration-300"
               >
                 <div className="flex items-center gap-2 mb-3">
@@ -182,15 +176,15 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
                   />
                   <p className="text-xs font-medium text-white">{stage.stage}</p>
                 </div>
-                <p className="text-xl font-bold text-white">{stage.conversionRate}</p>
-                <p className="text-sm text-muted-foreground">{stage.count.toLocaleString()} deals</p>
-              </motion.div>
+                <p className="typography-h4 text-white">{stage.conversionRate}</p>
+                <p className="typography-small text-muted-foreground">{stage.count.toLocaleString()} deals</p>
+              </div>
             ))}
           </div>
         </>
       ) : (
         <div className="h-40 flex items-center justify-center">
-          <p className="text-muted-foreground">No data available</p>
+          <p className="typography-muted">No data available</p>
         </div>
       )}
     </div>

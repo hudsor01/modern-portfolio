@@ -3,6 +3,10 @@
  * Helper functions for reading progress calculation and management
  */
 
+import { createContextLogger } from '@/lib/monitoring/logger'
+
+const progressLogger = createContextLogger('ReadingProgress')
+
 export interface ReadingProgressMetrics {
   scrollProgress: number
   scrollDirection: 'up' | 'down'
@@ -85,7 +89,7 @@ export function getEstimatedWordCount(element: Element | HTMLElement): number {
       .filter((word: string) => word.length > 0)
     return words.length
   } catch (error) {
-    console.warn('Error calculating word count:', error)
+    progressLogger.warn('Error calculating word count', { error })
     return 1000 // fallback estimate
   }
 }
@@ -127,7 +131,7 @@ export class ReadingProgressTracker {
         const container = document.querySelector(this.containerSelector)
         if (container) return container as HTMLElement
       } catch (error) {
-        console.warn('Error querying container selector:', error)
+        progressLogger.warn('Error querying container selector', { error })
       }
     }
     return document.documentElement
@@ -144,7 +148,7 @@ export class ReadingProgressTracker {
         }
       }
     } catch (error) {
-      console.warn('Error loading reading session:', error)
+      progressLogger.warn('Error loading reading session', { error })
     }
     return null
   }
@@ -153,7 +157,7 @@ export class ReadingProgressTracker {
     try {
       localStorage.setItem(this.storageKey, JSON.stringify(this.session))
     } catch (error) {
-      console.warn('Error saving reading session:', error)
+      progressLogger.warn('Error saving reading session', { error })
     }
   }
 
@@ -169,7 +173,7 @@ export class ReadingProgressTracker {
         try {
           this.saveSession()
         } catch (error) {
-          console.warn('Failed to save reading session:', error)
+          progressLogger.warn('Failed to save reading session', { error })
         }
       }
     }, 10000)

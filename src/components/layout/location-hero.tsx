@@ -40,18 +40,18 @@ export function LocationHero({
           </div>
 
           {/* Hero Heading */}
-          <h1 className="text-4xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <h1 className="typography-h1 text-4xl lg:text-6xl mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             Revenue Operations Consultant in {city}, {state}
           </h1>
           
           {/* Description */}
-          <p className="text-xl text-muted-foreground dark:text-muted-foreground mb-8 leading-relaxed">
+          <p className="typography-lead dark:text-muted-foreground mb-8 leading-relaxed">
             {description}
           </p>
 
           {/* Service Areas */}
           <div className="mb-8">
-            <p className="text-sm text-muted-foreground dark:text-muted-foreground mb-3">
+            <p className="typography-small text-muted-foreground dark:text-muted-foreground mb-3">
               Service Areas Include:
             </p>
             <div className="flex flex-wrap justify-center gap-2">
@@ -88,10 +88,10 @@ export function LocationHero({
                 <div className="flex justify-center mb-2 text-primary">
                   {stat.icon}
                 </div>
-                <div className="text-2xl font-bold text-foreground dark:text-white">
+                <div className="typography-h3 text-foreground dark:text-white">
                   {stat.value}
                 </div>
-                <div className="text-sm text-muted-foreground dark:text-muted-foreground">
+                <div className="typography-small text-muted-foreground dark:text-muted-foreground">
                   {stat.label}
                 </div>
               </div>
@@ -100,14 +100,14 @@ export function LocationHero({
 
           {/* Key Highlights */}
           <div className="bg-white/70 dark:bg-card/70 backdrop-blur rounded-2xl p-6 border border-white/20">
-            <h3 className="text-lg font-semibold mb-4 text-foreground dark:text-white">
+            <h3 className="typography-large mb-4 text-foreground dark:text-white">
               Why Choose Richard Hudson for Revenue Operations in {city}?
             </h3>
             <div className="grid md:grid-cols-2 gap-3 text-left">
               {highlights.map((highlight, index) => (
                 <div key={index} className="flex items-start gap-2">
                   <div className="w-2 h-2 bg-primary-hover rounded-full mt-2 flex-shrink-0" />
-                  <p className="text-sm text-muted-foreground dark:text-muted-foreground">
+                  <p className="typography-small text-muted-foreground dark:text-muted-foreground">
                     {highlight}
                   </p>
                 </div>

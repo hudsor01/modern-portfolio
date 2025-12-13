@@ -4,14 +4,13 @@
  * Part of the type-first architecture strategy
  */
 
-import { Key, ReactNode } from "react";
+// No React imports needed - PostTag uses Prisma composite key pattern
 
 // =======================
 // CORE BLOG TYPES
 // =======================
 
 export interface BlogPost {
-  featured: boolean;
   id: string;
   title: string;
   slug: string;
@@ -157,9 +156,8 @@ export interface Tag {
 // RELATIONSHIP TYPES
 // =======================
 
+// PostTag uses composite primary key [postId, tagId] per Prisma schema
 export interface PostTag {
-  id: Key | null | undefined;
-  name: ReactNode;
   postId: string;
   tagId: string;
   post?: BlogPost;
@@ -482,7 +480,6 @@ export interface BlogPostFilter {
     from: Date;
     to: Date;
   };
-  featured?: boolean;
   published?: boolean;
 }
 
@@ -729,7 +726,6 @@ export interface BlogFilters {
   search?: string;
   dateFrom?: Date;
   dateTo?: Date;
-  featured?: boolean;
   sortBy?: 'publishedAt' | 'title' | 'viewCount' | 'commentCount';
   sortOrder?: 'asc' | 'desc';
 }

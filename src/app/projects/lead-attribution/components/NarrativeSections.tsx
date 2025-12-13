@@ -1,6 +1,6 @@
 'use client'
 
-import { m as motion } from 'framer-motion'
+
 import { STARAreaChart } from '@/components/projects/STARAreaChart'
 import { starData, technologies } from '../data/constants'
 
@@ -8,13 +8,10 @@ export function NarrativeSections() {
   return (
     <div className="space-y-12 mt-12">
       {/* Project Overview */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.0 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-primary">Project Overview</h2>
+        <h2 className="typography-h3 mb-6 text-primary">Project Overview</h2>
         <div className="space-y-4 text-muted-foreground">
           <p className="text-lg leading-relaxed">
             Developed a comprehensive multi-touch lead attribution model to accurately track and measure the effectiveness of marketing channels throughout the customer journey, enabling data-driven budget allocation and campaign optimization.
@@ -23,16 +20,13 @@ export function NarrativeSections() {
             This attribution system became the foundation for marketing ROI analysis, helping the organization optimize a $2.4M annual marketing budget and improve lead-to-customer conversion rates across all channels.
           </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* Challenge */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.1 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-amber-400">Challenge</h2>
+        <h2 className="typography-h3 mb-6 text-amber-400">Challenge</h2>
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
             The marketing organization was operating with limited visibility into which channels and touchpoints were driving qualified leads and conversions, resulting in suboptimal budget allocation:
@@ -48,16 +42,13 @@ export function NarrativeSections() {
             With 8,743 monthly leads across 6 primary channels and complex B2B buying journeys averaging 7.3 touchpoints, the team needed a sophisticated attribution model to optimize performance.
           </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* Solution */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.2 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-success">Solution</h2>
+        <h2 className="typography-h3 mb-6 text-success">Solution</h2>
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
             Built a comprehensive multi-touch attribution system that tracks the complete customer journey and assigns weighted credit to each marketing touchpoint based on its influence on conversion:
@@ -86,16 +77,13 @@ export function NarrativeSections() {
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Results & Impact */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.3 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-emerald-400">Results & Impact</h2>
+        <h2 className="typography-h3 mb-6 text-emerald-400">Results & Impact</h2>
         <div className="space-y-6 text-muted-foreground">
           <p className="leading-relaxed">
             The multi-touch attribution model revolutionized marketing decision-making and enabled data-driven optimization that significantly improved both lead quality and conversion rates:
@@ -103,16 +91,16 @@ export function NarrativeSections() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold text-primary mb-2">34%</div>
-              <div className="text-sm text-muted-foreground">Improvement in Marketing ROI</div>
+              <div className="typography-h2 border-none pb-0 text-3xl text-primary mb-2">34%</div>
+              <div className="typography-small text-muted-foreground">Improvement in Marketing ROI</div>
             </div>
             <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-sm border border-secondary/20 rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold text-secondary mb-2">$480K</div>
-              <div className="text-sm text-muted-foreground">Annual Budget Optimization Savings</div>
+              <div className="typography-h2 border-none pb-0 text-3xl text-secondary mb-2">$480K</div>
+              <div className="typography-small text-muted-foreground">Annual Budget Optimization Savings</div>
             </div>
             <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold text-primary mb-2">29%</div>
-              <div className="text-sm text-muted-foreground">Increase in Lead-to-Customer Rate</div>
+              <div className="typography-h2 border-none pb-0 text-3xl text-primary mb-2">29%</div>
+              <div className="typography-small text-muted-foreground">Increase in Lead-to-Customer Rate</div>
             </div>
           </div>
 
@@ -128,16 +116,13 @@ export function NarrativeSections() {
             </ul>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Key Learnings */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.4 }}
+      <div
         className="glass rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-purple-400">Key Learnings</h2>
+        <h2 className="typography-h3 mb-6 text-purple-400">Key Learnings</h2>
         <div className="space-y-4 text-muted-foreground">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
@@ -163,16 +148,13 @@ export function NarrativeSections() {
             This project demonstrated that attribution modeling is as much about organizational change management as it is about technical implementation. The key is building confidence in the data through transparent methodology and clear business impact.
           </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* Technologies Used */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 1.5 }}
+      <div
         className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-border/20 rounded-3xl p-8"
       >
-        <h2 className="text-2xl font-bold mb-6 text-muted-foreground">Technologies Used</h2>
+        <h2 className="typography-h3 mb-6 text-muted-foreground">Technologies Used</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {technologies.map((tech, index) => (
             <span key={index} className="bg-white/10 text-muted-foreground px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
@@ -180,17 +162,14 @@ export function NarrativeSections() {
             </span>
           ))}
         </div>
-      </motion.div>
+      </div>
 
       {/* STAR Impact Analysis */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+      <div
         className="mt-16 space-y-8"
       >
         <div className="text-center space-y-4">
-          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+          <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
             STAR Impact Analysis
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -208,22 +187,22 @@ export function NarrativeSections() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="text-center p-6 glass rounded-2xl">
             <div className="text-sm text-primary/70 mb-2">Situation</div>
-            <div className="text-lg font-bold text-white">Initial Assessment</div>
+            <div className="typography-large text-white">Initial Assessment</div>
           </div>
           <div className="text-center p-6 glass rounded-2xl">
             <div className="text-sm text-green-400/70 mb-2">Task</div>
-            <div className="text-lg font-bold text-white">Goal Definition</div>
+            <div className="typography-large text-white">Goal Definition</div>
           </div>
           <div className="text-center p-6 glass rounded-2xl">
             <div className="text-sm text-amber-400/70 mb-2">Action</div>
-            <div className="text-lg font-bold text-white">Implementation</div>
+            <div className="typography-large text-white">Implementation</div>
           </div>
           <div className="text-center p-6 glass rounded-2xl">
             <div className="text-sm text-cyan-400/70 mb-2">Result</div>
-            <div className="text-lg font-bold text-white">Measurable Impact</div>
+            <div className="typography-large text-white">Measurable Impact</div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }

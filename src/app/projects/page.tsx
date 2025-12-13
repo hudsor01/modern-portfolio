@@ -1,5 +1,5 @@
 import { generateMetadata } from '@/app/shared-metadata'
-import { getProjects } from '@/data/projects'
+import { getProjects } from '@/lib/content/projects'
 import ProjectsClientBoundary from '@/components/projects/projects-client-boundary'
 import { Footer } from '@/components/layout/footer'
 import type { Project } from '@/types/project'
@@ -22,7 +22,7 @@ export default async function ProjectsPage() {
     description: p.description,
     ...(p.content && { content: p.content }),
     featured: p.featured ?? false,
-    ...(p.image && { image: p.image }),
+    image: p.image,
     ...(p.link && { link: p.link }),
     ...(p.github && { github: p.github }),
     category: p.category || 'Other',
@@ -33,6 +33,8 @@ export default async function ProjectsPage() {
     ...(p.link && { liveUrl: p.link }),
     ...(p.github && { githubUrl: p.github }),
     ...('starData' in p && p.starData && { starData: p.starData }),
+    viewCount: p.viewCount ?? 0,
+    clickCount: p.clickCount ?? 0,
   }))
 
   return (
