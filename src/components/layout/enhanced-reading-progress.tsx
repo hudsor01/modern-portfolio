@@ -218,7 +218,7 @@ export function EnhancedReadingProgress({
         {/* Progress Fill */}
         <div
           className={cn(
-            'relative h-full bg-gradient-to-r from-blue-500 via-sky-400 to-indigo-500 transition-all duration-150 ease-out shadow-sm',
+            'relative h-full bg-gradient-to-r from-blue-500 via-sky-400 to-indigo-500 transition-all duration-150 ease-out shadow-xs',
             // Add subtle animation based on scroll direction
             direction === 'down' 
               ? 'shadow-primary/40' 
@@ -232,7 +232,7 @@ export function EnhancedReadingProgress({
           {/* Subtle glow effect */}
           <div 
             className={cn(
-              'absolute inset-0 bg-gradient-to-r opacity-60 blur-sm transition-opacity duration-300',
+              'absolute inset-0 bg-gradient-to-r opacity-60 blur-xs transition-opacity duration-300',
               direction === 'down'
                 ? 'from-blue-300 via-sky-300 to-indigo-400'
                 : 'from-indigo-300 via-sky-300 to-blue-400'
@@ -241,7 +241,7 @@ export function EnhancedReadingProgress({
           
           {/* Leading edge highlight */}
           <div 
-            className="absolute right-0 top-0 bottom-0 w-1 bg-white/20 shadow-sm"
+            className="absolute right-0 top-0 bottom-0 w-1 bg-white/20 shadow-xs"
             style={{
               opacity: scrollProgress > 1 ? 1 : 0,
               transition: 'opacity 0.2s ease-out'
@@ -254,7 +254,7 @@ export function EnhancedReadingProgress({
       {showPercentage && scrollProgress > 5 && (
         <div
           className={cn(
-            'fixed right-4 z-50 px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 backdrop-blur-sm border',
+            'fixed right-4 z-50 px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 backdrop-blur-xs border',
             position === 'top' ? 'top-6' : 'bottom-6',
             'bg-white/10 text-foreground border-white/20 shadow-lg shadow-black/20'
           )}

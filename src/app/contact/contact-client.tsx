@@ -65,7 +65,7 @@ export default function ContactPageClient() {
         <div className="w-full mx-auto px-6">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent">
+            <h1 className="text-xl sm:text-xl md:text-2xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent">
               Let's Connect
             </h1>
             <p className="typography-lead max-w-3xl mx-auto mb-8">
@@ -91,7 +91,7 @@ export default function ContactPageClient() {
 
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             {/* Enhanced Contact Form */}
-            <div className="glass rounded-3xl p-8">
+            <div className="glass rounded-2xl p-8">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="typography-h3">Send a Message</h2>
                 <div className="flex items-center gap-2">
@@ -188,7 +188,7 @@ export default function ContactPageClient() {
                     onChange={handleInputChange}
                     required
                     rows={5}
-                    className={`w-full pl-12 pr-4 py-3 bg-white/10 border rounded-xl focus:outline-none focus:ring-2 text-foreground placeholder-gray-400 resize-none transition-all ${
+                    className={`w-full pl-12 pr-4 py-3 bg-white/10 border rounded-xl focus:outline-hidden focus:ring-2 text-foreground placeholder-gray-400 resize-none transition-all ${
                       errors.message
                         ? 'border-destructive focus:ring-red-500'
                         : 'border-white/20 focus:ring-cyan-500'
@@ -270,7 +270,7 @@ function FormInput({ icon, name, type, value, onChange, placeholder, error, requ
         value={value}
         onChange={onChange}
         required={required}
-        className={`w-full pl-12 pr-4 py-3 bg-white/10 border rounded-xl focus:outline-none focus:ring-2 text-foreground placeholder-gray-400 transition-all ${
+        className={`w-full pl-12 pr-4 py-3 bg-white/10 border rounded-xl focus:outline-hidden focus:ring-2 text-foreground placeholder-gray-400 transition-all ${
           error
             ? 'border-destructive focus:ring-red-500'
             : 'border-white/20 focus:ring-cyan-500'
@@ -299,7 +299,7 @@ function FormSelect({ label, name, value, onChange, options, placeholder }: Form
         name={name}
         value={value}
         onChange={onChange}
-        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white"
+        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-cyan-500 text-white"
       >
         <option value="">{placeholder}</option>
         {options.map(option => (
@@ -362,7 +362,7 @@ function PrivacyAgreement({ agreed, onAgree, showPrivacy, onTogglePrivacy, error
         id="privacy"
         checked={agreed}
         onChange={(e) => onAgree(e.target.checked)}
-        className="mt-0.5 w-4 h-4 text-primary bg-transparent border-border rounded focus:ring-cyan-500"
+        className="mt-0.5 w-4 h-4 text-primary bg-transparent border-border rounded-xs focus:ring-cyan-500"
       />
       <div className="text-sm">
         <label htmlFor="privacy" className="text-muted-foreground cursor-pointer">
@@ -378,7 +378,7 @@ function PrivacyAgreement({ agreed, onAgree, showPrivacy, onTogglePrivacy, error
           {' '}and consent to processing my data for this inquiry. *
         </label>
         {showPrivacy && (
-          <div className="mt-2 p-3 bg-white/5 rounded typography-small text-muted-foreground border border-white/10">
+          <div className="mt-2 p-3 bg-white/5 rounded-xs typography-small text-muted-foreground border border-white/10">
             Your information will be used solely to respond to your inquiry. We don't share personal data with third parties and you can request deletion at any time.
           </div>
         )}
@@ -416,7 +416,7 @@ function ContactSidebar() {
   return (
     <div className="space-y-8">
       {/* Contact Info Card */}
-      <div className="glass rounded-3xl p-8">
+      <div className="glass rounded-2xl p-8">
         <h3 className="typography-h4 mb-6 flex items-center gap-2">
           <Zap className="w-5 h-5 text-warning" />
           Contact Information
@@ -449,7 +449,7 @@ function ContactSidebar() {
       </div>
 
       {/* Social Links Card */}
-      <div className="glass rounded-3xl p-8">
+      <div className="glass rounded-2xl p-8">
         <h3 className="typography-h4 mb-6 flex items-center gap-2">
           <MessageSquare className="w-5 h-5 text-primary" />
           Connect Socially
@@ -485,7 +485,7 @@ function ContactSidebar() {
       </div>
 
       {/* Success Stories Card */}
-      <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-primary/20 rounded-3xl p-8">
+      <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-primary/20 rounded-xl p-8">
         <h4 className="typography-large mb-4 text-primary">Recent Success</h4>
         <div className="space-y-3 text-sm">
           <div className="flex items-center gap-2">

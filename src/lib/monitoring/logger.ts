@@ -53,8 +53,8 @@ const LOG_LEVELS: Record<LogLevel, number> = {
 
 // Environment configuration
 const LOG_LEVEL = (process.env.LOG_LEVEL as LogLevel) || 
-  (process.env.NODE_ENV === 'production' ? 'info' : 'debug')
-const IS_PRODUCTION = process.env.NODE_ENV === 'production'
+  ((process.env.NODE_ENV as string) === 'production' ? 'info' : 'debug')
+const IS_PRODUCTION = (process.env.NODE_ENV as string) === 'production'
 
 // Logger interface
 export interface Logger {
@@ -91,7 +91,7 @@ class ConsoleTransport implements LogTransport {
   }
   
   log(entry: LogEntry): void {
-    if (!this.shouldLog(entry.level) || process.env.NODE_ENV === 'production') return
+    if (!this.shouldLog(entry.level) || (process.env.NODE_ENV as string) === 'production') return
     
     const color = this.colors[entry.level]
     const timestamp = new Date(entry.timestamp).toISOString()
@@ -104,9 +104,16 @@ class ConsoleTransport implements LogTransport {
     }
     
     if (entry.error) {
-      output += `\n  Error: ${entry.error.name}: ${entry.error.message}`
-      if (entry.error.stack && entry.level === 'error') {
-        output += `\n  Stack: ${entry.error.stack}`
+      if ((process.env.NODE_ENV as string) === 'production') {
+        // In production, only log error name and sanitized message
+        output += `\n  Error: ${entry.error.name}: ${entry.error.message}`
+        // Don't include stack traces in production logs to prevent information disclosure
+      } else {
+        // In development, include full error details for debugging
+        output += `\n  Error: ${entry.error.name}: ${entry.error.message}`
+        if (entry.error.stack && entry.level === 'error') {
+          output += `\n  Stack: ${entry.error.stack}`
+        }
       }
     }
     
@@ -145,31 +152,32 @@ class FileTransport implements LogTransport {
   private buffer: LogEntry[] = []
   private readonly maxBufferSize = 100
   private readonly flushInterval = 5000 // 5 seconds
-  
+  private flushIntervalId: NodeJS.Timeout | null = null
+
   constructor() {
     // Flush buffer periodically
-    setInterval(() => this.flush(), this.flushInterval)
-    
+    this.flushIntervalId = setInterval(() => this.flush(), this.flushInterval)
+
     // Flush on process exit
     process.on('exit', () => this.flush())
     process.on('SIGINT', () => this.flush())
     process.on('SIGTERM', () => this.flush())
   }
-  
+
   log(entry: LogEntry): void {
     if (!this.shouldLog(entry.level)) return
-    
+
     this.buffer.push(entry)
-    
+
     // Flush if buffer is full
     if (this.buffer.length >= this.maxBufferSize) {
       this.flush()
     }
   }
-  
+
   private flush(): void {
     if (this.buffer.length === 0) return
-    
+
     try {
       // In a real implementation, you'd write to a file or send to a service
       // For now, we'll just clear the buffer
@@ -178,7 +186,15 @@ class FileTransport implements LogTransport {
       console.error('Failed to flush log buffer:', error)
     }
   }
-  
+
+  // Method to properly clean up the interval
+  destroy(): void {
+    if (this.flushIntervalId) {
+      clearInterval(this.flushIntervalId)
+      this.flushIntervalId = null
+    }
+  }
+
   private shouldLog(level: LogLevel): boolean {
     return LOG_LEVELS[level] >= LOG_LEVELS[LOG_LEVEL]
   }
@@ -188,32 +204,32 @@ class FileTransport implements LogTransport {
 class LoggerImpl implements Logger {
   private transports: LogTransport[]
   private baseContext: LogContext
-  
+
   constructor(transports: LogTransport[], baseContext: LogContext = {}) {
     this.transports = transports
     this.baseContext = baseContext
   }
-  
+
   debug(message: string, context?: LogContext): void {
     this.log('debug', message, context)
   }
-  
+
   info(message: string, context?: LogContext): void {
     this.log('info', message, context)
   }
-  
+
   warn(message: string, context?: LogContext): void {
     this.log('warn', message, context)
   }
-  
+
   error(message: string, error?: Error, context?: LogContext): void {
     this.log('error', message, context, error)
   }
-  
+
   fatal(message: string, error?: Error, context?: LogContext): void {
     this.log('fatal', message, context, error)
   }
-  
+
   performance(operation: string, duration: number, context?: LogContext): void {
     this.log('info', `Performance: ${operation}`, {
       ...context,
@@ -223,11 +239,11 @@ class LoggerImpl implements Logger {
       memory: this.getMemoryUsage(),
     })
   }
-  
+
   request(requestInfo: LogEntry['request'], context?: LogContext): void {
     this.log('info', `Request: ${requestInfo?.method} ${requestInfo?.url}`, context, undefined, undefined, requestInfo)
   }
-  
+
   security(event: string, context?: LogContext): void {
     this.log('warn', `Security Event: ${event}`, {
       ...context,
@@ -235,14 +251,14 @@ class LoggerImpl implements Logger {
       timestamp: Date.now(),
     })
   }
-  
+
   child(baseContext: LogContext): Logger {
     return new LoggerImpl(this.transports, {
       ...this.baseContext,
       ...baseContext,
     })
   }
-  
+
   startTimer(operation: string): () => void {
     const start = performance.now()
     return () => {
@@ -250,7 +266,16 @@ class LoggerImpl implements Logger {
       this.performance(operation, duration)
     }
   }
-  
+
+  // Add destroy method to properly clean up transports
+  destroy(): void {
+    for (const transport of this.transports) {
+      if (typeof (transport as FileTransport).destroy === 'function') {
+        (transport as FileTransport).destroy()
+      }
+    }
+  }
+
   private log(
     level: LogLevel,
     message: string,
@@ -273,7 +298,7 @@ class LoggerImpl implements Logger {
         environment: process.env.NODE_ENV || 'development',
       },
     }
-    
+
     if (error) {
       entry.error = {
         name: error.name,
@@ -282,15 +307,15 @@ class LoggerImpl implements Logger {
         cause: error.cause,
       }
     }
-    
+
     if (performanceData) {
       entry.performance = performanceData
     }
-    
+
     if (requestData) {
       entry.request = requestData
     }
-    
+
     // Send to all transports
     this.transports.forEach(transport => {
       try {
@@ -300,7 +325,7 @@ class LoggerImpl implements Logger {
       }
     })
   }
-  
+
   private getMemoryUsage(): { used: number; total: number } {
     if (typeof process !== 'undefined' && process.memoryUsage) {
       const usage = process.memoryUsage()
@@ -347,21 +372,20 @@ export class PerformanceMonitor {
     this.logger = logger
   }
   
-  measureAsync<T>(operation: string, fn: () => Promise<T>, context?: LogContext): Promise<T> {
+  async measureAsync<T>(operation: string, fn: () => Promise<T>, context?: LogContext): Promise<T> {
     const start = performance.now()
-    
-    return fn()
-      .then(result => {
-        this.recordMetric(operation, performance.now() - start, context)
-        return result
+
+    try {
+      const result = await fn()
+      this.recordMetric(operation, performance.now() - start, context)
+      return result
+    } catch (error) {
+      this.recordMetric(operation, performance.now() - start, {
+        ...context,
+        error: true,
       })
-      .catch(error => {
-        this.recordMetric(operation, performance.now() - start, {
-          ...context,
-          error: true,
-        })
-        throw error
-      })
+      throw error
+    }
   }
   
   measure<T>(operation: string, fn: () => T, context?: LogContext): T {

@@ -1,17 +1,15 @@
 /**
  * Data Access Layer (DAL)
- * Centralizes all data access with authentication and authorization
+ * Centralizes all data access
  *
  * This is the ONLY place in the application that should:
  * 1. Access the database directly
- * 2. Verify sessions
- * 3. Check authorization
+ * 2. Handle data validation and sanitization
  *
- * @see https://nextjs.org/docs/app/guides/authentication#creating-a-data-access-layer-dal
+ * @see https://nextjs.org/docs/app/guides/data-fetching
  */
 import 'server-only'
 import { cache } from 'react'
-import { cookies } from 'next/headers'
 import { db } from '@/lib/db'
 import { createContextLogger } from '@/lib/monitoring/logger'
 import { ProjectDataManager } from '@/lib/server/project-data-manager'
@@ -19,64 +17,8 @@ import type { Project } from '@/types/project'
 
 const logger = createContextLogger('DAL')
 
-// ============================================================================
-// Session Management
-// ============================================================================
-
-export interface Session {
-  isAuth: boolean
-  userId?: string
-  role?: 'user' | 'admin'
-}
-
-/**
- * Verify the current session
- * Uses React cache() to memoize during a single request
- */
-export const verifySession = cache(async (): Promise<Session | null> => {
-  try {
-    const cookieStore = await cookies()
-    const sessionCookie = cookieStore.get('session')?.value
-
-    if (!sessionCookie) {
-      return null
-    }
-
-    // For now, basic session check - extend with JWT validation as needed
-    // This is a simplified implementation for portfolio
-    return {
-      isAuth: true,
-      userId: sessionCookie,
-      role: 'user'
-    }
-  } catch (error) {
-    logger.error('Session verification failed', error instanceof Error ? error : new Error(String(error)))
-    return null
-  }
-})
-
-/**
- * Verify admin access
- * For protected automation and admin routes
- */
-export const verifyAdmin = cache(async (): Promise<{ isAdmin: boolean; userId?: string }> => {
-  const session = await verifySession()
-
-  if (!session?.isAuth) {
-    return { isAdmin: false }
-  }
-
-  // Check for admin API key in development/production
-  const cookieStore = await cookies()
-  const adminToken = cookieStore.get('admin_token')?.value
-  const expectedToken = process.env.ADMIN_API_TOKEN
-
-  if (adminToken && expectedToken && adminToken === expectedToken) {
-    return { isAdmin: true, userId: session.userId }
-  }
-
-  return { isAdmin: session.role === 'admin', userId: session.userId }
-})
+// For portfolio site, direct access is acceptable as all data is publicly accessible
+// No authentication required for public-facing portfolio
 
 // ============================================================================
 // Project Data Access
@@ -296,15 +238,9 @@ export const submitContact = async (data: ContactSubmission): Promise<{ success:
 
 /**
  * Get analytics data
- * Requires admin access
+ * For portfolio analytics (removed admin requirement)
  */
 export const getAnalytics = cache(async () => {
-  const { isAdmin } = await verifyAdmin()
-
-  if (!isAdmin) {
-    throw new Error('Unauthorized: Admin access required')
-  }
-
   try {
     const views = await db.postView.count()
 

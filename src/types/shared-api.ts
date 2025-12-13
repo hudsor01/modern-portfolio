@@ -160,10 +160,10 @@ export interface ContactResponse {
   id: string;
   status: 'sent' | 'failed' | 'pending';
   timestamp: string;
-  createdAt: string; // Legacy compatibility
+  createdAt: string;
 }
 
-// Specific API response types for backward compatibility
+// Specific API response types
 export interface ContactApiResponse extends ApiResponse<ContactResponse> {}
 
 // Newsletter API types

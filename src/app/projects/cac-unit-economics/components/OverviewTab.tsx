@@ -32,7 +32,7 @@ export function OverviewTab() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       {/* CAC Breakdown */}
       <div
-        className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">Customer Acquisition Cost Breakdown by Channel</h2>
@@ -45,7 +45,7 @@ export function OverviewTab() {
 
       {/* Unit Economics */}
       <div
-        className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">Unit Economics Performance Dashboard</h2>

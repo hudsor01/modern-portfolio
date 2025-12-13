@@ -107,7 +107,7 @@ export const ModernProjectsContent = memo<ModernProjectsContentProps>(
                   </div>
                 ) : sortedProjects.length === 0 ? (
                   <div className="text-center py-16">
-                    <div className="text-6xl mb-4">📊</div>
+                    <div className="text-xl mb-4">📊</div>
                     <h3 className="typography-h4 mb-2 text-white">No projects available</h3>
                     <p className="typography-muted">Projects are currently being updated</p>
                   </div>

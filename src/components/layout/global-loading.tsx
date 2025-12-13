@@ -70,15 +70,15 @@ export function PageLoading({
       <div className="text-center space-y-6">
         <div className="space-y-3">
           <LoadingSpinner size="lg" className="mx-auto" />
-          <h1 className="typography-h2 border-none pb-0 text-3xl text-white">{title}</h1>
+          <h1 className="typography-h2 border-none pb-0 text-2xl text-white">{title}</h1>
           <p className="text-muted-foreground max-w-md">{description}</p>
         </div>
         
         {/* Skeleton Content */}
         <div className="space-y-4 max-w-md mx-auto">
-          <div className="h-4 bg-card/50 rounded animate-pulse"></div>
-          <div className="h-4 bg-card/50 rounded animate-pulse w-3/4"></div>
-          <div className="h-4 bg-card/50 rounded animate-pulse w-1/2"></div>
+          <div className="h-4 bg-card/50 rounded-xs animate-pulse"></div>
+          <div className="h-4 bg-card/50 rounded-xs animate-pulse w-3/4"></div>
+          <div className="h-4 bg-card/50 rounded-xs animate-pulse w-1/2"></div>
         </div>
       </div>
     </div>

@@ -477,37 +477,36 @@ export class AnalyticsOperations {
         ...(country && { country })
       }
 
-      const [views, uniqueViews, avgReadingTime, countryStats] = await Promise.all([
-        // Total views
-        db.postView.count({ where: whereClause }),
-        
-        // Unique views (distinct visitor IDs)
-        db.postView.groupBy({
-          by: ['visitorId'],
-          where: whereClause,
-          _count: true
-        }).then((results: unknown[]) => results.length),
+      const views = await db.postView.count({ where: whereClause })
 
-        // Average reading time
-        db.postView.aggregate({
-          where: { ...whereClause, readingTime: { not: null } },
-          _avg: { readingTime: true }
-        }),
+      // Unique views (distinct visitor IDs)
+      const uniqueViewsResults = await db.postView.groupBy({
+        by: ['visitorId'],
+        where: whereClause,
+        _count: true
+      })
+      const uniqueViews = uniqueViewsResults.length
 
-        // Top countries
-        db.postView.groupBy({
-          by: ['country'],
-          where: { ...whereClause, country: { not: null } },
-          _count: true,
-          orderBy: { _count: { country: 'desc' } },
-          take: 10
-        })
-      ])
+      const avgReadingTime = await db.postView.aggregate({
+        where: { ...whereClause, readingTime: { not: null } },
+        _avg: { readingTime: true }
+      })
 
-      const bounceRate = views > 0 ?
-        await db.postView.count({
+      const countryStats = await db.postView.groupBy({
+        by: ['country'],
+        where: { ...whereClause, country: { not: null } },
+        _count: true,
+        orderBy: { _count: { country: 'desc' } },
+        take: 10
+      })
+
+      let bounceRate = 0
+      if (views > 0) {
+        const bounces = await db.postView.count({
           where: { ...whereClause, readingTime: { lt: 30 } }
-        }).then((bounces: number) => bounces / views) : 0
+        })
+        bounceRate = bounces / views
+      }
 
       return {
         totalViews: views,
@@ -548,6 +547,12 @@ export class UserContextOperations {
         throw new ValidationError('authorId', authorId, 'Author ID is required')
       }
 
+      // Validate authorId format to prevent injection - only allow alphanumeric, underscore, and hyphen
+      if (!/^[a-zA-Z0-9_-]+$/.test(authorId)) {
+        throw new ValidationError('authorId', authorId, 'Invalid author ID format')
+      }
+
+      // Use Prisma's raw query with parameterization to prevent SQL injection
       await db.$executeRaw`SELECT set_user_context(${authorId}, 'author')`
     } catch (error: unknown) {
       if (error instanceof ValidationError) throw error

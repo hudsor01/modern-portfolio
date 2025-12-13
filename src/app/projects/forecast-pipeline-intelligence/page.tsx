@@ -89,7 +89,7 @@ export default function ForecastPipelineIntelligenceProject() {
               Back to Projects
             </Link>
 
-            <h1 className="typography-h1 text-5xl text-foreground mb-4">
+            <h1 className="typography-h1 text-xl text-foreground mb-4">
               Forecast Accuracy & Pipeline Intelligence System
             </h1>
             <p className="text-xl text-slate-300 max-w-3xl">
@@ -106,12 +106,12 @@ export default function ForecastPipelineIntelligenceProject() {
               return (
                 <div
                   key={metric.label}
-                  className="glass rounded-xl p-6 hover:border-white/20 transition-all"
+                  className="glass rounded-2xl p-6 hover:border-white/20 transition-all"
                 >
                   <div className="flex items-center justify-between mb-4">
                     <Icon className={`h-8 w-8 ${metric.color}`} />
                   </div>
-                  <div className="typography-h2 border-none pb-0 text-3xl text-foreground mb-2">{metric.value}</div>
+                  <div className="typography-h2 border-none pb-0 text-2xl text-foreground mb-2">{metric.value}</div>
                   <div className="text-sm text-slate-400">{metric.label}</div>
                 </div>
               )
@@ -122,12 +122,12 @@ export default function ForecastPipelineIntelligenceProject() {
           <div
             className="mb-16"
           >
-            <h2 className="typography-h2 border-none pb-0 text-3xl text-foreground mb-8">Intelligence Modules</h2>
+            <h2 className="typography-h2 border-none pb-0 text-2xl text-foreground mb-8">Intelligence Modules</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {intelligenceModules.map((module, index) => (
                 <div
                   key={index}
-                  className="glass rounded-xl p-8 hover:border-primary/50 transition-all"
+                  className="glass rounded-2xl p-8 hover:border-primary/50 transition-all"
                 >
                   <h3 className="typography-h4 text-foreground mb-3">{module.title}</h3>
                   <p className="text-slate-300 mb-6">{module.description}</p>
@@ -148,22 +148,22 @@ export default function ForecastPipelineIntelligenceProject() {
           <div
             className="bg-gradient-to-r from-green-600/20 to-blue-600/20 border border-success/30 rounded-xl p-12 mb-16"
           >
-            <h2 className="typography-h2 border-none pb-0 text-3xl text-foreground mb-8">Business Impact</h2>
+            <h2 className="typography-h2 border-none pb-0 text-2xl text-foreground mb-8">Business Impact</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <div className="typography-h1 text-4xl text-success mb-2">$12.5M</div>
+                <div className="typography-h1 text-xl text-success mb-2">$12.5M</div>
                 <p className="text-slate-300">Revenue protected through proactive pipeline management</p>
               </div>
               <div>
-                <div className="typography-h1 text-4xl text-primary mb-2">94%</div>
+                <div className="typography-h1 text-xl text-primary mb-2">94%</div>
                 <p className="text-slate-300">Overall forecasting accuracy achieved</p>
               </div>
               <div>
-                <div className="typography-h1 text-4xl text-purple-400 mb-2">31%</div>
+                <div className="typography-h1 text-xl text-purple-400 mb-2">31%</div>
                 <p className="text-slate-300">Improvement in revenue forecast accuracy</p>
               </div>
               <div>
-                <div className="typography-h1 text-4xl text-amber-400 mb-2">26%</div>
+                <div className="typography-h1 text-xl text-amber-400 mb-2">26%</div>
                 <p className="text-slate-300">Reduction in deal slippage</p>
               </div>
             </div>
@@ -173,8 +173,8 @@ export default function ForecastPipelineIntelligenceProject() {
           <div
             className="mb-16"
           >
-            <h2 className="typography-h2 border-none pb-0 text-3xl text-foreground mb-8">Analytics & Signals</h2>
-            <div className="glass rounded-xl p-8">
+            <h2 className="typography-h2 border-none pb-0 text-2xl text-foreground mb-8">Analytics & Signals</h2>
+            <div className="glass rounded-2xl p-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
                   <h3 className="typography-large text-foreground mb-4">Deal Health Signals (50+)</h3>
@@ -206,7 +206,7 @@ export default function ForecastPipelineIntelligenceProject() {
           <div
             className="mb-16"
           >
-            <h2 className="typography-h2 border-none pb-0 text-3xl text-foreground mb-8">Technologies & Tools</h2>
+            <h2 className="typography-h2 border-none pb-0 text-2xl text-foreground mb-8">Technologies & Tools</h2>
             <div className="flex flex-wrap gap-3">
               {['Python', 'Machine Learning', 'Time Series Analysis', 'Plotly', 'Recharts', 'PostgreSQL', 'Next.js', 'Predictive Analytics'].map((tech) => (
                 <span

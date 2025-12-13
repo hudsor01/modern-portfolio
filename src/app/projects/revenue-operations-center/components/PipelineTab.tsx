@@ -22,7 +22,7 @@ const PipelineHealthChart = dynamic(
 export function PipelineTab() {
   return (
     <div
-      className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300 mb-12"
+      className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 mb-12"
     >
       <div className="mb-6">
         <h2 className="typography-h3 mb-2">Pipeline Health & Velocity Analysis</h2>

@@ -126,10 +126,10 @@ export const LazyFunnelChart = dynamic(
 
 /**
  * Lazy-loaded Treemap
- * Note: Treemap has complex type handling, using explicit any cast
+ * Using proper type definition for Treemap component
  */
 export const LazyTreemap = dynamic(
-  () => import('recharts').then((mod) => mod.Treemap) as Promise<React.ComponentType<Record<string, unknown>>>,
+  () => import('recharts').then((mod) => mod.Treemap),
   {
     ssr: false,
     loading: () => <ChartSkeleton />,

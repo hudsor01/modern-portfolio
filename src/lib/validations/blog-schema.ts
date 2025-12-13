@@ -498,6 +498,3 @@ export function validatePagination(data: unknown) {
   return paginationSchema.safeParse(data)
 }
 
-// Legacy export for backward compatibility
-export const blogPostSchema = blogPostCreateSchema
-export type BlogPost = BlogPostCreateInput

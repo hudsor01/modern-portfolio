@@ -31,7 +31,7 @@ export function SkipToContent({
         // Show on focus
         'focus:top-4 transition-all duration-200',
         // High contrast support
-        'focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2',
+        'focus:outline-hidden focus:ring-2 focus:ring-blue-400 focus:ring-offset-2',
         className
       )}
     >

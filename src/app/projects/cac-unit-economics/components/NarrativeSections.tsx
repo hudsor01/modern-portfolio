@@ -9,7 +9,7 @@ export function NarrativeSections() {
     <div className="space-y-12 mt-12">
       {/* Project Overview */}
       <div
-        className="glass rounded-3xl p-8"
+        className="glass rounded-2xl p-8"
       >
         <h2 className="typography-h3 mb-6 text-primary">Project Overview</h2>
         <div className="space-y-4 text-muted-foreground">
@@ -24,7 +24,7 @@ export function NarrativeSections() {
 
       {/* Challenge */}
       <div
-        className="glass rounded-3xl p-8"
+        className="glass rounded-2xl p-8"
       >
         <h2 className="typography-h3 mb-6 text-amber-400">Challenge</h2>
         <div className="space-y-4 text-muted-foreground">
@@ -47,7 +47,7 @@ export function NarrativeSections() {
 
       {/* Solution */}
       <div
-        className="glass rounded-3xl p-8"
+        className="glass rounded-2xl p-8"
       >
         <h2 className="typography-h3 mb-6 text-success">Solution</h2>
         <div className="space-y-4 text-muted-foreground">
@@ -56,7 +56,7 @@ export function NarrativeSections() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+            <div className="bg-white/5 rounded-xl p-6 border border-white/10">
               <h3 className="font-semibold text-primary mb-3">Unit Economics Framework</h3>
               <ul className="list-disc list-inside space-y-1 text-sm">
                 <li>Standardized CAC calculation methodology across all acquisition channels</li>
@@ -66,7 +66,7 @@ export function NarrativeSections() {
                 <li>LTV:CAC ratio optimization with industry benchmarking</li>
               </ul>
             </div>
-            <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+            <div className="bg-white/5 rounded-xl p-6 border border-white/10">
               <h3 className="font-semibold text-success mb-3">Optimization Tools</h3>
               <ul className="list-disc list-inside space-y-1 text-sm">
                 <li>Real-time channel performance monitoring and alerting</li>
@@ -82,7 +82,7 @@ export function NarrativeSections() {
 
       {/* Results & Impact */}
       <div
-        className="glass rounded-3xl p-8"
+        className="glass rounded-2xl p-8"
       >
         <h2 className="typography-h3 mb-6 text-emerald-400">Results & Impact</h2>
         <div className="space-y-6 text-muted-foreground">
@@ -91,16 +91,16 @@ export function NarrativeSections() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
-              <div className="typography-h2 border-none pb-0 text-3xl text-primary mb-2">32%</div>
+            <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-xs border border-primary/20 rounded-xl p-6 text-center">
+              <div className="typography-h2 border-none pb-0 text-2xl text-primary mb-2">32%</div>
               <div className="typography-small text-muted-foreground">CAC Reduction Achievement</div>
             </div>
-            <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-sm border border-secondary/20 rounded-2xl p-6 text-center">
-              <div className="typography-h2 border-none pb-0 text-3xl text-secondary mb-2">3.6:1</div>
+            <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 backdrop-blur-xs border border-secondary/20 rounded-xl p-6 text-center">
+              <div className="typography-h2 border-none pb-0 text-2xl text-secondary mb-2">3.6:1</div>
               <div className="typography-small text-muted-foreground">LTV:CAC Ratio Achieved</div>
             </div>
-            <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
-              <div className="typography-h2 border-none pb-0 text-3xl text-primary mb-2">8.4 mo</div>
+            <div className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-xs border border-primary/20 rounded-xl p-6 text-center">
+              <div className="typography-h2 border-none pb-0 text-2xl text-primary mb-2">8.4 mo</div>
               <div className="typography-small text-muted-foreground">Customer Payback Period</div>
             </div>
           </div>
@@ -122,7 +122,7 @@ export function NarrativeSections() {
 
       {/* Key Learnings */}
       <div
-        className="glass rounded-3xl p-8"
+        className="glass rounded-2xl p-8"
       >
         <h2 className="typography-h3 mb-6 text-purple-400">Key Learnings</h2>
         <div className="space-y-4 text-muted-foreground">
@@ -154,7 +154,7 @@ export function NarrativeSections() {
 
       {/* Technologies Used */}
       <div
-        className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-border/20 rounded-3xl p-8"
+        className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-xs border border-border/20 rounded-xl p-8"
       >
         <h2 className="typography-h3 mb-6 text-muted-foreground">Technologies Used</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -171,7 +171,7 @@ export function NarrativeSections() {
         className="mt-16 space-y-8"
       >
         <div className="text-center space-y-4">
-          <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+          <h2 className="typography-h2 border-none pb-0 text-2xl md:text-2xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
             STAR Impact Analysis
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -179,7 +179,7 @@ export function NarrativeSections() {
           </p>
         </div>
 
-        <div className="glass rounded-3xl p-8">
+        <div className="glass rounded-2xl p-8">
           <STARAreaChart
             data={starData}
             title="Project Progression Metrics"

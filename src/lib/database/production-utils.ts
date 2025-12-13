@@ -286,17 +286,20 @@ export class QueryOptimizer {
 
   static async getSlowQueries(limit = 10): Promise<SlowQueryResult[]> {
     try {
+      // Validate limit parameter to prevent SQL injection
+      const validatedLimit = Math.min(Math.max(1, Math.floor(limit)), 100) // Limit to 1-100 range
+
       return await db.$queryRaw`
-        SELECT 
+        SELECT
           query,
           calls,
           total_exec_time,
           mean_exec_time,
           max_exec_time,
           rows
-        FROM pg_stat_statements 
-        ORDER BY mean_exec_time DESC 
-        LIMIT ${limit}
+        FROM pg_stat_statements
+        ORDER BY mean_exec_time DESC
+        LIMIT ${validatedLimit}
       `
     } catch (_error) {
       dbUtilsLogger.warn('pg_stat_statements not available for slow query analysis')
@@ -370,27 +373,44 @@ export class DatabaseCache {
 // MIDDLEWARE WRAPPER
 // =======================
 
+// Simple hash function for generating consistent cache keys from functions
+function generateFunctionHash(fn: () => unknown): string {
+  // Convert function to string and generate a simple hash
+  const str = fn.toString()
+  let hash = 0
+
+  // Simple but effective hash algorithm
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash // Convert to 32bit integer
+  }
+
+  return Math.abs(hash).toString(36) // Convert to base-36 string
+}
+
 export function createDatabaseMiddleware() {
   return async <T>(operation: string, fn: () => Promise<T>): Promise<T> => {
     // Ensure connection
     await ConnectionManager.ensureConnection()
-    
-    // Check cache first
-    const cacheKey = `${operation}_${JSON.stringify(fn.toString().slice(0, 100))}`
+
+    // Check cache first - use a more reliable cache key generation
+    const functionHash = generateFunctionHash(fn)
+    const cacheKey = `${operation}_${functionHash}`
     const cached = DatabaseCache.get<T>(cacheKey)
-    
+
     if (cached) {
       return cached as T
     }
 
     // Execute with performance monitoring
     const result = await withPerformanceMonitoring(operation, fn)
-    
+
     // Cache result if it's a read operation
     if (operation.includes('FIND') || operation.includes('GET')) {
       DatabaseCache.set(cacheKey, result, 2 * 60 * 1000) // 2 minutes for read operations
     }
-    
+
     // Invalidate cache if it's a write operation
     if (operation.includes('CREATE') || operation.includes('UPDATE') || operation.includes('DELETE')) {
       DatabaseCache.invalidate('FIND|GET')

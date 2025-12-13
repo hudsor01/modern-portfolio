@@ -47,7 +47,7 @@ export default function CommissionOptimization() {
           </Link>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 glass rounded-xl p-1">
+            <div className="flex items-center gap-1 glass rounded-2xl p-1">
               {tabs.map((tab) => (
                 <button
                   key={tab}
@@ -78,7 +78,7 @@ export default function CommissionOptimization() {
         <div
           className="mb-8"
         >
-          <h1 className="text-4xl md:typography-h1 text-5xl bg-gradient-to-r from-emerald-400 to-green-600 bg-clip-text text-transparent mb-3">
+          <h1 className="text-xl md:typography-h1 text-xl bg-gradient-to-r from-emerald-400 to-green-600 bg-clip-text text-transparent mb-3">
             Commission & Incentive Optimization System
           </h1>
           <p className="typography-lead max-w-3xl mb-4">

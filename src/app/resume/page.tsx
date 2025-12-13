@@ -205,14 +205,14 @@ export default function ResumePage() {
             className={`text-center space-y-8 max-w-4xl mx-auto animate-fade-in-up ${isHeroInView ? 'opacity-100' : 'opacity-0'}`}
           >
 
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8">
+            <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-8">
               <span className="block hero-name-gradient">
                 Richard Hudson
               </span>
             </h1>
 
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-light max-w-4xl mx-auto mb-6">
-              <span className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-500/20 to-blue-600/20 border border-primary/40 px-6 py-3 text-primary/70 font-medium backdrop-blur-sm shadow-lg shadow-primary/25">
+            <h2 className="text-xl sm:text-xl md:text-2xl font-light max-w-4xl mx-auto mb-6">
+              <span className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-500/20 to-blue-600/20 border border-primary/40 px-6 py-3 text-primary/70 font-medium backdrop-blur-xs shadow-lg shadow-primary/25">
                 Revenue Operations Professional
               </span>
             </h2>
@@ -226,12 +226,12 @@ export default function ResumePage() {
             {/* Interactive Action Buttons */}
             <div className="relative max-w-4xl mx-auto pt-8">
               {/* Enhanced Action Buttons Container */}
-              <div className="glass-interactive rounded-3xl p-8 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/25">
+              <div className="glass-interactive rounded-2xl p-8 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/25">
                 <div className="glass rounded-2xl p-6">
                   {/* Action Buttons Grid */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     {/* Download Resume - Primary Action */}
-                    <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-600/20 border border-primary/30 hover:border-primary/50 transition-all duration-500 hover:scale-105">
+                    <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-600/20 border border-primary/30 hover:border-primary/50 transition-all duration-500 hover:scale-105">
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                       <Button
                         size="lg"
@@ -249,7 +249,7 @@ export default function ResumePage() {
                     </div>
 
                     {/* View Toggle - Interactive */}
-                    <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-600/20 border border-purple-400/30 hover:border-purple-400/50 transition-all duration-500 hover:scale-105">
+                    <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-600/20 border border-purple-400/30 hover:border-purple-400/50 transition-all duration-500 hover:scale-105">
                       <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                       <Button
                         size="lg"
@@ -266,7 +266,7 @@ export default function ResumePage() {
                     </div>
 
                     {/* Contact - Call to Action */}
-                    <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500/20 to-green-500/20 border border-emerald-500/30 hover:border-emerald-500/50 transition-all duration-500 hover:scale-105">
+                    <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-emerald-500/20 to-green-500/20 border border-emerald-500/30 hover:border-emerald-500/50 transition-all duration-500 hover:scale-105">
                       <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                       <Link
                         href="/contact"
@@ -286,7 +286,7 @@ export default function ResumePage() {
 
             {/* Enhanced Social Icons Container */}
             <div className="max-w-2xl mx-auto pt-8">
-              <div className="glass-interactive rounded-3xl p-8 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/25">
+              <div className="glass-interactive rounded-2xl p-8 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/25">
                 <div className="glass rounded-2xl p-6">
                   <div className="flex justify-center gap-6">
                     <a
@@ -331,7 +331,7 @@ export default function ResumePage() {
 
           {showPdf ? (
             // PDF viewer
-            <div className="glass rounded-xl overflow-hidden animate-fade-in-up">
+            <div className="glass rounded-2xl overflow-hidden animate-fade-in-up">
               {pdfUrl && <ResumeViewer pdfUrl={pdfUrl} />}
             </div>
           ) : (
@@ -345,7 +345,7 @@ export default function ResumePage() {
                 <div className="bg-slate-800/95 border border-slate-700 rounded-xl p-8 shadow-lg hover:bg-slate-700/95 hover:border-slate-600 transition-all duration-200">
                   <div className="flex flex-col lg:flex-row items-center gap-8">
                     {/* Profile Image */}
-                    <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-2xl overflow-hidden border-4 border-primary/40 shadow-xl shadow-primary/20 flex-shrink-0">
+                    <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-xl overflow-hidden border-4 border-primary/40 shadow-xl shadow-primary/20 flex-shrink-0">
                       <Image
                         src="/images/richard.jpg"
                         alt="Richard Hudson - Revenue Operations Consultant specializing in Salesforce automation, data analytics, and business growth strategies in Dallas, TX"
@@ -358,7 +358,7 @@ export default function ResumePage() {
 
                     {/* About Content */}
                     <div className="flex-1 text-center lg:text-left space-y-4">
-                      <h3 className="text-2xl md:typography-h2 border-none pb-0 text-3xl text-foreground mb-4">
+                      <h3 className="text-xl md:typography-h2 border-none pb-0 text-2xl text-foreground mb-4">
                         Revenue Operations Professional
                       </h3>
                       <p className="text-primary font-medium">
@@ -393,7 +393,7 @@ export default function ResumePage() {
                     <div key={job.title}  className="space-y-6">
                       {/* Job Title Outside Container */}
                       <div className="text-center">
-                        <h3 className="text-2xl sm:typography-h2 border-none pb-0 text-3xl md:text-4xl section-heading-gradient mb-2 tracking-tight">{job.title}</h3>
+                        <h3 className="text-xl sm:typography-h2 border-none pb-0 text-2xl md:text-2xl section-heading-gradient text-2xl md:text-3xl mb-2 tracking-tight">{job.title}</h3>
                       </div>
 
                       {/* Job Content Container - Clean Professional Style */}
@@ -435,12 +435,12 @@ export default function ResumePage() {
               {/* Education & Certifications */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
                 <section  className="group h-full">
-                  <div className="relative glass-interactive rounded-3xl overflow-hidden transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/25">
+                  <div className="relative glass-interactive rounded-2xl overflow-hidden transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/25">
                     <div className="p-8 flex-1 flex flex-col">
                       {/* Inner Container for Content */}
                       <div className="glass rounded-2xl p-6 flex-1 flex flex-col h-[320px]">
                         <div className="text-center mb-6">
-                          <h3 className="text-2xl sm:typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
+                          <h3 className="text-xl sm:typography-h2 border-none pb-0 text-2xl md:text-2xl bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
                             <GraduationCap className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                             Education
                           </h3>
@@ -465,12 +465,12 @@ export default function ResumePage() {
                 </section>
 
                 <section  className="group h-full">
-                  <div className="relative glass-interactive rounded-3xl overflow-hidden transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/25">
+                  <div className="relative glass-interactive rounded-2xl overflow-hidden transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/25">
                     <div className="p-8 flex-1 flex flex-col">
                       {/* Inner Container for Content */}
                       <div className="glass rounded-2xl p-6 flex-1 flex flex-col h-[320px]">
                         <div className="text-center mb-6">
-                          <h3 className="text-2xl sm:typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
+                          <h3 className="text-xl sm:typography-h2 border-none pb-0 text-2xl md:text-2xl bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
                             <BadgeCheck className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                             Certifications
                           </h3>
@@ -495,7 +495,7 @@ export default function ResumePage() {
               {/* Interactive Skills Showcase */}
               <section >
                 <div className="text-center mb-12">
-                  <h3 className="typography-h2 border-none pb-0 text-3xl md:text-4xl mb-4 bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent">
+                  <h3 className="typography-h2 border-none pb-0 text-2xl md:text-2xl mb-4 bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent">
                     Skills & Expertise
                   </h3>
                   <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -506,9 +506,9 @@ export default function ResumePage() {
                 {/* Interactive Skills Grid */}
                 <div className="relative max-w-6xl mx-auto">
                   {/* Premium Glassmorphism Container */}
-                  <div className="relative bg-gradient-to-br from-white/8 via-white/4 to-white/4 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+                  <div className="relative bg-gradient-to-br from-white/8 via-white/4 to-white/4 backdrop-blur-xl border border-white/20 rounded-xl p-8 shadow-2xl">
                     {/* Subtle background pattern */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/3 via-purple-500/2 to-indigo-500/3 rounded-3xl" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/3 via-purple-500/2 to-indigo-500/3 rounded-xl" />
 
                     <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
                       {skills.map((skillGroup, index) => (
@@ -518,7 +518,7 @@ export default function ResumePage() {
                           className="group relative"
                         >
                           {/* Skill Category Card */}
-                          <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur border border-white/20 rounded-2xl overflow-hidden transition-all duration-500 group-hover:border-white/40 group-hover:shadow-2xl group-hover:shadow-primary/20 h-full">
+                          <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur border border-white/20 rounded-xl overflow-hidden transition-all duration-500 group-hover:border-white/40 group-hover:shadow-2xl group-hover:shadow-primary/20 h-full">
                             {/* Gradient Background Effect */}
                             <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${index === 0 ? 'bg-gradient-to-br from-blue-500/10 to-cyan-500/10' :
                               index === 1 ? 'bg-gradient-to-br from-purple-500/10 to-pink-500/10' :

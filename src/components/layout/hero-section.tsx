@@ -22,7 +22,7 @@ export function HeroSection(_props: HeroSectionProps) {
           <div
             className="text-white space-y-6"
           >
-            <h1 className="typography-h1 text-5xl">Richard Hudson</h1>
+            <h1 className="typography-h1 text-xl">Richard Hudson</h1>
 
             <div className="typography-h2 border-none pb-0 text-2xl text-primary min-h-[2.5rem] flex items-center">
               <RichardTypewriterTitle />
@@ -80,7 +80,7 @@ export function HeroSection(_props: HeroSectionProps) {
             className="flex justify-center"
           >
             <div className="relative w-full max-w-md">
-              <div className="aspect-square rounded-2xl overflow-hidden">
+              <div className="aspect-square rounded-xl overflow-hidden">
                 <Image
                   src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face&q=80"
                   alt="Richard Hudson"

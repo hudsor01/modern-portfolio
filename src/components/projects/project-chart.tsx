@@ -159,7 +159,7 @@ export function ProjectChart({
 
   return (
     <div
-      className={cn('bg-card w-full rounded-lg p-4 shadow-sm', className)}
+      className={cn('bg-card w-full rounded-lg p-4 shadow-xs', className)}
       {...animationProps}
     >
       {title && <h3 className="mb-4 typography-large">{title}</h3>}

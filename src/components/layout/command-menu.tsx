@@ -50,7 +50,7 @@ export function CommandMenu({ ...props }: DialogProps) {
         <Search className="size-4 xl:mr-2" />
         <span className="hidden xl:inline-flex">Search...</span>
         <span className="sr-only">Search</span>
-        <kbd className="bg-muted pointer-events-none absolute top-2 right-1.5 hidden h-6 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 select-none xl:flex">
+        <kbd className="bg-muted pointer-events-none absolute top-2 right-1.5 hidden h-6 items-center gap-1 rounded-xs border px-1.5 font-mono text-[10px] font-medium opacity-100 select-none xl:flex">
           <span className="text-xs">⌘</span>K
         </kbd>
       </Button>

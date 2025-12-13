@@ -170,16 +170,16 @@ describe('/api/blog', () => {
       )
     })
 
-    it('limits results to maximum of 50 per page', async () => {
+    it('limits results to maximum of 100 per page', async () => {
       const { db } = await import('@/lib/db')
       vi.mocked(db.blogPost.findMany).mockResolvedValueOnce([])
       vi.mocked(db.blogPost.count).mockResolvedValueOnce(0)
 
-      const request = createMockRequest('http://localhost:3000/api/blog?limit=100')
+      const request = createMockRequest('http://localhost:3000/api/blog?limit=200')
       const response = await GET(request)
       const data = await response.json()
 
-      expect(data.pagination.limit).toBe(50)
+      expect(data.pagination.limit).toBe(100)
     })
 
     it('handles database errors gracefully', async () => {

@@ -175,14 +175,20 @@ export async function warmCriticalCaches(queryClient: QueryClient) {
     // Core data that's needed immediately
     {
       queryKey: ['projects'],
-      queryFn: () => fetch('/api/projects').then(res => res.json()),
+      queryFn: async () => {
+        const res = await fetch('/api/projects')
+        return res.json()
+      },
       staleTime: MODERN_CACHE_CONFIG.STATIC.staleTime,
     },
-    
+
     // Blog metadata for navigation
     {
       queryKey: ['blog', 'categories'],
-      queryFn: () => fetch('/api/blog/categories').then(res => res.json()),
+      queryFn: async () => {
+        const res = await fetch('/api/blog/categories')
+        return res.json()
+      },
       staleTime: MODERN_CACHE_CONFIG.STATIC.staleTime,
     },
   ]
