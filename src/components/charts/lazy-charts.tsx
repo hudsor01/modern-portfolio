@@ -6,7 +6,6 @@
  */
 'use client'
 
-import React from 'react'
 import dynamic from 'next/dynamic'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -129,7 +128,7 @@ export const LazyFunnelChart = dynamic(
  * Using proper type definition for Treemap component
  */
 export const LazyTreemap = dynamic(
-  () => import('recharts').then((mod) => mod.Treemap),
+  () => import('recharts').then((mod) => mod.Treemap as React.ComponentType<Record<string, unknown>>),
   {
     ssr: false,
     loading: () => <ChartSkeleton />,

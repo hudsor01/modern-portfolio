@@ -262,9 +262,9 @@ describe('Security Performance Tests', () => {
     dangerousStrings.forEach(str => {
       // Should complete in reasonable time (under 100ms for security)
       const start = Date.now()
-      const result = emailRegex.test(str)
+      emailRegex.test(str)
       const duration = Date.now() - start
-      
+
       expect(duration).toBeLessThan(100) // Less than 100ms
     })
   })
