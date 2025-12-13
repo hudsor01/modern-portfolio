@@ -35,7 +35,7 @@ export function HeroWithImage({
       <div className="w-full mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
           <div className={`space-y-6 ${contentOrder}`}>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h1 className="text-4xl md:text-5xl lg:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">
               {title}
             </h1>
             <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl">{description}</p>

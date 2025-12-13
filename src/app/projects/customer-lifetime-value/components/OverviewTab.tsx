@@ -32,7 +32,7 @@ export function OverviewTab() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       {/* CLV Prediction Chart */}
       <div
-        className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">CLV Prediction vs Actual Performance</h2>
@@ -45,7 +45,7 @@ export function OverviewTab() {
 
       {/* CLV Trend Analysis */}
       <div
-        className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">CLV Trend Analysis & Forecasting</h2>

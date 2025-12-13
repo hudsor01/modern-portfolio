@@ -31,7 +31,7 @@ export function CertificationsSection({
         
         className="text-center mb-12"
       >
-        <h2 className="typography-h1 text-4xl mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+        <h2 className="typography-h1 text-xl mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
           Certifications & Recognition
         </h2>
         <p className="typography-lead dark:text-muted-foreground max-w-3xl mx-auto">
@@ -61,7 +61,7 @@ function CertificationCard({ certification }: CertificationCardProps) {
       
       
     >
-      <Card className="h-full border-0 shadow-lg bg-white/50 dark:bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+      <Card className="h-full border-0 shadow-lg bg-white/50 dark:bg-card/50 backdrop-blur-xs hover:shadow-xl transition-all duration-300">
         <CardHeader className="pb-4">
           <div className="flex items-start gap-4">
             <CertificationBadge badge={certification.badge} name={certification.name} />
@@ -104,7 +104,7 @@ function CertificationBadge({ badge, name }: CertificationBadgeProps) {
           sizes="64px"
         />
       ) : (
-        <span className="text-2xl">{badge}</span>
+        <span className="text-xl">{badge}</span>
       )}
     </div>
   )

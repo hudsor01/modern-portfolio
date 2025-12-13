@@ -13,7 +13,7 @@ export function ChartsGrid() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       {/* Revenue Trends */}
       <div
-        className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">Revenue Growth Trends</h2>
@@ -28,7 +28,7 @@ export function ChartsGrid() {
 
       {/* Revenue Distribution */}
       <div
-        className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">Monthly Revenue Analysis</h2>
@@ -41,7 +41,7 @@ export function ChartsGrid() {
 
       {/* Top Partners */}
       <div
-        className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">Top Revenue Partners</h2>
@@ -54,7 +54,7 @@ export function ChartsGrid() {
 
       {/* Partner Distribution */}
       <div
-        className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">Partner Group Distribution</h2>

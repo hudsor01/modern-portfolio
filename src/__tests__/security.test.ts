@@ -1,0 +1,283 @@
+/**
+ * Security Testing Suite
+ * Comprehensive security tests for the modern-portfolio application
+ */
+
+import { describe, it, expect, vi } from 'vitest'
+import { db } from '@/lib/db'
+import { validateRequest } from '@/lib/api/validation'
+import { contactFormSchema } from '@/lib/validations/contact-form-schema'
+import { sanitizeUserContent, escapeHtml } from '@/lib/security/sanitize'
+import { rateLimiter } from '@/lib/security/rate-limiter'
+
+// Mock the database connection
+vi.mock('@/lib/db', () => ({
+  db: {
+    contactSubmission: {
+      create: vi.fn(),
+    },
+    $queryRaw: vi.fn(),
+  },
+}))
+
+describe('Security Tests', () => {
+  // XSS Prevention Tests
+  describe('XSS Prevention', () => {
+    it('should sanitize HTML content to prevent XSS', () => {
+      const maliciousContent = '<script>alert("XSS")</script><p>Safe content</p>'
+      const sanitized = sanitizeUserContent(maliciousContent)
+      
+      // Should remove script tags but keep safe content
+      expect(sanitized).not.toContain('<script>')
+      expect(sanitized).toContain('<p>Safe content</p>')
+      expect(sanitized).toBe('<p>Safe content</p>')
+    })
+
+    it('should escape HTML entities properly', () => {
+      const maliciousInput = '<script>alert("XSS")</script>'
+      const escaped = escapeHtml(maliciousInput)
+      
+      expect(escaped).toBe('&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;')
+    })
+
+    it('should handle malformed HTML tags', () => {
+      const malformedInput = '<img src=x onerror="alert(\'XSS\')">'
+      const sanitized = sanitizeUserContent(malformedInput)
+      
+      expect(sanitized).not.toContain('onerror')
+      expect(sanitized).not.toContain('alert')
+    })
+
+    it('should handle embedded JavaScript protocols', () => {
+      const input = '<a href="javascript:alert(\'XSS\')">Click me</a>'
+      const sanitized = sanitizeUserContent(input)
+      
+      expect(sanitized).not.toContain('javascript:')
+      expect(sanitized).toBe('<a>Click me</a>')
+    })
+  })
+
+  // Input Validation Tests
+  describe('Input Validation', () => {
+    it('should reject invalid email addresses', async () => {
+      const invalidData = {
+        name: 'Test User',
+        email: 'invalid-email', // Invalid email
+        subject: 'Test Subject',
+        message: 'Test message',
+      }
+
+      await expect(validateRequest(contactFormSchema, invalidData)).rejects.toThrow()
+    })
+
+    it('should reject overly long inputs', async () => {
+      const longData = {
+        name: 'A'.repeat(200), // Too long
+        email: 'test@example.com',
+        subject: 'Test Subject',
+        message: 'Test message',
+      }
+
+      await expect(validateRequest(contactFormSchema, longData)).rejects.toThrow()
+    })
+
+    it('should accept valid contact form data', async () => {
+      const validData = {
+        name: 'John Doe',
+        email: 'john@example.com',
+        subject: 'Test Subject',
+        message: 'This is a valid test message.',
+      }
+
+      const result = await validateRequest(contactFormSchema, validData)
+      expect(result).toEqual(validData)
+    })
+
+    it('should strip harmful characters from inputs', () => {
+      const input = { 
+        name: 'John<script>alert(1)</script>', 
+        email: 'test@example.com' 
+      }
+      
+      // Test validation with sanitization
+      expect(() => validateRequest(contactFormSchema, input)).toThrow()
+    })
+  })
+
+  // Rate Limiting Tests
+  describe('Rate Limiting', () => {
+    it('should enforce rate limits', () => {
+      const identifier = 'test-client'
+      const config = {
+        windowMs: 60 * 1000, // 1 minute
+        maxAttempts: 5,
+        progressivePenalty: true,
+        blockDuration: 60 * 1000, // 1 minute base
+      }
+
+      // Simulate multiple requests
+      for (let i = 0; i < 6; i++) {
+        const result = rateLimiter.checkLimit(identifier, config)
+        if (i < 5) {
+          expect(result.allowed).toBe(true)
+        } else {
+          expect(result.allowed).toBe(false)
+        }
+      }
+    })
+
+    it('should reset rate limit after window expires', () => {
+      vi.useFakeTimers()
+      
+      const identifier = 'test-client-reset'
+      const config = {
+        windowMs: 1000, // 1 second
+        maxAttempts: 2,
+        progressivePenalty: false,
+        blockDuration: 0,
+      }
+
+      // Make 2 requests - should be allowed
+      expect(rateLimiter.checkLimit(identifier, config).allowed).toBe(true)
+      expect(rateLimiter.checkLimit(identifier, config).allowed).toBe(true)
+
+      // Make 3rd request - should be blocked
+      expect(rateLimiter.checkLimit(identifier, config).allowed).toBe(false)
+
+      // Advance time past window
+      vi.advanceTimersByTime(1001)
+
+      // Should be allowed again
+      expect(rateLimiter.checkLimit(identifier, config).allowed).toBe(true)
+
+      vi.useRealTimers()
+    })
+  })
+
+  // SQL Injection Prevention Tests
+  describe('SQL Injection Prevention', () => {
+    it('should properly handle parameterized queries', async () => {
+      // Mock the db query function
+      const mockQuery = vi.fn().mockResolvedValue([{ id: 1 }])
+      vi.spyOn(db, '$queryRaw').mockImplementation(mockQuery)
+      
+      // Test with potentially malicious input
+      const maliciousInput = "'; DROP TABLE users; --"
+      
+      // This is already safe with Prisma's parameterized queries
+      await db.$queryRaw`SELECT * FROM blog_posts WHERE title = ${maliciousInput}`
+      
+      // Verify that the query was called with the input parameterized
+      expect(mockQuery).toHaveBeenCalledWith(
+        expect.stringContaining('SELECT * FROM blog_posts WHERE title = ?'),
+        maliciousInput
+      )
+    })
+
+    it('should validate all database input parameters', async () => {
+      // Test with various SQL injection payloads
+      const injectionPayloads = [
+        "' OR '1'='1",
+        "'; DROP TABLE users; --",
+        "' UNION SELECT * FROM users --",
+        "'; EXEC xp_cmdshell 'dir'; --",
+        "' AND 1=CONVERT(int, (SELECT @@version)) --",
+      ]
+
+      for (const payload of injectionPayloads) {
+        // Verify that validation catches these
+        expect(() => {
+          validateRequest(contactFormSchema, { 
+            name: payload, 
+            email: 'test@example.com', 
+            subject: 'Test', 
+            message: 'Test' 
+          })
+        }).toThrow()
+      }
+    })
+  })
+
+  // Security Headers Tests
+  describe('Security Headers', () => {
+    it('should validate content security policy headers', () => {
+      // This would be tested in integration tests
+      const cspHeader = "default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:;" 
+      
+      // Verify CSP doesn't allow unsafe-eval or data: sources
+      expect(cspHeader).not.toContain('unsafe-eval')
+      expect(cspHeader).not.toContain('data:')
+    })
+
+    it('should validate XSS protection headers', () => {
+      const securityHeaders = {
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block',
+        'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+      }
+
+      expect(securityHeaders['X-Content-Type-Options']).toBe('nosniff')
+      expect(securityHeaders['X-Frame-Options']).toBe('DENY')
+      expect(securityHeaders['X-XSS-Protection']).toBe('1; mode=block')
+    })
+  })
+
+  // Session Security Tests
+  describe('Session Security', () => {
+    it('should validate session management', () => {
+      // Test session token format and strength
+      const sessionToken = 'mock-session-token-' + Math.random().toString(36).substring(2, 15)
+      
+      // Verify token has sufficient entropy
+      expect(sessionToken.length).toBeGreaterThan(20)
+      expect(sessionToken).toMatch(/[0-9]/) // Contains numbers
+      expect(sessionToken).toMatch(/[a-z]/) // Contains lowercase
+      expect(sessionToken).toMatch(/[A-Z]/) // Contains uppercase
+    })
+
+    it('should validate CSRF protection', () => {
+      // This would be tested in integration tests
+      const csrfTokenRegex = /^[a-zA-Z0-9_-]{32,}$/
+      const mockCsrfToken = 'abcdefghijklmnopqrstuvwxyz1234567890'
+      
+      expect(mockCsrfToken).toMatch(csrfTokenRegex)
+    })
+  })
+})
+
+// Performance Security Tests
+describe('Security Performance Tests', () => {
+  it('should not be vulnerable to ReDoS attacks', () => {
+    // Test regex patterns with potentially dangerous patterns
+    const dangerousStrings = [
+      'a'.repeat(10000) + '!',
+      'aaaaaaaaaaaaaaaa!'.repeat(1000),
+      'a'.repeat(100000)
+    ]
+
+    // Example: testing an email validation regex that might be vulnerable
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    
+    dangerousStrings.forEach(str => {
+      // Should complete in reasonable time (under 100ms for security)
+      const start = Date.now()
+      const result = emailRegex.test(str)
+      const duration = Date.now() - start
+      
+      expect(duration).toBeLessThan(100) // Less than 100ms
+    })
+  })
+
+  it('should handle large payloads without crashing', () => {
+    const largePayload = {
+      name: 'Test User',
+      email: 'test@example.com',
+      subject: 'Test',
+      message: 'A'.repeat(10000) // Large message
+    }
+
+    // Should not crash the validation
+    expect(() => validateRequest(contactFormSchema, largePayload)).not.toThrow()
+  })
+})

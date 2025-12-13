@@ -17,7 +17,7 @@ import { monthlyTrendData } from '../data/constants'
 export function TrendsChart() {
   return (
     <div
-      className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+      className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300"
     >
       <div className="mb-6">
         <h2 className="typography-h3 mb-2">Lead Generation Trends</h2>

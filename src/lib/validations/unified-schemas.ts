@@ -316,7 +316,3 @@ export type PostViewCreateInput = z.infer<typeof postViewCreateSchema>
 export type PostInteractionCreateInput = z.infer<typeof postInteractionCreateSchema>
 export type PaginationInput = z.infer<typeof paginationSchema>
 
-// Legacy exports for backward compatibility
-export { contactFormSchema as contactSchema }
-export { projectFilterSchema as projectFiltersSchema }
-export type ContactFormData = ContactFormValues

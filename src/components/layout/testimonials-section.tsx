@@ -36,7 +36,7 @@ export function TestimonialsSection() {
     <section className="py-20 bg-muted/30">
       <div className="w-full mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl text-foreground animate-fade-in-up">
+          <h2 className="typography-h2 border-none pb-0 text-2xl md:text-2xl text-foreground animate-fade-in-up">
             What My Clients Say
           </h2>
           <p className="typography-muted animate-fade-in-up animate-delay-100">

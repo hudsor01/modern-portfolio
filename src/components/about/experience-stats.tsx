@@ -37,7 +37,7 @@ export function ExperienceStats({ stats, className = '' }: ExperienceStatsProps)
         
         className="text-center mb-12"
       >
-        <h2 className="typography-h1 text-4xl mb-4 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+        <h2 className="typography-h1 text-xl mb-4 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
           Impact & Experience
         </h2>
         <p className="typography-lead dark:text-muted-foreground max-w-3xl mx-auto">
@@ -76,7 +76,7 @@ function ExperienceStatCard({ stat }: ExperienceStatCardProps) {
               <IconComponent className="h-8 w-8 text-primary dark:text-primary" />
             </div>
           </div>
-          <div className="typography-h2 border-none pb-0 text-3xl text-foreground dark:text-white mb-2">
+          <div className="typography-h2 border-none pb-0 text-2xl text-foreground dark:text-white mb-2">
             <AnimatedCounter 
               value={stat.value}
               duration={2000}

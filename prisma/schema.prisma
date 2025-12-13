@@ -90,12 +90,16 @@ model BlogPost {
   sitemapEntries  SitemapEntry[]
   
   @@map("blog_posts")
-  @@index([status, publishedAt(sort: Desc)])
-  @@index([slug])
-  @@index([authorId])
-  @@index([categoryId])
-  @@index([createdAt(sort: Desc)])
-  @@index([viewCount(sort: Desc)])
+  @@index([status, publishedAt(sort: Desc)]) // For querying posts by status and publish date
+  @@index([status]) // For filtering by status only
+  @@index([publishedAt]) // For date range queries
+  @@index([authorId]) // For author-specific queries
+  @@index([categoryId]) // For category-specific queries
+  @@index([viewCount(sort: Desc)]) // For popular posts
+  @@index([createdAt(sort: Desc)]) // For creation date ordering
+  @@index([slug]) // For direct slug lookup
+  @@index([status, authorId]) // For author's posts with specific status
+  @@index([status, categoryId]) // For filtered posts by status and category
 }
 
 model Author {
@@ -159,8 +163,11 @@ model Category {
   posts           BlogPost[]
   
   @@map("categories")
-  @@index([slug])
-  @@index([parentId])
+  @@index([slug]) // For direct slug lookup
+  @@index([name]) // For name-based queries
+  @@index([parentId]) // For hierarchical queries
+  @@index([postCount(sort: Desc)]) // For popular categories
+  @@index([name, slug]) // For combined name and slug queries
 }
 
 model Tag {
@@ -185,7 +192,9 @@ model Tag {
   posts           PostTag[]
   
   @@map("tags")
-  @@index([slug])
+  @@index([slug]) // For direct slug lookup
+  @@index([name]) // For name-based searches
+  @@index([name, slug]) // For combined name and slug queries
 }
 
 // =======================
@@ -330,9 +339,13 @@ model PostView {
   post            BlogPost        @relation(fields: [postId], references: [id], onDelete: Cascade)
   
   @@map("post_views")
-  @@index([postId, viewedAt(sort: Desc)])
-  @@index([visitorId])
-  @@index([viewedAt(sort: Desc)])
+  @@index([postId]) // For querying views by post
+  @@index([viewedAt(sort: Desc)]) // For date range queries (most recent first)
+  @@index([postId, viewedAt(sort: Desc)]) // For post-specific date range queries
+  @@index([visitorId]) // For visitor-specific queries
+  @@index([country]) // For geographic queries
+  @@index([sessionId]) // For session-based analysis
+  @@index([viewedAt, country]) // For location and date range combined queries
 }
 
 model PostInteraction {

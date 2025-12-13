@@ -23,7 +23,7 @@ const project = {
   id: 'partnership-program-implementation',
   title: 'Enterprise Partnership Program Implementation',
   description: 'Led comprehensive design and implementation of a company\'s first partnership program, creating automated partner onboarding, commission tracking, and performance analytics. Built production-ready integrations with CRM, billing systems, and partner portals, resulting in a highly successful channel program that became integral to company revenue strategy.',
-  image: '/images/projects/partner-analytics.jpg',
+  image: '/images/projects/partner-intelligence.jpg',
   category: 'Revenue Operations',
   tags: [
     'Partnership Program',
@@ -135,11 +135,11 @@ export default function PartnershipProgramPage() {
                   </div>
                 </div>
 
-                <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent leading-tight">
+                <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent leading-tight">
                   {project.title}
                 </h1>
 
-                <p className="typography-lead leading-relaxed max-w-4xl">
+                <p className="typography-lead leading-relaxed max-w-3xl">
                   {project.description}
                 </p>
 
@@ -174,7 +174,7 @@ export default function PartnershipProgramPage() {
         <section className="py-8">
           <div className="w-full mx-auto px-4 max-w-6xl">
             <div
-              className="relative rounded-2xl overflow-hidden"
+              className="relative rounded-xl overflow-hidden"
             >
               <Image
                 src={project.image}
@@ -197,7 +197,7 @@ export default function PartnershipProgramPage() {
               className="space-y-12"
             >
               <div className="text-center space-y-4">
-                <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+                <h2 className="typography-h2 border-none pb-0 text-2xl md:text-2xl bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
                   Key Achievements
                 </h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -233,7 +233,7 @@ export default function PartnershipProgramPage() {
               className="space-y-12"
             >
               <div className="text-center space-y-4">
-                <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+                <h2 className="typography-h2 border-none pb-0 text-2xl md:text-2xl bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
                   Technical Implementation
                 </h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -271,9 +271,9 @@ export default function PartnershipProgramPage() {
           <div className="w-full mx-auto px-4 max-w-6xl space-y-16">
             {/* Challenge */}
             <div
-              className="glass rounded-3xl p-8"
+              className="glass rounded-2xl p-8"
             >
-              <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent mb-6">
+              <h2 className="typography-h2 border-none pb-0 text-2xl md:text-2xl bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent mb-6">
                 Challenge
               </h2>
               <div className="space-y-4 text-muted-foreground">
@@ -295,9 +295,9 @@ export default function PartnershipProgramPage() {
 
             {/* Solution */}
             <div
-              className="glass rounded-3xl p-8"
+              className="glass rounded-2xl p-8"
             >
-              <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent mb-6">
+              <h2 className="typography-h2 border-none pb-0 text-2xl md:text-2xl bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent mb-6">
                 Solution
               </h2>
               <div className="space-y-6 text-muted-foreground">
@@ -306,7 +306,7 @@ export default function PartnershipProgramPage() {
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                  <div className="bg-white/5 rounded-xl p-6 border border-white/10">
                     <h3 className="font-semibold text-success mb-4">Program Architecture</h3>
                     <ul className="list-disc list-inside space-y-2 text-sm">
                       <li>Multi-tier partner classification system</li>
@@ -316,7 +316,7 @@ export default function PartnershipProgramPage() {
                       <li>Partner portal with self-service capabilities</li>
                     </ul>
                   </div>
-                  <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                  <div className="bg-white/5 rounded-xl p-6 border border-white/10">
                     <h3 className="font-semibold text-primary mb-4">Technical Integration</h3>
                     <ul className="list-disc list-inside space-y-2 text-sm">
                       <li>Salesforce CRM integration for lead management</li>
@@ -336,9 +336,9 @@ export default function PartnershipProgramPage() {
 
             {/* Results & Impact */}
             <div
-              className="glass rounded-3xl p-8"
+              className="glass rounded-2xl p-8"
             >
-              <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent mb-6">
+              <h2 className="typography-h2 border-none pb-0 text-2xl md:text-2xl bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent mb-6">
                 Results & Impact
               </h2>
               <div className="space-y-6 text-muted-foreground">
@@ -347,20 +347,20 @@ export default function PartnershipProgramPage() {
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
-                    <div className="typography-h2 border-none pb-0 text-3xl text-primary mb-2">47</div>
+                  <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-xs border border-primary/20 rounded-xl p-6 text-center">
+                    <div className="typography-h2 border-none pb-0 text-2xl text-primary mb-2">47</div>
                     <div className="typography-small text-muted-foreground">Active Partners Onboarded</div>
                   </div>
-                  <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-sm border border-success/20 rounded-2xl p-6 text-center">
-                    <div className="typography-h2 border-none pb-0 text-3xl text-success mb-2">90%+</div>
+                  <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xs border border-success/20 rounded-xl p-6 text-center">
+                    <div className="typography-h2 border-none pb-0 text-2xl text-success mb-2">90%+</div>
                     <div className="typography-small text-muted-foreground">Process Automation</div>
                   </div>
-                  <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6 text-center">
-                    <div className="typography-h2 border-none pb-0 text-3xl text-purple-400 mb-2">35%</div>
+                  <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-xs border border-purple-500/20 rounded-xl p-6 text-center">
+                    <div className="typography-h2 border-none pb-0 text-2xl text-purple-400 mb-2">35%</div>
                     <div className="typography-small text-muted-foreground">Revenue Growth from Partners</div>
                   </div>
-                  <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-sm border border-amber-500/20 rounded-2xl p-6 text-center">
-                    <div className="typography-h2 border-none pb-0 text-3xl text-amber-400 mb-2">15 Days</div>
+                  <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-xs border border-amber-500/20 rounded-xl p-6 text-center">
+                    <div className="typography-h2 border-none pb-0 text-2xl text-amber-400 mb-2">15 Days</div>
                     <div className="typography-small text-muted-foreground">Average Onboarding Time</div>
                   </div>
                 </div>
@@ -381,9 +381,9 @@ export default function PartnershipProgramPage() {
 
             {/* Key Learnings */}
             <div
-              className="glass rounded-3xl p-8"
+              className="glass rounded-2xl p-8"
             >
-              <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent mb-6">
+              <h2 className="typography-h2 border-none pb-0 text-2xl md:text-2xl bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent mb-6">
                 Key Learnings
               </h2>
               <div className="space-y-4 text-muted-foreground">
@@ -413,9 +413,9 @@ export default function PartnershipProgramPage() {
 
             {/* Technologies Used */}
             <div
-              className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur border border-border/20 rounded-3xl p-8"
+              className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur border border-border/20 rounded-xl p-8"
             >
-              <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl text-muted-foreground mb-6">
+              <h2 className="typography-h2 border-none pb-0 text-2xl md:text-2xl text-muted-foreground mb-6">
                 Technologies Used
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -439,8 +439,8 @@ export default function PartnershipProgramPage() {
             <div
               className="text-center space-y-8"
             >
-              <div className="glass rounded-3xl p-8 md:p-12">
-                <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent mb-6">
+              <div className="glass rounded-2xl p-8 md:p-12">
+                <h2 className="typography-h2 border-none pb-0 text-2xl md:text-2xl bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent mb-6">
                   Interested in Partnership Program Development?
                 </h2>
                 <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
@@ -466,7 +466,7 @@ export default function PartnershipProgramPage() {
               className="space-y-8"
             >
               <div className="text-center space-y-4">
-                <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                <h2 className="typography-h2 border-none pb-0 text-2xl md:text-2xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
                   STAR Impact Analysis
                 </h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -474,7 +474,7 @@ export default function PartnershipProgramPage() {
                 </p>
               </div>
 
-              <div className="glass rounded-3xl p-8">
+              <div className="glass rounded-2xl p-8">
                 <STARAreaChart
                   data={starData}
                   title="Project Progression Metrics"

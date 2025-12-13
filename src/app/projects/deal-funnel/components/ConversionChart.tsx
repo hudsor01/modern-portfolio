@@ -16,7 +16,7 @@ interface ConversionChartProps {
 export function ConversionChart({ stageConversions }: ConversionChartProps) {
   return (
     <div
-      className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+      className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300"
     >
       <h2 className="typography-h3 mb-6">Stage Conversion Rates</h2>
       <div className="h-[300px]">

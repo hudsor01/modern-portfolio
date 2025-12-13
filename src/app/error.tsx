@@ -13,7 +13,7 @@ export default function ErrorPage({
   return (
     <div className="flex items-center justify-center min-h-screen p-4 bg-slate-50 dark:bg-slate-900">
       <div className="w-full max-w-md text-center">
-        <div className="p-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm">
+        <div className="p-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xs">
           <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 bg-destructive/10 dark:bg-destructive-bg rounded-full">
             <AlertTriangle className="w-8 h-8 text-destructive dark:text-destructive" />
           </div>

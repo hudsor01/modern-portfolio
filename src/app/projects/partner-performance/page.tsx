@@ -130,7 +130,7 @@ export default function PartnerPerformanceIntelligence() {
           </Link>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 glass rounded-xl p-1">
+            <div className="flex items-center gap-1 glass rounded-2xl p-1">
               {['overview', 'tiers', 'top-performers'].map((tab) => (
                 <button
                   key={tab}
@@ -161,7 +161,7 @@ export default function PartnerPerformanceIntelligence() {
         <div 
           className="mb-8"
         >
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-4">
+          <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-4">
             Partner Performance Intelligence Dashboard
           </h1>
           <p className="typography-lead max-w-3xl mb-6">
@@ -191,15 +191,15 @@ export default function PartnerPerformanceIntelligence() {
               <div 
                 className="relative group"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative glass-interactive rounded-3xl p-6">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
+                <div className="relative glass-interactive rounded-2xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-primary/20 rounded-2xl">
+                    <div className="p-3 bg-primary/20 rounded-xl">
                       <DollarSign className="h-6 w-6 text-primary" />
                     </div>
                     <span className="typography-small text-muted-foreground uppercase tracking-wider">Partner Revenue</span>
                   </div>
-                  <p className="typography-h2 border-none pb-0 text-3xl mb-1">
+                  <p className="typography-h2 border-none pb-0 text-2xl mb-1">
                     {formatCurrency(partnerMetrics.partnerRevenue)}
                   </p>
                   <p className="typography-small text-muted-foreground">83.2% of Total Revenue</p>
@@ -210,15 +210,15 @@ export default function PartnerPerformanceIntelligence() {
               <div 
                 className="relative group"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative glass-interactive rounded-3xl p-6">
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
+                <div className="relative glass-interactive rounded-2xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-secondary/20 rounded-2xl">
+                    <div className="p-3 bg-secondary/20 rounded-xl">
                       <Target className="h-6 w-6 text-secondary" />
                     </div>
                     <span className="typography-small text-muted-foreground uppercase tracking-wider">Win Rate</span>
                   </div>
-                  <p className="typography-h2 border-none pb-0 text-3xl mb-1">
+                  <p className="typography-h2 border-none pb-0 text-2xl mb-1">
                     {partnerMetrics.winRate}%
                   </p>
                   <p className="typography-small text-muted-foreground">Partner Channel Efficiency</p>
@@ -229,15 +229,15 @@ export default function PartnerPerformanceIntelligence() {
               <div 
                 className="relative group"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative glass-interactive rounded-3xl p-6">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
+                <div className="relative glass-interactive rounded-2xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-purple-500/20 rounded-2xl">
+                    <div className="p-3 bg-purple-500/20 rounded-xl">
                       <Users className="h-6 w-6 text-purple-400" />
                     </div>
                     <span className="typography-small text-muted-foreground uppercase tracking-wider">Active Partners</span>
                   </div>
-                  <p className="typography-h2 border-none pb-0 text-3xl mb-1">
+                  <p className="typography-h2 border-none pb-0 text-2xl mb-1">
                     {partnerMetrics.activePartners}
                   </p>
                   <p className="typography-small text-muted-foreground">of {partnerMetrics.totalPartners} Total</p>
@@ -248,15 +248,15 @@ export default function PartnerPerformanceIntelligence() {
               <div 
                 className="relative group"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-teal-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative glass-interactive rounded-3xl p-6">
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-teal-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
+                <div className="relative glass-interactive rounded-2xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-primary/20 rounded-2xl">
+                    <div className="p-3 bg-primary/20 rounded-xl">
                       <TrendingUp className="h-6 w-6 text-primary" />
                     </div>
                     <span className="typography-small text-muted-foreground uppercase tracking-wider">Quick Ratio</span>
                   </div>
-                  <p className="typography-h2 border-none pb-0 text-3xl mb-1">
+                  <p className="typography-h2 border-none pb-0 text-2xl mb-1">
                     {partnerMetrics.quickRatio}x
                   </p>
                   <p className="typography-small text-muted-foreground">SaaS Benchmark: &gt;4.0x</p>
@@ -269,7 +269,7 @@ export default function PartnerPerformanceIntelligence() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 {/* Partner Tier Performance */}
                 <div 
-                  className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+                  className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
                 >
                   <div className="mb-4">
                     <h2 className="typography-h4 mb-1">Partner Tier Performance Analysis</h2>
@@ -282,7 +282,7 @@ export default function PartnerPerformanceIntelligence() {
 
                 {/* Revenue Contribution */}
                 <div 
-                  className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+                  className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
                 >
                   <div className="mb-4">
                     <h2 className="typography-h4 mb-1">Channel Revenue Contribution</h2>
@@ -297,7 +297,7 @@ export default function PartnerPerformanceIntelligence() {
 
             {activeTab === 'tiers' && (
               <div 
-                className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300 mb-8"
+                className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 mb-8"
               >
                 <div className="mb-4">
                   <h2 className="typography-h4 mb-1">Partner Tier Intelligence & ROI Metrics</h2>
@@ -353,7 +353,7 @@ export default function PartnerPerformanceIntelligence() {
 
             {activeTab === 'top-performers' && (
               <div 
-                className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300 mb-8"
+                className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 mb-8"
               >
                 <div className="mb-4">
                   <h2 className="typography-h4 mb-1">Top 80% Revenue Partners (Pareto Principle)</h2>
@@ -362,7 +362,7 @@ export default function PartnerPerformanceIntelligence() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {top80PercentPartners.map((partner, index) => (
-                    <div key={index} className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                    <div key={index} className="bg-white/5 rounded-xl p-4 border border-white/10">
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="text-base font-semibold">{partner.partner}</h3>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -393,7 +393,7 @@ export default function PartnerPerformanceIntelligence() {
 
             {/* Strategic Insights */}
             <div 
-              className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-3xl p-6"
+              className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-xs border border-primary/20 rounded-xl p-6"
             >
               <h2 className="typography-h4 mb-4 text-primary">Partner Intelligence & Strategic Impact</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -417,7 +417,7 @@ export default function PartnerPerformanceIntelligence() {
               className="mt-16 space-y-8"
             >
               <div className="text-center space-y-4">
-                <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                <h2 className="typography-h2 border-none pb-0 text-2xl md:text-2xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
                   STAR Impact Analysis
                 </h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -425,7 +425,7 @@ export default function PartnerPerformanceIntelligence() {
                 </p>
               </div>
 
-              <div className="glass rounded-3xl p-8">
+              <div className="glass rounded-2xl p-8">
                 <STARAreaChart
                   data={starData}
                   title="Project Progression Metrics"

@@ -105,7 +105,7 @@ const AnimatedCounter = ({
   }, [inView, value, duration])
 
   return (
-    <span ref={countRef} className="typography-h2 border-none pb-0 text-4xl text-primary dark:text-primary font-serif">
+    <span ref={countRef} className="typography-h2 border-none pb-0 text-2xl text-primary dark:text-primary font-serif">
       {prefix}
       {Math.floor(count)}
       {suffix}
@@ -118,7 +118,7 @@ export function AchievementsSection() {
     <div className="py-24 md:py-32 lg:py-36 section-transition section-bg-primary">
       <div className="w-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl lg:text-5xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 animate-fade-in-up">
+          <h2 className="typography-h2 border-none pb-0 text-4xl md:text-5xl lg:text-5xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 animate-fade-in-up">
             Key Achievements
           </h2>
           <p className="typography-lead animate-fade-in-up animate-delay-100">

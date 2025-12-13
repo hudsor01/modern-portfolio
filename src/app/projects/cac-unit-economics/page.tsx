@@ -46,7 +46,7 @@ export default function CACUnitEconomics() {
           </Link>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 glass rounded-xl p-1">
+            <div className="flex items-center gap-1 glass rounded-2xl p-1">
               {tabs.map((tab) => (
                 <button
                   key={tab}
@@ -77,7 +77,7 @@ export default function CACUnitEconomics() {
         <div
           className="mb-8"
         >
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-green-400 to-emerald-600 bg-clip-text text-transparent mb-4">
+          <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-600 bg-clip-text text-transparent mb-4">
             Customer Acquisition Cost Optimization & Unit Economics Dashboard
           </h1>
           <p className="typography-lead max-w-3xl mb-6">

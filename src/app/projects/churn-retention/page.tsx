@@ -104,7 +104,7 @@ export default function ChurnAnalysis() {
         <div 
           className="mb-12"
         >
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-4">
+          <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-4">
             Churn & Retention Analysis
           </h1>
           <p className="typography-lead max-w-3xl">
@@ -128,15 +128,15 @@ export default function ChurnAnalysis() {
             >
               {/* Current Churn Rate */}
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-orange-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative glass-interactive rounded-3xl p-6">
+                <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-orange-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
+                <div className="relative glass-interactive rounded-2xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-destructive/20 rounded-2xl">
+                    <div className="p-3 bg-destructive/20 rounded-xl">
                       <TrendingDown className="h-6 w-6 text-destructive" />
                     </div>
                     <span className="typography-small text-muted-foreground uppercase tracking-wider">Current</span>
                   </div>
-                  <p className="typography-h2 border-none pb-0 text-3xl mb-1">
+                  <p className="typography-h2 border-none pb-0 text-2xl mb-1">
                     {currentMonth ? `${currentMonth.churnRate}%` : 'N/A'}
                   </p>
                   <p className="typography-small text-muted-foreground">Churn Rate</p>
@@ -145,30 +145,30 @@ export default function ChurnAnalysis() {
 
               {/* Retention Rate */}
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative glass-interactive rounded-3xl p-6">
+                <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
+                <div className="relative glass-interactive rounded-2xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-success/20 rounded-2xl">
+                    <div className="p-3 bg-success/20 rounded-xl">
                       <Users className="h-6 w-6 text-success" />
                     </div>
                     <span className="typography-small text-muted-foreground uppercase tracking-wider">Current</span>
                   </div>
-                  <p className="typography-h2 border-none pb-0 text-3xl mb-1">{retentionRate}%</p>
+                  <p className="typography-h2 border-none pb-0 text-2xl mb-1">{retentionRate}%</p>
                   <p className="typography-small text-muted-foreground">Retention Rate</p>
                 </div>
               </div>
 
               {/* Churn Trend */}
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative glass-interactive rounded-3xl p-6">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
+                <div className="relative glass-interactive rounded-2xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-primary/20 rounded-2xl">
+                    <div className="p-3 bg-primary/20 rounded-xl">
                       <Activity className="h-6 w-6 text-primary" />
                     </div>
                     <span className="typography-small text-muted-foreground uppercase tracking-wider">vs Last Month</span>
                   </div>
-                  <p className={`typography-h2 border-none pb-0 text-3xl mb-1 ${
+                  <p className={`typography-h2 border-none pb-0 text-2xl mb-1 ${
                     parseFloat(churnDifference) > 0 ? 'text-destructive' : 'text-success'
                   }`}>
                     {parseFloat(churnDifference) > 0 ? '+' : ''}{churnDifference}%
@@ -179,15 +179,15 @@ export default function ChurnAnalysis() {
 
               {/* At Risk Partners */}
               <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative glass-interactive rounded-3xl p-6">
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
+                <div className="relative glass-interactive rounded-2xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-amber-500/20 rounded-2xl">
+                    <div className="p-3 bg-amber-500/20 rounded-xl">
                       <AlertCircle className="h-6 w-6 text-amber-400" />
                     </div>
                     <span className="typography-small text-muted-foreground uppercase tracking-wider">This Month</span>
                   </div>
-                  <p className="typography-h2 border-none pb-0 text-3xl mb-1">
+                  <p className="typography-h2 border-none pb-0 text-2xl mb-1">
                     {currentMonth ? currentMonth.churned : 'N/A'}
                   </p>
                   <p className="typography-small text-muted-foreground">Partners Churned</p>
@@ -199,7 +199,7 @@ export default function ChurnAnalysis() {
             <div className="space-y-8">
               {/* Retention Heatmap */}
               <div 
-                className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+                className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300"
               >
                 <div className="mb-6">
                   <h2 className="typography-h3 mb-2">Partner Retention Patterns</h2>
@@ -210,7 +210,7 @@ export default function ChurnAnalysis() {
 
               {/* Churn Trends */}
               <div 
-                className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+                className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300"
               >
                 <div className="mb-6">
                   <h2 className="typography-h3 mb-2">Churn Rate Trends</h2>
@@ -224,7 +224,7 @@ export default function ChurnAnalysis() {
             <div className="space-y-12 mt-12">
               {/* Project Overview */}
               <div 
-                className="glass rounded-3xl p-8"
+                className="glass rounded-2xl p-8"
               >
                 <h2 className="typography-h3 mb-6 text-primary">Project Overview</h2>
                 <div className="space-y-4 text-muted-foreground">
@@ -239,7 +239,7 @@ export default function ChurnAnalysis() {
 
               {/* Challenge */}
               <div 
-                className="glass rounded-3xl p-8"
+                className="glass rounded-2xl p-8"
               >
                 <h2 className="typography-h3 mb-6 text-amber-400">Challenge</h2>
                 <div className="space-y-4 text-muted-foreground">
@@ -262,7 +262,7 @@ export default function ChurnAnalysis() {
 
               {/* Solution */}
               <div 
-                className="glass rounded-3xl p-8"
+                className="glass rounded-2xl p-8"
               >
                 <h2 className="typography-h3 mb-6 text-success">Solution</h2>
                 <div className="space-y-4 text-muted-foreground">
@@ -271,7 +271,7 @@ export default function ChurnAnalysis() {
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                    <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
                       <h3 className="font-semibold text-primary mb-3">Predictive Analytics</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
                         <li>Machine learning models for churn probability scoring</li>
@@ -281,7 +281,7 @@ export default function ChurnAnalysis() {
                         <li>Predictive lifecycle modeling</li>
                       </ul>
                     </div>
-                    <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
                       <h3 className="font-semibold text-success mb-3">Retention Operations</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
                         <li>Automated alert system for at-risk partners</li>
@@ -301,7 +301,7 @@ export default function ChurnAnalysis() {
 
               {/* Results & Impact */}
               <div 
-                className="glass rounded-3xl p-8"
+                className="glass rounded-2xl p-8"
               >
                 <h2 className="typography-h3 mb-6 text-emerald-400">Results & Impact</h2>
                 <div className="space-y-6 text-muted-foreground">
@@ -310,20 +310,20 @@ export default function ChurnAnalysis() {
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
-                      <div className="typography-h2 border-none pb-0 text-3xl text-primary mb-2">23%</div>
+                    <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-xs border border-primary/20 rounded-xl p-6 text-center">
+                      <div className="typography-h2 border-none pb-0 text-2xl text-primary mb-2">23%</div>
                       <div className="typography-small text-muted-foreground">Churn Rate Reduction</div>
                     </div>
-                    <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-sm border border-success/20 rounded-2xl p-6 text-center">
-                      <div className="typography-h2 border-none pb-0 text-3xl text-success mb-2">89%</div>
+                    <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xs border border-success/20 rounded-xl p-6 text-center">
+                      <div className="typography-h2 border-none pb-0 text-2xl text-success mb-2">89%</div>
                       <div className="typography-small text-muted-foreground">Prediction Accuracy</div>
                     </div>
-                    <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6 text-center">
-                      <div className="typography-h2 border-none pb-0 text-3xl text-purple-400 mb-2">$830K</div>
+                    <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-xs border border-purple-500/20 rounded-xl p-6 text-center">
+                      <div className="typography-h2 border-none pb-0 text-2xl text-purple-400 mb-2">$830K</div>
                       <div className="typography-small text-muted-foreground">Revenue Saved from Retention</div>
                     </div>
-                    <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-sm border border-amber-500/20 rounded-2xl p-6 text-center">
-                      <div className="typography-h2 border-none pb-0 text-3xl text-amber-400 mb-2">67%</div>
+                    <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-xs border border-amber-500/20 rounded-xl p-6 text-center">
+                      <div className="typography-h2 border-none pb-0 text-2xl text-amber-400 mb-2">67%</div>
                       <div className="typography-small text-muted-foreground">Success Rate of Interventions</div>
                     </div>
                   </div>
@@ -344,7 +344,7 @@ export default function ChurnAnalysis() {
 
               {/* Key Learnings */}
               <div 
-                className="glass rounded-3xl p-8"
+                className="glass rounded-2xl p-8"
               >
                 <h2 className="typography-h3 mb-6 text-purple-400">Key Learnings</h2>
                 <div className="space-y-4 text-muted-foreground">
@@ -374,7 +374,7 @@ export default function ChurnAnalysis() {
 
               {/* Technologies Used */}
               <div 
-                className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-border/20 rounded-3xl p-8"
+                className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-xs border border-border/20 rounded-xl p-8"
               >
                 <h2 className="typography-h3 mb-6 text-muted-foreground">Technologies Used</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -394,19 +394,19 @@ export default function ChurnAnalysis() {
               <div 
                 className="grid grid-cols-1 md:grid-cols-3 gap-6"
               >
-                <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-3xl p-6">
+                <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-xs border border-primary/20 rounded-xl p-6">
                   <h3 className="typography-large mb-2 text-primary">Key Insight</h3>
                   <p className="text-muted-foreground text-sm">
                     Partners with less than 3 months tenure show 2x higher churn risk. Focus onboarding efforts here.
                   </p>
                 </div>
-                <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-sm border border-success/20 rounded-3xl p-6">
+                <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xs border border-success/20 rounded-xl p-6">
                   <h3 className="typography-large mb-2 text-success">Opportunity</h3>
                   <p className="text-muted-foreground text-sm">
                     Implementing proactive engagement for at-risk segments could reduce churn by up to 15%.
                   </p>
                 </div>
-                <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-sm border border-amber-500/20 rounded-3xl p-6">
+                <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-xs border border-amber-500/20 rounded-xl p-6">
                   <h3 className="typography-large mb-2 text-amber-400">Action Required</h3>
                   <p className="text-muted-foreground text-sm">
                     Schedule quarterly business reviews with top 20% of partners to maintain retention rates.
@@ -419,7 +419,7 @@ export default function ChurnAnalysis() {
                 className="mt-16 space-y-8"
               >
                 <div className="text-center space-y-4">
-                  <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                  <h2 className="typography-h2 border-none pb-0 text-2xl md:text-2xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
                     STAR Impact Analysis
                   </h2>
                   <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -427,7 +427,7 @@ export default function ChurnAnalysis() {
                   </p>
                 </div>
 
-                <div className="glass rounded-3xl p-8">
+                <div className="glass rounded-2xl p-8">
                   <STARAreaChart
                     data={starData}
                     title="Project Progression Metrics"

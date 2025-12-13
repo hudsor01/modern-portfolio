@@ -177,8 +177,8 @@
     /* Link enhancements */
     a {
       @apply text-primary font-medium underline-offset-4 hover:text-primary/80;
-      @apply transition-colors duration-200 focus:outline-none;
-      @apply focus:ring-2 focus:ring-primary/20 focus:ring-offset-2 rounded-sm;
+      @apply transition-colors duration-200 focus:outline-hidden;
+      @apply focus:ring-2 focus:ring-primary/20 focus:ring-offset-2 rounded-xs;
       
       /* External link indicator */
       &[href^="http"]:not([href*="localhost"]):not([href*="127.0.0.1"])::after {
@@ -277,7 +277,7 @@
     
     /* Image enhancements */
     img {
-      @apply rounded-lg shadow-sm my-8 max-w-full h-auto;
+      @apply rounded-lg shadow-xs my-8 max-w-full h-auto;
       
       /* Lazy loading placeholder */
       &[loading="lazy"] {
@@ -343,7 +343,7 @@
   /* === BLOG CARD COMPONENTS === */
   
   .blog-card {
-    @apply bg-card border border-border rounded-xl shadow-sm;
+    @apply bg-card border border-border rounded-xl shadow-xs;
     @apply transition-all duration-300 ease-out;
     @apply hover:shadow-md hover:border-border/60 hover:-translate-y-0.5;
     @apply focus-within:ring-2 focus-within:ring-primary/20 focus-within:ring-offset-2;
@@ -477,11 +477,11 @@
   /* === FOCUS UTILITIES === */
   
   .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2;
+    @apply focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:ring-offset-2;
   }
   
   .focus-ring-inset {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-inset;
+    @apply focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:ring-inset;
   }
   
   /* === TEXT UTILITIES === */

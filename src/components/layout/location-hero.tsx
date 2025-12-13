@@ -40,7 +40,7 @@ export function LocationHero({
           </div>
 
           {/* Hero Heading */}
-          <h1 className="typography-h1 text-4xl lg:text-6xl mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <h1 className="typography-h1 text-xl lg:text-xl mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             Revenue Operations Consultant in {city}, {state}
           </h1>
           
@@ -99,7 +99,7 @@ export function LocationHero({
           </div>
 
           {/* Key Highlights */}
-          <div className="bg-white/70 dark:bg-card/70 backdrop-blur rounded-2xl p-6 border border-white/20">
+          <div className="bg-white/70 dark:bg-card/70 backdrop-blur rounded-xl p-6 border border-white/20">
             <h3 className="typography-large mb-4 text-foreground dark:text-white">
               Why Choose Richard Hudson for Revenue Operations in {city}?
             </h3>

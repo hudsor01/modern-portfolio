@@ -261,7 +261,7 @@ export function ContactForm({
   return (
     <Card className={cn('w-full max-w-2xl mx-auto', className)}>
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">{title}</CardTitle>
+        <CardTitle className="text-xl">{title}</CardTitle>
         {description && (
           <CardDescription className="text-base">{description}</CardDescription>
         )}

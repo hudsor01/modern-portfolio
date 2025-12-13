@@ -24,9 +24,14 @@ export function useLocalStorage<T>(
   // Initialize on mount
   useEffect(() => {
     try {
+      // Check if we're in a browser environment
+      if (typeof window === 'undefined') {
+        return;
+      }
+
       // Get from local storage by key
       const item = window.localStorage.getItem(key);
-      
+
       // Parse stored json or return initialValue
       const value = item ? JSON.parse(item) : initialValue;
       setStoredValue(value);
@@ -76,9 +81,14 @@ export function useSessionStorage<T>(
   // Initialize on mount
   useEffect(() => {
     try {
+      // Check if we're in a browser environment
+      if (typeof window === 'undefined') {
+        return;
+      }
+
       // Get from session storage by key
       const item = window.sessionStorage.getItem(key);
-      
+
       // Parse stored json or return initialValue
       const value = item ? JSON.parse(item) : initialValue;
       setStoredValue(value);

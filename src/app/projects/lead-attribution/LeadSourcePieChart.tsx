@@ -36,7 +36,7 @@ export default function LeadSourcePieChart() {
       const percentage = ((data.value / total) * 100).toFixed(1);
       
       return (
-        <div className="p-3 rounded-xl bg-[#0f172a]/90 backdrop-blur-sm border border-white/10">
+        <div className="p-3 rounded-xl bg-[#0f172a]/90 backdrop-blur-xs border border-white/10">
           <p className="font-medium text-white">{data.name}</p>
           <p className="typography-small text-muted-foreground">
             Leads: <span className="font-medium text-white">{data.value.toLocaleString()}</span>

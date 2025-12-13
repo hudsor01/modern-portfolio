@@ -60,6 +60,8 @@ export async function validateCSRFToken(
 
 /**
  * CSRF Protection middleware
+ * Note: This middleware cannot read request body if it's already consumed elsewhere
+ *       The CSRF token should primarily be passed via header for API endpoints
  */
 export async function csrfProtectionMiddleware(
   request: Request,
@@ -73,18 +75,25 @@ export async function csrfProtectionMiddleware(
     return { valid: true, token }
   }
 
-  // Get token from headers or form
+  // Get token primarily from headers (recommended approach)
   let requestToken: string | undefined = request.headers.get(CSRF_HEADER_NAME) ?? undefined
 
-  // If not in headers, try to parse from form data
+  // If not in headers and it's a POST request with form data, we can extract from body
+  // However, we can only read the body once, so need to determine content type first
   if (!requestToken && request.method === 'POST') {
     try {
-      const contentType = request.headers.get('content-type')
-      if (contentType?.includes('application/json')) {
-        const body = await request.json()
-        requestToken = body._csrf_token
-      } else if (contentType?.includes('application/x-www-form-urlencoded')) {
-        const formData = await request.formData()
+      const contentType = request.headers.get('content-type') || ''
+
+      if (contentType.includes('application/json')) {
+        // JSON requests should send token in header, not body
+        return {
+          valid: false,
+          error: 'CSRF token must be sent in header for JSON requests',
+        }
+      } else if (contentType.includes('application/x-www-form-urlencoded') || contentType.includes('multipart/form-data')) {
+        // For form data, we need to clone the request to read it without consuming the body elsewhere
+        const clonedRequest = request.clone()
+        const formData = await clonedRequest.formData()
         const tokenValue = formData.get('_csrf_token')
         requestToken = tokenValue ? String(tokenValue) : undefined
       }

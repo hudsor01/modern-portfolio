@@ -32,7 +32,7 @@ export function SkillsSection({ skills, className = '' }: SkillsSectionProps) {
         
         className="text-center mb-12"
       >
-        <h2 className="typography-h1 text-4xl mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        <h2 className="typography-h1 text-xl mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           Core Competencies
         </h2>
         <p className="typography-lead dark:text-muted-foreground max-w-3xl mx-auto">
@@ -62,9 +62,9 @@ function SkillCategoryCard({ category }: SkillCategoryCardProps) {
       
       
     >
-      <Card className="h-full border-0 shadow-lg bg-white/50 dark:bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+      <Card className="h-full border-0 shadow-lg bg-white/50 dark:bg-card/50 backdrop-blur-xs hover:shadow-xl transition-all duration-300">
         <CardHeader className="text-center pb-4">
-          <div className="text-4xl mb-4">{category.icon}</div>
+          <div className="text-xl mb-4">{category.icon}</div>
           <CardTitle className="typography-h4 text-foreground dark:text-white">
             {category.category}
           </CardTitle>

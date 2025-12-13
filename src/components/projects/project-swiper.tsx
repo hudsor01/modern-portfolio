@@ -56,7 +56,7 @@ export function ProjectSwiper({
         <div className="mb-10 flex flex-col md:flex-row md:items-end md:justify-between">
           <div>
             {title && (
-              <h2 className="flex items-center gap-2 typography-h2 border-none pb-0 text-3xl">
+              <h2 className="flex items-center gap-2 typography-h2 border-none pb-0 text-2xl">
                 <Zap className="text-primary h-6 w-6 animate-pulse" />
                 {title}
               </h2>

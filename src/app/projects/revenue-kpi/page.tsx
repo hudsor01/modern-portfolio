@@ -84,7 +84,7 @@ export default function RevenueKPI() {
             </Link>
 
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 glass rounded-xl p-1">
+              <div className="flex items-center gap-1 glass rounded-2xl p-1">
                 {timeframes.map((timeframe) => (
                   <button
                     key={timeframe}
@@ -113,7 +113,7 @@ export default function RevenueKPI() {
 
           {/* Title Section */}
           <div className="mb-8 animate-fade-in-up">
-            <h1 className="text-4xl md:typography-h1 text-5xl bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-3">
+            <h1 className="text-xl md:typography-h1 text-xl bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-3">
               Revenue KPI Dashboard
             </h1>
             <p className="typography-lead max-w-3xl mb-4">

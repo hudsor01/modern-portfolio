@@ -84,7 +84,7 @@ export default function LeadAttribution() {
           <div
             className="mb-12"
           >
-            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-green-400 to-blue-600 bg-clip-text text-transparent mb-4">
+            <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-600 bg-clip-text text-transparent mb-4">
               Lead Attribution Analytics
             </h1>
             <p className="typography-lead max-w-3xl">
