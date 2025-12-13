@@ -2,8 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { ExternalLink, X } from 'lucide-react'
-import { SiGithub } from 'react-icons/si'
+import { ExternalLink, X, Github } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -89,7 +88,7 @@ export function ProjectQuickView({ project, open, onOpenChangeAction }: ProjectQ
           {project.githubUrl && (
             <Button asChild variant="secondary">
               <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center">
-                <SiGithub className="mr-2 h-4 w-4" />
+                <Github className="mr-2 h-4 w-4" />
                 Source Code
               </a>
             </Button>

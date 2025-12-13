@@ -1,7 +1,35 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useInView } from 'framer-motion'
+
+// Custom useInView hook using IntersectionObserver
+function useInView(ref: React.RefObject<HTMLElement | null>, options?: { once?: boolean }) {
+  const [isInView, setIsInView] = useState(false)
+
+  useEffect(() => {
+    const element = ref.current
+    if (!element) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setIsInView(true)
+          if (options?.once) {
+            observer.disconnect()
+          }
+        } else if (!options?.once) {
+          setIsInView(false)
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [ref, options?.once])
+
+  return isInView
+}
 
 interface AnimatedCounterProps {
   value: string
@@ -9,35 +37,35 @@ interface AnimatedCounterProps {
   className?: string
 }
 
-export function AnimatedCounter({ 
-  value, 
-  duration = 2000, 
-  className = '' 
+export function AnimatedCounter({
+  value,
+  duration = 2000,
+  className = ''
 }: AnimatedCounterProps) {
   const [displayValue, setDisplayValue] = useState('0')
   const ref = useRef<HTMLSpanElement>(null)
   const isInView = useInView(ref, { once: true })
 
   const animateNumber = useCallback((
-    targetNum: number, 
+    targetNum: number,
     formatter: (current: number) => string
   ) => {
     let startTime: number
-    
+
     const animate = (currentTime: number) => {
       if (!startTime) startTime = currentTime
       const progress = Math.min((currentTime - startTime) / duration, 1)
-      const current = value.includes('.') 
-        ? progress * targetNum 
+      const current = value.includes('.')
+        ? progress * targetNum
         : Math.floor(progress * targetNum)
-      
+
       setDisplayValue(formatter(current))
-      
+
       if (progress < 1) {
         requestAnimationFrame(animate)
       }
     }
-    
+
     requestAnimationFrame(animate)
   }, [duration, value])
 
@@ -50,7 +78,7 @@ export function AnimatedCounter({
       const numMatch = value.match(/(\d+\.?\d*)/)
       if (numMatch?.[1]) {
         const targetNum = parseFloat(numMatch[1])
-        animateNumber(targetNum, (current) => 
+        animateNumber(targetNum, (current) =>
           value.replace(/\d+\.?\d*/, current.toFixed(1))
         )
       }
@@ -69,7 +97,7 @@ export function AnimatedCounter({
       const numMatch = value.match(/(\d+)/)
       if (numMatch?.[1]) {
         const targetNum = parseInt(numMatch[1])
-        animateNumber(targetNum, (current) => 
+        animateNumber(targetNum, (current) =>
           value.replace(/\d+/, current.toString())
         )
       }

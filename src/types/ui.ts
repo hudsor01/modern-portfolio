@@ -7,10 +7,8 @@ import { JSX, ReactNode } from 'react'
 import { ImageProps } from 'next/image'
 import { ButtonHTMLAttributes } from 'react'
 import { ContactFormData } from '@/types/shared-api'
-import { Variants } from 'framer-motion'
-
-// Framer Motion types - using Variants from framer-motion for compatibility
-export type MotionVariant = Variants
+// Motion types - no longer using framer-motion
+export type MotionVariant = Record<string, unknown>
 
 
 // Animation related interfaces

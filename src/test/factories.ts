@@ -6,6 +6,7 @@ import { ChartData } from '@/types/chart'
 export const createMockProject = (overrides: Partial<Project> = {}): Project => ({
   id: '1',
   title: 'Test Project',
+  slug: 'test-project',
   description: 'A test project for testing purposes',
   longDescription: 'This is a longer description of the test project that provides more details about what it does and how it works.',
   technologies: ['React', 'TypeScript', 'Next.js'],
@@ -14,7 +15,8 @@ export const createMockProject = (overrides: Partial<Project> = {}): Project => 
   image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&crop=center&q=80',
   githubUrl: 'https://github.com/test/project',
   featured: false,
-  slug: 'test-project',
+  viewCount: 0,
+  clickCount: 0,
   ...overrides,
 })
 

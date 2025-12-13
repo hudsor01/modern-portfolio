@@ -1,9 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { m as motion } from 'framer-motion'
-import { ArrowLeft, Calendar, Tag, ExternalLink, TrendingUp, Users, Settings, BarChart } from 'lucide-react'
-import { SiGithub } from 'react-icons/si'
+
+import { ArrowLeft, Calendar, Tag, ExternalLink, TrendingUp, Users, Settings, BarChart, Github } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -111,10 +110,7 @@ export default function PartnershipProgramPage() {
         {/* Hero Section */}
         <section className="relative py-16 md:py-24">
           <div className="w-full mx-auto px-4 max-w-6xl">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+            <div
               className="space-y-8"
             >
               {/* Back Navigation */}
@@ -128,7 +124,7 @@ export default function PartnershipProgramPage() {
 
               {/* Project Header */}
               <div className="space-y-6">
-                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex flex-wrap items-center gap-4 typography-small text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <Calendar size={16} />
                     <span>May 2024</span>
@@ -143,7 +139,7 @@ export default function PartnershipProgramPage() {
                   {project.title}
                 </h1>
 
-                <p className="text-xl text-muted-foreground leading-relaxed max-w-4xl">
+                <p className="typography-lead leading-relaxed max-w-4xl">
                   {project.description}
                 </p>
 
@@ -165,22 +161,19 @@ export default function PartnershipProgramPage() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2 px-6 py-3 text-base font-medium border border-primary/50 text-primary hover:bg-primary/10 rounded-lg transition-all duration-200"
                   >
-                    <SiGithub className="mr-2" size={20} />
+                    <Github className="mr-2" size={20} />
                     View Code
                   </Link>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
 
         {/* Project Image */}
         <section className="py-8">
           <div className="w-full mx-auto px-4 max-w-6xl">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+            <div
               className="relative rounded-2xl overflow-hidden"
             >
               <Image
@@ -193,21 +186,18 @@ export default function PartnershipProgramPage() {
                   e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwMCIgaGVpZ2h0PSI2MDAiIHZpZXdCb3g9IjAgMCAxMjAwIDYwMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyMDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjMWUyOTNiIi8+CjxwYXRoIGQ9Ik00ODAgMzAwTDU2MCAyNDBMNjQwIDMwMEw1NjAgMzYwTDQ4MCAzMDBaIiBmaWxsPSIjMzc0MTUxIi8+Cjx0ZXh0IHg9IjYwMCIgeT0iNDIwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM2YjczODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlBhcnRuZXJzaGlwIFByb2dyYW0gRGFzaGJvYXJkPC90ZXh0Pgo8L3N2Zz4='
                 }}
               />
-            </motion.div>
+            </div>
           </div>
         </section>
 
         {/* Key Achievements */}
         <section className="py-16">
           <div className="w-full mx-auto px-4 max-w-6xl">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
+            <div
               className="space-y-12"
             >
               <div className="text-center space-y-4">
-                <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+                <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
                   Key Achievements
                 </h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -217,39 +207,33 @@ export default function PartnershipProgramPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {achievements.map((achievement, index) => (
-                  <motion.div
+                  <div
                     key={index}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
                     className="glass rounded-2xl p-6 hover:bg-white/10 transition-all duration-300"
                   >
                     <div className="text-primary mb-4">
                       {achievement.icon}
                     </div>
                     <div className="space-y-2">
-                      <div className="text-2xl font-bold text-white">{achievement.value}</div>
+                      <div className="typography-h3 text-white">{achievement.value}</div>
                       <div className="text-sm font-medium text-primary">{achievement.metric}</div>
-                      <div className="text-sm text-muted-foreground leading-relaxed">{achievement.description}</div>
+                      <div className="typography-small typography-muted">{achievement.description}</div>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
 
         {/* Technical Implementation */}
         <section className="py-16">
           <div className="w-full mx-auto px-4 max-w-6xl">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
+            <div
               className="space-y-12"
             >
               <div className="text-center space-y-4">
-                <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+                <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
                   Technical Implementation
                 </h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -259,14 +243,11 @@ export default function PartnershipProgramPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {technicalDetails.map((detail, index) => (
-                  <motion.div
+                  <div
                     key={index}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 1.0 + index * 0.1 }}
                     className="glass rounded-2xl p-8 hover:bg-white/10 transition-all duration-300"
                   >
-                    <h3 className="text-xl font-bold text-foreground mb-4">{detail.title}</h3>
+                    <h3 className="typography-h4 text-foreground mb-4">{detail.title}</h3>
                     <p className="text-muted-foreground mb-6 leading-relaxed">{detail.description}</p>
                     <div className="flex flex-wrap gap-2">
                       {detail.technologies.map((tech, i) => (
@@ -278,10 +259,10 @@ export default function PartnershipProgramPage() {
                         </span>
                       ))}
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
 
@@ -289,13 +270,10 @@ export default function PartnershipProgramPage() {
         <section className="py-16">
           <div className="w-full mx-auto px-4 max-w-6xl space-y-16">
             {/* Challenge */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.2 }}
+            <div
               className="glass rounded-3xl p-8"
             >
-              <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent mb-6">
+              <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent mb-6">
                 Challenge
               </h2>
               <div className="space-y-4 text-muted-foreground">
@@ -313,16 +291,13 @@ export default function PartnershipProgramPage() {
                   This gap represented a critical strategic disadvantage, as competitors were successfully leveraging partner channels to accelerate growth and market penetration.
                 </p>
               </div>
-            </motion.div>
+            </div>
 
             {/* Solution */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.3 }}
+            <div
               className="glass rounded-3xl p-8"
             >
-              <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent mb-6">
+              <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent mb-6">
                 Solution
               </h2>
               <div className="space-y-6 text-muted-foreground">
@@ -357,16 +332,13 @@ export default function PartnershipProgramPage() {
                   The implementation required coordination across sales, legal, finance, and IT teams to ensure all business processes were properly integrated and compliant with regulatory requirements.
                 </p>
               </div>
-            </motion.div>
+            </div>
 
             {/* Results & Impact */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.4 }}
+            <div
               className="glass rounded-3xl p-8"
             >
-              <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent mb-6">
+              <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent mb-6">
                 Results & Impact
               </h2>
               <div className="space-y-6 text-muted-foreground">
@@ -376,20 +348,20 @@ export default function PartnershipProgramPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
-                    <div className="text-3xl font-bold text-primary mb-2">47</div>
-                    <div className="text-sm text-muted-foreground">Active Partners Onboarded</div>
+                    <div className="typography-h2 border-none pb-0 text-3xl text-primary mb-2">47</div>
+                    <div className="typography-small text-muted-foreground">Active Partners Onboarded</div>
                   </div>
                   <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-sm border border-success/20 rounded-2xl p-6 text-center">
-                    <div className="text-3xl font-bold text-success mb-2">90%+</div>
-                    <div className="text-sm text-muted-foreground">Process Automation</div>
+                    <div className="typography-h2 border-none pb-0 text-3xl text-success mb-2">90%+</div>
+                    <div className="typography-small text-muted-foreground">Process Automation</div>
                   </div>
                   <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6 text-center">
-                    <div className="text-3xl font-bold text-purple-400 mb-2">35%</div>
-                    <div className="text-sm text-muted-foreground">Revenue Growth from Partners</div>
+                    <div className="typography-h2 border-none pb-0 text-3xl text-purple-400 mb-2">35%</div>
+                    <div className="typography-small text-muted-foreground">Revenue Growth from Partners</div>
                   </div>
                   <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-sm border border-amber-500/20 rounded-2xl p-6 text-center">
-                    <div className="text-3xl font-bold text-amber-400 mb-2">15 Days</div>
-                    <div className="text-sm text-muted-foreground">Average Onboarding Time</div>
+                    <div className="typography-h2 border-none pb-0 text-3xl text-amber-400 mb-2">15 Days</div>
+                    <div className="typography-small text-muted-foreground">Average Onboarding Time</div>
                   </div>
                 </div>
 
@@ -405,16 +377,13 @@ export default function PartnershipProgramPage() {
                   </ul>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Key Learnings */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.5 }}
+            <div
               className="glass rounded-3xl p-8"
             >
-              <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent mb-6">
+              <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent mb-6">
                 Key Learnings
               </h2>
               <div className="space-y-4 text-muted-foreground">
@@ -440,16 +409,13 @@ export default function PartnershipProgramPage() {
                   This project demonstrated that successful channel programs require equal focus on business strategy, operational excellence, and technical implementation. The program's success came from treating partners as strategic assets rather than just another sales channel.
                 </p>
               </div>
-            </motion.div>
+            </div>
 
             {/* Technologies Used */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.6 }}
+            <div
               className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur border border-border/20 rounded-3xl p-8"
             >
-              <h2 className="text-3xl md:text-4xl font-bold text-muted-foreground mb-6">
+              <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl text-muted-foreground mb-6">
                 Technologies Used
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -463,21 +429,18 @@ export default function PartnershipProgramPage() {
                   </span>
                 ))}
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
 
         {/* CTA Section */}
         <section className="py-16">
           <div className="w-full mx-auto px-4 max-w-6xl">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.7 }}
+            <div
               className="text-center space-y-8"
             >
               <div className="glass rounded-3xl p-8 md:p-12">
-                <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent mb-6">
+                <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent mb-6">
                   Interested in Partnership Program Development?
                 </h2>
                 <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
@@ -492,21 +455,18 @@ export default function PartnershipProgramPage() {
                   Discuss Your Partnership Strategy
                 </Button>
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
 
         {/* STAR Impact Analysis */}
         <section className="py-16 bg-gradient-to-b from-transparent to-black/20">
           <div className="w-full mx-auto px-4 max-w-6xl">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+            <div
               className="space-y-8"
             >
               <div className="text-center space-y-4">
-                <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
                   STAR Impact Analysis
                 </h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -524,22 +484,22 @@ export default function PartnershipProgramPage() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="text-center p-6 glass rounded-2xl">
                   <div className="text-sm text-primary/70 mb-2">Situation</div>
-                  <div className="text-lg font-bold text-white">Initial Assessment</div>
+                  <div className="typography-large text-white">Initial Assessment</div>
                 </div>
                 <div className="text-center p-6 glass rounded-2xl">
                   <div className="text-sm text-green-400/70 mb-2">Task</div>
-                  <div className="text-lg font-bold text-white">Goal Definition</div>
+                  <div className="typography-large text-white">Goal Definition</div>
                 </div>
                 <div className="text-center p-6 glass rounded-2xl">
                   <div className="text-sm text-amber-400/70 mb-2">Action</div>
-                  <div className="text-lg font-bold text-white">Implementation</div>
+                  <div className="typography-large text-white">Implementation</div>
                 </div>
                 <div className="text-center p-6 glass rounded-2xl">
                   <div className="text-sm text-cyan-400/70 mb-2">Result</div>
-                  <div className="text-lg font-bold text-white">Measurable Impact</div>
+                  <div className="typography-large text-white">Measurable Impact</div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
       </main>

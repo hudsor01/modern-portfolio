@@ -11,7 +11,7 @@ import {
   AlertCircle,
 } from 'lucide-react'
 import Link from 'next/link'
-import { m as motion } from 'framer-motion'
+
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 
@@ -101,19 +101,16 @@ export default function ChurnAnalysis() {
         </div>
 
         {/* Title Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+        <div 
           className="mb-12"
         >
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-4">
             Churn & Retention Analysis
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl">
+          <p className="typography-lead max-w-3xl">
             Track partner churn rates and retention patterns to identify at-risk segments and improve partner success strategies.
           </p>
-        </motion.div>
+        </div>
 
         {/* Loading State */}
         {isLoading ? (
@@ -126,10 +123,7 @@ export default function ChurnAnalysis() {
         ) : (
           <>
             {/* KPI Cards */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+            <div 
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
             >
               {/* Current Churn Rate */}
@@ -140,12 +134,12 @@ export default function ChurnAnalysis() {
                     <div className="p-3 bg-destructive/20 rounded-2xl">
                       <TrendingDown className="h-6 w-6 text-destructive" />
                     </div>
-                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Current</span>
+                    <span className="typography-small text-muted-foreground uppercase tracking-wider">Current</span>
                   </div>
-                  <p className="text-3xl font-bold mb-1">
+                  <p className="typography-h2 border-none pb-0 text-3xl mb-1">
                     {currentMonth ? `${currentMonth.churnRate}%` : 'N/A'}
                   </p>
-                  <p className="text-sm text-muted-foreground">Churn Rate</p>
+                  <p className="typography-small text-muted-foreground">Churn Rate</p>
                 </div>
               </div>
 
@@ -157,10 +151,10 @@ export default function ChurnAnalysis() {
                     <div className="p-3 bg-success/20 rounded-2xl">
                       <Users className="h-6 w-6 text-success" />
                     </div>
-                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Current</span>
+                    <span className="typography-small text-muted-foreground uppercase tracking-wider">Current</span>
                   </div>
-                  <p className="text-3xl font-bold mb-1">{retentionRate}%</p>
-                  <p className="text-sm text-muted-foreground">Retention Rate</p>
+                  <p className="typography-h2 border-none pb-0 text-3xl mb-1">{retentionRate}%</p>
+                  <p className="typography-small text-muted-foreground">Retention Rate</p>
                 </div>
               </div>
 
@@ -172,14 +166,14 @@ export default function ChurnAnalysis() {
                     <div className="p-3 bg-primary/20 rounded-2xl">
                       <Activity className="h-6 w-6 text-primary" />
                     </div>
-                    <span className="text-xs text-muted-foreground uppercase tracking-wider">vs Last Month</span>
+                    <span className="typography-small text-muted-foreground uppercase tracking-wider">vs Last Month</span>
                   </div>
-                  <p className={`text-3xl font-bold mb-1 ${
+                  <p className={`typography-h2 border-none pb-0 text-3xl mb-1 ${
                     parseFloat(churnDifference) > 0 ? 'text-destructive' : 'text-success'
                   }`}>
                     {parseFloat(churnDifference) > 0 ? '+' : ''}{churnDifference}%
                   </p>
-                  <p className="text-sm text-muted-foreground">Churn Change</p>
+                  <p className="typography-small text-muted-foreground">Churn Change</p>
                 </div>
               </div>
 
@@ -191,57 +185,48 @@ export default function ChurnAnalysis() {
                     <div className="p-3 bg-amber-500/20 rounded-2xl">
                       <AlertCircle className="h-6 w-6 text-amber-400" />
                     </div>
-                    <span className="text-xs text-muted-foreground uppercase tracking-wider">This Month</span>
+                    <span className="typography-small text-muted-foreground uppercase tracking-wider">This Month</span>
                   </div>
-                  <p className="text-3xl font-bold mb-1">
+                  <p className="typography-h2 border-none pb-0 text-3xl mb-1">
                     {currentMonth ? currentMonth.churned : 'N/A'}
                   </p>
-                  <p className="text-sm text-muted-foreground">Partners Churned</p>
+                  <p className="typography-small text-muted-foreground">Partners Churned</p>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Charts Section */}
             <div className="space-y-8">
               {/* Retention Heatmap */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
+              <div 
                 className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
               >
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold mb-2">Partner Retention Patterns</h2>
-                  <p className="text-muted-foreground">Monthly retention rates by partner cohort</p>
+                  <h2 className="typography-h3 mb-2">Partner Retention Patterns</h2>
+                  <p className="typography-muted">Monthly retention rates by partner cohort</p>
                 </div>
                 <RetentionHeatmap />
-              </motion.div>
+              </div>
 
               {/* Churn Trends */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.6 }}
+              <div 
                 className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
               >
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold mb-2">Churn Rate Trends</h2>
-                  <p className="text-muted-foreground">Historical churn rate analysis and projections</p>
+                  <h2 className="typography-h3 mb-2">Churn Rate Trends</h2>
+                  <p className="typography-muted">Historical churn rate analysis and projections</p>
                 </div>
                 <ChurnLineChart />
-              </motion.div>
+              </div>
             </div>
 
             {/* Professional Narrative Sections */}
             <div className="space-y-12 mt-12">
               {/* Project Overview */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.8 }}
+              <div 
                 className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-primary">Project Overview</h2>
+                <h2 className="typography-h3 mb-6 text-primary">Project Overview</h2>
                 <div className="space-y-4 text-muted-foreground">
                   <p className="text-lg leading-relaxed">
                     Developed a predictive churn analysis system to identify at-risk partners and implement proactive retention strategies. This analytics solution became critical for maintaining partner relationships and optimizing lifetime value across the entire partner ecosystem.
@@ -250,16 +235,13 @@ export default function ChurnAnalysis() {
                     The system processes partner engagement patterns, transaction histories, and performance metrics to predict churn probability with 89% accuracy, enabling data-driven retention interventions.
                   </p>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Challenge */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.9 }}
+              <div 
                 className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-amber-400">Challenge</h2>
+                <h2 className="typography-h3 mb-6 text-amber-400">Challenge</h2>
                 <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
                     Partner churn was reactive rather than proactive, resulting in significant revenue loss and missed retention opportunities:
@@ -276,16 +258,13 @@ export default function ChurnAnalysis() {
                     The reactive approach meant losing partners who could have been retained with timely intervention, significantly impacting long-term revenue.
                   </p>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Solution */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 1.0 }}
+              <div 
                 className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-success">Solution</h2>
+                <h2 className="typography-h3 mb-6 text-success">Solution</h2>
                 <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
                     Built a comprehensive churn prediction and retention analytics platform using machine learning algorithms and real-time data analysis:
@@ -318,16 +297,13 @@ export default function ChurnAnalysis() {
                     The solution integrated with CRM systems, partner portals, and communication platforms to provide a 360-degree view of partner health and automated intervention triggers.
                   </p>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Results & Impact */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 1.1 }}
+              <div 
                 className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-emerald-400">Results & Impact</h2>
+                <h2 className="typography-h3 mb-6 text-emerald-400">Results & Impact</h2>
                 <div className="space-y-6 text-muted-foreground">
                   <p className="leading-relaxed">
                     The churn prediction system transformed partner retention from reactive firefighting to proactive relationship management:
@@ -335,20 +311,20 @@ export default function ChurnAnalysis() {
                   
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-primary mb-2">23%</div>
-                      <div className="text-sm text-muted-foreground">Churn Rate Reduction</div>
+                      <div className="typography-h2 border-none pb-0 text-3xl text-primary mb-2">23%</div>
+                      <div className="typography-small text-muted-foreground">Churn Rate Reduction</div>
                     </div>
                     <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-sm border border-success/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-success mb-2">89%</div>
-                      <div className="text-sm text-muted-foreground">Prediction Accuracy</div>
+                      <div className="typography-h2 border-none pb-0 text-3xl text-success mb-2">89%</div>
+                      <div className="typography-small text-muted-foreground">Prediction Accuracy</div>
                     </div>
                     <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-purple-400 mb-2">$830K</div>
-                      <div className="text-sm text-muted-foreground">Revenue Saved from Retention</div>
+                      <div className="typography-h2 border-none pb-0 text-3xl text-purple-400 mb-2">$830K</div>
+                      <div className="typography-small text-muted-foreground">Revenue Saved from Retention</div>
                     </div>
                     <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-sm border border-amber-500/20 rounded-2xl p-6 text-center">
-                      <div className="text-3xl font-bold text-amber-400 mb-2">67%</div>
-                      <div className="text-sm text-muted-foreground">Success Rate of Interventions</div>
+                      <div className="typography-h2 border-none pb-0 text-3xl text-amber-400 mb-2">67%</div>
+                      <div className="typography-small text-muted-foreground">Success Rate of Interventions</div>
                     </div>
                   </div>
 
@@ -364,16 +340,13 @@ export default function ChurnAnalysis() {
                     </ul>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Key Learnings */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 1.2 }}
+              <div 
                 className="glass rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-purple-400">Key Learnings</h2>
+                <h2 className="typography-h3 mb-6 text-purple-400">Key Learnings</h2>
                 <div className="space-y-4 text-muted-foreground">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
@@ -397,16 +370,13 @@ export default function ChurnAnalysis() {
                     This project highlighted that retention is fundamentally about relationship health, not just transactional metrics. The most successful interventions addressed underlying business challenges rather than just engagement gaps.
                   </p>
                 </div>
-              </motion.div>
+              </div>
 
               {/* Technologies Used */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 1.3 }}
+              <div 
                 className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-sm border border-border/20 rounded-3xl p-8"
               >
-                <h2 className="text-2xl font-bold mb-6 text-muted-foreground">Technologies Used</h2>
+                <h2 className="typography-h3 mb-6 text-muted-foreground">Technologies Used</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
                     'React 19', 'TypeScript', 'Recharts', 'Machine Learning',
@@ -418,44 +388,38 @@ export default function ChurnAnalysis() {
                     </span>
                   ))}
                 </div>
-              </motion.div>
+              </div>
 
               {/* Insights Section */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 1.4 }}
+              <div 
                 className="grid grid-cols-1 md:grid-cols-3 gap-6"
               >
                 <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-3xl p-6">
-                  <h3 className="text-lg font-semibold mb-2 text-primary">Key Insight</h3>
+                  <h3 className="typography-large mb-2 text-primary">Key Insight</h3>
                   <p className="text-muted-foreground text-sm">
                     Partners with less than 3 months tenure show 2x higher churn risk. Focus onboarding efforts here.
                   </p>
                 </div>
                 <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-sm border border-success/20 rounded-3xl p-6">
-                  <h3 className="text-lg font-semibold mb-2 text-success">Opportunity</h3>
+                  <h3 className="typography-large mb-2 text-success">Opportunity</h3>
                   <p className="text-muted-foreground text-sm">
                     Implementing proactive engagement for at-risk segments could reduce churn by up to 15%.
                   </p>
                 </div>
                 <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-sm border border-amber-500/20 rounded-3xl p-6">
-                  <h3 className="text-lg font-semibold mb-2 text-amber-400">Action Required</h3>
+                  <h3 className="typography-large mb-2 text-amber-400">Action Required</h3>
                   <p className="text-muted-foreground text-sm">
                     Schedule quarterly business reviews with top 20% of partners to maintain retention rates.
                   </p>
                 </div>
-              </motion.div>
+              </div>
 
               {/* STAR Impact Analysis */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
+              <div
                 className="mt-16 space-y-8"
               >
                 <div className="text-center space-y-4">
-                  <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                  <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
                     STAR Impact Analysis
                   </h2>
                   <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -473,22 +437,22 @@ export default function ChurnAnalysis() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div className="text-center p-6 glass rounded-2xl">
                     <div className="text-sm text-primary/70 mb-2">Situation</div>
-                    <div className="text-lg font-bold text-white">Initial Assessment</div>
+                    <div className="typography-large text-white">Initial Assessment</div>
                   </div>
                   <div className="text-center p-6 glass rounded-2xl">
                     <div className="text-sm text-green-400/70 mb-2">Task</div>
-                    <div className="text-lg font-bold text-white">Goal Definition</div>
+                    <div className="typography-large text-white">Goal Definition</div>
                   </div>
                   <div className="text-center p-6 glass rounded-2xl">
                     <div className="text-sm text-amber-400/70 mb-2">Action</div>
-                    <div className="text-lg font-bold text-white">Implementation</div>
+                    <div className="typography-large text-white">Implementation</div>
                   </div>
                   <div className="text-center p-6 glass rounded-2xl">
                     <div className="text-sm text-cyan-400/70 mb-2">Result</div>
-                    <div className="text-lg font-bold text-white">Measurable Impact</div>
+                    <div className="typography-large text-white">Measurable Impact</div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             </div>
           </>
         )}

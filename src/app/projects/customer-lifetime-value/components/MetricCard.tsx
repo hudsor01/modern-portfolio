@@ -1,6 +1,6 @@
 'use client'
 
-import { m as motion } from 'framer-motion'
+
 import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 
@@ -13,7 +13,6 @@ interface MetricCardProps {
   gradientTo: string
   iconBgClass: string
   iconColorClass: string
-  delay: number
 }
 
 export function MetricCard({
@@ -25,13 +24,9 @@ export function MetricCard({
   gradientTo,
   iconBgClass,
   iconColorClass,
-  delay
 }: MetricCardProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay }}
+    <div
       className="relative group"
     >
       <div className={`absolute inset-0 bg-gradient-to-r ${gradientFrom} ${gradientTo} rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300`} />
@@ -40,15 +35,15 @@ export function MetricCard({
           <div className={`p-3 ${iconBgClass} rounded-2xl`}>
             <Icon className={`h-6 w-6 ${iconColorClass}`} />
           </div>
-          <span className="text-xs text-muted-foreground uppercase tracking-wider">{label}</span>
+          <span className="typography-small text-muted-foreground uppercase tracking-wider">{label}</span>
         </div>
-        <p className="text-3xl font-bold mb-1">{value}</p>
+        <p className="typography-h2 border-none pb-0 text-3xl mb-1">{value}</p>
         {typeof subtitle === 'string' ? (
-          <p className="text-sm text-muted-foreground">{subtitle}</p>
+          <p className="typography-small text-muted-foreground">{subtitle}</p>
         ) : (
           subtitle
         )}
       </div>
-    </motion.div>
+    </div>
   )
 }

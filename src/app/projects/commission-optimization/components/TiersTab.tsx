@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { m as motion } from 'framer-motion'
+
 import { commissionTiers } from '../data/constants'
 import { formatCurrency, formatPercent } from '../utils'
 
@@ -14,29 +14,23 @@ export function TiersTab() {
   return (
     <div className="space-y-8 mb-12">
       {/* Commission Tier Visualization */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
+      <div
         className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-2">Commission Tier Performance & ROI Analysis</h2>
-          <p className="text-muted-foreground">Multi-tier commission structure optimization with performance-based adjustments</p>
+          <h2 className="typography-h3 mb-2">Commission Tier Performance & ROI Analysis</h2>
+          <p className="typography-muted">Multi-tier commission structure optimization with performance-based adjustments</p>
         </div>
         <CommissionTierChart />
-      </motion.div>
+      </div>
 
       {/* Tier Details Table */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.7 }}
+      <div
         className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-2">Partner Commission Tier Structure & Requirements</h2>
-          <p className="text-muted-foreground">Detailed commission tier analysis with earnings, requirements, and ROI metrics</p>
+          <h2 className="typography-h3 mb-2">Partner Commission Tier Structure & Requirements</h2>
+          <p className="typography-muted">Detailed commission tier analysis with earnings, requirements, and ROI metrics</p>
         </div>
 
         <div className="overflow-x-auto">
@@ -69,13 +63,13 @@ export function TiersTab() {
                       {tier.roi.toFixed(1)}x
                     </span>
                   </td>
-                  <td className="py-4 px-4 text-sm text-muted-foreground">{tier.requirements}</td>
+                  <td className="py-4 px-4 typography-small text-muted-foreground">{tier.requirements}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }

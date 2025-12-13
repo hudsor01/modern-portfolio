@@ -1,4 +1,4 @@
-import type { Variants } from 'framer-motion'
+
 
 export type YearOverYearGrowth = {
   year: number
@@ -16,32 +16,13 @@ export const starData = {
   result: { phase: 'Result', impact: 99, efficiency: 97, value: 95 },
 }
 
-export const staggerContainer: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-}
-
-export const fadeInUp: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: 'easeOut' },
-  },
-}
-
 export const technologies = [
   'React 19',
   'TypeScript',
   'Recharts',
   'Next.js',
   'Tailwind CSS',
-  'Framer Motion',
+  'CSS Animations',
   'API Integration',
   'Real-time Data',
   'Responsive Design',

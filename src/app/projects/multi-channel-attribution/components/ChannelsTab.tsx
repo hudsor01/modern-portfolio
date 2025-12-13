@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { m as motion } from 'framer-motion'
+
 import { channelPerformance } from '../data/constants'
 import { formatCurrency, formatPercent } from '../utils'
 
@@ -14,31 +14,25 @@ export function ChannelsTab() {
   return (
     <div className="space-y-6 mb-8">
       {/* Touchpoint Analysis */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
+      <div
         className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-4">
-          <h2 className="text-xl font-bold mb-1">Multi-Touch Attribution & Channel Performance</h2>
-          <p className="text-sm text-muted-foreground">Advanced touchpoint analysis revealing true cross-channel contribution and ROI optimization</p>
+          <h2 className="typography-h4 mb-1">Multi-Touch Attribution & Channel Performance</h2>
+          <p className="typography-small text-muted-foreground">Advanced touchpoint analysis revealing true cross-channel contribution and ROI optimization</p>
         </div>
         <div className="h-[250px]">
           <TouchpointAnalysisChart />
         </div>
-      </motion.div>
+      </div>
 
       {/* Channel Performance Table */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
+      <div
         className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-4">
-          <h2 className="text-xl font-bold mb-1">Channel Attribution & ROI Performance</h2>
-          <p className="text-sm text-muted-foreground">Comprehensive channel analysis with multi-touch attribution insights and investment optimization</p>
+          <h2 className="typography-h4 mb-1">Channel Attribution & ROI Performance</h2>
+          <p className="typography-small text-muted-foreground">Comprehensive channel analysis with multi-touch attribution insights and investment optimization</p>
         </div>
 
         <div className="overflow-x-auto">
@@ -77,7 +71,7 @@ export function ChannelsTab() {
             </tbody>
           </table>
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }

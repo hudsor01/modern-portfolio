@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, RefreshCcw, TrendingUp, Users, Zap, Target } from 'lucide-react'
-import { m as motion } from 'framer-motion'
+
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 import { leadAttributionData } from '@/app/projects/data/partner-analytics'
@@ -81,19 +81,16 @@ export default function LeadAttribution() {
           </div>
 
           {/* Title Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+          <div
             className="mb-12"
           >
             <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-green-400 to-blue-600 bg-clip-text text-transparent mb-4">
               Lead Attribution Analytics
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl">
+            <p className="typography-lead max-w-3xl">
               Understand your lead sources, optimize marketing spend, and improve conversion rates across all channels.
             </p>
-          </motion.div>
+          </div>
 
           {/* Loading State */}
           {isLoading ? (
@@ -106,17 +103,14 @@ export default function LeadAttribution() {
           ) : (
             <>
               {/* KPI Cards */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
+              <div
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
               >
                 <MetricCard icon={Users} label="Total" value={totalLeads.toLocaleString()} subtitle="Leads Generated" gradientFrom="from-blue-600" gradientTo="to-indigo-600" iconBgClass="bg-primary/20" iconColorClass="text-primary" />
                 <MetricCard icon={Target} label="Success" value={totalConversions.toLocaleString()} subtitle="Total Conversions" gradientFrom="from-green-600" gradientTo="to-emerald-600" iconBgClass="bg-success/20" iconColorClass="text-success" />
                 <MetricCard icon={Zap} label="Overall" value={`${overallConversionRate.toFixed(1)}%`} subtitle="Conversion Rate" gradientFrom="from-purple-600" gradientTo="to-pink-600" iconBgClass="bg-purple-500/20" iconColorClass="text-purple-400" />
                 <MetricCard icon={TrendingUp} label="MoM" value={`+${monthlyGrowth}%`} subtitle="Monthly Growth" gradientFrom="from-amber-600" gradientTo="to-orange-600" iconBgClass="bg-amber-500/20" iconColorClass="text-amber-400" />
-              </motion.div>
+              </div>
 
               {/* Charts Section */}
               <ChartsSection bestSource={bestSource} />

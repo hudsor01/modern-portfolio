@@ -5,6 +5,9 @@
 
 import { db } from '../db'
 import { Prisma } from '@prisma/client'
+import { createContextLogger } from '@/lib/monitoring/logger'
+
+const dbLogger = createContextLogger('DatabaseOps')
 import type {
   BlogPost,
   Author,
@@ -411,7 +414,7 @@ export class AnalyticsOperations {
           }
         }
       }).catch((error: unknown) => {
-        console.error('Failed to update view count:', error)
+        dbLogger.error('Failed to update view count', error instanceof Error ? error : undefined, { postId })
       })
 
     } catch (error: unknown) {
@@ -454,7 +457,7 @@ export class AnalyticsOperations {
             }
           }
         }).catch((error: unknown) => {
-          console.error('Failed to update interaction count:', error)
+          dbLogger.error('Failed to update interaction count', error instanceof Error ? error : undefined, { postId, updateField })
         })
       }
 

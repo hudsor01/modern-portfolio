@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { m as motion } from 'framer-motion'
+
 
 function ChartLoadError() {
   return (
@@ -21,17 +21,14 @@ const PipelineHealthChart = dynamic(
 
 export function PipelineTab() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.7 }}
+    <div
       className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300 mb-12"
     >
       <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-2">Pipeline Health & Velocity Analysis</h2>
-        <p className="text-muted-foreground">Real-time pipeline tracking with stage progression and bottleneck identification</p>
+        <h2 className="typography-h3 mb-2">Pipeline Health & Velocity Analysis</h2>
+        <p className="typography-muted">Real-time pipeline tracking with stage progression and bottleneck identification</p>
       </div>
       <PipelineHealthChart />
-    </motion.div>
+    </div>
   )
 }

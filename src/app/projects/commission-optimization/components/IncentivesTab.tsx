@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { m as motion } from 'framer-motion'
+
 import { TrendingUp } from 'lucide-react'
 import { incentivePrograms } from '../data/constants'
 import { formatCurrency, formatPercent } from '../utils'
@@ -15,29 +15,23 @@ export function IncentivesTab() {
   return (
     <div className="space-y-8 mb-12">
       {/* Performance Incentive Chart */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
+      <div
         className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-2">Performance Incentive Program Effectiveness</h2>
-          <p className="text-muted-foreground">Targeted incentive programs driving partner performance with ROI-optimized bonus structures</p>
+          <h2 className="typography-h3 mb-2">Performance Incentive Program Effectiveness</h2>
+          <p className="typography-muted">Targeted incentive programs driving partner performance with ROI-optimized bonus structures</p>
         </div>
         <PerformanceIncentiveChart />
-      </motion.div>
+      </div>
 
       {/* Incentive Programs Table */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.7 }}
+      <div
         className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-2">Incentive Program Performance & ROI Analysis</h2>
-          <p className="text-muted-foreground">Comprehensive incentive program analysis with effectiveness metrics and performance impact</p>
+          <h2 className="typography-h3 mb-2">Incentive Program Performance & ROI Analysis</h2>
+          <p className="typography-muted">Comprehensive incentive program analysis with effectiveness metrics and performance impact</p>
         </div>
 
         <div className="overflow-x-auto">
@@ -79,7 +73,7 @@ export function IncentivesTab() {
             </tbody>
           </table>
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }

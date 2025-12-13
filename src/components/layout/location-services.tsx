@@ -26,10 +26,10 @@ export function LocationServices({ city, services }: LocationServicesProps) {
     <section className="py-16 bg-background dark:bg-background">
       <div className="w-full mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground dark:text-white">
+          <h2 className="typography-h2 border-none pb-0 text-3xl lg:text-4xl text-foreground dark:text-white">
             Revenue Operations Services in {city}
           </h2>
-          <p className="text-lg text-muted-foreground dark:text-muted-foreground max-w-3xl mx-auto">
+          <p className="typography-lead max-w-3xl mx-auto">
             Comprehensive RevOps solutions tailored for {city} businesses. From startup scaling to enterprise optimization, 
             we deliver measurable results that drive sustainable growth.
           </p>
@@ -41,24 +41,24 @@ export function LocationServices({ city, services }: LocationServicesProps) {
               <div className="space-y-6">
                 {/* Service Header */}
                 <div>
-                  <h3 className="text-2xl font-semibold mb-3 text-foreground dark:text-white">
+                  <h3 className="typography-h3 text-foreground dark:text-white mb-3">
                     {service.title}
                   </h3>
-                  <p className="text-muted-foreground dark:text-muted-foreground leading-relaxed">
+                  <p className="typography-muted leading-relaxed">
                     {service.description}
                   </p>
                 </div>
 
                 {/* Features */}
                 <div>
-                  <h4 className="font-semibold mb-3 text-foreground dark:text-white">
+                  <h4 className="typography-large text-foreground dark:text-white mb-3">
                     What's Included:
                   </h4>
                   <div className="space-y-2">
                     {service.features.map((feature, featureIndex) => (
                       <div key={featureIndex} className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 text-success mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-muted-foreground dark:text-muted-foreground">
+                        <span className="typography-small text-muted-foreground">
                           {feature}
                         </span>
                       </div>
@@ -68,7 +68,7 @@ export function LocationServices({ city, services }: LocationServicesProps) {
 
                 {/* Benefits */}
                 <div>
-                  <h4 className="font-semibold mb-3 text-foreground dark:text-white">
+                  <h4 className="typography-large text-foreground dark:text-white mb-3">
                     Expected Outcomes:
                   </h4>
                   <div className="flex flex-wrap gap-2">
@@ -98,10 +98,10 @@ export function LocationServices({ city, services }: LocationServicesProps) {
         {/* Bottom CTA */}
         <div className="text-center mt-12">
           <Card className="max-w-2xl mx-auto p-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-primary/20 dark:border-primary/80">
-            <h3 className="text-2xl font-bold mb-4 text-foreground dark:text-white">
+            <h3 className="typography-h3 text-foreground dark:text-white mb-4">
               Ready to Transform Your Revenue Operations?
             </h3>
-            <p className="text-muted-foreground dark:text-muted-foreground mb-6">
+            <p className="typography-muted mb-6">
               Get a free consultation and discover how our proven RevOps strategies can accelerate your {city} business growth.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

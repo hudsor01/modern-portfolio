@@ -30,23 +30,27 @@ export interface STARData {
 export interface Project {
   id: string;
   title: string;
-  slug?: string;
+  slug: string; // Required per Prisma schema
   description: string;
   content?: string;
   longDescription?: string;
 
-  // Media & URLs
-  image?: string;
+  // Media & URLs (image required per Prisma schema)
+  image: string;
   link?: string;
   github?: string;
   liveUrl?: string;
   githubUrl?: string;
 
-  // Categorization & Metadata
-  category?: string;
+  // Categorization & Metadata (category required per Prisma schema)
+  category: string;
   tags?: string[];
   technologies?: string[];
   featured?: boolean;
+
+  // Analytics (per Prisma schema)
+  viewCount: number;
+  clickCount: number;
 
   // Dates
   date?: string | Date;

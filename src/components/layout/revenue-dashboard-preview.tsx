@@ -15,7 +15,7 @@ interface MetricCardProps {
 function MetricCard({ icon, title, value, change, trend }: MetricCardProps) {
   return (
     <div className="space-y-1">
-      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+      <div className="flex items-center gap-1 typography-small text-muted-foreground">
         {icon}
         <span className="truncate">{title}</span>
       </div>
@@ -78,7 +78,7 @@ export function RevenueDashboardPreview() {
         {/* Header */}
         <div className="mb-4">
           <div className="h-3 w-20 bg-primary/40 rounded mb-2"></div>
-          <div className="text-xs text-muted-foreground">Revenue Analytics</div>
+          <div className="typography-small text-muted-foreground">Revenue Analytics</div>
         </div>
 
         {/* Chart placeholder with animated gradient */}
@@ -104,7 +104,7 @@ export function RevenueDashboardPreview() {
 
         {/* Footer indicator */}
         <div className="mt-3 pt-3 border-t border-border/50">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex items-center justify-between typography-small text-muted-foreground">
             <span>Live Dashboard</span>
             <div className="flex items-center gap-1">
               <div className="h-1.5 w-1.5 bg-success rounded-full animate-pulse"></div>

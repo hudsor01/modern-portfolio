@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { ArrowLeft, RefreshCcw, DollarSign, Percent, TrendingUp, Calculator } from 'lucide-react'
 import Link from 'next/link'
-import { m as motion } from 'framer-motion'
+
 
 import { commissionMetrics } from './data/constants'
 import { formatCurrency, formatPercent } from './utils'
@@ -75,16 +75,13 @@ export default function CommissionOptimization() {
         </div>
 
         {/* Title Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+        <div
           className="mb-8"
         >
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-400 to-green-600 bg-clip-text text-transparent mb-3">
+          <h1 className="text-4xl md:typography-h1 text-5xl bg-gradient-to-r from-emerald-400 to-green-600 bg-clip-text text-transparent mb-3">
             Commission & Incentive Optimization System
           </h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mb-4">
+          <p className="typography-lead max-w-3xl mb-4">
             Advanced commission management and partner incentive optimization platform managing $254K+ commission structures. Automated tier adjustments with 23% average commission rate optimization and ROI-driven compensation strategy delivering 34% performance improvement and 87.5% automation efficiency.
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
@@ -93,7 +90,7 @@ export default function CommissionOptimization() {
             <span className="bg-teal-500/20 text-teal-400 px-3 py-1 rounded-full">Performance: +{formatPercent(commissionMetrics.performanceImprovement)}</span>
             <span className="bg-primary/20 text-primary px-3 py-1 rounded-full">Automation: {formatPercent(commissionMetrics.automationEfficiency)}</span>
           </div>
-        </motion.div>
+        </div>
 
         {/* Loading State */}
         {isLoading ? (
@@ -116,7 +113,7 @@ export default function CommissionOptimization() {
                 gradientTo="to-green-600"
                 iconBgClass="bg-emerald-500/20"
                 iconColorClass="text-emerald-400"
-                delay={0.1}
+                
               />
               <MetricCard
                 icon={Percent}
@@ -127,7 +124,7 @@ export default function CommissionOptimization() {
                 gradientTo="to-teal-600"
                 iconBgClass="bg-success/20"
                 iconColorClass="text-success"
-                delay={0.2}
+                
               />
               <MetricCard
                 icon={TrendingUp}
@@ -138,7 +135,7 @@ export default function CommissionOptimization() {
                 gradientTo="to-cyan-600"
                 iconBgClass="bg-teal-500/20"
                 iconColorClass="text-teal-400"
-                delay={0.3}
+                
               />
               <MetricCard
                 icon={Calculator}
@@ -149,7 +146,7 @@ export default function CommissionOptimization() {
                 gradientTo="to-blue-600"
                 iconBgClass="bg-primary/20"
                 iconColorClass="text-primary"
-                delay={0.4}
+                
               />
             </div>
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { m as motion } from 'framer-motion'
+
 import {
   Line,
   XAxis,
@@ -16,15 +16,12 @@ import { monthlyTrendData } from '../data/constants'
 
 export function TrendsChart() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.8 }}
+    <div
       className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
     >
       <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-2">Lead Generation Trends</h2>
-        <p className="text-muted-foreground">Monthly lead volume and conversion tracking</p>
+        <h2 className="typography-h3 mb-2">Lead Generation Trends</h2>
+        <p className="typography-muted">Monthly lead volume and conversion tracking</p>
       </div>
       <div className="h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -58,6 +55,6 @@ export function TrendsChart() {
           </ComposedChart>
         </ResponsiveContainer>
       </div>
-    </motion.div>
+    </div>
   )
 }

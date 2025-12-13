@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { m as motion } from 'framer-motion'
+
 import { leadConversionData } from '../data/constants'
 
 function ChartLoadError() {
@@ -28,29 +28,23 @@ export function ChartsSection({ bestSource }: ChartsSectionProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
       {/* Lead Source Distribution */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
+      <div
         className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-2">Lead Source Distribution</h2>
-          <p className="text-muted-foreground">Breakdown of leads by acquisition channel</p>
+          <h2 className="typography-h3 mb-2">Lead Source Distribution</h2>
+          <p className="typography-muted">Breakdown of leads by acquisition channel</p>
         </div>
         <LeadSourcePieChart />
-      </motion.div>
+      </div>
 
       {/* Channel Performance */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
+      <div
         className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-2">Channel Performance</h2>
-          <p className="text-muted-foreground">Conversion rates by source</p>
+          <h2 className="typography-h3 mb-2">Channel Performance</h2>
+          <p className="typography-muted">Conversion rates by source</p>
         </div>
         <div className="space-y-4">
           {leadConversionData.map((source) => {
@@ -63,11 +57,11 @@ export function ChartsSection({ bestSource }: ChartsSectionProps) {
                   </div>
                   <div>
                     <p className="font-medium">{source.source}</p>
-                    <p className="text-xs text-muted-foreground">{source.conversions} conversions</p>
+                    <p className="typography-small text-muted-foreground">{source.conversions} conversions</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold">{(source.conversion_rate * 100).toFixed(1)}%</p>
+                  <p className="typography-large">{(source.conversion_rate * 100).toFixed(1)}%</p>
                   {source.source === bestSource.source && (
                     <span className="text-xs text-success">Best Performer</span>
                   )}
@@ -76,7 +70,7 @@ export function ChartsSection({ bestSource }: ChartsSectionProps) {
             )
           })}
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }

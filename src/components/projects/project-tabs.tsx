@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState } from 'react'
-import { m as motion, AnimatePresence } from 'framer-motion'
 import { ProjectTabsProps } from '@/types/project'
 import { ProjectSwiper } from './project-swiper'
 
@@ -56,25 +55,17 @@ export function ProjectTabs({ projects }: ProjectTabsProps) {
       </div>
 
       {/* Projects display */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeCategory}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
-        >
-          {filteredProjects.length > 0 ? (
-            <ProjectSwiper projects={formattedProjects} showViewAll={false} />
-          ) : (
-            <div className="text-center py-16">
-              <p className="text-lg text-muted-foreground">
-                No projects found in this category
-              </p>
-            </div>
-          )}
-        </motion.div>
-      </AnimatePresence>
+      <div key={activeCategory} className="animate-fade-in-up">
+        {filteredProjects.length > 0 ? (
+          <ProjectSwiper projects={formattedProjects} showViewAll={false} />
+        ) : (
+          <div className="text-center py-16">
+            <p className="typography-lead">
+              No projects found in this category
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

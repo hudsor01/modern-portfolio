@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { ArrowLeft, RefreshCcw, DollarSign, Clock, Target, BarChart3 } from 'lucide-react'
 import Link from 'next/link'
-import { m as motion } from 'framer-motion'
+
 import { getProject } from '@/lib/content/projects'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { createContextLogger } from '@/lib/monitoring/logger'
@@ -104,19 +104,16 @@ export default function DealFunnel() {
           </div>
 
           {/* Title Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+          <div
             className="mb-12"
           >
             <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent mb-4">
               Deal Pipeline Analytics
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl">
+            <p className="typography-lead max-w-3xl">
               Track deal progression through your sales funnel, identify bottlenecks, and optimize conversion rates at each stage.
             </p>
-          </motion.div>
+          </div>
 
           {/* Loading State */}
           {isLoading ? (
@@ -129,17 +126,14 @@ export default function DealFunnel() {
           ) : (
             <>
               {/* KPI Cards */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
+              <div
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
               >
                 <MetricCard icon={BarChart3} label="Pipeline" value={totalOpportunities.toLocaleString()} subtitle="Total Opportunities" gradientFrom="from-blue-600" gradientTo="to-indigo-600" iconBgClass="bg-primary/20" iconColorClass="text-primary" />
                 <MetricCard icon={Target} label="Won" value={closedDeals.toLocaleString()} subtitle="Closed Deals" gradientFrom="from-green-600" gradientTo="to-emerald-600" iconBgClass="bg-success/20" iconColorClass="text-success" />
                 <MetricCard icon={DollarSign} label="Average" value={`$${(avgDealSize / 1000).toFixed(0)}K`} subtitle="Deal Size" gradientFrom="from-purple-600" gradientTo="to-pink-600" iconBgClass="bg-purple-500/20" iconColorClass="text-purple-400" />
                 <MetricCard icon={Clock} label="Average" value={avgSalesCycle.toString()} subtitle="Days to Close" gradientFrom="from-amber-600" gradientTo="to-orange-600" iconBgClass="bg-amber-500/20" iconColorClass="text-amber-400" />
-              </motion.div>
+              </div>
 
               {/* Main Funnel Chart */}
               <FunnelChart stages={localFunnelStages} overallConversionRate={overallConversionRate} />

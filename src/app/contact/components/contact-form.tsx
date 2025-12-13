@@ -140,7 +140,7 @@ export function ContactForm({
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
                         <FieldLabel htmlFor="company">
-                          Company <span className="text-muted-foreground">(optional)</span>
+                          Company <span className="typography-muted">(optional)</span>
                         </FieldLabel>
                         <Input
                           {...field}
@@ -160,7 +160,7 @@ export function ContactForm({
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
                         <FieldLabel htmlFor="phone">
-                          Phone <span className="text-muted-foreground">(optional)</span>
+                          Phone <span className="typography-muted">(optional)</span>
                         </FieldLabel>
                         <Input
                           {...field}

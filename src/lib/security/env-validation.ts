@@ -4,6 +4,9 @@
  */
 
 import { z } from 'zod'
+import { createContextLogger } from '@/lib/monitoring/logger'
+
+const envLogger = createContextLogger('EnvValidation')
 
 // Define the environment schema with enhanced security validation
 const envSchema = z.object({
@@ -104,8 +107,7 @@ export function performSecurityChecks(env: EnvConfig): void {
 
   // Log warnings
   if (warnings.length > 0) {
-    console.warn('[SECURITY WARNINGS]:')
-    warnings.forEach(warning => console.warn(`  - ${warning}`))
+    envLogger.warn('[SECURITY WARNINGS]', { warnings })
   }
 
   // Throw on errors
@@ -120,7 +122,7 @@ try {
   env = getValidatedEnv()
   performSecurityChecks(env)
 } catch (error) {
-  console.error('[ENVIRONMENT VALIDATION FAILED]:', error)
+  envLogger.error('[ENVIRONMENT VALIDATION FAILED]', error instanceof Error ? error : undefined)
   throw error
 }
 
