@@ -52,9 +52,10 @@ const LOG_LEVELS: Record<LogLevel, number> = {
 }
 
 // Environment configuration
-const LOG_LEVEL = (process.env.LOG_LEVEL as LogLevel) || 
-  ((process.env.NODE_ENV as string) === 'production' ? 'info' : 'debug')
-const IS_PRODUCTION = (process.env.NODE_ENV as string) === 'production'
+const NODE_ENV = (process.env.NODE_ENV ?? 'development') as 'development' | 'production' | 'test'
+const LOG_LEVEL = (process.env.LOG_LEVEL as LogLevel) ||
+  (NODE_ENV === 'production' ? 'info' : 'debug')
+const IS_PRODUCTION = NODE_ENV === 'production'
 
 // Logger interface
 export interface Logger {
@@ -91,12 +92,12 @@ class ConsoleTransport implements LogTransport {
   }
   
   log(entry: LogEntry): void {
-    if (!this.shouldLog(entry.level) || (process.env.NODE_ENV as string) === 'production') return
-    
+    if (!this.shouldLog(entry.level) || NODE_ENV === 'production') return
+
     const color = this.colors[entry.level]
     const timestamp = new Date(entry.timestamp).toISOString()
     const level = entry.level.toUpperCase().padEnd(5)
-    
+
     let output = `${color}[${timestamp}] ${level}${this.colors.reset} ${entry.message}`
     
     if (entry.context && Object.keys(entry.context).length > 0) {
@@ -104,7 +105,7 @@ class ConsoleTransport implements LogTransport {
     }
     
     if (entry.error) {
-      if ((process.env.NODE_ENV as string) === 'production') {
+      if (NODE_ENV === 'production') {
         // In production, only log error name and sanitized message
         output += `\n  Error: ${entry.error.name}: ${entry.error.message}`
         // Don't include stack traces in production logs to prevent information disclosure
