@@ -52,7 +52,8 @@ const LOG_LEVELS: Record<LogLevel, number> = {
 }
 
 // Environment configuration
-const NODE_ENV = (process.env.NODE_ENV ?? 'development') as 'development' | 'production' | 'test'
+type ValidEnv = 'development' | 'production' | 'test' | undefined
+const NODE_ENV = (process.env.NODE_ENV as ValidEnv) ?? 'development'
 const LOG_LEVEL = (process.env.LOG_LEVEL as LogLevel) ||
   (NODE_ENV === 'production' ? 'info' : 'debug')
 const IS_PRODUCTION = NODE_ENV === 'production'

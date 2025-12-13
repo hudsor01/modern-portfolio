@@ -3,7 +3,7 @@
  * Helper functions for reading progress calculation and management
  */
 
-import React, { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 import { createContextLogger } from '@/lib/monitoring/logger'
 
 const progressLogger = createContextLogger('ReadingProgress')
