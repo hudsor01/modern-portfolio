@@ -3,7 +3,21 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useBlogPosts, useBlogCategories } from '@/hooks/use-api-queries'
+import { useQuery } from '@tanstack/react-query'
+import type { BlogPostData, BlogCategoryData } from '@/types/shared-api'
+
+interface BlogPostsResponse {
+  data: BlogPostData[]
+  success: boolean
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+    hasNext: boolean
+    hasPrev: boolean
+  }
+}
 import { TagFilter } from './tag-filter'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
@@ -12,16 +26,35 @@ import { Badge } from '@/components/ui/badge'
 export function BlogPageContent() {
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
 
-  // Fetch all posts
-  const { data: postsData, isLoading: postsLoading } = useBlogPosts({
-    filters: { published: true },
-    sort: { field: 'publishedAt', order: 'desc' },
-    page: 1,
-    limit: 50,
+  // Fetch all posts - direct TanStack Query usage
+  const { data: postsData, isLoading: postsLoading } = useQuery({
+    queryKey: ['blog', 'posts', { published: true }, { field: 'publishedAt', order: 'desc' }, 1, 50],
+    queryFn: async (): Promise<BlogPostsResponse> => {
+      const searchParams = new URLSearchParams()
+      searchParams.append('page', '1')
+      searchParams.append('limit', '50')
+      searchParams.append('sortBy', 'publishedAt')
+      searchParams.append('sortOrder', 'desc')
+      searchParams.append('published', 'true')
+      
+      const response = await fetch(`/api/blog?${searchParams.toString()}`)
+      if (!response.ok) throw new Error('Failed to fetch blog posts')
+      return response.json()
+    },
+    staleTime: 5 * 60 * 1000,
   })
 
-  // Fetch categories
-  const { data: categories = [] } = useBlogCategories()
+  // Fetch categories - direct TanStack Query usage
+  const { data: categories = [] } = useQuery({
+    queryKey: ['blog', 'categories'],
+    queryFn: async (): Promise<BlogCategoryData[]> => {
+      const response = await fetch('/api/blog/categories')
+      if (!response.ok) throw new Error('Failed to fetch categories')
+      const result = await response.json()
+      return result.success ? result.data : result
+    },
+    staleTime: 15 * 60 * 1000,
+  })
 
   // Build category list with "All" option
   const categoryTags = useMemo(() => {
