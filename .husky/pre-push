@@ -1,6 +1,3 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 echo "Running pre-push checks..."
 bun run ci:quick && bun run test:run || exit 1
 echo "All checks passed!"
