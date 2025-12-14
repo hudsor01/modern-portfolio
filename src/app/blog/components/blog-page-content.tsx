@@ -1,24 +1,60 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { useBlogPosts, useBlogCategories } from '@/hooks/use-api-queries'
-import { BlogCard } from './blog-card'
+import Link from 'next/link'
+import Image from 'next/image'
+import { useQuery } from '@tanstack/react-query'
+import type { BlogPostData, BlogCategoryData } from '@/types/shared-api'
+
+interface BlogPostsResponse {
+  data: BlogPostData[]
+  success: boolean
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+    hasNext: boolean
+    hasPrev: boolean
+  }
+}
 import { TagFilter } from './tag-filter'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 export function BlogPageContent() {
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
 
-  // Fetch all posts
-  const { data: postsData, isLoading: postsLoading } = useBlogPosts({
-    filters: { published: true },
-    sort: { field: 'publishedAt', order: 'desc' },
-    page: 1,
-    limit: 50,
+  // Fetch all posts - direct TanStack Query usage
+  const { data: postsData, isLoading: postsLoading } = useQuery({
+    queryKey: ['blog', 'posts', { published: true }, { field: 'publishedAt', order: 'desc' }, 1, 50],
+    queryFn: async (): Promise<BlogPostsResponse> => {
+      const searchParams = new URLSearchParams()
+      searchParams.append('page', '1')
+      searchParams.append('limit', '50')
+      searchParams.append('sortBy', 'publishedAt')
+      searchParams.append('sortOrder', 'desc')
+      searchParams.append('published', 'true')
+      
+      const response = await fetch(`/api/blog?${searchParams.toString()}`)
+      if (!response.ok) throw new Error('Failed to fetch blog posts')
+      return response.json()
+    },
+    staleTime: 5 * 60 * 1000,
   })
 
-  // Fetch categories
-  const { data: categories = [] } = useBlogCategories()
+  // Fetch categories - direct TanStack Query usage
+  const { data: categories = [] } = useQuery({
+    queryKey: ['blog', 'categories'],
+    queryFn: async (): Promise<BlogCategoryData[]> => {
+      const response = await fetch('/api/blog/categories')
+      if (!response.ok) throw new Error('Failed to fetch categories')
+      const result = await response.json()
+      return result.success ? result.data : result
+    },
+    staleTime: 15 * 60 * 1000,
+  })
 
   // Build category list with "All" option
   const categoryTags = useMemo(() => {
@@ -90,14 +126,41 @@ export function BlogPageContent() {
       ) : filteredPosts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredPosts.map((post) => (
-            <BlogCard
-              key={post.id}
-              url={`/blog/${post.slug}`}
-              title={post.title}
-              description={post.excerpt || ''}
-              date={formatDate(post.publishedAt)}
-              thumbnail={post.featuredImage}
-            />
+            <Link key={post.id} href={`/blog/${post.slug}`} className="group block h-full">
+              <Card className="hover-lift hover:border-primary/50 transition-all h-full overflow-hidden">
+                {post.featuredImage && (
+                  <div className="relative aspect-[16/10] overflow-hidden">
+                    <Image
+                      src={post.featuredImage}
+                      alt={post.title}
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                  </div>
+                )}
+                <CardHeader>
+                  {post.tags && post.tags.length > 0 && (
+                    <div className="flex gap-2 mb-2 flex-wrap">
+                      {post.tags.slice(0, 3).map((tag: { id: string; name: string }) => (
+                        <Badge key={tag.id} variant="secondary" className="text-xs">
+                          {tag.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                  <CardTitle className="text-xl line-clamp-2 group-hover:text-primary transition-colors">
+                    {post.title}
+                  </CardTitle>
+                  <CardDescription className="line-clamp-3">{post.excerpt || ''}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <time className="typography-small text-muted-foreground">
+                    {formatDate(post.publishedAt)}
+                  </time>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       ) : (

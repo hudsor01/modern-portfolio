@@ -1,6 +1,8 @@
 'use client'
+import { memo } from 'react'
 
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, PieLabelRenderProps } from 'recharts'
+import { LazyPieChart as PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from '@/components/charts/lazy-charts'
+import type { PieLabelRenderProps } from 'recharts'
 
 // Production lead source data with realistic distribution and growth metrics
 const leadSourceData = [
@@ -27,7 +29,7 @@ interface CustomTooltipProps {
   }>;
 }
 
-export default function LeadSourcePieChart() {
+const LeadSourcePieChart = memo(function LeadSourcePieChart() {
   const total = leadSourceData.reduce((sum, item) => sum + item.value, 0)
 
   const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
@@ -36,7 +38,7 @@ export default function LeadSourcePieChart() {
       const percentage = ((data.value / total) * 100).toFixed(1);
       
       return (
-        <div className="p-3 rounded-xl bg-[#0f172a]/90 backdrop-blur-sm border border-white/10">
+        <div className="p-3 rounded-xl bg-[#0f172a]/90 backdrop-blur-xs border border-white/10">
           <p className="font-medium text-white">{data.name}</p>
           <p className="typography-small text-muted-foreground">
             Leads: <span className="font-medium text-white">{data.value.toLocaleString()}</span>
@@ -108,4 +110,8 @@ export default function LeadSourcePieChart() {
       </div>
     </div>
   )
-}
+})
+
+LeadSourcePieChart.displayName = 'LeadSourcePieChart'
+
+export default LeadSourcePieChart

@@ -1,5 +1,9 @@
 import { generateMetadata } from '@/app/shared-metadata'
-import AboutContent from '@/components/about/about-content'
+import { Navbar } from '@/components/layout/navbar'
+import { PersonalInfo } from '@/components/about/personal-info'
+import { SkillsSection } from '@/components/about/skills-section'
+import { ExperienceStats } from '@/components/about/experience-stats'
+import { CertificationsSection } from '@/components/about/certifications-section'
 
 const SKILLS = [
   {
@@ -108,7 +112,6 @@ My specialization in partnership program implementation has been particularly im
   ],
 }
 
-
 export const metadata = generateMetadata(
   'About Richard Hudson | Revenue Operations Professional | Dallas-Fort Worth',
   'Richard Hudson - Plano, Texas Revenue Operations Professional serving Dallas-Fort Worth metroplex with 10+ years experience. SalesLoft Admin certified (Level 1 & 2) and HubSpot Revenue Operations certified. Partnership program implementation specialist with system integration experience. Expert in data analytics, process automation, and CRM optimization. $4.8M+ revenue generated across 10+ projects, 432% transaction growth achieved.',
@@ -117,11 +120,34 @@ export const metadata = generateMetadata(
 
 export default function AboutPage() {
   return (
-    <AboutContent
-      skills={SKILLS}
-      experienceStats={EXPERIENCE_STATS}
-      personalInfo={PERSONAL_INFO}
-      certifications={CERTIFICATIONS}
-    />
+    <div className="min-h-screen bg-page-light dark:bg-page">
+      <Navbar />
+
+      <main className="w-full mx-auto px-6 py-12 space-y-24">
+        {/* Personal Information Section */}
+        <PersonalInfo
+          personalInfo={PERSONAL_INFO}
+          className="pt-8"
+        />
+
+        {/* Experience Stats Section */}
+        <ExperienceStats
+          stats={EXPERIENCE_STATS}
+          className="py-16"
+        />
+
+        {/* Skills Section */}
+        <SkillsSection
+          skills={SKILLS}
+          className="py-16"
+        />
+
+        {/* Certifications Section */}
+        <CertificationsSection
+          certifications={CERTIFICATIONS}
+          className="py-16"
+        />
+      </main>
+    </div>
   )
 }

@@ -1,6 +1,7 @@
 'use client'
+import { memo } from 'react'
 
-import { ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from 'recharts'
+import { LazyScatterChart as ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from '@/components/charts/lazy-charts'
 
 // CLV prediction vs actual data showing model accuracy
 const data = [
@@ -40,7 +41,7 @@ const chartColors = {
   reference: 'var(--color-muted-foreground)',
 }
 
-export default function CLVPredictionChart() {
+const CLVPredictionChart = memo(function CLVPredictionChart() {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -127,4 +128,8 @@ export default function CLVPredictionChart() {
       </p>
     </div>
   )
-}
+})
+
+CLVPredictionChart.displayName = 'CLVPredictionChart'
+
+export default CLVPredictionChart

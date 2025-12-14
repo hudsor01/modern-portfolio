@@ -1,6 +1,7 @@
 'use client'
+import { memo } from 'react'
 
-import { ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts'
+import { LazyScatterChart as ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from '@/components/charts/lazy-charts'
 
 // Channel performance data for scatter plot
 const data = [
@@ -35,7 +36,7 @@ const chartColors = {
   axis: 'var(--color-muted-foreground)',
 }
 
-export default function ChannelROIChart() {
+const ChannelROIChart = memo(function ChannelROIChart() {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -116,4 +117,8 @@ export default function ChannelROIChart() {
       </p>
     </div>
   )
-}
+})
+
+ChannelROIChart.displayName = 'ChannelROIChart'
+
+export default ChannelROIChart

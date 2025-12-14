@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest } from 'next/server'
 
+// Mock server-only before any imports
+vi.mock('server-only', () => ({}))
+
 // Mock Next.js
 vi.mock('next/server', async () => {
   const actual = await vi.importActual('next/server')

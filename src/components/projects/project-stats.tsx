@@ -12,8 +12,8 @@ export const ProjectStats: React.FC<ProjectStatsProps> = ({ totalProjects, isLoa
     return (
       <div className="text-centered-md text-center mb-16">
         <div className="animate-pulse">
-          <div className="h-8 bg-white/5 rounded w-64 mx-auto mb-4"></div>
-          <div className="h-6 bg-white/5 rounded w-48 mx-auto"></div>
+          <div className="h-8 bg-white/5 rounded-xs w-64 mx-auto mb-4"></div>
+          <div className="h-6 bg-white/5 rounded-xs w-48 mx-auto"></div>
         </div>
       </div>
     )

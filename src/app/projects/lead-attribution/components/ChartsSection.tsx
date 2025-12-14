@@ -29,7 +29,7 @@ export function ChartsSection({ bestSource }: ChartsSectionProps) {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
       {/* Lead Source Distribution */}
       <div
-        className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-6">
           <h2 className="typography-h3 mb-2">Lead Source Distribution</h2>
@@ -40,7 +40,7 @@ export function ChartsSection({ bestSource }: ChartsSectionProps) {
 
       {/* Channel Performance */}
       <div
-        className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-6">
           <h2 className="typography-h3 mb-2">Channel Performance</h2>

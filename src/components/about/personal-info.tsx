@@ -41,13 +41,13 @@ export function PersonalInfo({
         >
           <div>
             <h1 
-              className="text-5xl lg:text-6xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+              className="text-xl lg:text-xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
             >
               {personalInfo.name}
             </h1>
             
             <h2 
-              className="text-2xl lg:text-3xl font-semibold text-muted-foreground dark:text-foreground mb-6"
+              className="text-xl lg:text-xl font-semibold text-muted-foreground dark:text-foreground mb-6"
             >
               {personalInfo.title}
             </h2>

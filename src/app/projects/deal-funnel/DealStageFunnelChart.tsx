@@ -167,7 +167,7 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
             {data.map((stage, index) => (
               <div 
                 key={index} 
-                className="glass rounded-xl p-4 hover:bg-white/10 transition-all duration-300"
+                className="glass rounded-2xl p-4 hover:bg-white/10 transition-all duration-300"
               >
                 <div className="flex items-center gap-2 mb-3">
                   <div

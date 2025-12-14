@@ -74,15 +74,15 @@ export function RevenueDashboardPreview() {
 
   return (
     <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/10 via-primary/5 to-background p-4">
-      <Card className="w-full max-w-sm p-4 shadow-lg border bg-card/95 backdrop-blur-sm">
+      <Card className="w-full max-w-sm p-4 shadow-lg border bg-card/95 backdrop-blur-xs">
         {/* Header */}
         <div className="mb-4">
-          <div className="h-3 w-20 bg-primary/40 rounded mb-2"></div>
+          <div className="h-3 w-20 bg-primary/40 rounded-xs mb-2"></div>
           <div className="typography-small text-muted-foreground">Revenue Analytics</div>
         </div>
 
         {/* Chart placeholder with animated gradient */}
-        <div className="relative mb-4 h-16 rounded bg-gradient-to-r from-primary/20 via-primary/30 to-primary/10 overflow-hidden">
+        <div className="relative mb-4 h-16 rounded-xs bg-gradient-to-r from-primary/20 via-primary/30 to-primary/10 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
           <div className="absolute bottom-2 left-2 right-2 flex justify-between items-end">
             {chartBars.map((bar, i) => (

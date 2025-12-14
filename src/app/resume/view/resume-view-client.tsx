@@ -35,7 +35,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
         <div className="w-full mx-auto px-4 py-8">
           {/* Header */}
           <div className="mb-8 text-center">
-            <h1 className="typography-h1 text-4xl text-white mb-4">
+            <h1 className="typography-h1 text-xl text-white mb-4">
               Richard Hudson - Resume
             </h1>
             <p className="text-muted-foreground text-lg mb-6">

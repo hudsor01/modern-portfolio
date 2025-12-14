@@ -3,6 +3,7 @@
  * Provides singleton Prisma client instance with error handling and connection pooling
  */
 
+import 'server-only'
 import { PrismaClient } from '@prisma/client'
 import { logger } from '@/lib/monitoring/logger'
 

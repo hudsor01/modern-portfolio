@@ -41,7 +41,7 @@ export function Achievements() {
       <div className="w-full mx-auto max-w-7xl px-4">
         <div className="text-center mb-16">
           <h2
-            className="typography-h2 border-none pb-0 text-3xl mb-4"
+            className="typography-h2 border-none pb-0 text-2xl mb-4"
           >
             Key Achievements
           </h2>
@@ -66,7 +66,7 @@ export function Achievements() {
                 >
                   <achievement.icon size={24} color={achievement.color} />
                 </div>
-                <h3 className="typography-h1 text-4xl" style={{ color: achievement.color }}>
+                <h3 className="typography-h1 text-xl" style={{ color: achievement.color }}>
                   {achievement.stat}
                 </h3>
               </div>

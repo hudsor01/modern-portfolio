@@ -1,6 +1,7 @@
 'use client'
+import { memo } from 'react'
 
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
+import { LazyBarChart as BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from '@/components/charts/lazy-charts'
 
 // Partner tier performance data based on real CSV analysis
 const data = [
@@ -17,7 +18,7 @@ const chartColors = {
   axis: 'var(--color-muted-foreground)',
 }
 
-export default function PartnerTierChart() {
+const PartnerTierChart = memo(function PartnerTierChart() {
   return (
     <div className="h-[350px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -89,4 +90,8 @@ export default function PartnerTierChart() {
       </p>
     </div>
   )
-}
+})
+
+PartnerTierChart.displayName = 'PartnerTierChart'
+
+export default PartnerTierChart

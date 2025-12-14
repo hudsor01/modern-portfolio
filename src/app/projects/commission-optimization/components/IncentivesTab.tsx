@@ -16,7 +16,7 @@ export function IncentivesTab() {
     <div className="space-y-8 mb-12">
       {/* Performance Incentive Chart */}
       <div
-        className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-6">
           <h2 className="typography-h3 mb-2">Performance Incentive Program Effectiveness</h2>
@@ -27,7 +27,7 @@ export function IncentivesTab() {
 
       {/* Incentive Programs Table */}
       <div
-        className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-6">
           <h2 className="typography-h3 mb-2">Incentive Program Performance & ROI Analysis</h2>

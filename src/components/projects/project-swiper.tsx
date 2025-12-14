@@ -4,14 +4,15 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useRef } from 'react'
 import type { Swiper as SwiperType } from 'swiper'
+import { useSwiper } from 'swiper/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 import type { Project } from '@/types/project' // Changed import path
-import { ExternalLink, Info, ArrowRight, Zap } from 'lucide-react' // Added ArrowRight, Zap
+import { ExternalLink, Info, ArrowRight, Zap, ChevronLeft, ChevronRight } from 'lucide-react' // Added ArrowRight, Zap
 import { ProjectQuickView } from '@/components/projects/project-quick-view'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination, Autoplay, EffectCreative } from 'swiper/modules'
-import { PrevButton, NextButton, CustomPagination } from '@/components/layout/swiper-navigation'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
@@ -23,6 +24,61 @@ interface ProjectSwiperProps {
   subtitle?: string
   projects: Project[]
   showViewAll?: boolean
+}
+
+// Inline navigation components (previously in swiper-navigation.tsx)
+function SwiperPrevButton({ className }: { className?: string }) {
+  const swiper = useSwiper()
+  return (
+    <button
+      className={cn(
+        'group hover:bg-primary/10 rounded-full p-2.5 shadow-xs transition-colors duration-300 hover:shadow',
+        className
+      )}
+      onClick={() => swiper.slidePrev()}
+      aria-label="Previous slide"
+    >
+      <ChevronLeft className="group-hover:text-primary h-5 w-5 transition-all duration-300 group-hover:scale-110" />
+    </button>
+  )
+}
+
+function SwiperNextButton({ className }: { className?: string }) {
+  const swiper = useSwiper()
+  return (
+    <button
+      className={cn(
+        'group hover:bg-primary/10 rounded-full p-2.5 shadow-xs transition-colors duration-300 hover:shadow',
+        className
+      )}
+      onClick={() => swiper.slideNext()}
+      aria-label="Next slide"
+    >
+      <ChevronRight className="group-hover:text-primary h-5 w-5 transition-all duration-300 group-hover:scale-110" />
+    </button>
+  )
+}
+
+function SwiperPagination({ totalSlides, activeIndex, className }: { totalSlides: number; activeIndex: number; className?: string }) {
+  const swiper = useSwiper()
+  return (
+    <div className={cn('flex items-center gap-2', className)}>
+      {Array.from({ length: totalSlides }).map((_, index) => (
+        <button
+          key={index}
+          className={cn(
+            'h-2.5 w-2.5 rounded-full transition-all duration-300',
+            activeIndex === index
+              ? 'bg-primary scale-110 shadow-xs'
+              : 'bg-primary/20 hover:bg-primary/40'
+          )}
+          onClick={() => swiper.slideTo(index)}
+          aria-label={`Go to slide ${index + 1}`}
+          aria-current={activeIndex === index ? 'true' : 'false'}
+        />
+      ))}
+    </div>
+  )
 }
 
 export function ProjectSwiper({
@@ -56,7 +112,7 @@ export function ProjectSwiper({
         <div className="mb-10 flex flex-col md:flex-row md:items-end md:justify-between">
           <div>
             {title && (
-              <h2 className="flex items-center gap-2 typography-h2 border-none pb-0 text-3xl">
+              <h2 className="flex items-center gap-2 typography-h2 border-none pb-0 text-2xl">
                 <Zap className="text-primary h-6 w-6 animate-pulse" />
                 {title}
               </h2>
@@ -190,9 +246,9 @@ export function ProjectSwiper({
           {/* Custom Navigation */}
           <div className="absolute right-0 bottom-0 left-0 z-10 mt-6 mb-2 flex justify-center">
             <div className="flex items-center gap-6">
-              <PrevButton />
-              <CustomPagination totalSlides={projects.length} activeIndex={activeIndex} />
-              <NextButton />
+              <SwiperPrevButton />
+              <SwiperPagination totalSlides={projects.length} activeIndex={activeIndex} />
+              <SwiperNextButton />
             </div>
           </div>
         </Swiper>

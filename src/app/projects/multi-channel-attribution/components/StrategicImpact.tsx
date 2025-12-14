@@ -7,7 +7,7 @@ import { formatCurrency } from '../utils'
 export function StrategicImpact() {
   return (
     <div
-      className="bg-gradient-to-br from-orange-500/10 to-red-500/10 backdrop-blur-sm border border-orange-500/20 rounded-3xl p-6"
+      className="bg-gradient-to-br from-orange-500/10 to-red-500/10 backdrop-blur-xs border border-orange-500/20 rounded-xl p-6"
     >
       <h2 className="typography-h4 mb-4 text-orange-400">Multi-Channel Attribution Intelligence & Marketing ROI Impact</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

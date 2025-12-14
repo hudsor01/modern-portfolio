@@ -1,6 +1,7 @@
 'use client'
 
-import { useResumeGeneration } from '@/hooks/use-api-queries'
+import { useMutation } from '@tanstack/react-query'
+import type { ResumeData } from '@/types/shared-api'
 import { Button } from '@/components/ui/button'
 import { FileDown } from 'lucide-react'
 import { useToast } from '@/hooks/use-sonner-toast'
@@ -37,7 +38,18 @@ export function ResumeDownload({
     document.body.removeChild(link)
   }
 
-  const downloadResumeMutation = useResumeGeneration()
+  // Direct TanStack Query mutation usage
+  const downloadResumeMutation = useMutation({
+    mutationFn: async (): Promise<ResumeData> => {
+      const response = await fetch('/api/generate-resume-pdf', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      if (!response.ok) throw new Error('Resume generation failed')
+      return response.json()
+    },
+    retry: 2,
+  })
 
   const handleDownload = async () => {
     const toastId = showLoadingToast('Preparing your resume...')

@@ -1,6 +1,7 @@
 'use client'
+import { memo } from 'react'
 
-import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Area, ComposedChart } from 'recharts'
+import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Area, LazyComposedChart as ComposedChart } from '@/components/charts/lazy-charts'
 
 // CLV trend data with confidence intervals and forecasting
 const data = [
@@ -27,7 +28,7 @@ const chartColors = {
   axis: 'var(--color-muted-foreground)',
 }
 
-export default function CLVTrendChart() {
+const CLVTrendChart = memo(function CLVTrendChart() {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -129,4 +130,8 @@ export default function CLVTrendChart() {
       </p>
     </div>
   )
-}
+})
+
+CLVTrendChart.displayName = 'CLVTrendChart'
+
+export default CLVTrendChart

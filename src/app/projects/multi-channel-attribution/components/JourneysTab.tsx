@@ -15,7 +15,7 @@ export function JourneysTab() {
     <div className="space-y-6 mb-8">
       {/* Customer Journey Visualization */}
       <div
-        className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">Customer Journey Stage Analysis</h2>
@@ -28,7 +28,7 @@ export function JourneysTab() {
 
       {/* Journey Stages Details */}
       <div
-        className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
       >
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">Journey Stage Performance Metrics</h2>
@@ -37,7 +37,7 @@ export function JourneysTab() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {customerJourneyStages.map((stage, index) => (
-            <div key={index} className="bg-white/5 rounded-2xl p-4 border border-white/10">
+            <div key={index} className="bg-white/5 rounded-xl p-4 border border-white/10">
               <h3 className="text-base font-semibold mb-3">{stage.stage}</h3>
               <div className="space-y-2">
                 <div className="flex justify-between">

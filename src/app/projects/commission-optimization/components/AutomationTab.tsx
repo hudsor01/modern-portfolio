@@ -6,7 +6,7 @@ import { Clock, Target, Award } from 'lucide-react'
 export function AutomationTab() {
   return (
     <div
-      className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300 mb-12"
+      className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 mb-12"
     >
       <div className="mb-6">
         <h2 className="typography-h3 mb-2">Automated Commission Processing System</h2>
@@ -14,7 +14,7 @@ export function AutomationTab() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+        <div className="bg-white/5 rounded-xl p-6 border border-white/10">
           <h3 className="typography-large mb-4 flex items-center gap-2">
             <Clock className="w-5 h-5 text-emerald-400" />
             Processing Automation
@@ -35,7 +35,7 @@ export function AutomationTab() {
           </div>
         </div>
 
-        <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+        <div className="bg-white/5 rounded-xl p-6 border border-white/10">
           <h3 className="typography-large mb-4 flex items-center gap-2">
             <Target className="w-5 h-5 text-success" />
             Accuracy Metrics
@@ -56,7 +56,7 @@ export function AutomationTab() {
           </div>
         </div>
 
-        <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+        <div className="bg-white/5 rounded-xl p-6 border border-white/10">
           <h3 className="typography-large mb-4 flex items-center gap-2">
             <Award className="w-5 h-5 text-teal-400" />
             Partner Satisfaction

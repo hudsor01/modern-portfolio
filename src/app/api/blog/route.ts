@@ -9,6 +9,8 @@ import {
   BlogPostFilters,
   BlogPostSort
 } from '@/types/shared-api';
+import { EnhancedRateLimiter } from '@/lib/security/enhanced-rate-limiter';
+import { validateCSRFToken } from '@/lib/security/csrf-protection';
 
 const logger = createContextLogger('BlogAPI');
 
@@ -184,14 +186,60 @@ function transformToBlogPostData(post: Prisma.BlogPostGetPayload<{
   };
 }
 
+// Helper function to get client identifier
+function getClientId(request: NextRequest): string {
+  return request.headers.get('x-forwarded-for') ||
+         request.headers.get('x-real-ip') ||
+         'unknown'
+}
+
 // GET /api/blog - List blog posts with filtering and pagination
 export async function GET(request: NextRequest) {
+  const clientId = getClientId(request)
+
+  // Rate limiting: 100 requests per minute for blog listing
+  using rateLimiter = new EnhancedRateLimiter()
+
+  const rateLimitResult = rateLimiter.checkLimit(clientId, {
+    windowMs: 60 * 1000, // 1 minute
+    maxAttempts: 100,
+    progressivePenalty: false,
+    blockDuration: 0,
+    adaptiveThreshold: true,
+    antiAbuse: true,
+    burstProtection: {
+      enabled: true,
+      burstWindow: 5 * 1000, // 5 seconds
+      maxBurstRequests: 120
+    }
+  }, {
+    path: '/api/blog',
+    method: 'GET'
+  })
+
+  if (!rateLimitResult.allowed) {
+    const errorResponse: ApiResponse<never> = {
+      data: undefined as never,
+      success: false,
+      error: 'Rate limit exceeded. Please try again later.'
+    }
+
+    return NextResponse.json(errorResponse, {
+      status: 429,
+      headers: {
+        'Retry-After': String(Math.ceil((rateLimitResult.retryAfter || 0) / 1000)),
+        'X-RateLimit-Remaining': String(rateLimitResult.remaining || 0),
+        'X-RateLimit-Reset': String(rateLimitResult.resetTime || 0),
+      }
+    })
+  }
+
   try {
     const { searchParams } = new URL(request.url);
 
-    // Parse pagination parameters
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    const limit = Math.min(parseInt(searchParams.get('limit') || '10', 10), 50); // Max 50 per page
+    // Parse pagination parameters with abuse prevention
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
+    const limit = Math.min(Math.max(1, parseInt(searchParams.get('limit') || '10', 10)), 100);
     const skip = (page - 1) * limit;
 
     // Parse filters
@@ -292,7 +340,61 @@ export async function GET(request: NextRequest) {
 
 // POST /api/blog - Create new blog post
 export async function POST(request: NextRequest) {
+  const clientId = getClientId(request)
+
+  // Rate limiting: 10 blog post creations per hour
+  using rateLimiter = new EnhancedRateLimiter()
+
+  const rateLimitResult = rateLimiter.checkLimit(clientId, {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxAttempts: 10,
+    progressivePenalty: true,
+    blockDuration: 15 * 60 * 1000, // 15 minutes
+    adaptiveThreshold: true,
+    antiAbuse: true,
+    burstProtection: {
+      enabled: false,
+      burstWindow: 10 * 1000,
+      maxBurstRequests: 10
+    }
+  }, {
+    path: '/api/blog',
+    method: 'POST'
+  })
+
+  if (!rateLimitResult.allowed) {
+    const errorResponse: ApiResponse<never> = {
+      data: undefined as never,
+      success: false,
+      error: 'Rate limit exceeded. Too many blog posts created.'
+    }
+
+    return NextResponse.json(errorResponse, {
+      status: 429,
+      headers: {
+        'Retry-After': String(Math.ceil((rateLimitResult.retryAfter || 0) / 1000)),
+        'X-RateLimit-Remaining': String(rateLimitResult.remaining || 0),
+        'X-RateLimit-Reset': String(rateLimitResult.resetTime || 0),
+      }
+    })
+  }
+
   try {
+    // CSRF token validation
+    const csrfToken = request.headers.get('x-csrf-token')
+    const isCSRFValid = await validateCSRFToken(csrfToken ?? undefined)
+
+    if (!isCSRFValid) {
+      logger.warn('CSRF validation failed for blog post creation', { clientId })
+      const errorResponse: ApiResponse<never> = {
+        data: undefined as never,
+        success: false,
+        error: 'Security validation failed. Please refresh and try again.'
+      }
+
+      return NextResponse.json(errorResponse, { status: 403 })
+    }
+
     const body = await request.json();
 
     // Validate required fields

@@ -85,7 +85,7 @@ export default function QuotaTerritoryManagementProject() {
               Back to Projects
             </Link>
 
-            <h1 className="typography-h1 text-5xl text-foreground mb-4">
+            <h1 className="typography-h1 text-xl text-foreground mb-4">
               Intelligent Quota Management & Territory Planning
             </h1>
             <p className="text-xl text-slate-300 max-w-3xl">
@@ -102,12 +102,12 @@ export default function QuotaTerritoryManagementProject() {
               return (
                 <div
                   key={metric.label}
-                  className="glass rounded-xl p-6 hover:border-white/20 transition-all"
+                  className="glass rounded-2xl p-6 hover:border-white/20 transition-all"
                 >
                   <div className="flex items-center justify-between mb-4">
                     <Icon className={`h-8 w-8 ${metric.color}`} />
                   </div>
-                  <div className="typography-h2 border-none pb-0 text-3xl text-foreground mb-2">{metric.value}</div>
+                  <div className="typography-h2 border-none pb-0 text-2xl text-foreground mb-2">{metric.value}</div>
                   <div className="text-sm text-slate-400">{metric.label}</div>
                 </div>
               )
@@ -118,12 +118,12 @@ export default function QuotaTerritoryManagementProject() {
           <div
             className="mb-16"
           >
-            <h2 className="typography-h2 border-none pb-0 text-3xl text-foreground mb-8">Algorithmic Approaches</h2>
+            <h2 className="typography-h2 border-none pb-0 text-2xl text-foreground mb-8">Algorithmic Approaches</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {algorithmicApproaches.map((approach, index) => (
                 <div
                   key={index}
-                  className="glass rounded-xl p-8 hover:border-primary/50 transition-all"
+                  className="glass rounded-2xl p-8 hover:border-primary/50 transition-all"
                 >
                   <h3 className="typography-h4 text-foreground mb-3 flex items-center gap-2">
                     <Code className="h-5 w-5 text-primary" />
@@ -147,22 +147,22 @@ export default function QuotaTerritoryManagementProject() {
           <div
             className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-primary/30 rounded-xl p-12 mb-16"
           >
-            <h2 className="typography-h2 border-none pb-0 text-3xl text-foreground mb-8">Revenue Impact</h2>
+            <h2 className="typography-h2 border-none pb-0 text-2xl text-foreground mb-8">Revenue Impact</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <div className="typography-h1 text-4xl text-success mb-2">$8.7M</div>
+                <div className="typography-h1 text-xl text-success mb-2">$8.7M</div>
                 <p className="text-slate-300">Incremental revenue from optimized territories</p>
               </div>
               <div>
-                <div className="typography-h1 text-4xl text-primary mb-2">28%</div>
+                <div className="typography-h1 text-xl text-primary mb-2">28%</div>
                 <p className="text-slate-300">Improvement in forecast accuracy</p>
               </div>
               <div>
-                <div className="typography-h1 text-4xl text-purple-400 mb-2">32%</div>
+                <div className="typography-h1 text-xl text-purple-400 mb-2">32%</div>
                 <p className="text-slate-300">Reduction in quota attainment variance</p>
               </div>
               <div>
-                <div className="typography-h1 text-4xl text-amber-400 mb-2">23%</div>
+                <div className="typography-h1 text-xl text-amber-400 mb-2">23%</div>
                 <p className="text-slate-300">Average territory efficiency increase</p>
               </div>
             </div>
@@ -172,9 +172,9 @@ export default function QuotaTerritoryManagementProject() {
           <div
             className="mb-16"
           >
-            <h2 className="typography-h2 border-none pb-0 text-3xl text-foreground mb-8">Technical Stack & Methodologies</h2>
+            <h2 className="typography-h2 border-none pb-0 text-2xl text-foreground mb-8">Technical Stack & Methodologies</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="glass rounded-xl p-8">
+              <div className="glass rounded-2xl p-8">
                 <h3 className="typography-large text-foreground mb-4">Machine Learning Models</h3>
                 <ul className="space-y-2 text-slate-300">
                   <li>• Regression models for revenue prediction</li>
@@ -183,7 +183,7 @@ export default function QuotaTerritoryManagementProject() {
                   <li>• Time series forecasting</li>
                 </ul>
               </div>
-              <div className="glass rounded-xl p-8">
+              <div className="glass rounded-2xl p-8">
                 <h3 className="typography-large text-foreground mb-4">Data & Analytics</h3>
                 <ul className="space-y-2 text-slate-300">
                   <li>• 2.5M+ data points analyzed</li>
@@ -199,7 +199,7 @@ export default function QuotaTerritoryManagementProject() {
           <div
             className="mb-16"
           >
-            <h2 className="typography-h2 border-none pb-0 text-3xl text-foreground mb-8">Technologies & Tools</h2>
+            <h2 className="typography-h2 border-none pb-0 text-2xl text-foreground mb-8">Technologies & Tools</h2>
             <div className="flex flex-wrap gap-3">
               {['Python', 'Machine Learning', 'Predictive Analytics', 'D3.js', 'Recharts', 'PostgreSQL', 'Next.js', 'Geospatial Analysis'].map((tech) => (
                 <span

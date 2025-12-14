@@ -1,6 +1,7 @@
 'use client'
+import { memo } from 'react'
 
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
+import { LazyLineChart as LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from '@/components/charts/lazy-charts'
 
 // Touchpoint sequence analysis data
 const data = [
@@ -24,7 +25,7 @@ const channelColors = {
   axis: 'var(--color-muted-foreground)',
 }
 
-export default function TouchpointAnalysisChart() {
+const TouchpointAnalysisChart = memo(function TouchpointAnalysisChart() {
   return (
     <div className="h-[350px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -119,4 +120,8 @@ export default function TouchpointAnalysisChart() {
       </p>
     </div>
   )
-}
+})
+
+TouchpointAnalysisChart.displayName = 'TouchpointAnalysisChart'
+
+export default TouchpointAnalysisChart

@@ -1,6 +1,6 @@
 'use client'
 
-import { useProject } from '@/hooks/use-api-queries'
+import { useQuery } from '@tanstack/react-query'
 import { usePageAnalytics } from '@/hooks/use-page-analytics'
 import { Navbar } from '@/components/layout/navbar'
 import { Button } from '@/components/ui/button'
@@ -34,7 +34,7 @@ function ProjectDetailSkeleton() {
         
         <div className="grid lg:grid-cols-2 gap-12">
           <div className="space-y-8">
-            <Skeleton className="h-64 w-full rounded-2xl" />
+            <Skeleton className="h-64 w-full rounded-xl" />
             <div className="space-y-4">
               <Skeleton className="h-6 w-full" />
               <Skeleton className="h-6 w-3/4" />
@@ -71,8 +71,20 @@ export default function ProjectDetailClientBoundary({
     trackScrollDepth: true
   })
 
-  // Use modern hook with automatic prefetching
-  const { data: project, isLoading, error } = useProject(slug)
+  // Direct TanStack Query usage
+  const { data: project, isLoading, error } = useQuery({
+    queryKey: ['project', slug],
+    queryFn: async () => {
+      const response = await fetch(`/api/projects/${slug}`, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      if (!response.ok) throw new Error('Failed to fetch project')
+      const result = await response.json()
+      return result.data || result
+    },
+    enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
+  })
 
   // Show loading skeleton
   if (isLoading && !initialProject) {
@@ -124,7 +136,7 @@ export default function ProjectDetailClientBoundary({
 
         {/* Project Header */}
         <div className="mb-12">
-          <h1 className="typography-h1 text-4xl text-foreground dark:text-white mb-4">
+          <h1 className="typography-h1 text-xl text-foreground dark:text-white mb-4">
             {displayProject.title}
           </h1>
           <p className="typography-lead dark:text-muted-foreground max-w-3xl">
@@ -138,7 +150,7 @@ export default function ProjectDetailClientBoundary({
           <div className="space-y-8">
             {/* Project Image */}
             {displayProject.image && (
-              <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl">
+              <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl">
                 <Image
                   src={displayProject.image}
                   alt={displayProject.title}
@@ -150,7 +162,7 @@ export default function ProjectDetailClientBoundary({
             )}
 
             {/* Project Description */}
-            <div className="bg-white/70 dark:bg-card/70 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+            <div className="bg-white/70 dark:bg-card/70 backdrop-blur-xs rounded-xl p-8 border border-white/20">
               <h2 className="typography-h3 mb-4 text-foreground dark:text-white">
                 About This Project
               </h2>
@@ -163,7 +175,7 @@ export default function ProjectDetailClientBoundary({
           {/* Right Column */}
           <div className="space-y-8">
             {/* Technologies & Links */}
-            <div className="bg-white/70 dark:bg-card/70 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+            <div className="bg-white/70 dark:bg-card/70 backdrop-blur-xs rounded-xl p-8 border border-white/20">
               <h3 className="typography-h4 mb-4 text-foreground dark:text-white">
                 Technologies Used
               </h3>
@@ -202,7 +214,7 @@ export default function ProjectDetailClientBoundary({
 
             {/* STAR Impact Analysis Chart */}
             {displayProject.starData && (
-              <div className="bg-white/70 dark:bg-card/70 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+              <div className="bg-white/70 dark:bg-card/70 backdrop-blur-xs rounded-xl p-8 border border-white/20">
                 <h3 className="typography-h4 mb-4 text-foreground dark:text-white">
                   Impact Analysis
                 </h3>
@@ -217,8 +229,8 @@ export default function ProjectDetailClientBoundary({
         </div>
 
         {/* CTA Section */}
-        <div className="mt-16 gradient-cta rounded-3xl p-8 text-center text-white">
-          <h2 className="typography-h2 border-none pb-0 text-3xl mb-4">Impressed by This Case Study?</h2>
+        <div className="mt-16 gradient-cta rounded-xl p-8 text-center text-white">
+          <h2 className="typography-h2 border-none pb-0 text-2xl mb-4">Impressed by This Case Study?</h2>
           <p className="text-xl mb-6 opacity-90">
             Connect with me to discuss professional opportunities and revenue operations collaboration
           </p>

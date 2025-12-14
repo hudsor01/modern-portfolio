@@ -7,7 +7,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '@/components/ui/chart'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
+import { LazyBarChart as BarChart, Bar, XAxis, YAxis, CartesianGrid } from '@/components/charts/lazy-charts'
 import { partnerGroupsData, type PartnerGroup } from '@/app/projects/data/partner-analytics'
 
 const chartData = partnerGroupsData.map((group: PartnerGroup) => ({

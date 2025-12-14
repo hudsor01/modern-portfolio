@@ -183,8 +183,6 @@ export const CHART_FORMAT_TYPES = {
 
 export type ChartFormatType = typeof CHART_FORMAT_TYPES[keyof typeof CHART_FORMAT_TYPES];
 
-// Legacy support - keeping for compatibility
-export type FunnelValueFormatType = ChartFormatType;
 
 /**
  * Chart theme configuration

@@ -57,7 +57,7 @@ export function BlogContent({
       })
 
       // Inline code
-      html = html.replace(/`([^`]+)`/gim, '<code class="px-1.5 py-0.5 bg-muted dark:bg-card rounded text-sm font-mono">$1</code>')
+      html = html.replace(/`([^`]+)`/gim, '<code class="px-1.5 py-0.5 bg-muted dark:bg-card rounded-xs text-sm font-mono">$1</code>')
 
       // Links - with URL validation
       html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/gim, (_match, text, url) => {
@@ -151,6 +151,21 @@ export function BlogContent({
     }
   }
 
+  // Sanitize content for all types to prevent XSS
+  const sanitizeContent = (content: string) => {
+    // Only sanitize in browser environment
+    if (typeof window !== 'undefined') {
+      return DOMPurify.sanitize(content, {
+        ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'em', 'strong', 'a', 'code', 'pre', 'blockquote', 'ul', 'ol', 'li', 'img', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'div', 'span', 'small'],
+        ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'id', 'data-language', 'target', 'rel', 'loading', 'width', 'height', 'style'],
+        ALLOW_DATA_ATTR: false,
+        FORBID_TAGS: ['script', 'object', 'embed', 'form', 'input', 'button'],
+        FORBID_ATTR: ['on*', 'srcdoc', 'lowsrc', 'dynsrc']
+      })
+    }
+    return content // During SSR, return content (will be sanitized on client)
+  }
+
   // Extract and render code blocks for markdown
   const renderMarkdownWithCodeBlocks = (html: string) => {
     const parts = html.split(/(<pre data-language="([^"]*?)"><code>([\s\S]*?)<\/code><\/pre>)/g)
@@ -187,6 +202,7 @@ export function BlogContent({
   }
 
   const processedContent = processContent()
+  const sanitizedContent = sanitizeContent(processedContent)
 
   return (
     <div
@@ -208,12 +224,12 @@ export function BlogContent({
       {contentType === 'MARKDOWN' ? (
         renderMarkdownWithCodeBlocks(processedContent)
       ) : (
-        <div dangerouslySetInnerHTML={{ __html: processedContent }} />
+        <div dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
       )}
 
       <style jsx global>{`
         .blog-content h1 {
-          @apply typography-h2 border-none pb-0 text-3xl mt-8 mb-6 text-foreground dark:text-white;
+          @apply typography-h2 border-none pb-0 text-2xl mt-8 mb-6 text-foreground dark:text-white;
         }
         .blog-content h2 {
           @apply typography-h3 mt-8 mb-4 text-foreground dark:text-white;
