@@ -1,10 +1,13 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
 import { useBlogPosts, useBlogCategories } from '@/hooks/use-api-queries'
-import { BlogCard } from './blog-card'
 import { TagFilter } from './tag-filter'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 export function BlogPageContent() {
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
@@ -90,14 +93,41 @@ export function BlogPageContent() {
       ) : filteredPosts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredPosts.map((post) => (
-            <BlogCard
-              key={post.id}
-              url={`/blog/${post.slug}`}
-              title={post.title}
-              description={post.excerpt || ''}
-              date={formatDate(post.publishedAt)}
-              thumbnail={post.featuredImage}
-            />
+            <Link key={post.id} href={`/blog/${post.slug}`} className="group block h-full">
+              <Card className="hover-lift hover:border-primary/50 transition-all h-full overflow-hidden">
+                {post.featuredImage && (
+                  <div className="relative aspect-[16/10] overflow-hidden">
+                    <Image
+                      src={post.featuredImage}
+                      alt={post.title}
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                  </div>
+                )}
+                <CardHeader>
+                  {post.tags && post.tags.length > 0 && (
+                    <div className="flex gap-2 mb-2 flex-wrap">
+                      {post.tags.slice(0, 3).map((tag: { id: string; name: string }) => (
+                        <Badge key={tag.id} variant="secondary" className="text-xs">
+                          {tag.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                  <CardTitle className="text-xl line-clamp-2 group-hover:text-primary transition-colors">
+                    {post.title}
+                  </CardTitle>
+                  <CardDescription className="line-clamp-3">{post.excerpt || ''}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <time className="typography-small text-muted-foreground">
+                    {formatDate(post.publishedAt)}
+                  </time>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       ) : (
