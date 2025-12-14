@@ -1,4 +1,5 @@
 'use client'
+import { memo } from 'react'
 
 import { LazyAreaChart as AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from '@/components/charts/lazy-charts'
 
@@ -20,7 +21,7 @@ const chartColors = {
   axis: 'var(--color-muted-foreground)',
 }
 
-export default function CustomerJourneyChart() {
+const CustomerJourneyChart = memo(function CustomerJourneyChart() {
   return (
     <div className="h-[350px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -89,4 +90,8 @@ export default function CustomerJourneyChart() {
       </p>
     </div>
   )
-}
+})
+
+CustomerJourneyChart.displayName = 'CustomerJourneyChart'
+
+export default CustomerJourneyChart

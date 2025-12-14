@@ -1,4 +1,5 @@
 'use client'
+import { memo } from 'react'
 
 import { LazyLineChart as LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from '@/components/charts/lazy-charts'
 
@@ -24,7 +25,7 @@ const chartColors = {
   axis: 'var(--color-muted-foreground)',
 }
 
-export default function RevenueOverviewChart() {
+const RevenueOverviewChart = memo(function RevenueOverviewChart() {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -126,4 +127,8 @@ export default function RevenueOverviewChart() {
       </p>
     </div>
   )
-}
+})
+
+RevenueOverviewChart.displayName = 'RevenueOverviewChart'
+
+export default RevenueOverviewChart

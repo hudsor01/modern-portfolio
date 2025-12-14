@@ -1,4 +1,5 @@
 'use client'
+import { memo } from 'react'
 
 import { LazyLineChart as LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from '@/components/charts/lazy-charts'
 
@@ -51,7 +52,7 @@ const chartColors = {
   axis: 'var(--color-muted-foreground)',
 }
 
-export default function ROIOptimizationChart() {
+const ROIOptimizationChart = memo(function ROIOptimizationChart() {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -157,4 +158,8 @@ export default function ROIOptimizationChart() {
       </p>
     </div>
   )
-}
+})
+
+ROIOptimizationChart.displayName = 'ROIOptimizationChart'
+
+export default ROIOptimizationChart

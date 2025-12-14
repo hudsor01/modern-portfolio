@@ -1,4 +1,5 @@
 'use client'
+import { memo } from 'react'
 
 import { LazyComposedChart as ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from '@/components/charts/lazy-charts'
 
@@ -60,7 +61,7 @@ const chartColors = {
   axis: 'var(--color-muted-foreground)',
 }
 
-export default function CommissionTierChart() {
+const CommissionTierChart = memo(function CommissionTierChart() {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -175,4 +176,8 @@ export default function CommissionTierChart() {
       </p>
     </div>
   )
-}
+})
+
+CommissionTierChart.displayName = 'CommissionTierChart'
+
+export default CommissionTierChart

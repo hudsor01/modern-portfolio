@@ -1,4 +1,5 @@
 'use client'
+import { memo } from 'react'
 import { useState, useEffect } from 'react'
 import {
   Line,
@@ -20,7 +21,7 @@ const data = staticChurnData.map((item) => ({
   retention: 100 - item.churnRate,
 }))
 
-export default function ChurnLineChart() {
+const ChurnLineChart = memo(function ChurnLineChart() {
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
@@ -110,4 +111,8 @@ export default function ChurnLineChart() {
       </ResponsiveContainer>
     </div>
   )
-}
+})
+
+ChurnLineChart.displayName = 'ChurnLineChart'
+
+export default ChurnLineChart

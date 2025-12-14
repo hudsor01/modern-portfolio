@@ -1,4 +1,5 @@
 'use client'
+import { memo } from 'react'
 
 import { LazyPieChart as PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from '@/components/charts/lazy-charts'
 import type { PieLabelRenderProps } from 'recharts'
@@ -28,7 +29,7 @@ interface CustomTooltipProps {
   }>;
 }
 
-export default function LeadSourcePieChart() {
+const LeadSourcePieChart = memo(function LeadSourcePieChart() {
   const total = leadSourceData.reduce((sum, item) => sum + item.value, 0)
 
   const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
@@ -109,4 +110,8 @@ export default function LeadSourcePieChart() {
       </div>
     </div>
   )
-}
+})
+
+LeadSourcePieChart.displayName = 'LeadSourcePieChart'
+
+export default LeadSourcePieChart

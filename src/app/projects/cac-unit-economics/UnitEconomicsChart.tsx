@@ -1,4 +1,5 @@
 'use client'
+import { memo } from 'react'
 
 import { LazyLineChart as LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from '@/components/charts/lazy-charts'
 
@@ -22,7 +23,7 @@ const chartColors = {
   axis: 'var(--color-muted-foreground)',
 }
 
-export default function UnitEconomicsChart() {
+const UnitEconomicsChart = memo(function UnitEconomicsChart() {
   return (
     <div className="h-[350px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -105,4 +106,8 @@ export default function UnitEconomicsChart() {
       </p>
     </div>
   )
-}
+})
+
+UnitEconomicsChart.displayName = 'UnitEconomicsChart'
+
+export default UnitEconomicsChart
