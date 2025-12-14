@@ -1,6 +1,6 @@
 'use client'
 
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Legend } from 'recharts'
+import { LazyRadarChart as RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Legend } from '@/components/charts/lazy-charts'
 
 // Operational efficiency metrics across different areas
 const data = [

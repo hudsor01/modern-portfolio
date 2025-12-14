@@ -9,8 +9,8 @@ import {
   CartesianGrid,
   Legend,
   Area,
-  ComposedChart,
-} from 'recharts'
+  LazyComposedChart as ComposedChart,
+} from '@/components/charts/lazy-charts'
 import { staticChurnData } from '@/app/projects/data/partner-analytics'
 
 // Transform data for visualization

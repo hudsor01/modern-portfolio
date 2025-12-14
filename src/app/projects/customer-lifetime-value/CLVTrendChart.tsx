@@ -1,6 +1,6 @@
 'use client'
 
-import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Area, ComposedChart } from 'recharts'
+import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Area, LazyComposedChart as ComposedChart } from '@/components/charts/lazy-charts'
 
 // CLV trend data with confidence intervals and forecasting
 const data = [

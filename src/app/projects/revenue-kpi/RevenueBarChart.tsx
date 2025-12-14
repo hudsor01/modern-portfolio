@@ -8,7 +8,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '@/components/ui/chart'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
+import { LazyBarChart as BarChart, Bar, XAxis, YAxis, CartesianGrid } from '@/components/charts/lazy-charts'
 import { monthlyRevenue2024, type MonthlyRevenueData } from '@/app/projects/data/partner-analytics'
 
 const chartConfig = {

@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import {
-  BarChart,
+  LazyBarChart as BarChart,
   Bar,
   XAxis,
   YAxis,
@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
   Legend,
   CartesianGrid,
-} from 'recharts'
+} from '@/components/charts/lazy-charts'
 import { staticChurnData } from '@/app/projects/data/partner-analytics'
 
 // Transform data for visualization
