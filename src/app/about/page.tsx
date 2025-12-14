@@ -1,5 +1,3 @@
-'use client'
-
 import { generateMetadata } from '@/app/shared-metadata'
 import { Navbar } from '@/components/layout/navbar'
 import { PersonalInfo } from '@/components/about/personal-info'
