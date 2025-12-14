@@ -1,9 +1,9 @@
 'use client'
 
 import {
-  BarChart,
+  LazyBarChart as BarChart,
   Bar,
-  LineChart,
+  LazyLineChart as LineChart,
   Line,
   XAxis,
   YAxis,
@@ -11,10 +11,10 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  PieChart,
+  LazyPieChart as PieChart,
   Pie,
   Cell,
-} from 'recharts'
+} from '@/components/charts/lazy-charts'
 
 import { cn } from '@/lib/utils'
 import type { ChartData } from '@/types/chart'

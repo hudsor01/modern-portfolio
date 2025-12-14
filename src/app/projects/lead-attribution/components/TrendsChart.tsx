@@ -10,8 +10,8 @@ import {
   Legend,
   ResponsiveContainer,
   Area,
-  ComposedChart,
-} from 'recharts'
+  LazyComposedChart as ComposedChart,
+} from '@/components/charts/lazy-charts'
 import { monthlyTrendData } from '../data/constants'
 
 export function TrendsChart() {

@@ -1,6 +1,6 @@
 'use client'
 
-import { BarChart, Bar } from 'recharts'
+import { LazyBarChart as BarChart, Bar } from '@/components/charts/lazy-charts'
 import {
   ChartWrapper,
   ChartGrid,

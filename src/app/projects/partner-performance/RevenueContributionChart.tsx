@@ -1,6 +1,6 @@
 'use client'
 
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { LazyPieChart as PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from '@/components/charts/lazy-charts'
 
 // Partner revenue distribution demonstrating 80/20 rule
 const data = [

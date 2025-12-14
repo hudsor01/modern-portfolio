@@ -1,6 +1,7 @@
 'use client'
 
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, PieLabelRenderProps } from 'recharts'
+import { LazyPieChart as PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from '@/components/charts/lazy-charts'
+import type { PieLabelRenderProps } from 'recharts'
 
 // Production lead source data with realistic distribution and growth metrics
 const leadSourceData = [

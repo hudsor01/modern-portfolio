@@ -1,6 +1,6 @@
 'use client'
 
-import { ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts'
+import { LazyScatterChart as ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from '@/components/charts/lazy-charts'
 
 // Channel performance data for scatter plot
 const data = [

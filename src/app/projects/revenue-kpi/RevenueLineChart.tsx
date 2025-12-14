@@ -1,6 +1,6 @@
 'use client'
 import React, { memo, useMemo } from 'react'
-import { LineChart, Line, Legend } from 'recharts'
+import { LazyLineChart as LineChart, Line, Legend } from '@/components/charts/lazy-charts'
 import {
   ChartWrapper,
   ChartGrid,

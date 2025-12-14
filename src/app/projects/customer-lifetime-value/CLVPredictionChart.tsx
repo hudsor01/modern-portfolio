@@ -1,6 +1,6 @@
 'use client'
 
-import { ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from 'recharts'
+import { LazyScatterChart as ScatterChart, Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from '@/components/charts/lazy-charts'
 
 // CLV prediction vs actual data showing model accuracy
 const data = [
