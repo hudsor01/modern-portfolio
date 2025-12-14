@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ApiResponse, BlogPostData } from '@/types/shared-api';
 import { createContextLogger } from '@/lib/monitoring/logger';
 import { db, Prisma } from '@/lib/db';
+import { validateCSRFToken } from '@/lib/security/csrf-protection';
 
 const logger = createContextLogger('SlugAPI');
 
@@ -172,6 +173,21 @@ export async function PUT(
   context: { params: Promise<{ slug: string }> }
 ) {
   try {
+    // CSRF token validation
+    const csrfToken = request.headers.get('x-csrf-token')
+    const isCSRFValid = await validateCSRFToken(csrfToken ?? undefined)
+
+    if (!isCSRFValid) {
+      logger.warn('CSRF validation failed for blog post update')
+      const errorResponse: ApiResponse<never> = {
+        data: undefined as never,
+        success: false,
+        error: 'Security validation failed. Please refresh and try again.'
+      }
+
+      return NextResponse.json(errorResponse, { status: 403 })
+    }
+
     const { slug } = await context.params;
     const body = await request.json();
 
@@ -276,10 +292,25 @@ export async function PUT(
 
 // DELETE /api/blog/[slug] - Delete blog post by slug
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   context: { params: Promise<{ slug: string }> }
 ) {
   try {
+    // CSRF token validation
+    const csrfToken = request.headers.get('x-csrf-token')
+    const isCSRFValid = await validateCSRFToken(csrfToken ?? undefined)
+
+    if (!isCSRFValid) {
+      logger.warn('CSRF validation failed for blog post deletion')
+      const errorResponse: ApiResponse<never> = {
+        data: undefined as never,
+        success: false,
+        error: 'Security validation failed. Please refresh and try again.'
+      }
+
+      return NextResponse.json(errorResponse, { status: 403 })
+    }
+
     const { slug } = await context.params;
 
     if (!slug) {

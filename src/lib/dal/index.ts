@@ -81,11 +81,35 @@ export interface BlogPostData {
   readingTime?: number
 }
 
+export interface BlogPostsResult {
+  posts: BlogPostData[]
+  totalCount: number
+  totalPages: number
+  currentPage: number
+  hasNextPage: boolean
+  hasPreviousPage: boolean
+}
+
 /**
- * Get all published blog posts
+ * Get published blog posts with pagination
+ * @param page - Page number (1-indexed, default: 1)
+ * @param pageSize - Number of posts per page (default: 10, max: 100)
  */
-export const getBlogPosts = cache(async (): Promise<BlogPostData[]> => {
+export const getBlogPosts = cache(async (
+  page = 1,
+  pageSize = 10
+): Promise<BlogPostsResult> => {
   try {
+    // Validate and sanitize inputs to prevent abuse
+    const validatedPage = Math.max(1, Math.floor(page))
+    const validatedPageSize = Math.min(100, Math.max(1, Math.floor(pageSize)))
+    const skip = (validatedPage - 1) * validatedPageSize
+
+    // Get total count for pagination metadata
+    const totalCount = await db.blogPost.count({
+      where: { status: 'PUBLISHED' }
+    })
+
     const posts = await db.blogPost.findMany({
       where: { status: 'PUBLISHED' },
       select: {
@@ -111,25 +135,43 @@ export const getBlogPosts = cache(async (): Promise<BlogPostData[]> => {
         readingTime: true,
       },
       orderBy: { publishedAt: 'desc' },
+      skip,
+      take: validatedPageSize,
     })
 
-    return posts.map(p => ({
-      id: p.id,
-      slug: p.slug,
-      title: p.title,
-      excerpt: p.excerpt ?? undefined,
-      content: p.content,
-      author: p.authorId || 'Richard Hudson',
-      category: p.category?.name ?? undefined,
-      tags: p.tags.map(t => t.tag.name),
-      publishedAt: p.publishedAt?.toISOString(),
-      updatedAt: p.updatedAt?.toISOString(),
-      readingTime: p.readingTime ?? undefined,
-    }))
+    const totalPages = Math.ceil(totalCount / validatedPageSize)
+
+    return {
+      posts: posts.map(p => ({
+        id: p.id,
+        slug: p.slug,
+        title: p.title,
+        excerpt: p.excerpt ?? undefined,
+        content: p.content,
+        author: p.authorId || 'Richard Hudson',
+        category: p.category?.name ?? undefined,
+        tags: p.tags.map(t => t.tag.name),
+        publishedAt: p.publishedAt?.toISOString(),
+        updatedAt: p.updatedAt?.toISOString(),
+        readingTime: p.readingTime ?? undefined,
+      })),
+      totalCount,
+      totalPages,
+      currentPage: validatedPage,
+      hasNextPage: validatedPage < totalPages,
+      hasPreviousPage: validatedPage > 1,
+    }
   } catch (error) {
-    // Return empty array if database unavailable
+    // Return empty result if database unavailable
     logger.warn('Database unavailable for blog posts', { error: error instanceof Error ? error.message : String(error) })
-    return []
+    return {
+      posts: [],
+      totalCount: 0,
+      totalPages: 0,
+      currentPage: page,
+      hasNextPage: false,
+      hasPreviousPage: false,
+    }
   }
 })
 

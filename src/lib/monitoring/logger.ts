@@ -148,7 +148,8 @@ class JSONTransport implements LogTransport {
 }
 
 // File transport (for persistent logging)
-class FileTransport implements LogTransport {
+// Node.js 24: Implements Disposable for automatic cleanup via 'using' keyword
+class FileTransport implements LogTransport, Disposable {
   private buffer: LogEntry[] = []
   private readonly maxBufferSize = 100
   private readonly flushInterval = 5000 // 5 seconds
@@ -187,12 +188,19 @@ class FileTransport implements LogTransport {
     }
   }
 
-  // Method to properly clean up the interval
-  destroy(): void {
+  // Node.js 24: Explicit Resource Management - called automatically with 'using' keyword
+  [Symbol.dispose](): void {
     if (this.flushIntervalId) {
       clearInterval(this.flushIntervalId)
       this.flushIntervalId = null
     }
+    // Flush remaining logs before disposal
+    this.flush()
+  }
+
+  // Legacy method for backward compatibility - calls Symbol.dispose
+  destroy(): void {
+    this[Symbol.dispose]()
   }
 
   private shouldLog(level: LogLevel): boolean {

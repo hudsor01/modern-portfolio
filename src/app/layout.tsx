@@ -7,10 +7,10 @@ import { ThemeProvider } from '@/components/providers/theme-provider'
 import { ClientComponentsProvider } from '@/components/providers/client-components-provider'
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from '@/components/ui/toaster'
-import { EnhancedReadingProgress } from '@/components/layout/enhanced-reading-progress'
 import { ScrollToTop } from '@/components/layout/scroll-to-top'
 import { baseMetadata } from './shared-metadata'
 import { PersonJsonLd, WebsiteJsonLd, LocalBusinessJsonLd, OrganizationJsonLd } from '@/components/seo/json-ld'
+import { ReadingProgressBar } from './reading-progress'
 
 // Use single font family for better performance
 const inter = Inter({
@@ -48,9 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={inter.className}>
         <ThemeProvider attribute="data-theme" defaultTheme="light" enableSystem>
           <ClientComponentsProvider>
-            <EnhancedReadingProgress
-              contentPagesOnly={true}
-            />
+            <ReadingProgressBar />
             {children}
             <ScrollToTop />
             <Toaster position="bottom-right" closeButton richColors />

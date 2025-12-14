@@ -4,13 +4,18 @@
  */
 
 import { PrismaClient } from '@prisma/client'
-import type { 
+import type {
+  Author,
+  BlogPost,
+  Category,
+  Tag,
+  Series,
   PostStatus,
   ContentType,
   InteractionType,
   SEOEventType,
   SEOSeverity,
-  ChangeFrequency 
+  ChangeFrequency
 } from '@prisma/client'
 
 const db = new PrismaClient()
@@ -568,7 +573,7 @@ Success with sales technology requires strategic planning, careful implementatio
   return { content, excerpt }
 }
 
-async function seedBlogPosts(authors: any[], categories: any[], tags: any[], series: any[]) {
+async function seedBlogPosts(authors: Author[], categories: Category[], tags: Tag[], series: Series[]) {
   console.log('🔄 Seeding blog posts...')
   
   const blogPosts = [
@@ -751,7 +756,7 @@ async function seedBlogPosts(authors: any[], categories: any[], tags: any[], ser
   return createdPosts
 }
 
-async function seedAnalyticsData(posts: any[]) {
+async function seedAnalyticsData(posts: BlogPost[]) {
   console.log('🔄 Seeding analytics data...')
   
   let totalViews = 0
@@ -805,7 +810,7 @@ async function seedAnalyticsData(posts: any[]) {
   console.log(`✅ Created ${totalViews} post views and ${totalInteractions} interactions`)
 }
 
-async function seedSEOData(posts: any[]) {
+async function seedSEOData(posts: BlogPost[]) {
   console.log('🔄 Seeding SEO data...')
   
   let totalKeywords = 0
@@ -868,7 +873,7 @@ async function seedSEOData(posts: any[]) {
   console.log(`✅ Created ${totalKeywords} SEO keywords and ${totalSEOEvents} SEO events`)
 }
 
-async function seedSitemapEntries(posts: any[]) {
+async function seedSitemapEntries(posts: BlogPost[]) {
   console.log('🔄 Seeding sitemap entries...')
   
   const baseUrls = [

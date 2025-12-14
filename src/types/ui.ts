@@ -59,12 +59,6 @@ export interface FadeInProps {
   once?: boolean
 }
 
-export interface PageTransitionProps {
-  children: ReactNode
-  className?: string
-  mode?: 'wait' | 'sync' | 'popLayout'
-}
-
 // Layout and Section interfaces
 export interface SectionProps {
   id?: string

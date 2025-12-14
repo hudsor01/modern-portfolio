@@ -424,11 +424,23 @@ export function createDatabaseMiddleware() {
 // BACKUP AUTOMATION
 // =======================
 
-export class BackupAutomation {
-  static async scheduleBackup(intervalHours = 24): Promise<void> {
-    dbUtilsLogger.info(`Scheduling automatic backups every ${intervalHours} hours`)
+/**
+ * Backup scheduler with automatic cleanup
+ * Node.js 24: Implements Disposable for automatic cleanup via 'using' keyword
+ */
+export class BackupAutomation implements Disposable {
+  private backupInterval: NodeJS.Timeout | null = null
+  private intervalHours: number
 
-    setInterval(async () => {
+  constructor(intervalHours = 24) {
+    this.intervalHours = intervalHours
+    this.scheduleBackup()
+  }
+
+  private scheduleBackup(): void {
+    dbUtilsLogger.info(`Scheduling automatic backups every ${this.intervalHours} hours`)
+
+    this.backupInterval = setInterval(async () => {
       try {
         dbUtilsLogger.info('Starting scheduled backup...')
         // Note: Database backup functionality removed as part of production cleanup
@@ -438,7 +450,21 @@ export class BackupAutomation {
         dbUtilsLogger.error('Scheduled backup failed', error instanceof Error ? error : undefined)
         DatabaseMonitor.recordError('SCHEDULED_BACKUP', error)
       }
-    }, intervalHours * 60 * 60 * 1000)
+    }, this.intervalHours * 60 * 60 * 1000)
+  }
+
+  // Node.js 24: Explicit Resource Management - called automatically with 'using' keyword
+  [Symbol.dispose](): void {
+    if (this.backupInterval) {
+      clearInterval(this.backupInterval)
+      this.backupInterval = null
+      dbUtilsLogger.info('Backup scheduler stopped')
+    }
+  }
+
+  // Legacy static method for backward compatibility
+  static async scheduleBackup(intervalHours = 24): Promise<BackupAutomation> {
+    return new BackupAutomation(intervalHours)
   }
 
   static async retentionCleanup(retentionDays = 30): Promise<void> {
