@@ -1,12 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+
 
 import { ArrowLeft, Calendar, Tag, ExternalLink, TrendingUp, Users, Settings, BarChart, Github } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { ContactModal } from '@/components/layout/contact-modal'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
@@ -92,7 +91,6 @@ const technicalDetails = [
 ]
 
 export default function PartnershipProgramPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false)
 
   return (
     <>
@@ -448,7 +446,7 @@ export default function PartnershipProgramPage() {
                 </p>
                 <Button
                   size="lg"
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => window.location.href = "/contact"}
                   className="gradient-cta hover:gradient-cta-hover"
                 >
                   <TrendingUp className="mr-2" size={20} />
@@ -505,7 +503,6 @@ export default function PartnershipProgramPage() {
       </main>
 
       <Footer />
-      <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   )
 }

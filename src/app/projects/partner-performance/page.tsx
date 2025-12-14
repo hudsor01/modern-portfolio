@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
+import { AnimatedBackground } from '@/components/projects/animated-background'
 import { STARAreaChart } from '@/components/projects/STARAreaChart'
 
 
@@ -111,12 +112,7 @@ export default function PartnerPerformanceIntelligence() {
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-white">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
-      </div>
+      <AnimatedBackground tertiaryColor="bg-purple-500" />
 
       <div className="relative z-10 max-w-7xl mx-auto p-6">
         {/* Header */}

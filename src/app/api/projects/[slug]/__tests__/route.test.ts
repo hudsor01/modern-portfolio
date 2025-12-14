@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { NextRequest } from 'next/server'
 import { GET } from '../route'
 
 // Mock the data layer
@@ -16,9 +17,11 @@ vi.mock('@/lib/monitoring/logger', () => ({
   }))
 }))
 
-const createMockRequest = () => ({
-  url: 'http://localhost:3000/api/projects/test-project'
-}) as unknown as Request
+const createMockRequest = () => {
+  return new NextRequest('http://localhost:3000/api/projects/test-project', {
+    method: 'GET',
+  })
+}
 
 describe('/api/projects/[slug]', () => {
   beforeEach(() => {

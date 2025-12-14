@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import type { NextLinkHref } from '@/types/next-types'
 import { getRouteKey } from '@/lib/utils'
-import { ContactModal } from '@/components/layout/contact-modal'
 
 type NavItem = {
   label: string
@@ -24,7 +23,6 @@ const navItems: NavItem[] = [
 
 export function Navbar() {
   const pathname = usePathname()
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const navbarClasses = 'fixed top-0 left-0 right-0 z-50 w-full bg-gradient-to-r from-[#0f172a]/95 via-[#0f172a]/98 to-[#0f172a]/95 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-primary/5'
@@ -75,12 +73,12 @@ export function Navbar() {
 
             {/* Desktop CTA button */}
             <div className="hidden md:flex items-center w-32 justify-end">
-              <button
-                onClick={() => setIsModalOpen(true)}
+              <Link
+                href="/contact"
                 className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black text-base font-medium px-5 py-3 rounded-xl transition-all duration-300 border border-primary/20 shadow-lg shadow-cyan-500/25"
               >
                 Let's Talk
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -102,25 +100,18 @@ export function Navbar() {
                     {item.label}
                   </Link>
                 ))}
-                <button
-                  onClick={() => {
-                    setIsModalOpen(true)
-                    setIsMobileMenuOpen(false)
-                  }}
+                <Link
+                  href="/contact"
+                  onClick={() => setIsMobileMenuOpen(false)}
                   className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black text-base font-medium px-4 py-4 rounded-xl transition-all duration-300 border border-primary/20 shadow-lg shadow-cyan-500/25 min-h-[44px] flex items-center justify-center"
                 >
                   Let's Talk
-                </button>
+                </Link>
               </div>
             </div>
           )}
         </div>
       </div>
-
-      <ContactModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
     </>
   )
 }

@@ -57,10 +57,11 @@ export interface RateLimitResult {
   }
 }
 
-// Simple in-memory store for rate limiting (could be replaced with Redis in production)  
+// Simple in-memory store for rate limiting (could be replaced with Redis in production)
 // Note: This store is not used directly in the current implementation
 
-class EnhancedRateLimiter {
+// Node.js 24: Implements Disposable for automatic cleanup via 'using' keyword
+class EnhancedRateLimiter implements Disposable {
   private store = new Map<string, RateLimitRecord>()
   private analytics: RateLimitAnalytics = {
     totalRequests: 0,
@@ -457,9 +458,9 @@ class EnhancedRateLimiter {
   }
 
   /**
-   * Cleanup resources
+   * Node.js 24: Explicit Resource Management - called automatically with 'using' keyword
    */
-  destroy(): void {
+  [Symbol.dispose](): void {
     if (this.cleanupInterval) {
       clearInterval(this.cleanupInterval)
       this.cleanupInterval = null
@@ -478,6 +479,13 @@ class EnhancedRateLimiter {
         daily: new Array(7).fill(0)
       }
     }
+  }
+
+  /**
+   * Legacy method for backward compatibility - calls Symbol.dispose
+   */
+  destroy(): void {
+    this[Symbol.dispose]()
   }
 }
 
@@ -588,5 +596,5 @@ export function getClientRateLimitInfo(identifier: string): RateLimitRecord | nu
   return enhancedRateLimiter.getClientInfo(identifier)
 }
 
-export { enhancedRateLimiter }
+export { enhancedRateLimiter, EnhancedRateLimiter }
 // Type exports are already done via interface exports above

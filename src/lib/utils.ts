@@ -1,6 +1,7 @@
 // Split utilities into client and server files
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { z } from 'zod'
 
 // Create a client-safe absoluteUrl function
 export function absoluteUrl(path: string): string {
@@ -101,9 +102,21 @@ export function parseParam<T>(value: string | string[] | undefined, defaultValue
   return (Array.isArray(value) ? value[0] : value) as T
 }
 
-export function safeJsonParse<T>(json: string, fallback: T): T {
+/**
+ * Safely parse JSON with runtime type validation using Zod schema
+ * @param json - JSON string to parse
+ * @param schema - Zod schema for runtime validation
+ * @param fallback - Fallback value if parsing or validation fails
+ * @returns Validated parsed value or fallback
+ */
+export function safeJsonParse<T>(
+  json: string,
+  schema: z.ZodSchema<T>,
+  fallback: T
+): T {
   try {
-    return JSON.parse(json) as T
+    const parsed = JSON.parse(json)
+    return schema.parse(parsed)
   } catch {
     return fallback
   }

@@ -216,13 +216,17 @@ function FocusManager() {
         }
       }
 
+      // Node.js 24 Fix: Store stable function reference for proper cleanup
+      // Previously created new function each time, causing memory leak
+      const handleWindowFocus = () => handleFocus()
+
       // Listen to visibilitychange and focus
       document.addEventListener('visibilitychange', handleVisibilityChange)
-      window.addEventListener('focus', () => handleFocus())
+      window.addEventListener('focus', handleWindowFocus)
 
       return () => {
         document.removeEventListener('visibilitychange', handleVisibilityChange)
-        window.removeEventListener('focus', () => handleFocus())
+        window.removeEventListener('focus', handleWindowFocus)
       }
     })
   }, [])

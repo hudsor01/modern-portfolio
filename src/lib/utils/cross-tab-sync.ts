@@ -3,6 +3,7 @@
  * Synchronizes form data across browser tabs using localStorage events
  */
 
+import { z } from 'zod'
 import { createContextLogger } from '@/lib/monitoring/logger'
 
 const syncLogger = createContextLogger('CrossTabSync')
@@ -14,6 +15,15 @@ export interface CrossTabMessage {
   timestamp: number
   tabId: string
 }
+
+// Zod schema for runtime validation of CrossTabMessage
+const CrossTabMessageSchema = z.object({
+  type: z.enum(['form-update', 'form-clear', 'form-restore']),
+  formId: z.string(),
+  data: z.record(z.string(), z.unknown()).optional(),
+  timestamp: z.number(),
+  tabId: z.string()
+})
 
 // Generate unique tab ID
 const TAB_ID = crypto.randomUUID()
@@ -102,7 +112,10 @@ class CrossTabSync {
     try {
       const stored = localStorage.getItem(`form-auto-save-${formId}`)
       if (stored) {
-        return JSON.parse(stored)
+        const parsed = JSON.parse(stored)
+        // Validate that it's at least a plain object
+        const schema = z.record(z.string(), z.unknown())
+        return schema.parse(parsed)
       }
     } catch (error) {
       syncLogger.warn('Failed to get latest form data', { error })
@@ -122,8 +135,9 @@ class CrossTabSync {
     if (!listeners || listeners.size === 0) return
 
     try {
-      const message: CrossTabMessage = JSON.parse(event.newValue || '{}')
-      
+      const parsed = JSON.parse(event.newValue || '{}')
+      const message = CrossTabMessageSchema.parse(parsed)
+
       // Ignore messages from the same tab
       if (message.tabId === TAB_ID) return
 

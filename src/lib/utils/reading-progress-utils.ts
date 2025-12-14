@@ -8,6 +8,11 @@ import { createContextLogger } from '@/lib/monitoring/logger'
 
 const progressLogger = createContextLogger('ReadingProgress')
 
+// Extend Window interface to include custom scroll tracking property
+interface WindowWithScrollTracking extends Window {
+  _lastScrollTop?: number
+}
+
 export interface ReadingProgressMetrics {
   scrollProgress: number
   scrollDirection: 'up' | 'down'
@@ -54,9 +59,10 @@ export function calculateScrollProgress(container?: Element | HTMLElement): Read
 
   // Determine scroll direction - use a more reliable method
   if (typeof window !== 'undefined') {
-    const lastScrollTop = (window as any)._lastScrollTop || 0
+    const win = window as WindowWithScrollTracking
+    const lastScrollTop = win._lastScrollTop || 0
     const scrollDirection = scrollTop > lastScrollTop ? 'down' : 'up'
-    ;(window as any)._lastScrollTop = scrollTop
+    win._lastScrollTop = scrollTop
 
     // Calculate positions
     const isAtTop = scrollTop < 10
@@ -109,8 +115,9 @@ export function getEstimatedWordCount(element: Element | HTMLElement): number {
 
 /**
  * Track reading session
+ * Node.js 24: Implements Disposable for automatic cleanup via 'using' keyword
  */
-export class ReadingProgressTracker {
+export class ReadingProgressTracker implements Disposable {
   private session: ReadingSession
   private progressHistory: number[] = []
   private lastUpdateTime: number = Date.now()
@@ -273,6 +280,11 @@ export class ReadingProgressTracker {
       clearInterval(this.saveInterval)
       this.saveInterval = null
     }
+  }
+
+  // Node.js 24: Explicit Resource Management - called automatically with 'using' keyword
+  [Symbol.dispose](): void {
+    this.stopTracking()
   }
 
   public resetSession(): void {
