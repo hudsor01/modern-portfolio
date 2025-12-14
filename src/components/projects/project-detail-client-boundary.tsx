@@ -1,6 +1,6 @@
 'use client'
 
-import { useProject } from '@/hooks/use-api-queries'
+import { useQuery } from '@tanstack/react-query'
 import { usePageAnalytics } from '@/hooks/use-page-analytics'
 import { Navbar } from '@/components/layout/navbar'
 import { Button } from '@/components/ui/button'
@@ -71,8 +71,20 @@ export default function ProjectDetailClientBoundary({
     trackScrollDepth: true
   })
 
-  // Use modern hook with automatic prefetching
-  const { data: project, isLoading, error } = useProject(slug)
+  // Direct TanStack Query usage
+  const { data: project, isLoading, error } = useQuery({
+    queryKey: ['project', slug],
+    queryFn: async () => {
+      const response = await fetch(`/api/projects/${slug}`, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      if (!response.ok) throw new Error('Failed to fetch project')
+      const result = await response.json()
+      return result.data || result
+    },
+    enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
+  })
 
   // Show loading skeleton
   if (isLoading && !initialProject) {
