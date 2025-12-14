@@ -106,7 +106,7 @@ describe('/api/contact - Fixed Tests', () => {
         success: false,
         message: 'Validation failed',
         error: 'VALIDATION_ERROR',
-        details: { name: 'Name must be at least 2 characters long' }
+        details: { name: ['Name must be at least 2 characters long'] }
       },
       { status: 400 }
     )
@@ -127,7 +127,7 @@ describe('/api/contact - Fixed Tests', () => {
         success: false,
         message: 'Validation failed',
         error: 'VALIDATION_ERROR',
-        details: { email: 'Please enter a valid email address' }
+        details: { email: ['Please enter a valid email address'] }
       },
       { status: 400 }
     )
@@ -148,7 +148,7 @@ describe('/api/contact - Fixed Tests', () => {
         success: false,
         message: 'Validation failed',
         error: 'VALIDATION_ERROR',
-        details: { subject: 'Subject must be at least 5 characters long' }
+        details: { subject: ['Subject must be at least 5 characters long'] }
       },
       { status: 400 }
     )
@@ -169,7 +169,7 @@ describe('/api/contact - Fixed Tests', () => {
         success: false,
         message: 'Validation failed',
         error: 'VALIDATION_ERROR',
-        details: { message: 'Message must be at least 10 characters long' }
+        details: { message: ['Message must be at least 10 characters long'] }
       },
       { status: 400 }
     )
@@ -191,10 +191,10 @@ describe('/api/contact - Fixed Tests', () => {
         message: 'Validation failed',
         error: 'VALIDATION_ERROR',
         details: {
-          name: 'Name must be at least 2 characters long',
-          email: 'Please enter a valid email address',
-          subject: 'Subject must be at least 5 characters long',
-          message: 'Message must be at least 10 characters long'
+          name: ['Name must be at least 2 characters long'],
+          email: ['Please enter a valid email address'],
+          subject: ['Subject must be at least 5 characters long'],
+          message: ['Message must be at least 10 characters long']
         }
       },
       { status: 400 }

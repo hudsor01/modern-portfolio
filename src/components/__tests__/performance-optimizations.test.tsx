@@ -194,7 +194,7 @@ describe('Performance Optimizations', () => {
       )
       
       const heading = screen.getByTestId('responsive-heading')
-      expect(heading).toHaveClass('text-xl', 'md:text-xl')
+      expect(heading).toHaveClass('text-xl', 'md:text-2xl')
     })
 
     it('maintains 44px touch targets on mobile', () => {
