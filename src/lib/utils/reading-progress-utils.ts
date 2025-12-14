@@ -100,8 +100,10 @@ export function calculateScrollProgress(container?: Element | HTMLElement): Read
  */
 export function getEstimatedWordCount(element: Element | HTMLElement): number {
   try {
-    const textContent =
-      element.textContent || ('innerHTML' in element ? (element as HTMLElement).innerText : '') || ''
+    // Try textContent first, then innerText as fallback
+    const textContent = element.textContent ||
+      (element as HTMLElement & { innerText?: string }).innerText ||
+      ''
     const words = textContent
       .trim()
       .split(/\s+/)
