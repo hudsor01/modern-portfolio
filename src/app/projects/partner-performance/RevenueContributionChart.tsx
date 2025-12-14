@@ -1,4 +1,5 @@
 'use client'
+import { memo } from 'react'
 
 import { LazyPieChart as PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from '@/components/charts/lazy-charts'
 
@@ -11,7 +12,7 @@ const data = [
 
 const COLORS = data.map(item => item.color)
 
-export default function RevenueContributionChart() {
+const RevenueContributionChart = memo(function RevenueContributionChart() {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -71,4 +72,8 @@ export default function RevenueContributionChart() {
       </p>
     </div>
   )
-}
+})
+
+RevenueContributionChart.displayName = 'RevenueContributionChart'
+
+export default RevenueContributionChart

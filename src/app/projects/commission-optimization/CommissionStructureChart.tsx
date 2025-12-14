@@ -1,4 +1,5 @@
 'use client'
+import { memo } from 'react'
 
 import { LazyBarChart as BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from '@/components/charts/lazy-charts'
 
@@ -46,7 +47,7 @@ const chartColors = {
   axis: 'var(--color-muted-foreground)',
 }
 
-export default function CommissionStructureChart() {
+const CommissionStructureChart = memo(function CommissionStructureChart() {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -128,4 +129,8 @@ export default function CommissionStructureChart() {
       </p>
     </div>
   )
-}
+})
+
+CommissionStructureChart.displayName = 'CommissionStructureChart'
+
+export default CommissionStructureChart

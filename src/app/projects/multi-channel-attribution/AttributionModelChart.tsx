@@ -1,4 +1,5 @@
 'use client'
+import { memo } from 'react'
 
 import { LazyBarChart as BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from '@/components/charts/lazy-charts'
 
@@ -20,7 +21,7 @@ const chartColors = {
   axis: 'var(--color-muted-foreground)',
 }
 
-export default function AttributionModelChart() {
+const AttributionModelChart = memo(function AttributionModelChart() {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -105,4 +106,8 @@ export default function AttributionModelChart() {
       </p>
     </div>
   )
-}
+})
+
+AttributionModelChart.displayName = 'AttributionModelChart'
+
+export default AttributionModelChart

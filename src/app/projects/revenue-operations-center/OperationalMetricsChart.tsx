@@ -1,4 +1,5 @@
 'use client'
+import { memo } from 'react'
 
 import { LazyRadarChart as RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Legend } from '@/components/charts/lazy-charts'
 
@@ -62,7 +63,7 @@ const chartColors = {
   axis: 'var(--color-muted-foreground)',
 }
 
-export default function OperationalMetricsChart() {
+const OperationalMetricsChart = memo(function OperationalMetricsChart() {
   return (
     <div className="h-[350px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -117,4 +118,8 @@ export default function OperationalMetricsChart() {
       </p>
     </div>
   )
-}
+})
+
+OperationalMetricsChart.displayName = 'OperationalMetricsChart'
+
+export default OperationalMetricsChart

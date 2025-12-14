@@ -1,4 +1,5 @@
 'use client'
+import { memo } from 'react'
 
 import { LazyLineChart as LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from '@/components/charts/lazy-charts'
 
@@ -21,7 +22,7 @@ const chartColors = {
   axis: 'var(--color-muted-foreground)',
 }
 
-export default function PartnerROIChart() {
+const PartnerROIChart = memo(function PartnerROIChart() {
   return (
     <div className="h-[350px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -118,4 +119,8 @@ export default function PartnerROIChart() {
       </p>
     </div>
   )
-}
+})
+
+PartnerROIChart.displayName = 'PartnerROIChart'
+
+export default PartnerROIChart
