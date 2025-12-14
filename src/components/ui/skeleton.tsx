@@ -53,7 +53,7 @@ function Skeleton({
       data-slot="skeleton"
       data-variant={variant}
       className={cn(
-        'bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg',
+        'bg-card/50 backdrop-blur-xs border border-border/50 rounded-lg',
         animationClasses,
         variantClasses[variant],
         shimmer && 'relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-gray-600/20 before:to-transparent',

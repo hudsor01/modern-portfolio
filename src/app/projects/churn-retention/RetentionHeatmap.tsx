@@ -1,7 +1,8 @@
 'use client'
+import { memo } from 'react'
 import { useState, useEffect } from 'react'
 import {
-  BarChart,
+  LazyBarChart as BarChart,
   Bar,
   XAxis,
   YAxis,
@@ -9,7 +10,7 @@ import {
   ResponsiveContainer,
   Legend,
   CartesianGrid,
-} from 'recharts'
+} from '@/components/charts/lazy-charts'
 import { staticChurnData } from '@/app/projects/data/partner-analytics'
 
 // Transform data for visualization
@@ -23,7 +24,7 @@ const data = staticChurnData.slice(-6).map((item) => ({
   ),
 }))
 
-export default function RetentionHeatmap() {
+const RetentionHeatmap = memo(function RetentionHeatmap() {
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
@@ -111,4 +112,8 @@ export default function RetentionHeatmap() {
       </ResponsiveContainer>
     </div>
   )
-}
+})
+
+RetentionHeatmap.displayName = 'RetentionHeatmap'
+
+export default RetentionHeatmap

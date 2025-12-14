@@ -1,123 +1,156 @@
 'use client'
 
-import { Suspense } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight, Folder, FileText, Mail } from 'lucide-react'
+import { ArrowRight, Briefcase, FileText, MessageCircle, MapPin } from 'lucide-react'
 import { HomePageSchema } from '@/components/seo/home-page-schema'
+import { NumberTicker } from '@/components/ui/number-ticker'
 import { cn } from '@/lib/utils'
 
-export default function HomePageContent() {
-  const buttons = [
-    { href: '/projects', icon: 'folder', label: 'Projects' },
-    { href: '/resume', icon: 'file-text', label: 'Resume' },
-    { href: '/contact', icon: 'mail', label: 'Contact' },
-  ]
+interface MetricCardProps {
+  value: number
+  prefix?: string
+  suffix?: string
+  label: string
+  delay: number
+  accent?: 'revenue' | 'growth' | 'default'
+  decimalPlaces?: number
+}
 
-  const renderIcon = (iconName: string) => {
-    switch (iconName) {
-      case 'folder':
-        return <Folder size={20} className="text-slate-800" aria-hidden="true" />
-      case 'file-text':
-        return <FileText size={20} className="text-slate-800" aria-hidden="true" />
-      case 'mail':
-        return <Mail size={20} className="text-slate-800" aria-hidden="true" />
-      default:
-        return null
-    }
+function MetricCard({ value, prefix = '', suffix = '', label, delay, accent = 'default', decimalPlaces = 0 }: MetricCardProps) {
+  const accentStyles = {
+    revenue: 'text-amber-600 dark:text-amber-400',
+    growth: 'text-emerald-600 dark:text-emerald-400',
+    default: 'text-slate-700 dark:text-slate-200',
   }
 
   return (
-    <section className="landing-screen relative text-foreground overflow-hidden">
+    <div className="p-3 rounded-lg bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 shadow-sm text-center">
+      <div className={cn('text-lg font-bold tabular-nums', accentStyles[accent])}>
+        {prefix}
+        <NumberTicker value={value} delay={delay} decimalPlaces={decimalPlaces} />
+        {suffix}
+      </div>
+      <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">{label}</div>
+    </div>
+  )
+}
+
+export default function HomePageContent() {
+  return (
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <HomePageSchema />
 
-      {/* Modern Gradient Background - Hydration Safe */}
-      <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-gray-950" />
-        <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/10 via-cyan-600/5 to-teal-600/10 opacity-60" />
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/15 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-teal-500/10 rounded-full blur-3xl" />
-        <div
-          className="absolute inset-0 opacity-[0.015]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px)`,
-            backgroundSize: '50px 50px'
-          }}
-        />
+      {/* Background decorations */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-48 h-48 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-amber-500/10 dark:bg-amber-500/15 rounded-full blur-3xl" />
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 px-4 mx-auto max-w-7xl text-center w-full">
-        <h1 className="typography-h1 text-5xl md:text-7xl text-white mb-6 animate-fade-in-up">
-          Richard Hudson
-        </h1>
+      <div className="w-full max-w-lg mx-auto px-6 py-12">
+        {/* Hero Section */}
+        <div className="text-center mb-10">
+          {/* Avatar */}
+          <div className="relative inline-block mb-6">
+            <div className="h-28 w-28 rounded-full overflow-hidden border-4 border-emerald-500/20 dark:border-emerald-400/30 shadow-lg">
+              <Image
+                src="/images/richard.jpg"
+                alt="Richard Hudson"
+                width={112}
+                height={112}
+                className="object-cover w-full h-full"
+                priority
+              />
+            </div>
+            <div className="absolute bottom-1 right-1 h-5 w-5 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-900" />
+          </div>
 
-        <div className="mb-8 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-          <h2 className="typography-h2 border-none pb-0 text-3xl md:text-4xl gradient-text">
+          {/* Name */}
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+            Richard Hudson
+          </h1>
+
+          {/* Title */}
+          <h2 className="text-xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-500 dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent mb-6">
             Revenue Operations Professional
           </h2>
+
+          {/* Description */}
+          <p className="text-base text-slate-600 dark:text-slate-300 leading-relaxed mb-4 max-w-md mx-auto">
+            Delivering <span className="text-amber-600 dark:text-amber-400 font-semibold">measurable revenue impact</span> through strategic operational improvements and data-driven insights.
+          </p>
+
+          {/* Location */}
+          <div className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+            <MapPin size={16} className="text-emerald-600 dark:text-emerald-400" />
+            <span>Plano, Texas • North of Dallas</span>
+          </div>
         </div>
 
-        <p className="typography-lead text-centered-md mb-4 px-4 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-          Experienced Revenue Operations professional with proven track record of delivering $4.8M+
-          revenue impact through strategic operational improvements, data-driven insights, and
-          scalable process optimization for growing organizations.
-        </p>
+        {/* Metrics Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+          <MetricCard 
+            value={4.8} 
+            prefix="$" 
+            suffix="M+" 
+            label="Revenue" 
+            delay={0.2} 
+            accent="revenue"
+            decimalPlaces={1}
+          />
+          <MetricCard 
+            value={432} 
+            suffix="%" 
+            label="Growth" 
+            delay={0.3} 
+            accent="growth"
+          />
+          <MetricCard 
+            value={2217} 
+            suffix="%" 
+            label="Network" 
+            delay={0.4} 
+            accent="growth"
+          />
+          <MetricCard 
+            value={10} 
+            suffix="+" 
+            label="Years" 
+            delay={0.5}
+          />
+        </div>
 
-        {/* Location Information */}
-        <Suspense fallback={<div className="animate-pulse h-12 bg-muted/50 rounded" />}>
-          <div className="mb-8 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
-            <p className="typography-large text-primary mb-2">
-              Based in Plano, TX - Serving Dallas-Fort Worth Metroplex
-            </p>
-            <div className="flex flex-wrap justify-center gap-3 typography-muted">
-              <span>Dallas</span>
-              <span>-</span>
-              <span>Fort Worth</span>
-              <span>-</span>
-              <span>Plano</span>
-              <span>-</span>
-              <span>Frisco</span>
-              <span>-</span>
-              <span>Richardson</span>
-              <span>-</span>
-              <span>McKinney</span>
-            </div>
-          </div>
-        </Suspense>
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          {/* Primary CTA */}
+          <Link
+            href="/projects"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-500 hover:to-teal-500 shadow-md hover:shadow-lg transition-all duration-300"
+          >
+            <Briefcase size={18} />
+            <span>See My Work</span>
+            <ArrowRight size={16} />
+          </Link>
 
-        {/* Professional Navigation */}
-        <Suspense fallback={<div className="animate-pulse h-16 bg-muted/50 rounded-xl" />}>
-          <div className="max-w-4xl mx-auto animate-fade-in-up" style={{ animationDelay: '400ms' }}>
-            <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center items-center">
-              {buttons.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "group bg-gradient-to-r from-primary to-secondary",
-                    "hover:from-primary/90 hover:to-secondary/90",
-                    "text-primary-foreground font-bold px-6 py-4 min-h-[44px] rounded-lg",
-                    "shadow-lg hover:shadow-xl hover:shadow-primary/25",
-                    "border border-primary/20 hover:border-primary/40",
-                    "flex items-center gap-3 transition-all duration-300 hover:scale-105"
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    {renderIcon(item.icon)}
-                    <span>{item.label}</span>
-                    <ArrowRight
-                      size={16}
-                      className="transition-transform duration-200 group-hover:translate-x-1"
-                      aria-hidden="true"
-                    />
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </Suspense>
+          {/* Secondary CTA */}
+          <Link
+            href="/resume"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-emerald-500/50 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300"
+          >
+            <FileText size={18} />
+            <span>Resume</span>
+          </Link>
+
+          {/* Tertiary CTA */}
+          <Link
+            href="/contact"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-all duration-300"
+          >
+            <MessageCircle size={18} />
+            <span>Contact</span>
+          </Link>
+        </div>
       </div>
-    </section>
+    </div>
   )
 }

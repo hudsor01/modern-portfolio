@@ -1,6 +1,7 @@
 'use client'
+import { memo } from 'react'
 
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
+import { LazyBarChart as BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from '@/components/charts/lazy-charts'
 
 // Pipeline health data across stages
 const data = [
@@ -62,7 +63,7 @@ const chartColors = {
   axis: 'var(--color-muted-foreground)',
 }
 
-export default function PipelineHealthChart() {
+const PipelineHealthChart = memo(function PipelineHealthChart() {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -148,4 +149,8 @@ export default function PipelineHealthChart() {
       </p>
     </div>
   )
-}
+})
+
+PipelineHealthChart.displayName = 'PipelineHealthChart'
+
+export default PipelineHealthChart

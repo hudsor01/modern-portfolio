@@ -8,6 +8,7 @@ import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { createContextLogger } from '@/lib/monitoring/logger'
 import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
 import { yearOverYearGrowthExtended } from '@/app/projects/data/partner-analytics'
+import { AnimatedBackground } from '@/components/projects/animated-background'
 
 import { timeframes, type YearOverYearGrowth } from './data/constants'
 import { formatCurrency, calculateGrowth } from './utils'
@@ -65,12 +66,7 @@ export default function RevenueKPI() {
         ]}
       />
       <div className="min-h-screen bg-[#0f172a] text-white">
-        {/* Animated Background */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
-        </div>
+        <AnimatedBackground />
 
         <div className="relative z-10 max-w-7xl mx-auto p-6">
           {/* Header */}
@@ -84,7 +80,7 @@ export default function RevenueKPI() {
             </Link>
 
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 glass rounded-xl p-1">
+              <div className="flex items-center gap-1 glass rounded-2xl p-1">
                 {timeframes.map((timeframe) => (
                   <button
                     key={timeframe}
@@ -113,7 +109,7 @@ export default function RevenueKPI() {
 
           {/* Title Section */}
           <div className="mb-8 animate-fade-in-up">
-            <h1 className="text-4xl md:typography-h1 text-5xl bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-3">
+            <h1 className="text-xl md:typography-h1 text-xl bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-3">
               Revenue KPI Dashboard
             </h1>
             <p className="typography-lead max-w-3xl mb-4">

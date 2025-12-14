@@ -18,14 +18,14 @@ interface ProjectCTASectionProps {
 export const ProjectCTASection: React.FC<ProjectCTASectionProps> = () => {
   return (
     <div className="text-center space-y-8 max-w-6xl mx-auto mt-24 mb-16">
-      <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-white/5 backdrop-blur-xl border border-white/20 rounded-3xl p-8 md:p-12 shadow-2xl">
+      <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-white/5 backdrop-blur-xl border border-white/20 rounded-xl p-8 md:p-12 shadow-2xl">
         {/* Subtle background gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-blue-500/5 rounded-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-blue-500/5 rounded-xl" />
 
         <div className="relative z-10">
           {/* Portfolio Header */}
           <div className="flex items-center justify-center mb-8">
-            <h3 className="typography-h2 border-none pb-0 text-3xl md:text-4xl tracking-tight section-heading-gradient glow-blue">
+            <h3 className="typography-h2 border-none pb-0 text-2xl md:text-2xl tracking-tight section-heading-gradient glow-blue">
               Explore More of My Work
             </h3>
           </div>
@@ -65,8 +65,8 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = () => {
           {/* Portfolio Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-white/20">
             <div className="group text-center">
-              <div className="relative bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 mb-4 mx-auto w-fit hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative bg-white/10 backdrop-blur border border-white/20 rounded-xl p-6 mb-4 mx-auto w-fit hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <TrendingUp className="relative z-10 w-7 h-7 text-primary" />
               </div>
               <h4 className="font-bold text-foreground mb-2 text-xl">
@@ -76,8 +76,8 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = () => {
             </div>
 
             <div className="group text-center">
-              <div className="relative bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 mb-4 mx-auto w-fit hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative bg-white/10 backdrop-blur border border-white/20 rounded-xl p-6 mb-4 mx-auto w-fit hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <BarChart3 className="relative z-10 w-7 h-7 text-primary" />
               </div>
               <h4 className="font-bold text-foreground mb-2 text-xl">
@@ -87,8 +87,8 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = () => {
             </div>
 
             <div className="group text-center">
-              <div className="relative bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 mb-4 mx-auto w-fit hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative bg-white/10 backdrop-blur border border-white/20 rounded-xl p-6 mb-4 mx-auto w-fit hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <Github className="relative z-10 w-7 h-7 text-primary" />
               </div>
               <h4 className="font-bold text-foreground mb-2 text-xl">

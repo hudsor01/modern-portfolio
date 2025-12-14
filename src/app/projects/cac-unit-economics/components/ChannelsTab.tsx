@@ -7,7 +7,7 @@ import { formatCurrency } from '../utils'
 export function ChannelsTab() {
   return (
     <div
-      className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300 mb-8"
+      className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 mb-8"
     >
       <div className="mb-4">
         <h2 className="typography-h4 mb-1">Partner Channel ROI & Acquisition Efficiency Analysis</h2>

@@ -1,6 +1,7 @@
 'use client'
 
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
+import { memo } from 'react'
+import { LazyBarChart as BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from '@/components/charts/lazy-charts'
 
 // Customer segment data with CLV and count metrics
 const data = [
@@ -51,7 +52,7 @@ const chartColors = {
   axis: 'var(--color-muted-foreground)',
 }
 
-export default function CustomerSegmentChart() {
+const CustomerSegmentChart = memo(function CustomerSegmentChart() {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -135,4 +136,8 @@ export default function CustomerSegmentChart() {
       </p>
     </div>
   )
-}
+})
+
+CustomerSegmentChart.displayName = 'CustomerSegmentChart'
+
+export default CustomerSegmentChart

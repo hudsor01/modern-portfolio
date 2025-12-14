@@ -148,13 +148,3 @@ export function useProjectStats(): UseQueryResult<{
   })
 }
 
-// Legacy compatibility - direct API calls (use hooks above instead)
-export const projectsApi = {
-  getProjects: fetchProjects,
-  getProjectsWithFilters: fetchProjectsWithFilters,
-  getFeaturedProjects: fetchFeaturedProjects,
-  getProjectBySlug: fetchProjectBySlug,
-  searchProjects,
-  getProjectsByCategory: fetchProjectsByCategory,
-  getProjectStats: fetchProjectStats,
-}

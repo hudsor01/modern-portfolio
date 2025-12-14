@@ -132,13 +132,13 @@ function QueryErrorFallback({
         <div className="flex gap-4">
           <button
             onClick={resetErrorBoundary}
-            className="px-4 py-2 bg-destructive text-foreground rounded hover:bg-destructive transition"
+            className="px-4 py-2 bg-destructive text-foreground rounded-xs hover:bg-destructive transition"
           >
             Try Again
           </button>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-muted text-foreground rounded hover:bg-muted transition"
+            className="px-4 py-2 bg-muted text-foreground rounded-xs hover:bg-muted transition"
           >
             Reload Page
           </button>
@@ -216,13 +216,17 @@ function FocusManager() {
         }
       }
 
+      // Node.js 24 Fix: Store stable function reference for proper cleanup
+      // Previously created new function each time, causing memory leak
+      const handleWindowFocus = () => handleFocus()
+
       // Listen to visibilitychange and focus
       document.addEventListener('visibilitychange', handleVisibilityChange)
-      window.addEventListener('focus', () => handleFocus())
+      window.addEventListener('focus', handleWindowFocus)
 
       return () => {
         document.removeEventListener('visibilitychange', handleVisibilityChange)
-        window.removeEventListener('focus', () => handleFocus())
+        window.removeEventListener('focus', handleWindowFocus)
       }
     })
   }, [])

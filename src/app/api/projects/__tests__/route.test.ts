@@ -1,10 +1,18 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { NextRequest } from 'next/server'
 import { GET } from '../route'
 
 // Mock the data layer
 vi.mock('@/lib/content/projects', () => ({
   getProjects: vi.fn()
 }))
+
+// Helper to create mock NextRequest
+function createMockRequest(): NextRequest {
+  return new NextRequest('http://localhost:3000/api/projects', {
+    method: 'GET',
+  })
+}
 
 describe('/api/projects', () => {
   beforeEach(() => {
@@ -24,7 +32,8 @@ describe('/api/projects', () => {
       ]
       vi.mocked(getProjects).mockResolvedValueOnce(mockProjects)
 
-      const response = await GET()
+      const request = createMockRequest()
+      const response = await GET(request)
       const data = await response.json()
 
       expect(response.status).toBe(200)
@@ -36,7 +45,8 @@ describe('/api/projects', () => {
       const { getProjects } = await import('@/lib/content/projects')
       vi.mocked(getProjects).mockResolvedValueOnce([])
 
-      const response = await GET()
+      const request = createMockRequest()
+      const response = await GET(request)
       const data = await response.json()
 
       expect(response.status).toBe(200)
@@ -48,7 +58,8 @@ describe('/api/projects', () => {
       const { getProjects } = await import('@/lib/content/projects')
       vi.mocked(getProjects).mockRejectedValueOnce(new Error('Database error'))
 
-      const response = await GET()
+      const request = createMockRequest()
+      const response = await GET(request)
       const data = await response.json()
 
       expect(response.status).toBe(500)

@@ -58,7 +58,7 @@ describe('Performance Optimizations', () => {
       expect(screen.getByTestId('title-skeleton')).toHaveClass('h-20')
       
       rerender(
-        <div className="animate-pulse h-6 bg-card/50 rounded" data-testid="text-skeleton" />
+        <div className="animate-pulse h-6 bg-card/50 rounded-xs" data-testid="text-skeleton" />
       )
       
       expect(screen.getByTestId('text-skeleton')).toHaveClass('h-6')
@@ -188,13 +188,13 @@ describe('Performance Optimizations', () => {
 
     it('optimizes text sizing for mobile', () => {
       render(
-        <h1 className="text-5xl md:text-7xl" data-testid="responsive-heading">
+        <h1 className="text-xl md:text-2xl" data-testid="responsive-heading">
           Responsive heading
         </h1>
       )
       
       const heading = screen.getByTestId('responsive-heading')
-      expect(heading).toHaveClass('text-5xl', 'md:text-7xl')
+      expect(heading).toHaveClass('text-xl', 'md:text-2xl')
     })
 
     it('maintains 44px touch targets on mobile', () => {

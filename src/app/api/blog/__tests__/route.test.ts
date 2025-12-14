@@ -33,13 +33,23 @@ vi.mock('@/lib/monitoring/logger', () => ({
   })),
 }))
 
+// Mock CSRF protection
+vi.mock('@/lib/security/csrf-protection', () => ({
+  validateCSRFToken: vi.fn().mockResolvedValue(true),
+  generateCSRFToken: vi.fn().mockResolvedValue('mock-csrf-token'),
+}))
+
 const createMockRequest = (url: string, options?: RequestInit) => {
   return new NextRequest(url, options as ConstructorParameters<typeof NextRequest>[1])
 }
 
 describe('/api/blog', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
+
+    // Ensure CSRF mock is properly set
+    const csrfModule = await import('@/lib/security/csrf-protection')
+    vi.mocked(csrfModule.validateCSRFToken).mockResolvedValue(true)
   })
 
   describe('GET', () => {
@@ -170,16 +180,16 @@ describe('/api/blog', () => {
       )
     })
 
-    it('limits results to maximum of 50 per page', async () => {
+    it('limits results to maximum of 100 per page', async () => {
       const { db } = await import('@/lib/db')
       vi.mocked(db.blogPost.findMany).mockResolvedValueOnce([])
       vi.mocked(db.blogPost.count).mockResolvedValueOnce(0)
 
-      const request = createMockRequest('http://localhost:3000/api/blog?limit=100')
+      const request = createMockRequest('http://localhost:3000/api/blog?limit=200')
       const response = await GET(request)
       const data = await response.json()
 
-      expect(data.pagination.limit).toBe(50)
+      expect(data.pagination.limit).toBe(100)
     })
 
     it('handles database errors gracefully', async () => {
@@ -247,6 +257,10 @@ describe('/api/blog', () => {
 
       const request = createMockRequest('http://localhost:3000/api/blog', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': 'mock-csrf-token',
+        },
         body: JSON.stringify({
           title: 'New Post',
           content: 'This is the content of the new post',
@@ -265,6 +279,10 @@ describe('/api/blog', () => {
     it('returns 400 for missing required fields', async () => {
       const request = createMockRequest('http://localhost:3000/api/blog', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': 'mock-csrf-token',
+        },
         body: JSON.stringify({
           title: 'New Post',
           // Missing content and authorId
@@ -284,6 +302,10 @@ describe('/api/blog', () => {
 
       const request = createMockRequest('http://localhost:3000/api/blog', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': 'mock-csrf-token',
+        },
         body: JSON.stringify({
           title: 'New Post',
           content: 'Content',

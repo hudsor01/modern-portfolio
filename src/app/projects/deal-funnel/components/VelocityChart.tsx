@@ -13,7 +13,7 @@ export function VelocityChart({ partnerConversion }: VelocityChartProps) {
 
   return (
     <div
-      className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+      className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300"
     >
       <h2 className="typography-h3 mb-6">Sales Velocity by Segment</h2>
       <div className="space-y-6">
@@ -33,7 +33,7 @@ export function VelocityChart({ partnerConversion }: VelocityChartProps) {
           )
         })}
       </div>
-      <div className="mt-6 p-4 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-sm border border-primary/20 rounded-2xl">
+      <div className="mt-6 p-4 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-xs border border-primary/20 rounded-xl">
         <div className="flex items-center gap-2 mb-2">
           <Zap className="h-5 w-5 text-primary" />
           <h3 className="font-semibold text-primary">Quick Win</h3>

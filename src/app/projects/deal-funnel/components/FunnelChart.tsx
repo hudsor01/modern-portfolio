@@ -28,7 +28,7 @@ interface FunnelChartProps {
 export function FunnelChart({ stages, overallConversionRate }: FunnelChartProps) {
   return (
     <div
-      className="glass rounded-3xl p-8 hover:bg-white/[0.07] transition-all duration-300 mb-8"
+      className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 mb-8"
     >
       <div className="flex items-center justify-between mb-6">
         <div>

@@ -1,6 +1,7 @@
 'use client'
+import { memo } from 'react'
 
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
+import { LazyBarChart as BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from '@/components/charts/lazy-charts'
 
 // Performance incentive program data
 const data = [
@@ -51,7 +52,7 @@ const chartColors = {
   axis: 'var(--color-muted-foreground)',
 }
 
-export default function PerformanceIncentiveChart() {
+const PerformanceIncentiveChart = memo(function PerformanceIncentiveChart() {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -150,4 +151,8 @@ export default function PerformanceIncentiveChart() {
       </p>
     </div>
   )
-}
+})
+
+PerformanceIncentiveChart.displayName = 'PerformanceIncentiveChart'
+
+export default PerformanceIncentiveChart

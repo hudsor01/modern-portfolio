@@ -15,7 +15,7 @@ describe('Design System Integration', () => {
         },
         backgrounds: {
           glassmorphism: 'bg-gray-800/50',
-          backdrop: 'backdrop-blur-sm',
+          backdrop: 'backdrop-blur-xs',
           borders: 'border-gray-700'
         }
       }
@@ -63,12 +63,12 @@ describe('Design System Integration', () => {
     it('enforces consistent heading weights', () => {
       const typographyScale = {
         h1: {
-          size: 'text-5xl md:text-7xl',
+          size: 'text-xl md:text-2xl',
           weight: 'font-black',
           color: 'text-white'
         },
         h2: {
-          size: 'text-3xl md:text-4xl',
+          size: 'text-xl md:text-2xl',
           weight: 'font-bold',
           color: 'text-white'
         },
@@ -93,8 +93,8 @@ describe('Design System Integration', () => {
 
     it('uses responsive text sizing', () => {
       const responsivePatterns = [
-        'text-5xl md:text-7xl',    // H1
-        'text-3xl md:text-4xl',    // H2
+        'text-xl md:text-2xl',    // H1
+        'text-xl md:text-2xl',    // H2
         'text-xl md:text-2xl',     // H3
         'text-base md:text-lg'     // Body
       ]
@@ -109,7 +109,7 @@ describe('Design System Integration', () => {
     it('standardizes glassmorphism patterns', () => {
       const glassmorphismPattern = {
         background: 'bg-gray-800/50',
-        backdrop: 'backdrop-blur-sm',
+        backdrop: 'backdrop-blur-xs',
         border: 'border-gray-700',
         borderRadius: 'rounded-xl',
         hover: {
@@ -120,7 +120,7 @@ describe('Design System Integration', () => {
       
       // Verify consistent pattern usage
       expect(glassmorphismPattern.background).toBe('bg-gray-800/50')
-      expect(glassmorphismPattern.backdrop).toBe('backdrop-blur-sm')
+      expect(glassmorphismPattern.backdrop).toBe('backdrop-blur-xs')
       expect(glassmorphismPattern.border).toBe('border-gray-700')
       expect(glassmorphismPattern.hover.border).toBe('hover:border-primary/50')
     })
@@ -299,7 +299,7 @@ describe('Design System Integration', () => {
     it('ensures consistent design token usage', () => {
       const designTokens = {
         spacing: ['p-4', 'p-6', 'p-8', 'gap-6', 'mb-4'],
-        borderRadius: ['rounded-lg', 'rounded-xl', 'rounded-2xl'],
+        borderRadius: ['rounded-lg', 'rounded-xl', 'rounded-xl'],
         shadows: ['shadow-lg', 'shadow-xl', 'shadow-cyan-500/25'],
         transitions: ['duration-300', 'ease-in-out', 'transition-all']
       }

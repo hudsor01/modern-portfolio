@@ -1,6 +1,7 @@
 'use client'
+import { memo } from 'react'
 
-import { BarChart, Bar } from 'recharts'
+import { LazyBarChart as BarChart, Bar } from '@/components/charts/lazy-charts'
 import {
   ChartWrapper,
   ChartGrid,
@@ -24,7 +25,7 @@ const dataColors = {
   ltv: chartColors.positive, // green for value
 }
 
-export default function CACBreakdownChart() {
+const CACBreakdownChart = memo(function CACBreakdownChart() {
   return (
     <ChartWrapper
       caption="Partner channel CAC optimization revealing 70% cost reduction through certified partner strategy vs direct sales acquisition"
@@ -62,4 +63,8 @@ export default function CACBreakdownChart() {
       </BarChart>
     </ChartWrapper>
   )
-}
+})
+
+CACBreakdownChart.displayName = 'CACBreakdownChart'
+
+export default CACBreakdownChart

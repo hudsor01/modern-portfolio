@@ -3,9 +3,15 @@
  * Helper functions for reading progress calculation and management
  */
 
+import { useEffect, useRef, useCallback } from 'react'
 import { createContextLogger } from '@/lib/monitoring/logger'
 
 const progressLogger = createContextLogger('ReadingProgress')
+
+// Extend Window interface to include custom scroll tracking property
+interface WindowWithScrollTracking extends Window {
+  _lastScrollTop?: number
+}
 
 export interface ReadingProgressMetrics {
   scrollProgress: number
@@ -51,28 +57,41 @@ export function calculateScrollProgress(container?: Element | HTMLElement): Read
   const totalScrollable = scrollHeight - clientHeight
   const scrollProgress = Math.min(Math.max((scrollTop / totalScrollable) * 100, 0), 100)
 
-  // Determine scroll direction
-  const lastScrollTop = (globalThis as { _lastScrollTop?: number })._lastScrollTop || 0
-  const scrollDirection = scrollTop > lastScrollTop ? 'down' : 'up'
-  ;(globalThis as { _lastScrollTop?: number })._lastScrollTop = scrollTop
+  // Determine scroll direction - use a more reliable method
+  if (typeof window !== 'undefined') {
+    const win = window as WindowWithScrollTracking
+    const lastScrollTop = win._lastScrollTop || 0
+    const scrollDirection = scrollTop > lastScrollTop ? 'down' : 'up'
+    win._lastScrollTop = scrollTop
 
-  // Calculate positions
-  const isAtTop = scrollTop < 10
-  const isAtBottom = scrollTop >= totalScrollable - 10
+    // Calculate positions
+    const isAtTop = scrollTop < 10
+    const isAtBottom = scrollTop >= totalScrollable - 10
 
-  // Estimate reading time (basic calculation)
-  const remainingProgress = 100 - scrollProgress
-  const averageWPM = 200 // Average reading speed
-  const estimatedWordsRemaining = (remainingProgress / 100) * getEstimatedWordCount(scrollElement)
-  const estimatedTimeRemaining = (estimatedWordsRemaining / averageWPM) * 60 // seconds
+    // Estimate reading time (basic calculation)
+    const remainingProgress = 100 - scrollProgress
+    const averageWPM = 200 // Average reading speed
+    const estimatedWordsRemaining = (remainingProgress / 100) * getEstimatedWordCount(scrollContainer)
+    const estimatedTimeRemaining = (estimatedWordsRemaining / averageWPM) * 60 // seconds
 
+    return {
+      scrollProgress,
+      scrollDirection,
+      isAtTop,
+      isAtBottom,
+      estimatedTimeRemaining,
+      readingSpeed: averageWPM,
+    }
+  }
+
+  // Fallback for server-side
   return {
-    scrollProgress,
-    scrollDirection,
-    isAtTop,
-    isAtBottom,
-    estimatedTimeRemaining,
-    readingSpeed: averageWPM,
+    scrollProgress: 0,
+    scrollDirection: 'down',
+    isAtTop: true,
+    isAtBottom: false,
+    estimatedTimeRemaining: 0,
+    readingSpeed: 200,
   }
 }
 
@@ -81,8 +100,10 @@ export function calculateScrollProgress(container?: Element | HTMLElement): Read
  */
 export function getEstimatedWordCount(element: Element | HTMLElement): number {
   try {
-    const textContent =
-      element.textContent || ('innerText' in element ? element.innerText : '') || ''
+    // Try textContent first, then innerText as fallback
+    const textContent = element.textContent ||
+      (element as HTMLElement & { innerText?: string }).innerText ||
+      ''
     const words = textContent
       .trim()
       .split(/\s+/)
@@ -96,8 +117,9 @@ export function getEstimatedWordCount(element: Element | HTMLElement): number {
 
 /**
  * Track reading session
+ * Node.js 24: Implements Disposable for automatic cleanup via 'using' keyword
  */
-export class ReadingProgressTracker {
+export class ReadingProgressTracker implements Disposable {
   private session: ReadingSession
   private progressHistory: number[] = []
   private lastUpdateTime: number = Date.now()
@@ -107,8 +129,13 @@ export class ReadingProgressTracker {
     private containerSelector?: string,
     private storageKey: string = 'reading-progress'
   ) {
-    this.session = this.loadSession() || this.createNewSession()
-    this.startTracking()
+    if (typeof window !== 'undefined') {
+      this.session = this.loadSession() || this.createNewSession()
+      this.startTracking()
+    } else {
+      // In SSR, initialize with default values
+      this.session = this.createNewSession()
+    }
   }
 
   private createNewSession(): ReadingSession {
@@ -121,12 +148,12 @@ export class ReadingProgressTracker {
       currentProgress: 0,
       averageReadingSpeed: 200,
       timeSpent: 0,
-      isActive: true,
+      isActive: typeof window !== 'undefined', // Only active in browser environment
     }
   }
 
   private getContainer(): Element | HTMLElement {
-    if (this.containerSelector) {
+    if (this.containerSelector && typeof window !== 'undefined') {
       try {
         const container = document.querySelector(this.containerSelector)
         if (container) return container as HTMLElement
@@ -134,12 +161,14 @@ export class ReadingProgressTracker {
         progressLogger.warn('Error querying container selector', { error })
       }
     }
-    return document.documentElement
+    return typeof window !== 'undefined' ? document.documentElement : {} as HTMLElement
   }
 
   private loadSession(): ReadingSession | null {
+    if (typeof window === 'undefined') return null
+
     try {
-      const saved = localStorage.getItem(this.storageKey)
+      const saved = window.localStorage.getItem(this.storageKey)
       if (saved) {
         const session = JSON.parse(saved)
         // Only restore if session is recent (within 1 hour)
@@ -154,14 +183,18 @@ export class ReadingProgressTracker {
   }
 
   private saveSession(): void {
+    if (typeof window === 'undefined') return
+
     try {
-      localStorage.setItem(this.storageKey, JSON.stringify(this.session))
+      window.localStorage.setItem(this.storageKey, JSON.stringify(this.session))
     } catch (error) {
       progressLogger.warn('Error saving reading session', { error })
     }
   }
 
   private startTracking(): void {
+    if (typeof window === 'undefined') return
+
     // Prevent duplicate intervals
     if (this.saveInterval) {
       return
@@ -251,6 +284,11 @@ export class ReadingProgressTracker {
     }
   }
 
+  // Node.js 24: Explicit Resource Management - called automatically with 'using' keyword
+  [Symbol.dispose](): void {
+    this.stopTracking()
+  }
+
   public resetSession(): void {
     this.session = this.createNewSession()
     this.progressHistory = []
@@ -262,9 +300,9 @@ export class ReadingProgressTracker {
  * Hook for reading progress tracking
  */
 export function useReadingProgressTracker(containerSelector?: string, storageKey?: string) {
-  const trackerRef = React.useRef<ReadingProgressTracker | undefined>(undefined)
+  const trackerRef = useRef<ReadingProgressTracker | undefined>(undefined)
 
-  React.useEffect(() => {
+  useEffect(() => {
     trackerRef.current = new ReadingProgressTracker(containerSelector, storageKey)
 
     return () => {
@@ -272,11 +310,11 @@ export function useReadingProgressTracker(containerSelector?: string, storageKey
     }
   }, [containerSelector, storageKey])
 
-  const updateProgress = React.useCallback((progress: number) => {
+  const updateProgress = useCallback((progress: number) => {
     trackerRef.current?.updateProgress(progress)
   }, [])
 
-  const getStats = React.useCallback(() => {
+  const getStats = useCallback(() => {
     return (
       trackerRef.current?.getReadingStats() || {
         progress: 0,
@@ -296,9 +334,6 @@ export function useReadingProgressTracker(containerSelector?: string, storageKey
     resetSession: () => trackerRef.current?.resetSession(),
   }
 }
-
-// Add React import for hooks
-import React from 'react'
 
 /**
  * Page-specific reading progress utilities
@@ -334,6 +369,16 @@ export const pageReadingConfig = {
  * Get reading configuration for current page
  */
 export function getPageReadingConfig() {
+  if (typeof window === 'undefined') {
+    // Return default config for server side
+    return {
+      containerSelector: 'main, article',
+      showThreshold: 5,
+      hideThreshold: 95,
+      estimatedWPM: 200,
+    }
+  }
+
   const pathname = window.location.pathname
 
   if (pathname.includes('/blog/')) return pageReadingConfig.blog

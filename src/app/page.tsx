@@ -1,6 +1,5 @@
 // Removed 'use client' - this is now a Server Component
 import { Metadata } from 'next'
-import PageTransition from '@/components/layout/page-transition' // Corrected path
 import HomePageContent from '@/components/layout/home-page-content' // Corrected path // Import the new client component
 // Removed client-side imports like framer-motion and lucide-react icons as they are in HomePageContent
 
@@ -59,9 +58,9 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <PageTransition>
+    <div className="animate-fade-in-up">
       <HomePageContent />
-    </PageTransition>
+    </div>
   )
 }
 

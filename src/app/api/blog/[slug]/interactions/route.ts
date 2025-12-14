@@ -4,6 +4,7 @@ import { InteractionType } from '@prisma/client'
 import { ApiResponse } from '@/types/shared-api'
 import { validateBlogInteraction, BlogInteractionInput, ValidationError } from '@/lib/validations/unified-schemas'
 import { createContextLogger } from '@/lib/monitoring/logger';
+import { validateCSRFToken } from '@/lib/security/csrf-protection';
 
 const logger = createContextLogger('InteractionsAPI');
 
@@ -30,8 +31,24 @@ export async function POST(
   { params }: { params: { slug: string } }
 ): Promise<NextResponse<ApiResponse<BlogInteractionResponse>>> {
   try {
+    // CSRF token validation
+    const csrfToken = request.headers.get('x-csrf-token')
+    const isCSRFValid = await validateCSRFToken(csrfToken ?? undefined)
+
+    if (!isCSRFValid) {
+      logger.warn('CSRF validation failed for blog interaction')
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Security validation failed. Please refresh and try again.',
+          data: null as never
+        },
+        { status: 403 }
+      )
+    }
+
     const body = await request.json()
-    
+
     // Validate request data
     let validatedData: BlogInteractionInput
     try {

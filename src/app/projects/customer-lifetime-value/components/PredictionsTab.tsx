@@ -7,7 +7,7 @@ import { predictiveMetrics } from '../data/constants'
 export function PredictionsTab() {
   return (
     <div
-      className="glass rounded-3xl p-6 hover:bg-white/[0.07] transition-all duration-300 mb-8"
+      className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 mb-8"
     >
       <div className="mb-4">
         <h2 className="typography-h4 mb-1">Real-Time Predictive Analytics Dashboard</h2>
@@ -16,7 +16,7 @@ export function PredictionsTab() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {predictiveMetrics.map((metric, index) => (
-          <div key={index} className="bg-white/5 rounded-2xl p-4 border border-white/10">
+          <div key={index} className="bg-white/5 rounded-xl p-4 border border-white/10">
             <h3 className="text-xs font-medium text-muted-foreground mb-2">{metric.metric}</h3>
             <div className="flex items-end justify-between">
               <div>

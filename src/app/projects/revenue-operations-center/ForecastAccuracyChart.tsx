@@ -1,6 +1,7 @@
 'use client'
+import { memo } from 'react'
 
-import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Area, ComposedChart } from 'recharts'
+import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Area, LazyComposedChart as ComposedChart } from '@/components/charts/lazy-charts'
 
 // Forecast accuracy data with confidence intervals
 const data = [
@@ -28,7 +29,7 @@ const chartColors = {
   axis: 'var(--color-muted-foreground)',
 }
 
-export default function ForecastAccuracyChart() {
+const ForecastAccuracyChart = memo(function ForecastAccuracyChart() {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -158,4 +159,8 @@ export default function ForecastAccuracyChart() {
       </p>
     </div>
   )
-}
+})
+
+ForecastAccuracyChart.displayName = 'ForecastAccuracyChart'
+
+export default ForecastAccuracyChart

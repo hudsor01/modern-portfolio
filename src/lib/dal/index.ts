@@ -1,17 +1,15 @@
 /**
  * Data Access Layer (DAL)
- * Centralizes all data access with authentication and authorization
+ * Centralizes all data access
  *
  * This is the ONLY place in the application that should:
  * 1. Access the database directly
- * 2. Verify sessions
- * 3. Check authorization
+ * 2. Handle data validation and sanitization
  *
- * @see https://nextjs.org/docs/app/guides/authentication#creating-a-data-access-layer-dal
+ * @see https://nextjs.org/docs/app/guides/data-fetching
  */
 import 'server-only'
 import { cache } from 'react'
-import { cookies } from 'next/headers'
 import { db } from '@/lib/db'
 import { createContextLogger } from '@/lib/monitoring/logger'
 import { ProjectDataManager } from '@/lib/server/project-data-manager'
@@ -19,64 +17,8 @@ import type { Project } from '@/types/project'
 
 const logger = createContextLogger('DAL')
 
-// ============================================================================
-// Session Management
-// ============================================================================
-
-export interface Session {
-  isAuth: boolean
-  userId?: string
-  role?: 'user' | 'admin'
-}
-
-/**
- * Verify the current session
- * Uses React cache() to memoize during a single request
- */
-export const verifySession = cache(async (): Promise<Session | null> => {
-  try {
-    const cookieStore = await cookies()
-    const sessionCookie = cookieStore.get('session')?.value
-
-    if (!sessionCookie) {
-      return null
-    }
-
-    // For now, basic session check - extend with JWT validation as needed
-    // This is a simplified implementation for portfolio
-    return {
-      isAuth: true,
-      userId: sessionCookie,
-      role: 'user'
-    }
-  } catch (error) {
-    logger.error('Session verification failed', error instanceof Error ? error : new Error(String(error)))
-    return null
-  }
-})
-
-/**
- * Verify admin access
- * For protected automation and admin routes
- */
-export const verifyAdmin = cache(async (): Promise<{ isAdmin: boolean; userId?: string }> => {
-  const session = await verifySession()
-
-  if (!session?.isAuth) {
-    return { isAdmin: false }
-  }
-
-  // Check for admin API key in development/production
-  const cookieStore = await cookies()
-  const adminToken = cookieStore.get('admin_token')?.value
-  const expectedToken = process.env.ADMIN_API_TOKEN
-
-  if (adminToken && expectedToken && adminToken === expectedToken) {
-    return { isAdmin: true, userId: session.userId }
-  }
-
-  return { isAdmin: session.role === 'admin', userId: session.userId }
-})
+// For portfolio site, direct access is acceptable as all data is publicly accessible
+// No authentication required for public-facing portfolio
 
 // ============================================================================
 // Project Data Access
@@ -139,11 +81,35 @@ export interface BlogPostData {
   readingTime?: number
 }
 
+export interface BlogPostsResult {
+  posts: BlogPostData[]
+  totalCount: number
+  totalPages: number
+  currentPage: number
+  hasNextPage: boolean
+  hasPreviousPage: boolean
+}
+
 /**
- * Get all published blog posts
+ * Get published blog posts with pagination
+ * @param page - Page number (1-indexed, default: 1)
+ * @param pageSize - Number of posts per page (default: 10, max: 100)
  */
-export const getBlogPosts = cache(async (): Promise<BlogPostData[]> => {
+export const getBlogPosts = cache(async (
+  page = 1,
+  pageSize = 10
+): Promise<BlogPostsResult> => {
   try {
+    // Validate and sanitize inputs to prevent abuse
+    const validatedPage = Math.max(1, Math.floor(page))
+    const validatedPageSize = Math.min(100, Math.max(1, Math.floor(pageSize)))
+    const skip = (validatedPage - 1) * validatedPageSize
+
+    // Get total count for pagination metadata
+    const totalCount = await db.blogPost.count({
+      where: { status: 'PUBLISHED' }
+    })
+
     const posts = await db.blogPost.findMany({
       where: { status: 'PUBLISHED' },
       select: {
@@ -169,25 +135,43 @@ export const getBlogPosts = cache(async (): Promise<BlogPostData[]> => {
         readingTime: true,
       },
       orderBy: { publishedAt: 'desc' },
+      skip,
+      take: validatedPageSize,
     })
 
-    return posts.map(p => ({
-      id: p.id,
-      slug: p.slug,
-      title: p.title,
-      excerpt: p.excerpt ?? undefined,
-      content: p.content,
-      author: p.authorId || 'Richard Hudson',
-      category: p.category?.name ?? undefined,
-      tags: p.tags.map(t => t.tag.name),
-      publishedAt: p.publishedAt?.toISOString(),
-      updatedAt: p.updatedAt?.toISOString(),
-      readingTime: p.readingTime ?? undefined,
-    }))
+    const totalPages = Math.ceil(totalCount / validatedPageSize)
+
+    return {
+      posts: posts.map(p => ({
+        id: p.id,
+        slug: p.slug,
+        title: p.title,
+        excerpt: p.excerpt ?? undefined,
+        content: p.content,
+        author: p.authorId || 'Richard Hudson',
+        category: p.category?.name ?? undefined,
+        tags: p.tags.map(t => t.tag.name),
+        publishedAt: p.publishedAt?.toISOString(),
+        updatedAt: p.updatedAt?.toISOString(),
+        readingTime: p.readingTime ?? undefined,
+      })),
+      totalCount,
+      totalPages,
+      currentPage: validatedPage,
+      hasNextPage: validatedPage < totalPages,
+      hasPreviousPage: validatedPage > 1,
+    }
   } catch (error) {
-    // Return empty array if database unavailable
+    // Return empty result if database unavailable
     logger.warn('Database unavailable for blog posts', { error: error instanceof Error ? error.message : String(error) })
-    return []
+    return {
+      posts: [],
+      totalCount: 0,
+      totalPages: 0,
+      currentPage: page,
+      hasNextPage: false,
+      hasPreviousPage: false,
+    }
   }
 })
 
@@ -296,15 +280,9 @@ export const submitContact = async (data: ContactSubmission): Promise<{ success:
 
 /**
  * Get analytics data
- * Requires admin access
+ * For portfolio analytics (removed admin requirement)
  */
 export const getAnalytics = cache(async () => {
-  const { isAdmin } = await verifyAdmin()
-
-  if (!isAdmin) {
-    throw new Error('Unauthorized: Admin access required')
-  }
-
   try {
     const views = await db.postView.count()
 

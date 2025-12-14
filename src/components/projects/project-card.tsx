@@ -60,7 +60,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, pr
       className="animate-fade-in-up"
       style={{ animationDelay: `${index * 100}ms` }}
     >
-      <div className="bg-card/50 backdrop-blur-sm border border-border rounded-xl p-8 hover:border-primary/50 transition-all duration-300 hover:-translate-y-2 h-full group">
+      <div className="bg-card/50 backdrop-blur-xs border border-border rounded-xl p-8 hover:border-primary/50 transition-all duration-300 hover:-translate-y-2 h-full group">
         {/* Header */}
         <div className="mb-6">
           <h3 className="text-xl md:typography-h3 text-foreground mb-2">
@@ -91,7 +91,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, pr
                 <h4 className="text-sm font-bold text-success mb-2">⚡ SOLUTION</h4>
                 <div className="flex flex-wrap gap-2">
                   {project.technologies.slice(0, 4).map((tech, i) => (
-                    <span key={i} className="bg-primary/10 text-primary px-2 py-1 rounded text-xs border border-primary/20">
+                    <span key={i} className="bg-primary/10 text-primary px-2 py-1 rounded-xs text-xs border border-primary/20">
                       {tech}
                     </span>
                   ))}

@@ -1,8 +1,9 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getProject } from '@/lib/content/projects'
 import { z } from 'zod'
 import { validationErrorResponse } from '@/lib/api/response'
 import { createContextLogger } from '@/lib/monitoring/logger';
+import { EnhancedRateLimiter } from '@/lib/security/enhanced-rate-limiter'
 
 const logger = createContextLogger('SlugAPI');
 
@@ -14,10 +15,56 @@ const slugSchema = z.object({
     .regex(/^[a-zA-Z0-9-_]+$/, 'Invalid slug format')
 })
 
+// Helper function to get client identifier
+function getClientId(request: NextRequest): string {
+  return request.headers.get('x-forwarded-for') ||
+         request.headers.get('x-real-ip') ||
+         'unknown'
+}
+
 export async function GET(
-  _request: Request,
+  request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
+  const clientId = getClientId(request)
+
+  // Rate limiting: 100 requests per minute for individual project views
+  using rateLimiter = new EnhancedRateLimiter()
+
+  const rateLimitResult = rateLimiter.checkLimit(clientId, {
+    windowMs: 60 * 1000, // 1 minute
+    maxAttempts: 100,
+    progressivePenalty: false,
+    blockDuration: 0,
+    adaptiveThreshold: true,
+    antiAbuse: true,
+    burstProtection: {
+      enabled: true,
+      burstWindow: 5 * 1000,
+      maxBurstRequests: 120
+    }
+  }, {
+    path: `/api/projects/${(await params).slug}`,
+    method: 'GET'
+  })
+
+  if (!rateLimitResult.allowed) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Rate limit exceeded. Please try again later.'
+      },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': String(Math.ceil((rateLimitResult.retryAfter || 0) / 1000)),
+          'X-RateLimit-Remaining': String(rateLimitResult.remaining || 0),
+          'X-RateLimit-Reset': String(rateLimitResult.resetTime || 0),
+        }
+      }
+    )
+  }
+
   try {
     // Validate slug parameter
     const resolvedParams = await params

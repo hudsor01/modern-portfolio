@@ -26,7 +26,7 @@ export function LocationServices({ city, services }: LocationServicesProps) {
     <section className="py-16 bg-background dark:bg-background">
       <div className="w-full mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="typography-h2 border-none pb-0 text-3xl lg:text-4xl text-foreground dark:text-white">
+          <h2 className="typography-h2 border-none pb-0 text-2xl lg:text-xl text-foreground dark:text-white">
             Revenue Operations Services in {city}
           </h2>
           <p className="typography-lead max-w-3xl mx-auto">
