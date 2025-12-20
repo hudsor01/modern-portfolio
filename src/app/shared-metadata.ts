@@ -80,7 +80,7 @@ export const baseMetadata: Metadata = {
     canonical: 'https://richardwhudsonjr.com',
   },
   verification: {
-    google: 'google-site-verification-code-placeholder',
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || '',
   },
   icons: {
     icon: '/favicon.ico',
