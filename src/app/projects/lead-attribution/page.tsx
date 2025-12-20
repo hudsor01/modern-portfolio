@@ -81,10 +81,10 @@ export default function LeadAttribution() {
             <div
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
             >
-              <MetricCard icon={Users} label="Total" value={totalLeads.toLocaleString()} subtitle="Leads Generated" gradientFrom="from-blue-600" gradientTo="to-indigo-600" iconBgClass="bg-primary/20" iconColorClass="text-primary" />
-              <MetricCard icon={Target} label="Success" value={totalConversions.toLocaleString()} subtitle="Total Conversions" gradientFrom="from-green-600" gradientTo="to-emerald-600" iconBgClass="bg-success/20" iconColorClass="text-success" />
-              <MetricCard icon={Zap} label="Overall" value={`${overallConversionRate.toFixed(1)}%`} subtitle="Conversion Rate" gradientFrom="from-purple-600" gradientTo="to-pink-600" iconBgClass="bg-purple-500/20" iconColorClass="text-purple-400" />
-              <MetricCard icon={TrendingUp} label="MoM" value={`+${monthlyGrowth}%`} subtitle="Monthly Growth" gradientFrom="from-amber-600" gradientTo="to-orange-600" iconBgClass="bg-amber-500/20" iconColorClass="text-amber-400" />
+              <MetricCard icon={Users} label="Total" value={totalLeads.toLocaleString()} subtitle="Leads Generated" gradientFrom="from-blue-600" gradientTo="to-cyan-600" iconBgClass="bg-primary/20" iconColorClass="text-primary" />
+              <MetricCard icon={Target} label="Success" value={totalConversions.toLocaleString()} subtitle="Total Conversions" gradientFrom="from-blue-600" gradientTo="to-cyan-600" iconBgClass="bg-secondary/20" iconColorClass="text-secondary" />
+              <MetricCard icon={Zap} label="Overall" value={`${overallConversionRate.toFixed(1)}%`} subtitle="Conversion Rate" gradientFrom="from-blue-600" gradientTo="to-cyan-600" iconBgClass="bg-primary/20" iconColorClass="text-primary" />
+              <MetricCard icon={TrendingUp} label="MoM" value={`+${monthlyGrowth}%`} subtitle="Monthly Growth" gradientFrom="from-blue-600" gradientTo="to-cyan-600" iconBgClass="bg-secondary/20" iconColorClass="text-secondary" />
             </div>
 
             {/* Charts Section */}
