@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { ArrowLeft, RefreshCcw, TrendingUp, Users, Zap, Target } from 'lucide-react'
+import { TrendingUp, Users, Zap, Target } from 'lucide-react'
 
-import { AnimatedBackground } from '@/components/projects/animated-background'
+import { ProjectPageLayout } from '@/components/projects/project-page-layout'
+import { LoadingState } from '@/components/projects/loading-state'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
-import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
+import { TIMING } from '@/lib/constants/spacing'
 import { leadAttributionData } from '@/app/projects/data/partner-analytics'
 
 import { leadConversionData, monthlyTrendData } from './data/constants'
@@ -20,8 +20,14 @@ export default function LeadAttribution() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    setTimeout(() => setIsLoading(false), TIMING_CONSTANTS.LOADING_STATE_RESET)
+    const timer = setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
+    return () => clearTimeout(timer)
   }, [])
+
+  const handleRefresh = () => {
+    setIsLoading(true)
+    setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
+  }
 
   // Calculate totals safely
   const totalLeads = leadAttributionData?.reduce(
@@ -55,74 +61,46 @@ export default function LeadAttribution() {
         category="Marketing Analytics"
         tags={['Lead Attribution', 'Marketing Analytics', 'Campaign Tracking', 'Multi-Touch Attribution']}
       />
-      <div className="min-h-screen bg-[#0f172a] text-white">
-        <AnimatedBackground primaryColor="bg-success" />
-
-        <div className="relative z-10 max-w-7xl mx-auto p-8">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-12">
-            <Link href="/projects" className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors duration-300">
-              <ArrowLeft className="h-5 w-5" />
-              <span className="text-sm font-medium">Back to Projects</span>
-            </Link>
-            <button
-              onClick={() => {
-                setIsLoading(true)
-                setTimeout(() => setIsLoading(false), TIMING_CONSTANTS.LOADING_STATE_RESET)
-              }}
-              className="p-2 rounded-xl glass-interactive"
+      <ProjectPageLayout
+        title="Lead Attribution Analytics"
+        description="Understand your lead sources, optimize marketing spend, and improve conversion rates across all channels."
+        tags={[
+          { label: `Total Leads: ${totalLeads.toLocaleString()}`, color: 'bg-primary/20 text-primary' },
+          { label: `Conversions: ${totalConversions}`, color: 'bg-secondary/20 text-secondary' },
+          { label: `Conversion Rate: ${overallConversionRate.toFixed(1)}%`, color: 'bg-primary/20 text-primary' },
+          { label: `Growth: +${monthlyGrowth}%`, color: 'bg-secondary/20 text-secondary' },
+        ]}
+        onRefresh={handleRefresh}
+        refreshButtonDisabled={isLoading}
+      >
+        {isLoading ? (
+          <LoadingState />
+        ) : (
+          <>
+            {/* KPI Cards */}
+            <div
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
             >
-              <RefreshCcw className="h-5 w-5 text-muted-foreground" />
-            </button>
-          </div>
-
-          {/* Title Section */}
-          <div
-            className="mb-12"
-          >
-            <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-600 bg-clip-text text-transparent mb-4">
-              Lead Attribution Analytics
-            </h1>
-            <p className="typography-lead max-w-3xl">
-              Understand your lead sources, optimize marketing spend, and improve conversion rates across all channels.
-            </p>
-          </div>
-
-          {/* Loading State */}
-          {isLoading ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="relative">
-                <div className="w-16 h-16 border-4 border-success/20 rounded-full" />
-                <div className="absolute top-0 left-0 w-16 h-16 border-4 border-success rounded-full animate-spin border-t-transparent" />
-              </div>
+              <MetricCard icon={Users} label="Total" value={totalLeads.toLocaleString()} subtitle="Leads Generated" gradientFrom="from-blue-600" gradientTo="to-indigo-600" iconBgClass="bg-primary/20" iconColorClass="text-primary" />
+              <MetricCard icon={Target} label="Success" value={totalConversions.toLocaleString()} subtitle="Total Conversions" gradientFrom="from-green-600" gradientTo="to-emerald-600" iconBgClass="bg-success/20" iconColorClass="text-success" />
+              <MetricCard icon={Zap} label="Overall" value={`${overallConversionRate.toFixed(1)}%`} subtitle="Conversion Rate" gradientFrom="from-purple-600" gradientTo="to-pink-600" iconBgClass="bg-purple-500/20" iconColorClass="text-purple-400" />
+              <MetricCard icon={TrendingUp} label="MoM" value={`+${monthlyGrowth}%`} subtitle="Monthly Growth" gradientFrom="from-amber-600" gradientTo="to-orange-600" iconBgClass="bg-amber-500/20" iconColorClass="text-amber-400" />
             </div>
-          ) : (
-            <>
-              {/* KPI Cards */}
-              <div
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
-              >
-                <MetricCard icon={Users} label="Total" value={totalLeads.toLocaleString()} subtitle="Leads Generated" gradientFrom="from-blue-600" gradientTo="to-indigo-600" iconBgClass="bg-primary/20" iconColorClass="text-primary" />
-                <MetricCard icon={Target} label="Success" value={totalConversions.toLocaleString()} subtitle="Total Conversions" gradientFrom="from-green-600" gradientTo="to-emerald-600" iconBgClass="bg-success/20" iconColorClass="text-success" />
-                <MetricCard icon={Zap} label="Overall" value={`${overallConversionRate.toFixed(1)}%`} subtitle="Conversion Rate" gradientFrom="from-purple-600" gradientTo="to-pink-600" iconBgClass="bg-purple-500/20" iconColorClass="text-purple-400" />
-                <MetricCard icon={TrendingUp} label="MoM" value={`+${monthlyGrowth}%`} subtitle="Monthly Growth" gradientFrom="from-amber-600" gradientTo="to-orange-600" iconBgClass="bg-amber-500/20" iconColorClass="text-amber-400" />
-              </div>
 
-              {/* Charts Section */}
-              <ChartsSection bestSource={bestSource} />
+            {/* Charts Section */}
+            <ChartsSection bestSource={bestSource} />
 
-              {/* Monthly Trends */}
-              <TrendsChart />
+            {/* Monthly Trends */}
+            <TrendsChart />
 
-              {/* Insights Section */}
-              <InsightsSection bestConversionRate={bestSource.conversion_rate * 100} />
+            {/* Insights Section */}
+            <InsightsSection bestConversionRate={bestSource.conversion_rate * 100} />
 
-              {/* Professional Narrative Sections */}
-              <NarrativeSections />
-            </>
-          )}
-        </div>
-      </div>
+            {/* Professional Narrative Sections */}
+            <NarrativeSections />
+          </>
+        )}
+      </ProjectPageLayout>
     </>
   )
 }
