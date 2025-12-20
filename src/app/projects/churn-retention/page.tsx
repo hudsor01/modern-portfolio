@@ -3,18 +3,16 @@
 import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import {
-  ArrowLeft,
-  RefreshCcw,
   TrendingDown,
   Users,
   Activity,
   AlertCircle,
 } from 'lucide-react'
-import Link from 'next/link'
 
-import { AnimatedBackground } from '@/components/projects/animated-background'
+import { ProjectPageLayout } from '@/components/projects/project-page-layout'
+import { LoadingState } from '@/components/projects/loading-state'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
-import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
+import { TIMING } from '@/lib/constants/spacing'
 
 // Lazy-load chart components with Suspense fallback
 const ChurnLineChart = dynamic(() => import('./ChurnLineChart'), {
@@ -41,8 +39,14 @@ export default function ChurnAnalysis() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    setTimeout(() => setIsLoading(false), TIMING_CONSTANTS.LOADING_STATE_RESET)
+    const timer = setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
+    return () => clearTimeout(timer)
   }, [])
+
+  const handleRefresh = () => {
+    setIsLoading(true)
+    setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
+  }
 
   // Ensure data exists before accessing indices
   const currentMonth = staticChurnData?.[staticChurnData.length - 1] ?? null
@@ -65,57 +69,27 @@ export default function ChurnAnalysis() {
 
   return (
     <>
-      <ProjectJsonLd 
+      <ProjectJsonLd
         title="Customer Churn & Retention Analysis - Predictive Analytics"
         description="Advanced churn prediction and retention analysis dashboard with customer lifecycle metrics, retention heatmaps, and predictive modeling for customer success optimization."
         slug="churn-retention"
         category="Customer Analytics"
         tags={['Churn Analysis', 'Customer Retention', 'Predictive Analytics', 'Customer Success', 'Lifecycle Management', 'Customer Analytics', 'Data Science', 'Machine Learning']}
       />
-      <div className="min-h-screen bg-[#0f172a] text-white">
-      <AnimatedBackground tertiaryColor="bg-purple-500" />
-
-      <div className="relative z-10 max-w-7xl mx-auto p-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-12">
-          <Link 
-            href="/projects"
-            className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors duration-300"
-          >
-            <ArrowLeft className="h-5 w-5" />
-            <span className="text-sm font-medium">Back to Projects</span>
-          </Link>
-          <button 
-            onClick={() => {
-              setIsLoading(true)
-              setTimeout(() => setIsLoading(false), TIMING_CONSTANTS.LOADING_STATE_RESET)
-            }}
-            className="p-2 rounded-xl glass-interactive"
-          >
-            <RefreshCcw className="h-5 w-5 text-muted-foreground" />
-          </button>
-        </div>
-
-        {/* Title Section */}
-        <div 
-          className="mb-12"
-        >
-          <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-4">
-            Churn & Retention Analysis
-          </h1>
-          <p className="typography-lead max-w-3xl">
-            Track partner churn rates and retention patterns to identify at-risk segments and improve partner success strategies.
-          </p>
-        </div>
-
-        {/* Loading State */}
+      <ProjectPageLayout
+        title="Churn & Retention Analysis"
+        description="Track partner churn rates and retention patterns to identify at-risk segments and improve partner success strategies."
+        tags={[
+          { label: `Churn Rate: ${currentMonth ? currentMonth.churnRate : 'N/A'}%`, color: 'bg-primary/20 text-primary' },
+          { label: `Retention: ${retentionRate}%`, color: 'bg-secondary/20 text-secondary' },
+          { label: 'Prediction: 89%', color: 'bg-primary/20 text-primary' },
+          { label: 'Revenue Saved: $830K', color: 'bg-secondary/20 text-secondary' },
+        ]}
+        onRefresh={handleRefresh}
+        refreshButtonDisabled={isLoading}
+      >
         {isLoading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="relative">
-              <div className="w-16 h-16 border-4 border-primary/20 rounded-full" />
-              <div className="absolute top-0 left-0 w-16 h-16 border-4 border-primary rounded-full animate-spin border-t-transparent" />
-            </div>
-          </div>
+          <LoadingState />
         ) : (
           <>
             {/* KPI Cards */}
@@ -452,8 +426,7 @@ export default function ChurnAnalysis() {
             </div>
           </>
         )}
-      </div>
-      </div>
+      </ProjectPageLayout>
     </>
   )
 }
