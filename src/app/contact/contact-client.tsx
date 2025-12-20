@@ -340,7 +340,7 @@ export default function ContactPageClient() {
                       aria-invalid={!!errors.name}
                       className="pl-12"
                     />
-                    {errors.name && <span className="text-destructive text-sm mt-1 block">{errors.name}</span>}
+                    {errors.name && <span role="alert" className="text-destructive text-sm mt-1 block">{errors.name}</span>}
                   </div>
                   <div className="relative">
                     <div className="absolute left-3 top-3.5 text-muted-foreground">
@@ -356,7 +356,7 @@ export default function ContactPageClient() {
                       aria-invalid={!!errors.email}
                       className="pl-12"
                     />
-                    {errors.email && <span className="text-destructive text-sm mt-1 block">{errors.email}</span>}
+                    {errors.email && <span role="alert" className="text-destructive text-sm mt-1 block">{errors.email}</span>}
                   </div>
                 </div>
 
@@ -388,7 +388,7 @@ export default function ContactPageClient() {
                       aria-invalid={!!errors.phone}
                       className="pl-12"
                     />
-                    {errors.phone && <span className="text-destructive text-sm mt-1 block">{errors.phone}</span>}
+                    {errors.phone && <span role="alert" className="text-destructive text-sm mt-1 block">{errors.phone}</span>}
                   </div>
                 </div>
 
@@ -418,7 +418,7 @@ export default function ContactPageClient() {
                       )
                     })}
                   </div>
-                  {errors.subject && <span className="text-destructive text-sm mt-1 block">{errors.subject}</span>}
+                  {errors.subject && <span role="alert" className="text-destructive text-sm mt-1 block">{errors.subject}</span>}
                 </div>
 
                 {/* Timeline & Budget Row */}
@@ -472,7 +472,7 @@ export default function ContactPageClient() {
                   <div className="absolute bottom-3 right-3 typography-small text-muted-foreground">
                     {formData.message.length}/500
                   </div>
-                  {errors.message && <span className="text-destructive text-sm mt-1 block">{errors.message}</span>}
+                  {errors.message && <span role="alert" className="text-destructive text-sm mt-1 block">{errors.message}</span>}
                 </div>
 
                 {/* Privacy Agreement */}
@@ -500,7 +500,7 @@ export default function ContactPageClient() {
                         Your information will be used solely to respond to your inquiry. We don't share personal data with third parties and you can request deletion at any time.
                       </div>
                     )}
-                    {errors.terms && <div className="text-destructive text-sm mt-1">{errors.terms}</div>}
+                    {errors.terms && <div role="alert" className="text-destructive text-sm mt-1">{errors.terms}</div>}
                   </div>
                 </div>
 
@@ -526,13 +526,21 @@ export default function ContactPageClient() {
 
                 {/* Status Messages */}
                 {submitStatus === 'success' && (
-                  <div className="flex items-center gap-2 text-success bg-success/10 p-4 rounded-xl">
+                  <div
+                    role="alert"
+                    aria-live="polite"
+                    className="flex items-center gap-2 text-success bg-success/10 p-4 rounded-xl"
+                  >
                     <CheckCircle className="w-5 h-5" />
                     Message sent successfully!
                   </div>
                 )}
                 {submitStatus === 'error' && (
-                  <div className="flex items-center gap-2 text-destructive bg-destructive/10 p-4 rounded-xl">
+                  <div
+                    role="alert"
+                    aria-live="polite"
+                    className="flex items-center gap-2 text-destructive bg-destructive/10 p-4 rounded-xl"
+                  >
                     <AlertCircle className="w-5 h-5" />
                     Failed to send message. Please try again.
                   </div>
