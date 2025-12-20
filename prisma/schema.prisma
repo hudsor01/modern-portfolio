@@ -566,3 +566,54 @@ model Project {
   @@index([featured])
   @@index([createdAt(sort: Desc)])
 }
+
+// =======================
+// CONTACT SUBMISSIONS
+// =======================
+
+model ContactSubmission {
+  id              String          @id @default(cuid())
+  name            String
+  email           String
+  subject         String
+  message         String          @db.Text
+  company         String?
+  phone           String?
+  timeline        String?
+  budget          String?
+
+  // Metadata
+  status          SubmissionStatus @default(NEW)
+  responded       Boolean         @default(false)
+  respondedAt     DateTime?
+  notes           String?         @db.Text
+
+  // Security & Analytics
+  ipAddress       String?         @db.Inet
+  userAgent       String?         @db.Text
+  referer         String?
+
+  // Email tracking
+  emailSent       Boolean         @default(false)
+  emailId         String?         // Resend email ID
+  emailError      String?         @db.Text
+
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@map("contact_submissions")
+  @@index([status, createdAt(sort: Desc)])
+  @@index([email])
+  @@index([createdAt(sort: Desc)])
+  @@index([responded])
+}
+
+enum SubmissionStatus {
+  NEW
+  READ
+  IN_PROGRESS
+  RESPONDED
+  ARCHIVED
+  SPAM
+}
