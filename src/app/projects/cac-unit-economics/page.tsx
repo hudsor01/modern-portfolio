@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ArrowLeft, RefreshCcw, TrendingUp, DollarSign, Target, Calculator } from 'lucide-react'
-import Link from 'next/link'
+import { TrendingUp, DollarSign, Target, Calculator } from 'lucide-react'
 
-import { AnimatedBackground } from '@/components/projects/animated-background'
+import { ProjectPageLayout } from '@/components/projects/project-page-layout'
+import { LoadingState } from '@/components/projects/loading-state'
+import { TIMING } from '@/lib/constants/spacing'
 import { cacMetrics } from './data/constants'
 import { formatCurrency } from './utils'
 import { MetricCard } from './components/MetricCard'
@@ -22,145 +23,96 @@ export default function CACUnitEconomics() {
   const [activeTab, setActiveTab] = useState<Tab>('overview')
 
   useEffect(() => {
-    setTimeout(() => setIsLoading(false), 600)
+    const timer = setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
+    return () => clearTimeout(timer)
   }, [])
 
+  const handleRefresh = () => {
+    setIsLoading(true)
+    setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
+  }
+
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white">
-      <AnimatedBackground
-        primaryColor="bg-success"
-        secondaryColor="bg-primary"
-        tertiaryColor="bg-emerald-500"
-      />
+    <ProjectPageLayout
+      title="Customer Acquisition Cost Optimization & Unit Economics Dashboard"
+      description="Comprehensive CAC analysis and LTV:CAC ratio optimization that achieved 32% cost reduction through strategic partner channel optimization. Industry-benchmark 3.6:1 efficiency ratio with 8.4-month payback period across multi-tier SaaS products."
+      tags={[
+        { label: 'CAC Reduction: 32%', color: 'bg-primary/20 text-primary' },
+        { label: 'LTV:CAC Ratio: 3.6:1', color: 'bg-secondary/20 text-secondary' },
+        { label: 'ROI Optimization', color: 'bg-primary/20 text-primary' },
+        { label: 'Unit Economics', color: 'bg-secondary/20 text-secondary' },
+      ]}
+      onRefresh={handleRefresh}
+      refreshButtonDisabled={isLoading}
+      showTimeframes={true}
+      timeframes={tabs.map(t => t.charAt(0).toUpperCase() + t.slice(1))}
+      activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+      onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
+    >
+      {isLoading ? (
+        <LoadingState />
+      ) : (
+        <>
+          {/* Key Metrics Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <MetricCard
+              icon={DollarSign}
+              label="Blended CAC"
+              value={formatCurrency(cacMetrics.blendedCAC)}
+              subtitle="Cost to Acquire"
+              gradientFrom="from-green-600"
+              gradientTo="to-emerald-600"
+              iconBgClass="bg-success/20"
+              iconColorClass="text-success"
 
-      <div className="relative z-10 max-w-7xl mx-auto p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-12">
-          <Link
-            href="/projects"
-            className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors duration-300"
-          >
-            <ArrowLeft className="h-5 w-5" />
-            <span className="text-sm font-medium">Back to Projects</span>
-          </Link>
+            />
+            <MetricCard
+              icon={TrendingUp}
+              label="Lifetime Value"
+              value={formatCurrency(cacMetrics.averageLTV)}
+              subtitle="Average LTV"
+              gradientFrom="from-blue-600"
+              gradientTo="to-cyan-600"
+              iconBgClass="bg-primary/20"
+              iconColorClass="text-primary"
 
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 glass rounded-2xl p-1">
-              {tabs.map((tab) => (
-                <button
-                  key={tab}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 capitalize ${
-                    activeTab === tab
-                      ? 'bg-success text-foreground shadow-lg'
-                      : 'text-muted-foreground hover:text-white hover:bg-white/10'
-                  }`}
-                  onClick={() => setActiveTab(tab)}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-            <button
-              onClick={() => {
-                setIsLoading(true)
-                setTimeout(() => setIsLoading(false), 600)
-              }}
-              className="p-2 rounded-xl glass-interactive"
-            >
-              <RefreshCcw className="h-5 w-5 text-muted-foreground" />
-            </button>
+            />
+            <MetricCard
+              icon={Calculator}
+              label="LTV:CAC"
+              value={`${cacMetrics.ltv_cac_ratio.toFixed(1)}:1`}
+              subtitle="Efficiency Ratio"
+              gradientFrom="from-purple-600"
+              gradientTo="to-pink-600"
+              iconBgClass="bg-purple-500/20"
+              iconColorClass="text-purple-400"
+
+            />
+            <MetricCard
+              icon={Target}
+              label="Payback"
+              value={`${cacMetrics.paybackPeriod} mo`}
+              subtitle="Payback Period"
+              gradientFrom="from-amber-600"
+              gradientTo="to-orange-600"
+              iconBgClass="bg-amber-500/20"
+              iconColorClass="text-amber-400"
+
+            />
           </div>
-        </div>
 
-        {/* Title Section */}
-        <div
-          className="mb-8"
-        >
-          <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-600 bg-clip-text text-transparent mb-4">
-            Customer Acquisition Cost Optimization & Unit Economics Dashboard
-          </h1>
-          <p className="typography-lead max-w-3xl mb-6">
-            Comprehensive CAC analysis and LTV:CAC ratio optimization that achieved 32% cost reduction through strategic partner channel optimization. Industry-benchmark 3.6:1 efficiency ratio with 8.4-month payback period across multi-tier SaaS products.
-          </p>
-          <div className="flex flex-wrap gap-3 text-sm">
-            <span className="bg-success/20 text-success px-3 py-1 rounded-full">CAC Reduction: 32%</span>
-            <span className="bg-primary/20 text-primary px-3 py-1 rounded-full">LTV:CAC Ratio: 3.6:1</span>
-            <span className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full">ROI Optimization</span>
-            <span className="bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full">Unit Economics</span>
-          </div>
-        </div>
+          {/* Tab Content */}
+          {activeTab === 'overview' && <OverviewTab />}
+          {activeTab === 'channels' && <ChannelsTab />}
+          {activeTab === 'products' && <ProductsTab />}
 
-        {/* Loading State */}
-        {isLoading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="relative">
-              <div className="w-16 h-16 border-4 border-success/20 rounded-full" />
-              <div className="absolute top-0 left-0 w-16 h-16 border-4 border-success rounded-full animate-spin border-t-transparent" />
-            </div>
-          </div>
-        ) : (
-          <>
-            {/* Key Metrics Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <MetricCard
-                icon={DollarSign}
-                label="Blended CAC"
-                value={formatCurrency(cacMetrics.blendedCAC)}
-                subtitle="Cost to Acquire"
-                gradientFrom="from-green-600"
-                gradientTo="to-emerald-600"
-                iconBgClass="bg-success/20"
-                iconColorClass="text-success"
-                
-              />
-              <MetricCard
-                icon={TrendingUp}
-                label="Lifetime Value"
-                value={formatCurrency(cacMetrics.averageLTV)}
-                subtitle="Average LTV"
-                gradientFrom="from-blue-600"
-                gradientTo="to-cyan-600"
-                iconBgClass="bg-primary/20"
-                iconColorClass="text-primary"
-                
-              />
-              <MetricCard
-                icon={Calculator}
-                label="LTV:CAC"
-                value={`${cacMetrics.ltv_cac_ratio.toFixed(1)}:1`}
-                subtitle="Efficiency Ratio"
-                gradientFrom="from-purple-600"
-                gradientTo="to-pink-600"
-                iconBgClass="bg-purple-500/20"
-                iconColorClass="text-purple-400"
-                
-              />
-              <MetricCard
-                icon={Target}
-                label="Payback"
-                value={`${cacMetrics.paybackPeriod} mo`}
-                subtitle="Payback Period"
-                gradientFrom="from-amber-600"
-                gradientTo="to-orange-600"
-                iconBgClass="bg-amber-500/20"
-                iconColorClass="text-amber-400"
-                
-              />
-            </div>
+          {/* Strategic Impact */}
+          <StrategicImpact />
 
-            {/* Tab Content */}
-            {activeTab === 'overview' && <OverviewTab />}
-            {activeTab === 'channels' && <ChannelsTab />}
-            {activeTab === 'products' && <ProductsTab />}
-
-            {/* Strategic Impact */}
-            <StrategicImpact />
-
-            {/* Professional Narrative Sections */}
-            <NarrativeSections />
-          </>
-        )}
-      </div>
-    </div>
+          {/* Professional Narrative Sections */}
+          <NarrativeSections />
+        </>
+      )}
+    </ProjectPageLayout>
   )
 }
