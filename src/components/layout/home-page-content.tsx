@@ -20,20 +20,21 @@ interface MetricCardProps {
 
 function MetricCard({ value, prefix = '', suffix = '', label, delay, accent = 'default', decimalPlaces = 0 }: MetricCardProps) {
   const accentStyles = {
-    revenue: 'text-amber-500',
-    growth: 'text-cyan-400',
-    default: 'text-white',
+    revenue: 'text-amber-600 dark:text-amber-400',
+    growth: 'text-emerald-600 dark:text-emerald-400',
+    default: 'text-slate-700 dark:text-slate-200',
   }
 
   const borderStyles = {
     revenue: 'hover:border-amber-500/50 hover:shadow-amber-500/20',
-    growth: 'hover:border-cyan-500/50 hover:shadow-cyan-500/20',
-    default: 'hover:border-white/30 hover:shadow-white/10',
+    growth: 'hover:border-emerald-500/50 hover:shadow-emerald-500/20',
+    default: 'hover:border-slate-400/50 hover:shadow-slate-500/20',
   }
 
   return (
     <div className={cn(
-      'group relative p-4 rounded-xl glass backdrop-blur-lg',
+      'group relative p-4 rounded-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm',
+      'border border-slate-200/60 dark:border-slate-700/60',
       'shadow-lg hover:shadow-xl',
       borderStyles[accent],
       'transition-all duration-300 hover:-translate-y-1 text-center'
@@ -43,7 +44,7 @@ function MetricCard({ value, prefix = '', suffix = '', label, delay, accent = 'd
         <NumberTicker value={value} delay={delay} decimalPlaces={decimalPlaces} />
         {suffix}
       </div>
-      <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{label}</div>
+      <div className="text-xs text-slate-600 dark:text-slate-400 font-medium uppercase tracking-wide">{label}</div>
     </div>
   )
 }
@@ -52,26 +53,38 @@ export default function HomePageContent() {
   return (
     <>
       <Navbar />
-      <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#0f172a]">
+      <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
         <HomePageSchema />
+
+        {/* Enhanced Background with Gradient Mesh */}
+        <div className="fixed inset-0 -z-20 bg-gradient-to-br from-slate-50 via-blue-50/30 to-emerald-50/40 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950/30" />
 
         {/* Animated Background Decorations */}
         <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
           {/* Large ambient glow - top left */}
-          <div className="absolute -top-24 -left-24 w-96 h-96 bg-gradient-to-br from-blue-500/20 via-cyan-500/15 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
+          <div className="absolute -top-24 -left-24 w-96 h-96 bg-gradient-to-br from-emerald-400/20 via-teal-400/15 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
 
           {/* Large ambient glow - bottom right */}
-          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-gradient-to-tl from-indigo-500/20 via-blue-500/15 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
+          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-gradient-to-tl from-amber-400/20 via-orange-400/15 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
 
           {/* Medium accent blob - center right */}
-          <div className="absolute top-1/3 -right-12 w-64 h-64 bg-gradient-to-l from-cyan-400/15 via-blue-400/10 to-transparent rounded-full blur-2xl" />
+          <div className="absolute top-1/3 -right-12 w-64 h-64 bg-gradient-to-l from-blue-400/15 via-cyan-400/10 to-transparent rounded-full blur-2xl" />
 
           {/* Medium accent blob - center left */}
-          <div className="absolute bottom-1/3 -left-12 w-64 h-64 bg-gradient-to-r from-blue-400/15 via-indigo-400/10 to-transparent rounded-full blur-2xl" />
+          <div className="absolute bottom-1/3 -left-12 w-64 h-64 bg-gradient-to-r from-violet-400/15 via-purple-400/10 to-transparent rounded-full blur-2xl" />
 
           {/* Small floating elements for depth */}
-          <div className="absolute top-1/4 right-1/3 w-32 h-32 bg-cyan-400/10 rounded-full blur-xl" />
-          <div className="absolute bottom-1/4 left-1/3 w-32 h-32 bg-blue-400/10 rounded-full blur-xl" />
+          <div className="absolute top-1/4 right-1/3 w-32 h-32 bg-emerald-400/10 rounded-full blur-xl" />
+          <div className="absolute bottom-1/4 left-1/3 w-32 h-32 bg-amber-400/10 rounded-full blur-xl" />
+
+          {/* Subtle grid overlay for texture */}
+          <div
+            className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]"
+            style={{
+              backgroundImage: 'radial-gradient(circle at 1px 1px, rgb(0 0 0 / 0.5) 1px, transparent 0)',
+              backgroundSize: '40px 40px'
+            }}
+          />
         </div>
 
       <main id="main-content" className="w-full mx-auto px-6 py-12" style={{ maxWidth: '32rem' }}>
@@ -80,9 +93,9 @@ export default function HomePageContent() {
           {/* Avatar with Premium Glow */}
           <div className="relative inline-block mb-8">
             {/* Glow ring effect */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/30 to-blue-400/30 blur-xl scale-110" />
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400/30 to-teal-400/30 blur-xl scale-110" />
 
-            <div className="relative h-32 w-32 rounded-full overflow-hidden border-4 border-white/10 shadow-2xl ring-2 ring-cyan-500/30">
+            <div className="relative h-32 w-32 rounded-full overflow-hidden border-4 border-white/80 dark:border-slate-800/80 shadow-2xl ring-2 ring-emerald-500/20 dark:ring-emerald-400/30">
               <Image
                 src="/images/richard.jpg"
                 alt="Richard Hudson"
@@ -94,29 +107,29 @@ export default function HomePageContent() {
             </div>
 
             {/* Online status indicator with pulse */}
-            <div className="absolute bottom-2 right-2 h-6 w-6 bg-emerald-500 rounded-full border-3 border-slate-900 shadow-lg">
+            <div className="absolute bottom-2 right-2 h-6 w-6 bg-emerald-500 rounded-full border-3 border-white dark:border-slate-900 shadow-lg">
               <div className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-75" />
             </div>
           </div>
 
           {/* Name - Enhanced Typography */}
-          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-3 tracking-tight">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-3 tracking-tight">
             Richard Hudson
           </h1>
 
           {/* Title - Enhanced Gradient */}
-          <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-6 leading-tight">
+          <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 dark:from-emerald-400 dark:via-teal-400 dark:to-cyan-400 bg-clip-text text-transparent mb-6 leading-tight">
             Revenue Operations Professional
           </h2>
 
           {/* Description */}
-          <p className="text-base text-slate-300 leading-relaxed mb-4 mx-auto" style={{ maxWidth: '28rem' }}>
-            Delivering <span className="text-amber-400 font-semibold">measurable revenue impact</span> through strategic operational improvements and data-driven insights.
+          <p className="text-base text-slate-600 dark:text-slate-300 leading-relaxed mb-4 mx-auto" style={{ maxWidth: '28rem' }}>
+            Delivering <span className="text-amber-600 dark:text-amber-400 font-semibold">measurable revenue impact</span> through strategic operational improvements and data-driven insights.
           </p>
 
           {/* Location */}
-          <div className="inline-flex items-center gap-2 text-sm text-slate-400">
-            <MapPin size={16} className="text-cyan-400" />
+          <div className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+            <MapPin size={16} className="text-emerald-600 dark:text-emerald-400" />
             <span>Plano, Texas • North of Dallas</span>
           </div>
         </div>
@@ -159,7 +172,7 @@ export default function HomePageContent() {
           {/* Primary CTA - Premium Gradient */}
           <Link
             href="/projects"
-            className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-base bg-gradient-to-r from-blue-600 via-cyan-600 to-indigo-600 text-white shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all duration-300 overflow-hidden"
+            className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-base bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/40 hover:-translate-y-0.5 transition-all duration-300 overflow-hidden"
           >
             {/* Shine effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
@@ -172,7 +185,7 @@ export default function HomePageContent() {
           {/* Secondary CTA - Glass Effect */}
           <Link
             href="/resume"
-            className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-base glass backdrop-blur-lg text-white hover:border-cyan-500/50 hover:text-cyan-400 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
+            className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-base bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm text-slate-700 dark:text-slate-300 border-2 border-slate-200/60 dark:border-slate-700/60 hover:border-emerald-500/50 hover:text-emerald-600 dark:hover:text-emerald-400 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
           >
             <FileText size={20} />
             <span>Resume</span>
@@ -181,7 +194,7 @@ export default function HomePageContent() {
           {/* Tertiary CTA - Subtle Hover */}
           <Link
             href="/contact"
-            className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-base text-slate-400 hover:text-cyan-400 hover:bg-white/5 backdrop-blur-sm border border-transparent hover:border-cyan-500/30 hover:-translate-y-0.5 transition-all duration-300"
+            className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-base text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-white/60 dark:hover:bg-slate-800/60 backdrop-blur-sm border border-transparent hover:border-emerald-500/30 hover:-translate-y-0.5 transition-all duration-300"
           >
             <MessageCircle size={20} />
             <span>Contact</span>
