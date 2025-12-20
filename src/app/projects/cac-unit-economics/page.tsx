@@ -60,10 +60,10 @@ export default function CACUnitEconomics() {
               label="Blended CAC"
               value={formatCurrency(cacMetrics.blendedCAC)}
               subtitle="Cost to Acquire"
-              gradientFrom="from-green-600"
-              gradientTo="to-emerald-600"
-              iconBgClass="bg-success/20"
-              iconColorClass="text-success"
+              gradientFrom="from-blue-600"
+              gradientTo="to-cyan-600"
+              iconBgClass="bg-primary/20"
+              iconColorClass="text-primary"
 
             />
             <MetricCard
@@ -82,10 +82,10 @@ export default function CACUnitEconomics() {
               label="LTV:CAC"
               value={`${cacMetrics.ltv_cac_ratio.toFixed(1)}:1`}
               subtitle="Efficiency Ratio"
-              gradientFrom="from-purple-600"
-              gradientTo="to-pink-600"
-              iconBgClass="bg-purple-500/20"
-              iconColorClass="text-purple-400"
+              gradientFrom="from-blue-600"
+              gradientTo="to-cyan-600"
+              iconBgClass="bg-secondary/20"
+              iconColorClass="text-secondary"
 
             />
             <MetricCard
@@ -93,10 +93,10 @@ export default function CACUnitEconomics() {
               label="Payback"
               value={`${cacMetrics.paybackPeriod} mo`}
               subtitle="Payback Period"
-              gradientFrom="from-amber-600"
-              gradientTo="to-orange-600"
-              iconBgClass="bg-amber-500/20"
-              iconColorClass="text-amber-400"
+              gradientFrom="from-blue-600"
+              gradientTo="to-cyan-600"
+              iconBgClass="bg-primary/20"
+              iconColorClass="text-primary"
 
             />
           </div>

@@ -107,10 +107,10 @@ export default function DealFunnel() {
             <div
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
             >
-              <MetricCard icon={BarChart3} label="Pipeline" value={totalOpportunities.toLocaleString()} subtitle="Total Opportunities" gradientFrom="from-blue-600" gradientTo="to-indigo-600" iconBgClass="bg-primary/20" iconColorClass="text-primary" />
-              <MetricCard icon={Target} label="Won" value={closedDeals.toLocaleString()} subtitle="Closed Deals" gradientFrom="from-green-600" gradientTo="to-emerald-600" iconBgClass="bg-success/20" iconColorClass="text-success" />
-              <MetricCard icon={DollarSign} label="Average" value={`$${(avgDealSize / 1000).toFixed(0)}K`} subtitle="Deal Size" gradientFrom="from-purple-600" gradientTo="to-pink-600" iconBgClass="bg-purple-500/20" iconColorClass="text-purple-400" />
-              <MetricCard icon={Clock} label="Average" value={avgSalesCycle.toString()} subtitle="Days to Close" gradientFrom="from-amber-600" gradientTo="to-orange-600" iconBgClass="bg-amber-500/20" iconColorClass="text-amber-400" />
+              <MetricCard icon={BarChart3} label="Pipeline" value={totalOpportunities.toLocaleString()} subtitle="Total Opportunities" gradientFrom="from-blue-600" gradientTo="to-cyan-600" iconBgClass="bg-primary/20" iconColorClass="text-primary" />
+              <MetricCard icon={Target} label="Won" value={closedDeals.toLocaleString()} subtitle="Closed Deals" gradientFrom="from-blue-600" gradientTo="to-cyan-600" iconBgClass="bg-secondary/20" iconColorClass="text-secondary" />
+              <MetricCard icon={DollarSign} label="Average" value={`$${(avgDealSize / 1000).toFixed(0)}K`} subtitle="Deal Size" gradientFrom="from-blue-600" gradientTo="to-cyan-600" iconBgClass="bg-primary/20" iconColorClass="text-primary" />
+              <MetricCard icon={Clock} label="Average" value={avgSalesCycle.toString()} subtitle="Days to Close" gradientFrom="from-blue-600" gradientTo="to-cyan-600" iconBgClass="bg-secondary/20" iconColorClass="text-secondary" />
             </div>
 
             {/* Main Funnel Chart */}

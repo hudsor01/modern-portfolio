@@ -66,10 +66,10 @@ export default function MultiChannelAttribution() {
                   +{formatPercent(attributionMetrics.conversionLift)} lift
                 </p>
               }
-              gradientFrom="from-orange-600"
-              gradientTo="to-red-600"
-              iconBgClass="bg-orange-500/20"
-              iconColorClass="text-orange-400"
+              gradientFrom="from-blue-600"
+              gradientTo="to-cyan-600"
+              iconBgClass="bg-primary/20"
+              iconColorClass="text-primary"
 
             />
             <MetricCard
@@ -77,10 +77,10 @@ export default function MultiChannelAttribution() {
               label="Accuracy"
               value={formatPercent(attributionMetrics.attributionAccuracy)}
               subtitle="ML Model Performance"
-              gradientFrom="from-red-600"
-              gradientTo="to-pink-600"
-              iconBgClass="bg-destructive/20"
-              iconColorClass="text-destructive"
+              gradientFrom="from-blue-600"
+              gradientTo="to-cyan-600"
+              iconBgClass="bg-secondary/20"
+              iconColorClass="text-secondary"
 
             />
             <MetricCard
@@ -88,10 +88,10 @@ export default function MultiChannelAttribution() {
               label="Channels"
               value={attributionMetrics.totalChannels.toString()}
               subtitle={`${attributionMetrics.avgTouchpoints.toFixed(1)} avg touchpoints`}
-              gradientFrom="from-pink-600"
-              gradientTo="to-purple-600"
-              iconBgClass="bg-pink-500/20"
-              iconColorClass="text-pink-400"
+              gradientFrom="from-blue-600"
+              gradientTo="to-cyan-600"
+              iconBgClass="bg-primary/20"
+              iconColorClass="text-primary"
 
             />
             <MetricCard
@@ -99,10 +99,10 @@ export default function MultiChannelAttribution() {
               label="ROI Impact"
               value={formatCurrency(attributionMetrics.totalROI)}
               subtitle="Optimization Value"
-              gradientFrom="from-amber-600"
-              gradientTo="to-orange-600"
-              iconBgClass="bg-amber-500/20"
-              iconColorClass="text-amber-400"
+              gradientFrom="from-blue-600"
+              gradientTo="to-cyan-600"
+              iconBgClass="bg-secondary/20"
+              iconColorClass="text-secondary"
 
             />
           </div>
