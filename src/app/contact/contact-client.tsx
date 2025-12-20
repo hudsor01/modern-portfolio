@@ -277,7 +277,8 @@ export default function ContactPageClient() {
   return (
     <>
       <Navbar />
-      <section className="min-h-screen bg-[#0f172a] text-foreground pt-20">
+      <main id="main-content">
+        <section className="min-h-screen bg-[#0f172a] text-foreground pt-20">
         <div className="w-full mx-auto px-6">
           {/* Header */}
           <div className="text-center mb-12">
@@ -635,6 +636,7 @@ export default function ContactPageClient() {
           </div>
         </div>
       </section>
+      </main>
       <Footer />
     </>
   )
