@@ -76,25 +76,28 @@ export function ProjectPageLayout({
           </div>
         </div>
 
-        {/* Title Section */}
-        <div className="mb-8 animate-fade-in-up">
-          <h1 className="text-xl md:typography-h1 bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-3">
-            {title}
-          </h1>
-          <p className="typography-lead max-w-3xl mb-4">
-            {description}
-          </p>
-          <div className="flex flex-wrap gap-3 text-sm">
-            {tags.map((tag, index) => (
-              <span key={index} className={`${tag.color} px-3 py-1 rounded-full`}>
-                {tag.label}
-              </span>
-            ))}
+        {/* Main Content */}
+        <main id="main-content">
+          {/* Title Section */}
+          <div className="mb-8 animate-fade-in-up">
+            <h1 className="text-xl md:typography-h1 bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-3">
+              {title}
+            </h1>
+            <p className="typography-lead max-w-3xl mb-4">
+              {description}
+            </p>
+            <div className="flex flex-wrap gap-3 text-sm">
+              {tags.map((tag, index) => (
+                <span key={index} className={`${tag.color} px-3 py-1 rounded-full`}>
+                  {tag.label}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Content */}
-        {children}
+          {/* Content */}
+          {children}
+        </main>
       </div>
     </div>
   )
