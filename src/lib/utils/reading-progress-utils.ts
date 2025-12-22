@@ -4,6 +4,7 @@
  */
 
 import { useEffect, useRef, useCallback } from 'react'
+import { z } from 'zod'
 import { createContextLogger } from '@/lib/monitoring/logger'
 
 const progressLogger = createContextLogger('ReadingProgress')
@@ -28,6 +29,16 @@ export interface ReadingSession {
   timeSpent: number
   isActive: boolean
 }
+
+// Zod schema for runtime validation of stored sessions
+const ReadingSessionSchema = z.object({
+  startTime: z.number(),
+  totalWords: z.number(),
+  currentProgress: z.number(),
+  averageReadingSpeed: z.number(),
+  timeSpent: z.number(),
+  isActive: z.boolean(),
+})
 
 /**
  * Calculate scroll progress with better accuracy
@@ -167,7 +178,9 @@ export class ReadingProgressTracker implements Disposable {
     try {
       const saved = window.localStorage.getItem(this.storageKey)
       if (saved) {
-        const session = JSON.parse(saved)
+        const parsed = JSON.parse(saved)
+        // Validate with Zod schema for runtime type safety
+        const session = ReadingSessionSchema.parse(parsed)
         // Only restore if session is recent (within 1 hour)
         if (Date.now() - session.startTime < 60 * 60 * 1000) {
           return { ...session, isActive: true }
