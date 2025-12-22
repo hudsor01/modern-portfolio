@@ -462,6 +462,11 @@ export class BackupAutomation implements Disposable {
     }
   }
 
+  // Legacy method for backward compatibility - calls Symbol.dispose
+  destroy(): void {
+    this[Symbol.dispose]()
+  }
+
   // Legacy static method for backward compatibility
   static async scheduleBackup(intervalHours = 24): Promise<BackupAutomation> {
     return new BackupAutomation(intervalHours)
