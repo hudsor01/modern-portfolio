@@ -27,16 +27,12 @@ The validation system has been centralized to eliminate duplication and ensure c
 
 #### **Import Pattern**
 ```typescript
-// OLD - DO NOT USE
-import { contactFormSchema } from '@/lib/validation'
-import { emailSchema } from '@/lib/validation'
-
-// NEW - USE THIS
-import { 
-  contactFormSchema, 
+// All validation imports should use unified-schemas
+import {
+  contactFormSchema,
   emailSchema,
   validateContactForm,
-  ValidationError 
+  ValidationError
 } from '@/lib/validations/unified-schemas'
 ```
 
@@ -66,17 +62,13 @@ try {
 }
 ```
 
-### 🗂️ **LEGACY FILES TO MIGRATE**
+### ✅ **MIGRATION COMPLETE**
 
-#### **Files Still Using Old Validation**
-- `/src/lib/validation.ts` - **Deprecated** (duplicates unified schemas)
-- Components that import from old validation files
+All legacy validation files have been removed and all imports now use unified schemas:
+- `/src/lib/api/validation.ts` - **Removed** (Dec 2025)
+- `/src/lib/validations/contact-form-schema.ts` - **Removed** (Dec 2025)
 
-#### **Migration Steps for Remaining Files**
-1. Replace imports from `/src/lib/validation.ts` with `/src/lib/validations/unified-schemas.ts`
-2. Use the centralized validation functions
-3. Update error handling to use `ValidationError` class
-4. Test thoroughly
+No legacy files remain. All validation uses `@/lib/validations/unified-schemas`.
 
 ### 🔄 **SCHEMA MAPPING**
 
