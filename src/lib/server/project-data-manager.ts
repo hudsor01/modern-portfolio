@@ -12,6 +12,7 @@ import {
 } from '@/lib/validations/project-schema'
 import type { STARData } from '@/components/projects/STARAreaChart'
 import { createContextLogger } from '@/lib/monitoring/logger'
+import { LRUCache } from 'lru-cache'
 
 const projectLogger = createContextLogger('ProjectDataManager')
 
@@ -366,9 +367,24 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
   },
 ]
 
-// Server-side only cache (not accessible from client)
+// Server-side only cache with LRU eviction and memory limits
+interface CacheEntry<T> {
+  data: T
+  ttl: number
+}
+
 class ServerProjectCache {
-  private cache = new Map<string, { data: unknown; timestamp: number; ttl: number }>()
+  // LRU cache with 100 max entries and 50MB max memory
+  private cache = new LRUCache<string, CacheEntry<unknown>>({
+    max: 100, // Maximum 100 cached items
+    maxSize: 50 * 1024 * 1024, // 50MB max memory
+    sizeCalculation: (value) => {
+      // Estimate size of cached data
+      return JSON.stringify(value).length * 2 // UTF-16 chars = 2 bytes
+    },
+    ttl: 10 * 60 * 1000, // Default 10 minute TTL
+    updateAgeOnGet: true, // Reset TTL on access
+  })
   private static instance: ServerProjectCache
 
   static getInstance(): ServerProjectCache {
@@ -379,22 +395,12 @@ class ServerProjectCache {
   }
 
   set<T>(key: string, data: T, ttlMs: number = 5 * 60 * 1000): void {
-    this.cache.set(key, {
-      data,
-      timestamp: Date.now(),
-      ttl: ttlMs,
-    })
+    this.cache.set(key, { data, ttl: ttlMs }, { ttl: ttlMs })
   }
 
   get<T>(key: string): T | null {
     const cached = this.cache.get(key)
     if (!cached) return null
-
-    if (Date.now() - cached.timestamp > cached.ttl) {
-      this.cache.delete(key)
-      return null
-    }
-
     return cached.data as T
   }
 
@@ -412,6 +418,16 @@ class ServerProjectCache {
       if (key.includes(pattern)) {
         this.cache.delete(key)
       }
+    }
+  }
+
+  // Get cache statistics for monitoring
+  getStats(): { size: number; calculatedSize: number; max: number; maxSize: number } {
+    return {
+      size: this.cache.size,
+      calculatedSize: this.cache.calculatedSize,
+      max: this.cache.max,
+      maxSize: this.cache.maxSize,
     }
   }
 }

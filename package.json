@@ -87,6 +87,7 @@
     "date-fns": "^4.1.0",
     "dompurify": "^3.3.0",
     "isomorphic-dompurify": "2.33.0",
+    "lru-cache": "11.2.4",
     "lucide-react": "^0.536.0",
     "motion": "12.23.26",
     "next": "^16.0.0",
