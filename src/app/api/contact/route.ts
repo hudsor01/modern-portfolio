@@ -16,6 +16,7 @@ import {
   ValidationError,
   createApiError,
   createApiSuccess,
+  contactFormSchema,
 } from '@/lib/validations/unified-schemas'
 import {
   getClientIdentifier,
@@ -25,7 +26,6 @@ import {
   logApiRequest,
   logApiResponse,
 } from '@/lib/api/utils'
-import { contactFormSchema } from '@/lib/validations/contact-form-schema'
 
 const logger = createContextLogger('ContactAPI')
 
