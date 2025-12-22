@@ -113,10 +113,7 @@ All validation schemas include comprehensive tests:
 
 ### 📈 **NEXT STEPS**
 
-1. **Complete remaining migrations** of legacy validation usage
-2. **Remove deprecated files** once all migrations are complete
-3. **Update documentation** to reference unified schemas
-4. **Consider adding more validation helpers** as needed
+> **Note**: Action items are now tracked in beads. Run `bd list --epic modern-portfolio-wug` to see remaining tasks.
 
 ---
 

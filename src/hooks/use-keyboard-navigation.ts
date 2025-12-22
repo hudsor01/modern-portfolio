@@ -33,21 +33,19 @@ export function useKeyboardNavigation({
 }: KeyboardNavigationOptions) {
   const handlerRef = useRef<KeyboardNavigationOptions>({})
 
-  // Update handler ref with latest callbacks
-  useEffect(() => {
-    handlerRef.current = {
-      onEscape,
-      onEnter,
-      onSpace,
-      onArrowUp,
-      onArrowDown,
-      onArrowLeft,
-      onArrowRight,
-      onTab,
-      onHome,
-      onEnd
-    }
-  })
+  // Update handler ref with latest callbacks (no useEffect needed for refs)
+  handlerRef.current = {
+    onEscape,
+    onEnter,
+    onSpace,
+    onArrowUp,
+    onArrowDown,
+    onArrowLeft,
+    onArrowRight,
+    onTab,
+    onHome,
+    onEnd
+  }
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     if (!enabled) return

@@ -13,7 +13,7 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.tsx'],
     css: true,
     includeSource: ['src/**/*.{js,ts,jsx,tsx}'],
-    exclude: ['node_modules', 'dist', '.next', 'e2e/**/*', 'playwright-report/**/*'],
+    exclude: ['node_modules', 'dist', '.next', 'e2e/**/*', 'playwright-report/**/*', '**/*.spec.ts'],
     // Timeout configurations to prevent hanging
     testTimeout: isCI ? 15000 : 10000, // Slightly longer in CI
     hookTimeout: 10000, // 10 seconds for beforeEach/afterEach

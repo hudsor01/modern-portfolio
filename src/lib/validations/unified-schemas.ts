@@ -258,12 +258,27 @@ export const paginatedResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =
 // =======================
 
 export class ValidationError extends Error {
+  public details?: Record<string, string[]>
+
   constructor(
     message: string,
-    public details?: z.ZodError
+    details?: Record<string, string[]>
   ) {
     super(message)
     this.name = 'ValidationError'
+    this.details = details
+  }
+
+  static fromZodError(error: z.ZodError): ValidationError {
+    const details: Record<string, string[]> = {}
+    error.issues.forEach((issue) => {
+      const path = issue.path.join('.') || 'root'
+      if (!details[path]) {
+        details[path] = []
+      }
+      details[path].push(issue.message)
+    })
+    return new ValidationError('Validation failed', details)
   }
 }
 
@@ -273,7 +288,7 @@ export function validate<T>(schema: z.ZodType<T>, data: unknown): T {
     return schema.parse(data)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      throw new ValidationError('Validation failed', error)
+      throw ValidationError.fromZodError(error)
     }
     throw new ValidationError('Invalid data')
   }
@@ -315,4 +330,101 @@ export type ViewTrackingInput = z.infer<typeof viewTrackingSchema>
 export type PostViewCreateInput = z.infer<typeof postViewCreateSchema>
 export type PostInteractionCreateInput = z.infer<typeof postInteractionCreateSchema>
 export type PaginationInput = z.infer<typeof paginationSchema>
+
+// =======================
+// API RESPONSE UTILITIES
+// =======================
+
+// API Error/Success types
+export interface ApiError {
+  success: false
+  message: string
+  error: string
+  details?: Record<string, string[]>
+  rateLimitInfo?: {
+    remaining?: number
+    resetTime?: number
+    retryAfter?: number
+    blocked?: boolean
+  }
+}
+
+export interface ApiSuccess {
+  success: true
+  message: string
+  data?: Record<string, unknown> | string | number | boolean
+  rateLimitInfo?: {
+    remaining?: number
+    resetTime?: number
+  }
+}
+
+export type ApiResponse = ApiError | ApiSuccess
+
+// Validation helper that converts Zod errors to Record<string, string[]>
+export function validateRequest<T>(schema: z.ZodType<T>, data: unknown): T {
+  try {
+    return schema.parse(data)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      throw ValidationError.fromZodError(error)
+    }
+    throw error
+  }
+}
+
+export function createApiError(
+  message: string,
+  error: string,
+  details?: Record<string, string[]>,
+  rateLimitInfo?: ApiError['rateLimitInfo']
+): ApiError {
+  return {
+    success: false,
+    message,
+    error,
+    ...(details && { details }),
+    ...(rateLimitInfo && { rateLimitInfo }),
+  }
+}
+
+export function createApiSuccess(
+  message: string,
+  data?: Record<string, unknown> | string | number | boolean,
+  rateLimitInfo?: ApiSuccess['rateLimitInfo']
+): ApiSuccess {
+  return {
+    success: true,
+    message,
+    ...(data !== undefined && { data }),
+    ...(rateLimitInfo && { rateLimitInfo }),
+  }
+}
+
+// =======================
+// INPUT SANITIZATION
+// =======================
+
+export function sanitizeUserInput(input: string): string {
+  return input
+    .trim()
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/vbscript:/gi, '')
+    .replace(/data:/gi, '')
+    .replace(/on\w+="[^"]*"/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/<form\b[^<]*(?:(?!<\/form>)<[^<]*)*<\/form>/gi, '')
+    .substring(0, 10000)
+}
+
+export function sanitizeHtml(html: string): string {
+  return html
+    .substring(0, 50000)
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/<meta[^>]*>/gi, '')
+    .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
+    .replace(/<embed\b[^<]*(?:(?!<\/embed>)<[^<]*)*<\/embed>/gi, '')
+}
 

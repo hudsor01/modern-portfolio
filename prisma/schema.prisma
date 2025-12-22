@@ -566,3 +566,113 @@ model Project {
   @@index([featured])
   @@index([createdAt(sort: Desc)])
 }
+
+// =======================
+// CONTACT SUBMISSIONS
+// =======================
+
+model ContactSubmission {
+  id              String          @id @default(cuid())
+  name            String
+  email           String
+  subject         String
+  message         String          @db.Text
+  company         String?
+  phone           String?
+  timeline        String?
+  budget          String?
+
+  // Metadata
+  status          SubmissionStatus @default(NEW)
+  responded       Boolean         @default(false)
+  respondedAt     DateTime?
+  notes           String?         @db.Text
+
+  // Security & Analytics
+  ipAddress       String?         @db.Inet
+  userAgent       String?         @db.Text
+  referer         String?
+
+  // Email tracking
+  emailSent       Boolean         @default(false)
+  emailId         String?         // Resend email ID
+  emailError      String?         @db.Text
+
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@map("contact_submissions")
+  @@index([status, createdAt(sort: Desc)])
+  @@index([email])
+  @@index([createdAt(sort: Desc)])
+  @@index([responded])
+}
+
+enum SubmissionStatus {
+  NEW
+  READ
+  IN_PROGRESS
+  RESPONDED
+  ARCHIVED
+  SPAM
+}
+
+// =======================
+// SECURITY EVENTS
+// =======================
+
+model SecurityEvent {
+  id              String              @id @default(cuid())
+  type            SecurityEventType
+  severity        SecuritySeverity    @default(MEDIUM)
+
+  // Event details
+  message         String
+  details         Json?               // Structured event data
+
+  // Context
+  ipAddress       String?             @db.Inet
+  userAgent       String?             @db.Text
+  path            String?
+  method          String?             // HTTP method
+
+  // User identification (anonymized)
+  clientId        String?             // Hash of IP + UA
+  sessionId       String?
+
+  // Processing
+  acknowledged    Boolean             @default(false)
+  acknowledgedAt  DateTime?
+  acknowledgedBy  String?
+
+  // Timestamps
+  createdAt       DateTime            @default(now())
+
+  @@map("security_events")
+  @@index([type, createdAt(sort: Desc)])
+  @@index([severity, acknowledged])
+  @@index([clientId, createdAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
+}
+
+enum SecurityEventType {
+  RATE_LIMIT_EXCEEDED
+  CSRF_VALIDATION_FAILED
+  INVALID_INPUT
+  SUSPICIOUS_ACTIVITY
+  BOT_DETECTED
+  BRUTE_FORCE_ATTEMPT
+  BLOCKED_REQUEST
+  AUTH_FAILURE
+  SQL_INJECTION_ATTEMPT
+  XSS_ATTEMPT
+  UNAUTHORIZED_ACCESS
+}
+
+enum SecuritySeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}

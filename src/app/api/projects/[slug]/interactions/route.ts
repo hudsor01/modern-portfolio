@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient, InteractionType } from '@prisma/client'
+import { db, InteractionType } from '@/lib/db'
 import { ApiResponse } from '@/types/shared-api'
 import { validateProjectInteraction, ProjectInteractionInput, ValidationError } from '@/lib/validations/unified-schemas'
 import { createContextLogger } from '@/lib/monitoring/logger';
 
 const logger = createContextLogger('InteractionsAPI');
-
-const prisma = new PrismaClient()
 
 // Using centralized validation schema from unified-schemas
 
@@ -38,7 +36,7 @@ export async function POST(
         return NextResponse.json(
           {
             success: false,
-            error: 'Invalid request data: ' + error.message,
+            error: 'Invalid request data',
             data: null as never
           },
           { status: 400 }
@@ -63,7 +61,7 @@ export async function POST(
     // We could extend this to create a separate project interactions table if needed
     
     // Create the interaction record (using blog post structure as template)
-    const interaction = await prisma.postInteraction.create({
+    const interaction = await db.postInteraction.create({
       data: {
         postId: `project-${projectSlug}`, // Use project slug as pseudo-post ID
         type: type as InteractionType,
@@ -75,7 +73,7 @@ export async function POST(
     })
 
     // Get total interaction counts for this project
-    const totalCounts = await prisma.postInteraction.groupBy({
+    const totalCounts = await db.postInteraction.groupBy({
       by: ['type'],
       where: {
         postId: `project-${projectSlug}`
@@ -127,7 +125,7 @@ export async function GET(
     const projectSlug = params.slug
 
     // Get interaction counts for this project
-    const totalCounts = await prisma.postInteraction.groupBy({
+    const totalCounts = await db.postInteraction.groupBy({
       by: ['type'],
       where: {
         postId: `project-${projectSlug}`

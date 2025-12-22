@@ -46,16 +46,34 @@ export default function ProjectsPage() {
     <ErrorBoundary>
       <>
         <Navbar />
-        <section className="relative min-h-screen bg-linear-to-br from-gray-900 via-black to-gray-900 text-foreground overflow-hidden pt-20">
-          {/* Modern Animated Background */}
-          <div className="fixed inset-0 -z-10">
-            <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float"></div>
-            <div className="absolute bottom-1/3 left-1/3 w-64 h-64 bg-primary/5 rounded-full blur-3xl animate-float-delayed"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-primary/3 rounded-full blur-3xl animate-pulse-glow"></div>
+        <main id="main-content" className="relative min-h-screen text-foreground overflow-hidden pt-20">
+          {/* Premium Enhanced Background */}
+          <div className="fixed inset-0 -z-20 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900" />
+
+          {/* Animated Background Decorations */}
+          <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+            {/* Large ambient glows - similar to homepage */}
+            <div className="absolute -top-32 -right-32 w-[600px] h-[600px] bg-gradient-to-br from-cyan-500/15 via-blue-500/10 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
+
+            <div className="absolute -bottom-32 -left-32 w-[600px] h-[600px] bg-gradient-to-tl from-emerald-500/15 via-teal-500/10 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
+
+            {/* Medium accent blobs */}
+            <div className="absolute top-1/3 -left-16 w-96 h-96 bg-gradient-to-r from-violet-500/10 via-purple-500/5 to-transparent rounded-full blur-2xl" />
+
+            <div className="absolute bottom-1/3 -right-16 w-96 h-96 bg-gradient-to-l from-blue-500/10 via-cyan-500/5 to-transparent rounded-full blur-2xl" />
+
+            {/* Small floating elements for depth */}
+            <div className="absolute top-1/4 left-1/3 w-48 h-48 bg-cyan-400/8 rounded-full blur-xl animate-float" />
+            <div className="absolute bottom-1/4 right-1/3 w-48 h-48 bg-emerald-400/8 rounded-full blur-xl animate-float-delayed" />
+
+            {/* Subtle grid overlay for texture */}
             <div
-              className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.03)_1px,transparent_1px),linear-gradient(to_right,rgba(34,211,238,0.03)_1px,transparent_1px)] bg-size-[50px_50px]"
-              aria-hidden="true"
-            ></div>
+              className="absolute inset-0 opacity-[0.02]"
+              style={{
+                backgroundImage: 'radial-gradient(circle at 1px 1px, rgb(100 200 255 / 0.3) 1px, transparent 0)',
+                backgroundSize: '50px 50px'
+              }}
+            />
           </div>
 
           <div className="w-full relative z-10 px-6 mx-auto max-w-7xl py-24">
@@ -108,7 +126,7 @@ export default function ProjectsPage() {
             {/* CTA Section */}
             <ProjectCTASection />
           </div>
-        </section>
+        </main>
         <Footer />
       </>
     </ErrorBoundary>

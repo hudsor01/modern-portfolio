@@ -1,17 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
+import { db } from '@/lib/db'
 import {
   checkEnhancedContactFormRateLimit
 } from '@/lib/security/enhanced-rate-limiter'
 import { escapeHtml } from '@/lib/security/html-escape'
 import { validateCSRFToken } from '@/lib/security/csrf-protection'
+import {
+  logRateLimitExceeded,
+  logCSRFFailure,
+} from '@/lib/security/security-event-logger'
 import { createContextLogger } from '@/lib/monitoring/logger'
 import {
   validateRequest,
   ValidationError,
   createApiError,
   createApiSuccess,
-} from '@/lib/api/validation'
+} from '@/lib/validations/unified-schemas'
 import {
   getClientIdentifier,
   getRequestMetadata,
@@ -45,12 +50,16 @@ function getResendClient(): Resend {
   return resend
 }
 
+// Using singleton Prisma client from @/lib/db
+
 export async function POST(request: NextRequest) {
   const startTime = Date.now()
   const clientId = getClientIdentifier(request)
   const metadata = getRequestMetadata(request)
 
   logApiRequest('POST', '/api/contact', clientId, metadata)
+
+  let submission: { id: string; email: string } | undefined
 
   try {
     // CSRF token validation
@@ -59,6 +68,13 @@ export async function POST(request: NextRequest) {
 
     if (!isCSRFValid) {
       logger.warn('CSRF validation failed for contact form', { clientId })
+
+      // Log security event (non-blocking)
+      void logCSRFFailure(clientId, '/api/contact', {
+        ipAddress: clientId,
+        userAgent: metadata.userAgent,
+      })
+
       const response = createApiError(
         'Security validation failed. Please refresh and try again.',
         'CSRF_VALIDATION_FAILED',
@@ -76,8 +92,16 @@ export async function POST(request: NextRequest) {
     })
 
     if (!rateLimitResult.allowed) {
+      // Log security event (non-blocking)
+      void logRateLimitExceeded(clientId, '/api/contact', {
+        ipAddress: clientId,
+        userAgent: metadata.userAgent,
+        retryAfter: rateLimitResult.retryAfter,
+        reason: rateLimitResult.reason,
+      })
+
       const response = createApiError(
-        rateLimitResult.reason === 'penalty_block' 
+        rateLimitResult.reason === 'penalty_block'
           ? 'Account temporarily blocked due to excessive attempts'
           : 'Too many contact form submissions. Please try again later.',
         'RATE_LIMIT_EXCEEDED',
@@ -104,13 +128,41 @@ export async function POST(request: NextRequest) {
     const body = await parseRequestBody(request)
     const formData = validateRequest(contactFormSchema, body)
 
-    // Send email using Resend
+    // Extract form data
     const { name, email, subject, message } = formData
+
+    // Save to database first (fail fast on DB errors)
+    submission = await db.contactSubmission.create({
+      data: {
+        name,
+        email,
+        subject,
+        message,
+        ipAddress: clientId,
+        userAgent: metadata.userAgent,
+        referer: request.headers.get('referer'),
+      }
+    })
+
+    logger.info('Contact form submission saved to database', {
+      submissionId: submission.id,
+      email: submission.email
+    })
 
     // Validate that CONTACT_EMAIL is configured
     const contactEmail = process.env.CONTACT_EMAIL
     if (!contactEmail) {
       logger.error('CONTACT_EMAIL environment variable not configured')
+
+      // Update submission with error
+      await db.contactSubmission.update({
+        where: { id: submission.id },
+        data: {
+          emailSent: false,
+          emailError: 'CONTACT_EMAIL not configured'
+        }
+      })
+
       return NextResponse.json(
         createApiError(
           'Email service misconfigured. Please try again later.',
@@ -121,7 +173,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    await getResendClient().emails.send({
+    // Send email using Resend
+    const emailResult = await getResendClient().emails.send({
       from: 'Portfolio Contact <hello@richardwhudsonjr.com>',
       to: contactEmail,
       subject: `${escapeHtml(subject)} - from ${escapeHtml(name)}`,
@@ -136,6 +189,20 @@ export async function POST(request: NextRequest) {
           <p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>
         </div>
       `,
+    })
+
+    // Update submission with email result
+    await db.contactSubmission.update({
+      where: { id: submission.id },
+      data: {
+        emailSent: true,
+        emailId: emailResult.data?.id || null,
+      }
+    })
+
+    logger.info('Email sent successfully', {
+      submissionId: submission.id,
+      emailId: emailResult.data?.id
     })
 
     const response = createApiSuccess(
@@ -159,7 +226,28 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const isValidationError = error instanceof ValidationError
     const status = isValidationError ? 400 : 500
-    
+
+    // If submission was created but email failed, update the database with error
+    if (!isValidationError && typeof submission !== 'undefined') {
+      try {
+        await db.contactSubmission.update({
+          where: { id: submission.id },
+          data: {
+            emailSent: false,
+            emailError: error instanceof Error ? error.message : 'Unknown error sending email'
+          }
+        })
+        logger.warn('Email send failed but submission saved to database', {
+          submissionId: submission.id,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        })
+      } catch (dbError) {
+        logger.error('Failed to update submission with email error', {
+          error: dbError instanceof Error ? dbError.message : 'Unknown DB error'
+        })
+      }
+    }
+
     const response = createApiError(
       isValidationError ? 'Validation failed' : 'Error processing form',
       isValidationError ? 'VALIDATION_ERROR' : 'INTERNAL_ERROR',
@@ -169,7 +257,7 @@ export async function POST(request: NextRequest) {
     logApiResponse('POST', '/api/contact', clientId, status, false, Date.now() - startTime, {
       error: error instanceof Error ? error.message : 'Unknown error'
     })
-    
+
     return NextResponse.json(response, { status })
   }
 }
