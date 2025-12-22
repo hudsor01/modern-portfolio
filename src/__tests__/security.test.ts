@@ -9,8 +9,7 @@ import { describe, it, expect, vi } from 'vitest'
 vi.mock('server-only', () => ({}))
 
 import { db } from '@/lib/db'
-import { validateRequest } from '@/lib/validations/unified-schemas'
-import { contactFormSchema } from '@/lib/validations/contact-form-schema'
+import { validateRequest, contactFormSchema } from '@/lib/validations/unified-schemas'
 import { sanitizeUserContent, escapeHtml } from '@/lib/security/sanitize'
 import { rateLimiter } from '@/lib/security/rate-limiter'
 
