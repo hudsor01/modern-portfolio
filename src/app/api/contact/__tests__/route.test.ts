@@ -1,28 +1,33 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { NextRequest } from 'next/server'
-import { POST } from '@/app/api/contact/route'
 
-// Mock Prisma Client with shared mocks
-const mockCreate = vi.fn()
-const mockUpdate = vi.fn()
+// Mock server-only module first (before any imports that use it)
+vi.mock('server-only', () => ({}))
 
-vi.mock('@prisma/client', () => ({
-  PrismaClient: vi.fn(() => ({
+// Use vi.hoisted to ensure mocks are available when vi.mock runs
+const { mockCreate, mockUpdate, mockSend } = vi.hoisted(() => ({
+  mockCreate: vi.fn(),
+  mockUpdate: vi.fn(),
+  mockSend: vi.fn()
+}))
+
+// Mock db module directly (instead of PrismaClient)
+vi.mock('@/lib/db', () => ({
+  db: {
     contactSubmission: {
       create: mockCreate,
       update: mockUpdate
     }
-  }))
+  }
 }))
-
-// Mock Resend with shared mock
-const mockSend = vi.fn()
 
 vi.mock('resend', () => ({
   Resend: vi.fn(() => ({
     emails: { send: mockSend }
   }))
 }))
+
+import { POST } from '@/app/api/contact/route'
 
 // Mock NextResponse
 vi.mock('next/server', () => ({

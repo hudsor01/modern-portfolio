@@ -15,11 +15,6 @@ vi.mock('lucide-react', () => ({
   RefreshCcw: ({ className }: { className?: string }) => <svg data-testid="refresh-icon" className={className} />,
 }))
 
-// Mock AnimatedBackground component
-vi.mock('../animated-background', () => ({
-  AnimatedBackground: () => <div data-testid="animated-background" />,
-}))
-
 describe('ProjectPageLayout', () => {
   const defaultProps = {
     title: 'Test Project',
@@ -34,7 +29,7 @@ describe('ProjectPageLayout', () => {
   it('should render all core elements', () => {
     render(<ProjectPageLayout {...defaultProps} />)
 
-    expect(screen.getByTestId('animated-background')).toBeInTheDocument()
+    // Background decorations are now inline (not a separate component)
     expect(screen.getByText('Back to Projects')).toBeInTheDocument()
     expect(screen.getByText('Test Project')).toBeInTheDocument()
     expect(screen.getByText('Test project description')).toBeInTheDocument()
@@ -123,10 +118,10 @@ describe('ProjectPageLayout', () => {
     )
 
     const ytdButton = screen.getByText('YTD')
-    expect(ytdButton).toHaveClass('bg-primary', 'text-foreground', 'shadow-lg')
+    expect(ytdButton).toHaveClass('bg-gradient-to-r', 'text-white', 'shadow-md')
 
     const allButton = screen.getByText('All')
-    expect(allButton).toHaveClass('text-muted-foreground')
+    expect(allButton).toHaveClass('text-slate-600')
   })
 
   it('should call onTimeframeChange when timeframe button is clicked', () => {
@@ -164,7 +159,7 @@ describe('ProjectPageLayout', () => {
     render(<ProjectPageLayout {...defaultProps} />)
 
     const title = screen.getByText('Test Project')
-    expect(title).toHaveClass('bg-gradient-to-r', 'from-blue-300', 'via-cyan-300', 'to-cyan-400', 'bg-clip-text', 'text-transparent')
+    expect(title).toHaveClass('bg-gradient-to-r', 'from-blue-600', 'via-cyan-600', 'to-indigo-600', 'bg-clip-text', 'text-transparent')
   })
 
   it('should have max-w-7xl container', () => {
@@ -192,18 +187,17 @@ describe('ProjectPageLayout', () => {
     expect(screen.getByText('Custom Project Content')).toBeInTheDocument()
   })
 
-  it('should have dark background theme', () => {
+  it('should have light background theme', () => {
     const { container } = render(<ProjectPageLayout {...defaultProps} />)
 
     const outerContainer = container.firstChild as HTMLElement
-    expect(outerContainer).toHaveClass('min-h-screen', 'bg-[#0f172a]', 'text-white')
+    expect(outerContainer).toHaveClass('min-h-screen', 'bg-gradient-to-br')
   })
 
-  it('should have dark background theme', () => {
+  it('should have min-h-screen container', () => {
     const { container } = render(<ProjectPageLayout {...defaultProps} />)
 
-    // AnimatedBackground component is rendered (implementation detail - component exists)
-    // Actual z-index positioning is handled by component internals
+    // Container spans full viewport height
     expect(container.querySelector('.min-h-screen')).toBeInTheDocument()
   })
 })
