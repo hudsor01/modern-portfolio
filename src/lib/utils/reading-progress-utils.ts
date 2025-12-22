@@ -8,10 +8,8 @@ import { createContextLogger } from '@/lib/monitoring/logger'
 
 const progressLogger = createContextLogger('ReadingProgress')
 
-// Extend Window interface to include custom scroll tracking property
-interface WindowWithScrollTracking extends Window {
-  _lastScrollTop?: number
-}
+// WeakMap to store last scroll position per container (avoids window object pollution)
+const lastScrollTopMap = new WeakMap<Element, number>()
 
 export interface ReadingProgressMetrics {
   scrollProgress: number
@@ -57,12 +55,11 @@ export function calculateScrollProgress(container?: Element | HTMLElement): Read
   const totalScrollable = scrollHeight - clientHeight
   const scrollProgress = Math.min(Math.max((scrollTop / totalScrollable) * 100, 0), 100)
 
-  // Determine scroll direction - use a more reliable method
+  // Determine scroll direction using WeakMap (no window pollution)
   if (typeof window !== 'undefined') {
-    const win = window as WindowWithScrollTracking
-    const lastScrollTop = win._lastScrollTop || 0
+    const lastScrollTop = lastScrollTopMap.get(scrollContainer) ?? 0
     const scrollDirection = scrollTop > lastScrollTop ? 'down' : 'up'
-    win._lastScrollTop = scrollTop
+    lastScrollTopMap.set(scrollContainer, scrollTop)
 
     // Calculate positions
     const isAtTop = scrollTop < 10
