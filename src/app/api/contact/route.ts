@@ -1,18 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { PrismaClient } from '@prisma/client'
+import { db } from '@/lib/db'
 import {
   checkEnhancedContactFormRateLimit
 } from '@/lib/security/enhanced-rate-limiter'
 import { escapeHtml } from '@/lib/security/html-escape'
 import { validateCSRFToken } from '@/lib/security/csrf-protection'
+import {
+  logRateLimitExceeded,
+  logCSRFFailure,
+} from '@/lib/security/security-event-logger'
 import { createContextLogger } from '@/lib/monitoring/logger'
 import {
   validateRequest,
   ValidationError,
   createApiError,
   createApiSuccess,
-} from '@/lib/api/validation'
+} from '@/lib/validations/unified-schemas'
 import {
   getClientIdentifier,
   getRequestMetadata,
@@ -46,15 +50,7 @@ function getResendClient(): Resend {
   return resend
 }
 
-// Initialize Prisma Client lazily
-let prisma: PrismaClient | null = null
-
-function getPrismaClient(): PrismaClient {
-  if (!prisma) {
-    prisma = new PrismaClient()
-  }
-  return prisma
-}
+// Using singleton Prisma client from @/lib/db
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now()
@@ -72,6 +68,13 @@ export async function POST(request: NextRequest) {
 
     if (!isCSRFValid) {
       logger.warn('CSRF validation failed for contact form', { clientId })
+
+      // Log security event (non-blocking)
+      void logCSRFFailure(clientId, '/api/contact', {
+        ipAddress: clientId,
+        userAgent: metadata.userAgent,
+      })
+
       const response = createApiError(
         'Security validation failed. Please refresh and try again.',
         'CSRF_VALIDATION_FAILED',
@@ -89,8 +92,16 @@ export async function POST(request: NextRequest) {
     })
 
     if (!rateLimitResult.allowed) {
+      // Log security event (non-blocking)
+      void logRateLimitExceeded(clientId, '/api/contact', {
+        ipAddress: clientId,
+        userAgent: metadata.userAgent,
+        retryAfter: rateLimitResult.retryAfter,
+        reason: rateLimitResult.reason,
+      })
+
       const response = createApiError(
-        rateLimitResult.reason === 'penalty_block' 
+        rateLimitResult.reason === 'penalty_block'
           ? 'Account temporarily blocked due to excessive attempts'
           : 'Too many contact form submissions. Please try again later.',
         'RATE_LIMIT_EXCEEDED',
@@ -121,7 +132,6 @@ export async function POST(request: NextRequest) {
     const { name, email, subject, message } = formData
 
     // Save to database first (fail fast on DB errors)
-    const db = getPrismaClient()
     submission = await db.contactSubmission.create({
       data: {
         name,
@@ -220,7 +230,6 @@ export async function POST(request: NextRequest) {
     // If submission was created but email failed, update the database with error
     if (!isValidationError && typeof submission !== 'undefined') {
       try {
-        const db = getPrismaClient()
         await db.contactSubmission.update({
           where: { id: submission.id },
           data: {

@@ -5,7 +5,14 @@
 
 import { NextRequest } from 'next/server'
 import { logger } from '@/lib/monitoring/logger'
-import type { RequestMetadata } from './validation'
+
+// Request metadata type
+export interface RequestMetadata {
+  userAgent?: string
+  ip?: string
+  path?: string
+  timestamp?: number
+}
 
 /**
  * Extract client identifier from request for rate limiting
@@ -138,7 +145,7 @@ export function logApiResponse(
     duration,
     ...additionalInfo,
   }
-  
+
   if (status >= 400) {
     logger.error('API response sent', new Error(`API error: ${status}`), logData)
   } else if (status >= 300) {
@@ -146,4 +153,63 @@ export function logApiResponse(
   } else {
     logger.info('API response sent', logData)
   }
+}
+
+/**
+ * Generic error messages for production
+ * Maps error types to user-friendly messages
+ */
+const PRODUCTION_ERROR_MESSAGES: Record<string, string> = {
+  VALIDATION_ERROR: 'Invalid request data',
+  DATABASE_ERROR: 'Service temporarily unavailable',
+  EMAIL_ERROR: 'Failed to send email. Please try again later.',
+  NETWORK_ERROR: 'Network error occurred',
+  AUTH_ERROR: 'Authentication failed',
+  DEFAULT: 'An unexpected error occurred',
+}
+
+/**
+ * Sanitize error message for client response
+ * In production, returns generic error to prevent information leakage
+ * In development, returns full error message for debugging
+ */
+export function sanitizeErrorForClient(
+  error: unknown,
+  errorType: keyof typeof PRODUCTION_ERROR_MESSAGES = 'DEFAULT'
+): string {
+  const isDev = process.env.NODE_ENV === 'development'
+  const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+
+  if (isDev) {
+    return errorMessage
+  }
+
+  // Log full error internally before sanitizing
+  logger.error('Sanitized error for client', new Error(errorMessage), { errorType })
+
+  return PRODUCTION_ERROR_MESSAGES[errorType] ?? PRODUCTION_ERROR_MESSAGES['DEFAULT'] as string
+}
+
+/**
+ * Log and sanitize error - combines logging with sanitization
+ * Returns sanitized message for client while logging full error internally
+ */
+export function logAndSanitizeError(
+  context: string,
+  error: unknown,
+  errorType: keyof typeof PRODUCTION_ERROR_MESSAGES = 'DEFAULT',
+  additionalInfo?: Record<string, unknown>
+): string {
+  const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+
+  // Always log full error internally
+  logger.error(context, new Error(errorMessage), additionalInfo)
+
+  // Return sanitized message for client
+  const isDev = process.env.NODE_ENV === 'development'
+  if (isDev) {
+    return errorMessage
+  }
+
+  return PRODUCTION_ERROR_MESSAGES[errorType] ?? PRODUCTION_ERROR_MESSAGES['DEFAULT'] as string
 }

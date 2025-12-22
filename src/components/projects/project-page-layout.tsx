@@ -1,7 +1,6 @@
 import { ReactNode } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, RefreshCcw } from 'lucide-react'
-import { AnimatedBackground } from './animated-background'
 
 interface ProjectPageLayoutProps {
   children: ReactNode
