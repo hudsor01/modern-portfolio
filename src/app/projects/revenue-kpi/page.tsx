@@ -1,14 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { ArrowLeft, RefreshCcw, TrendingUp, DollarSign, Users, Activity } from 'lucide-react'
+import { TrendingUp, DollarSign, Users, Activity } from 'lucide-react'
 
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { createContextLogger } from '@/lib/monitoring/logger'
-import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
+import { TIMING } from '@/lib/constants/spacing'
 import { yearOverYearGrowthExtended } from '@/app/projects/data/partner-analytics'
-import { AnimatedBackground } from '@/components/projects/animated-background'
+import { ProjectPageLayout } from '@/components/projects/project-page-layout'
+import { LoadingState } from '@/components/projects/loading-state'
 
 import { timeframes, type YearOverYearGrowth } from './data/constants'
 import { formatCurrency, calculateGrowth } from './utils'
@@ -23,7 +23,7 @@ export default function RevenueKPI() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), TIMING_CONSTANTS.LOADING_STATE_RESET)
+    const timer = setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
     return () => clearTimeout(timer)
   }, [])
 
@@ -47,6 +47,11 @@ export default function RevenueKPI() {
     prevYearData?.total_transactions
   )
 
+  const handleRefresh = () => {
+    setIsLoading(true)
+    setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
+  }
+
   return (
     <>
       <ProjectJsonLd
@@ -65,136 +70,78 @@ export default function RevenueKPI() {
           'TypeScript',
         ]}
       />
-      <div className="min-h-screen bg-[#0f172a] text-white">
-        <AnimatedBackground />
-
-        <div className="relative z-10 max-w-7xl mx-auto p-6">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-12">
-            <Link
-              href="/projects"
-              className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors duration-300"
-            >
-              <ArrowLeft className="h-5 w-5" />
-              <span className="text-sm font-medium">Back to Projects</span>
-            </Link>
-
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 glass rounded-2xl p-1">
-                {timeframes.map((timeframe) => (
-                  <button
-                    key={timeframe}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                      activeTimeframe === timeframe
-                        ? 'bg-primary text-foreground shadow-lg'
-                        : 'text-muted-foreground hover:text-white hover:bg-white/10'
-                    }`}
-                    onClick={() => setActiveTimeframe(timeframe)}
-                  >
-                    {timeframe}
-                  </button>
-                ))}
-              </div>
-              <button
-                onClick={() => {
-                  setIsLoading(true)
-                  setTimeout(() => setIsLoading(false), TIMING_CONSTANTS.LOADING_STATE_RESET)
-                }}
-                className="p-2 rounded-xl glass-interactive"
-              >
-                <RefreshCcw className="h-5 w-5 text-muted-foreground" />
-              </button>
+      <ProjectPageLayout
+        title="Revenue KPI Dashboard"
+        description="Real-time revenue analytics, partner performance metrics, and business intelligence for data-driven growth strategies."
+        tags={[
+          { label: `Revenue: $${formatCurrency(currentYearData.total_revenue)}`, color: 'bg-primary/20 text-primary' },
+          { label: `Partners: ${currentYearData.partner_count}`, color: 'bg-secondary/20 text-secondary' },
+          { label: `Growth: +${currentYearData.commission_growth_percentage.toFixed(1)}%`, color: 'bg-primary/20 text-primary' },
+          { label: 'Accuracy: 94%', color: 'bg-secondary/20 text-secondary' },
+        ]}
+        showTimeframes={true}
+        timeframes={timeframes}
+        activeTimeframe={activeTimeframe}
+        onTimeframeChange={setActiveTimeframe}
+        onRefresh={handleRefresh}
+        refreshButtonDisabled={isLoading}
+      >
+        {isLoading ? (
+          <LoadingState />
+        ) : (
+          <>
+            {/* KPI Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <MetricCard
+                icon={DollarSign}
+                label="Revenue"
+                value={formatCurrency(currentYearData.total_revenue)}
+                subtitle={`${revenueGrowth > 0 ? '+' : ''}${revenueGrowth.toFixed(1)}% vs last year`}
+                gradientFrom="from-blue-600"
+                gradientTo="to-cyan-600"
+                iconBgClass="bg-primary/20"
+                iconColorClass="text-primary"
+              />
+              <MetricCard
+                icon={Users}
+                label="Partners"
+                value={currentYearData.partner_count.toLocaleString()}
+                subtitle={`${partnerGrowth > 0 ? '+' : ''}${partnerGrowth.toFixed(1)}% growth`}
+                gradientFrom="from-blue-600"
+                gradientTo="to-cyan-600"
+                iconBgClass="bg-secondary/20"
+                iconColorClass="text-secondary"
+              />
+              <MetricCard
+                icon={Activity}
+                label="Volume"
+                value={currentYearData.total_transactions.toLocaleString()}
+                subtitle={`${transactionGrowth > 0 ? '+' : ''}${transactionGrowth.toFixed(1)}% transactions`}
+                gradientFrom="from-blue-600"
+                gradientTo="to-cyan-600"
+                iconBgClass="bg-primary/20"
+                iconColorClass="text-primary"
+              />
+              <MetricCard
+                icon={TrendingUp}
+                label="Growth"
+                value={`+${currentYearData.commission_growth_percentage.toFixed(1)}%`}
+                subtitle="Commission Growth"
+                gradientFrom="from-blue-600"
+                gradientTo="to-cyan-600"
+                iconBgClass="bg-secondary/20"
+                iconColorClass="text-secondary"
+              />
             </div>
-          </div>
 
-          {/* Title Section */}
-          <div className="mb-8 animate-fade-in-up">
-            <h1 className="text-xl md:typography-h1 text-xl bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent mb-3">
-              Revenue KPI Dashboard
-            </h1>
-            <p className="typography-lead max-w-3xl mb-4">
-              Real-time revenue analytics, partner performance metrics, and business intelligence
-              for data-driven growth strategies.
-            </p>
-            <div className="flex flex-wrap gap-3 text-sm">
-              <span className="bg-primary/20 text-primary px-3 py-1 rounded-full">
-                Revenue: ${formatCurrency(currentYearData.total_revenue)}
-              </span>
-              <span className="bg-secondary/20 text-secondary px-3 py-1 rounded-full">
-                Partners: {currentYearData.partner_count}
-              </span>
-              <span className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full">
-                Growth: +{currentYearData.commission_growth_percentage.toFixed(1)}%
-              </span>
-              <span className="bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full">
-                Accuracy: 94%
-              </span>
-            </div>
-          </div>
+            {/* Charts Grid */}
+            <ChartsGrid />
 
-          {/* Loading State */}
-          {isLoading ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="relative">
-                <div className="w-16 h-16 border-4 border-primary/20 rounded-full" />
-                <div className="absolute top-0 left-0 w-16 h-16 border-4 border-primary rounded-full animate-spin border-t-transparent" />
-              </div>
-            </div>
-          ) : (
-            <>
-              {/* KPI Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <MetricCard
-                  icon={DollarSign}
-                  label="Revenue"
-                  value={formatCurrency(currentYearData.total_revenue)}
-                  subtitle={`${revenueGrowth > 0 ? '+' : ''}${revenueGrowth.toFixed(1)}% vs last year`}
-                  gradientFrom="from-blue-600"
-                  gradientTo="to-cyan-600"
-                  iconBgClass="bg-primary/20"
-                  iconColorClass="text-primary"
-                />
-                <MetricCard
-                  icon={Users}
-                  label="Partners"
-                  value={currentYearData.partner_count.toLocaleString()}
-                  subtitle={`${partnerGrowth > 0 ? '+' : ''}${partnerGrowth.toFixed(1)}% growth`}
-                  gradientFrom="from-indigo-600"
-                  gradientTo="to-purple-600"
-                  iconBgClass="bg-secondary/20"
-                  iconColorClass="text-secondary"
-                />
-                <MetricCard
-                  icon={Activity}
-                  label="Volume"
-                  value={currentYearData.total_transactions.toLocaleString()}
-                  subtitle={`${transactionGrowth > 0 ? '+' : ''}${transactionGrowth.toFixed(1)}% transactions`}
-                  gradientFrom="from-purple-600"
-                  gradientTo="to-pink-600"
-                  iconBgClass="bg-purple-500/20"
-                  iconColorClass="text-purple-400"
-                />
-                <MetricCard
-                  icon={TrendingUp}
-                  label="Growth"
-                  value={`+${currentYearData.commission_growth_percentage.toFixed(1)}%`}
-                  subtitle="Commission Growth"
-                  gradientFrom="from-amber-600"
-                  gradientTo="to-orange-600"
-                  iconBgClass="bg-amber-500/20"
-                  iconColorClass="text-amber-400"
-                />
-              </div>
-
-              {/* Charts Grid */}
-              <ChartsGrid />
-
-              {/* Narrative Sections */}
-              <NarrativeSections totalRevenue={currentYearData.total_revenue} />
-            </>
-          )}
-        </div>
-      </div>
+            {/* Narrative Sections */}
+            <NarrativeSections totalRevenue={currentYearData.total_revenue} />
+          </>
+        )}
+      </ProjectPageLayout>
     </>
   )
 }

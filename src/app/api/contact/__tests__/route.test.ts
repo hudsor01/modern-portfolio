@@ -1,17 +1,33 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { NextRequest } from 'next/server'
-import { POST } from '@/app/api/contact/route'
 
-// Mock Resend with factory function
-vi.mock('resend', () => {
-  const mockSend = vi.fn()
-  return {
-    Resend: vi.fn(() => ({
-      emails: { send: mockSend }
-    })),
-    __mockSend: mockSend // Export so we can access it
+// Mock server-only module first (before any imports that use it)
+vi.mock('server-only', () => ({}))
+
+// Use vi.hoisted to ensure mocks are available when vi.mock runs
+const { mockCreate, mockUpdate, mockSend } = vi.hoisted(() => ({
+  mockCreate: vi.fn(),
+  mockUpdate: vi.fn(),
+  mockSend: vi.fn()
+}))
+
+// Mock db module directly (instead of PrismaClient)
+vi.mock('@/lib/db', () => ({
+  db: {
+    contactSubmission: {
+      create: mockCreate,
+      update: mockUpdate
+    }
   }
-})
+}))
+
+vi.mock('resend', () => ({
+  Resend: vi.fn(() => ({
+    emails: { send: mockSend }
+  }))
+}))
+
+import { POST } from '@/app/api/contact/route'
 
 // Mock NextResponse
 vi.mock('next/server', () => ({
@@ -62,17 +78,14 @@ const createMockRequest = (data: Record<string, unknown>) => ({
 } as unknown as NextRequest)
 
 describe('/api/contact - Fixed Tests', () => {
-  let mockSend: ReturnType<typeof vi.fn>
   let mockJson: ReturnType<typeof vi.fn>
 
   beforeEach(async () => {
     vi.clearAllMocks()
 
     // Get the mock functions
-    const ResendModule = await import('resend') as unknown as { __mockSend: ReturnType<typeof vi.fn> }
     const NextServerModule = await import('next/server')
 
-    mockSend = ResendModule.__mockSend
     mockJson = (NextServerModule.NextResponse as unknown as { json: ReturnType<typeof vi.fn> }).json
 
     process.env.RESEND_API_KEY = 'test-key'
@@ -83,11 +96,26 @@ describe('/api/contact - Fixed Tests', () => {
       json: () => Promise.resolve(data),
       status: options?.status || 200
     }))
+
+    // Setup default Prisma mocks
+    mockCreate.mockResolvedValue({
+      id: 'submission-123',
+      email: 'test@example.com',
+      name: 'John Doe',
+      subject: 'Test Subject',
+      message: 'Test message',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    })
+    mockUpdate.mockResolvedValue({
+      id: 'submission-123',
+      emailSent: true,
+      emailId: 'email-123'
+    })
   })
 
   afterEach(() => {
     vi.clearAllMocks()
-    vi.clearAllTimers()
     vi.restoreAllMocks()
   })
 
@@ -209,16 +237,39 @@ describe('/api/contact - Fixed Tests', () => {
       message: 'Test message that is long enough to pass validation'
     }
 
-    mockSend.mockResolvedValueOnce({ id: 'email-123' })
+    mockSend.mockResolvedValueOnce({ data: { id: 'email-123' } })
 
     await POST(createMockRequest(validData))
 
+    // Verify database save happened first
+    expect(mockCreate).toHaveBeenCalledWith({
+      data: {
+        name: 'John Doe',
+        email: 'john@example.com',
+        subject: 'Test Subject',
+        message: 'Test message that is long enough to pass validation',
+        ipAddress: expect.any(String),
+        userAgent: 'test-agent',
+        referer: null
+      }
+    })
+
+    // Verify email was sent
     expect(mockSend).toHaveBeenCalledWith({
       from: 'Portfolio Contact <hello@richardwhudsonjr.com>',
       to: 'test@example.com',
       subject: 'Test Subject - from John Doe',
       text: expect.stringContaining('John Doe'),
       html: expect.stringContaining('John Doe')
+    })
+
+    // Verify database was updated with email result
+    expect(mockUpdate).toHaveBeenCalledWith({
+      where: { id: 'submission-123' },
+      data: {
+        emailSent: true,
+        emailId: 'email-123'
+      }
     })
 
     expect(mockJson).toHaveBeenCalledWith(
@@ -230,8 +281,8 @@ describe('/api/contact - Fixed Tests', () => {
           resetTime: expect.any(Number)
         }
       },
-      { 
-        status: 200, 
+      {
+        status: 200,
         headers: expect.objectContaining({
           'Content-Type': 'application/json'
         })
@@ -239,7 +290,7 @@ describe('/api/contact - Fixed Tests', () => {
     )
   })
 
-  it('should handle email service errors', async () => {
+  it('should handle email service errors and save to database with error', async () => {
     const validData = {
       name: 'John Doe',
       email: 'john@example.com',
@@ -251,6 +302,18 @@ describe('/api/contact - Fixed Tests', () => {
 
     await POST(createMockRequest(validData))
 
+    // Verify database save happened
+    expect(mockCreate).toHaveBeenCalled()
+
+    // Verify database was updated with email error
+    expect(mockUpdate).toHaveBeenCalledWith({
+      where: { id: 'submission-123' },
+      data: {
+        emailSent: false,
+        emailError: 'Email service error'
+      }
+    })
+
     expect(mockJson).toHaveBeenCalledWith(
       {
         success: false,
@@ -259,5 +322,68 @@ describe('/api/contact - Fixed Tests', () => {
       },
       { status: 500 }
     )
+  })
+
+  it('should handle database creation failures', async () => {
+    const validData = {
+      name: 'John Doe',
+      email: 'john@example.com',
+      subject: 'Test Subject',
+      message: 'Test message that is long enough to pass validation'
+    }
+
+    mockCreate.mockRejectedValueOnce(new Error('Database connection failed'))
+
+    await POST(createMockRequest(validData))
+
+    // Verify email was NOT sent when DB fails
+    expect(mockSend).not.toHaveBeenCalled()
+
+    expect(mockJson).toHaveBeenCalledWith(
+      {
+        success: false,
+        message: 'Error processing form',
+        error: 'INTERNAL_ERROR'
+      },
+      { status: 500 }
+    )
+  })
+
+  it('should handle missing CONTACT_EMAIL environment variable', async () => {
+    const validData = {
+      name: 'John Doe',
+      email: 'john@example.com',
+      subject: 'Test Subject',
+      message: 'Test message that is long enough to pass validation'
+    }
+
+    // Remove CONTACT_EMAIL
+    delete process.env.CONTACT_EMAIL
+
+    await POST(createMockRequest(validData))
+
+    // Verify database save happened
+    expect(mockCreate).toHaveBeenCalled()
+
+    // Verify database was updated with error
+    expect(mockUpdate).toHaveBeenCalledWith({
+      where: { id: 'submission-123' },
+      data: {
+        emailSent: false,
+        emailError: 'CONTACT_EMAIL not configured'
+      }
+    })
+
+    expect(mockJson).toHaveBeenCalledWith(
+      {
+        success: false,
+        message: 'Email service misconfigured. Please try again later.',
+        error: 'SERVICE_ERROR'
+      },
+      { status: 500 }
+    )
+
+    // Restore for other tests
+    process.env.CONTACT_EMAIL = 'test@example.com'
   })
 })

@@ -54,12 +54,12 @@ async function setupStandardMocks(overrides?: {
 }) {
   const { db } = await import('@/lib/db')
 
-  vi.mocked(db.blogPost.count)
+  ;(db.blogPost.count as ReturnType<typeof vi.fn>)
     .mockResolvedValueOnce(overrides?.totalPosts ?? 10)
     .mockResolvedValueOnce(overrides?.publishedPosts ?? 8)
     .mockResolvedValueOnce(overrides?.draftPosts ?? 2)
 
-  vi.mocked(db.blogPost.aggregate).mockResolvedValueOnce({
+  ;(db.blogPost.aggregate as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
     _sum: {
       viewCount: overrides?.viewCount ?? 1500,
       likeCount: overrides?.likeCount ?? 100,
@@ -69,13 +69,13 @@ async function setupStandardMocks(overrides?: {
     _avg: { readingTime: overrides?.readingTime ?? 5 },
   } as never)
 
-  vi.mocked(db.blogPost.findMany)
+  ;(db.blogPost.findMany as ReturnType<typeof vi.fn>)
     .mockResolvedValueOnce((overrides?.topPosts ?? []) as never)
     .mockResolvedValueOnce((overrides?.keywords ?? []) as never)
 
-  vi.mocked(db.category.findMany).mockResolvedValueOnce((overrides?.topCategories ?? []) as never)
-  vi.mocked(db.tag.findMany).mockResolvedValueOnce((overrides?.topTags ?? []) as never)
-  vi.mocked(db.postView.groupBy).mockResolvedValueOnce((overrides?.monthlyViews ?? []) as never)
+  ;(db.category.findMany as ReturnType<typeof vi.fn>).mockResolvedValueOnce((overrides?.topCategories ?? []) as never)
+  ;(db.tag.findMany as ReturnType<typeof vi.fn>).mockResolvedValueOnce((overrides?.topTags ?? []) as never)
+  ;(db.postView.groupBy as ReturnType<typeof vi.fn>).mockResolvedValueOnce((overrides?.monthlyViews ?? []) as never)
 }
 
 describe('/api/blog/analytics', () => {
@@ -322,7 +322,7 @@ describe('/api/blog/analytics', () => {
 
     it('handles database errors gracefully', async () => {
       const { db } = await import('@/lib/db')
-      vi.mocked(db.blogPost.count).mockRejectedValueOnce(new Error('Database error'))
+      ;(db.blogPost.count as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('Database error'))
 
       const request = createMockRequest('http://localhost:3000/api/blog/analytics')
       const response = await GET(request)

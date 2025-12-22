@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-import { InteractionType } from '@prisma/client'
+import { db, InteractionType } from '@/lib/db'
 import { ApiResponse } from '@/types/shared-api'
 import { validateBlogInteraction, BlogInteractionInput, ValidationError } from '@/lib/validations/unified-schemas'
 import { createContextLogger } from '@/lib/monitoring/logger';
 import { validateCSRFToken } from '@/lib/security/csrf-protection';
 
 const logger = createContextLogger('InteractionsAPI');
-
-const prisma = new PrismaClient()
 
 // Using centralized validation schema from unified-schemas
 
@@ -58,7 +55,7 @@ export async function POST(
         return NextResponse.json(
           {
             success: false,
-            error: 'Invalid request data: ' + error.message,
+            error: 'Invalid request data',
             data: null as never
           },
           { status: 400 }
@@ -71,7 +68,7 @@ export async function POST(
     const postSlug = params.slug
 
     // Find the blog post by slug
-    const blogPost = await prisma.blogPost.findUnique({
+    const blogPost = await db.blogPost.findUnique({
       where: { slug: postSlug }
     })
 
@@ -96,7 +93,7 @@ export async function POST(
     // Validation is handled by validateBlogInteraction
 
     // Create the interaction
-    const interaction = await prisma.postInteraction.create({
+    const interaction = await db.postInteraction.create({
       data: {
         postId: blogPost.id,
         type: type as InteractionType,
@@ -123,14 +120,14 @@ export async function POST(
     }
 
     if (Object.keys(updateData).length > 0) {
-      await prisma.blogPost.update({
+      await db.blogPost.update({
         where: { id: blogPost.id },
         data: updateData
       })
     }
 
     // Get current post counts
-    const updatedPost = await prisma.blogPost.findUnique({
+    const updatedPost = await db.blogPost.findUnique({
       where: { id: blogPost.id },
       select: {
         likeCount: true,
@@ -140,7 +137,7 @@ export async function POST(
     })
 
     // Get additional interaction counts from PostInteraction table
-    const additionalCounts = await prisma.postInteraction.groupBy({
+    const additionalCounts = await db.postInteraction.groupBy({
       by: ['type'],
       where: {
         postId: blogPost.id,
@@ -196,7 +193,7 @@ export async function GET(
     const postSlug = params.slug
 
     // Find the blog post
-    const blogPost = await prisma.blogPost.findUnique({
+    const blogPost = await db.blogPost.findUnique({
       where: { slug: postSlug },
       select: {
         id: true,
@@ -218,7 +215,7 @@ export async function GET(
     }
 
     // Get additional interaction counts
-    const additionalCounts = await prisma.postInteraction.groupBy({
+    const additionalCounts = await db.postInteraction.groupBy({
       by: ['type'],
       where: {
         postId: blogPost.id,

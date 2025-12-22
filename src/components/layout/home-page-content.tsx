@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, Briefcase, FileText, MessageCircle, MapPin } from 'lucide-react'
+import { Navbar } from '@/components/layout/navbar'
 import { HomePageSchema } from '@/components/seo/home-page-schema'
 import { NumberTicker } from '@/components/ui/number-ticker'
 import { cn } from '@/lib/utils'
@@ -24,59 +25,105 @@ function MetricCard({ value, prefix = '', suffix = '', label, delay, accent = 'd
     default: 'text-slate-700 dark:text-slate-200',
   }
 
+  const borderStyles = {
+    revenue: 'hover:border-amber-500/50 hover:shadow-amber-500/20',
+    growth: 'hover:border-emerald-500/50 hover:shadow-emerald-500/20',
+    default: 'hover:border-slate-400/50 hover:shadow-slate-500/20',
+  }
+
   return (
-    <div className="p-3 rounded-lg bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 shadow-sm text-center">
-      <div className={cn('text-lg font-bold tabular-nums', accentStyles[accent])}>
+    <div className={cn(
+      'group relative p-4 rounded-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm',
+      'border border-slate-200/60 dark:border-slate-700/60',
+      'shadow-lg hover:shadow-xl',
+      borderStyles[accent],
+      'transition-all duration-300 hover:-translate-y-1 text-center'
+    )}>
+      <div className={cn('text-2xl font-bold tabular-nums mb-1', accentStyles[accent])}>
         {prefix}
         <NumberTicker value={value} delay={delay} decimalPlaces={decimalPlaces} />
         {suffix}
       </div>
-      <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">{label}</div>
+      <div className="text-xs text-slate-600 dark:text-slate-400 font-medium uppercase tracking-wide">{label}</div>
     </div>
   )
 }
 
 export default function HomePageContent() {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-      <HomePageSchema />
+    <>
+      <Navbar />
+      <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
+        <HomePageSchema />
 
-      {/* Background decorations */}
-      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-48 h-48 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-amber-500/10 dark:bg-amber-500/15 rounded-full blur-3xl" />
-      </div>
+        {/* Enhanced Background with Gradient Mesh */}
+        <div className="fixed inset-0 -z-20 bg-gradient-to-br from-slate-50 via-blue-50/30 to-emerald-50/40 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950/30" />
 
-      <div className="w-full max-w-lg mx-auto px-6 py-12">
+        {/* Animated Background Decorations */}
+        <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+          {/* Large ambient glow - top left */}
+          <div className="absolute -top-24 -left-24 w-96 h-96 bg-gradient-to-br from-emerald-400/20 via-teal-400/15 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
+
+          {/* Large ambient glow - bottom right */}
+          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-gradient-to-tl from-amber-400/20 via-orange-400/15 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
+
+          {/* Medium accent blob - center right */}
+          <div className="absolute top-1/3 -right-12 w-64 h-64 bg-gradient-to-l from-blue-400/15 via-cyan-400/10 to-transparent rounded-full blur-2xl" />
+
+          {/* Medium accent blob - center left */}
+          <div className="absolute bottom-1/3 -left-12 w-64 h-64 bg-gradient-to-r from-violet-400/15 via-purple-400/10 to-transparent rounded-full blur-2xl" />
+
+          {/* Small floating elements for depth */}
+          <div className="absolute top-1/4 right-1/3 w-32 h-32 bg-emerald-400/10 rounded-full blur-xl" />
+          <div className="absolute bottom-1/4 left-1/3 w-32 h-32 bg-amber-400/10 rounded-full blur-xl" />
+
+          {/* Subtle grid overlay for texture */}
+          <div
+            className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]"
+            style={{
+              backgroundImage: 'radial-gradient(circle at 1px 1px, rgb(0 0 0 / 0.5) 1px, transparent 0)',
+              backgroundSize: '40px 40px'
+            }}
+          />
+        </div>
+
+      <main id="main-content" className="w-full mx-auto px-6 py-12" style={{ maxWidth: '32rem' }}>
         {/* Hero Section */}
         <div className="text-center mb-10">
-          {/* Avatar */}
-          <div className="relative inline-block mb-6">
-            <div className="h-28 w-28 rounded-full overflow-hidden border-4 border-emerald-500/20 dark:border-emerald-400/30 shadow-lg">
+          {/* Avatar with Premium Glow */}
+          <div className="relative inline-block mb-8">
+            {/* Glow ring effect */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400/30 to-teal-400/30 blur-xl scale-110" />
+
+            <div className="relative h-32 w-32 rounded-full overflow-hidden border-4 border-white/80 dark:border-slate-800/80 shadow-2xl ring-2 ring-emerald-500/20 dark:ring-emerald-400/30">
               <Image
                 src="/images/richard.jpg"
                 alt="Richard Hudson"
-                width={112}
-                height={112}
+                width={128}
+                height={128}
                 className="object-cover w-full h-full"
                 priority
               />
             </div>
-            <div className="absolute bottom-1 right-1 h-5 w-5 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-900" />
+
+            {/* Online status indicator with pulse */}
+            <div className="absolute bottom-2 right-2 h-6 w-6 bg-emerald-500 rounded-full border-3 border-white dark:border-slate-900 shadow-lg">
+              <div className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-75" />
+            </div>
           </div>
 
-          {/* Name */}
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+          {/* Name - Enhanced Typography */}
+          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-3 tracking-tight">
             Richard Hudson
           </h1>
 
-          {/* Title */}
-          <h2 className="text-xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-500 dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent mb-6">
+          {/* Title - Enhanced Gradient */}
+          <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 dark:from-emerald-400 dark:via-teal-400 dark:to-cyan-400 bg-clip-text text-transparent mb-6 leading-tight">
             Revenue Operations Professional
           </h2>
 
           {/* Description */}
-          <p className="text-base text-slate-600 dark:text-slate-300 leading-relaxed mb-4 max-w-md mx-auto">
+          <p className="text-base text-slate-600 dark:text-slate-300 leading-relaxed mb-4 mx-auto" style={{ maxWidth: '28rem' }}>
             Delivering <span className="text-amber-600 dark:text-amber-400 font-semibold">measurable revenue impact</span> through strategic operational improvements and data-driven insights.
           </p>
 
@@ -88,7 +135,7 @@ export default function HomePageContent() {
         </div>
 
         {/* Metrics Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+        <div className="grid gap-3 mb-8" style={{ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
           <MetricCard 
             value={4.8} 
             prefix="$" 
@@ -120,37 +167,41 @@ export default function HomePageContent() {
           />
         </div>
 
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          {/* Primary CTA */}
+        {/* CTA Buttons - Premium Design */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          {/* Primary CTA - Premium Gradient */}
           <Link
             href="/projects"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-500 hover:to-teal-500 shadow-md hover:shadow-lg transition-all duration-300"
+            className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-base bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/40 hover:-translate-y-0.5 transition-all duration-300 overflow-hidden"
           >
-            <Briefcase size={18} />
-            <span>See My Work</span>
-            <ArrowRight size={16} />
+            {/* Shine effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
+
+            <Briefcase size={20} className="relative z-10" />
+            <span className="relative z-10">See My Work</span>
+            <ArrowRight size={18} className="relative z-10 group-hover:translate-x-1 transition-transform" />
           </Link>
 
-          {/* Secondary CTA */}
+          {/* Secondary CTA - Glass Effect */}
           <Link
             href="/resume"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-emerald-500/50 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-300"
+            className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-base bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm text-slate-700 dark:text-slate-300 border-2 border-slate-200/60 dark:border-slate-700/60 hover:border-emerald-500/50 hover:text-emerald-600 dark:hover:text-emerald-400 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
           >
-            <FileText size={18} />
+            <FileText size={20} />
             <span>Resume</span>
           </Link>
 
-          {/* Tertiary CTA */}
+          {/* Tertiary CTA - Subtle Hover */}
           <Link
             href="/contact"
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-all duration-300"
+            className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-base text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-white/60 dark:hover:bg-slate-800/60 backdrop-blur-sm border border-transparent hover:border-emerald-500/30 hover:-translate-y-0.5 transition-all duration-300"
           >
-            <MessageCircle size={18} />
+            <MessageCircle size={20} />
             <span>Contact</span>
           </Link>
         </div>
+      </main>
       </div>
-    </div>
+    </>
   )
 }

@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ArrowLeft, RefreshCcw, DollarSign, Clock, Target, BarChart3 } from 'lucide-react'
-import Link from 'next/link'
+import { DollarSign, Clock, Target, BarChart3 } from 'lucide-react'
 
-import { AnimatedBackground } from '@/components/projects/animated-background'
+import { ProjectPageLayout } from '@/components/projects/project-page-layout'
+import { LoadingState } from '@/components/projects/loading-state'
 import { getProject } from '@/lib/content/projects'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { createContextLogger } from '@/lib/monitoring/logger'
+import { TIMING } from '@/lib/constants/spacing'
 
 import {
   type FunnelStage,
@@ -39,7 +40,7 @@ export default function DealFunnel() {
         setLocalFunnelStages(initialFunnelStages)
         setLocalPartnerConversion(initialPartnerConversion)
         setLocalConversionRates(initialConversionRates)
-        setTimeout(() => setIsLoading(false), 800)
+        setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
       } catch (error) {
         logger.error('Error loading project data', error instanceof Error ? error : new Error(String(error)))
         setIsLoading(false)
@@ -47,6 +48,14 @@ export default function DealFunnel() {
     }
     loadProjectData()
   }, [])
+
+  const handleRefresh = () => {
+    setIsLoading(true)
+    setLocalFunnelStages(initialFunnelStages)
+    setLocalPartnerConversion(initialPartnerConversion)
+    setLocalConversionRates(initialConversionRates)
+    setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
+  }
 
   // Derived calculations
   const totalOpportunities = localFunnelStages?.[0]?.count ?? 0
@@ -78,80 +87,49 @@ export default function DealFunnel() {
         category="Sales Operations"
         tags={['Sales Funnel', 'Deal Pipeline', 'Conversion Analysis', 'Sales Operations']}
       />
-      <div className="min-h-screen bg-[#0f172a] text-white">
-        <AnimatedBackground
-          primaryColor="bg-purple-500"
-          tertiaryColor="bg-primary"
-        />
-
-        <div className="relative z-10 max-w-7xl mx-auto p-8">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-12">
-            <Link href="/projects" className="flex items-center gap-2 text-muted-foreground hover:text-white transition-colors duration-300">
-              <ArrowLeft className="h-5 w-5" />
-              <span className="text-sm font-medium">Back to Projects</span>
-            </Link>
-            <button
-              onClick={() => {
-                setIsLoading(true)
-                setTimeout(() => setIsLoading(false), 800)
-              }}
-              className="p-2 rounded-xl glass-interactive"
+      <ProjectPageLayout
+        title="Deal Pipeline Analytics"
+        description="Track deal progression through your sales funnel, identify bottlenecks, and optimize conversion rates at each stage."
+        tags={[
+          { label: `Conversion: ${overallConversionRate}%`, color: 'bg-primary/20 text-primary' },
+          { label: `Avg Deal: $${avgDealSize.toLocaleString()}`, color: 'bg-secondary/20 text-secondary' },
+          { label: `Sales Cycle: ${avgSalesCycle}d`, color: 'bg-primary/20 text-primary' },
+          { label: `Revenue: $${(totalRevenue / 1000000).toFixed(1)}M`, color: 'bg-secondary/20 text-secondary' },
+        ]}
+        onRefresh={handleRefresh}
+        refreshButtonDisabled={isLoading}
+      >
+        {isLoading ? (
+          <LoadingState />
+        ) : (
+          <>
+            {/* KPI Cards */}
+            <div
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
             >
-              <RefreshCcw className="h-5 w-5 text-muted-foreground" />
-            </button>
-          </div>
-
-          {/* Title Section */}
-          <div
-            className="mb-12"
-          >
-            <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent mb-4">
-              Deal Pipeline Analytics
-            </h1>
-            <p className="typography-lead max-w-3xl">
-              Track deal progression through your sales funnel, identify bottlenecks, and optimize conversion rates at each stage.
-            </p>
-          </div>
-
-          {/* Loading State */}
-          {isLoading ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="relative">
-                <div className="w-16 h-16 border-4 border-purple-500/20 rounded-full" />
-                <div className="absolute top-0 left-0 w-16 h-16 border-4 border-purple-500 rounded-full animate-spin border-t-transparent" />
-              </div>
+              <MetricCard icon={BarChart3} label="Pipeline" value={totalOpportunities.toLocaleString()} subtitle="Total Opportunities" gradientFrom="from-blue-600" gradientTo="to-cyan-600" iconBgClass="bg-primary/20" iconColorClass="text-primary" />
+              <MetricCard icon={Target} label="Won" value={closedDeals.toLocaleString()} subtitle="Closed Deals" gradientFrom="from-blue-600" gradientTo="to-cyan-600" iconBgClass="bg-secondary/20" iconColorClass="text-secondary" />
+              <MetricCard icon={DollarSign} label="Average" value={`$${(avgDealSize / 1000).toFixed(0)}K`} subtitle="Deal Size" gradientFrom="from-blue-600" gradientTo="to-cyan-600" iconBgClass="bg-primary/20" iconColorClass="text-primary" />
+              <MetricCard icon={Clock} label="Average" value={avgSalesCycle.toString()} subtitle="Days to Close" gradientFrom="from-blue-600" gradientTo="to-cyan-600" iconBgClass="bg-secondary/20" iconColorClass="text-secondary" />
             </div>
-          ) : (
-            <>
-              {/* KPI Cards */}
-              <div
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
-              >
-                <MetricCard icon={BarChart3} label="Pipeline" value={totalOpportunities.toLocaleString()} subtitle="Total Opportunities" gradientFrom="from-blue-600" gradientTo="to-indigo-600" iconBgClass="bg-primary/20" iconColorClass="text-primary" />
-                <MetricCard icon={Target} label="Won" value={closedDeals.toLocaleString()} subtitle="Closed Deals" gradientFrom="from-green-600" gradientTo="to-emerald-600" iconBgClass="bg-success/20" iconColorClass="text-success" />
-                <MetricCard icon={DollarSign} label="Average" value={`$${(avgDealSize / 1000).toFixed(0)}K`} subtitle="Deal Size" gradientFrom="from-purple-600" gradientTo="to-pink-600" iconBgClass="bg-purple-500/20" iconColorClass="text-purple-400" />
-                <MetricCard icon={Clock} label="Average" value={avgSalesCycle.toString()} subtitle="Days to Close" gradientFrom="from-amber-600" gradientTo="to-orange-600" iconBgClass="bg-amber-500/20" iconColorClass="text-amber-400" />
-              </div>
 
-              {/* Main Funnel Chart */}
-              <FunnelChart stages={localFunnelStages} overallConversionRate={overallConversionRate} />
+            {/* Main Funnel Chart */}
+            <FunnelChart stages={localFunnelStages} overallConversionRate={overallConversionRate} />
 
-              {/* Conversion Analytics */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <ConversionChart stageConversions={stageConversions} />
-                <VelocityChart partnerConversion={localPartnerConversion} />
-              </div>
+            {/* Conversion Analytics */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <ConversionChart stageConversions={stageConversions} />
+              <VelocityChart partnerConversion={localPartnerConversion} />
+            </div>
 
-              {/* Professional Narrative Sections */}
-              <NarrativeSections />
+            {/* Professional Narrative Sections */}
+            <NarrativeSections />
 
-              {/* Revenue Impact */}
-              <PipelineValue totalRevenue={totalRevenue} />
-            </>
-          )}
-        </div>
-      </div>
+            {/* Revenue Impact */}
+            <PipelineValue totalRevenue={totalRevenue} />
+          </>
+        )}
+      </ProjectPageLayout>
     </>
   )
 }

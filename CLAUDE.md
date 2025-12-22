@@ -259,4 +259,4 @@ Required variables:
 - **PDF Resume Viewer**: Iframe implementation with download functionality
 - **Blog System**: API integration with navigation
 - **Contact Form**: Real-time validation, progress tracking, visual subject selection
-- **Project Showcase**: Interactive data visualization projects with Recharts
+- **Project Showcase**: Interactive data visualization projects with RechartsUse 'bd' for task tracking
