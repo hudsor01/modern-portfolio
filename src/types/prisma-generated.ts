@@ -78,6 +78,41 @@ export enum ChangeFrequency {
   NEVER = 'NEVER',
 }
 
+export enum SubmissionStatus {
+  NEW = 'NEW',
+  READ = 'READ',
+  IN_PROGRESS = 'IN_PROGRESS',
+  RESPONDED = 'RESPONDED',
+  ARCHIVED = 'ARCHIVED',
+  SPAM = 'SPAM',
+}
+
+export enum SecurityEventType {
+  RATE_LIMIT_EXCEEDED = 'RATE_LIMIT_EXCEEDED',
+  CSRF_VALIDATION_FAILED = 'CSRF_VALIDATION_FAILED',
+  INVALID_INPUT = 'INVALID_INPUT',
+  SUSPICIOUS_ACTIVITY = 'SUSPICIOUS_ACTIVITY',
+  BOT_DETECTED = 'BOT_DETECTED',
+  BRUTE_FORCE_ATTEMPT = 'BRUTE_FORCE_ATTEMPT',
+  BLOCKED_REQUEST = 'BLOCKED_REQUEST',
+  AUTH_FAILURE = 'AUTH_FAILURE',
+  SQL_INJECTION_ATTEMPT = 'SQL_INJECTION_ATTEMPT',
+  XSS_ATTEMPT = 'XSS_ATTEMPT',
+  UNAUTHORIZED_ACCESS = 'UNAUTHORIZED_ACCESS',
+}
+
+export enum SecuritySeverity {
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+  CRITICAL = 'CRITICAL',
+}
+
+// ===== UTILITY TYPES =====
+
+/** JSON value type for Prisma */
+export type InputJsonValue = string | number | boolean | null | { [key: string]: InputJsonValue } | InputJsonValue[]
+
 // ===== MODEL TYPES =====
 
 export interface BlogPost {
@@ -135,7 +170,7 @@ export interface BlogPost {
 
   // SEO Analytics
   seoScore: number | null
-  seoAnalysis: unknown | null
+  seoAnalysis: InputJsonValue | null
   lastSeoCheck: Date | null
 }
 
@@ -307,7 +342,7 @@ export interface PostInteraction {
 
   // Interaction details
   value: string | null
-  metadata: unknown | null
+  metadata: InputJsonValue | null
 
   // Timestamps
   createdAt: Date
@@ -376,6 +411,87 @@ export interface SitemapEntry {
   updatedAt: Date
 }
 
+export interface Project {
+  id: string
+  slug: string
+  title: string
+  description: string
+  image: string
+  link: string | null
+  github: string | null
+  category: string
+  tags: string[]
+  featured: boolean
+
+  // Analytics
+  viewCount: number
+  clickCount: number
+
+  // Timestamps
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface ContactSubmission {
+  id: string
+  name: string
+  email: string
+  subject: string
+  message: string
+  company: string | null
+  phone: string | null
+  timeline: string | null
+  budget: string | null
+
+  // Metadata
+  status: SubmissionStatus
+  responded: boolean
+  respondedAt: Date | null
+  notes: string | null
+
+  // Security & Analytics
+  ipAddress: string | null
+  userAgent: string | null
+  referer: string | null
+
+  // Email tracking
+  emailSent: boolean
+  emailId: string | null
+  emailError: string | null
+
+  // Timestamps
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface SecurityEvent {
+  id: string
+  type: SecurityEventType
+  severity: SecuritySeverity
+
+  // Event details
+  message: string
+  details: InputJsonValue | null
+
+  // Context
+  ipAddress: string | null
+  userAgent: string | null
+  path: string | null
+  method: string | null
+
+  // User identification
+  clientId: string | null
+  sessionId: string | null
+
+  // Processing
+  acknowledged: boolean
+  acknowledgedAt: Date | null
+  acknowledgedBy: string | null
+
+  // Timestamps
+  createdAt: Date
+}
+
 // ===== PRISMA QUERY INPUT TYPES =====
 
 /** Filter conditions for BlogPost queries */
@@ -417,24 +533,97 @@ export interface PostViewWhereInput {
   viewedAt?: Date | { gte?: Date; lte?: Date }
 }
 
-/** JSON value type for Prisma */
-export type InputJsonValue = string | number | boolean | null | { [key: string]: InputJsonValue } | InputJsonValue[]
+// ===== PRISMA ARGUMENT TYPES =====
+
+/** Arguments for BlogPost.findMany */
+export interface BlogPostFindManyArgs {
+  where?: BlogPostWhereInput
+  orderBy?: BlogPostOrderByWithRelationInput | BlogPostOrderByWithRelationInput[]
+  skip?: number
+  take?: number
+  include?: { author?: boolean; category?: boolean; tags?: boolean | { include?: { tag?: boolean } } }
+  select?: Partial<Record<keyof BlogPost, boolean>>
+}
+
+/** Arguments for BlogPost.findUnique */
+export interface BlogPostFindUniqueArgs {
+  where: { id?: string; slug?: string }
+  include?: { author?: boolean; category?: boolean; tags?: boolean | { include?: { tag?: boolean } } }
+  select?: Partial<Record<keyof BlogPost, boolean>>
+}
+
+/** Arguments for BlogPost.create */
+export interface BlogPostCreateArgs {
+  data: Omit<BlogPost, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }
+  include?: { author?: boolean; category?: boolean; tags?: boolean }
+}
+
+/** Arguments for BlogPost.update */
+export interface BlogPostUpdateArgs {
+  where: { id?: string; slug?: string }
+  data: Partial<Omit<BlogPost, 'id' | 'createdAt' | 'updatedAt'>>
+  include?: { author?: boolean; category?: boolean; tags?: boolean }
+}
+
+/** Arguments for BlogPost.delete */
+export interface BlogPostDeleteArgs {
+  where: { id?: string; slug?: string }
+}
+
+/** Filter conditions for Tag queries */
+export interface TagWhereInput {
+  id?: string | { in?: string[] }
+  name?: string | { contains?: string; mode?: 'insensitive' | 'default' }
+  slug?: string
+}
+
+/** Arguments for Tag.upsert */
+export interface TagUpsertArgs {
+  where: { id?: string; slug?: string; name?: string }
+  create: Omit<Tag, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }
+  update: Partial<Omit<Tag, 'id' | 'createdAt' | 'updatedAt'>>
+}
+
+/** Arguments for Tag.findMany */
+export interface TagFindManyArgs {
+  where?: TagWhereInput
+  orderBy?: { name?: SortOrder; postCount?: SortOrder }
+  skip?: number
+  take?: number
+}
+
+/** Filter conditions for Category queries */
+export interface CategoryWhereInput {
+  id?: string | { in?: string[] }
+  name?: string | { contains?: string; mode?: 'insensitive' | 'default' }
+  slug?: string
+  parentId?: string | null
+}
+
+/** Arguments for Category.findMany */
+export interface CategoryFindManyArgs {
+  where?: CategoryWhereInput
+  orderBy?: { name?: SortOrder; postCount?: SortOrder }
+  skip?: number
+  take?: number
+  include?: { parent?: boolean; children?: boolean }
+}
 
 /** Transaction client interface */
 export interface TransactionClient {
   blogPost: {
-    findMany: (args: unknown) => Promise<BlogPost[]>
-    findUnique: (args: unknown) => Promise<BlogPost | null>
-    create: (args: unknown) => Promise<BlogPost>
-    update: (args: unknown) => Promise<BlogPost>
-    delete: (args: unknown) => Promise<BlogPost>
+    findMany: (args?: BlogPostFindManyArgs) => Promise<BlogPost[]>
+    findUnique: (args: BlogPostFindUniqueArgs) => Promise<BlogPost | null>
+    create: (args: BlogPostCreateArgs) => Promise<BlogPost>
+    update: (args: BlogPostUpdateArgs) => Promise<BlogPost>
+    delete: (args: BlogPostDeleteArgs) => Promise<BlogPost>
   }
   tag: {
-    upsert: (args: unknown) => Promise<Tag>
-    findMany: (args: unknown) => Promise<Tag[]>
+    upsert: (args: TagUpsertArgs) => Promise<Tag>
+    findMany: (args?: TagFindManyArgs) => Promise<Tag[]>
   }
   category: {
-    findMany: (args: unknown) => Promise<Category[]>
+    findMany: (args?: CategoryFindManyArgs) => Promise<Category[]>
   }
 }
 
