@@ -19,6 +19,12 @@ import type {
   PostStatus
 } from '@prisma/client'
 
+/** Type for PostView groupBy with country and _count */
+interface CountryGroupByResult {
+  country: string | null
+  _count: number
+}
+
 // =======================
 // ERROR TYPES & HANDLING
 // =======================
@@ -513,13 +519,10 @@ export class AnalyticsOperations {
         uniqueViews,
         averageReadingTime: avgReadingTime._avg.readingTime || 0,
         bounceRate,
-        topCountries: countryStats.map((stat: unknown) => {
-          const s = stat as Record<string, unknown>
-          return {
-            country: (s.country as string | null) || 'Unknown',
-            views: (s._count as Record<string, number>).country || 0
-          }
-        })
+        topCountries: (countryStats as CountryGroupByResult[]).map((stat) => ({
+          country: stat.country ?? 'Unknown',
+          views: stat._count
+        }))
       }
 
     } catch (error: unknown) {
