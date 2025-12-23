@@ -1,5 +1,5 @@
 /**
- * Next.js Middleware
+ * Next.js Proxy
  * Handles Content Security Policy (CSP) with nonces for inline scripts
  */
 
@@ -13,7 +13,7 @@ function generateNonce(): string {
   return Buffer.from(array).toString('base64')
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // Generate nonce for this request
   const nonce = generateNonce()
 
