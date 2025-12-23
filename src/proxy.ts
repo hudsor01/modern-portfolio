@@ -1,33 +1,19 @@
 /**
- * Next.js Middleware
- * Handles Content Security Policy (CSP) with nonces for inline scripts
+ * Next.js Proxy
+ * Handles Content Security Policy (CSP) headers
  */
 
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// Generate a random nonce for CSP
-function generateNonce(): string {
-  const array = new Uint8Array(16)
-  crypto.getRandomValues(array)
-  return Buffer.from(array).toString('base64')
-}
-
-export function middleware(request: NextRequest) {
-  // Generate nonce for this request
-  const nonce = generateNonce()
-
+export function proxy(request: NextRequest) {
   // Build CSP header
-  const cspHeader = buildCSP(nonce)
-
-  // Clone the request headers
-  const requestHeaders = new Headers(request.headers)
-  requestHeaders.set('x-nonce', nonce)
+  const cspHeader = buildCSP()
 
   // Create response
   const response = NextResponse.next({
     request: {
-      headers: requestHeaders,
+      headers: request.headers,
     },
   })
 
@@ -37,21 +23,31 @@ export function middleware(request: NextRequest) {
   return response
 }
 
-function buildCSP(nonce: string): string {
+function buildCSP(): string {
   const isDev = process.env.NODE_ENV === 'development'
 
   // Base CSP directives
+  // Note: Using 'unsafe-inline' for scripts because Next.js generates inline scripts
+  // that don't automatically receive nonce attributes. This is the pragmatic approach
+  // for Next.js apps. For stricter CSP, use Next.js experimental.contentSecurityPolicy.
   const directives: Record<string, string[]> = {
     'default-src': ["'self'"],
     'script-src': [
       "'self'",
-      `'nonce-${nonce}'`,
-      "'strict-dynamic'",
+      "'unsafe-inline'", // Required for Next.js inline scripts
       // Vercel Analytics and Speed Insights
       'https://va.vercel-scripts.com',
       'https://vercel.live',
+      'https://*.vercel-scripts.com',
       // Development only
-      ...(isDev ? ["'unsafe-eval'", "'unsafe-inline'"] : []),
+      ...(isDev ? ["'unsafe-eval'"] : []),
+    ],
+    'script-src-elem': [
+      "'self'",
+      "'unsafe-inline'",
+      'https://va.vercel-scripts.com',
+      'https://vercel.live',
+      'https://*.vercel-scripts.com',
     ],
     'style-src': [
       "'self'",
@@ -69,12 +65,14 @@ function buildCSP(nonce: string): string {
       'blob:',
       'https://images.unsplash.com',
       'https://*.vercel.com',
+      'https://*.githubusercontent.com',
     ],
     'connect-src': [
       "'self'",
       'https://va.vercel-scripts.com',
       'https://vercel.live',
       'https://vitals.vercel-insights.com',
+      'https://*.vercel-scripts.com',
       // API endpoints
       ...(isDev ? ['ws://localhost:*', 'http://localhost:*'] : []),
     ],
