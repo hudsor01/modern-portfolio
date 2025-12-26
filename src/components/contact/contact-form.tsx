@@ -14,7 +14,17 @@ import {
   EyeOff,
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { type UseContactFormReturn } from '@/hooks/use-contact-form'
 import { subjectOptions, budgetRanges, timelineOptions, iconMap } from './contact-constants'
 
@@ -40,6 +50,7 @@ export function ContactForm({ form }: ContactFormProps) {
     progress,
     isSubmitting,
     handleInputChange,
+    handleFieldChange,
     handleSubjectSelect,
     handleSubmit,
     setShowPrivacy,
@@ -133,27 +144,28 @@ export function ContactForm({ form }: ContactFormProps) {
 
         {/* Subject Selection */}
         <div>
-          <label className="block text-sm font-medium text-muted-foreground mb-3">
+          <Label className="block text-sm font-medium text-muted-foreground mb-3">
             What can I help you with? *
-          </label>
+          </Label>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {subjectOptions.map((option) => {
               const Icon = iconMap[option.icon as keyof typeof iconMap]
               const isSelected = formData.subject === option.value
               return (
-                <button
+                <Button
                   key={option.value}
                   type="button"
+                  variant="outline"
                   onClick={() => handleSubjectSelect(option.value)}
-                  className={`p-4 rounded-xl border text-center transition-all duration-200 ${
+                  className={`h-auto p-4 flex-col gap-2 ${
                     isSelected
                       ? 'border-primary bg-primary/10 text-primary'
                       : 'border-white/20 bg-white/5 text-muted-foreground hover:border-primary/50 hover:bg-white/10'
                   }`}
                 >
-                  <Icon className="w-6 h-6 mx-auto mb-2" />
-                  <div className="text-xs font-medium">{option.label}</div>
-                </button>
+                  <Icon className="w-6 h-6" />
+                  <span className="text-xs font-medium">{option.label}</span>
+                </Button>
               )
             })}
           </div>
@@ -163,49 +175,54 @@ export function ContactForm({ form }: ContactFormProps) {
         {/* Timeline & Budget Row */}
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-2">Project Timeline</label>
-            <select
-              name="timeline"
+            <Label className="block text-sm font-medium text-muted-foreground mb-2">Project Timeline</Label>
+            <Select
               value={formData.timeline}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-cyan-500 text-white"
+              onValueChange={(value) => handleFieldChange('timeline', value)}
             >
-              <option value="">Select timeline</option>
-              {timelineOptions.map(option => (
-                <option key={option.value} value={option.value}>{option.label}</option>
-              ))}
-            </select>
+              <SelectTrigger className="w-full bg-white/10 border-white/20 rounded-xl">
+                <SelectValue placeholder="Select timeline" />
+              </SelectTrigger>
+              <SelectContent>
+                {timelineOptions.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-2">Budget Range</label>
-            <select
-              name="budget"
+            <Label className="block text-sm font-medium text-muted-foreground mb-2">Budget Range</Label>
+            <Select
               value={formData.budget}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-cyan-500 text-white"
+              onValueChange={(value) => handleFieldChange('budget', value)}
             >
-              <option value="">Select budget</option>
-              {budgetRanges.map(option => (
-                <option key={option.value} value={option.value}>{option.label}</option>
-              ))}
-            </select>
+              <SelectTrigger className="w-full bg-white/10 border-white/20 rounded-xl">
+                <SelectValue placeholder="Select budget" />
+              </SelectTrigger>
+              <SelectContent>
+                {budgetRanges.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
         {/* Message */}
         <div className="relative">
-          <MessageSquare className="absolute left-3 top-3.5 w-5 h-5 text-muted-foreground" />
-          <textarea
+          <MessageSquare className="absolute left-3 top-3.5 w-5 h-5 text-muted-foreground z-10" />
+          <Textarea
             name="message"
             value={formData.message}
             onChange={handleInputChange}
             required
             rows={5}
-            className={`w-full pl-12 pr-4 py-3 bg-white/10 border rounded-xl focus:outline-hidden focus:ring-2 text-foreground placeholder-gray-400 resize-none transition-all ${
-              errors.message
-                ? 'border-destructive focus:ring-red-500'
-                : 'border-white/20 focus:ring-cyan-500'
-            }`}
+            aria-invalid={!!errors.message}
+            className="pl-12 pr-4 bg-white/10 border-white/20 rounded-xl resize-none"
             placeholder="Tell me about your project or requirements... *"
           />
           <div className="absolute bottom-3 right-3 typography-small text-muted-foreground">
@@ -222,21 +239,23 @@ export function ContactForm({ form }: ContactFormProps) {
             onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
           />
           <div className="text-sm">
-            <label htmlFor="privacy" className="text-muted-foreground cursor-pointer">
+            <Label htmlFor="privacy" className="text-muted-foreground cursor-pointer font-normal">
               I agree to the{' '}
-              <button
+              <Button
                 type="button"
+                variant="link"
+                size="sm"
                 onClick={() => setShowPrivacy(!showPrivacy)}
-                className="text-primary hover:text-primary/70 underline inline-flex items-center gap-1"
+                className="h-auto p-0 text-primary hover:text-primary/70 underline"
               >
                 privacy policy
-                {showPrivacy ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-              </button>
+                {showPrivacy ? <EyeOff className="w-3 h-3 ml-1" /> : <Eye className="w-3 h-3 ml-1" />}
+              </Button>
               {' '}and consent to processing my data for this inquiry. *
-            </label>
+            </Label>
             {showPrivacy && (
               <div className="mt-2 p-3 bg-white/5 rounded-xs typography-small text-muted-foreground border border-white/10">
-                Your information will be used solely to respond to your inquiry. We don't share personal data with third parties and you can request deletion at any time.
+                Your information will be used solely to respond to your inquiry. We don&apos;t share personal data with third parties and you can request deletion at any time.
               </div>
             )}
             {errors.terms && <div role="alert" className="text-destructive text-sm mt-1">{errors.terms}</div>}
@@ -244,10 +263,11 @@ export function ContactForm({ form }: ContactFormProps) {
         </div>
 
         {/* Submit Button */}
-        <button
+        <Button
           type="submit"
           disabled={isSubmitting || !agreedToTerms}
-          className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-foreground font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group"
+          size="lg"
+          className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-foreground font-semibold py-4 px-6 rounded-xl h-auto group"
         >
           {isSubmitting ? (
             <>
@@ -261,7 +281,7 @@ export function ContactForm({ form }: ContactFormProps) {
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </>
           )}
-        </button>
+        </Button>
 
         {/* Status Messages */}
         {submitStatus === 'success' && (

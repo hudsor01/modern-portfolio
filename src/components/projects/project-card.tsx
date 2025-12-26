@@ -6,6 +6,7 @@ import Image from 'next/image'
 import type { Project as ProjectType } from '@/types/project'
 import type { ShowcaseProject } from '@/data/projects'
 import { ArrowRight } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 type Project = ProjectType | ShowcaseProject
 
@@ -139,16 +140,18 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, pr
 
         {/* CTA Button - Premium Design */}
         <div className="relative z-10 flex justify-center">
-          <Link
-            href={`/projects/${isShowcaseProject(project) ? project.slug : project.slug || project.id}`}
-            className="group/btn relative inline-flex items-center justify-center gap-2 px-8 py-4 min-h-[52px] rounded-xl font-bold text-base bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-600 text-white shadow-lg shadow-cyan-500/25 hover:shadow-xl hover:shadow-cyan-500/40 hover:-translate-y-0.5 transition-all duration-300 overflow-hidden"
+          <Button
+            asChild
+            size="lg"
+            className="group/btn relative px-8 py-4 min-h-[52px] rounded-xl font-bold text-base bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-600 text-white shadow-lg shadow-cyan-500/25 hover:shadow-xl hover:shadow-cyan-500/40 hover:-translate-y-0.5 overflow-hidden h-auto"
           >
-            {/* Shine effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover/btn:translate-x-[200%] transition-transform duration-1000" />
-
-            <span className="relative z-10">{customCTA}</span>
-            <ArrowRight size={18} className="relative z-10 transition-transform duration-200 group-hover/btn:translate-x-1" />
-          </Link>
+            <Link href={`/projects/${isShowcaseProject(project) ? project.slug : project.slug || project.id}`}>
+              {/* Shine effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover/btn:translate-x-[200%] transition-transform duration-1000" />
+              <span className="relative z-10">{customCTA}</span>
+              <ArrowRight size={18} className="relative z-10 transition-transform duration-200 group-hover/btn:translate-x-1" />
+            </Link>
+          </Button>
         </div>
       </div>
     </div>

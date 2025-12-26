@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import type { NextLinkHref } from '@/types/next-types'
 import { getRouteKey } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 type NavItem = {
   label: string
@@ -63,22 +64,25 @@ export function Navbar() {
 
             {/* Mobile menu button */}
             <div className="md:hidden flex items-center">
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-3 rounded-lg text-muted-foreground hover:text-white hover:bg-white/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                className="min-w-[44px] min-h-[44px]"
+                aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
               >
                 {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-              </button>
+              </Button>
             </div>
 
             {/* Desktop CTA button */}
             <div className="hidden md:flex items-center w-32 justify-end">
-              <Link
-                href="/contact"
-                className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black text-base font-medium px-5 py-3 rounded-xl transition-all duration-300 border border-primary/20 shadow-lg shadow-cyan-500/25"
+              <Button
+                asChild
+                className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black text-base font-medium px-5 py-3 rounded-xl border border-primary/20 shadow-lg shadow-cyan-500/25 h-auto"
               >
-                Let's Talk
-              </Link>
+                <Link href="/contact">Let&apos;s Talk</Link>
+              </Button>
             </div>
           </div>
 
@@ -100,13 +104,14 @@ export function Navbar() {
                     {item.label}
                   </Link>
                 ))}
-                <Link
-                  href="/contact"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black text-base font-medium px-4 py-4 rounded-xl transition-all duration-300 border border-primary/20 shadow-lg shadow-cyan-500/25 min-h-[44px] flex items-center justify-center"
+                <Button
+                  asChild
+                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black text-base font-medium px-4 py-4 rounded-xl border border-primary/20 shadow-lg shadow-cyan-500/25 min-h-[44px] h-auto"
                 >
-                  Let's Talk
-                </Link>
+                  <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)}>
+                    Let&apos;s Talk
+                  </Link>
+                </Button>
               </div>
             </div>
           )}
