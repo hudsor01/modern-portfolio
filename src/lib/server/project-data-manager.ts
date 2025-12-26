@@ -10,7 +10,7 @@ import {
   sanitizeProjectForAPI,
   type ValidatedProject
 } from '@/lib/validations/project-schema'
-import type { STARData } from '@/components/projects/STARAreaChart'
+import type { STARData } from '@/components/projects/star-area-chart'
 import { createContextLogger } from '@/lib/monitoring/logger'
 import { LRUCache } from 'lru-cache'
 

@@ -41,6 +41,7 @@ export interface UseContactFormReturn {
 
   // Actions
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void
+  handleFieldChange: (name: keyof ContactFormData, value: string) => void
   handleSubjectSelect: (value: string) => void
   handleSubmit: (e: React.FormEvent) => Promise<void>
   setShowPrivacy: (show: boolean) => void
@@ -184,6 +185,23 @@ export function useContactForm(): UseContactFormReturn {
     setErrors((prev) => ({ ...prev, subject: '' }))
   }, [])
 
+  // Generic field change handler for Radix UI components (Select, etc.)
+  const handleFieldChange = useCallback(
+    (name: keyof ContactFormData, value: string) => {
+      setFormData((prev) => ({ ...prev, [name]: value }))
+
+      // Real-time validation
+      const error = validateField(name, value)
+      setErrors((prev) => ({ ...prev, [name]: error }))
+
+      // Clear submit status on new input
+      if (submitStatus !== 'idle') {
+        setSubmitStatus('idle')
+      }
+    },
+    [validateField, submitStatus]
+  )
+
   const resetForm = useCallback(() => {
     setFormData(initialFormData)
     setAgreedToTerms(false)
@@ -238,6 +256,7 @@ export function useContactForm(): UseContactFormReturn {
     progress,
     isSubmitting,
     handleInputChange,
+    handleFieldChange,
     handleSubjectSelect,
     handleSubmit,
     setShowPrivacy,

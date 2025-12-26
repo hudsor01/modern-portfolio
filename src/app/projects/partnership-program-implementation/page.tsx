@@ -7,7 +7,7 @@ import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
 import { TIMING } from '@/lib/constants/spacing'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
-import { STARAreaChart } from '@/components/projects/STARAreaChart'
+import { STARAreaChart } from '@/components/projects/star-area-chart'
 
 const starData = {
   situation: { phase: 'Situation', impact: 20, efficiency: 15, value: 10 },

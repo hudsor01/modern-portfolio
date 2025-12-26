@@ -12,7 +12,7 @@ import {
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
 import { TIMING } from '@/lib/constants/spacing'
-import { STARAreaChart } from '@/components/projects/STARAreaChart'
+import { STARAreaChart } from '@/components/projects/star-area-chart'
 
 
 const starData = {

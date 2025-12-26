@@ -7,9 +7,9 @@ import {
 } from 'lucide-react'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
-import { ContactForm } from '@/components/contact/ContactForm'
-import { ContactInfo } from '@/components/contact/ContactInfo'
-import { SuccessStories } from '@/components/contact/SuccessStories'
+import { ContactForm } from '@/components/contact/contact-form'
+import { ContactInfo } from '@/components/contact/contact-info'
+import { SuccessStories } from '@/components/contact/success-stories'
 import { useContactForm } from '@/hooks/use-contact-form'
 
 // ============================================================================

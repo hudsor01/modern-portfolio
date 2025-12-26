@@ -10,6 +10,7 @@ import {
   BarChart3,
   Brain,
 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 interface ProjectCTASectionProps {
   onContactClick?: () => void // Make optional since we're not using it
@@ -37,29 +38,35 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = () => {
 
           {/* Portfolio Navigation - Equal sized buttons */}
           <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12 max-w-2xl mx-auto">
-            <Link
-              href="/about"
-              className="relative inline-flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black typography-large px-8 py-4 rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105 transition-all duration-300 group border border-primary/20 flex-1 sm:min-w-[240px]"
+            <Button
+              asChild
+              size="lg"
+              className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black typography-large px-8 py-4 rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105 border border-primary/20 flex-1 sm:min-w-[240px] h-auto group"
             >
-              <FileText className="mr-3" size={20} />
-              About My Experience
-              <ArrowRight
-                size={20}
-                className="ml-3 transition-transform duration-300 group-hover:translate-x-1"
-              />
-            </Link>
+              <Link href="/about">
+                <FileText className="mr-3" size={20} />
+                About My Experience
+                <ArrowRight
+                  size={20}
+                  className="ml-3 transition-transform duration-300 group-hover:translate-x-1"
+                />
+              </Link>
+            </Button>
 
-            <Link
-              href="/blog"
-              className="relative inline-flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black typography-large px-8 py-4 rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105 transition-all duration-300 group border border-primary/20 flex-1 sm:min-w-[240px]"
+            <Button
+              asChild
+              size="lg"
+              className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black typography-large px-8 py-4 rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105 border border-primary/20 flex-1 sm:min-w-[240px] h-auto group"
             >
-              <Brain className="mr-3" size={20} />
-              Technical Insights
-              <ArrowRight
-                size={20}
-                className="ml-3 transition-transform duration-300 group-hover:translate-x-1"
-              />
-            </Link>
+              <Link href="/blog">
+                <Brain className="mr-3" size={20} />
+                Technical Insights
+                <ArrowRight
+                  size={20}
+                  className="ml-3 transition-transform duration-300 group-hover:translate-x-1"
+                />
+              </Link>
+            </Button>
           </div>
 
           {/* Portfolio Stats */}
