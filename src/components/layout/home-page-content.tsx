@@ -6,6 +6,7 @@ import { ArrowRight, Briefcase, FileText, MessageCircle, MapPin } from 'lucide-r
 import { Navbar } from '@/components/layout/navbar'
 import { HomePageSchema } from '@/components/seo/home-page-schema'
 import { NumberTicker } from '@/components/ui/number-ticker'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 interface MetricCardProps {
@@ -170,35 +171,45 @@ export default function HomePageContent() {
         {/* CTA Buttons - Premium Design */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           {/* Primary CTA - Premium Gradient */}
-          <Link
-            href="/projects"
-            className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-base bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/40 hover:-translate-y-0.5 transition-all duration-300 overflow-hidden"
+          <Button
+            asChild
+            size="lg"
+            className="group relative px-8 py-4 rounded-xl font-bold text-base bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/40 hover:-translate-y-0.5 overflow-hidden h-auto"
           >
-            {/* Shine effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
-
-            <Briefcase size={20} className="relative z-10" />
-            <span className="relative z-10">See My Work</span>
-            <ArrowRight size={18} className="relative z-10 group-hover:translate-x-1 transition-transform" />
-          </Link>
+            <Link href="/projects">
+              {/* Shine effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
+              <Briefcase size={20} className="relative z-10" />
+              <span className="relative z-10">See My Work</span>
+              <ArrowRight size={18} className="relative z-10 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </Button>
 
           {/* Secondary CTA - Glass Effect */}
-          <Link
-            href="/resume"
-            className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-base bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm text-slate-700 dark:text-slate-300 border-2 border-slate-200/60 dark:border-slate-700/60 hover:border-emerald-500/50 hover:text-emerald-600 dark:hover:text-emerald-400 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="group px-8 py-4 rounded-xl font-semibold text-base bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm text-slate-700 dark:text-slate-300 border-2 border-slate-200/60 dark:border-slate-700/60 hover:border-emerald-500/50 hover:text-emerald-600 dark:hover:text-emerald-400 shadow-md hover:shadow-lg hover:-translate-y-0.5 h-auto"
           >
-            <FileText size={20} />
-            <span>Resume</span>
-          </Link>
+            <Link href="/resume">
+              <FileText size={20} />
+              <span>Resume</span>
+            </Link>
+          </Button>
 
           {/* Tertiary CTA - Subtle Hover */}
-          <Link
-            href="/contact"
-            className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-base text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-white/60 dark:hover:bg-slate-800/60 backdrop-blur-sm border border-transparent hover:border-emerald-500/30 hover:-translate-y-0.5 transition-all duration-300"
+          <Button
+            asChild
+            variant="ghost"
+            size="lg"
+            className="group px-8 py-4 rounded-xl font-semibold text-base text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-white/60 dark:hover:bg-slate-800/60 backdrop-blur-sm border border-transparent hover:border-emerald-500/30 hover:-translate-y-0.5 h-auto"
           >
-            <MessageCircle size={20} />
-            <span>Contact</span>
-          </Link>
+            <Link href="/contact">
+              <MessageCircle size={20} />
+              <span>Contact</span>
+            </Link>
+          </Button>
         </div>
       </main>
       </div>

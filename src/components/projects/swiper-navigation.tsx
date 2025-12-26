@@ -3,6 +3,7 @@
 import { useSwiper } from 'swiper/react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 interface NavigationButtonProps {
   className?: string
@@ -14,35 +15,36 @@ interface PaginationProps {
   className?: string
 }
 
-const navigationButtonStyles =
-  'group hover:bg-primary/10 rounded-full p-2.5 shadow-xs transition-colors duration-300 hover:shadow'
-
 const iconStyles =
   'group-hover:text-primary h-5 w-5 transition-all duration-300 group-hover:scale-110'
 
 export function SwiperPrevButton({ className }: NavigationButtonProps) {
   const swiper = useSwiper()
   return (
-    <button
-      className={cn(navigationButtonStyles, className)}
+    <Button
+      variant="ghost"
+      size="icon"
+      className={cn('rounded-full shadow-xs hover:shadow group', className)}
       onClick={() => swiper.slidePrev()}
       aria-label="Previous slide"
     >
       <ChevronLeft className={iconStyles} />
-    </button>
+    </Button>
   )
 }
 
 export function SwiperNextButton({ className }: NavigationButtonProps) {
   const swiper = useSwiper()
   return (
-    <button
-      className={cn(navigationButtonStyles, className)}
+    <Button
+      variant="ghost"
+      size="icon"
+      className={cn('rounded-full shadow-xs hover:shadow group', className)}
       onClick={() => swiper.slideNext()}
       aria-label="Next slide"
     >
       <ChevronRight className={iconStyles} />
-    </button>
+    </Button>
   )
 }
 
