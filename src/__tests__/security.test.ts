@@ -10,7 +10,8 @@ vi.mock('server-only', () => ({}))
 
 import { db } from '@/lib/db'
 import { validateRequest, contactFormSchema } from '@/lib/validations/unified-schemas'
-import { sanitizeUserContent, escapeHtml } from '@/lib/security/sanitize'
+import { sanitizeUserContent } from '@/lib/security/sanitize'
+import { escapeHtml } from '@/lib/security/html-escape'
 import { rateLimiter } from '@/lib/security/rate-limiter'
 
 // Mock the database connection
@@ -39,8 +40,9 @@ describe('Security Tests', () => {
     it('should escape HTML entities properly', () => {
       const maliciousInput = '<script>alert("XSS")</script>'
       const escaped = escapeHtml(maliciousInput)
-      
-      expect(escaped).toBe('&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;')
+
+      // html-escape module also escapes / to &#x2F; for extra security
+      expect(escaped).toBe('&lt;script&gt;alert(&quot;XSS&quot;)&lt;&#x2F;script&gt;')
     })
 
     it('should handle malformed HTML tags', () => {
