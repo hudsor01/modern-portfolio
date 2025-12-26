@@ -1,7 +1,7 @@
 'use client'
 
 
-import { STARAreaChart } from '@/components/projects/STARAreaChart'
+import { STARAreaChart } from '@/components/projects/star-area-chart'
 import { starData, attributionMetrics, technologies } from '../data/constants'
 import { formatCurrency } from '../utils'
 

@@ -15,7 +15,7 @@ import {
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Project } from '@/types/project'
-import { STARAreaChart } from './STARAreaChart'
+import { STARAreaChart } from './star-area-chart'
 
 interface ProjectDetailClientBoundaryProps {
   slug: string
