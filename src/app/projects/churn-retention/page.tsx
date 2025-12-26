@@ -9,7 +9,7 @@ import { LoadingState } from '@/components/projects/loading-state'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { TIMING } from '@/lib/constants/spacing'
 import { staticChurnData } from '@/app/projects/data/partner-analytics'
-import { STARAreaChart } from '@/components/projects/STARAreaChart'
+import { STARAreaChart } from '@/components/projects/star-area-chart'
 
 import { MetricCard } from './components/MetricCard'
 import { NarrativeSection } from './components/NarrativeSection'
