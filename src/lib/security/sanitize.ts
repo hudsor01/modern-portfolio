@@ -246,37 +246,6 @@ export function sanitizeUrl(url: string): string {
 }
 
 /**
- * Escapes HTML entities for literal display.
- *
- * Use this function when you want to display HTML code as text,
- * not render it. Converts special characters to HTML entities.
- *
- * @param text - The text containing HTML to escape
- * @returns Text with HTML characters converted to entities
- *
- * @example
- * ```typescript
- * // Display code snippet literally
- * const codeDisplay = escapeHtml('<div class="foo">Hello</div>')
- * // Result: '&lt;div class="foo"&gt;Hello&lt;/div&gt;'
- *
- * // Show user what they typed
- * return <pre>{escapeHtml(userInput)}</pre>
- * ```
- *
- * @note This does NOT sanitize - it escapes for display.
- * Use sanitize functions when accepting HTML input.
- */
-export function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
-}
-
-/**
  * Applies pagination limits to prevent API abuse.
  *
  * @param requestedLimit - The limit requested by the client
