@@ -13,12 +13,16 @@ import { contactFormSchema } from '@/lib/validations/unified-schemas'
 export interface ContactFormData {
   name: string
   email: string
+  company: string
+  phone: string
   message: string
 }
 
 export interface ContactFormErrors {
   name?: string
   email?: string
+  company?: string
+  phone?: string
   message?: string
   terms?: string
 }
@@ -50,6 +54,8 @@ export interface UseContactFormReturn {
 const initialFormData: ContactFormData = {
   name: '',
   email: '',
+  company: '',
+  phone: '',
   message: '',
 }
 
@@ -68,11 +74,15 @@ export function useContactForm(): UseContactFormReturn {
   // Derived state: form completion progress
   const progress = useMemo(() => {
     let filled = 0
+    const total = 4 // Required fields: name, email, message, terms
     if (formData.name.length >= 2) filled++
     if (formData.email.includes('@')) filled++
     if (formData.message.length >= 10) filled++
     if (agreedToTerms) filled++
-    return Math.round((filled / 4) * 100)
+    // Bonus for optional fields (adds up to 10% extra)
+    if (formData.company) filled += 0.2
+    if (formData.phone) filled += 0.2
+    return Math.min(100, Math.round((filled / total) * 100))
   }, [formData, agreedToTerms])
 
   const isSubmitting = submitStatus === 'submitting'
@@ -86,6 +96,11 @@ export function useContactForm(): UseContactFormReturn {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         return !emailRegex.test(value) ? 'Please enter a valid email address' : ''
       }
+      case 'phone':
+        if (value && !/^[\d\s+()-]*$/.test(value)) {
+          return 'Please enter a valid phone number'
+        }
+        return ''
       case 'message':
         return value.length < 10 ? 'Message must be at least 10 characters' : ''
       default:
@@ -103,8 +118,8 @@ export function useContactForm(): UseContactFormReturn {
       result.error.issues.forEach((err) => {
         const field = err.path[0] as string
         // Only set errors for fields we display (not honeypot)
-        if (field === 'name' || field === 'email' || field === 'message') {
-          newErrors[field] = err.message
+        if (field === 'name' || field === 'email' || field === 'company' || field === 'phone' || field === 'message') {
+          newErrors[field as keyof ContactFormErrors] = err.message
         }
       })
     }

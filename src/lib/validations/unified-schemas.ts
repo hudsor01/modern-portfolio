@@ -110,6 +110,18 @@ export const contactFormSchema = z.object({
     .max(50, 'Name cannot exceed 50 characters')
     .trim(),
   email: emailSchema,
+  company: z
+    .string()
+    .max(100, 'Company name cannot exceed 100 characters')
+    .trim()
+    .optional()
+    .or(z.literal('')),
+  phone: z
+    .string()
+    .max(20, 'Phone number cannot exceed 20 characters')
+    .regex(/^[\d\s+()-]*$/, 'Please enter a valid phone number')
+    .optional()
+    .or(z.literal('')),
   message: z
     .string()
     .min(10, 'Message must be at least 10 characters long')

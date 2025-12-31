@@ -219,6 +219,8 @@ describe('/api/contact - Fixed Tests', () => {
       data: {
         name: 'John Doe',
         email: 'john@example.com',
+        company: null,
+        phone: null,
         subject: 'Contact Form Inquiry',
         message: 'Test message that is long enough to pass validation',
         ipAddress: expect.any(String),
