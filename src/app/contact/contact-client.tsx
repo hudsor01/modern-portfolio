@@ -9,7 +9,7 @@ import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { ContactForm } from '@/components/contact/ContactForm'
 import { ContactInfo } from '@/components/contact/ContactInfo'
-import { SuccessStories } from '@/components/contact/SuccessStories'
+import { FeaturedProjects } from '@/components/contact/FeaturedProjects'
 import { useContactForm } from '@/hooks/use-contact-form'
 
 // ============================================================================
@@ -55,10 +55,10 @@ export default function ContactPageClient() {
               {/* Contact Form */}
               <ContactForm form={form} />
 
-              {/* Contact Information & Social Proof */}
+              {/* Contact Information & Featured Work */}
               <div className="space-y-8">
                 <ContactInfo />
-                <SuccessStories />
+                <FeaturedProjects />
               </div>
             </div>
           </div>

@@ -3,7 +3,6 @@
 import {
   Mail,
   MapPin,
-  Clock,
   Linkedin,
   Github,
   ArrowRight,
@@ -16,12 +15,11 @@ import {
 // ============================================================================
 
 const contactInfo = {
-  email: 'contact@richardwhudsonjr.com',
+  email: 'hello@richardwhudsonjr.com',
   location: 'Dallas-Fort Worth Metroplex',
   linkedin: 'https://www.linkedin.com/in/hudsor01',
   github: 'https://github.com/hudsor01',
   response: '24 hours',
-  availability: 'Mon-Fri: 9:00 AM - 6:00 PM CT',
 }
 
 // ============================================================================
@@ -52,13 +50,6 @@ export function ContactInfo() {
             <div>
               <span className="text-foreground">{contactInfo.location}</span>
               <div className="typography-small text-muted-foreground">Open to remote & hybrid roles</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-4 p-3 bg-muted/30 rounded-xl">
-            <Clock className="w-6 h-6 text-success" />
-            <div>
-              <span className="text-foreground">{contactInfo.availability}</span>
-              <div className="typography-small text-muted-foreground">Response within {contactInfo.response}</div>
             </div>
           </div>
         </div>

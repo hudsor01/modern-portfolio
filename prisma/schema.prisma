@@ -575,12 +575,8 @@ model ContactSubmission {
   id              String          @id @default(cuid())
   name            String
   email           String
-  subject         String
+  subject         String?         // Optional - default to "Contact Form Inquiry"
   message         String          @db.Text
-  company         String?
-  phone           String?
-  timeline        String?
-  budget          String?
 
   // Metadata
   status          SubmissionStatus @default(NEW)

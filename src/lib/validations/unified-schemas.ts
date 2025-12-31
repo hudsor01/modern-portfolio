@@ -110,21 +110,11 @@ export const contactFormSchema = z.object({
     .max(50, 'Name cannot exceed 50 characters')
     .trim(),
   email: emailSchema,
-  subject: z
-    .string()
-    .min(5, 'Subject must be at least 5 characters long')
-    .max(100, 'Subject cannot exceed 100 characters')
-    .trim(),
   message: z
     .string()
     .min(10, 'Message must be at least 10 characters long')
     .max(1000, 'Message cannot exceed 1000 characters')
     .trim(),
-  company: z
-    .string()
-    .max(100, 'Company name cannot exceed 100 characters')
-    .optional(),
-  phone: phoneSchema,
   honeypot: z.string().optional(), // Bot detection field
 })
 

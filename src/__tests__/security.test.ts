@@ -88,7 +88,6 @@ describe('Security Tests', () => {
       const validData = {
         name: 'John Doe',
         email: 'john@example.com',
-        subject: 'Test Subject',
         message: 'This is a valid test message.',
       }
 
