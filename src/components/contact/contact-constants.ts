@@ -12,11 +12,11 @@ import {
 } from 'lucide-react'
 
 export const subjectOptions = [
-  { value: 'revenue-ops-consulting', label: 'Revenue Operations Consulting', icon: 'Briefcase' },
-  { value: 'job-opportunity', label: 'Job Opportunity', icon: 'User' },
+  { value: 'job-opportunity', label: 'Job Opportunity', icon: 'Briefcase' },
+  { value: 'networking', label: 'Networking / Connect', icon: 'User' },
   { value: 'project-collaboration', label: 'Project Collaboration', icon: 'MessageSquare' },
-  { value: 'partnership', label: 'Partnership Opportunity', icon: 'Building' },
-  { value: 'speaking', label: 'Speaking Engagement', icon: 'Calendar' },
+  { value: 'speaking', label: 'Speaking / Podcast', icon: 'Calendar' },
+  { value: 'mentorship', label: 'Mentorship', icon: 'Building' },
   { value: 'other', label: 'Other', icon: 'Mail' },
 ] as const
 

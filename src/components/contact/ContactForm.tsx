@@ -16,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { type UseContactFormReturn } from '@/hooks/use-contact-form'
-import { subjectOptions, budgetRanges, timelineOptions, iconMap } from './contact-constants'
+import { subjectOptions, iconMap } from './contact-constants'
 
 // ============================================================================
 // Props
@@ -134,7 +134,7 @@ export function ContactForm({ form }: ContactFormProps) {
         {/* Subject Selection */}
         <div>
           <label className="block text-sm font-medium text-muted-foreground mb-3">
-            What can I help you with? *
+            What would you like to discuss? *
           </label>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {subjectOptions.map((option) => {
@@ -148,7 +148,7 @@ export function ContactForm({ form }: ContactFormProps) {
                   className={`p-4 rounded-xl border text-center transition-all duration-200 ${
                     isSelected
                       ? 'border-primary bg-primary/10 text-primary'
-                      : 'border-white/20 bg-white/5 text-muted-foreground hover:border-primary/50 hover:bg-white/10'
+                      : 'border-border bg-card text-muted-foreground hover:border-primary/50 hover:bg-muted/50'
                   }`}
                 >
                   <Icon className="w-6 h-6 mx-auto mb-2" />
@@ -160,38 +160,6 @@ export function ContactForm({ form }: ContactFormProps) {
           {errors.subject && <span role="alert" className="text-destructive text-sm mt-1 block">{errors.subject}</span>}
         </div>
 
-        {/* Timeline & Budget Row */}
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-2">Project Timeline</label>
-            <select
-              name="timeline"
-              value={formData.timeline}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-cyan-500 text-white"
-            >
-              <option value="">Select timeline</option>
-              {timelineOptions.map(option => (
-                <option key={option.value} value={option.value}>{option.label}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-2">Budget Range</label>
-            <select
-              name="budget"
-              value={formData.budget}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-cyan-500 text-white"
-            >
-              <option value="">Select budget</option>
-              {budgetRanges.map(option => (
-                <option key={option.value} value={option.value}>{option.label}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
         {/* Message */}
         <div className="relative">
           <MessageSquare className="absolute left-3 top-3.5 w-5 h-5 text-muted-foreground" />
@@ -201,12 +169,12 @@ export function ContactForm({ form }: ContactFormProps) {
             onChange={handleInputChange}
             required
             rows={5}
-            className={`w-full pl-12 pr-4 py-3 bg-white/10 border rounded-xl focus:outline-hidden focus:ring-2 text-foreground placeholder-gray-400 resize-none transition-all ${
+            className={`w-full pl-12 pr-4 py-3 bg-card border rounded-xl focus:outline-hidden focus:ring-2 text-foreground placeholder-muted-foreground resize-none transition-all ${
               errors.message
-                ? 'border-destructive focus:ring-red-500'
-                : 'border-white/20 focus:ring-cyan-500'
+                ? 'border-destructive focus:ring-destructive'
+                : 'border-border focus:ring-primary'
             }`}
-            placeholder="Tell me about your project or requirements... *"
+            placeholder="Tell me about the opportunity or what you'd like to discuss... *"
           />
           <div className="absolute bottom-3 right-3 typography-small text-muted-foreground">
             {formData.message.length}/500
@@ -215,7 +183,7 @@ export function ContactForm({ form }: ContactFormProps) {
         </div>
 
         {/* Privacy Agreement */}
-        <div className="flex items-start gap-3 p-4 bg-white/5 rounded-xl border border-white/10">
+        <div className="flex items-start gap-3 p-4 bg-muted/30 rounded-xl border border-border">
           <Checkbox
             id="privacy"
             checked={agreedToTerms}
@@ -235,7 +203,7 @@ export function ContactForm({ form }: ContactFormProps) {
               {' '}and consent to processing my data for this inquiry. *
             </label>
             {showPrivacy && (
-              <div className="mt-2 p-3 bg-white/5 rounded-xs typography-small text-muted-foreground border border-white/10">
+              <div className="mt-2 p-3 bg-card rounded-lg typography-small text-muted-foreground border border-border">
                 Your information will be used solely to respond to your inquiry. We don't share personal data with third parties and you can request deletion at any time.
               </div>
             )}
@@ -247,7 +215,7 @@ export function ContactForm({ form }: ContactFormProps) {
         <button
           type="submit"
           disabled={isSubmitting || !agreedToTerms}
-          className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-foreground font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group"
+          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group shadow-sm hover:shadow-md"
         >
           {isSubmitting ? (
             <>
