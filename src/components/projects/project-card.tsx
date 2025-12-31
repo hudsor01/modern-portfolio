@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import type { Project as ProjectType } from '@/types/project'
 import type { ShowcaseProject } from '@/data/projects'
-import { ArrowUpRight, TrendingUp } from 'lucide-react'
+import { ArrowUpRight, Sparkles } from 'lucide-react'
 
 type Project = ProjectType | ShowcaseProject
 
@@ -32,6 +32,25 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, pr
     return null
   }, [project])
 
+  // Get category label - works for both Project and ShowcaseProject
+  const categoryLabel = useMemo(() => {
+    if (isShowcaseProject(project)) {
+      return project.client
+    }
+    return project.category || (project.tags && project.tags.length > 0 ? project.tags[0] : null)
+  }, [project])
+
+  // Get technologies - works for both types
+  const technologies = useMemo(() => {
+    if (isShowcaseProject(project)) {
+      return project.technologies
+    }
+    // Prefer technologies if it has items, otherwise fallback to tags
+    const techs = project.technologies
+    if (techs && techs.length > 0) return techs
+    return project.tags || []
+  }, [project])
+
   return (
     <div
       className="animate-fade-in-up"
@@ -39,10 +58,18 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, pr
     >
       <Link
         href={`/projects/${isShowcaseProject(project) ? project.slug : project.slug || project.id}`}
-        className="group block"
+        className="group block h-full"
       >
-        <article className="relative bg-card border border-border rounded-2xl overflow-hidden transition-all duration-500 ease-out hover:border-primary/30 hover:shadow-lg hover:-translate-y-1">
-          {/* Image Section - Premium aspect ratio */}
+        <article className="relative h-full bg-card border border-border rounded-2xl overflow-hidden shadow-sm transition-all duration-500 ease-out hover:border-primary/40 hover:shadow-lg hover:-translate-y-1.5">
+          {/* Featured Badge - Premium Design */}
+          {project.featured && (
+            <div className="absolute top-4 left-4 z-10 flex items-center gap-1.5 px-3 py-1.5 bg-accent text-accent-foreground text-xs font-semibold rounded-full shadow-md">
+              <Sparkles className="w-3 h-3" />
+              Featured
+            </div>
+          )}
+
+          {/* Image Section */}
           <div className="relative aspect-[16/10] overflow-hidden bg-muted">
             {projectImage && (
               <Image
@@ -58,81 +85,76 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, pr
               />
             )}
 
-            {/* Gradient overlay for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            {/* Subtle gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
             {/* Primary Metric Badge - Shows on hover */}
             {primaryMetric && (
-              <div className="absolute bottom-4 left-4 flex items-center gap-2 px-3 py-1.5 bg-card/95 backdrop-blur-sm border border-border rounded-full opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500">
-                <TrendingUp className="w-3.5 h-3.5 text-primary" />
-                <span className="font-mono text-sm font-medium text-foreground">{primaryMetric.value}</span>
+              <div className="absolute bottom-4 left-4 flex items-center gap-2 px-3 py-2 bg-card/95 backdrop-blur-sm border border-border rounded-xl shadow-md opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500">
+                <primaryMetric.icon className="w-4 h-4 text-secondary" />
+                <span className="font-mono text-sm font-semibold text-foreground">{primaryMetric.value}</span>
                 <span className="text-xs text-muted-foreground">{primaryMetric.label}</span>
               </div>
             )}
 
-            {/* Featured badge */}
-            {project.featured && (
-              <div className="absolute top-4 left-4 px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full shadow-sm">
-                Featured
-              </div>
-            )}
-
             {/* Arrow indicator */}
-            <div className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center bg-card/90 backdrop-blur-sm border border-border rounded-full opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-0 transition-all duration-500">
+            <div className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center bg-card/95 backdrop-blur-sm border border-border rounded-full shadow-sm opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-0 transition-all duration-500">
               <ArrowUpRight className="w-4 h-4 text-foreground transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </div>
           </div>
 
           {/* Content Section */}
-          <div className="p-6 lg:p-8">
-            {/* Category/Client */}
-            {isShowcaseProject(project) && (
-              <p className="text-xs font-medium tracking-wider uppercase text-primary mb-3">
-                {project.client}
-              </p>
+          <div className="p-6 lg:p-7 flex flex-col">
+            {/* Category Badge - Works for all projects */}
+            {categoryLabel && (
+              <div className="mb-3">
+                <span className="inline-flex items-center px-2.5 py-1 text-xs font-semibold tracking-wide uppercase text-primary bg-primary/8 border border-primary/15 rounded-md">
+                  {categoryLabel}
+                </span>
+              </div>
             )}
 
-            {/* Title */}
-            <h3 className="font-display text-xl lg:text-2xl font-semibold text-foreground mb-3 transition-colors duration-300 group-hover:text-primary">
+            {/* Title - Better contrast */}
+            <h3 className="font-display text-xl lg:text-2xl font-semibold text-foreground mb-3 leading-tight transition-colors duration-300 group-hover:text-primary">
               {project.title}
             </h3>
 
-            {/* Description */}
-            <p className="text-muted-foreground text-sm lg:text-base leading-relaxed line-clamp-2 mb-6">
+            {/* Description - Improved contrast */}
+            <p className="text-foreground/70 text-sm lg:text-base leading-relaxed line-clamp-2 mb-5">
               {project.description}
             </p>
 
-            {/* Metrics Grid */}
+            {/* Metrics Row - Only for ShowcaseProject */}
             {isShowcaseProject(project) && project.displayMetrics.length > 1 && (
-              <div className="flex flex-wrap gap-4 pt-5 border-t border-border">
+              <div className="flex flex-wrap gap-x-5 gap-y-3 py-4 border-t border-border mt-auto">
                 {project.displayMetrics.slice(0, 3).map((metric, i) => (
                   <div key={i} className="flex items-center gap-2">
-                    <div className="w-8 h-8 flex items-center justify-center bg-primary/5 border border-primary/10 rounded-lg">
-                      <metric.icon className="w-4 h-4 text-primary" />
+                    <div className="w-7 h-7 flex items-center justify-center bg-secondary/10 border border-secondary/20 rounded-lg">
+                      <metric.icon className="w-3.5 h-3.5 text-secondary" />
                     </div>
-                    <div>
-                      <div className="font-mono text-sm font-semibold text-foreground">{metric.value}</div>
-                      <div className="text-xs text-muted-foreground">{metric.label}</div>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="font-mono text-sm font-semibold text-foreground">{metric.value}</span>
+                      <span className="text-xs text-muted-foreground">{metric.label}</span>
                     </div>
                   </div>
                 ))}
               </div>
             )}
 
-            {/* Technologies */}
-            {isShowcaseProject(project) && project.technologies.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-5">
-                {project.technologies.slice(0, 4).map((tech, i) => (
+            {/* Technologies - Works for all projects */}
+            {technologies.length > 0 && (
+              <div className={`flex flex-wrap gap-2 ${isShowcaseProject(project) && project.displayMetrics.length > 1 ? 'mt-4 pt-4 border-t border-border' : 'mt-auto pt-4 border-t border-border'}`}>
+                {technologies.slice(0, 4).map((tech, i) => (
                   <span
                     key={i}
-                    className="px-2.5 py-1 text-xs font-medium text-muted-foreground bg-muted/50 border border-border rounded-md transition-colors duration-300 group-hover:border-primary/20 group-hover:text-foreground"
+                    className="px-2.5 py-1 text-xs font-medium text-foreground/80 bg-muted border border-border rounded-md transition-all duration-300 group-hover:border-primary/25 group-hover:bg-primary/5"
                   >
                     {tech}
                   </span>
                 ))}
-                {project.technologies.length > 4 && (
+                {technologies.length > 4 && (
                   <span className="px-2.5 py-1 text-xs font-medium text-muted-foreground">
-                    +{project.technologies.length - 4} more
+                    +{technologies.length - 4}
                   </span>
                 )}
               </div>
