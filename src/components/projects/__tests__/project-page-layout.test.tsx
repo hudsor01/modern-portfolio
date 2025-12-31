@@ -118,10 +118,10 @@ describe('ProjectPageLayout', () => {
     )
 
     const ytdButton = screen.getByText('YTD')
-    expect(ytdButton).toHaveClass('bg-gradient-to-r', 'text-white', 'shadow-md')
+    expect(ytdButton).toHaveClass('bg-primary', 'text-primary-foreground', 'shadow-sm')
 
     const allButton = screen.getByText('All')
-    expect(allButton).toHaveClass('text-slate-600')
+    expect(allButton).toHaveClass('text-muted-foreground')
   })
 
   it('should call onTimeframeChange when timeframe button is clicked', () => {
@@ -155,11 +155,11 @@ describe('ProjectPageLayout', () => {
     expect(screen.queryByText('YTD')).not.toBeInTheDocument()
   })
 
-  it('should use gradient styling for title', () => {
+  it('should use luxury minimalist styling for title', () => {
     render(<ProjectPageLayout {...defaultProps} />)
 
     const title = screen.getByText('Test Project')
-    expect(title).toHaveClass('bg-gradient-to-r', 'from-blue-600', 'via-cyan-600', 'to-indigo-600', 'bg-clip-text', 'text-transparent')
+    expect(title).toHaveClass('font-display', 'text-foreground')
   })
 
   it('should have max-w-7xl container', () => {
@@ -191,7 +191,7 @@ describe('ProjectPageLayout', () => {
     const { container } = render(<ProjectPageLayout {...defaultProps} />)
 
     const outerContainer = container.firstChild as HTMLElement
-    expect(outerContainer).toHaveClass('min-h-screen', 'bg-gradient-to-br')
+    expect(outerContainer).toHaveClass('min-h-screen', 'bg-background')
   })
 
   it('should have min-h-screen container', () => {
