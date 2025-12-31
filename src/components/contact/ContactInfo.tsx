@@ -38,26 +38,26 @@ export function ContactInfo() {
           Contact Information
         </h3>
         <div className="space-y-4">
-          <div className="flex items-center gap-4 p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors">
+          <div className="flex items-center gap-4 p-3 bg-muted/30 rounded-xl hover:bg-muted/50 transition-colors">
             <Mail className="w-6 h-6 text-primary" />
             <div>
-              <a href={`mailto:${contactInfo.email}`} className="text-muted-foreground hover:text-primary font-medium">
+              <a href={`mailto:${contactInfo.email}`} className="text-foreground hover:text-primary font-medium">
                 {contactInfo.email}
               </a>
               <div className="typography-small text-muted-foreground">Primary contact</div>
             </div>
           </div>
-          <div className="flex items-center gap-4 p-3 bg-white/5 rounded-xl">
+          <div className="flex items-center gap-4 p-3 bg-muted/30 rounded-xl">
             <MapPin className="w-6 h-6 text-primary" />
             <div>
-              <span className="typography-muted">{contactInfo.location}</span>
-              <div className="typography-small text-muted-foreground">Available for remote work</div>
+              <span className="text-foreground">{contactInfo.location}</span>
+              <div className="typography-small text-muted-foreground">Open to remote & hybrid roles</div>
             </div>
           </div>
-          <div className="flex items-center gap-4 p-3 bg-white/5 rounded-xl">
+          <div className="flex items-center gap-4 p-3 bg-muted/30 rounded-xl">
             <Clock className="w-6 h-6 text-success" />
             <div>
-              <span className="typography-muted">{contactInfo.availability}</span>
+              <span className="text-foreground">{contactInfo.availability}</span>
               <div className="typography-small text-muted-foreground">Response within {contactInfo.response}</div>
             </div>
           </div>
@@ -75,27 +75,27 @@ export function ContactInfo() {
             href={contactInfo.linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-4 p-4 bg-white/5 rounded-xl hover:bg-primary/10 hover:border-primary/30 border border-transparent transition-all duration-300 group"
+            className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl hover:bg-primary/10 hover:border-primary/30 border border-transparent transition-all duration-300 group"
           >
-            <Linkedin className="w-6 h-6 text-primary group-hover:text-primary" />
+            <Linkedin className="w-6 h-6 text-primary" />
             <div className="flex-1">
-              <span className="font-medium">LinkedIn</span>
+              <span className="font-medium text-foreground">LinkedIn</span>
               <div className="typography-small text-muted-foreground">Professional network</div>
             </div>
-            <ArrowRight className="w-4 h-4 ml-auto group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-4 h-4 ml-auto text-muted-foreground group-hover:translate-x-1 transition-transform" />
           </a>
           <a
             href={contactInfo.github}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-4 p-4 bg-white/5 rounded-xl hover:bg-purple-500/10 hover:border-purple-500/30 border border-transparent transition-all duration-300 group"
+            className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl hover:bg-secondary/10 hover:border-secondary/30 border border-transparent transition-all duration-300 group"
           >
-            <Github className="w-6 h-6 text-muted-foreground group-hover:text-purple-400" />
+            <Github className="w-6 h-6 text-foreground" />
             <div className="flex-1">
-              <span className="font-medium">GitHub</span>
+              <span className="font-medium text-foreground">GitHub</span>
               <div className="typography-small text-muted-foreground">Code repositories</div>
             </div>
-            <ArrowRight className="w-4 h-4 ml-auto group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-4 h-4 ml-auto text-muted-foreground group-hover:translate-x-1 transition-transform" />
           </a>
         </div>
       </div>

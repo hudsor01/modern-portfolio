@@ -31,7 +31,7 @@ export default function ContactPageClient() {
                 Let's Connect
               </h1>
               <p className="typography-lead max-w-3xl mx-auto mb-8">
-                Ready to optimize your revenue operations? Let's discuss how we can drive growth together.
+                Open to new opportunities in Revenue Operations. Whether you're a recruiter, hiring manager, or industry peer, I'd love to hear from you.
               </p>
 
               {/* Quick Stats */}
@@ -46,7 +46,7 @@ export default function ContactPageClient() {
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-primary" />
-                  <span>$4.8M+ Revenue Generated</span>
+                  <span>$4.8M+ Revenue Impact</span>
                 </div>
               </div>
             </div>
