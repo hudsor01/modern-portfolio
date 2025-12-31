@@ -234,7 +234,7 @@ describe('Security Tests', () => {
     it('should validate session management', () => {
       // Test session token format and strength
       const randomPart = Math.random().toString(36).substring(2, 15)
-      const sessionToken = 'Mock-Session-Token-' + randomPart + 'ABC'
+      const sessionToken = 'Mock-Session-Token-123-' + randomPart + 'ABC'
 
       // Verify token has sufficient entropy
       expect(sessionToken.length).toBeGreaterThan(20)
