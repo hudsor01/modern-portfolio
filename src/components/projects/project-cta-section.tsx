@@ -2,103 +2,103 @@
 
 import React from 'react'
 import Link from 'next/link'
-import {
-  ArrowRight,
-  Github,
-  FileText,
-  TrendingUp,
-  BarChart3,
-  Brain,
-} from 'lucide-react'
+import { ArrowRight, FileText, Lightbulb, MessageSquare } from 'lucide-react'
 
-interface ProjectCTASectionProps {
-  onContactClick?: () => void // Make optional since we're not using it
-}
-
-export const ProjectCTASection: React.FC<ProjectCTASectionProps> = () => {
+export const ProjectCTASection: React.FC = () => {
   return (
-    <div className="text-center space-y-8 max-w-6xl mx-auto mt-24 mb-16">
-      <div className="relative bg-gradient-to-br from-white/10 via-white/5 to-white/5 backdrop-blur-xl border border-white/20 rounded-xl p-8 md:p-12 shadow-2xl">
-        {/* Subtle background gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-blue-500/5 rounded-xl" />
+    <section className="mt-32 mb-16">
+      {/* Section Header */}
+      <div className="text-center mb-12">
+        <h2 className="font-display text-3xl lg:text-4xl font-semibold text-foreground mb-4">
+          Let&apos;s Work Together
+        </h2>
+        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          Ready to transform your revenue operations? Explore more about my work or get in touch to discuss your project.
+        </p>
+      </div>
 
-        <div className="relative z-10">
-          {/* Portfolio Header */}
-          <div className="flex items-center justify-center mb-8">
-            <h3 className="typography-h2 border-none pb-0 text-2xl md:text-2xl tracking-tight section-heading-gradient glow-blue">
-              Explore More of My Work
-            </h3>
+      {/* CTA Cards Grid */}
+      <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        {/* About Card */}
+        <Link
+          href="/about"
+          className="group relative p-8 bg-card border border-border rounded-2xl transition-all duration-400 ease-out hover:border-primary/30 hover:shadow-lg hover:-translate-y-1"
+        >
+          <div className="w-12 h-12 flex items-center justify-center bg-primary/5 border border-primary/10 rounded-xl mb-5 transition-colors duration-300 group-hover:bg-primary/10 group-hover:border-primary/20">
+            <FileText className="w-6 h-6 text-primary" />
           </div>
-
-          <p className="text-foreground text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-10 font-light">
-            Dive deeper into my Revenue Operations expertise, methodologies, and the 
-            transformative results achieved across various industries.
+          <h3 className="font-display text-xl font-semibold text-foreground mb-2 transition-colors duration-300 group-hover:text-primary">
+            About My Work
+          </h3>
+          <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+            Learn about my experience in revenue operations and data analytics.
           </p>
+          <span className="inline-flex items-center gap-2 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            Learn more
+            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+          </span>
+        </Link>
 
-          {/* Portfolio Navigation - Equal sized buttons */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12 max-w-2xl mx-auto">
-            <Link
-              href="/about"
-              className="relative inline-flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black typography-large px-8 py-4 rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105 transition-all duration-300 group border border-primary/20 flex-1 sm:min-w-[240px]"
-            >
-              <FileText className="mr-3" size={20} />
-              About My Experience
-              <ArrowRight
-                size={20}
-                className="ml-3 transition-transform duration-300 group-hover:translate-x-1"
-              />
-            </Link>
-
-            <Link
-              href="/blog"
-              className="relative inline-flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black typography-large px-8 py-4 rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105 transition-all duration-300 group border border-primary/20 flex-1 sm:min-w-[240px]"
-            >
-              <Brain className="mr-3" size={20} />
-              Technical Insights
-              <ArrowRight
-                size={20}
-                className="ml-3 transition-transform duration-300 group-hover:translate-x-1"
-              />
-            </Link>
+        {/* Blog Card */}
+        <Link
+          href="/blog"
+          className="group relative p-8 bg-card border border-border rounded-2xl transition-all duration-400 ease-out hover:border-primary/30 hover:shadow-lg hover:-translate-y-1"
+        >
+          <div className="w-12 h-12 flex items-center justify-center bg-primary/5 border border-primary/10 rounded-xl mb-5 transition-colors duration-300 group-hover:bg-primary/10 group-hover:border-primary/20">
+            <Lightbulb className="w-6 h-6 text-primary" />
           </div>
+          <h3 className="font-display text-xl font-semibold text-foreground mb-2 transition-colors duration-300 group-hover:text-primary">
+            Technical Insights
+          </h3>
+          <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+            Read about revenue operations strategies and best practices.
+          </p>
+          <span className="inline-flex items-center gap-2 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            Read blog
+            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+          </span>
+        </Link>
 
-          {/* Portfolio Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-white/20">
-            <div className="group text-center">
-              <div className="relative bg-white/10 backdrop-blur border border-white/20 rounded-xl p-6 mb-4 mx-auto w-fit hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <TrendingUp className="relative z-10 w-7 h-7 text-primary" />
-              </div>
-              <h4 className="font-bold text-foreground mb-2 text-xl">
-                $4.8M+ Generated
-              </h4>
-              <p className="text-muted-foreground text-base">Revenue impact delivered</p>
-            </div>
+        {/* Contact Card */}
+        <Link
+          href="/contact"
+          className="group relative p-8 bg-primary text-primary-foreground rounded-2xl transition-all duration-400 ease-out hover:shadow-lg hover:-translate-y-1"
+        >
+          <div className="w-12 h-12 flex items-center justify-center bg-primary-foreground/10 border border-primary-foreground/20 rounded-xl mb-5 transition-colors duration-300 group-hover:bg-primary-foreground/20">
+            <MessageSquare className="w-6 h-6 text-primary-foreground" />
+          </div>
+          <h3 className="font-display text-xl font-semibold mb-2">
+            Get in Touch
+          </h3>
+          <p className="text-primary-foreground/80 text-sm leading-relaxed mb-4">
+            Have a project in mind? Let&apos;s discuss how I can help.
+          </p>
+          <span className="inline-flex items-center gap-2 text-sm font-medium text-primary-foreground opacity-80 group-hover:opacity-100 transition-opacity duration-300">
+            Contact me
+            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+          </span>
+        </Link>
+      </div>
 
-            <div className="group text-center">
-              <div className="relative bg-white/10 backdrop-blur border border-white/20 rounded-xl p-6 mb-4 mx-auto w-fit hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <BarChart3 className="relative z-10 w-7 h-7 text-primary" />
-              </div>
-              <h4 className="font-bold text-foreground mb-2 text-xl">
-                432% Growth
-              </h4>
-              <p className="text-muted-foreground text-base">Average client improvement</p>
-            </div>
-
-            <div className="group text-center">
-              <div className="relative bg-white/10 backdrop-blur border border-white/20 rounded-xl p-6 mb-4 mx-auto w-fit hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <Github className="relative z-10 w-7 h-7 text-primary" />
-              </div>
-              <h4 className="font-bold text-foreground mb-2 text-xl">
-                11+ Projects
-              </h4>
-              <p className="text-muted-foreground text-base">Documented case studies</p>
-            </div>
+      {/* Bottom Stats Bar */}
+      <div className="mt-16 pt-12 border-t border-border">
+        <div className="flex flex-wrap justify-center gap-8 lg:gap-16 text-center">
+          <div>
+            <div className="font-mono text-3xl lg:text-4xl font-bold text-foreground mb-1">$4.8M+</div>
+            <div className="text-sm text-muted-foreground">Revenue Impact</div>
+          </div>
+          <div className="hidden sm:block w-px bg-border" />
+          <div>
+            <div className="font-mono text-3xl lg:text-4xl font-bold text-foreground mb-1">432%</div>
+            <div className="text-sm text-muted-foreground">Average Growth</div>
+          </div>
+          <div className="hidden sm:block w-px bg-border" />
+          <div>
+            <div className="font-mono text-3xl lg:text-4xl font-bold text-foreground mb-1">11+</div>
+            <div className="text-sm text-muted-foreground">Case Studies</div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
