@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Briefcase } from 'lucide-react'
 
 // ============================================================================
 // Static Data
@@ -35,14 +35,17 @@ const featuredProjects = [
 
 export function FeaturedProjects() {
   return (
-    <div className="space-y-4">
-      <h4 className="typography-large text-primary font-display">Featured Work</h4>
-      <div className="space-y-3">
+    <div className="glass rounded-2xl p-8">
+      <h3 className="typography-h4 mb-6 flex items-center gap-2">
+        <Briefcase className="w-5 h-5 text-primary" />
+        Featured Work
+      </h3>
+      <div className="space-y-4">
         {featuredProjects.map((project) => (
           <Link
             key={project.href}
             href={project.href}
-            className="flex items-center gap-4 p-3 bg-card rounded-xl border border-border hover:border-primary/30 hover:shadow-sm transition-all duration-300 group"
+            className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl hover:bg-primary/10 hover:border-primary/30 border border-transparent transition-all duration-300 group"
           >
             <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
               <Image
@@ -54,10 +57,10 @@ export function FeaturedProjects() {
               />
             </div>
             <div className="flex-1 min-w-0">
-              <h5 className="font-medium text-foreground text-sm truncate">{project.title}</h5>
-              <p className="typography-small text-muted-foreground truncate">{project.description}</p>
+              <span className="font-medium text-foreground">{project.title}</span>
+              <div className="typography-small text-muted-foreground truncate">{project.description}</div>
             </div>
-            <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" />
+            <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform shrink-0" />
           </Link>
         ))}
       </div>

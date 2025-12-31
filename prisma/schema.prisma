@@ -575,6 +575,8 @@ model ContactSubmission {
   id              String          @id @default(cuid())
   name            String
   email           String
+  company         String?         // Optional - company/organization name
+  phone           String?         // Optional - phone number
   subject         String?         // Optional - default to "Contact Form Inquiry"
   message         String          @db.Text
 

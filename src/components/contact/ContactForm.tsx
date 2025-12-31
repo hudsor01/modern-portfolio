@@ -10,6 +10,8 @@ import {
   MessageSquare,
   Eye,
   EyeOff,
+  Building2,
+  Phone,
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -79,6 +81,40 @@ export function ContactForm({ form }: ContactFormProps) {
               className="pl-12"
             />
             {errors.email && <span role="alert" className="text-destructive text-sm mt-1 block">{errors.email}</span>}
+          </div>
+        </div>
+
+        {/* Company & Phone Row */}
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="relative">
+            <div className="absolute left-3 top-3.5 text-muted-foreground">
+              <Building2 className="w-5 h-5" />
+            </div>
+            <Input
+              name="company"
+              type="text"
+              value={formData.company}
+              onChange={handleInputChange}
+              placeholder="Company / Organization"
+              aria-invalid={!!errors.company}
+              className="pl-12"
+            />
+            {errors.company && <span role="alert" className="text-destructive text-sm mt-1 block">{errors.company}</span>}
+          </div>
+          <div className="relative">
+            <div className="absolute left-3 top-3.5 text-muted-foreground">
+              <Phone className="w-5 h-5" />
+            </div>
+            <Input
+              name="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={handleInputChange}
+              placeholder="Phone number"
+              aria-invalid={!!errors.phone}
+              className="pl-12"
+            />
+            {errors.phone && <span role="alert" className="text-destructive text-sm mt-1 block">{errors.phone}</span>}
           </div>
         </div>
 
