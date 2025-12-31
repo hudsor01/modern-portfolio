@@ -8,7 +8,7 @@ import { LoadingState } from '@/components/projects/loading-state'
 import { TIMING } from '@/lib/constants/spacing'
 import { cacMetrics } from './data/constants'
 import { formatCurrency } from './utils'
-import { MetricCard } from './components/MetricCard'
+import { MetricCard } from '@/components/projects/shared'
 import { OverviewTab } from './components/OverviewTab'
 import { ChannelsTab } from './components/ChannelsTab'
 import { ProductsTab } from './components/ProductsTab'
@@ -60,10 +60,7 @@ export default function CACUnitEconomics() {
               label="Blended CAC"
               value={formatCurrency(cacMetrics.blendedCAC)}
               subtitle="Cost to Acquire"
-              gradientFrom="from-blue-600"
-              gradientTo="to-cyan-600"
-              iconBgClass="bg-primary/20"
-              iconColorClass="text-primary"
+              variant="primary"
 
             />
             <MetricCard
@@ -71,10 +68,7 @@ export default function CACUnitEconomics() {
               label="Lifetime Value"
               value={formatCurrency(cacMetrics.averageLTV)}
               subtitle="Average LTV"
-              gradientFrom="from-blue-600"
-              gradientTo="to-cyan-600"
-              iconBgClass="bg-primary/20"
-              iconColorClass="text-primary"
+              variant="primary"
 
             />
             <MetricCard
@@ -82,10 +76,7 @@ export default function CACUnitEconomics() {
               label="LTV:CAC"
               value={`${cacMetrics.ltv_cac_ratio.toFixed(1)}:1`}
               subtitle="Efficiency Ratio"
-              gradientFrom="from-blue-600"
-              gradientTo="to-cyan-600"
-              iconBgClass="bg-secondary/20"
-              iconColorClass="text-secondary"
+              variant="secondary"
 
             />
             <MetricCard
@@ -93,10 +84,7 @@ export default function CACUnitEconomics() {
               label="Payback"
               value={`${cacMetrics.paybackPeriod} mo`}
               subtitle="Payback Period"
-              gradientFrom="from-blue-600"
-              gradientTo="to-cyan-600"
-              iconBgClass="bg-primary/20"
-              iconColorClass="text-primary"
+              variant="primary"
 
             />
           </div>

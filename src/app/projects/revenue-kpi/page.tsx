@@ -12,7 +12,7 @@ import { LoadingState } from '@/components/projects/loading-state'
 
 import { timeframes, type YearOverYearGrowth } from './data/constants'
 import { formatCurrency, calculateGrowth } from './utils'
-import { MetricCard } from './components/MetricCard'
+import { MetricCard } from '@/components/projects/shared'
 import { ChartsGrid } from './components/ChartsGrid'
 import { NarrativeSections } from './components/NarrativeSections'
 
@@ -97,40 +97,32 @@ export default function RevenueKPI() {
                 label="Revenue"
                 value={formatCurrency(currentYearData.total_revenue)}
                 subtitle={`${revenueGrowth > 0 ? '+' : ''}${revenueGrowth.toFixed(1)}% vs last year`}
-                gradientFrom="from-blue-600"
-                gradientTo="to-cyan-600"
-                iconBgClass="bg-primary/20"
-                iconColorClass="text-primary"
+                variant="primary"
+                animationDelay={0}
               />
               <MetricCard
                 icon={Users}
                 label="Partners"
                 value={currentYearData.partner_count.toLocaleString()}
                 subtitle={`${partnerGrowth > 0 ? '+' : ''}${partnerGrowth.toFixed(1)}% growth`}
-                gradientFrom="from-blue-600"
-                gradientTo="to-cyan-600"
-                iconBgClass="bg-secondary/20"
-                iconColorClass="text-secondary"
+                variant="secondary"
+                animationDelay={50}
               />
               <MetricCard
                 icon={Activity}
                 label="Volume"
                 value={currentYearData.total_transactions.toLocaleString()}
                 subtitle={`${transactionGrowth > 0 ? '+' : ''}${transactionGrowth.toFixed(1)}% transactions`}
-                gradientFrom="from-blue-600"
-                gradientTo="to-cyan-600"
-                iconBgClass="bg-primary/20"
-                iconColorClass="text-primary"
+                variant="primary"
+                animationDelay={100}
               />
               <MetricCard
                 icon={TrendingUp}
                 label="Growth"
                 value={`+${currentYearData.commission_growth_percentage.toFixed(1)}%`}
                 subtitle="Commission Growth"
-                gradientFrom="from-blue-600"
-                gradientTo="to-cyan-600"
-                iconBgClass="bg-secondary/20"
-                iconColorClass="text-secondary"
+                variant="secondary"
+                animationDelay={150}
               />
             </div>
 

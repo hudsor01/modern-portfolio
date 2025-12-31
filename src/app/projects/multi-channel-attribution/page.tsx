@@ -8,7 +8,7 @@ import { LoadingState } from '@/components/projects/loading-state'
 import { TIMING } from '@/lib/constants/spacing'
 import { attributionMetrics } from './data/constants'
 import { formatCurrency, formatPercent } from './utils'
-import { MetricCard } from './components/MetricCard'
+import { MetricCard } from '@/components/projects/shared'
 import { OverviewTab } from './components/OverviewTab'
 import { ModelsTab } from './components/ModelsTab'
 import { JourneysTab } from './components/JourneysTab'
@@ -66,10 +66,7 @@ export default function MultiChannelAttribution() {
                   +{formatPercent(attributionMetrics.conversionLift)} lift
                 </p>
               }
-              gradientFrom="from-blue-600"
-              gradientTo="to-cyan-600"
-              iconBgClass="bg-primary/20"
-              iconColorClass="text-primary"
+              variant="primary"
 
             />
             <MetricCard
@@ -77,10 +74,7 @@ export default function MultiChannelAttribution() {
               label="Accuracy"
               value={formatPercent(attributionMetrics.attributionAccuracy)}
               subtitle="ML Model Performance"
-              gradientFrom="from-blue-600"
-              gradientTo="to-cyan-600"
-              iconBgClass="bg-secondary/20"
-              iconColorClass="text-secondary"
+              variant="secondary"
 
             />
             <MetricCard
@@ -88,10 +82,7 @@ export default function MultiChannelAttribution() {
               label="Channels"
               value={attributionMetrics.totalChannels.toString()}
               subtitle={`${attributionMetrics.avgTouchpoints.toFixed(1)} avg touchpoints`}
-              gradientFrom="from-blue-600"
-              gradientTo="to-cyan-600"
-              iconBgClass="bg-primary/20"
-              iconColorClass="text-primary"
+              variant="primary"
 
             />
             <MetricCard
@@ -99,10 +90,7 @@ export default function MultiChannelAttribution() {
               label="ROI Impact"
               value={formatCurrency(attributionMetrics.totalROI)}
               subtitle="Optimization Value"
-              gradientFrom="from-blue-600"
-              gradientTo="to-cyan-600"
-              iconBgClass="bg-secondary/20"
-              iconColorClass="text-secondary"
+              variant="secondary"
 
             />
           </div>

@@ -10,7 +10,7 @@ import { TIMING } from '@/lib/constants/spacing'
 import { leadAttributionData } from '@/app/projects/data/partner-analytics'
 
 import { leadConversionData, monthlyTrendData } from './data/constants'
-import { MetricCard } from './components/MetricCard'
+import { MetricCard } from '@/components/projects/shared'
 import { ChartsSection } from './components/ChartsSection'
 import { TrendsChart } from './components/TrendsChart'
 import { InsightsSection } from './components/InsightsSection'
@@ -81,10 +81,10 @@ export default function LeadAttribution() {
             <div
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
             >
-              <MetricCard icon={Users} label="Total" value={totalLeads.toLocaleString()} subtitle="Leads Generated" gradientFrom="from-blue-600" gradientTo="to-cyan-600" iconBgClass="bg-primary/20" iconColorClass="text-primary" />
-              <MetricCard icon={Target} label="Success" value={totalConversions.toLocaleString()} subtitle="Total Conversions" gradientFrom="from-blue-600" gradientTo="to-cyan-600" iconBgClass="bg-secondary/20" iconColorClass="text-secondary" />
-              <MetricCard icon={Zap} label="Overall" value={`${overallConversionRate.toFixed(1)}%`} subtitle="Conversion Rate" gradientFrom="from-blue-600" gradientTo="to-cyan-600" iconBgClass="bg-primary/20" iconColorClass="text-primary" />
-              <MetricCard icon={TrendingUp} label="MoM" value={`+${monthlyGrowth}%`} subtitle="Monthly Growth" gradientFrom="from-blue-600" gradientTo="to-cyan-600" iconBgClass="bg-secondary/20" iconColorClass="text-secondary" />
+              <MetricCard icon={Users} label="Total" value={totalLeads.toLocaleString()} subtitle="Leads Generated" variant="primary" animationDelay={0} />
+              <MetricCard icon={Target} label="Success" value={totalConversions.toLocaleString()} subtitle="Total Conversions" variant="secondary" animationDelay={50} />
+              <MetricCard icon={Zap} label="Overall" value={`${overallConversionRate.toFixed(1)}%`} subtitle="Conversion Rate" variant="primary" animationDelay={100} />
+              <MetricCard icon={TrendingUp} label="MoM" value={`+${monthlyGrowth}%`} subtitle="Monthly Growth" variant="secondary" animationDelay={150} />
             </div>
 
             {/* Charts Section */}
