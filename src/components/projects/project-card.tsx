@@ -60,12 +60,10 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, pr
       className="animate-fade-in-up"
       style={{ animationDelay: `${index * 100}ms` }}
     >
-      <div className="relative bg-slate-800/40 backdrop-blur-md border border-slate-700/50 rounded-2xl p-8 hover:border-cyan-500/50 hover:bg-slate-800/60 shadow-xl shadow-black/20 hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02] h-full group overflow-hidden">
-        {/* Subtle gradient overlay on hover */}
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 via-transparent to-blue-500/0 group-hover:from-cyan-500/5 group-hover:to-blue-500/5 transition-all duration-500 pointer-events-none" />
+      <div className="relative bg-card border border-border rounded-2xl p-8 hover:border-border-hover shadow-sm hover:shadow-md transition-all duration-400 ease-out hover:-translate-y-1 h-full group overflow-hidden">
         {/* Header */}
         <div className="relative z-10 mb-6">
-          <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+          <h3 className="font-display text-2xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
             {project.title}
           </h3>
           {isShowcaseProject(project) && (
@@ -109,7 +107,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, pr
                       <div className="text-primary mb-1 flex justify-center">
                         <metric.icon className="w-4 h-4" />
                       </div>
-                      <div className="typography-large text-white">{metric.value}</div>
+                      <div className="typography-large text-foreground font-mono">{metric.value}</div>
                       <div className="typography-small text-muted-foreground">{metric.label}</div>
                     </div>
                   ))}
@@ -132,22 +130,18 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, pr
                 placeholder="blur"
                 blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8A0XqoC2QtJQFgx+GktulvNKyWnLWJdZJvVy2PqwEEgT+OFOccNaJJcGqDYB4LCqTU69jQFf/Z"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
             </div>
           )}
         </div>
 
-        {/* CTA Button - Premium Design */}
+        {/* CTA Button */}
         <div className="relative z-10 flex justify-center">
           <Link
             href={`/projects/${isShowcaseProject(project) ? project.slug : project.slug || project.id}`}
-            className="group/btn relative inline-flex items-center justify-center gap-2 px-8 py-4 min-h-[52px] rounded-xl font-bold text-base bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-600 text-white shadow-lg shadow-cyan-500/25 hover:shadow-xl hover:shadow-cyan-500/40 hover:-translate-y-0.5 transition-all duration-300 overflow-hidden"
+            className="group/btn inline-flex items-center justify-center gap-2 px-8 py-4 min-h-[52px] rounded-xl font-semibold text-base bg-primary text-primary-foreground shadow-md hover:bg-primary/95 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-400 ease-out"
           >
-            {/* Shine effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover/btn:translate-x-[200%] transition-transform duration-1000" />
-
-            <span className="relative z-10">{customCTA}</span>
-            <ArrowRight size={18} className="relative z-10 transition-transform duration-200 group-hover/btn:translate-x-1" />
+            <span>{customCTA}</span>
+            <ArrowRight size={18} className="transition-transform duration-200 group-hover/btn:translate-x-1" />
           </Link>
         </div>
       </div>

@@ -25,34 +25,34 @@ export function Navbar() {
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
-  const navbarClasses = 'fixed top-0 left-0 right-0 z-50 w-full bg-gradient-to-r from-[#0f172a]/95 via-[#0f172a]/98 to-[#0f172a]/95 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-primary/5'
+  const navbarClasses = 'fixed top-0 left-0 right-0 z-50 w-full bg-card/95 backdrop-blur-sm border-b border-border shadow-sm'
 
   return (
     <>
       <div className={navbarClasses}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-20 items-center justify-between">
+          <div className="flex h-16 items-center justify-between">
             {/* Empty left area for balanced layout on desktop */}
             <div className="flex items-center w-32 md:block hidden" />
 
             {/* Desktop Navigation - centered */}
             <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center justify-center">
-              <div className="glass rounded-2xl px-3 py-3 shadow-lg">
+              <div className="bg-card rounded-xl px-2 py-2 shadow-sm border border-border">
                 <div className="flex items-center space-x-1">
                   {navItems.map((item, index) => (
                     <Link
                       key={getRouteKey(item.href, index)}
                       href={item.href}
-                      className={`relative text-base font-medium transition-all duration-300 px-5 py-3 rounded-xl border ${
+                      className={`relative text-base font-medium transition-all duration-300 px-4 py-2 rounded-lg ${
                         pathname === item.href
-                          ? 'text-white bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-primary/30 shadow-lg shadow-cyan-500/25'
-                          : 'text-muted-foreground hover:text-white hover:bg-white/10 border-transparent hover:border-white/20 hover:shadow-md'
+                          ? 'text-primary bg-primary/5'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                       }`}
                     >
                       <div className="relative">
                         {item.label}
                         {pathname === item.href && (
-                          <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-0.5 w-6 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full" />
+                          <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-0.5 w-5 bg-primary rounded-full" />
                         )}
                       </div>
                     </Link>
@@ -65,7 +65,7 @@ export function Navbar() {
             <div className="md:hidden flex items-center">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-3 rounded-lg text-muted-foreground hover:text-white hover:bg-white/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                className="p-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
               >
                 {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
               </button>
@@ -75,7 +75,7 @@ export function Navbar() {
             <div className="hidden md:flex items-center w-32 justify-end">
               <Link
                 href="/contact"
-                className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black text-base font-medium px-5 py-3 rounded-xl transition-all duration-300 border border-primary/20 shadow-lg shadow-cyan-500/25"
+                className="bg-primary text-primary-foreground text-sm font-medium px-4 py-2 rounded-lg transition-all duration-300 shadow-sm hover:bg-primary/95 hover:shadow-md"
               >
                 Let's Talk
               </Link>
@@ -84,17 +84,17 @@ export function Navbar() {
 
           {/* Mobile Navigation Menu */}
           {isMobileMenuOpen && (
-            <div className="md:hidden absolute top-20 left-0 right-0 bg-[#0f172a]/98 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-primary/5">
-              <div className="px-4 py-6 space-y-4">
+            <div className="md:hidden absolute top-16 left-0 right-0 bg-card/98 backdrop-blur-sm border-b border-border shadow-md">
+              <div className="px-4 py-4 space-y-2">
                 {navItems.map((item, index) => (
                   <Link
                     key={getRouteKey(item.href, index)}
                     href={item.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`block w-full text-left px-4 py-4 rounded-xl border transition-all duration-300 text-base font-medium min-h-[44px] flex items-center ${
+                    className={`block w-full text-left px-4 py-3 rounded-lg transition-all duration-300 text-base font-medium min-h-[44px] flex items-center ${
                       pathname === item.href
-                        ? 'text-white bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-primary/30 shadow-lg shadow-cyan-500/25'
-                        : 'text-muted-foreground hover:text-white hover:bg-white/10 border-transparent hover:border-white/20'
+                        ? 'text-primary bg-primary/5'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                     }`}
                   >
                     {item.label}
@@ -103,7 +103,7 @@ export function Navbar() {
                 <Link
                   href="/contact"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black text-base font-medium px-4 py-4 rounded-xl transition-all duration-300 border border-primary/20 shadow-lg shadow-cyan-500/25 min-h-[44px] flex items-center justify-center"
+                  className="w-full bg-primary text-primary-foreground text-base font-medium px-4 py-3 rounded-lg transition-all duration-300 shadow-sm hover:bg-primary/95 min-h-[44px] flex items-center justify-center"
                 >
                   Let's Talk
                 </Link>

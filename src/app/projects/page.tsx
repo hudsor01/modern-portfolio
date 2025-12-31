@@ -47,31 +47,16 @@ export default function ProjectsPage() {
       <>
         <Navbar />
         <main id="main-content" className="relative min-h-screen text-foreground overflow-hidden pt-20">
-          {/* Premium Enhanced Background */}
-          <div className="fixed inset-0 -z-20 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900" />
+          {/* Clean Background */}
+          <div className="fixed inset-0 -z-20 bg-background" />
 
-          {/* Animated Background Decorations */}
+          {/* Subtle texture */}
           <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-            {/* Large ambient glows - similar to homepage */}
-            <div className="absolute -top-32 -right-32 w-[600px] h-[600px] bg-gradient-to-br from-cyan-500/15 via-blue-500/10 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
-
-            <div className="absolute -bottom-32 -left-32 w-[600px] h-[600px] bg-gradient-to-tl from-emerald-500/15 via-teal-500/10 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
-
-            {/* Medium accent blobs */}
-            <div className="absolute top-1/3 -left-16 w-96 h-96 bg-gradient-to-r from-violet-500/10 via-purple-500/5 to-transparent rounded-full blur-2xl" />
-
-            <div className="absolute bottom-1/3 -right-16 w-96 h-96 bg-gradient-to-l from-blue-500/10 via-cyan-500/5 to-transparent rounded-full blur-2xl" />
-
-            {/* Small floating elements for depth */}
-            <div className="absolute top-1/4 left-1/3 w-48 h-48 bg-cyan-400/8 rounded-full blur-xl animate-float" />
-            <div className="absolute bottom-1/4 right-1/3 w-48 h-48 bg-emerald-400/8 rounded-full blur-xl animate-float-delayed" />
-
-            {/* Subtle grid overlay for texture */}
             <div
               className="absolute inset-0 opacity-[0.02]"
               style={{
-                backgroundImage: 'radial-gradient(circle at 1px 1px, rgb(100 200 255 / 0.3) 1px, transparent 0)',
-                backgroundSize: '50px 50px'
+                backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 0.5px, transparent 0)',
+                backgroundSize: '32px 32px'
               }}
             />
           </div>
@@ -79,8 +64,8 @@ export default function ProjectsPage() {
           <div className="w-full relative z-10 px-6 mx-auto max-w-7xl py-24">
             {/* Hero Section */}
             <div className="section-hero">
-              <h1 className="heading-page glow-primary mb-8">Project Portfolio</h1>
-              <p className="text-body text-centered-md mb-16">
+              <h1 className="font-display text-4xl md:text-5xl font-semibold text-foreground mb-8 text-center">Project Portfolio</h1>
+              <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto mb-16">
                 Transforming data into actionable insights and driving measurable business results
                 through innovative solutions.
               </p>
@@ -88,9 +73,9 @@ export default function ProjectsPage() {
             </div>
 
             {/* Projects Section Header */}
-            <div className="section-header">
-              <h2 className="heading-section glow-secondary mb-6">Featured Projects</h2>
-              <p className="text-body text-centered-sm">
+            <div className="section-header mt-24">
+              <h2 className="font-display text-3xl font-semibold text-foreground mb-6 text-center">Featured Projects</h2>
+              <p className="text-muted-foreground text-center max-w-xl mx-auto">
                 Explore my latest work in revenue operations and data analytics
               </p>
             </div>
@@ -111,8 +96,8 @@ export default function ProjectsPage() {
               ) : sortedProjects.length === 0 ? (
                 <div className="text-center py-16">
                   <div className="text-xl mb-4">📊</div>
-                  <h3 className="typography-h4 mb-2 text-white">No projects available</h3>
-                  <p className="typography-muted">Projects are currently being updated</p>
+                  <h3 className="text-xl font-semibold mb-2 text-foreground">No projects available</h3>
+                  <p className="text-muted-foreground">Projects are currently being updated</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 max-w-7xl mx-auto">
