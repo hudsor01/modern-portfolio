@@ -23,11 +23,11 @@ export default function ContactPageClient() {
     <>
       <Navbar />
       <main id="main-content">
-        <section className="min-h-screen bg-[#0f172a] text-foreground pt-20">
+        <section className="min-h-screen bg-background text-foreground pt-20">
           <div className="w-full mx-auto px-6">
             {/* Header */}
             <div className="text-center mb-12">
-              <h1 className="text-xl sm:text-xl md:text-2xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent">
+              <h1 className="text-xl sm:text-xl md:text-2xl font-display font-bold mb-6 text-primary">
                 Let's Connect
               </h1>
               <p className="typography-lead max-w-3xl mx-auto mb-8">
