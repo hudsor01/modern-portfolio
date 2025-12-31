@@ -102,7 +102,7 @@ describe('/api/contact - Fixed Tests', () => {
       id: 'submission-123',
       email: 'test@example.com',
       name: 'John Doe',
-      subject: 'Test Subject',
+      subject: 'Contact Form Inquiry',
       message: 'Test message',
       createdAt: new Date(),
       updatedAt: new Date()
@@ -123,7 +123,6 @@ describe('/api/contact - Fixed Tests', () => {
     const invalidData = {
       name: '',
       email: 'test@example.com',
-      subject: 'Test Subject',
       message: 'Test message that is long enough'
     }
 
@@ -144,7 +143,6 @@ describe('/api/contact - Fixed Tests', () => {
     const invalidData = {
       name: 'John Doe',
       email: 'invalid-email',
-      subject: 'Test Subject',
       message: 'Test message that is long enough'
     }
 
@@ -161,32 +159,10 @@ describe('/api/contact - Fixed Tests', () => {
     )
   })
 
-  it('should handle validation error for missing subject', async () => {
-    const invalidData = {
-      name: 'John Doe',
-      email: 'test@example.com',
-      subject: '',
-      message: 'Test message that is long enough'
-    }
-
-    await POST(createMockRequest(invalidData))
-
-    expect(mockJson).toHaveBeenCalledWith(
-      {
-        success: false,
-        message: 'Validation failed',
-        error: 'VALIDATION_ERROR',
-        details: { subject: ['Subject must be at least 5 characters long'] }
-      },
-      { status: 400 }
-    )
-  })
-
   it('should handle validation error for missing message', async () => {
     const invalidData = {
       name: 'John Doe',
       email: 'test@example.com',
-      subject: 'Test Subject',
       message: ''
     }
 
@@ -207,7 +183,6 @@ describe('/api/contact - Fixed Tests', () => {
     const invalidData = {
       name: '',
       email: 'invalid-email',
-      subject: '',
       message: ''
     }
 
@@ -221,7 +196,6 @@ describe('/api/contact - Fixed Tests', () => {
         details: {
           name: ['Name must be at least 2 characters long'],
           email: ['Please enter a valid email address'],
-          subject: ['Subject must be at least 5 characters long'],
           message: ['Message must be at least 10 characters long']
         }
       },
@@ -233,7 +207,6 @@ describe('/api/contact - Fixed Tests', () => {
     const validData = {
       name: 'John Doe',
       email: 'john@example.com',
-      subject: 'Test Subject',
       message: 'Test message that is long enough to pass validation'
     }
 
@@ -241,12 +214,12 @@ describe('/api/contact - Fixed Tests', () => {
 
     await POST(createMockRequest(validData))
 
-    // Verify database save happened first
+    // Verify database save happened first (with default subject)
     expect(mockCreate).toHaveBeenCalledWith({
       data: {
         name: 'John Doe',
         email: 'john@example.com',
-        subject: 'Test Subject',
+        subject: 'Contact Form Inquiry',
         message: 'Test message that is long enough to pass validation',
         ipAddress: expect.any(String),
         userAgent: 'test-agent',
@@ -258,7 +231,8 @@ describe('/api/contact - Fixed Tests', () => {
     expect(mockSend).toHaveBeenCalledWith({
       from: 'Portfolio Contact <hello@richardwhudsonjr.com>',
       to: 'test@example.com',
-      subject: 'Test Subject - from John Doe',
+      replyTo: 'john@example.com',
+      subject: 'New Contact from John Doe',
       text: expect.stringContaining('John Doe'),
       html: expect.stringContaining('John Doe')
     })
@@ -294,7 +268,6 @@ describe('/api/contact - Fixed Tests', () => {
     const validData = {
       name: 'John Doe',
       email: 'john@example.com',
-      subject: 'Test Subject',
       message: 'Test message that is long enough to pass validation'
     }
 
@@ -328,7 +301,6 @@ describe('/api/contact - Fixed Tests', () => {
     const validData = {
       name: 'John Doe',
       email: 'john@example.com',
-      subject: 'Test Subject',
       message: 'Test message that is long enough to pass validation'
     }
 
@@ -353,7 +325,6 @@ describe('/api/contact - Fixed Tests', () => {
     const validData = {
       name: 'John Doe',
       email: 'john@example.com',
-      subject: 'Test Subject',
       message: 'Test message that is long enough to pass validation'
     }
 

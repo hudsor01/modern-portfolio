@@ -7,8 +7,6 @@ import {
   AlertCircle,
   ArrowRight,
   User,
-  Building,
-  Phone,
   MessageSquare,
   Eye,
   EyeOff,
@@ -16,7 +14,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { type UseContactFormReturn } from '@/hooks/use-contact-form'
-import { subjectOptions, iconMap } from './contact-constants'
 
 // ============================================================================
 // Props
@@ -37,30 +34,16 @@ export function ContactForm({ form }: ContactFormProps) {
     submitStatus,
     showPrivacy,
     agreedToTerms,
-    progress,
     isSubmitting,
     handleInputChange,
-    handleSubjectSelect,
     handleSubmit,
     setShowPrivacy,
     setAgreedToTerms,
   } = form
 
   return (
-    <div className="glass rounded-2xl p-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="typography-h3">Send a Message</h2>
-        <div className="flex items-center gap-2">
-          <div className="typography-small text-muted-foreground">Form Progress</div>
-          <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <div className="text-sm text-primary font-medium">{progress}%</div>
-        </div>
-      </div>
+    <div className="bg-card rounded-2xl p-8 border border-border shadow-sm">
+      <h2 className="typography-h3 mb-6">Send a Message</h2>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Name & Email Row */}
@@ -99,67 +82,6 @@ export function ContactForm({ form }: ContactFormProps) {
           </div>
         </div>
 
-        {/* Company & Phone Row */}
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="relative">
-            <div className="absolute left-3 top-3.5 text-muted-foreground">
-              <Building className="w-5 h-5" />
-            </div>
-            <Input
-              name="company"
-              type="text"
-              value={formData.company}
-              onChange={handleInputChange}
-              placeholder="Company"
-              className="pl-12"
-            />
-          </div>
-          <div className="relative">
-            <div className="absolute left-3 top-3.5 text-muted-foreground">
-              <Phone className="w-5 h-5" />
-            </div>
-            <Input
-              name="phone"
-              type="tel"
-              value={formData.phone}
-              onChange={handleInputChange}
-              placeholder="Phone"
-              aria-invalid={!!errors.phone}
-              className="pl-12"
-            />
-            {errors.phone && <span role="alert" className="text-destructive text-sm mt-1 block">{errors.phone}</span>}
-          </div>
-        </div>
-
-        {/* Subject Selection */}
-        <div>
-          <label className="block text-sm font-medium text-muted-foreground mb-3">
-            What would you like to discuss? *
-          </label>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {subjectOptions.map((option) => {
-              const Icon = iconMap[option.icon as keyof typeof iconMap]
-              const isSelected = formData.subject === option.value
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => handleSubjectSelect(option.value)}
-                  className={`p-4 rounded-xl border text-center transition-all duration-200 ${
-                    isSelected
-                      ? 'border-primary bg-primary/10 text-primary'
-                      : 'border-border bg-card text-muted-foreground hover:border-primary/50 hover:bg-muted/50'
-                  }`}
-                >
-                  <Icon className="w-6 h-6 mx-auto mb-2" />
-                  <div className="text-xs font-medium">{option.label}</div>
-                </button>
-              )
-            })}
-          </div>
-          {errors.subject && <span role="alert" className="text-destructive text-sm mt-1 block">{errors.subject}</span>}
-        </div>
-
         {/* Message */}
         <div className="relative">
           <MessageSquare className="absolute left-3 top-3.5 w-5 h-5 text-muted-foreground" />
@@ -168,13 +90,13 @@ export function ContactForm({ form }: ContactFormProps) {
             value={formData.message}
             onChange={handleInputChange}
             required
-            rows={5}
-            className={`w-full pl-12 pr-4 py-3 bg-card border rounded-xl focus:outline-hidden focus:ring-2 text-foreground placeholder-muted-foreground resize-none transition-all ${
+            rows={6}
+            className={`w-full pl-12 pr-4 py-3 bg-background border rounded-xl focus:outline-hidden focus:ring-2 text-foreground placeholder-muted-foreground resize-none transition-all ${
               errors.message
                 ? 'border-destructive focus:ring-destructive'
                 : 'border-border focus:ring-primary'
             }`}
-            placeholder="Tell me about the opportunity or what you'd like to discuss... *"
+            placeholder="What would you like to discuss? *"
           />
           <div className="absolute bottom-3 right-3 typography-small text-muted-foreground">
             {formData.message.length}/500
@@ -239,7 +161,7 @@ export function ContactForm({ form }: ContactFormProps) {
             className="flex items-center gap-2 text-success bg-success/10 p-4 rounded-xl"
           >
             <CheckCircle className="w-5 h-5" />
-            Message sent successfully!
+            Message sent successfully! I'll get back to you soon.
           </div>
         )}
         {submitStatus === 'error' && (
