@@ -8,7 +8,7 @@ import { LoadingState } from '@/components/projects/loading-state'
 import { TIMING } from '@/lib/constants/spacing'
 import { revenueMetrics } from './data/constants'
 import { formatCurrency, formatPercent } from './utils'
-import { MetricCard } from './components/MetricCard'
+import { MetricCard } from '@/components/projects/shared'
 import { KPIAlerts } from './components/KPIAlerts'
 import { OverviewTab } from './components/OverviewTab'
 import { PipelineTab } from './components/PipelineTab'
@@ -67,10 +67,7 @@ export default function RevenueOperationsCenter() {
                   +{formatPercent(revenueMetrics.revenueGrowth)} YoY
                 </p>
               }
-              gradientFrom="from-violet-600"
-              gradientTo="to-purple-600"
-              iconBgClass="bg-violet-500/20"
-              iconColorClass="text-violet-400"
+              variant="primary"
 
             />
             <MetricCard
@@ -78,10 +75,7 @@ export default function RevenueOperationsCenter() {
               label="Forecast"
               value={formatPercent(revenueMetrics.forecastAccuracy)}
               subtitle="Accuracy Rate"
-              gradientFrom="from-purple-600"
-              gradientTo="to-indigo-600"
-              iconBgClass="bg-purple-500/20"
-              iconColorClass="text-purple-400"
+              variant="primary"
 
             />
             <MetricCard
@@ -89,10 +83,7 @@ export default function RevenueOperationsCenter() {
               label="Pipeline"
               value={formatPercent(revenueMetrics.pipelineHealth)}
               subtitle="Health Score"
-              gradientFrom="from-indigo-600"
-              gradientTo="to-blue-600"
-              iconBgClass="bg-secondary/20"
-              iconColorClass="text-secondary"
+              variant="secondary"
 
             />
             <MetricCard
@@ -100,10 +91,7 @@ export default function RevenueOperationsCenter() {
               label="Active Deals"
               value={revenueMetrics.activeDeals.toString()}
               subtitle={`${formatCurrency(revenueMetrics.avgDealSize)} avg`}
-              gradientFrom="from-blue-600"
-              gradientTo="to-cyan-600"
-              iconBgClass="bg-primary/20"
-              iconColorClass="text-primary"
+              variant="primary"
 
             />
             <MetricCard
@@ -111,10 +99,7 @@ export default function RevenueOperationsCenter() {
               label="Target"
               value={formatPercent(revenueMetrics.targetAttainment)}
               subtitle="Attainment"
-              gradientFrom="from-cyan-600"
-              gradientTo="to-teal-600"
-              iconBgClass="bg-primary/20"
-              iconColorClass="text-primary"
+              variant="primary"
 
             />
           </div>

@@ -8,7 +8,7 @@ import { LoadingState } from '@/components/projects/loading-state'
 import { TIMING } from '@/lib/constants/spacing'
 import { clvMetrics } from './data/constants'
 import { formatCurrency, formatPercent } from './utils'
-import { MetricCard } from './components/MetricCard'
+import { MetricCard } from '@/components/projects/shared'
 import { OverviewTab } from './components/OverviewTab'
 import { SegmentsTab } from './components/SegmentsTab'
 import { PredictionsTab } from './components/PredictionsTab'
@@ -60,10 +60,7 @@ export default function CustomerLifetimeValueAnalytics() {
               label="Average CLV"
               value={formatCurrency(clvMetrics.averageCLV)}
               subtitle="Predicted Value"
-              gradientFrom="from-emerald-600"
-              gradientTo="to-teal-600"
-              iconBgClass="bg-emerald-500/20"
-              iconColorClass="text-emerald-400"
+              variant="primary"
 
             />
             <MetricCard
@@ -71,10 +68,7 @@ export default function CustomerLifetimeValueAnalytics() {
               label="ML Accuracy"
               value={formatPercent(clvMetrics.predictionAccuracy)}
               subtitle="Model Performance"
-              gradientFrom="from-teal-600"
-              gradientTo="to-cyan-600"
-              iconBgClass="bg-teal-500/20"
-              iconColorClass="text-teal-400"
+              variant="primary"
 
             />
             <MetricCard
@@ -82,10 +76,7 @@ export default function CustomerLifetimeValueAnalytics() {
               label="High Value"
               value={clvMetrics.highValueCustomers.toLocaleString()}
               subtitle="Premium Customers"
-              gradientFrom="from-cyan-600"
-              gradientTo="to-blue-600"
-              iconBgClass="bg-primary/20"
-              iconColorClass="text-primary"
+              variant="primary"
 
             />
             <MetricCard
@@ -93,10 +84,7 @@ export default function CustomerLifetimeValueAnalytics() {
               label="Forecast"
               value={`${clvMetrics.forecastHorizon} mo`}
               subtitle="Prediction Window"
-              gradientFrom="from-blue-600"
-              gradientTo="to-purple-600"
-              iconBgClass="bg-primary/20"
-              iconColorClass="text-primary"
+              variant="primary"
 
             />
           </div>

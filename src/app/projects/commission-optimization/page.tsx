@@ -8,7 +8,7 @@ import { LoadingState } from '@/components/projects/loading-state'
 import { TIMING } from '@/lib/constants/spacing'
 import { commissionMetrics } from './data/constants'
 import { formatCurrency, formatPercent } from './utils'
-import { MetricCard } from './components/MetricCard'
+import { MetricCard } from '@/components/projects/shared'
 import { ProcessingMetrics } from './components/ProcessingMetrics'
 import { OverviewTab } from './components/OverviewTab'
 import { TiersTab } from './components/TiersTab'
@@ -61,44 +61,32 @@ export default function CommissionOptimization() {
               label="Commission Pool"
               value={formatCurrency(commissionMetrics.totalCommissionPool)}
               subtitle="Annual Management"
-              gradientFrom="from-emerald-600"
-              gradientTo="to-green-600"
-              iconBgClass="bg-emerald-500/20"
-              iconColorClass="text-emerald-400"
-
+              variant="secondary"
+              animationDelay={0}
             />
             <MetricCard
               icon={Percent}
               label="Avg Rate"
               value={formatPercent(commissionMetrics.averageCommissionRate)}
               subtitle="Commission Rate"
-              gradientFrom="from-green-600"
-              gradientTo="to-teal-600"
-              iconBgClass="bg-success/20"
-              iconColorClass="text-success"
-
+              variant="secondary"
+              animationDelay={50}
             />
             <MetricCard
               icon={TrendingUp}
               label="Performance"
               value={`+${formatPercent(commissionMetrics.performanceImprovement)}`}
               subtitle="Improvement"
-              gradientFrom="from-teal-600"
-              gradientTo="to-cyan-600"
-              iconBgClass="bg-teal-500/20"
-              iconColorClass="text-teal-400"
-
+              variant="primary"
+              animationDelay={100}
             />
             <MetricCard
               icon={Calculator}
               label="Automation"
               value={formatPercent(commissionMetrics.automationEfficiency)}
               subtitle="Efficiency"
-              gradientFrom="from-cyan-600"
-              gradientTo="to-blue-600"
-              iconBgClass="bg-primary/20"
-              iconColorClass="text-primary"
-
+              variant="primary"
+              animationDelay={150}
             />
           </div>
 
