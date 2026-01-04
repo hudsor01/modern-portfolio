@@ -17,6 +17,9 @@ jobs:
         env:
           DATABASE_URL: "postgresql://user:pass@localhost:5432/db?schema=public"
 
+      - name: Ensure reports directory exists
+        run: mkdir -p ./reports
+
       - name: Lint, Type-check, and Test
         run: bun run ci:local
         env:

@@ -72,3 +72,6 @@ coveragePathIgnorePatterns = [
   "src/lib/utils/route-utils.ts"
 ]
 
+# JUnit reporter for CI
+[test.reporter]
+junit = "./reports/junit.xml"
