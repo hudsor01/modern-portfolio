@@ -9,6 +9,7 @@
  * **Validates: Requirements 6.1, 6.2, 6.5**
  */
 
+import { describe, test, expect } from 'bun:test'
 import * as fc from 'fast-check'
 import {
   hoverVariants,

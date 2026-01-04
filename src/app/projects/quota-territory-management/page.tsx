@@ -1,13 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { TrendingUp, Map, Database, Zap, Code } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
-import { TIMING } from '@/lib/constants/spacing'
+import { useLoadingState } from '@/hooks/use-loading-state'
 import {
   formatCurrency,
   formatNumber,
@@ -17,17 +16,7 @@ import {
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 
 export default function QuotaTerritoryManagementProject() {
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-    return () => clearTimeout(timer)
-  }, [])
-
-  const handleRefresh = () => {
-    setIsLoading(true)
-    setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-  }
+  const { isLoading, handleRefresh } = useLoadingState()
 
   // Standardized metrics configuration using consistent data formatting
   const metrics = [

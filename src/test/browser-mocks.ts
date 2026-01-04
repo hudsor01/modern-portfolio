@@ -4,10 +4,10 @@
  * This file provides proper class constructor mocks for browser APIs
  * that happy-dom doesn't include but Next.js requires.
  *
- * IMPORTANT: This file must be listed FIRST in vitest.config.ts setupFiles
+ * IMPORTANT: This file must be listed FIRST in test setup (--preload flag)
  */
 
-import { vi } from 'vitest'
+import { vi } from 'bun:test'
 
 // =============================================================================
 // IntersectionObserver Mock (required for Next.js Image, Link, etc.)

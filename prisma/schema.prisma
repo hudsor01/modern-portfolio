@@ -5,6 +5,9 @@ generator client {
   provider        = "prisma-client"
   output          = "./generated/prisma"
   previewFeatures = ["fullTextSearchPostgres"]
+  // Bun-specific optimizations (Rust-free client)
+  engineType      = "client"
+  runtime         = "bun"
 }
 
 datasource db {

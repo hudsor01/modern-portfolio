@@ -1,19 +1,104 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { z } from 'zod';
-import { createContextLogger } from '@/lib/monitoring/logger';
+import { useCallback, useSyncExternalStore } from 'react'
+import { z } from 'zod'
+import { createContextLogger } from '@/lib/monitoring/logger'
 
-const storageLogger = createContextLogger('LocalStorage');
+const storageLogger = createContextLogger('LocalStorage')
+
+/**
+ * Create a storage adapter for useSyncExternalStore
+ */
+function createStorageAdapter<T>(
+  storage: Storage | null,
+  key: string,
+  initialValue: T,
+  schema?: z.ZodSchema<T>
+) {
+  // Track listeners for storage changes
+  const listeners = new Set<() => void>()
+
+  // Notify all listeners of changes
+  const emitChange = () => {
+    listeners.forEach((listener) => listener())
+  }
+
+  // Subscribe to storage changes
+  const subscribe = (callback: () => void): (() => void) => {
+    listeners.add(callback)
+
+    // Listen for storage events from other tabs
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === key) {
+        emitChange()
+      }
+    }
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', handleStorageChange)
+    }
+
+    return () => {
+      listeners.delete(callback)
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('storage', handleStorageChange)
+      }
+    }
+  }
+
+  // Get current value from storage
+  const getSnapshot = (): T => {
+    if (!storage) return initialValue
+
+    try {
+      const item = storage.getItem(key)
+      if (item === null) return initialValue
+
+      const parsed = JSON.parse(item)
+      return schema ? schema.parse(parsed) : parsed
+    } catch (error) {
+      storageLogger.error(
+        `Error reading storage key "${key}"`,
+        error instanceof Error ? error : undefined,
+        { key }
+      )
+      return initialValue
+    }
+  }
+
+  // Server snapshot always returns initial value
+  const getServerSnapshot = (): T => initialValue
+
+  // Set value to storage
+  const setValue = (value: T | ((prev: T) => T)): void => {
+    if (!storage) return
+
+    try {
+      const currentValue = getSnapshot()
+      const newValue = value instanceof Function ? value(currentValue) : value
+      storage.setItem(key, JSON.stringify(newValue))
+      emitChange()
+    } catch (error) {
+      storageLogger.error(
+        `Error setting storage key "${key}"`,
+        error instanceof Error ? error : undefined,
+        { key }
+      )
+    }
+  }
+
+  return { subscribe, getSnapshot, getServerSnapshot, setValue }
+}
 
 /**
  * useLocalStorage Hook
  *
- * A custom hook for persisting state in localStorage with runtime type safety.
+ * A custom hook for persisting state in localStorage with proper SSR handling.
+ * Uses useSyncExternalStore to avoid hydration mismatches.
  *
  * @param key - The localStorage key
  * @param initialValue - The initial value if no value exists in localStorage
- * @param schema - Optional Zod schema for runtime validation (recommended for type safety)
+ * @param schema - Optional Zod schema for runtime validation
  * @returns A stateful value and a function to update it
  */
 export function useLocalStorage<T>(
@@ -21,58 +106,23 @@ export function useLocalStorage<T>(
   initialValue: T,
   schema?: z.ZodSchema<T>
 ): [T, (value: T | ((val: T) => T)) => void] {
-  // State to store our value
-  const [storedValue, setStoredValue] = useState<T>(initialValue);
+  const storage = typeof window !== 'undefined' ? window.localStorage : null
+  const adapter = createStorageAdapter(storage, key, initialValue, schema)
 
-  // Initialize on mount
-  useEffect(() => {
-    try {
-      // Check if we're in a browser environment
-      if (typeof window === 'undefined') {
-        return;
-      }
+  const value = useSyncExternalStore(
+    adapter.subscribe,
+    adapter.getSnapshot,
+    adapter.getServerSnapshot
+  )
 
-      // Get from local storage by key
-      const item = window.localStorage.getItem(key);
+  const setValue = useCallback(
+    (newValue: T | ((val: T) => T)) => {
+      adapter.setValue(newValue)
+    },
+    [adapter]
+  )
 
-      // Parse stored json or return initialValue
-      if (item) {
-        const parsed = JSON.parse(item);
-        // Validate with schema if provided
-        const value = schema ? schema.parse(parsed) : parsed;
-        setStoredValue(value);
-      } else {
-        setStoredValue(initialValue);
-      }
-    } catch (error) {
-      // If error, use initial value
-      storageLogger.error(`Error reading localStorage key "${key}"`, error instanceof Error ? error : undefined, { key });
-      setStoredValue(initialValue);
-    }
-  }, [key, initialValue, schema]);
-
-  // Return a wrapped version of useState's setter function that
-  // persists the new value to localStorage
-  const setValue = (value: T | ((val: T) => T)) => {
-    try {
-      // Allow value to be a function so we have the same API as useState
-      const valueToStore =
-        value instanceof Function ? value(storedValue) : value;
-      
-      // Save state
-      setStoredValue(valueToStore);
-      
-      // Save to local storage
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
-      }
-    } catch (error) {
-      // Log errors
-      storageLogger.error(`Error setting localStorage key "${key}"`, error instanceof Error ? error : undefined, { key });
-    }
-  };
-
-  return [storedValue, setValue];
+  return [value, setValue]
 }
 
 /**
@@ -82,7 +132,7 @@ export function useLocalStorage<T>(
  *
  * @param key - The sessionStorage key
  * @param initialValue - The initial value if no value exists in sessionStorage
- * @param schema - Optional Zod schema for runtime validation (recommended for type safety)
+ * @param schema - Optional Zod schema for runtime validation
  * @returns A stateful value and a function to update it
  */
 export function useSessionStorage<T>(
@@ -90,56 +140,21 @@ export function useSessionStorage<T>(
   initialValue: T,
   schema?: z.ZodSchema<T>
 ): [T, (value: T | ((val: T) => T)) => void] {
-  // State to store our value
-  const [storedValue, setStoredValue] = useState<T>(initialValue);
+  const storage = typeof window !== 'undefined' ? window.sessionStorage : null
+  const adapter = createStorageAdapter(storage, key, initialValue, schema)
 
-  // Initialize on mount
-  useEffect(() => {
-    try {
-      // Check if we're in a browser environment
-      if (typeof window === 'undefined') {
-        return;
-      }
+  const value = useSyncExternalStore(
+    adapter.subscribe,
+    adapter.getSnapshot,
+    adapter.getServerSnapshot
+  )
 
-      // Get from session storage by key
-      const item = window.sessionStorage.getItem(key);
+  const setValue = useCallback(
+    (newValue: T | ((val: T) => T)) => {
+      adapter.setValue(newValue)
+    },
+    [adapter]
+  )
 
-      // Parse stored json or return initialValue
-      if (item) {
-        const parsed = JSON.parse(item);
-        // Validate with schema if provided
-        const value = schema ? schema.parse(parsed) : parsed;
-        setStoredValue(value);
-      } else {
-        setStoredValue(initialValue);
-      }
-    } catch (error) {
-      // If error, use initial value
-      storageLogger.error(`Error reading sessionStorage key "${key}"`, error instanceof Error ? error : undefined, { key });
-      setStoredValue(initialValue);
-    }
-  }, [key, initialValue, schema]);
-
-  // Return a wrapped version of useState's setter function that
-  // persists the new value to sessionStorage
-  const setValue = (value: T | ((val: T) => T)) => {
-    try {
-      // Allow value to be a function so we have the same API as useState
-      const valueToStore =
-        value instanceof Function ? value(storedValue) : value;
-
-      // Save state
-      setStoredValue(valueToStore);
-
-      // Save to session storage
-      if (typeof window !== 'undefined') {
-        window.sessionStorage.setItem(key, JSON.stringify(valueToStore));
-      }
-    } catch (error) {
-      // Log errors
-      storageLogger.error(`Error setting sessionStorage key "${key}"`, error instanceof Error ? error : undefined, { key });
-    }
-  };
-
-  return [storedValue, setValue];
+  return [value, setValue]
 }

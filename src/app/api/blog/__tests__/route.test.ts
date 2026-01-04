@@ -1,60 +1,81 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { NextRequest } from 'next/server'
-import { GET, POST } from '@/app/api/blog/route'
+import { describe, afterAll, it, expect, vi, beforeEach, mock } from 'bun:test'
+
+// Create mock functions
+const mockBlogPostFindMany = vi.fn()
+const mockBlogPostCount = vi.fn()
+const mockBlogPostFindUnique = vi.fn()
+const mockBlogPostCreate = vi.fn()
+const mockAuthorUpdate = vi.fn()
+const mockCategoryUpdate = vi.fn()
+const mockTagUpdateMany = vi.fn()
+const mockValidateCSRFToken = vi.fn().mockResolvedValue(true)
 
 // Mock the db module
-vi.mock('@/lib/db', () => ({
+mock.module('@/lib/db', () => ({
   db: {
     blogPost: {
-      findMany: vi.fn(),
-      count: vi.fn(),
-      findUnique: vi.fn(),
-      create: vi.fn(),
+      findMany: mockBlogPostFindMany,
+      count: mockBlogPostCount,
+      findUnique: mockBlogPostFindUnique,
+      create: mockBlogPostCreate,
     },
     author: {
-      update: vi.fn(),
+      update: mockAuthorUpdate,
     },
     category: {
-      update: vi.fn(),
+      update: mockCategoryUpdate,
     },
     tag: {
-      updateMany: vi.fn(),
+      updateMany: mockTagUpdateMany,
     },
   },
 }))
 
 // Mock the logger
-vi.mock('@/lib/monitoring/logger', () => ({
-  createContextLogger: vi.fn(() => ({
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn(),
-    debug: vi.fn(),
-  })),
+mock.module('@/lib/monitoring/logger', () => ({
+  createContextLogger: () => ({
+    info: () => {},
+    warn: () => {},
+    error: () => {},
+    debug: () => {},
+  }),
 }))
 
 // Mock CSRF protection
-vi.mock('@/lib/security/csrf-protection', () => ({
-  validateCSRFToken: vi.fn().mockResolvedValue(true),
+mock.module('@/lib/security/csrf-protection', () => ({
+  validateCSRFToken: mockValidateCSRFToken,
   generateCSRFToken: vi.fn().mockResolvedValue('mock-csrf-token'),
 }))
 
-const createMockRequest = (url: string, options?: RequestInit) => {
-  return new NextRequest(url, options as ConstructorParameters<typeof NextRequest>[1])
+// Import after mocks
+import { GET, POST } from '@/app/api/blog/route'
+
+// Import mock request helper
+import { createMockNextRequest } from '@/test/mock-next-request'
+
+// Create a proper mock request with headers
+const createMockRequest = (url: string, options?: { method?: string; body?: string; headers?: Record<string, string> }) => {
+  return createMockNextRequest(url, options)
 }
 
-describe('/api/blog', () => {
-  beforeEach(async () => {
-    vi.clearAllMocks()
+// Clean up mocks after all tests in this file
+afterAll(() => {
+  mock.restore()
+})
 
-    // Ensure CSRF mock is properly set
-    const csrfModule = await import('@/lib/security/csrf-protection')
-    vi.mocked(csrfModule.validateCSRFToken).mockResolvedValue(true)
+describe('/api/blog', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockBlogPostFindMany.mockReset()
+    mockBlogPostCount.mockReset()
+    mockBlogPostFindUnique.mockReset()
+    mockBlogPostCreate.mockReset()
+    mockAuthorUpdate.mockReset()
+    mockValidateCSRFToken.mockResolvedValue(true)
   })
 
   describe('GET', () => {
     it('returns blog posts with default pagination', async () => {
-      const { db } = await import('@/lib/db')
       const mockPosts = [
         {
           id: '1',
@@ -108,8 +129,8 @@ describe('/api/blog', () => {
           tags: [],
         },
       ]
-      vi.mocked(db.blogPost.findMany).mockResolvedValueOnce(mockPosts as never)
-      vi.mocked(db.blogPost.count).mockResolvedValueOnce(1)
+      mockBlogPostFindMany.mockResolvedValueOnce(mockPosts as never)
+      mockBlogPostCount.mockResolvedValueOnce(1)
 
       const request = createMockRequest('http://localhost:3000/api/blog')
       const response = await GET(request)
@@ -130,9 +151,8 @@ describe('/api/blog', () => {
     })
 
     it('applies pagination parameters correctly', async () => {
-      const { db } = await import('@/lib/db')
-      vi.mocked(db.blogPost.findMany).mockResolvedValueOnce([])
-      vi.mocked(db.blogPost.count).mockResolvedValueOnce(15)
+      mockBlogPostFindMany.mockResolvedValueOnce([])
+      mockBlogPostCount.mockResolvedValueOnce(15)
 
       const request = createMockRequest('http://localhost:3000/api/blog?page=2&limit=5')
       const response = await GET(request)
@@ -144,14 +164,13 @@ describe('/api/blog', () => {
     })
 
     it('filters posts by status', async () => {
-      const { db } = await import('@/lib/db')
-      vi.mocked(db.blogPost.findMany).mockResolvedValueOnce([])
-      vi.mocked(db.blogPost.count).mockResolvedValueOnce(0)
+      mockBlogPostFindMany.mockResolvedValueOnce([])
+      mockBlogPostCount.mockResolvedValueOnce(0)
 
       const request = createMockRequest('http://localhost:3000/api/blog?status=DRAFT')
       await GET(request)
 
-      expect(db.blogPost.findMany).toHaveBeenCalledWith(
+      expect(mockBlogPostFindMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
             status: { in: ['DRAFT'] },
@@ -161,14 +180,13 @@ describe('/api/blog', () => {
     })
 
     it('filters posts by search term', async () => {
-      const { db } = await import('@/lib/db')
-      vi.mocked(db.blogPost.findMany).mockResolvedValueOnce([])
-      vi.mocked(db.blogPost.count).mockResolvedValueOnce(0)
+      mockBlogPostFindMany.mockResolvedValueOnce([])
+      mockBlogPostCount.mockResolvedValueOnce(0)
 
       const request = createMockRequest('http://localhost:3000/api/blog?search=react')
       await GET(request)
 
-      expect(db.blogPost.findMany).toHaveBeenCalledWith(
+      expect(mockBlogPostFindMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
             OR: expect.arrayContaining([
@@ -181,9 +199,8 @@ describe('/api/blog', () => {
     })
 
     it('limits results to maximum of 100 per page', async () => {
-      const { db } = await import('@/lib/db')
-      vi.mocked(db.blogPost.findMany).mockResolvedValueOnce([])
-      vi.mocked(db.blogPost.count).mockResolvedValueOnce(0)
+      mockBlogPostFindMany.mockResolvedValueOnce([])
+      mockBlogPostCount.mockResolvedValueOnce(0)
 
       const request = createMockRequest('http://localhost:3000/api/blog?limit=200')
       const response = await GET(request)
@@ -193,8 +210,7 @@ describe('/api/blog', () => {
     })
 
     it('handles database errors gracefully', async () => {
-      const { db } = await import('@/lib/db')
-      vi.mocked(db.blogPost.findMany).mockRejectedValueOnce(new Error('Database error'))
+      mockBlogPostFindMany.mockRejectedValueOnce(new Error('Database error'))
 
       const request = createMockRequest('http://localhost:3000/api/blog')
       const response = await GET(request)
@@ -208,7 +224,6 @@ describe('/api/blog', () => {
 
   describe('POST', () => {
     it('creates a new blog post with required fields', async () => {
-      const { db } = await import('@/lib/db')
       const createdPost = {
         id: 'new-post-1',
         title: 'New Post',
@@ -251,15 +266,16 @@ describe('/api/blog', () => {
         tags: [],
       }
 
-      vi.mocked(db.blogPost.findUnique).mockResolvedValueOnce(null)
-      vi.mocked(db.blogPost.create).mockResolvedValueOnce(createdPost as never)
-      vi.mocked(db.author.update).mockResolvedValueOnce({} as never)
+      mockBlogPostFindUnique.mockResolvedValueOnce(null)
+      mockBlogPostCreate.mockResolvedValueOnce(createdPost as never)
+      mockAuthorUpdate.mockResolvedValueOnce({} as never)
 
       const request = createMockRequest('http://localhost:3000/api/blog', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-csrf-token': 'mock-csrf-token',
+          'x-forwarded-for': '127.0.0.1',
         },
         body: JSON.stringify({
           title: 'New Post',
@@ -282,6 +298,7 @@ describe('/api/blog', () => {
         headers: {
           'Content-Type': 'application/json',
           'x-csrf-token': 'mock-csrf-token',
+          'x-forwarded-for': '127.0.0.1',
         },
         body: JSON.stringify({
           title: 'New Post',
@@ -297,14 +314,14 @@ describe('/api/blog', () => {
     })
 
     it('returns 409 for duplicate slug', async () => {
-      const { db } = await import('@/lib/db')
-      vi.mocked(db.blogPost.findUnique).mockResolvedValueOnce({ id: 'existing' } as never)
+      mockBlogPostFindUnique.mockResolvedValueOnce({ id: 'existing' } as never)
 
       const request = createMockRequest('http://localhost:3000/api/blog', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-csrf-token': 'mock-csrf-token',
+          'x-forwarded-for': '127.0.0.1',
         },
         body: JSON.stringify({
           title: 'New Post',

@@ -1,15 +1,12 @@
-/**
- * @vitest-environment jsdom
- */
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, configure, act } from '@testing-library/react'
+import { describe, afterAll, expect, it, mock } from 'bun:test'
+import { render, screen } from '@testing-library/react'
 
-// Configure testing-library to work with fake timers
-configure({ asyncUtilTimeout: 5000 })
+// Helper to wait for a specific duration (Bun doesn't support fake timers)
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-// Mock project data with realistic values
-vi.mock('@/lib/content/projects', () => ({
-  getProject: vi.fn().mockResolvedValue({
+// Mock project data with realistic values - must be before imports
+mock.module('@/lib/content/projects', () => ({
+  getProject: () => Promise.resolve({
     id: 'test-project',
     title: 'Test Project',
     description: 'Test Description',
@@ -17,23 +14,23 @@ vi.mock('@/lib/content/projects', () => ({
 }))
 
 // Mock logger
-vi.mock('@/lib/monitoring/logger', () => ({
+mock.module('@/lib/monitoring/logger', () => ({
   createContextLogger: () => ({
-    error: vi.fn(),
-    info: vi.fn(),
-    warn: vi.fn(),
+    error: () => {},
+    info: () => {},
+    warn: () => {},
   }),
 }))
 
 // Mock timing constants for faster tests
-vi.mock('@/lib/constants/spacing', () => ({
+mock.module('@/lib/constants/spacing', () => ({
   TIMING: {
     LOADING_STATE_RESET: 0, // Instant for tests
   },
 }))
 
 // Mock all project data modules with realistic test data
-vi.mock('@/app/projects/data/partner-analytics', () => ({
+mock.module('@/app/projects/data/partner-analytics', () => ({
   leadAttributionData: [
     { source: 'Organic Search', leads: 1250, conversions: 187 },
     { source: 'Paid Search', leads: 890, conversions: 156 },
@@ -104,7 +101,7 @@ vi.mock('@/app/projects/data/partner-analytics', () => ({
   ],
 }))
 
-// Import project pages
+// Import project pages (after mocks)
 import DealFunnel from '@/app/projects/deal-funnel/page'
 import LeadAttribution from '@/app/projects/lead-attribution/page'
 import MultiChannelAttribution from '@/app/projects/multi-channel-attribution/page'
@@ -117,6 +114,11 @@ import CACUnitEconomics from '@/app/projects/cac-unit-economics/page'
 import ChurnRetention from '@/app/projects/churn-retention/page'
 import CommissionOptimization from '@/app/projects/commission-optimization/page'
 import RevenueKPI from '@/app/projects/revenue-kpi/page'
+
+// Clean up mocks after all tests in this file
+afterAll(() => {
+  mock.restore()
+})
 
 describe('Project Pages Consistency Integration Tests', () => {
   const projectPages = [
@@ -154,21 +156,10 @@ describe('Project Pages Consistency Integration Tests', () => {
     { name: 'Revenue KPI', component: RevenueKPI, slug: 'revenue-kpi' },
   ]
 
-  beforeEach(() => {
-    vi.useFakeTimers({ shouldAdvanceTime: true })
-  })
-
-  afterEach(() => {
-    vi.clearAllTimers()
-    vi.useRealTimers()
-  })
-
-  // Helper function to wait for component to load
+  // Helper function to wait for component to load (using real timers)
   const waitForComponentLoad = async () => {
-    await act(async () => {
-      vi.advanceTimersByTime(100)
-      await Promise.resolve()
-    })
+    // Wait for React to finish rendering
+    await wait(50)
   }
 
   describe('Basic Rendering and Structure', () => {
@@ -552,10 +543,8 @@ describe('Project Pages Consistency Integration Tests', () => {
         // Unmounting should not cause timer-related errors
         unmount()
 
-        // Advance timers after unmount to check for cleanup
-        await act(async () => {
-          vi.advanceTimersByTime(100)
-        })
+        // Wait after unmount to check for cleanup (using real timers)
+        await wait(50)
       }
     )
   })

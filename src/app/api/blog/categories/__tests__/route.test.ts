@@ -1,39 +1,57 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { NextRequest } from 'next/server'
-import { GET, POST } from '@/app/api/blog/categories/route'
-
-// Import proper types from the types directory
+import { describe, afterAll, it, expect, vi, beforeEach, mock } from 'bun:test'
 import type { BlogCategory } from '@/types/blog'
 
 // Use the actual category type
 type CategoryData = BlogCategory
 
-// Mock the database
-vi.mock('@/lib/db', () => ({
+// Create mock functions that can be reused
+const mockFindMany = vi.fn()
+const mockFindUnique = vi.fn()
+const mockCreate = vi.fn()
+
+// Mock the database BEFORE importing the route
+mock.module('@/lib/db', () => ({
   db: {
     category: {
-      findMany: vi.fn(),
-      findUnique: vi.fn(),
-      create: vi.fn(),
+      findMany: mockFindMany,
+      findUnique: mockFindUnique,
+      create: mockCreate,
     }
   }
 }))
 
-// Mock Next.js
-vi.mock('next/server', async () => {
-  const actual = await vi.importActual('next/server')
-  return {
-    ...actual,
-    NextResponse: {
-      json: vi.fn((data, options) => ({
-        json: async () => data,
-        status: options?.status || 200,
-        headers: options?.headers || {},
-        ok: (options?.status || 200) < 400,
-      })),
-    },
-  }
-})
+// Mock server-only
+mock.module('server-only', () => ({}))
+
+// Mock Next.js with proper headers Map
+mock.module('next/server', () => ({
+  NextRequest: class NextRequest {
+    url: string
+    constructor(url: string) { this.url = url }
+  },
+  NextResponse: {
+    json: (data: unknown, options?: { status?: number; headers?: Record<string, string> }) => ({
+      json: async () => data,
+      status: options?.status || 200,
+      headers: new Map(Object.entries(options?.headers || {})),
+      ok: (options?.status || 200) < 400,
+    }),
+  },
+}))
+
+// Mock logger
+mock.module('@/lib/monitoring/logger', () => ({
+  createContextLogger: () => ({
+    info: () => {},
+    warn: () => {},
+    error: () => {},
+    debug: () => {},
+  })
+}))
+
+// Now import route and NextRequest after mocks
+import { GET, POST } from '@/app/api/blog/categories/route'
+import { NextRequest } from 'next/server'
 
 const createMockRequest = (url: string, options: RequestInit = {}) => {
   return {
@@ -43,22 +61,18 @@ const createMockRequest = (url: string, options: RequestInit = {}) => {
   } as NextRequest
 }
 
-describe('/api/blog/categories', () => {
-  let mockDb: {
-    category: {
-      findMany: ReturnType<typeof vi.fn>
-      findUnique: ReturnType<typeof vi.fn>
-      create: ReturnType<typeof vi.fn>
-    }
-  }
+// Clean up mocks after all tests in this file
+afterAll(() => {
+  mock.restore()
+})
 
+describe('/api/blog/categories', () => {
   beforeEach(async () => {
     vi.clearAllMocks()
-    
-    // Get the mocked database
-    const dbModule = await import('@/lib/db')
-    mockDb = dbModule.db as unknown as typeof mockDb
-    
+    mockFindMany.mockReset()
+    mockFindUnique.mockReset()
+    mockCreate.mockReset()
+
     // Setup default mock data
     const mockCategories = [
       {
@@ -73,7 +87,7 @@ describe('/api/blog/categories', () => {
         createdAt: new Date('2023-01-01'),
       },
       {
-        id: '2', 
+        id: '2',
         name: 'Data Visualization',
         slug: 'data-visualization',
         description: 'Data visualization topics',
@@ -85,7 +99,7 @@ describe('/api/blog/categories', () => {
       },
       {
         id: '3',
-        name: 'Sales Analytics', 
+        name: 'Sales Analytics',
         slug: 'sales-analytics',
         description: 'Sales analytics topics',
         color: '#F59E0B',
@@ -97,7 +111,7 @@ describe('/api/blog/categories', () => {
       {
         id: '4',
         name: 'Process Automation',
-        slug: 'process-automation', 
+        slug: 'process-automation',
         description: 'Process automation topics',
         color: '#8B5CF6',
         icon: '⚙️',
@@ -106,10 +120,10 @@ describe('/api/blog/categories', () => {
         createdAt: new Date('2023-01-04'),
       }
     ]
-    
+
     // Set default mock implementations
-    mockDb.category.findMany.mockResolvedValue(mockCategories)
-    mockDb.category.findUnique.mockResolvedValue(null) // No conflicts by default
+    mockFindMany.mockResolvedValue(mockCategories)
+    mockFindUnique.mockResolvedValue(null) // No conflicts by default
   })
 
   describe('GET', () => {
@@ -171,24 +185,16 @@ describe('/api/blog/categories', () => {
       const request = createMockRequest('http://localhost:3000/api/blog/categories')
       const response = await GET(request)
 
-      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('public, max-age=300, s-maxage=600')
+      expect(response.headers.get('Cache-Control')).toBe('public, max-age=300, s-maxage=600')
     })
 
     it('handles errors gracefully', async () => {
-      // Force an error by mocking console.error and throwing in the route
-      const originalConsoleError = console.error
-      console.error = vi.fn()
-
-      // This test verifies the error handling structure
-      // In a real scenario, we'd mock the database call to fail
       const request = createMockRequest('http://localhost:3000/api/blog/categories')
       const response = await GET(request)
-      
-      // Since our mock implementation doesn't actually fail, 
+
+      // Since our mock implementation doesn't actually fail,
       // we expect success here, but the error handling code is tested
       expect(response.status).toBe(200)
-
-      console.error = originalConsoleError
     })
   })
 
@@ -213,8 +219,8 @@ describe('/api/blog/categories', () => {
         totalViews: 0,
         createdAt: new Date('2023-01-05'),
       }
-      
-      mockDb.category.create.mockResolvedValue(createdCategory)
+
+      mockCreate.mockResolvedValue(createdCategory)
 
       const request = createMockRequest('http://localhost:3000/api/blog/categories', {
         method: 'POST',
@@ -258,8 +264,8 @@ describe('/api/blog/categories', () => {
         totalViews: 0,
         createdAt: new Date('2023-01-06'),
       }
-      
-      mockDb.category.create.mockResolvedValue(createdCategory)
+
+      mockCreate.mockResolvedValue(createdCategory)
 
       const request = createMockRequest('http://localhost:3000/api/blog/categories', {
         method: 'POST',
@@ -290,8 +296,8 @@ describe('/api/blog/categories', () => {
         totalViews: 0,
         createdAt: new Date('2023-01-07'),
       }
-      
-      mockDb.category.create.mockResolvedValue(createdCategory)
+
+      mockCreate.mockResolvedValue(createdCategory)
 
       const request = createMockRequest('http://localhost:3000/api/blog/categories', {
         method: 'POST',
@@ -322,8 +328,8 @@ describe('/api/blog/categories', () => {
         totalViews: 0,
         createdAt: new Date('2023-01-08'),
       }
-      
-      mockDb.category.create.mockResolvedValue(createdCategory)
+
+      mockCreate.mockResolvedValue(createdCategory)
 
       const request = createMockRequest('http://localhost:3000/api/blog/categories', {
         method: 'POST',
@@ -356,7 +362,7 @@ describe('/api/blog/categories', () => {
         createdAt: new Date('2023-01-12'),
       }
 
-      mockDb.category.create.mockResolvedValue(createdCategory)
+      mockCreate.mockResolvedValue(createdCategory)
 
       const request = createMockRequest('http://localhost:3000/api/blog/categories', {
         method: 'POST',
@@ -365,7 +371,7 @@ describe('/api/blog/categories', () => {
 
       const response = await POST(request)
 
-      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('no-cache')
+      expect(response.headers.get('Cache-Control')).toBe('no-cache')
     })
 
     it('validates required name field', async () => {
@@ -406,7 +412,7 @@ describe('/api/blog/categories', () => {
         createdAt: new Date('2023-01-13'),
       }
 
-      mockDb.category.create.mockResolvedValueOnce(createdCategory1)
+      mockCreate.mockResolvedValueOnce(createdCategory1)
 
       const request1 = createMockRequest('http://localhost:3000/api/blog/categories', {
         method: 'POST',
@@ -422,7 +428,7 @@ describe('/api/blog/categories', () => {
       }
 
       // Mock findUnique to return the existing category for the duplicate check
-      mockDb.category.findUnique.mockResolvedValue(createdCategory1)
+      mockFindUnique.mockResolvedValue(createdCategory1)
 
       const request2 = createMockRequest('http://localhost:3000/api/blog/categories', {
         method: 'POST',
@@ -460,7 +466,7 @@ describe('/api/blog/categories', () => {
         totalViews: 0,
         createdAt: new Date('2023-01-09'),
       }
-      
+
       // Mock second category creation
       const createdCategory2 = {
         id: 'data-analytics-id',
@@ -474,8 +480,8 @@ describe('/api/blog/categories', () => {
         createdAt: new Date('2023-01-10'),
       }
 
-      mockDb.category.create.mockResolvedValueOnce(createdCategory1)
-      mockDb.category.create.mockResolvedValueOnce(createdCategory2)
+      mockCreate.mockResolvedValueOnce(createdCategory1)
+      mockCreate.mockResolvedValueOnce(createdCategory2)
 
       const request1 = createMockRequest('http://localhost:3000/api/blog/categories', {
         method: 'POST',
@@ -519,8 +525,8 @@ describe('/api/blog/categories', () => {
         totalViews: 0,
         createdAt: new Date('2023-01-11'),
       }
-      
-      mockDb.category.create.mockResolvedValue(createdCategory)
+
+      mockCreate.mockResolvedValue(createdCategory)
 
       const request = createMockRequest('http://localhost:3000/api/blog/categories', {
         method: 'POST',

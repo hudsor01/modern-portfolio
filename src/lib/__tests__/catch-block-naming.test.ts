@@ -8,7 +8,7 @@
  * with an underscore prefix.
  */
 
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'bun:test'
 import * as fc from 'fast-check'
 
 /**

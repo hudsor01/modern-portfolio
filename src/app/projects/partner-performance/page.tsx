@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { TrendingUp, Users, Target, DollarSign } from 'lucide-react'
 
@@ -9,7 +9,7 @@ import { LoadingState } from '@/components/projects/loading-state'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { ChartContainer } from '@/components/ui/chart-container'
-import { TIMING } from '@/lib/constants/spacing'
+import { useLoadingState } from '@/hooks/use-loading-state'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data-formatters'
 import { STARAreaChart } from '@/components/projects/star-area-chart'
 
@@ -101,18 +101,8 @@ const tabs = ['overview', 'tiers', 'top-performers'] as const
 type Tab = (typeof tabs)[number]
 
 export default function PartnerPerformanceIntelligence() {
-  const [isLoading, setIsLoading] = useState(true)
+  const { isLoading, handleRefresh } = useLoadingState()
   const [activeTab, setActiveTab] = useState<Tab>('overview')
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-    return () => clearTimeout(timer)
-  }, [])
-
-  const handleRefresh = () => {
-    setIsLoading(true)
-    setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-  }
 
   // Standardized metrics configuration using consistent data formatting
   const metrics = [

@@ -7,6 +7,7 @@
  * Feature: project-ui-consistency, Property 10: Loading State Uniformity
  */
 
+import { describe, test, expect, vi } from 'bun:test'
 import { render } from '@testing-library/react'
 import * as fc from 'fast-check'
 import {

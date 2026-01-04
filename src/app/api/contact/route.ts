@@ -3,7 +3,7 @@ import { Resend } from 'resend'
 import { db } from '@/lib/db'
 import {
   checkEnhancedContactFormRateLimit
-} from '@/lib/security/enhanced-rate-limiter'
+} from '@/lib/security/rate-limiter'
 import { escapeHtml } from '@/lib/security/html-escape'
 import { validateCSRFToken } from '@/lib/security/csrf-protection'
 import {

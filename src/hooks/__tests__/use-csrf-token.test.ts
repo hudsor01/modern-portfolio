@@ -1,16 +1,24 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, afterAll, it, expect, beforeEach, afterEach, mock } from 'bun:test'
+import { vi } from '@/test/vitest-compat'
 import { renderHook, waitFor } from '@testing-library/react'
+
+// Mock logger - must be before imports
+mock.module('@/lib/monitoring/logger', () => ({
+  createContextLogger: () => ({
+    info: () => {},
+    warn: () => {},
+    error: () => {},
+    debug: () => {}
+  })
+}))
+
+// Import after mocks
 import { useCSRFToken, addCSRFTokenToHeaders, addCSRFTokenToFormData } from '../use-csrf-token'
 
-// Mock logger
-vi.mock('@/lib/monitoring/logger', () => ({
-  createContextLogger: vi.fn(() => ({
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn(),
-    debug: vi.fn()
-  }))
-}))
+// Clean up mocks after all tests in this file
+afterAll(() => {
+  mock.restore()
+})
 
 describe('useCSRFToken', () => {
   const mockFetch = vi.fn()

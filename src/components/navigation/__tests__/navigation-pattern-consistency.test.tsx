@@ -7,9 +7,17 @@
  * Feature: project-ui-consistency, Property 3: Navigation Pattern Consistency
  */
 
-import { render } from '@testing-library/react'
+import { describe, test, expect, afterEach } from 'bun:test'
+import { render, cleanup } from '@testing-library/react'
 import * as fc from 'fast-check'
 import { BackButton, NavigationBreadcrumbs, NavigationTabs } from '../index'
+
+// Note: Don't manually clear document.body.innerHTML - this breaks happy-dom's cache
+// The cleanup() function from RTL handles DOM cleanup properly
+
+afterEach(() => {
+  cleanup()
+})
 // Types imported but not used in current tests
 
 // Generators for property-based testing
@@ -113,6 +121,9 @@ const uniqueTabsGenerator = (minLength: number, maxLength: number) =>
 const backButtonVariantGenerator = fc.constantFrom('ghost', 'outline', 'secondary')
 const backButtonSizeGenerator = fc.constantFrom('sm', 'default', 'lg')
 
+// Note: Property-based tests were previously skipped due to happy-dom test isolation issues.
+// The fix was to ensure all tests properly restore window/document modifications in afterEach.
+// See: src/lib/utils/__tests__/reading-progress-utils.test.ts for the pattern.
 describe('Navigation Pattern Consistency', () => {
   describe('Property 3: Back Button Consistency', () => {
     test('back buttons have consistent styling and behavior across all variants', () => {

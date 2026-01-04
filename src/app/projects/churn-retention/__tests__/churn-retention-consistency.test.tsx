@@ -1,75 +1,59 @@
 /**
- * @vitest-environment jsdom
- */
-
-/**
  * Integration test for Churn Retention project page consistency
  * Validates that the page follows all standardized UI patterns and components
+ * Refactored for Bun test runner
  */
 
-import { render, act } from '@testing-library/react'
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render } from '@testing-library/react'
+import { describe, it, expect, mock, beforeEach, afterEach } from 'bun:test'
 import ChurnAnalysis from '../page'
 
-// Mock all external dependencies to ensure clean test environment
-vi.mock('@/lib/constants/spacing', () => ({
-  TIMING: {
-    LOADING_STATE_RESET: 100, // Shorter timeout for tests
-  },
-}))
-
-vi.mock('@/lib/utils/data-formatters', () => ({
-  formatPercentage: (value: number) => `${(value * 100).toFixed(1)}%`,
-  formatNumber: (value: number) => value.toString(),
-  formatCurrency: (value: number, options?: { compact?: boolean }) => {
-    if (options?.compact) {
-      if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`
-      if (value >= 1000) return `${(value / 1000).toFixed(1)}K`
-    }
-    return `${value.toLocaleString()}`
-  },
-}))
-
-// Mock static churn data
-vi.mock('@/app/projects/data/partner-analytics', () => ({
-  staticChurnData: [
-    { churnRate: 12.5, retained: 87, churned: 13 },
-    { churnRate: 14.2, retained: 85, churned: 15 },
-  ],
-}))
-
-// Mock dynamic imports to prevent loading issues
-vi.mock('next/dynamic', () => ({
-  default: (_importFn: unknown, options: { loading?: boolean }) => {
-    // Return a simple mock component for dynamic imports
-    const MockComponent = () => (
-      <div data-testid={options.loading ? 'loading' : 'dynamic-component'}>Mock Component</div>
-    )
-    return MockComponent
-  },
-}))
-
-// Mock chart components to isolate the main component logic
-vi.mock('../ChurnLineChart', () => ({
-  default: () => <div data-testid="churn-line-chart">Churn Line Chart</div>,
-}))
-
-vi.mock('../RetentionHeatmap', () => ({
-  default: () => <div data-testid="retention-heatmap">Retention Heatmap</div>,
-}))
-
-vi.mock('@/components/projects/star-area-chart', () => ({
-  STARAreaChart: () => <div data-testid="star-area-chart">STAR Area Chart</div>,
-}))
+// Helper to wait for a specific duration
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 describe('Churn Retention Page Consistency', () => {
+  // Set up mocks before each test and restore after
   beforeEach(() => {
-    vi.useFakeTimers()
+    mock.module('@/lib/constants/spacing', () => ({
+      TIMING: {
+        LOADING_STATE_RESET: 0,
+      },
+    }))
+
+    mock.module('@/lib/utils/data-formatters', () => ({
+      formatPercentage: (value: number) => `${(value * 100).toFixed(1)}%`,
+      formatNumber: (value: number) => value.toString(),
+      formatCurrency: (value: number, options?: { compact?: boolean }) => {
+        if (options?.compact) {
+          if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`
+          if (value >= 1000) return `${(value / 1000).toFixed(1)}K`
+        }
+        return `${value.toLocaleString()}`
+      },
+    }))
+
+    mock.module('@/app/projects/data/partner-analytics', () => ({
+      staticChurnData: [
+        { churnRate: 12.5, retained: 87, churned: 13 },
+        { churnRate: 14.2, retained: 85, churned: 15 },
+      ],
+    }))
+
+    mock.module('../ChurnLineChart', () => ({
+      default: () => <div data-testid="churn-line-chart">Churn Line Chart</div>,
+    }))
+
+    mock.module('../RetentionHeatmap', () => ({
+      default: () => <div data-testid="retention-heatmap">Retention Heatmap</div>,
+    }))
+
+    mock.module('@/components/projects/star-area-chart', () => ({
+      STARAreaChart: () => <div data-testid="star-area-chart">STAR Area Chart</div>,
+    }))
   })
 
   afterEach(() => {
-    vi.clearAllTimers()
-    vi.useRealTimers()
+    mock.restore()
   })
 
   describe('Basic Rendering', () => {
@@ -79,11 +63,7 @@ describe('Churn Retention Page Consistency', () => {
 
     it('should use standardized components structure', async () => {
       const { container } = render(<ChurnAnalysis />)
-
-      // Fast-forward timers to complete loading
-      await act(async () => {
-        vi.advanceTimersByTime(200)
-      })
+      await wait(50)
 
       // Check that the page renders with basic structure
       expect(container).toBeInTheDocument()
@@ -93,11 +73,7 @@ describe('Churn Retention Page Consistency', () => {
   describe('Component Library Consistency (Requirements 3.1, 3.2, 3.3)', () => {
     it('should use MetricsGrid component for metrics display', async () => {
       const { container } = render(<ChurnAnalysis />)
-
-      // Fast-forward timers to complete loading
-      await act(async () => {
-        vi.advanceTimersByTime(200)
-      })
+      await wait(50)
 
       // Verify MetricsGrid is rendered (it should have data-testid="metrics-grid")
       const metricsGrid = container.querySelector('[data-testid="metrics-grid"]')
@@ -106,11 +82,7 @@ describe('Churn Retention Page Consistency', () => {
 
     it('should use SectionCard components for content organization', async () => {
       const { container } = render(<ChurnAnalysis />)
-
-      // Fast-forward timers to complete loading
-      await act(async () => {
-        vi.advanceTimersByTime(200)
-      })
+      await wait(50)
 
       // Check for section titles that would be in SectionCard components
       expect(container.textContent).toContain('Project Overview')
@@ -123,11 +95,7 @@ describe('Churn Retention Page Consistency', () => {
   describe('Data Formatting Consistency (Requirements 8.1, 8.2, 8.4)', () => {
     it('should use consistent data formatting utilities', async () => {
       const { container } = render(<ChurnAnalysis />)
-
-      // Fast-forward timers to complete loading
-      await act(async () => {
-        vi.advanceTimersByTime(200)
-      })
+      await wait(50)
 
       // The component should render without errors, indicating proper data formatting
       expect(container).toBeInTheDocument()
@@ -142,11 +110,7 @@ describe('Churn Retention Page Consistency', () => {
   describe('Content Structure Consistency (Requirements 5.1, 5.3)', () => {
     it('should follow standardized content organization pattern', async () => {
       const { container } = render(<ChurnAnalysis />)
-
-      // Fast-forward timers to complete loading
-      await act(async () => {
-        vi.advanceTimersByTime(200)
-      })
+      await wait(50)
 
       // Verify key content sections are present
       expect(container.textContent).toContain('Project Overview')
@@ -157,11 +121,7 @@ describe('Churn Retention Page Consistency', () => {
   describe('Chart Container Usage (Requirements 3.2)', () => {
     it('should use ChartContainer components for data visualizations', async () => {
       const { container } = render(<ChurnAnalysis />)
-
-      // Fast-forward timers to complete loading
-      await act(async () => {
-        vi.advanceTimersByTime(200)
-      })
+      await wait(50)
 
       // Verify chart components are rendered (they show as loading in test)
       expect(container.textContent).toContain('Partner Retention Patterns')

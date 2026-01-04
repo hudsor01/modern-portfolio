@@ -4,7 +4,8 @@
  * Validates: Requirements 5.1, 5.5, 5.6, 7.10
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, beforeAll } from 'bun:test'
+import { vi } from '@/test/vitest-compat'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import * as fc from 'fast-check'

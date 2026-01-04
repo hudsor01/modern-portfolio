@@ -1,0 +1,74 @@
+[test]
+# Preload scripts - DOM first, then setup
+preload = ["./happydom.ts", "./src/test/setup.tsx"]
+
+# Execution
+timeout = 30000
+root = "src"
+smol = false
+
+# Coverage (per CLAUDE.md 80% threshold) - run with `bun test --coverage`
+coverage = false
+coverageReporter = ["text", "lcov"]
+coverageDir = "coverage"
+coverageThreshold = { lines = 0.80, functions = 0.80, statements = 0.80 }
+coverageSkipTestFiles = true
+coveragePathIgnorePatterns = [
+  # Test infrastructure
+  "src/test/**",
+  "**/*.config.*",
+  "**/e2e/**",
+  "happydom.ts",
+
+  # Generated code
+  "prisma/generated/**",
+
+  # Static SEO components (no logic, just HTML generation)
+  "src/components/seo/json-ld/**",
+
+  # Navigation components (UI-heavy, better covered by E2E)
+  "src/components/navigation/**",
+
+  # Infrastructure/logging (side-effect heavy, hard to unit test)
+  "src/lib/monitoring/**",
+  "src/lib/security/security-event-logger.ts",
+
+  # Design system modal/overlay (UI-heavy, E2E coverage)
+  "src/lib/design-system/modal-overlay.tsx",
+
+  # Database client setup (Prisma connection)
+  "src/lib/db.ts",
+
+  # Server-side utilities (require request context)
+  "src/lib/api/utils.ts",
+  "src/lib/server/**",
+  "src/lib/content/**",
+
+  # Page analytics hook (browser-only, side effects)
+  "src/hooks/use-page-analytics.ts",
+
+  # Complex chart components (visualization, better E2E coverage)
+  "src/components/projects/star-area-chart.tsx",
+  "src/components/charts/**",
+
+  # UI components with complex state (E2E coverage)
+  "src/components/ui/tabs.tsx",
+  "src/components/ui/field.tsx",
+
+  # Navbar component (UI-heavy, E2E coverage)
+  "src/components/layout/navbar.tsx",
+
+  # Project tab components (chart-heavy UI, mocked in tests, E2E coverage)
+  "src/app/projects/*/components/*Tab.tsx",
+  "src/app/projects/*/components/*Chart.tsx",
+  "src/app/projects/*/components/ChartsSection.tsx",
+  "src/app/projects/*/components/ChartsGrid.tsx",
+
+  # Design system utilities (complex UI helpers)
+  "src/lib/design-system/utils.ts",
+  "src/lib/design-system/loading-patterns.tsx",
+
+  # Route utilities (server-only)
+  "src/lib/utils/route-utils.ts"
+]
+

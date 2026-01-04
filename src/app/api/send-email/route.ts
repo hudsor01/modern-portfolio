@@ -13,7 +13,7 @@ import {
   logApiRequest,
   logApiResponse,
 } from '@/lib/api/utils'
-import { EnhancedRateLimiter } from '@/lib/security/enhanced-rate-limiter'
+import { EnhancedRateLimiter } from '@/lib/security/rate-limiter'
 import { validateCSRFToken } from '@/lib/security/csrf-protection'
 import { createContextLogger } from '@/lib/monitoring/logger'
 import { z } from 'zod'

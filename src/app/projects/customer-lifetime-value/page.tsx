@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { DollarSign, Brain, Users, Calendar } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
-import { TIMING } from '@/lib/constants/spacing'
+import { useLoadingState } from '@/hooks/use-loading-state'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data-formatters'
 import { clvMetrics } from './data/constants'
 import { OverviewTab } from './components/OverviewTab'
@@ -20,18 +20,8 @@ const tabs = ['overview', 'segments', 'predictions'] as const
 type Tab = (typeof tabs)[number]
 
 export default function CustomerLifetimeValueAnalytics() {
-  const [isLoading, setIsLoading] = useState(true)
+  const { isLoading, handleRefresh } = useLoadingState()
   const [activeTab, setActiveTab] = useState<Tab>('overview')
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-    return () => clearTimeout(timer)
-  }, [])
-
-  const handleRefresh = () => {
-    setIsLoading(true)
-    setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-  }
 
   // Standardized metrics configuration using consistent data formatting
   const metrics = [

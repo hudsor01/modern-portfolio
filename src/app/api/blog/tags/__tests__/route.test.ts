@@ -1,23 +1,38 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { NextRequest } from 'next/server'
-import { GET, POST } from '@/app/api/blog/tags/route'
+import { describe, afterAll, it, expect, vi, beforeEach, mock } from 'bun:test'
 import type { BlogTagData } from '@/types/shared-api'
 
-// Mock Next.js
-vi.mock('next/server', async () => {
-  const actual = await vi.importActual('next/server')
-  return {
-    ...actual,
-    NextResponse: {
-      json: vi.fn((data, options) => ({
-        json: async () => data,
-        status: options?.status || 200,
-        headers: options?.headers || {},
-        ok: (options?.status || 200) < 400,
-      })),
-    },
-  }
-})
+// Mock server-only
+mock.module('server-only', () => ({}))
+
+// Mock Next.js with proper headers Map
+mock.module('next/server', () => ({
+  NextRequest: class NextRequest {
+    url: string
+    constructor(url: string) { this.url = url }
+  },
+  NextResponse: {
+    json: (data: unknown, options?: { status?: number; headers?: Record<string, string> }) => ({
+      json: async () => data,
+      status: options?.status || 200,
+      headers: new Map(Object.entries(options?.headers || {})),
+      ok: (options?.status || 200) < 400,
+    }),
+  },
+}))
+
+// Mock logger
+mock.module('@/lib/monitoring/logger', () => ({
+  createContextLogger: () => ({
+    info: () => {},
+    warn: () => {},
+    error: () => {},
+    debug: () => {},
+  })
+}))
+
+// Import after mocks
+import { GET, POST } from '@/app/api/blog/tags/route'
+import { NextRequest } from 'next/server'
 
 const createMockRequest = (url: string, options: RequestInit = {}) => {
   return {
@@ -34,6 +49,11 @@ const createMockRequestWithSearchParams = (searchParams: Record<string, string>)
   })
   return createMockRequest(url.toString())
 }
+
+// Clean up mocks after all tests in this file
+afterAll(() => {
+  mock.restore()
+})
 
 describe('/api/blog/tags', () => {
   beforeEach(() => {
@@ -188,7 +208,7 @@ describe('/api/blog/tags', () => {
       const request = createMockRequest('http://localhost:3000/api/blog/tags')
       const response = await GET(request)
 
-      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('public, max-age=300, s-maxage=600')
+      expect(response.headers.get('Cache-Control')).toBe('public, max-age=300, s-maxage=600')
     })
 
     it('handles malformed limit parameter gracefully', async () => {
@@ -317,7 +337,7 @@ describe('/api/blog/tags', () => {
 
       const response = await POST(request)
 
-      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('no-cache')
+      expect(response.headers.get('Cache-Control')).toBe('no-cache')
     })
 
     it('validates required name field', async () => {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getProjects } from '@/lib/content/projects'
-import { EnhancedRateLimiter } from '@/lib/security/enhanced-rate-limiter'
+import { EnhancedRateLimiter } from '@/lib/security/rate-limiter'
 
 // Helper function to get client identifier
 function getClientId(request: NextRequest): string {

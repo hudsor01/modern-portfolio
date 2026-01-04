@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { DollarSign, Target, BarChart3, Users, Activity } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
-import { TIMING } from '@/lib/constants/spacing'
+import { useLoadingState } from '@/hooks/use-loading-state'
 import { revenueMetrics } from './data/constants'
 import { formatCurrency, formatPercent } from './utils'
 import { MetricCard } from '@/components/ui/metric-card'
@@ -21,18 +21,8 @@ const tabs = ['overview', 'pipeline', 'forecasting', 'operations'] as const
 type Tab = (typeof tabs)[number]
 
 export default function RevenueOperationsCenter() {
-  const [isLoading, setIsLoading] = useState(true)
+  const { isLoading, handleRefresh } = useLoadingState()
   const [activeTab, setActiveTab] = useState<Tab>('overview')
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-    return () => clearTimeout(timer)
-  }, [])
-
-  const handleRefresh = () => {
-    setIsLoading(true)
-    setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-  }
 
   return (
     <ProjectPageLayout

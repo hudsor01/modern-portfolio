@@ -52,7 +52,8 @@ const LOG_LEVELS: Record<LogLevel, number> = {
 }
 
 // Environment configuration
-const LOG_LEVEL = (process.env.LOG_LEVEL as LogLevel) ||
+const LOG_LEVEL =
+  (process.env.LOG_LEVEL as LogLevel) ||
   ((process.env.NODE_ENV as string) === 'production' ? 'info' : 'debug')
 const IS_PRODUCTION = (process.env.NODE_ENV as string) === 'production'
 
@@ -63,12 +64,12 @@ export interface Logger {
   warn(message: string, context?: LogContext): void
   error(message: string, error?: Error, context?: LogContext): void
   fatal(message: string, error?: Error, context?: LogContext): void
-  
+
   // Specialized logging methods
   performance(operation: string, duration: number, context?: LogContext): void
   request(requestInfo: LogEntry['request'], context?: LogContext): void
   security(event: string, context?: LogContext): void
-  
+
   // Utility methods
   child(baseContext: LogContext): Logger
   startTimer(operation: string): () => void
@@ -83,26 +84,26 @@ export interface LogTransport {
 class ConsoleTransport implements LogTransport {
   private colors = {
     debug: '\x1b[36m', // Cyan
-    info: '\x1b[32m',  // Green
-    warn: '\x1b[33m',  // Yellow
+    info: '\x1b[32m', // Green
+    warn: '\x1b[33m', // Yellow
     error: '\x1b[31m', // Red
     fatal: '\x1b[35m', // Magenta
-    reset: '\x1b[0m',  // Reset
+    reset: '\x1b[0m', // Reset
   }
-  
+
   log(entry: LogEntry): void {
-    if (!this.shouldLog(entry.level) || ((process.env.NODE_ENV as string) === 'production')) return
+    if (!this.shouldLog(entry.level) || (process.env.NODE_ENV as string) === 'production') return
 
     const color = this.colors[entry.level]
     const timestamp = new Date(entry.timestamp).toISOString()
     const level = entry.level.toUpperCase().padEnd(5)
 
     let output = `${color}[${timestamp}] ${level}${this.colors.reset} ${entry.message}`
-    
+
     if (entry.context && Object.keys(entry.context).length > 0) {
       output += `\n  Context: ${JSON.stringify(entry.context, null, 2)}`
     }
-    
+
     if (entry.error) {
       if ((process.env.NODE_ENV as string) === 'production') {
         // In production, only log error name and sanitized message
@@ -116,17 +117,17 @@ class ConsoleTransport implements LogTransport {
         }
       }
     }
-    
+
     if (entry.performance) {
       output += `\n  Performance: ${entry.performance.duration}ms`
       if (entry.performance.memory) {
         output += ` | Memory: ${Math.round(entry.performance.memory.used / 1024 / 1024)}MB`
       }
     }
-    
+
     console.log(output)
   }
-  
+
   private shouldLog(level: LogLevel): boolean {
     return LOG_LEVELS[level] >= LOG_LEVELS[LOG_LEVEL]
   }
@@ -136,12 +137,12 @@ class ConsoleTransport implements LogTransport {
 class JSONTransport implements LogTransport {
   log(entry: LogEntry): void {
     if (!this.shouldLog(entry.level)) return
-    
+
     // In production, you'd send this to your logging service
     // Examples: DataDog, Splunk, ELK Stack, CloudWatch, etc.
     console.info('Logging entry:', entry)
   }
-  
+
   private shouldLog(level: LogLevel): boolean {
     return LOG_LEVELS[level] >= LOG_LEVELS[LOG_LEVEL]
   }
@@ -239,17 +240,30 @@ class LoggerImpl implements Logger {
   }
 
   performance(operation: string, duration: number, context?: LogContext): void {
-    this.log('info', `Performance: ${operation}`, {
-      ...context,
-      operation,
-    }, undefined, {
-      duration,
-      memory: this.getMemoryUsage(),
-    })
+    this.log(
+      'info',
+      `Performance: ${operation}`,
+      {
+        ...context,
+        operation,
+      },
+      undefined,
+      {
+        duration,
+        memory: this.getMemoryUsage(),
+      }
+    )
   }
 
   request(requestInfo: LogEntry['request'], context?: LogContext): void {
-    this.log('info', `Request: ${requestInfo?.method} ${requestInfo?.url}`, context, undefined, undefined, requestInfo)
+    this.log(
+      'info',
+      `Request: ${requestInfo?.method} ${requestInfo?.url}`,
+      context,
+      undefined,
+      undefined,
+      requestInfo
+    )
   }
 
   security(event: string, context?: LogContext): void {
@@ -279,7 +293,7 @@ class LoggerImpl implements Logger {
   destroy(): void {
     for (const transport of this.transports) {
       if (typeof (transport as FileTransport).destroy === 'function') {
-        (transport as FileTransport).destroy()
+        ;(transport as FileTransport).destroy()
       }
     }
   }
@@ -302,7 +316,7 @@ class LoggerImpl implements Logger {
       },
       metadata: {
         buildId: process.env.NEXT_BUILD_ID,
-        version: process.env.npm_package_version,
+        version: process.env.bun_package_version,
         environment: process.env.NODE_ENV || 'development',
       },
     }
@@ -325,7 +339,7 @@ class LoggerImpl implements Logger {
     }
 
     // Send to all transports
-    this.transports.forEach(transport => {
+    this.transports.forEach((transport) => {
       try {
         transport.log(entry)
       } catch (err) {
@@ -349,11 +363,11 @@ class LoggerImpl implements Logger {
 // Error boundary logger
 export class ErrorBoundaryLogger {
   private logger: Logger
-  
+
   constructor(logger: Logger) {
     this.logger = logger
   }
-  
+
   logError(error: Error, errorInfo: { componentStack: string }, context?: LogContext): void {
     this.logger.error('React Error Boundary caught an error', error, {
       ...context,
@@ -361,7 +375,7 @@ export class ErrorBoundaryLogger {
       errorBoundary: true,
     })
   }
-  
+
   logRecovery(context?: LogContext): void {
     this.logger.info('Error boundary recovered', {
       ...context,
@@ -375,11 +389,11 @@ export class ErrorBoundaryLogger {
 export class PerformanceMonitor {
   private logger: Logger
   private metrics: Map<string, number[]> = new Map()
-  
+
   constructor(logger: Logger) {
     this.logger = logger
   }
-  
+
   async measureAsync<T>(operation: string, fn: () => Promise<T>, context?: LogContext): Promise<T> {
     const start = performance.now()
 
@@ -395,10 +409,10 @@ export class PerformanceMonitor {
       throw error
     }
   }
-  
+
   measure<T>(operation: string, fn: () => T, context?: LogContext): T {
     const start = performance.now()
-    
+
     try {
       const result = fn()
       this.recordMetric(operation, performance.now() - start, context)
@@ -411,24 +425,24 @@ export class PerformanceMonitor {
       throw error
     }
   }
-  
+
   private recordMetric(operation: string, duration: number, context?: LogContext): void {
     // Store metrics for aggregation
     if (!this.metrics.has(operation)) {
       this.metrics.set(operation, [])
     }
-    
+
     const operationMetrics = this.metrics.get(operation)!
     operationMetrics.push(duration)
-    
+
     // Keep only recent metrics (last 100)
     if (operationMetrics.length > 100) {
       operationMetrics.shift()
     }
-    
+
     // Log the performance
     this.logger.performance(operation, duration, context)
-    
+
     // Log warning for slow operations
     if (duration > 1000) {
       this.logger.warn(`Slow operation detected: ${operation}`, {
@@ -438,16 +452,17 @@ export class PerformanceMonitor {
       })
     }
   }
-  
-  getMetricsSummary(): Record<string, OperationMetricsSummary> { // Updated return type
+
+  getMetricsSummary(): Record<string, OperationMetricsSummary> {
+    // Updated return type
     const summary: Record<string, OperationMetricsSummary> = {} // Updated type for summary
-    
+
     this.metrics.forEach((durations, operation) => {
       if (durations.length === 0) return
-      
+
       const sorted = [...durations].sort((a, b) => a - b)
       const sum = durations.reduce((a, b) => a + b, 0)
-      
+
       summary[operation] = {
         count: durations.length,
         average: sum / durations.length,
@@ -456,27 +471,27 @@ export class PerformanceMonitor {
         p95: sorted[Math.floor(sorted.length * 0.95)]!, // Added non-null assertion
       }
     })
-    
+
     return summary
   }
 }
 
 interface OperationMetricsSummary {
-  count: number;
-  average: number;
-  min: number;
-  max: number;
-  p95: number;
+  count: number
+  average: number
+  min: number
+  max: number
+  p95: number
 }
 
 // Create logger instance with appropriate transports
 function createLogger(): Logger {
   const transports: LogTransport[] = []
-  
+
   if (IS_PRODUCTION) {
     // In production, use structured JSON logging
     transports.push(new JSONTransport())
-    
+
     // Optionally add file transport or external service transport
     if (process.env.ENABLE_FILE_LOGGING === 'true') {
       transports.push(new FileTransport())
@@ -485,7 +500,7 @@ function createLogger(): Logger {
     // In development, use colored console output
     transports.push(new ConsoleTransport())
   }
-  
+
   return new LoggerImpl(transports)
 }
 
@@ -516,11 +531,11 @@ export function withAsyncLogging<T extends unknown[], R>( // Changed any[] to un
 }
 
 interface MinimalRequest {
-  method: string;
-  url: string;
+  method: string
+  url: string
   headers?: {
-    get: (name: string) => string | null | undefined;
-  };
+    get: (name: string) => string | null | undefined
+  }
 }
 
 // Request logger middleware utility
@@ -537,7 +552,10 @@ export function createRequestLogger(operation: string) {
       method: request.method,
       url: request.url,
       userAgent: request.headers?.get?.('user-agent') || undefined,
-      ip: (request.headers?.get?.('x-forwarded-for') || request.headers?.get?.('x-real-ip')) || undefined,
+      ip:
+        request.headers?.get?.('x-forwarded-for') ||
+        request.headers?.get?.('x-real-ip') ||
+        undefined,
     })
 
     return requestLogger
@@ -550,12 +568,9 @@ export function createRequestLogger(operation: string) {
  */
 export function createContextLogger(context: string) {
   return {
-    debug: (message: string, data?: LogContext) =>
-      logger.debug(message, { ...data, context }),
-    info: (message: string, data?: LogContext) =>
-      logger.info(message, { ...data, context }),
-    warn: (message: string, data?: LogContext) =>
-      logger.warn(message, { ...data, context }),
+    debug: (message: string, data?: LogContext) => logger.debug(message, { ...data, context }),
+    info: (message: string, data?: LogContext) => logger.info(message, { ...data, context }),
+    warn: (message: string, data?: LogContext) => logger.warn(message, { ...data, context }),
     error: (message: string, error?: Error | LogContext, data?: LogContext) => {
       if (error instanceof Error) {
         logger.error(message, error, { ...data, context })
