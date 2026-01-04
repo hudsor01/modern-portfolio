@@ -423,6 +423,13 @@ describe('Property 1: Backward Compatibility Preservation', () => {
         'DELETED',
       ] as const
 
+      // Use integer timestamps to avoid invalid date issues
+      const minTimestamp = new Date('2000-01-01').getTime()
+      const maxTimestamp = new Date('2100-01-01').getTime()
+      const validDateStringArb = fc
+        .integer({ min: minTimestamp, max: maxTimestamp })
+        .map((ts) => new Date(ts).toISOString())
+
       const blogPostArb = fc.record({
         id: fc.uuid(),
         title: fc.string({ minLength: 1 }),
@@ -436,8 +443,8 @@ describe('Property 1: Backward Compatibility Preservation', () => {
         likeCount: fc.integer({ min: 0 }),
         shareCount: fc.integer({ min: 0 }),
         commentCount: fc.integer({ min: 0 }),
-        createdAt: fc.date().map((d) => d.toISOString()),
-        updatedAt: fc.date().map((d) => d.toISOString()),
+        createdAt: validDateStringArb,
+        updatedAt: validDateStringArb,
       })
 
       fc.assert(
@@ -491,6 +498,13 @@ describe('Property 1: Backward Compatibility Preservation', () => {
 
     it('should maintain BlogAuthorData interface contract', () => {
       // For any BlogAuthorData, required fields must be present
+      // Use integer timestamps to avoid invalid date issues
+      const minTimestamp = new Date('2000-01-01').getTime()
+      const maxTimestamp = new Date('2100-01-01').getTime()
+      const validDateStringArb = fc
+        .integer({ min: minTimestamp, max: maxTimestamp })
+        .map((ts) => new Date(ts).toISOString())
+
       const authorArb = fc.record({
         id: fc.uuid(),
         name: fc.string({ minLength: 1 }),
@@ -498,7 +512,7 @@ describe('Property 1: Backward Compatibility Preservation', () => {
         slug: fc.string({ minLength: 1 }),
         totalPosts: fc.integer({ min: 0 }),
         totalViews: fc.integer({ min: 0 }),
-        createdAt: fc.date().map((d) => d.toISOString()),
+        createdAt: validDateStringArb,
         bio: fc.option(fc.string(), { nil: undefined }),
         avatar: fc.option(fc.string(), { nil: undefined }),
         website: fc.option(fc.string(), { nil: undefined }),
