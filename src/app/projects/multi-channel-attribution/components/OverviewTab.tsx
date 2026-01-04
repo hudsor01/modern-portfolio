@@ -18,7 +18,7 @@ export function OverviewTab() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       {/* Attribution Model Comparison */}
       <div
-        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out"
       >
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">Attribution Model Performance Comparison</h2>
@@ -31,7 +31,7 @@ export function OverviewTab() {
 
       {/* Channel ROI Analysis */}
       <div
-        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out"
       >
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">Cross-Channel ROI & Attribution Analysis</h2>

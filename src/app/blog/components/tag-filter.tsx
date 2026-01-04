@@ -16,7 +16,7 @@ export function TagFilter({ tags, selectedTag, tagCounts, onTagChange }: TagFilt
           onClick={() => onTagChange(tag)}
           className={`
             inline-flex items-center gap-2 px-4 py-2 rounded-full text-size-sm font-medium
-            transition-all duration-300
+            transition-all duration-300 ease-out
             ${
               selectedTag === tag
                 ? 'bg-primary/20 text-primary border border-primary/30'

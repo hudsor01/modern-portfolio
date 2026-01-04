@@ -11,6 +11,7 @@ export default tseslint.config(
     ignores: [
       'e2e/**/*',
       '.next/**/*',
+      '.vercel/**/*',
       'out/**/*',
       'build/**/*',
       'dist/**/*',
@@ -126,5 +127,5 @@ export default tseslint.config(
       '@next/next/no-img-element': 'warn',
       '@next/next/no-html-link-for-pages': 'error',
     },
-  },
+  }
 )

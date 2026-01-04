@@ -270,7 +270,7 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
     title: 'Customer Churn & Retention Analytics',
     description:
       'A sophisticated analytics platform that helps businesses understand and reduce customer churn while improving retention rates through predictive modeling and actionable insights.',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=800&fit=crop&crop=center&q=85',
+    image: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&h=800&fit=crop&crop=center&q=85',
     link: 'https://demo.churnanalytics.example.com',
     github: 'https://github.com/hudsonr01/churn-retention',
     category: 'Analytics',
@@ -348,7 +348,7 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
     title: 'Revenue KPI Dashboard',
     description:
       'A comprehensive dashboard that provides a complete view of revenue metrics and KPIs, allowing business leaders to monitor performance, identify trends, and make data-driven decisions.',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=800&fit=crop&crop=center&q=85',
+    image: 'https://images.unsplash.com/photo-1543286386-713bdd548da4?w=1200&h=800&fit=crop&crop=center&q=85',
     link: 'https://demo.revenuekpi.example.com',
     github: 'https://github.com/hudsonr01/revenue-kpi',
     category: 'Finance',

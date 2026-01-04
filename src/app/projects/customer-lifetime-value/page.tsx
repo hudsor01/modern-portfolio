@@ -5,10 +5,11 @@ import { DollarSign, Brain, Users, Calendar } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
+import { MetricsGrid } from '@/components/projects/metrics-grid'
+import { SectionCard } from '@/components/ui/section-card'
 import { TIMING } from '@/lib/constants/spacing'
+import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data-formatters'
 import { clvMetrics } from './data/constants'
-import { formatCurrency, formatPercent } from './utils'
-import { MetricCard } from './components/MetricCard'
 import { OverviewTab } from './components/OverviewTab'
 import { SegmentsTab } from './components/SegmentsTab'
 import { PredictionsTab } from './components/PredictionsTab'
@@ -16,7 +17,7 @@ import { StrategicImpact } from './components/StrategicImpact'
 import { NarrativeSections } from './components/NarrativeSections'
 
 const tabs = ['overview', 'segments', 'predictions'] as const
-type Tab = typeof tabs[number]
+type Tab = (typeof tabs)[number]
 
 export default function CustomerLifetimeValueAnalytics() {
   const [isLoading, setIsLoading] = useState(true)
@@ -32,20 +33,62 @@ export default function CustomerLifetimeValueAnalytics() {
     setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
   }
 
+  // Standardized metrics configuration using consistent data formatting
+  const metrics = [
+    {
+      id: 'average-clv',
+      icon: DollarSign,
+      label: 'Average CLV',
+      value: formatCurrency(clvMetrics.averageCLV, { compact: true }),
+      subtitle: 'Predicted Value',
+      variant: 'primary' as const,
+    },
+    {
+      id: 'ml-accuracy',
+      icon: Brain,
+      label: 'ML Accuracy',
+      value: formatPercentage(clvMetrics.predictionAccuracy / 100),
+      subtitle: 'Model Performance',
+      variant: 'secondary' as const,
+    },
+    {
+      id: 'high-value-customers',
+      icon: Users,
+      label: 'High Value',
+      value: formatNumber(clvMetrics.highValueCustomers),
+      subtitle: 'Premium Customers',
+      variant: 'primary' as const,
+    },
+    {
+      id: 'forecast-horizon',
+      icon: Calendar,
+      label: 'Forecast',
+      value: `${clvMetrics.forecastHorizon} mo`,
+      subtitle: 'Prediction Window',
+      variant: 'secondary' as const,
+    },
+  ]
+
   return (
     <ProjectPageLayout
       title="Customer Lifetime Value Predictive Analytics Dashboard"
       description="Advanced CLV analytics platform leveraging BTYD (Buy Till You Die) predictive modeling framework. Achieving 94.3% prediction accuracy through machine learning algorithms and real-time customer behavior tracking across 5 distinct customer segments."
       tags={[
-        { label: 'Prediction Accuracy: 94.3%', color: 'bg-primary/20 text-primary' },
-        { label: `Avg CLV: ${formatCurrency(clvMetrics.averageCLV)}`, color: 'bg-secondary/20 text-secondary' },
-        { label: 'Machine Learning', color: 'bg-primary/20 text-primary' },
-        { label: 'BTYD Framework', color: 'bg-secondary/20 text-secondary' },
+        {
+          label: `Prediction Accuracy: ${formatPercentage(clvMetrics.predictionAccuracy / 100)}`,
+          variant: 'primary',
+        },
+        {
+          label: `Avg CLV: ${formatCurrency(clvMetrics.averageCLV, { compact: true })}`,
+          variant: 'secondary',
+        },
+        { label: 'Machine Learning', variant: 'primary' },
+        { label: 'BTYD Framework', variant: 'secondary' },
       ]}
       onRefresh={handleRefresh}
       refreshButtonDisabled={isLoading}
       showTimeframes={true}
-      timeframes={tabs.map(t => t.charAt(0).toUpperCase() + t.slice(1))}
+      timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
       activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
       onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
     >
@@ -53,64 +96,36 @@ export default function CustomerLifetimeValueAnalytics() {
         <LoadingState />
       ) : (
         <>
-          {/* Key Metrics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <MetricCard
-              icon={DollarSign}
-              label="Average CLV"
-              value={formatCurrency(clvMetrics.averageCLV)}
-              subtitle="Predicted Value"
-              gradientFrom="from-emerald-600"
-              gradientTo="to-teal-600"
-              iconBgClass="bg-emerald-500/20"
-              iconColorClass="text-emerald-400"
+          {/* Key Metrics using standardized MetricsGrid */}
+          <MetricsGrid metrics={metrics} columns={4} loading={isLoading} className="mb-8" />
 
-            />
-            <MetricCard
-              icon={Brain}
-              label="ML Accuracy"
-              value={formatPercent(clvMetrics.predictionAccuracy)}
-              subtitle="Model Performance"
-              gradientFrom="from-teal-600"
-              gradientTo="to-cyan-600"
-              iconBgClass="bg-teal-500/20"
-              iconColorClass="text-teal-400"
+          {/* Tab Content wrapped in SectionCard */}
+          <SectionCard
+            title="CLV Analytics"
+            description="Comprehensive customer lifetime value analysis and insights"
+            className="mb-8"
+          >
+            {activeTab === 'overview' && <OverviewTab />}
+            {activeTab === 'segments' && <SegmentsTab />}
+            {activeTab === 'predictions' && <PredictionsTab />}
+          </SectionCard>
 
-            />
-            <MetricCard
-              icon={Users}
-              label="High Value"
-              value={clvMetrics.highValueCustomers.toLocaleString()}
-              subtitle="Premium Customers"
-              gradientFrom="from-cyan-600"
-              gradientTo="to-blue-600"
-              iconBgClass="bg-primary/20"
-              iconColorClass="text-primary"
+          {/* Strategic Impact wrapped in SectionCard */}
+          <SectionCard
+            title="Strategic Impact"
+            description="Business impact and strategic outcomes from CLV optimization"
+            className="mb-8"
+          >
+            <StrategicImpact />
+          </SectionCard>
 
-            />
-            <MetricCard
-              icon={Calendar}
-              label="Forecast"
-              value={`${clvMetrics.forecastHorizon} mo`}
-              subtitle="Prediction Window"
-              gradientFrom="from-blue-600"
-              gradientTo="to-purple-600"
-              iconBgClass="bg-primary/20"
-              iconColorClass="text-primary"
-
-            />
-          </div>
-
-          {/* Tab Content */}
-          {activeTab === 'overview' && <OverviewTab />}
-          {activeTab === 'segments' && <SegmentsTab />}
-          {activeTab === 'predictions' && <PredictionsTab />}
-
-          {/* Strategic Impact */}
-          <StrategicImpact />
-
-          {/* Professional Narrative Sections */}
-          <NarrativeSections />
+          {/* Professional Narrative Sections wrapped in SectionCard */}
+          <SectionCard
+            title="Project Narrative"
+            description="Comprehensive case study following the STAR methodology"
+          >
+            <NarrativeSections />
+          </SectionCard>
         </>
       )}
     </ProjectPageLayout>

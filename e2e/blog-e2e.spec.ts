@@ -135,20 +135,20 @@ class BlogPage {
 
   async savePost() {
     await this.page.click('[data-testid="save-post-button"]')
-    await this.page.waitForSelector('[data-testid="save-success-message"]')
+    await this.page.locator('[data-testid="save-success-message"]').waitFor({ state: 'visible' })
   }
 
   async publishPost() {
     await this.page.click('[data-testid="publish-post-button"]')
     await this.page.click('[data-testid="confirm-publish-button"]')
-    await this.page.waitForSelector('[data-testid="publish-success-message"]')
+    await this.page.locator('[data-testid="publish-success-message"]').waitFor({ state: 'visible' })
   }
 
   async deletePost() {
     await this.page.click('[data-testid="delete-post-button"]')
     await this.page.fill('[data-testid="delete-confirmation-input"]', 'delete')
     await this.page.click('[data-testid="confirm-delete-button"]')
-    await this.page.waitForSelector('[data-testid="delete-success-message"]')
+    await this.page.locator('[data-testid="delete-success-message"]').waitFor({ state: 'visible' })
   }
 
   // Assertions
@@ -591,6 +591,6 @@ test.describe('Blog System Error Handling', () => {
     await expect(page.locator('[data-testid="blog-list-loading"]')).toBeVisible()
     
     // Wait for content to load
-    await page.waitForSelector('[data-testid="blog-card"]', { timeout: 10000 })
+    await page.locator('[data-testid="blog-card"]').first().waitFor({ state: 'visible', timeout: 10000 })
   })
 })

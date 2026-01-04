@@ -69,7 +69,7 @@ function ExperienceStatCard({ stat }: ExperienceStatCardProps) {
       
       
     >
-      <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 hover:shadow-xl transition-all duration-300">
+      <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 hover:shadow-xl transition-all duration-300 ease-out">
         <CardContent className="p-6 text-center">
           <div className="mb-4 flex justify-center">
             <div className="p-3 rounded-full bg-primary/10 dark:bg-primary-bg">

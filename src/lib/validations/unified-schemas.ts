@@ -11,8 +11,8 @@ import {
   InteractionType,
   SEOEventType,
   SEOSeverity,
-  ChangeFrequency
-} from '@prisma/client'
+  ChangeFrequency,
+} from '@/lib/prisma-types'
 
 // =======================
 // BASE PRIMITIVE SCHEMAS
@@ -25,10 +25,7 @@ export const emailSchema = z
   .max(254, 'Email address is too long')
 
 // URL validation
-export const urlSchema = z
-  .string()
-  .url('Please enter a valid URL')
-  .max(2048, 'URL is too long')
+export const urlSchema = z.string().url('Please enter a valid URL').max(2048, 'URL is too long')
 
 // Optional URL that can be empty string
 export const optionalUrlSchema = z
@@ -48,9 +45,7 @@ export const slugSchema = z
   })
 
 // CUID validation for database IDs
-export const cuidSchema = z
-  .string()
-  .regex(/^c[^\s-]{8,}$/, 'Must be a valid CUID')
+export const cuidSchema = z.string().regex(/^c[^\s-]{8,}$/, 'Must be a valid CUID')
 
 // Phone number validation
 export const phoneSchema = z
@@ -110,21 +105,23 @@ export const contactFormSchema = z.object({
     .max(50, 'Name cannot exceed 50 characters')
     .trim(),
   email: emailSchema,
-  subject: z
+  company: z
     .string()
-    .min(5, 'Subject must be at least 5 characters long')
-    .max(100, 'Subject cannot exceed 100 characters')
-    .trim(),
+    .max(100, 'Company name cannot exceed 100 characters')
+    .trim()
+    .optional()
+    .or(z.literal('')),
+  phone: z
+    .string()
+    .max(20, 'Phone number cannot exceed 20 characters')
+    .regex(/^[\d\s+()-]*$/, 'Please enter a valid phone number')
+    .optional()
+    .or(z.literal('')),
   message: z
     .string()
     .min(10, 'Message must be at least 10 characters long')
     .max(1000, 'Message cannot exceed 1000 characters')
     .trim(),
-  company: z
-    .string()
-    .max(100, 'Company name cannot exceed 100 characters')
-    .optional(),
-  phone: phoneSchema,
   honeypot: z.string().optional(), // Bot detection field
 })
 
@@ -159,25 +156,24 @@ export const blogInteractionSchema = z.object({
 })
 
 export const blogPostFilterSchema = z.object({
-  status: z.union([
-    PostStatusSchema,
-    z.array(PostStatusSchema)
-  ]).optional(),
+  status: z.union([PostStatusSchema, z.array(PostStatusSchema)]).optional(),
   authorId: cuidSchema.optional(),
   categoryId: cuidSchema.optional(),
   tagIds: z.array(cuidSchema).optional(),
   search: z.string().max(200).optional(),
-  dateRange: z.object({
-    from: z.date(),
-    to: z.date()
-  }).optional(),
+  dateRange: z
+    .object({
+      from: z.date(),
+      to: z.date(),
+    })
+    .optional(),
   featured: z.boolean().optional(),
-  published: z.boolean().optional()
+  published: z.boolean().optional(),
 })
 
 export const blogPostSortSchema = z.object({
   field: z.enum(['title', 'createdAt', 'updatedAt', 'publishedAt', 'viewCount', 'likeCount']),
-  order: z.enum(['asc', 'desc']).default('desc')
+  order: z.enum(['asc', 'desc']).default('desc'),
 })
 
 // =======================
@@ -203,7 +199,7 @@ export const postViewCreateSchema = z.object({
   region: z.string().max(100).optional(),
   city: z.string().max(100).optional(),
   readingTime: z.number().int().min(0).max(3600).optional(),
-  scrollDepth: z.number().min(0).max(1).optional()
+  scrollDepth: z.number().min(0).max(1).optional(),
 })
 
 export const postInteractionCreateSchema = z.object({
@@ -212,7 +208,7 @@ export const postInteractionCreateSchema = z.object({
   visitorId: z.string().max(100).optional(),
   sessionId: z.string().max(100).optional(),
   value: z.string().max(200).optional(),
-  metadata: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).optional()
+  metadata: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).optional(),
 })
 
 // =======================
@@ -260,10 +256,7 @@ export const paginatedResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =
 export class ValidationError extends Error {
   public details?: Record<string, string[]>
 
-  constructor(
-    message: string,
-    details?: Record<string, string[]>
-  ) {
+  constructor(message: string, details?: Record<string, string[]>) {
     super(message)
     this.name = 'ValidationError'
     this.details = details
@@ -296,7 +289,7 @@ export function validate<T>(schema: z.ZodType<T>, data: unknown): T {
 
 // Safe validation that returns success/error results
 export function safeValidate<T>(
-  schema: z.ZodType<T>, 
+  schema: z.ZodType<T>,
   data: unknown
 ): { success: true; data: T } | { success: false; error: z.ZodError } {
   const result = schema.safeParse(data)
@@ -312,7 +305,8 @@ export const validateUrl = (url: unknown) => validate(urlSchema, url)
 export const validateSlug = (slug: unknown) => validate(slugSchema, slug)
 export const validateCuid = (id: unknown) => validate(cuidSchema, id)
 export const validateContactForm = (data: unknown) => validate(contactFormSchema, data)
-export const validateProjectInteraction = (data: unknown) => validate(projectInteractionSchema, data)
+export const validateProjectInteraction = (data: unknown) =>
+  validate(projectInteractionSchema, data)
 export const validateBlogInteraction = (data: unknown) => validate(blogInteractionSchema, data)
 export const validateViewTracking = (data: unknown) => validate(viewTrackingSchema, data)
 export const validatePagination = (data: unknown) => validate(paginationSchema, data)
@@ -427,4 +421,3 @@ export function sanitizeHtml(html: string): string {
     .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
     .replace(/<embed\b[^<]*(?:(?!<\/embed>)<[^<]*)*<\/embed>/gi, '')
 }
-

@@ -1,3 +1,2 @@
-echo "Running pre-push checks..."
-bun run ci:quick && bun run test:run || exit 1
-echo "All checks passed!"
+# Pre-commit already ran lint, type-check, and tests
+echo "Pushing to remote..."

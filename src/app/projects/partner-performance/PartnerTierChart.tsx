@@ -1,7 +1,15 @@
 'use client'
 import { memo } from 'react'
 
-import { LazyBarChart as BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from '@/components/charts/lazy-charts'
+import {
+  LazyBarChart as BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from '@/components/charts/lazy-charts'
 
 // Partner tier performance data based on real CSV analysis
 const data = [
@@ -23,11 +31,7 @@ const PartnerTierChart = memo(function PartnerTierChart() {
     <div className="h-[350px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke={chartColors.grid} 
-            vertical={false}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
           <XAxis
             dataKey="tier"
             stroke={chartColors.axis}
@@ -63,30 +67,33 @@ const PartnerTierChart = memo(function PartnerTierChart() {
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
-            formatter={(value: number, name: string) => {
-              if (name === 'revenue') return [`$${(value / 1000).toFixed(0)}K`, 'Revenue']
-              if (name === 'roi') return [`${value}x`, 'ROI Multiple']
-              return [value, name]
+            formatter={(value: number | undefined, name: string | undefined) => {
+              const safeName = name ?? ''
+              if (value === undefined) return [0, safeName]
+              if (safeName === 'revenue') return [`$${(value / 1000).toFixed(0)}K`, 'Revenue']
+              if (safeName === 'roi') return [`${value}x`, 'ROI Multiple']
+              return [value, safeName]
             }}
           />
-          <Bar 
+          <Bar
             yAxisId="revenue"
-            dataKey="revenue" 
-            fill={chartColors.revenue} 
-            radius={[4, 4, 0, 0]} 
+            dataKey="revenue"
+            fill={chartColors.revenue}
+            radius={[4, 4, 0, 0]}
             name="revenue"
           />
-          <Bar 
+          <Bar
             yAxisId="roi"
-            dataKey="roi" 
-            fill={chartColors.roi} 
-            radius={[4, 4, 0, 0]} 
+            dataKey="roi"
+            fill={chartColors.roi}
+            radius={[4, 4, 0, 0]}
             name="roi"
           />
         </BarChart>
       </ResponsiveContainer>
       <p className="mt-4 text-center text-sm italic text-muted-foreground">
-        Partner tier performance showing certified partners deliver 8.2x ROI vs 2.4x for new partner acquisitions
+        Partner tier performance showing certified partners deliver 8.2x ROI vs 2.4x for new partner
+        acquisitions
       </p>
     </div>
   )

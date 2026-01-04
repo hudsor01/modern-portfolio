@@ -3,7 +3,9 @@
  * Persists security events to the database for monitoring and auditing
  */
 
-import { db, SecurityEventType, SecuritySeverity, Prisma } from '@/lib/db'
+import { db } from '@/lib/db'
+import { Prisma } from '@/prisma/client'
+import { SecurityEventType, SecuritySeverity } from '@/lib/prisma-types'
 import { createContextLogger } from '@/lib/monitoring/logger'
 
 const logger = createContextLogger('SecurityEventLogger')
@@ -178,11 +180,12 @@ export async function logMaliciousInput(
     sanitizedInput?: string
   }
 ): Promise<string | null> {
-  const type = inputType === 'XSS'
-    ? 'XSS_ATTEMPT'
-    : inputType === 'SQL_INJECTION'
-      ? 'SQL_INJECTION_ATTEMPT'
-      : 'INVALID_INPUT'
+  const type =
+    inputType === 'XSS'
+      ? 'XSS_ATTEMPT'
+      : inputType === 'SQL_INJECTION'
+        ? 'SQL_INJECTION_ATTEMPT'
+        : 'INVALID_INPUT'
 
   return logSecurityEvent({
     type,

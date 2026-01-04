@@ -1,7 +1,17 @@
 'use client'
 import { memo } from 'react'
 
-import { LazyComposedChart as ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from '@/components/charts/lazy-charts'
+import {
+  LazyComposedChart as ComposedChart,
+  Bar,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Legend,
+} from '@/components/charts/lazy-charts'
 
 // Commission tier performance data
 const data = [
@@ -14,7 +24,7 @@ const data = [
     roi: 4.2,
     performanceBonus: 15.0,
     retentionRate: 95.0,
-    satisfactionScore: 96.5
+    satisfactionScore: 96.5,
   },
   {
     tier: 'Premium',
@@ -25,7 +35,7 @@ const data = [
     roi: 3.8,
     performanceBonus: 10.0,
     retentionRate: 92.0,
-    satisfactionScore: 94.2
+    satisfactionScore: 94.2,
   },
   {
     tier: 'Standard',
@@ -36,7 +46,7 @@ const data = [
     roi: 3.2,
     performanceBonus: 5.0,
     retentionRate: 87.0,
-    satisfactionScore: 89.1
+    satisfactionScore: 89.1,
   },
   {
     tier: 'Growth',
@@ -47,7 +57,7 @@ const data = [
     roi: 2.1,
     performanceBonus: 0,
     retentionRate: 78.0,
-    satisfactionScore: 82.4
+    satisfactionScore: 82.4,
   },
 ]
 
@@ -75,11 +85,7 @@ const CommissionTierChart = memo(function CommissionTierChart() {
     <div className="h-[350px]">
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke={chartColors.grid} 
-            vertical={false}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
           <XAxis
             dataKey="tier"
             stroke={chartColors.axis}
@@ -113,57 +119,59 @@ const CommissionTierChart = memo(function CommissionTierChart() {
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
-            formatter={(value: number, name: string) => {
-              if (name === 'totalEarnings') return [formatCurrency(value), 'Total Earnings']
-              if (name === 'avgEarnings') return [formatCurrency(value), 'Avg Earnings']
-              if (name === 'commissionRate') return [`${value}%`, 'Commission Rate']
-              if (name === 'roi') return [`${value}x`, 'ROI']
-              if (name === 'retentionRate') return [`${value}%`, 'Retention Rate']
-              if (name === 'satisfactionScore') return [`${value}%`, 'Satisfaction Score']
-              if (name === 'performanceBonus') return [`${value}%`, 'Performance Bonus']
-              if (name === 'partners') return [value, 'Partner Count']
-              return [value, name]
+            formatter={(value: number | undefined, name: string | undefined) => {
+              const safeValue = value ?? 0
+              const safeName = name ?? ''
+              if (safeName === 'totalEarnings') return [formatCurrency(safeValue), 'Total Earnings']
+              if (safeName === 'avgEarnings') return [formatCurrency(safeValue), 'Avg Earnings']
+              if (safeName === 'commissionRate') return [`${safeValue}%`, 'Commission Rate']
+              if (safeName === 'roi') return [`${safeValue}x`, 'ROI']
+              if (safeName === 'retentionRate') return [`${safeValue}%`, 'Retention Rate']
+              if (safeName === 'satisfactionScore') return [`${safeValue}%`, 'Satisfaction Score']
+              if (safeName === 'performanceBonus') return [`${safeValue}%`, 'Performance Bonus']
+              if (safeName === 'partners') return [safeValue, 'Partner Count']
+              return [safeValue, safeName]
             }}
             labelFormatter={(label) => `${label} Tier Performance`}
           />
           <Legend
             wrapperStyle={{
               paddingTop: '20px',
-              fontSize: '12px'
+              fontSize: '12px',
             }}
           />
-          <Bar 
+          <Bar
             yAxisId="earnings"
-            dataKey="totalEarnings" 
-            fill={chartColors.earnings} 
-            radius={[4, 4, 0, 0]} 
+            dataKey="totalEarnings"
+            fill={chartColors.earnings}
+            radius={[4, 4, 0, 0]}
             name="totalEarnings"
           />
-          <Line 
+          <Line
             yAxisId="percentage"
-            type="monotone" 
-            dataKey="retentionRate" 
-            stroke={chartColors.retention} 
+            type="monotone"
+            dataKey="retentionRate"
+            stroke={chartColors.retention}
             strokeWidth={3}
             dot={{ fill: chartColors.retention, strokeWidth: 2, r: 6 }}
             activeDot={{ r: 8, stroke: chartColors.retention, strokeWidth: 2 }}
             name="retentionRate"
           />
-          <Line 
+          <Line
             yAxisId="percentage"
-            type="monotone" 
-            dataKey="satisfactionScore" 
-            stroke={chartColors.satisfaction} 
+            type="monotone"
+            dataKey="satisfactionScore"
+            stroke={chartColors.satisfaction}
             strokeWidth={2}
             strokeDasharray="5 5"
             dot={{ fill: chartColors.satisfaction, strokeWidth: 2, r: 4 }}
             name="satisfactionScore"
           />
-          <Line 
+          <Line
             yAxisId="percentage"
-            type="monotone" 
-            dataKey="commissionRate" 
-            stroke={chartColors.commissionRate} 
+            type="monotone"
+            dataKey="commissionRate"
+            stroke={chartColors.commissionRate}
             strokeWidth={2}
             strokeDasharray="8 3"
             dot={{ fill: chartColors.commissionRate, strokeWidth: 2, r: 4 }}
@@ -172,7 +180,8 @@ const CommissionTierChart = memo(function CommissionTierChart() {
         </ComposedChart>
       </ResponsiveContainer>
       <p className="mt-4 text-center text-sm italic text-muted-foreground">
-        Commission tier analysis showing earnings distribution, partner retention rates, satisfaction scores, and commission rate optimization across performance tiers
+        Commission tier analysis showing earnings distribution, partner retention rates,
+        satisfaction scores, and commission rate optimization across performance tiers
       </p>
     </div>
   )

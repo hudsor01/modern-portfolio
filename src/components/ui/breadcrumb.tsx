@@ -44,7 +44,7 @@ const BreadcrumbLink = React.forwardRef<HTMLAnchorElement, BreadcrumbLinkProps>(
       // It's part of React.Attributes, not HTMLAttributes.
       const newProps = {
         ...props,
-        className: cn('hover:text-foreground transition-colors', className, childProps.className),
+        className: cn('hover:text-foreground transition-colors duration-150 ease-out', className, childProps.className),
         ref, // This is the ref from React.forwardRef
       };
       // TypeScript might still struggle here if `children` is a DOM element string like 'a'.
@@ -58,7 +58,7 @@ const BreadcrumbLink = React.forwardRef<HTMLAnchorElement, BreadcrumbLinkProps>(
       <a
         ref={ref}
         data-slot="breadcrumb-link"
-        className={cn('hover:text-foreground transition-colors', className)}
+        className={cn('hover:text-foreground transition-colors duration-150 ease-out', className)}
         {...props}
       >
         {children}

@@ -128,14 +128,17 @@ export async function POST(request: NextRequest) {
     const body = await parseRequestBody(request)
     const formData = validateRequest(contactFormSchema, body)
 
-    // Extract form data
-    const { name, email, subject, message } = formData
+    // Extract form data (subject removed - using default)
+    const { name, email, company, phone, message } = formData
+    const subject = 'Contact Form Inquiry' // Default subject for simplified form
 
     // Save to database first (fail fast on DB errors)
     submission = await db.contactSubmission.create({
       data: {
         name,
         email,
+        company: company || null,
+        phone: phone || null,
         subject,
         message,
         ipAddress: clientId,
@@ -173,20 +176,30 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Build optional fields for email
+    const companyLine = company ? `Company: ${company}\n` : ''
+    const phoneLine = phone ? `Phone: ${phone}\n` : ''
+    const companyHtml = company ? `<p><strong>Company:</strong> ${escapeHtml(company)}</p>` : ''
+    const phoneHtml = phone ? `<p><strong>Phone:</strong> ${escapeHtml(phone)}</p>` : ''
+
     // Send email using Resend
     const emailResult = await getResendClient().emails.send({
       from: 'Portfolio Contact <hello@richardwhudsonjr.com>',
       to: contactEmail,
-      subject: `${escapeHtml(subject)} - from ${escapeHtml(name)}`,
-      text: `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\nMessage: ${message}`,
+      replyTo: email,
+      subject: `New Contact from ${escapeHtml(name)}`,
+      text: `Name: ${name}\nEmail: ${email}\n${companyLine}${phoneLine}\nMessage:\n${message}`,
       html: `
-        <div>
-          <h2>New Contact Form Submission</h2>
-          <p><strong>Name:</strong> ${escapeHtml(name)}</p>
-          <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-          <p><strong>Subject:</strong> ${escapeHtml(subject)}</p>
-          <p><strong>Message:</strong></p>
-          <p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #1e293b; border-bottom: 2px solid #3b82f6; padding-bottom: 8px;">New Contact Form Submission</h2>
+          <p><strong>From:</strong> ${escapeHtml(name)}</p>
+          <p><strong>Email:</strong> <a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></p>
+          ${companyHtml}
+          ${phoneHtml}
+          <div style="background: #f8fafc; padding: 16px; border-radius: 8px; margin-top: 16px;">
+            <p><strong>Message:</strong></p>
+            <p style="white-space: pre-wrap;">${escapeHtml(message).replace(/\n/g, '<br>')}</p>
+          </div>
         </div>
       `,
     })

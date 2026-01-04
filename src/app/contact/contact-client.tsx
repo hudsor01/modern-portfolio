@@ -1,15 +1,11 @@
 'use client'
 
-import {
-  Zap,
-  Shield,
-  CheckCircle,
-} from 'lucide-react'
+import { Zap, Shield, CheckCircle } from 'lucide-react'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { ContactForm } from '@/components/contact/contact-form'
 import { ContactInfo } from '@/components/contact/contact-info'
-import { SuccessStories } from '@/components/contact/success-stories'
+import { FeaturedProjects } from '@/components/contact/featured-projects'
 import { useContactForm } from '@/hooks/use-contact-form'
 
 // ============================================================================
@@ -23,15 +19,16 @@ export default function ContactPageClient() {
     <>
       <Navbar />
       <main id="main-content">
-        <section className="min-h-screen bg-[#0f172a] text-foreground pt-20">
+        <section className="min-h-screen bg-background text-foreground pt-20">
           <div className="w-full mx-auto px-6">
             {/* Header */}
             <div className="text-center mb-12">
-              <h1 className="text-xl sm:text-xl md:text-2xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent">
+              <h1 className="text-xl sm:text-xl md:text-2xl font-display font-bold mb-6 text-primary">
                 Let's Connect
               </h1>
               <p className="typography-lead max-w-3xl mx-auto mb-8">
-                Ready to optimize your revenue operations? Let's discuss how we can drive growth together.
+                Open to new opportunities in Revenue Operations. Whether you're a recruiter, hiring
+                manager, or industry peer, I'd love to hear from you.
               </p>
 
               {/* Quick Stats */}
@@ -46,7 +43,7 @@ export default function ContactPageClient() {
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-primary" />
-                  <span>$4.8M+ Revenue Generated</span>
+                  <span>$4.8M+ Revenue Impact</span>
                 </div>
               </div>
             </div>
@@ -55,10 +52,10 @@ export default function ContactPageClient() {
               {/* Contact Form */}
               <ContactForm form={form} />
 
-              {/* Contact Information & Social Proof */}
+              {/* Contact Information & Featured Work */}
               <div className="space-y-8">
                 <ContactInfo />
-                <SuccessStories />
+                <FeaturedProjects />
               </div>
             </div>
           </div>

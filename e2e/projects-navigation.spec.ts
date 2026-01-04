@@ -4,12 +4,12 @@ test.describe('Projects Page - Blue CTA Navigation Tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/projects')
     await page.waitForLoadState('networkidle')
-    await page.waitForSelector('h1', { timeout: 30000 })
+    await page.locator('h1').waitFor({ state: 'visible', timeout: 30000 })
   })
 
   test('should display all project cards with blue CTA buttons', async ({ page }) => {
     // Wait for project content to load
-    await page.waitForSelector('h1', { timeout: 10000 })
+    await page.locator('h1').waitFor({ state: 'visible', timeout: 10000 })
     
     // Get all blue CTA buttons 
     const blueButtons = page.locator('a').filter({ 

@@ -7,26 +7,17 @@ import {
   AlertCircle,
   ArrowRight,
   User,
-  Building,
-  Phone,
   MessageSquare,
   Eye,
   EyeOff,
+  Building2,
+  Phone,
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Field, FieldError } from '@/components/ui/field'
 import { type UseContactFormReturn } from '@/hooks/use-contact-form'
-import { subjectOptions, budgetRanges, timelineOptions, iconMap } from './contact-constants'
+import type { AnyFieldApi } from '@tanstack/react-form'
 
 // ============================================================================
 // Props
@@ -37,251 +28,263 @@ interface ContactFormProps {
 }
 
 // ============================================================================
+// Helper Component for Field Info
+// ============================================================================
+
+function FieldErrorDisplay({
+  field,
+  fallbackError,
+}: {
+  field: AnyFieldApi
+  fallbackError?: string
+}) {
+  const hasFieldErrors = field.state.meta.isTouched && field.state.meta.errors.length > 0
+  const errorMessage = hasFieldErrors ? field.state.meta.errors[0] : fallbackError
+
+  if (!errorMessage) return null
+
+  return <FieldError>{errorMessage}</FieldError>
+}
+
+// ============================================================================
 // Component
 // ============================================================================
 
-export function ContactForm({ form }: ContactFormProps) {
+export function ContactForm({ form: formHook }: ContactFormProps) {
   const {
-    formData,
-    errors,
     submitStatus,
     showPrivacy,
     agreedToTerms,
-    progress,
-    isSubmitting,
-    handleInputChange,
-    handleFieldChange,
-    handleSubjectSelect,
-    handleSubmit,
+    errors,
+    form,
     setShowPrivacy,
     setAgreedToTerms,
-  } = form
+  } = formHook
 
   return (
-    <div className="glass rounded-2xl p-8">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="typography-h3">Send a Message</h2>
-        <div className="flex items-center gap-2">
-          <div className="typography-small text-muted-foreground">Form Progress</div>
-          <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <div className="text-sm text-primary font-medium">{progress}%</div>
-        </div>
-      </div>
+    <div className="bg-card rounded-2xl p-8 border border-border shadow-sm">
+      <h2 className="typography-h3 mb-6">Send a Message</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          formHook.handleSubmit(e)
+        }}
+        className="space-y-6"
+      >
         {/* Name & Email Row */}
         <div className="grid md:grid-cols-2 gap-4">
-          <div className="relative">
-            <div className="absolute left-3 top-3.5 text-muted-foreground">
-              <User className="w-5 h-5" />
-            </div>
-            <Input
-              name="name"
-              type="text"
-              value={formData.name}
-              onChange={handleInputChange}
-              placeholder="Your name *"
-              required
-              aria-invalid={!!errors.name}
-              className="pl-12"
-            />
-            {errors.name && <span role="alert" className="text-destructive text-sm mt-1 block">{errors.name}</span>}
-          </div>
-          <div className="relative">
-            <div className="absolute left-3 top-3.5 text-muted-foreground">
-              <Mail className="w-5 h-5" />
-            </div>
-            <Input
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              placeholder="Your email *"
-              required
-              aria-invalid={!!errors.email}
-              className="pl-12"
-            />
-            {errors.email && <span role="alert" className="text-destructive text-sm mt-1 block">{errors.email}</span>}
-          </div>
+          <form.Field
+            name="name"
+            children={(field: AnyFieldApi) => (
+              <Field data-invalid={field.state.meta.errors.length > 0 || !!errors.name}>
+                <div className="relative">
+                  <div className="absolute left-3 top-3.5 text-muted-foreground">
+                    <User className="w-5 h-5" />
+                  </div>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    type="text"
+                    value={field.state.value}
+                    onChange={(e) => {
+                      field.handleChange(e.target.value)
+                      formHook.handleInputChange(e)
+                    }}
+                    onBlur={field.handleBlur}
+                    placeholder="Your name *"
+                    required
+                    aria-invalid={field.state.meta.errors.length > 0 || !!errors.name}
+                    className="pl-12"
+                  />
+                </div>
+                <FieldErrorDisplay field={field} fallbackError={errors.name} />
+              </Field>
+            )}
+          />
+
+          <form.Field
+            name="email"
+            children={(field: AnyFieldApi) => (
+              <Field data-invalid={field.state.meta.errors.length > 0 || !!errors.email}>
+                <div className="relative">
+                  <div className="absolute left-3 top-3.5 text-muted-foreground">
+                    <Mail className="w-5 h-5" />
+                  </div>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    type="email"
+                    value={field.state.value}
+                    onChange={(e) => {
+                      field.handleChange(e.target.value)
+                      formHook.handleInputChange(e)
+                    }}
+                    onBlur={field.handleBlur}
+                    placeholder="Your email *"
+                    required
+                    aria-invalid={field.state.meta.errors.length > 0 || !!errors.email}
+                    className="pl-12"
+                  />
+                </div>
+                <FieldErrorDisplay field={field} fallbackError={errors.email} />
+              </Field>
+            )}
+          />
         </div>
 
         {/* Company & Phone Row */}
         <div className="grid md:grid-cols-2 gap-4">
-          <div className="relative">
-            <div className="absolute left-3 top-3.5 text-muted-foreground">
-              <Building className="w-5 h-5" />
-            </div>
-            <Input
-              name="company"
-              type="text"
-              value={formData.company}
-              onChange={handleInputChange}
-              placeholder="Company"
-              className="pl-12"
-            />
-          </div>
-          <div className="relative">
-            <div className="absolute left-3 top-3.5 text-muted-foreground">
-              <Phone className="w-5 h-5" />
-            </div>
-            <Input
-              name="phone"
-              type="tel"
-              value={formData.phone}
-              onChange={handleInputChange}
-              placeholder="Phone"
-              aria-invalid={!!errors.phone}
-              className="pl-12"
-            />
-            {errors.phone && <span role="alert" className="text-destructive text-sm mt-1 block">{errors.phone}</span>}
-          </div>
-        </div>
+          <form.Field
+            name="company"
+            children={(field: AnyFieldApi) => (
+              <Field data-invalid={field.state.meta.errors.length > 0 || !!errors.company}>
+                <div className="relative">
+                  <div className="absolute left-3 top-3.5 text-muted-foreground">
+                    <Building2 className="w-5 h-5" />
+                  </div>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    type="text"
+                    value={field.state.value}
+                    onChange={(e) => {
+                      field.handleChange(e.target.value)
+                      formHook.handleInputChange(e)
+                    }}
+                    onBlur={field.handleBlur}
+                    placeholder="Company / Organization"
+                    aria-invalid={field.state.meta.errors.length > 0 || !!errors.company}
+                    className="pl-12"
+                  />
+                </div>
+                <FieldErrorDisplay field={field} fallbackError={errors.company} />
+              </Field>
+            )}
+          />
 
-        {/* Subject Selection */}
-        <div>
-          <Label className="block text-sm font-medium text-muted-foreground mb-3">
-            What can I help you with? *
-          </Label>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {subjectOptions.map((option) => {
-              const Icon = iconMap[option.icon as keyof typeof iconMap]
-              const isSelected = formData.subject === option.value
-              return (
-                <Button
-                  key={option.value}
-                  type="button"
-                  variant="outline"
-                  onClick={() => handleSubjectSelect(option.value)}
-                  className={`h-auto p-4 flex-col gap-2 ${
-                    isSelected
-                      ? 'border-primary bg-primary/10 text-primary'
-                      : 'border-white/20 bg-white/5 text-muted-foreground hover:border-primary/50 hover:bg-white/10'
-                  }`}
-                >
-                  <Icon className="w-6 h-6" />
-                  <span className="text-xs font-medium">{option.label}</span>
-                </Button>
-              )
-            })}
-          </div>
-          {errors.subject && <span role="alert" className="text-destructive text-sm mt-1 block">{errors.subject}</span>}
-        </div>
-
-        {/* Timeline & Budget Row */}
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <Label className="block text-sm font-medium text-muted-foreground mb-2">Project Timeline</Label>
-            <Select
-              value={formData.timeline}
-              onValueChange={(value) => handleFieldChange('timeline', value)}
-            >
-              <SelectTrigger className="w-full bg-white/10 border-white/20 rounded-xl">
-                <SelectValue placeholder="Select timeline" />
-              </SelectTrigger>
-              <SelectContent>
-                {timelineOptions.map(option => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label className="block text-sm font-medium text-muted-foreground mb-2">Budget Range</Label>
-            <Select
-              value={formData.budget}
-              onValueChange={(value) => handleFieldChange('budget', value)}
-            >
-              <SelectTrigger className="w-full bg-white/10 border-white/20 rounded-xl">
-                <SelectValue placeholder="Select budget" />
-              </SelectTrigger>
-              <SelectContent>
-                {budgetRanges.map(option => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <form.Field
+            name="phone"
+            children={(field: AnyFieldApi) => (
+              <Field data-invalid={field.state.meta.errors.length > 0 || !!errors.phone}>
+                <div className="relative">
+                  <div className="absolute left-3 top-3.5 text-muted-foreground">
+                    <Phone className="w-5 h-5" />
+                  </div>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    type="tel"
+                    value={field.state.value}
+                    onChange={(e) => {
+                      field.handleChange(e.target.value)
+                      formHook.handleInputChange(e)
+                    }}
+                    onBlur={field.handleBlur}
+                    placeholder="Phone number"
+                    aria-invalid={field.state.meta.errors.length > 0 || !!errors.phone}
+                    className="pl-12"
+                  />
+                </div>
+                <FieldErrorDisplay field={field} fallbackError={errors.phone} />
+              </Field>
+            )}
+          />
         </div>
 
         {/* Message */}
-        <div className="relative">
-          <MessageSquare className="absolute left-3 top-3.5 w-5 h-5 text-muted-foreground z-10" />
-          <Textarea
-            name="message"
-            value={formData.message}
-            onChange={handleInputChange}
-            required
-            rows={5}
-            aria-invalid={!!errors.message}
-            className="pl-12 pr-4 bg-white/10 border-white/20 rounded-xl resize-none"
-            placeholder="Tell me about your project or requirements... *"
-          />
-          <div className="absolute bottom-3 right-3 typography-small text-muted-foreground">
-            {formData.message.length}/500
-          </div>
-          {errors.message && <span role="alert" className="text-destructive text-sm mt-1 block">{errors.message}</span>}
-        </div>
+        <form.Field
+          name="message"
+          children={(field: AnyFieldApi) => (
+            <Field data-invalid={field.state.meta.errors.length > 0 || !!errors.message}>
+              <div className="relative">
+                <MessageSquare className="absolute left-3 top-3.5 w-5 h-5 text-muted-foreground" />
+                <textarea
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  onChange={(e) => {
+                    field.handleChange(e.target.value)
+                    formHook.handleInputChange(e)
+                  }}
+                  onBlur={field.handleBlur}
+                  required
+                  rows={6}
+                  className={`w-full pl-12 pr-4 py-3 bg-background border rounded-xl focus:outline-hidden focus:ring-[3px] text-foreground placeholder-muted-foreground resize-none transition-all duration-300 ease-out ${
+                    field.state.meta.errors.length > 0 || errors.message
+                      ? 'border-destructive focus:ring-destructive/50'
+                      : 'border-border focus:ring-primary/50'
+                  }`}
+                  placeholder="What would you like to discuss? *"
+                />
+                <div className="absolute bottom-3 right-3 typography-small text-muted-foreground">
+                  {String(field.state.value).length}/500
+                </div>
+              </div>
+              <FieldErrorDisplay field={field} fallbackError={errors.message} />
+            </Field>
+          )}
+        />
 
         {/* Privacy Agreement */}
-        <div className="flex items-start gap-3 p-4 bg-white/5 rounded-xl border border-white/10">
+        <div className="flex items-start gap-3 p-4 bg-muted/30 rounded-xl border border-border">
           <Checkbox
             id="privacy"
             checked={agreedToTerms}
             onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
           />
           <div className="text-sm">
-            <Label htmlFor="privacy" className="text-muted-foreground cursor-pointer font-normal">
+            <label htmlFor="privacy" className="text-muted-foreground cursor-pointer">
               I agree to the{' '}
-              <Button
+              <button
                 type="button"
-                variant="link"
-                size="sm"
                 onClick={() => setShowPrivacy(!showPrivacy)}
-                className="h-auto p-0 text-primary hover:text-primary/70 underline"
+                className="text-primary hover:text-primary/70 underline inline-flex items-center gap-1"
+                aria-label={showPrivacy ? 'Hide privacy policy' : 'Show privacy policy'}
+                aria-expanded={showPrivacy}
               >
                 privacy policy
-                {showPrivacy ? <EyeOff className="w-3 h-3 ml-1" /> : <Eye className="w-3 h-3 ml-1" />}
-              </Button>
-              {' '}and consent to processing my data for this inquiry. *
-            </Label>
+                {showPrivacy ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+              </button>{' '}
+              and consent to processing my data for this inquiry. *
+            </label>
             {showPrivacy && (
-              <div className="mt-2 p-3 bg-white/5 rounded-xs typography-small text-muted-foreground border border-white/10">
-                Your information will be used solely to respond to your inquiry. We don&apos;t share personal data with third parties and you can request deletion at any time.
+              <div className="mt-2 p-3 bg-card rounded-lg typography-small text-muted-foreground border border-border">
+                Your information will be used solely to respond to your inquiry. We don't share
+                personal data with third parties and you can request deletion at any time.
               </div>
             )}
-            {errors.terms && <div role="alert" className="text-destructive text-sm mt-1">{errors.terms}</div>}
+            {errors.terms && <FieldError>{errors.terms}</FieldError>}
           </div>
         </div>
 
-        {/* Submit Button */}
-        <Button
-          type="submit"
-          disabled={isSubmitting || !agreedToTerms}
-          size="lg"
-          className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-foreground font-semibold py-4 px-6 rounded-xl h-auto group"
-        >
-          {isSubmitting ? (
-            <>
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-              Sending Message...
-            </>
-          ) : (
-            <>
-              <Send className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
-              Send Message
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </>
+        {/* Submit Button - Using form.Subscribe for reactive state */}
+        <form.Subscribe
+          selector={(state: { canSubmit: boolean; isSubmitting: boolean }) => [
+            state.canSubmit,
+            state.isSubmitting,
+          ]}
+          children={([_canSubmit, isSubmitting]: [boolean, boolean]) => (
+            <button
+              type="submit"
+              disabled={isSubmitting || !agreedToTerms}
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-4 px-6 rounded-xl transition-all duration-300 ease-out flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group shadow-sm hover:shadow-md"
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                  Sending Message...
+                </>
+              ) : (
+                <>
+                  <Send className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+                  Send Message
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                </>
+              )}
+            </button>
           )}
-        </Button>
+        />
 
         {/* Status Messages */}
         {submitStatus === 'success' && (
@@ -291,7 +294,7 @@ export function ContactForm({ form }: ContactFormProps) {
             className="flex items-center gap-2 text-success bg-success/10 p-4 rounded-xl"
           >
             <CheckCircle className="w-5 h-5" />
-            Message sent successfully!
+            Message sent successfully! I'll get back to you soon.
           </div>
         )}
         {submitStatus === 'error' && (

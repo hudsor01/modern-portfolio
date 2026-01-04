@@ -2,18 +2,16 @@
 
 import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
-import {
-  TrendingUp,
-  Users,
-  Target,
-  DollarSign,
-} from 'lucide-react'
+import { TrendingUp, Users, Target, DollarSign } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
+import { MetricsGrid } from '@/components/projects/metrics-grid'
+import { SectionCard } from '@/components/ui/section-card'
+import { ChartContainer } from '@/components/ui/chart-container'
 import { TIMING } from '@/lib/constants/spacing'
+import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data-formatters'
 import { STARAreaChart } from '@/components/projects/star-area-chart'
-
 
 const starData = {
   situation: { phase: 'Situation', impact: 24, efficiency: 20, value: 15 },
@@ -21,14 +19,15 @@ const starData = {
   action: { phase: 'Action', impact: 78, efficiency: 83, value: 75 },
   result: { phase: 'Result', impact: 95, efficiency: 93, value: 91 },
 }
+
 // Lazy-load chart components with Suspense fallback
 const PartnerTierChart = dynamic(() => import('./PartnerTierChart'), {
   loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
-  ssr: true
+  ssr: true,
 })
 const RevenueContributionChart = dynamic(() => import('./RevenueContributionChart'), {
   loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
-  ssr: true
+  ssr: true,
 })
 
 // Real data based on CSV analysis: 83.2% win rate, $1.1M partner revenue
@@ -53,7 +52,7 @@ const partnerTierPerformance = [
     avgDeal: 485,
     winRate: 89.4,
     cycleLength: 73,
-    roi: 8.2
+    roi: 8.2,
   },
   {
     tier: 'Legacy Partners',
@@ -62,7 +61,7 @@ const partnerTierPerformance = [
     avgDeal: 298,
     winRate: 78.1,
     cycleLength: 89,
-    roi: 3.1
+    roi: 3.1,
   },
   {
     tier: 'Inactive Partners',
@@ -71,7 +70,7 @@ const partnerTierPerformance = [
     avgDeal: 0,
     winRate: 0,
     cycleLength: 126,
-    roi: 0
+    roi: 0,
   },
   {
     tier: 'New Partners',
@@ -80,20 +79,26 @@ const partnerTierPerformance = [
     avgDeal: 267,
     winRate: 71.2,
     cycleLength: 105,
-    roi: 2.4
+    roi: 2.4,
   },
 ]
 
 const top80PercentPartners = [
   { partner: 'TechFlow Solutions', revenue: 287650, deals: 89, winRate: 94.2, tier: 'Certified' },
-  { partner: 'Digital Marketing Pro', revenue: 184320, deals: 67, winRate: 87.6, tier: 'Certified' },
+  {
+    partner: 'Digital Marketing Pro',
+    revenue: 184320,
+    deals: 67,
+    winRate: 87.6,
+    tier: 'Certified',
+  },
   { partner: 'Revenue Boost Inc', revenue: 156780, deals: 54, winRate: 91.1, tier: 'Certified' },
   { partner: 'Growth Partners LLC', revenue: 142890, deals: 48, winRate: 85.4, tier: 'Legacy' },
   { partner: 'Channel Dynamics', revenue: 133247, deals: 45, winRate: 82.2, tier: 'Legacy' },
 ]
 
 const tabs = ['overview', 'tiers', 'top-performers'] as const
-type Tab = typeof tabs[number]
+type Tab = (typeof tabs)[number]
 
 export default function PartnerPerformanceIntelligence() {
   const [isLoading, setIsLoading] = useState(true)
@@ -109,29 +114,59 @@ export default function PartnerPerformanceIntelligence() {
     setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
   }
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value)
-  }
+  // Standardized metrics configuration using consistent data formatting
+  const metrics = [
+    {
+      id: 'partner-revenue',
+      icon: DollarSign,
+      label: 'Partner Revenue',
+      value: formatCurrency(partnerMetrics.partnerRevenue, { compact: true }),
+      subtitle: `${formatPercentage(partnerMetrics.partnerContribution / 100)} of Total Revenue`,
+      variant: 'primary' as const,
+    },
+    {
+      id: 'win-rate',
+      icon: Target,
+      label: 'Win Rate',
+      value: formatPercentage(partnerMetrics.winRate / 100),
+      subtitle: 'Partner Channel Efficiency',
+      variant: 'secondary' as const,
+    },
+    {
+      id: 'active-partners',
+      icon: Users,
+      label: 'Active Partners',
+      value: formatNumber(partnerMetrics.activePartners),
+      subtitle: `of ${formatNumber(partnerMetrics.totalPartners)} Total`,
+      variant: 'primary' as const,
+    },
+    {
+      id: 'quick-ratio',
+      icon: TrendingUp,
+      label: 'Quick Ratio',
+      value: `${partnerMetrics.quickRatio}x`,
+      subtitle: 'SaaS Benchmark: >4.0x',
+      variant: 'secondary' as const,
+    },
+  ]
 
   return (
     <ProjectPageLayout
       title="Partner Performance Intelligence Dashboard"
       description="Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem. Real-time performance tracking following industry-standard 80/20 partner revenue distribution."
       tags={[
-        { label: 'Channel ROI: 4.7x', color: 'bg-primary/20 text-primary' },
-        { label: 'Win Rate: 83.2%', color: 'bg-secondary/20 text-secondary' },
-        { label: 'Partner Intelligence', color: 'bg-primary/20 text-primary' },
-        { label: 'Revenue Operations', color: 'bg-secondary/20 text-secondary' },
+        { label: `Channel ROI: ${partnerMetrics.quickRatio}x`, variant: 'primary' },
+        {
+          label: `Win Rate: ${formatPercentage(partnerMetrics.winRate / 100)}`,
+          variant: 'secondary',
+        },
+        { label: 'Partner Intelligence', variant: 'primary' },
+        { label: 'Revenue Operations', variant: 'secondary' },
       ]}
       onRefresh={handleRefresh}
       refreshButtonDisabled={isLoading}
       showTimeframes={true}
-      timeframes={tabs.map(t => t.charAt(0).toUpperCase() + t.slice(1).replace('-', ' '))}
+      timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1).replace('-', ' '))}
       activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1).replace('-', ' ')}
       onTimeframeChange={(timeframe) => {
         const tab = timeframe.toLowerCase().replace(' ', '-') as Tab
@@ -142,272 +177,219 @@ export default function PartnerPerformanceIntelligence() {
         <LoadingState />
       ) : (
         <>
-          {/* Key Metrics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            {/* Total Partner Revenue */}
-            <div
-              className="relative group"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-              <div className="relative glass-interactive rounded-2xl p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-primary/20 rounded-xl">
-                    <DollarSign className="h-6 w-6 text-primary" />
-                  </div>
-                  <span className="typography-small text-muted-foreground uppercase tracking-wider">Partner Revenue</span>
-                </div>
-                <p className="typography-h2 border-none pb-0 text-2xl mb-1">
-                  {formatCurrency(partnerMetrics.partnerRevenue)}
-                </p>
-                <p className="typography-small text-muted-foreground">83.2% of Total Revenue</p>
-              </div>
-            </div>
+          {/* Key Metrics using standardized MetricsGrid */}
+          <MetricsGrid metrics={metrics} columns={4} loading={isLoading} className="mb-8" />
 
-            {/* Win Rate */}
-            <div
-              className="relative group"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-              <div className="relative glass-interactive rounded-2xl p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-secondary/20 rounded-xl">
-                    <Target className="h-6 w-6 text-secondary" />
-                  </div>
-                  <span className="typography-small text-muted-foreground uppercase tracking-wider">Win Rate</span>
-                </div>
-                <p className="typography-h2 border-none pb-0 text-2xl mb-1">
-                  {partnerMetrics.winRate}%
-                </p>
-                <p className="typography-small text-muted-foreground">Partner Channel Efficiency</p>
-              </div>
-            </div>
-
-            {/* Active Partners */}
-            <div
-              className="relative group"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-              <div className="relative glass-interactive rounded-2xl p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-primary/20 rounded-xl">
-                    <Users className="h-6 w-6 text-primary" />
-                  </div>
-                  <span className="typography-small text-muted-foreground uppercase tracking-wider">Active Partners</span>
-                </div>
-                <p className="typography-h2 border-none pb-0 text-2xl mb-1">
-                  {partnerMetrics.activePartners}
-                </p>
-                <p className="typography-small text-muted-foreground">of {partnerMetrics.totalPartners} Total</p>
-              </div>
-            </div>
-
-            {/* SaaS Quick Ratio */}
-            <div
-              className="relative group"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-teal-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-              <div className="relative glass-interactive rounded-2xl p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-primary/20 rounded-xl">
-                    <TrendingUp className="h-6 w-6 text-primary" />
-                  </div>
-                  <span className="typography-small text-muted-foreground uppercase tracking-wider">Quick Ratio</span>
-                </div>
-                <p className="typography-h2 border-none pb-0 text-2xl mb-1">
-                  {partnerMetrics.quickRatio}x
-                </p>
-                <p className="typography-small text-muted-foreground">SaaS Benchmark: &gt;4.0x</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Tab Content */}
-          {activeTab === 'overview' && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-              {/* Partner Tier Performance */}
-              <div
-                className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
-              >
-                <div className="mb-4">
-                  <h2 className="typography-h4 mb-1">Partner Tier Performance Analysis</h2>
-                  <p className="typography-small text-muted-foreground">Revenue and ROI analysis across certified, legacy, and new partner tiers</p>
-                </div>
-                <div className="h-[250px]">
+          {/* Tab Content wrapped in SectionCard */}
+          <SectionCard
+            title="Partner Performance Analysis"
+            description="Comprehensive partner analytics and performance insights"
+            className="mb-8"
+          >
+            {activeTab === 'overview' && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <ChartContainer
+                  title="Partner Tier Performance Analysis"
+                  description="Revenue and ROI analysis across certified, legacy, and new partner tiers"
+                  height={250}
+                >
                   <PartnerTierChart />
-                </div>
-              </div>
+                </ChartContainer>
 
-              {/* Revenue Contribution */}
-              <div
-                className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
-              >
-                <div className="mb-4">
-                  <h2 className="typography-h4 mb-1">Channel Revenue Contribution</h2>
-                  <p className="typography-small text-muted-foreground">Partner revenue distribution following industry 80/20 performance rule</p>
-                </div>
-                <div className="h-[250px]">
+                <ChartContainer
+                  title="Channel Revenue Contribution"
+                  description="Partner revenue distribution following industry 80/20 performance rule"
+                  height={250}
+                >
                   <RevenueContributionChart />
+                </ChartContainer>
+              </div>
+            )}
+
+            {activeTab === 'tiers' && (
+              <div>
+                <h3 className="text-lg font-semibold mb-4">
+                  Partner Tier Intelligence & ROI Metrics
+                </h3>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Comprehensive partner performance analysis across certification levels and
+                  engagement tiers
+                </p>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="text-left py-3 px-4 font-semibold">Partner Tier</th>
+                        <th className="text-left py-3 px-4 font-semibold">Count</th>
+                        <th className="text-left py-3 px-4 font-semibold">Revenue</th>
+                        <th className="text-left py-3 px-4 font-semibold">Avg Deal</th>
+                        <th className="text-left py-3 px-4 font-semibold">Win Rate</th>
+                        <th className="text-left py-3 px-4 font-semibold">Cycle (Days)</th>
+                        <th className="text-left py-3 px-4 font-semibold">ROI</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {partnerTierPerformance.map((tier, index) => (
+                        <tr
+                          key={index}
+                          className="border-b border-border/50 hover:bg-muted/50 transition-colors"
+                        >
+                          <td className="py-4 px-4 font-medium">{tier.tier}</td>
+                          <td className="py-4 px-4">{formatNumber(tier.count)}</td>
+                          <td className="py-4 px-4">
+                            {formatCurrency(tier.revenue, { compact: true })}
+                          </td>
+                          <td className="py-4 px-4">{formatCurrency(tier.avgDeal)}</td>
+                          <td className="py-4 px-4">
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                tier.winRate >= 85
+                                  ? 'bg-green-500/20 text-green-400'
+                                  : tier.winRate >= 70
+                                    ? 'bg-yellow-500/20 text-yellow-400'
+                                    : 'bg-red-500/20 text-red-400'
+                              }`}
+                            >
+                              {formatPercentage(tier.winRate / 100)}
+                            </span>
+                          </td>
+                          <td className="py-4 px-4">{formatNumber(tier.cycleLength)}</td>
+                          <td className="py-4 px-4">
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                tier.roi >= 5
+                                  ? 'bg-green-500/20 text-green-400'
+                                  : tier.roi >= 3
+                                    ? 'bg-yellow-500/20 text-yellow-400'
+                                    : 'bg-red-500/20 text-red-400'
+                              }`}
+                            >
+                              {tier.roi}x
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'top-performers' && (
+              <div>
+                <h3 className="text-lg font-semibold mb-4">
+                  Top 80% Revenue Partners (Pareto Principle)
+                </h3>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Elite partner performance driving majority of channel revenue following the proven
+                  80/20 distribution rule
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {top80PercentPartners.map((partner, index) => (
+                    <div key={index} className="bg-card border border-border rounded-xl p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-base font-semibold">{partner.partner}</h4>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            partner.tier === 'Certified'
+                              ? 'bg-primary/20 text-primary'
+                              : 'bg-secondary/20 text-secondary'
+                          }`}
+                        >
+                          {partner.tier}
+                        </span>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Revenue:</span>
+                          <span className="font-medium">
+                            {formatCurrency(partner.revenue, { compact: true })}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Deals:</span>
+                          <span className="font-medium">{formatNumber(partner.deals)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Win Rate:</span>
+                          <span className="font-medium">
+                            {formatPercentage(partner.winRate / 100)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </SectionCard>
+
+          {/* Strategic Insights wrapped in SectionCard */}
+          <SectionCard
+            title="Partner Intelligence & Strategic Impact"
+            description="Key performance indicators and strategic insights"
+            className="mb-8"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-card border border-border rounded-xl p-4 text-center">
+                <div className="text-2xl font-semibold text-primary mb-1">
+                  {formatPercentage(partnerMetrics.winRate / 100)}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Partner Channel Win Rate (Industry: 65-75%)
+                </div>
+              </div>
+              <div className="bg-card border border-border rounded-xl p-4 text-center">
+                <div className="text-2xl font-semibold text-secondary mb-1">
+                  {partnerMetrics.quickRatio}x
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  SaaS Quick Ratio (Benchmark: &gt;4.0x)
+                </div>
+              </div>
+              <div className="bg-card border border-border rounded-xl p-4 text-center">
+                <div className="text-2xl font-semibold text-primary mb-1">80/20</div>
+                <div className="text-sm text-muted-foreground">
+                  Partner Revenue Distribution (Pareto Optimized)
                 </div>
               </div>
             </div>
-          )}
+          </SectionCard>
 
-          {activeTab === 'tiers' && (
-            <div
-              className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 mb-8"
-            >
-              <div className="mb-4">
-                <h2 className="typography-h4 mb-1">Partner Tier Intelligence & ROI Metrics</h2>
-                <p className="typography-small text-muted-foreground">Comprehensive partner performance analysis across certification levels and engagement tiers</p>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left py-3 px-4 font-semibold">Partner Tier</th>
-                      <th className="text-left py-3 px-4 font-semibold">Count</th>
-                      <th className="text-left py-3 px-4 font-semibold">Revenue</th>
-                      <th className="text-left py-3 px-4 font-semibold">Avg Deal</th>
-                      <th className="text-left py-3 px-4 font-semibold">Win Rate</th>
-                      <th className="text-left py-3 px-4 font-semibold">Cycle (Days)</th>
-                      <th className="text-left py-3 px-4 font-semibold">ROI</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {partnerTierPerformance.map((tier, index) => (
-                      <tr key={index} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                        <td className="py-4 px-4 font-medium">{tier.tier}</td>
-                        <td className="py-4 px-4">{tier.count}</td>
-                        <td className="py-4 px-4">{formatCurrency(tier.revenue)}</td>
-                        <td className="py-4 px-4">{formatCurrency(tier.avgDeal)}</td>
-                        <td className="py-4 px-4">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            tier.winRate >= 85 ? 'bg-success/20 text-success' :
-                            tier.winRate >= 70 ? 'bg-warning/20 text-warning' :
-                            'bg-destructive/20 text-destructive'
-                          }`}>
-                            {tier.winRate}%
-                          </span>
-                        </td>
-                        <td className="py-4 px-4">{tier.cycleLength}</td>
-                        <td className="py-4 px-4">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            tier.roi >= 5 ? 'bg-success/20 text-success' :
-                            tier.roi >= 3 ? 'bg-warning/20 text-warning' :
-                            'bg-destructive/20 text-destructive'
-                          }`}>
-                            {tier.roi}x
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'top-performers' && (
-            <div
-              className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 mb-8"
-            >
-              <div className="mb-4">
-                <h2 className="typography-h4 mb-1">Top 80% Revenue Partners (Pareto Principle)</h2>
-                <p className="typography-small text-muted-foreground">Elite partner performance driving majority of channel revenue following the proven 80/20 distribution rule</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {top80PercentPartners.map((partner, index) => (
-                  <div key={index} className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-base font-semibold">{partner.partner}</h3>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        partner.tier === 'Certified' ? 'bg-primary/20 text-primary' : 'bg-secondary/20 text-secondary'
-                      }`}>
-                        {partner.tier}
-                      </span>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="typography-muted">Revenue:</span>
-                        <span className="font-medium">{formatCurrency(partner.revenue)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="typography-muted">Deals:</span>
-                        <span className="font-medium">{partner.deals}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="typography-muted">Win Rate:</span>
-                        <span className="font-medium">{partner.winRate}%</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Strategic Insights */}
-          <div
-            className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-xs border border-primary/20 rounded-xl p-6"
+          {/* STAR Impact Analysis wrapped in SectionCard */}
+          <SectionCard
+            title="STAR Impact Analysis"
+            description="Tracking project progression from Situation through Action to measurable Results"
           >
-            <h2 className="typography-h4 mb-4 text-primary">Partner Intelligence & Strategic Impact</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="glass rounded-2xl p-4 text-center">
-                <div className="typography-h3 text-primary mb-1">83.2%</div>
-                <div className="typography-small text-muted-foreground">Partner Channel Win Rate (Industry: 65-75%)</div>
-              </div>
-              <div className="glass rounded-2xl p-4 text-center">
-                <div className="typography-h3 text-secondary mb-1">4.7x</div>
-                <div className="typography-small text-muted-foreground">SaaS Quick Ratio (Benchmark: &gt;4.0x)</div>
-              </div>
-              <div className="glass rounded-2xl p-4 text-center">
-                <div className="typography-h3 text-primary mb-1">80/20</div>
-                <div className="typography-small text-muted-foreground">Partner Revenue Distribution (Pareto Optimized)</div>
-              </div>
-            </div>
-          </div>
+            <ChartContainer
+              title="Project Progression Metrics"
+              description="Impact, efficiency, and value metrics across project phases"
+              height={400}
+            >
+              <STARAreaChart data={starData} title="Project Progression Metrics" />
+            </ChartContainer>
 
-          {/* STAR Impact Analysis */}
-          <div
-            className="mt-16 space-y-8"
-          >
-            <div className="text-center space-y-4">
-              <h2 className="typography-h2 border-none pb-0 text-2xl md:text-2xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                STAR Impact Analysis
-              </h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Tracking project progression from Situation through Action to measurable Results
-              </p>
-            </div>
-
-            <div className="glass rounded-2xl p-8">
-              <STARAreaChart
-                data={starData}
-                title="Project Progression Metrics"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="text-center p-6 glass rounded-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+              <div className="text-center p-4 bg-card border border-border rounded-xl">
                 <div className="text-sm text-primary/70 mb-2">Situation</div>
-                <div className="typography-large text-white">Initial Assessment</div>
+                <div className="text-lg font-medium">Initial Assessment</div>
               </div>
-              <div className="text-center p-6 glass rounded-2xl">
+              <div className="text-center p-4 bg-card border border-border rounded-xl">
                 <div className="text-sm text-green-400/70 mb-2">Task</div>
-                <div className="typography-large text-white">Goal Definition</div>
+                <div className="text-lg font-medium">Goal Definition</div>
               </div>
-              <div className="text-center p-6 glass rounded-2xl">
+              <div className="text-center p-4 bg-card border border-border rounded-xl">
                 <div className="text-sm text-amber-400/70 mb-2">Action</div>
-                <div className="typography-large text-white">Implementation</div>
+                <div className="text-lg font-medium">Implementation</div>
               </div>
-              <div className="text-center p-6 glass rounded-2xl">
+              <div className="text-center p-4 bg-card border border-border rounded-xl">
                 <div className="text-sm text-cyan-400/70 mb-2">Result</div>
-                <div className="typography-large text-white">Measurable Impact</div>
+                <div className="text-lg font-medium">Measurable Impact</div>
               </div>
             </div>
-          </div>
+          </SectionCard>
         </>
       )}
     </ProjectPageLayout>

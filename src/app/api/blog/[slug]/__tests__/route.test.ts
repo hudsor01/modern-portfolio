@@ -34,9 +34,7 @@ const createMockRequest = (url: string, options: RequestInit = {}) => {
 const createMockParams = (slug: string) => ({ params: Promise.resolve({ slug }) })
 
 // Mock the blog posts data to ensure test isolation
-vi.mock('@/app/api/blog/[slug]/route', async () => {
-  const actual = await vi.importActual('@/app/api/blog/[slug]/route')
-  
+vi.mock('@/app/api/blog/[slug]/route', () => {
   // Store original mock data
   const originalMockData = [
     {
@@ -105,7 +103,6 @@ vi.mock('@/app/api/blog/[slug]/route', async () => {
   }
   
   return {
-    ...actual,
     __resetMockData: resetMockData,
     // Override the functions to use our controlled mock data
     GET: async (_request: NextRequest, context: { params: Promise<{ slug: string }> }) => {

@@ -63,28 +63,8 @@ export default function ResumePage() {
   return (
     <>
       <Navbar />
-      <section className="relative min-h-screen bg-[#0f172a] text-foreground overflow-hidden pt-20">
-        {/* Grid Background */}
-        <div
-          className="absolute inset-0 bg-[image:linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[length:50px_50px]"
-          aria-hidden="true"
-        />
-
-        {/* Animated Blobs */}
-        <div
-          className="absolute top-0 -left-4 w-72 h-72 sm:w-96 sm:h-96 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"
-          aria-hidden="true"
-        />
-        <div
-          className="absolute top-0 -right-4 w-72 h-72 sm:w-96 sm:h-96 bg-primary-hover rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob [animation-delay:2s]"
-          aria-hidden="true"
-        />
-        <div
-          className="absolute bottom-0 left-20 w-72 h-72 sm:w-96 sm:h-96 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob [animation-delay:4s]"
-          aria-hidden="true"
-        />
-
-        <div className="w-full relative z-10 px-4 mx-auto max-w-6xl py-16 space-y-16">
+      <section className="relative min-h-screen bg-background text-foreground overflow-hidden pt-20">
+        <div className="w-full px-4 mx-auto max-w-6xl py-16 space-y-16">
           {/* Hero Header */}
           <div ref={heroRef}>
             <HeroHeader

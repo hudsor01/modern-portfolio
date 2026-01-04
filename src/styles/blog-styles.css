@@ -177,8 +177,8 @@
     /* Link enhancements */
     a {
       @apply text-primary font-medium underline-offset-4 hover:text-primary/80;
-      @apply transition-colors duration-200 focus:outline-hidden;
-      @apply focus:ring-2 focus:ring-primary/20 focus:ring-offset-2 rounded-xs;
+      @apply transition-colors duration-150 ease-out focus:outline-hidden;
+      @apply focus:ring-[3px] focus:ring-primary/50 focus:ring-offset-2 rounded-xs;
       
       /* External link indicator */
       &[href^="http"]:not([href*="localhost"]):not([href*="127.0.0.1"])::after {
@@ -346,7 +346,7 @@
     @apply bg-card border border-border rounded-xl shadow-xs;
     @apply transition-all duration-300 ease-out;
     @apply hover:shadow-md hover:border-border/60 hover:-translate-y-0.5;
-    @apply focus-within:ring-2 focus-within:ring-primary/20 focus-within:ring-offset-2;
+    @apply focus-within:ring-[3px] focus-within:ring-primary/50 focus-within:ring-offset-2;
     
     /* Card content styling */
     .blog-card-header {
@@ -366,7 +366,7 @@
       @apply aspect-video rounded-t-xl overflow-hidden bg-muted;
       
       img {
-        @apply w-full h-full object-cover transition-transform duration-300;
+        @apply w-full h-full object-cover transition-transform duration-300 ease-out;
         @apply hover:scale-105;
       }
     }
@@ -377,7 +377,7 @@
   .blog-skip-link {
     @apply fixed top-4 left-4 z-50 bg-primary text-primary-foreground;
     @apply px-4 py-2 rounded-md font-medium text-sm;
-    @apply opacity-0 -translate-y-12 transition-all duration-200;
+    @apply opacity-0 -translate-y-12 transition-all duration-150 ease-out;
     @apply focus:opacity-100 focus:translate-y-0;
   }
   
@@ -425,7 +425,7 @@
     
     &::before {
       content: "";
-      @apply absolute left-0 top-0 h-full bg-primary transition-all duration-300;
+      @apply absolute left-0 top-0 h-full bg-primary transition-all duration-300 ease-out;
       width: var(--reading-progress, 0%);
     }
   }
@@ -477,11 +477,11 @@
   /* === FOCUS UTILITIES === */
   
   .focus-ring {
-    @apply focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:ring-offset-2;
+    @apply focus:outline-hidden focus:ring-[3px] focus:ring-primary/50 focus:ring-offset-2;
   }
-  
+
   .focus-ring-inset {
-    @apply focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:ring-inset;
+    @apply focus:outline-hidden focus:ring-[3px] focus:ring-primary/50 focus:ring-inset;
   }
   
   /* === TEXT UTILITIES === */

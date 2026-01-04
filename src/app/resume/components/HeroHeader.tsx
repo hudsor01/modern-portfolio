@@ -61,7 +61,7 @@ export function HeroHeader({
                   disabled={isDownloading}
                 >
                   <div className="flex flex-col items-center justify-center space-y-1">
-                    <FileDown size={20} className="text-primary group-hover:animate-bounce transition-all duration-300" />
+                    <FileDown size={20} className="text-primary group-hover:animate-bounce transition-all duration-300 ease-out" />
                     <span className="text-sm font-medium">
                       {isDownloading ? 'Downloading...' : 'Download PDF'}
                     </span>
@@ -78,7 +78,7 @@ export function HeroHeader({
                   onClick={onToggleView}
                 >
                   <div className="flex flex-col items-center justify-center space-y-1">
-                    <Eye size={20} className="text-purple-400 group-hover:scale-110 transition-all duration-300" />
+                    <Eye size={20} className="text-purple-400 group-hover:scale-110 transition-all duration-300 ease-out" />
                     <span className="text-sm font-medium">
                       {showPdf ? 'Interactive View' : 'PDF View'}
                     </span>
@@ -91,10 +91,10 @@ export function HeroHeader({
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <Link
                   href="/contact"
-                  className="relative block w-full h-20 bg-transparent hover:bg-transparent text-foreground p-6 rounded-lg transition-all duration-200"
+                  className="relative block w-full h-20 bg-transparent hover:bg-transparent text-foreground p-6 rounded-lg transition-all duration-150 ease-out"
                 >
                   <div className="flex flex-col items-center justify-center space-y-1 h-full">
-                    <Mail size={20} className="text-emerald-500 group-hover:scale-110 transition-all duration-300" />
+                    <Mail size={20} className="text-emerald-500 group-hover:scale-110 transition-all duration-300 ease-out" />
                     <span className="text-sm font-medium">Let's Connect</span>
                   </div>
                 </Link>

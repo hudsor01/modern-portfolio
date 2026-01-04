@@ -46,7 +46,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
             <div className="flex flex-wrap gap-4 justify-center">
               <Button
                 onClick={handleDownload}
-                className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-out"
               >
                 <Download className="mr-2 h-5 w-5" />
                 Download PDF
@@ -55,7 +55,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
               <Button
                 variant="outline"
                 asChild
-                className="border-primary text-primary hover:bg-primary/10 px-6 py-3 rounded-lg transition-all duration-300"
+                className="border-primary text-primary hover:bg-primary/10 px-6 py-3 rounded-lg transition-all duration-300 ease-out"
               >
                 <a href="/resume" className="flex items-center">
                   <FileText className="mr-2 h-5 w-5" />
@@ -66,7 +66,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
               <Button
                 variant="outline"
                 asChild
-                className="border-primary text-primary hover:bg-primary/10 px-6 py-3 rounded-lg transition-all duration-300"
+                className="border-primary text-primary hover:bg-primary/10 px-6 py-3 rounded-lg transition-all duration-300 ease-out"
               >
                 <a 
                   href="/Richard Hudson - Resume.pdf" 

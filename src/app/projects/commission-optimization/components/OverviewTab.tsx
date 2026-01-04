@@ -1,46 +1,40 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-
+import { ChartContainer } from '@/components/ui/chart-container'
 
 const CommissionStructureChart = dynamic(() => import('../CommissionStructureChart'), {
   loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
-  ssr: true
+  ssr: true,
 })
 
 const ROIOptimizationChart = dynamic(() => import('../ROIOptimizationChart'), {
   loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
-  ssr: true
+  ssr: true,
 })
 
 export function OverviewTab() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       {/* Commission Structure */}
-      <div
-        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+      <ChartContainer
+        title="Commission Structure & Payout Analysis"
+        description="Tier-based commission optimization with automated calculations and performance tracking"
+        height={280}
+        variant="glass"
       >
-        <div className="mb-4">
-          <h2 className="typography-h4 mb-1">Commission Structure & Payout Analysis</h2>
-          <p className="typography-small text-muted-foreground">Tier-based commission optimization with automated calculations and performance tracking</p>
-        </div>
-        <div className="h-[280px]">
-          <CommissionStructureChart />
-        </div>
-      </div>
+        <CommissionStructureChart />
+      </ChartContainer>
 
       {/* ROI Optimization */}
-      <div
-        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+      <ChartContainer
+        title="ROI Optimization & Performance Impact"
+        description="Commission ROI analysis showing investment efficiency across partner tiers"
+        height={280}
+        variant="glass"
       >
-        <div className="mb-4">
-          <h2 className="typography-h4 mb-1">ROI Optimization & Performance Impact</h2>
-          <p className="typography-small text-muted-foreground">Commission ROI analysis showing investment efficiency across partner tiers</p>
-        </div>
-        <div className="h-[280px]">
-          <ROIOptimizationChart />
-        </div>
-      </div>
+        <ROIOptimizationChart />
+      </ChartContainer>
     </div>
   )
 }

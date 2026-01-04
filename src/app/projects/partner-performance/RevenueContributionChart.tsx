@@ -1,16 +1,41 @@
 'use client'
 import { memo } from 'react'
 
-import { LazyPieChart as PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from '@/components/charts/lazy-charts'
+import {
+  LazyPieChart as PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from '@/components/charts/lazy-charts'
 
 // Partner revenue distribution demonstrating 80/20 rule
 const data = [
-  { name: 'Top 20% Partners', value: 80.2, revenue: 725840, count: 7, color: 'var(--color-primary)' },
-  { name: 'Middle 60% Partners', value: 17.1, revenue: 154689, count: 20, color: 'var(--color-secondary)' },
-  { name: 'Bottom 20% Partners', value: 2.7, revenue: 23858, count: 7, color: 'var(--color-secondary)' },
+  {
+    name: 'Top 20% Partners',
+    value: 80.2,
+    revenue: 725840,
+    count: 7,
+    color: 'var(--color-primary)',
+  },
+  {
+    name: 'Middle 60% Partners',
+    value: 17.1,
+    revenue: 154689,
+    count: 20,
+    color: 'var(--color-secondary)',
+  },
+  {
+    name: 'Bottom 20% Partners',
+    value: 2.7,
+    revenue: 23858,
+    count: 7,
+    color: 'var(--color-secondary)',
+  },
 ]
 
-const COLORS = data.map(item => item.color)
+const COLORS = data.map((item) => item.color)
 
 const RevenueContributionChart = memo(function RevenueContributionChart() {
   const formatCurrency = (value: number) => {
@@ -48,27 +73,26 @@ const RevenueContributionChart = memo(function RevenueContributionChart() {
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
-            formatter={(value: number, name: string, props: unknown) => {
-              const payload = (props as { payload?: typeof data[0] })?.payload
+            formatter={(value: number | undefined, name: string | undefined, props: unknown) => {
+              if (value === undefined) return ['', name]
+              const payload = (props as { payload?: (typeof data)[0] })?.payload
               if (!payload) return [String(value), name]
               return [
-                [
-                  `${value}% (${formatCurrency(payload.revenue)})`,
-                  `${payload.count} partners`
-                ],
-                name
+                [`${value}% (${formatCurrency(payload.revenue)})`, `${payload.count} partners`],
+                name,
               ]
             }}
           />
-          <Legend 
-            verticalAlign="bottom" 
+          <Legend
+            verticalAlign="bottom"
             height={36}
             wrapperStyle={{ color: 'var(--color-muted-foreground)' }}
           />
         </PieChart>
       </ResponsiveContainer>
       <p className="mt-4 text-center text-sm italic text-muted-foreground">
-        Channel revenue distribution following Pareto Principle: top 20% of partners generate 80.2% of revenue
+        Channel revenue distribution following Pareto Principle: top 20% of partners generate 80.2%
+        of revenue
       </p>
     </div>
   )

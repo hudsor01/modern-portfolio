@@ -9,10 +9,11 @@ import { TIMING } from '@/lib/constants/spacing'
 import { yearOverYearGrowthExtended } from '@/app/projects/data/partner-analytics'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
+import { MetricsGrid } from '@/components/projects/metrics-grid'
+import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data-formatters'
 
 import { timeframes, type YearOverYearGrowth } from './data/constants'
-import { formatCurrency, calculateGrowth } from './utils'
-import { MetricCard } from './components/MetricCard'
+import { calculateGrowth } from './utils'
 import { ChartsGrid } from './components/ChartsGrid'
 import { NarrativeSections } from './components/NarrativeSections'
 
@@ -52,6 +53,77 @@ export default function RevenueKPI() {
     setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
   }
 
+  // Prepare metrics data for standardized MetricsGrid
+  const metrics = [
+    {
+      id: 'revenue',
+      icon: DollarSign,
+      label: 'Revenue',
+      value: formatCurrency(currentYearData.total_revenue),
+      subtitle: `${revenueGrowth > 0 ? '+' : ''}${formatPercentage(revenueGrowth / 100)} vs last year`,
+      variant: 'primary' as const,
+      trend: {
+        direction:
+          revenueGrowth > 0
+            ? ('up' as const)
+            : revenueGrowth < 0
+              ? ('down' as const)
+              : ('neutral' as const),
+        value: formatPercentage(Math.abs(revenueGrowth) / 100),
+        label: 'vs last year',
+      },
+    },
+    {
+      id: 'partners',
+      icon: Users,
+      label: 'Partners',
+      value: formatNumber(currentYearData.partner_count),
+      subtitle: `${partnerGrowth > 0 ? '+' : ''}${formatPercentage(partnerGrowth / 100)} growth`,
+      variant: 'secondary' as const,
+      trend: {
+        direction:
+          partnerGrowth > 0
+            ? ('up' as const)
+            : partnerGrowth < 0
+              ? ('down' as const)
+              : ('neutral' as const),
+        value: formatPercentage(Math.abs(partnerGrowth) / 100),
+        label: 'growth',
+      },
+    },
+    {
+      id: 'volume',
+      icon: Activity,
+      label: 'Volume',
+      value: formatNumber(currentYearData.total_transactions),
+      subtitle: `${transactionGrowth > 0 ? '+' : ''}${formatPercentage(transactionGrowth / 100)} transactions`,
+      variant: 'primary' as const,
+      trend: {
+        direction:
+          transactionGrowth > 0
+            ? ('up' as const)
+            : transactionGrowth < 0
+              ? ('down' as const)
+              : ('neutral' as const),
+        value: formatPercentage(Math.abs(transactionGrowth) / 100),
+        label: 'transactions',
+      },
+    },
+    {
+      id: 'growth',
+      icon: TrendingUp,
+      label: 'Growth',
+      value: `+${formatPercentage(currentYearData.commission_growth_percentage / 100)}`,
+      subtitle: 'Commission Growth',
+      variant: 'secondary' as const,
+      trend: {
+        direction: 'up' as const,
+        value: formatPercentage(currentYearData.commission_growth_percentage / 100),
+        label: 'Commission Growth',
+      },
+    },
+  ]
+
   return (
     <>
       <ProjectJsonLd
@@ -74,10 +146,19 @@ export default function RevenueKPI() {
         title="Revenue KPI Dashboard"
         description="Real-time revenue analytics, partner performance metrics, and business intelligence for data-driven growth strategies."
         tags={[
-          { label: `Revenue: $${formatCurrency(currentYearData.total_revenue)}`, color: 'bg-primary/20 text-primary' },
-          { label: `Partners: ${currentYearData.partner_count}`, color: 'bg-secondary/20 text-secondary' },
-          { label: `Growth: +${currentYearData.commission_growth_percentage.toFixed(1)}%`, color: 'bg-primary/20 text-primary' },
-          { label: 'Accuracy: 94%', color: 'bg-secondary/20 text-secondary' },
+          {
+            label: `Revenue: ${formatCurrency(currentYearData.total_revenue)}`,
+            variant: 'primary',
+          },
+          {
+            label: `Partners: ${formatNumber(currentYearData.partner_count)}`,
+            variant: 'secondary',
+          },
+          {
+            label: `Growth: +${formatPercentage(currentYearData.commission_growth_percentage / 100)}`,
+            variant: 'primary',
+          },
+          { label: 'Accuracy: 94%', variant: 'secondary' },
         ]}
         showTimeframes={true}
         timeframes={timeframes}
@@ -90,48 +171,9 @@ export default function RevenueKPI() {
           <LoadingState />
         ) : (
           <>
-            {/* KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <MetricCard
-                icon={DollarSign}
-                label="Revenue"
-                value={formatCurrency(currentYearData.total_revenue)}
-                subtitle={`${revenueGrowth > 0 ? '+' : ''}${revenueGrowth.toFixed(1)}% vs last year`}
-                gradientFrom="from-blue-600"
-                gradientTo="to-cyan-600"
-                iconBgClass="bg-primary/20"
-                iconColorClass="text-primary"
-              />
-              <MetricCard
-                icon={Users}
-                label="Partners"
-                value={currentYearData.partner_count.toLocaleString()}
-                subtitle={`${partnerGrowth > 0 ? '+' : ''}${partnerGrowth.toFixed(1)}% growth`}
-                gradientFrom="from-blue-600"
-                gradientTo="to-cyan-600"
-                iconBgClass="bg-secondary/20"
-                iconColorClass="text-secondary"
-              />
-              <MetricCard
-                icon={Activity}
-                label="Volume"
-                value={currentYearData.total_transactions.toLocaleString()}
-                subtitle={`${transactionGrowth > 0 ? '+' : ''}${transactionGrowth.toFixed(1)}% transactions`}
-                gradientFrom="from-blue-600"
-                gradientTo="to-cyan-600"
-                iconBgClass="bg-primary/20"
-                iconColorClass="text-primary"
-              />
-              <MetricCard
-                icon={TrendingUp}
-                label="Growth"
-                value={`+${currentYearData.commission_growth_percentage.toFixed(1)}%`}
-                subtitle="Commission Growth"
-                gradientFrom="from-blue-600"
-                gradientTo="to-cyan-600"
-                iconBgClass="bg-secondary/20"
-                iconColorClass="text-secondary"
-              />
+            {/* KPI Cards using standardized MetricsGrid */}
+            <div className="mb-8">
+              <MetricsGrid metrics={metrics} columns={4} loading={isLoading} />
             </div>
 
             {/* Charts Grid */}

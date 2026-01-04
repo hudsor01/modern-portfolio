@@ -3,31 +3,37 @@ import { NextRequest } from 'next/server'
 import { GET } from '@/app/api/blog/rss/route'
 import type { RSSFeedData } from '@/types/shared-api'
 
-// Mock Next.js
+// Mock Next.js - Vitest 4 requires function/class for constructor mocks
 vi.mock('next/server', async () => {
   const actual = await vi.importActual('next/server')
-  
-  return {
-    ...actual,
-    NextResponse: vi.fn((content, options) => ({
+
+  // Use function syntax for constructor mock (required by Vitest 4)
+  const MockNextResponse = vi.fn(function(this: unknown, content: unknown, options?: { status?: number; headers?: Record<string, string> }) {
+    return {
       status: options?.status || 200,
       headers: options?.headers || {},
       text: async () => content,
-      json: async () => (typeof content === 'string' ? JSON.parse(content) : content),
+      json: async () => (typeof content === 'string' ? JSON.parse(content as string) : content),
       ok: (options?.status || 200) < 400,
-    })),
+    }
+  })
+
+  // Add static json method using function syntax
+  ;(MockNextResponse as unknown as { json: ReturnType<typeof vi.fn> }).json = vi.fn(function(data: unknown, options?: { status?: number; headers?: Record<string, string> }) {
+    return new (MockNextResponse as unknown as new (...args: unknown[]) => unknown)(JSON.stringify(data), {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers,
+      },
+    })
+  })
+
+  return {
+    ...actual,
+    NextResponse: MockNextResponse,
   }
 })
-
-// Override NextResponse.json to work with the constructor pattern
-const { NextResponse: MockedNextResponse } = await import('next/server')
-;(MockedNextResponse as unknown as { json: ReturnType<typeof vi.fn> }).json = vi.fn((data, options) => new MockedNextResponse(JSON.stringify(data), {
-  ...options,
-  headers: {
-    'Content-Type': 'application/json',
-    ...options?.headers,
-  },
-}))
 
 const createMockRequest = (url: string, options: RequestInit = {}) => {
   return {
@@ -189,10 +195,10 @@ describe('/api/blog/rss', () => {
         text: async () => '<?xml version="1.0" encoding="UTF-8"?><rss version="2.0">...</rss>'
       }
       
-      // Mock the NextResponse constructor
-      const NextResponseMock = vi.fn(() => mockXMLResponse)
+      // Mock the NextResponse constructor (using function syntax for Vitest 4)
+      const NextResponseMock = vi.fn(function() { return mockXMLResponse })
       vi.doMock('next/server', () => ({
-        NextRequest: vi.fn(),
+        NextRequest: vi.fn(function() { return {} }),
         NextResponse: NextResponseMock
       }))
 
@@ -226,9 +232,9 @@ describe('/api/blog/rss', () => {
         text: async () => mockXMLContent
       }
       
-      const NextResponseMock = vi.fn(() => mockXMLResponse)
+      const NextResponseMock = vi.fn(function() { return mockXMLResponse })
       vi.doMock('next/server', () => ({
-        NextRequest: vi.fn(),
+        NextRequest: vi.fn(function() { return {} }),
         NextResponse: NextResponseMock
       }))
 
@@ -254,9 +260,9 @@ describe('/api/blog/rss', () => {
         text: async () => 'xml-content'
       }
       
-      const NextResponseMock = vi.fn(() => mockXMLResponse)
+      const NextResponseMock = vi.fn(function() { return mockXMLResponse })
       vi.doMock('next/server', () => ({
-        NextRequest: vi.fn(),
+        NextRequest: vi.fn(function() { return {} }),
         NextResponse: NextResponseMock
       }))
 
@@ -275,9 +281,9 @@ describe('/api/blog/rss', () => {
         text: async () => '<rss><channel><item>single item</item></channel></rss>'
       }
       
-      const NextResponseMock = vi.fn(() => mockXMLResponse)
+      const NextResponseMock = vi.fn(function() { return mockXMLResponse })
       vi.doMock('next/server', () => ({
-        NextRequest: vi.fn(),
+        NextRequest: vi.fn(function() { return {} }),
         NextResponse: NextResponseMock
       }))
 

@@ -1,7 +1,16 @@
 'use client'
 import { memo } from 'react'
 
-import { LazyLineChart as LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from '@/components/charts/lazy-charts'
+import {
+  LazyLineChart as LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Legend,
+} from '@/components/charts/lazy-charts'
 
 // ROI optimization data showing commission investment efficiency
 const data = [
@@ -12,7 +21,7 @@ const data = [
     roi: 4.48,
     partnerCount: 42,
     avgROI: 3.2,
-    topTierROI: 5.8
+    topTierROI: 5.8,
   },
   {
     quarter: 'Q2 2024',
@@ -21,7 +30,7 @@ const data = [
     roi: 5.04,
     partnerCount: 44,
     avgROI: 3.6,
-    topTierROI: 6.2
+    topTierROI: 6.2,
   },
   {
     quarter: 'Q3 2024',
@@ -30,7 +39,7 @@ const data = [
     roi: 4.97,
     partnerCount: 47,
     avgROI: 3.8,
-    topTierROI: 6.1
+    topTierROI: 6.1,
   },
   {
     quarter: 'Q4 2024',
@@ -39,7 +48,7 @@ const data = [
     roi: 5.21,
     partnerCount: 47,
     avgROI: 4.2,
-    topTierROI: 6.7
+    topTierROI: 6.7,
   },
 ]
 
@@ -66,11 +75,7 @@ const ROIOptimizationChart = memo(function ROIOptimizationChart() {
     <div className="h-[350px]">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke={chartColors.grid} 
-            vertical={false}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
           <XAxis
             dataKey="quarter"
             stroke={chartColors.axis}
@@ -104,48 +109,52 @@ const ROIOptimizationChart = memo(function ROIOptimizationChart() {
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
-            formatter={(value: number, name: string) => {
-              if (name === 'commissionInvestment') return [formatCurrency(value), 'Commission Investment']
-              if (name === 'revenueGenerated') return [formatCurrency(value), 'Revenue Generated']
-              if (name === 'roi') return [`${value}x`, 'Overall ROI']
-              if (name === 'avgROI') return [`${value}x`, 'Average ROI']
-              if (name === 'topTierROI') return [`${value}x`, 'Top Tier ROI']
-              if (name === 'partnerCount') return [value, 'Partner Count']
-              return [value, name]
+            formatter={(value: number | undefined, name: string | undefined) => {
+              const safeValue = value ?? 0
+              const safeName = name ?? ''
+              if (safeName === 'commissionInvestment')
+                return [formatCurrency(safeValue), 'Commission Investment']
+              if (safeName === 'revenueGenerated')
+                return [formatCurrency(safeValue), 'Revenue Generated']
+              if (safeName === 'roi') return [`${safeValue}x`, 'Overall ROI']
+              if (safeName === 'avgROI') return [`${safeValue}x`, 'Average ROI']
+              if (safeName === 'topTierROI') return [`${safeValue}x`, 'Top Tier ROI']
+              if (safeName === 'partnerCount') return [safeValue, 'Partner Count']
+              return [safeValue, safeName]
             }}
             labelFormatter={(label) => `${label} Performance`}
           />
           <Legend
             wrapperStyle={{
               paddingTop: '20px',
-              fontSize: '12px'
+              fontSize: '12px',
             }}
           />
-          <Line 
+          <Line
             yAxisId="roi"
-            type="monotone" 
-            dataKey="roi" 
-            stroke={chartColors.roi} 
+            type="monotone"
+            dataKey="roi"
+            stroke={chartColors.roi}
             strokeWidth={3}
             dot={{ fill: chartColors.roi, strokeWidth: 2, r: 6 }}
             activeDot={{ r: 8, stroke: chartColors.roi, strokeWidth: 2 }}
             name="roi"
           />
-          <Line 
+          <Line
             yAxisId="roi"
-            type="monotone" 
-            dataKey="avgROI" 
-            stroke={chartColors.avgROI} 
+            type="monotone"
+            dataKey="avgROI"
+            stroke={chartColors.avgROI}
             strokeWidth={2}
             strokeDasharray="5 5"
             dot={{ fill: chartColors.avgROI, strokeWidth: 2, r: 4 }}
             name="avgROI"
           />
-          <Line 
+          <Line
             yAxisId="roi"
-            type="monotone" 
-            dataKey="topTierROI" 
-            stroke={chartColors.topTierROI} 
+            type="monotone"
+            dataKey="topTierROI"
+            stroke={chartColors.topTierROI}
             strokeWidth={2}
             strokeDasharray="8 3"
             dot={{ fill: chartColors.topTierROI, strokeWidth: 2, r: 4 }}
@@ -154,7 +163,8 @@ const ROIOptimizationChart = memo(function ROIOptimizationChart() {
         </LineChart>
       </ResponsiveContainer>
       <p className="mt-4 text-center text-sm italic text-muted-foreground">
-        Commission ROI optimization trends showing investment efficiency, revenue impact, and tier-based performance analysis across quarterly performance cycles
+        Commission ROI optimization trends showing investment efficiency, revenue impact, and
+        tier-based performance analysis across quarterly performance cycles
       </p>
     </div>
   )

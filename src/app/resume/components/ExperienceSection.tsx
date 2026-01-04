@@ -20,7 +20,7 @@ export function ExperienceSection() {
             </div>
 
             {/* Job Content Container - Clean Professional Style */}
-            <div className="bg-slate-800/95 border border-slate-700 rounded-xl p-8 shadow-lg hover:bg-slate-700/95 hover:border-slate-600 transition-all duration-200">
+            <div className="bg-slate-800/95 border border-slate-700 rounded-xl p-8 shadow-lg hover:bg-slate-700/95 hover:border-slate-600 transition-all duration-150 ease-out">
               {/* Company and Details Header */}
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
                 <div>

@@ -3,41 +3,36 @@
  * Demonstrates the comprehensive type architecture strategy
  */
 
-import type { 
-  ChartDataPoint, 
-  ChartData, 
-  RevenueData, 
-  FunnelStageData, 
+import type {
+  ChartDataPoint,
+  ChartData,
+  RevenueData,
+  FunnelStageData,
   LeadSourceData,
   ChartFormatType,
-  ChartColor
-} from '@/types/chart';
-import { CHART_FORMAT_TYPES } from '@/types/chart';
+  ChartColor,
+} from '@/types/chart'
+import { CHART_FORMAT_TYPES } from '@/types/chart'
+import { formatCurrency, formatPercentage, formatCompactNumber } from '@/lib/utils/data-formatters'
 
 /**
  * Type-safe data formatters - no string literals
+ * Updated to use comprehensive data formatters for consistency
  */
 export const formatters = {
   [CHART_FORMAT_TYPES.DEFAULT]: (value: number): string => value.toString(),
-  [CHART_FORMAT_TYPES.CURRENCY]: (value: number): string => 
-    new Intl.NumberFormat('en-US', { 
-      style: 'currency', 
-      currency: 'USD',
+  [CHART_FORMAT_TYPES.CURRENCY]: (value: number): string =>
+    formatCurrency(value, {
       minimumFractionDigits: value >= 1000000 ? 1 : 0,
       maximumFractionDigits: value >= 1000000 ? 1 : 0,
-    }).format(value),
-  [CHART_FORMAT_TYPES.PERCENTAGE]: (value: number): string => 
-    `${(value * 100).toFixed(1)}%`,
-  [CHART_FORMAT_TYPES.THOUSANDS]: (value: number): string => 
-    value >= 1000 ? `${(value / 1000).toFixed(1)}K` : value.toString(),
-  [CHART_FORMAT_TYPES.COMPACT]: (value: number): string => {
-    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
-    if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
-    return value.toString();
-  },
-  [CHART_FORMAT_TYPES.CUSTOM_EXAMPLE]: (value: number): string => 
-    `Val: ${value}`,
-} as const satisfies Record<ChartFormatType, (value: number) => string>;
+    }),
+  [CHART_FORMAT_TYPES.PERCENTAGE]: (value: number): string =>
+    formatPercentage(value, { decimals: 1 }),
+  [CHART_FORMAT_TYPES.THOUSANDS]: (value: number): string =>
+    value >= 1000 ? formatCompactNumber(value) : value.toString(),
+  [CHART_FORMAT_TYPES.COMPACT]: (value: number): string => formatCompactNumber(value),
+  [CHART_FORMAT_TYPES.CUSTOM_EXAMPLE]: (value: number): string => `Val: ${value}`,
+} as const satisfies Record<ChartFormatType, (value: number) => string>
 
 /**
  * Type-safe format value function
@@ -46,52 +41,68 @@ export function formatValue(
   value: number,
   format: ChartFormatType = CHART_FORMAT_TYPES.DEFAULT
 ): string {
-  return formatters[format](value);
+  return formatters[format](value)
 }
 
 /**
  * Chart data validators - ensure type safety at runtime
  */
 export function isValidChartData<T extends ChartDataPoint>(data: unknown): data is T[] {
-  return Array.isArray(data) && data.every(item =>
-    typeof item === 'object' &&
-    item !== null &&
-    'name' in item &&
-    'value' in item &&
-    typeof (item as ChartDataPoint).name === 'string' &&
-    typeof (item as ChartDataPoint).value === 'number'
-  );
+  return (
+    Array.isArray(data) &&
+    data.every(
+      (item) =>
+        typeof item === 'object' &&
+        item !== null &&
+        'name' in item &&
+        'value' in item &&
+        typeof (item as ChartDataPoint).name === 'string' &&
+        typeof (item as ChartDataPoint).value === 'number'
+    )
+  )
 }
 
 export function isRevenueData(data: unknown): data is RevenueData[] {
-  return isValidChartData(data) && (data as ChartDataPoint[]).every(item =>
-    'revenue' in item &&
-    'period' in item &&
-    typeof (item as RevenueData).revenue === 'number' &&
-    (item as RevenueData).period instanceof Date
-  );
+  return (
+    isValidChartData(data) &&
+    (data as ChartDataPoint[]).every(
+      (item) =>
+        'revenue' in item &&
+        'period' in item &&
+        typeof (item as RevenueData).revenue === 'number' &&
+        (item as RevenueData).period instanceof Date
+    )
+  )
 }
 
 export function isFunnelData(data: unknown): data is FunnelStageData[] {
-  return isValidChartData(data) && (data as ChartDataPoint[]).every(item =>
-    'stage' in item &&
-    'count' in item &&
-    typeof (item as FunnelStageData).stage === 'string' &&
-    typeof (item as FunnelStageData).count === 'number'
-  );
+  return (
+    isValidChartData(data) &&
+    (data as ChartDataPoint[]).every(
+      (item) =>
+        'stage' in item &&
+        'count' in item &&
+        typeof (item as FunnelStageData).stage === 'string' &&
+        typeof (item as FunnelStageData).count === 'number'
+    )
+  )
 }
 
 export function isLeadSourceData(data: unknown): data is LeadSourceData[] {
-  return isValidChartData(data) && (data as ChartDataPoint[]).every(item =>
-    'source' in item &&
-    'leads' in item &&
-    'conversions' in item &&
-    'conversionRate' in item &&
-    typeof (item as LeadSourceData).source === 'string' &&
-    typeof (item as LeadSourceData).leads === 'number' &&
-    typeof (item as LeadSourceData).conversions === 'number' &&
-    typeof (item as LeadSourceData).conversionRate === 'number'
-  );
+  return (
+    isValidChartData(data) &&
+    (data as ChartDataPoint[]).every(
+      (item) =>
+        'source' in item &&
+        'leads' in item &&
+        'conversions' in item &&
+        'conversionRate' in item &&
+        typeof (item as LeadSourceData).source === 'string' &&
+        typeof (item as LeadSourceData).leads === 'number' &&
+        typeof (item as LeadSourceData).conversions === 'number' &&
+        typeof (item as LeadSourceData).conversionRate === 'number'
+    )
+  )
 }
 
 /**
@@ -104,21 +115,21 @@ export function generateChartColors(count: number): ChartColor[] {
     'hsl(var(--chart-3))',
     'hsl(var(--chart-4))',
     'hsl(var(--chart-5))',
-  ];
-  
+  ]
+
   // If we need more colors than base, generate variations
   if (count <= baseColors.length) {
-    return baseColors.slice(0, count);
+    return baseColors.slice(0, count)
   }
-  
-  const colors: ChartColor[] = [...baseColors];
+
+  const colors: ChartColor[] = [...baseColors]
   for (let i = baseColors.length; i < count; i++) {
-    const baseIndex = i % baseColors.length;
-    const opacity = 0.8 - ((i - baseColors.length) * 0.1);
-    colors.push(`${baseColors[baseIndex]} / ${Math.max(opacity, 0.3)}`);
+    const baseIndex = i % baseColors.length
+    const opacity = 0.8 - (i - baseColors.length) * 0.1
+    colors.push(`${baseColors[baseIndex]} / ${Math.max(opacity, 0.3)}`)
   }
-  
-  return colors;
+
+  return colors
 }
 
 /**
@@ -134,9 +145,9 @@ export function transformToChartData<T extends Record<string, unknown>>(
     value: Number(item[valueKey]) || 0,
     id: String(index),
     metadata: {
-      source: 'Data transformation utility'
-    }
-  }));
+      source: 'Data transformation utility',
+    },
+  }))
 }
 
 export function transformToRevenueData<T extends Record<string, unknown>>(
@@ -154,9 +165,9 @@ export function transformToRevenueData<T extends Record<string, unknown>>(
     growth: growthKey ? Number(item[growthKey]) : undefined,
     id: String(index),
     metadata: {
-      source: 'Revenue data transformation'
-    }
-  }));
+      source: 'Revenue data transformation',
+    },
+  }))
 }
 
 /**
@@ -192,7 +203,7 @@ export const chartThemeConfig = {
       lg: '16px',
     },
   },
-} as const;
+} as const
 
 /**
  * Type-safe chart configuration builder
@@ -200,15 +211,15 @@ export const chartThemeConfig = {
 export function buildChartConfig<T extends ChartDataPoint>(
   data: T[],
   options?: {
-    colors?: ChartColor[];
-    formatType?: ChartFormatType;
-    showGrid?: boolean;
-    showLegend?: boolean;
+    colors?: ChartColor[]
+    formatType?: ChartFormatType
+    showGrid?: boolean
+    showLegend?: boolean
   }
 ) {
-  const colors = options?.colors || generateChartColors(data.length);
-  const formatType = options?.formatType || CHART_FORMAT_TYPES.DEFAULT;
-  
+  const colors = options?.colors || generateChartColors(data.length)
+  const formatType = options?.formatType || CHART_FORMAT_TYPES.DEFAULT
+
   return {
     data: data.map((item, index) => ({
       ...item,
@@ -222,16 +233,19 @@ export function buildChartConfig<T extends ChartDataPoint>(
       showGrid: options?.showGrid ?? true,
       showLegend: options?.showLegend ?? true,
     },
-  };
+  }
 }
 
 /**
  * Error handling for chart data
  */
 export class ChartDataError extends Error {
-  constructor(message: string, public readonly data?: unknown) {
-    super(`Chart Data Error: ${message}`);
-    this.name = 'ChartDataError';
+  constructor(
+    message: string,
+    public readonly data?: unknown
+  ) {
+    super(`Chart Data Error: ${message}`)
+    this.name = 'ChartDataError'
   }
 }
 
@@ -240,12 +254,12 @@ export function validateChartData<T extends ChartDataPoint>(
   validator: (data: unknown) => data is T[]
 ): T[] {
   if (!Array.isArray(data)) {
-    throw new ChartDataError('Data must be an array', data);
+    throw new ChartDataError('Data must be an array', data)
   }
-  
+
   if (!validator(data)) {
-    throw new ChartDataError('Data does not match expected chart data structure', data);
+    throw new ChartDataError('Data does not match expected chart data structure', data)
   }
-  
-  return data;
+
+  return data
 }
