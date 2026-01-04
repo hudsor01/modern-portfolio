@@ -27,7 +27,7 @@ import { db } from '@/lib/db'
 import { validateRequest, contactFormSchema } from '@/lib/validations/unified-schemas'
 import { sanitizeUserContent } from '@/lib/security/sanitize'
 import { escapeHtml } from '@/lib/security/html-escape'
-import { rateLimiter } from '@/lib/security/rate-limiter'
+import { enhancedRateLimiter } from '@/lib/security/rate-limiter'
 
 // Clean up mocks after all tests in this file
 afterAll(() => {
@@ -130,11 +130,13 @@ describe('Security Tests', () => {
         maxAttempts: 5,
         progressivePenalty: true,
         blockDuration: 60 * 1000, // 1 minute base
+        adaptiveThreshold: false,
+        antiAbuse: false,
       }
 
       // Simulate multiple requests
       for (let i = 0; i < 6; i++) {
-        const result = rateLimiter.checkLimit(identifier, config)
+        const result = enhancedRateLimiter.checkLimit(identifier, config)
         if (i < 5) {
           expect(result.allowed).toBe(true)
         } else {
@@ -152,20 +154,22 @@ describe('Security Tests', () => {
         maxAttempts: 2,
         progressivePenalty: false,
         blockDuration: 0,
+        adaptiveThreshold: false,
+        antiAbuse: false,
       }
 
       // Make 2 requests - should be allowed
-      expect(rateLimiter.checkLimit(identifier, config).allowed).toBe(true)
-      expect(rateLimiter.checkLimit(identifier, config).allowed).toBe(true)
+      expect(enhancedRateLimiter.checkLimit(identifier, config).allowed).toBe(true)
+      expect(enhancedRateLimiter.checkLimit(identifier, config).allowed).toBe(true)
 
       // Make 3rd request - should be blocked
-      expect(rateLimiter.checkLimit(identifier, config).allowed).toBe(false)
+      expect(enhancedRateLimiter.checkLimit(identifier, config).allowed).toBe(false)
 
       // Wait for window to expire (using real timers)
       await new Promise(resolve => setTimeout(resolve, SHORT_WINDOW + 20))
 
       // Should be allowed again
-      expect(rateLimiter.checkLimit(identifier, config).allowed).toBe(true)
+      expect(enhancedRateLimiter.checkLimit(identifier, config).allowed).toBe(true)
     })
   })
 

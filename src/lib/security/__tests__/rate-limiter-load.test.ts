@@ -10,7 +10,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'bun:test'
 import {
   enhancedRateLimiter,
   EnhancedRateLimitConfigs
-} from '../enhanced-rate-limiter'
+} from '../rate-limiter'
 
 // Skip load tests by default - they can cause hanging due to real-time loops
 // Run with: LOAD_TEST=true bun test src/lib/security/__tests__/rate-limiter-load.test.ts
@@ -64,7 +64,7 @@ describeLoadTest('Rate Limiter Load Tests', () => {
       }
 
       const clientId = 'accuracy-test-client'
-      const results: Array<import('../enhanced-rate-limiter').RateLimitResult> = []
+      const results: Array<import('../rate-limiter').RateLimitResult> = []
 
       // Make exactly maxAttempts + 5 requests
       for (let i = 0; i < 10; i++) {
@@ -103,7 +103,7 @@ describeLoadTest('Rate Limiter Load Tests', () => {
         })
       })
       
-      const results = await Promise.all(promises) as Array<import('../enhanced-rate-limiter').RateLimitResult>
+      const results = await Promise.all(promises) as Array<import('../rate-limiter').RateLimitResult>
       
       // Should have processed all requests
       expect(results).toHaveLength(numConcurrent)
@@ -226,7 +226,7 @@ describeLoadTest('Rate Limiter Load Tests', () => {
         }
       }
       
-      const results: Array<import('../enhanced-rate-limiter').RateLimitResult> = []
+      const results: Array<import('../rate-limiter').RateLimitResult> = []
       
       // Simulate burst patterns - rapid requests from same client
       for (let burst = 0; burst < 10; burst++) {
@@ -252,7 +252,7 @@ describeLoadTest('Rate Limiter Load Tests', () => {
       const contactConfig = EnhancedRateLimitConfigs.contactForm
       const authConfig = EnhancedRateLimitConfigs.auth
 
-      const results: Array<import('../enhanced-rate-limiter').RateLimitResult> = []
+      const results: Array<import('../rate-limiter').RateLimitResult> = []
 
       // Simulate mixed traffic: API, contact forms, auth attempts
       for (let i = 0; i < 1000; i++) {
@@ -350,7 +350,7 @@ describeLoadTest('Rate Limiter Load Tests', () => {
       }
 
       // Simulate bot making many rapid requests
-      const results: Array<import('../enhanced-rate-limiter').RateLimitResult> = []
+      const results: Array<import('../rate-limiter').RateLimitResult> = []
       for (let i = 0; i < 200; i++) {
         results.push(
           enhancedRateLimiter.checkLimit('suspicious-bot', config, suspiciousContext)
