@@ -9,19 +9,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useEffect, useState } from 'react'
+import { useMounted } from '@/hooks/use-mounted'
 
 export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const mounted = useMounted()
 
-  // Avoid hydration mismatch
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
+  // Show placeholder during SSR to avoid hydration mismatch
   if (!mounted) {
-    return null
+    return (
+      <Button variant="ghost" size="icon" disabled>
+        <Monitor className="h-5 w-5" />
+        <span className="sr-only">Toggle theme</span>
+      </Button>
+    )
   }
 
   return (

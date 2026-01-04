@@ -2,7 +2,7 @@
  * Test factory utilities - separate from JSX to avoid generic syntax conflicts
  */
 
-import { vi } from 'vitest'
+import { vi } from 'bun:test'
 import type { TestDataFactory, DeepPartial } from '@/types/test-utils'
 import type { MockFetchResponse } from '@/types/mock-types'
 

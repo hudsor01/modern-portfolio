@@ -1,79 +1,14 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, mock, beforeEach, afterAll } from 'bun:test'
 import { render } from '@testing-library/react'
-import ProjectDetailClientBoundary from '@/components/projects/project-detail-client-boundary'
 import type { Project } from '@/types/project'
 import type {
   MockNextImageProps,
   MockNextLinkProps,
   MockSTARAreaChartProps,
-  MockBackButtonProps,
-  MockNavigationBreadcrumbsProps,
-  MockBreadcrumbItem,
 } from '@/types/test-utils'
 
-// Mock the page analytics hook
-vi.mock('@/hooks/use-page-analytics', () => ({
-  usePageAnalytics: () => {},
-}))
-
-// Mock the Navbar component
-vi.mock('@/components/layout/navbar', () => ({
-  Navbar: () => <nav data-testid="navbar">Navigation</nav>,
-}))
-
-// Mock Next.js Image component
-vi.mock('next/image', () => ({
-  default: ({ src, alt, ...props }: MockNextImageProps) => (
-    // Using img element intentionally for test mocking purposes
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} {...props} data-testid="project-image" />
-  ),
-}))
-
-// Mock Next.js Link component
-vi.mock('next/link', () => ({
-  default: ({ href, children, ...props }: MockNextLinkProps) => (
-    <a href={href} {...props}>
-      {children}
-    </a>
-  ),
-}))
-
-// Mock the STARAreaChart component
-vi.mock('@/components/projects/star-area-chart', () => ({
-  STARAreaChart: ({ data, title }: MockSTARAreaChartProps) => (
-    <div data-testid="star-chart" data-title={title}>
-      STAR Chart: {JSON.stringify(data)}
-    </div>
-  ),
-}))
-
-// Mock navigation components
-vi.mock('@/components/navigation', () => ({
-  BackButton: ({ href, label, ...props }: MockBackButtonProps) => (
-    <a href={href} {...props} data-testid="back-button">
-      {label}
-    </a>
-  ),
-  NavigationBreadcrumbs: ({ items, currentPage }: MockNavigationBreadcrumbsProps) => (
-    <nav data-testid="breadcrumbs">
-      {items?.map((item: MockBreadcrumbItem, index: number) => (
-        <span key={index}>{item.label}</span>
-      ))}
-      <span>{currentPage}</span>
-    </nav>
-  ),
-}))
-
-// Mock TanStack Query
-vi.mock('@tanstack/react-query', () => ({
-  useQuery: () => ({
-    data: null,
-    isLoading: false,
-    error: null,
-    refetch: vi.fn(),
-  }),
-}))
+// Import after mocks are set up in beforeEach - Bun supports mocking after import
+import ProjectDetailClientBoundary from '@/components/projects/project-detail-client-boundary'
 
 // Sample project data for testing
 const mockProject: Project = {
@@ -102,6 +37,57 @@ const mockProject: Project = {
 }
 
 describe('Project Detail Consistency Integration', () => {
+  // Set up mocks before each test and restore after
+  beforeEach(() => {
+    mock.module('@/hooks/use-page-analytics', () => ({
+      usePageAnalytics: () => {},
+    }))
+
+    mock.module('@/components/layout/navbar', () => ({
+      Navbar: () => <nav data-testid="navbar">Navigation</nav>,
+    }))
+
+    mock.module('next/image', () => ({
+      default: ({ src, alt, ...props }: MockNextImageProps) => (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={src} alt={alt} {...props} data-testid="project-image" />
+      ),
+    }))
+
+    mock.module('next/link', () => ({
+      default: ({ href, children, ...props }: MockNextLinkProps) => (
+        <a href={href} {...props}>
+          {children}
+        </a>
+      ),
+    }))
+
+    mock.module('@/components/projects/star-area-chart', () => ({
+      STARAreaChart: ({ data, title }: MockSTARAreaChartProps) => (
+        <div data-testid="star-chart" data-title={title}>
+          STAR Chart: {JSON.stringify(data)}
+        </div>
+      ),
+    }))
+
+    // Note: We don't mock @/components/navigation to avoid polluting other test files
+    // The real navigation components will render correctly with the mocked next/link
+
+    mock.module('@tanstack/react-query', () => ({
+      useQuery: () => ({
+        data: null,
+        isLoading: false,
+        error: null,
+        refetch: () => {},
+      }),
+    }))
+  })
+
+  // Clean up all mocks after tests in this file to prevent pollution
+  afterAll(() => {
+    mock.restore()
+  })
+
   describe('Component Structure and Consistency', () => {
     it('renders with standardized components when project data is provided', () => {
       const { container } = render(

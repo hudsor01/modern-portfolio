@@ -3,7 +3,7 @@
  * Ensures XSS attack vectors are properly neutralized
  */
 
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from 'bun:test'
 import {
   escapeHtml,
   escapeUrl,

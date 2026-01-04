@@ -1,16 +1,23 @@
-import { describe, test, expect, vi } from 'vitest'
+import { describe, afterAll, test, expect, mock } from 'bun:test'
 import { render } from '@testing-library/react'
-import { ProjectPageLayout } from '../project-page-layout'
 import type { MockNextLinkProps } from '@/types/test-utils'
 
-// Mock Next.js Link component
-vi.mock('next/link', () => ({
+// Mock Next.js Link component - must be before imports
+mock.module('next/link', () => ({
   default: ({ children, href, ...props }: MockNextLinkProps) => (
     <a href={href} {...props}>
       {children}
     </a>
   ),
 }))
+
+// Import after mocks
+import { ProjectPageLayout } from '../project-page-layout'
+
+// Clean up mocks after all tests
+afterAll(() => {
+  mock.restore()
+})
 
 describe('Debug Layout Rendering', () => {
   test('should render basic layout structure', () => {

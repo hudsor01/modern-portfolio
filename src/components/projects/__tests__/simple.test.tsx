@@ -1,7 +1,4 @@
-/**
- * @vitest-environment jsdom
- */
-import { describe, test, expect } from 'vitest'
+import { describe, test, expect } from 'bun:test'
 import { render, screen } from '@testing-library/react'
 
 describe('Simple DOM Test', () => {

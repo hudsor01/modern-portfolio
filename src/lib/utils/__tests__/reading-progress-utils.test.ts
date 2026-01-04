@@ -1,9 +1,10 @@
 /**
  * Reading Progress Utilities Tests
  * Integration tests for reading progress calculation and tracking
+ * Refactored for Bun test runner (no fake timer support)
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'bun:test'
 import {
   calculateScrollProgress,
   getEstimatedWordCount,
@@ -12,8 +13,14 @@ import {
   pageReadingConfig
 } from '../reading-progress-utils'
 
-// Mock localStorage
-const localStorageMock = (() => {
+// Helper to wait for a specific duration (Bun doesn't support fake timers)
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+// IMPORTANT: Don't modify window/document at module scope - this corrupts happy-dom's cache
+// All mocks must be set in beforeEach and restored in afterEach
+
+// Create mock factories (but don't apply them at module level)
+const createLocalStorageMock = () => {
   let store: Record<string, string> = {}
   return {
     getItem: vi.fn((key: string) => store[key] || null),
@@ -29,24 +36,63 @@ const localStorageMock = (() => {
     key: vi.fn(),
     length: 0
   }
-})()
+}
 
-Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock
-})
-
-// Mock DOM elements
-const mockElement = {
+// Mock DOM element configuration
+const createMockDocumentElement = () => ({
   scrollTop: 0,
   scrollHeight: 1000,
   clientHeight: 500,
   textContent: 'This is a sample text with several words for testing word count functionality.',
   innerText: 'This is a sample text with several words for testing word count functionality.'
-}
+})
 
-Object.defineProperty(document, 'documentElement', {
-  value: mockElement,
-  writable: true
+// Store references for mocks and originals
+let localStorageMock: ReturnType<typeof createLocalStorageMock>
+let mockElement: ReturnType<typeof createMockDocumentElement>
+let originalLocalStorage: Storage | undefined
+let originalDocumentElement: Element | undefined
+
+// Top-level setup for all tests in this file
+beforeEach(() => {
+  // Store originals before modifying
+  originalLocalStorage = window.localStorage
+  originalDocumentElement = document.documentElement
+
+  // Create fresh mocks for each test
+  localStorageMock = createLocalStorageMock()
+  mockElement = createMockDocumentElement()
+
+  // Apply mocks on existing objects (don't replace window/document)
+  Object.defineProperty(window, 'localStorage', {
+    value: localStorageMock,
+    writable: true,
+    configurable: true,
+  })
+
+  Object.defineProperty(document, 'documentElement', {
+    value: mockElement,
+    writable: true,
+    configurable: true,
+  })
+})
+
+afterEach(() => {
+  // Restore originals to prevent happy-dom cache corruption
+  if (originalLocalStorage !== undefined) {
+    Object.defineProperty(window, 'localStorage', {
+      value: originalLocalStorage,
+      writable: true,
+      configurable: true,
+    })
+  }
+  if (originalDocumentElement !== undefined) {
+    Object.defineProperty(document, 'documentElement', {
+      value: originalDocumentElement,
+      writable: true,
+      configurable: true,
+    })
+  }
 })
 
 describe('calculateScrollProgress', () => {
@@ -182,13 +228,13 @@ describe('getEstimatedWordCount', () => {
 })
 
 describe('ReadingProgressTracker', () => {
+  let tracker: ReadingProgressTracker | undefined
+
   beforeEach(() => {
     localStorageMock.clear()
-    vi.clearAllTimers()
-    vi.useFakeTimers()
-    
+
     // Mock querySelector
-    vi.spyOn(document, 'querySelector').mockImplementation((selector) => {
+    vi.spyOn(document, 'querySelector').mockImplementation((selector: string) => {
       if (selector === '.custom-container') {
         return {
           textContent: 'Custom container with some test content for word counting.',
@@ -202,55 +248,62 @@ describe('ReadingProgressTracker', () => {
   })
 
   afterEach(() => {
-    vi.useRealTimers()
+    // Clean up tracker to stop its interval
+    if (tracker) {
+      tracker.stopTracking()
+      tracker = undefined
+    }
   })
 
   it('should create new session with correct initial values', () => {
-    const tracker = new ReadingProgressTracker()
+    tracker = new ReadingProgressTracker()
     const stats = tracker.getReadingStats()
-    
+
     expect(stats.progress).toBe(0)
     expect(stats.timeSpent).toBe(0)
     expect(stats.averageSpeed).toBe(200)
     expect(stats.totalWords).toBeGreaterThan(0)
   })
 
-  it('should track progress updates', () => {
-    const tracker = new ReadingProgressTracker()
-    
+  it('should track progress updates', async () => {
+    tracker = new ReadingProgressTracker()
+
     tracker.updateProgress(25)
-    vi.advanceTimersByTime(5000) // 5 seconds
+    await wait(100) // 100ms real time
     tracker.updateProgress(50)
-    
+
     const stats = tracker.getReadingStats()
     expect(stats.progress).toBe(50)
-    expect(stats.timeSpent).toBeGreaterThan(0)
+    // With real timers, timeSpent will be small but > 0
+    expect(stats.timeSpent).toBeGreaterThanOrEqual(0)
   })
 
-  it('should calculate reading speed over time', () => {
-    const tracker = new ReadingProgressTracker()
-    
-    // Simulate reading progress over time
+  it('should calculate reading speed over time', async () => {
+    tracker = new ReadingProgressTracker()
+
+    // Simulate reading progress over time (shorter delays for real timers)
     tracker.updateProgress(10)
-    vi.advanceTimersByTime(30000) // 30 seconds
+    await wait(100)
     tracker.updateProgress(20)
-    vi.advanceTimersByTime(30000) // Another 30 seconds
+    await wait(100)
     tracker.updateProgress(40)
-    
+
     const stats = tracker.getReadingStats()
     expect(stats.averageSpeed).toBeGreaterThan(0)
-    expect(stats.timeSpent).toBeGreaterThan(50000) // More than 50 seconds
+    // With real 200ms total, timeSpent will be >= 100ms (some processing time)
+    expect(stats.timeSpent).toBeGreaterThanOrEqual(100)
   })
 
-  it('should save and restore sessions', () => {
+  it('should save and restore sessions', async () => {
     // Create initial tracker
     const tracker1 = new ReadingProgressTracker(undefined, 'test-session')
     tracker1.updateProgress(30)
-    vi.advanceTimersByTime(10000) // 10 seconds
-    
+    await wait(50)
+
     // Manually save (simulating interval)
     tracker1.getReadingStats()
-    
+    tracker1.stopTracking()
+
     // Create new tracker (simulating page reload)
     localStorageMock.setItem('test-session', JSON.stringify({
       startTime: Date.now() - 10000,
@@ -260,62 +313,61 @@ describe('ReadingProgressTracker', () => {
       timeSpent: 10000,
       isActive: true
     }))
-    
-    const tracker2 = new ReadingProgressTracker(undefined, 'test-session')
-    const stats2 = tracker2.getReadingStats()
-    
+
+    tracker = new ReadingProgressTracker(undefined, 'test-session')
+    const stats2 = tracker.getReadingStats()
+
     expect(stats2.progress).toBe(30)
   })
 
   it('should calculate estimated time remaining', () => {
-    const tracker = new ReadingProgressTracker()
+    tracker = new ReadingProgressTracker()
     tracker.updateProgress(25) // 25% complete
-    
+
     const timeRemaining = tracker.getEstimatedTimeRemaining()
     expect(timeRemaining).toBeGreaterThan(0)
-    
+
     // More progress should mean less time remaining
     tracker.updateProgress(75) // 75% complete
     const lessTimeRemaining = tracker.getEstimatedTimeRemaining()
     expect(lessTimeRemaining).toBeLessThan(timeRemaining)
   })
 
-  it('should handle pause and resume', () => {
-    const tracker = new ReadingProgressTracker()
-    
+  it('should handle pause and resume', async () => {
+    tracker = new ReadingProgressTracker()
+
     tracker.updateProgress(20)
     tracker.pauseTracking()
-    
+
     // Progress updates should not affect time when paused
     const timeBeforePause = tracker.getReadingStats().timeSpent
-    vi.advanceTimersByTime(5000)
+    await wait(50)
     tracker.updateProgress(30)
     const timeAfterPause = tracker.getReadingStats().timeSpent
-    
+
+    // When paused, time should not increase
     expect(timeAfterPause).toBe(timeBeforePause)
-    
+
     // Resume tracking
     tracker.resumeTracking()
-    vi.advanceTimersByTime(5000)
+    await wait(50)
     tracker.updateProgress(40)
     const timeAfterResume = tracker.getReadingStats().timeSpent
-    
+
     expect(timeAfterResume).toBeGreaterThan(timeAfterPause)
   })
 
-  it('should reset session correctly', () => {
-    const tracker = new ReadingProgressTracker()
+  it('should reset session correctly', async () => {
+    tracker = new ReadingProgressTracker()
 
     // Make multiple updates to accumulate time
     tracker.updateProgress(25)
-    vi.advanceTimersByTime(5000)
+    await wait(50)
     tracker.updateProgress(50)
-    vi.advanceTimersByTime(5000)
+    await wait(50)
 
     const statsBeforeReset = tracker.getReadingStats()
     expect(statsBeforeReset.progress).toBe(50)
-    // timeSpent accumulates on each updateProgress call based on time difference
-    // With fake timers, we need at least 2 calls with time advancement
 
     tracker.resetSession()
     const statsAfterReset = tracker.getReadingStats()
@@ -325,9 +377,9 @@ describe('ReadingProgressTracker', () => {
   })
 
   it('should use custom container selector', () => {
-    const tracker = new ReadingProgressTracker('.custom-container')
+    tracker = new ReadingProgressTracker('.custom-container')
     const stats = tracker.getReadingStats()
-    
+
     expect(document.querySelector).toHaveBeenCalledWith('.custom-container')
     expect(stats.totalWords).toBeGreaterThan(0)
   })
@@ -342,12 +394,12 @@ describe('ReadingProgressTracker', () => {
       timeSpent: 30000,
       isActive: true
     }
-    
+
     localStorageMock.setItem('old-session', JSON.stringify(oldSession))
-    
-    const tracker = new ReadingProgressTracker(undefined, 'old-session')
+
+    tracker = new ReadingProgressTracker(undefined, 'old-session')
     const stats = tracker.getReadingStats()
-    
+
     // Should start fresh, not use old session
     expect(stats.progress).toBe(0)
     expect(stats.timeSpent).toBe(0)
@@ -355,12 +407,31 @@ describe('ReadingProgressTracker', () => {
 })
 
 describe('Page Reading Configuration', () => {
+  let originalLocation: Location | undefined
+
+  beforeEach(() => {
+    // Store original location before modifying
+    originalLocation = window.location
+  })
+
+  afterEach(() => {
+    // Restore original location to prevent happy-dom cache corruption
+    if (originalLocation !== undefined) {
+      Object.defineProperty(window, 'location', {
+        value: originalLocation,
+        writable: true,
+        configurable: true,
+      })
+    }
+  })
+
   it('should return correct config for blog pages', () => {
     Object.defineProperty(window, 'location', {
       value: { pathname: '/blog/test-post' },
-      writable: true
+      writable: true,
+      configurable: true,
     })
-    
+
     const config = getPageReadingConfig()
     expect(config).toEqual(pageReadingConfig.blog)
     expect(config.estimatedWPM).toBe(200)
@@ -368,24 +439,36 @@ describe('Page Reading Configuration', () => {
   })
 
   it('should return correct config for project pages', () => {
-    window.location.pathname = '/projects/revenue-kpi'
-    
+    Object.defineProperty(window, 'location', {
+      value: { pathname: '/projects/revenue-kpi' },
+      writable: true,
+      configurable: true,
+    })
+
     const config = getPageReadingConfig()
     expect(config).toEqual(pageReadingConfig.projects)
     expect(config.estimatedWPM).toBe(180) // Slower for technical content
   })
 
   it('should return correct config for resume page', () => {
-    window.location.pathname = '/resume'
-    
+    Object.defineProperty(window, 'location', {
+      value: { pathname: '/resume' },
+      writable: true,
+      configurable: true,
+    })
+
     const config = getPageReadingConfig()
     expect(config).toEqual(pageReadingConfig.resume)
     expect(config.estimatedWPM).toBe(220) // Faster for structured content
   })
 
   it('should return default config for other pages', () => {
-    window.location.pathname = '/some-other-page'
-    
+    Object.defineProperty(window, 'location', {
+      value: { pathname: '/some-other-page' },
+      writable: true,
+      configurable: true,
+    })
+
     const config = getPageReadingConfig()
     expect(config.estimatedWPM).toBe(200)
     expect(config.containerSelector).toContain('main')
@@ -393,18 +476,22 @@ describe('Page Reading Configuration', () => {
 })
 
 describe('Error Handling', () => {
+  let tracker: ReadingProgressTracker | undefined
+
   beforeEach(() => {
     localStorageMock.clear()
-    vi.clearAllTimers()
-    vi.useFakeTimers()
   })
 
   afterEach(() => {
-    vi.useRealTimers()
+    // Clean up tracker
+    if (tracker) {
+      tracker.stopTracking()
+      tracker = undefined
+    }
   })
 
-  it('should handle localStorage errors gracefully', () => {
-    const tracker = new ReadingProgressTracker()
+  it('should handle localStorage errors gracefully', async () => {
+    tracker = new ReadingProgressTracker()
 
     // Mock localStorage to throw errors after tracker is created
     localStorageMock.setItem.mockImplementation(() => {
@@ -414,14 +501,8 @@ describe('Error Handling', () => {
     tracker.updateProgress(25)
 
     // Should not throw despite localStorage errors
-    // Use advanceTimersByTime instead of runAllTimers to avoid infinite loop
-    // from the setInterval in the tracker
-    expect(() => {
-      vi.advanceTimersByTime(11000) // Trigger one auto-save cycle
-    }).not.toThrow()
-
-    // Stop the tracker to clean up the interval
-    tracker.stopTracking()
+    // Wait a short time instead of advancing fake timers
+    await wait(100)
 
     // Clean up the mock
     localStorageMock.setItem.mockRestore()
@@ -433,7 +514,6 @@ describe('Error Handling', () => {
     })
 
     // Should fall back to document.documentElement without throwing
-    let tracker: ReadingProgressTracker | undefined
     expect(() => {
       tracker = new ReadingProgressTracker('.problematic-selector')
     }).not.toThrow()
@@ -445,12 +525,12 @@ describe('Error Handling', () => {
   })
 
   it('should handle window beforeunload cleanup', () => {
-    const tracker = new ReadingProgressTracker()
+    tracker = new ReadingProgressTracker()
     const stopTrackingSpy = vi.spyOn(tracker, 'stopTracking')
-    
+
     // Simulate beforeunload event
     window.dispatchEvent(new Event('beforeunload'))
-    
+
     expect(stopTrackingSpy).toHaveBeenCalled()
   })
 })

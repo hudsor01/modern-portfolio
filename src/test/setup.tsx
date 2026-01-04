@@ -1,15 +1,114 @@
-import '@testing-library/jest-dom/vitest'
-import { afterEach, beforeAll, vi } from 'vitest'
+// happy-dom is registered in happydom.ts (loaded first via bunfig.toml preload)
+/// <reference lib="dom" />
+/// <reference lib="dom.iterable" />
+
+import '@testing-library/jest-dom'
+import { cleanup } from '@testing-library/react'
+import { afterEach, beforeAll, vi, mock } from 'bun:test'
 import React from 'react'
 import type { MockNextImageProps } from '@/types/mock-types'
 
 // =============================================================================
-// ESSENTIAL MODULE-LEVEL MOCKS ONLY
-// Heavy mocks (Recharts, Framer Motion, TanStack Query) moved to individual tests
+// VITEST COMPATIBILITY LAYER
+// Add missing Vitest APIs to Bun's vi object
 // =============================================================================
 
+const stubbedGlobals = new Map()
+
+// Extend vi with missing Vitest APIs
+const viExt = vi as Record<string, unknown>
+
+// stubGlobal - stores original and sets mock on globalThis AND window
+viExt.stubGlobal = function stubGlobal(name: string, value: unknown) {
+  if (!stubbedGlobals.has(name)) {
+    stubbedGlobals.set(name, (globalThis as Record<string, unknown>)[name])
+  }
+  (globalThis as Record<string, unknown>)[name] = value
+  // Also set on window for DOM environments
+  if (typeof window !== 'undefined') {
+    (window as unknown as Record<string, unknown>)[name] = value
+  }
+}
+
+// unstubAllGlobals - restores all stubbed globals on both globalThis and window
+viExt.unstubAllGlobals = function unstubAllGlobals() {
+  stubbedGlobals.forEach((original, name) => {
+    (globalThis as Record<string, unknown>)[name] = original
+    if (typeof window !== 'undefined') {
+      (window as unknown as Record<string, unknown>)[name] = original
+    }
+  })
+  stubbedGlobals.clear()
+}
+
+// mocked - just returns the mock (no-op in Bun)
+viExt.mocked = function mocked(item: unknown) { return item }
+
+// doMock - alias for vi.mock
+viExt.doMock = vi.mock
+
+// hoisted - just executes the function and returns result
+viExt.hoisted = function hoisted(fn: () => unknown) { return fn() }
+
+// =============================================================================
+// FAKE TIMER STUBS (NOT SUPPORTED IN BUN - these are no-ops)
+// Bun does NOT support timer mocking yet. These stubs prevent crashes.
+// Tests using these will need to be refactored for real timers.
+// =============================================================================
+
+// advanceTimersByTime - stub (Bun doesn't support timer mocking)
+viExt.advanceTimersByTime = function advanceTimersByTime(_ms: number) {
+  // No-op: Bun doesn't support timer mocking
+  return vi
+}
+
+// runAllTimers - stub (Bun doesn't support timer mocking)
+viExt.runAllTimers = function runAllTimers() {
+  // No-op: Bun doesn't support timer mocking
+  return vi
+}
+
+// runAllTimersAsync - stub (Bun doesn't support timer mocking)
+viExt.runAllTimersAsync = async function runAllTimersAsync() {
+  // No-op: Bun doesn't support timer mocking
+  return vi
+}
+
+// runOnlyPendingTimers - stub
+viExt.runOnlyPendingTimers = function runOnlyPendingTimers() {
+  return vi
+}
+
+// runOnlyPendingTimersAsync - stub
+viExt.runOnlyPendingTimersAsync = async function runOnlyPendingTimersAsync() {
+  return vi
+}
+
+// advanceTimersToNextTimer - stub
+viExt.advanceTimersToNextTimer = function advanceTimersToNextTimer() {
+  return vi
+}
+
+// advanceTimersToNextTimerAsync - stub
+viExt.advanceTimersToNextTimerAsync = async function advanceTimersToNextTimerAsync() {
+  return vi
+}
+
+// getTimerCount - stub
+viExt.getTimerCount = function getTimerCount() {
+  return 0
+}
+
+// =============================================================================
+// ESSENTIAL MODULE-LEVEL MOCKS ONLY
+// Using Bun's native mock.module() API (preferred over vi.mock)
+// =============================================================================
+
+// Mock server-only (throws when imported outside server context)
+mock.module('server-only', () => ({}))
+
 // Mock Next.js router
-vi.mock('next/navigation', () => ({
+mock.module('next/navigation', () => ({
   useRouter: () => ({
     push: vi.fn(),
     replace: vi.fn(),
@@ -24,7 +123,7 @@ vi.mock('next/navigation', () => ({
 }))
 
 // Mock Next.js image component with proper typing
-vi.mock('next/image', () => ({
+mock.module('next/image', () => ({
   default: React.forwardRef<HTMLImageElement, MockNextImageProps>(
     function MockNextImage(props, ref) {
       const { src, alt, ...rest } = props
@@ -40,7 +139,7 @@ vi.mock('next/image', () => ({
 }))
 
 // Mock theme provider
-vi.mock('next-themes', () => ({
+mock.module('next-themes', () => ({
   useTheme: () => ({
     theme: 'dark',
     setTheme: vi.fn(),
@@ -52,7 +151,7 @@ vi.mock('next-themes', () => ({
 }))
 
 // Lightweight Framer Motion mock - just pass-through elements
-vi.mock('framer-motion', () => {
+mock.module('framer-motion', () => {
   const motion = {
     div: React.forwardRef<HTMLDivElement, React.ComponentProps<'div'>>((props, ref) =>
       React.createElement('div', { ...props, ref })
@@ -90,26 +189,70 @@ vi.mock('framer-motion', () => {
 })
 
 // Lightweight Recharts mock - minimal stubs
-vi.mock('recharts', () => ({
+mock.module('recharts', () => ({
   ResponsiveContainer: ({ children }: React.PropsWithChildren) =>
     React.createElement('div', { 'data-testid': 'chart-container' }, children),
   BarChart: ({ children }: React.PropsWithChildren) => React.createElement('div', null, children),
   LineChart: ({ children }: React.PropsWithChildren) => React.createElement('div', null, children),
+  AreaChart: ({ children }: React.PropsWithChildren) => React.createElement('div', null, children),
   PieChart: ({ children }: React.PropsWithChildren) => React.createElement('div', null, children),
   FunnelChart: ({ children }: React.PropsWithChildren) => React.createElement('div', null, children),
+  ComposedChart: ({ children }: React.PropsWithChildren) => React.createElement('div', null, children),
+  ScatterChart: ({ children }: React.PropsWithChildren) => React.createElement('div', null, children),
+  RadarChart: ({ children }: React.PropsWithChildren) => React.createElement('div', null, children),
+  RadialBarChart: ({ children }: React.PropsWithChildren) => React.createElement('div', null, children),
+  Treemap: ({ children }: React.PropsWithChildren) => React.createElement('div', null, children),
   Line: () => null,
   Bar: () => null,
+  Area: () => null,
   Pie: () => null,
   Cell: () => null,
+  Scatter: () => null,
+  Radar: () => null,
+  RadialBar: () => null,
+  Funnel: () => null,
   XAxis: () => null,
   YAxis: () => null,
+  ZAxis: () => null,
   CartesianGrid: () => null,
+  PolarGrid: () => null,
+  PolarAngleAxis: () => null,
+  PolarRadiusAxis: () => null,
   Tooltip: () => null,
   Legend: () => null,
+  Brush: () => null,
+  ReferenceLine: () => null,
+  ReferenceArea: () => null,
+  ReferenceDot: () => null,
+  LabelList: () => null,
+  Label: () => null,
+  ErrorBar: () => null,
+  Sector: () => null,
+  Curve: () => null,
+  Rectangle: () => null,
+  Cross: () => null,
+  Symbols: () => null,
+  Customized: () => null,
+}))
+
+// Unified next/dynamic mock - handles all dynamic import patterns
+mock.module('next/dynamic', () => ({
+  default: (_importFn: unknown, options?: { ssr?: boolean; loading?: unknown }) => {
+    // Return a simple mock component for all dynamic imports
+    const MockComponent = () => {
+      // Determine testid based on options
+      let testId = 'dynamic-component'
+      if (options?.ssr === false) {
+        testId = 'dynamic-chart'
+      }
+      return React.createElement('div', { 'data-testid': testId }, 'Mock Dynamic Component')
+    }
+    return MockComponent
+  },
 }))
 
 // Lightweight TanStack Query mock
-vi.mock('@tanstack/react-query', () => ({
+mock.module('@tanstack/react-query', () => ({
   useQuery: vi.fn(() => ({
     data: null,
     isPending: false,
@@ -171,7 +314,19 @@ beforeAll(() => {
 // =============================================================================
 
 afterEach(() => {
+  // Cleanup React Testing Library (unmounts components, clears DOM)
+  cleanup()
+
+  // Clear all mocks
   vi.clearAllMocks()
-  vi.clearAllTimers()
-  vi.useRealTimers()
+
+  // Note: Don't manually clear document.body.innerHTML - this breaks happy-dom's cache
+  // The cleanup() function from RTL handles DOM cleanup properly
+
+  // Only clear timers if fake timers are active
+  try {
+    vi.useRealTimers()
+  } catch {
+    // Timers weren't faked, ignore
+  }
 })

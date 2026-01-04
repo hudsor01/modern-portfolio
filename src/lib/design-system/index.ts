@@ -22,9 +22,6 @@ export * from './utils'
 // Export interactive elements
 export * from './interactive-elements'
 
-// Export loading states
-export * from './loading-states'
-
 // Export loading patterns
 export * from './loading-patterns'
 

@@ -54,15 +54,15 @@ export interface ConnectionInfo {
 
 // Type for navigator.connection
 interface NetworkInformation extends EventTarget {
-  readonly effectiveType?: 'slow-2g' | '2g' | '3g' | '4g';
-  readonly downlink?: number;
-  readonly rtt?: number;
-  readonly saveData?: boolean;
+  readonly effectiveType?: 'slow-2g' | '2g' | '3g' | '4g'
+  readonly downlink?: number
+  readonly rtt?: number
+  readonly saveData?: boolean
   // Other properties like type, onchange could be added if needed
 }
 
 interface NavigatorWithConnection extends Navigator {
-  readonly connection?: NetworkInformation;
+  readonly connection?: NetworkInformation
 }
 
 // Thresholds for Core Web Vitals (based on Google's recommendations)
@@ -83,22 +83,25 @@ const ANALYTICS_RATE_LIMIT_MAX = 50 // Max 50 metrics per minute per client
 export function checkAnalyticsRateLimit(identifier: string): boolean {
   const now = Date.now()
   const record = analyticsRateLimit.get(identifier)
-  
+
   if (!record || now > record.resetTime) {
     analyticsRateLimit.set(identifier, { count: 1, resetTime: now + ANALYTICS_RATE_LIMIT_WINDOW })
     return true
   }
-  
+
   if (record.count >= ANALYTICS_RATE_LIMIT_MAX) {
     return false
   }
-  
+
   record.count++
   return true
 }
 
 // Generate rating based on thresholds
-export function getRating(name: WebVitalsData['name'], value: number): 'good' | 'needs-improvement' | 'poor' {
+export function getRating(
+  name: WebVitalsData['name'],
+  value: number
+): 'good' | 'needs-improvement' | 'poor' {
   const thresholds = WEB_VITALS_THRESHOLDS[name]
   if (value <= thresholds.good) return 'good'
   if (value <= thresholds.poor) return 'needs-improvement'
@@ -106,23 +109,26 @@ export function getRating(name: WebVitalsData['name'], value: number): 'good' | 
 }
 
 // Device detection utility
-export function getDeviceInfo(userAgent: string, viewport: { width: number; height: number }): DeviceInfo {
+export function getDeviceInfo(
+  userAgent: string,
+  viewport: { width: number; height: number }
+): DeviceInfo {
   const isMobile = /Mobi|Android/i.test(userAgent)
   const isTablet = /Tablet|iPad/i.test(userAgent)
-  
+
   let os: string | undefined
   if (/Windows/i.test(userAgent)) os = 'Windows'
   else if (/Mac/i.test(userAgent)) os = 'macOS'
   else if (/Linux/i.test(userAgent)) os = 'Linux'
   else if (/Android/i.test(userAgent)) os = 'Android'
   else if (/iOS/i.test(userAgent)) os = 'iOS'
-  
+
   let browser: string | undefined
   if (/Chrome/i.test(userAgent) && !/Edge/i.test(userAgent)) browser = 'Chrome'
   else if (/Firefox/i.test(userAgent)) browser = 'Firefox'
   else if (/Safari/i.test(userAgent) && !/Chrome/i.test(userAgent)) browser = 'Safari'
   else if (/Edge/i.test(userAgent)) browser = 'Edge'
-  
+
   return {
     type: isMobile ? 'mobile' : isTablet ? 'tablet' : 'desktop',
     os,
@@ -166,9 +172,9 @@ export interface AnalyticsAggregation {
 }
 
 interface GroupedAnalyticsResult {
-  samples: number;
-  average: number;
-  rating: 'good' | 'needs-improvement' | 'poor'; // Made rating more specific
+  samples: number
+  average: number
+  rating: 'good' | 'needs-improvement' | 'poor' // Made rating more specific
 }
 
 export interface TimeRange {
@@ -180,56 +186,56 @@ export interface TimeRange {
 class InMemoryAnalyticsStorage implements AnalyticsStorage {
   private data: EnhancedWebVitalsData[] = []
   private readonly maxEntries = 10000 // Prevent memory overflow
-  
+
   async store(data: EnhancedWebVitalsData): Promise<void> {
     this.data.push(data)
-    
+
     // Keep only recent entries
     if (this.data.length > this.maxEntries) {
       this.data = this.data.slice(-this.maxEntries)
     }
   }
-  
+
   async query(filters: AnalyticsQueryFilters): Promise<AnalyticsQueryResult[]> {
     let filtered = this.data
-    
+
     if (filters.startDate) {
-      filtered = filtered.filter(d => d.timestamp >= filters.startDate!.getTime())
+      filtered = filtered.filter((d) => d.timestamp >= filters.startDate!.getTime())
     }
-    
+
     if (filters.endDate) {
-      filtered = filtered.filter(d => d.timestamp <= filters.endDate!.getTime())
+      filtered = filtered.filter((d) => d.timestamp <= filters.endDate!.getTime())
     }
-    
+
     if (filters.page) {
-      filtered = filtered.filter(d => d.page === filters.page)
+      filtered = filtered.filter((d) => d.page === filters.page)
     }
-    
+
     if (filters.metric) {
-      filtered = filtered.filter(d => d.name === filters.metric)
+      filtered = filtered.filter((d) => d.name === filters.metric)
     }
-    
+
     if (filters.device) {
-      filtered = filtered.filter(d => d.device.type === filters.device)
+      filtered = filtered.filter((d) => d.device.type === filters.device)
     }
-    
+
     if (filters.rating) {
-      filtered = filtered.filter(d => d.rating === filters.rating)
+      filtered = filtered.filter((d) => d.rating === filters.rating)
     }
-    
+
     if (filters.limit) {
       filtered = filtered.slice(-filters.limit)
     }
-    
+
     return filtered
   }
-  
-  async aggregate(timeRange: TimeRange, _groupBy?: string): Promise<AnalyticsAggregation> { // Prefixed groupBy with _
-    const filtered = this.data.filter(d => 
-      d.timestamp >= timeRange.start.getTime() && 
-      d.timestamp <= timeRange.end.getTime()
+
+  async aggregate(timeRange: TimeRange, _groupBy?: string): Promise<AnalyticsAggregation> {
+    // Prefixed groupBy with _
+    const filtered = this.data.filter(
+      (d) => d.timestamp >= timeRange.start.getTime() && d.timestamp <= timeRange.end.getTime()
     )
-    
+
     if (filtered.length === 0) {
       return {
         totalSamples: 0,
@@ -242,10 +248,10 @@ class InMemoryAnalyticsStorage implements AnalyticsStorage {
         byDevice: {},
       }
     }
-    
-    const values = filtered.map(d => d.value).sort((a, b) => a - b)
-    const ratings = filtered.map(d => d.rating || getRating(d.name, d.value))
-    
+
+    const values = filtered.map((d) => d.value).sort((a, b) => a - b)
+    const ratings = filtered.map((d) => d.rating || getRating(d.name, d.value))
+
     return {
       totalSamples: filtered.length,
       averageValue: values.reduce((sum, val) => sum + val, 0) / values.length,
@@ -253,29 +259,34 @@ class InMemoryAnalyticsStorage implements AnalyticsStorage {
       p75Value: values[Math.floor(values.length * 0.75)] || 0,
       p95Value: values[Math.floor(values.length * 0.95)] || 0,
       ratingDistribution: {
-        good: ratings.filter(r => r === 'good').length,
-        needsImprovement: ratings.filter(r => r === 'needs-improvement').length,
-        poor: ratings.filter(r => r === 'poor').length,
+        good: ratings.filter((r) => r === 'good').length,
+        needsImprovement: ratings.filter((r) => r === 'needs-improvement').length,
+        poor: ratings.filter((r) => r === 'poor').length,
       },
       byPage: this.groupBy(filtered, 'page'),
-      byDevice: this.groupBy(filtered, d => d.device.type),
+      byDevice: this.groupBy(filtered, (d) => d.device.type),
     }
   }
-  
-  private groupBy(data: EnhancedWebVitalsData[], key: string | ((item: EnhancedWebVitalsData) => string)): Record<string, GroupedAnalyticsResult> { // Updated signature
+
+  private groupBy(
+    data: EnhancedWebVitalsData[],
+    key: string | ((item: EnhancedWebVitalsData) => string)
+  ): Record<string, GroupedAnalyticsResult> {
+    // Updated signature
     const groups: Record<string, EnhancedWebVitalsData[]> = {}
-    
-    data.forEach(item => {
+
+    data.forEach((item) => {
       // Ensure groupKey is a string, as it's used as a Record key.
-      const groupKeyValue = typeof key === 'string' ? item[key as keyof EnhancedWebVitalsData] : key(item);
-      const groupKey = String(groupKeyValue); // Convert to string to handle potential undefined from item[key]
+      const groupKeyValue =
+        typeof key === 'string' ? item[key as keyof EnhancedWebVitalsData] : key(item)
+      const groupKey = String(groupKeyValue) // Convert to string to handle potential undefined from item[key]
       if (!groups[groupKey]) groups[groupKey] = []
       groups[groupKey].push(item)
     })
-    
+
     const result: Record<string, GroupedAnalyticsResult> = {} // Updated type
     Object.entries(groups).forEach(([groupKey, items]) => {
-      const values = items.map(item => item.value)
+      const values = items.map((item) => item.value)
       const average = values.reduce((sum, val) => sum + val, 0) / values.length
       result[groupKey] = {
         samples: items.length,
@@ -283,7 +294,7 @@ class InMemoryAnalyticsStorage implements AnalyticsStorage {
         rating: getRating(items[0]!.name, average), // Added non-null assertion for items[0]
       }
     })
-    
+
     return result
   }
 }
@@ -291,47 +302,50 @@ class InMemoryAnalyticsStorage implements AnalyticsStorage {
 // Web Vitals service class
 export class WebVitalsService {
   private storage: AnalyticsStorage
-  
+
   constructor(storage?: AnalyticsStorage) {
     this.storage = storage || new InMemoryAnalyticsStorage()
   }
-  
-  async collect(rawData: unknown, context: {
-    userAgent?: string
-    url?: string
-    sessionId: string
-    userId?: string
-    viewport?: { width: number; height: number }
-  }): Promise<{ success: boolean; error?: string }> {
+
+  async collect(
+    rawData: unknown,
+    context: {
+      userAgent?: string
+      url?: string
+      sessionId: string
+      userId?: string
+      viewport?: { width: number; height: number }
+    }
+  ): Promise<{ success: boolean; error?: string }> {
     try {
       // Validate the raw data
       const validatedData = WebVitalsSchema.parse(rawData)
-      
+
       // Add rating if not provided
       if (!validatedData.rating) {
         validatedData.rating = getRating(validatedData.name, validatedData.value)
       }
-      
+
       // Extract page from URL
       const page = context.url ? new URL(context.url).pathname : '/unknown'
-      
+
       // Get device info
       const viewport = context.viewport || { width: 1920, height: 1080 }
-      const deviceInfo = context.userAgent ? 
-        getDeviceInfo(context.userAgent, viewport) : 
-        { type: 'desktop' as const, viewport }
-      
+      const deviceInfo = context.userAgent
+        ? getDeviceInfo(context.userAgent, viewport)
+        : { type: 'desktop' as const, viewport }
+
       // Get connection info (if available)
       const connection: ConnectionInfo = {}
       if (typeof navigator !== 'undefined' && (navigator as NavigatorWithConnection).connection) {
-        const conn = (navigator as NavigatorWithConnection).connection!;
+        const conn = (navigator as NavigatorWithConnection).connection!
         // Check for properties individually as they are optional in NetworkInformation
-        if (conn.effectiveType) connection.effectiveType = conn.effectiveType;
-        if (conn.downlink !== undefined) connection.downlink = conn.downlink;
-        if (conn.rtt !== undefined) connection.rtt = conn.rtt;
-        if (conn.saveData !== undefined) connection.saveData = conn.saveData;
+        if (conn.effectiveType) connection.effectiveType = conn.effectiveType
+        if (conn.downlink !== undefined) connection.downlink = conn.downlink
+        if (conn.rtt !== undefined) connection.rtt = conn.rtt
+        if (conn.saveData !== undefined) connection.saveData = conn.saveData
       }
-      
+
       // Create enhanced data
       const enhancedData: EnhancedWebVitalsData = {
         ...validatedData,
@@ -342,40 +356,46 @@ export class WebVitalsService {
         connection,
         timestamp: validatedData.timestamp || Date.now(),
         buildId: process.env.NEXT_BUILD_ID,
-        version: process.env.npm_package_version,
+        version: process.env.bun_package_version,
       }
-      
+
       // Store the data
       await this.storage.store(enhancedData)
-      
+
       // Production only - no development logging
-      
+
       return { success: true }
     } catch (error) {
-      logger.error('Web Vitals collection error', error instanceof Error ? error : new Error('Unknown error'))
-      
+      logger.error(
+        'Web Vitals collection error',
+        error instanceof Error ? error : new Error('Unknown error')
+      )
+
       if (error instanceof z.ZodError) {
         return {
           success: false,
           error: `Validation error: ${error.issues.map((e) => e.message).join(', ')}`,
         }
       }
-      
+
       return {
         success: false,
         error: 'Failed to process Web Vitals data',
       }
     }
   }
-  
+
   async getAnalytics(filters: AnalyticsQueryFilters = {}): Promise<AnalyticsQueryResult[]> {
     return this.storage.query(filters)
   }
-  
-  async getAggregatedAnalytics(timeRange: TimeRange, groupBy?: string): Promise<AnalyticsAggregation> {
+
+  async getAggregatedAnalytics(
+    timeRange: TimeRange,
+    groupBy?: string
+  ): Promise<AnalyticsAggregation> {
     return this.storage.aggregate(timeRange, groupBy)
   }
-  
+
   async getRealtimeMetrics(): Promise<{
     currentSessions: number
     recentMetrics: AnalyticsQueryResult[]
@@ -386,25 +406,25 @@ export class WebVitalsService {
       startDate: fiveMinutesAgo,
       limit: 100,
     })
-    
+
     // Count unique sessions
-    const uniqueSessions = new Set(recent.map(m => m.sessionId)).size
-    
+    const uniqueSessions = new Set(recent.map((m) => m.sessionId)).size
+
     // Check for performance alerts
     const alerts = this.generatePerformanceAlerts(recent)
-    
+
     return {
       currentSessions: uniqueSessions,
       recentMetrics: recent,
       alerts,
     }
   }
-  
+
   private generatePerformanceAlerts(metrics: AnalyticsQueryResult[]): PerformanceAlert[] {
     const alerts: PerformanceAlert[] = []
-    
+
     // Check for high percentage of poor ratings
-    const recentPoorRatings = metrics.filter(m => m.rating === 'poor')
+    const recentPoorRatings = metrics.filter((m) => m.rating === 'poor')
     if (recentPoorRatings.length / metrics.length > 0.3) {
       alerts.push({
         type: 'high_poor_ratings',
@@ -413,9 +433,9 @@ export class WebVitalsService {
         metrics: recentPoorRatings.slice(0, 5),
       })
     }
-    
+
     // Check for specific metric degradation
-    const lcpMetrics = metrics.filter(m => m.name === 'LCP')
+    const lcpMetrics = metrics.filter((m) => m.name === 'LCP')
     if (lcpMetrics.length > 0) {
       const avgLCP = lcpMetrics.reduce((sum, m) => sum + m.value, 0) / lcpMetrics.length
       if (avgLCP > WEB_VITALS_THRESHOLDS.LCP.poor) {
@@ -427,7 +447,7 @@ export class WebVitalsService {
         })
       }
     }
-    
+
     return alerts
   }
 }

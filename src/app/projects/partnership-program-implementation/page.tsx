@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { TrendingUp, Users, Settings, BarChart } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
-import { TIMING } from '@/lib/constants/spacing'
+import { useLoadingState } from '@/hooks/use-loading-state'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { STARAreaChart } from '@/components/projects/star-area-chart'
 
@@ -72,17 +71,7 @@ const technicalDetails = [
 ]
 
 export default function PartnershipProgramPage() {
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-    return () => clearTimeout(timer)
-  }, [])
-
-  const handleRefresh = () => {
-    setIsLoading(true)
-    setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-  }
+  const { isLoading, handleRefresh } = useLoadingState()
 
   return (
     <>

@@ -3,26 +3,36 @@
  * Comprehensive security tests for the modern-portfolio application
  */
 
-import { describe, it, expect, vi } from 'vitest'
+import { describe, afterAll, it, expect, vi, mock } from 'bun:test'
+
+// Create mock functions
+const mockCreate = vi.fn()
+const mockQueryRaw = vi.fn()
 
 // Mock server-only before importing db
-vi.mock('server-only', () => ({}))
+mock.module('server-only', () => ({}))
 
+// Mock the database connection
+mock.module('@/lib/db', () => ({
+  db: {
+    contactSubmission: {
+      create: mockCreate,
+    },
+    $queryRaw: mockQueryRaw,
+  },
+}))
+
+// Import after mocks
 import { db } from '@/lib/db'
 import { validateRequest, contactFormSchema } from '@/lib/validations/unified-schemas'
 import { sanitizeUserContent } from '@/lib/security/sanitize'
 import { escapeHtml } from '@/lib/security/html-escape'
 import { rateLimiter } from '@/lib/security/rate-limiter'
 
-// Mock the database connection
-vi.mock('@/lib/db', () => ({
-  db: {
-    contactSubmission: {
-      create: vi.fn(),
-    },
-    $queryRaw: vi.fn(),
-  },
-}))
+// Clean up mocks after all tests in this file
+afterAll(() => {
+  mock.restore()
+})
 
 describe('Security Tests', () => {
   // XSS Prevention Tests
@@ -110,8 +120,11 @@ describe('Security Tests', () => {
 
   // Rate Limiting Tests
   describe('Rate Limiting', () => {
+    // Use unique identifier prefix to avoid conflicts between tests
+    const testId = `security-test-${Date.now()}`
+
     it('should enforce rate limits', () => {
-      const identifier = 'test-client'
+      const identifier = `${testId}-client`
       const config = {
         windowMs: 60 * 1000, // 1 minute
         maxAttempts: 5,
@@ -130,12 +143,12 @@ describe('Security Tests', () => {
       }
     })
 
-    it('should reset rate limit after window expires', () => {
-      vi.useFakeTimers()
-      
-      const identifier = 'test-client-reset'
+    it('should reset rate limit after window expires', async () => {
+      // Use real timers with short window (Bun doesn't support fake timers)
+      const SHORT_WINDOW = 50 // 50ms
+      const identifier = `${testId}-reset`
       const config = {
-        windowMs: 1000, // 1 second
+        windowMs: SHORT_WINDOW,
         maxAttempts: 2,
         progressivePenalty: false,
         blockDuration: 0,
@@ -148,13 +161,11 @@ describe('Security Tests', () => {
       // Make 3rd request - should be blocked
       expect(rateLimiter.checkLimit(identifier, config).allowed).toBe(false)
 
-      // Advance time past window
-      vi.advanceTimersByTime(1001)
+      // Wait for window to expire (using real timers)
+      await new Promise(resolve => setTimeout(resolve, SHORT_WINDOW + 20))
 
       // Should be allowed again
       expect(rateLimiter.checkLimit(identifier, config).allowed).toBe(true)
-
-      vi.useRealTimers()
     })
   })
 
@@ -162,8 +173,7 @@ describe('Security Tests', () => {
   describe('SQL Injection Prevention', () => {
     it('should properly handle parameterized queries', async () => {
       // Mock the db query function
-      const mockQuery = vi.fn().mockResolvedValue([{ id: 1 }])
-      vi.spyOn(db, '$queryRaw').mockImplementation(mockQuery)
+      mockQueryRaw.mockResolvedValue([{ id: 1 }])
 
       // Test with potentially malicious input
       const maliciousInput = "'; DROP TABLE users; --"
@@ -173,7 +183,7 @@ describe('Security Tests', () => {
 
       // Verify that the query was called with the input parameterized
       // Prisma uses array format for tagged template queries
-      expect(mockQuery).toHaveBeenCalledWith(
+      expect(mockQueryRaw).toHaveBeenCalledWith(
         expect.arrayContaining([
           expect.stringContaining('SELECT * FROM blog_posts WHERE title =')
         ]),

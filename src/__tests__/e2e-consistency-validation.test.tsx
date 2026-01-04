@@ -5,7 +5,7 @@
  * consistency across all project pages.
  */
 
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from 'bun:test'
 // Removed unused imports
 
 // Mock project pages for testing

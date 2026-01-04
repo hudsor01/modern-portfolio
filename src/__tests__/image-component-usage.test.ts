@@ -10,7 +10,7 @@
  * instead of HTML img tags where optimization is beneficial.
  */
 
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from 'bun:test'
 import * as fc from 'fast-check'
 import * as fs from 'fs'
 import * as path from 'path'
@@ -154,7 +154,9 @@ describe('Image Component Usage', () => {
             // (meaning it's using both, which is unusual but might be valid)
             if (!isAcceptable && !analysis.hasNextImageImport) {
               // This is a violation - img tag without Next.js Image and not in acceptable context
-              expect(isAcceptable).toBe(true)
+              throw new Error(
+                `File ${analysis.filePath} has unacceptable img tag usage (${analysis.imgTagCount} img tags)`
+              )
             }
           }
 

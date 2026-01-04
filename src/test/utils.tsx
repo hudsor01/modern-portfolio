@@ -3,7 +3,7 @@ import { render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
-import { vi } from 'vitest'
+import { vi } from '@/test/vitest-compat'
 import type { TestRenderOptions } from '@/types/test-utils'
 import {
   createTestDataFactory,
@@ -85,6 +85,7 @@ export const mockFetch = (
   mockImplementation?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
 ) => {
   const mockFn = vi.fn(mockImplementation || (() => createMockResponse({})))
+  // Use vi.stubGlobal from our compatibility layer
   vi.stubGlobal('fetch', mockFn)
   return mockFn
 }

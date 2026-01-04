@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'bun:test'
 import { renderHook, act } from '@testing-library/react'
 import { useMediaQuery } from '../use-media-query'
 
@@ -113,12 +113,13 @@ describe('useMediaQuery', () => {
       { initialProps: { query: '(min-width: 640px)' } }
     )
 
-    expect(mockMatchMedia).toHaveBeenCalledTimes(1)
-    expect(mockMatchMedia).toHaveBeenLastCalledWith('(min-width: 640px)')
+    // With useSyncExternalStore, matchMedia may be called multiple times
+    // (once for subscribe, once for getSnapshot). Check it was called with the query.
+    expect(mockMatchMedia).toHaveBeenCalledWith('(min-width: 640px)')
 
+    mockMatchMedia.mockClear()
     rerender({ query: '(min-width: 1024px)' })
 
-    expect(mockMatchMedia).toHaveBeenCalledTimes(2)
-    expect(mockMatchMedia).toHaveBeenLastCalledWith('(min-width: 1024px)')
+    expect(mockMatchMedia).toHaveBeenCalledWith('(min-width: 1024px)')
   })
 })
