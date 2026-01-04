@@ -240,6 +240,8 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                 type="button"
                 onClick={() => setShowPrivacy(!showPrivacy)}
                 className="text-primary hover:text-primary/70 underline inline-flex items-center gap-1"
+                aria-label={showPrivacy ? 'Hide privacy policy' : 'Show privacy policy'}
+                aria-expanded={showPrivacy}
               >
                 privacy policy
                 {showPrivacy ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}

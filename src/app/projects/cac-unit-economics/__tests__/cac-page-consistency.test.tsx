@@ -3,7 +3,7 @@
  * Validates that the page follows all standardized UI patterns and components
  */
 
-import { render, screen } from '@testing-library/react'
+import { render, screen, act } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import CACUnitEconomics from '../page'
 
@@ -88,8 +88,10 @@ describe('CAC Unit Economics Page Consistency', () => {
     it('should implement consistent section organization', async () => {
       render(<CACUnitEconomics />)
 
-      // Fast-forward timers to complete loading
-      await vi.advanceTimersByTimeAsync(200)
+      // Run all timers and let React update
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
 
       // Verify section organization
       expect(screen.getByText('Analysis Details')).toBeInTheDocument()
@@ -102,8 +104,10 @@ describe('CAC Unit Economics Page Consistency', () => {
     it('should use standardized MetricsGrid for key metrics display', async () => {
       render(<CACUnitEconomics />)
 
-      // Fast-forward timers to complete loading
-      await vi.advanceTimersByTimeAsync(200)
+      // Run all timers and let React update
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
 
       // Verify all key metrics are displayed with consistent formatting
       expect(screen.getByText('Blended CAC')).toBeInTheDocument()
@@ -117,8 +121,10 @@ describe('CAC Unit Economics Page Consistency', () => {
     it('should use standardized SectionCard components for content organization', async () => {
       render(<CACUnitEconomics />)
 
-      // Fast-forward timers to complete loading
-      await vi.advanceTimersByTimeAsync(200)
+      // Run all timers and let React update
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
 
       // Verify SectionCard usage for main content areas
       expect(screen.getByText('Analysis Details')).toBeInTheDocument()
@@ -137,8 +143,10 @@ describe('CAC Unit Economics Page Consistency', () => {
     it('should use consistent currency formatting across all displays', async () => {
       render(<CACUnitEconomics />)
 
-      // Fast-forward timers to complete loading
-      await vi.advanceTimersByTimeAsync(200)
+      // Run all timers and let React update
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
 
       // Verify consistent currency formatting (no decimals for whole numbers)
       expect(screen.getByText('$168')).toBeInTheDocument() // Blended CAC
@@ -148,8 +156,10 @@ describe('CAC Unit Economics Page Consistency', () => {
     it('should use consistent ratio and percentage formatting', async () => {
       render(<CACUnitEconomics />)
 
-      // Fast-forward timers to complete loading
-      await vi.advanceTimersByTimeAsync(200)
+      // Run all timers and let React update
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
 
       // Verify consistent ratio formatting
       expect(screen.getByText('3.6:1')).toBeInTheDocument() // LTV:CAC ratio
@@ -163,8 +173,10 @@ describe('CAC Unit Economics Page Consistency', () => {
     it('should follow standardized content organization pattern', async () => {
       render(<CACUnitEconomics />)
 
-      // Fast-forward timers to complete loading
-      await vi.advanceTimersByTimeAsync(200)
+      // Run all timers and let React update
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
 
       // Verify standardized content sequence: metrics → analysis → impact → narrative
       expect(screen.getByText('Analysis Details')).toBeInTheDocument()
@@ -175,10 +187,12 @@ describe('CAC Unit Economics Page Consistency', () => {
     it('should use consistent narrative structure in project sections', async () => {
       render(<CACUnitEconomics />)
 
-      // Fast-forward timers to complete loading
-      await vi.advanceTimersByTimeAsync(200)
+      // Run all timers and let React update
+      await act(async () => {
+        await vi.runAllTimersAsync()
+      })
 
-      // Verify standardized narrative sections are present (from mocked component)
+      // Verify standardized narrative sections are present (actual component content)
       expect(screen.getByText('Project Overview')).toBeInTheDocument()
       expect(screen.getByText('Challenge')).toBeInTheDocument()
       expect(screen.getByText('Solution')).toBeInTheDocument()
