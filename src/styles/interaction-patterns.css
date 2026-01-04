@@ -1,0 +1,560 @@
+/* 
+ * Standardized Hover States and Click Feedback Patterns
+ * Luxury Minimalist Design System
+ * Consistent interaction patterns across the portfolio
+ */
+
+/* ============================================
+   HOVER STATE PATTERNS
+   ============================================ */
+
+/* Base hover transition - all interactive elements */
+.hover-element,
+a,
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+label[for],
+.portfolio-card,
+.portfolio-button-primary,
+.portfolio-button-secondary,
+.social-icon,
+.hover-lift,
+.hover-glow {
+  transition: all var(--transition-base);
+}
+
+/* Lift effect - subtle elevation on hover */
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Enhanced lift effect for cards */
+.hover-lift-lg:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Glow effect - border and shadow enhancement */
+.hover-glow:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary) / 0.1;
+}
+
+/* Enhanced glow effect */
+.hover-glow-lg:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px var(--color-primary) / 0.15;
+}
+
+/* Scale effect - subtle zoom on hover */
+.hover-scale {
+  transform-origin: center;
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+/* Enhanced scale effect */
+.hover-scale-lg:hover {
+  transform: scale(1.05);
+}
+
+/* Background color transition */
+.hover-bg-primary:hover {
+  background-color: var(--color-primary-bg);
+  border-color: var(--color-primary-border);
+}
+
+.hover-bg-secondary:hover {
+  background-color: var(--color-secondary-bg);
+  border-color: var(--color-secondary-border);
+}
+
+.hover-bg-accent:hover {
+  background-color: var(--color-accent-bg);
+  border-color: var(--color-accent-border);
+}
+
+/* Text color transition */
+.hover-text-primary:hover {
+  color: var(--color-primary);
+}
+
+.hover-text-secondary:hover {
+  color: var(--color-secondary);
+}
+
+.hover-text-accent:hover {
+  color: var(--color-accent);
+}
+
+/* Opacity transition */
+.hover-opacity-75:hover {
+  opacity: 0.75;
+}
+
+.hover-opacity-90:hover {
+  opacity: 0.9;
+}
+
+/* Border width transition */
+.hover-border-2:hover {
+  border-width: 2px;
+}
+
+.hover-border-4:hover {
+  border-width: 4px;
+}
+
+/* ============================================
+   CLICK FEEDBACK PATTERNS
+   ============================================ */
+
+/* Pressed/active states for visual feedback */
+.pressed-element:active,
+button:active,
+input[type="button"]:active,
+input[type="submit"]:active,
+input[type="reset"]:active,
+.portfolio-button-primary:active,
+.portfolio-button-secondary:active {
+  transform: translateY(1px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Click ripple effect */
+.click-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.click-ripple::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: var(--color-primary) / 0.2;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.click-ripple:active::after {
+  width: 200%;
+  height: 200%;
+}
+
+/* Click scale effect */
+.click-scale {
+  transition: transform var(--transition-fast);
+}
+
+.click-scale:active {
+  transform: scale(0.98);
+}
+
+/* Enhanced click scale effect */
+.click-scale-lg:active {
+  transform: scale(0.95);
+}
+
+/* Click opacity effect */
+.click-opacity {
+  transition: opacity var(--transition-fast);
+}
+
+.click-opacity:active {
+  opacity: 0.8;
+}
+
+/* Click background effect */
+.click-bg {
+  transition: background-color var(--transition-fast);
+}
+
+.click-bg:active {
+  background-color: var(--color-muted);
+}
+
+/* ============================================
+   ADVANCED HOVER PATTERNS
+   ============================================ */
+
+/* Slide in content on hover */
+.hover-slide-in::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-primary) / 0.1;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-base);
+  z-index: -1;
+}
+
+.hover-slide-in:hover::before {
+  transform: scaleX(1);
+}
+
+/* Gradient overlay on hover */
+.hover-gradient-overlay {
+  position: relative;
+  overflow: hidden;
+}
+
+.hover-gradient-overlay::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-primary) / 0.1,
+    transparent
+  );
+  transition: left 0.5s;
+  z-index: -1;
+}
+
+.hover-gradient-overlay:hover::before {
+  left: 100%;
+}
+
+/* Border animation on hover */
+.hover-border-animate {
+  position: relative;
+}
+
+.hover-border-animate::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 2px solid transparent;
+  border-radius: inherit;
+  transition: all var(--transition-base);
+  pointer-events: none;
+}
+
+.hover-border-animate:hover::before {
+  border-top-color: var(--color-primary);
+  border-right-color: var(--color-primary);
+  border-bottom-color: var(--color-secondary);
+  border-left-color: var(--color-secondary);
+  animation: border-rotate 1.5s linear infinite;
+}
+
+@keyframes border-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   HOVER COMBINATIONS
+   ============================================ */
+
+/* Combined effects */
+.hover-lift-glow {
+  transition: all var(--transition-base);
+}
+
+.hover-lift-glow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 3px var(--color-primary) / 0.1;
+}
+
+.hover-lift-scale {
+  transition: all var(--transition-base);
+}
+
+.hover-lift-scale:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.hover-lift-scale-glow {
+  transition: all var(--transition-base);
+}
+
+.hover-lift-scale-glow:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 0 3px var(--color-primary) / 0.1;
+}
+
+/* ============================================
+   CLICK FEEDBACK COMBINATIONS
+   ============================================ */
+
+/* Combined click effects */
+.click-lift-scale:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.click-lift-scale-glow:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ============================================
+   ACCESSIBILITY & REDUCED MOTION
+   ============================================ */
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .hover-element,
+  a,
+  button,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  label[for],
+  .portfolio-card,
+  .portfolio-button-primary,
+  .portfolio-button-secondary,
+  .social-icon,
+  .hover-lift,
+  .hover-glow,
+  .hover-scale,
+  .click-ripple,
+  .click-scale,
+  .hover-slide-in,
+  .hover-gradient-overlay,
+  .hover-border-animate {
+    transition: none;
+    animation: none;
+  }
+
+  .hover-lift:hover,
+  .hover-lift-lg:hover,
+  .hover-scale:hover,
+  .hover-scale-lg:hover,
+  .hover-lift-scale:hover,
+  .hover-lift-scale-glow:hover {
+    transform: none;
+  }
+
+  .click-scale:active,
+  .click-scale-lg:active,
+  .click-lift-scale:active,
+  .click-lift-scale-glow:active {
+    transform: none;
+  }
+
+  .hover-slide-in::before,
+  .hover-gradient-overlay::before {
+    display: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .hover-glow:hover,
+  .hover-glow-lg:hover {
+    border-width: 2px;
+  }
+
+  .hover-lift:hover,
+  .hover-lift-lg:hover {
+    box-shadow: 0 0 0 1px;
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES FOR EASY IMPLEMENTATION
+   ============================================ */
+
+/* Hover utilities */
+.hover-transform {
+  transform: translateY(0) scale(1);
+  transition: transform var(--transition-base);
+}
+
+.hover-transform:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.hover-shadow {
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-base);
+}
+
+.hover-shadow:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.hover-border {
+  border-color: var(--color-border);
+  transition: border-color var(--transition-base);
+}
+
+.hover-border:hover {
+  border-color: var(--color-primary);
+}
+
+.hover-text {
+  color: var(--color-muted-foreground);
+  transition: color var(--transition-base);
+}
+
+.hover-text:hover {
+  color: var(--color-primary);
+}
+
+/* Click utilities */
+.click-feedback {
+  transition: all var(--transition-fast);
+}
+
+.click-feedback:active {
+  transform: scale(0.98);
+  opacity: 0.8;
+}
+
+.click-feedback-lg:active {
+  transform: scale(0.95);
+  opacity: 0.7;
+}
+
+/* ============================================
+   SEMANTIC INTERACTION CLASSES
+   ============================================ */
+
+/* Primary action interactions */
+.interact-primary {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+  transition: all var(--transition-base);
+}
+
+.interact-primary:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.interact-primary:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Secondary action interactions */
+.interact-secondary {
+  border: 1px solid var(--color-border);
+  color: var(--color-muted-foreground);
+  background-color: transparent;
+  transition: all var(--transition-base);
+}
+
+.interact-secondary:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.interact-secondary:active {
+  transform: scale(0.98);
+}
+
+/* Destructive action interactions */
+.interact-destructive {
+  background-color: var(--color-destructive);
+  color: var(--color-destructive-foreground);
+  transition: all var(--transition-base);
+}
+
+.interact-destructive:hover {
+  background-color: oklch(0.45 0.18 25);
+}
+
+.interact-destructive:active {
+  transform: scale(0.98);
+}
+
+/* Disabled state interactions */
+.interact-disabled,
+[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Focus-visible enhancements for accessibility */
+.focus-enhanced {
+  transition: all var(--transition-fast);
+}
+
+.focus-enhanced:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px var(--color-ring) / 0.2;
+}
+
+/* ============================================
+   HOVER DELAY UTILITIES
+   ============================================ */
+
+.hover-delay-100:hover {
+  transition-delay: 100ms;
+}
+
+.hover-delay-200:hover {
+  transition-delay: 200ms;
+}
+
+.hover-delay-300:hover {
+  transition-delay: 300ms;
+}
+
+/* ============================================
+   CUSTOM PROPERTY OVERRIDES
+   ============================================ */
+
+/* Allow for custom transition timing */
+.hover-custom {
+  transition-timing-function: var(--motion-ease-spring);
+}
+
+.hover-custom-fast {
+  transition-timing-function: var(--motion-ease-bounce);
+}
+
+/* ============================================
+   TOUCH DEVICE OPTIMIZATIONS
+   ============================================ */
+
+/* Enhanced touch targets */
+.touch-enhanced {
+  min-height: var(--size-touch-target);
+  min-width: var(--size-touch-target);
+  padding: calc((var(--size-touch-target) - 1rem) / 2) calc((var(--size-touch-target) - 1rem) / 2);
+}
+
+/* Touch-specific feedback */
+@media (hover: none) and (pointer: coarse) {
+  .touch-enhanced:active {
+    background-color: var(--color-muted);
+  }
+}
+
+/* Mouse-specific feedback */
+@media (hover: hover) and (pointer: fine) {
+  .hover-element {
+    cursor: pointer;
+  }
+}

@@ -1,13 +1,9 @@
 'use client'
 
-import {
-  SectionCard,
-  ResultCard,
-  TechGrid,
-  FeatureCard,
-} from '@/components/projects/shared'
+import { SectionCard } from '@/components/ui/section-card'
+import { ResultCard, TechGrid, FeatureCard } from '@/components/projects/shared'
+import { formatCurrency } from '@/lib/utils/data-formatters'
 import { technologies } from '../data/constants'
-import { formatCurrency } from '../utils'
 
 interface NarrativeSectionsProps {
   totalRevenue: number
@@ -17,7 +13,7 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
   return (
     <div className="space-y-12 mt-12">
       {/* Project Overview */}
-      <SectionCard title="Project Overview" titleVariant="primary">
+      <SectionCard title="Project Overview" >
         <div className="space-y-4 text-muted-foreground">
           <p className="text-lg leading-relaxed">
             Developed and implemented a comprehensive real-time revenue analytics dashboard to
@@ -34,7 +30,7 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
       </SectionCard>
 
       {/* Challenge */}
-      <SectionCard title="Challenge" titleVariant="warning">
+      <SectionCard title="Challenge" >
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
             The organization was experiencing rapid growth but lacked visibility into partner
@@ -57,7 +53,7 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
       </SectionCard>
 
       {/* Solution */}
-      <SectionCard title="Solution" titleVariant="success">
+      <SectionCard title="Solution" >
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
             Designed and built a comprehensive revenue KPI dashboard using React, TypeScript, and
@@ -65,7 +61,7 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <FeatureCard title="Technical Implementation" titleVariant="primary">
+            <FeatureCard title="Technical Implementation" >
               <ul className="list-disc list-inside space-y-1 text-sm">
                 <li>Real-time data integration from multiple sources</li>
                 <li>Automated revenue calculations and forecasting</li>
@@ -74,7 +70,7 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
                 <li>Role-based access controls and data security</li>
               </ul>
             </FeatureCard>
-            <FeatureCard title="Business Features" titleVariant="secondary">
+            <FeatureCard title="Business Features" >
               <ul className="list-disc list-inside space-y-1 text-sm">
                 <li>Partner performance tracking and rankings</li>
                 <li>Commission tier analysis and optimization</li>
@@ -88,7 +84,7 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
       </SectionCard>
 
       {/* Results & Impact */}
-      <SectionCard title="Results & Impact" titleVariant="success">
+      <SectionCard title="Results & Impact" >
         <div className="space-y-6 text-muted-foreground">
           <p className="leading-relaxed">
             The revenue KPI dashboard transformed how the organization manages and optimizes partner
@@ -101,16 +97,8 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
               label="Additional Revenue Generated"
               variant="primary"
             />
-            <ResultCard
-              value="94%"
-              label="Forecast Accuracy Achievement"
-              variant="secondary"
-            />
-            <ResultCard
-              value="65%"
-              label="Reduction in Manual Reporting Time"
-              variant="primary"
-            />
+            <ResultCard value="94%" label="Forecast Accuracy Achievement" variant="secondary" />
+            <ResultCard value="65%" label="Reduction in Manual Reporting Time" variant="primary" />
           </div>
 
           <div className="space-y-3">
@@ -127,7 +115,7 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
       </SectionCard>
 
       {/* Key Learnings */}
-      <SectionCard title="Key Learnings" titleVariant="accent">
+      <SectionCard title="Key Learnings" >
         <div className="space-y-4 text-muted-foreground">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">

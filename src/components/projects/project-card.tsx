@@ -99,7 +99,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, pr
 
             {/* Arrow indicator */}
             <div className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center bg-card/95 backdrop-blur-sm border border-border rounded-full shadow-sm opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-0 transition-all duration-500">
-              <ArrowUpRight className="w-4 h-4 text-foreground transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              <ArrowUpRight className="w-4 h-4 text-foreground transition-transform duration-300 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </div>
           </div>
 
@@ -115,7 +115,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, pr
             )}
 
             {/* Title - Better contrast */}
-            <h3 className="font-display text-xl lg:text-2xl font-semibold text-foreground mb-3 leading-tight transition-colors duration-300 group-hover:text-primary">
+            <h3 className="font-display text-xl lg:text-2xl font-semibold text-foreground mb-3 leading-tight transition-colors duration-300 ease-out group-hover:text-primary">
               {project.title}
             </h3>
 
@@ -147,7 +147,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, pr
                 {technologies.slice(0, 4).map((tech, i) => (
                   <span
                     key={i}
-                    className="px-2.5 py-1 text-xs font-medium text-foreground/80 bg-muted border border-border rounded-md transition-all duration-300 group-hover:border-primary/25 group-hover:bg-primary/5"
+                    className="px-2.5 py-1 text-xs font-medium text-foreground/80 bg-muted border border-border rounded-md transition-all duration-300 ease-out group-hover:border-primary/25 group-hover:bg-primary/5"
                   >
                     {tech}
                   </span>

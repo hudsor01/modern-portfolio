@@ -133,13 +133,13 @@ describe('Performance Optimizations', () => {
 
     it('implements smooth transitions with proper duration', () => {
       render(
-        <div className="transition-all duration-300" data-testid="smooth-transition">
+        <div className="transition-all duration-300 ease-out" data-testid="smooth-transition">
           Smooth element
         </div>
       )
-      
+
       const element = screen.getByTestId('smooth-transition')
-      expect(element).toHaveClass('transition-all', 'duration-300')
+      expect(element).toHaveClass('transition-all', 'duration-300', 'ease-out')
     })
 
     it('uses hardware acceleration for transforms', () => {

@@ -1,83 +1,70 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "target": "ES2023",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "ESNext",
-      "ESNext.Disposable"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "esModuleInterop": true,
+    //========== Target and module ==========
+    // Use ESNext for modern JavaScript features (no transpilation)
+    "target": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ESNext", "ESNext.Disposable"],
+    // Use bundler for better compatibility with Next.js and bundlers
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "react-jsx",
-    "incremental": true,
-    "noImplicitAny": true,
+    //========== Type checking ==========
+    // Essential: activates several useful options
+    "strict": true,
+    // Beyond "strict": additional strictness (but more compatible)
     "noFallthroughCasesInSwitch": true,
-    "allowSyntheticDefaultImports": true,
-    "verbatimModuleSyntax": false,
-    "strictNullChecks": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noImplicitOverride": true,
     "useUnknownInCatchVariables": true,
+    //========== Module resolution ==========
+    "allowJs": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    //========== Emit ==========
+    "noEmit": true,
+    "isolatedModules": true,
+    //========== JSX ==========
+    "jsx": "react-jsx",
+    //========== Performance ==========
+    "incremental": true,
     "tsBuildInfoFile": "./.next/cache/tsconfig.tsbuildinfo",
-    "types": [
-      "bun-types",
-      "node",
-      "next"
-    ],
+    //========== Types ==========
+    "types": ["bun-types", "node", "next", "vitest/globals", "@testing-library/jest-dom"],
+    //========== Next.js ==========
     "plugins": [
       {
         "name": "next"
       }
     ],
+    //========== Path mapping ==========
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@/components/*": [
-        "./src/components/*"
-      ],
-      "@/lib/*": [
-        "./src/lib/*"
-      ],
-      "@/hooks/*": [
-        "./src/hooks/*"
-      ],
-      "@/types/*": [
-        "./src/types/*"
-      ],
-      "@/app/*": [
-        "./src/app/*"
-      ],
-      "@/styles/*": [
-        "./src/styles/*"
-      ],
-      "@/content/*": [
-        "./src/content/*"
-      ],
-      "@/data/*": [
-        "./src/data/*"
-      ]
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/app/*": ["./src/app/*"],
+      "@/styles/*": ["./src/styles/*"],
+      "@/content/*": ["./src/content/*"],
+      "@/data/*": ["./src/data/*"],
+      "@/prisma/*": ["./prisma/generated/prisma/*"],
+      "@/prisma/client": ["./prisma/generated/prisma/client.ts"],
+      "@/prisma/browser": ["./prisma/generated/prisma/browser.ts"]
     }
   },
   "include": [
-    "./src/**/*.js",
-    "./src/**/*.jsx",
-    "./src/**/*.ts",
-    "./src/**/*.tsx",
     "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
@@ -87,12 +74,11 @@
     "out",
     "dist",
     "build",
-    "**/*.config.js",
-    "**/*.config.mjs",
     "coverage",
     ".nyc_output",
     "e2e/**/*",
-    "playwright",
+    "playwright-report",
+    "test-results",
     "scripts",
     "docs",
     "temp",

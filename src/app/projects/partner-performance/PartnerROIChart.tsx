@@ -1,7 +1,16 @@
 'use client'
 import { memo } from 'react'
 
-import { LazyLineChart as LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from '@/components/charts/lazy-charts'
+import {
+  LazyLineChart as LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Legend,
+} from '@/components/charts/lazy-charts'
 
 // Partner ROI trends over time showing optimization results
 const data = [
@@ -27,11 +36,7 @@ const PartnerROIChart = memo(function PartnerROIChart() {
     <div className="h-[350px]">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke={chartColors.grid} 
-            vertical={false}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
           <XAxis
             dataKey="month"
             stroke={chartColors.axis}
@@ -64,14 +69,16 @@ const PartnerROIChart = memo(function PartnerROIChart() {
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
-            formatter={(value: number, name: string) => {
+            formatter={(value: number | undefined, name: string | undefined) => {
+              const safeName = name ?? ''
+              if (value === undefined) return ['', safeName]
               const labels: Record<string, string> = {
                 certified: 'Certified Partners ROI',
                 legacy: 'Legacy Partners ROI',
                 newPartners: 'New Partners ROI',
-                quickRatio: 'SaaS Quick Ratio'
+                quickRatio: 'SaaS Quick Ratio',
               }
-              return [`${value}x`, labels[name] || name]
+              return [`${value}x`, labels[safeName] || safeName]
             }}
           />
           <Legend />
@@ -115,7 +122,8 @@ const PartnerROIChart = memo(function PartnerROIChart() {
         </LineChart>
       </ResponsiveContainer>
       <p className="mt-4 text-center text-sm italic text-muted-foreground">
-        Partner ROI optimization achieving 4.7x SaaS Quick Ratio benchmark through strategic tier management
+        Partner ROI optimization achieving 4.7x SaaS Quick Ratio benchmark through strategic tier
+        management
       </p>
     </div>
   )

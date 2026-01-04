@@ -56,10 +56,10 @@ export const ProjectStats: React.FC<ProjectStatsProps> = ({ totalProjects, isLoa
       {displayStats.map((stat, index) => (
         <div
           key={index}
-          className="group relative p-6 bg-card border border-border rounded-xl transition-all duration-400 ease-out hover:border-primary/20 hover:shadow-md hover:-translate-y-0.5"
+          className="group relative p-6 bg-card border border-border rounded-xl transition-all duration-300 ease-out hover:border-primary/20 hover:shadow-md hover:-translate-y-0.5"
         >
           {/* Icon */}
-          <div className="w-10 h-10 flex items-center justify-center bg-primary/5 border border-primary/10 rounded-lg mb-4 transition-colors duration-300 group-hover:bg-primary/10 group-hover:border-primary/20">
+          <div className="w-10 h-10 flex items-center justify-center bg-primary/5 border border-primary/10 rounded-lg mb-4 transition-colors duration-300 ease-out group-hover:bg-primary/10 group-hover:border-primary/20">
             <stat.icon className="w-5 h-5 text-primary" />
           </div>
 
@@ -74,7 +74,7 @@ export const ProjectStats: React.FC<ProjectStatsProps> = ({ totalProjects, isLoa
           </div>
 
           {/* Subtle accent line */}
-          <div className="absolute bottom-0 left-6 right-6 h-0.5 bg-primary/0 group-hover:bg-primary/30 transition-colors duration-400 rounded-full" />
+          <div className="absolute bottom-0 left-6 right-6 h-0.5 bg-primary/0 group-hover:bg-primary/30 transition-colors duration-300 ease-out rounded-full" />
         </div>
       ))}
     </div>

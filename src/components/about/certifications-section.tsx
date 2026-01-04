@@ -61,7 +61,7 @@ function CertificationCard({ certification }: CertificationCardProps) {
       
       
     >
-      <Card className="h-full border-0 shadow-lg bg-white/50 dark:bg-card/50 backdrop-blur-xs hover:shadow-xl transition-all duration-300">
+      <Card className="h-full border-0 shadow-lg bg-white/50 dark:bg-card/50 backdrop-blur-xs hover:shadow-xl transition-all duration-300 ease-out">
         <CardHeader className="pb-4">
           <div className="flex items-start gap-4">
             <CertificationBadge badge={certification.badge} name={certification.name} />

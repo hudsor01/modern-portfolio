@@ -3,7 +3,7 @@
  * Extends Prisma types with additional computed fields and relations
  */
 
-import type { 
+import type {
   BlogPost,
   Author,
   Category,
@@ -26,8 +26,8 @@ import type {
   SEOEventType,
   SEOSeverity,
   ChangeFrequency,
-  Prisma
-} from '@prisma/client'
+  Prisma,
+} from '@/lib/prisma-types'
 
 // =======================
 // ENHANCED ENTITY TYPES
@@ -80,7 +80,7 @@ export type AuthorWithStats = Author & {
   recentActivity?: PostVersion[]
 }
 
-// Category with usage stats  
+// Category with usage stats
 export type CategoryWithStats = Category & {
   posts: BlogPost[]
   _count: {
@@ -182,7 +182,7 @@ export interface SEOAnalytics {
   postId?: string
   seoScore: number
   keywordCount: number
-  topKeywords: Array<{ 
+  topKeywords: Array<{
     keyword: string
     position: number
     impressions: number
@@ -232,17 +232,19 @@ export interface BlogPostListResult {
 }
 
 export interface BlogSearchResult {
-  posts: Array<BlogPost & {
-    author: Pick<Author, 'name' | 'slug'>
-    category?: Pick<Category, 'name' | 'slug'> | null
-    tags: Array<Pick<Tag, 'name' | 'slug'>>
-    highlight?: {
-      title?: string
-      content?: string
-      excerpt?: string
+  posts: Array<
+    BlogPost & {
+      author: Pick<Author, 'name' | 'slug'>
+      category?: Pick<Category, 'name' | 'slug'> | null
+      tags: Array<Pick<Tag, 'name' | 'slug'>>
+      highlight?: {
+        title?: string
+        content?: string
+        excerpt?: string
+      }
+      score?: number
     }
-    score?: number
-  }>
+  >
   facets: {
     categories: Array<{ name: string; count: number }>
     tags: Array<{ name: string; count: number }>
@@ -257,8 +259,17 @@ export interface BlogSearchResult {
 // =======================
 
 export type CreateBlogPostData = Omit<
-  BlogPost, 
-  'id' | 'createdAt' | 'updatedAt' | 'viewCount' | 'likeCount' | 'shareCount' | 'commentCount' | 'seoScore' | 'readingTime' | 'wordCount'
+  BlogPost,
+  | 'id'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'viewCount'
+  | 'likeCount'
+  | 'shareCount'
+  | 'commentCount'
+  | 'seoScore'
+  | 'readingTime'
+  | 'wordCount'
 > & {
   tagIds?: string[]
   seriesId?: string
@@ -269,13 +280,19 @@ export type UpdateBlogPostData = Partial<CreateBlogPostData> & {
   id: string
 }
 
-export type CreateAuthorData = Omit<Author, 'id' | 'createdAt' | 'updatedAt' | 'totalViews' | 'totalPosts'>
+export type CreateAuthorData = Omit<
+  Author,
+  'id' | 'createdAt' | 'updatedAt' | 'totalViews' | 'totalPosts'
+>
 
 export type UpdateAuthorData = Partial<CreateAuthorData> & {
   id: string
 }
 
-export type CreateCategoryData = Omit<Category, 'id' | 'createdAt' | 'updatedAt' | 'postCount' | 'totalViews'>
+export type CreateCategoryData = Omit<
+  Category,
+  'id' | 'createdAt' | 'updatedAt' | 'postCount' | 'totalViews'
+>
 
 export type UpdateCategoryData = Partial<CreateCategoryData> & {
   id: string
@@ -299,16 +316,16 @@ export const blogPostIncludes = {
         id: true,
         name: true,
         slug: true,
-        avatar: true
-      }
+        avatar: true,
+      },
     },
     category: {
       select: {
         id: true,
         name: true,
         slug: true,
-        color: true
-      }
+        color: true,
+      },
     },
     tags: {
       select: {
@@ -317,28 +334,28 @@ export const blogPostIncludes = {
             id: true,
             name: true,
             slug: true,
-            color: true
-          }
-        }
-      }
-    }
+            color: true,
+          },
+        },
+      },
+    },
   },
-  
+
   withRelations: {
     author: true,
     category: true,
     tags: {
       include: {
-        tag: true
-      }
+        tag: true,
+      },
     },
     seriesPosts: {
       include: {
-        series: true
+        series: true,
       },
       orderBy: {
-        order: 'asc' as const
-      }
+        order: 'asc' as const,
+      },
     },
     relatedPosts: {
       include: {
@@ -350,29 +367,29 @@ export const blogPostIncludes = {
             excerpt: true,
             featuredImage: true,
             publishedAt: true,
-            readingTime: true
-          }
-        }
-      }
-    }
+            readingTime: true,
+          },
+        },
+      },
+    },
   },
-  
+
   withAnalytics: {
     author: {
       select: {
         id: true,
         name: true,
         slug: true,
-        avatar: true
-      }
+        avatar: true,
+      },
     },
     category: {
       select: {
         id: true,
         name: true,
         slug: true,
-        color: true
-      }
+        color: true,
+      },
     },
     tags: {
       select: {
@@ -381,20 +398,20 @@ export const blogPostIncludes = {
             id: true,
             name: true,
             slug: true,
-            color: true
-          }
-        }
-      }
+            color: true,
+          },
+        },
+      },
     },
     _count: {
       select: {
         views: true,
         interactions: true,
         tags: true,
-        seriesPosts: true
-      }
-    }
-  }
+        seriesPosts: true,
+      },
+    },
+  },
 } as const
 
 // Common where clauses
@@ -402,61 +419,61 @@ export const blogPostFilters = {
   published: {
     status: 'PUBLISHED' as const,
     publishedAt: {
-      lte: new Date()
-    }
+      lte: new Date(),
+    },
   },
-  
+
   draft: {
-    status: 'DRAFT' as const
+    status: 'DRAFT' as const,
   },
-  
+
   scheduled: {
     status: 'SCHEDULED' as const,
     scheduledAt: {
-      gte: new Date()
-    }
+      gte: new Date(),
+    },
   },
-  
+
   byAuthor: (authorId: string) => ({
-    authorId
+    authorId,
   }),
-  
+
   byCategory: (categoryId: string) => ({
-    categoryId
+    categoryId,
   }),
-  
+
   byTags: (tagIds: string[]) => ({
     tags: {
       some: {
         tagId: {
-          in: tagIds
-        }
-      }
-    }
+          in: tagIds,
+        },
+      },
+    },
   }),
-  
+
   search: (query: string) => ({
     OR: [
       {
         title: {
           contains: query,
-          mode: 'insensitive' as const
-        }
+          mode: 'insensitive' as const,
+        },
       },
       {
         content: {
           contains: query,
-          mode: 'insensitive' as const
-        }
+          mode: 'insensitive' as const,
+        },
       },
       {
         excerpt: {
           contains: query,
-          mode: 'insensitive' as const
-        }
-      }
-    ]
-  })
+          mode: 'insensitive' as const,
+        },
+      },
+    ],
+  }),
 } as const
 
 // Common order by clauses
@@ -465,12 +482,12 @@ export const blogPostSorts = {
   oldest: { createdAt: 'asc' as const },
   published: { publishedAt: 'desc' as const },
   popular: { viewCount: 'desc' as const },
-  trending: { 
+  trending: {
     interactions: {
-      _count: 'desc' as const
-    }
+      _count: 'desc' as const,
+    },
   },
-  alphabetical: { title: 'asc' as const }
+  alphabetical: { title: 'asc' as const },
 } as const
 
 // Export all Prisma client types for convenience
@@ -497,5 +514,5 @@ export type {
   SEOEventType,
   SEOSeverity,
   ChangeFrequency,
-  Prisma
+  Prisma,
 }

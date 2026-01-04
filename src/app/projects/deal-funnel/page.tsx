@@ -5,10 +5,14 @@ import { DollarSign, Clock, Target, BarChart3 } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
+import { MetricsGrid } from '@/components/projects/metrics-grid'
+import { SectionCard } from '@/components/ui/section-card'
+import { ChartContainer } from '@/components/ui/chart-container'
 import { getProject } from '@/lib/content/projects'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { createContextLogger } from '@/lib/monitoring/logger'
 import { TIMING } from '@/lib/constants/spacing'
+import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data-formatters'
 
 import {
   type FunnelStage,
@@ -16,9 +20,8 @@ import {
   type ConversionRate,
   initialFunnelStages,
   initialPartnerConversion,
-  initialConversionRates
+  initialConversionRates,
 } from './data/constants'
-import { MetricCard } from '@/components/projects/shared'
 import { FunnelChart } from './components/FunnelChart'
 import { ConversionChart } from './components/ConversionChart'
 import { VelocityChart } from './components/VelocityChart'
@@ -42,7 +45,10 @@ export default function DealFunnel() {
         setLocalConversionRates(initialConversionRates)
         setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
       } catch (error) {
-        logger.error('Error loading project data', error instanceof Error ? error : new Error(String(error)))
+        logger.error(
+          'Error loading project data',
+          error instanceof Error ? error : new Error(String(error))
+        )
         setIsLoading(false)
       }
     }
@@ -59,24 +65,90 @@ export default function DealFunnel() {
 
   // Derived calculations
   const totalOpportunities = localFunnelStages?.[0]?.count ?? 0
-  const closedDeals = localFunnelStages.length > 0 ? localFunnelStages[localFunnelStages.length - 1]?.count ?? 0 : 0
-  const avgDealSize = localFunnelStages.length > 0 ? Math.round(localFunnelStages[localFunnelStages.length - 1]?.avg_deal_size ?? 0) : 0
+  const closedDeals =
+    localFunnelStages.length > 0 ? (localFunnelStages[localFunnelStages.length - 1]?.count ?? 0) : 0
+  const avgDealSize =
+    localFunnelStages.length > 0
+      ? Math.round(localFunnelStages[localFunnelStages.length - 1]?.avg_deal_size ?? 0)
+      : 0
   const totalRevenue = closedDeals * avgDealSize
 
-  const avgSalesCycle = localPartnerConversion.length > 0
-    ? Math.round(localPartnerConversion.reduce((sum, group) => sum + group.avg_sales_cycle_days, 0) / localPartnerConversion.length)
-    : 0
+  const avgSalesCycle =
+    localPartnerConversion.length > 0
+      ? Math.round(
+          localPartnerConversion.reduce((sum, group) => sum + group.avg_sales_cycle_days, 0) /
+            localPartnerConversion.length
+        )
+      : 0
 
-  const overallConversionRate = totalOpportunities > 0 ? ((closedDeals / totalOpportunities) * 100).toFixed(1) : '0.0'
+  const overallConversionRate =
+    totalOpportunities > 0 ? ((closedDeals / totalOpportunities) * 100).toFixed(1) : '0.0'
 
-  const stageConversions = localConversionRates.length > 0
-    ? [
-        { stage: 'Leads → Qualified', conversion: localConversionRates[localConversionRates.length - 1]?.lead_to_qualified ?? 0, color: 'var(--color-primary)' },
-        { stage: 'Qualified → Proposal', conversion: localConversionRates[localConversionRates.length - 1]?.qualified_to_proposal ?? 0, color: 'var(--color-secondary)' },
-        { stage: 'Proposal → Negotiation', conversion: localConversionRates[localConversionRates.length - 1]?.proposal_to_negotiation ?? 0, color: 'var(--color-secondary)' },
-        { stage: 'Negotiation → Closed', conversion: localConversionRates[localConversionRates.length - 1]?.negotiation_to_closed ?? 0, color: 'var(--color-chart-5)' },
-      ]
-    : []
+  const stageConversions =
+    localConversionRates.length > 0
+      ? [
+          {
+            stage: 'Leads → Qualified',
+            conversion:
+              localConversionRates[localConversionRates.length - 1]?.lead_to_qualified ?? 0,
+            color: 'var(--color-primary)',
+          },
+          {
+            stage: 'Qualified → Proposal',
+            conversion:
+              localConversionRates[localConversionRates.length - 1]?.qualified_to_proposal ?? 0,
+            color: 'var(--color-secondary)',
+          },
+          {
+            stage: 'Proposal → Negotiation',
+            conversion:
+              localConversionRates[localConversionRates.length - 1]?.proposal_to_negotiation ?? 0,
+            color: 'var(--color-secondary)',
+          },
+          {
+            stage: 'Negotiation → Closed',
+            conversion:
+              localConversionRates[localConversionRates.length - 1]?.negotiation_to_closed ?? 0,
+            color: 'var(--color-chart-5)',
+          },
+        ]
+      : []
+
+  // Standardized metrics configuration using consistent data formatting
+  const metrics = [
+    {
+      id: 'pipeline-opportunities',
+      icon: BarChart3,
+      label: 'Pipeline',
+      value: formatNumber(totalOpportunities),
+      subtitle: 'Total Opportunities',
+      variant: 'primary' as const,
+    },
+    {
+      id: 'closed-deals',
+      icon: Target,
+      label: 'Won',
+      value: formatNumber(closedDeals),
+      subtitle: 'Closed Deals',
+      variant: 'secondary' as const,
+    },
+    {
+      id: 'avg-deal-size',
+      icon: DollarSign,
+      label: 'Average',
+      value: formatCurrency(avgDealSize, { compact: true }),
+      subtitle: 'Deal Size',
+      variant: 'primary' as const,
+    },
+    {
+      id: 'sales-cycle',
+      icon: Clock,
+      label: 'Average',
+      value: `${avgSalesCycle}d`,
+      subtitle: 'Days to Close',
+      variant: 'secondary' as const,
+    },
+  ]
 
   return (
     <>
@@ -91,10 +163,19 @@ export default function DealFunnel() {
         title="Deal Pipeline Analytics"
         description="Track deal progression through your sales funnel, identify bottlenecks, and optimize conversion rates at each stage."
         tags={[
-          { label: `Conversion: ${overallConversionRate}%`, color: 'bg-primary/20 text-primary' },
-          { label: `Avg Deal: $${avgDealSize.toLocaleString()}`, color: 'bg-secondary/20 text-secondary' },
-          { label: `Sales Cycle: ${avgSalesCycle}d`, color: 'bg-primary/20 text-primary' },
-          { label: `Revenue: $${(totalRevenue / 1000000).toFixed(1)}M`, color: 'bg-secondary/20 text-secondary' },
+          {
+            label: `Conversion: ${formatPercentage(parseFloat(overallConversionRate) / 100)}`,
+            variant: 'primary',
+          },
+          {
+            label: `Avg Deal: ${formatCurrency(avgDealSize, { compact: true })}`,
+            variant: 'secondary',
+          },
+          { label: `Sales Cycle: ${avgSalesCycle}d`, variant: 'primary' },
+          {
+            label: `Revenue: ${formatCurrency(totalRevenue, { compact: true })}`,
+            variant: 'secondary',
+          },
         ]}
         onRefresh={handleRefresh}
         refreshButtonDisabled={isLoading}
@@ -103,30 +184,67 @@ export default function DealFunnel() {
           <LoadingState />
         ) : (
           <>
-            {/* KPI Cards */}
-            <div
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+            {/* Key Metrics using standardized MetricsGrid */}
+            <MetricsGrid metrics={metrics} columns={4} loading={isLoading} className="mb-8" />
+
+            {/* Main Funnel Chart wrapped in SectionCard */}
+            <SectionCard
+              title="Sales Funnel Analysis"
+              description="Visual representation of deal progression through each stage of the sales pipeline"
+              className="mb-8"
             >
-              <MetricCard icon={BarChart3} label="Pipeline" value={totalOpportunities.toLocaleString()} subtitle="Total Opportunities" variant="primary" animationDelay={0} />
-              <MetricCard icon={Target} label="Won" value={closedDeals.toLocaleString()} subtitle="Closed Deals" variant="secondary" animationDelay={50} />
-              <MetricCard icon={DollarSign} label="Average" value={`$${(avgDealSize / 1000).toFixed(0)}K`} subtitle="Deal Size" variant="primary" animationDelay={100} />
-              <MetricCard icon={Clock} label="Average" value={avgSalesCycle.toString()} subtitle="Days to Close" variant="secondary" animationDelay={150} />
-            </div>
+              <ChartContainer
+                title="Deal Stage Funnel"
+                description={`Overall conversion rate: ${overallConversionRate}%`}
+                height={400}
+              >
+                <FunnelChart
+                  stages={localFunnelStages}
+                  overallConversionRate={overallConversionRate}
+                />
+              </ChartContainer>
+            </SectionCard>
 
-            {/* Main Funnel Chart */}
-            <FunnelChart stages={localFunnelStages} overallConversionRate={overallConversionRate} />
+            {/* Conversion Analytics wrapped in SectionCard */}
+            <SectionCard
+              title="Conversion Analytics"
+              description="Detailed analysis of stage-to-stage conversion rates and sales velocity"
+              className="mb-8"
+            >
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <ChartContainer
+                  title="Stage Conversion Rates"
+                  description="Conversion rates between each stage of the sales funnel"
+                  height={350}
+                >
+                  <ConversionChart stageConversions={stageConversions} />
+                </ChartContainer>
+                <ChartContainer
+                  title="Sales Velocity by Partner"
+                  description="Average sales cycle duration across different partner channels"
+                  height={350}
+                >
+                  <VelocityChart partnerConversion={localPartnerConversion} />
+                </ChartContainer>
+              </div>
+            </SectionCard>
 
-            {/* Conversion Analytics */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <ConversionChart stageConversions={stageConversions} />
-              <VelocityChart partnerConversion={localPartnerConversion} />
-            </div>
+            {/* Professional Narrative Sections wrapped in SectionCard */}
+            <SectionCard
+              title="Project Narrative"
+              description="Comprehensive case study following the STAR methodology"
+              className="mb-8"
+            >
+              <NarrativeSections />
+            </SectionCard>
 
-            {/* Professional Narrative Sections */}
-            <NarrativeSections />
-
-            {/* Revenue Impact */}
-            <PipelineValue totalRevenue={totalRevenue} />
+            {/* Revenue Impact wrapped in SectionCard */}
+            <SectionCard
+              title="Revenue Impact"
+              description="Financial impact and business value generated from pipeline optimization"
+            >
+              <PipelineValue totalRevenue={totalRevenue} />
+            </SectionCard>
           </>
         )}
       </ProjectPageLayout>

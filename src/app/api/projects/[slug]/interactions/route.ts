@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db, InteractionType } from '@/lib/db'
+import { db } from '@/lib/db'
+import { InteractionType } from '@/lib/prisma-types'
 import { ApiResponse } from '@/types/shared-api'
-import { validateProjectInteraction, ProjectInteractionInput, ValidationError } from '@/lib/validations/unified-schemas'
-import { createContextLogger } from '@/lib/monitoring/logger';
+import {
+  validateProjectInteraction,
+  ProjectInteractionInput,
+  ValidationError,
+} from '@/lib/validations/unified-schemas'
+import { createContextLogger } from '@/lib/monitoring/logger'
 
-const logger = createContextLogger('InteractionsAPI');
+const logger = createContextLogger('InteractionsAPI')
 
 // Using centralized validation schema from unified-schemas
 
@@ -26,7 +31,7 @@ export async function POST(
 ): Promise<NextResponse<ApiResponse<ProjectInteractionResponse>>> {
   try {
     const body = await request.json()
-    
+
     // Validate request data
     let validatedData: ProjectInteractionInput
     try {
@@ -37,14 +42,14 @@ export async function POST(
           {
             success: false,
             error: 'Invalid request data',
-            data: null as never
+            data: null as never,
           },
           { status: 400 }
         )
       }
       throw error
     }
-    
+
     const { type, value, metadata } = validatedData
     const projectSlug = params.slug
 
@@ -59,7 +64,7 @@ export async function POST(
 
     // For projects, we'll store interactions in a custom way since projects aren't in the blog schema
     // We could extend this to create a separate project interactions table if needed
-    
+
     // Create the interaction record (using blog post structure as template)
     const interaction = await db.postInteraction.create({
       data: {
@@ -69,18 +74,18 @@ export async function POST(
         ...(metadata && { metadata }),
         visitorId,
         sessionId,
-      }
+      },
     })
 
     // Get total interaction counts for this project
     const totalCounts = await db.postInteraction.groupBy({
       by: ['type'],
       where: {
-        postId: `project-${projectSlug}`
+        postId: `project-${projectSlug}`,
       },
       _count: {
-        id: true
-      }
+        id: true,
+      },
     })
 
     type InteractionCount = { type: InteractionType; _count: { id: number } }
@@ -97,20 +102,22 @@ export async function POST(
         id: interaction.id,
         type: interaction.type,
         createdAt: interaction.createdAt.toISOString(),
-        totalInteractions
-      }
+        totalInteractions,
+      },
     }
 
     return NextResponse.json(response, { status: 201 })
-
   } catch (error: unknown) {
-    logger.error('Project interaction error:', error instanceof Error ? error : new Error(String(error)))
+    logger.error(
+      'Project interaction error:',
+      error instanceof Error ? error : new Error(String(error))
+    )
 
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to record interaction',
-        data: null as never
+        data: null as never,
       },
       { status: 500 }
     )
@@ -128,34 +135,39 @@ export async function GET(
     const totalCounts = await db.postInteraction.groupBy({
       by: ['type'],
       where: {
-        postId: `project-${projectSlug}`
+        postId: `project-${projectSlug}`,
       },
       _count: {
-        id: true
-      }
+        id: true,
+      },
     })
 
     type InteractionCountGet = { type: InteractionType; _count: { id: number } }
-    const totalInteractions = totalCounts.reduce((acc: Record<string, number>, count: InteractionCountGet) => {
-      acc[count.type.toLowerCase()] = count._count.id
-      return acc
-    }, {} as Record<string, number>)
+    const totalInteractions = totalCounts.reduce(
+      (acc: Record<string, number>, count: InteractionCountGet) => {
+        acc[count.type.toLowerCase()] = count._count.id
+        return acc
+      },
+      {} as Record<string, number>
+    )
 
     const response: ApiResponse<{ totalInteractions: Record<string, number> }> = {
       success: true,
-      data: { totalInteractions }
+      data: { totalInteractions },
     }
 
     return NextResponse.json(response)
-
   } catch (error: unknown) {
-    logger.error('Get project interactions error:', error instanceof Error ? error : new Error(String(error)))
+    logger.error(
+      'Get project interactions error:',
+      error instanceof Error ? error : new Error(String(error))
+    )
 
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to get interactions',
-        data: null as never
+        data: null as never,
       },
       { status: 500 }
     )
@@ -168,5 +180,8 @@ async function generateVisitorId(ip: string, userAgent: string): Promise<string>
   const encoder = new TextEncoder()
   const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(data))
   const hashArray = Array.from(new Uint8Array(hashBuffer))
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16)
+  return hashArray
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+    .substring(0, 16)
 }

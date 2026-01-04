@@ -13,7 +13,14 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.tsx'],
     css: true,
     includeSource: ['src/**/*.{js,ts,jsx,tsx}'],
-    exclude: ['node_modules', 'dist', '.next', 'e2e/**/*', 'playwright-report/**/*', '**/*.spec.ts'],
+    exclude: [
+      'node_modules',
+      'dist',
+      '.next',
+      'e2e/**/*',
+      'playwright-report/**/*',
+      '**/*.spec.ts',
+    ],
     // Timeout configurations to prevent hanging
     testTimeout: isCI ? 15000 : 10000, // Slightly longer in CI
     hookTimeout: 10000, // 10 seconds for beforeEach/afterEach
@@ -22,18 +29,13 @@ export default defineConfig({
     watch: false, // Never watch in CI (also enforced by --run flag)
     reporters: isCI ? ['default', 'json'] : ['default'],
     outputFile: isCI ? './test-results/results.json' : undefined,
-    // Pool options for proper worker cleanup
-    pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true, // Use single fork for better stability in CI
-        isolate: true, // Isolate each test file
-      },
-    },
+    // Vitest 4: Pool options are now top-level
+    pool: 'threads',
+    isolate: true, // Enable isolation to prevent cross-test pollution
+    fileParallelism: false, // Run tests sequentially for stability
     // Ensure proper cleanup
     restoreMocks: true,
     clearMocks: true,
-    resetMocks: true,
     unstubEnvs: true,
     unstubGlobals: true,
     // Force exit after tests complete (prevents hanging)
@@ -42,6 +44,15 @@ export default defineConfig({
     // Ensure timers are properly cleaned up
     fakeTimers: {
       shouldClearNativeTimers: true,
+    },
+    // Explicit environment options for jsdom
+    environmentOptions: {
+      jsdom: {
+        resources: 'usable',
+        runScripts: 'dangerously',
+        pretendToBeVisual: true,
+        url: 'http://localhost:3000',
+      },
     },
     coverage: {
       provider: 'v8',
@@ -69,17 +80,28 @@ export default defineConfig({
     },
   },
   resolve: {
-    alias: {
-      '@': resolve(__dirname, './src'),
-      '@/components': resolve(__dirname, './src/components'),
-      '@/lib': resolve(__dirname, './src/lib'),
-      '@/hooks': resolve(__dirname, './src/hooks'),
-      '@/types': resolve(__dirname, './src/types'),
-      '@/app': resolve(__dirname, './src/app'),
-      '@/styles': resolve(__dirname, './src/styles'),
-      '@/content': resolve(__dirname, './src/content'),
-      '@/data': resolve(__dirname, './src/data'),
-    },
+    alias: [
+      // Prisma aliases must come first (more specific paths)
+      {
+        find: '@/prisma/client',
+        replacement: resolve(__dirname, './prisma/generated/prisma/client.ts'),
+      },
+      {
+        find: '@/prisma/browser',
+        replacement: resolve(__dirname, './prisma/generated/prisma/browser.ts'),
+      },
+      { find: '@/prisma', replacement: resolve(__dirname, './prisma/generated/prisma') },
+      // Standard src aliases
+      { find: '@/components', replacement: resolve(__dirname, './src/components') },
+      { find: '@/lib', replacement: resolve(__dirname, './src/lib') },
+      { find: '@/hooks', replacement: resolve(__dirname, './src/hooks') },
+      { find: '@/types', replacement: resolve(__dirname, './src/types') },
+      { find: '@/app', replacement: resolve(__dirname, './src/app') },
+      { find: '@/styles', replacement: resolve(__dirname, './src/styles') },
+      { find: '@/content', replacement: resolve(__dirname, './src/content') },
+      { find: '@/data', replacement: resolve(__dirname, './src/data') },
+      { find: '@', replacement: resolve(__dirname, './src') },
+    ],
   },
   define: {
     'import.meta.vitest': false,

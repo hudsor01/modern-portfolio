@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db, InteractionType } from '@/lib/db'
+import { db } from '@/lib/db'
+import { InteractionType } from '@/lib/prisma-types'
 import { ApiResponse } from '@/types/shared-api'
-import { validateBlogInteraction, BlogInteractionInput, ValidationError } from '@/lib/validations/unified-schemas'
-import { createContextLogger } from '@/lib/monitoring/logger';
-import { validateCSRFToken } from '@/lib/security/csrf-protection';
+import {
+  validateBlogInteraction,
+  BlogInteractionInput,
+  ValidationError,
+} from '@/lib/validations/unified-schemas'
+import { createContextLogger } from '@/lib/monitoring/logger'
+import { validateCSRFToken } from '@/lib/security/csrf-protection'
 
-const logger = createContextLogger('InteractionsAPI');
+const logger = createContextLogger('InteractionsAPI')
 
 // Using centralized validation schema from unified-schemas
 
@@ -38,7 +43,7 @@ export async function POST(
         {
           success: false,
           error: 'Security validation failed. Please refresh and try again.',
-          data: null as never
+          data: null as never,
         },
         { status: 403 }
       )
@@ -56,20 +61,20 @@ export async function POST(
           {
             success: false,
             error: 'Invalid request data',
-            data: null as never
+            data: null as never,
           },
           { status: 400 }
         )
       }
       throw error
     }
-    
+
     const { type, value, metadata } = validatedData
     const postSlug = params.slug
 
     // Find the blog post by slug
     const blogPost = await db.blogPost.findUnique({
-      where: { slug: postSlug }
+      where: { slug: postSlug },
     })
 
     if (!blogPost) {
@@ -77,7 +82,7 @@ export async function POST(
         {
           success: false,
           error: 'Blog post not found',
-          data: null as never
+          data: null as never,
         },
         { status: 404 }
       )
@@ -101,11 +106,15 @@ export async function POST(
         metadata: metadata || undefined,
         visitorId,
         sessionId,
-      }
+      },
     })
 
     // Update the blog post counters based on interaction type
-    const updateData: Partial<{ likeCount: { increment: number }; shareCount: { increment: number }; commentCount: { increment: number } }> = {}
+    const updateData: Partial<{
+      likeCount: { increment: number }
+      shareCount: { increment: number }
+      commentCount: { increment: number }
+    }> = {}
 
     switch (type) {
       case 'LIKE':
@@ -122,7 +131,7 @@ export async function POST(
     if (Object.keys(updateData).length > 0) {
       await db.blogPost.update({
         where: { id: blogPost.id },
-        data: updateData
+        data: updateData,
       })
     }
 
@@ -132,8 +141,8 @@ export async function POST(
       select: {
         likeCount: true,
         shareCount: true,
-        commentCount: true
-      }
+        commentCount: true,
+      },
     })
 
     // Get additional interaction counts from PostInteraction table
@@ -142,21 +151,21 @@ export async function POST(
       where: {
         postId: blogPost.id,
         type: {
-          in: ['BOOKMARK', 'SUBSCRIBE', 'DOWNLOAD']
-        }
+          in: ['BOOKMARK', 'SUBSCRIBE', 'DOWNLOAD'],
+        },
       },
       _count: {
-        id: true
-      }
+        id: true,
+      },
     })
 
     const postCounts = {
       likes: updatedPost?.likeCount || 0,
       shares: updatedPost?.shareCount || 0,
       comments: updatedPost?.commentCount || 0,
-      bookmarks: additionalCounts.find(c => c.type === 'BOOKMARK')?._count.id || 0,
-      subscribes: additionalCounts.find(c => c.type === 'SUBSCRIBE')?._count.id || 0,
-      downloads: additionalCounts.find(c => c.type === 'DOWNLOAD')?._count.id || 0,
+      bookmarks: additionalCounts.find((c) => c.type === 'BOOKMARK')?._count.id || 0,
+      subscribes: additionalCounts.find((c) => c.type === 'SUBSCRIBE')?._count.id || 0,
+      downloads: additionalCounts.find((c) => c.type === 'DOWNLOAD')?._count.id || 0,
     }
 
     const response: ApiResponse<BlogInteractionResponse> = {
@@ -165,20 +174,22 @@ export async function POST(
         id: interaction.id,
         type: interaction.type,
         createdAt: interaction.createdAt.toISOString(),
-        postCounts
-      }
+        postCounts,
+      },
     }
 
     return NextResponse.json(response, { status: 201 })
-
   } catch (error) {
-    logger.error('Blog interaction error', error instanceof Error ? error : new Error(String(error)))
+    logger.error(
+      'Blog interaction error',
+      error instanceof Error ? error : new Error(String(error))
+    )
 
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to record interaction',
-        data: null as never
+        data: null as never,
       },
       { status: 500 }
     )
@@ -199,8 +210,8 @@ export async function GET(
         id: true,
         likeCount: true,
         shareCount: true,
-        commentCount: true
-      }
+        commentCount: true,
+      },
     })
 
     if (!blogPost) {
@@ -208,7 +219,7 @@ export async function GET(
         {
           success: false,
           error: 'Blog post not found',
-          data: null as never
+          data: null as never,
         },
         { status: 404 }
       )
@@ -220,38 +231,40 @@ export async function GET(
       where: {
         postId: blogPost.id,
         type: {
-          in: ['BOOKMARK', 'SUBSCRIBE', 'DOWNLOAD']
-        }
+          in: ['BOOKMARK', 'SUBSCRIBE', 'DOWNLOAD'],
+        },
       },
       _count: {
-        id: true
-      }
+        id: true,
+      },
     })
 
     const postCounts = {
       likes: blogPost.likeCount,
       shares: blogPost.shareCount,
       comments: blogPost.commentCount,
-      bookmarks: additionalCounts.find(c => c.type === 'BOOKMARK')?._count.id || 0,
-      subscribes: additionalCounts.find(c => c.type === 'SUBSCRIBE')?._count.id || 0,
-      downloads: additionalCounts.find(c => c.type === 'DOWNLOAD')?._count.id || 0,
+      bookmarks: additionalCounts.find((c) => c.type === 'BOOKMARK')?._count.id || 0,
+      subscribes: additionalCounts.find((c) => c.type === 'SUBSCRIBE')?._count.id || 0,
+      downloads: additionalCounts.find((c) => c.type === 'DOWNLOAD')?._count.id || 0,
     }
 
     const response: ApiResponse<{ postCounts: Record<string, number> }> = {
       success: true,
-      data: { postCounts }
+      data: { postCounts },
     }
 
     return NextResponse.json(response)
-
   } catch (error) {
-    logger.error('Get blog interactions error', error instanceof Error ? error : new Error(String(error)))
+    logger.error(
+      'Get blog interactions error',
+      error instanceof Error ? error : new Error(String(error))
+    )
 
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to get interactions',
-        data: null as never
+        data: null as never,
       },
       { status: 500 }
     )
@@ -264,5 +277,8 @@ async function generateVisitorId(ip: string, userAgent: string): Promise<string>
   const encoder = new TextEncoder()
   const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(data))
   const hashArray = Array.from(new Uint8Array(hashBuffer))
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16)
+  return hashArray
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+    .substring(0, 16)
 }

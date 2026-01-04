@@ -5,19 +5,20 @@ import { DollarSign, Percent, TrendingUp, Calculator } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
+import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { TIMING } from '@/lib/constants/spacing'
 import { commissionMetrics } from './data/constants'
-import { formatCurrency, formatPercent } from './utils'
-import { MetricCard } from '@/components/projects/shared'
+import { formatCurrency, formatPercentage } from '@/lib/utils/data-formatters'
 import { ProcessingMetrics } from './components/ProcessingMetrics'
 import { OverviewTab } from './components/OverviewTab'
 import { TiersTab } from './components/TiersTab'
 import { IncentivesTab } from './components/IncentivesTab'
 import { AutomationTab } from './components/AutomationTab'
 import { NarrativeSections } from './components/NarrativeSections'
+import type { MetricConfig } from '@/lib/design-system/types'
 
 const tabs = ['overview', 'tiers', 'incentives', 'automation'] as const
-type Tab = typeof tabs[number]
+type Tab = (typeof tabs)[number]
 
 export default function CommissionOptimization() {
   const [isLoading, setIsLoading] = useState(true)
@@ -33,20 +34,68 @@ export default function CommissionOptimization() {
     setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
   }
 
+  // Standardized metrics configuration using design system types
+  const metrics: MetricConfig[] = [
+    {
+      id: 'commission-pool',
+      icon: DollarSign,
+      label: 'Commission Pool',
+      value: formatCurrency(commissionMetrics.totalCommissionPool),
+      subtitle: 'Annual Management',
+      variant: 'secondary',
+    },
+    {
+      id: 'avg-rate',
+      icon: Percent,
+      label: 'Avg Rate',
+      value: formatPercentage(commissionMetrics.averageCommissionRate / 100),
+      subtitle: 'Commission Rate',
+      variant: 'secondary',
+    },
+    {
+      id: 'performance',
+      icon: TrendingUp,
+      label: 'Performance',
+      value: `+${formatPercentage(commissionMetrics.performanceImprovement / 100)}`,
+      subtitle: 'Improvement',
+      variant: 'primary',
+    },
+    {
+      id: 'automation',
+      icon: Calculator,
+      label: 'Automation',
+      value: formatPercentage(commissionMetrics.automationEfficiency / 100),
+      subtitle: 'Efficiency',
+      variant: 'primary',
+    },
+  ]
+
   return (
     <ProjectPageLayout
       title="Commission & Incentive Optimization System"
       description="Advanced commission management and partner incentive optimization platform managing $254K+ commission structures. Automated tier adjustments with 23% average commission rate optimization and ROI-driven compensation strategy delivering 34% performance improvement and 87.5% automation efficiency."
       tags={[
-        { label: `Commission Pool: ${formatCurrency(commissionMetrics.totalCommissionPool)}`, color: 'bg-primary/20 text-primary' },
-        { label: `Avg Rate: ${formatPercent(commissionMetrics.averageCommissionRate)}`, color: 'bg-secondary/20 text-secondary' },
-        { label: `Performance: +${formatPercent(commissionMetrics.performanceImprovement)}`, color: 'bg-primary/20 text-primary' },
-        { label: `Automation: ${formatPercent(commissionMetrics.automationEfficiency)}`, color: 'bg-secondary/20 text-secondary' },
+        {
+          label: `Commission Pool: ${formatCurrency(commissionMetrics.totalCommissionPool)}`,
+          variant: 'primary',
+        },
+        {
+          label: `Avg Rate: ${formatPercentage(commissionMetrics.averageCommissionRate / 100)}`,
+          variant: 'secondary',
+        },
+        {
+          label: `Performance: +${formatPercentage(commissionMetrics.performanceImprovement / 100)}`,
+          variant: 'primary',
+        },
+        {
+          label: `Automation: ${formatPercentage(commissionMetrics.automationEfficiency / 100)}`,
+          variant: 'secondary',
+        },
       ]}
       onRefresh={handleRefresh}
       refreshButtonDisabled={isLoading}
       showTimeframes={true}
-      timeframes={tabs.map(t => t.charAt(0).toUpperCase() + t.slice(1))}
+      timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
       activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
       onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
     >
@@ -54,41 +103,8 @@ export default function CommissionOptimization() {
         <LoadingState />
       ) : (
         <>
-          {/* Key Metrics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <MetricCard
-              icon={DollarSign}
-              label="Commission Pool"
-              value={formatCurrency(commissionMetrics.totalCommissionPool)}
-              subtitle="Annual Management"
-              variant="secondary"
-              animationDelay={0}
-            />
-            <MetricCard
-              icon={Percent}
-              label="Avg Rate"
-              value={formatPercent(commissionMetrics.averageCommissionRate)}
-              subtitle="Commission Rate"
-              variant="secondary"
-              animationDelay={50}
-            />
-            <MetricCard
-              icon={TrendingUp}
-              label="Performance"
-              value={`+${formatPercent(commissionMetrics.performanceImprovement)}`}
-              subtitle="Improvement"
-              variant="primary"
-              animationDelay={100}
-            />
-            <MetricCard
-              icon={Calculator}
-              label="Automation"
-              value={formatPercent(commissionMetrics.automationEfficiency)}
-              subtitle="Efficiency"
-              variant="primary"
-              animationDelay={150}
-            />
-          </div>
+          {/* Standardized Key Metrics Grid */}
+          <MetricsGrid metrics={metrics} columns={4} loading={isLoading} className="mb-8" />
 
           {/* Processing Metrics */}
           <ProcessingMetrics />

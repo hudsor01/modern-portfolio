@@ -4,10 +4,8 @@
  */
 
 import { db } from '../db'
-import { Prisma } from '@prisma/client'
+import { Prisma } from '@/prisma/client'
 import { createContextLogger } from '@/lib/monitoring/logger'
-
-const dbLogger = createContextLogger('DatabaseOps')
 import type {
   BlogPost,
   Author,
@@ -16,8 +14,10 @@ import type {
   // PostView,
   // PostInteraction,
   // SEOKeyword,
-  PostStatus
-} from '@prisma/client'
+  PostStatus,
+} from '@/lib/prisma-types'
+
+const dbLogger = createContextLogger('DatabaseOps')
 
 /** Type for PostView groupBy with country and _count */
 interface CountryGroupByResult {
@@ -50,7 +50,11 @@ export class NotFoundError extends DatabaseError {
 
 export class ValidationError extends DatabaseError {
   constructor(field: string, value: unknown, constraint: string) {
-    super(`Validation failed for field '${field}' with value '${value}': ${constraint}`, 'VALIDATE', 'VALIDATION_ERROR')
+    super(
+      `Validation failed for field '${field}' with value '${value}': ${constraint}`,
+      'VALIDATE',
+      'VALIDATION_ERROR'
+    )
     this.name = 'ValidationError'
   }
 }
@@ -67,18 +71,23 @@ function handlePrismaError(error: unknown, operation: string): never {
       case 'P2014':
         throw new DatabaseError('Invalid relation', operation, error.code, error)
       default:
-        throw new DatabaseError(`Database operation failed: ${error.message}`, operation, error.code, error)
+        throw new DatabaseError(
+          `Database operation failed: ${error.message}`,
+          operation,
+          error.code,
+          error
+        )
     }
   }
-  
+
   if (error instanceof Prisma.PrismaClientUnknownRequestError) {
     throw new DatabaseError('Unknown database error', operation, 'UNKNOWN', error)
   }
-  
+
   if (error instanceof Prisma.PrismaClientValidationError) {
     throw new ValidationError('Unknown field', 'unknown', error.message)
   }
-  
+
   throw new DatabaseError(
     error instanceof Error ? error.message : 'Unknown error',
     operation,
@@ -155,69 +164,71 @@ export class BlogPostOperations {
         offset = 0,
         orderBy = 'publishedAt',
         orderDirection = 'desc',
-        includeAnalytics = false
+        includeAnalytics = false,
       } = query
 
       const where: Prisma.BlogPostWhereInput = {
         ...(Array.isArray(status) ? { status: { in: status } } : { status }),
         ...(authorId && { authorId }),
         ...(categoryId && { categoryId }),
-        ...(tagIds?.length && { 
-          tags: { 
-            some: { 
-              tagId: { in: tagIds } 
-            } 
-          } 
+        ...(tagIds?.length && {
+          tags: {
+            some: {
+              tagId: { in: tagIds },
+            },
+          },
         }),
         ...(search && {
           OR: [
             { title: { contains: search, mode: 'insensitive' } },
             { excerpt: { contains: search, mode: 'insensitive' } },
-            { content: { contains: search, mode: 'insensitive' } }
-          ]
+            { content: { contains: search, mode: 'insensitive' } },
+          ],
         }),
         ...(publishedAfter && { publishedAt: { gte: publishedAfter } }),
-        ...(publishedBefore && { publishedAt: { lte: publishedBefore } })
+        ...(publishedBefore && { publishedAt: { lte: publishedBefore } }),
       }
 
-      const orderByClause: Prisma.BlogPostOrderByWithRelationInput = 
-        orderBy === 'viewCount' ? { viewCount: orderDirection } :
-        orderBy === 'createdAt' ? { createdAt: orderDirection } :
-        orderBy === 'title' ? { title: orderDirection } :
-        { publishedAt: orderDirection }
+      const orderByClause: Prisma.BlogPostOrderByWithRelationInput =
+        orderBy === 'viewCount'
+          ? { viewCount: orderDirection }
+          : orderBy === 'createdAt'
+            ? { createdAt: orderDirection }
+            : orderBy === 'title'
+              ? { title: orderDirection }
+              : { publishedAt: orderDirection }
 
       const posts = await db.blogPost.findMany({
         where,
         include: {
           author: {
-            select: { id: true, name: true, slug: true, avatar: true }
+            select: { id: true, name: true, slug: true, avatar: true },
           },
           category: {
-            select: { id: true, name: true, slug: true, color: true }
+            select: { id: true, name: true, slug: true, color: true },
           },
           tags: {
             select: {
               tag: {
-                select: { id: true, name: true, slug: true, color: true }
-              }
-            }
+                select: { id: true, name: true, slug: true, color: true },
+              },
+            },
           },
           ...(includeAnalytics && {
             _count: {
               select: {
                 views: true,
-                interactions: true
-              }
-            }
-          })
+                interactions: true,
+              },
+            },
+          }),
         },
         orderBy: orderByClause,
         take: Math.min(limit, 100), // Max 100 records per query
-        skip: offset
+        skip: offset,
       })
 
       return posts as BlogPostWithRelations[]
-
     } catch (error: unknown) {
       handlePrismaError(error, 'BLOG_POST_FIND_MANY')
     }
@@ -229,27 +240,27 @@ export class BlogPostOperations {
         where: { slug },
         include: {
           author: {
-            select: { id: true, name: true, slug: true, avatar: true, bio: true }
+            select: { id: true, name: true, slug: true, avatar: true, bio: true },
           },
           category: {
-            select: { id: true, name: true, slug: true, color: true, description: true }
+            select: { id: true, name: true, slug: true, color: true, description: true },
           },
           tags: {
             select: {
               tag: {
-                select: { id: true, name: true, slug: true, color: true }
-              }
-            }
+                select: { id: true, name: true, slug: true, color: true },
+              },
+            },
           },
           ...(includeAnalytics && {
             _count: {
               select: {
                 views: true,
-                interactions: true
-              }
-            }
-          })
-        }
+                interactions: true,
+              },
+            },
+          }),
+        },
       })
 
       if (!post) {
@@ -257,7 +268,6 @@ export class BlogPostOperations {
       }
 
       return post as BlogPostWithRelations
-
     } catch (error: unknown) {
       if (error instanceof NotFoundError) throw error
       handlePrismaError(error, 'BLOG_POST_FIND_BY_SLUG')
@@ -289,14 +299,13 @@ export class BlogPostOperations {
           readingTime: Math.ceil(input.content.split(/\s+/).length / 200),
           ...(tagIds?.length && {
             tags: {
-              create: tagIds.map(tagId => ({ tagId }))
-            }
-          })
-        }
+              create: tagIds.map((tagId) => ({ tagId })),
+            },
+          }),
+        },
       })
 
       return post
-
     } catch (error: unknown) {
       if (error instanceof ValidationError) throw error
       handlePrismaError(error, 'BLOG_POST_CREATE')
@@ -316,7 +325,7 @@ export class BlogPostOperations {
         const wordCount = input.content.split(/\s+/).length
         Object.assign(updateData, {
           wordCount,
-          readingTime: Math.ceil(wordCount / 200)
+          readingTime: Math.ceil(wordCount / 200),
         })
       }
 
@@ -327,14 +336,13 @@ export class BlogPostOperations {
           ...(tagIds && {
             tags: {
               deleteMany: {},
-              create: tagIds.map(tagId => ({ tagId }))
-            }
-          })
-        }
+              create: tagIds.map((tagId) => ({ tagId })),
+            },
+          }),
+        },
       })
 
       return post
-
     } catch (error: unknown) {
       if (error instanceof ValidationError) throw error
       handlePrismaError(error, 'BLOG_POST_UPDATE')
@@ -348,9 +356,8 @@ export class BlogPostOperations {
       }
 
       await db.blogPost.delete({
-        where: { id }
+        where: { id },
       })
-
     } catch (error: unknown) {
       if (error instanceof ValidationError) throw error
       handlePrismaError(error, 'BLOG_POST_DELETE')
@@ -380,20 +387,23 @@ export interface AnalyticsResult {
 }
 
 export class AnalyticsOperations {
-  static async recordView(postId: string, visitorData: {
-    visitorId?: string
-    sessionId?: string
-    ipAddress?: string
-    userAgent?: string
-    country?: string
-    readingTime?: number
-    scrollDepth?: number
-  }): Promise<void> {
+  static async recordView(
+    postId: string,
+    visitorData: {
+      visitorId?: string
+      sessionId?: string
+      ipAddress?: string
+      userAgent?: string
+      country?: string
+      readingTime?: number
+      scrollDepth?: number
+    }
+  ): Promise<void> {
     try {
       // Verify post exists and is published
       const post = await db.blogPost.findUnique({
         where: { id: postId },
-        select: { status: true }
+        select: { status: true },
       })
 
       if (!post) {
@@ -407,22 +417,27 @@ export class AnalyticsOperations {
       await db.postView.create({
         data: {
           postId,
-          ...visitorData
-        }
+          ...visitorData,
+        },
       })
 
       // Update post view count (async, don't wait)
-      db.blogPost.update({
-        where: { id: postId },
-        data: {
-          viewCount: {
-            increment: 1
-          }
-        }
-      }).catch((error: unknown) => {
-        dbLogger.error('Failed to update view count', error instanceof Error ? error : undefined, { postId })
-      })
-
+      db.blogPost
+        .update({
+          where: { id: postId },
+          data: {
+            viewCount: {
+              increment: 1,
+            },
+          },
+        })
+        .catch((error: unknown) => {
+          dbLogger.error(
+            'Failed to update view count',
+            error instanceof Error ? error : undefined,
+            { postId }
+          )
+        })
     } catch (error: unknown) {
       if (error instanceof NotFoundError || error instanceof ValidationError) throw error
       handlePrismaError(error, 'ANALYTICS_RECORD_VIEW')
@@ -430,7 +445,7 @@ export class AnalyticsOperations {
   }
 
   static async recordInteraction(
-    postId: string, 
+    postId: string,
     type: 'LIKE' | 'SHARE' | 'COMMENT' | 'BOOKMARK' | 'SUBSCRIBE' | 'DOWNLOAD',
     visitorData: {
       visitorId?: string
@@ -445,28 +460,38 @@ export class AnalyticsOperations {
           postId,
           type,
           ...visitorData,
-          metadata: visitorData.metadata as Prisma.InputJsonValue | undefined
-        }
+          metadata: visitorData.metadata as Prisma.InputJsonValue | undefined,
+        },
       })
 
       // Update post interaction counts
-      const updateField = type === 'LIKE' ? 'likeCount' : 
-                         type === 'SHARE' ? 'shareCount' : 
-                         type === 'COMMENT' ? 'commentCount' : null
+      const updateField =
+        type === 'LIKE'
+          ? 'likeCount'
+          : type === 'SHARE'
+            ? 'shareCount'
+            : type === 'COMMENT'
+              ? 'commentCount'
+              : null
 
       if (updateField) {
-        db.blogPost.update({
-          where: { id: postId },
-          data: {
-            [updateField]: {
-              increment: 1
-            }
-          }
-        }).catch((error: unknown) => {
-          dbLogger.error('Failed to update interaction count', error instanceof Error ? error : undefined, { postId, updateField })
-        })
+        db.blogPost
+          .update({
+            where: { id: postId },
+            data: {
+              [updateField]: {
+                increment: 1,
+              },
+            },
+          })
+          .catch((error: unknown) => {
+            dbLogger.error(
+              'Failed to update interaction count',
+              error instanceof Error ? error : undefined,
+              { postId, updateField }
+            )
+          })
       }
-
     } catch (error: unknown) {
       handlePrismaError(error, 'ANALYTICS_RECORD_INTERACTION')
     }
@@ -480,7 +505,7 @@ export class AnalyticsOperations {
         ...(postId && { postId }),
         ...(startDate && { viewedAt: { gte: startDate } }),
         ...(endDate && { viewedAt: { lte: endDate } }),
-        ...(country && { country })
+        ...(country && { country }),
       }
 
       const views = await db.postView.count({ where: whereClause })
@@ -489,13 +514,13 @@ export class AnalyticsOperations {
       const uniqueViewsResults = await db.postView.groupBy({
         by: ['visitorId'],
         where: whereClause,
-        _count: true
+        _count: true,
       })
       const uniqueViews = uniqueViewsResults.length
 
       const avgReadingTime = await db.postView.aggregate({
         where: { ...whereClause, readingTime: { not: null } },
-        _avg: { readingTime: true }
+        _avg: { readingTime: true },
       })
 
       const countryStats = await db.postView.groupBy({
@@ -503,13 +528,13 @@ export class AnalyticsOperations {
         where: { ...whereClause, country: { not: null } },
         _count: true,
         orderBy: { _count: { country: 'desc' } },
-        take: 10
+        take: 10,
       })
 
       let bounceRate = 0
       if (views > 0) {
         const bounces = await db.postView.count({
-          where: { ...whereClause, readingTime: { lt: 30 } }
+          where: { ...whereClause, readingTime: { lt: 30 } },
         })
         bounceRate = bounces / views
       }
@@ -521,10 +546,9 @@ export class AnalyticsOperations {
         bounceRate,
         topCountries: (countryStats as CountryGroupByResult[]).map((stat) => ({
           country: stat.country ?? 'Unknown',
-          views: stat._count
-        }))
+          views: stat._count,
+        })),
       }
-
     } catch (error: unknown) {
       handlePrismaError(error, 'ANALYTICS_GET_ANALYTICS')
     }
@@ -599,7 +623,7 @@ export class TransactionOperations {
           return tx.tag.upsert({
             where: { slug },
             create: { name, slug },
-            update: {}
+            update: {},
           })
         })
       )
@@ -612,9 +636,9 @@ export class TransactionOperations {
           wordCount: postData.content.split(/\s+/).length,
           readingTime: Math.ceil(postData.content.split(/\s+/).length / 200),
           tags: {
-            create: tags.map((tag: Tag) => ({ tagId: tag.id }))
-          }
-        }
+            create: tags.map((tag: Tag) => ({ tagId: tag.id })),
+          },
+        },
       })
     })
   }

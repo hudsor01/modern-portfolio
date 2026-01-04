@@ -5,16 +5,15 @@ import { usePageAnalytics } from '@/hooks/use-page-analytics'
 import { Navbar } from '@/components/layout/navbar'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
-import {
-  ArrowLeft,
-  ExternalLink,
-  ArrowRight,
-  Github
-} from 'lucide-react'
+import { ProjectPageLayout } from './project-page-layout'
+import { SectionCard } from '@/components/ui/section-card'
+import { ChartContainer } from '@/components/ui/chart-container'
+import { DataLoadingState } from '@/components/ui/loading-states'
+import { ExternalLink, ArrowRight, Github } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Project } from '@/types/project'
+import type { ProjectTag } from '@/lib/design-system/types'
 import { STARAreaChart } from './STARAreaChart'
 
 interface ProjectDetailClientBoundaryProps {
@@ -22,57 +21,25 @@ interface ProjectDetailClientBoundaryProps {
   initialProject?: Project
 }
 
-function ProjectDetailSkeleton() {
-  return (
-    <div className="min-h-screen bg-page-light dark:bg-page">
-      <div className="w-full mx-auto px-6 py-8">
-        <div className="mb-8">
-          <Skeleton className="h-10 w-32 mb-4" />
-          <Skeleton className="h-12 w-96 mb-2" />
-          <Skeleton className="h-6 w-64" />
-        </div>
-        
-        <div className="grid lg:grid-cols-2 gap-12">
-          <div className="space-y-8">
-            <Skeleton className="h-64 w-full rounded-xl" />
-            <div className="space-y-4">
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-3/4" />
-              <Skeleton className="h-6 w-1/2" />
-            </div>
-          </div>
-          
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <Skeleton className="h-8 w-48" />
-              <div className="flex gap-2">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <Skeleton key={i} className="h-6 w-20" />
-                ))}
-              </div>
-            </div>
-            <Skeleton className="h-48 w-full" />
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export default function ProjectDetailClientBoundary({ 
-  slug, 
-  initialProject 
+export default function ProjectDetailClientBoundary({
+  slug,
+  initialProject,
 }: ProjectDetailClientBoundaryProps) {
   // Track page analytics for projects
   usePageAnalytics({
     type: 'project',
     slug: slug,
     trackReadingTime: true,
-    trackScrollDepth: true
+    trackScrollDepth: true,
   })
 
   // Direct TanStack Query usage
-  const { data: project, isLoading, error } = useQuery({
+  const {
+    data: project,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ['project', slug],
     queryFn: async () => {
       const response = await fetch(`/api/projects/${slug}`, {
@@ -86,166 +53,226 @@ export default function ProjectDetailClientBoundary({
     staleTime: 5 * 60 * 1000,
   })
 
-  // Show loading skeleton
-  if (isLoading && !initialProject) {
-    return <ProjectDetailSkeleton />
-  }
-
-  // Show error state
-  if (error && !initialProject) {
-    return (
-      <div className="min-h-screen bg-page-light dark:bg-page">
-        <Navbar />
-        <div className="w-full mx-auto px-6 py-8">
-          <div className="min-h-[400px] flex items-center justify-center">
-            <div className="text-center">
-              <h3 className="typography-large mb-2">Project not found</h3>
-              <p className="text-muted-foreground mb-4">The project you're looking for doesn't exist.</p>
-              <Button asChild>
-                <Link href="/projects">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Projects
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   // Use project data or fallback
   const displayProject = project || initialProject
-  
-  if (!displayProject) {
-    return <ProjectDetailSkeleton />
+
+  // Convert project data to standardized format
+  const projectTags: ProjectTag[] =
+    displayProject?.technologies?.map((tech: string) => ({
+      label: tech,
+      variant: 'secondary' as const,
+    })) || []
+
+  // Add category tag if available
+  if (displayProject?.category) {
+    projectTags.unshift({
+      label: displayProject.category,
+      variant: 'primary' as const,
+    })
+  }
+
+  const handleRetry = () => {
+    refetch()
   }
 
   return (
-    <div className="min-h-screen bg-page-light dark:bg-page">
+    <div className="min-h-screen bg-background">
       <Navbar />
-      
-      <main className="w-full mx-auto px-6 py-8">
-        {/* Back Button */}
-        <Button variant="ghost" size="sm" asChild className="mb-6">
-          <Link href="/projects" className="flex items-center gap-2 text-sm">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Projects
-          </Link>
-        </Button>
 
-        {/* Project Header */}
-        <div className="mb-12">
-          <h1 className="typography-h1 text-xl text-foreground dark:text-white mb-4">
-            {displayProject.title}
-          </h1>
-          <p className="typography-lead dark:text-muted-foreground max-w-3xl">
-            {displayProject.description}
-          </p>
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-2 gap-12">
-          {/* Left Column */}
-          <div className="space-y-8">
-            {/* Project Image */}
-            {displayProject.image && (
-              <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl">
-                <Image
-                  src={displayProject.image}
-                  alt={displayProject.title}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            )}
-
-            {/* Project Description */}
-            <div className="bg-white/70 dark:bg-card/70 backdrop-blur-xs rounded-xl p-8 border border-white/20">
-              <h2 className="typography-h3 mb-4 text-foreground dark:text-white">
-                About This Project
-              </h2>
-              <div className="prose prose-gray dark:prose-invert max-w-none">
-                <p>{displayProject.longDescription || displayProject.description}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column */}
-          <div className="space-y-8">
-            {/* Technologies & Links */}
-            <div className="bg-white/70 dark:bg-card/70 backdrop-blur-xs rounded-xl p-8 border border-white/20">
-              <h3 className="typography-h4 mb-4 text-foreground dark:text-white">
-                Technologies Used
-              </h3>
-              <div className="flex flex-wrap gap-2 mb-6">
-                {displayProject.technologies?.map((tech: string, index: number) => (
-                  <Badge 
-                    key={index} 
-                    variant="secondary" 
-                    className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-foreground"
-                  >
-                    {tech}
-                  </Badge>
-                ))}
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-4">
-                {displayProject.liveUrl && (
-                  <Button asChild className="flex-1">
-                    <a href={displayProject.liveUrl} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      Live Demo
-                    </a>
-                  </Button>
-                )}
-                {displayProject.githubUrl && (
-                  <Button asChild variant="ghost" className="flex-1">
-                    <a href={displayProject.githubUrl} target="_blank" rel="noopener noreferrer">
-                      <Github className="w-4 h-4 mr-2" />
-                      View Code
-                    </a>
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            {/* STAR Impact Analysis Chart */}
-            {displayProject.starData && (
-              <div className="bg-white/70 dark:bg-card/70 backdrop-blur-xs rounded-xl p-8 border border-white/20">
-                <h3 className="typography-h4 mb-4 text-foreground dark:text-white">
-                  Impact Analysis
-                </h3>
-                <STARAreaChart
-                  data={displayProject.starData}
-                  title="STAR Framework Metrics"
-                  className="mt-4"
-                />
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* CTA Section */}
-        <div className="mt-16 gradient-cta rounded-xl p-8 text-center text-white">
-          <h2 className="typography-h2 border-none pb-0 text-2xl mb-4">Impressed by This Case Study?</h2>
-          <p className="text-xl mb-6 opacity-90">
-            Connect with me to discuss professional opportunities and revenue operations collaboration
-          </p>
-          <Button 
-            size="lg" 
-            className="bg-white text-primary hover:bg-muted font-semibold px-8"
-            asChild
+      <DataLoadingState
+        loading={isLoading && !initialProject}
+        error={error && !initialProject ? error : null}
+        empty={!displayProject && !isLoading && !error}
+        emptyMessage="Project not found"
+        emptyAction={{
+          label: 'Back to Projects',
+          onClick: () => (window.location.href = '/projects'),
+        }}
+        retryAction={handleRetry}
+        errorVariant="not-found"
+        loadingComponent={
+          <ProjectPageLayout
+            title="Loading..."
+            description="Please wait while we load the project details."
+            tags={[]}
           >
-            <Link href="/contact">
-              Get In Touch
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Link>
-          </Button>
-        </div>
-      </main>
+            <div className="grid lg:grid-cols-2 gap-8">
+              <div className="space-y-8">
+                <SectionCard title="Project Image" variant="glass">
+                  <div className="aspect-video bg-muted animate-pulse rounded-lg" />
+                </SectionCard>
+                <SectionCard title="About This Project" variant="glass">
+                  <div className="space-y-3">
+                    <div className="h-4 bg-muted animate-pulse rounded" />
+                    <div className="h-4 bg-muted animate-pulse rounded w-3/4" />
+                    <div className="h-4 bg-muted animate-pulse rounded w-1/2" />
+                  </div>
+                </SectionCard>
+              </div>
+              <div className="space-y-8">
+                <SectionCard title="Technologies Used" variant="glass">
+                  <div className="flex gap-2">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <div key={i} className="h-6 w-20 bg-muted animate-pulse rounded" />
+                    ))}
+                  </div>
+                </SectionCard>
+                <ChartContainer title="Impact Analysis" loading>
+                  <div />
+                </ChartContainer>
+              </div>
+            </div>
+          </ProjectPageLayout>
+        }
+      >
+        {displayProject && (
+          <ProjectPageLayout
+            title={displayProject.title}
+            description={displayProject.description}
+            tags={projectTags}
+            navigation={{
+              backUrl: '/projects',
+              backLabel: 'Back to Projects',
+            }}
+            onRefresh={handleRetry}
+          >
+            {/* Main Content Grid */}
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Left Column */}
+              <div className="space-y-8">
+                {/* Project Image */}
+                {displayProject.image && (
+                  <SectionCard title="Project Overview" variant="glass">
+                    <div className="relative aspect-video rounded-xl overflow-hidden">
+                      <Image
+                        src={displayProject.image}
+                        alt={displayProject.title}
+                        fill
+                        className="object-cover"
+                        priority
+                      />
+                    </div>
+                  </SectionCard>
+                )}
+
+                {/* Project Description */}
+                <SectionCard
+                  title="About This Project"
+                  description="Detailed overview of the project goals, challenges, and approach"
+                  variant="default"
+                >
+                  <div className="prose prose-gray dark:prose-invert max-w-none">
+                    <p className="text-muted-foreground leading-relaxed">
+                      {displayProject.longDescription || displayProject.description}
+                    </p>
+                  </div>
+                </SectionCard>
+              </div>
+
+              {/* Right Column */}
+              <div className="space-y-8">
+                {/* Technologies & Links */}
+                <SectionCard
+                  title="Technologies & Resources"
+                  description="Technical stack and project links"
+                  variant="default"
+                >
+                  <div className="space-y-6">
+                    {/* Technologies */}
+                    <div>
+                      <h4 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wider">
+                        Technologies Used
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {displayProject.technologies?.map((tech: string, index: number) => (
+                          <Badge
+                            key={index}
+                            variant="secondary"
+                            className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-foreground"
+                          >
+                            {tech}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    {(displayProject.liveUrl || displayProject.githubUrl) && (
+                      <div>
+                        <h4 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wider">
+                          Project Links
+                        </h4>
+                        <div className="flex gap-3">
+                          {displayProject.liveUrl && (
+                            <Button asChild className="flex-1">
+                              <a
+                                href={displayProject.liveUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <ExternalLink className="w-4 h-4 mr-2" />
+                                Live Demo
+                              </a>
+                            </Button>
+                          )}
+                          {displayProject.githubUrl && (
+                            <Button asChild variant="outline" className="flex-1">
+                              <a
+                                href={displayProject.githubUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <Github className="w-4 h-4 mr-2" />
+                                View Code
+                              </a>
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </SectionCard>
+
+                {/* STAR Impact Analysis Chart */}
+                {displayProject.starData && (
+                  <ChartContainer
+                    title="Impact Analysis"
+                    description="STAR Framework performance metrics"
+                    variant="default"
+                    height={300}
+                  >
+                    <STARAreaChart
+                      data={displayProject.starData}
+                      title="STAR Framework Metrics"
+                      className="h-full"
+                    />
+                  </ChartContainer>
+                )}
+              </div>
+            </div>
+
+            {/* CTA Section */}
+            <SectionCard
+              title="Impressed by This Case Study?"
+              variant="gradient"
+              className="mt-16 text-center"
+            >
+              <div className="space-y-6">
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                  Connect with me to discuss professional opportunities and revenue operations
+                  collaboration
+                </p>
+                <Button size="lg" className="font-semibold px-8" asChild>
+                  <Link href="/contact">
+                    Get In Touch
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Link>
+                </Button>
+              </div>
+            </SectionCard>
+          </ProjectPageLayout>
+        )}
+      </DataLoadingState>
     </div>
   )
 }

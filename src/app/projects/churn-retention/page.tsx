@@ -2,26 +2,24 @@
 
 import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
-import {
-  TrendingDown,
-  Users,
-  Activity,
-  AlertCircle,
-} from 'lucide-react'
+import { TrendingDown, Users, Activity, AlertCircle } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
-import { LoadingState } from '@/components/projects/loading-state'
+import { MetricsGrid } from '@/components/projects/metrics-grid'
+import { SectionCard } from '@/components/ui/section-card'
+import { ChartContainer } from '@/components/ui/chart-container'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { TIMING } from '@/lib/constants/spacing'
+import { formatPercentage, formatNumber, formatCurrency } from '@/lib/utils/data-formatters'
 
 // Lazy-load chart components with Suspense fallback
 const ChurnLineChart = dynamic(() => import('./ChurnLineChart'), {
   loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
-  ssr: true
+  ssr: true,
 })
 const RetentionHeatmap = dynamic(() => import('./RetentionHeatmap'), {
   loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
-  ssr: true
+  ssr: true,
 })
 
 // Import static churn data
@@ -54,18 +52,60 @@ export default function ChurnAnalysis() {
 
   // Safe calculations
   const churnDifference =
-    currentMonth && previousMonth
-      ? (currentMonth.churnRate - previousMonth.churnRate).toFixed(1)
-      : '0.0'
+    currentMonth && previousMonth ? currentMonth.churnRate - previousMonth.churnRate : 0
 
+  const totalPartners = currentMonth ? currentMonth.retained + currentMonth.churned : 0
 
-  const totalPartners = currentMonth 
-    ? currentMonth.retained + currentMonth.churned 
-    : 0
+  const retentionRate = currentMonth ? (currentMonth.retained / totalPartners) * 100 : 0
 
-  const retentionRate = currentMonth
-    ? ((currentMonth.retained / totalPartners) * 100).toFixed(1)
-    : '0.0'
+  // Create metrics data for standardized MetricsGrid
+  const metricsData = [
+    {
+      id: 'churn-rate',
+      icon: TrendingDown,
+      label: 'Current',
+      value: currentMonth ? formatPercentage(currentMonth.churnRate / 100) : 'N/A',
+      subtitle: 'Churn Rate',
+      variant: 'warning' as const,
+    },
+    {
+      id: 'retention-rate',
+      icon: Users,
+      label: 'Current',
+      value: formatPercentage(retentionRate / 100),
+      subtitle: 'Retention Rate',
+      variant: 'success' as const,
+    },
+    {
+      id: 'churn-trend',
+      icon: Activity,
+      label: 'vs Last Month',
+      value:
+        churnDifference > 0
+          ? `+${formatPercentage(Math.abs(churnDifference) / 100)}`
+          : formatPercentage(Math.abs(churnDifference) / 100),
+      subtitle: 'Churn Change',
+      variant: 'info' as const,
+      trend: {
+        direction:
+          churnDifference > 0
+            ? ('up' as const)
+            : churnDifference < 0
+              ? ('down' as const)
+              : ('neutral' as const),
+        value: formatPercentage(Math.abs(churnDifference) / 100),
+        label: 'vs last month',
+      },
+    },
+    {
+      id: 'churned-partners',
+      icon: AlertCircle,
+      label: 'This Month',
+      value: currentMonth ? formatNumber(currentMonth.churned) : 'N/A',
+      subtitle: 'Partners Churned',
+      variant: 'warning' as const,
+    },
+  ]
 
   return (
     <>
@@ -74,172 +114,121 @@ export default function ChurnAnalysis() {
         description="Advanced churn prediction and retention analysis dashboard with customer lifecycle metrics, retention heatmaps, and predictive modeling for customer success optimization."
         slug="churn-retention"
         category="Customer Analytics"
-        tags={['Churn Analysis', 'Customer Retention', 'Predictive Analytics', 'Customer Success', 'Lifecycle Management', 'Customer Analytics', 'Data Science', 'Machine Learning']}
+        tags={[
+          'Churn Analysis',
+          'Customer Retention',
+          'Predictive Analytics',
+          'Customer Success',
+          'Lifecycle Management',
+          'Customer Analytics',
+          'Data Science',
+          'Machine Learning',
+        ]}
       />
       <ProjectPageLayout
         title="Churn & Retention Analysis"
         description="Track partner churn rates and retention patterns to identify at-risk segments and improve partner success strategies."
         tags={[
-          { label: `Churn Rate: ${currentMonth ? currentMonth.churnRate : 'N/A'}%`, color: 'bg-primary/20 text-primary' },
-          { label: `Retention: ${retentionRate}%`, color: 'bg-secondary/20 text-secondary' },
-          { label: 'Prediction: 89%', color: 'bg-primary/20 text-primary' },
-          { label: 'Revenue Saved: $830K', color: 'bg-secondary/20 text-secondary' },
+          {
+            label: `Churn Rate: ${currentMonth ? formatPercentage(currentMonth.churnRate / 100) : 'N/A'}`,
+            variant: 'warning' as const,
+          },
+          {
+            label: `Retention: ${formatPercentage(retentionRate / 100)}`,
+            variant: 'success' as const,
+          },
+          { label: 'Prediction: 89%', variant: 'info' as const },
+          {
+            label: `Revenue Saved: ${formatCurrency(830000, { compact: true })}`,
+            variant: 'success' as const,
+          },
         ]}
         onRefresh={handleRefresh}
         refreshButtonDisabled={isLoading}
       >
         {isLoading ? (
-          <LoadingState />
+          <MetricsGrid metrics={metricsData} columns={4} loading={true} className="mb-12" />
         ) : (
           <>
-            {/* KPI Cards */}
-            <div 
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
-            >
-              {/* Current Churn Rate */}
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-orange-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative glass-interactive rounded-2xl p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-destructive/20 rounded-xl">
-                      <TrendingDown className="h-6 w-6 text-destructive" />
-                    </div>
-                    <span className="typography-small text-muted-foreground uppercase tracking-wider">Current</span>
-                  </div>
-                  <p className="typography-h2 border-none pb-0 text-2xl mb-1">
-                    {currentMonth ? `${currentMonth.churnRate}%` : 'N/A'}
-                  </p>
-                  <p className="typography-small text-muted-foreground">Churn Rate</p>
-                </div>
-              </div>
-
-              {/* Retention Rate */}
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative glass-interactive rounded-2xl p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-success/20 rounded-xl">
-                      <Users className="h-6 w-6 text-success" />
-                    </div>
-                    <span className="typography-small text-muted-foreground uppercase tracking-wider">Current</span>
-                  </div>
-                  <p className="typography-h2 border-none pb-0 text-2xl mb-1">{retentionRate}%</p>
-                  <p className="typography-small text-muted-foreground">Retention Rate</p>
-                </div>
-              </div>
-
-              {/* Churn Trend */}
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative glass-interactive rounded-2xl p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-primary/20 rounded-xl">
-                      <Activity className="h-6 w-6 text-primary" />
-                    </div>
-                    <span className="typography-small text-muted-foreground uppercase tracking-wider">vs Last Month</span>
-                  </div>
-                  <p className={`typography-h2 border-none pb-0 text-2xl mb-1 ${
-                    parseFloat(churnDifference) > 0 ? 'text-destructive' : 'text-success'
-                  }`}>
-                    {parseFloat(churnDifference) > 0 ? '+' : ''}{churnDifference}%
-                  </p>
-                  <p className="typography-small text-muted-foreground">Churn Change</p>
-                </div>
-              </div>
-
-              {/* At Risk Partners */}
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-orange-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition-opacity duration-300" />
-                <div className="relative glass-interactive rounded-2xl p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 bg-amber-500/20 rounded-xl">
-                      <AlertCircle className="h-6 w-6 text-amber-400" />
-                    </div>
-                    <span className="typography-small text-muted-foreground uppercase tracking-wider">This Month</span>
-                  </div>
-                  <p className="typography-h2 border-none pb-0 text-2xl mb-1">
-                    {currentMonth ? currentMonth.churned : 'N/A'}
-                  </p>
-                  <p className="typography-small text-muted-foreground">Partners Churned</p>
-                </div>
-              </div>
-            </div>
+            {/* Standardized Metrics Grid */}
+            <MetricsGrid metrics={metricsData} columns={4} className="mb-12" />
 
             {/* Charts Section */}
             <div className="space-y-8">
               {/* Retention Heatmap */}
-              <div 
-                className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+              <ChartContainer
+                title="Partner Retention Patterns"
+                description="Monthly retention rates by partner cohort"
+                height={350}
+                loading={isLoading}
               >
-                <div className="mb-6">
-                  <h2 className="typography-h3 mb-2">Partner Retention Patterns</h2>
-                  <p className="typography-muted">Monthly retention rates by partner cohort</p>
-                </div>
                 <RetentionHeatmap />
-              </div>
+              </ChartContainer>
 
               {/* Churn Trends */}
-              <div 
-                className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+              <ChartContainer
+                title="Churn Rate Trends"
+                description="Historical churn rate analysis and projections"
+                height={350}
+                loading={isLoading}
               >
-                <div className="mb-6">
-                  <h2 className="typography-h3 mb-2">Churn Rate Trends</h2>
-                  <p className="typography-muted">Historical churn rate analysis and projections</p>
-                </div>
                 <ChurnLineChart />
-              </div>
+              </ChartContainer>
             </div>
 
             {/* Professional Narrative Sections */}
-            <div className="space-y-12 mt-12">
+            <div className="space-y-8 mt-12">
               {/* Project Overview */}
-              <div 
-                className="glass rounded-2xl p-8"
-              >
-                <h2 className="typography-h3 mb-6 text-primary">Project Overview</h2>
+              <SectionCard title="Project Overview" variant="glass" padding="lg">
                 <div className="space-y-4 text-muted-foreground">
                   <p className="text-lg leading-relaxed">
-                    Developed a predictive churn analysis system to identify at-risk partners and implement proactive retention strategies. This analytics solution became critical for maintaining partner relationships and optimizing lifetime value across the entire partner ecosystem.
+                    Developed a predictive churn analysis system to identify at-risk partners and
+                    implement proactive retention strategies. This analytics solution became
+                    critical for maintaining partner relationships and optimizing lifetime value
+                    across the entire partner ecosystem.
                   </p>
                   <p className="leading-relaxed">
-                    The system processes partner engagement patterns, transaction histories, and performance metrics to predict churn probability with 89% accuracy, enabling data-driven retention interventions.
+                    The system processes partner engagement patterns, transaction histories, and
+                    performance metrics to predict churn probability with 89% accuracy, enabling
+                    data-driven retention interventions.
                   </p>
                 </div>
-              </div>
+              </SectionCard>
 
               {/* Challenge */}
-              <div 
-                className="glass rounded-2xl p-8"
-              >
-                <h2 className="typography-h3 mb-6 text-amber-400">Challenge</h2>
+              <SectionCard title="Challenge" variant="glass" padding="lg">
                 <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
-                    Partner churn was reactive rather than proactive, resulting in significant revenue loss and missed retention opportunities:
+                    Partner churn was reactive rather than proactive, resulting in significant
+                    revenue loss and missed retention opportunities:
                   </p>
                   <ul className="list-disc list-inside space-y-2 ml-4">
                     <li>No early warning system for partners at risk of churning</li>
-                    <li>Partners often churned without any engagement attempt from the retention team</li>
+                    <li>
+                      Partners often churned without any engagement attempt from the retention team
+                    </li>
                     <li>High-value partners were leaving due to unaddressed concerns</li>
-                    <li>Retention efforts were costly and unfocused, targeting the wrong segments</li>
+                    <li>
+                      Retention efforts were costly and unfocused, targeting the wrong segments
+                    </li>
                     <li>No understanding of churn patterns or leading indicators</li>
                     <li>Manual tracking was impossible at scale with growing partner base</li>
                   </ul>
                   <p className="leading-relaxed">
-                    The reactive approach meant losing partners who could have been retained with timely intervention, significantly impacting long-term revenue.
+                    The reactive approach meant losing partners who could have been retained with
+                    timely intervention, significantly impacting long-term revenue.
                   </p>
                 </div>
-              </div>
+              </SectionCard>
 
               {/* Solution */}
-              <div 
-                className="glass rounded-2xl p-8"
-              >
-                <h2 className="typography-h3 mb-6 text-success">Solution</h2>
+              <SectionCard title="Solution" variant="glass" padding="lg">
                 <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
-                    Built a comprehensive churn prediction and retention analytics platform using machine learning algorithms and real-time data analysis:
+                    Built a comprehensive churn prediction and retention analytics platform using
+                    machine learning algorithms and real-time data analysis:
                   </p>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <div className="bg-white/5 rounded-xl p-6 border border-white/10">
                       <h3 className="font-semibold text-primary mb-3">Predictive Analytics</h3>
@@ -264,165 +253,212 @@ export default function ChurnAnalysis() {
                   </div>
 
                   <p className="leading-relaxed mt-4">
-                    The solution integrated with CRM systems, partner portals, and communication platforms to provide a 360-degree view of partner health and automated intervention triggers.
+                    The solution integrated with CRM systems, partner portals, and communication
+                    platforms to provide a 360-degree view of partner health and automated
+                    intervention triggers.
                   </p>
                 </div>
-              </div>
+              </SectionCard>
 
               {/* Results & Impact */}
-              <div 
-                className="glass rounded-2xl p-8"
-              >
-                <h2 className="typography-h3 mb-6 text-emerald-400">Results & Impact</h2>
+              <SectionCard title="Results & Impact" variant="glass" padding="lg">
                 <div className="space-y-6 text-muted-foreground">
                   <p className="leading-relaxed">
-                    The churn prediction system transformed partner retention from reactive firefighting to proactive relationship management:
+                    The churn prediction system transformed partner retention from reactive
+                    firefighting to proactive relationship management:
                   </p>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-xs border border-primary/20 rounded-xl p-6 text-center">
-                      <div className="typography-h2 border-none pb-0 text-2xl text-primary mb-2">23%</div>
-                      <div className="typography-small text-muted-foreground">Churn Rate Reduction</div>
+                      <div className="text-2xl font-semibold text-primary mb-2">23%</div>
+                      <div className="text-sm text-muted-foreground">Churn Rate Reduction</div>
                     </div>
                     <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xs border border-success/20 rounded-xl p-6 text-center">
-                      <div className="typography-h2 border-none pb-0 text-2xl text-success mb-2">89%</div>
-                      <div className="typography-small text-muted-foreground">Prediction Accuracy</div>
+                      <div className="text-2xl font-semibold text-success mb-2">89%</div>
+                      <div className="text-sm text-muted-foreground">Prediction Accuracy</div>
                     </div>
                     <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-xs border border-purple-500/20 rounded-xl p-6 text-center">
-                      <div className="typography-h2 border-none pb-0 text-2xl text-purple-400 mb-2">$830K</div>
-                      <div className="typography-small text-muted-foreground">Revenue Saved from Retention</div>
+                      <div className="text-2xl font-semibold text-purple-400 mb-2">
+                        {formatCurrency(830000, { compact: true })}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Revenue Saved from Retention
+                      </div>
                     </div>
                     <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-xs border border-amber-500/20 rounded-xl p-6 text-center">
-                      <div className="typography-h2 border-none pb-0 text-2xl text-amber-400 mb-2">67%</div>
-                      <div className="typography-small text-muted-foreground">Success Rate of Interventions</div>
+                      <div className="text-2xl font-semibold text-amber-400 mb-2">67%</div>
+                      <div className="text-sm text-muted-foreground">
+                        Success Rate of Interventions
+                      </div>
                     </div>
                   </div>
 
                   <div className="space-y-3">
-                    <h3 className="font-semibold text-emerald-400">Quantified Business Outcomes:</h3>
+                    <h3 className="font-semibold text-emerald-400">
+                      Quantified Business Outcomes:
+                    </h3>
                     <ul className="list-disc list-inside space-y-2 ml-4">
                       <li>Reduced partner churn rate from 14.2% to 10.9% quarterly</li>
                       <li>Increased retention rate for high-value partners to 92%</li>
                       <li>Achieved 67% success rate for at-risk partner interventions</li>
-                      <li>Saved $830K in annual revenue through proactive retention</li>
-                      <li>Improved partner satisfaction scores by 18% through proactive outreach</li>
+                      <li>
+                        Saved {formatCurrency(830000, { compact: true })} in annual revenue through
+                        proactive retention
+                      </li>
+                      <li>
+                        Improved partner satisfaction scores by 18% through proactive outreach
+                      </li>
                       <li>Reduced retention team workload by 34% through targeted interventions</li>
                     </ul>
                   </div>
                 </div>
-              </div>
+              </SectionCard>
 
               {/* Key Learnings */}
-              <div 
-                className="glass rounded-2xl p-8"
-              >
-                <h2 className="typography-h3 mb-6 text-purple-400">Key Learnings</h2>
+              <SectionCard title="Key Learnings" variant="glass" padding="lg">
                 <div className="space-y-4 text-muted-foreground">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
                       <h3 className="font-semibold text-purple-400">Customer Success Insights</h3>
                       <ul className="list-disc list-inside space-y-2 text-sm">
-                        <li>Early engagement is 3x more effective than late-stage retention efforts</li>
-                        <li>Partners with declining engagement patterns show churn intent 60-90 days before actual churn</li>
-                        <li>Personalized retention approaches significantly outperform generic campaigns</li>
+                        <li>
+                          Early engagement is 3x more effective than late-stage retention efforts
+                        </li>
+                        <li>
+                          Partners with declining engagement patterns show churn intent 60-90 days
+                          before actual churn
+                        </li>
+                        <li>
+                          Personalized retention approaches significantly outperform generic
+                          campaigns
+                        </li>
                       </ul>
                     </div>
                     <div className="space-y-3">
-                      <h3 className="font-semibold text-primary">Technical Implementation Insights</h3>
+                      <h3 className="font-semibold text-primary">
+                        Technical Implementation Insights
+                      </h3>
                       <ul className="list-disc list-inside space-y-2 text-sm">
-                        <li>Real-time data processing is crucial for actionable churn predictions</li>
-                        <li>Model accuracy improves significantly with multi-dimensional engagement data</li>
+                        <li>
+                          Real-time data processing is crucial for actionable churn predictions
+                        </li>
+                        <li>
+                          Model accuracy improves significantly with multi-dimensional engagement
+                          data
+                        </li>
                         <li>Automated workflows reduce response time from days to hours</li>
                       </ul>
                     </div>
                   </div>
                   <p className="leading-relaxed mt-4">
-                    This project highlighted that retention is fundamentally about relationship health, not just transactional metrics. The most successful interventions addressed underlying business challenges rather than just engagement gaps.
+                    This project highlighted that retention is fundamentally about relationship
+                    health, not just transactional metrics. The most successful interventions
+                    addressed underlying business challenges rather than just engagement gaps.
                   </p>
                 </div>
-              </div>
+              </SectionCard>
 
               {/* Technologies Used */}
-              <div 
-                className="bg-gradient-to-br from-gray-500/10 to-slate-500/10 backdrop-blur-xs border border-border/20 rounded-xl p-8"
-              >
-                <h2 className="typography-h3 mb-6 text-muted-foreground">Technologies Used</h2>
+              <SectionCard title="Technologies Used" variant="default" padding="lg">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
-                    'React 19', 'TypeScript', 'Recharts', 'Machine Learning',
-                    'Predictive Analytics', 'Data Modeling', 'Real-time Processing', 'CRM Integration',
-                    'Behavioral Analytics', 'Cohort Analysis', 'Automation Workflows', 'Customer Success'
+                    'React 19',
+                    'TypeScript',
+                    'Recharts',
+                    'Machine Learning',
+                    'Predictive Analytics',
+                    'Data Modeling',
+                    'Real-time Processing',
+                    'CRM Integration',
+                    'Behavioral Analytics',
+                    'Cohort Analysis',
+                    'Automation Workflows',
+                    'Customer Success',
                   ].map((tech, index) => (
-                    <span key={index} className="bg-white/10 text-muted-foreground px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors">
+                    <span
+                      key={index}
+                      className="bg-white/10 text-muted-foreground px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors"
+                    >
                       {tech}
                     </span>
                   ))}
                 </div>
-              </div>
+              </SectionCard>
 
               {/* Insights Section */}
-              <div 
-                className="grid grid-cols-1 md:grid-cols-3 gap-6"
-              >
-                <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-xs border border-primary/20 rounded-xl p-6">
-                  <h3 className="typography-large mb-2 text-primary">Key Insight</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <SectionCard
+                  title="Key Insight"
+                  variant="glass"
+                  padding="md"
+                  className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border-primary/20"
+                >
                   <p className="text-muted-foreground text-sm">
-                    Partners with less than 3 months tenure show 2x higher churn risk. Focus onboarding efforts here.
+                    Partners with less than 3 months tenure show 2x higher churn risk. Focus
+                    onboarding efforts here.
                   </p>
-                </div>
-                <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xs border border-success/20 rounded-xl p-6">
-                  <h3 className="typography-large mb-2 text-success">Opportunity</h3>
+                </SectionCard>
+                <SectionCard
+                  title="Opportunity"
+                  variant="glass"
+                  padding="md"
+                  className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-success/20"
+                >
                   <p className="text-muted-foreground text-sm">
-                    Implementing proactive engagement for at-risk segments could reduce churn by up to 15%.
+                    Implementing proactive engagement for at-risk segments could reduce churn by up
+                    to 15%.
                   </p>
-                </div>
-                <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-xs border border-amber-500/20 rounded-xl p-6">
-                  <h3 className="typography-large mb-2 text-amber-400">Action Required</h3>
+                </SectionCard>
+                <SectionCard
+                  title="Action Required"
+                  variant="glass"
+                  padding="md"
+                  className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 border-amber-500/20"
+                >
                   <p className="text-muted-foreground text-sm">
-                    Schedule quarterly business reviews with top 20% of partners to maintain retention rates.
+                    Schedule quarterly business reviews with top 20% of partners to maintain
+                    retention rates.
                   </p>
-                </div>
+                </SectionCard>
               </div>
 
               {/* STAR Impact Analysis */}
-              <div
-                className="mt-16 space-y-8"
+              <SectionCard
+                title="STAR Impact Analysis"
+                description="Tracking project progression from Situation through Action to measurable Results"
+                variant="glass"
+                padding="lg"
+                className="mt-16"
               >
-                <div className="text-center space-y-4">
-                  <h2 className="typography-h2 border-none pb-0 text-2xl md:text-2xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                    STAR Impact Analysis
-                  </h2>
-                  <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                    Tracking project progression from Situation through Action to measurable Results
-                  </p>
-                </div>
-
-                <div className="glass rounded-2xl p-8">
-                  <STARAreaChart
-                    data={starData}
+                <div className="space-y-8">
+                  <ChartContainer
                     title="Project Progression Metrics"
-                  />
-                </div>
+                    height={300}
+                    loading={isLoading}
+                  >
+                    <STARAreaChart data={starData} title="Project Progression Metrics" />
+                  </ChartContainer>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="text-center p-6 glass rounded-2xl">
-                    <div className="text-sm text-primary/70 mb-2">Situation</div>
-                    <div className="typography-large text-white">Initial Assessment</div>
-                  </div>
-                  <div className="text-center p-6 glass rounded-2xl">
-                    <div className="text-sm text-green-400/70 mb-2">Task</div>
-                    <div className="typography-large text-white">Goal Definition</div>
-                  </div>
-                  <div className="text-center p-6 glass rounded-2xl">
-                    <div className="text-sm text-amber-400/70 mb-2">Action</div>
-                    <div className="typography-large text-white">Implementation</div>
-                  </div>
-                  <div className="text-center p-6 glass rounded-2xl">
-                    <div className="text-sm text-cyan-400/70 mb-2">Result</div>
-                    <div className="typography-large text-white">Measurable Impact</div>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="text-center p-6 glass rounded-2xl">
+                      <div className="text-sm text-primary/70 mb-2">Situation</div>
+                      <div className="text-lg font-medium text-white">Initial Assessment</div>
+                    </div>
+                    <div className="text-center p-6 glass rounded-2xl">
+                      <div className="text-sm text-green-400/70 mb-2">Task</div>
+                      <div className="text-lg font-medium text-white">Goal Definition</div>
+                    </div>
+                    <div className="text-center p-6 glass rounded-2xl">
+                      <div className="text-sm text-amber-400/70 mb-2">Action</div>
+                      <div className="text-lg font-medium text-white">Implementation</div>
+                    </div>
+                    <div className="text-center p-6 glass rounded-2xl">
+                      <div className="text-sm text-cyan-400/70 mb-2">Result</div>
+                      <div className="text-lg font-medium text-white">Measurable Impact</div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </SectionCard>
             </div>
           </>
         )}

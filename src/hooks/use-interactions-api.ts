@@ -4,7 +4,7 @@
  */
 
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query'
-import { InteractionType } from '@prisma/client'
+import { InteractionType } from '@/lib/prisma-types'
 import { ApiResponse } from '@/types/shared-api'
 
 // Types based on API responses
@@ -43,7 +43,7 @@ interface ViewResponse {
 
 // API functions
 async function trackProjectInteraction(
-  slug: string, 
+  slug: string,
   type: 'LIKE' | 'SHARE' | 'BOOKMARK' | 'DOWNLOAD',
   value?: string,
   metadata?: Record<string, string | number | boolean>
@@ -94,9 +94,11 @@ async function trackBlogInteraction(
   return data.data
 }
 
-async function getProjectInteractions(slug: string): Promise<{ totalInteractions: Record<string, number> }> {
+async function getProjectInteractions(
+  slug: string
+): Promise<{ totalInteractions: Record<string, number> }> {
   const response = await fetch(`/api/projects/${slug}/interactions`)
-  
+
   if (!response.ok) {
     throw new Error('Failed to fetch project interactions')
   }
@@ -111,7 +113,7 @@ async function getProjectInteractions(slug: string): Promise<{ totalInteractions
 
 async function getBlogInteractions(slug: string): Promise<{ postCounts: Record<string, number> }> {
   const response = await fetch(`/api/blog/${slug}/interactions`)
-  
+
   if (!response.ok) {
     throw new Error('Failed to fetch blog interactions')
   }
@@ -145,18 +147,22 @@ async function trackView(viewData: ViewTrackingData): Promise<ViewResponse> {
   return data.data
 }
 
-async function getViews(type?: 'project' | 'blog', slug?: string): Promise<{ views: Array<{ slug: string; type: string; totalViews: number }> }> {
+async function getViews(
+  type?: 'project' | 'blog',
+  slug?: string
+): Promise<{ views: Array<{ slug: string; type: string; totalViews: number }> }> {
   const params = new URLSearchParams()
   if (type) params.append('type', type)
   if (slug) params.append('slug', slug)
 
   const response = await fetch(`/api/analytics/views?${params.toString()}`)
-  
+
   if (!response.ok) {
     throw new Error('Failed to fetch views')
   }
 
-  const data: ApiResponse<{ views: Array<{ slug: string; type: string; totalViews: number }> }> = await response.json()
+  const data: ApiResponse<{ views: Array<{ slug: string; type: string; totalViews: number }> }> =
+    await response.json()
   if (!data.success) {
     throw new Error(data.error || 'Failed to fetch views')
   }
@@ -169,7 +175,11 @@ export function useProjectInteraction(slug: string) {
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: ({ type, value, metadata }: {
+    mutationFn: ({
+      type,
+      value,
+      metadata,
+    }: {
       type: 'LIKE' | 'SHARE' | 'BOOKMARK' | 'DOWNLOAD'
       value?: string
       metadata?: Record<string, string | number | boolean>
@@ -188,7 +198,11 @@ export function useBlogInteraction(slug: string) {
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: ({ type, value, metadata }: {
+    mutationFn: ({
+      type,
+      value,
+      metadata,
+    }: {
       type: 'LIKE' | 'SHARE' | 'COMMENT' | 'BOOKMARK' | 'SUBSCRIBE' | 'DOWNLOAD'
       value?: string
       metadata?: Record<string, string | number | boolean>
@@ -203,7 +217,9 @@ export function useBlogInteraction(slug: string) {
   return mutation
 }
 
-export function useProjectInteractions(slug: string): UseQueryResult<{ totalInteractions: Record<string, number> }, Error> {
+export function useProjectInteractions(
+  slug: string
+): UseQueryResult<{ totalInteractions: Record<string, number> }, Error> {
   return useQuery({
     queryKey: ['project-interactions', slug],
     queryFn: () => getProjectInteractions(slug),
@@ -212,7 +228,9 @@ export function useProjectInteractions(slug: string): UseQueryResult<{ totalInte
   })
 }
 
-export function useBlogInteractions(slug: string): UseQueryResult<{ postCounts: Record<string, number> }, Error> {
+export function useBlogInteractions(
+  slug: string
+): UseQueryResult<{ postCounts: Record<string, number> }, Error> {
   return useQuery({
     queryKey: ['blog-interactions', slug],
     queryFn: () => getBlogInteractions(slug),
@@ -235,7 +253,10 @@ export function useViewTracking() {
   return mutation
 }
 
-export function useViews(type?: 'project' | 'blog', slug?: string): UseQueryResult<{ views: Array<{ slug: string; type: string; totalViews: number }> }, Error> {
+export function useViews(
+  type?: 'project' | 'blog',
+  slug?: string
+): UseQueryResult<{ views: Array<{ slug: string; type: string; totalViews: number }> }, Error> {
   return useQuery({
     queryKey: ['views', type, slug],
     queryFn: () => getViews(type, slug),
@@ -247,7 +268,7 @@ export function useViews(type?: 'project' | 'blog', slug?: string): UseQueryResu
 // Convenience hooks for specific interactions
 export function useLikeProject(slug: string) {
   const interaction = useProjectInteraction(slug)
-  
+
   return {
     like: () => interaction.mutate({ type: 'LIKE' }),
     isLiking: interaction.isPending,
@@ -257,13 +278,14 @@ export function useLikeProject(slug: string) {
 
 export function useShareProject(slug: string) {
   const interaction = useProjectInteraction(slug)
-  
+
   return {
-    share: (platform?: string) => interaction.mutate({ 
-      type: 'SHARE', 
-      value: platform,
-      metadata: { timestamp: new Date().toISOString() }
-    }),
+    share: (platform?: string) =>
+      interaction.mutate({
+        type: 'SHARE',
+        value: platform,
+        metadata: { timestamp: new Date().toISOString() },
+      }),
     isSharing: interaction.isPending,
     error: interaction.error,
   }
@@ -271,7 +293,7 @@ export function useShareProject(slug: string) {
 
 export function useBookmarkProject(slug: string) {
   const interaction = useProjectInteraction(slug)
-  
+
   return {
     bookmark: () => interaction.mutate({ type: 'BOOKMARK' }),
     isBookmarking: interaction.isPending,
@@ -281,7 +303,7 @@ export function useBookmarkProject(slug: string) {
 
 export function useLikeBlogPost(slug: string) {
   const interaction = useBlogInteraction(slug)
-  
+
   return {
     like: () => interaction.mutate({ type: 'LIKE' }),
     isLiking: interaction.isPending,
@@ -291,13 +313,14 @@ export function useLikeBlogPost(slug: string) {
 
 export function useShareBlogPost(slug: string) {
   const interaction = useBlogInteraction(slug)
-  
+
   return {
-    share: (platform?: string) => interaction.mutate({ 
-      type: 'SHARE', 
-      value: platform,
-      metadata: { timestamp: new Date().toISOString() }
-    }),
+    share: (platform?: string) =>
+      interaction.mutate({
+        type: 'SHARE',
+        value: platform,
+        metadata: { timestamp: new Date().toISOString() },
+      }),
     isSharing: interaction.isPending,
     error: interaction.error,
   }

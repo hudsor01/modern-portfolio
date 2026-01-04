@@ -39,7 +39,7 @@ async function globalSetup(config: FullConfig) {
     
     // Wait for critical elements to be ready
     console.log('⏳ Waiting for page to be ready...')
-    await page.waitForSelector('body', { timeout: 30000 })
+    await page.locator('body').waitFor({ state: 'visible', timeout: 30000 })
     
     // Check if we have a proper response
     const title = await page.title()

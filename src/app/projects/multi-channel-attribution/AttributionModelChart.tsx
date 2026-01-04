@@ -1,7 +1,15 @@
 'use client'
 import { memo } from 'react'
 
-import { LazyBarChart as BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from '@/components/charts/lazy-charts'
+import {
+  LazyBarChart as BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from '@/components/charts/lazy-charts'
 
 // Attribution model comparison data
 const data = [
@@ -36,11 +44,7 @@ const AttributionModelChart = memo(function AttributionModelChart() {
     <div className="h-[350px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke={chartColors.grid} 
-            vertical={false}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
           <XAxis
             dataKey="model"
             stroke={chartColors.axis}
@@ -77,32 +81,36 @@ const AttributionModelChart = memo(function AttributionModelChart() {
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
-            formatter={(value: number, name: string) => {
-              if (name === 'accuracy') return [`${value}%`, 'Attribution Accuracy']
-              if (name === 'conversions') return [value.toLocaleString(), 'Attributed Conversions']
-              if (name === 'roi') return [formatCurrency(value), 'Attributed ROI']
-              return [value, name]
+            formatter={(value: number | undefined, name: string | undefined) => {
+              const safeValue = value ?? 0
+              const safeName = name ?? ''
+              if (safeName === 'accuracy') return [`${safeValue}%`, 'Attribution Accuracy']
+              if (safeName === 'conversions')
+                return [safeValue.toLocaleString(), 'Attributed Conversions']
+              if (safeName === 'roi') return [formatCurrency(safeValue), 'Attributed ROI']
+              return [safeValue, safeName]
             }}
             labelFormatter={(label) => `Model: ${label}`}
           />
-          <Bar 
+          <Bar
             yAxisId="accuracy"
-            dataKey="accuracy" 
-            fill={chartColors.accuracy} 
-            radius={[4, 4, 0, 0]} 
+            dataKey="accuracy"
+            fill={chartColors.accuracy}
+            radius={[4, 4, 0, 0]}
             name="accuracy"
           />
-          <Bar 
+          <Bar
             yAxisId="roi"
-            dataKey="roi" 
-            fill={chartColors.roi} 
-            radius={[4, 4, 0, 0]} 
+            dataKey="roi"
+            fill={chartColors.roi}
+            radius={[4, 4, 0, 0]}
             name="roi"
           />
         </BarChart>
       </ResponsiveContainer>
       <p className="mt-4 text-center text-sm italic text-muted-foreground">
-        Attribution model performance comparison showing ML-driven model achieving 92.4% accuracy vs traditional approaches
+        Attribution model performance comparison showing ML-driven model achieving 92.4% accuracy vs
+        traditional approaches
       </p>
     </div>
   )

@@ -45,7 +45,7 @@ export function FeaturedProjects() {
           <Link
             key={project.href}
             href={project.href}
-            className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl hover:bg-primary/10 hover:border-primary/30 border border-transparent transition-all duration-300 group"
+            className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl hover:bg-primary/10 hover:border-primary/30 border border-transparent transition-all duration-300 ease-out group"
           >
             <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
               <Image
