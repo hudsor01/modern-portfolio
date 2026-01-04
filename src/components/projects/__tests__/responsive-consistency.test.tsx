@@ -8,7 +8,7 @@
  * Validates: Requirements 1.5, 4.4
  */
 
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from 'bun:test'
 import * as fc from 'fast-check'
 
 describe('Responsive Behavior Consistency - Property 5', () => {

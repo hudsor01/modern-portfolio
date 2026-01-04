@@ -35,7 +35,7 @@
     "incremental": true,
     "tsBuildInfoFile": "./.next/cache/tsconfig.tsbuildinfo",
     //========== Types ==========
-    "types": ["bun-types", "node", "next", "vitest/globals", "@testing-library/jest-dom"],
+    "types": ["bun-types", "node", "next", "@testing-library/jest-dom"],
     //========== Next.js ==========
     "plugins": [
       {

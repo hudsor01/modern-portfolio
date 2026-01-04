@@ -1,74 +1,74 @@
 /**
  * Integration test for CAC Unit Economics project page consistency
  * Validates that the page follows all standardized UI patterns and components
+ * Refactored for Bun test runner (no fake timer support)
  */
 
-import { render, screen, act } from '@testing-library/react'
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { describe, it, expect, mock, beforeEach, afterEach } from 'bun:test'
 import CACUnitEconomics from '../page'
 
-// Mock all external dependencies to ensure clean test environment
-vi.mock('@/lib/constants/spacing', () => ({
-  TIMING: {
-    LOADING_STATE_RESET: 100, // Shorter timeout for tests
-  },
-}))
-
-vi.mock('@/lib/utils/data-formatters', () => ({
-  formatCurrency: (value: number) => `$${value}`,
-}))
-
-vi.mock('../data/constants', () => ({
-  cacMetrics: {
-    blendedCAC: 168,
-    averageLTV: 612,
-    ltv_cac_ratio: 3.6,
-    paybackPeriod: 8.4,
-  },
-}))
-
-// Mock all child components to isolate the main component logic
-vi.mock('../components/OverviewTab', () => ({
-  OverviewTab: () => <div data-testid="overview-tab">Overview Content</div>,
-}))
-
-vi.mock('../components/ChannelsTab', () => ({
-  ChannelsTab: () => <div data-testid="channels-tab">Channels Content</div>,
-}))
-
-vi.mock('../components/ProductsTab', () => ({
-  ProductsTab: () => <div data-testid="products-tab">Products Content</div>,
-}))
-
-vi.mock('../components/StrategicImpact', () => ({
-  StrategicImpact: () => <div data-testid="strategic-impact">Strategic Impact Content</div>,
-}))
-
-vi.mock('../components/NarrativeSections', () => ({
-  NarrativeSections: () => (
-    <div data-testid="narrative-sections">
-      <div>Project Overview</div>
-      <div>Challenge</div>
-      <div>Solution</div>
-      <div>Results & Impact</div>
-      <div>Key Learnings</div>
-    </div>
-  ),
-}))
+// Helper to wait for a specific duration
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 describe('CAC Unit Economics Page Consistency', () => {
+  // Set up mocks before each test and restore after
   beforeEach(() => {
-    vi.useFakeTimers()
+    mock.module('@/lib/constants/spacing', () => ({
+      TIMING: {
+        LOADING_STATE_RESET: 0,
+      },
+    }))
+
+    mock.module('@/lib/utils/data-formatters', () => ({
+      formatCurrency: (value: number) => `$${value}`,
+    }))
+
+    mock.module('../data/constants', () => ({
+      cacMetrics: {
+        blendedCAC: 168,
+        averageLTV: 612,
+        ltv_cac_ratio: 3.6,
+        paybackPeriod: 8.4,
+      },
+    }))
+
+    mock.module('../components/OverviewTab', () => ({
+      OverviewTab: () => <div data-testid="overview-tab">Overview Content</div>,
+    }))
+
+    mock.module('../components/ChannelsTab', () => ({
+      ChannelsTab: () => <div data-testid="channels-tab">Channels Content</div>,
+    }))
+
+    mock.module('../components/ProductsTab', () => ({
+      ProductsTab: () => <div data-testid="products-tab">Products Content</div>,
+    }))
+
+    mock.module('../components/StrategicImpact', () => ({
+      StrategicImpact: () => <div data-testid="strategic-impact">Strategic Impact Content</div>,
+    }))
+
+    mock.module('../components/NarrativeSections', () => ({
+      NarrativeSections: () => (
+        <div data-testid="narrative-sections">
+          <div>Project Overview</div>
+          <div>Challenge</div>
+          <div>Solution</div>
+          <div>Results & Impact</div>
+          <div>Key Learnings</div>
+        </div>
+      ),
+    }))
   })
 
   afterEach(() => {
-    vi.clearAllTimers()
-    vi.useRealTimers()
+    mock.restore()
   })
-
   describe('Layout Consistency (Requirements 1.1, 1.2)', () => {
     it('should use standardized ProjectPageLayout with consistent header structure', async () => {
       render(<CACUnitEconomics />)
+      await wait(50)
 
       // Verify project title is present
       expect(
@@ -87,11 +87,7 @@ describe('CAC Unit Economics Page Consistency', () => {
 
     it('should implement consistent section organization', async () => {
       render(<CACUnitEconomics />)
-
-      // Run all timers and let React update
-      await act(async () => {
-        await vi.runAllTimersAsync()
-      })
+      await wait(50)
 
       // Verify section organization
       expect(screen.getByText('Analysis Details')).toBeInTheDocument()
@@ -103,11 +99,7 @@ describe('CAC Unit Economics Page Consistency', () => {
   describe('Component Library Consistency (Requirements 3.1, 3.2, 3.3)', () => {
     it('should use standardized MetricsGrid for key metrics display', async () => {
       render(<CACUnitEconomics />)
-
-      // Run all timers and let React update
-      await act(async () => {
-        await vi.runAllTimersAsync()
-      })
+      await wait(50)
 
       // Verify all key metrics are displayed with consistent formatting
       expect(screen.getByText('Blended CAC')).toBeInTheDocument()
@@ -120,11 +112,7 @@ describe('CAC Unit Economics Page Consistency', () => {
 
     it('should use standardized SectionCard components for content organization', async () => {
       render(<CACUnitEconomics />)
-
-      // Run all timers and let React update
-      await act(async () => {
-        await vi.runAllTimersAsync()
-      })
+      await wait(50)
 
       // Verify SectionCard usage for main content areas
       expect(screen.getByText('Analysis Details')).toBeInTheDocument()
@@ -142,11 +130,7 @@ describe('CAC Unit Economics Page Consistency', () => {
   describe('Data Formatting Consistency (Requirements 8.1, 8.2, 8.4)', () => {
     it('should use consistent currency formatting across all displays', async () => {
       render(<CACUnitEconomics />)
-
-      // Run all timers and let React update
-      await act(async () => {
-        await vi.runAllTimersAsync()
-      })
+      await wait(50)
 
       // Verify consistent currency formatting (no decimals for whole numbers)
       expect(screen.getByText('$168')).toBeInTheDocument() // Blended CAC
@@ -155,11 +139,7 @@ describe('CAC Unit Economics Page Consistency', () => {
 
     it('should use consistent ratio and percentage formatting', async () => {
       render(<CACUnitEconomics />)
-
-      // Run all timers and let React update
-      await act(async () => {
-        await vi.runAllTimersAsync()
-      })
+      await wait(50)
 
       // Verify consistent ratio formatting
       expect(screen.getByText('3.6:1')).toBeInTheDocument() // LTV:CAC ratio
@@ -172,11 +152,7 @@ describe('CAC Unit Economics Page Consistency', () => {
   describe('Content Structure Consistency (Requirements 5.1, 5.3)', () => {
     it('should follow standardized content organization pattern', async () => {
       render(<CACUnitEconomics />)
-
-      // Run all timers and let React update
-      await act(async () => {
-        await vi.runAllTimersAsync()
-      })
+      await wait(50)
 
       // Verify standardized content sequence: metrics → analysis → impact → narrative
       expect(screen.getByText('Analysis Details')).toBeInTheDocument()
@@ -186,11 +162,7 @@ describe('CAC Unit Economics Page Consistency', () => {
 
     it('should use consistent narrative structure in project sections', async () => {
       render(<CACUnitEconomics />)
-
-      // Run all timers and let React update
-      await act(async () => {
-        await vi.runAllTimersAsync()
-      })
+      await wait(50)
 
       // Verify standardized narrative sections are present (actual component content)
       expect(screen.getByText('Project Overview')).toBeInTheDocument()

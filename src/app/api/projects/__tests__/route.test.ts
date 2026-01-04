@@ -1,22 +1,33 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { NextRequest } from 'next/server'
-import { GET } from '../route'
+import { describe, afterAll, it, expect, vi, beforeEach, afterEach, mock } from 'bun:test'
+
+// Create mock function
+const mockGetProjects = vi.fn()
 
 // Mock the data layer
-vi.mock('@/lib/content/projects', () => ({
-  getProjects: vi.fn()
+mock.module('@/lib/content/projects', () => ({
+  getProjects: mockGetProjects
 }))
 
-// Helper to create mock NextRequest
-function createMockRequest(): NextRequest {
-  return new NextRequest('http://localhost:3000/api/projects', {
-    method: 'GET',
+// Import after mocks
+import { GET } from '../route'
+import { createMockNextRequest } from '@/test/mock-next-request'
+
+// Helper to create mock Request with proper headers
+function createMockRequest() {
+  return createMockNextRequest('http://localhost:3000/api/projects', {
+    headers: { 'x-forwarded-for': '127.0.0.1' }
   })
 }
+
+// Clean up mocks after all tests in this file
+afterAll(() => {
+  mock.restore()
+})
 
 describe('/api/projects', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockGetProjects.mockReset()
   })
 
   afterEach(() => {
@@ -25,12 +36,11 @@ describe('/api/projects', () => {
 
   describe('GET', () => {
     it('should return projects successfully', async () => {
-      const { getProjects } = await import('@/lib/content/projects')
       const mockProjects = [
         { id: '1', title: 'Project 1', slug: 'project-1', description: 'Description 1', image: 'https://example.com/1.jpg', category: 'Analytics', viewCount: 0, clickCount: 0 },
         { id: '2', title: 'Project 2', slug: 'project-2', description: 'Description 2', image: 'https://example.com/2.jpg', category: 'Dashboard', viewCount: 0, clickCount: 0 }
       ]
-      vi.mocked(getProjects).mockResolvedValueOnce(mockProjects)
+      mockGetProjects.mockResolvedValueOnce(mockProjects)
 
       const request = createMockRequest()
       const response = await GET(request)
@@ -42,8 +52,7 @@ describe('/api/projects', () => {
     })
 
     it('should return empty array when no projects exist', async () => {
-      const { getProjects } = await import('@/lib/content/projects')
-      vi.mocked(getProjects).mockResolvedValueOnce([])
+      mockGetProjects.mockResolvedValueOnce([])
 
       const request = createMockRequest()
       const response = await GET(request)
@@ -55,8 +64,7 @@ describe('/api/projects', () => {
     })
 
     it('should handle errors gracefully', async () => {
-      const { getProjects } = await import('@/lib/content/projects')
-      vi.mocked(getProjects).mockRejectedValueOnce(new Error('Database error'))
+      mockGetProjects.mockRejectedValueOnce(new Error('Database error'))
 
       const request = createMockRequest()
       const response = await GET(request)

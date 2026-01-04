@@ -4,7 +4,7 @@
  * Part of the type-first architecture strategy
  */
 
-import type { Mock } from 'vitest'
+import type { Mock } from 'bun:test'
 import type { ReactNode, ForwardRefExoticComponent, RefAttributes } from 'react'
 
 // =======================
@@ -39,8 +39,8 @@ export interface MockDatabaseClient {
   tag: MockPrismaModelOperations<TagMockData>
   contactSubmission: MockPrismaModelOperations<ContactSubmissionMockData>
   project: MockPrismaModelOperations<ProjectMockData>
-  $queryRaw: Mock
-  $executeRaw: Mock
+  $queryRaw: Mock<(...args: unknown[]) => unknown>
+  $executeRaw: Mock<(...args: unknown[]) => unknown>
   $connect: Mock<() => Promise<void>>
   $disconnect: Mock<() => Promise<void>>
 }
@@ -216,9 +216,9 @@ export interface MockNextRouter {
   isPreview: boolean
   isFallback: boolean
   events: {
-    on: Mock
-    off: Mock
-    emit: Mock
+    on: Mock<(...args: unknown[]) => unknown>
+    off: Mock<(...args: unknown[]) => unknown>
+    emit: Mock<(...args: unknown[]) => unknown>
   }
 }
 
@@ -308,15 +308,15 @@ export interface MockUseMutationResult<TData = unknown, TError = Error, TVariabl
  * Matches TanStack Query QueryClient
  */
 export interface MockQueryClient {
-  setQueryData: Mock
-  getQueryData: Mock
-  invalidateQueries: Mock
-  clear: Mock
-  getQueryState: Mock
-  prefetchQuery: Mock
-  cancelQueries: Mock
-  removeQueries: Mock
-  resetQueries: Mock
+  setQueryData: Mock<(...args: unknown[]) => unknown>
+  getQueryData: Mock<(...args: unknown[]) => unknown>
+  invalidateQueries: Mock<(...args: unknown[]) => unknown>
+  clear: Mock<(...args: unknown[]) => unknown>
+  getQueryState: Mock<(...args: unknown[]) => unknown>
+  prefetchQuery: Mock<(...args: unknown[]) => unknown>
+  cancelQueries: Mock<(...args: unknown[]) => unknown>
+  removeQueries: Mock<(...args: unknown[]) => unknown>
+  resetQueries: Mock<(...args: unknown[]) => unknown>
 }
 
 // =======================
@@ -493,14 +493,17 @@ export type PartialMock<T> = {
   [K in keyof T]?: T[K] extends (...args: infer A) => infer R ? Mock<(...args: A) => R> : T[K]
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyMock = Mock<(...args: any[]) => any>
+
 /**
  * Type guard to check if a value is a mock function
  */
-export function isMockFunction(value: unknown): value is Mock {
+export function isMockFunction(value: unknown): value is AnyMock {
   return (
     typeof value === 'function' &&
     'mock' in value &&
-    typeof (value as Mock).mockReturnValue === 'function'
+    typeof (value as AnyMock).mockReturnValue === 'function'
   )
 }
 

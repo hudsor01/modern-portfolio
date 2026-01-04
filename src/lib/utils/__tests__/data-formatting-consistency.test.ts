@@ -5,7 +5,7 @@
  * Validates: Requirements 8.1, 8.2, 8.4
  */
 
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'bun:test'
 import * as fc from 'fast-check'
 import {
   formatCurrency,

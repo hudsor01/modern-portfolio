@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { TrendingUp, Users, Zap, Target } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
@@ -9,7 +8,7 @@ import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { ChartContainer } from '@/components/ui/chart-container'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
-import { TIMING } from '@/lib/constants/spacing'
+import { useLoadingState } from '@/hooks/use-loading-state'
 import { formatNumber, formatPercentage, formatTrend } from '@/lib/utils/data-formatters'
 import { leadAttributionData } from '@/app/projects/data/partner-analytics'
 
@@ -20,17 +19,7 @@ import { InsightsSection } from './components/InsightsSection'
 import { NarrativeSections } from './components/NarrativeSections'
 
 export default function LeadAttribution() {
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-    return () => clearTimeout(timer)
-  }, [])
-
-  const handleRefresh = () => {
-    setIsLoading(true)
-    setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-  }
+  const { isLoading, handleRefresh } = useLoadingState()
 
   // Calculate totals safely
   const totalLeads =

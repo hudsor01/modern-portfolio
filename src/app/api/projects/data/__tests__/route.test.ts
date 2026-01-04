@@ -1,35 +1,54 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, afterAll, it, expect, vi, beforeEach, afterEach, mock } from 'bun:test'
 import { NextRequest } from 'next/server'
-import { GET } from '../route'
 
-// Mock the ProjectDataManager
-vi.mock('@/lib/server/project-data-manager', () => ({
+// Create mock functions
+const mockGetProjects = vi.fn()
+const mockGetProjectsByCategory = vi.fn()
+const mockGetFeaturedProjects = vi.fn()
+const mockSearchProjects = vi.fn()
+const mockGetProjectsWithFilters = vi.fn()
+
+// Mock the ProjectDataManager - must be before imports
+mock.module('@/lib/server/project-data-manager', () => ({
   ProjectDataManager: {
-    getProjects: vi.fn(),
-    getProjectsByCategory: vi.fn(),
-    getFeaturedProjects: vi.fn(),
-    searchProjects: vi.fn(),
-    getProjectsWithFilters: vi.fn()
+    getProjects: mockGetProjects,
+    getProjectsByCategory: mockGetProjectsByCategory,
+    getFeaturedProjects: mockGetFeaturedProjects,
+    searchProjects: mockSearchProjects,
+    getProjectsWithFilters: mockGetProjectsWithFilters
   }
 }))
 
 // Mock the logger
-vi.mock('@/lib/monitoring/logger', () => ({
-  createContextLogger: vi.fn(() => ({
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn(),
-    debug: vi.fn()
-  }))
+mock.module('@/lib/monitoring/logger', () => ({
+  createContextLogger: () => ({
+    info: () => {},
+    warn: () => {},
+    error: () => {},
+    debug: () => {}
+  })
 }))
+
+// Import after mocks
+import { GET } from '../route'
 
 const createMockRequest = (url: string) => {
   return new NextRequest(url)
 }
 
+// Clean up mocks after all tests in this file
+afterAll(() => {
+  mock.restore()
+})
+
 describe('/api/projects/data', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockGetProjects.mockReset()
+    mockGetProjectsByCategory.mockReset()
+    mockGetFeaturedProjects.mockReset()
+    mockSearchProjects.mockReset()
+    mockGetProjectsWithFilters.mockReset()
   })
 
   afterEach(() => {
@@ -38,79 +57,73 @@ describe('/api/projects/data', () => {
 
   describe('GET', () => {
     it('should return all projects by default', async () => {
-      const { ProjectDataManager } = await import('@/lib/server/project-data-manager')
       const mockProjects = [
         { id: '1', title: 'Project 1', slug: 'project-1', description: 'Description 1', image: 'https://example.com/1.jpg', category: 'Analytics', viewCount: 0, clickCount: 0 },
         { id: '2', title: 'Project 2', slug: 'project-2', description: 'Description 2', image: 'https://example.com/2.jpg', category: 'Dashboard', viewCount: 0, clickCount: 0 }
       ]
-      vi.mocked(ProjectDataManager.getProjects).mockResolvedValueOnce(mockProjects)
+      mockGetProjects.mockResolvedValueOnce(mockProjects)
 
       const response = await GET(createMockRequest('http://localhost:3000/api/projects/data'))
       const data = await response.json()
 
       expect(response.status).toBe(200)
       expect(data.projects).toEqual(mockProjects)
-      expect(ProjectDataManager.getProjects).toHaveBeenCalled()
+      expect(mockGetProjects).toHaveBeenCalled()
     })
 
     it('should filter by category', async () => {
-      const { ProjectDataManager } = await import('@/lib/server/project-data-manager')
       const mockProjects = [{ id: '1', title: 'Revenue Project', slug: 'revenue-project', description: 'Revenue description', image: 'https://example.com/1.jpg', category: 'revenue', viewCount: 0, clickCount: 0 }]
-      vi.mocked(ProjectDataManager.getProjectsByCategory).mockResolvedValueOnce(mockProjects)
+      mockGetProjectsByCategory.mockResolvedValueOnce(mockProjects)
 
       const response = await GET(createMockRequest('http://localhost:3000/api/projects/data?category=revenue'))
       const data = await response.json()
 
       expect(response.status).toBe(200)
       expect(data.projects).toEqual(mockProjects)
-      expect(ProjectDataManager.getProjectsByCategory).toHaveBeenCalledWith('revenue')
+      expect(mockGetProjectsByCategory).toHaveBeenCalledWith('revenue')
     })
 
     it('should filter by featured', async () => {
-      const { ProjectDataManager } = await import('@/lib/server/project-data-manager')
       const mockProjects = [{ id: '1', title: 'Featured Project', slug: 'featured-project', description: 'Featured description', image: 'https://example.com/1.jpg', category: 'Analytics', featured: true, viewCount: 0, clickCount: 0 }]
-      vi.mocked(ProjectDataManager.getFeaturedProjects).mockResolvedValueOnce(mockProjects)
+      mockGetFeaturedProjects.mockResolvedValueOnce(mockProjects)
 
       const response = await GET(createMockRequest('http://localhost:3000/api/projects/data?featured=true'))
       const data = await response.json()
 
       expect(response.status).toBe(200)
       expect(data.projects).toEqual(mockProjects)
-      expect(ProjectDataManager.getFeaturedProjects).toHaveBeenCalled()
+      expect(mockGetFeaturedProjects).toHaveBeenCalled()
     })
 
     it('should search projects', async () => {
-      const { ProjectDataManager } = await import('@/lib/server/project-data-manager')
       const mockProjects = [{ id: '1', title: 'Revenue Operations', slug: 'revenue-operations', description: 'Revenue ops description', image: 'https://example.com/1.jpg', category: 'Revenue', viewCount: 0, clickCount: 0 }]
-      vi.mocked(ProjectDataManager.searchProjects).mockResolvedValueOnce(mockProjects)
+      mockSearchProjects.mockResolvedValueOnce(mockProjects)
 
       const response = await GET(createMockRequest('http://localhost:3000/api/projects/data?search=revenue'))
       const data = await response.json()
 
       expect(response.status).toBe(200)
       expect(data.projects).toEqual(mockProjects)
-      expect(ProjectDataManager.searchProjects).toHaveBeenCalledWith('revenue')
+      expect(mockSearchProjects).toHaveBeenCalledWith('revenue')
     })
 
     it('should return projects with filters', async () => {
-      const { ProjectDataManager } = await import('@/lib/server/project-data-manager')
       const mockData = {
         projects: [{ id: '1', title: 'Project 1', slug: 'project-1', description: 'Description 1', image: 'https://example.com/1.jpg', category: 'Analytics', viewCount: 0, clickCount: 0 }],
         filters: [{ category: 'revenue', count: 5 }, { category: 'analytics', count: 3 }]
       }
-      vi.mocked(ProjectDataManager.getProjectsWithFilters).mockResolvedValueOnce(mockData)
+      mockGetProjectsWithFilters.mockResolvedValueOnce(mockData)
 
       const response = await GET(createMockRequest('http://localhost:3000/api/projects/data?withFilters=true'))
       const data = await response.json()
 
       expect(response.status).toBe(200)
       expect(data).toEqual(mockData)
-      expect(ProjectDataManager.getProjectsWithFilters).toHaveBeenCalled()
+      expect(mockGetProjectsWithFilters).toHaveBeenCalled()
     })
 
     it('should handle errors', async () => {
-      const { ProjectDataManager } = await import('@/lib/server/project-data-manager')
-      vi.mocked(ProjectDataManager.getProjects).mockRejectedValueOnce(new Error('Database error'))
+      mockGetProjects.mockRejectedValueOnce(new Error('Database error'))
 
       const response = await GET(createMockRequest('http://localhost:3000/api/projects/data'))
       const data = await response.json()

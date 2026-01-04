@@ -1,27 +1,8 @@
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'bun:test'
 import React, { Suspense } from 'react'
 
-// Mock dynamic imports
-vi.mock('next/dynamic', () => ({
-  default: (_importFn: () => Promise<unknown>, options?: { loading?: () => React.ReactElement }) => {
-    // Return a component that shows loading state initially, then resolves
-    return function DynamicComponent(props: Record<string, unknown>) {
-      const [isLoaded, setIsLoaded] = React.useState(false)
-      
-      React.useEffect(() => {
-        const timer = setTimeout(() => setIsLoaded(true), 100)
-        return () => clearTimeout(timer)
-      }, [])
-      
-      if (!isLoaded && options?.loading) {
-        return options.loading()
-      }
-      
-      return <div data-testid="dynamic-component" {...props} />
-    }
-  }
-}))
+// Note: next/dynamic is mocked in src/test/setup.tsx (unified mock)
 
 describe('Performance Optimizations', () => {
   describe('Dynamic Imports', () => {

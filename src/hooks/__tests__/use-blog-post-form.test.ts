@@ -4,7 +4,7 @@
  * Validates: Requirements 4.2, 4.3, 4.5, 4.6, 4.7, 3.6, 4.4
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'bun:test'
 import { renderHook, act } from '@testing-library/react'
 import * as fc from 'fast-check'
 import { useBlogPostForm, blogPostFormSchema, generateSlug } from '../use-blog-post-form'

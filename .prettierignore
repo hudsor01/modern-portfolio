@@ -10,10 +10,10 @@ node_modules/
 .pnp.js
 
 # Cache and logs
-npm-debug.log*
+bun-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
+.bun-debug.log*
 .cache/
 
 # Environment files

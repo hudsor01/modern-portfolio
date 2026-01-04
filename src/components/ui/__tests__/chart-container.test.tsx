@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'bun:test'
 import * as fc from 'fast-check'
 import { Download, RefreshCw, Settings } from 'lucide-react'
 import { ChartContainer, type ChartAction } from '../chart-container'
@@ -78,7 +78,7 @@ describe('ChartContainer', () => {
     expect(downloadButton).toBeInTheDocument()
 
     await user.click(downloadButton)
-    expect(mockAction).toHaveBeenCalledOnce()
+    expect(mockAction).toHaveBeenCalledTimes(1)
   })
 
   it('renders loading state', () => {
@@ -110,7 +110,7 @@ describe('ChartContainer', () => {
     expect(retryButton).toBeInTheDocument()
 
     await user.click(retryButton)
-    expect(mockRetry).toHaveBeenCalledOnce()
+    expect(mockRetry).toHaveBeenCalledTimes(1)
   })
 
   // Property-based tests for consistency

@@ -8,14 +8,13 @@
  * Validates: Requirements 1.1, 1.2
  */
 
-import { describe, test, expect, afterEach, vi } from 'vitest'
+import { describe, afterAll, test, expect, afterEach, vi, mock } from 'bun:test'
 import { render } from '@testing-library/react'
 import * as fc from 'fast-check'
-import { ProjectPageLayout } from '../project-page-layout'
 import type { MockNextLinkProps } from '@/types/test-utils'
 
-// Mock Next.js Link component
-vi.mock('next/link', () => ({
+// Mock Next.js Link component - must be before imports
+mock.module('next/link', () => ({
   default: ({ children, href, ...props }: MockNextLinkProps) => (
     <a href={href} {...props}>
       {children}
@@ -23,9 +22,17 @@ vi.mock('next/link', () => ({
   ),
 }))
 
+// Import after mocks
+import { ProjectPageLayout } from '../project-page-layout'
+
 // Clear mocks after each test
 afterEach(() => {
   vi.clearAllMocks()
+})
+
+// Clean up mocks after all tests
+afterAll(() => {
+  mock.restore()
 })
 
 describe('Layout Consistency - Property 1', () => {

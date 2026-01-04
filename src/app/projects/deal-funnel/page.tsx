@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { DollarSign, Clock, Target, BarChart3 } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
@@ -35,6 +35,14 @@ export default function DealFunnel() {
   const [localFunnelStages, setLocalFunnelStages] = useState<FunnelStage[]>([])
   const [localPartnerConversion, setLocalPartnerConversion] = useState<PartnerConversion[]>([])
   const [localConversionRates, setLocalConversionRates] = useState<ConversionRate[]>([])
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+  }, [])
 
   useEffect(() => {
     async function loadProjectData() {
@@ -43,7 +51,7 @@ export default function DealFunnel() {
         setLocalFunnelStages(initialFunnelStages)
         setLocalPartnerConversion(initialPartnerConversion)
         setLocalConversionRates(initialConversionRates)
-        setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
+        timeoutRef.current = setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
       } catch (error) {
         logger.error(
           'Error loading project data',
@@ -55,13 +63,14 @@ export default function DealFunnel() {
     loadProjectData()
   }, [])
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
     setIsLoading(true)
     setLocalFunnelStages(initialFunnelStages)
     setLocalPartnerConversion(initialPartnerConversion)
     setLocalConversionRates(initialConversionRates)
-    setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-  }
+    timeoutRef.current = setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
+  }, [])
 
   // Derived calculations
   const totalOpportunities = localFunnelStages?.[0]?.count ?? 0

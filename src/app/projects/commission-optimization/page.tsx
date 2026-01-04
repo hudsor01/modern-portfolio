@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { DollarSign, Percent, TrendingUp, Calculator } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
-import { TIMING } from '@/lib/constants/spacing'
+import { useLoadingState } from '@/hooks/use-loading-state'
 import { commissionMetrics } from './data/constants'
 import { formatCurrency, formatPercentage } from '@/lib/utils/data-formatters'
 import { ProcessingMetrics } from './components/ProcessingMetrics'
@@ -21,18 +21,8 @@ const tabs = ['overview', 'tiers', 'incentives', 'automation'] as const
 type Tab = (typeof tabs)[number]
 
 export default function CommissionOptimization() {
-  const [isLoading, setIsLoading] = useState(true)
+  const { isLoading, handleRefresh } = useLoadingState()
   const [activeTab, setActiveTab] = useState<Tab>('overview')
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-    return () => clearTimeout(timer)
-  }, [])
-
-  const handleRefresh = () => {
-    setIsLoading(true)
-    setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-  }
 
   // Standardized metrics configuration using design system types
   const metrics: MetricConfig[] = [
