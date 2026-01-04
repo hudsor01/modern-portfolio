@@ -8,14 +8,12 @@ import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from 'vite
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import * as fc from 'fast-check'
-import { ContactForm } from '../ContactForm'
+import { ContactForm } from '../contact-form'
 import { useContactForm } from '@/hooks/use-contact-form'
 import { renderHook, act } from '@testing-library/react'
 
 // Mock fetch for form submission tests
 const mockFetch = vi.fn()
-// @ts-expect-error - Mock doesn't need all fetch properties
-global.fetch = mockFetch
 
 // Fix ResizeObserver mock to be a proper constructor
 beforeAll(() => {
@@ -30,6 +28,7 @@ describe('ContactForm - Property-Based Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockFetch.mockReset()
+    vi.stubGlobal('fetch', mockFetch)
   })
 
   afterEach(() => {

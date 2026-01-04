@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-
+import { Button } from '@/components/ui/button'
 import { Skill } from '@/data/skills'
 
 interface SkillsChartProps {
@@ -27,16 +27,15 @@ export function SkillsChart({ skills }: Readonly<SkillsChartProps>) {
     <div className="w-full">
       <div className="flex flex-wrap gap-2 mb-8 justify-center">
         {categories.map((category) => (
-          <button
+          <Button
             key={category.id}
+            variant={activeCategory === category.id ? 'default' : 'secondary'}
+            size="sm"
             onClick={() => setActiveCategory(category.id)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeCategory === category.id
-                ? 'bg-primary text-white'
-                : 'bg-muted text-muted-foreground hover:bg-muted/80'
-              }`}
+            className="rounded-full"
           >
             {category.name}
-          </button>
+          </Button>
         ))}
       </div>
 
