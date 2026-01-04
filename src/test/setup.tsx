@@ -4,7 +4,8 @@ import React from 'react'
 import type { MockNextImageProps } from '@/types/mock-types'
 
 // =============================================================================
-// MODULE-LEVEL MOCKS (Required to be at top level for Vitest hoisting)
+// ESSENTIAL MODULE-LEVEL MOCKS ONLY
+// Heavy mocks (Recharts, Framer Motion, TanStack Query) moved to individual tests
 // =============================================================================
 
 // Mock Next.js router
@@ -38,178 +39,6 @@ vi.mock('next/image', () => ({
   ),
 }))
 
-// Mock Framer Motion to avoid animation issues in tests
-const motionMock = {
-  div: React.forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(
-    function MockMotionDiv(props, ref) {
-      return React.createElement('div', { ...props, ref, 'data-testid': 'motion-div' })
-    }
-  ),
-  section: React.forwardRef<HTMLElement, React.ComponentProps<'section'>>(
-    function MockMotionSection(props, ref) {
-      return React.createElement('section', { ...props, ref, 'data-testid': 'motion-section' })
-    }
-  ),
-  h1: React.forwardRef<HTMLHeadingElement, React.ComponentProps<'h1'>>(
-    function MockMotionH1(props, ref) {
-      return React.createElement('h1', { ...props, ref, 'data-testid': 'motion-h1' })
-    }
-  ),
-  h2: React.forwardRef<HTMLHeadingElement, React.ComponentProps<'h2'>>(
-    function MockMotionH2(props, ref) {
-      return React.createElement('h2', { ...props, ref, 'data-testid': 'motion-h2' })
-    }
-  ),
-  h3: React.forwardRef<HTMLHeadingElement, React.ComponentProps<'h3'>>(
-    function MockMotionH3(props, ref) {
-      return React.createElement('h3', { ...props, ref, 'data-testid': 'motion-h3' })
-    }
-  ),
-  p: React.forwardRef<HTMLParagraphElement, React.ComponentProps<'p'>>(
-    function MockMotionP(props, ref) {
-      return React.createElement('p', { ...props, ref, 'data-testid': 'motion-p' })
-    }
-  ),
-  span: React.forwardRef<HTMLSpanElement, React.ComponentProps<'span'>>(
-    function MockMotionSpan(props, ref) {
-      return React.createElement('span', { ...props, ref, 'data-testid': 'motion-span' })
-    }
-  ),
-  button: React.forwardRef<HTMLButtonElement, React.ComponentProps<'button'>>(
-    function MockMotionButton(props, ref) {
-      return React.createElement('button', { ...props, ref, 'data-testid': 'motion-button' })
-    }
-  ),
-}
-
-vi.mock('framer-motion', () => ({
-  motion: motionMock,
-  m: motionMock, // Add 'm' export which is an alias for motion
-  AnimatePresence: function MockAnimatePresence({ children }: { children: React.ReactNode }) {
-    return React.createElement('div', { 'data-testid': 'animate-presence' }, children)
-  },
-  useAnimation: () => ({
-    start: vi.fn(),
-    stop: vi.fn(),
-    set: vi.fn(),
-  }),
-  useInView: () => true,
-}))
-
-// Mock Recharts components
-// Modern Recharts mock - only pass valid DOM attributes to avoid React warnings
-vi.mock('recharts', () => ({
-  ResponsiveContainer: function MockResponsiveContainer({
-    children,
-  }: React.PropsWithChildren<Record<string, unknown>>) {
-    return React.createElement(
-      'div',
-      {
-        'data-testid': 'responsive-container',
-        style: { width: '100%', height: '400px' },
-      },
-      children
-    )
-  },
-  BarChart: function MockBarChart({
-    children,
-  }: React.PropsWithChildren<Record<string, unknown>>) {
-    return React.createElement('div', { 'data-testid': 'bar-chart' }, children)
-  },
-  LineChart: function MockLineChart({
-    children,
-  }: React.PropsWithChildren<Record<string, unknown>>) {
-    return React.createElement('div', { 'data-testid': 'line-chart' }, children)
-  },
-  PieChart: function MockPieChart({
-    children,
-  }: React.PropsWithChildren<Record<string, unknown>>) {
-    return React.createElement('div', { 'data-testid': 'pie-chart' }, children)
-  },
-  FunnelChart: function MockFunnelChart({
-    children,
-  }: React.PropsWithChildren<Record<string, unknown>>) {
-    return React.createElement('div', { 'data-testid': 'funnel-chart' }, children)
-  },
-  Line: function MockLine() {
-    return React.createElement('div', { 'data-testid': 'line' })
-  },
-  Bar: function MockBar() {
-    return React.createElement('div', { 'data-testid': 'bar' })
-  },
-  Pie: function MockPie() {
-    return React.createElement('div', { 'data-testid': 'pie' })
-  },
-  Cell: function MockCell() {
-    return React.createElement('div', { 'data-testid': 'cell' })
-  },
-  XAxis: function MockXAxis() {
-    return React.createElement('div', { 'data-testid': 'x-axis' })
-  },
-  YAxis: function MockYAxis() {
-    return React.createElement('div', { 'data-testid': 'y-axis' })
-  },
-  CartesianGrid: function MockCartesianGrid() {
-    return React.createElement('div', { 'data-testid': 'cartesian-grid' })
-  },
-  Tooltip: function MockTooltip() {
-    return React.createElement('div', { 'data-testid': 'tooltip' })
-  },
-  Legend: function MockLegend() {
-    return React.createElement('div', { 'data-testid': 'legend' })
-  },
-}))
-
-// Mock TanStack Query (v5 API - isPending replaces isLoading)
-vi.mock('@tanstack/react-query', () => ({
-  useQuery: vi.fn(() => ({
-    data: null,
-    isPending: false, // TanStack Query v5 renamed isLoading to isPending
-    isLoading: false, // Kept for backwards compatibility
-    isFetching: false,
-    error: null,
-    isError: false,
-    isSuccess: true,
-    status: 'success',
-    fetchStatus: 'idle',
-  })),
-  useMutation: vi.fn(() => ({
-    mutate: vi.fn(),
-    mutateAsync: vi.fn(),
-    isPending: false, // TanStack Query v5 renamed isLoading to isPending
-    isLoading: false, // Kept for backwards compatibility
-    error: null,
-    isError: false,
-    isSuccess: false,
-    isIdle: true,
-    status: 'idle',
-    reset: vi.fn(),
-  })),
-  QueryClient: vi.fn(() => ({
-    setQueryData: vi.fn(),
-    getQueryData: vi.fn(),
-    invalidateQueries: vi.fn(),
-    clear: vi.fn(),
-    getQueryState: vi.fn(),
-    prefetchQuery: vi.fn(),
-  })),
-  QueryClientProvider: function MockQueryClientProvider({
-    children,
-  }: {
-    children: React.ReactNode
-  }) {
-    return React.createElement('div', { 'data-testid': 'query-client-provider' }, children)
-  },
-  useQueryClient: vi.fn(() => ({
-    setQueryData: vi.fn(),
-    getQueryData: vi.fn(),
-    invalidateQueries: vi.fn(),
-    clear: vi.fn(),
-    getQueryState: vi.fn(),
-    prefetchQuery: vi.fn(),
-  })),
-}))
-
 // Mock theme provider
 vi.mock('next-themes', () => ({
   useTheme: () => ({
@@ -222,12 +51,104 @@ vi.mock('next-themes', () => ({
   },
 }))
 
+// Lightweight Framer Motion mock - just pass-through elements
+vi.mock('framer-motion', () => {
+  const motion = {
+    div: React.forwardRef<HTMLDivElement, React.ComponentProps<'div'>>((props, ref) =>
+      React.createElement('div', { ...props, ref })
+    ),
+    section: React.forwardRef<HTMLElement, React.ComponentProps<'section'>>((props, ref) =>
+      React.createElement('section', { ...props, ref })
+    ),
+    h1: React.forwardRef<HTMLHeadingElement, React.ComponentProps<'h1'>>((props, ref) =>
+      React.createElement('h1', { ...props, ref })
+    ),
+    h2: React.forwardRef<HTMLHeadingElement, React.ComponentProps<'h2'>>((props, ref) =>
+      React.createElement('h2', { ...props, ref })
+    ),
+    h3: React.forwardRef<HTMLHeadingElement, React.ComponentProps<'h3'>>((props, ref) =>
+      React.createElement('h3', { ...props, ref })
+    ),
+    p: React.forwardRef<HTMLParagraphElement, React.ComponentProps<'p'>>((props, ref) =>
+      React.createElement('p', { ...props, ref })
+    ),
+    span: React.forwardRef<HTMLSpanElement, React.ComponentProps<'span'>>((props, ref) =>
+      React.createElement('span', { ...props, ref })
+    ),
+    button: React.forwardRef<HTMLButtonElement, React.ComponentProps<'button'>>((props, ref) =>
+      React.createElement('button', { ...props, ref })
+    ),
+  }
+
+  return {
+    motion,
+    m: motion,
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => children,
+    useAnimation: () => ({ start: vi.fn(), stop: vi.fn(), set: vi.fn() }),
+    useInView: () => true,
+  }
+})
+
+// Lightweight Recharts mock - minimal stubs
+vi.mock('recharts', () => ({
+  ResponsiveContainer: ({ children }: React.PropsWithChildren) =>
+    React.createElement('div', { 'data-testid': 'chart-container' }, children),
+  BarChart: ({ children }: React.PropsWithChildren) => React.createElement('div', null, children),
+  LineChart: ({ children }: React.PropsWithChildren) => React.createElement('div', null, children),
+  PieChart: ({ children }: React.PropsWithChildren) => React.createElement('div', null, children),
+  FunnelChart: ({ children }: React.PropsWithChildren) => React.createElement('div', null, children),
+  Line: () => null,
+  Bar: () => null,
+  Pie: () => null,
+  Cell: () => null,
+  XAxis: () => null,
+  YAxis: () => null,
+  CartesianGrid: () => null,
+  Tooltip: () => null,
+  Legend: () => null,
+}))
+
+// Lightweight TanStack Query mock
+vi.mock('@tanstack/react-query', () => ({
+  useQuery: vi.fn(() => ({
+    data: null,
+    isPending: false,
+    isLoading: false,
+    error: null,
+    isError: false,
+    isSuccess: true,
+  })),
+  useMutation: vi.fn(() => ({
+    mutate: vi.fn(),
+    mutateAsync: vi.fn(),
+    isPending: false,
+    isLoading: false,
+    error: null,
+    isError: false,
+    isSuccess: false,
+    isIdle: true,
+    reset: vi.fn(),
+  })),
+  QueryClient: vi.fn(() => ({
+    setQueryData: vi.fn(),
+    getQueryData: vi.fn(),
+    invalidateQueries: vi.fn(),
+    clear: vi.fn(),
+  })),
+  QueryClientProvider: ({ children }: { children: React.ReactNode }) => children,
+  useQueryClient: vi.fn(() => ({
+    setQueryData: vi.fn(),
+    getQueryData: vi.fn(),
+    invalidateQueries: vi.fn(),
+  })),
+}))
+
 // =============================================================================
-// GLOBAL SETUP (Window/DOM properties)
+// GLOBAL SETUP
 // =============================================================================
 
 beforeAll(() => {
-  // Mock Web APIs not available in JSDOM
+  // Mock matchMedia
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
     value: vi.fn().mockImplementation((query: string) => ({
@@ -240,25 +161,7 @@ beforeAll(() => {
     })),
   })
 
-  Object.defineProperty(window, 'ResizeObserver', {
-    writable: true,
-    value: vi.fn().mockImplementation(() => ({
-      observe: vi.fn(),
-      unobserve: vi.fn(),
-      disconnect: vi.fn(),
-    })),
-  })
-
-  Object.defineProperty(window, 'IntersectionObserver', {
-    writable: true,
-    value: vi.fn().mockImplementation(() => ({
-      observe: vi.fn(),
-      unobserve: vi.fn(),
-      disconnect: vi.fn(),
-    })),
-  })
-
-  // Mock console methods to reduce noise in tests
+  // Suppress console noise in tests
   vi.spyOn(console, 'error').mockImplementation(() => {})
   vi.spyOn(console, 'warn').mockImplementation(() => {})
 })
@@ -270,5 +173,5 @@ beforeAll(() => {
 afterEach(() => {
   vi.clearAllMocks()
   vi.clearAllTimers()
-  vi.useRealTimers() // Ensure real timers are restored
+  vi.useRealTimers()
 })

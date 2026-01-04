@@ -9,8 +9,8 @@ export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/test/setup.tsx'],
+    environment: 'happy-dom', // 2-10x faster than jsdom
+    setupFiles: ['./src/test/browser-mocks.ts', './src/test/setup.tsx'],
     css: true,
     includeSource: ['src/**/*.{js,ts,jsx,tsx}'],
     exclude: [
@@ -22,37 +22,25 @@ export default defineConfig({
       '**/*.spec.ts',
     ],
     // Timeout configurations to prevent hanging
-    testTimeout: isCI ? 15000 : 10000, // Slightly longer in CI
-    hookTimeout: 10000, // 10 seconds for beforeEach/afterEach
-    teardownTimeout: 5000, // 5 seconds for cleanup
-    // CI-specific settings to prevent hanging
-    watch: false, // Never watch in CI (also enforced by --run flag)
+    testTimeout: isCI ? 15000 : 10000,
+    hookTimeout: 10000,
+    teardownTimeout: 5000,
+    // CI-specific settings
+    watch: false,
     reporters: isCI ? ['default', 'json'] : ['default'],
     outputFile: isCI ? './test-results/results.json' : undefined,
-    // Vitest 4: Pool options are now top-level
+    // Pool options
     pool: 'threads',
-    isolate: true, // Enable isolation to prevent cross-test pollution
-    fileParallelism: true, // Run tests in parallel for speed
-    // Ensure proper cleanup
+    fileParallelism: true,
+    // Cleanup
     restoreMocks: true,
     clearMocks: true,
     unstubEnvs: true,
     unstubGlobals: true,
-    // Force exit after tests complete (prevents hanging)
     passWithNoTests: true,
     dangerouslyIgnoreUnhandledErrors: false,
-    // Ensure timers are properly cleaned up
     fakeTimers: {
       shouldClearNativeTimers: true,
-    },
-    // Explicit environment options for jsdom
-    environmentOptions: {
-      jsdom: {
-        resources: 'usable',
-        runScripts: 'dangerously',
-        pretendToBeVisual: true,
-        url: 'http://localhost:3000',
-      },
     },
     coverage: {
       provider: 'v8',

@@ -427,8 +427,8 @@ describe('ContactForm - Property-Based Tests', () => {
       // Privacy details should not be visible initially
       expect(screen.queryByText(/your information will be used solely/i)).not.toBeInTheDocument()
 
-      // Click privacy policy button
-      const privacyButton = screen.getByRole('button', { name: /privacy policy/i })
+      // Click privacy policy button (uses aria-label for accessibility)
+      const privacyButton = screen.getByRole('button', { name: /show privacy policy/i })
       await userEvent.click(privacyButton)
 
       // Re-render with updated state
