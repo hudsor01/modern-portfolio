@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom/vitest'
-import { cleanup } from '@testing-library/react'
 import { afterEach, beforeAll, vi } from 'vitest'
 import React from 'react'
 import type { MockNextImageProps } from '@/types/mock-types'
@@ -98,15 +97,14 @@ vi.mock('framer-motion', () => ({
 }))
 
 // Mock Recharts components
+// Modern Recharts mock - only pass valid DOM attributes to avoid React warnings
 vi.mock('recharts', () => ({
   ResponsiveContainer: function MockResponsiveContainer({
     children,
-    ...props
   }: React.PropsWithChildren<Record<string, unknown>>) {
     return React.createElement(
       'div',
       {
-        ...props,
         'data-testid': 'responsive-container',
         style: { width: '100%', height: '400px' },
       },
@@ -115,54 +113,50 @@ vi.mock('recharts', () => ({
   },
   BarChart: function MockBarChart({
     children,
-    ...props
   }: React.PropsWithChildren<Record<string, unknown>>) {
-    return React.createElement('div', { ...props, 'data-testid': 'bar-chart' }, children)
+    return React.createElement('div', { 'data-testid': 'bar-chart' }, children)
   },
   LineChart: function MockLineChart({
     children,
-    ...props
   }: React.PropsWithChildren<Record<string, unknown>>) {
-    return React.createElement('div', { ...props, 'data-testid': 'line-chart' }, children)
+    return React.createElement('div', { 'data-testid': 'line-chart' }, children)
   },
   PieChart: function MockPieChart({
     children,
-    ...props
   }: React.PropsWithChildren<Record<string, unknown>>) {
-    return React.createElement('div', { ...props, 'data-testid': 'pie-chart' }, children)
+    return React.createElement('div', { 'data-testid': 'pie-chart' }, children)
   },
   FunnelChart: function MockFunnelChart({
     children,
-    ...props
   }: React.PropsWithChildren<Record<string, unknown>>) {
-    return React.createElement('div', { ...props, 'data-testid': 'funnel-chart' }, children)
+    return React.createElement('div', { 'data-testid': 'funnel-chart' }, children)
   },
-  Line: function MockLine(props: Record<string, unknown>) {
-    return React.createElement('div', { ...props, 'data-testid': 'line' })
+  Line: function MockLine() {
+    return React.createElement('div', { 'data-testid': 'line' })
   },
-  Bar: function MockBar(props: Record<string, unknown>) {
-    return React.createElement('div', { ...props, 'data-testid': 'bar' })
+  Bar: function MockBar() {
+    return React.createElement('div', { 'data-testid': 'bar' })
   },
-  Pie: function MockPie(props: Record<string, unknown>) {
-    return React.createElement('div', { ...props, 'data-testid': 'pie' })
+  Pie: function MockPie() {
+    return React.createElement('div', { 'data-testid': 'pie' })
   },
-  Cell: function MockCell(props: Record<string, unknown>) {
-    return React.createElement('div', { ...props, 'data-testid': 'cell' })
+  Cell: function MockCell() {
+    return React.createElement('div', { 'data-testid': 'cell' })
   },
-  XAxis: function MockXAxis(props: Record<string, unknown>) {
-    return React.createElement('div', { ...props, 'data-testid': 'x-axis' })
+  XAxis: function MockXAxis() {
+    return React.createElement('div', { 'data-testid': 'x-axis' })
   },
-  YAxis: function MockYAxis(props: Record<string, unknown>) {
-    return React.createElement('div', { ...props, 'data-testid': 'y-axis' })
+  YAxis: function MockYAxis() {
+    return React.createElement('div', { 'data-testid': 'y-axis' })
   },
-  CartesianGrid: function MockCartesianGrid(props: Record<string, unknown>) {
-    return React.createElement('div', { ...props, 'data-testid': 'cartesian-grid' })
+  CartesianGrid: function MockCartesianGrid() {
+    return React.createElement('div', { 'data-testid': 'cartesian-grid' })
   },
-  Tooltip: function MockTooltip(props: Record<string, unknown>) {
-    return React.createElement('div', { ...props, 'data-testid': 'tooltip' })
+  Tooltip: function MockTooltip() {
+    return React.createElement('div', { 'data-testid': 'tooltip' })
   },
-  Legend: function MockLegend(props: Record<string, unknown>) {
-    return React.createElement('div', { ...props, 'data-testid': 'legend' })
+  Legend: function MockLegend() {
+    return React.createElement('div', { 'data-testid': 'legend' })
   },
 }))
 
@@ -274,7 +268,6 @@ beforeAll(() => {
 // =============================================================================
 
 afterEach(() => {
-  cleanup()
   vi.clearAllMocks()
   vi.clearAllTimers()
   vi.useRealTimers() // Ensure real timers are restored

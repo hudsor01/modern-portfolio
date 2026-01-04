@@ -1,1 +1,3 @@
-bunx lint-staged
+echo "Pre-commit: lint, type-check..."
+bunx lint-staged && bun run type-check || exit 1
+echo "All checks passed! Full tests run in CI."
