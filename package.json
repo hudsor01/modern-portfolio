@@ -26,6 +26,7 @@
     "dev:debug": "bun --bun next dev --inspect",
     "build:analyze": "ANALYZE=true bun run build",
     "test": "vitest",
+    "test:unit": "vitest run --passWithNoTests --exclude='**/rate-limiter-load*'",
     "test:ui": "vitest --ui",
     "test:run": "vitest run --no-file-parallelism --passWithNoTests",
     "test:coverage": "vitest run --no-file-parallelism --coverage --passWithNoTests",

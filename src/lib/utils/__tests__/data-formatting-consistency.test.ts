@@ -50,10 +50,12 @@ const numberValueArbitrary = fc.float({
   noDefaultInfinity: true,
 })
 
-const dateArbitrary = fc.date({
-  min: new Date('2000-01-01'),
-  max: new Date('2030-12-31'),
-})
+// Use integer timestamps to avoid invalid date issues with parallel execution
+const minTimestamp = new Date('2000-01-01').getTime()
+const maxTimestamp = new Date('2030-12-31').getTime()
+const dateArbitrary = fc
+  .integer({ min: minTimestamp, max: maxTimestamp })
+  .map((ts) => new Date(ts))
 
 const currencyOptionsArbitrary = fc.record(
   {

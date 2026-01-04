@@ -32,7 +32,7 @@ export default defineConfig({
     // Vitest 4: Pool options are now top-level
     pool: 'threads',
     isolate: true, // Enable isolation to prevent cross-test pollution
-    fileParallelism: false, // Run tests sequentially for stability
+    fileParallelism: true, // Run tests in parallel for speed
     // Ensure proper cleanup
     restoreMocks: true,
     clearMocks: true,
