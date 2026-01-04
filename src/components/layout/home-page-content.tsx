@@ -37,7 +37,7 @@ function MetricCard({ value, prefix = '', suffix = '', label, delay, accent = 'd
       'border border-border',
       'shadow-sm hover:shadow-md',
       borderStyles[accent],
-      'transition-all duration-400 ease-out hover:-translate-y-0.5 text-center'
+      'transition-all duration-300 ease-out hover:-translate-y-0.5 text-center'
     )}>
       <div className={cn('text-2xl font-bold font-mono tabular-nums mb-1', accentStyles[accent])}>
         {prefix}
@@ -150,17 +150,17 @@ export default function HomePageContent() {
           {/* Primary CTA */}
           <Link
             href="/projects"
-            className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-base bg-primary text-primary-foreground shadow-md hover:bg-primary/95 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-400 ease-out"
+            className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-base bg-primary text-primary-foreground shadow-md hover:bg-primary/95 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-out"
           >
             <Briefcase size={20} />
             <span>See My Work</span>
-            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
+            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300 ease-out" />
           </Link>
 
           {/* Secondary CTA */}
           <Link
             href="/resume"
-            className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-base bg-card text-foreground border border-border shadow-sm hover:border-border-hover hover:shadow-md hover:-translate-y-0.5 transition-all duration-400 ease-out"
+            className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-base bg-card text-foreground border border-border shadow-sm hover:border-border-hover hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ease-out"
           >
             <FileText size={20} />
             <span>Resume</span>
@@ -169,7 +169,7 @@ export default function HomePageContent() {
           {/* Tertiary CTA */}
           <Link
             href="/contact"
-            className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-base text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent hover:border-border hover:-translate-y-0.5 transition-all duration-400 ease-out"
+            className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-base text-muted-foreground hover:text-foreground hover:bg-muted border border-transparent hover:border-border hover:-translate-y-0.5 transition-all duration-300 ease-out"
           >
             <MessageCircle size={20} />
             <span>Contact</span>

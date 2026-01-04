@@ -201,11 +201,11 @@ test.describe('Complete Projects User Flow Tests', () => {
 
     for (const url of projectUrls) {
       const startTime = Date.now()
-      
+
       await page.goto(url)
       await page.waitForLoadState('networkidle')
-      await page.waitForSelector('h1')
-      
+      await page.locator('h1').waitFor({ state: 'visible' })
+
       const loadTime = Date.now() - startTime
       
       // Page should load within reasonable time (10 seconds max)

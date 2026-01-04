@@ -27,7 +27,7 @@ export function TechGrid({
         {technologies.map((tech, index) => (
           <span
             key={index}
-            className="bg-card text-foreground/80 px-3 py-2 rounded-lg text-sm text-center border border-border hover:border-primary/30 hover:bg-primary/5 transition-all duration-200"
+            className="bg-card text-foreground/80 px-3 py-2 rounded-lg text-sm text-center border border-border hover:border-primary/30 hover:bg-primary/5 transition-all duration-150 ease-out"
           >
             {tech}
           </span>

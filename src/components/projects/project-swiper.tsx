@@ -32,13 +32,13 @@ function SwiperPrevButton({ className }: { className?: string }) {
   return (
     <button
       className={cn(
-        'group hover:bg-primary/10 rounded-full p-2.5 shadow-xs transition-colors duration-300 hover:shadow',
+        'group hover:bg-primary/10 rounded-full p-2.5 shadow-xs transition-colors duration-300 ease-out hover:shadow',
         className
       )}
       onClick={() => swiper.slidePrev()}
       aria-label="Previous slide"
     >
-      <ChevronLeft className="group-hover:text-primary h-5 w-5 transition-all duration-300 group-hover:scale-110" />
+      <ChevronLeft className="group-hover:text-primary h-5 w-5 transition-all duration-300 ease-out group-hover:scale-110" />
     </button>
   )
 }
@@ -48,13 +48,13 @@ function SwiperNextButton({ className }: { className?: string }) {
   return (
     <button
       className={cn(
-        'group hover:bg-primary/10 rounded-full p-2.5 shadow-xs transition-colors duration-300 hover:shadow',
+        'group hover:bg-primary/10 rounded-full p-2.5 shadow-xs transition-colors duration-300 ease-out hover:shadow',
         className
       )}
       onClick={() => swiper.slideNext()}
       aria-label="Next slide"
     >
-      <ChevronRight className="group-hover:text-primary h-5 w-5 transition-all duration-300 group-hover:scale-110" />
+      <ChevronRight className="group-hover:text-primary h-5 w-5 transition-all duration-300 ease-out group-hover:scale-110" />
     </button>
   )
 }
@@ -67,7 +67,7 @@ function SwiperPagination({ totalSlides, activeIndex, className }: { totalSlides
         <button
           key={index}
           className={cn(
-            'h-2.5 w-2.5 rounded-full transition-all duration-300',
+            'h-2.5 w-2.5 rounded-full transition-all duration-300 ease-out',
             activeIndex === index
               ? 'bg-primary scale-110 shadow-xs'
               : 'bg-primary/20 hover:bg-primary/40'
@@ -176,7 +176,7 @@ export function ProjectSwiper({
                     </div>
                   )}
                   {/* Enhanced image overlay with improved hover effects */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 backdrop-blur transition-all duration-300 group-hover:opacity-100">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 backdrop-blur transition-all duration-300 ease-out group-hover:opacity-100">
                     <div className="absolute bottom-0 w-full p-4">
                       <div className="flex flex-wrap gap-2">
                         <Button

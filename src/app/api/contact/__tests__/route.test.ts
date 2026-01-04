@@ -21,10 +21,11 @@ vi.mock('@/lib/db', () => ({
   }
 }))
 
+// Vitest 4: Use function syntax for constructor mocks
 vi.mock('resend', () => ({
-  Resend: vi.fn(() => ({
-    emails: { send: mockSend }
-  }))
+  Resend: vi.fn(function() {
+    return { emails: { send: mockSend } }
+  })
 }))
 
 import { POST } from '@/app/api/contact/route'

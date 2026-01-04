@@ -42,7 +42,7 @@ export function ProjectTabs({ projects }: ProjectTabsProps) {
           <button
             key={category}
             onClick={() => setActiveCategory(category)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-150 ease-out
               ${
                 activeCategory === category
                   ? 'bg-primary text-primary-foreground'

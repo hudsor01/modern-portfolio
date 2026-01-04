@@ -17,7 +17,7 @@ class HomePage {
     await this.page.goto('/')
     await this.page.waitForLoadState('networkidle')
     // Wait for hero title to be visible
-    await this.page.waitForSelector('h1', { timeout: 30000 })
+    await this.page.locator('h1').waitFor({ state: 'visible', timeout: 30000 })
   }
 
   async getHeroTitle() {
@@ -49,7 +49,7 @@ class ProjectsPage {
     await this.page.goto('/projects')
     await this.page.waitForLoadState('networkidle')
     // Wait for page content to load
-    await this.page.waitForSelector('h1', { timeout: 30000 })
+    await this.page.locator('h1').waitFor({ state: 'visible', timeout: 30000 })
   }
 
   async getProjectCards() {
@@ -112,7 +112,7 @@ class ProjectDetailPage {
   async goto(slug: string) {
     await this.page.goto(`/projects/${slug}`)
     await this.page.waitForLoadState('networkidle')
-    await this.page.waitForSelector('h1', { timeout: 30000 })
+    await this.page.locator('h1').waitFor({ state: 'visible', timeout: 30000 })
   }
 
   async getPageTitle() {
@@ -169,7 +169,7 @@ class ContactPage {
     await this.page.goto('/contact')
     await this.page.waitForLoadState('networkidle')
     // Wait for specific form elements to be loaded
-    await this.page.waitForSelector('input[name="name"]', { timeout: 30000 })
+    await this.page.locator('input[name="name"]').waitFor({ state: 'visible', timeout: 30000 })
   }
 
   async fillContactForm(data: {
@@ -198,34 +198,34 @@ class ContactPage {
   }
 
   async waitForFormLoad() {
-    await this.page.waitForSelector('form', { timeout: 15000 })
-    await this.page.waitForSelector('input[name="name"]', { timeout: 15000 })
-    await this.page.waitForSelector('input[name="email"]', { timeout: 15000 })
-    await this.page.waitForSelector('select[name="subject"]', { timeout: 15000 })
-    await this.page.waitForSelector('textarea[name="message"]', { timeout: 15000 })
+    await this.page.locator('form').waitFor({ state: 'visible', timeout: 15000 })
+    await this.page.locator('input[name="name"]').waitFor({ state: 'visible', timeout: 15000 })
+    await this.page.locator('input[name="email"]').waitFor({ state: 'visible', timeout: 15000 })
+    await this.page.locator('select[name="subject"]').waitFor({ state: 'visible', timeout: 15000 })
+    await this.page.locator('textarea[name="message"]').waitFor({ state: 'visible', timeout: 15000 })
   }
 }
 
 // Extend the base test with custom fixtures
 export const test = base.extend<TestFixtures>({
-  homePage: async ({ page }, useFixture) => {
+  homePage: async ({ page }, use) => {
     const homePage = new HomePage(page)
-    await useFixture(homePage)
+    await use(homePage)
   },
 
-  projectsPage: async ({ page }, useFixture) => {
+  projectsPage: async ({ page }, use) => {
     const projectsPage = new ProjectsPage(page)
-    await useFixture(projectsPage)
+    await use(projectsPage)
   },
 
-  contactPage: async ({ page }, useFixture) => {
+  contactPage: async ({ page }, use) => {
     const contactPage = new ContactPage(page)
-    await useFixture(contactPage)
+    await use(contactPage)
   },
 
-  projectDetailPage: async ({ page }, useFixture) => {
+  projectDetailPage: async ({ page }, use) => {
     const projectDetailPage = new ProjectDetailPage(page)
-    await useFixture(projectDetailPage)
+    await use(projectDetailPage)
   },
 })
 

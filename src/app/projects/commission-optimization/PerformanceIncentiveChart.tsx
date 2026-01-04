@@ -1,7 +1,16 @@
 'use client'
 import { memo } from 'react'
 
-import { LazyBarChart as BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from '@/components/charts/lazy-charts'
+import {
+  LazyBarChart as BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Legend,
+} from '@/components/charts/lazy-charts'
 
 // Performance incentive program data
 const data = [
@@ -12,7 +21,7 @@ const data = [
     payout: 38750,
     effectiveness: 86.1,
     avgBonus: 1140,
-    performanceLift: 28.4
+    performanceLift: 28.4,
   },
   {
     program: 'New Customer Bonus',
@@ -21,7 +30,7 @@ const data = [
     payout: 31200,
     effectiveness: 89.1,
     avgBonus: 1114,
-    performanceLift: 42.3
+    performanceLift: 42.3,
   },
   {
     program: 'Product Mix Incentive',
@@ -30,7 +39,7 @@ const data = [
     payout: 24680,
     effectiveness: 88.1,
     avgBonus: 602,
-    performanceLift: 19.7
+    performanceLift: 19.7,
   },
   {
     program: 'Territory Expansion',
@@ -39,7 +48,7 @@ const data = [
     payout: 18900,
     effectiveness: 85.9,
     avgBonus: 1260,
-    performanceLift: 35.6
+    performanceLift: 35.6,
   },
 ]
 
@@ -53,7 +62,8 @@ const chartColors = {
 }
 
 const PerformanceIncentiveChart = memo(function PerformanceIncentiveChart() {
-  const formatCurrency = (value: number) => {
+  const formatCurrency = (value: number | undefined) => {
+    if (value === undefined) return ''
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -66,11 +76,7 @@ const PerformanceIncentiveChart = memo(function PerformanceIncentiveChart() {
     <div className="h-[350px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke={chartColors.grid} 
-            vertical={false}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
           <XAxis
             dataKey="program"
             stroke={chartColors.axis}
@@ -106,48 +112,50 @@ const PerformanceIncentiveChart = memo(function PerformanceIncentiveChart() {
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
-            formatter={(value: number, name: string) => {
-              if (name === 'budget') return [formatCurrency(value), 'Budget']
-              if (name === 'payout') return [formatCurrency(value), 'Payout']
-              if (name === 'effectiveness') return [`${value}%`, 'Effectiveness']
-              if (name === 'avgBonus') return [formatCurrency(value), 'Avg Bonus']
-              if (name === 'performanceLift') return [`${value}%`, 'Performance Lift']
-              if (name === 'participants') return [value, 'Participants']
-              return [value, name]
+            formatter={(value: number | undefined, name: string | undefined) => {
+              const safeName = name ?? ''
+              if (safeName === 'budget') return [formatCurrency(value), 'Budget']
+              if (safeName === 'payout') return [formatCurrency(value), 'Payout']
+              if (safeName === 'effectiveness') return [`${value}%`, 'Effectiveness']
+              if (safeName === 'avgBonus') return [formatCurrency(value), 'Avg Bonus']
+              if (safeName === 'performanceLift') return [`${value}%`, 'Performance Lift']
+              if (safeName === 'participants') return [value, 'Participants']
+              return [value, safeName]
             }}
             labelFormatter={(label) => `${label} Program`}
           />
           <Legend
             wrapperStyle={{
               paddingTop: '20px',
-              fontSize: '12px'
+              fontSize: '12px',
             }}
           />
-          <Bar 
+          <Bar
             yAxisId="budget"
-            dataKey="budget" 
-            fill={chartColors.budget} 
-            radius={[4, 4, 0, 0]} 
+            dataKey="budget"
+            fill={chartColors.budget}
+            radius={[4, 4, 0, 0]}
             name="budget"
           />
-          <Bar 
+          <Bar
             yAxisId="budget"
-            dataKey="payout" 
-            fill={chartColors.payout} 
-            radius={[4, 4, 0, 0]} 
+            dataKey="payout"
+            fill={chartColors.payout}
+            radius={[4, 4, 0, 0]}
             name="payout"
           />
-          <Bar 
+          <Bar
             yAxisId="effectiveness"
-            dataKey="effectiveness" 
-            fill={chartColors.effectiveness} 
-            radius={[4, 4, 0, 0]} 
+            dataKey="effectiveness"
+            fill={chartColors.effectiveness}
+            radius={[4, 4, 0, 0]}
             name="effectiveness"
           />
         </BarChart>
       </ResponsiveContainer>
       <p className="mt-4 text-center text-sm italic text-muted-foreground">
-        Performance incentive program analysis showing budget allocation, payout efficiency, and effectiveness metrics across targeted partner programs
+        Performance incentive program analysis showing budget allocation, payout efficiency, and
+        effectiveness metrics across targeted partner programs
       </p>
     </div>
   )

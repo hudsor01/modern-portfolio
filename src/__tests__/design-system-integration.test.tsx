@@ -6,26 +6,26 @@ describe('Design System Integration', () => {
       const colorPalette = {
         primary: {
           cyan: ['cyan-400', 'cyan-500'],
-          blue: ['blue-400', 'blue-500']
+          blue: ['blue-400', 'blue-500'],
         },
         gradients: {
           button: 'from-cyan-500 to-blue-500',
           buttonHover: 'from-cyan-400 to-blue-400',
-          text: 'from-cyan-400 to-blue-400'
+          text: 'from-cyan-400 to-blue-400',
         },
         backgrounds: {
           glassmorphism: 'bg-gray-800/50',
           backdrop: 'backdrop-blur-xs',
-          borders: 'border-gray-700'
-        }
+          borders: 'border-gray-700',
+        },
       }
-      
+
       // Verify color consistency
       expect(colorPalette.primary.cyan).toContain('cyan-400')
       expect(colorPalette.primary.cyan).toContain('cyan-500')
       expect(colorPalette.primary.blue).toContain('blue-400')
       expect(colorPalette.primary.blue).toContain('blue-500')
-      
+
       // Verify gradient patterns
       expect(colorPalette.gradients.button).toBe('from-cyan-500 to-blue-500')
       expect(colorPalette.gradients.buttonHover).toBe('from-cyan-400 to-blue-400')
@@ -35,15 +35,15 @@ describe('Design System Integration', () => {
       const oldPatterns = [
         'from-blue-500 to-indigo-600',
         'from-blue-600 to-indigo-700',
-        'bg-destructive/20/20',  // Invalid double-slash opacity
-        'bg-primary/20/20'       // Invalid double-slash opacity
+        'bg-destructive/20/20', // Invalid double-slash opacity
+        'bg-primary/20/20', // Invalid double-slash opacity
       ]
 
       const newPatterns = [
         'from-cyan-500 to-blue-500',
         'from-cyan-400 to-blue-400',
-        'bg-destructive-bg',  // Semantic token with built-in opacity
-        'bg-primary-bg'       // Semantic token with built-in opacity
+        'bg-destructive-bg', // Semantic token with built-in opacity
+        'bg-primary-bg', // Semantic token with built-in opacity
       ]
 
       // Verify transformation pattern
@@ -53,7 +53,7 @@ describe('Design System Integration', () => {
       expect(newPatterns[3]).toBe('bg-primary-bg')
 
       // Ensure old patterns are not used
-      oldPatterns.forEach(pattern => {
+      oldPatterns.forEach((pattern) => {
         expect(newPatterns).not.toContain(pattern)
       })
     })
@@ -65,25 +65,25 @@ describe('Design System Integration', () => {
         h1: {
           size: 'text-xl md:text-2xl',
           weight: 'font-black',
-          color: 'text-white'
+          color: 'text-white',
         },
         h2: {
           size: 'text-xl md:text-2xl',
           weight: 'font-bold',
-          color: 'text-white'
+          color: 'text-white',
         },
         h3: {
           size: 'text-xl md:text-2xl',
           weight: 'font-bold',
-          color: 'text-white'
+          color: 'text-white',
         },
         body: {
           size: 'text-base md:text-lg',
           weight: 'font-normal',
-          color: 'text-gray-300'
-        }
+          color: 'text-gray-300',
+        },
       }
-      
+
       // Verify hierarchy
       expect(typographyScale.h1.weight).toBe('font-black')
       expect(typographyScale.h2.weight).toBe('font-bold')
@@ -93,13 +93,13 @@ describe('Design System Integration', () => {
 
     it('uses responsive text sizing', () => {
       const responsivePatterns = [
-        'text-xl md:text-2xl',    // H1
-        'text-xl md:text-2xl',    // H2
-        'text-xl md:text-2xl',     // H3
-        'text-base md:text-lg'     // Body
+        'text-xl md:text-2xl', // H1
+        'text-xl md:text-2xl', // H2
+        'text-xl md:text-2xl', // H3
+        'text-base md:text-lg', // Body
       ]
-      
-      responsivePatterns.forEach(pattern => {
+
+      responsivePatterns.forEach((pattern) => {
         expect(pattern).toMatch(/text-\w+ md:text-\w+/)
       })
     })
@@ -114,10 +114,10 @@ describe('Design System Integration', () => {
         borderRadius: 'rounded-xl',
         hover: {
           border: 'hover:border-primary/50',
-          transform: 'hover:-translate-y-1'
-        }
+          transform: 'hover:-translate-y-1',
+        },
       }
-      
+
       // Verify consistent pattern usage
       expect(glassmorphismPattern.background).toBe('bg-gray-800/50')
       expect(glassmorphismPattern.backdrop).toBe('backdrop-blur-xs')
@@ -127,13 +127,13 @@ describe('Design System Integration', () => {
 
     it('applies proper opacity levels', () => {
       const opacityLevels = {
-        card: '800/50',      // 50% opacity on gray-800
-        overlay: '500/5',    // 5% opacity for subtle overlays
-        border: '500/20',    // 20% opacity for borders
-        shadow: '500/25'     // 25% opacity for shadows
+        card: '800/50', // 50% opacity on gray-800
+        overlay: '500/5', // 5% opacity for subtle overlays
+        border: '500/20', // 20% opacity for borders
+        shadow: '500/25', // 25% opacity for shadows
       }
-      
-      Object.values(opacityLevels).forEach(level => {
+
+      Object.values(opacityLevels).forEach((level) => {
         expect(level).toMatch(/\d+\/\d+/)
       })
     })
@@ -143,25 +143,25 @@ describe('Design System Integration', () => {
     it('uses CSS animations for performance', () => {
       const animationClasses = [
         'animate-float',
-        'animate-float-delayed', 
+        'animate-float-delayed',
         'animate-pulse-glow',
-        'transition-all duration-300'
+        'transition-all duration-300',
       ]
-      
+
       // Verify animation classes exist
-      animationClasses.forEach(className => {
+      animationClasses.forEach((className) => {
         expect(className).toMatch(/^(animate-|transition-)/)
       })
     })
 
     it('implements consistent transition timing', () => {
       const transitionDurations = [
-        'duration-300',  // Standard transitions
-        'duration-200',  // Quick interactions
-        'duration-500'   // Slower animations
+        'duration-300', // Standard transitions
+        'duration-150', // Quick interactions (micro-interactions)
+        'duration-500', // Slower animations
       ]
-      
-      transitionDurations.forEach(duration => {
+
+      transitionDurations.forEach((duration) => {
         expect(duration).toMatch(/duration-\d+/)
       })
     })
@@ -176,7 +176,7 @@ describe('Design System Integration', () => {
         'subtle',
         'interactive',
         'primary',
-        'outline'
+        'outline',
       ]
 
       // Verify all variants are supported
@@ -193,22 +193,22 @@ describe('Design System Integration', () => {
           label: 'CHALLENGE',
           background: 'bg-destructive-bg',
           border: 'border-destructive-border',
-          textColor: 'text-destructive'
+          textColor: 'text-destructive',
         },
         solution: {
           emoji: '⚡',
           label: 'SOLUTION',
           background: 'bg-success-bg',
           border: 'border-success-border',
-          textColor: 'text-success'
+          textColor: 'text-success',
         },
         results: {
           emoji: '📊',
           label: 'RESULTS',
           background: 'bg-primary-bg',
           border: 'border-primary-border',
-          textColor: 'text-primary/70'
-        }
+          textColor: 'text-primary/70',
+        },
       }
 
       // Verify CSR structure
@@ -228,9 +228,9 @@ describe('Design System Integration', () => {
       const loadingStates = {
         skeleton: 'animate-pulse h-96 bg-gray-800/50 rounded-xl',
         shimmer: 'before:animate-[shimmer_2s_infinite]',
-        suspense: 'Suspense fallback components'
+        suspense: 'Suspense fallback components',
       }
-      
+
       expect(loadingStates.skeleton).toContain('animate-pulse')
       expect(loadingStates.skeleton).toContain('bg-gray-800/50')
       expect(loadingStates.shimmer).toContain('shimmer_2s_infinite')
@@ -240,36 +240,32 @@ describe('Design System Integration', () => {
       const accessibilityRequirements = {
         touchTargets: '44px minimum',
         contrast: 'WCAG AA compliant',
-        focusStates: 'focus:ring-2 focus:ring-cyan-400',
-        screenReader: 'proper ARIA labels'
+        focusStates: 'focus:ring-[3px] focus:ring-ring/50',
+        screenReader: 'proper ARIA labels',
       }
-      
+
       expect(accessibilityRequirements.touchTargets).toBe('44px minimum')
-      expect(accessibilityRequirements.focusStates).toContain('focus:ring-cyan-400')
+      expect(accessibilityRequirements.focusStates).toContain('focus:ring-')
     })
   })
 
   describe('Mobile Optimization', () => {
     it('uses mobile-first responsive design', () => {
       const responsivePatterns = [
-        'grid-cols-1 lg:grid-cols-2',      // Project grid
-        'text-base md:text-lg',            // Typography
-        'px-4 md:px-8',                    // Spacing
-        'gap-6 lg:gap-12'                  // Grid gaps
+        'grid-cols-1 lg:grid-cols-2', // Project grid
+        'text-base md:text-lg', // Typography
+        'px-4 md:px-8', // Spacing
+        'gap-6 lg:gap-12', // Grid gaps
       ]
-      
-      responsivePatterns.forEach(pattern => {
+
+      responsivePatterns.forEach((pattern) => {
         expect(pattern).toMatch(/(sm:|md:|lg:|xl:)/)
       })
     })
 
     it('ensures proper touch target sizes', () => {
-      const touchTargetClasses = [
-        'min-h-[44px]',
-        'py-4',
-        'px-6'
-      ]
-      
+      const touchTargetClasses = ['min-h-[44px]', 'py-4', 'px-6']
+
       expect(touchTargetClasses[0]).toBe('min-h-[44px]')
     })
   })
@@ -279,9 +275,9 @@ describe('Design System Integration', () => {
       const importPatterns = {
         icons: 'import { DollarSign, TrendingUp } from "lucide-react"',
         components: 'import { Card } from "@/components/ui/card"',
-        utilities: 'import { cn } from "@/lib/utils"'
+        utilities: 'import { cn } from "@/lib/utils"',
       }
-      
+
       // Verify named imports (tree-shakeable)
       expect(importPatterns.icons).toMatch(/import\s*{\s*[\w\s,]+\s*}/)
       expect(importPatterns.components).toMatch(/import\s*{\s*[\w\s,]+\s*}/)
@@ -290,7 +286,7 @@ describe('Design System Integration', () => {
     it('implements dynamic imports for code splitting', () => {
       const dynamicImportPattern = /dynamic\(\s*\(\)\s*=>\s*import\(/
       const mockDynamicImport = "dynamic(() => import('@/components/ui/card'))"
-      
+
       expect(mockDynamicImport).toMatch(dynamicImportPattern)
     })
   })
@@ -301,25 +297,29 @@ describe('Design System Integration', () => {
         spacing: ['p-4', 'p-6', 'p-8', 'gap-6', 'mb-4'],
         borderRadius: ['rounded-lg', 'rounded-xl', 'rounded-xl'],
         shadows: ['shadow-lg', 'shadow-xl', 'shadow-cyan-500/25'],
-        transitions: ['duration-300', 'ease-in-out', 'transition-all']
+        transitions: ['duration-300', 'ease-in-out', 'transition-all'],
       }
-      
+
       // Verify consistent token patterns
-      expect(designTokens.spacing.every(token => token.match(/^(p|gap|m[btlr]?)-\d+$/))).toBeTruthy()
-      expect(designTokens.borderRadius.every(token => token.match(/^rounded(-\w+)?$/))).toBeTruthy()
+      expect(
+        designTokens.spacing.every((token) => token.match(/^(p|gap|m[btlr]?)-\d+$/))
+      ).toBeTruthy()
+      expect(
+        designTokens.borderRadius.every((token) => token.match(/^rounded(-\w+)?$/))
+      ).toBeTruthy()
     })
 
     it('validates complete design system cohesion', () => {
       const designSystemMetrics = {
-        colorConsistency: 100,    // All cyan/blue gradients
-        componentCoverage: 95,    // Modern components used
-        performanceScore: 90,     // Optimizations applied
-        accessibilityScore: 95,   // WCAG compliance
-        mobileOptimization: 100   // Responsive design
+        colorConsistency: 100, // All cyan/blue gradients
+        componentCoverage: 95, // Modern components used
+        performanceScore: 90, // Optimizations applied
+        accessibilityScore: 95, // WCAG compliance
+        mobileOptimization: 100, // Responsive design
       }
-      
+
       // All scores should be above minimum thresholds
-      Object.values(designSystemMetrics).forEach(score => {
+      Object.values(designSystemMetrics).forEach((score) => {
         expect(score).toBeGreaterThanOrEqual(90)
       })
     })

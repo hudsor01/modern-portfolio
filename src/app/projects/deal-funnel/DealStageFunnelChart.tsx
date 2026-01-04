@@ -109,7 +109,7 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
                       stroke={funnelColors[index]}
                       strokeWidth="2"
                       filter="url(#glow)"
-                      className="transition-all duration-300 hover:opacity-90 cursor-pointer"
+                      className="transition-all duration-300 ease-out hover:opacity-90 cursor-pointer"
                     />
                     
                     {/* Stage label on the left */}
@@ -167,7 +167,7 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
             {data.map((stage, index) => (
               <div 
                 key={index} 
-                className="glass rounded-2xl p-4 hover:bg-white/10 transition-all duration-300"
+                className="glass rounded-2xl p-4 hover:bg-white/10 transition-all duration-300 ease-out"
               >
                 <div className="flex items-center gap-2 mb-3">
                   <div

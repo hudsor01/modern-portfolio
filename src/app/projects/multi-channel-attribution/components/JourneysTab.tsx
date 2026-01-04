@@ -15,7 +15,7 @@ export function JourneysTab() {
     <div className="space-y-6 mb-8">
       {/* Customer Journey Visualization */}
       <div
-        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out"
       >
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">Customer Journey Stage Analysis</h2>
@@ -28,7 +28,7 @@ export function JourneysTab() {
 
       {/* Journey Stages Details */}
       <div
-        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out"
       >
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">Journey Stage Performance Metrics</h2>

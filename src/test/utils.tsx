@@ -1,8 +1,16 @@
 import React, { ReactElement } from 'react'
-import { render, RenderOptions } from '@testing-library/react'
+import { render } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
 import { vi } from 'vitest'
+import type { TestRenderOptions } from '@/types/test-utils'
+import {
+  createTestDataFactory,
+  createMockFunction,
+  runPropertyTest,
+  createMockResponse,
+} from './test-factories'
 
 // Mock Next.js router for testing
 const mockRouter = {
@@ -43,10 +51,8 @@ const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-const customRender = (
-  ui: ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>,
-) => render(ui, { wrapper: AllTheProviders, ...options })
+const customRender = (ui: ReactElement, options?: TestRenderOptions) =>
+  render(ui, { wrapper: AllTheProviders, ...options })
 
 // re-export everything
 export * from '@testing-library/react'
@@ -55,53 +61,36 @@ export * from '@testing-library/react'
 export { customRender as render }
 
 // Custom render for components that need specific providers
-export const renderWithQueryClient = (
-  ui: ReactElement,
-  queryClient?: QueryClient,
-) => {
-  const testQueryClient = queryClient || new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-        staleTime: 0,
-        gcTime: 0,
+export const renderWithQueryClient = (ui: ReactElement, queryClient?: QueryClient) => {
+  const testQueryClient =
+    queryClient ||
+    new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+          staleTime: 0,
+          gcTime: 0,
+        },
+        mutations: {
+          retry: false,
+        },
       },
-      mutations: {
-        retry: false,
-      },
-    },
-  })
+    })
 
-  return render(
-    <QueryClientProvider client={testQueryClient}>
-      {ui}
-    </QueryClientProvider>
-  )
-}
-
-// Utility for creating mock fetch responses
-export const createMockResponse = (data: unknown, status = 200) => {
-  return Promise.resolve({
-    ok: status >= 200 && status < 300,
-    status,
-    json: () => Promise.resolve(data),
-    text: () => Promise.resolve(JSON.stringify(data)),
-    headers: new Headers({
-      'content-type': 'application/json',
-    }),
-  } as Response)
+  return render(<QueryClientProvider client={testQueryClient}>{ui}</QueryClientProvider>)
 }
 
 // Mock fetch utility
-export const mockFetch = (mockImplementation?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>) => {
+export const mockFetch = (
+  mockImplementation?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
+) => {
   const mockFn = vi.fn(mockImplementation || (() => createMockResponse({})))
   vi.stubGlobal('fetch', mockFn)
   return mockFn
 }
 
 // Wait for async operations to complete
-export const waitForAsyncOperations = () => 
-  new Promise(resolve => setTimeout(resolve, 0))
+export const waitForAsyncOperations = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 // Mock router utility
 export const mockNextRouter = (overrides = {}) => {
@@ -112,3 +101,9 @@ export const mockNextRouter = (overrides = {}) => {
     notFound: vi.fn(),
   }))
 }
+
+// Re-export the factory functions
+export { createTestDataFactory, createMockFunction, runPropertyTest, createMockResponse }
+
+// Export userEvent for modern user interaction testing
+export { userEvent }

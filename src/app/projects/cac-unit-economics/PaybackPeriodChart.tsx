@@ -1,7 +1,15 @@
 'use client'
 import { memo } from 'react'
 
-import { LazyAreaChart as AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from '@/components/charts/lazy-charts'
+import {
+  LazyAreaChart as AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from '@/components/charts/lazy-charts'
 
 // Payback period by customer cohort
 const data = [
@@ -28,23 +36,19 @@ const PaybackPeriodChart = memo(function PaybackPeriodChart() {
         <AreaChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <defs>
             <linearGradient id="certifiedGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={chartColors.certified} stopOpacity={0.3}/>
-              <stop offset="95%" stopColor={chartColors.certified} stopOpacity={0}/>
+              <stop offset="5%" stopColor={chartColors.certified} stopOpacity={0.3} />
+              <stop offset="95%" stopColor={chartColors.certified} stopOpacity={0} />
             </linearGradient>
             <linearGradient id="legacyGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={chartColors.legacy} stopOpacity={0.3}/>
-              <stop offset="95%" stopColor={chartColors.legacy} stopOpacity={0}/>
+              <stop offset="5%" stopColor={chartColors.legacy} stopOpacity={0.3} />
+              <stop offset="95%" stopColor={chartColors.legacy} stopOpacity={0} />
             </linearGradient>
             <linearGradient id="directGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={chartColors.direct} stopOpacity={0.3}/>
-              <stop offset="95%" stopColor={chartColors.direct} stopOpacity={0}/>
+              <stop offset="5%" stopColor={chartColors.direct} stopOpacity={0.3} />
+              <stop offset="95%" stopColor={chartColors.direct} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke={chartColors.grid} 
-            vertical={false}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
           <XAxis
             dataKey="cohort"
             stroke={chartColors.axis}
@@ -70,9 +74,9 @@ const PaybackPeriodChart = memo(function PaybackPeriodChart() {
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
-            formatter={(value: number, name: string) => [
-              `${value.toFixed(1)} months`, 
-              name.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
+            formatter={(value: number | undefined, name: string | undefined) => [
+              `${(value ?? 0).toFixed(1)} months`,
+              (name ?? '').replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()),
             ]}
           />
           <Area
@@ -102,7 +106,8 @@ const PaybackPeriodChart = memo(function PaybackPeriodChart() {
         </AreaChart>
       </ResponsiveContainer>
       <p className="mt-4 text-center text-sm italic text-muted-foreground">
-        Customer acquisition payback period optimization showing certified partners achieve 5.4-month ROI vs 11.9-month direct sales
+        Customer acquisition payback period optimization showing certified partners achieve
+        5.4-month ROI vs 11.9-month direct sales
       </p>
     </div>
   )

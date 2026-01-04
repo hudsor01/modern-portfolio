@@ -15,7 +15,7 @@ export function ChannelsTab() {
     <div className="space-y-6 mb-8">
       {/* Touchpoint Analysis */}
       <div
-        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out"
       >
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">Multi-Touch Attribution & Channel Performance</h2>
@@ -28,7 +28,7 @@ export function ChannelsTab() {
 
       {/* Channel Performance Table */}
       <div
-        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out"
       >
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">Channel Attribution & ROI Performance</h2>

@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-
+import { ChartContainer } from '@/components/ui/chart-container'
 
 const RevenueBarChart = dynamic(() => import('../RevenueBarChart'), { ssr: false })
 const RevenueLineChart = dynamic(() => import('../RevenueLineChart'), { ssr: false })
@@ -12,58 +12,44 @@ export function ChartsGrid() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       {/* Revenue Trends */}
-      <div
-        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+      <ChartContainer
+        title="Revenue Growth Trends"
+        description="Monthly revenue progression and forecasting"
+        height={200}
+        variant="glass"
       >
-        <div className="mb-4">
-          <h2 className="typography-h4 mb-1">Revenue Growth Trends</h2>
-          <p className="typography-small text-muted-foreground">
-            Monthly revenue progression and forecasting
-          </p>
-        </div>
-        <div className="h-[200px]">
-          <RevenueLineChart />
-        </div>
-      </div>
+        <RevenueLineChart />
+      </ChartContainer>
 
       {/* Revenue Distribution */}
-      <div
-        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+      <ChartContainer
+        title="Monthly Revenue Analysis"
+        description="Revenue breakdown by time period"
+        height={200}
+        variant="glass"
       >
-        <div className="mb-4">
-          <h2 className="typography-h4 mb-1">Monthly Revenue Analysis</h2>
-          <p className="typography-small text-muted-foreground">Revenue breakdown by time period</p>
-        </div>
-        <div className="h-[200px]">
-          <RevenueBarChart />
-        </div>
-      </div>
+        <RevenueBarChart />
+      </ChartContainer>
 
       {/* Top Partners */}
-      <div
-        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+      <ChartContainer
+        title="Top Revenue Partners"
+        description="Highest performing business partners"
+        height={200}
+        variant="glass"
       >
-        <div className="mb-4">
-          <h2 className="typography-h4 mb-1">Top Revenue Partners</h2>
-          <p className="typography-small text-muted-foreground">Highest performing business partners</p>
-        </div>
-        <div className="h-[200px]">
-          <TopPartnersChart />
-        </div>
-      </div>
+        <TopPartnersChart />
+      </ChartContainer>
 
       {/* Partner Distribution */}
-      <div
-        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300"
+      <ChartContainer
+        title="Partner Group Distribution"
+        description="Revenue contribution by partner type"
+        height={200}
+        variant="glass"
       >
-        <div className="mb-4">
-          <h2 className="typography-h4 mb-1">Partner Group Distribution</h2>
-          <p className="typography-small text-muted-foreground">Revenue contribution by partner type</p>
-        </div>
-        <div className="h-[200px]">
-          <PartnerGroupPieChart />
-        </div>
-      </div>
+        <PartnerGroupPieChart />
+      </ChartContainer>
     </div>
   )
 }

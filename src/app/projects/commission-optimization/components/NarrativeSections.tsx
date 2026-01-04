@@ -1,58 +1,65 @@
 'use client'
 
-import {
-  SectionCard,
-  ResultCard,
-  TechGrid,
-  FeatureCard,
-} from '@/components/projects/shared'
+import { SectionCard } from '@/components/ui/section-card'
+import { ResultCard, TechGrid, FeatureCard } from '@/components/projects/shared'
 import { commissionMetrics, technologies } from '../data/constants'
-import { formatCurrency, formatPercent } from '../utils'
+import { formatCurrency, formatPercentage } from '@/lib/utils/data-formatters'
 
 export function NarrativeSections() {
   return (
     <div className="space-y-12 mt-12">
       {/* Project Overview */}
-      <SectionCard title="Project Overview" titleVariant="primary">
+      <SectionCard title="Project Overview">
         <div className="space-y-4 text-muted-foreground">
           <p className="text-lg leading-relaxed">
-            Designed and implemented a comprehensive commission optimization system to manage {formatCurrency(commissionMetrics.totalCommissionPool)} annual commission pool across multi-tier partner structures. This strategic initiative transformed commission management from manual processes to automated optimization.
+            Designed and implemented a comprehensive commission optimization system to manage{' '}
+            {formatCurrency(commissionMetrics.totalCommissionPool)} annual commission pool across
+            multi-tier partner structures. This strategic initiative transformed commission
+            management from manual processes to automated optimization.
           </p>
           <p className="leading-relaxed">
-            The system enabled data-driven commission strategy decisions that improved partner performance by {formatPercent(commissionMetrics.performanceImprovement)} while achieving {formatPercent(commissionMetrics.automationEfficiency)} automation efficiency across all commission operations.
+            The system enabled data-driven commission strategy decisions that improved partner
+            performance by {formatPercentage(commissionMetrics.performanceImprovement / 100)} while
+            achieving {formatPercentage(commissionMetrics.automationEfficiency / 100)} automation
+            efficiency across all commission operations.
           </p>
         </div>
       </SectionCard>
 
       {/* Challenge */}
-      <SectionCard title="Challenge" titleVariant="warning">
+      <SectionCard title="Challenge">
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
-            The existing commission structure was hindering partner performance and creating operational inefficiencies. Key problems included:
+            The existing commission structure was hindering partner performance and creating
+            operational inefficiencies. Key problems included:
           </p>
           <ul className="list-disc list-inside space-y-2 ml-4">
             <li>Manual commission calculations consuming 8.5 hours weekly with frequent errors</li>
             <li>Static tier structures not aligned with actual partner performance patterns</li>
-            <li>High dispute rates (3.8%) due to calculation inconsistencies and transparency issues</li>
+            <li>
+              High dispute rates (3.8%) due to calculation inconsistencies and transparency issues
+            </li>
             <li>Inability to rapidly adjust incentive programs based on market conditions</li>
             <li>Partner dissatisfaction with delayed payments and unclear commission structures</li>
             <li>No visibility into commission ROI or optimization opportunities</li>
           </ul>
           <p className="leading-relaxed">
-            These inefficiencies were not only costly operationally but also negatively impacting partner motivation and retention rates.
+            These inefficiencies were not only costly operationally but also negatively impacting
+            partner motivation and retention rates.
           </p>
         </div>
       </SectionCard>
 
       {/* Solution */}
-      <SectionCard title="Solution" titleVariant="success">
+      <SectionCard title="Solution">
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
-            Developed a comprehensive commission optimization platform with automated tier management, real-time calculations, and performance-based incentive programs:
+            Developed a comprehensive commission optimization platform with automated tier
+            management, real-time calculations, and performance-based incentive programs:
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <FeatureCard title="Automation Engine" titleVariant="primary">
+            <FeatureCard title="Automation Engine" >
               <ul className="list-disc list-inside space-y-1 text-sm">
                 <li>Real-time commission calculation with 99.8% accuracy</li>
                 <li>Automated tier adjustments based on performance metrics</li>
@@ -61,7 +68,7 @@ export function NarrativeSections() {
                 <li>Compliance monitoring and audit trails</li>
               </ul>
             </FeatureCard>
-            <FeatureCard title="Analytics & Optimization" titleVariant="secondary">
+            <FeatureCard title="Analytics & Optimization" >
               <ul className="list-disc list-inside space-y-1 text-sm">
                 <li>ROI analysis for each commission tier and program</li>
                 <li>Performance impact measurement and forecasting</li>
@@ -73,16 +80,19 @@ export function NarrativeSections() {
           </div>
 
           <p className="leading-relaxed mt-4">
-            The solution included comprehensive dashboards for different stakeholders: executives focused on ROI metrics, operations teams managing day-to-day processing, and partners tracking their earnings and performance.
+            The solution included comprehensive dashboards for different stakeholders: executives
+            focused on ROI metrics, operations teams managing day-to-day processing, and partners
+            tracking their earnings and performance.
           </p>
         </div>
       </SectionCard>
 
       {/* Results & Impact */}
-      <SectionCard title="Results & Impact" titleVariant="success">
+      <SectionCard title="Results & Impact">
         <div className="space-y-6 text-muted-foreground">
           <p className="leading-relaxed">
-            The commission optimization system delivered significant operational improvements and partner performance gains:
+            The commission optimization system delivered significant operational improvements and
+            partner performance gains:
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -92,12 +102,12 @@ export function NarrativeSections() {
               variant="primary"
             />
             <ResultCard
-              value={`+${formatPercent(commissionMetrics.performanceImprovement)}`}
+              value={`+${formatPercentage(commissionMetrics.performanceImprovement / 100)}`}
               label="Partner Performance Improvement"
               variant="secondary"
             />
             <ResultCard
-              value={formatPercent(commissionMetrics.automationEfficiency)}
+              value={formatPercentage(commissionMetrics.automationEfficiency / 100)}
               label="Automation & Processing Efficiency"
               variant="accent"
             />
@@ -125,28 +135,41 @@ export function NarrativeSections() {
       </SectionCard>
 
       {/* Key Learnings */}
-      <SectionCard title="Key Learnings" titleVariant="accent">
+      <SectionCard title="Key Learnings">
         <div className="space-y-4 text-muted-foreground">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
               <h3 className="font-semibold text-accent-foreground">Business Strategy Insights</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
-                <li>Commission structures significantly impact partner behavior - small adjustments yield large performance changes</li>
-                <li>Transparency in commission calculations builds trust and reduces disputes more than higher rates</li>
+                <li>
+                  Commission structures significantly impact partner behavior - small adjustments
+                  yield large performance changes
+                </li>
+                <li>
+                  Transparency in commission calculations builds trust and reduces disputes more
+                  than higher rates
+                </li>
                 <li>Dynamic tier structures outperform static ones by 23% in partner engagement</li>
               </ul>
             </div>
             <div className="space-y-3">
               <h3 className="font-semibold text-secondary">Technical Implementation Insights</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
-                <li>Real-time calculation engines require robust error handling and rollback mechanisms</li>
+                <li>
+                  Real-time calculation engines require robust error handling and rollback
+                  mechanisms
+                </li>
                 <li>Automated audit trails are essential for compliance and dispute resolution</li>
-                <li>Performance optimization is critical when processing large commission datasets</li>
+                <li>
+                  Performance optimization is critical when processing large commission datasets
+                </li>
               </ul>
             </div>
           </div>
           <p className="leading-relaxed mt-4">
-            This project demonstrated that commission optimization is both an art and a science. The most successful strategies combined data-driven insights with deep understanding of partner psychology and motivation patterns.
+            This project demonstrated that commission optimization is both an art and a science. The
+            most successful strategies combined data-driven insights with deep understanding of
+            partner psychology and motivation patterns.
           </p>
         </div>
       </SectionCard>
