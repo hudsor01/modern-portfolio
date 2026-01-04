@@ -1,27 +1,35 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { NextRequest } from 'next/server'
+import { describe, afterAll, it, expect, vi, beforeEach, mock } from 'bun:test'
 
 // Mock server-only before any imports
-vi.mock('server-only', () => ({}))
+mock.module('server-only', () => ({}))
 
-// Mock Next.js
-vi.mock('next/server', async () => {
-  const actual = await vi.importActual('next/server')
-  return {
-    ...actual,
-    NextResponse: {
-      json: vi.fn((data, options) => {
-        const headers = options?.headers || {}
-        return {
-          json: async () => data,
-          status: options?.status || 200,
-          headers: headers, // Direct access to headers object
-          ok: (options?.status || 200) < 400,
-        }
-      }),
-    },
-  }
-})
+// Mock Next.js with proper headers Map
+mock.module('next/server', () => ({
+  NextRequest: class NextRequest {
+    url: string
+    constructor(url: string) { this.url = url }
+  },
+  NextResponse: {
+    json: (data: unknown, options?: { status?: number; headers?: Record<string, string> }) => ({
+      json: async () => data,
+      status: options?.status || 200,
+      headers: new Map(Object.entries(options?.headers || {})),
+      ok: (options?.status || 200) < 400,
+    }),
+  },
+}))
+
+// Mock logger
+mock.module('@/lib/monitoring/logger', () => ({
+  createContextLogger: () => ({
+    info: () => {},
+    warn: () => {},
+    error: () => {},
+    debug: () => {},
+  })
+}))
+
+import { NextRequest } from 'next/server'
 
 const createMockRequest = (url: string, options: RequestInit = {}) => {
   return {
@@ -33,186 +41,187 @@ const createMockRequest = (url: string, options: RequestInit = {}) => {
 
 const createMockParams = (slug: string) => ({ params: Promise.resolve({ slug }) })
 
-// Mock the blog posts data to ensure test isolation
-vi.mock('@/app/api/blog/[slug]/route', () => {
-  // Store original mock data
-  const originalMockData = [
-    {
-      id: '1',
-      title: 'Revenue Operations Best Practices: A Complete Guide',
-      slug: 'revenue-operations-best-practices-complete-guide',
-      excerpt: 'Discover proven strategies for optimizing revenue operations, from data analytics to process automation.',
-      content: 'Revenue Operations Best Practices content here...',
-      contentType: 'MARKDOWN',
-      status: 'PUBLISHED',
-      metaTitle: 'Revenue Operations Best Practices: A Complete Guide | Richard Hudson',
-      metaDescription: 'Discover proven strategies for optimizing revenue operations, from data analytics to process automation.',
-      keywords: ['revenue operations', 'revops', 'data analytics'],
-      featuredImage: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=600',
-      featuredImageAlt: 'Revenue Operations Dashboard Analytics',
-      readingTime: 8,
-      wordCount: 1200,
-      publishedAt: '2024-01-15T10:00:00Z',
-      createdAt: '2024-01-10T09:00:00Z',
-      updatedAt: '2024-01-15T10:00:00Z',
-      authorId: 'richard-hudson',
-      author: {
-        id: 'richard-hudson',
-        name: 'Richard Hudson',
-        email: 'richard@example.com',
-        slug: 'richard-hudson',
-        bio: 'Revenue Operations Professional with 8+ years of experience.',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150',
-        totalPosts: 10,
-        totalViews: 15000,
-        createdAt: '2024-01-01T00:00:00Z'
-      },
-      categoryId: 'revenue-operations',
-      category: {
-        id: 'revenue-operations',
-        name: 'Revenue Operations',
-        slug: 'revenue-operations',
-        description: 'Insights and strategies for revenue operations professionals',
-        color: '#3B82F6',
-        postCount: 5,
-        totalViews: 8000,
-        createdAt: '2024-01-01T00:00:00Z'
-      },
-      tags: [{
-        id: 'analytics',
-        name: 'Analytics',
-        slug: 'analytics',
-        color: '#10B981',
-        postCount: 8,
-        totalViews: 5000,
-        createdAt: '2024-01-01T00:00:00Z'
-      }],
-      viewCount: 0,
-      likeCount: 0,
-      shareCount: 0,
-      commentCount: 0
-    }
-  ]
-  
-  // Create a fresh copy for each test
-  let mockBlogPosts = [...originalMockData]
-  
-  // Reset function to restore original data
-  const resetMockData = () => {
-    mockBlogPosts = [...originalMockData]
+// Helper to create mock response with Map headers
+const createMockResponse = (data: unknown, status: number, headerObj: Record<string, string> = {}) => ({
+  json: async () => data,
+  status,
+  headers: new Map(Object.entries(headerObj)),
+  ok: status < 400,
+})
+
+// Store original mock data
+const originalMockData = [
+  {
+    id: '1',
+    title: 'Revenue Operations Best Practices: A Complete Guide',
+    slug: 'revenue-operations-best-practices-complete-guide',
+    excerpt: 'Discover proven strategies for optimizing revenue operations, from data analytics to process automation.',
+    content: 'Revenue Operations Best Practices content here...',
+    contentType: 'MARKDOWN',
+    status: 'PUBLISHED',
+    metaTitle: 'Revenue Operations Best Practices: A Complete Guide | Richard Hudson',
+    metaDescription: 'Discover proven strategies for optimizing revenue operations, from data analytics to process automation.',
+    keywords: ['revenue operations', 'revops', 'data analytics'],
+    featuredImage: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=600',
+    featuredImageAlt: 'Revenue Operations Dashboard Analytics',
+    readingTime: 8,
+    wordCount: 1200,
+    publishedAt: '2024-01-15T10:00:00Z',
+    createdAt: '2024-01-10T09:00:00Z',
+    updatedAt: '2024-01-15T10:00:00Z',
+    authorId: 'richard-hudson',
+    author: {
+      id: 'richard-hudson',
+      name: 'Richard Hudson',
+      email: 'richard@example.com',
+      slug: 'richard-hudson',
+      bio: 'Revenue Operations Professional with 8+ years of experience.',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150',
+      totalPosts: 10,
+      totalViews: 15000,
+      createdAt: '2024-01-01T00:00:00Z'
+    },
+    categoryId: 'revenue-operations',
+    category: {
+      id: 'revenue-operations',
+      name: 'Revenue Operations',
+      slug: 'revenue-operations',
+      description: 'Insights and strategies for revenue operations professionals',
+      color: '#3B82F6',
+      postCount: 5,
+      totalViews: 8000,
+      createdAt: '2024-01-01T00:00:00Z'
+    },
+    tags: [{
+      id: 'analytics',
+      name: 'Analytics',
+      slug: 'analytics',
+      color: '#10B981',
+      postCount: 8,
+      totalViews: 5000,
+      createdAt: '2024-01-01T00:00:00Z'
+    }],
+    viewCount: 0,
+    likeCount: 0,
+    shareCount: 0,
+    commentCount: 0
   }
-  
+]
+
+// Create a fresh copy for each test
+let mockBlogPosts = [...originalMockData.map(p => ({ ...p }))]
+
+// Reset function to restore original data
+const resetMockData = () => {
+  mockBlogPosts = [...originalMockData.map(p => ({ ...p }))]
+}
+
+// Mock the blog posts data to ensure test isolation
+mock.module('@/app/api/blog/[slug]/route', () => {
   return {
     __resetMockData: resetMockData,
     // Override the functions to use our controlled mock data
     GET: async (_request: NextRequest, context: { params: Promise<{ slug: string }> }) => {
       try {
-        const { slug } = await context.params;
-      
-      if (!slug) {
-        return { json: async () => ({ success: false, error: 'Slug parameter is required' }), status: 400, headers: {} }
-      }
-      
-      const post = mockBlogPosts.find(p => p.slug === slug);
-      
-      if (!post) {
-        return { json: async () => ({ success: false, error: 'Blog post not found' }), status: 404, headers: {} }
-      }
-      
-      // Increment view count for testing
-      post.viewCount = (post.viewCount || 0) + 1;
-      
-        return { 
-          json: async () => ({ data: post, success: true }), 
-          status: 200, 
-          headers: { 'Cache-Control': 'public, max-age=300, s-maxage=600' }
+        const { slug } = await context.params
+
+        if (!slug) {
+          return createMockResponse({ success: false, error: 'Slug parameter is required' }, 400)
         }
+
+        const post = mockBlogPosts.find(p => p.slug === slug)
+
+        if (!post) {
+          return createMockResponse({ success: false, error: 'Blog post not found' }, 404)
+        }
+
+        // Increment view count for testing
+        post.viewCount = (post.viewCount || 0) + 1
+
+        return createMockResponse(
+          { data: post, success: true },
+          200,
+          { 'Cache-Control': 'public, max-age=300, s-maxage=600' }
+        )
       } catch (_error) {
-        return { 
-          json: async () => ({ success: false, error: 'Failed to fetch blog post' }), 
-          status: 500, 
-          headers: {}
-        }
+        return createMockResponse({ success: false, error: 'Failed to fetch blog post' }, 500)
       }
     },
     PUT: async (request: NextRequest, context: { params: Promise<{ slug: string }> }) => {
       try {
-        const { slug } = await context.params;
-        const body = await request.json();
-      
-      if (!slug) {
-        return { json: async () => ({ success: false, error: 'Slug parameter is required' }), status: 400, headers: {} }
-      }
-      
-      const postIndex = mockBlogPosts.findIndex(p => p.slug === slug);
+        const { slug } = await context.params
+        const body = await request.json()
 
-      if (postIndex === -1) {
-        return { json: async () => ({ success: false, error: 'Blog post not found' }), status: 404, headers: {} }
-      }
-
-      const currentPost = mockBlogPosts[postIndex];
-      if (!currentPost) {
-        return { json: async () => ({ success: false, error: 'Blog post not found' }), status: 404, headers: {} }
-      }
-
-      const updatedPost = {
-        ...currentPost,
-        ...body,
-        id: currentPost.id,
-        slug: currentPost.slug,
-        updatedAt: new Date().toISOString(),
-        readingTime: body.content ? Math.ceil(body.content.split(' ').length / 200) : currentPost.readingTime,
-        wordCount: body.content ? body.content.split(' ').length : currentPost.wordCount,
-        publishedAt: body.status === 'PUBLISHED' && !currentPost.publishedAt
-          ? new Date().toISOString()
-          : body.publishedAt || currentPost.publishedAt
-      };
-      
-      mockBlogPosts[postIndex] = updatedPost;
-      
-        return { 
-          json: async () => ({ data: updatedPost, success: true, message: 'Blog post updated successfully' }), 
-          status: 200, 
-          headers: { 'Cache-Control': 'no-cache' }
+        if (!slug) {
+          return createMockResponse({ success: false, error: 'Slug parameter is required' }, 400)
         }
+
+        const postIndex = mockBlogPosts.findIndex(p => p.slug === slug)
+
+        if (postIndex === -1) {
+          return createMockResponse({ success: false, error: 'Blog post not found' }, 404)
+        }
+
+        const currentPost = mockBlogPosts[postIndex]
+        if (!currentPost) {
+          return createMockResponse({ success: false, error: 'Blog post not found' }, 404)
+        }
+
+        const updatedPost = {
+          ...currentPost,
+          ...body,
+          id: currentPost.id,
+          slug: currentPost.slug,
+          updatedAt: new Date().toISOString(),
+          readingTime: body.content ? Math.ceil(body.content.split(' ').length / 200) : currentPost.readingTime,
+          wordCount: body.content ? body.content.split(' ').length : currentPost.wordCount,
+          publishedAt: body.status === 'PUBLISHED' && !currentPost.publishedAt
+            ? new Date().toISOString()
+            : body.publishedAt || currentPost.publishedAt
+        }
+
+        mockBlogPosts[postIndex] = updatedPost
+
+        return createMockResponse(
+          { data: updatedPost, success: true, message: 'Blog post updated successfully' },
+          200,
+          { 'Cache-Control': 'no-cache' }
+        )
       } catch (_error) {
-        return { 
-          json: async () => ({ success: false, error: 'Failed to update blog post' }), 
-          status: 500, 
-          headers: {}
-        }
+        return createMockResponse({ success: false, error: 'Failed to update blog post' }, 500)
       }
     },
     DELETE: async (_request: NextRequest, context: { params: Promise<{ slug: string }> }) => {
       try {
-        const { slug } = await context.params;
-        
+        const { slug } = await context.params
+
         if (!slug) {
-        return { json: async () => ({ success: false, error: 'Slug parameter is required' }), status: 400, headers: {} }
-      }
-      
-      const postIndex = mockBlogPosts.findIndex(p => p.slug === slug);
-      
-      if (postIndex === -1) {
-        return { json: async () => ({ success: false, error: 'Blog post not found' }), status: 404, headers: {} }
-      }
-      
-      mockBlogPosts.splice(postIndex, 1);
-      
-        return { 
-          json: async () => ({ data: { success: true }, success: true, message: 'Blog post deleted successfully' }), 
-          status: 200, 
-          headers: { 'Cache-Control': 'no-cache' }
+          return createMockResponse({ success: false, error: 'Slug parameter is required' }, 400)
         }
+
+        const postIndex = mockBlogPosts.findIndex(p => p.slug === slug)
+
+        if (postIndex === -1) {
+          return createMockResponse({ success: false, error: 'Blog post not found' }, 404)
+        }
+
+        mockBlogPosts.splice(postIndex, 1)
+
+        return createMockResponse(
+          { data: { success: true }, success: true, message: 'Blog post deleted successfully' },
+          200,
+          { 'Cache-Control': 'no-cache' }
+        )
       } catch (_error) {
-        return { 
-          json: async () => ({ success: false, error: 'Failed to delete blog post' }), 
-          status: 500, 
-          headers: {}
-        }
+        return createMockResponse({ success: false, error: 'Failed to delete blog post' }, 500)
       }
     }
   }
+})
+
+// Clean up mocks after all tests in this file
+afterAll(() => {
+  mock.restore()
 })
 
 describe('/api/blog/[slug]', () => {
@@ -295,7 +304,7 @@ describe('/api/blog/[slug]', () => {
 
       const response = await GET(request, params)
 
-      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('public, max-age=300, s-maxage=600')
+      expect(response.headers.get('Cache-Control')).toBe('public, max-age=300, s-maxage=600')
     })
 
     it('includes all expected fields in response', async () => {
@@ -487,7 +496,7 @@ describe('/api/blog/[slug]', () => {
 
       const response = await PUT(request, params)
 
-      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('no-cache')
+      expect(response.headers.get('Cache-Control')).toBe('no-cache')
     })
 
     it('handles JSON parsing errors', async () => {
@@ -562,7 +571,7 @@ describe('/api/blog/[slug]', () => {
 
       const response = await DELETE(request, params)
 
-      expect((response.headers as unknown as Record<string, string>)['Cache-Control']).toBe('no-cache')
+      expect(response.headers.get('Cache-Control')).toBe('no-cache')
     })
 
     it('actually removes the post from the collection', async () => {

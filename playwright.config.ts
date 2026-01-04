@@ -99,7 +99,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'npm run dev',
+    command: 'bun run dev',
     
     url: process.env.BASE_URL || 'http://localhost:3000',
     reuseExistingServer: true, // Always reuse existing server

@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { TrendingUp, DollarSign, Users, Activity } from 'lucide-react'
 
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { createContextLogger } from '@/lib/monitoring/logger'
-import { TIMING } from '@/lib/constants/spacing'
+import { useLoadingState } from '@/hooks/use-loading-state'
 import { yearOverYearGrowthExtended } from '@/app/projects/data/partner-analytics'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
@@ -21,12 +21,7 @@ const logger = createContextLogger('RevenueKPIPage')
 
 export default function RevenueKPI() {
   const [activeTimeframe, setActiveTimeframe] = useState('All')
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-    return () => clearTimeout(timer)
-  }, [])
+  const { isLoading, handleRefresh } = useLoadingState()
 
   const currentYearData: YearOverYearGrowth | undefined =
     yearOverYearGrowthExtended[yearOverYearGrowthExtended.length - 1]
@@ -47,11 +42,6 @@ export default function RevenueKPI() {
     currentYearData.total_transactions,
     prevYearData?.total_transactions
   )
-
-  const handleRefresh = () => {
-    setIsLoading(true)
-    setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-  }
 
   // Prepare metrics data for standardized MetricsGrid
   const metrics = [

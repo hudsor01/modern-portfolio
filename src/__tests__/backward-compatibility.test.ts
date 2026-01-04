@@ -7,7 +7,7 @@
  * with existing public API contracts and component interfaces.
  */
 
-import { describe, it } from 'vitest'
+import { describe, it } from 'bun:test'
 import * as fc from 'fast-check'
 
 // Import public API types to verify their contracts

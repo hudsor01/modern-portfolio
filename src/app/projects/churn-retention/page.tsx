@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useLoadingState } from '@/hooks/use-loading-state'
 import dynamic from 'next/dynamic'
 import { TrendingDown, Users, Activity, AlertCircle } from 'lucide-react'
 
@@ -9,7 +9,6 @@ import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { ChartContainer } from '@/components/ui/chart-container'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
-import { TIMING } from '@/lib/constants/spacing'
 import { formatPercentage, formatNumber, formatCurrency } from '@/lib/utils/data-formatters'
 
 // Lazy-load chart components with Suspense fallback
@@ -34,17 +33,7 @@ const starData = {
 }
 
 export default function ChurnAnalysis() {
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-    return () => clearTimeout(timer)
-  }, [])
-
-  const handleRefresh = () => {
-    setIsLoading(true)
-    setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-  }
+  const { isLoading, handleRefresh } = useLoadingState()
 
   // Ensure data exists before accessing indices
   const currentMonth = staticChurnData?.[staticChurnData.length - 1] ?? null

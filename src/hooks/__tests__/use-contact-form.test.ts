@@ -4,7 +4,8 @@
  * Validates: Requirements 3.1, 3.2, 3.10, 7.2, 6.6
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'bun:test'
+import { vi } from '@/test/vitest-compat'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import * as fc from 'fast-check'
 import { useContactForm, type ContactFormData } from '../use-contact-form'

@@ -7,9 +7,17 @@
  * Feature: project-ui-consistency, Property 9: Accessibility Pattern Consistency
  */
 
-import { render } from '@testing-library/react'
+import { describe, test, expect, afterEach } from 'bun:test'
+import { render, cleanup } from '@testing-library/react'
 import * as fc from 'fast-check'
 import { BackButton, NavigationBreadcrumbs, NavigationTabs } from '../index'
+
+// Note: Don't manually clear document.body.innerHTML - this breaks happy-dom's cache
+// The cleanup() function from RTL handles DOM cleanup properly
+
+afterEach(() => {
+  cleanup()
+})
 // Types imported but not used in current tests
 
 // Generators for property-based testing with valid, HTML-safe data
@@ -60,6 +68,9 @@ const uniqueNavigationTabsGenerator = (minLength: number, maxLength: number) =>
     }))
   })
 
+// Note: Property-based tests were previously skipped due to happy-dom test isolation issues.
+// The fix was to ensure all tests properly restore window/document modifications in afterEach.
+// See: src/lib/utils/__tests__/reading-progress-utils.test.ts for the pattern.
 describe('Accessibility Pattern Consistency', () => {
   describe('Property 9: Semantic HTML Structure Consistency', () => {
     test('back buttons maintain consistent semantic HTML structure', () => {

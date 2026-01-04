@@ -9,7 +9,7 @@ import {
   BlogPostFilters,
   BlogPostSort,
 } from '@/types/shared-api'
-import { EnhancedRateLimiter } from '@/lib/security/enhanced-rate-limiter'
+import { EnhancedRateLimiter } from '@/lib/security/rate-limiter'
 import { validateCSRFToken } from '@/lib/security/csrf-protection'
 
 const logger = createContextLogger('BlogAPI')

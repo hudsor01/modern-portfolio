@@ -1,43 +1,51 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { NextRequest } from 'next/server'
-import { GET } from '@/app/api/blog/analytics/route'
+import { describe, afterAll, it, expect, vi, beforeEach, mock } from 'bun:test'
+
+// Create mock functions
+const mockCount = vi.fn()
+const mockAggregate = vi.fn()
+const mockBlogPostFindMany = vi.fn()
+const mockCategoryFindMany = vi.fn()
+const mockTagFindMany = vi.fn()
+const mockGroupBy = vi.fn()
 
 // Mock the db module
-vi.mock('@/lib/db', () => ({
+mock.module('@/lib/db', () => ({
   db: {
     blogPost: {
-      count: vi.fn(),
-      aggregate: vi.fn(),
-      findMany: vi.fn(),
+      count: mockCount,
+      aggregate: mockAggregate,
+      findMany: mockBlogPostFindMany,
     },
     category: {
-      findMany: vi.fn(),
+      findMany: mockCategoryFindMany,
     },
     tag: {
-      findMany: vi.fn(),
+      findMany: mockTagFindMany,
     },
     postView: {
-      groupBy: vi.fn(),
+      groupBy: mockGroupBy,
     },
   },
 }))
 
 // Mock the logger
-vi.mock('@/lib/monitoring/logger', () => ({
-  createContextLogger: vi.fn(() => ({
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn(),
-    debug: vi.fn(),
-  })),
+mock.module('@/lib/monitoring/logger', () => ({
+  createContextLogger: () => ({
+    info: () => {},
+    warn: () => {},
+    error: () => {},
+    debug: () => {},
+  }),
 }))
 
-const createMockRequest = (url: string) => {
-  return new NextRequest(url)
-}
+// Import after mocks
+import { GET } from '@/app/api/blog/analytics/route'
+import { createMockNextRequest } from '@/test/mock-next-request'
+
+const createMockRequest = (url: string) => createMockNextRequest(url)
 
 // Helper to set up standard mocks for successful responses
-async function setupStandardMocks(overrides?: {
+function setupStandardMocks(overrides?: {
   totalPosts?: number
   publishedPosts?: number
   draftPosts?: number
@@ -52,14 +60,12 @@ async function setupStandardMocks(overrides?: {
   monthlyViews?: unknown[]
   keywords?: unknown[]
 }) {
-  const { db } = await import('@/lib/db')
-
-  ;(db.blogPost.count as ReturnType<typeof vi.fn>)
+  mockCount
     .mockResolvedValueOnce(overrides?.totalPosts ?? 10)
     .mockResolvedValueOnce(overrides?.publishedPosts ?? 8)
     .mockResolvedValueOnce(overrides?.draftPosts ?? 2)
 
-  ;(db.blogPost.aggregate as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+  mockAggregate.mockResolvedValueOnce({
     _sum: {
       viewCount: overrides?.viewCount ?? 1500,
       likeCount: overrides?.likeCount ?? 100,
@@ -69,23 +75,34 @@ async function setupStandardMocks(overrides?: {
     _avg: { readingTime: overrides?.readingTime ?? 5 },
   } as never)
 
-  ;(db.blogPost.findMany as ReturnType<typeof vi.fn>)
+  mockBlogPostFindMany
     .mockResolvedValueOnce((overrides?.topPosts ?? []) as never)
     .mockResolvedValueOnce((overrides?.keywords ?? []) as never)
 
-  ;(db.category.findMany as ReturnType<typeof vi.fn>).mockResolvedValueOnce((overrides?.topCategories ?? []) as never)
-  ;(db.tag.findMany as ReturnType<typeof vi.fn>).mockResolvedValueOnce((overrides?.topTags ?? []) as never)
-  ;(db.postView.groupBy as ReturnType<typeof vi.fn>).mockResolvedValueOnce((overrides?.monthlyViews ?? []) as never)
+  mockCategoryFindMany.mockResolvedValueOnce((overrides?.topCategories ?? []) as never)
+  mockTagFindMany.mockResolvedValueOnce((overrides?.topTags ?? []) as never)
+  mockGroupBy.mockResolvedValueOnce((overrides?.monthlyViews ?? []) as never)
 }
+
+// Clean up mocks after all tests in this file
+afterAll(() => {
+  mock.restore()
+})
 
 describe('/api/blog/analytics', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockCount.mockReset()
+    mockAggregate.mockReset()
+    mockBlogPostFindMany.mockReset()
+    mockCategoryFindMany.mockReset()
+    mockTagFindMany.mockReset()
+    mockGroupBy.mockReset()
   })
 
   describe('GET', () => {
     it('returns comprehensive blog analytics data', async () => {
-      await setupStandardMocks()
+      setupStandardMocks()
 
       const request = createMockRequest('http://localhost:3000/api/blog/analytics')
       const response = await GET(request)
@@ -107,7 +124,7 @@ describe('/api/blog/analytics', () => {
     })
 
     it('returns correct counts from database', async () => {
-      await setupStandardMocks({
+      setupStandardMocks({
         totalPosts: 15,
         publishedPosts: 12,
         draftPosts: 3,
@@ -183,7 +200,7 @@ describe('/api/blog/analytics', () => {
         tags: [],
       }
 
-      await setupStandardMocks({
+      setupStandardMocks({
         totalPosts: 1,
         publishedPosts: 1,
         draftPosts: 0,
@@ -220,7 +237,7 @@ describe('/api/blog/analytics', () => {
         createdAt: new Date(),
       }
 
-      await setupStandardMocks({
+      setupStandardMocks({
         topCategories: [mockCategory],
       })
 
@@ -249,7 +266,7 @@ describe('/api/blog/analytics', () => {
         createdAt: new Date(),
       }
 
-      await setupStandardMocks({
+      setupStandardMocks({
         topTags: [mockTag],
       })
 
@@ -267,7 +284,7 @@ describe('/api/blog/analytics', () => {
     })
 
     it('returns monthly views data with correct structure', async () => {
-      await setupStandardMocks({
+      setupStandardMocks({
         monthlyViews: [
           { viewedAt: new Date('2024-01-15'), _count: 100 },
           { viewedAt: new Date('2024-02-10'), _count: 150 },
@@ -288,7 +305,7 @@ describe('/api/blog/analytics', () => {
     })
 
     it('returns popular keywords with correct structure', async () => {
-      await setupStandardMocks({
+      setupStandardMocks({
         keywords: [
           { keywords: ['react', 'javascript'] },
           { keywords: ['react', 'typescript'] },
@@ -310,7 +327,7 @@ describe('/api/blog/analytics', () => {
     })
 
     it('handles time range parameter', async () => {
-      await setupStandardMocks()
+      setupStandardMocks()
 
       const request = createMockRequest('http://localhost:3000/api/blog/analytics?timeRange=7d')
       const response = await GET(request)
@@ -321,8 +338,7 @@ describe('/api/blog/analytics', () => {
     })
 
     it('handles database errors gracefully', async () => {
-      const { db } = await import('@/lib/db')
-      ;(db.blogPost.count as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('Database error'))
+      mockCount.mockRejectedValueOnce(new Error('Database error'))
 
       const request = createMockRequest('http://localhost:3000/api/blog/analytics')
       const response = await GET(request)
@@ -334,7 +350,7 @@ describe('/api/blog/analytics', () => {
     })
 
     it('returns empty arrays when no data exists', async () => {
-      await setupStandardMocks({
+      setupStandardMocks({
         totalPosts: 0,
         publishedPosts: 0,
         draftPosts: 0,
@@ -359,7 +375,7 @@ describe('/api/blog/analytics', () => {
     })
 
     it('includes cache headers in response', async () => {
-      await setupStandardMocks({
+      setupStandardMocks({
         totalPosts: 0,
         publishedPosts: 0,
         draftPosts: 0,
