@@ -3,7 +3,7 @@ import { getProject } from '@/lib/content/projects'
 import { z } from 'zod'
 import { validationErrorResponse } from '@/lib/api/response'
 import { createContextLogger } from '@/lib/monitoring/logger';
-import { EnhancedRateLimiter } from '@/lib/security/enhanced-rate-limiter'
+import { EnhancedRateLimiter } from '@/lib/security/rate-limiter'
 
 const logger = createContextLogger('SlugAPI');
 

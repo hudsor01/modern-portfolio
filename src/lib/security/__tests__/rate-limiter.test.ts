@@ -14,7 +14,7 @@ import {
   getRateLimitAnalytics,
   clearRateLimit,
   getClientRateLimitInfo
-} from '../enhanced-rate-limiter'
+} from '../rate-limiter'
 
 // Helper to wait for a specific duration
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
@@ -376,7 +376,7 @@ describe('Enhanced Rate Limiter', () => {
 
   describe('Error Handling and Edge Cases', () => {
     it('should handle missing configuration gracefully', () => {
-      const result = enhancedRateLimiter.checkLimit('edge-client', {} as import('../enhanced-rate-limiter').EnhancedRateLimitConfig)
+      const result = enhancedRateLimiter.checkLimit('edge-client', {} as import('../rate-limiter').EnhancedRateLimitConfig)
       expect(result.allowed).toBe(true) // Should default to allowing
     })
 

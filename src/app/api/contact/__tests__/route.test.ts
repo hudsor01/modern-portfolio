@@ -42,7 +42,7 @@ mock.module('next/server', () => ({
 }))
 
 // Mock rate limiter to always allow
-mock.module('@/lib/security/enhanced-rate-limiter', () => ({
+mock.module('@/lib/security/rate-limiter', () => ({
   checkEnhancedContactFormRateLimit: () => ({
     allowed: true,
     remaining: 5,
