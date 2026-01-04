@@ -29,9 +29,9 @@ export function SkipToContent({
         // Visually hidden by default
         'absolute -top-96 left-4 z-[9999] px-4 py-2 bg-primary-hover text-foreground rounded-md font-medium text-sm',
         // Show on focus
-        'focus:top-4 transition-all duration-200',
+        'focus:top-4 transition-all duration-150 ease-out',
         // High contrast support
-        'focus:outline-hidden focus:ring-2 focus:ring-blue-400 focus:ring-offset-2',
+        'focus:outline-hidden focus:ring-[3px] focus:ring-ring/50 focus:ring-offset-2',
         className
       )}
     >

@@ -13,7 +13,7 @@ export function VelocityChart({ partnerConversion }: VelocityChartProps) {
 
   return (
     <div
-      className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+      className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out"
     >
       <h2 className="typography-h3 mb-6">Sales Velocity by Segment</h2>
       <div className="space-y-6">

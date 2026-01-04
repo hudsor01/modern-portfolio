@@ -2,13 +2,13 @@
 // Learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
+  provider        = "prisma-client"
+  output          = "./generated/prisma"
   previewFeatures = ["fullTextSearchPostgres"]
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // =======================
@@ -575,12 +575,10 @@ model ContactSubmission {
   id              String          @id @default(cuid())
   name            String
   email           String
-  subject         String
+  company         String?         // Optional - company/organization name
+  phone           String?         // Optional - phone number
+  subject         String?         // Optional - default to "Contact Form Inquiry"
   message         String          @db.Text
-  company         String?
-  phone           String?
-  timeline        String?
-  budget          String?
 
   // Metadata
   status          SubmissionStatus @default(NEW)

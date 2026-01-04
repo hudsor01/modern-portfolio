@@ -13,15 +13,15 @@ vi.mock('@/lib/monitoring/logger', () => ({
 }))
 
 describe('useCSRFToken', () => {
-  const mockFetch = vi.fn() as unknown as typeof fetch & ReturnType<typeof vi.fn>
+  const mockFetch = vi.fn()
 
   beforeEach(() => {
     vi.clearAllMocks()
-    global.fetch = mockFetch
+    vi.stubGlobal('fetch', mockFetch)
   })
 
   afterEach(() => {
-    vi.restoreAllMocks()
+    vi.unstubAllGlobals()
   })
 
   it('should fetch CSRF token successfully', async () => {

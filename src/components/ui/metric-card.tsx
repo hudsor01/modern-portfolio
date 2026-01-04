@@ -1,0 +1,173 @@
+'use client'
+
+import * as React from 'react'
+import { cva, type VariantProps } from 'class-variance-authority'
+import type { LucideIcon } from 'lucide-react'
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Skeleton } from './skeleton'
+
+const metricCardVariants = cva(
+  'relative group rounded-xl border bg-card text-card-foreground transition-all duration-300 ease-out hover:shadow-md hover:-translate-y-0.5',
+  {
+    variants: {
+      variant: {
+        primary: 'border-primary/20 hover:border-primary/40 hover:shadow-primary/10',
+        secondary: 'border-secondary/20 hover:border-secondary/40 hover:shadow-secondary/10',
+        success:
+          'border-green-200 hover:border-green-300 hover:shadow-green-100 dark:border-green-800 dark:hover:border-green-700',
+        warning:
+          'border-yellow-200 hover:border-yellow-300 hover:shadow-yellow-100 dark:border-yellow-800 dark:hover:border-yellow-700',
+        info: 'border-blue-200 hover:border-blue-300 hover:shadow-blue-100 dark:border-blue-800 dark:hover:border-blue-700',
+      },
+      size: {
+        sm: 'p-4',
+        default: 'p-6',
+        lg: 'p-8',
+      },
+    },
+    defaultVariants: {
+      variant: 'primary',
+      size: 'default',
+    },
+  }
+)
+
+const iconVariants = cva('rounded-xl p-3 transition-colors duration-150 ease-out', {
+  variants: {
+    variant: {
+      primary: 'bg-primary/10 text-primary',
+      secondary: 'bg-secondary/10 text-secondary',
+      success: 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400',
+      warning: 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/20 dark:text-yellow-400',
+      info: 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400',
+    },
+  },
+  defaultVariants: {
+    variant: 'primary',
+  },
+})
+
+const trendVariants = cva('inline-flex items-center gap-1 text-xs font-medium', {
+  variants: {
+    direction: {
+      up: 'text-green-600 dark:text-green-400',
+      down: 'text-red-600 dark:text-red-400',
+      neutral: 'text-muted-foreground',
+    },
+  },
+  defaultVariants: {
+    direction: 'neutral',
+  },
+})
+
+export interface MetricTrend {
+  direction: 'up' | 'down' | 'neutral'
+  value: string
+  label: string
+}
+
+export interface MetricCardProps
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof metricCardVariants> {
+  icon: LucideIcon
+  label: string
+  value: string | number
+  subtitle?: string
+  trend?: MetricTrend
+  animationDelay?: number
+  loading?: boolean
+}
+
+const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
+  (
+    {
+      className,
+      variant,
+      size,
+      icon: Icon,
+      label,
+      value,
+      subtitle,
+      trend,
+      animationDelay = 0,
+      loading = false,
+      ...props
+    },
+    ref
+  ) => {
+    const TrendIcon =
+      trend?.direction === 'up' ? TrendingUp : trend?.direction === 'down' ? TrendingDown : Minus
+
+    if (loading) {
+      return (
+        <div
+          ref={ref}
+          className={cn(metricCardVariants({ variant, size }), className)}
+          style={{ animationDelay: `${animationDelay}ms` }}
+          {...props}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <Skeleton className="h-12 w-12 rounded-xl" />
+            <Skeleton className="h-4 w-16" />
+          </div>
+          <Skeleton className="h-8 w-24 mb-2" />
+          {subtitle && <Skeleton className="h-4 w-20" />}
+          {trend && <Skeleton className="h-4 w-16 mt-2" />}
+        </div>
+      )
+    }
+
+    return (
+      <div
+        ref={ref}
+        className={cn(metricCardVariants({ variant, size }), 'animate-fade-in-up', className)}
+        style={{ animationDelay: `${animationDelay}ms` }}
+        {...props}
+      >
+        {/* Subtle glow effect */}
+        <div
+          className={cn(
+            'absolute inset-0 rounded-xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 ease-out',
+            variant === 'primary' && 'bg-gradient-to-r from-primary/20 to-primary/5',
+            variant === 'secondary' && 'bg-gradient-to-r from-secondary/20 to-secondary/5',
+            variant === 'success' && 'bg-gradient-to-r from-green-200/20 to-green-100/5',
+            variant === 'warning' && 'bg-gradient-to-r from-yellow-200/20 to-yellow-100/5',
+            variant === 'info' && 'bg-gradient-to-r from-blue-200/20 to-blue-100/5'
+          )}
+        />
+
+        {/* Card content */}
+        <div className="relative">
+          <div className="flex items-center justify-between mb-4">
+            <div className={cn(iconVariants({ variant }))}>
+              <Icon className="h-6 w-6" />
+            </div>
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              {label}
+            </span>
+          </div>
+
+          <div className="space-y-1">
+            <p className="text-2xl font-semibold tracking-tight">
+              {typeof value === 'number' ? value.toLocaleString() : value}
+            </p>
+
+            {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+
+            {trend && (
+              <div className={cn(trendVariants({ direction: trend.direction }))}>
+                <TrendIcon className="h-3 w-3" />
+                <span>{trend.value}</span>
+                <span className="text-muted-foreground">{trend.label}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+)
+
+MetricCard.displayName = 'MetricCard'
+
+export { MetricCard, metricCardVariants }

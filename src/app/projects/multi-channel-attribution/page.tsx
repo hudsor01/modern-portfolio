@@ -1,14 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Target, Eye, Share2, DollarSign, TrendingUp } from 'lucide-react'
+import { Target, Eye, Share2, DollarSign } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
+import { MetricsGrid } from '@/components/projects/metrics-grid'
+import { SectionCard } from '@/components/ui/section-card'
 import { TIMING } from '@/lib/constants/spacing'
+import { formatCurrency, formatNumber } from '@/lib/utils/data-formatters'
 import { attributionMetrics } from './data/constants'
-import { formatCurrency, formatPercent } from './utils'
-import { MetricCard } from './components/MetricCard'
+import { formatPercent } from './utils'
 import { OverviewTab } from './components/OverviewTab'
 import { ModelsTab } from './components/ModelsTab'
 import { JourneysTab } from './components/JourneysTab'
@@ -17,7 +19,7 @@ import { StrategicImpact } from './components/StrategicImpact'
 import { NarrativeSections } from './components/NarrativeSections'
 
 const tabs = ['overview', 'models', 'journeys', 'channels'] as const
-type Tab = typeof tabs[number]
+type Tab = (typeof tabs)[number]
 
 export default function MultiChannelAttribution() {
   const [isLoading, setIsLoading] = useState(true)
@@ -33,20 +35,67 @@ export default function MultiChannelAttribution() {
     setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
   }
 
+  // Standardized metrics configuration using consistent data formatting
+  const metrics = [
+    {
+      id: 'total-conversions',
+      icon: Target,
+      label: 'Conversions',
+      value: formatNumber(attributionMetrics.totalConversions),
+      subtitle: `+${formatPercent(attributionMetrics.conversionLift)} lift`,
+      variant: 'primary' as const,
+      trend: {
+        direction: 'up' as const,
+        value: formatPercent(attributionMetrics.conversionLift),
+        label: 'lift',
+      },
+    },
+    {
+      id: 'attribution-accuracy',
+      icon: Eye,
+      label: 'Accuracy',
+      value: formatPercent(attributionMetrics.attributionAccuracy),
+      subtitle: 'ML Model Performance',
+      variant: 'secondary' as const,
+    },
+    {
+      id: 'total-channels',
+      icon: Share2,
+      label: 'Channels',
+      value: formatNumber(attributionMetrics.totalChannels),
+      subtitle: `${attributionMetrics.avgTouchpoints.toFixed(1)} avg touchpoints`,
+      variant: 'primary' as const,
+    },
+    {
+      id: 'roi-impact',
+      icon: DollarSign,
+      label: 'ROI Impact',
+      value: formatCurrency(attributionMetrics.totalROI, { compact: true }),
+      subtitle: 'Optimization Value',
+      variant: 'secondary' as const,
+    },
+  ]
+
   return (
     <ProjectPageLayout
       title="Multi-Channel Attribution Analytics Dashboard"
       description="Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints. Delivering 92.4% attribution accuracy and $2.3M ROI optimization through data-driven attribution modeling and cross-channel insights."
       tags={[
-        { label: 'Attribution Accuracy: 92.4%', color: 'bg-primary/20 text-primary' },
-        { label: `ROI Optimization: ${formatCurrency(attributionMetrics.totalROI)}`, color: 'bg-secondary/20 text-secondary' },
-        { label: 'ML Attribution Models', color: 'bg-primary/20 text-primary' },
-        { label: 'Customer Journey Analytics', color: 'bg-secondary/20 text-secondary' },
+        {
+          label: `Attribution Accuracy: ${formatPercent(attributionMetrics.attributionAccuracy)}`,
+          variant: 'primary',
+        },
+        {
+          label: `ROI Optimization: ${formatCurrency(attributionMetrics.totalROI, { compact: true })}`,
+          variant: 'secondary',
+        },
+        { label: 'ML Attribution Models', variant: 'primary' },
+        { label: 'Customer Journey Analytics', variant: 'secondary' },
       ]}
       onRefresh={handleRefresh}
       refreshButtonDisabled={isLoading}
       showTimeframes={true}
-      timeframes={tabs.map(t => t.charAt(0).toUpperCase() + t.slice(1))}
+      timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
       activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
       onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
     >
@@ -54,70 +103,37 @@ export default function MultiChannelAttribution() {
         <LoadingState />
       ) : (
         <>
-          {/* Key Metrics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <MetricCard
-              icon={Target}
-              label="Conversions"
-              value={attributionMetrics.totalConversions.toLocaleString()}
-              subtitle={
-                <p className="typography-small text-muted-foreground flex items-center gap-1">
-                  <TrendingUp className="w-4 h-4 text-success" />
-                  +{formatPercent(attributionMetrics.conversionLift)} lift
-                </p>
-              }
-              gradientFrom="from-blue-600"
-              gradientTo="to-cyan-600"
-              iconBgClass="bg-primary/20"
-              iconColorClass="text-primary"
+          {/* Key Metrics using standardized MetricsGrid */}
+          <MetricsGrid metrics={metrics} columns={4} loading={isLoading} className="mb-8" />
 
-            />
-            <MetricCard
-              icon={Eye}
-              label="Accuracy"
-              value={formatPercent(attributionMetrics.attributionAccuracy)}
-              subtitle="ML Model Performance"
-              gradientFrom="from-blue-600"
-              gradientTo="to-cyan-600"
-              iconBgClass="bg-secondary/20"
-              iconColorClass="text-secondary"
+          {/* Tab Content wrapped in SectionCard */}
+          <SectionCard
+            title="Attribution Analysis"
+            description="Detailed multi-channel attribution analysis and insights"
+            className="mb-8"
+          >
+            {activeTab === 'overview' && <OverviewTab />}
+            {activeTab === 'models' && <ModelsTab />}
+            {activeTab === 'journeys' && <JourneysTab />}
+            {activeTab === 'channels' && <ChannelsTab />}
+          </SectionCard>
 
-            />
-            <MetricCard
-              icon={Share2}
-              label="Channels"
-              value={attributionMetrics.totalChannels.toString()}
-              subtitle={`${attributionMetrics.avgTouchpoints.toFixed(1)} avg touchpoints`}
-              gradientFrom="from-blue-600"
-              gradientTo="to-cyan-600"
-              iconBgClass="bg-primary/20"
-              iconColorClass="text-primary"
+          {/* Strategic Impact wrapped in SectionCard */}
+          <SectionCard
+            title="Strategic Impact"
+            description="Business impact and strategic outcomes from attribution optimization"
+            className="mb-8"
+          >
+            <StrategicImpact />
+          </SectionCard>
 
-            />
-            <MetricCard
-              icon={DollarSign}
-              label="ROI Impact"
-              value={formatCurrency(attributionMetrics.totalROI)}
-              subtitle="Optimization Value"
-              gradientFrom="from-blue-600"
-              gradientTo="to-cyan-600"
-              iconBgClass="bg-secondary/20"
-              iconColorClass="text-secondary"
-
-            />
-          </div>
-
-          {/* Tab Content */}
-          {activeTab === 'overview' && <OverviewTab />}
-          {activeTab === 'models' && <ModelsTab />}
-          {activeTab === 'journeys' && <JourneysTab />}
-          {activeTab === 'channels' && <ChannelsTab />}
-
-          {/* Strategic Impact */}
-          <StrategicImpact />
-
-          {/* Professional Narrative Sections */}
-          <NarrativeSections />
+          {/* Professional Narrative Sections wrapped in SectionCard */}
+          <SectionCard
+            title="Project Narrative"
+            description="Comprehensive case study following the STAR methodology"
+          >
+            <NarrativeSections />
+          </SectionCard>
         </>
       )}
     </ProjectPageLayout>

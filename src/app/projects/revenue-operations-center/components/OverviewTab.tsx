@@ -32,7 +32,7 @@ export function OverviewTab() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
       {/* Revenue Overview */}
       <div
-        className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out"
       >
         <div className="mb-6">
           <h2 className="typography-h3 mb-2">Revenue Performance Overview</h2>
@@ -43,7 +43,7 @@ export function OverviewTab() {
 
       {/* Operational Efficiency */}
       <div
-        className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300"
+        className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out"
       >
         <div className="mb-6">
           <h2 className="typography-h3 mb-2">Operational Efficiency Metrics</h2>

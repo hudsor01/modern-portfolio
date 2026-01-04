@@ -16,9 +16,9 @@ export function Footer() {
   if (!showFooter) return null
 
   return (
-    <footer className="bg-[#0f172a] text-foreground border-t border-white/10 py-3">
+    <footer className="bg-card border-t border-border py-4">
       <div className="w-full mx-auto px-4 max-w-7xl">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-3 typography-small text-muted-foreground">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-3 text-sm text-muted-foreground">
           <p>© {currentYear} Richard Hudson. All rights reserved.</p>
           <a href="https://hudsondigitalsolutions.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
             Built by Hudson Digital Solutions

@@ -53,7 +53,7 @@ test.describe('Individual Project Dashboard Tests', () => {
 
     test('should display charts correctly', async ({ page }) => {
       // Wait for charts to load
-      await page.waitForSelector('svg', { timeout: 10000 })
+      await page.locator('svg').first().waitFor({ state: 'visible', timeout: 10000 })
       
       const svgElements = page.locator('svg')
       const svgCount = await svgElements.count()

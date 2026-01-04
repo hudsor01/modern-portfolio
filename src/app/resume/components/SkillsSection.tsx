@@ -59,7 +59,7 @@ export function SkillsSection() {
                           className="group/skill"
                         >
                           {/* Skill Item */}
-                          <div className="bg-white/5 rounded-xl p-3 hover:bg-white/10 transition-all duration-300 border border-white/10 hover:border-white/20 text-center">
+                          <div className="bg-white/5 rounded-xl p-3 hover:bg-white/10 transition-all duration-300 ease-out border border-white/10 hover:border-white/20 text-center">
                             <span className="text-foreground text-sm font-medium">
                               {skill}
                             </span>

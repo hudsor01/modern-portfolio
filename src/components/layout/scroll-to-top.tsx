@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { ArrowUp } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 
 export function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false)
@@ -30,13 +29,12 @@ export function ScrollToTop() {
   if (!isVisible) return null
 
   return (
-    <Button
+    <button
       onClick={scrollToTop}
-      size="icon"
-      className="fixed bottom-8 right-8 rounded-full shadow-lg z-50 animate-scale-in"
+      className="fixed bottom-8 right-8 p-3 bg-primary text-foreground rounded-full shadow-lg transition-all duration-300 ease-out hover:bg-primary-hover focus:outline-hidden focus:ring-[3px] focus:ring-ring/50 z-50 animate-scale-in"
       aria-label="Scroll to top"
     >
       <ArrowUp className="h-5 w-5" />
-    </Button>
+    </button>
   )
 }

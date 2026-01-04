@@ -5,7 +5,15 @@ import { TrendingUp, Map, Database, Zap, Code } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
+import { MetricsGrid } from '@/components/projects/metrics-grid'
+import { SectionCard } from '@/components/ui/section-card'
 import { TIMING } from '@/lib/constants/spacing'
+import {
+  formatCurrency,
+  formatNumber,
+  formatPercentage,
+  formatTrend,
+} from '@/lib/utils/data-formatters'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 
 export default function QuotaTerritoryManagementProject() {
@@ -21,50 +29,83 @@ export default function QuotaTerritoryManagementProject() {
     setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
   }
 
+  // Standardized metrics configuration using consistent data formatting
   const metrics = [
-    { label: 'Forecast Accuracy Improvement', value: '+28%', icon: TrendingUp, color: 'text-success' },
-    { label: 'Quota Variance Reduction', value: '-32%', icon: Zap, color: 'text-primary' },
-    { label: 'Territories Optimized', value: '47', icon: Map, color: 'text-secondary' },
-    { label: 'Data Points Analyzed', value: '2.5M+', icon: Database, color: 'text-primary' },
+    {
+      id: 'forecast-accuracy',
+      icon: TrendingUp,
+      label: 'Forecast Accuracy',
+      value: formatTrend(0.28, { format: 'percentage', showArrow: false }),
+      subtitle: 'Improvement',
+      variant: 'success' as const,
+    },
+    {
+      id: 'quota-variance',
+      icon: Zap,
+      label: 'Quota Variance',
+      value: formatTrend(-0.32, { format: 'percentage', showArrow: false }),
+      subtitle: 'Reduction',
+      variant: 'primary' as const,
+    },
+    {
+      id: 'territories-optimized',
+      icon: Map,
+      label: 'Territories',
+      value: formatNumber(47),
+      subtitle: 'Optimized',
+      variant: 'secondary' as const,
+    },
+    {
+      id: 'data-points',
+      icon: Database,
+      label: 'Data Points',
+      value: formatNumber(2500000, { compact: true }),
+      subtitle: 'Analyzed',
+      variant: 'primary' as const,
+    },
   ]
 
   const algorithmicApproaches = [
     {
       name: 'Fairness-First Quota Setting',
-      description: 'Multi-factor model incorporating territory potential, historical performance, experience level, and market conditions',
+      description:
+        'Multi-factor model incorporating territory potential, historical performance, experience level, and market conditions',
       outcomes: [
         '18% reduction in sales rep churn',
         'Improved rep satisfaction scores by 24%',
-        'Reduced turnover-related revenue impact'
-      ]
+        'Reduced turnover-related revenue impact',
+      ],
     },
     {
       name: 'Predictive Territory Design',
-      description: 'Machine learning models predicting territory revenue potential and optimal rep placement',
+      description:
+        'Machine learning models predicting territory revenue potential and optimal rep placement',
       outcomes: [
         '28% improvement in forecast accuracy',
         'Better territory-to-rep matching',
-        'Optimized sales coverage'
-      ]
+        'Optimized sales coverage',
+      ],
     },
     {
       name: 'Dynamic Rebalancing',
-      description: 'Quarterly territory optimization based on market changes, rep performance, and revenue trends',
+      description:
+        'Quarterly territory optimization based on market changes, rep performance, and revenue trends',
       outcomes: [
         '23% average territory efficiency increase',
         'Continuous improvement over time',
-        'Data-driven decision making'
-      ]
+        'Data-driven decision making',
+      ],
     },
     {
       name: 'What-If Scenario Planning',
-      description: 'Advanced simulation tools for evaluating different territory assignments and quota structures',
+      description:
+        'Advanced simulation tools for evaluating different territory assignments and quota structures',
       outcomes: [
         'Reduced planning cycle by 60%',
         'Better executive visibility into trade-offs',
-        'Faster implementation of changes'
-      ]
-    }
+        'Faster implementation of changes',
+      ],
+    },
   ]
 
   return (
@@ -74,17 +115,31 @@ export default function QuotaTerritoryManagementProject() {
         description="Territory management system that improved forecast accuracy by 28% and reduced quota variance by 32%"
         slug="quota-territory-management"
         category="Revenue Operations"
-        tags={['Quota Management', 'Territory Planning', 'Predictive Analytics', 'Revenue Operations']}
+        tags={[
+          'Quota Management',
+          'Territory Planning',
+          'Predictive Analytics',
+          'Revenue Operations',
+        ]}
       />
 
       <ProjectPageLayout
         title="Intelligent Quota Management & Territory Planning"
         description="Advanced quota setting and territory assignment system using predictive analytics and fairness algorithms. Optimized territory design increased forecast accuracy by 28% and reduced quota attainment variance by 32%."
         tags={[
-          { label: 'Forecast Accuracy: +28%', color: 'bg-primary/20 text-primary' },
-          { label: 'Quota Variance: -32%', color: 'bg-secondary/20 text-secondary' },
-          { label: '47 Territories Optimized', color: 'bg-primary/20 text-primary' },
-          { label: '2.5M+ Data Points', color: 'bg-secondary/20 text-secondary' },
+          {
+            label: `Forecast Accuracy: ${formatTrend(0.28, { format: 'percentage', showArrow: false })}`,
+            variant: 'primary',
+          },
+          {
+            label: `Quota Variance: ${formatTrend(-0.32, { format: 'percentage', showArrow: false })}`,
+            variant: 'secondary',
+          },
+          { label: `${formatNumber(47)} Territories Optimized`, variant: 'primary' },
+          {
+            label: `${formatNumber(2500000, { compact: true })} Data Points`,
+            variant: 'secondary',
+          },
         ]}
         onRefresh={handleRefresh}
         refreshButtonDisabled={isLoading}
@@ -93,47 +148,30 @@ export default function QuotaTerritoryManagementProject() {
           <LoadingState />
         ) : (
           <>
-            {/* Key Metrics */}
-            <div
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
-            >
-              {metrics.map((metric) => {
-                const Icon = metric.icon
-                return (
-                  <div
-                    key={metric.label}
-                    className="glass rounded-2xl p-6 hover:border-white/20 transition-all"
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <Icon className={`h-8 w-8 ${metric.color}`} />
-                    </div>
-                    <div className="typography-h2 border-none pb-0 text-2xl text-foreground mb-2">{metric.value}</div>
-                    <div className="text-sm text-slate-400">{metric.label}</div>
-                  </div>
-                )
-              })}
-            </div>
+            {/* Key Metrics using standardized MetricsGrid */}
+            <MetricsGrid metrics={metrics} columns={4} loading={isLoading} className="mb-8" />
 
-            {/* Algorithmic Approaches */}
-            <div
-              className="mb-16"
+            {/* Algorithmic Approaches wrapped in SectionCard */}
+            <SectionCard
+              title="Algorithmic Approaches"
+              description="Advanced algorithms and methodologies for quota and territory optimization"
+              className="mb-8"
             >
-              <h2 className="typography-h2 border-none pb-0 text-2xl text-foreground mb-8">Algorithmic Approaches</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {algorithmicApproaches.map((approach, index) => (
                   <div
                     key={index}
-                    className="glass rounded-2xl p-8 hover:border-primary/50 transition-all"
+                    className="bg-card border border-border rounded-xl p-6 hover:border-primary/50 transition-all"
                   >
-                    <h3 className="typography-h4 text-foreground mb-3 flex items-center gap-2">
+                    <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                       <Code className="h-5 w-5 text-primary" />
                       {approach.name}
                     </h3>
-                    <p className="text-slate-300 mb-6">{approach.description}</p>
+                    <p className="text-muted-foreground mb-4">{approach.description}</p>
                     <ul className="space-y-2">
                       {approach.outcomes.map((outcome, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-slate-300">
-                          <span className="text-success mt-1">✓</span>
+                        <li key={idx} className="flex items-start gap-2 text-sm">
+                          <span className="text-green-500 mt-1">✓</span>
                           <span>{outcome}</span>
                         </li>
                       ))}
@@ -141,76 +179,98 @@ export default function QuotaTerritoryManagementProject() {
                   </div>
                 ))}
               </div>
-            </div>
+            </SectionCard>
 
-            {/* Impact Section */}
-            <div
-              className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-primary/30 rounded-xl p-12 mb-16"
+            {/* Revenue Impact wrapped in SectionCard */}
+            <SectionCard
+              title="Revenue Impact"
+              description="Measurable business impact and performance improvements"
+              variant="gradient"
+              className="mb-8"
             >
-              <h2 className="typography-h2 border-none pb-0 text-2xl text-foreground mb-8">Revenue Impact</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <div className="typography-h1 text-xl text-success mb-2">$8.7M</div>
-                  <p className="text-slate-300">Incremental revenue from optimized territories</p>
+                <div className="text-center p-4">
+                  <div className="text-3xl font-bold text-green-500 mb-2">
+                    {formatCurrency(8700000, { compact: true })}
+                  </div>
+                  <p className="text-muted-foreground">
+                    Incremental revenue from optimized territories
+                  </p>
                 </div>
-                <div>
-                  <div className="typography-h1 text-xl text-primary mb-2">28%</div>
-                  <p className="text-slate-300">Improvement in forecast accuracy</p>
+                <div className="text-center p-4">
+                  <div className="text-3xl font-bold text-primary mb-2">
+                    {formatPercentage(0.28)}
+                  </div>
+                  <p className="text-muted-foreground">Improvement in forecast accuracy</p>
                 </div>
-                <div>
-                  <div className="typography-h1 text-xl text-secondary mb-2">32%</div>
-                  <p className="text-slate-300">Reduction in quota attainment variance</p>
+                <div className="text-center p-4">
+                  <div className="text-3xl font-bold text-secondary mb-2">
+                    {formatPercentage(0.32)}
+                  </div>
+                  <p className="text-muted-foreground">Reduction in quota attainment variance</p>
                 </div>
-                <div>
-                  <div className="typography-h1 text-xl text-primary mb-2">23%</div>
-                  <p className="text-slate-300">Average territory efficiency increase</p>
+                <div className="text-center p-4">
+                  <div className="text-3xl font-bold text-primary mb-2">
+                    {formatPercentage(0.23)}
+                  </div>
+                  <p className="text-muted-foreground">Average territory efficiency increase</p>
                 </div>
               </div>
-            </div>
+            </SectionCard>
 
-            {/* Technical Implementation */}
-            <div
-              className="mb-16"
+            {/* Technical Implementation wrapped in SectionCard */}
+            <SectionCard
+              title="Technical Stack & Methodologies"
+              description="Machine learning models and data analytics approaches"
+              className="mb-8"
             >
-              <h2 className="typography-h2 border-none pb-0 text-2xl text-foreground mb-8">Technical Stack & Methodologies</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="glass rounded-2xl p-8">
-                  <h3 className="typography-large text-foreground mb-4">Machine Learning Models</h3>
-                  <ul className="space-y-2 text-slate-300">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-card border border-border rounded-xl p-6">
+                  <h3 className="text-lg font-semibold mb-4">Machine Learning Models</h3>
+                  <ul className="space-y-2 text-muted-foreground">
                     <li>• Regression models for revenue prediction</li>
                     <li>• Classification for territory potential</li>
                     <li>• Clustering for geographic optimization</li>
                     <li>• Time series forecasting</li>
                   </ul>
                 </div>
-                <div className="glass rounded-2xl p-8">
-                  <h3 className="typography-large text-foreground mb-4">Data & Analytics</h3>
-                  <ul className="space-y-2 text-slate-300">
-                    <li>• 2.5M+ data points analyzed</li>
+                <div className="bg-card border border-border rounded-xl p-6">
+                  <h3 className="text-lg font-semibold mb-4">Data & Analytics</h3>
+                  <ul className="space-y-2 text-muted-foreground">
+                    <li>• {formatNumber(2500000, { compact: true })} data points analyzed</li>
                     <li>• Multi-dimensional territory analysis</li>
                     <li>• Real-time performance tracking</li>
                     <li>• Historical trend analysis</li>
                   </ul>
                 </div>
               </div>
-            </div>
+            </SectionCard>
 
-            {/* Technologies */}
-            <div
-              className="mb-16"
+            {/* Technologies wrapped in SectionCard */}
+            <SectionCard
+              title="Technologies & Tools"
+              description="Technology stack and tools used for implementation"
             >
-              <h2 className="typography-h2 border-none pb-0 text-2xl text-foreground mb-8">Technologies & Tools</h2>
               <div className="flex flex-wrap gap-3">
-                {['Python', 'Machine Learning', 'Predictive Analytics', 'D3.js', 'Recharts', 'PostgreSQL', 'Next.js', 'Geospatial Analysis'].map((tech) => (
+                {[
+                  'Python',
+                  'Machine Learning',
+                  'Predictive Analytics',
+                  'D3.js',
+                  'Recharts',
+                  'PostgreSQL',
+                  'Next.js',
+                  'Geospatial Analysis',
+                ].map((tech) => (
                   <span
                     key={tech}
-                    className="bg-primary-hover/20 border border-primary/50 rounded-full px-4 py-2 text-sm text-primary/70 hover:bg-primary-hover/30 transition-colors"
+                    className="bg-primary/10 border border-primary/20 rounded-full px-4 py-2 text-sm text-primary hover:bg-primary/20 transition-colors"
                   >
                     {tech}
                   </span>
                 ))}
               </div>
-            </div>
+            </SectionCard>
           </>
         )}
       </ProjectPageLayout>

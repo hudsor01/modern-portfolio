@@ -8,7 +8,7 @@ import Image from 'next/image'
 export function AboutSection() {
   return (
     <section>
-      <div className="bg-slate-800/95 border border-slate-700 rounded-xl p-8 shadow-lg hover:bg-slate-700/95 hover:border-slate-600 transition-all duration-200">
+      <div className="bg-slate-800/95 border border-slate-700 rounded-xl p-8 shadow-lg hover:bg-slate-700/95 hover:border-slate-600 transition-all duration-150 ease-out">
         <div className="flex flex-col lg:flex-row items-center gap-8">
           {/* Profile Image */}
           <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-xl overflow-hidden border-4 border-primary/40 shadow-xl shadow-primary/20 flex-shrink-0">

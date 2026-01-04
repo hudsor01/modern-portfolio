@@ -1,7 +1,16 @@
 'use client'
 import { memo } from 'react'
 
-import { LazyLineChart as LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from '@/components/charts/lazy-charts'
+import {
+  LazyLineChart as LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Legend,
+} from '@/components/charts/lazy-charts'
 
 // Unit economics progression over time
 const data = [
@@ -17,7 +26,7 @@ const data = [
 
 const chartColors = {
   ltv: 'var(--color-success)',
-  cac: 'var(--color-destructive)', 
+  cac: 'var(--color-destructive)',
   ratio: 'var(--color-primary)',
   grid: 'var(--color-border)',
   axis: 'var(--color-muted-foreground)',
@@ -28,11 +37,7 @@ const UnitEconomicsChart = memo(function UnitEconomicsChart() {
     <div className="h-[350px]">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke={chartColors.grid} 
-            vertical={false}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
           <XAxis
             dataKey="month"
             stroke={chartColors.axis}
@@ -65,10 +70,12 @@ const UnitEconomicsChart = memo(function UnitEconomicsChart() {
               backdropFilter: 'blur(10px)',
               color: 'white',
             }}
-            formatter={(value: number, name: string) => {
-              if (name === 'ratio') return [`${value.toFixed(1)}:1`, 'LTV:CAC Ratio']
-              if (name === 'payback') return [`${value.toFixed(1)} mo`, 'Payback Period']
-              return [`$${value}`, name.toUpperCase()]
+            formatter={(value: number | undefined, name: string | undefined) => {
+              const safeValue = value ?? 0
+              const safeName = name ?? ''
+              if (safeName === 'ratio') return [`${safeValue.toFixed(1)}:1`, 'LTV:CAC Ratio']
+              if (safeName === 'payback') return [`${safeValue.toFixed(1)} mo`, 'Payback Period']
+              return [`${safeValue}`, safeName.toUpperCase()]
             }}
           />
           <Legend />
@@ -102,7 +109,8 @@ const UnitEconomicsChart = memo(function UnitEconomicsChart() {
         </LineChart>
       </ResponsiveContainer>
       <p className="mt-4 text-center text-sm italic text-muted-foreground">
-        LTV:CAC ratio optimization achieving industry-benchmark 3.6:1+ efficiency through strategic partner channel management
+        LTV:CAC ratio optimization achieving industry-benchmark 3.6:1+ efficiency through strategic
+        partner channel management
       </p>
     </div>
   )

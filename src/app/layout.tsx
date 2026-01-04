@@ -2,8 +2,7 @@ import React from 'react'
 import './globals.css'
 import '@/styles/animations.css'
 import { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import { ThemeProvider } from '@/components/providers/theme-provider'
+import { Playfair_Display, Spline_Sans, Roboto_Mono } from 'next/font/google'
 import { ClientComponentsProvider } from '@/components/providers/client-components-provider'
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from '@/components/ui/toaster'
@@ -12,22 +11,40 @@ import { baseMetadata } from './shared-metadata'
 import { PersonJsonLd, WebsiteJsonLd, LocalBusinessJsonLd, OrganizationJsonLd } from '@/components/seo/json-ld'
 import { ReadingProgressBar } from './reading-progress'
 
-// Use single font family for better performance
-const inter = Inter({
+// Luxury Minimalist Typography System
+const playfair = Playfair_Display({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter',
+  variable: '--font-playfair',
+  weight: ['400', '500', '600', '700'],
+})
+
+const splineSans = Spline_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-spline',
+  weight: ['300', '400', '500', '600', '700'],
+})
+
+const robotoMono = Roboto_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-roboto-mono',
+  weight: ['400', '500'],
 })
 
 export const metadata: Metadata = baseMetadata
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={inter.variable}>
+    <html
+      lang="en"
+      className={`${playfair.variable} ${splineSans.variable} ${robotoMono.variable}`}
+    >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-        <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+        <meta name="theme-color" content="#fafafa" />
+        <meta name="color-scheme" content="light" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
@@ -45,23 +62,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <LocalBusinessJsonLd />
         <OrganizationJsonLd />
       </head>
-      <body className={inter.className}>
+      <body className="antialiased bg-background text-foreground">
         {/* Skip to main content link for keyboard navigation accessibility */}
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded-lg"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-lg"
         >
           Skip to content
         </a>
-        <ThemeProvider attribute="data-theme" defaultTheme="light" enableSystem>
-          <ClientComponentsProvider>
-            <ReadingProgressBar />
-            {children}
-            <ScrollToTop />
-            <Toaster position="bottom-right" closeButton richColors />
-            <Analytics />
-          </ClientComponentsProvider>
-        </ThemeProvider>
+        <ClientComponentsProvider>
+          <ReadingProgressBar />
+          {children}
+          <ScrollToTop />
+          <Toaster position="bottom-right" closeButton richColors />
+          <Analytics />
+        </ClientComponentsProvider>
       </body>
     </html>
   )

@@ -84,7 +84,7 @@ export function ResumeDownload({
     <Button
       variant={variant}
       size={size}
-      className={cn('group transform transition-all duration-300 hover:shadow-lg', className)}
+      className={cn('group transform transition-all duration-300 ease-out hover:shadow-lg', className)}
       onClick={handleDownload}
       disabled={downloadResumeMutation.isPending}
     >

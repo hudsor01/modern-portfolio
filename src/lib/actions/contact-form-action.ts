@@ -22,13 +22,11 @@ export async function submitContactForm(
                     'unknown'
 
     const validatedData = contactFormSchema.parse(formData)
-    
+
     const emailData: ContactFormData = {
       name: validatedData.name,
       email: validatedData.email,
       message: validatedData.message,
-      subject: validatedData.subject,
-      phone: validatedData.phone,
     }
 
     const result = await emailService.sendContactEmail(emailData, clientIP)

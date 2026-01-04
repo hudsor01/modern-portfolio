@@ -45,19 +45,15 @@ const ChurnLineChart = memo(function ChurnLineChart() {
         <ComposedChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="churnGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="retentionGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke="var(--color-border)" 
-            vertical={false}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
           <XAxis
             dataKey="month"
             stroke="var(--color-muted-foreground)"
@@ -83,12 +79,15 @@ const ChurnLineChart = memo(function ChurnLineChart() {
               color: 'white',
             }}
             itemStyle={{ color: 'white' }}
-            formatter={(value: number, name: string) => [`${value.toFixed(1)}%`, name === 'churn' ? 'Churn Rate' : 'Retention Rate']}
+            formatter={(value: number | undefined, name: string | undefined) => [
+              `${(value ?? 0).toFixed(1)}%`,
+              (name ?? '') === 'churn' ? 'Churn Rate' : 'Retention Rate',
+            ]}
           />
-          <Legend 
+          <Legend
             iconType="line"
             wrapperStyle={{ paddingTop: '20px' }}
-            formatter={(value) => value === 'churn' ? 'Churn Rate' : 'Retention Rate'}
+            formatter={(value) => (value === 'churn' ? 'Churn Rate' : 'Retention Rate')}
           />
           <Area
             type="monotone"

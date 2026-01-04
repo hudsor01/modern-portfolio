@@ -3,7 +3,6 @@
 import React, { useState } from 'react'
 import { ProjectTabsProps } from '@/types/project'
 import { ProjectSwiper } from './project-swiper'
-import { Button } from '@/components/ui/button'
 
 export function ProjectTabs({ projects }: ProjectTabsProps) {
   // Extract unique categories from projects
@@ -40,15 +39,18 @@ export function ProjectTabs({ projects }: ProjectTabsProps) {
       {/* Category tabs */}
       <div className="flex flex-wrap gap-2 justify-center">
         {allCategories.map((category) => (
-          <Button
+          <button
             key={category}
-            variant={activeCategory === category ? 'default' : 'secondary'}
-            size="sm"
             onClick={() => setActiveCategory(category)}
-            className="rounded-full"
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-150 ease-out
+              ${
+                activeCategory === category
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+              }`}
           >
             {category}
-          </Button>
+          </button>
         ))}
       </div>
 

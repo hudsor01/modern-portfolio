@@ -62,7 +62,7 @@ function SkillCategoryCard({ category }: SkillCategoryCardProps) {
       
       
     >
-      <Card className="h-full border-0 shadow-lg bg-white/50 dark:bg-card/50 backdrop-blur-xs hover:shadow-xl transition-all duration-300">
+      <Card className="h-full border-0 shadow-lg bg-white/50 dark:bg-card/50 backdrop-blur-xs hover:shadow-xl transition-all duration-300 ease-out">
         <CardHeader className="text-center pb-4">
           <div className="text-xl mb-4">{category.icon}</div>
           <CardTitle className="typography-h4 text-foreground dark:text-white">

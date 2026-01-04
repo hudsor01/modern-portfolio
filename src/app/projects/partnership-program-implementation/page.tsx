@@ -20,50 +20,55 @@ const achievements = [
   {
     metric: 'Partner Program',
     value: 'First Implementation',
-    description: 'Designed and built company\'s first-ever partnership program from concept to production',
-    icon: <Users className="w-6 h-6" />
+    description:
+      "Designed and built company's first-ever partnership program from concept to production",
+    icon: <Users className="w-6 h-6" />,
   },
   {
     metric: 'System Integration',
     value: 'Full Production',
     description: 'Production-ready integrations with CRM, billing systems, and partner portals',
-    icon: <Settings className="w-6 h-6" />
+    icon: <Settings className="w-6 h-6" />,
   },
   {
     metric: 'Automation Level',
     value: '90%+',
     description: 'Automated partner onboarding, commission tracking, and performance reporting',
-    icon: <BarChart className="w-6 h-6" />
+    icon: <BarChart className="w-6 h-6" />,
   },
   {
     metric: 'Business Impact',
     value: 'Strategic Success',
     description: 'Program became integral to company revenue strategy and growth',
-    icon: <TrendingUp className="w-6 h-6" />
-  }
+    icon: <TrendingUp className="w-6 h-6" />,
+  },
 ]
 
 const technicalDetails = [
   {
     title: 'Partner Onboarding Automation',
-    description: 'Built automated partner registration and approval workflows with document verification, background checks, and training completion tracking.',
-    technologies: ['Salesforce', 'DocuSign API', 'Custom Workflows']
+    description:
+      'Built automated partner registration and approval workflows with document verification, background checks, and training completion tracking.',
+    technologies: ['Salesforce', 'DocuSign API', 'Custom Workflows'],
   },
   {
     title: 'Commission Tracking System',
-    description: 'Implemented real-time commission calculation engine with multi-tier structures, dispute resolution, and automated payouts.',
-    technologies: ['Custom API', 'Database Design', 'Payment Integration']
+    description:
+      'Implemented real-time commission calculation engine with multi-tier structures, dispute resolution, and automated payouts.',
+    technologies: ['Custom API', 'Database Design', 'Payment Integration'],
   },
   {
     title: 'Performance Analytics Dashboard',
-    description: 'Created comprehensive partner performance tracking with revenue attribution, conversion metrics, and predictive analytics.',
-    technologies: ['React', 'TypeScript', 'Data Visualization']
+    description:
+      'Created comprehensive partner performance tracking with revenue attribution, conversion metrics, and predictive analytics.',
+    technologies: ['React', 'TypeScript', 'Data Visualization'],
   },
   {
     title: 'Integration Architecture',
-    description: 'Designed and implemented production integrations connecting CRM, billing systems, partner portals, and internal tools.',
-    technologies: ['REST APIs', 'Webhooks', 'Data Synchronization']
-  }
+    description:
+      'Designed and implemented production integrations connecting CRM, billing systems, partner portals, and internal tools.',
+    technologies: ['REST APIs', 'Webhooks', 'Data Synchronization'],
+  },
 ]
 
 export default function PartnershipProgramPage() {
@@ -86,17 +91,22 @@ export default function PartnershipProgramPage() {
         description="Led comprehensive design and implementation of a company's first partnership program, creating automated partner onboarding, commission tracking, and performance analytics."
         slug="partnership-program-implementation"
         category="Revenue Operations"
-        tags={['Partnership Program', 'Channel Operations', 'Partner Onboarding', 'Commission Automation']}
+        tags={[
+          'Partnership Program',
+          'Channel Operations',
+          'Partner Onboarding',
+          'Commission Automation',
+        ]}
       />
 
       <ProjectPageLayout
         title="Enterprise Partnership Program Implementation"
         description="Led comprehensive design and implementation of a company's first partnership program, creating automated partner onboarding, commission tracking, and performance analytics. Built production-ready integrations with CRM, billing systems, and partner portals."
         tags={[
-          { label: 'First Partner Program', color: 'bg-primary/20 text-primary' },
-          { label: '90%+ Automation', color: 'bg-secondary/20 text-secondary' },
-          { label: 'Full Production', color: 'bg-primary/20 text-primary' },
-          { label: 'Strategic Success', color: 'bg-secondary/20 text-secondary' },
+          { label: 'First Partner Program', variant: 'primary' },
+          { label: '90%+ Automation', variant: 'secondary' },
+          { label: 'Full Production', variant: 'primary' },
+          { label: 'Strategic Success', variant: 'secondary' },
         ]}
         onRefresh={handleRefresh}
         refreshButtonDisabled={isLoading}
@@ -120,15 +130,15 @@ export default function PartnershipProgramPage() {
                 {achievements.map((achievement, index) => (
                   <div
                     key={index}
-                    className="glass rounded-2xl p-6 hover:bg-white/10 transition-all duration-300"
+                    className="glass rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 ease-out"
                   >
-                    <div className="text-primary mb-4">
-                      {achievement.icon}
-                    </div>
+                    <div className="text-primary mb-4">{achievement.icon}</div>
                     <div className="space-y-2">
                       <div className="typography-h3 text-white">{achievement.value}</div>
                       <div className="text-sm font-medium text-primary">{achievement.metric}</div>
-                      <div className="typography-small typography-muted">{achievement.description}</div>
+                      <div className="typography-small typography-muted">
+                        {achievement.description}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -150,10 +160,12 @@ export default function PartnershipProgramPage() {
                 {technicalDetails.map((detail, index) => (
                   <div
                     key={index}
-                    className="glass rounded-2xl p-8 hover:bg-white/10 transition-all duration-300"
+                    className="glass rounded-2xl p-8 hover:bg-white/10 transition-all duration-300 ease-out"
                   >
                     <h3 className="typography-h4 text-foreground mb-4">{detail.title}</h3>
-                    <p className="text-muted-foreground mb-6 leading-relaxed">{detail.description}</p>
+                    <p className="text-muted-foreground mb-6 leading-relaxed">
+                      {detail.description}
+                    </p>
                     <div className="flex flex-wrap gap-2">
                       {detail.technologies.map((tech, i) => (
                         <span
@@ -178,7 +190,9 @@ export default function PartnershipProgramPage() {
                 </h2>
                 <div className="space-y-4 text-muted-foreground">
                   <p className="text-lg leading-relaxed">
-                    The organization lacked any structured approach to partner channel sales, missing significant revenue opportunities in an increasingly partnership-driven market. Without a formal program, the company was unable to:
+                    The organization lacked any structured approach to partner channel sales,
+                    missing significant revenue opportunities in an increasingly partnership-driven
+                    market. Without a formal program, the company was unable to:
                   </p>
                   <ul className="list-disc list-inside space-y-2 ml-4">
                     <li>Scale sales efforts beyond direct sales team capacity</li>
@@ -197,7 +211,9 @@ export default function PartnershipProgramPage() {
                 </h2>
                 <div className="space-y-6 text-muted-foreground">
                   <p className="text-lg leading-relaxed">
-                    Led the complete design and implementation of the company's first enterprise partnership program from concept to production, creating a comprehensive channel management system.
+                    Led the complete design and implementation of the company's first enterprise
+                    partnership program from concept to production, creating a comprehensive channel
+                    management system.
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -232,25 +248,42 @@ export default function PartnershipProgramPage() {
                 </h2>
                 <div className="space-y-6 text-muted-foreground">
                   <p className="text-lg leading-relaxed">
-                    The partnership program became a strategic revenue channel, fundamentally transforming the company's go-to-market approach.
+                    The partnership program became a strategic revenue channel, fundamentally
+                    transforming the company's go-to-market approach.
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-xs border border-primary/20 rounded-xl p-6 text-center">
-                      <div className="typography-h2 border-none pb-0 text-2xl text-primary mb-2">47</div>
-                      <div className="typography-small text-muted-foreground">Active Partners Onboarded</div>
+                      <div className="typography-h2 border-none pb-0 text-2xl text-primary mb-2">
+                        47
+                      </div>
+                      <div className="typography-small text-muted-foreground">
+                        Active Partners Onboarded
+                      </div>
                     </div>
                     <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xs border border-success/20 rounded-xl p-6 text-center">
-                      <div className="typography-h2 border-none pb-0 text-2xl text-success mb-2">90%+</div>
-                      <div className="typography-small text-muted-foreground">Process Automation</div>
+                      <div className="typography-h2 border-none pb-0 text-2xl text-success mb-2">
+                        90%+
+                      </div>
+                      <div className="typography-small text-muted-foreground">
+                        Process Automation
+                      </div>
                     </div>
                     <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-xs border border-secondary/20 rounded-xl p-6 text-center">
-                      <div className="typography-h2 border-none pb-0 text-2xl text-secondary mb-2">35%</div>
-                      <div className="typography-small text-muted-foreground">Revenue Growth from Partners</div>
+                      <div className="typography-h2 border-none pb-0 text-2xl text-secondary mb-2">
+                        35%
+                      </div>
+                      <div className="typography-small text-muted-foreground">
+                        Revenue Growth from Partners
+                      </div>
                     </div>
                     <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-xs border border-primary/20 rounded-xl p-6 text-center">
-                      <div className="typography-h2 border-none pb-0 text-2xl text-primary mb-2">15 Days</div>
-                      <div className="typography-small text-muted-foreground">Average Onboarding Time</div>
+                      <div className="typography-h2 border-none pb-0 text-2xl text-primary mb-2">
+                        15 Days
+                      </div>
+                      <div className="typography-small text-muted-foreground">
+                        Average Onboarding Time
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -269,10 +302,7 @@ export default function PartnershipProgramPage() {
               </div>
 
               <div className="glass rounded-2xl p-8">
-                <STARAreaChart
-                  data={starData}
-                  title="Project Progression Metrics"
-                />
+                <STARAreaChart data={starData} title="Project Progression Metrics" />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
