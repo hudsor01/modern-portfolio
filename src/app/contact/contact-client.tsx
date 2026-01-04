@@ -1,15 +1,11 @@
 'use client'
 
-import {
-  Zap,
-  Shield,
-  CheckCircle,
-} from 'lucide-react'
+import { Zap, Shield, CheckCircle } from 'lucide-react'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
-import { ContactForm } from '@/components/contact/ContactForm'
-import { ContactInfo } from '@/components/contact/ContactInfo'
-import { FeaturedProjects } from '@/components/contact/FeaturedProjects'
+import { ContactForm } from '@/components/contact/contact-form'
+import { ContactInfo } from '@/components/contact/contact-info'
+import { FeaturedProjects } from '@/components/contact/featured-projects'
 import { useContactForm } from '@/hooks/use-contact-form'
 
 // ============================================================================
@@ -31,7 +27,8 @@ export default function ContactPageClient() {
                 Let's Connect
               </h1>
               <p className="typography-lead max-w-3xl mx-auto mb-8">
-                Open to new opportunities in Revenue Operations. Whether you're a recruiter, hiring manager, or industry peer, I'd love to hear from you.
+                Open to new opportunities in Revenue Operations. Whether you're a recruiter, hiring
+                manager, or industry peer, I'd love to hear from you.
               </p>
 
               {/* Quick Stats */}

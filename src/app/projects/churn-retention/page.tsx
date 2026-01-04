@@ -24,7 +24,7 @@ const RetentionHeatmap = dynamic(() => import('./RetentionHeatmap'), {
 
 // Import static churn data
 import { staticChurnData } from '@/app/projects/data/partner-analytics'
-import { STARAreaChart } from '@/components/projects/STARAreaChart'
+import { STARAreaChart } from '@/components/projects/star-area-chart'
 
 const starData = {
   situation: { phase: 'Situation', impact: 27, efficiency: 23, value: 18 },

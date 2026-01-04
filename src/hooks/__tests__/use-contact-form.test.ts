@@ -12,13 +12,12 @@ import { contactFormSchema } from '@/lib/validations/unified-schemas'
 
 // Mock fetch for form submission tests
 const mockFetch = vi.fn()
-// @ts-expect-error - Mock doesn't need all fetch properties
-global.fetch = mockFetch
 
 describe('useContactForm - Property-Based Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockFetch.mockReset()
+    vi.stubGlobal('fetch', mockFetch)
   })
 
   afterEach(() => {

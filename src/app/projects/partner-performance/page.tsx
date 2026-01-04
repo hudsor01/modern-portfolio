@@ -11,7 +11,7 @@ import { SectionCard } from '@/components/ui/section-card'
 import { ChartContainer } from '@/components/ui/chart-container'
 import { TIMING } from '@/lib/constants/spacing'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data-formatters'
-import { STARAreaChart } from '@/components/projects/STARAreaChart'
+import { STARAreaChart } from '@/components/projects/star-area-chart'
 
 const starData = {
   situation: { phase: 'Situation', impact: 24, efficiency: 20, value: 15 },

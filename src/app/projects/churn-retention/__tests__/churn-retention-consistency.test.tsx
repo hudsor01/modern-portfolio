@@ -58,7 +58,7 @@ vi.mock('../RetentionHeatmap', () => ({
   default: () => <div data-testid="retention-heatmap">Retention Heatmap</div>,
 }))
 
-vi.mock('@/components/projects/STARAreaChart', () => ({
+vi.mock('@/components/projects/star-area-chart', () => ({
   STARAreaChart: () => <div data-testid="star-area-chart">STAR Area Chart</div>,
 }))
 

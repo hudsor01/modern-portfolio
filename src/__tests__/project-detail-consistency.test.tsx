@@ -40,7 +40,7 @@ vi.mock('next/link', () => ({
 }))
 
 // Mock the STARAreaChart component
-vi.mock('@/components/projects/STARAreaChart', () => ({
+vi.mock('@/components/projects/star-area-chart', () => ({
   STARAreaChart: ({ data, title }: MockSTARAreaChartProps) => (
     <div data-testid="star-chart" data-title={title}>
       STAR Chart: {JSON.stringify(data)}
