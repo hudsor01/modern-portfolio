@@ -19,7 +19,6 @@
     "test:unit": "bun test",
     "test:watch": "bun test --watch",
     "test:coverage": "bun test --coverage",
-    "test:ci": "bun test --coverage --reporter=junit --reporter-outfile=./reports/junit.xml",
     "test:update-snapshots": "bun test --update-snapshots",
     "test:run": "bun test",
     "e2e": "bunx playwright test",

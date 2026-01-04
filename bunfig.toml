@@ -7,8 +7,8 @@ timeout = 30000
 root = "src"
 smol = false
 
-# Coverage (per CLAUDE.md 80% threshold)
-coverage = true
+# Coverage (per CLAUDE.md 80% threshold) - run with `bun test --coverage`
+coverage = false
 coverageReporter = ["text", "lcov"]
 coverageDir = "coverage"
 coverageThreshold = { lines = 0.80, functions = 0.80, statements = 0.80 }
@@ -72,6 +72,3 @@ coveragePathIgnorePatterns = [
   "src/lib/utils/route-utils.ts"
 ]
 
-# JUnit reporter for CI
-[test.reporter]
-junit = "./reports/junit.xml"
