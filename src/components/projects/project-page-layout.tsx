@@ -37,20 +37,12 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
     ref
   ) => {
     return (
-      <div ref={ref} className={cn('min-h-screen bg-background', className)} {...props}>
-        {/* Subtle texture background */}
-        <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-          <div
-            className="absolute inset-0 opacity-[0.02]"
-            style={{
-              backgroundImage:
-                'radial-gradient(circle at 1px 1px, currentColor 0.5px, transparent 0)',
-              backgroundSize: '32px 32px',
-            }}
-          />
-        </div>
+      <div ref={ref} className={cn('min-h-screen bg-background overflow-hidden', className)} {...props}>
+        {/* Decorative background elements */}
+        <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16 lg:pt-32 lg:pb-20">
           {/* Header Navigation */}
           <header className="flex items-center justify-between mb-12" data-testid="project-header">
             {/* Back Navigation and Breadcrumbs */}

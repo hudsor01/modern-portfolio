@@ -47,20 +47,13 @@ export default function ProjectsPage() {
       <>
         <Navbar />
         <main id="main-content" className="relative min-h-screen bg-background overflow-hidden">
-          {/* Subtle dot pattern background */}
-          <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-            <div
-              className="absolute inset-0 opacity-[0.015]"
-              style={{
-                backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 0.5px, transparent 0)',
-                backgroundSize: '40px 40px'
-              }}
-            />
-          </div>
+          {/* Decorative background elements */}
+          <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
 
-          <div className="w-full relative z-10 px-6 mx-auto max-w-7xl">
+          <div className="w-full relative z-10 px-6 lg:px-8 mx-auto max-w-7xl">
             {/* Hero Section */}
-            <section className="pt-32 pb-20">
+            <section className="pt-24 pb-16 lg:pt-32 lg:pb-20">
               {/* Eyebrow */}
               <p className="text-center text-sm font-medium tracking-widest uppercase text-primary mb-6 animate-fade-in-up">
                 Portfolio

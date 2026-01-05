@@ -90,11 +90,13 @@ export function BlogPageContent() {
   }
 
   return (
-    <div className="portfolio-container portfolio-section">
+    <div className="max-w-7xl mx-auto px-6 lg:px-8">
       {/* Header */}
-      <header className="mb-10">
-        <h1 className="heading-page mb-2">Blog</h1>
-        <p className="text-body-lg">
+      <header className="text-center mb-12">
+        <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+          Blog
+        </h1>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Insights on revenue operations, data analytics, and business growth strategies.
         </p>
       </header>

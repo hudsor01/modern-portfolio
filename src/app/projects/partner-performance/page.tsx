@@ -363,20 +363,20 @@ export default function PartnerPerformanceIntelligence() {
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
               <div className="text-center p-4 bg-card border border-border rounded-xl">
-                <div className="text-sm text-primary/70 mb-2">Situation</div>
-                <div className="text-lg font-medium">Initial Assessment</div>
+                <div className="text-sm text-primary mb-2">Situation</div>
+                <div className="text-lg font-medium text-foreground">Initial Assessment</div>
               </div>
               <div className="text-center p-4 bg-card border border-border rounded-xl">
-                <div className="text-sm text-green-400/70 mb-2">Task</div>
-                <div className="text-lg font-medium">Goal Definition</div>
+                <div className="text-sm text-secondary mb-2">Task</div>
+                <div className="text-lg font-medium text-foreground">Goal Definition</div>
               </div>
               <div className="text-center p-4 bg-card border border-border rounded-xl">
-                <div className="text-sm text-amber-400/70 mb-2">Action</div>
-                <div className="text-lg font-medium">Implementation</div>
+                <div className="text-sm text-accent mb-2">Action</div>
+                <div className="text-lg font-medium text-foreground">Implementation</div>
               </div>
               <div className="text-center p-4 bg-card border border-border rounded-xl">
-                <div className="text-sm text-cyan-400/70 mb-2">Result</div>
-                <div className="text-lg font-medium">Measurable Impact</div>
+                <div className="text-sm text-primary mb-2">Result</div>
+                <div className="text-lg font-medium text-foreground">Measurable Impact</div>
               </div>
             </div>
           </SectionCard>

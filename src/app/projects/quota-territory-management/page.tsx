@@ -160,7 +160,7 @@ export default function QuotaTerritoryManagementProject() {
                     <ul className="space-y-2">
                       {approach.outcomes.map((outcome, idx) => (
                         <li key={idx} className="flex items-start gap-2 text-sm">
-                          <span className="text-green-500 mt-1">✓</span>
+                          <span className="text-secondary mt-1">✓</span>
                           <span>{outcome}</span>
                         </li>
                       ))}
@@ -179,7 +179,7 @@ export default function QuotaTerritoryManagementProject() {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="text-center p-4">
-                  <div className="text-3xl font-bold text-green-500 mb-2">
+                  <div className="text-3xl font-bold text-secondary mb-2">
                     {formatCurrency(8700000, { compact: true })}
                   </div>
                   <p className="text-muted-foreground">

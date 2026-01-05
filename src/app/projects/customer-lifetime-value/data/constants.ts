@@ -60,10 +60,10 @@ export const customerSegments = [
 ]
 
 export const predictiveMetrics = [
-  { metric: 'Next Purchase Probability', value: '87.3%', trend: '+12%', color: 'text-success' },
+  { metric: 'Next Purchase Probability', value: '87.3%', trend: '+12%', color: 'text-secondary' },
   { metric: 'Expected Purchase Value', value: '$342', trend: '+8%', color: 'text-primary' },
-  { metric: 'Days to Next Purchase', value: '14.2', trend: '-3%', color: 'text-purple-400' },
-  { metric: 'Churn Probability', value: '12.8%', trend: '-15%', color: 'text-amber-400' },
+  { metric: 'Days to Next Purchase', value: '14.2', trend: '-3%', color: 'text-accent' },
+  { metric: 'Churn Probability', value: '12.8%', trend: '-15%', color: 'text-primary' },
 ]
 
 export const technologies = [
