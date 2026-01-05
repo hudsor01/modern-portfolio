@@ -3,11 +3,15 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { AnimatedCounter } from './animated-counter'
-import { 
-  TrendingUp, 
-  Star, 
-  Briefcase, 
-  Clock 
+import {
+  TrendingUp,
+  Star,
+  Briefcase,
+  Clock,
+  CheckCircle,
+  DollarSign,
+  Rocket,
+  BarChart3
 } from 'lucide-react'
 
 interface ExperienceStat {
@@ -27,6 +31,10 @@ const iconMap = {
   'star': Star,
   'briefcase': Briefcase,
   'clock': Clock,
+  'check-circle': CheckCircle,
+  'dollar-sign': DollarSign,
+  'rocket': Rocket,
+  'bar-chart': BarChart3,
 }
 
 export function ExperienceStats({ stats, className = '' }: ExperienceStatsProps) {

@@ -5,61 +5,11 @@ import { SkillsSection } from '@/components/about/skills-section'
 import { ExperienceStats } from '@/components/about/experience-stats'
 import { CertificationsSection } from '@/components/about/certifications-section'
 
-const SKILLS = [
-  {
-    category: 'Technical',
-    icon: '💻',
-    description: 'Full-stack development expertise',
-    skills: [
-      { name: 'JavaScript', level: 95, years: 8 },
-      { name: 'TypeScript', level: 90, years: 5 },
-      { name: 'React', level: 95, years: 6 },
-      { name: 'Node.js', level: 85, years: 6 },
-      { name: 'Next.js', level: 90, years: 4 },
-      { name: 'GraphQL', level: 80, years: 3 },
-      { name: 'PostgreSQL', level: 75, years: 5 },
-      { name: 'Python', level: 70, years: 3 },
-      { name: 'AWS', level: 80, years: 4 },
-    ],
-  },
-  {
-    category: 'Business',
-    icon: '📊',
-    description: 'Strategic operations and growth',
-    skills: [
-      { name: 'Revenue Operations', level: 95, years: 10 },
-      { name: 'Strategic Planning', level: 90, years: 8 },
-      { name: 'Process Optimization', level: 88, years: 7 },
-      { name: 'Data Analysis', level: 85, years: 9 },
-      { name: 'Project Management', level: 92, years: 8 },
-      { name: 'Team Leadership', level: 87, years: 6 },
-      { name: 'Business Intelligence', level: 85, years: 7 },
-      { name: 'Financial Modeling', level: 80, years: 5 },
-    ],
-  },
-  {
-    category: 'Tools',
-    icon: '🛠️',
-    description: 'Industry-leading platforms',
-    skills: [
-      { name: 'Salesforce', level: 90, years: 8 },
-      { name: 'HubSpot', level: 85, years: 6 },
-      { name: 'Marketo', level: 80, years: 4 },
-      { name: 'Tableau', level: 85, years: 5 },
-      { name: 'Power BI', level: 80, years: 4 },
-      { name: 'Google Analytics', level: 90, years: 7 },
-      { name: 'Zapier', level: 85, years: 5 },
-      { name: 'Looker', level: 75, years: 3 },
-      { name: 'Mixpanel', level: 78, years: 4 },
-    ],
-  },
-]
-
 const EXPERIENCE_STATS = [
-  { label: 'Projects Delivered', value: '10+', icon: '✅' },
-  { label: 'Revenue Generated', value: '$4.8M+', icon: '💰' },
-  { label: 'Transaction Growth', value: '432%', icon: '📈' },
-  { label: 'Network Expansion', value: '2,217%', icon: '🚀' },
+  { label: 'Projects Delivered', value: '10+', icon: 'check-circle' },
+  { label: 'Revenue Generated', value: '$4.8M+', icon: 'dollar-sign' },
+  { label: 'Transaction Growth', value: '432%', icon: 'bar-chart' },
+  { label: 'Network Expansion', value: '2,217%', icon: 'rocket' },
 ]
 
 const CERTIFICATIONS = [
@@ -141,7 +91,7 @@ export default function AboutPage() {
         {/* Skills Section */}
         <section className="relative py-16 lg:py-20">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <SkillsSection skills={SKILLS} />
+            <SkillsSection />
           </div>
         </section>
 

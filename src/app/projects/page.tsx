@@ -9,6 +9,7 @@ import { ProjectStats } from '@/components/projects/project-stats'
 import { ProjectCTASection } from '@/components/projects/project-cta-section'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ErrorBoundary } from '@/components/error/error-boundary'
+import { BarChart3 } from 'lucide-react'
 import type { Project } from '@/types/project'
 
 export default function ProjectsPage() {
@@ -117,7 +118,9 @@ export default function ProjectsPage() {
                 </div>
               ) : sortedProjects.length === 0 ? (
                 <div className="text-center py-24 bg-card border border-border rounded-2xl">
-                  <div className="text-4xl mb-4">📊</div>
+                  <div className="flex justify-center mb-4">
+                    <BarChart3 className="h-10 w-10 text-muted-foreground" />
+                  </div>
                   <h3 className="font-display text-xl font-semibold text-foreground mb-2">No projects yet</h3>
                   <p className="text-muted-foreground">Projects are currently being updated</p>
                 </div>
