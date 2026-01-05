@@ -7,7 +7,7 @@ interface SkillsSectionProps {
   className?: string
 }
 
-// Animated chart bars for Revenue Operations - MUST be absolute positioned
+// Animated chart bars for Revenue Operations
 function RevenueChartBackground() {
   return (
     <div className="absolute inset-0 flex items-end justify-center gap-2 px-8 pb-4 [mask-image:linear-gradient(to_top,transparent_40%,#000_100%)]">
@@ -52,8 +52,7 @@ function AnalyticsBackground() {
           d="M 0 120 Q 50 80, 100 90 T 200 60 T 300 40 L 300 150 L 0 150 Z"
           fill="url(#areaGrad)"
         />
-        {/* Data points */}
-        <circle cx="100" cy="90" r="4" fill="#3b82f6" className="group-hover:r-6 transition-all" />
+        <circle cx="100" cy="90" r="4" fill="#3b82f6" />
         <circle cx="200" cy="60" r="4" fill="#3b82f6" />
         <circle cx="300" cy="40" r="4" fill="#60a5fa" />
       </svg>
@@ -66,7 +65,6 @@ function AutomationBackground() {
   return (
     <div className="absolute right-4 top-4 [mask-image:linear-gradient(to_top,transparent_10%,#000_100%)] transition-all duration-300 ease-out group-hover:scale-105">
       <div className="flex flex-col items-center gap-3">
-        {/* Row 1 */}
         <div className="flex items-center gap-4">
           <div className="h-10 w-10 rounded-lg bg-violet-500/30 border border-violet-500/50 group-hover:bg-violet-500/50 transition-colors" />
           <div className="w-8 h-0.5 bg-gradient-to-r from-violet-500/60 to-violet-400/30" />
@@ -74,12 +72,10 @@ function AutomationBackground() {
           <div className="w-8 h-0.5 bg-gradient-to-r from-violet-500/60 to-violet-400/30" />
           <div className="h-10 w-10 rounded-lg bg-violet-500/30 border border-violet-500/50 group-hover:bg-violet-500/50 transition-colors" />
         </div>
-        {/* Connecting lines */}
         <div className="flex gap-16">
           <div className="w-0.5 h-6 bg-gradient-to-b from-violet-500/50 to-transparent" />
           <div className="w-0.5 h-6 bg-gradient-to-b from-violet-500/50 to-transparent" />
         </div>
-        {/* Row 2 */}
         <div className="flex items-center gap-12">
           <div className="h-8 w-8 rounded-full bg-violet-400/30 border border-violet-400/50 group-hover:scale-110 transition-transform" />
           <div className="h-8 w-8 rounded-full bg-violet-400/30 border border-violet-400/50 group-hover:scale-110 transition-transform" />
@@ -115,9 +111,7 @@ function PartnershipBackground() {
   return (
     <div className="absolute right-8 top-4 [mask-image:linear-gradient(to_top,transparent_10%,#000_100%)] transition-all duration-300 ease-out group-hover:scale-105">
       <div className="relative h-24 w-24">
-        {/* Central node */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-amber-500/40 border-2 border-amber-500/60 group-hover:scale-110 transition-transform" />
-        {/* Orbiting nodes */}
         {[0, 60, 120, 180, 240, 300].map((angle, i) => (
           <div
             key={i}
@@ -148,7 +142,7 @@ function StrategyBackground() {
   )
 }
 
-// Core competencies with backgrounds
+// Core competencies - using simpler col-span approach
 const competencies = [
   {
     Icon: TrendingUp,
@@ -156,7 +150,7 @@ const competencies = [
     description: '$4.8M+ revenue generated through data-driven strategies and process optimization.',
     href: '/projects',
     cta: 'View Projects',
-    className: 'lg:row-start-1 lg:row-end-3 lg:col-start-1 lg:col-end-2',
+    className: 'col-span-3 lg:col-span-1 lg:row-span-2',
     background: <RevenueChartBackground />,
   },
   {
@@ -165,7 +159,7 @@ const competencies = [
     description: '432% transaction growth achieved through advanced analytics.',
     href: '/projects/revenue-kpi',
     cta: 'See Dashboard',
-    className: 'lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-2',
+    className: 'col-span-3 lg:col-span-1',
     background: <AnalyticsBackground />,
   },
   {
@@ -174,7 +168,7 @@ const competencies = [
     description: '90%+ workflow automation reducing manual tasks.',
     href: '/projects/revenue-operations-center',
     cta: 'Explore',
-    className: 'lg:col-start-3 lg:col-end-4 lg:row-start-1 lg:row-end-2',
+    className: 'col-span-3 lg:col-span-1',
     background: <AutomationBackground />,
   },
   {
@@ -183,7 +177,7 @@ const competencies = [
     description: '10+ production systems built with modern technologies.',
     href: '/projects',
     cta: 'View Stack',
-    className: 'lg:col-start-2 lg:col-end-3 lg:row-start-2 lg:row-end-3',
+    className: 'col-span-3 lg:col-span-1',
     background: <TechBackground />,
   },
   {
@@ -192,7 +186,7 @@ const competencies = [
     description: '2,217% network expansion through partner enablement.',
     href: '/projects/partner-performance',
     cta: 'See Results',
-    className: 'lg:col-start-3 lg:col-end-4 lg:row-start-2 lg:row-end-3',
+    className: 'col-span-3 lg:col-span-1',
     background: <PartnershipBackground />,
   },
   {
@@ -201,7 +195,7 @@ const competencies = [
     description: 'Cross-functional leadership driving measurable outcomes.',
     href: '/about',
     cta: 'Learn More',
-    className: 'lg:col-start-1 lg:col-end-4 lg:row-start-3 lg:row-end-4',
+    className: 'col-span-3',
     background: <StrategyBackground />,
   },
 ]
@@ -219,7 +213,7 @@ export function SkillsSection({ className = '' }: SkillsSectionProps) {
         </p>
       </div>
 
-      {/* Bento Grid - using row/col positioning from docs */}
+      {/* Bento Grid */}
       <BentoGrid className="max-w-5xl mx-auto lg:grid-rows-3">
         {competencies.map((feature) => (
           <BentoCard key={feature.name} {...feature} />
