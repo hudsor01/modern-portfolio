@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight, Briefcase, FileText, MessageCircle, ChevronDown, TrendingUp, Users, DollarSign, Clock } from 'lucide-react'
+import { ArrowRight, Briefcase, FileText, MessageCircle, TrendingUp, Users, DollarSign, Clock } from 'lucide-react'
 import { Navbar } from '@/components/layout/navbar'
 import { HomePageSchema } from '@/components/seo/home-page-schema'
 import { NumberTicker } from '@/components/ui/number-ticker'
@@ -79,18 +79,6 @@ function ImpactMetric({
   )
 }
 
-// Scroll indicator
-function ScrollIndicator() {
-  return (
-    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-      <div className="flex flex-col items-center gap-2 text-muted-foreground">
-        <span className="text-xs uppercase tracking-widest">Scroll</span>
-        <ChevronDown className="w-5 h-5" />
-      </div>
-    </div>
-  )
-}
-
 export default function HomePageContent() {
   const mounted = useMounted()
 
@@ -99,8 +87,8 @@ export default function HomePageContent() {
       <Navbar />
       <HomePageSchema />
 
-      {/* Hero Section - Full Viewport */}
-      <section className="relative min-h-screen flex items-center overflow-hidden">
+      {/* Hero Section */}
+      <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
         {/* Sophisticated Background */}
         <div className="absolute inset-0 -z-10">
           {/* Base gradient */}
@@ -132,7 +120,7 @@ export default function HomePageContent() {
           />
         </div>
 
-        <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-24">
+        <div className="w-full max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Left Column - Content */}
             <div className={`space-y-8 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
@@ -265,18 +253,17 @@ export default function HomePageContent() {
           </div>
         </div>
 
-        <ScrollIndicator />
       </section>
 
       {/* Impact Section */}
-      <section className="py-24 lg:py-32 bg-muted/30 relative overflow-hidden">
+      <section className="py-16 lg:py-20 bg-muted/30 relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
         <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           {/* Section header */}
-          <div className="text-center mb-16">
+          <div className="text-center mb-10">
             <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
               Proven Results
             </h2>
@@ -322,7 +309,7 @@ export default function HomePageContent() {
       </section>
 
       {/* Value Proposition Section */}
-      <section className="py-24 lg:py-32">
+      <section className="py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left - Text content */}
@@ -392,104 +379,74 @@ export default function HomePageContent() {
         </div>
       </section>
 
-      {/* Final Section - The Story Conclusion */}
-      <section className="relative py-32 lg:py-40 overflow-hidden bg-primary">
-        {/* Simple gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-primary/90" />
-        <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
-        <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-white/5 rounded-full blur-3xl translate-y-1/4 -translate-x-1/4" />
+      {/* Final CTA Section - Clean & Consistent */}
+      <section className="relative py-16 lg:py-20 overflow-hidden">
+        {/* Subtle decorative elements */}
+        <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
 
-        <div className="relative max-w-6xl mx-auto px-6 lg:px-8">
-          <div className="grid lg:grid-cols-5 gap-12 lg:gap-16 items-center">
-            {/* Left content - The message (3 cols) */}
-            <div className="lg:col-span-3 space-y-8">
-              {/* Personal philosophy */}
-              <div className="inline-block">
-                <span className="text-sm uppercase tracking-[0.2em] text-white/60 font-medium">
-                  My Promise
-                </span>
-              </div>
-
-              <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.1] tracking-tight">
-                Your revenue goals
-                <br />
-                deserve a partner,
-                <br />
-                <span className="text-white/80">not just a hire.</span>
-              </h2>
-
-              <p className="text-xl text-white/80 leading-relaxed max-w-xl">
-                I don't just optimize systems—I build the foundation for sustainable growth.
-                When your operations run like clockwork, your team can focus on what matters:
-                <span className="text-white font-medium"> closing deals and delighting customers.</span>
+        <div className="relative max-w-4xl mx-auto px-6 lg:px-8 text-center">
+          {/* Centered content flow */}
+          <div className="space-y-6">
+            {/* Testimonial as opening hook */}
+            <blockquote className="relative">
+              <div className="text-6xl text-primary/20 font-serif leading-none">"</div>
+              <p className="text-xl md:text-2xl text-foreground font-medium leading-relaxed -mt-8 mb-4">
+                Richard transformed our entire sales process and delivered results within 60 days.
               </p>
+              <cite className="text-sm text-muted-foreground not-italic">
+                — Former Director of Sales, Enterprise SaaS
+              </cite>
+            </blockquote>
 
-              {/* Social proof snippet */}
-              <div className="pt-4 border-t border-white/20">
-                <p className="text-white/60 text-sm italic mb-2">
-                  "Richard transformed our entire sales process and delivered results within 60 days."
-                </p>
-                <p className="text-white/40 text-xs uppercase tracking-wider">
-                  — Former Director of Sales, Enterprise SaaS
-                </p>
-              </div>
+            {/* Main headline */}
+            <div className="pt-4">
+              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight">
+                Ready to transform your
+                <br />
+                <span className="text-primary">revenue operations?</span>
+              </h2>
+              <p className="text-lg text-muted-foreground mt-4 max-w-2xl mx-auto">
+                Whether you're scaling a startup or optimizing enterprise operations,
+                let's discuss how I can help drive measurable growth.
+              </p>
             </div>
 
-            {/* Right content - CTA card (2 cols) */}
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-3xl p-8 shadow-2xl">
-                <h3 className="text-2xl font-bold text-foreground mb-3">
-                  Let's build something great
-                </h3>
-                <p className="text-muted-foreground mb-6">
-                  Whether you're scaling a startup or optimizing enterprise operations,
-                  I'd love to hear about your challenges.
-                </p>
-
-                {/* Primary CTA */}
-                <Button asChild size="lg" className="w-full h-14 text-lg font-semibold mb-4">
-                  <Link href="/contact">
-                    Start a Conversation
-                    <ArrowRight className="w-5 h-5" />
-                  </Link>
-                </Button>
-
-                {/* Secondary actions */}
-                <div className="flex gap-3">
-                  <Button asChild variant="outline" className="flex-1 h-12">
-                    <Link href="/resume">
-                      <FileText className="w-4 h-4" />
-                      Resume
-                    </Link>
-                  </Button>
-                  <Button asChild variant="outline" className="flex-1 h-12">
-                    <Link href="/projects">
-                      <Briefcase className="w-4 h-4" />
-                      Projects
-                    </Link>
-                  </Button>
-                </div>
-
-                {/* Email fallback */}
-                <div className="mt-6 pt-6 border-t border-border text-center">
-                  <p className="text-muted-foreground text-sm mb-1">
-                    Prefer email? Reach me at
-                  </p>
-                  <a
-                    href="mailto:richard@richardwhudsonjr.com"
-                    className="text-primary hover:text-primary/80 font-medium transition-colors"
-                  >
-                    richard@richardwhudsonjr.com
-                  </a>
-                </div>
-              </div>
+            {/* CTA buttons - inline, not in a card */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+              <Button asChild size="lg" className="h-14 px-8 text-base font-semibold">
+                <Link href="/contact">
+                  <MessageCircle className="w-5 h-5" />
+                  Start a Conversation
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="h-14 px-8 text-base font-semibold">
+                <Link href="/resume">
+                  <FileText className="w-5 h-5" />
+                  View Resume
+                </Link>
+              </Button>
             </div>
+
+            {/* Email as subtle text link */}
+            <p className="text-muted-foreground text-sm">
+              Or email me directly at{' '}
+              <a
+                href="mailto:richard@richardwhudsonjr.com"
+                className="text-primary hover:text-primary/80 font-medium transition-colors"
+              >
+                richard@richardwhudsonjr.com
+              </a>
+            </p>
           </div>
+        </div>
 
-          {/* Bottom signature */}
-          <div className="mt-20 pt-8 border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        {/* Bottom signature */}
+        <div className="relative max-w-4xl mx-auto px-6 lg:px-8 mt-10 pt-6 border-t border-border">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/30">
+              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-border shadow-sm">
                 <Image
                   src="/images/richard.jpg"
                   alt="Richard Hudson"
@@ -499,11 +456,11 @@ export default function HomePageContent() {
                 />
               </div>
               <div>
-                <p className="text-white font-semibold">Richard Hudson</p>
-                <p className="text-white/60 text-sm">Revenue Operations Professional</p>
+                <p className="text-foreground font-semibold">Richard Hudson</p>
+                <p className="text-muted-foreground text-sm">Revenue Operations Professional</p>
               </div>
             </div>
-            <p className="text-white/40 text-sm">
+            <p className="text-muted-foreground text-sm">
               Based in Plano, TX • Open to remote opportunities
             </p>
           </div>
