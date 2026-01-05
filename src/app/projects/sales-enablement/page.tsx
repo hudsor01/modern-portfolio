@@ -1,6 +1,6 @@
 'use client'
 
-import { TrendingUp, Users, Zap, Award, BookOpen } from 'lucide-react'
+import { TrendingUp, Users, Zap, BookOpen } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
@@ -14,6 +14,7 @@ import {
   formatTrend,
 } from '@/lib/utils/data-formatters'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
+import { NarrativeSections } from './components/NarrativeSections'
 
 export default function SalesEnablementProject() {
   const { isLoading, handleRefresh } = useLoadingState()
@@ -202,54 +203,8 @@ export default function SalesEnablementProject() {
               </div>
             </SectionCard>
 
-            {/* Skills & Learnings wrapped in SectionCard */}
-            <SectionCard
-              title="Skills & Learnings"
-              description="Key competencies and insights gained from the project"
-              className="mb-8"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  'Building scalable learning systems for high-growth sales teams',
-                  'Understanding psychology of adult learning and behavior change',
-                  'Creating engaging content that drives adoption',
-                  'Measuring training ROI and linking to business outcomes',
-                  'Change management and overcoming resistance',
-                  'Advanced coaching techniques for leaders',
-                ].map((skill, idx) => (
-                  <div key={idx} className="flex items-start gap-3">
-                    <Award className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">{skill}</span>
-                  </div>
-                ))}
-              </div>
-            </SectionCard>
-
-            {/* Technologies wrapped in SectionCard */}
-            <SectionCard
-              title="Technologies & Tools"
-              description="Technology stack and platforms used for implementation"
-            >
-              <div className="flex flex-wrap gap-3">
-                {[
-                  'React',
-                  'Next.js',
-                  'TypeScript',
-                  'Recharts',
-                  'Tailwind CSS',
-                  'PostgreSQL',
-                  'Node.js',
-                  'Learning Management System',
-                ].map((tech) => (
-                  <span
-                    key={tech}
-                    className="bg-primary/10 border border-primary/20 rounded-full px-4 py-2 text-sm text-primary hover:bg-primary/20 transition-colors"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </SectionCard>
+            {/* Professional Narrative Sections - STAR Method */}
+            <NarrativeSections />
           </>
         )}
       </ProjectPageLayout>

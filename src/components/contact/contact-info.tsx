@@ -22,7 +22,7 @@ const socialLinks = {
 
 export function ContactInfo() {
   return (
-    <div className="glass rounded-2xl p-8">
+    <div className="bg-card border border-border rounded-2xl p-8">
       <h3 className="typography-h4 mb-6 flex items-center gap-2">
         <MessageSquare className="w-5 h-5 text-primary" />
         Connect Socially

@@ -46,10 +46,6 @@ describe('Churn Retention Page Consistency', () => {
     mock.module('../RetentionHeatmap', () => ({
       default: () => <div data-testid="retention-heatmap">Retention Heatmap</div>,
     }))
-
-    mock.module('@/components/projects/star-area-chart', () => ({
-      STARAreaChart: () => <div data-testid="star-area-chart">STAR Area Chart</div>,
-    }))
   })
 
   afterEach(() => {
@@ -84,11 +80,12 @@ describe('Churn Retention Page Consistency', () => {
       const { container } = render(<ChurnAnalysis />)
       await wait(50)
 
-      // Check for section titles that would be in SectionCard components
-      expect(container.textContent).toContain('Project Overview')
-      expect(container.textContent).toContain('Challenge')
-      expect(container.textContent).toContain('Solution')
-      expect(container.textContent).toContain('Results & Impact')
+      // Check for STAR narrative section titles in SectionCard components
+      expect(container.textContent).toContain('Situation')
+      expect(container.textContent).toContain('Task')
+      expect(container.textContent).toContain('Action')
+      expect(container.textContent).toContain('Result')
+      expect(container.textContent).toContain('Key Learnings')
     })
   })
 
@@ -112,9 +109,9 @@ describe('Churn Retention Page Consistency', () => {
       const { container } = render(<ChurnAnalysis />)
       await wait(50)
 
-      // Verify key content sections are present
-      expect(container.textContent).toContain('Project Overview')
-      expect(container.textContent).toContain('STAR Impact Analysis')
+      // Verify STAR narrative sections are present
+      expect(container.textContent).toContain('Situation')
+      expect(container.textContent).toContain('Technologies Used')
     })
   })
 
@@ -126,7 +123,6 @@ describe('Churn Retention Page Consistency', () => {
       // Verify chart components are rendered (they show as loading in test)
       expect(container.textContent).toContain('Partner Retention Patterns')
       expect(container.textContent).toContain('Churn Rate Trends')
-      expect(container.textContent).toContain('Project Progression Metrics')
     })
   })
 })

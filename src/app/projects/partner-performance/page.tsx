@@ -11,14 +11,7 @@ import { SectionCard } from '@/components/ui/section-card'
 import { ChartContainer } from '@/components/ui/chart-container'
 import { useLoadingState } from '@/hooks/use-loading-state'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data-formatters'
-import { STARAreaChart } from '@/components/projects/star-area-chart'
-
-const starData = {
-  situation: { phase: 'Situation', impact: 24, efficiency: 20, value: 15 },
-  task: { phase: 'Task', impact: 50, efficiency: 45, value: 40 },
-  action: { phase: 'Action', impact: 78, efficiency: 83, value: 75 },
-  result: { phase: 'Result', impact: 95, efficiency: 93, value: 91 },
-}
+import { NarrativeSections } from './components/NarrativeSections'
 
 // Lazy-load chart components with Suspense fallback
 const PartnerTierChart = dynamic(() => import('./PartnerTierChart'), {
@@ -348,38 +341,8 @@ export default function PartnerPerformanceIntelligence() {
             </div>
           </SectionCard>
 
-          {/* STAR Impact Analysis wrapped in SectionCard */}
-          <SectionCard
-            title="STAR Impact Analysis"
-            description="Tracking project progression from Situation through Action to measurable Results"
-          >
-            <ChartContainer
-              title="Project Progression Metrics"
-              description="Impact, efficiency, and value metrics across project phases"
-              height={400}
-            >
-              <STARAreaChart data={starData} title="Project Progression Metrics" />
-            </ChartContainer>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-              <div className="text-center p-4 bg-card border border-border rounded-xl">
-                <div className="text-sm text-primary mb-2">Situation</div>
-                <div className="text-lg font-medium text-foreground">Initial Assessment</div>
-              </div>
-              <div className="text-center p-4 bg-card border border-border rounded-xl">
-                <div className="text-sm text-secondary mb-2">Task</div>
-                <div className="text-lg font-medium text-foreground">Goal Definition</div>
-              </div>
-              <div className="text-center p-4 bg-card border border-border rounded-xl">
-                <div className="text-sm text-accent mb-2">Action</div>
-                <div className="text-lg font-medium text-foreground">Implementation</div>
-              </div>
-              <div className="text-center p-4 bg-card border border-border rounded-xl">
-                <div className="text-sm text-primary mb-2">Result</div>
-                <div className="text-lg font-medium text-foreground">Measurable Impact</div>
-              </div>
-            </div>
-          </SectionCard>
+          {/* Professional Narrative Sections - STAR Method */}
+          <NarrativeSections />
         </>
       )}
     </ProjectPageLayout>
