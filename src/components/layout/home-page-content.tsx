@@ -388,19 +388,8 @@ export default function HomePageContent() {
         <div className="relative max-w-4xl mx-auto px-6 lg:px-8 text-center">
           {/* Centered content flow */}
           <div className="space-y-6">
-            {/* Testimonial as opening hook */}
-            <blockquote className="relative">
-              <div className="text-6xl text-primary/20 font-serif leading-none">"</div>
-              <p className="text-xl md:text-2xl text-foreground font-medium leading-relaxed -mt-8 mb-4">
-                Richard transformed our entire sales process and delivered results within 60 days.
-              </p>
-              <cite className="text-sm text-muted-foreground not-italic">
-                — Former Director of Sales, Enterprise SaaS
-              </cite>
-            </blockquote>
-
             {/* Main headline */}
-            <div className="pt-4">
+            <div>
               <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight">
                 Ready to transform your
                 <br />

@@ -219,7 +219,7 @@ export default function ChurnAnalysis() {
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+                    <div className="bg-muted/50 rounded-xl p-6 border border-border">
                       <h3 className="font-semibold text-primary mb-3">Predictive Analytics</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
                         <li>Machine learning models for churn probability scoring</li>
@@ -229,8 +229,8 @@ export default function ChurnAnalysis() {
                         <li>Predictive lifecycle modeling</li>
                       </ul>
                     </div>
-                    <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-                      <h3 className="font-semibold text-success mb-3">Retention Operations</h3>
+                    <div className="bg-muted/50 rounded-xl p-6 border border-border">
+                      <h3 className="font-semibold text-secondary mb-3">Retention Operations</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
                         <li>Automated alert system for at-risk partners</li>
                         <li>Segmented retention campaign workflows</li>
@@ -258,24 +258,24 @@ export default function ChurnAnalysis() {
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-xs border border-primary/20 rounded-xl p-6 text-center">
+                    <div className="bg-primary/10 border border-primary/20 rounded-xl p-6 text-center">
                       <div className="text-2xl font-semibold text-primary mb-2">23%</div>
                       <div className="text-sm text-muted-foreground">Churn Rate Reduction</div>
                     </div>
-                    <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xs border border-success/20 rounded-xl p-6 text-center">
-                      <div className="text-2xl font-semibold text-success mb-2">89%</div>
+                    <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-6 text-center">
+                      <div className="text-2xl font-semibold text-secondary mb-2">89%</div>
                       <div className="text-sm text-muted-foreground">Prediction Accuracy</div>
                     </div>
-                    <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-xs border border-purple-500/20 rounded-xl p-6 text-center">
-                      <div className="text-2xl font-semibold text-purple-400 mb-2">
+                    <div className="bg-accent/10 border border-accent/20 rounded-xl p-6 text-center">
+                      <div className="text-2xl font-semibold text-accent mb-2">
                         {formatCurrency(830000, { compact: true })}
                       </div>
                       <div className="text-sm text-muted-foreground">
                         Revenue Saved from Retention
                       </div>
                     </div>
-                    <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-xs border border-amber-500/20 rounded-xl p-6 text-center">
-                      <div className="text-2xl font-semibold text-amber-400 mb-2">67%</div>
+                    <div className="bg-primary/10 border border-primary/20 rounded-xl p-6 text-center">
+                      <div className="text-2xl font-semibold text-primary mb-2">67%</div>
                       <div className="text-sm text-muted-foreground">
                         Success Rate of Interventions
                       </div>
@@ -283,7 +283,7 @@ export default function ChurnAnalysis() {
                   </div>
 
                   <div className="space-y-3">
-                    <h3 className="font-semibold text-emerald-400">
+                    <h3 className="font-semibold text-secondary">
                       Quantified Business Outcomes:
                     </h3>
                     <ul className="list-disc list-inside space-y-2 ml-4">
@@ -308,7 +308,7 @@ export default function ChurnAnalysis() {
                 <div className="space-y-4 text-muted-foreground">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
-                      <h3 className="font-semibold text-purple-400">Customer Success Insights</h3>
+                      <h3 className="font-semibold text-accent">Customer Success Insights</h3>
                       <ul className="list-disc list-inside space-y-2 text-sm">
                         <li>
                           Early engagement is 3x more effective than late-stage retention efforts
@@ -366,7 +366,7 @@ export default function ChurnAnalysis() {
                   ].map((tech, index) => (
                     <span
                       key={index}
-                      className="bg-white/10 text-muted-foreground px-3 py-2 rounded-lg text-sm text-center border border-white/20 hover:bg-white/20 transition-colors"
+                      className="bg-muted/50 text-muted-foreground px-3 py-2 rounded-lg text-sm text-center border border-border hover:bg-muted transition-colors"
                     >
                       {tech}
                     </span>
@@ -380,7 +380,7 @@ export default function ChurnAnalysis() {
                   title="Key Insight"
                   variant="glass"
                   padding="md"
-                  className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border-primary/20"
+                  className="bg-primary/5 border-primary/20"
                 >
                   <p className="text-muted-foreground text-sm">
                     Partners with less than 3 months tenure show 2x higher churn risk. Focus
@@ -391,7 +391,7 @@ export default function ChurnAnalysis() {
                   title="Opportunity"
                   variant="glass"
                   padding="md"
-                  className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-success/20"
+                  className="bg-secondary/5 border-secondary/20"
                 >
                   <p className="text-muted-foreground text-sm">
                     Implementing proactive engagement for at-risk segments could reduce churn by up
@@ -402,7 +402,7 @@ export default function ChurnAnalysis() {
                   title="Action Required"
                   variant="glass"
                   padding="md"
-                  className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 border-amber-500/20"
+                  className="bg-accent/5 border-accent/20"
                 >
                   <p className="text-muted-foreground text-sm">
                     Schedule quarterly business reviews with top 20% of partners to maintain
@@ -429,21 +429,21 @@ export default function ChurnAnalysis() {
                   </ChartContainer>
 
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="text-center p-6 glass rounded-2xl">
-                      <div className="text-sm text-primary/70 mb-2">Situation</div>
-                      <div className="text-lg font-medium text-white">Initial Assessment</div>
+                    <div className="text-center p-6 bg-card border border-border rounded-2xl">
+                      <div className="text-sm text-primary mb-2">Situation</div>
+                      <div className="text-lg font-medium text-foreground">Initial Assessment</div>
                     </div>
-                    <div className="text-center p-6 glass rounded-2xl">
-                      <div className="text-sm text-green-400/70 mb-2">Task</div>
-                      <div className="text-lg font-medium text-white">Goal Definition</div>
+                    <div className="text-center p-6 bg-card border border-border rounded-2xl">
+                      <div className="text-sm text-secondary mb-2">Task</div>
+                      <div className="text-lg font-medium text-foreground">Goal Definition</div>
                     </div>
-                    <div className="text-center p-6 glass rounded-2xl">
-                      <div className="text-sm text-amber-400/70 mb-2">Action</div>
-                      <div className="text-lg font-medium text-white">Implementation</div>
+                    <div className="text-center p-6 bg-card border border-border rounded-2xl">
+                      <div className="text-sm text-accent mb-2">Action</div>
+                      <div className="text-lg font-medium text-foreground">Implementation</div>
                     </div>
-                    <div className="text-center p-6 glass rounded-2xl">
-                      <div className="text-sm text-cyan-400/70 mb-2">Result</div>
-                      <div className="text-lg font-medium text-white">Measurable Impact</div>
+                    <div className="text-center p-6 bg-card border border-border rounded-2xl">
+                      <div className="text-sm text-primary mb-2">Result</div>
+                      <div className="text-lg font-medium text-foreground">Measurable Impact</div>
                     </div>
                   </div>
                 </div>

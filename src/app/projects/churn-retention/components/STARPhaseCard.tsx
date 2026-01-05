@@ -6,19 +6,19 @@ interface STARPhaseCardProps {
 }
 
 const phaseStyles: Record<Phase, string> = {
-  situation: 'text-primary/70',
-  task: 'text-green-400/70',
-  action: 'text-amber-400/70',
-  result: 'text-cyan-400/70',
+  situation: 'text-primary',
+  task: 'text-secondary',
+  action: 'text-accent',
+  result: 'text-primary',
 }
 
 export function STARPhaseCard({ phase, label }: STARPhaseCardProps) {
   return (
-    <div className="text-center p-6 glass rounded-2xl">
+    <div className="text-center p-6 bg-card border border-border rounded-2xl">
       <div className={`text-sm ${phaseStyles[phase]} mb-2`}>
         {phase.charAt(0).toUpperCase() + phase.slice(1)}
       </div>
-      <div className="typography-large text-white">{label}</div>
+      <div className="typography-large text-foreground">{label}</div>
     </div>
   )
 }
