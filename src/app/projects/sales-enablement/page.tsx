@@ -149,7 +149,7 @@ export default function SalesEnablementProject() {
                     <ul className="space-y-2">
                       {pillar.achievements.map((achievement, idx) => (
                         <li key={idx} className="flex items-start gap-2 text-sm">
-                          <span className="text-green-500 mt-1">✓</span>
+                          <span className="text-secondary mt-1">✓</span>
                           <span>{achievement}</span>
                         </li>
                       ))}
@@ -168,7 +168,7 @@ export default function SalesEnablementProject() {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="text-center p-4">
-                  <div className="text-3xl font-bold text-green-500 mb-2">
+                  <div className="text-3xl font-bold text-secondary mb-2">
                     {formatPercentage(0.34)}
                   </div>
                   <p className="text-muted-foreground">

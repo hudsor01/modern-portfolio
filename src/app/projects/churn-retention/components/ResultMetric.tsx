@@ -1,4 +1,4 @@
-type MetricColor = 'blue' | 'green' | 'purple' | 'amber'
+type MetricColor = 'primary' | 'secondary' | 'accent'
 
 interface ResultMetricProps {
   color: MetricColor
@@ -6,26 +6,21 @@ interface ResultMetricProps {
   label: string
 }
 
-const colorStyles: Record<MetricColor, { gradient: string; border: string; textColor: string }> = {
-  blue: {
-    gradient: 'from-blue-500/10 to-indigo-500/10',
+const colorStyles: Record<MetricColor, { background: string; border: string; textColor: string }> = {
+  primary: {
+    background: 'bg-primary/10',
     border: 'border-primary/20',
     textColor: 'text-primary',
   },
-  green: {
-    gradient: 'from-green-500/10 to-emerald-500/10',
-    border: 'border-success/20',
-    textColor: 'text-success',
+  secondary: {
+    background: 'bg-secondary/10',
+    border: 'border-secondary/20',
+    textColor: 'text-secondary',
   },
-  purple: {
-    gradient: 'from-purple-500/10 to-pink-500/10',
-    border: 'border-purple-500/20',
-    textColor: 'text-purple-400',
-  },
-  amber: {
-    gradient: 'from-amber-500/10 to-orange-500/10',
-    border: 'border-amber-500/20',
-    textColor: 'text-amber-400',
+  accent: {
+    background: 'bg-accent/10',
+    border: 'border-accent/20',
+    textColor: 'text-accent',
   },
 }
 
@@ -34,7 +29,7 @@ export function ResultMetric({ color, value, label }: ResultMetricProps) {
 
   return (
     <div
-      className={`bg-gradient-to-br ${styles.gradient} backdrop-blur-xs border ${styles.border} rounded-xl p-6 text-center`}
+      className={`${styles.background} border ${styles.border} rounded-xl p-6 text-center`}
     >
       <div className={`typography-h2 border-none pb-0 text-2xl ${styles.textColor} mb-2`}>
         {value}

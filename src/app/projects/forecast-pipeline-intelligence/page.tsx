@@ -157,7 +157,7 @@ export default function ForecastPipelineIntelligenceProject() {
                     <ul className="space-y-2">
                       {module.capabilities.map((capability, idx) => (
                         <li key={idx} className="flex items-start gap-2 text-sm">
-                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-5 w-5 text-secondary mt-0.5 flex-shrink-0" />
                           <span>{capability}</span>
                         </li>
                       ))}
@@ -176,7 +176,7 @@ export default function ForecastPipelineIntelligenceProject() {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="text-center p-4">
-                  <div className="text-3xl font-bold text-green-500 mb-2">
+                  <div className="text-3xl font-bold text-secondary mb-2">
                     {formatCurrency(12500000, { compact: true })}
                   </div>
                   <p className="text-muted-foreground">
@@ -254,7 +254,7 @@ export default function ForecastPipelineIntelligenceProject() {
                 ].map((tech) => (
                   <span
                     key={tech}
-                    className="bg-green-500/10 border border-green-500/20 rounded-full px-4 py-2 text-sm text-green-500 hover:bg-green-500/20 transition-colors"
+                    className="bg-primary/10 border border-primary/20 rounded-full px-4 py-2 text-sm text-primary hover:bg-primary/20 transition-colors"
                   >
                     {tech}
                   </span>

@@ -40,14 +40,14 @@ export function PersonalInfo({
           className="space-y-8"
         >
           <div>
-            <h1 
-              className="text-xl lg:text-xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+            <h1
+              className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-foreground"
             >
               {personalInfo.name}
             </h1>
-            
-            <h2 
-              className="text-xl lg:text-xl font-semibold text-muted-foreground dark:text-foreground mb-6"
+
+            <h2
+              className="text-xl lg:text-2xl font-semibold text-primary mb-6"
             >
               {personalInfo.title}
             </h2>
@@ -62,13 +62,11 @@ export function PersonalInfo({
           </p>
 
           {onContactClick && (
-            <div
-              className="pt-4"
-            >
+            <div className="pt-4">
               <Button
                 onClick={onContactClick}
                 size="lg"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-foreground px-8 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 ease-out"
+                className="h-14 px-8 text-base font-semibold"
               >
                 Let's Connect
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -110,21 +108,18 @@ function ContactInfo({ personalInfo }: ContactInfoProps) {
 
 function ProfileImage() {
   return (
-    <div
-      className="relative"
-    >
-      <Card className="border-0 shadow-2xl bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 overflow-hidden">
-        <CardContent className="p-8">
-          <div className="relative mx-auto w-80 h-80 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20">
+    <div className="relative @container">
+      <Card className="bg-card border border-border rounded-2xl overflow-hidden">
+        <CardContent className="p-6 @md:p-8">
+          <div className="relative mx-auto w-64 h-64 @md:w-80 @md:h-80 rounded-full overflow-hidden bg-muted">
             <Image
               src="/images/richard.jpg"
               alt="Richard Hudson - Revenue Operations Professional"
               fill
               className="object-cover"
               priority
-              sizes="(max-width: 768px) 280px, 320px"
+              sizes="(max-width: 768px) 256px, 320px"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
           </div>
         </CardContent>
       </Card>
