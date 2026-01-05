@@ -10,12 +10,12 @@ export function EducationCertifications() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
       <section className="group h-full">
-        <div className="relative glass-interactive rounded-2xl overflow-hidden transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/25">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden transition-all duration-300 h-full flex flex-col hover:border-primary/30">
           <div className="p-8 flex-1 flex flex-col">
             {/* Inner Container for Content */}
-            <div className="glass rounded-2xl p-6 flex-1 flex flex-col h-[320px]">
+            <div className="bg-muted/50 rounded-xl p-6 flex-1 flex flex-col h-[320px]">
               <div className="text-center mb-6">
-                <h3 className="text-xl sm:typography-h2 border-none pb-0 text-2xl md:text-2xl bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
+                <h3 className="text-xl sm:typography-h2 border-none pb-0 text-2xl md:text-2xl text-foreground flex items-center justify-center gap-3">
                   <GraduationCap className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                   Education
                 </h3>
@@ -40,12 +40,12 @@ export function EducationCertifications() {
       </section>
 
       <section className="group h-full">
-        <div className="relative glass-interactive rounded-2xl overflow-hidden transition-all duration-500 h-full flex flex-col hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/25">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden transition-all duration-300 h-full flex flex-col hover:border-primary/30">
           <div className="p-8 flex-1 flex flex-col">
             {/* Inner Container for Content */}
-            <div className="glass rounded-2xl p-6 flex-1 flex flex-col h-[320px]">
+            <div className="bg-muted/50 rounded-xl p-6 flex-1 flex flex-col h-[320px]">
               <div className="text-center mb-6">
-                <h3 className="text-xl sm:typography-h2 border-none pb-0 text-2xl md:text-2xl bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
+                <h3 className="text-xl sm:typography-h2 border-none pb-0 text-2xl md:text-2xl text-foreground flex items-center justify-center gap-3">
                   <BadgeCheck className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                   Certifications
                 </h3>
@@ -54,7 +54,7 @@ export function EducationCertifications() {
               <div className="space-y-4 flex-1 flex flex-col justify-center">
                 {certifications.map((cert, index) => (
                   <div key={index} className="flex items-center">
-                    <div className="w-2 h-2 bg-primary/70 rounded-full mr-3 flex-shrink-0"></div>
+                    <div className="w-2 h-2 bg-primary rounded-full mr-3 flex-shrink-0"></div>
                     <p className="text-muted-foreground text-sm leading-relaxed">
                       {cert}
                     </p>

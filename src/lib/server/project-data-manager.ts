@@ -10,14 +10,13 @@ import {
   sanitizeProjectForAPI,
   type ValidatedProject
 } from '@/lib/validations/project-schema'
-import type { STARData } from '@/components/projects/star-area-chart'
 import { createContextLogger } from '@/lib/monitoring/logger'
 import { LRUCache } from 'lru-cache'
 
 const projectLogger = createContextLogger('ProjectDataManager')
 
 // Master project data - server-side only
-const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
+const MASTER_PROJECT_DATA: Project[] = [
   {
     id: 'partnership-program-implementation',
     slug: 'partnership-program-implementation',
@@ -42,12 +41,6 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       'React',
       'TypeScript',
     ],
-    starData: {
-      situation: { phase: 'Situation', impact: 20, efficiency: 15, value: 10 },
-      task: { phase: 'Task', impact: 45, efficiency: 40, value: 35 },
-      action: { phase: 'Action', impact: 75, efficiency: 80, value: 70 },
-      result: { phase: 'Result', impact: 95, efficiency: 98, value: 92 },
-    },
     featured: true,
     viewCount: 0,
     clickCount: 0,
@@ -77,12 +70,6 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       'TypeScript',
       'Recharts',
     ],
-    starData: {
-      situation: { phase: 'Situation', impact: 25, efficiency: 20, value: 15 },
-      task: { phase: 'Task', impact: 50, efficiency: 45, value: 40 },
-      action: { phase: 'Action', impact: 80, efficiency: 85, value: 75 },
-      result: { phase: 'Result', impact: 98, efficiency: 95, value: 94 },
-    },
     featured: true,
     viewCount: 0,
     clickCount: 0,
@@ -112,12 +99,6 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       'TypeScript',
       'Recharts',
     ],
-    starData: {
-      situation: { phase: 'Situation', impact: 18, efficiency: 22, value: 20 },
-      task: { phase: 'Task', impact: 42, efficiency: 48, value: 45 },
-      action: { phase: 'Action', impact: 78, efficiency: 82, value: 80 },
-      result: { phase: 'Result', impact: 92, efficiency: 96, value: 94 },
-    },
     featured: true,
     viewCount: 0,
     clickCount: 0,
@@ -147,12 +128,6 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       'TypeScript',
       'Recharts',
     ],
-    starData: {
-      situation: { phase: 'Situation', impact: 22, efficiency: 18, value: 20 },
-      task: { phase: 'Task', impact: 48, efficiency: 50, value: 48 },
-      action: { phase: 'Action', impact: 82, efficiency: 85, value: 80 },
-      result: { phase: 'Result', impact: 97, efficiency: 98, value: 95 },
-    },
     featured: true,
     viewCount: 0,
     clickCount: 0,
@@ -182,12 +157,6 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       'TypeScript',
       'Recharts',
     ],
-    starData: {
-      situation: { phase: 'Situation', impact: 15, efficiency: 25, value: 18 },
-      task: { phase: 'Task', impact: 40, efficiency: 52, value: 45 },
-      action: { phase: 'Action', impact: 75, efficiency: 88, value: 78 },
-      result: { phase: 'Result', impact: 94, efficiency: 97, value: 96 },
-    },
     featured: true,
     viewCount: 0,
     clickCount: 0,
@@ -217,12 +186,6 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       'TypeScript',
       'Recharts',
     ],
-    starData: {
-      situation: { phase: 'Situation', impact: 20, efficiency: 15, value: 18 },
-      task: { phase: 'Task', impact: 45, efficiency: 42, value: 44 },
-      action: { phase: 'Action', impact: 77, efficiency: 80, value: 78 },
-      result: { phase: 'Result', impact: 93, efficiency: 95, value: 94 },
-    },
     featured: true,
     viewCount: 0,
     clickCount: 0,
@@ -252,12 +215,6 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       'TypeScript',
       'Recharts',
     ],
-    starData: {
-      situation: { phase: 'Situation', impact: 28, efficiency: 22, value: 25 },
-      task: { phase: 'Task', impact: 52, efficiency: 48, value: 50 },
-      action: { phase: 'Action', impact: 84, efficiency: 82, value: 83 },
-      result: { phase: 'Result', impact: 96, efficiency: 94, value: 95 },
-    },
     featured: true,
     viewCount: 0,
     clickCount: 0,
@@ -284,12 +241,6 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
       'Python',
       'FastAPI',
     ],
-    starData: {
-      situation: { phase: 'Situation', impact: 30, efficiency: 25, value: 28 },
-      task: { phase: 'Task', impact: 55, efficiency: 50, value: 52 },
-      action: { phase: 'Action', impact: 85, efficiency: 88, value: 86 },
-      result: { phase: 'Result', impact: 96, efficiency: 97, value: 96 },
-    },
     featured: true,
     viewCount: 0,
     clickCount: 0,
@@ -307,12 +258,6 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
     github: 'https://github.com/hudsonr01/deal-funnel',
     category: 'Sales',
     tags: ['React', 'TypeScript', 'Recharts', 'Tailwind CSS', 'Next.js', 'Redux'],
-    starData: {
-      situation: { phase: 'Situation', impact: 25, efficiency: 20, value: 22 },
-      task: { phase: 'Task', impact: 48, efficiency: 45, value: 46 },
-      action: { phase: 'Action', impact: 80, efficiency: 82, value: 81 },
-      result: { phase: 'Result', impact: 94, efficiency: 95, value: 94 },
-    },
     featured: true,
     viewCount: 0,
     clickCount: 0,
@@ -330,12 +275,6 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
     github: 'https://github.com/hudsonr01/lead-attribution',
     category: 'Marketing',
     tags: ['React', 'TypeScript', 'Recharts', 'Tailwind CSS', 'Next.js'],
-    starData: {
-      situation: { phase: 'Situation', impact: 18, efficiency: 20, value: 19 },
-      task: { phase: 'Task', impact: 42, efficiency: 45, value: 43 },
-      action: { phase: 'Action', impact: 76, efficiency: 78, value: 77 },
-      result: { phase: 'Result', impact: 90, efficiency: 92, value: 91 },
-    },
     featured: true,
     viewCount: 0,
     clickCount: 0,
@@ -353,12 +292,6 @@ const MASTER_PROJECT_DATA: (Project & { starData?: STARData })[] = [
     github: 'https://github.com/hudsonr01/revenue-kpi',
     category: 'Finance',
     tags: ['React', 'TypeScript', 'Recharts', 'Tailwind CSS', 'Next.js', 'GraphQL', 'REST API'],
-    starData: {
-      situation: { phase: 'Situation', impact: 22, efficiency: 18, value: 20 },
-      task: { phase: 'Task', impact: 46, efficiency: 48, value: 47 },
-      action: { phase: 'Action', impact: 82, efficiency: 84, value: 83 },
-      result: { phase: 'Result', impact: 95, efficiency: 97, value: 96 },
-    },
     featured: true,
     viewCount: 0,
     clickCount: 0,

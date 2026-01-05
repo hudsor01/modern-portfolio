@@ -66,21 +66,21 @@ const CERTIFICATIONS = [
   {
     name: 'SalesLoft Admin Certification Level 1',
     issuer: 'SalesLoft',
-    badge: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=150&h=150&fit=crop&crop=center&q=80',
+    badge: '/images/certifications/salesloft-admin-badge-1.png',
     description: 'Foundational administration and configuration of SalesLoft sales engagement platform',
     skills: ['Platform Setup', 'User Management', 'Basic Cadences', 'Email Templates']
   },
   {
     name: 'SalesLoft Admin Certification Level 2',
     issuer: 'SalesLoft',
-    badge: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=150&h=150&fit=crop&crop=center&q=80',
+    badge: '/images/certifications/salesloft-admin-badge-2.png',
     description: 'Advanced administration including complex automation, integrations, and advanced analytics',
     skills: ['Advanced Automation', 'CRM Integrations', 'Advanced Analytics', 'Complex Workflows']
   },
   {
     name: 'HubSpot Revenue Operations Certification',
     issuer: 'HubSpot Academy',
-    badge: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=150&h=150&fit=crop&crop=center&q=80',
+    badge: '/images/certifications/hubspot-revops-badge.png',
     description: 'Comprehensive revenue operations strategy, process optimization, and performance analysis',
     skills: ['Revenue Operations', 'Sales Process Optimization', 'Marketing Alignment', 'Analytics & Forecasting']
   }
@@ -91,13 +91,9 @@ const PERSONAL_INFO = {
   title: 'Revenue Operations Professional',
   location: 'Plano, TX • Serving Dallas-Fort Worth Metroplex • Remote & On-Site Available',
   email: 'contact@richardwhudsonjr.com',
-  bio: `I'm a Revenue Operations Professional specializing in transforming business operations through data-driven strategies across the Dallas-Fort Worth metroplex. With over 10 years of experience optimizing sales processes, implementing marketing automation, and building business intelligence solutions, I help companies achieve sustainable revenue growth.
+  bio: `Revenue Operations leader who transforms complexity into competitive advantage. 10+ years architecting data-driven systems that have generated $4.8M+ in revenue, driven 432% transaction growth, and expanded partner networks by 2,217%.
 
-My expertise spans CRM optimization, advanced analytics, partnership program development, and process automation that has generated over $4.8M in revenue and achieved 432% transaction growth. I hold SalesLoft Admin Certifications (Level 1 & 2) and HubSpot Revenue Operations certification, making me a skilled RevOps professional in the Texas market.
-
-Based in Plano, I serve businesses throughout Dallas, Fort Worth, Frisco, and the greater DFW metroplex. My approach combines technical expertise with practical business acumen, ensuring implementations that drive measurable results. Whether you're a growing startup in Dallas's tech corridor or an established company in Fort Worth's business district, I create scalable revenue operations that power sustainable growth.
-
-My specialization in partnership program implementation has been particularly impactful, helping companies establish and optimize strategic partnerships that become significant revenue drivers. This expertise, combined with my technical skills in CRM systems, marketing automation platforms, and business intelligence tools, enables me to deliver comprehensive RevOps solutions that address every aspect of the revenue generation process.`,
+I specialize in the intersection of strategy and execution—building automated pipelines, predictive analytics, and scalable processes that turn operational chaos into sustainable growth engines. SalesLoft Admin certified (Level 1 & 2) and HubSpot Revenue Operations certified.`,
   highlights: [
     'Based in Plano, TX with deep knowledge of Dallas-Fort Worth business ecosystem and market dynamics',
     'SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified professional',

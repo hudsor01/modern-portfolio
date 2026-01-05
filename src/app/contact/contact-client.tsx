@@ -58,14 +58,14 @@ export default function ContactPageClient() {
         {/* Form Section */}
         <section className="relative py-16 lg:py-20 bg-muted/30">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-12 items-start">
+            <div className="grid lg:grid-cols-2 gap-12 items-stretch">
               {/* Contact Form */}
               <ContactForm form={form} />
 
               {/* Contact Information & Featured Work */}
-              <div className="space-y-8">
+              <div className="flex flex-col gap-8">
                 <ContactInfo />
-                <FeaturedProjects />
+                <FeaturedProjects className="flex-1" />
               </div>
             </div>
           </div>

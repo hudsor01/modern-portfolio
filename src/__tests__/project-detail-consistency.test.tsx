@@ -1,11 +1,7 @@
 import { describe, expect, it, mock, beforeEach, afterAll } from 'bun:test'
 import { render } from '@testing-library/react'
 import type { Project } from '@/types/project'
-import type {
-  MockNextImageProps,
-  MockNextLinkProps,
-  MockSTARAreaChartProps,
-} from '@/types/test-utils'
+import type { MockNextImageProps, MockNextLinkProps } from '@/types/test-utils'
 
 // Import after mocks are set up in beforeEach - Bun supports mocking after import
 import ProjectDetailClientBoundary from '@/components/projects/project-detail-client-boundary'
@@ -28,12 +24,6 @@ const mockProject: Project = {
   createdAt: new Date('2024-01-01'),
   liveUrl: 'https://example.com',
   githubUrl: 'https://github.com/example/test-project',
-  starData: {
-    situation: { phase: 'Situation', impact: 80, efficiency: 70, value: 90 },
-    task: { phase: 'Task', impact: 85, efficiency: 75, value: 85 },
-    action: { phase: 'Action', impact: 90, efficiency: 85, value: 95 },
-    result: { phase: 'Result', impact: 95, efficiency: 90, value: 100 },
-  },
 }
 
 describe('Project Detail Consistency Integration', () => {
@@ -59,14 +49,6 @@ describe('Project Detail Consistency Integration', () => {
         <a href={href} {...props}>
           {children}
         </a>
-      ),
-    }))
-
-    mock.module('@/components/projects/star-area-chart', () => ({
-      STARAreaChart: ({ data, title }: MockSTARAreaChartProps) => (
-        <div data-testid="star-chart" data-title={title}>
-          STAR Chart: {JSON.stringify(data)}
-        </div>
       ),
     }))
 
@@ -126,14 +108,6 @@ describe('Project Detail Consistency Integration', () => {
       const projectImage = container.querySelector('[data-testid="project-image"]')
       expect(projectImage).toBeInTheDocument()
       expect(projectImage).toHaveAttribute('alt', 'Test Project')
-    })
-
-    it('renders STAR chart when data is available', () => {
-      const { container } = render(
-        <ProjectDetailClientBoundary slug="test-project" initialProject={mockProject} />
-      )
-
-      expect(container.querySelector('[data-testid="star-chart"]')).toBeInTheDocument()
     })
 
     it('displays action buttons with proper attributes', () => {

@@ -7,89 +7,87 @@ import { technologies } from '../data/constants'
 export function NarrativeSections() {
   return (
     <div className="space-y-12 mt-12">
-      {/* Project Overview */}
-      <SectionCard title="Project Overview" >
+      {/* Situation */}
+      <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
           <p className="text-lg leading-relaxed">
-            Designed and implemented a comprehensive deal funnel analytics system to provide
-            real-time visibility into sales pipeline performance, conversion rates, and revenue
-            velocity across different market segments and deal sizes.
+            When I inherited the sales operations function, I discovered we were flying blind.
+            The team was managing 847 active opportunities worth $14.2M in pipeline, but had no
+            standardized way to track deal progression across our 4 distinct market segments.
+            Sales velocity metrics were being calculated manually using inconsistent methodologies.
           </p>
           <p className="leading-relaxed">
-            This strategic initiative enabled data-driven sales optimization, improved forecasting
-            accuracy, and identified critical bottlenecks that were constraining revenue growth
-            across the organization&apos;s diverse customer segments.
+            Pipeline bottlenecks were only identified reactively—after deals had already stalled.
+            Conversion rate analysis was limited to overall averages that hid critical
+            segment-specific insights. Revenue forecasting was essentially guesswork, hovering
+            around 73% accuracy. We were leaving money on the table.
           </p>
         </div>
       </SectionCard>
 
-      {/* Challenge */}
-      <SectionCard title="Challenge" >
+      {/* Task */}
+      <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
-            The sales organization lacked comprehensive visibility into pipeline performance across
-            different segments, making it difficult to optimize conversion rates and identify
-            process improvements:
+            I was charged with building a pipeline analytics system that would give our sales
+            leadership real-time visibility into deal flow. My specific objectives were:
           </p>
           <ul className="list-disc list-inside space-y-2 ml-4">
-            <li>No standardized way to track deal progression across 4 distinct market segments</li>
-            <li>
-              Sales velocity metrics were calculated manually, often with inconsistent methodologies
-            </li>
-            <li>
-              Pipeline bottlenecks were identified reactively, after deals had already stalled
-            </li>
-            <li>
-              Conversion rate analysis was limited to overall averages, missing segment-specific
-              insights
-            </li>
-            <li>Revenue forecasting accuracy suffered due to lack of granular pipeline data</li>
+            <li>Create multi-stage funnel tracking with segment-specific conversion rate analysis</li>
+            <li>Build real-time deal velocity calculations to identify slowdowns before they become stalls</li>
+            <li>Develop automated bottleneck identification with proactive alerting</li>
+            <li>Improve forecast accuracy from 73% to at least 85%</li>
+            <li>Enable segment-based performance comparisons to optimize resource allocation</li>
+            <li>Deliver actionable insights, not just dashboards full of data</li>
           </ul>
-          <p className="leading-relaxed">
-            With 847 active opportunities worth $14.2M in pipeline, the team needed a systematic
-            approach to optimize deal flow and maximize revenue conversion.
-          </p>
         </div>
       </SectionCard>
 
-      {/* Solution */}
-      <SectionCard title="Solution" >
+      {/* Action */}
+      <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
-            Built a comprehensive deal funnel analytics dashboard that provides real-time visibility
-            into sales performance with advanced segmentation and velocity tracking:
+            I designed and built a comprehensive deal funnel analytics system from scratch,
+            integrating data from our CRM and building custom calculation engines for each
+            key metric:
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <FeatureCard title="Analytics Framework" >
+            <FeatureCard title="Analytics Framework I Built">
               <ul className="list-disc list-inside space-y-1 text-sm">
-                <li>Multi-stage funnel tracking with conversion rate analysis</li>
-                <li>Segment-based performance comparisons (Enterprise, SMB, etc.)</li>
-                <li>Real-time deal velocity calculations and trending</li>
-                <li>Automated bottleneck identification and alerting</li>
-                <li>Historical performance benchmarking and forecasting</li>
+                <li>Multi-stage funnel tracking with conversion rate analysis at each gate</li>
+                <li>Segment-based performance comparisons (Enterprise, Mid-Market, SMB, Partner)</li>
+                <li>Real-time deal velocity calculations with trend detection</li>
+                <li>Automated bottleneck identification with Slack alerting</li>
+                <li>Historical performance benchmarking for forecast modeling</li>
               </ul>
             </FeatureCard>
-            <FeatureCard title="Interactive Features" >
+            <FeatureCard title="Interactive Features">
               <ul className="list-disc list-inside space-y-1 text-sm">
                 <li>Dynamic filtering by segment, stage, and deal size</li>
-                <li>Drill-down capabilities from overview to individual deals</li>
-                <li>Performance comparison tools and trend analysis</li>
-                <li>Automated reporting and insights generation</li>
-                <li>Mobile-optimized dashboards for field sales teams</li>
+                <li>Drill-down capabilities from overview to individual deal</li>
+                <li>Manager coaching tools with rep-level performance views</li>
+                <li>Automated weekly reporting with AI-generated insights</li>
+                <li>Mobile-optimized dashboards for field sales access</li>
               </ul>
             </FeatureCard>
           </div>
+
+          <p className="leading-relaxed mt-4">
+            I personally led the data integration effort, designed the visual funnel
+            representations for faster pattern recognition, and trained sales managers on
+            leveraging the new coaching insights. The rollout was phased by segment to
+            validate accuracy before scaling.
+          </p>
         </div>
       </SectionCard>
 
-      {/* Results & Impact */}
-      <SectionCard title="Results & Impact" >
+      {/* Result */}
+      <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
           <p className="leading-relaxed">
-            The deal funnel analytics system transformed sales performance visibility and enabled
-            data-driven optimization that significantly improved conversion rates and revenue
-            velocity:
+            The deal funnel analytics system I built transformed how we manage our pipeline
+            and delivered measurable revenue impact:
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -107,17 +105,17 @@ export function NarrativeSections() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-secondary">Quantified Business Outcomes:</h3>
+            <h3 className="font-semibold text-secondary">Quantified Business Outcomes I Delivered:</h3>
             <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>Improved forecast accuracy from 73% to 89% through better pipeline visibility</li>
+              <li>Improved forecast accuracy from 73% to 89% through granular pipeline visibility</li>
               <li>
-                Reduced deal stagnation in middle stages by 34% through proactive intervention
+                Reduced deal stagnation in middle stages by 34% through proactive intervention triggers
               </li>
-              <li>Identified that SMB deals close 47% faster, enabling resource reallocation</li>
+              <li>Discovered that SMB deals close 47% faster—enabling strategic resource reallocation</li>
               <li>Increased Enterprise segment conversion rate from 18% to 24%</li>
               <li>Reduced time-to-close for deals over $100K by 22 days average</li>
               <li>
-                Enabled sales managers to coach 15% more effectively with data-driven insights
+                Enabled sales managers to coach 15% more effectively with data-driven conversation starters
               </li>
             </ul>
           </div>
@@ -125,23 +123,24 @@ export function NarrativeSections() {
       </SectionCard>
 
       {/* Key Learnings */}
-      <SectionCard title="Key Learnings" >
+      <SectionCard title="Key Learnings">
         <div className="space-y-4 text-muted-foreground">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
               <h3 className="font-semibold text-accent-foreground">Sales Process Insights</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>
-                  Different market segments require fundamentally different sales approaches and
-                  timelines
+                  Different market segments require fundamentally different sales approaches
+                  and timelines—one size never fits all
                 </li>
                 <li>
-                  Pipeline stagnation patterns are predictable and can be prevented with early
-                  intervention
+                  Pipeline stagnation patterns are predictable; I can now identify at-risk
+                  deals 2-3 weeks before they stall
                 </li>
-                <li>Sales velocity is more impactful than pure volume for revenue optimization</li>
+                <li>Sales velocity matters more than pure volume for revenue optimization</li>
                 <li>
-                  Mid-funnel conversion rates are the highest leverage point for overall improvement
+                  Mid-funnel conversion rates are the highest leverage point—that's where I
+                  focus coaching resources
                 </li>
               </ul>
             </div>
@@ -149,25 +148,28 @@ export function NarrativeSections() {
               <h3 className="font-semibold text-primary">Technical Implementation Insights</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>
-                  Real-time data updates are crucial for actionable sales coaching and intervention
+                  Real-time data updates are crucial for actionable sales coaching—batch
+                  updates are too slow
                 </li>
                 <li>
-                  Segment-based views prevent &quot;average&quot; metrics from hiding important
+                  Segment-based views prevent "average" metrics from hiding critical
                   performance variations
                 </li>
                 <li>
-                  Visual funnel representations enable faster pattern recognition than tabular data
+                  Visual funnel representations enable faster pattern recognition than
+                  tabular data—by at least 3x
                 </li>
                 <li>
-                  Mobile accessibility dramatically increases sales team adoption and daily usage
+                  Mobile accessibility dramatically increases adoption; our field reps use
+                  this daily now
                 </li>
               </ul>
             </div>
           </div>
           <p className="leading-relaxed mt-4">
-            This project highlighted the importance of making complex sales data immediately
-            actionable. The most valuable features weren&apos;t the most sophisticated analyses, but
-            the ones that enabled quick decision-making in daily sales operations.
+            This project taught me that the most valuable analytics features aren't the most
+            sophisticated—they're the ones that enable quick decision-making in daily sales
+            operations. Actionable beats impressive every time.
           </p>
         </div>
       </SectionCard>
