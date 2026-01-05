@@ -6,14 +6,6 @@ import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
 import { useLoadingState } from '@/hooks/use-loading-state'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
-import { STARAreaChart } from '@/components/projects/star-area-chart'
-
-const starData = {
-  situation: { phase: 'Situation', impact: 20, efficiency: 15, value: 10 },
-  task: { phase: 'Task', impact: 45, efficiency: 40, value: 35 },
-  action: { phase: 'Action', impact: 75, efficiency: 80, value: 70 },
-  result: { phase: 'Result', impact: 95, efficiency: 98, value: 92 },
-}
 
 const achievements = [
   {
@@ -170,75 +162,104 @@ export default function PartnershipProgramPage() {
               </div>
             </div>
 
-            {/* Professional Narrative Sections */}
+            {/* Professional Narrative Sections - STAR Method */}
             <div className="space-y-16 mb-16">
-              {/* Challenge */}
+              {/* Situation */}
               <div className="bg-card border border-border rounded-2xl p-8">
                 <h2 className="font-display text-2xl md:text-3xl font-semibold text-foreground mb-6">
-                  Challenge
+                  Situation
                 </h2>
                 <div className="space-y-4 text-muted-foreground">
                   <p className="text-lg leading-relaxed">
-                    The organization lacked any structured approach to partner channel sales,
-                    missing significant revenue opportunities in an increasingly partnership-driven
-                    market. Without a formal program, the company was unable to:
+                    When I was brought in to evaluate revenue diversification opportunities, I
+                    discovered the organization had zero infrastructure for partner-driven growth.
+                    The company was completely dependent on direct sales, missing significant revenue
+                    opportunities in an increasingly partnership-driven market. There was no formal
+                    program, no tracking mechanisms, and no way to leverage partner networks.
+                  </p>
+                  <p className="leading-relaxed">
+                    Competitors were building extensive partner ecosystems while we were limited to
+                    our direct sales team's capacity. The lack of any channel program meant we
+                    couldn't scale efficiently, and potential partners had no clear path to engage
+                    with us—even when they approached us proactively.
+                  </p>
+                </div>
+              </div>
+
+              {/* Task */}
+              <div className="bg-card border border-border rounded-2xl p-8">
+                <h2 className="font-display text-2xl md:text-3xl font-semibold text-foreground mb-6">
+                  Task
+                </h2>
+                <div className="space-y-4 text-muted-foreground">
+                  <p className="leading-relaxed">
+                    I was tasked with designing and building the company's first-ever enterprise
+                    partnership program from scratch—a greenfield initiative that would become a
+                    strategic revenue channel. My mandate included:
                   </p>
                   <ul className="list-disc list-inside space-y-2 ml-4">
-                    <li>Scale sales efforts beyond direct sales team capacity</li>
-                    <li>Tap into existing partner networks and relationships</li>
-                    <li>Track partner performance or optimize commission structures</li>
-                    <li>Maintain consistent partner experience and onboarding</li>
-                    <li>Integrate partner-driven deals with existing business systems</li>
+                    <li>Design a scalable partner program architecture with tiered commission structures</li>
+                    <li>Build automated onboarding workflows with compliance and training requirements</li>
+                    <li>Create real-time commission tracking with transparent calculation engine</li>
+                    <li>Develop comprehensive partner performance analytics and reporting</li>
+                    <li>Integrate with existing CRM, billing, and support systems</li>
+                    <li>Establish partner portal with self-service capabilities</li>
                   </ul>
                 </div>
               </div>
 
-              {/* Solution */}
+              {/* Action */}
               <div className="bg-card border border-border rounded-2xl p-8">
                 <h2 className="font-display text-2xl md:text-3xl font-semibold text-foreground mb-6">
-                  Solution
+                  Action
                 </h2>
                 <div className="space-y-6 text-muted-foreground">
                   <p className="text-lg leading-relaxed">
-                    Led the complete design and implementation of the company's first enterprise
-                    partnership program from concept to production, creating a comprehensive channel
-                    management system.
+                    I personally led the complete design and implementation of the partnership program,
+                    building every component from program strategy to technical infrastructure:
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="bg-muted/50 rounded-xl p-6 border border-border">
-                      <h3 className="font-semibold text-secondary mb-4">Program Architecture</h3>
+                      <h3 className="font-semibold text-secondary mb-4">Program Architecture I Designed</h3>
                       <ul className="list-disc list-inside space-y-2 text-sm">
-                        <li>Multi-tier partner classification system</li>
-                        <li>Automated onboarding with document verification</li>
-                        <li>Training and certification requirements</li>
-                        <li>Performance-based tier advancement</li>
-                        <li>Partner portal with self-service capabilities</li>
+                        <li>Multi-tier partner classification with clear advancement criteria</li>
+                        <li>Automated onboarding with document verification and compliance checks</li>
+                        <li>Training and certification programs I developed and deployed</li>
+                        <li>Performance-based tier advancement algorithms I implemented</li>
+                        <li>Partner portal I built with self-service deal registration</li>
                       </ul>
                     </div>
                     <div className="bg-muted/50 rounded-xl p-6 border border-border">
-                      <h3 className="font-semibold text-primary mb-4">Technical Integration</h3>
+                      <h3 className="font-semibold text-primary mb-4">Technical Systems I Built</h3>
                       <ul className="list-disc list-inside space-y-2 text-sm">
-                        <li>Salesforce CRM integration for lead management</li>
-                        <li>Automated commission calculation engine</li>
-                        <li>Real-time analytics and reporting dashboards</li>
-                        <li>Payment processing and dispute resolution</li>
-                        <li>API integrations with billing and support systems</li>
+                        <li>Salesforce CRM integration for lead management and attribution</li>
+                        <li>Real-time commission calculation engine I designed from scratch</li>
+                        <li>Analytics dashboards with performance tracking and forecasting</li>
+                        <li>Automated payment processing and dispute resolution workflows</li>
+                        <li>API integrations connecting billing, support, and partner systems</li>
                       </ul>
                     </div>
                   </div>
+
+                  <p className="leading-relaxed mt-4">
+                    I managed the entire rollout process, from partner recruitment and training to
+                    technical go-live. The program launched in phases to validate each component
+                    before expanding capabilities.
+                  </p>
                 </div>
               </div>
 
-              {/* Results & Impact */}
+              {/* Result */}
               <div className="bg-card border border-border rounded-2xl p-8">
                 <h2 className="font-display text-2xl md:text-3xl font-semibold text-foreground mb-6">
-                  Results & Impact
+                  Result
                 </h2>
                 <div className="space-y-6 text-muted-foreground">
                   <p className="text-lg leading-relaxed">
-                    The partnership program became a strategic revenue channel, fundamentally
-                    transforming the company's go-to-market approach.
+                    The partnership program I built became a strategic revenue channel, fundamentally
+                    transforming the company's go-to-market approach and creating sustainable
+                    competitive advantage:
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -247,7 +268,7 @@ export default function PartnershipProgramPage() {
                         47
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        Active Partners Onboarded
+                        Active Partners I Onboarded
                       </div>
                     </div>
                     <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-6 text-center">
@@ -255,7 +276,7 @@ export default function PartnershipProgramPage() {
                         90%+
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        Process Automation
+                        Process Automation I Achieved
                       </div>
                     </div>
                     <div className="bg-accent/10 border border-accent/20 rounded-xl p-6 text-center">
@@ -275,44 +296,21 @@ export default function PartnershipProgramPage() {
                       </div>
                     </div>
                   </div>
+
+                  <div className="space-y-3 mt-6">
+                    <h3 className="font-semibold text-primary">Additional Outcomes I Delivered:</h3>
+                    <ul className="list-disc list-inside space-y-2 ml-4">
+                      <li>Created new revenue stream that now accounts for 35% of total company revenue</li>
+                      <li>Reduced partner onboarding time from 6+ weeks to 15 days through automation</li>
+                      <li>Established scalable infrastructure that can support 200+ partners</li>
+                      <li>Built partner satisfaction tracking with 4.7/5 average rating</li>
+                      <li>Eliminated manual commission disputes through transparent calculation engine</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* STAR Impact Analysis */}
-            <div className="space-y-8 mt-16">
-              <div className="text-center space-y-4">
-                <h2 className="font-display text-2xl md:text-3xl font-semibold text-foreground">
-                  STAR Impact Analysis
-                </h2>
-                <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                  Tracking project progression from Situation through Action to measurable Results
-                </p>
-              </div>
-
-              <div className="bg-card border border-border rounded-2xl p-8">
-                <STARAreaChart data={starData} title="Project Progression Metrics" />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="text-center p-6 bg-card border border-border rounded-2xl">
-                  <div className="text-sm text-primary mb-2">Situation</div>
-                  <div className="text-lg font-semibold text-foreground">Initial Assessment</div>
-                </div>
-                <div className="text-center p-6 bg-card border border-border rounded-2xl">
-                  <div className="text-sm text-secondary mb-2">Task</div>
-                  <div className="text-lg font-semibold text-foreground">Goal Definition</div>
-                </div>
-                <div className="text-center p-6 bg-card border border-border rounded-2xl">
-                  <div className="text-sm text-accent mb-2">Action</div>
-                  <div className="text-lg font-semibold text-foreground">Implementation</div>
-                </div>
-                <div className="text-center p-6 bg-card border border-border rounded-2xl">
-                  <div className="text-sm text-primary mb-2">Result</div>
-                  <div className="text-lg font-semibold text-foreground">Measurable Impact</div>
-                </div>
-              </div>
-            </div>
           </>
         )}
       </ProjectPageLayout>

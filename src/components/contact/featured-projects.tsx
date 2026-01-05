@@ -33,14 +33,18 @@ const featuredProjects = [
 // Component
 // ============================================================================
 
-export function FeaturedProjects() {
+interface FeaturedProjectsProps {
+  className?: string
+}
+
+export function FeaturedProjects({ className = '' }: FeaturedProjectsProps) {
   return (
-    <div className="glass rounded-2xl p-8">
+    <div className={`bg-card border border-border rounded-2xl p-8 flex flex-col ${className}`}>
       <h3 className="typography-h4 mb-6 flex items-center gap-2">
         <Briefcase className="w-5 h-5 text-primary" />
         Featured Work
       </h3>
-      <div className="space-y-4">
+      <div className="space-y-4 flex-1 flex flex-col justify-center">
         {featuredProjects.map((project) => (
           <Link
             key={project.href}

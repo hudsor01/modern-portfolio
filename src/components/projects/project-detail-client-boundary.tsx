@@ -14,7 +14,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import type { Project } from '@/types/project'
 import type { ProjectTag } from '@/lib/design-system/types'
-import { STARAreaChart } from './star-area-chart'
 
 interface ProjectDetailClientBoundaryProps {
   slug: string
@@ -233,21 +232,6 @@ export default function ProjectDetailClientBoundary({
                   </div>
                 </SectionCard>
 
-                {/* STAR Impact Analysis Chart */}
-                {displayProject.starData && (
-                  <ChartContainer
-                    title="Impact Analysis"
-                    description="STAR Framework performance metrics"
-                    variant="default"
-                    height={300}
-                  >
-                    <STARAreaChart
-                      data={displayProject.starData}
-                      title="STAR Framework Metrics"
-                      className="h-full"
-                    />
-                  </ChartContainer>
-                )}
               </div>
             </div>
 
