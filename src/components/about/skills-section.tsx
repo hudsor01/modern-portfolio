@@ -1,216 +1,229 @@
 'use client'
 
-import { TrendingUp, Database, BarChart3, Users, Target, Workflow, ArrowRight } from 'lucide-react'
+import { TrendingUp, Database, BarChart3, Users, Target, Workflow } from 'lucide-react'
+import { BentoCard, BentoGrid } from '@/components/ui/bento-grid'
 import { cn } from '@/lib/utils'
 
 interface SkillsSectionProps {
   className?: string
 }
 
-// Core competencies data
-const competencies = [
-  {
-    icon: TrendingUp,
-    name: 'Revenue Operations',
-    description: '$4.8M+ revenue generated through data-driven strategies and process optimization.',
-    href: '/projects',
-    skills: ['Salesforce', 'HubSpot', 'Revenue Forecasting', 'Pipeline Analytics'],
-    color: 'cyan',
-    featured: true,
-  },
-  {
-    icon: BarChart3,
-    name: 'Data Analytics',
-    description: '432% transaction growth achieved through advanced analytics and visualization.',
-    href: '/projects/revenue-kpi',
-    skills: ['Tableau', 'Power BI', 'SQL', 'Python'],
-    color: 'blue',
-  },
-  {
-    icon: Workflow,
-    name: 'Process Automation',
-    description: '90%+ workflow automation reducing manual tasks and accelerating operations.',
-    href: '/projects/revenue-operations-center',
-    skills: ['Zapier', 'N8N', 'API Integrations', 'ETL'],
-    color: 'violet',
-  },
-  {
-    icon: Database,
-    name: 'Technical Development',
-    description: '10+ production systems built with modern full-stack technologies.',
-    href: '/projects',
-    skills: ['TypeScript', 'React', 'Next.js', 'PostgreSQL'],
-    color: 'emerald',
-  },
-  {
-    icon: Users,
-    name: 'Partnership Programs',
-    description: '2,217% network expansion through strategic partner enablement.',
-    href: '/projects/partner-performance',
-    skills: ['Partner Enablement', 'Commission Systems', 'Channel Ops'],
-    color: 'amber',
-  },
-  {
-    icon: Target,
-    name: 'Strategic Planning',
-    description: 'Cross-functional leadership driving alignment and measurable outcomes.',
-    href: '/about',
-    skills: ['OKRs', 'Roadmapping', 'Stakeholder Management'],
-    color: 'rose',
-  },
-]
-
-// Color mappings for different accent colors
-const colorStyles = {
-  cyan: {
-    iconBg: 'bg-cyan-500/10',
-    iconColor: 'text-cyan-400',
-    tagBg: 'bg-cyan-500/10 border-cyan-500/20 text-cyan-300',
-    glow: 'group-hover:shadow-cyan-500/20',
-    border: 'group-hover:border-cyan-500/40',
-    gradient: 'from-cyan-500/10 via-transparent to-transparent',
-  },
-  blue: {
-    iconBg: 'bg-blue-500/10',
-    iconColor: 'text-blue-400',
-    tagBg: 'bg-blue-500/10 border-blue-500/20 text-blue-300',
-    glow: 'group-hover:shadow-blue-500/20',
-    border: 'group-hover:border-blue-500/40',
-    gradient: 'from-blue-500/10 via-transparent to-transparent',
-  },
-  violet: {
-    iconBg: 'bg-violet-500/10',
-    iconColor: 'text-violet-400',
-    tagBg: 'bg-violet-500/10 border-violet-500/20 text-violet-300',
-    glow: 'group-hover:shadow-violet-500/20',
-    border: 'group-hover:border-violet-500/40',
-    gradient: 'from-violet-500/10 via-transparent to-transparent',
-  },
-  emerald: {
-    iconBg: 'bg-emerald-500/10',
-    iconColor: 'text-emerald-400',
-    tagBg: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300',
-    glow: 'group-hover:shadow-emerald-500/20',
-    border: 'group-hover:border-emerald-500/40',
-    gradient: 'from-emerald-500/10 via-transparent to-transparent',
-  },
-  amber: {
-    iconBg: 'bg-amber-500/10',
-    iconColor: 'text-amber-400',
-    tagBg: 'bg-amber-500/10 border-amber-500/20 text-amber-300',
-    glow: 'group-hover:shadow-amber-500/20',
-    border: 'group-hover:border-amber-500/40',
-    gradient: 'from-amber-500/10 via-transparent to-transparent',
-  },
-  rose: {
-    iconBg: 'bg-rose-500/10',
-    iconColor: 'text-rose-400',
-    tagBg: 'bg-rose-500/10 border-rose-500/20 text-rose-300',
-    glow: 'group-hover:shadow-rose-500/20',
-    border: 'group-hover:border-rose-500/40',
-    gradient: 'from-rose-500/10 via-transparent to-transparent',
-  },
-}
-
-function CompetencyCard({
-  competency,
-  className,
-}: {
-  competency: (typeof competencies)[0]
-  className?: string
-}) {
-  const colors = colorStyles[competency.color as keyof typeof colorStyles]
-  const Icon = competency.icon
-
+// Animated chart bars for Revenue Operations
+function RevenueChartBackground() {
   return (
-    <a
-      href={competency.href}
-      className={cn(
-        'group relative flex flex-col overflow-hidden rounded-2xl',
-        'bg-gray-900/50 backdrop-blur-sm',
-        'border border-gray-800/50',
-        'transition-all duration-500 ease-out',
-        'hover:-translate-y-1',
-        colors.border,
-        colors.glow,
-        'hover:shadow-xl',
-        className
-      )}
-    >
-      {/* Gradient overlay */}
-      <div
-        className={cn(
-          'absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500',
-          'bg-gradient-to-br',
-          colors.gradient
-        )}
-      />
-
-      {/* Content */}
-      <div className="relative z-10 flex flex-col h-full p-6">
-        {/* Icon */}
+    <div className="absolute inset-0 flex items-end justify-center gap-2 px-8 pb-20 [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]">
+      {[65, 45, 80, 55, 90, 70, 95, 60, 85].map((height, i) => (
         <div
-          className={cn(
-            'w-12 h-12 rounded-xl flex items-center justify-center mb-4',
-            'transition-transform duration-300 group-hover:scale-110',
-            colors.iconBg
-          )}
-        >
-          <Icon className={cn('w-6 h-6', colors.iconColor)} />
-        </div>
-
-        {/* Title & Description */}
-        <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-white/90 transition-colors">
-          {competency.name}
-        </h3>
-        <p className="text-sm text-gray-400 mb-4 flex-grow">
-          {competency.description}
-        </p>
-
-        {/* Skills */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {competency.skills.slice(0, 3).map((skill) => (
-            <span
-              key={skill}
-              className={cn(
-                'px-2.5 py-1 text-xs font-medium rounded-md border',
-                'transition-colors duration-300',
-                colors.tagBg
-              )}
-            >
-              {skill}
-            </span>
-          ))}
-          {competency.skills.length > 3 && (
-            <span className="px-2.5 py-1 text-xs font-medium rounded-md bg-gray-800/50 text-gray-400 border border-gray-700/50">
-              +{competency.skills.length - 3}
-            </span>
-          )}
-        </div>
-
-        {/* CTA */}
-        <div className="flex items-center text-sm font-medium text-gray-400 group-hover:text-white transition-colors">
-          <span>View projects</span>
-          <ArrowRight className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" />
-        </div>
-      </div>
-
-      {/* Corner accent */}
-      <div
-        className={cn(
-          'absolute top-0 right-0 w-24 h-24 opacity-20 group-hover:opacity-40 transition-opacity',
-          'bg-gradient-to-bl',
-          colors.gradient
-        )}
-      />
-    </a>
+          key={i}
+          className="w-6 rounded-t-sm bg-gradient-to-t from-cyan-500/40 to-cyan-400/20 transition-all duration-500 group-hover:from-cyan-500/60 group-hover:to-cyan-400/40"
+          style={{
+            height: `${height}%`,
+            animationDelay: `${i * 100}ms`,
+          }}
+        />
+      ))}
+    </div>
   )
 }
 
-export function SkillsSection({ className = '' }: SkillsSectionProps) {
-  const featured = competencies.find((c) => c.featured)
-  const others = competencies.filter((c) => !c.featured)
+// Animated data visualization for Data Analytics
+function AnalyticsBackground() {
+  return (
+    <div className="absolute inset-0 [mask-image:linear-gradient(to_top,transparent_20%,#000_100%)]">
+      <div className="absolute top-8 right-4 left-4 grid grid-cols-4 gap-2">
+        {Array.from({ length: 16 }).map((_, i) => (
+          <div
+            key={i}
+            className={cn(
+              'h-8 rounded-md transition-all duration-300',
+              i % 3 === 0
+                ? 'bg-blue-500/30 group-hover:bg-blue-500/50'
+                : i % 2 === 0
+                  ? 'bg-blue-400/20 group-hover:bg-blue-400/40'
+                  : 'bg-blue-300/10 group-hover:bg-blue-300/30'
+            )}
+            style={{ animationDelay: `${i * 50}ms` }}
+          />
+        ))}
+      </div>
+      <svg className="absolute bottom-16 left-4 right-4 h-20 opacity-60 group-hover:opacity-100 transition-opacity">
+        <path
+          d="M 0 60 Q 30 20, 60 40 T 120 30 T 180 50 T 240 20"
+          fill="none"
+          stroke="url(#blueGradient)"
+          strokeWidth="2"
+          className="animate-pulse"
+        />
+        <defs>
+          <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.4" />
+            <stop offset="100%" stopColor="#60a5fa" stopOpacity="0.8" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  )
+}
 
+// Animated workflow nodes for Process Automation
+function AutomationBackground() {
+  return (
+    <div className="absolute inset-0 [mask-image:linear-gradient(to_top,transparent_20%,#000_100%)]">
+      <div className="absolute top-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
+        {/* Workflow nodes */}
+        <div className="flex items-center gap-8">
+          <div className="w-10 h-10 rounded-lg bg-violet-500/30 border border-violet-500/40 group-hover:bg-violet-500/50 transition-colors" />
+          <div className="w-16 h-0.5 bg-gradient-to-r from-violet-500/50 to-violet-400/30" />
+          <div className="w-10 h-10 rounded-lg bg-violet-500/30 border border-violet-500/40 group-hover:bg-violet-500/50 transition-colors" />
+          <div className="w-16 h-0.5 bg-gradient-to-r from-violet-500/50 to-violet-400/30" />
+          <div className="w-10 h-10 rounded-lg bg-violet-500/30 border border-violet-500/40 group-hover:bg-violet-500/50 transition-colors" />
+        </div>
+        {/* Connecting lines */}
+        <div className="flex gap-24">
+          <div className="w-0.5 h-8 bg-gradient-to-b from-violet-500/50 to-transparent" />
+          <div className="w-0.5 h-8 bg-gradient-to-b from-violet-500/50 to-transparent" />
+        </div>
+        <div className="flex items-center gap-16">
+          <div className="w-8 h-8 rounded-full bg-violet-400/20 border border-violet-400/30 group-hover:scale-110 transition-transform" />
+          <div className="w-8 h-8 rounded-full bg-violet-400/20 border border-violet-400/30 group-hover:scale-110 transition-transform" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Code snippet visualization for Technical Development
+function TechBackground() {
+  const codeLines = [
+    'const revenue = await',
+    '  analyzeMetrics({',
+    '    period: "Q4",',
+    '    growth: 432%',
+    '  });',
+  ]
+
+  return (
+    <div className="absolute inset-0 [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]">
+      <div className="absolute top-6 left-4 right-4 font-mono text-xs space-y-1">
+        {codeLines.map((line, i) => (
+          <div
+            key={i}
+            className={cn(
+              'text-emerald-400/60 group-hover:text-emerald-400/90 transition-colors',
+              i === 0 && 'text-emerald-300/70',
+              i === 3 && 'text-cyan-400/70'
+            )}
+            style={{ paddingLeft: line.startsWith(' ') ? '1rem' : 0 }}
+          >
+            {line}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Network nodes for Partnership Programs
+function PartnershipBackground() {
+  return (
+    <div className="absolute inset-0 [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]">
+      <div className="absolute top-8 left-1/2 -translate-x-1/2">
+        {/* Central node */}
+        <div className="relative">
+          <div className="w-12 h-12 rounded-full bg-amber-500/30 border-2 border-amber-500/50 group-hover:scale-110 transition-transform" />
+          {/* Radiating nodes */}
+          {[0, 60, 120, 180, 240, 300].map((angle, i) => (
+            <div
+              key={i}
+              className="absolute w-6 h-6 rounded-full bg-amber-400/20 border border-amber-400/40 group-hover:bg-amber-400/40 transition-colors"
+              style={{
+                top: `${Math.sin((angle * Math.PI) / 180) * 50 + 12}px`,
+                left: `${Math.cos((angle * Math.PI) / 180) * 50 + 12}px`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Target/milestone visual for Strategic Planning
+function StrategyBackground() {
+  return (
+    <div className="absolute inset-0 [mask-image:linear-gradient(to_top,transparent_30%,#000_100%)]">
+      <div className="absolute top-8 left-1/2 -translate-x-1/2">
+        {/* Concentric circles */}
+        <div className="relative w-32 h-32">
+          <div className="absolute inset-0 rounded-full border-2 border-rose-500/20 group-hover:border-rose-500/40 transition-colors" />
+          <div className="absolute inset-4 rounded-full border-2 border-rose-500/30 group-hover:border-rose-500/50 transition-colors" />
+          <div className="absolute inset-8 rounded-full border-2 border-rose-500/40 group-hover:border-rose-500/60 transition-colors" />
+          <div className="absolute inset-12 rounded-full bg-rose-500/50 group-hover:bg-rose-500/70 transition-colors" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Core competencies data with backgrounds
+const competencies = [
+  {
+    Icon: TrendingUp,
+    name: 'Revenue Operations',
+    description: '$4.8M+ revenue generated through data-driven strategies and process optimization.',
+    href: '/projects',
+    cta: 'View Projects',
+    className: 'col-span-3 lg:col-span-2 lg:row-span-2',
+    background: <RevenueChartBackground />,
+  },
+  {
+    Icon: BarChart3,
+    name: 'Data Analytics',
+    description: '432% transaction growth achieved through advanced analytics.',
+    href: '/projects/revenue-kpi',
+    cta: 'See Dashboard',
+    className: 'col-span-3 lg:col-span-1',
+    background: <AnalyticsBackground />,
+  },
+  {
+    Icon: Workflow,
+    name: 'Process Automation',
+    description: '90%+ workflow automation reducing manual tasks.',
+    href: '/projects/revenue-operations-center',
+    cta: 'Explore',
+    className: 'col-span-3 lg:col-span-1',
+    background: <AutomationBackground />,
+  },
+  {
+    Icon: Database,
+    name: 'Technical Development',
+    description: '10+ production systems built with modern technologies.',
+    href: '/projects',
+    cta: 'View Stack',
+    className: 'col-span-3 lg:col-span-1',
+    background: <TechBackground />,
+  },
+  {
+    Icon: Users,
+    name: 'Partnership Programs',
+    description: '2,217% network expansion through partner enablement.',
+    href: '/projects/partner-performance',
+    cta: 'See Results',
+    className: 'col-span-3 lg:col-span-1',
+    background: <PartnershipBackground />,
+  },
+  {
+    Icon: Target,
+    name: 'Strategic Planning',
+    description: 'Cross-functional leadership driving measurable outcomes.',
+    href: '/about',
+    cta: 'Learn More',
+    className: 'col-span-3 lg:col-span-1',
+    background: <StrategyBackground />,
+  },
+]
+
+export function SkillsSection({ className = '' }: SkillsSectionProps) {
   return (
     <section className={className}>
       {/* Header */}
@@ -223,23 +236,12 @@ export function SkillsSection({ className = '' }: SkillsSectionProps) {
         </p>
       </div>
 
-      {/* Grid */}
-      <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* Featured card - spans 2 cols on lg */}
-          {featured && (
-            <CompetencyCard
-              competency={featured}
-              className="md:col-span-2 lg:col-span-2 lg:row-span-2"
-            />
-          )}
-
-          {/* Other cards */}
-          {others.map((competency) => (
-            <CompetencyCard key={competency.name} competency={competency} />
-          ))}
-        </div>
-      </div>
+      {/* Bento Grid */}
+      <BentoGrid className="max-w-5xl mx-auto auto-rows-[12rem] lg:grid-rows-3">
+        {competencies.map((feature) => (
+          <BentoCard key={feature.name} {...feature} />
+        ))}
+      </BentoGrid>
     </section>
   )
 }
