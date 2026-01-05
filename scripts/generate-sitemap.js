@@ -86,6 +86,6 @@ ${routes.map(route => `  <url>
 const sitemapPath = path.join(process.cwd(), 'public', 'sitemap.xml');
 fs.writeFileSync(sitemapPath, sitemap);
 
-console.log(`✅ Sitemap generated successfully at ${sitemapPath}`);
-console.log(`📅 Last modified: ${today}`);
-console.log(`🔗 ${routes.length} URLs included`);
+console.log(`Sitemap generated successfully at ${sitemapPath}`);
+console.log(`Last modified: ${today}`);
+console.log(`${routes.length} URLs included`);

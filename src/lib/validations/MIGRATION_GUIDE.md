@@ -6,7 +6,7 @@ The validation system has been centralized to eliminate duplication and ensure c
 
 ## Migration Summary
 
-### ✅ **COMPLETED MIGRATIONS**
+### **COMPLETED MIGRATIONS**
 
 #### 1. **API Endpoints Updated**
 - `/api/projects/[slug]/interactions` - Now uses `validateProjectInteraction()`
@@ -23,7 +23,7 @@ The validation system has been centralized to eliminate duplication and ensure c
   - Type-safe validation helpers
   - Legacy compatibility exports
 
-### 📋 **USAGE GUIDE**
+### **USAGE GUIDE**
 
 #### **Import Pattern**
 ```typescript
@@ -62,7 +62,7 @@ try {
 }
 ```
 
-### ✅ **MIGRATION COMPLETE**
+### **MIGRATION COMPLETE**
 
 All legacy validation files have been removed and all imports now use unified schemas:
 - `/src/lib/api/validation.ts` - **Removed** (Dec 2025)
@@ -70,19 +70,19 @@ All legacy validation files have been removed and all imports now use unified sc
 
 No legacy files remain. All validation uses `@/lib/validations/unified-schemas`.
 
-### 🔄 **SCHEMA MAPPING**
+### **SCHEMA MAPPING**
 
 | Legacy Schema | Unified Schema | Notes |
 |---------------|----------------|-------|
-| `contactFormSchema` | `contactFormSchema` | ✅ Migrated |
-| `emailSchema` | `emailSchema` | ✅ Migrated |
-| `urlSchema` | `urlSchema` | ✅ Migrated |
-| `phoneSchema` | `phoneSchema` | ✅ Migrated |
-| `projectFilterSchema` | `projectFilterSchema` | ✅ Migrated |
-| Blog schemas | `blogPostFilterSchema`, `blogPostSortSchema` | ✅ Added |
-| Interaction schemas | `projectInteractionSchema`, `blogInteractionSchema` | ✅ Added |
+| `contactFormSchema` | `contactFormSchema` | Migrated |
+| `emailSchema` | `emailSchema` | Migrated |
+| `urlSchema` | `urlSchema` | Migrated |
+| `phoneSchema` | `phoneSchema` | Migrated |
+| `projectFilterSchema` | `projectFilterSchema` | Migrated |
+| Blog schemas | `blogPostFilterSchema`, `blogPostSortSchema` | Added |
+| Interaction schemas | `projectInteractionSchema`, `blogInteractionSchema` | Added |
 
-### 🎯 **BENEFITS OF MIGRATION**
+### **BENEFITS OF MIGRATION**
 
 1. **Consistency**: All validation uses same patterns and error handling
 2. **Type Safety**: Full TypeScript integration with Prisma schemas  
@@ -90,20 +90,20 @@ No legacy files remain. All validation uses `@/lib/validations/unified-schemas`.
 4. **Performance**: Reduced bundle size by eliminating duplicates
 5. **Developer Experience**: Better autocomplete and error messages
 
-### ⚠️ **BREAKING CHANGES**
+### **BREAKING CHANGES**
 
 - `ValidationError` class replaces generic errors
 - Some schema names have changed for consistency
 - Import paths updated to use unified schemas
 
-### 🧪 **TESTING**
+### **TESTING**
 
 All validation schemas include comprehensive tests:
 - Unit tests for individual schemas
 - Integration tests for API endpoints
 - Error handling tests
 
-### 📈 **NEXT STEPS**
+### **NEXT STEPS**
 
 > **Note**: Action items are now tracked in beads. Run `bd list --epic modern-portfolio-wug` to see remaining tasks.
 

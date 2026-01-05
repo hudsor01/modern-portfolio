@@ -1,6 +1,6 @@
 'use client'
 
-import { TrendingUp, Map, Database, Zap, Code } from 'lucide-react'
+import { TrendingUp, Map, Database, Zap, Code, Check } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
@@ -161,7 +161,7 @@ export default function QuotaTerritoryManagementProject() {
                     <ul className="space-y-2">
                       {approach.outcomes.map((outcome, idx) => (
                         <li key={idx} className="flex items-start gap-2 text-sm">
-                          <span className="text-secondary mt-1">✓</span>
+                          <Check className="h-4 w-4 text-secondary mt-0.5 flex-shrink-0" />
                           <span>{outcome}</span>
                         </li>
                       ))}
