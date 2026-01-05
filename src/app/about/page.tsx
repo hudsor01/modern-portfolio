@@ -120,33 +120,41 @@ export const metadata = generateMetadata(
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-page-light dark:bg-page">
+    <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="w-full mx-auto px-6 py-12 space-y-24">
-        {/* Personal Information Section */}
-        <PersonalInfo
-          personalInfo={PERSONAL_INFO}
-          className="pt-8"
-        />
+      <main className="relative overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
+
+        {/* Personal Information Section - Hero */}
+        <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-20">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <PersonalInfo personalInfo={PERSONAL_INFO} />
+          </div>
+        </section>
 
         {/* Experience Stats Section */}
-        <ExperienceStats
-          stats={EXPERIENCE_STATS}
-          className="py-16"
-        />
+        <section className="relative py-16 lg:py-20 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <ExperienceStats stats={EXPERIENCE_STATS} />
+          </div>
+        </section>
 
         {/* Skills Section */}
-        <SkillsSection
-          skills={SKILLS}
-          className="py-16"
-        />
+        <section className="relative py-16 lg:py-20">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <SkillsSection skills={SKILLS} />
+          </div>
+        </section>
 
         {/* Certifications Section */}
-        <CertificationsSection
-          certifications={CERTIFICATIONS}
-          className="py-16"
-        />
+        <section className="relative py-16 lg:py-20 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <CertificationsSection certifications={CERTIFICATIONS} />
+          </div>
+        </section>
       </main>
     </div>
   )

@@ -32,8 +32,8 @@ export function StrategicImpact() {
   ]
 
   return (
-    <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-xs border border-green-200 dark:border-green-800 rounded-xl p-6">
-      <h2 className="text-xl font-semibold mb-4 text-green-600 dark:text-green-400">
+    <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-6">
+      <h2 className="text-xl font-semibold mb-4 text-secondary">
         Proven Revenue Operations Impact & ROI Results
       </h2>
       <MetricsGrid metrics={impactMetrics} columns={3} className="gap-4" />

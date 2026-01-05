@@ -18,27 +18,32 @@ export default function ContactPageClient() {
   return (
     <>
       <Navbar />
-      <main id="main-content">
-        <section className="min-h-screen bg-background text-foreground pt-20">
-          <div className="w-full mx-auto px-6">
+      <main id="main-content" className="min-h-screen bg-background">
+        {/* Hero Section */}
+        <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-20 overflow-hidden">
+          {/* Decorative background elements */}
+          <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
+
+          <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
             {/* Header */}
             <div className="text-center mb-12">
-              <h1 className="text-xl sm:text-xl md:text-2xl font-display font-bold mb-6 text-primary">
-                Let's Connect
+              <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
+                Let's <span className="text-primary">Connect</span>
               </h1>
-              <p className="typography-lead max-w-3xl mx-auto mb-8">
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
                 Open to new opportunities in Revenue Operations. Whether you're a recruiter, hiring
                 manager, or industry peer, I'd love to hear from you.
               </p>
 
               {/* Quick Stats */}
-              <div className="flex flex-wrap justify-center gap-8 typography-small text-muted-foreground">
+              <div className="flex flex-wrap justify-center gap-8 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-warning" />
+                  <Zap className="w-4 h-4 text-secondary" />
                   <span>24hr Response Time</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-success" />
+                  <Shield className="w-4 h-4 text-secondary" />
                   <span>Confidential Discussions</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -47,7 +52,12 @@ export default function ContactPageClient() {
                 </div>
               </div>
             </div>
+          </div>
+        </section>
 
+        {/* Form Section */}
+        <section className="relative py-16 lg:py-20 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="grid lg:grid-cols-2 gap-12 items-start">
               {/* Contact Form */}
               <ContactForm form={form} />

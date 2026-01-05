@@ -27,20 +27,16 @@ interface SkillsSectionProps {
 export function SkillsSection({ skills, className = '' }: SkillsSectionProps) {
   return (
     <section className={className}>
-      <div
-        
-        
-        className="text-center mb-12"
-      >
-        <h2 className="typography-h1 text-xl mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+      <div className="text-center mb-12">
+        <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-4">
           Core Competencies
         </h2>
-        <p className="typography-lead dark:text-muted-foreground max-w-3xl mx-auto">
+        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
           Revenue operations expertise spanning analytics, automation, and strategic optimization
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 @container">
         {skills.map((category) => (
           <SkillCategoryCard
             key={category.category}
@@ -58,29 +54,24 @@ interface SkillCategoryCardProps {
 
 function SkillCategoryCard({ category }: SkillCategoryCardProps) {
   return (
-    <div
-      
-      
-    >
-      <Card className="h-full border-0 shadow-lg bg-white/50 dark:bg-card/50 backdrop-blur-xs hover:shadow-xl transition-all duration-300 ease-out">
-        <CardHeader className="text-center pb-4">
-          <div className="text-xl mb-4">{category.icon}</div>
-          <CardTitle className="typography-h4 text-foreground dark:text-white">
-            {category.category}
-          </CardTitle>
-          <p className="typography-small text-muted-foreground dark:text-muted-foreground">
-            {category.description}
-          </p>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {category.skills.map((skill) => (
-              <SkillItem key={skill.name} skill={skill} />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <Card className="h-full bg-card border border-border rounded-2xl hover:border-primary/50 transition-all duration-300">
+      <CardHeader className="text-center pb-4">
+        <div className="text-2xl mb-4">{category.icon}</div>
+        <CardTitle className="font-display text-xl font-semibold text-foreground">
+          {category.category}
+        </CardTitle>
+        <p className="text-sm text-muted-foreground">
+          {category.description}
+        </p>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {category.skills.map((skill) => (
+            <SkillItem key={skill.name} skill={skill} />
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -92,20 +83,20 @@ function SkillItem({ skill }: SkillItemProps) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="font-medium text-foreground dark:text-white">
+        <span className="text-sm font-medium text-foreground">
           {skill.name}
         </span>
         <div className="flex items-center gap-2">
           <Badge variant="secondary" className="text-xs">
             {skill.years}y
           </Badge>
-          <span className="typography-small text-muted-foreground dark:text-muted-foreground">
+          <span className="text-xs text-muted-foreground">
             {skill.level}%
           </span>
         </div>
       </div>
-      <Progress 
-        value={skill.level} 
+      <Progress
+        value={skill.level}
         className="h-2"
         aria-label={`${skill.name} proficiency: ${skill.level}%`}
       />

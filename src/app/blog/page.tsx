@@ -22,8 +22,14 @@ export default function BlogHomePage() {
       <BlogJsonLd />
       <div className="min-h-screen bg-background">
         <Navbar />
-        <main className="pt-20">
-          <BlogPageContent />
+        <main className="relative overflow-hidden">
+          {/* Decorative background elements */}
+          <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
+
+          <div className="relative pt-24 pb-16 lg:pt-32 lg:pb-20">
+            <BlogPageContent />
+          </div>
         </main>
         <Footer />
       </div>

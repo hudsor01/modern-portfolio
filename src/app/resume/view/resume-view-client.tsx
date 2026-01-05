@@ -29,48 +29,55 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
   }
 
   return (
-    <div>
+    <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="min-h-screen bg-slate-950 pt-20">
-        <div className="w-full mx-auto px-4 py-8">
+      <main className="relative overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
+
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16 lg:pt-32 lg:pb-20">
           {/* Header */}
-          <div className="mb-8 text-center">
-            <h1 className="typography-h1 text-xl text-white mb-4">
+          <div className="mb-12 text-center">
+            <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
               Richard Hudson - Resume
             </h1>
-            <p className="text-muted-foreground text-lg mb-6">
+            <p className="text-lg text-muted-foreground mb-8">
               Revenue Operations Professional | Plano, TX
             </p>
-            
+
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-4 justify-center">
               <Button
                 onClick={handleDownload}
-                className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-out"
+                size="lg"
+                className="h-14 px-8 text-base font-semibold"
               >
                 <Download className="mr-2 h-5 w-5" />
                 Download PDF
               </Button>
-              
+
               <Button
                 variant="outline"
+                size="lg"
                 asChild
-                className="border-primary text-primary hover:bg-primary/10 px-6 py-3 rounded-lg transition-all duration-300 ease-out"
+                className="h-14 px-8 text-base font-semibold"
               >
                 <a href="/resume" className="flex items-center">
                   <FileText className="mr-2 h-5 w-5" />
                   View Web Version
                 </a>
               </Button>
-              
+
               <Button
                 variant="outline"
+                size="lg"
                 asChild
-                className="border-primary text-primary hover:bg-primary/10 px-6 py-3 rounded-lg transition-all duration-300 ease-out"
+                className="h-14 px-8 text-base font-semibold"
               >
-                <a 
-                  href="/Richard Hudson - Resume.pdf" 
-                  target="_blank" 
+                <a
+                  href="/Richard Hudson - Resume.pdf"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center"
                 >
@@ -83,33 +90,33 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
 
           {/* PDF Viewer */}
           <div className="max-w-5xl mx-auto">
-            <div className="bg-white rounded-lg shadow-2xl overflow-hidden">
+            <div className="bg-card border border-border rounded-2xl overflow-hidden">
               {isLoading && (
                 <div className="flex items-center justify-center h-96">
                   <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                    <p className="typography-muted">Loading PDF...</p>
+                    <p className="text-muted-foreground">Loading PDF...</p>
                   </div>
                 </div>
               )}
-              
+
               {error && (
                 <div className="flex items-center justify-center h-96">
                   <div className="text-center">
                     <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                     <p className="text-muted-foreground mb-4">Unable to display PDF in browser</p>
-                    <Button onClick={handleDownload} className="bg-primary hover:bg-primary">
+                    <Button onClick={handleDownload}>
                       <Download className="mr-2 h-4 w-4" />
                       Download Instead
                     </Button>
                   </div>
                 </div>
               )}
-              
+
               {!error && (
                 <iframe
                   src="/Richard Hudson - Resume.pdf"
-                  className="w-full h-[800px] border-0"
+                  className="w-full h-[800px] border-0 bg-white"
                   title="Richard Hudson Resume"
                   onLoad={handlePdfLoad}
                   onError={handlePdfError}
@@ -117,10 +124,10 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
                 />
               )}
             </div>
-            
+
             {/* Mobile Fallback Message */}
-            <div className="md:hidden mt-6 p-4 bg-primary-bg border border-primary-border rounded-lg">
-              <p className="text-primary/70 text-sm text-center">
+            <div className="md:hidden mt-6 p-4 bg-muted/50 border border-border rounded-xl">
+              <p className="text-sm text-muted-foreground text-center">
                 💡 For the best mobile experience, tap "Download PDF" or "Open in New Tab" above
               </p>
             </div>
