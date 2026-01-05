@@ -1,6 +1,7 @@
 'use client'
 
 import { TrendingUp, Database, BarChart3, Users, Target, Workflow } from 'lucide-react'
+import { BentoCard, BentoGrid } from '@/components/ui/bento-grid'
 
 interface Skill {
   name: string
@@ -20,55 +21,91 @@ interface SkillsSectionProps {
   className?: string
 }
 
-// Transform flat skills into impact areas for bento display
-const impactAreas = [
+// Skills background component for visual interest
+function SkillsBackground({ skills, variant }: { skills: string[]; variant: 'primary' | 'secondary' | 'accent' }) {
+  const colorMap = {
+    primary: 'bg-primary/10 border-primary/20 text-primary/80',
+    secondary: 'bg-secondary/10 border-secondary/20 text-secondary/80',
+    accent: 'bg-accent/10 border-accent/20 text-accent/80',
+  }
+
+  return (
+    <div className="absolute inset-0 p-4 pt-8 [mask-image:linear-gradient(to_bottom,transparent_0%,#000_20%,#000_80%,transparent_100%)]">
+      <div className="flex flex-wrap gap-2">
+        {skills.map((skill) => (
+          <span
+            key={skill}
+            className={`px-3 py-1.5 text-xs font-medium rounded-full border ${colorMap[variant]} transition-all duration-300 group-hover:scale-105`}
+          >
+            {skill}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Core competencies data mapped to BentoCard format
+const competencies = [
   {
-    title: 'Revenue Operations',
-    outcome: '$4.8M+ revenue generated',
-    icon: TrendingUp,
-    skills: ['Salesforce', 'HubSpot', 'Revenue Forecasting'],
+    Icon: TrendingUp,
+    name: 'Revenue Operations',
+    description: '$4.8M+ revenue generated through data-driven strategies and process optimization.',
+    href: '/projects',
+    cta: 'View Projects',
+    className: 'col-span-3 lg:col-span-2 lg:row-span-2',
+    skills: ['Salesforce', 'HubSpot', 'Revenue Forecasting', 'Pipeline Analytics'],
     variant: 'primary' as const,
-    size: 'large' as const,
   },
   {
-    title: 'Data Analytics',
-    outcome: '432% transaction growth',
-    icon: BarChart3,
+    Icon: BarChart3,
+    name: 'Data Analytics',
+    description: '432% transaction growth achieved through advanced analytics and visualization.',
+    href: '/projects/revenue-kpi',
+    cta: 'See Dashboard',
+    className: 'col-span-3 lg:col-span-1',
     skills: ['Tableau', 'Power BI', 'SQL', 'Python'],
     variant: 'secondary' as const,
-    size: 'medium' as const,
   },
   {
-    title: 'Process Automation',
-    outcome: '90%+ workflow automation',
-    icon: Workflow,
-    skills: ['Zapier', 'N8N', 'API Integrations'],
+    Icon: Workflow,
+    name: 'Process Automation',
+    description: '90%+ workflow automation reducing manual tasks and accelerating operations.',
+    href: '/projects/revenue-operations-center',
+    cta: 'Explore',
+    className: 'col-span-3 lg:col-span-1',
+    skills: ['Zapier', 'N8N', 'API Integrations', 'ETL'],
     variant: 'accent' as const,
-    size: 'medium' as const,
   },
   {
-    title: 'Technical Development',
-    outcome: '10+ production systems built',
-    icon: Database,
+    Icon: Database,
+    name: 'Technical Development',
+    description: '10+ production systems built with modern full-stack technologies.',
+    href: '/projects',
+    cta: 'View Stack',
+    className: 'col-span-3 lg:col-span-1',
     skills: ['TypeScript', 'React', 'Next.js', 'PostgreSQL'],
     variant: 'primary' as const,
-    size: 'small' as const,
   },
   {
-    title: 'Partnership Programs',
-    outcome: '2,217% network expansion',
-    icon: Users,
+    Icon: Users,
+    name: 'Partnership Programs',
+    description: '2,217% network expansion through strategic partner enablement.',
+    href: '/projects/partner-performance',
+    cta: 'See Results',
+    className: 'col-span-3 lg:col-span-1',
     skills: ['Partner Enablement', 'Commission Systems', 'Channel Ops'],
     variant: 'secondary' as const,
-    size: 'small' as const,
   },
   {
-    title: 'Strategic Planning',
-    outcome: 'Cross-functional leadership',
-    icon: Target,
+    Icon: Target,
+    name: 'Strategic Planning',
+    description: 'Cross-functional leadership driving alignment and measurable outcomes.',
+    href: '/about',
+    cta: 'Learn More',
+    className: 'col-span-3 lg:col-span-1',
     skills: ['OKRs', 'Roadmapping', 'Stakeholder Management'],
     variant: 'accent' as const,
-    size: 'small' as const,
   },
 ]
 
@@ -84,93 +121,20 @@ export function SkillsSection({ className = '' }: SkillsSectionProps) {
         </p>
       </div>
 
-      {/* Bento Grid Layout */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
-        {impactAreas.map((area, index) => {
-          // Determine grid position based on index
-          const gridClass =
-            index === 0 ? 'col-span-2 row-span-2' :
-            index === 1 || index === 2 ? 'col-span-2 md:col-span-1 row-span-1' :
-            index === 3 || index === 4 ? 'col-span-1' :
-            'col-span-2'
-
-          return (
-            <div key={area.title} className={gridClass}>
-              <ImpactCard area={area} />
-            </div>
-          )
-        })}
-      </div>
-    </section>
-  )
-}
-
-interface ImpactArea {
-  title: string
-  outcome: string
-  icon: React.ComponentType<{ className?: string }>
-  skills: string[]
-  variant: 'primary' | 'secondary' | 'accent'
-  size: 'large' | 'medium' | 'small'
-}
-
-interface ImpactCardProps {
-  area: ImpactArea
-}
-
-function ImpactCard({ area }: ImpactCardProps) {
-  const Icon = area.icon
-
-  const variantStyles = {
-    primary: 'bg-primary/5 border-primary/20 hover:border-primary/50 hover:bg-primary/10',
-    secondary: 'bg-secondary/5 border-secondary/20 hover:border-secondary/50 hover:bg-secondary/10',
-    accent: 'bg-accent/5 border-accent/20 hover:border-accent/50 hover:bg-accent/10',
-  }
-
-  const iconColors = {
-    primary: 'text-primary',
-    secondary: 'text-secondary',
-    accent: 'text-accent',
-  }
-
-  const isLarge = area.size === 'large'
-
-  return (
-    <div
-      className={`
-        group h-full rounded-2xl border p-6 transition-all duration-300
-        ${variantStyles[area.variant]}
-        ${isLarge ? 'flex flex-col justify-between' : ''}
-      `}
-    >
-      {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className={`p-2 rounded-xl bg-card border border-border ${iconColors[area.variant]}`}>
-          <Icon className={`${isLarge ? 'w-6 h-6' : 'w-5 h-5'}`} />
-        </div>
-      </div>
-
-      {/* Title & Outcome */}
-      <div className={`${isLarge ? 'flex-1 flex flex-col justify-center' : ''}`}>
-        <h3 className={`font-semibold text-foreground mb-2 ${isLarge ? 'text-xl md:text-2xl' : 'text-base md:text-lg'}`}>
-          {area.title}
-        </h3>
-        <p className={`font-medium mb-4 ${iconColors[area.variant]} ${isLarge ? 'text-lg' : 'text-sm'}`}>
-          {area.outcome}
-        </p>
-      </div>
-
-      {/* Skills Tags */}
-      <div className="flex flex-wrap gap-2">
-        {area.skills.map((skill) => (
-          <span
-            key={skill}
-            className="px-2 py-1 text-xs font-medium rounded-lg bg-card border border-border text-muted-foreground"
-          >
-            {skill}
-          </span>
+      <BentoGrid className="max-w-6xl mx-auto auto-rows-[18rem] lg:auto-rows-[14rem] lg:grid-rows-3">
+        {competencies.map((competency) => (
+          <BentoCard
+            key={competency.name}
+            Icon={competency.Icon}
+            name={competency.name}
+            description={competency.description}
+            href={competency.href}
+            cta={competency.cta}
+            className={competency.className}
+            background={<SkillsBackground skills={competency.skills} variant={competency.variant} />}
+          />
         ))}
-      </div>
-    </div>
+      </BentoGrid>
+    </section>
   )
 }
