@@ -2,50 +2,97 @@
 
 import { TrendingUp, Database, BarChart3, Users, Target, Workflow } from 'lucide-react'
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid'
-
-interface Skill {
-  name: string
-  level: number
-  years: number
-}
-
-interface SkillCategory {
-  category: string
-  icon: string
-  description: string
-  skills: Skill[]
-}
+import { Marquee } from '@/components/ui/marquee'
+import { cn } from '@/lib/utils'
 
 interface SkillsSectionProps {
-  skills: SkillCategory[]
   className?: string
 }
 
-// Skills background component for visual interest
-function SkillsBackground({ skills, variant }: { skills: string[]; variant: 'primary' | 'secondary' | 'accent' }) {
+// Skill badge component for marquee items
+function SkillBadge({ skill, variant }: { skill: string; variant: 'primary' | 'secondary' | 'accent' }) {
   const colorMap = {
-    primary: 'bg-primary/10 border-primary/20 text-primary/80',
-    secondary: 'bg-secondary/10 border-secondary/20 text-secondary/80',
-    accent: 'bg-accent/10 border-accent/20 text-accent/80',
+    primary: 'bg-primary/10 border-primary/30 text-primary shadow-sm shadow-primary/10',
+    secondary: 'bg-secondary/10 border-secondary/30 text-secondary shadow-sm shadow-secondary/10',
+    accent: 'bg-accent/10 border-accent/30 text-accent shadow-sm shadow-accent/10',
   }
 
   return (
-    <div className="absolute inset-0 p-4 pt-8 [mask-image:linear-gradient(to_bottom,transparent_0%,#000_20%,#000_80%,transparent_100%)]">
-      <div className="flex flex-wrap gap-2">
-        {skills.map((skill) => (
-          <span
-            key={skill}
-            className={`px-3 py-1.5 text-xs font-medium rounded-full border ${colorMap[variant]} transition-all duration-300 group-hover:scale-105`}
-          >
-            {skill}
-          </span>
-        ))}
-      </div>
+    <div
+      className={cn(
+        'px-4 py-2 text-sm font-medium rounded-lg border backdrop-blur-sm',
+        'transition-all duration-300 hover:scale-105',
+        colorMap[variant]
+      )}
+    >
+      {skill}
     </div>
   )
 }
 
-// Core competencies data mapped to BentoCard format
+// Grid pattern background for visual interest
+function GridPatternBackground({ variant }: { variant: 'primary' | 'secondary' | 'accent' }) {
+  const colorMap = {
+    primary: 'stroke-primary/10',
+    secondary: 'stroke-secondary/10',
+    accent: 'stroke-accent/10',
+  }
+
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      <svg
+        className="absolute inset-0 h-full w-full"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <pattern
+            id={`grid-${variant}`}
+            width="32"
+            height="32"
+            patternUnits="userSpaceOnUse"
+          >
+            <path
+              d="M0 32V0h32"
+              fill="none"
+              className={colorMap[variant]}
+              strokeWidth="1"
+            />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill={`url(#grid-${variant})`} />
+      </svg>
+      <div className="absolute inset-0 bg-gradient-to-t from-card via-card/80 to-transparent" />
+    </div>
+  )
+}
+
+// Combined background with marquee and grid
+function PremiumBackground({
+  skills,
+  variant,
+  showMarquee = true
+}: {
+  skills: string[]
+  variant: 'primary' | 'secondary' | 'accent'
+  showMarquee?: boolean
+}) {
+  return (
+    <div className="absolute inset-0">
+      <GridPatternBackground variant={variant} />
+      {showMarquee && (
+        <div className="absolute inset-x-0 top-4 bottom-20">
+          <Marquee pauseOnHover className="[--duration:20s] [--gap:0.75rem]">
+            {skills.map((skill) => (
+              <SkillBadge key={skill} skill={skill} variant={variant} />
+            ))}
+          </Marquee>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Core competencies data
 const competencies = [
   {
     Icon: TrendingUp,
@@ -54,7 +101,7 @@ const competencies = [
     href: '/projects',
     cta: 'View Projects',
     className: 'col-span-3 lg:col-span-2 lg:row-span-2',
-    skills: ['Salesforce', 'HubSpot', 'Revenue Forecasting', 'Pipeline Analytics'],
+    skills: ['Salesforce', 'HubSpot', 'Revenue Forecasting', 'Pipeline Analytics', 'Deal Management', 'Sales Metrics'],
     variant: 'primary' as const,
   },
   {
@@ -121,7 +168,7 @@ export function SkillsSection({ className = '' }: SkillsSectionProps) {
         </p>
       </div>
 
-      <BentoGrid className="max-w-6xl mx-auto auto-rows-[18rem] lg:auto-rows-[14rem] lg:grid-rows-3">
+      <BentoGrid className="max-w-6xl mx-auto auto-rows-[20rem] lg:auto-rows-[16rem] lg:grid-rows-3">
         {competencies.map((competency) => (
           <BentoCard
             key={competency.name}
@@ -131,7 +178,12 @@ export function SkillsSection({ className = '' }: SkillsSectionProps) {
             href={competency.href}
             cta={competency.cta}
             className={competency.className}
-            background={<SkillsBackground skills={competency.skills} variant={competency.variant} />}
+            background={
+              <PremiumBackground
+                skills={competency.skills}
+                variant={competency.variant}
+              />
+            }
           />
         ))}
       </BentoGrid>
