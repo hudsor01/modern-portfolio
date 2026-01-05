@@ -82,7 +82,7 @@ export default function ResumePage() {
 
           {showPdf ? (
             // PDF viewer
-            <div className="glass rounded-2xl overflow-hidden animate-fade-in-up">
+            <div className="bg-card border border-border rounded-2xl overflow-hidden animate-fade-in-up">
               {pdfUrl && <ResumeViewer pdfUrl={pdfUrl} />}
             </div>
           ) : (

@@ -23,14 +23,6 @@ const RetentionHeatmap = dynamic(() => import('./RetentionHeatmap'), {
 
 // Import static churn data
 import { staticChurnData } from '@/app/projects/data/partner-analytics'
-import { STARAreaChart } from '@/components/projects/star-area-chart'
-
-const starData = {
-  situation: { phase: 'Situation', impact: 27, efficiency: 23, value: 18 },
-  task: { phase: 'Task', impact: 53, efficiency: 47, value: 43 },
-  action: { phase: 'Action', impact: 81, efficiency: 85, value: 77 },
-  result: { phase: 'Result', impact: 97, efficiency: 95, value: 93 },
-}
 
 export default function ChurnAnalysis() {
   const { isLoading, handleRefresh } = useLoadingState()
@@ -165,96 +157,94 @@ export default function ChurnAnalysis() {
               </ChartContainer>
             </div>
 
-            {/* Professional Narrative Sections */}
+            {/* Professional Narrative Sections - STAR Method */}
             <div className="space-y-8 mt-12">
-              {/* Project Overview */}
-              <SectionCard title="Project Overview" variant="glass" padding="lg">
+              {/* Situation */}
+              <SectionCard title="Situation" variant="glass" padding="lg">
                 <div className="space-y-4 text-muted-foreground">
                   <p className="text-lg leading-relaxed">
-                    Developed a predictive churn analysis system to identify at-risk partners and
-                    implement proactive retention strategies. This analytics solution became
-                    critical for maintaining partner relationships and optimizing lifetime value
-                    across the entire partner ecosystem.
+                    When I took ownership of partner success operations, I discovered we had a
+                    critical blind spot: partner churn was completely reactive. We were losing
+                    valuable partners without any advance warning, and by the time the retention
+                    team engaged, it was usually too late. With a growing partner base and
+                    significant revenue at stake, the reactive approach was costing us real money.
                   </p>
                   <p className="leading-relaxed">
-                    The system processes partner engagement patterns, transaction histories, and
-                    performance metrics to predict churn probability with 89% accuracy, enabling
-                    data-driven retention interventions.
+                    High-value partners were leaving due to unaddressed concerns, retention efforts
+                    were costly and unfocused—targeting the wrong segments—and there was no
+                    understanding of churn patterns or leading indicators. Manual tracking was
+                    impossible at scale.
                   </p>
                 </div>
               </SectionCard>
 
-              {/* Challenge */}
-              <SectionCard title="Challenge" variant="glass" padding="lg">
+              {/* Task */}
+              <SectionCard title="Task" variant="glass" padding="lg">
                 <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
-                    Partner churn was reactive rather than proactive, resulting in significant
-                    revenue loss and missed retention opportunities:
+                    I was tasked with building a predictive churn analysis system that would
+                    transform partner retention from reactive firefighting to proactive
+                    relationship management. My specific objectives included:
                   </p>
                   <ul className="list-disc list-inside space-y-2 ml-4">
-                    <li>No early warning system for partners at risk of churning</li>
-                    <li>
-                      Partners often churned without any engagement attempt from the retention team
-                    </li>
-                    <li>High-value partners were leaving due to unaddressed concerns</li>
-                    <li>
-                      Retention efforts were costly and unfocused, targeting the wrong segments
-                    </li>
-                    <li>No understanding of churn patterns or leading indicators</li>
-                    <li>Manual tracking was impossible at scale with growing partner base</li>
+                    <li>Develop an early warning system that identifies at-risk partners 60-90 days before potential churn</li>
+                    <li>Build machine learning models achieving at least 85% prediction accuracy</li>
+                    <li>Create automated alert systems to trigger proactive interventions</li>
+                    <li>Enable segmented retention campaigns based on risk profiles and partner value</li>
+                    <li>Reduce overall churn rate by at least 15% within the first year</li>
+                    <li>Integrate with CRM and partner portals for 360-degree partner health visibility</li>
                   </ul>
-                  <p className="leading-relaxed">
-                    The reactive approach meant losing partners who could have been retained with
-                    timely intervention, significantly impacting long-term revenue.
-                  </p>
                 </div>
               </SectionCard>
 
-              {/* Solution */}
-              <SectionCard title="Solution" variant="glass" padding="lg">
+              {/* Action */}
+              <SectionCard title="Action" variant="glass" padding="lg">
                 <div className="space-y-4 text-muted-foreground">
                   <p className="leading-relaxed">
-                    Built a comprehensive churn prediction and retention analytics platform using
-                    machine learning algorithms and real-time data analysis:
+                    I designed and built a comprehensive churn prediction and retention analytics
+                    platform from scratch, using machine learning algorithms and real-time data
+                    analysis:
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     <div className="bg-muted/50 rounded-xl p-6 border border-border">
-                      <h3 className="font-semibold text-primary mb-3">Predictive Analytics</h3>
+                      <h3 className="font-semibold text-primary mb-3">Predictive Analytics I Built</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
                         <li>Machine learning models for churn probability scoring</li>
-                        <li>Real-time partner engagement tracking</li>
-                        <li>Behavioral pattern analysis and anomaly detection</li>
-                        <li>Cohort analysis for retention rate optimization</li>
-                        <li>Predictive lifecycle modeling</li>
+                        <li>Real-time partner engagement tracking and anomaly detection</li>
+                        <li>Behavioral pattern analysis across transaction and engagement data</li>
+                        <li>Cohort analysis for retention curve optimization</li>
+                        <li>Predictive lifecycle modeling with 60-90 day advance warnings</li>
                       </ul>
                     </div>
                     <div className="bg-muted/50 rounded-xl p-6 border border-border">
                       <h3 className="font-semibold text-secondary mb-3">Retention Operations</h3>
                       <ul className="list-disc list-inside space-y-1 text-sm">
-                        <li>Automated alert system for at-risk partners</li>
-                        <li>Segmented retention campaign workflows</li>
-                        <li>Partner health score monitoring</li>
-                        <li>Success team task prioritization</li>
+                        <li>Automated alert system for at-risk partners I configured</li>
+                        <li>Segmented retention campaign workflows based on risk tier</li>
+                        <li>Partner health score monitoring with intervention triggers</li>
+                        <li>Success team task prioritization based on partner value and risk</li>
                         <li>ROI tracking for retention initiatives</li>
                       </ul>
                     </div>
                   </div>
 
                   <p className="leading-relaxed mt-4">
-                    The solution integrated with CRM systems, partner portals, and communication
-                    platforms to provide a 360-degree view of partner health and automated
-                    intervention triggers.
+                    I personally led the integration with CRM systems, partner portals, and
+                    communication platforms to provide a 360-degree view of partner health
+                    and automated intervention triggers. The rollout was phased by partner
+                    tier to validate accuracy before scaling.
                   </p>
                 </div>
               </SectionCard>
 
-              {/* Results & Impact */}
-              <SectionCard title="Results & Impact" variant="glass" padding="lg">
+              {/* Result */}
+              <SectionCard title="Result" variant="glass" padding="lg">
                 <div className="space-y-6 text-muted-foreground">
                   <p className="leading-relaxed">
-                    The churn prediction system transformed partner retention from reactive
-                    firefighting to proactive relationship management:
+                    The churn prediction system I built transformed partner retention from reactive
+                    firefighting to proactive relationship management, delivering measurable revenue
+                    impact:
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -284,12 +274,12 @@ export default function ChurnAnalysis() {
 
                   <div className="space-y-3">
                     <h3 className="font-semibold text-secondary">
-                      Quantified Business Outcomes:
+                      Quantified Business Outcomes I Delivered:
                     </h3>
                     <ul className="list-disc list-inside space-y-2 ml-4">
                       <li>Reduced partner churn rate from 14.2% to 10.9% quarterly</li>
                       <li>Increased retention rate for high-value partners to 92%</li>
-                      <li>Achieved 67% success rate for at-risk partner interventions</li>
+                      <li>Achieved 67% success rate for at-risk partner interventions I designed</li>
                       <li>
                         Saved {formatCurrency(830000, { compact: true })} in annual revenue through
                         proactive retention
@@ -311,15 +301,16 @@ export default function ChurnAnalysis() {
                       <h3 className="font-semibold text-accent">Customer Success Insights</h3>
                       <ul className="list-disc list-inside space-y-2 text-sm">
                         <li>
-                          Early engagement is 3x more effective than late-stage retention efforts
+                          Early engagement is 3x more effective than late-stage retention—I now
+                          prioritize prevention over cure
                         </li>
                         <li>
-                          Partners with declining engagement patterns show churn intent 60-90 days
-                          before actual churn
+                          Partners with declining engagement show churn intent 60-90 days before
+                          actual churn; I learned to trust the signals
                         </li>
                         <li>
                           Personalized retention approaches significantly outperform generic
-                          campaigns
+                          campaigns—I segment everything now
                         </li>
                       </ul>
                     </div>
@@ -329,20 +320,25 @@ export default function ChurnAnalysis() {
                       </h3>
                       <ul className="list-disc list-inside space-y-2 text-sm">
                         <li>
-                          Real-time data processing is crucial for actionable churn predictions
+                          Real-time data processing is crucial for actionable churn predictions;
+                          batch processing is too slow
                         </li>
                         <li>
                           Model accuracy improves significantly with multi-dimensional engagement
-                          data
+                          data—I now collect everything
                         </li>
-                        <li>Automated workflows reduce response time from days to hours</li>
+                        <li>
+                          Automated workflows reduce response time from days to hours; I automate
+                          every intervention trigger
+                        </li>
                       </ul>
                     </div>
                   </div>
                   <p className="leading-relaxed mt-4">
-                    This project highlighted that retention is fundamentally about relationship
+                    This project taught me that retention is fundamentally about relationship
                     health, not just transactional metrics. The most successful interventions
-                    addressed underlying business challenges rather than just engagement gaps.
+                    I've designed address underlying business challenges rather than just
+                    engagement gaps.
                   </p>
                 </div>
               </SectionCard>
@@ -411,43 +407,6 @@ export default function ChurnAnalysis() {
                 </SectionCard>
               </div>
 
-              {/* STAR Impact Analysis */}
-              <SectionCard
-                title="STAR Impact Analysis"
-                description="Tracking project progression from Situation through Action to measurable Results"
-                variant="glass"
-                padding="lg"
-                className="mt-16"
-              >
-                <div className="space-y-8">
-                  <ChartContainer
-                    title="Project Progression Metrics"
-                    height={300}
-                    loading={isLoading}
-                  >
-                    <STARAreaChart data={starData} title="Project Progression Metrics" />
-                  </ChartContainer>
-
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="text-center p-6 bg-card border border-border rounded-2xl">
-                      <div className="text-sm text-primary mb-2">Situation</div>
-                      <div className="text-lg font-medium text-foreground">Initial Assessment</div>
-                    </div>
-                    <div className="text-center p-6 bg-card border border-border rounded-2xl">
-                      <div className="text-sm text-secondary mb-2">Task</div>
-                      <div className="text-lg font-medium text-foreground">Goal Definition</div>
-                    </div>
-                    <div className="text-center p-6 bg-card border border-border rounded-2xl">
-                      <div className="text-sm text-accent mb-2">Action</div>
-                      <div className="text-lg font-medium text-foreground">Implementation</div>
-                    </div>
-                    <div className="text-center p-6 bg-card border border-border rounded-2xl">
-                      <div className="text-sm text-primary mb-2">Result</div>
-                      <div className="text-lg font-medium text-foreground">Measurable Impact</div>
-                    </div>
-                  </div>
-                </div>
-              </SectionCard>
             </div>
           </>
         )}
