@@ -765,6 +765,25 @@ label {
 .animate-gradient { animation: gradient 8s ease-in-out infinite; }
 .animate-bounce-subtle { animation: bounce-subtle 2s ease-in-out infinite; }
 
+/* Magic UI Marquee Animations */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-100% - var(--gap))); }
+}
+
+@keyframes marquee-vertical {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(-100% - var(--gap))); }
+}
+
+.animate-marquee {
+  animation: marquee var(--duration) linear infinite;
+}
+
+.animate-marquee-vertical {
+  animation: marquee-vertical var(--duration) linear infinite;
+}
+
 @utility text-white-enhanced { color: oklch(0.99 0.005 285) !important; }
 @utility text-gray-100-enhanced { color: oklch(0.95 0.01 285) !important; }
 @utility text-gray-200-enhanced { color: oklch(0.9 0.01 285) !important; }

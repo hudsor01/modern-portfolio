@@ -128,7 +128,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
             {/* Mobile Fallback Message */}
             <div className="md:hidden mt-6 p-4 bg-muted/50 border border-border rounded-xl">
               <p className="text-sm text-muted-foreground text-center">
-                💡 For the best mobile experience, tap "Download PDF" or "Open in New Tab" above
+                For the best mobile experience, tap "Download PDF" or "Open in New Tab" above
               </p>
             </div>
           </div>

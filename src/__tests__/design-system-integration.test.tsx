@@ -189,21 +189,21 @@ describe('Design System Integration', () => {
     it('implements Challenge-Solution-Results format', () => {
       const csrStructure = {
         challenge: {
-          emoji: '🎯',
+          icon: 'target',
           label: 'CHALLENGE',
           background: 'bg-destructive-bg',
           border: 'border-destructive-border',
           textColor: 'text-destructive',
         },
         solution: {
-          emoji: '⚡',
+          icon: 'zap',
           label: 'SOLUTION',
           background: 'bg-success-bg',
           border: 'border-success-border',
           textColor: 'text-success',
         },
         results: {
-          emoji: '📊',
+          icon: 'bar-chart',
           label: 'RESULTS',
           background: 'bg-primary-bg',
           border: 'border-primary-border',

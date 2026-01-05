@@ -260,7 +260,7 @@ const SAMPLE_SERIES = [
 // =======================
 
 async function seedAuthors() {
-  console.log('🔄 Seeding authors...')
+  console.log('Seeding authors...')
 
   const authors = []
   for (const authorData of SAMPLE_AUTHORS) {
@@ -272,12 +272,12 @@ async function seedAuthors() {
     authors.push(author)
   }
 
-  console.log(`✅ Created ${authors.length} authors`)
+  console.log(`Created ${authors.length} authors`)
   return authors
 }
 
 async function seedCategories() {
-  console.log('🔄 Seeding categories...')
+  console.log('Seeding categories...')
 
   const categories = []
 
@@ -308,12 +308,12 @@ async function seedCategories() {
     }
   }
 
-  console.log(`✅ Created ${categories.length} categories`)
+  console.log(`Created ${categories.length} categories`)
   return categories
 }
 
 async function seedTags() {
-  console.log('🔄 Seeding tags...')
+  console.log('Seeding tags...')
 
   const tags = []
   for (const tagData of SAMPLE_TAGS) {
@@ -325,12 +325,12 @@ async function seedTags() {
     tags.push(tag)
   }
 
-  console.log(`✅ Created ${tags.length} tags`)
+  console.log(`Created ${tags.length} tags`)
   return tags
 }
 
 async function seedPostSeries() {
-  console.log('🔄 Seeding post series...')
+  console.log('Seeding post series...')
 
   const series = []
   for (const seriesData of SAMPLE_SERIES) {
@@ -342,7 +342,7 @@ async function seedPostSeries() {
     series.push(postSeries)
   }
 
-  console.log(`✅ Created ${series.length} series`)
+  console.log(`Created ${series.length} series`)
   return series
 }
 
@@ -681,7 +681,7 @@ async function seedBlogPosts(
   tags: Tag[],
   series: PostSeries[]
 ) {
-  console.log('🔄 Seeding blog posts...')
+  console.log('Seeding blog posts...')
 
   const blogPosts = [
     // Revenue Operations Posts
@@ -876,12 +876,12 @@ async function seedBlogPosts(
     createdPosts.push(post)
   }
 
-  console.log(`✅ Created ${createdPosts.length} blog posts`)
+  console.log(`Created ${createdPosts.length} blog posts`)
   return createdPosts
 }
 
 async function seedAnalyticsData(posts: BlogPost[]) {
-  console.log('🔄 Seeding analytics data...')
+  console.log('Seeding analytics data...')
 
   let totalViews = 0
   let totalInteractions = 0
@@ -931,11 +931,11 @@ async function seedAnalyticsData(posts: BlogPost[]) {
     }
   }
 
-  console.log(`✅ Created ${totalViews} post views and ${totalInteractions} interactions`)
+  console.log(`Created ${totalViews} post views and ${totalInteractions} interactions`)
 }
 
 async function seedSEOData(posts: BlogPost[]) {
-  console.log('🔄 Seeding SEO data...')
+  console.log('Seeding SEO data...')
 
   let totalKeywords = 0
   let totalSEOEvents = 0
@@ -1003,11 +1003,11 @@ async function seedSEOData(posts: BlogPost[]) {
     }
   }
 
-  console.log(`✅ Created ${totalKeywords} SEO keywords and ${totalSEOEvents} SEO events`)
+  console.log(`Created ${totalKeywords} SEO keywords and ${totalSEOEvents} SEO events`)
 }
 
 async function seedSitemapEntries(posts: BlogPost[]) {
-  console.log('🔄 Seeding sitemap entries...')
+  console.log('Seeding sitemap entries...')
 
   const baseUrls = [
     { url: 'https://modernportfolio.dev', priority: 1.0, changeFreq: 'DAILY' as ChangeFrequency },
@@ -1062,7 +1062,7 @@ async function seedSitemapEntries(posts: BlogPost[]) {
     }
   }
 
-  console.log(`✅ Created ${totalEntries} sitemap entries`)
+  console.log(`Created ${totalEntries} sitemap entries`)
 }
 
 // =======================
@@ -1070,12 +1070,12 @@ async function seedSitemapEntries(posts: BlogPost[]) {
 // =======================
 
 async function main() {
-  console.log('🌱 Starting database seeding...')
+  console.log('Starting database seeding...')
 
   try {
     // Clear existing data (in development only)
     if (process.env.NODE_ENV !== 'production') {
-      console.log('🧹 Cleaning existing data...')
+      console.log('Cleaning existing data...')
       await db.sitemapEntry.deleteMany()
       await db.sEOKeyword.deleteMany()
       await db.sEOEvent.deleteMany()
@@ -1090,7 +1090,7 @@ async function main() {
       await db.tag.deleteMany()
       await db.category.deleteMany()
       await db.author.deleteMany()
-      console.log('✅ Cleaned existing data')
+      console.log('Cleaned existing data')
     }
 
     // Seed data in order
@@ -1101,7 +1101,7 @@ async function main() {
     const posts = await seedBlogPosts(authors, categories, tags, series)
 
     // Update stats after creating posts
-    console.log('🔄 Updating entity statistics...')
+    console.log('Updating entity statistics...')
 
     // Update category stats
     for (const category of categories) {
@@ -1199,7 +1199,7 @@ async function main() {
     await seedSEOData(posts)
     await seedSitemapEntries(posts)
 
-    console.log('🎉 Database seeding completed successfully!')
+    console.log('Database seeding completed successfully!')
 
     // Print summary
     const summary = await Promise.all([
@@ -1215,7 +1215,7 @@ async function main() {
       db.sitemapEntry.count(),
     ])
 
-    console.log('\n📊 Seeding Summary:')
+    console.log('\nSeeding Summary:')
     console.log(`Authors: ${summary[0]}`)
     console.log(`Categories: ${summary[1]}`)
     console.log(`Tags: ${summary[2]}`)
@@ -1227,7 +1227,7 @@ async function main() {
     console.log(`SEO Events: ${summary[8]}`)
     console.log(`Sitemap Entries: ${summary[9]}`)
   } catch (error) {
-    console.error('❌ Error during seeding:', error)
+    console.error('Error during seeding:', error)
     throw error
   } finally {
     await db.$disconnect()
