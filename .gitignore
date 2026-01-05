@@ -23,6 +23,8 @@ bun-debug.log*
 # IDE and config files
 .vscode/
 .idea/
+.kiro/
+.serena/
 .next/
 coverage/
 .nyc_output/
@@ -30,6 +32,7 @@ coverage/
 # Test outputs
 playwright-report/
 test-results/
+e2e/
 .actrc
 
 # Development artifacts
