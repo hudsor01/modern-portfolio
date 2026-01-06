@@ -12,7 +12,7 @@ import 'server-only'
 import { cache } from 'react'
 import { db } from '@/lib/db'
 import { createContextLogger } from '@/lib/monitoring/logger'
-import { ProjectDataManager } from '@/lib/server/project-data-manager'
+import { getProjects as getProjectsFromContent, getProject as getProjectFromContent } from '@/lib/content/projects'
 import type { Project } from '@/types/project'
 
 const logger = createContextLogger('DAL')
@@ -31,7 +31,7 @@ const logger = createContextLogger('DAL')
  */
 export const getProjects = cache(async (): Promise<Project[]> => {
   try {
-    return await ProjectDataManager.getProjects()
+    return await getProjectsFromContent()
   } catch (error) {
     logger.error('Failed to get projects', error instanceof Error ? error : new Error(String(error)))
     return []
@@ -43,7 +43,7 @@ export const getProjects = cache(async (): Promise<Project[]> => {
  */
 export const getProject = cache(async (slug: string): Promise<Project | null> => {
   try {
-    return await ProjectDataManager.getProjectBySlug(slug)
+    return await getProjectFromContent(slug)
   } catch (error) {
     logger.error(`Failed to get project ${slug}`, { error: error instanceof Error ? error.message : String(error) })
     return null
@@ -55,7 +55,7 @@ export const getProject = cache(async (slug: string): Promise<Project | null> =>
  */
 export const getProjectSlugs = cache(async (): Promise<string[]> => {
   try {
-    const projects = await ProjectDataManager.getProjects()
+    const projects = await getProjectsFromContent()
     return projects.map(p => p.slug).filter((s): s is string => s !== undefined)
   } catch (error) {
     logger.error('Failed to get project slugs', { error: error instanceof Error ? error.message : String(error) })

@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from '@/components/charts/lazy-charts'
+import { chartColors as baseChartColors, chartCssVars } from '@/lib/chart-colors'
 
 // Commission structure data by tier
 const data = [
@@ -48,11 +49,11 @@ const data = [
 ]
 
 const chartColors = {
-  earnings: 'var(--color-success)',
-  commissionRate: 'var(--color-primary)',
-  bonus: 'var(--color-warning)',
-  grid: 'var(--color-border)',
-  axis: 'var(--color-muted-foreground)',
+  earnings: baseChartColors.success,
+  commissionRate: baseChartColors.primary,
+  bonus: baseChartColors.warning,
+  grid: baseChartColors.grid,
+  axis: baseChartColors.axis,
 }
 
 const CommissionStructureChart = memo(function CommissionStructureChart() {
@@ -96,11 +97,11 @@ const CommissionStructureChart = memo(function CommissionStructureChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'var(--color-popover)',
+              backgroundColor: chartCssVars.popover,
               borderRadius: '12px',
-              border: '1px solid var(--color-border)',
+              border: `1px solid ${chartCssVars.border}`,
               backdropFilter: 'blur(10px)',
-              color: 'white',
+              color: chartCssVars.cardForeground,
             }}
             formatter={(value: number | undefined, name: string | undefined) => {
               const safeValue = value ?? 0

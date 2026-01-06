@@ -11,6 +11,7 @@ import {
   CartesianGrid,
   Legend,
 } from '@/components/charts/lazy-charts'
+import { chartColors as baseChartColors, chartCssVars } from '@/lib/chart-colors'
 
 // Partner ROI trends over time showing optimization results
 const data = [
@@ -23,12 +24,12 @@ const data = [
 ]
 
 const chartColors = {
-  certified: 'var(--color-success)',
-  legacy: 'var(--color-primary)',
-  newPartners: 'var(--color-secondary)',
-  quickRatio: 'var(--color-warning)',
-  grid: 'var(--color-border)',
-  axis: 'var(--color-muted-foreground)',
+  certified: baseChartColors.success,
+  legacy: baseChartColors.primary,
+  newPartners: baseChartColors.secondary,
+  quickRatio: baseChartColors.warning,
+  grid: baseChartColors.grid,
+  axis: baseChartColors.axis,
 }
 
 const PartnerROIChart = memo(function PartnerROIChart() {
@@ -63,11 +64,11 @@ const PartnerROIChart = memo(function PartnerROIChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'var(--color-popover)',
+              backgroundColor: chartCssVars.popover,
               borderRadius: '12px',
-              border: '1px solid var(--color-border)',
+              border: `1px solid ${chartCssVars.border}`,
               backdropFilter: 'blur(10px)',
-              color: 'white',
+              color: chartCssVars.cardForeground,
             }}
             formatter={(value: number | undefined, name: string | undefined) => {
               const safeName = name ?? ''

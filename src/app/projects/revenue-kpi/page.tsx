@@ -1,37 +1,119 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { TrendingUp, DollarSign, Users, Activity } from 'lucide-react'
 
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { createContextLogger } from '@/lib/monitoring/logger'
 import { useLoadingState } from '@/hooks/use-loading-state'
-import { yearOverYearGrowthExtended } from '@/app/projects/data/partner-analytics'
+import { useAnalyticsData } from '@/hooks/use-analytics-data'
+import {
+  monthlyRevenue2024,
+  partnerGroupsData,
+  topPartnersData,
+  yearOverYearGrowthExtended,
+} from '@/app/projects/data/partner-analytics'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data-formatters'
 
-import { timeframes, type YearOverYearGrowth } from './data/constants'
+import type { GrowthData, YearOverYearData } from '@/lib/analytics/data-service'
+import { timeframes } from './data/constants'
 import { calculateGrowth } from './utils'
 import { ChartsGrid } from './components/ChartsGrid'
 import { NarrativeSections } from './components/NarrativeSections'
 
 const logger = createContextLogger('RevenueKPIPage')
 
+type YearOverYearSeries = Pick<
+  YearOverYearData,
+  'year' | 'total_revenue' | 'total_transactions' | 'total_commissions' | 'partner_count' | 'commission_growth_percentage'
+>
+
+type PartnerSeries = {
+  name: string
+  revenue: number
+  tier?: string
+}
+
 export default function RevenueKPI() {
   const [activeTimeframe, setActiveTimeframe] = useState('All')
-  const { isLoading, handleRefresh } = useLoadingState()
+  const { isLoading: isUiLoading, handleRefresh: handleUiRefresh } = useLoadingState()
+  const {
+    data: analyticsData,
+    isLoading: isAnalyticsLoading,
+    error: analyticsError,
+    refresh: refreshAnalyticsData,
+  } = useAnalyticsData()
 
-  const currentYearData: YearOverYearGrowth | undefined =
-    yearOverYearGrowthExtended[yearOverYearGrowthExtended.length - 1]
-  const prevYearData: YearOverYearGrowth | undefined =
-    yearOverYearGrowthExtended[yearOverYearGrowthExtended.length - 2]
+  const yearOverYearData: YearOverYearSeries[] = analyticsData?.yearOverYear?.length
+    ? analyticsData.yearOverYear
+    : yearOverYearGrowthExtended
+
+  const sortedYearOverYear = useMemo(
+    () => [...yearOverYearData].sort((a, b) => a.year - b.year),
+    [yearOverYearData]
+  )
+
+  const currentYearData: YearOverYearSeries | undefined =
+    sortedYearOverYear[sortedYearOverYear.length - 1]
+  const prevYearData: YearOverYearSeries | undefined =
+    sortedYearOverYear[sortedYearOverYear.length - 2]
+
+  const revenueTrendData = useMemo(() => {
+    if (analyticsData?.growth?.length) {
+      return analyticsData.growth.map((item: GrowthData) => ({
+        label: item.quarter,
+        revenue: item.revenue,
+      }))
+    }
+
+    return monthlyRevenue2024.map((item) => ({
+      label: item.month,
+      revenue: item.revenue,
+    }))
+  }, [analyticsData?.growth])
+
+  const topPartners: PartnerSeries[] = analyticsData?.topPartners?.length
+    ? analyticsData.topPartners
+    : topPartnersData
+
+  const partnerGroups = useMemo(() => {
+    const byTier = new Map<string, number>()
+    let hasTier = false
+
+    topPartners.forEach((partner) => {
+      if (partner.tier) {
+        hasTier = true
+        const currentValue = byTier.get(partner.tier) || 0
+        byTier.set(partner.tier, currentValue + partner.revenue)
+      }
+    })
+
+    if (!hasTier) {
+      return partnerGroupsData.map((group) => ({ name: group.name, value: group.value }))
+    }
+
+    const totalRevenue = Array.from(byTier.values()).reduce((sum, value) => sum + value, 0)
+
+    return Array.from(byTier.entries())
+      .map(([tier, revenue]) => ({
+        name: tier.charAt(0).toUpperCase() + tier.slice(1),
+        value: totalRevenue > 0 ? Math.round((revenue / totalRevenue) * 1000) / 10 : 0,
+      }))
+      .sort((a, b) => b.value - a.value)
+  }, [topPartners])
+
+  const handleRefresh = () => {
+    handleUiRefresh()
+    void refreshAnalyticsData()
+  }
 
   if (!currentYearData) {
     logger.error(
       'currentYearData is undefined. Cannot render Revenue KPI dashboard',
-      new Error('Missing current year data')
+      analyticsError || new Error('Missing current year data')
     )
     return <div>Error: Current year data not available.</div>
   }
@@ -114,6 +196,8 @@ export default function RevenueKPI() {
     },
   ]
 
+  const isLoading = isUiLoading || isAnalyticsLoading
+
   return (
     <>
       <ProjectJsonLd
@@ -167,7 +251,12 @@ export default function RevenueKPI() {
             </div>
 
             {/* Charts Grid */}
-            <ChartsGrid />
+            <ChartsGrid
+              yearOverYearData={sortedYearOverYear}
+              revenueTrendData={revenueTrendData}
+              topPartners={topPartners}
+              partnerGroups={partnerGroups}
+            />
 
             {/* Narrative Sections */}
             <NarrativeSections totalRevenue={currentYearData.total_revenue} />

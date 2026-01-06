@@ -12,6 +12,7 @@ import {
   Area,
   LazyComposedChart as ComposedChart,
 } from '@/components/charts/lazy-charts'
+import { chartColors as baseChartColors, chartCssVars } from '@/lib/chart-colors'
 
 // Forecast accuracy data with confidence intervals
 const data = [
@@ -115,12 +116,12 @@ const data = [
 ]
 
 const chartColors = {
-  forecast: 'var(--color-primary)',
-  actual: 'var(--color-success)',
-  accuracy: 'var(--color-warning)',
-  confidence: 'color-mix(in oklch, var(--color-primary) 20%, transparent)',
-  grid: 'var(--color-border)',
-  axis: 'var(--color-muted-foreground)',
+  forecast: baseChartColors.primary,
+  actual: baseChartColors.success,
+  accuracy: baseChartColors.warning,
+  confidence: `${baseChartColors.primary}33`, // 20% opacity
+  grid: baseChartColors.grid,
+  axis: baseChartColors.axis,
 }
 
 const ForecastAccuracyChart = memo(function ForecastAccuracyChart() {
@@ -169,11 +170,11 @@ const ForecastAccuracyChart = memo(function ForecastAccuracyChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'var(--color-popover)',
+              backgroundColor: chartCssVars.popover,
               borderRadius: '12px',
-              border: '1px solid var(--color-border)',
+              border: `1px solid ${chartCssVars.border}`,
               backdropFilter: 'blur(10px)',
-              color: 'white',
+              color: chartCssVars.cardForeground,
             }}
             formatter={(value: unknown, name: string | undefined) => {
               const safeName = name ?? ''

@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from '@/components/charts/lazy-charts'
+import { chartColors as baseChartColors, chartCssVars } from '@/lib/chart-colors'
 
 // Partner tier performance data based on real CSV analysis
 const data = [
@@ -20,10 +21,10 @@ const data = [
 ]
 
 const chartColors = {
-  revenue: 'var(--color-primary)',
-  roi: 'var(--color-success)',
-  grid: 'var(--color-border)',
-  axis: 'var(--color-muted-foreground)',
+  revenue: baseChartColors.primary,
+  roi: baseChartColors.success,
+  grid: baseChartColors.grid,
+  axis: baseChartColors.axis,
 }
 
 const PartnerTierChart = memo(function PartnerTierChart() {
@@ -61,11 +62,11 @@ const PartnerTierChart = memo(function PartnerTierChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'var(--color-popover)',
+              backgroundColor: chartCssVars.popover,
               borderRadius: '12px',
-              border: '1px solid var(--color-border)',
+              border: `1px solid ${chartCssVars.border}`,
               backdropFilter: 'blur(10px)',
-              color: 'white',
+              color: chartCssVars.cardForeground,
             }}
             formatter={(value: number | undefined, name: string | undefined) => {
               const safeName = name ?? ''

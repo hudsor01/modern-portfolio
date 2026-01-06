@@ -264,7 +264,9 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
             state.canSubmit,
             state.isSubmitting,
           ]}
-          children={([_canSubmit, isSubmitting]: [boolean, boolean]) => (
+          children={(state) => {
+            const isSubmitting = state[1] as boolean
+            return (
             <button
               type="submit"
               disabled={isSubmitting || !agreedToTerms}
@@ -283,7 +285,8 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                 </>
               )}
             </button>
-          )}
+          )
+          }}
         />
 
         {/* Status Messages */}

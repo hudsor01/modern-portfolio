@@ -14,13 +14,30 @@ mock.module('@/lib/content/projects', () => ({
 }))
 
 // Mock logger
-mock.module('@/lib/monitoring/logger', () => ({
-  createContextLogger: () => ({
-    error: () => {},
-    info: () => {},
-    warn: () => {},
-  }),
-}))
+mock.module('@/lib/monitoring/logger', () => {
+  const noop = () => {}
+  const stubLogger = {
+    debug: noop,
+    info: noop,
+    warn: noop,
+    error: noop,
+    fatal: noop,
+    performance: noop,
+    request: noop,
+    security: noop,
+    child: () => stubLogger,
+    startTimer: () => () => {},
+  }
+
+  return {
+    createContextLogger: () => ({
+      error: noop,
+      info: noop,
+      warn: noop,
+    }),
+    logger: stubLogger,
+  }
+})
 
 // Mock timing constants for faster tests
 mock.module('@/lib/constants/spacing', () => ({

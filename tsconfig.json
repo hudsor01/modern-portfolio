@@ -4,7 +4,12 @@
     //========== Target and module ==========
     // Use ESNext for modern JavaScript features (no transpilation)
     "target": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext", "ESNext.Disposable"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext",
+      "ESNext.Disposable"
+    ],
     // Use bundler for better compatibility with Next.js and bundlers
     "module": "ESNext",
     "moduleResolution": "bundler",
@@ -35,7 +40,12 @@
     "incremental": true,
     "tsBuildInfoFile": "./.next/cache/tsconfig.tsbuildinfo",
     //========== Types ==========
-    "types": ["bun-types", "node", "next", "@testing-library/jest-dom"],
+    "types": [
+      "bun-types",
+      "node",
+      "next",
+      "@testing-library/jest-dom"
+    ],
     //========== Next.js ==========
     "plugins": [
       {
@@ -45,18 +55,42 @@
     //========== Path mapping ==========
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@/components/*": ["./src/components/*"],
-      "@/lib/*": ["./src/lib/*"],
-      "@/hooks/*": ["./src/hooks/*"],
-      "@/types/*": ["./src/types/*"],
-      "@/app/*": ["./src/app/*"],
-      "@/styles/*": ["./src/styles/*"],
-      "@/content/*": ["./src/content/*"],
-      "@/data/*": ["./src/data/*"],
-      "@/prisma/*": ["./prisma/generated/prisma/*"],
-      "@/prisma/client": ["./prisma/generated/prisma/client.ts"],
-      "@/prisma/browser": ["./prisma/generated/prisma/browser.ts"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@/components/*": [
+        "./src/components/*"
+      ],
+      "@/lib/*": [
+        "./src/lib/*"
+      ],
+      "@/hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@/types/*": [
+        "./src/types/*"
+      ],
+      "@/app/*": [
+        "./src/app/*"
+      ],
+      "@/styles/*": [
+        "./src/styles/*"
+      ],
+      "@/content/*": [
+        "./src/content/*"
+      ],
+      "@/data/*": [
+        "./src/data/*"
+      ],
+      "@/prisma/*": [
+        "./prisma/generated/prisma/*"
+      ],
+      "@/prisma/client": [
+        "./prisma/generated/prisma/index"
+      ],
+      "@/prisma/browser": [
+        "./prisma/generated/prisma/index-browser"
+      ]
     }
   },
   "include": [

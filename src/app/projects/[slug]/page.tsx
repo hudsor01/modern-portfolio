@@ -6,6 +6,9 @@ import { Metadata } from 'next'
 import { createQueryClient } from '@/lib/query-config'
 import ProjectDetailClientBoundary from '@/components/projects/project-detail-client-boundary'
 
+// Enable ISR with 1 hour revalidation
+export const revalidate = 3600
+
 // Define our own ProjectPageProps instead of extending PageProps
 interface ProjectPageProps {
   params: {
@@ -29,10 +32,10 @@ export async function generateStaticParams() {
     'multi-channel-attribution',
     'partner-performance',
     'revenue-kpi',
-    'revenue-operations-center'
+    'revenue-operations-center',
   ]
   return projects
-    .filter(project => !excludedSlugs.includes(project.slug || ''))
+    .filter((project) => !excludedSlugs.includes(project.slug || ''))
     .map((project) => ({
       slug: project.slug,
     }))
@@ -70,7 +73,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const queryClient = createQueryClient()
   const resolvedParams = await params
   const project = await getProject(resolvedParams.slug)
-  
+
   if (!project) {
     notFound()
   }
@@ -88,8 +91,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     ...(project.github && { github: project.github }),
     category: project.category || 'Other',
     ...(project.tags && { tags: project.tags }),
-    createdAt: project.createdAt instanceof Date ? project.createdAt : new Date(project.createdAt || '2024-01-01'),
-    ...(project.updatedAt && { updatedAt: project.updatedAt instanceof Date ? project.updatedAt : new Date(project.updatedAt) }),
+    createdAt:
+      project.createdAt instanceof Date
+        ? project.createdAt
+        : new Date(project.createdAt || '2024-01-01'),
+    ...(project.updatedAt && {
+      updatedAt:
+        project.updatedAt instanceof Date ? project.updatedAt : new Date(project.updatedAt),
+    }),
     ...(project.tags && { technologies: project.tags }),
     ...(project.link && { liveUrl: project.link }),
     ...(project.github && { githubUrl: project.github }),
@@ -107,10 +116,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProjectDetailClientBoundary 
-        slug={resolvedParams.slug} 
-        initialProject={convertedProject}
-      />
+      <ProjectDetailClientBoundary slug={resolvedParams.slug} initialProject={convertedProject} />
     </HydrationBoundary>
   )
 }

@@ -6,25 +6,25 @@
 // Chart color palette using CSS custom properties for consistency
 export const chartColors = {
   // Primary data colors
-  revenue: 'hsl(var(--chart-1))',
-  transactions: 'hsl(var(--chart-2))',
-  commissions: 'hsl(var(--chart-3))',
-  cac: 'hsl(var(--chart-4))',
-  ltv: 'hsl(var(--chart-5))',
-  
+  revenue: 'var(--color-chart-1)',
+  transactions: 'var(--color-chart-2)',
+  commissions: 'var(--color-chart-3)',
+  cac: 'var(--color-chart-4)',
+  ltv: 'var(--color-chart-5)',
+
   // Semantic colors
-  positive: '#10b981', // green
-  negative: '#ef4444', // red
-  neutral: '#3b82f6', // blue
-  warning: '#f59e0b', // amber
-  
+  positive: 'var(--color-success)',
+  negative: 'var(--color-destructive)',
+  neutral: 'var(--color-primary)',
+  warning: 'var(--color-warning)',
+
   // UI colors
-  grid: 'hsl(var(--border))',
-  axis: 'hsl(var(--muted-foreground))',
-  background: 'hsl(var(--background))',
-  card: 'hsl(var(--card))',
-  cardForeground: 'hsl(var(--card-foreground))',
-  border: 'hsl(var(--border))',
+  grid: 'var(--color-border)',
+  axis: 'var(--color-muted-foreground)',
+  background: 'var(--color-background)',
+  card: 'var(--color-card)',
+  cardForeground: 'var(--color-card-foreground)',
+  border: 'var(--color-border)',
 } as const
 
 // Chart configuration constants
@@ -61,11 +61,11 @@ export const chartConfig = {
 
 // Standard tooltip styling
 export const tooltipStyles = {
-  backgroundColor: 'hsl(var(--card))',
+  backgroundColor: 'var(--color-card)',
   borderRadius: '12px',
-  border: '1px solid hsl(var(--border))',
+  border: '1px solid var(--color-border)',
   backdropFilter: 'blur(10px)',
-  color: 'hsl(var(--card-foreground))',
+  color: 'var(--color-card-foreground)',
   boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
   padding: '12px',
 } as const
