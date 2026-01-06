@@ -11,6 +11,7 @@ import {
   CartesianGrid,
   Legend,
 } from '@/components/charts/lazy-charts'
+import { chartColors as baseChartColors, chartCssVars } from '@/lib/chart-colors'
 
 // Revenue overview data showing multi-channel performance
 const data = [
@@ -81,13 +82,13 @@ const data = [
 ]
 
 const chartColors = {
-  direct: 'var(--color-primary)',
-  partners: 'var(--color-success)',
-  marketing: 'var(--color-secondary)',
-  total: 'var(--color-warning)',
-  target: 'var(--color-destructive)',
-  grid: 'var(--color-border)',
-  axis: 'var(--color-muted-foreground)',
+  direct: baseChartColors.primary,
+  partners: baseChartColors.success,
+  marketing: baseChartColors.secondary,
+  total: baseChartColors.warning,
+  target: baseChartColors.destructive,
+  grid: baseChartColors.grid,
+  axis: baseChartColors.axis,
 }
 
 const RevenueOverviewChart = memo(function RevenueOverviewChart() {
@@ -122,11 +123,11 @@ const RevenueOverviewChart = memo(function RevenueOverviewChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'var(--color-popover)',
+              backgroundColor: chartCssVars.popover,
               borderRadius: '12px',
-              border: '1px solid var(--color-border)',
+              border: `1px solid ${chartCssVars.border}`,
               backdropFilter: 'blur(10px)',
-              color: 'white',
+              color: chartCssVars.cardForeground,
             }}
             formatter={(value: number | undefined, name: string | undefined) => {
               const safeName = name ?? ''

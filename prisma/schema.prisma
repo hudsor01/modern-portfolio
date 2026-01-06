@@ -2,12 +2,9 @@
 // Learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client"
+  provider        = "prisma-client-js"
   output          = "./generated/prisma"
   previewFeatures = ["fullTextSearchPostgres"]
-  // Bun-specific optimizations (Rust-free client)
-  engineType      = "client"
-  runtime         = "bun"
 }
 
 datasource db {
@@ -548,12 +545,31 @@ model Project {
   slug            String          @unique
   title           String
   description     String          @db.Text
-  image           String          // Project screenshot/hero image
-  link            String?         // Live demo URL
-  github          String?         // GitHub repository URL
-  category        String          // e.g., "Revenue Operations", "Marketing"
-  tags            String[]        // Array of technology and feature tags
+  longDescription String?         @db.Text    // Extended project description
+  content         String?         @db.Text    // Full markdown content for case studies
+  image           String                      // Project screenshot/hero image
+  link            String?                     // Live demo URL
+  github          String?                     // GitHub repository URL
+  category        String                      // e.g., "Revenue Operations", "Marketing"
+  tags            String[]                    // Array of technology and feature tags
   featured        Boolean         @default(false)
+
+  // Project metadata
+  client          String?                     // Client name
+  role            String?                     // Role in project
+  duration        String?                     // Project duration (e.g., "6 months")
+  year            Int?                        // Project year
+  caseStudyUrl    String?                     // URL to case study page
+
+  // Rich content fields (JSON for complex nested data)
+  impact          Json?                       // string[] - Impact statements
+  results         Json?                       // Array<{metric, before, after, improvement}>
+  displayMetrics  Json?                       // Array<{label, value, iconName}>
+  metrics         Json?                       // Record<string, string>
+  testimonial     Json?                       // {quote, author, role?, company?, avatar?}
+  gallery         Json?                       // Array<{url, alt, caption?}>
+  details         Json?                       // {challenge, solution, impact}
+  charts          Json?                       // Array<{type, title, dataKey}>
 
   // Analytics
   viewCount       Int             @default(0)
@@ -568,6 +584,7 @@ model Project {
   @@index([category])
   @@index([featured])
   @@index([createdAt(sort: Desc)])
+  @@index([year])
 }
 
 // =======================

@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from '@/components/charts/lazy-charts'
+import { chartColors as baseChartColors, chartCssVars } from '@/lib/chart-colors'
 
 // Attribution model comparison data
 const data = [
@@ -22,11 +23,11 @@ const data = [
 ]
 
 const chartColors = {
-  accuracy: 'var(--color-warning)',
-  conversions: 'var(--color-primary)',
-  roi: 'var(--color-success)',
-  grid: 'var(--color-border)',
-  axis: 'var(--color-muted-foreground)',
+  accuracy: baseChartColors.warning,
+  conversions: baseChartColors.primary,
+  roi: baseChartColors.success,
+  grid: baseChartColors.grid,
+  axis: baseChartColors.axis,
 }
 
 const AttributionModelChart = memo(function AttributionModelChart() {
@@ -75,11 +76,11 @@ const AttributionModelChart = memo(function AttributionModelChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'var(--color-popover)',
+              backgroundColor: chartCssVars.popover,
               borderRadius: '12px',
-              border: '1px solid var(--color-border)',
+              border: `1px solid ${chartCssVars.border}`,
               backdropFilter: 'blur(10px)',
-              color: 'white',
+              color: chartCssVars.cardForeground,
             }}
             formatter={(value: number | undefined, name: string | undefined) => {
               const safeValue = value ?? 0

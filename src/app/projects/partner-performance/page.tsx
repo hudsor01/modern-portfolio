@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { TrendingUp, Users, Target, DollarSign } from 'lucide-react'
+import { useQueryState } from 'nuqs'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
@@ -95,7 +95,7 @@ type Tab = (typeof tabs)[number]
 
 export default function PartnerPerformanceIntelligence() {
   const { isLoading, handleRefresh } = useLoadingState()
-  const [activeTab, setActiveTab] = useState<Tab>('overview')
+  const [activeTab, setActiveTab] = useQueryState('tab', { defaultValue: 'overview' as Tab })
 
   // Standardized metrics configuration using consistent data formatting
   const metrics = [

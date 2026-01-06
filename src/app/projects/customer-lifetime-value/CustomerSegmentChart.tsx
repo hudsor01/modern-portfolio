@@ -11,55 +11,8 @@ import {
   CartesianGrid,
   Legend,
 } from '@/components/charts/lazy-charts'
-
-// Customer segment data with CLV and count metrics
-const data = [
-  {
-    segment: 'Champions',
-    count: 628,
-    clv: 4850,
-    probability: 92,
-    revenue: 3045800,
-    color: 'var(--color-success)',
-  },
-  {
-    segment: 'Loyal',
-    count: 841,
-    clv: 3420,
-    probability: 87,
-    revenue: 2876220,
-    color: 'var(--color-primary)',
-  },
-  {
-    segment: 'Potential',
-    count: 1156,
-    clv: 2640,
-    probability: 74,
-    revenue: 3051840,
-    color: 'var(--color-secondary)',
-  },
-  {
-    segment: 'At Risk',
-    count: 892,
-    clv: 1890,
-    probability: 45,
-    revenue: 1686480,
-    color: 'var(--color-warning)',
-  },
-  {
-    segment: "Can't Lose",
-    count: 770,
-    clv: 3850,
-    probability: 68,
-    revenue: 2964500,
-    color: 'var(--color-destructive)',
-  },
-]
-
-const chartColors = {
-  grid: 'var(--color-border)',
-  axis: 'var(--color-muted-foreground)',
-}
+import { chartColors, chartCssVars } from '@/lib/chart-colors'
+import { customerSegmentChartData } from './data/constants'
 
 const CustomerSegmentChart = memo(function CustomerSegmentChart() {
   const formatCurrency = (value: number) => {
@@ -74,7 +27,7 @@ const CustomerSegmentChart = memo(function CustomerSegmentChart() {
   return (
     <div className="h-[350px]">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+        <BarChart data={customerSegmentChartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
           <XAxis
             dataKey="segment"
@@ -105,11 +58,11 @@ const CustomerSegmentChart = memo(function CustomerSegmentChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'var(--color-popover)',
+              backgroundColor: chartCssVars.popover,
               borderRadius: '12px',
-              border: '1px solid var(--color-border)',
+              border: `1px solid ${chartCssVars.border}`,
               backdropFilter: 'blur(10px)',
-              color: 'white',
+              color: chartCssVars.cardForeground,
             }}
             formatter={(value: number | undefined, name: string | undefined) => {
               const safeValue = value ?? 0
@@ -122,8 +75,8 @@ const CustomerSegmentChart = memo(function CustomerSegmentChart() {
             labelFormatter={(label) => `Segment: ${label}`}
           />
           <Legend />
-          <Bar yAxisId="count" dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} name="count" />
-          <Bar yAxisId="clv" dataKey="clv" fill="#10b981" radius={[4, 4, 0, 0]} name="clv" />
+          <Bar yAxisId="count" dataKey="count" fill={chartColors.primary} radius={[4, 4, 0, 0]} name="count" />
+          <Bar yAxisId="clv" dataKey="clv" fill={chartColors.success} radius={[4, 4, 0, 0]} name="clv" />
         </BarChart>
       </ResponsiveContainer>
       <p className="mt-4 text-center text-sm italic text-muted-foreground">

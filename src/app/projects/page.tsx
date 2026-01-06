@@ -1,20 +1,42 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useQueryState } from 'nuqs'
+import { projectKeys } from '@/lib/queryKeys'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { ProjectCard } from '@/components/projects/project-card'
 import { ProjectStats } from '@/components/projects/project-stats'
 import { ProjectCTASection } from '@/components/projects/project-cta-section'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { ErrorBoundary } from '@/components/error/error-boundary'
-import { BarChart3 } from 'lucide-react'
+import { BarChart3, Search } from 'lucide-react'
 import type { Project } from '@/types/project'
 
 export default function ProjectsPage() {
-  const { data: projects, isLoading, error } = useQuery({
-    queryKey: ['projects'],
+  // Hydration safety - only render interactive elements after mount
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+
+  // URL state management with nuqs - URL is the source of truth
+  const [search, setSearch] = useQueryState('search', { defaultValue: '' })
+  const [category, setCategory] = useQueryState('category', { defaultValue: 'all' })
+
+  const {
+    data: projects,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: projectKeys.list(),
     queryFn: async () => {
       const res = await fetch('/api/projects')
       if (!res.ok) throw new Error('Failed to fetch projects')
@@ -32,6 +54,29 @@ export default function ProjectsPage() {
     })
   }, [projects])
 
+  const categories = useMemo((): string[] => {
+    if (!projects) return []
+    const cats = new Set((projects as Project[]).map((p) => p.category).filter(Boolean))
+    return Array.from(cats)
+  }, [projects])
+
+  const filteredProjects = useMemo(() => {
+    let filtered = sortedProjects
+    if (search) {
+      const lowerSearch = search.toLowerCase()
+      filtered = filtered.filter(
+        (p) =>
+          p.title.toLowerCase().includes(lowerSearch) ||
+          p.description.toLowerCase().includes(lowerSearch) ||
+          (p.tags || []).some((tag: string) => tag.toLowerCase().includes(lowerSearch))
+      )
+    }
+    if (category && category !== 'all') {
+      filtered = filtered.filter((p) => p.category === category)
+    }
+    return filtered
+  }, [sortedProjects, search, category])
+
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -44,7 +89,7 @@ export default function ProjectsPage() {
   }
 
   return (
-    <ErrorBoundary>
+    <ErrorBoundary showErrorDetails>
       <>
         <Navbar />
         <main id="main-content" className="relative min-h-screen bg-background overflow-hidden">
@@ -61,13 +106,21 @@ export default function ProjectsPage() {
               </p>
 
               {/* Main Heading */}
-              <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground text-center mb-6 animate-fade-in-up" style={{ animationDelay: '80ms' }}>
-                Revenue Operations<br className="hidden sm:block" /> Excellence
+              <h1
+                className="font-display text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground text-center mb-6 animate-fade-in-up"
+                style={{ animationDelay: '80ms' }}
+              >
+                Revenue Operations
+                <br className="hidden sm:block" /> Excellence
               </h1>
 
               {/* Subheading */}
-              <p className="text-lg lg:text-xl text-muted-foreground text-center max-w-2xl mx-auto mb-16 animate-fade-in-up" style={{ animationDelay: '160ms' }}>
-                Transforming data into actionable insights and driving measurable business results through innovative solutions.
+              <p
+                className="text-lg lg:text-xl text-muted-foreground text-center max-w-2xl mx-auto mb-16 animate-fade-in-up"
+                style={{ animationDelay: '160ms' }}
+              >
+                Transforming data into actionable insights and driving measurable business results
+                through innovative solutions.
               </p>
 
               {/* Stats Grid */}
@@ -92,16 +145,49 @@ export default function ProjectsPage() {
                   </p>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {sortedProjects.length} {sortedProjects.length === 1 ? 'project' : 'projects'}
+                  {filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'}
                 </p>
+              </div>
+
+              {/* Filters */}
+              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search projects..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value || null)}
+                    className="pl-10"
+                  />
+                </div>
+                {mounted ? (
+                  <Select value={category} onValueChange={(value) => setCategory(value === 'all' ? null : value)}>
+                    <SelectTrigger className="w-full sm:w-48">
+                      <SelectValue placeholder="All categories" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All categories</SelectItem>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat} value={cat}>
+                          {cat}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Skeleton className="h-10 w-full sm:w-48 rounded-md" />
+                )}
               </div>
 
               {/* Projects Grid */}
               {isLoading ? (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="bg-card border border-border rounded-2xl overflow-hidden">
-                      <Skeleton className="aspect-[16/10] w-full" />
+                    <div
+                      key={i}
+                      className="bg-card border border-border rounded-2xl overflow-hidden"
+                    >
+                      <Skeleton className="aspect-video w-full" />
                       <div className="p-6 lg:p-8 space-y-4">
                         <Skeleton className="h-4 w-24" />
                         <Skeleton className="h-7 w-3/4" />
@@ -116,18 +202,31 @@ export default function ProjectsPage() {
                     </div>
                   ))}
                 </div>
-              ) : sortedProjects.length === 0 ? (
+              ) : filteredProjects.length === 0 ? (
                 <div className="text-center py-24 bg-card border border-border rounded-2xl">
                   <div className="flex justify-center mb-4">
                     <BarChart3 className="h-10 w-10 text-muted-foreground" />
                   </div>
-                  <h3 className="font-display text-xl font-semibold text-foreground mb-2">No projects yet</h3>
-                  <p className="text-muted-foreground">Projects are currently being updated</p>
+                  <h3 className="font-display text-xl font-semibold text-foreground mb-2">
+                    {projects && projects.length === 0
+                      ? 'No projects yet'
+                      : 'No projects match your search'}
+                  </h3>
+                  <p className="text-muted-foreground">
+                    {projects && projects.length === 0
+                      ? 'Projects are currently being updated'
+                      : 'Try adjusting your search or filters'}
+                  </p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {sortedProjects.map((project: Project, index: number) => (
-                    <ProjectCard key={project.id} project={project} index={index} />
+                  {filteredProjects.map((project: Project, index: number) => (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      index={index}
+                      priority={index < 2}
+                    />
                   ))}
                 </div>
               )}

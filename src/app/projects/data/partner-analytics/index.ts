@@ -125,9 +125,9 @@ export const revenueKpiData = [
 ]
 
 export const partnerGroupsData = [
-  { name: "Enterprise", value: 65, color: "#0088FE" },
-  { name: "Mid-Market", value: 25, color: "#00C49F" },
-  { name: "SMB", value: 10, color: "#FFBB28" }
+  { name: "Enterprise", value: 65, color: "var(--color-chart-1)" },
+  { name: "Mid-Market", value: 25, color: "var(--color-chart-2)" },
+  { name: "SMB", value: 10, color: "var(--color-chart-3)" }
 ]
 
 export const monthlyRevenue2024 = [

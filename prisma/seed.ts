@@ -3,7 +3,7 @@
  * Creates sample data for development and testing
  */
 
-import { PrismaClient } from './generated/prisma/client'
+import { PrismaClient, Prisma } from './generated/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import type {
   Author,
@@ -18,6 +18,7 @@ import type {
   SEOSeverity,
   ChangeFrequency,
 } from './generated/prisma/client'
+import { showcaseProjects } from '../src/data/projects'
 
 // Create the PostgreSQL adapter for seeding
 const adapter = new PrismaPg({
@@ -342,8 +343,53 @@ async function seedPostSeries() {
     series.push(postSeries)
   }
 
-  console.log(`Created ${series.length} series`)
   return series
+}
+
+async function seedProjects() {
+  console.log('Seeding projects...')
+
+  await db.project.createMany({
+    data: showcaseProjects.map(p => ({
+      id: p.id,
+      slug: p.slug,
+      title: p.title,
+      description: p.description,
+      longDescription: p.longDescription,
+      content: null,
+      image: p.image,
+      link: null,
+      github: null,
+      category: p.category,
+      tags: p.technologies,
+      featured: p.featured,
+      client: p.client,
+      role: null,
+      duration: p.duration,
+      year: p.year,
+      caseStudyUrl: p.caseStudyUrl,
+      // JSON fields - cast through unknown to Prisma.InputJsonValue for type compatibility
+      impact: p.impact as unknown as Prisma.InputJsonValue,
+      results: p.results as unknown as Prisma.InputJsonValue,
+      displayMetrics: p.displayMetrics.map(m => ({
+        label: m.label,
+        value: m.value,
+        iconName: m.icon.name?.toLowerCase() || 'circle',
+      })) as unknown as Prisma.InputJsonValue,
+      metrics: p.metrics ? (p.metrics as unknown as Prisma.InputJsonValue) : Prisma.DbNull,
+      testimonial: Prisma.DbNull,
+      gallery: Prisma.DbNull,
+      details: Prisma.DbNull,
+      charts: Prisma.DbNull,
+      viewCount: 0,
+      clickCount: 0,
+    })),
+    skipDuplicates: true,
+  })
+
+  const count = await db.project.count()
+  console.log(`Created ${count} projects`)
+  return count
 }
 
 async function generateBlogPostContent(
@@ -1090,6 +1136,7 @@ async function main() {
       await db.tag.deleteMany()
       await db.category.deleteMany()
       await db.author.deleteMany()
+      await db.project.deleteMany()
       console.log('Cleaned existing data')
     }
 
@@ -1098,6 +1145,7 @@ async function main() {
     const categories = await seedCategories()
     const tags = await seedTags()
     const series = await seedPostSeries()
+    await seedProjects()
     const posts = await seedBlogPosts(authors, categories, tags, series)
 
     // Update stats after creating posts
@@ -1207,6 +1255,7 @@ async function main() {
       db.category.count(),
       db.tag.count(),
       db.postSeries.count(),
+      db.project.count(),
       db.blogPost.count(),
       db.postView.count(),
       db.postInteraction.count(),
@@ -1220,12 +1269,13 @@ async function main() {
     console.log(`Categories: ${summary[1]}`)
     console.log(`Tags: ${summary[2]}`)
     console.log(`Series: ${summary[3]}`)
-    console.log(`Blog Posts: ${summary[4]}`)
-    console.log(`Post Views: ${summary[5]}`)
-    console.log(`Interactions: ${summary[6]}`)
-    console.log(`SEO Keywords: ${summary[7]}`)
-    console.log(`SEO Events: ${summary[8]}`)
-    console.log(`Sitemap Entries: ${summary[9]}`)
+    console.log(`Projects: ${summary[4]}`)
+    console.log(`Blog Posts: ${summary[5]}`)
+    console.log(`Post Views: ${summary[6]}`)
+    console.log(`Interactions: ${summary[7]}`)
+    console.log(`SEO Keywords: ${summary[8]}`)
+    console.log(`SEO Events: ${summary[9]}`)
+    console.log(`Sitemap Entries: ${summary[10]}`)
   } catch (error) {
     console.error('Error during seeding:', error)
     throw error

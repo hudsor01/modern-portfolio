@@ -33,6 +33,13 @@ export interface LeadAttributionData extends BaseAnalyticsData {
   roi: number
 }
 
+export interface LeadTrendData extends BaseAnalyticsData {
+  month: string
+  leads: number
+  conversions: number
+  conversion_rate: number
+}
+
 export interface GrowthData extends BaseAnalyticsData {
   quarter: string
   revenue: number
@@ -47,6 +54,8 @@ export interface YearOverYearData extends BaseAnalyticsData {
   total_revenue: number
   total_transactions: number
   total_commissions: number
+  partner_count: number
+  commission_growth_percentage: number
   growth_percentage: number
   market_share: number
 }
@@ -64,6 +73,7 @@ export interface TopPartnerData extends BaseAnalyticsData {
 export interface AllAnalyticsDataBundle {
   churn: ChurnAnalyticsData[];
   leadAttribution: LeadAttributionData[];
+  leadTrends: LeadTrendData[];
   growth: GrowthData[];
   yearOverYear: YearOverYearData[];
   topPartners: TopPartnerData[];
@@ -171,6 +181,37 @@ class DataGenerator {
       }
     })
   }
+
+  // Generate monthly lead trend data for attribution dashboards
+  generateLeadTrendData(monthsCount: number = 12): LeadTrendData[] {
+    const data: LeadTrendData[] = []
+    const baseLeads = 950
+    const baseConversionRate = 0.12
+
+    for (let i = 0; i < monthsCount; i++) {
+      const date = new Date(this.currentYear, this.currentMonth - i, 1)
+      const monthName = date.toLocaleDateString('en-US', { month: 'short' })
+      const seasonalFactor = 1 + (Math.sin((date.getMonth() * Math.PI) / 6) * 0.15)
+      const leads = Math.floor(baseLeads * seasonalFactor * (0.85 + Math.random() * 0.3))
+      const conversionRate = baseConversionRate + (Math.random() - 0.5) * 0.04
+      const conversions = Math.floor(leads * Math.max(0.05, conversionRate))
+
+      data.unshift({
+        id: `lead-trend-${date.getTime()}`,
+        timestamp: date,
+        source: 'generated',
+        month: monthName,
+        leads,
+        conversions,
+        conversion_rate: Math.round(conversions / Math.max(leads, 1) * 1000) / 10,
+        metadata: {
+          seasonal_factor: seasonalFactor,
+        },
+      })
+    }
+
+    return data
+  }
   
   // Generate quarterly growth data with realistic trends
   generateGrowthData(quartersCount: number = 8): GrowthData[] {
@@ -225,6 +266,7 @@ class DataGenerator {
     const data: YearOverYearData[] = []
     const baseRevenue = this.baseMetrics.get('base_revenue')!
     const growthTrend = this.baseMetrics.get('growth_trend')!
+    const basePartners = this.baseMetrics.get('base_partners')!
     
     for (let i = 0; i < yearsCount; i++) {
       const year = this.currentYear - i
@@ -235,9 +277,13 @@ class DataGenerator {
       const totalTransactions = Math.floor(800 * Math.pow(1.08, yearsCount - i - 1) * (0.9 + Math.random() * 0.2))
       const commissionRate = 0.08 + (Math.random() - 0.5) * 0.02
       const totalCommissions = Math.floor(totalRevenue * commissionRate)
+      const partnerCount = Math.floor(
+        basePartners * Math.pow(1.06, yearsCount - i - 1) * (0.9 + Math.random() * 0.2)
+      )
       
       const growthPercentage = i === 0 ? 0 : 
         ((totalRevenue / (data[i - 1]?.total_revenue || totalRevenue * 0.9)) - 1) * 100
+      const commissionGrowth = (annualGrowth * 100) + (Math.random() - 0.5) * 5
       
       // Market share (simulated - growing over time)
       const marketShare = (2.5 + (yearsCount - i) * 0.3) + (Math.random() - 0.5) * 0.5
@@ -250,6 +296,8 @@ class DataGenerator {
         total_revenue: totalRevenue,
         total_transactions: totalTransactions,
         total_commissions: totalCommissions,
+        partner_count: partnerCount,
+        commission_growth_percentage: Math.round(commissionGrowth * 100) / 100,
         growth_percentage: Math.round(growthPercentage * 100) / 100,
         market_share: Math.round(marketShare * 100) / 100,
         metadata: {
@@ -429,6 +477,24 @@ export class AnalyticsDataService {
     
     return data
   }
+
+  async getLeadTrendData(months: number = 12, useCache: boolean = true): Promise<LeadTrendData[]> {
+    const cacheKey = `lead-trend-data-${months}`
+
+    if (useCache) {
+      const cached = this.cache.get<LeadTrendData[]>(cacheKey)
+      if (cached) return cached
+    }
+
+    logger.info('Generating lead trend data', { months })
+    const data = this.generator.generateLeadTrendData(months)
+
+    if (useCache) {
+      this.cache.set(cacheKey, data, 10 * 60 * 1000)
+    }
+
+    return data
+  }
   
   async getGrowthData(quarters: number = 8, useCache: boolean = true): Promise<GrowthData[]> {
     const cacheKey = `growth-data-${quarters}`
@@ -496,9 +562,10 @@ export class AnalyticsDataService {
     
     logger.info('Generating complete analytics dataset')
     
-    const [churn, leadAttribution, growth, yearOverYear, topPartners] = await Promise.all([
+    const [churn, leadAttribution, leadTrends, growth, yearOverYear, topPartners] = await Promise.all([
       this.getChurnData(12, false),
       this.getLeadAttributionData(false),
+      this.getLeadTrendData(12, false),
       this.getGrowthData(8, false),
       this.getYearOverYearData(5, false),
       this.getTopPartnersData(15, false),
@@ -507,6 +574,7 @@ export class AnalyticsDataService {
     const allData = {
       churn,
       leadAttribution,
+      leadTrends,
       growth,
       yearOverYear,
       topPartners,

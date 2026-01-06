@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from '@/components/charts/lazy-charts'
+import { chartColors as baseChartColors, chartCssVars } from '@/lib/chart-colors'
 
 // Pipeline health data across stages
 const data = [
@@ -64,11 +65,11 @@ const data = [
 ]
 
 const chartColors = {
-  count: 'var(--color-primary)',
-  value: 'var(--color-success)',
-  health: 'var(--color-secondary)',
-  grid: 'var(--color-border)',
-  axis: 'var(--color-muted-foreground)',
+  count: baseChartColors.primary,
+  value: baseChartColors.success,
+  health: baseChartColors.secondary,
+  grid: baseChartColors.grid,
+  axis: baseChartColors.axis,
 }
 
 const PipelineHealthChart = memo(function PipelineHealthChart() {
@@ -116,11 +117,11 @@ const PipelineHealthChart = memo(function PipelineHealthChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'var(--color-popover)',
+              backgroundColor: chartCssVars.popover,
               borderRadius: '12px',
-              border: '1px solid var(--color-border)',
+              border: `1px solid ${chartCssVars.border}`,
               backdropFilter: 'blur(10px)',
-              color: 'white',
+              color: chartCssVars.cardForeground,
             }}
             formatter={(value: number | undefined, name: string | undefined) => {
               const safeName = name ?? ''

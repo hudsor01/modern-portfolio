@@ -9,6 +9,9 @@ const nextConfig = {
   // React Compiler for automatic memoization (Next.js 16+)
   reactCompiler: true,
 
+  // External packages that shouldn't be bundled (required for Prisma + Turbopack)
+  serverExternalPackages: ['@prisma/client', '@prisma/adapter-pg'],
+
   // Enhanced experimental features for performance
   experimental: {
     optimizeCss: true,

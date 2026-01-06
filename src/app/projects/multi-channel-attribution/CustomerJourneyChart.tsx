@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from '@/components/charts/lazy-charts'
+import { chartColors as baseChartColors, chartCssVars } from '@/lib/chart-colors'
 
 // Customer journey funnel data
 const data = [
@@ -58,11 +59,11 @@ const data = [
 ]
 
 const chartColors = {
-  touchpoints: 'var(--color-primary)',
-  conversions: 'var(--color-success)',
-  conversionRate: 'var(--color-warning)',
-  grid: 'var(--color-border)',
-  axis: 'var(--color-muted-foreground)',
+  touchpoints: baseChartColors.primary,
+  conversions: baseChartColors.success,
+  conversionRate: baseChartColors.warning,
+  grid: baseChartColors.grid,
+  axis: baseChartColors.axis,
 }
 
 const CustomerJourneyChart = memo(function CustomerJourneyChart() {
@@ -90,11 +91,11 @@ const CustomerJourneyChart = memo(function CustomerJourneyChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'var(--color-popover)',
+              backgroundColor: chartCssVars.popover,
               borderRadius: '12px',
-              border: '1px solid var(--color-border)',
+              border: `1px solid ${chartCssVars.border}`,
               backdropFilter: 'blur(10px)',
-              color: 'white',
+              color: chartCssVars.cardForeground,
             }}
             formatter={(value: number | undefined, name: string | undefined) => {
               const safeValue = value ?? 0

@@ -1,6 +1,6 @@
 'use client'
 
-
+import { chartColors } from '@/lib/chart-colors'
 
 // Define proper types for the data
 interface FunnelStage {
@@ -48,13 +48,13 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
   // Transform data for visualization
   const data: ChartData[] = calculateData();
 
-  // Gradient colors for funnel stages
+  // Gradient colors for funnel stages (hex colors for SVG compatibility)
   const funnelColors = [
-    'var(--color-primary)', // Blue
-    'var(--color-secondary)', // Indigo
-    'var(--color-secondary)', // Purple
-    'var(--color-chart-5)', // Purple
-    'var(--color-chart-5)', // Light Purple
+    chartColors.primary,    // Navy Blue
+    chartColors.secondary,  // Forest Green
+    chartColors.chart3,     // Bronze/Copper
+    chartColors.chart4,     // Slate Gray
+    chartColors.chart5,     // Deep Navy
   ];
 
 

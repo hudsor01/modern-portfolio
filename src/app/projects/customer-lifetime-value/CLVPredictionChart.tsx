@@ -11,43 +11,15 @@ import {
   CartesianGrid,
   ReferenceLine,
 } from '@/components/charts/lazy-charts'
+import { chartColors, segmentColors, chartCssVars } from '@/lib/chart-colors'
+import { clvPredictionData } from './data/constants'
 
-// CLV prediction vs actual data showing model accuracy
-const data = [
-  { predicted: 2100, actual: 2150, segment: 'Champions', accuracy: 97.7 },
-  { predicted: 2300, actual: 2280, segment: 'Champions', accuracy: 99.1 },
-  { predicted: 1800, actual: 1750, segment: 'Loyal', accuracy: 97.2 },
-  { predicted: 1950, actual: 1980, segment: 'Loyal', accuracy: 98.5 },
-  { predicted: 1400, actual: 1450, segment: 'Potential', accuracy: 96.6 },
-  { predicted: 1600, actual: 1580, segment: 'Potential', accuracy: 98.8 },
-  { predicted: 1200, actual: 1180, segment: 'At Risk', accuracy: 98.3 },
-  { predicted: 1350, actual: 1320, segment: 'At Risk', accuracy: 97.8 },
-  { predicted: 2800, actual: 2750, segment: "Can't Lose", accuracy: 98.2 },
-  { predicted: 3100, actual: 3180, segment: "Can't Lose", accuracy: 97.5 },
-  { predicted: 2500, actual: 2520, segment: 'Champions', accuracy: 99.2 },
-  { predicted: 1700, actual: 1680, segment: 'Loyal', accuracy: 98.8 },
-  { predicted: 1500, actual: 1520, segment: 'Potential', accuracy: 98.7 },
-  { predicted: 1100, actual: 1090, segment: 'At Risk', accuracy: 99.1 },
-  { predicted: 2900, actual: 2980, segment: "Can't Lose", accuracy: 97.3 },
-  { predicted: 2200, actual: 2180, segment: 'Champions', accuracy: 99.1 },
-  { predicted: 1850, actual: 1870, segment: 'Loyal', accuracy: 98.9 },
-  { predicted: 1300, actual: 1280, segment: 'Potential', accuracy: 98.5 },
-  { predicted: 1150, actual: 1140, segment: 'At Risk', accuracy: 99.1 },
-  { predicted: 3200, actual: 3150, segment: "Can't Lose", accuracy: 98.4 },
-]
-
-const segmentColors = {
-  Champions: 'var(--color-success)',
-  Loyal: 'var(--color-primary)',
-  Potential: 'var(--color-secondary)',
-  'At Risk': 'var(--color-warning)',
-  "Can't Lose": 'var(--color-destructive)',
-}
-
-const chartColors = {
-  grid: 'var(--color-border)',
-  axis: 'var(--color-muted-foreground)',
-  reference: 'var(--color-muted-foreground)',
+const scatterSegmentColors = {
+  Champions: segmentColors.Champions,
+  Loyal: segmentColors.Loyal,
+  Potential: segmentColors.Potential,
+  'At Risk': segmentColors['At Risk'],
+  "Can't Lose": segmentColors["Can't Lose"],
 }
 
 const CLVPredictionChart = memo(function CLVPredictionChart() {
@@ -63,7 +35,7 @@ const CLVPredictionChart = memo(function CLVPredictionChart() {
   return (
     <div className="h-[350px]">
       <ResponsiveContainer width="100%" height="100%">
-        <ScatterChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+        <ScatterChart data={clvPredictionData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
           <XAxis
             type="number"
@@ -87,7 +59,7 @@ const CLVPredictionChart = memo(function CLVPredictionChart() {
           />
           {/* Perfect prediction reference line */}
           <ReferenceLine
-            stroke={chartColors.reference}
+            stroke={chartColors.muted}
             strokeDasharray="5 5"
             segment={[
               { x: 1000, y: 1000 },
@@ -96,11 +68,11 @@ const CLVPredictionChart = memo(function CLVPredictionChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'var(--color-popover)',
+              backgroundColor: chartCssVars.popover,
               borderRadius: '12px',
-              border: '1px solid var(--color-border)',
+              border: `1px solid ${chartCssVars.border}`,
               backdropFilter: 'blur(10px)',
-              color: 'white',
+              color: chartCssVars.cardForeground,
             }}
             formatter={(value: number | undefined, name: string | undefined) => {
               const safeValue = value ?? 0
@@ -120,11 +92,11 @@ const CLVPredictionChart = memo(function CLVPredictionChart() {
               return label
             }}
           />
-          {Object.entries(segmentColors).map(([segment, color]) => (
+          {Object.entries(scatterSegmentColors).map(([segment, color]) => (
             <Scatter
               key={segment}
               name={segment}
-              data={data.filter((d) => d.segment === segment)}
+              data={clvPredictionData.filter((d) => d.segment === segment)}
               fill={color}
               r={6}
             />

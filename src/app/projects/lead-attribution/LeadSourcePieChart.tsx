@@ -2,19 +2,8 @@
 import { memo } from 'react'
 
 import { LazyPieChart as PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from '@/components/charts/lazy-charts'
+import { chartColors } from '@/lib/chart-colors'
 import type { PieLabelRenderProps } from 'recharts'
-
-// Production lead source data with realistic distribution and growth metrics
-const leadSourceData = [
-  { name: 'Organic Search', value: 3420, growth: '+18.5%', color: 'var(--color-primary)' },
-  { name: 'Paid Search', value: 2150, growth: '+12.3%', color: 'var(--color-secondary)' },
-  { name: 'Social Media', value: 1680, growth: '+24.7%', color: 'var(--color-secondary)' },
-  { name: 'Email Marketing', value: 1290, growth: '+8.9%', color: 'var(--color-chart-5)' },
-  { name: 'Direct Traffic', value: 980, growth: '+5.2%', color: 'var(--color-chart-5)' },
-  { name: 'Referrals', value: 740, growth: '+31.4%', color: 'var(--color-accent)' },
-  { name: 'Content Marketing', value: 580, growth: '+19.8%', color: 'var(--color-accent)' },
-  { name: 'Partnerships', value: 420, growth: '+42.1%', color: 'var(--color-accent)' },
-]
 
 interface CustomTooltipProps {
   active?: boolean;
@@ -24,12 +13,37 @@ interface CustomTooltipProps {
     payload: {
       name: string;
       value: number;
-      growth: string;
+      growth?: string;
     };
   }>;
 }
 
-const LeadSourcePieChart = memo(function LeadSourcePieChart() {
+type LeadSourceDatum = {
+  name: string
+  value: number
+  growth?: string
+  color?: string
+}
+
+const defaultColors = [
+  chartColors.primary,
+  chartColors.secondary,
+  chartColors.chart3,
+  chartColors.chart4,
+  chartColors.chart5,
+  chartColors.chart1,
+]
+
+type LeadSourcePieChartProps = {
+  data: LeadSourceDatum[]
+}
+
+const LeadSourcePieChart = memo(function LeadSourcePieChart({ data }: LeadSourcePieChartProps) {
+  const leadSourceData = data.map((item, index) => ({
+    ...item,
+    color: item.color || defaultColors[index % defaultColors.length],
+  }))
+
   const total = leadSourceData.reduce((sum, item) => sum + item.value, 0)
 
   const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
@@ -38,17 +52,19 @@ const LeadSourcePieChart = memo(function LeadSourcePieChart() {
       const percentage = ((data.value / total) * 100).toFixed(1);
       
       return (
-        <div className="p-3 rounded-xl bg-[#0f172a]/90 backdrop-blur-xs border border-white/10">
-          <p className="font-medium text-white">{data.name}</p>
+        <div className="p-3 rounded-xl bg-popover/95 backdrop-blur-xs border border-border">
+          <p className="font-medium text-foreground">{data.name}</p>
           <p className="typography-small text-muted-foreground">
-            Leads: <span className="font-medium text-white">{data.value.toLocaleString()}</span>
+            Leads: <span className="font-medium text-foreground">{data.value.toLocaleString()}</span>
           </p>
           <p className="typography-small text-muted-foreground">
-            Share: <span className="font-medium text-white">{percentage}%</span>
+            Share: <span className="font-medium text-foreground">{percentage}%</span>
           </p>
-          <p className="typography-small text-muted-foreground">
-            Growth: <span className="font-medium text-success">{data.growth}</span>
-          </p>
+          {data.growth ? (
+            <p className="typography-small text-muted-foreground">
+              Performance: <span className="font-medium text-success">{data.growth}</span>
+            </p>
+          ) : null}
         </div>
       )
     }
@@ -57,7 +73,7 @@ const LeadSourcePieChart = memo(function LeadSourcePieChart() {
 
   const renderCustomLabel = (entry: PieLabelRenderProps) => {
     if (typeof entry.value === 'number') {
-      const percentage = ((entry.value / total) * 100).toFixed(0);
+      const percentage = total > 0 ? ((entry.value / total) * 100).toFixed(0) : '0'
       return `${percentage}%`;
     }
     return '';
@@ -75,7 +91,7 @@ const LeadSourcePieChart = memo(function LeadSourcePieChart() {
               labelLine={false}
               label={renderCustomLabel}
               outerRadius={120}
-              fill="#8884d8"
+              fill={chartColors.chart3}
               dataKey="value"
               animationBegin={0}
               animationDuration={1500}

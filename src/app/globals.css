@@ -2,6 +2,8 @@
 @import 'tw-animate-css';
 @import '../styles/interaction-patterns.css';
 
+@custom-variant dark (&:is(.dark *));
+
 /* Light mode only - no dark mode support */
 
 @theme {
@@ -784,6 +786,20 @@ label {
   animation: marquee-vertical var(--duration) linear infinite;
 }
 
+/* Magic UI Orbiting Circles Animation */
+@keyframes orbit {
+  0% {
+    transform: rotate(calc(var(--angle) * 1deg)) translateY(calc(var(--radius) * 1px)) rotate(calc(var(--angle) * -1deg));
+  }
+  100% {
+    transform: rotate(calc(var(--angle) * 1deg + 360deg)) translateY(calc(var(--radius) * 1px)) rotate(calc((var(--angle) * -1deg) - 360deg));
+  }
+}
+
+.animate-orbit {
+  animation: orbit calc(var(--duration) * 1s) linear infinite;
+}
+
 @utility text-white-enhanced { color: oklch(0.99 0.005 285) !important; }
 @utility text-gray-100-enhanced { color: oklch(0.95 0.01 285) !important; }
 @utility text-gray-200-enhanced { color: oklch(0.9 0.01 285) !important; }
@@ -1321,3 +1337,12 @@ label {
 @utility font-sans { font-family: var(--font-spline), system-ui, -apple-system, 'Segoe UI', sans-serif; }
 @utility font-display { font-family: var(--font-playfair), Georgia, 'Times New Roman', serif; }
 @utility font-mono { font-family: var(--font-roboto-mono), 'Fira Code', Consolas, monospace; }
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

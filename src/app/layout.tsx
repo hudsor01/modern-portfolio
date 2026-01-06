@@ -10,6 +10,7 @@ import { ScrollToTop } from '@/components/layout/scroll-to-top'
 import { baseMetadata } from './shared-metadata'
 import { PersonJsonLd, WebsiteJsonLd, LocalBusinessJsonLd, OrganizationJsonLd } from '@/components/seo/json-ld'
 import { ReadingProgressBar } from './reading-progress'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 // Luxury Minimalist Typography System
 const playfair = Playfair_Display({
@@ -70,13 +71,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
-        <ClientComponentsProvider>
-          <ReadingProgressBar />
-          {children}
-          <ScrollToTop />
-          <Toaster position="bottom-right" closeButton richColors />
-          <Analytics />
-        </ClientComponentsProvider>
+        <NuqsAdapter>
+          <ClientComponentsProvider>
+            <ReadingProgressBar />
+            {children}
+            <ScrollToTop />
+            <Toaster position="bottom-right" closeButton richColors />
+            <Analytics />
+          </ClientComponentsProvider>
+        </NuqsAdapter>
       </body>
     </html>
   )
