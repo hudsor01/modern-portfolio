@@ -11,6 +11,7 @@ import {
   CartesianGrid,
   Cell,
 } from '@/components/charts/lazy-charts'
+import { chartColors as baseChartColors, chartCssVars } from '@/lib/chart-colors'
 
 // Channel performance data for scatter plot
 const data = [
@@ -58,19 +59,19 @@ const normalizedData = data.map((d) => ({
 
 const getChannelColor = (channel: string) => {
   const colors: Record<string, string> = {
-    'Email Marketing': 'var(--color-success)',
-    'Organic Search': 'var(--color-primary)',
-    'Paid Search': 'var(--color-warning)',
-    'Social Media': 'var(--color-secondary)',
-    'Direct Traffic': 'var(--color-destructive)',
-    'Display Ads': 'var(--color-secondary)',
+    'Email Marketing': baseChartColors.success,
+    'Organic Search': baseChartColors.primary,
+    'Paid Search': baseChartColors.warning,
+    'Social Media': baseChartColors.secondary,
+    'Direct Traffic': baseChartColors.destructive,
+    'Display Ads': baseChartColors.secondary,
   }
-  return colors[channel] || 'var(--color-muted-foreground)'
+  return colors[channel] || baseChartColors.muted
 }
 
 const chartColors = {
-  grid: 'var(--color-border)',
-  axis: 'var(--color-muted-foreground)',
+  grid: baseChartColors.grid,
+  axis: baseChartColors.axis,
 }
 
 const ChannelROIChart = memo(function ChannelROIChart() {
@@ -123,11 +124,11 @@ const ChannelROIChart = memo(function ChannelROIChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'var(--color-popover)',
+              backgroundColor: chartCssVars.popover,
               borderRadius: '12px',
-              border: '1px solid var(--color-border)',
+              border: `1px solid ${chartCssVars.border}`,
               backdropFilter: 'blur(10px)',
-              color: 'white',
+              color: chartCssVars.cardForeground,
             }}
             formatter={(value: number | undefined, name: string | undefined, props: unknown) => {
               const payload = (props as { payload?: (typeof normalizedData)[0] })?.payload
@@ -145,7 +146,7 @@ const ChannelROIChart = memo(function ChannelROIChart() {
             }}
             labelFormatter={() => ''}
           />
-          <Scatter name="Channels" data={normalizedData} fill="#8884d8">
+          <Scatter name="Channels" data={normalizedData} fill={baseChartColors.chart3}>
             {normalizedData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={getChannelColor(entry.channel)} />
             ))}

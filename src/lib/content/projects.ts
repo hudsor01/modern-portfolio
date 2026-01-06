@@ -1,31 +1,57 @@
 import { cache } from 'react'
 import type { Project } from '@/types/project'
-import { ProjectDataManager } from '@/lib/server/project-data-manager'
+import { showcaseProjects } from '@/data/projects'
 
 // Re-export the Project type for components to use
 export type { Project }
 
-// Cache the getProjects function for the duration of the request
+// Map ShowcaseProject to Project type
+function mapToProject(showcase: typeof showcaseProjects[number]): Project {
+  return {
+    id: showcase.id,
+    slug: showcase.slug,
+    title: showcase.title,
+    description: showcase.description,
+    longDescription: showcase.longDescription,
+    image: showcase.image,
+    category: showcase.category,
+    tags: showcase.technologies,
+    featured: showcase.featured,
+    year: showcase.year,
+    client: showcase.client,
+    duration: showcase.duration,
+    impact: showcase.impact,
+    results: showcase.results,
+    caseStudyUrl: showcase.caseStudyUrl,
+    viewCount: 0,
+    clickCount: 0,
+    displayMetrics: showcase.displayMetrics.map(m => ({
+      label: m.label,
+      value: m.value,
+      iconName: m.icon.name?.toLowerCase().replace(/([A-Z])/g, '-$1').slice(1) || 'circle',
+    })),
+  }
+}
+
+// Get all projects
 export const getProjects = cache(async (): Promise<Project[]> => {
-  return await ProjectDataManager.getProjects()
+  return showcaseProjects.map(mapToProject)
 })
 
 export const getProject = cache(async (slug: string): Promise<Project | null> => {
-  return await ProjectDataManager.getProjectBySlug(slug)
+  const project = showcaseProjects.find(p => p.slug === slug)
+  return project ? mapToProject(project) : null
 })
 
 export const getFeaturedProjects = cache(async (): Promise<Project[]> => {
-  const allProjects = await getProjects()
-  return allProjects.filter(p => p.featured)
+  return showcaseProjects.filter(p => p.featured).map(mapToProject)
 })
 
 export const getProjectsByCategory = cache(async (category: string): Promise<Project[]> => {
-  const allProjects = await getProjects()
-  return allProjects.filter(p => p.category === category)
+  return showcaseProjects.filter(p => p.category === category).map(mapToProject)
 })
 
 export const getCategories = cache(async (): Promise<string[]> => {
-  const allProjects = await getProjects()
-  const categories = new Set(allProjects.map(p => p.category).filter(Boolean) as string[])
+  const categories = new Set(showcaseProjects.map(p => p.category))
   return Array.from(categories)
 })

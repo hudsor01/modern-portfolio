@@ -10,14 +10,6 @@ mock.module('@/lib/content/projects', () => ({
 
 // Import after mocks
 import { GET } from '../route'
-import { createMockNextRequest } from '@/test/mock-next-request'
-
-// Helper to create mock Request with proper headers
-function createMockRequest() {
-  return createMockNextRequest('http://localhost:3000/api/projects', {
-    headers: { 'x-forwarded-for': '127.0.0.1' }
-  })
-}
 
 // Clean up mocks after all tests in this file
 afterAll(() => {
@@ -42,8 +34,7 @@ describe('/api/projects', () => {
       ]
       mockGetProjects.mockResolvedValueOnce(mockProjects)
 
-      const request = createMockRequest()
-      const response = await GET(request)
+      const response = await GET()
       const data = await response.json()
 
       expect(response.status).toBe(200)
@@ -54,8 +45,7 @@ describe('/api/projects', () => {
     it('should return empty array when no projects exist', async () => {
       mockGetProjects.mockResolvedValueOnce([])
 
-      const request = createMockRequest()
-      const response = await GET(request)
+      const response = await GET()
       const data = await response.json()
 
       expect(response.status).toBe(200)
@@ -66,8 +56,7 @@ describe('/api/projects', () => {
     it('should handle errors gracefully', async () => {
       mockGetProjects.mockRejectedValueOnce(new Error('Database error'))
 
-      const request = createMockRequest()
-      const response = await GET(request)
+      const response = await GET()
       const data = await response.json()
 
       expect(response.status).toBe(500)

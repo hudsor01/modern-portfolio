@@ -1,6 +1,18 @@
 'use client'
 
-import { TrendingUp, Users, Zap, Target } from 'lucide-react'
+import { useMemo } from 'react'
+import {
+  TrendingUp,
+  Users,
+  Zap,
+  Target,
+  Globe,
+  Mail,
+  Share2,
+  DollarSign,
+  Activity,
+} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
@@ -9,6 +21,7 @@ import { SectionCard } from '@/components/ui/section-card'
 import { ChartContainer } from '@/components/ui/chart-container'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { useLoadingState } from '@/hooks/use-loading-state'
+import { useAnalyticsData } from '@/hooks/use-analytics-data'
 import { formatNumber, formatPercentage, formatTrend } from '@/lib/utils/data-formatters'
 import { leadAttributionData } from '@/app/projects/data/partner-analytics'
 
@@ -19,30 +32,95 @@ import { InsightsSection } from './components/InsightsSection'
 import { NarrativeSections } from './components/NarrativeSections'
 
 export default function LeadAttribution() {
-  const { isLoading, handleRefresh } = useLoadingState()
+  const { isLoading: isUiLoading, handleRefresh: handleUiRefresh } = useLoadingState()
+  const {
+    data: analyticsData,
+    isLoading: isAnalyticsLoading,
+    refresh: refreshAnalyticsData,
+  } = useAnalyticsData()
 
-  // Calculate totals safely
-  const totalLeads =
-    leadAttributionData?.reduce(
-      (sum: number, source: { leads: number }) => sum + (source.leads || 0),
-      0
-    ) || 0
-  const totalConversions =
-    leadConversionData.reduce((sum, source) => sum + (source.conversions || 0), 0) || 0
+  const leadSources = useMemo(() => {
+    if (analyticsData?.leadAttribution?.length) {
+      return analyticsData.leadAttribution.map((item) => ({
+        name: item.channel,
+        value: item.leads,
+        growth: item.conversion_rate ? `+${item.conversion_rate.toFixed(1)}%` : undefined,
+      }))
+    }
+
+    return leadAttributionData.map((item) => ({
+      name: item.source,
+      value: item.leads,
+      growth: item.conversion ? `+${(item.conversion * 100).toFixed(1)}%` : undefined,
+    }))
+  }, [analyticsData?.leadAttribution])
+
+  const conversionSources = useMemo(() => {
+    const iconByChannel: Record<string, LucideIcon> = {
+      Website: Globe,
+      'Organic Search': Globe,
+      'Paid Search': DollarSign,
+      'Paid Social': Users,
+      'Social Media': Users,
+      Referrals: Share2,
+      Referral: Share2,
+      LinkedIn: Users,
+      Conferences: Users,
+      Email: Mail,
+      'Email Marketing': Mail,
+      'Google Ads': DollarSign,
+      'Content Marketing': Globe,
+      'Direct Traffic': Activity,
+    }
+
+    if (analyticsData?.leadAttribution?.length) {
+      return analyticsData.leadAttribution.map((item) => ({
+        source: item.channel,
+        conversions: item.closed,
+        conversion_rate: item.conversion_rate / 100,
+        icon: iconByChannel[item.channel] || Activity,
+      }))
+    }
+
+    return leadConversionData
+  }, [analyticsData?.leadAttribution])
+
+  const trendData = useMemo(() => {
+    if (analyticsData?.leadTrends?.length) {
+      return analyticsData.leadTrends.map((item) => ({
+        month: item.month,
+        leads: item.leads,
+        conversions: item.conversions,
+      }))
+    }
+
+    return monthlyTrendData
+  }, [analyticsData?.leadTrends])
+
+  const totalLeads = leadSources.reduce((sum, source) => sum + (source.value || 0), 0)
+  const totalConversions = conversionSources.reduce(
+    (sum, source) => sum + (source.conversions || 0),
+    0
+  )
 
   // Calculate conversion rate safely
   const overallConversionRate = totalLeads > 0 ? (totalConversions / totalLeads) * 100 : 0
 
   // Find best performing source
-  const bestSource = leadConversionData.reduce((best, current) =>
-    current.conversion_rate > best.conversion_rate ? current : best
-  )
+  const bestSource =
+    conversionSources.length > 0
+      ? conversionSources.reduce((best, current) =>
+          current.conversion_rate > best.conversion_rate ? current : best
+        )
+      : { source: 'N/A', conversions: 0, conversion_rate: 0, icon: Activity }
 
   // Calculate month-over-month growth
-  const lastMonth = monthlyTrendData[monthlyTrendData.length - 1]
-  const prevMonth = monthlyTrendData[monthlyTrendData.length - 2]
+  const lastMonth = trendData[trendData.length - 1]
+  const prevMonth = trendData[trendData.length - 2]
   const monthlyGrowth =
     prevMonth && lastMonth ? ((lastMonth.leads - prevMonth.leads) / prevMonth.leads) * 100 : 0
+
+  const isLoading = isUiLoading || isAnalyticsLoading
 
   // Standardized metrics configuration using consistent data formatting
   const metrics = [
@@ -109,7 +187,10 @@ export default function LeadAttribution() {
             variant: 'secondary',
           },
         ]}
-        onRefresh={handleRefresh}
+        onRefresh={() => {
+          handleUiRefresh()
+          void refreshAnalyticsData()
+        }}
         refreshButtonDisabled={isLoading}
       >
         {isLoading ? (
@@ -125,7 +206,11 @@ export default function LeadAttribution() {
               description="Breakdown of lead generation and conversion performance by source"
               className="mb-8"
             >
-              <ChartsSection bestSource={bestSource} />
+              <ChartsSection
+                bestSource={bestSource}
+                leadSources={leadSources}
+                conversionSources={conversionSources}
+              />
             </SectionCard>
 
             {/* Monthly Trends wrapped in SectionCard */}
@@ -139,7 +224,7 @@ export default function LeadAttribution() {
                 description="Monthly lead volume and growth patterns"
                 height={400}
               >
-                <TrendsChart />
+                <TrendsChart data={trendData} />
               </ChartContainer>
             </SectionCard>
 

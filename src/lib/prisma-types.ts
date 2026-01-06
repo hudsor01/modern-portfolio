@@ -1,10 +1,12 @@
 /**
  * Prisma types re-export for client-side usage
  * This file can be safely imported in client components
- * It uses the browser-safe exports from Prisma (no node modules)
+ *
+ * Note: Prisma enums are exported as both const values and types from @/prisma/client.
+ * Use regular imports for values and `import type` for types.
  */
 
-// Re-export enums (these are values, not just types)
+// Re-export everything from prisma client - enums work as both values and types
 export {
   PostStatus,
   ContentType,
@@ -17,28 +19,23 @@ export {
   SubmissionStatus,
   SecurityEventType,
   SecuritySeverity,
-} from '@/prisma/browser'
-
-// Re-export Prisma namespace (needed for Prisma types)
-export { Prisma } from '@/prisma/browser'
-
-// Re-export types
-export type {
-  BlogPost,
-  Author,
-  Category,
-  Tag,
-  PostTag,
-  PostRelation,
-  PostVersion,
-  PostSeries,
-  SeriesPost,
-  PostView,
-  PostInteraction,
-  SEOEvent,
-  SEOKeyword,
-  SitemapEntry,
-  Project,
-  ContactSubmission,
-  SecurityEvent,
-} from '@/prisma/browser'
+  Prisma,
+  // Model types
+  type BlogPost,
+  type Author,
+  type Category,
+  type Tag,
+  type PostTag,
+  type PostRelation,
+  type PostVersion,
+  type PostSeries,
+  type SeriesPost,
+  type PostView,
+  type PostInteraction,
+  type SEOEvent,
+  type SEOKeyword,
+  type SitemapEntry,
+  type Project,
+  type ContactSubmission,
+  type SecurityEvent,
+} from '@/prisma/client'

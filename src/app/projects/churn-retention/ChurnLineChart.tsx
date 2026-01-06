@@ -12,16 +12,18 @@ import {
   Area,
   LazyComposedChart as ComposedChart,
 } from '@/components/charts/lazy-charts'
-import { staticChurnData } from '@/app/projects/data/partner-analytics'
+import { chartColors, chartCssVars } from '@/lib/chart-colors'
 
-// Transform data for visualization
-const data = staticChurnData.map((item) => ({
-  month: item.month,
-  churn: item.churnRate,
-  retention: 100 - item.churnRate,
-}))
+type ChurnDatum = {
+  month: string
+  churnRate: number
+}
 
-const ChurnLineChart = memo(function ChurnLineChart() {
+type ChurnLineChartProps = {
+  data: ChurnDatum[]
+}
+
+const ChurnLineChart = memo(function ChurnLineChart({ data }: ChurnLineChartProps) {
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
@@ -39,46 +41,52 @@ const ChurnLineChart = memo(function ChurnLineChart() {
     )
   }
 
+  const chartData = data.map((item) => ({
+    month: item.month,
+    churn: item.churnRate,
+    retention: 100 - item.churnRate,
+  }))
+
   return (
     <div className="h-[350px]">
       <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+        <ComposedChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="churnGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+              <stop offset="5%" stopColor={chartColors.destructive} stopOpacity={0.3} />
+              <stop offset="95%" stopColor={chartColors.destructive} stopOpacity={0} />
             </linearGradient>
             <linearGradient id="retentionGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+              <stop offset="5%" stopColor={chartColors.success} stopOpacity={0.3} />
+              <stop offset="95%" stopColor={chartColors.success} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
           <XAxis
             dataKey="month"
-            stroke="var(--color-muted-foreground)"
+            stroke={chartColors.axis}
             fontSize={12}
             tickLine={false}
-            axisLine={{ stroke: 'var(--color-muted)' }}
+            axisLine={{ stroke: chartColors.muted }}
           />
           <YAxis
-            stroke="var(--color-muted-foreground)"
+            stroke={chartColors.axis}
             fontSize={12}
             tickLine={false}
-            axisLine={{ stroke: 'var(--color-muted)' }}
+            axisLine={{ stroke: chartColors.muted }}
             domain={[0, 10]}
             ticks={[0, 2, 4, 6, 8, 10]}
             tickFormatter={(value) => `${value}%`}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'var(--color-popover)',
+              backgroundColor: chartCssVars.popover,
               borderRadius: '12px',
-              border: '1px solid var(--color-border)',
+              border: `1px solid ${chartCssVars.border}`,
               backdropFilter: 'blur(10px)',
-              color: 'white',
+              color: chartCssVars.cardForeground,
             }}
-            itemStyle={{ color: 'white' }}
+            itemStyle={{ color: chartCssVars.cardForeground }}
             formatter={(value: number | undefined, name: string | undefined) => [
               `${(value ?? 0).toFixed(1)}%`,
               (name ?? '') === 'churn' ? 'Churn Rate' : 'Retention Rate',
@@ -99,10 +107,10 @@ const ChurnLineChart = memo(function ChurnLineChart() {
           <Line
             type="monotone"
             dataKey="churn"
-            stroke="#ef4444"
+            stroke={chartColors.destructive}
             strokeWidth={3}
-            dot={{ fill: 'var(--color-destructive)', strokeWidth: 2, r: 4 }}
-            activeDot={{ r: 6, fill: 'var(--color-destructive)' }}
+            dot={{ fill: chartColors.destructive, strokeWidth: 2, r: 4 }}
+            activeDot={{ r: 6, fill: chartColors.destructive }}
             animationDuration={1500}
             name="churn"
           />

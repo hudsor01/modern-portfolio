@@ -11,16 +11,19 @@ import {
   Legend,
   CartesianGrid,
 } from '@/components/charts/lazy-charts'
-import { staticChurnData } from '@/app/projects/data/partner-analytics'
+import { chartColors, chartCssVars } from '@/lib/chart-colors'
 
-// Transform data for visualization
-const data = staticChurnData.slice(-6).map((item) => ({
-  month: item.month,
-  retained: parseFloat(((item.retained / (item.retained + item.churned)) * 100).toFixed(1)),
-  churned: parseFloat(((item.churned / (item.retained + item.churned)) * 100).toFixed(1)),
-}))
+type ChurnDatum = {
+  month: string
+  retained: number
+  churned: number
+}
 
-const RetentionHeatmap = memo(function RetentionHeatmap() {
+type RetentionHeatmapProps = {
+  data: ChurnDatum[]
+}
+
+const RetentionHeatmap = memo(function RetentionHeatmap({ data }: RetentionHeatmapProps) {
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
@@ -38,46 +41,52 @@ const RetentionHeatmap = memo(function RetentionHeatmap() {
     )
   }
 
+  const chartData = data.slice(-6).map((item) => ({
+    month: item.month,
+    retained: parseFloat(((item.retained / (item.retained + item.churned)) * 100).toFixed(1)),
+    churned: parseFloat(((item.churned / (item.retained + item.churned)) * 100).toFixed(1)),
+  }))
+
   return (
     <div className="h-[350px]">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+        <BarChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="retentionBarGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#10b981" stopOpacity={1} />
-              <stop offset="100%" stopColor="#059669" stopOpacity={1} />
+              <stop offset="0%" stopColor={chartColors.success} stopOpacity={1} />
+              <stop offset="100%" stopColor={chartColors.success} stopOpacity={1} />
             </linearGradient>
             <linearGradient id="churnBarGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#ef4444" stopOpacity={1} />
-              <stop offset="100%" stopColor="#dc2626" stopOpacity={1} />
+              <stop offset="0%" stopColor={chartColors.destructive} stopOpacity={1} />
+              <stop offset="100%" stopColor={chartColors.destructive} stopOpacity={1} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
           <XAxis
             dataKey="month"
-            stroke="var(--color-muted-foreground)"
+            stroke={chartColors.axis}
             fontSize={12}
             tickLine={false}
-            axisLine={{ stroke: 'var(--color-muted)' }}
+            axisLine={{ stroke: chartColors.muted }}
           />
           <YAxis
-            stroke="var(--color-muted-foreground)"
+            stroke={chartColors.axis}
             fontSize={12}
             tickLine={false}
-            axisLine={{ stroke: 'var(--color-muted)' }}
+            axisLine={{ stroke: chartColors.muted }}
             domain={[0, 100]}
             ticks={[0, 25, 50, 75, 100]}
             tickFormatter={(value) => `${value}%`}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'var(--color-popover)',
+              backgroundColor: chartCssVars.popover,
               borderRadius: '12px',
-              border: '1px solid var(--color-border)',
+              border: `1px solid ${chartCssVars.border}`,
               backdropFilter: 'blur(10px)',
-              color: 'white',
+              color: chartCssVars.cardForeground,
             }}
-            itemStyle={{ color: 'white' }}
+            itemStyle={{ color: chartCssVars.cardForeground }}
             formatter={(value: number | undefined) => `${(value ?? 0).toFixed(1)}%`}
           />
           <Legend iconType="rect" wrapperStyle={{ paddingTop: '20px' }} />

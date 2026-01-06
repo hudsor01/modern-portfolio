@@ -1,158 +1,239 @@
 'use client'
 
-import { TrendingUp, Database, BarChart3, Users, Target, Workflow } from 'lucide-react'
+import { CalendarIcon, FileTextIcon } from '@radix-ui/react-icons'
+import { BarChart3, Users, TrendingUp, Handshake, PieChart, Target, Zap, Database, Mail } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Calendar } from '@/components/ui/calendar'
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid'
 import { Marquee } from '@/components/ui/marquee'
-import { cn } from '@/lib/utils'
+import { AnimatedList } from '@/components/ui/animated-list'
+import { OrbitingCircles } from '@/components/ui/orbiting-circles'
+import { BorderBeam } from '@/components/ui/border-beam'
 
 interface SkillsSectionProps {
   className?: string
 }
 
-// Skill badge component for marquee items
-function SkillBadge({ skill, variant }: { skill: string; variant: 'primary' | 'secondary' | 'accent' }) {
-  const colorMap = {
-    primary: 'bg-primary/10 border-primary/30 text-primary shadow-sm shadow-primary/10',
-    secondary: 'bg-secondary/10 border-secondary/30 text-secondary shadow-sm shadow-secondary/10',
-    accent: 'bg-accent/10 border-accent/30 text-accent shadow-sm shadow-accent/10',
-  }
+// Files for Marquee - matches Magic UI pattern
+const files = [
+  { name: '$4.8M+', body: 'Revenue generated through data-driven strategies' },
+  { name: '432%', body: 'Transaction growth achieved via advanced analytics' },
+  { name: '90%+', body: 'Workflow automation reducing manual tasks' },
+  { name: '2,217%', body: 'Network expansion through partner enablement' },
+  { name: '10+', body: 'Production systems built with modern tech' },
+]
 
+// Notifications for AnimatedList
+interface NotificationItem {
+  name: string
+  description: string
+  Icon: React.ElementType
+  color: string
+  time: string
+}
+
+const notifications: NotificationItem[] = [
+  { name: 'Revenue up 12%', description: 'Q4 targets exceeded', time: '15m ago', Icon: TrendingUp, color: '#00C9A7' },
+  { name: 'Deal closed', description: '$50K enterprise', time: '10m ago', Icon: Handshake, color: '#FFB800' },
+  { name: 'Pipeline +$2.1M', description: 'Monthly increase', time: '5m ago', Icon: PieChart, color: '#FF3D71' },
+  { name: 'Conversion +8%', description: 'Lead optimization', time: '2m ago', Icon: Target, color: '#1E86FF' },
+]
+
+// Repeat for continuous animation
+const repeatedNotifications = Array.from({ length: 10 }, () => notifications).flat()
+
+const Notification = ({ name, description, Icon, color, time }: NotificationItem) => {
   return (
-    <div
+    <figure
       className={cn(
-        'px-4 py-2 text-sm font-medium rounded-lg border backdrop-blur-sm',
-        'transition-all duration-300 hover:scale-105',
-        colorMap[variant]
+        'relative mx-auto min-h-fit w-full max-w-[400px] cursor-pointer overflow-hidden rounded-2xl p-4',
+        'transition-all duration-200 ease-in-out hover:scale-[103%]',
+        'bg-white [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)]',
+        'transform-gpu dark:bg-transparent dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset] dark:backdrop-blur-md dark:[border:1px_solid_rgba(255,255,255,.1)]'
       )}
     >
-      {skill}
-    </div>
-  )
-}
-
-// Grid pattern background for visual interest
-function GridPatternBackground({ variant }: { variant: 'primary' | 'secondary' | 'accent' }) {
-  const colorMap = {
-    primary: 'stroke-primary/10',
-    secondary: 'stroke-secondary/10',
-    accent: 'stroke-accent/10',
-  }
-
-  return (
-    <div className="absolute inset-0 overflow-hidden">
-      <svg
-        className="absolute inset-0 h-full w-full"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <defs>
-          <pattern
-            id={`grid-${variant}`}
-            width="32"
-            height="32"
-            patternUnits="userSpaceOnUse"
-          >
-            <path
-              d="M0 32V0h32"
-              fill="none"
-              className={colorMap[variant]}
-              strokeWidth="1"
-            />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill={`url(#grid-${variant})`} />
-      </svg>
-      <div className="absolute inset-0 bg-gradient-to-t from-card via-card/80 to-transparent" />
-    </div>
-  )
-}
-
-// Combined background with marquee and grid
-function PremiumBackground({
-  skills,
-  variant,
-  showMarquee = true
-}: {
-  skills: string[]
-  variant: 'primary' | 'secondary' | 'accent'
-  showMarquee?: boolean
-}) {
-  return (
-    <div className="absolute inset-0">
-      <GridPatternBackground variant={variant} />
-      {showMarquee && (
-        <div className="absolute inset-x-0 top-4 bottom-20">
-          <Marquee pauseOnHover className="[--duration:20s] [--gap:0.75rem]">
-            {skills.map((skill) => (
-              <SkillBadge key={skill} skill={skill} variant={variant} />
-            ))}
-          </Marquee>
+      <div className="flex flex-row items-center gap-3">
+        <div
+          className="flex size-10 items-center justify-center rounded-2xl"
+          style={{ backgroundColor: color }}
+        >
+          <Icon className="size-5 text-white" />
         </div>
-      )}
+        <div className="flex flex-col overflow-hidden">
+          <figcaption className="flex flex-row items-center whitespace-pre text-lg font-medium dark:text-white">
+            <span className="text-sm sm:text-lg">{name}</span>
+            <span className="mx-1">·</span>
+            <span className="text-xs text-gray-500">{time}</span>
+          </figcaption>
+          <p className="text-sm font-normal dark:text-white/60">{description}</p>
+        </div>
+      </div>
+    </figure>
+  )
+}
+
+function AnimatedListDemo({ className }: { className?: string }) {
+  return (
+    <div className={cn('flex h-full w-full flex-col overflow-hidden p-2', className)}>
+      <AnimatedList>
+        {repeatedNotifications.map((item, idx) => (
+          <Notification {...item} key={idx} />
+        ))}
+      </AnimatedList>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-background"></div>
     </div>
   )
 }
 
-// Core competencies data
-const competencies = [
+function OrbitingCirclesDemo({ className }: { className?: string }) {
+  return (
+    <div className={cn('relative flex h-full w-full items-center justify-center overflow-hidden', className)}>
+      <span className="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text text-center text-4xl font-semibold leading-none text-transparent dark:from-white dark:to-slate-900/10">
+        2,217%
+      </span>
+      <OrbitingCircles iconSize={30} radius={80}>
+        <Icons.salesforce />
+        <Icons.hubspot />
+        <Icons.slack />
+        <Icons.zapier />
+      </OrbitingCircles>
+      <OrbitingCircles iconSize={30} radius={130} reverse speed={0.5}>
+        <Icons.notion />
+        <Icons.sheets />
+        <Icons.analytics />
+        <Icons.mail />
+        <Icons.database />
+      </OrbitingCircles>
+    </div>
+  )
+}
+
+// Simple icon components
+const Icons = {
+  salesforce: () => (
+    <div className="flex size-8 items-center justify-center rounded-full bg-[#00A1E0] shadow-md">
+      <Zap className="size-4 text-white" />
+    </div>
+  ),
+  hubspot: () => (
+    <div className="flex size-8 items-center justify-center rounded-full bg-[#FF7A59] shadow-md">
+      <Target className="size-4 text-white" />
+    </div>
+  ),
+  slack: () => (
+    <div className="flex size-8 items-center justify-center rounded-full bg-[#4A154B] shadow-md">
+      <Mail className="size-4 text-white" />
+    </div>
+  ),
+  zapier: () => (
+    <div className="flex size-8 items-center justify-center rounded-full bg-[#FF4F00] shadow-md">
+      <Zap className="size-4 text-white" />
+    </div>
+  ),
+  notion: () => (
+    <div className="flex size-8 items-center justify-center rounded-full bg-black shadow-md dark:bg-white">
+      <FileTextIcon className="size-4 text-white dark:text-black" />
+    </div>
+  ),
+  sheets: () => (
+    <div className="flex size-8 items-center justify-center rounded-full bg-[#34A853] shadow-md">
+      <BarChart3 className="size-4 text-white" />
+    </div>
+  ),
+  analytics: () => (
+    <div className="flex size-8 items-center justify-center rounded-full bg-[#F9AB00] shadow-md">
+      <TrendingUp className="size-4 text-white" />
+    </div>
+  ),
+  mail: () => (
+    <div className="flex size-8 items-center justify-center rounded-full bg-[#EA4335] shadow-md">
+      <Mail className="size-4 text-white" />
+    </div>
+  ),
+  database: () => (
+    <div className="flex size-8 items-center justify-center rounded-full bg-[#5865F2] shadow-md">
+      <Database className="size-4 text-white" />
+    </div>
+  ),
+}
+
+const features = [
   {
-    Icon: TrendingUp,
+    Icon: FileTextIcon,
     name: 'Revenue Operations',
-    description: '$4.8M+ revenue generated through data-driven strategies and process optimization.',
+    description: '$4.8M+ revenue generated through data-driven strategies.',
     href: '/projects',
     cta: 'View Projects',
-    className: 'col-span-3 lg:col-span-2 lg:row-span-2',
-    skills: ['Salesforce', 'HubSpot', 'Revenue Forecasting', 'Pipeline Analytics', 'Deal Management', 'Sales Metrics'],
-    variant: 'primary' as const,
+    // Responsive: 1 col on all breakpoints (uses default)
+    className: '',
+    background: (
+      <Marquee
+        pauseOnHover
+        className="absolute top-10 [--duration:20s] [mask-image:linear-gradient(to_top,transparent_40%,#000_100%)]"
+      >
+        {files.map((f, idx) => (
+          <figure
+            key={idx}
+            className={cn(
+              'relative w-32 cursor-pointer overflow-hidden rounded-xl border p-4',
+              'border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]',
+              'dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]',
+              'transform-gpu blur-[1px] transition-all duration-300 ease-out hover:blur-none'
+            )}
+          >
+            <div className="flex flex-col">
+              <figcaption className="text-sm font-medium dark:text-white">{f.name}</figcaption>
+            </div>
+            <blockquote className="mt-2 text-xs">{f.body}</blockquote>
+          </figure>
+        ))}
+      </Marquee>
+    ),
   },
   {
     Icon: BarChart3,
     name: 'Data Analytics',
-    description: '432% transaction growth achieved through advanced analytics and visualization.',
+    description: '432% transaction growth achieved through advanced analytics.',
     href: '/projects/revenue-kpi',
     cta: 'See Dashboard',
-    className: 'col-span-3 lg:col-span-1',
-    skills: ['Tableau', 'Power BI', 'SQL', 'Python'],
-    variant: 'secondary' as const,
-  },
-  {
-    Icon: Workflow,
-    name: 'Process Automation',
-    description: '90%+ workflow automation reducing manual tasks and accelerating operations.',
-    href: '/projects/revenue-operations-center',
-    cta: 'Explore',
-    className: 'col-span-3 lg:col-span-1',
-    skills: ['Zapier', 'N8N', 'API Integrations', 'ETL'],
-    variant: 'accent' as const,
-  },
-  {
-    Icon: Database,
-    name: 'Technical Development',
-    description: '10+ production systems built with modern full-stack technologies.',
-    href: '/projects',
-    cta: 'View Stack',
-    className: 'col-span-3 lg:col-span-1',
-    skills: ['TypeScript', 'React', 'Next.js', 'PostgreSQL'],
-    variant: 'primary' as const,
+    // Responsive: 2 cols on tablet+
+    className: 'md:col-span-2',
+    background: (
+      <AnimatedListDemo className="h-full w-full [mask-image:linear-gradient(to_top,transparent_40%,#000_100%)] transition-all duration-300 ease-out group-hover:scale-105" />
+    ),
   },
   {
     Icon: Users,
     name: 'Partnership Programs',
-    description: '2,217% network expansion through strategic partner enablement.',
+    description: '2,217% network expansion through partner enablement.',
     href: '/projects/partner-performance',
     cta: 'See Results',
-    className: 'col-span-3 lg:col-span-1',
-    skills: ['Partner Enablement', 'Commission Systems', 'Channel Ops'],
-    variant: 'secondary' as const,
+    // Responsive: 2 cols on tablet+
+    className: 'md:col-span-2',
+    background: (
+      <OrbitingCirclesDemo className="h-full w-full [mask-image:linear-gradient(to_top,transparent_40%,#000_100%)] transition-all duration-300 ease-out group-hover:scale-105" />
+    ),
   },
   {
-    Icon: Target,
+    Icon: CalendarIcon,
     name: 'Strategic Planning',
-    description: 'Cross-functional leadership driving alignment and measurable outcomes.',
+    description: 'Cross-functional leadership driving measurable outcomes.',
     href: '/about',
     cta: 'Learn More',
-    className: 'col-span-3 lg:col-span-1',
-    skills: ['OKRs', 'Roadmapping', 'Stakeholder Management'],
-    variant: 'accent' as const,
+    // Responsive: 1 col on all breakpoints (uses default)
+    className: '',
+    background: (
+      <div className="absolute right-0 top-10 origin-top scale-75 transition-all duration-300 ease-out group-hover:scale-90 [mask-image:linear-gradient(to_top,transparent_40%,#000_100%)]">
+        <div className="relative rounded-md overflow-hidden">
+          <Calendar
+            mode="single"
+            selected={new Date(2022, 4, 11, 0, 0, 0)}
+            className="rounded-md border"
+          />
+          <BorderBeam size={100} duration={8} colorFrom="#3b82f6" colorTo="#8b5cf6" />
+        </div>
+      </div>
+    ),
   },
 ]
 
@@ -163,28 +244,14 @@ export function SkillsSection({ className = '' }: SkillsSectionProps) {
         <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-4">
           Core Competencies
         </h2>
-        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Revenue operations expertise spanning analytics, automation, and strategic optimization
         </p>
       </div>
 
-      <BentoGrid className="max-w-6xl mx-auto auto-rows-[20rem] lg:auto-rows-[16rem] lg:grid-rows-3">
-        {competencies.map((competency) => (
-          <BentoCard
-            key={competency.name}
-            Icon={competency.Icon}
-            name={competency.name}
-            description={competency.description}
-            href={competency.href}
-            cta={competency.cta}
-            className={competency.className}
-            background={
-              <PremiumBackground
-                skills={competency.skills}
-                variant={competency.variant}
-              />
-            }
-          />
+      <BentoGrid>
+        {features.map((feature) => (
+          <BentoCard key={feature.name} {...feature} />
         ))}
       </BentoGrid>
     </section>

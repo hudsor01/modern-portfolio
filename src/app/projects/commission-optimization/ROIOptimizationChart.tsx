@@ -11,6 +11,7 @@ import {
   CartesianGrid,
   Legend,
 } from '@/components/charts/lazy-charts'
+import { chartColors as baseChartColors, chartCssVars } from '@/lib/chart-colors'
 
 // ROI optimization data showing commission investment efficiency
 const data = [
@@ -53,12 +54,12 @@ const data = [
 ]
 
 const chartColors = {
-  roi: 'var(--color-success)',
-  avgROI: 'var(--color-primary)',
-  topTierROI: 'var(--color-warning)',
-  investment: 'var(--color-secondary)',
-  grid: 'var(--color-border)',
-  axis: 'var(--color-muted-foreground)',
+  roi: baseChartColors.success,
+  avgROI: baseChartColors.primary,
+  topTierROI: baseChartColors.warning,
+  investment: baseChartColors.secondary,
+  grid: baseChartColors.grid,
+  axis: baseChartColors.axis,
 }
 
 const ROIOptimizationChart = memo(function ROIOptimizationChart() {
@@ -103,11 +104,11 @@ const ROIOptimizationChart = memo(function ROIOptimizationChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'var(--color-popover)',
+              backgroundColor: chartCssVars.popover,
               borderRadius: '12px',
-              border: '1px solid var(--color-border)',
+              border: `1px solid ${chartCssVars.border}`,
               backdropFilter: 'blur(10px)',
-              color: 'white',
+              color: chartCssVars.cardForeground,
             }}
             formatter={(value: number | undefined, name: string | undefined) => {
               const safeValue = value ?? 0

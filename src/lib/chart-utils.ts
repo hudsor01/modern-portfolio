@@ -110,11 +110,11 @@ export function isLeadSourceData(data: unknown): data is LeadSourceData[] {
  */
 export function generateChartColors(count: number): ChartColor[] {
   const baseColors: ChartColor[] = [
-    'hsl(var(--chart-1))',
-    'hsl(var(--chart-2))',
-    'hsl(var(--chart-3))',
-    'hsl(var(--chart-4))',
-    'hsl(var(--chart-5))',
+    'var(--color-chart-1)',
+    'var(--color-chart-2)',
+    'var(--color-chart-3)',
+    'var(--color-chart-4)',
+    'var(--color-chart-5)',
   ]
 
   // If we need more colors than base, generate variations
@@ -125,8 +125,8 @@ export function generateChartColors(count: number): ChartColor[] {
   const colors: ChartColor[] = [...baseColors]
   for (let i = baseColors.length; i < count; i++) {
     const baseIndex = i % baseColors.length
-    const opacity = 0.8 - (i - baseColors.length) * 0.1
-    colors.push(`${baseColors[baseIndex]} / ${Math.max(opacity, 0.3)}`)
+    const strength = Math.max(30, 80 - (i - baseColors.length) * 10)
+    colors.push(`color-mix(in oklch, ${baseColors[baseIndex]} ${strength}%, transparent)`)
   }
 
   return colors
@@ -176,17 +176,17 @@ export function transformToRevenueData<T extends Record<string, unknown>>(
 export const chartThemeConfig = {
   colors: {
     primary: [
-      'hsl(var(--chart-1))',
-      'hsl(var(--chart-2))',
-      'hsl(var(--chart-3))',
-      'hsl(var(--chart-4))',
-      'hsl(var(--chart-5))',
+      'var(--color-chart-1)',
+      'var(--color-chart-2)',
+      'var(--color-chart-3)',
+      'var(--color-chart-4)',
+      'var(--color-chart-5)',
     ],
-    grid: 'hsl(var(--border))',
-    axis: 'hsl(var(--muted-foreground))',
-    background: 'hsl(var(--card))',
-    foreground: 'hsl(var(--card-foreground))',
-    border: 'hsl(var(--border))',
+    grid: 'var(--color-border)',
+    axis: 'var(--color-muted-foreground)',
+    background: 'var(--color-card)',
+    foreground: 'var(--color-card-foreground)',
+    border: 'var(--color-border)',
   },
   spacing: {
     xs: 4,

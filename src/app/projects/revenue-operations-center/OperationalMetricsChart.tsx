@@ -2,6 +2,7 @@
 import { memo } from 'react'
 
 import { LazyRadarChart as RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Legend } from '@/components/charts/lazy-charts'
+import { chartColors as baseChartColors, chartCssVars } from '@/lib/chart-colors'
 
 // Operational efficiency metrics across different areas
 const data = [
@@ -56,11 +57,11 @@ const data = [
 ]
 
 const chartColors = {
-  current: 'var(--color-success)',
-  target: 'var(--color-primary)',
-  industry: 'var(--color-secondary)',
-  grid: 'var(--color-muted)',
-  axis: 'var(--color-muted-foreground)',
+  current: baseChartColors.success,
+  target: baseChartColors.primary,
+  industry: baseChartColors.secondary,
+  grid: baseChartColors.grid,
+  axis: baseChartColors.axis,
 }
 
 const OperationalMetricsChart = memo(function OperationalMetricsChart() {
@@ -108,8 +109,8 @@ const OperationalMetricsChart = memo(function OperationalMetricsChart() {
             strokeWidth={2}
             strokeDasharray="3 3"
           />
-          <Legend 
-            wrapperStyle={{ color: 'var(--color-muted-foreground)' }}
+          <Legend
+            wrapperStyle={{ color: chartCssVars.mutedForeground }}
           />
         </RadarChart>
       </ResponsiveContainer>
