@@ -60,6 +60,13 @@ export const initialConversionRates: ConversionRate[] = [
     proposal_to_negotiation: 62.3,
     negotiation_to_closed: 83.6,
   },
+  {
+    month: 'Q4',
+    lead_to_qualified: 60.8,
+    qualified_to_proposal: 64.3,
+    proposal_to_negotiation: 63.9,
+    negotiation_to_closed: 85.4,
+  },
 ]
 
 export const technologies = [

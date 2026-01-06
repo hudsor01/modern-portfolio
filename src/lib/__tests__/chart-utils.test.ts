@@ -193,17 +193,18 @@ describe('chart-utils', () => {
 
     it('should use base colors for small counts', () => {
       const colors = generateChartColors(3)
-      expect(colors[0]).toBe('hsl(var(--chart-1))')
-      expect(colors[1]).toBe('hsl(var(--chart-2))')
-      expect(colors[2]).toBe('hsl(var(--chart-3))')
+      expect(colors[0]).toBe('var(--color-chart-1)')
+      expect(colors[1]).toBe('var(--color-chart-2)')
+      expect(colors[2]).toBe('var(--color-chart-3)')
     })
 
     it('should generate variations for large counts', () => {
       const colors = generateChartColors(7)
       expect(colors).toHaveLength(7)
-      expect(colors[0]).toBe('hsl(var(--chart-1))')
-      expect(colors[5]).toContain('hsl(var(--chart-1))')
-      expect(colors[5]).toContain('/')
+      expect(colors[0]).toBe('var(--color-chart-1)')
+      expect(colors[5]).toContain('var(--color-chart-1)')
+      expect(colors[5]).toContain('color-mix')
+      expect(colors[5]).toContain('transparent')
     })
   })
 

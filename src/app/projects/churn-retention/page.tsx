@@ -1,6 +1,8 @@
 'use client'
 
+import { useMemo } from 'react'
 import { useLoadingState } from '@/hooks/use-loading-state'
+import { useAnalyticsData } from '@/hooks/use-analytics-data'
 import dynamic from 'next/dynamic'
 import { TrendingDown, Users, Activity, AlertCircle } from 'lucide-react'
 
@@ -25,11 +27,31 @@ const RetentionHeatmap = dynamic(() => import('./RetentionHeatmap'), {
 import { staticChurnData } from '@/app/projects/data/partner-analytics'
 
 export default function ChurnAnalysis() {
-  const { isLoading, handleRefresh } = useLoadingState()
+  const { isLoading: isUiLoading, handleRefresh: handleUiRefresh } = useLoadingState()
+  const {
+    data: analyticsData,
+    isLoading: isAnalyticsLoading,
+    refresh: refreshAnalyticsData,
+  } = useAnalyticsData()
+
+  const churnData = useMemo(
+    () =>
+      analyticsData?.churn?.length
+        ? analyticsData.churn.map((item) => ({
+            month: item.month,
+            churnRate: item.churn_rate,
+            retained: item.retained_partners,
+            churned: item.churned_partners,
+          }))
+        : staticChurnData,
+    [analyticsData?.churn]
+  )
+
+  const isLoading = isUiLoading || isAnalyticsLoading
 
   // Ensure data exists before accessing indices
-  const currentMonth = staticChurnData?.[staticChurnData.length - 1] ?? null
-  const previousMonth = staticChurnData?.[staticChurnData.length - 2] ?? null
+  const currentMonth = churnData?.[churnData.length - 1] ?? null
+  const previousMonth = churnData?.[churnData.length - 2] ?? null
 
   // Safe calculations
   const churnDifference =
@@ -124,7 +146,10 @@ export default function ChurnAnalysis() {
             variant: 'success' as const,
           },
         ]}
-        onRefresh={handleRefresh}
+        onRefresh={() => {
+          handleUiRefresh()
+          void refreshAnalyticsData()
+        }}
         refreshButtonDisabled={isLoading}
       >
         {isLoading ? (
@@ -143,7 +168,7 @@ export default function ChurnAnalysis() {
                 height={350}
                 loading={isLoading}
               >
-                <RetentionHeatmap />
+                <RetentionHeatmap data={churnData} />
               </ChartContainer>
 
               {/* Churn Trends */}
@@ -153,7 +178,7 @@ export default function ChurnAnalysis() {
                 height={350}
                 loading={isLoading}
               >
-                <ChurnLineChart />
+                <ChurnLineChart data={churnData} />
               </ChartContainer>
             </div>
 

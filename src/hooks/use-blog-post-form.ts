@@ -62,34 +62,7 @@ export const blogPostFormSchema = z.object({
 
 export type BlogPostFormData = z.infer<typeof blogPostFormSchema>
 
-// ============================================================================
-// Types
-// ============================================================================
-
-export interface UseBlogPostFormReturn {
-  // TanStack Form instance
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  form: any
-
-  // Form values (reactive)
-  formValues: BlogPostFormData
-
-  // Additional state
-  selectedTags: string[]
-  newKeyword: string
-  previewMode: boolean
-
-  // Actions
-  setSelectedTags: (tags: string[]) => void
-  setNewKeyword: (keyword: string) => void
-  setPreviewMode: (mode: boolean) => void
-  handleTitleChange: (title: string) => void
-  addKeyword: () => void
-  removeKeyword: (keyword: string) => void
-  toggleTag: (tagId: string) => void
-  generateSlug: (title: string) => string
-  resetForm: () => void
-}
+// Return type is inferred - exported below for external use
 
 // ============================================================================
 // Utility Functions
@@ -114,7 +87,7 @@ export function generateSlug(title: string): string {
 // Hook
 // ============================================================================
 
-export function useBlogPostForm(post?: Partial<BlogPost>): UseBlogPostFormReturn {
+export function useBlogPostForm(post?: Partial<BlogPost>) {
   // Extract initial tag IDs from post - memoized to prevent dependency changes
   const initialTagIds = useMemo(
     () =>
@@ -246,3 +219,6 @@ export function useBlogPostForm(post?: Partial<BlogPost>): UseBlogPostFormReturn
     resetForm,
   }
 }
+
+// Export inferred type for external use - TanStack Form types flow naturally
+export type UseBlogPostFormReturn = ReturnType<typeof useBlogPostForm>

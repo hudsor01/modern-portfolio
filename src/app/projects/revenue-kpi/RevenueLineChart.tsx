@@ -9,8 +9,7 @@ import {
   StandardTooltip,
 } from '@/lib/charts/chart-components'
 import { chartColors, chartConfig, chartTypeConfigs, formatters } from '@/lib/charts/chart-theme'
-// Corrected path and added type import for YearOverYearGrowthExtended
-import { yearOverYearGrowthExtended, type YearOverYearGrowthExtended } from '@/app/projects/data/partner-analytics'
+import type { YearOverYearData } from '@/lib/analytics/data-service'
 import type { ExtendedRevenueData, TypedTooltipProps } from '@/types/chart'
 
 // Transform the real data for the line chart with proper typing
@@ -63,11 +62,21 @@ function CustomTooltip({ active, payload, label }: TypedTooltipProps<ExtendedRev
   )
 }
 
-const RevenueLineChart = memo((): React.JSX.Element => {
+type YearOverYearSeries = Pick<
+  YearOverYearData,
+  'year' | 'total_revenue' | 'total_transactions' | 'total_commissions'
+>
+
+type RevenueLineChartProps = {
+  data: YearOverYearSeries[]
+}
+
+const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Element => {
   // Memoize expensive data calculations
   const yearlyData = useMemo(() => {
-    return yearOverYearGrowthExtended.map((yearData: YearOverYearGrowthExtended, index: number) => {
-      const previousYear = index > 0 ? yearOverYearGrowthExtended[index - 1] : null;
+    if (!data || data.length === 0) return []
+    return data.map((yearData: YearOverYearSeries, index: number) => {
+      const previousYear = index > 0 ? data[index - 1] : null;
       const growth = previousYear ? calculateGrowthRate(yearData.total_revenue, previousYear.total_revenue) : 0;
       
       return {
@@ -84,7 +93,19 @@ const RevenueLineChart = memo((): React.JSX.Element => {
         }
       };
     });
-  }, []);
+  }, [data]);
+
+  if (!yearlyData.length) {
+    return (
+      <div className="portfolio-card">
+        <ChartWrapper title="Revenue Growth Metrics" caption="No data available" height="standard">
+          <div className="flex items-center justify-center h-full text-muted-foreground">
+            No data available
+          </div>
+        </ChartWrapper>
+      </div>
+    )
+  }
 
   return (
     <div className="portfolio-card">

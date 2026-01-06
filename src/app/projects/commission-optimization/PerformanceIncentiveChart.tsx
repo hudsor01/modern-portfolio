@@ -11,6 +11,7 @@ import {
   CartesianGrid,
   Legend,
 } from '@/components/charts/lazy-charts'
+import { chartColors as baseChartColors, chartCssVars } from '@/lib/chart-colors'
 
 // Performance incentive program data
 const data = [
@@ -53,12 +54,12 @@ const data = [
 ]
 
 const chartColors = {
-  payout: 'var(--color-success)',
-  budget: 'var(--color-primary)',
-  effectiveness: 'var(--color-warning)',
-  participants: 'var(--color-secondary)',
-  grid: 'var(--color-border)',
-  axis: 'var(--color-muted-foreground)',
+  payout: baseChartColors.success,
+  budget: baseChartColors.primary,
+  effectiveness: baseChartColors.warning,
+  participants: baseChartColors.secondary,
+  grid: baseChartColors.grid,
+  axis: baseChartColors.axis,
 }
 
 const PerformanceIncentiveChart = memo(function PerformanceIncentiveChart() {
@@ -106,11 +107,11 @@ const PerformanceIncentiveChart = memo(function PerformanceIncentiveChart() {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'var(--color-popover)',
+              backgroundColor: chartCssVars.popover,
               borderRadius: '12px',
-              border: '1px solid var(--color-border)',
+              border: `1px solid ${chartCssVars.border}`,
               backdropFilter: 'blur(10px)',
-              color: 'white',
+              color: chartCssVars.cardForeground,
             }}
             formatter={(value: number | undefined, name: string | undefined) => {
               const safeName = name ?? ''

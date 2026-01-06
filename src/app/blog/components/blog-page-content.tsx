@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
+import { useQueryState } from 'nuqs'
 import type { BlogPostData, BlogCategoryData } from '@/types/shared-api'
 
 interface BlogPostsResponse {
@@ -24,7 +25,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Badge } from '@/components/ui/badge'
 
 export function BlogPageContent() {
-  const [selectedCategory, setSelectedCategory] = useState<string>('All')
+  // URL state management with nuqs - shareable category links
+  const [selectedCategory, setSelectedCategory] = useQueryState('category', { defaultValue: 'All' })
 
   // Fetch all posts - direct TanStack Query usage
   const { data: postsData, isLoading: postsLoading } = useQuery({
@@ -107,7 +109,7 @@ export function BlogPageContent() {
           tags={categoryTags}
           selectedTag={selectedCategory}
           tagCounts={categoryCounts}
-          onTagChange={setSelectedCategory}
+          onTagChange={(tag) => setSelectedCategory(tag === 'All' ? null : tag)}
         />
       </div>
 

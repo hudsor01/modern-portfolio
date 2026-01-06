@@ -31,27 +31,7 @@ export interface ContactFormErrors {
 
 export type SubmitStatus = 'idle' | 'submitting' | 'success' | 'error'
 
-export interface UseContactFormReturn {
-  // State
-  formData: ContactFormData
-  errors: ContactFormErrors
-  submitStatus: SubmitStatus
-  showPrivacy: boolean
-  agreedToTerms: boolean
-  progress: number
-  isSubmitting: boolean
-
-  // Actions
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
-  handleSubmit: (e: React.FormEvent) => Promise<void>
-  setShowPrivacy: (show: boolean) => void
-  setAgreedToTerms: (agreed: boolean) => void
-  resetForm: () => void
-
-  // TanStack Form instance (for form.Field and form.Subscribe usage)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  form: any
-}
+// Return type is inferred - exported below for external use
 
 // ============================================================================
 // Initial State
@@ -69,7 +49,7 @@ const initialFormData: ContactFormData = {
 // Hook
 // ============================================================================
 
-export function useContactForm(): UseContactFormReturn {
+export function useContactForm() {
   // Additional state not managed by TanStack Form
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>('idle')
   const [showPrivacy, setShowPrivacy] = useState(false)
@@ -236,3 +216,6 @@ export function useContactForm(): UseContactFormReturn {
     form,
   }
 }
+
+// Export inferred type for external use - TanStack Form types flow naturally
+export type UseContactFormReturn = ReturnType<typeof useContactForm>

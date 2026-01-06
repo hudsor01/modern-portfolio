@@ -191,7 +191,7 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
           </div>
 
           {/* Chart content */}
-          <div className="w-full" style={{ height: `${height}px` }}>
+          <div className="w-full overflow-hidden" style={{ height: `${height}px` }}>
             {children}
           </div>
         </div>

@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
 import { DollarSign, Target, BarChart3, Users, Activity } from 'lucide-react'
+import { useQueryState } from 'nuqs'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
@@ -22,7 +22,7 @@ type Tab = (typeof tabs)[number]
 
 export default function RevenueOperationsCenter() {
   const { isLoading, handleRefresh } = useLoadingState()
-  const [activeTab, setActiveTab] = useState<Tab>('overview')
+  const [activeTab, setActiveTab] = useQueryState('tab', { defaultValue: 'overview' as Tab })
 
   return (
     <ProjectPageLayout

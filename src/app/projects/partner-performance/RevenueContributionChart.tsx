@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from '@/components/charts/lazy-charts'
+import { chartColors as baseChartColors, chartCssVars } from '@/lib/chart-colors'
 
 // Partner revenue distribution demonstrating 80/20 rule
 const data = [
@@ -17,21 +18,21 @@ const data = [
     value: 80.2,
     revenue: 725840,
     count: 7,
-    color: 'var(--color-primary)',
+    color: baseChartColors.primary,
   },
   {
     name: 'Middle 60% Partners',
     value: 17.1,
     revenue: 154689,
     count: 20,
-    color: 'var(--color-secondary)',
+    color: baseChartColors.secondary,
   },
   {
     name: 'Bottom 20% Partners',
     value: 2.7,
     revenue: 23858,
     count: 7,
-    color: 'var(--color-secondary)',
+    color: baseChartColors.chart4,
   },
 ]
 
@@ -58,7 +59,7 @@ const RevenueContributionChart = memo(function RevenueContributionChart() {
             labelLine={false}
             label={({ name, value }) => `${name}: ${value}%`}
             outerRadius={100}
-            fill="#8884d8"
+            fill={baseChartColors.chart3}
             dataKey="value"
           >
             {data.map((_, index) => (
@@ -67,11 +68,11 @@ const RevenueContributionChart = memo(function RevenueContributionChart() {
           </Pie>
           <Tooltip
             contentStyle={{
-              backgroundColor: 'var(--color-popover)',
+              backgroundColor: chartCssVars.popover,
               borderRadius: '12px',
-              border: '1px solid var(--color-border)',
+              border: `1px solid ${chartCssVars.border}`,
               backdropFilter: 'blur(10px)',
-              color: 'white',
+              color: chartCssVars.cardForeground,
             }}
             formatter={(value: number | undefined, name: string | undefined, props: unknown) => {
               if (value === undefined) return ['', name]
@@ -86,7 +87,7 @@ const RevenueContributionChart = memo(function RevenueContributionChart() {
           <Legend
             verticalAlign="bottom"
             height={36}
-            wrapperStyle={{ color: 'var(--color-muted-foreground)' }}
+            wrapperStyle={{ color: chartCssVars.mutedForeground }}
           />
         </PieChart>
       </ResponsiveContainer>
