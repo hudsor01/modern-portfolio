@@ -251,6 +251,26 @@ mock.module('next/dynamic', () => ({
   },
 }))
 
+// Mock nuqs (URL state management) - needs adapter in tests
+mock.module('nuqs', () => ({
+  useQueryState: (_key: string, options?: { defaultValue?: unknown }) => {
+    const [state, setState] = React.useState(options?.defaultValue ?? null)
+    return [state, setState]
+  },
+  useQueryStates: (keys: Record<string, { defaultValue?: unknown }>) => {
+    const initialState = Object.fromEntries(
+      Object.entries(keys).map(([k, v]) => [k, v.defaultValue ?? null])
+    )
+    const [state, setState] = React.useState(initialState)
+    return [state, setState]
+  },
+  parseAsString: { defaultValue: '' },
+  parseAsInteger: { defaultValue: 0 },
+  parseAsBoolean: { defaultValue: false },
+  parseAsArrayOf: () => ({ defaultValue: [] }),
+  parseAsJson: () => ({ defaultValue: null }),
+}))
+
 // Lightweight TanStack Query mock
 mock.module('@tanstack/react-query', () => ({
   useQuery: vi.fn(() => ({
