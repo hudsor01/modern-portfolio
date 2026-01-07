@@ -2,9 +2,7 @@
 
 import { useCallback, useSyncExternalStore } from 'react'
 import { z } from 'zod'
-import { createContextLogger } from '@/lib/monitoring/logger'
-
-const storageLogger = createContextLogger('LocalStorage')
+import { handleUtilityError } from '@/lib/error-handling'
 
 /**
  * Create a storage adapter for useSyncExternalStore
@@ -25,6 +23,9 @@ function createStorageAdapter<T>(
 
   // Subscribe to storage changes
   const subscribe = (callback: () => void): (() => void) => {
+    listeners.add(callback)
+
+    // Listen for storage events from other tabs
     listeners.add(callback)
 
     // Listen for storage events from other tabs
@@ -57,12 +58,12 @@ function createStorageAdapter<T>(
       const parsed = JSON.parse(item)
       return schema ? schema.parse(parsed) : parsed
     } catch (error) {
-      storageLogger.error(
-        `Error reading storage key "${key}"`,
-        error instanceof Error ? error : undefined,
-        { key }
-      )
-      return initialValue
+      return handleUtilityError(
+        error,
+        { operation: 'getStorageSnapshot', component: 'LocalStorage', metadata: { key } },
+        'return-default',
+        initialValue
+      )!
     }
   }
 
@@ -79,10 +80,10 @@ function createStorageAdapter<T>(
       storage.setItem(key, JSON.stringify(newValue))
       emitChange()
     } catch (error) {
-      storageLogger.error(
-        `Error setting storage key "${key}"`,
-        error instanceof Error ? error : undefined,
-        { key }
+      handleUtilityError(
+        error,
+        { operation: 'setStorageValue', component: 'LocalStorage', metadata: { key } },
+        'return-default'
       )
     }
   }

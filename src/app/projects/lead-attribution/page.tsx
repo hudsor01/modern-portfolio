@@ -114,11 +114,13 @@ export default function LeadAttribution() {
         )
       : { source: 'N/A', conversions: 0, conversion_rate: 0, icon: Activity }
 
-  // Calculate month-over-month growth
+  // Calculate month-over-month growth safely (prevent division by zero)
   const lastMonth = trendData[trendData.length - 1]
   const prevMonth = trendData[trendData.length - 2]
   const monthlyGrowth =
-    prevMonth && lastMonth ? ((lastMonth.leads - prevMonth.leads) / prevMonth.leads) * 100 : 0
+    prevMonth && lastMonth && prevMonth.leads > 0
+      ? ((lastMonth.leads - prevMonth.leads) / prevMonth.leads) * 100
+      : 0
 
   const isLoading = isUiLoading || isAnalyticsLoading
 

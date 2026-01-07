@@ -1,8 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    //========== Target and module ==========
-    // Use ESNext for modern JavaScript features (no transpilation)
     "target": "ESNext",
     "lib": [
       "DOM",
@@ -10,13 +8,9 @@
       "ESNext",
       "ESNext.Disposable"
     ],
-    // Use bundler for better compatibility with Next.js and bundlers
     "module": "ESNext",
     "moduleResolution": "bundler",
-    //========== Type checking ==========
-    // Essential: activates several useful options
     "strict": true,
-    // Beyond "strict": additional strictness (but more compatible)
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
@@ -24,35 +18,28 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "useUnknownInCatchVariables": true,
-    //========== Module resolution ==========
     "allowJs": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    //========== Emit ==========
     "noEmit": true,
     "isolatedModules": true,
-    //========== JSX ==========
     "jsx": "react-jsx",
-    //========== Performance ==========
     "incremental": true,
     "tsBuildInfoFile": "./.next/cache/tsconfig.tsbuildinfo",
-    //========== Types ==========
     "types": [
       "bun-types",
       "node",
       "next",
       "@testing-library/jest-dom"
     ],
-    //========== Next.js ==========
     "plugins": [
       {
         "name": "next"
       }
     ],
-    //========== Path mapping ==========
     "baseUrl": ".",
     "paths": {
       "@/*": [

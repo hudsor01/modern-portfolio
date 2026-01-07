@@ -6,59 +6,19 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createContextLogger } from '@/lib/monitoring/logger'
+import { getConfigSection } from '@/lib/config'
+import type { SecurityConfig } from '@/lib/config'
 
 const securityLogger = createContextLogger('SecurityHeaders')
 
-export interface SecurityHeadersConfig {
-  csp?: string
-  frameOptions?: 'DENY' | 'SAMEORIGIN'
-  contentTypeOptions?: boolean
-  xssProtection?: boolean
-  referrerPolicy?: string
-  hsts?: {
-    maxAge: number
-    includeSubDomains: boolean
-    preload: boolean
-  }
-  permissionsPolicy?: string[]
-  crossOriginEmbedderPolicy?: 'require-corp' | 'unsafe-none'
-  crossOriginOpenerPolicy?: 'same-origin' | 'same-origin-allow-popups' | 'unsafe-none'
-  crossOriginResourcePolicy?: 'same-site' | 'same-origin' | 'cross-origin'
-}
-
-const DEFAULT_SECURITY_CONFIG: SecurityHeadersConfig = {
-  frameOptions: 'DENY',
-  contentTypeOptions: true,
-  xssProtection: true,
-  referrerPolicy: 'strict-origin-when-cross-origin',
-  hsts: {
-    maxAge: 31536000, // 1 year
-    includeSubDomains: true,
-    preload: true
-  },
-  permissionsPolicy: [
-    'camera=()',
-    'microphone=()',
-    'geolocation=()',
-    'browsing-topics=()',
-    'interest-cohort=()',
-    'payment=()',
-    'usb=()',
-    'magnetometer=()',
-    'gyroscope=()',
-    'accelerometer=()'
-  ],
-  crossOriginEmbedderPolicy: 'unsafe-none', // Required for some third-party services
-  crossOriginOpenerPolicy: 'same-origin-allow-popups',
-  crossOriginResourcePolicy: 'cross-origin' // Allow cross-origin resources
-}
+const DEFAULT_SECURITY_CONFIG: SecurityConfig = getConfigSection('security')
 
 /**
  * Apply security headers to a response
  */
 export function applySecurityHeaders(
   response: NextResponse,
-  config: Partial<SecurityHeadersConfig> = {}
+  config: Partial<SecurityConfig> = {}
 ): NextResponse {
   const finalConfig = { ...DEFAULT_SECURITY_CONFIG, ...config }
 
@@ -83,13 +43,15 @@ export function applySecurityHeaders(
   }
 
   // Strict-Transport-Security (HSTS)
-  if (finalConfig.hsts && process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production') {
     const hstsValue = [
-      `max-age=${finalConfig.hsts.maxAge}`,
-      finalConfig.hsts.includeSubDomains ? 'includeSubDomains' : '',
-      finalConfig.hsts.preload ? 'preload' : ''
-    ].filter(Boolean).join('; ')
-    
+      `max-age=${finalConfig.hstsMaxAge}`,
+      finalConfig.hstsIncludeSubDomains ? 'includeSubDomains' : '',
+      finalConfig.hstsPreload ? 'preload' : '',
+    ]
+      .filter(Boolean)
+      .join('; ')
+
     response.headers.set('Strict-Transport-Security', hstsValue)
   }
 
@@ -114,11 +76,11 @@ export function applySecurityHeaders(
   // Additional security headers
   response.headers.set('X-DNS-Prefetch-Control', 'on')
   response.headers.set('X-Permitted-Cross-Domain-Policies', 'none')
-  
+
   // Remove potentially sensitive headers
   response.headers.delete('Server')
   response.headers.delete('X-Powered-By')
-  
+
   return response
 }
 
@@ -133,7 +95,7 @@ export function getApiSecurityHeaders(allowedOrigin?: string): Record<string, st
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Cache-Control': 'no-store, max-age=0, must-revalidate',
     'X-Robots-Tag': 'noindex, nofollow',
-    'X-Permitted-Cross-Domain-Policies': 'none'
+    'X-Permitted-Cross-Domain-Policies': 'none',
   }
 
   // CORS headers
@@ -157,7 +119,7 @@ export function getApiSecurityHeaders(allowedOrigin?: string): Record<string, st
  */
 export function validateOrigin(request: NextRequest, allowedOrigins: string[]): boolean {
   const origin = request.headers.get('origin')
-  
+
   if (!origin) {
     // Allow requests without origin (same-origin requests)
     return true
@@ -171,7 +133,7 @@ export function validateOrigin(request: NextRequest, allowedOrigins: string[]): 
  */
 export function getTrustedOrigins(): string[] {
   const origins = []
-  
+
   if (process.env.NODE_ENV === 'production') {
     origins.push('https://richardwhudsonjr.com')
     origins.push('https://www.richardwhudsonjr.com')
@@ -182,7 +144,7 @@ export function getTrustedOrigins(): string[] {
 
   // Add custom origins from environment
   const customOrigins = process.env.ALLOWED_ORIGINS?.split(',') || []
-  customOrigins.forEach(origin => {
+  customOrigins.forEach((origin) => {
     if (origin.trim()) {
       origins.push(origin.trim())
     }
@@ -198,7 +160,7 @@ export function getStaticAssetHeaders(): Record<string, string> {
   return {
     'Cache-Control': 'public, max-age=31536000, immutable',
     'X-Content-Type-Options': 'nosniff',
-    'Cross-Origin-Resource-Policy': 'cross-origin'
+    'Cross-Origin-Resource-Policy': 'cross-origin',
   }
 }
 
@@ -218,14 +180,14 @@ export function buildEnhancedCSP(nonces: { scriptNonce: string; styleNonce: stri
     "base-uri 'self'",
     "form-action 'self'",
     "frame-ancestors 'none'",
-    "upgrade-insecure-requests",
-    "block-all-mixed-content"
+    'upgrade-insecure-requests',
+    'block-all-mixed-content',
   ]
 
   // Add reporting in production
   if (process.env.NODE_ENV === 'production') {
-    directives.push("report-uri /api/csp-report")
-    directives.push("report-to csp-endpoint")
+    directives.push('report-uri /api/csp-report')
+    directives.push('report-to csp-endpoint')
   }
 
   return directives.join('; ')
@@ -261,12 +223,13 @@ export function logSecurityEvent(
     severity,
     details,
     clientInfo: {
-      ip: request.headers.get('x-forwarded-for')?.split(',')[0] || 
-          request.headers.get('x-real-ip') || 
-          'unknown',
+      ip:
+        request.headers.get('x-forwarded-for')?.split(',')[0] ||
+        request.headers.get('x-real-ip') ||
+        'unknown',
       userAgent: request.headers.get('user-agent') || 'unknown',
-      origin: request.headers.get('origin') || undefined
-    }
+      origin: request.headers.get('origin') || undefined,
+    },
   }
 
   // In production, you would send this to a monitoring service

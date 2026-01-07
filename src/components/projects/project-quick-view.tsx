@@ -14,7 +14,8 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer'
-import type { Project } from '@/types/project' // Changed import path
+import type { Project } from '@/types/project'
+import { normalizeProjectForDisplay } from '@/types/project' // Changed import path
 
 interface ProjectQuickViewProps {
   project: Project
@@ -30,13 +31,17 @@ interface ProjectQuickViewProps {
 }
 
 export function ProjectQuickView({ project, open, onOpenChangeAction }: ProjectQuickViewProps) {
+  const displayProject = normalizeProjectForDisplay(project)
+
   return (
     <Drawer open={open} onOpenChange={onOpenChangeAction}>
       <DrawerContent className="max-h-[90vh]">
         <DrawerHeader className="flex items-center justify-between">
           <div>
-            <DrawerTitle>{project.title}</DrawerTitle>
-            <DrawerDescription className="mt-2 max-w-3xl">{project.description}</DrawerDescription>
+            <DrawerTitle>{displayProject.title}</DrawerTitle>
+            <DrawerDescription className="mt-2 max-w-3xl">
+              {displayProject.description}
+            </DrawerDescription>
           </div>
           <DrawerClose asChild>
             <Button variant="ghost" size="icon">
@@ -48,8 +53,8 @@ export function ProjectQuickView({ project, open, onOpenChangeAction }: ProjectQ
         <div className="px-4 pb-4">
           <div className="relative aspect-video w-full overflow-hidden rounded-lg">
             <Image
-              src={project.image || '/images/projects/analytics-dashboard.jpg'}
-              alt={project.title}
+              src={displayProject.image || '/images/projects/analytics-dashboard.jpg'}
+              alt={displayProject.title}
               fill
               className="object-cover"
             />
@@ -59,7 +64,7 @@ export function ProjectQuickView({ project, open, onOpenChangeAction }: ProjectQ
             <div>
               <h3 className="text-sm font-medium">Technologies</h3>
               <div className="mt-2 flex flex-wrap gap-2">
-                {project.technologies?.map((tech) => (
+                {displayProject.technologies?.map((tech) => (
                   <Badge key={tech} variant="secondary" className="text-xs">
                     {tech}
                   </Badge>
@@ -73,21 +78,31 @@ export function ProjectQuickView({ project, open, onOpenChangeAction }: ProjectQ
 
         <DrawerFooter className="flex flex-row justify-end space-x-2">
           <Button asChild variant="ghost">
-            <Link href={`/projects/${project.id}`}>View Details</Link>
+            <Link href={`/projects/${displayProject.id}`}>View Details</Link>
           </Button>
 
-          {project.liveUrl && (
+          {displayProject.liveUrl && (
             <Button asChild>
-              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="flex items-center">
+              <a
+                href={displayProject.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center"
+              >
                 <ExternalLink className="mr-2 h-4 w-4" />
                 Live Demo
               </a>
             </Button>
           )}
 
-          {project.githubUrl && (
+          {displayProject.githubUrl && (
             <Button asChild variant="secondary">
-              <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center">
+              <a
+                href={displayProject.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center"
+              >
                 <Github className="mr-2 h-4 w-4" />
                 Source Code
               </a>

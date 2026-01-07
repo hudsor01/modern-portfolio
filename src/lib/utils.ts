@@ -5,13 +5,27 @@ import { z } from 'zod'
 
 // Create a client-safe absoluteUrl function
 export function absoluteUrl(path: string): string {
-  const host =
+  // Use validated site URL in production, dynamic host in development
+  const siteUrl =
     typeof window !== 'undefined'
-      ? window.location.host
-      : process.env.NEXT_PUBLIC_VERCEL_URL || 'https://richardwhudsonjr.com'
+      ? window.location.origin
+      : process.env.NEXT_PUBLIC_SITE_URL ||
+        process.env.NEXT_PUBLIC_VERCEL_URL ||
+        'https://richardwhudsonjr.com'
 
-  const protocol = host.includes('localhost') ? 'http' : 'https'
-  return `${protocol}://${host}${path}`
+  return `${siteUrl}${path}`
+}
+
+// Testable version that accepts window object for testing
+export function absoluteUrlTestable(path: string, windowObj?: typeof window): string {
+  const siteUrl =
+    windowObj && typeof windowObj !== 'undefined'
+      ? windowObj.location.origin
+      : process.env.NEXT_PUBLIC_SITE_URL ||
+        process.env.NEXT_PUBLIC_VERCEL_URL ||
+        'https://richardwhudsonjr.com'
+
+  return `${siteUrl}${path}`
 }
 
 export function cn(...inputs: ClassValue[]): string {
@@ -35,7 +49,6 @@ export const isClient = !isServer
 export function truncate(text: string, maxLength: number): string {
   return text.length <= maxLength ? text : text.substring(0, maxLength) + '...'
 }
-
 
 export function formatRelativeTime(date: string | Date): string {
   const dateObj = typeof date === 'string' ? new Date(date) : date
@@ -62,6 +75,19 @@ export function getCurrentBreakpoint(): Breakpoint {
   if (isServer) return 'md'
 
   const width = window.innerWidth
+  if (width < 640) return 'xs'
+  if (width < 768) return 'sm'
+  if (width < 1024) return 'md'
+  if (width < 1280) return 'lg'
+  if (width < 1536) return 'xl'
+  return '2xl'
+}
+
+// Testable version that accepts window object for testing
+export function getCurrentBreakpointTestable(windowObj?: typeof window): Breakpoint {
+  if (!windowObj || typeof windowObj === 'undefined') return 'md'
+
+  const width = windowObj.innerWidth
   if (width < 640) return 'xs'
   if (width < 768) return 'sm'
   if (width < 1024) return 'md'
@@ -109,11 +135,7 @@ export function parseParam<T>(value: string | string[] | undefined, defaultValue
  * @param fallback - Fallback value if parsing or validation fails
  * @returns Validated parsed value or fallback
  */
-export function safeJsonParse<T>(
-  json: string,
-  schema: z.ZodSchema<T>,
-  fallback: T
-): T {
+export function safeJsonParse<T>(json: string, schema: z.ZodSchema<T>, fallback: T): T {
   try {
     const parsed = JSON.parse(json)
     return schema.parse(parsed)
@@ -135,6 +157,23 @@ export function isInViewport(element: HTMLElement, offset = 0): boolean {
     rect.top <= window.innerHeight + offset &&
     rect.bottom >= -offset &&
     rect.left <= window.innerWidth + offset &&
+    rect.right >= -offset
+  )
+}
+
+// Testable version that accepts window object for testing
+export function isInViewportTestable(
+  element: HTMLElement,
+  offset = 0,
+  windowObj?: typeof window
+): boolean {
+  if (!windowObj || typeof windowObj === 'undefined') return false
+
+  const rect = element.getBoundingClientRect()
+  return (
+    rect.top <= windowObj.innerHeight + offset &&
+    rect.bottom >= -offset &&
+    rect.left <= windowObj.innerWidth + offset &&
     rect.right >= -offset
   )
 }

@@ -6,7 +6,7 @@ import { showcaseProjects } from '@/data/projects'
 export type { Project }
 
 // Map ShowcaseProject to Project type
-function mapToProject(showcase: typeof showcaseProjects[number]): Project {
+function mapToProject(showcase: (typeof showcaseProjects)[number]): Project {
   return {
     id: showcase.id,
     slug: showcase.slug,
@@ -25,10 +25,16 @@ function mapToProject(showcase: typeof showcaseProjects[number]): Project {
     caseStudyUrl: showcase.caseStudyUrl,
     viewCount: 0,
     clickCount: 0,
-    displayMetrics: showcase.displayMetrics.map(m => ({
+    createdAt: new Date(showcase.year, 0, 1), // Default to January 1st of the project year
+    updatedAt: new Date(showcase.year, 0, 1), // Default to January 1st of the project year
+    displayMetrics: showcase.displayMetrics.map((m) => ({
       label: m.label,
       value: m.value,
-      iconName: m.icon.name?.toLowerCase().replace(/([A-Z])/g, '-$1').slice(1) || 'circle',
+      iconName:
+        m.icon.name
+          ?.toLowerCase()
+          .replace(/([A-Z])/g, '-$1')
+          .slice(1) || 'circle',
     })),
   }
 }
@@ -39,19 +45,19 @@ export const getProjects = cache(async (): Promise<Project[]> => {
 })
 
 export const getProject = cache(async (slug: string): Promise<Project | null> => {
-  const project = showcaseProjects.find(p => p.slug === slug)
+  const project = showcaseProjects.find((p) => p.slug === slug)
   return project ? mapToProject(project) : null
 })
 
 export const getFeaturedProjects = cache(async (): Promise<Project[]> => {
-  return showcaseProjects.filter(p => p.featured).map(mapToProject)
+  return showcaseProjects.filter((p) => p.featured).map(mapToProject)
 })
 
 export const getProjectsByCategory = cache(async (category: string): Promise<Project[]> => {
-  return showcaseProjects.filter(p => p.category === category).map(mapToProject)
+  return showcaseProjects.filter((p) => p.category === category).map(mapToProject)
 })
 
 export const getCategories = cache(async (): Promise<string[]> => {
-  const categories = new Set(showcaseProjects.map(p => p.category))
+  const categories = new Set(showcaseProjects.map((p) => p.category))
   return Array.from(categories)
 })

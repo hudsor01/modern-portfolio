@@ -6,26 +6,6 @@ import type { MockNextImageProps, MockNextLinkProps } from '@/types/test-utils'
 // Import after mocks are set up in beforeEach - Bun supports mocking after import
 import ProjectDetailClientBoundary from '@/components/projects/project-detail-client-boundary'
 
-// Sample project data for testing
-const mockProject: Project = {
-  id: '1',
-  slug: 'test-project',
-  title: 'Test Project',
-  description: 'A test project for consistency validation',
-  longDescription:
-    'This is a longer description of the test project that provides more details about the implementation and goals.',
-  category: 'Analytics',
-  tags: ['test', 'consistency'],
-  technologies: ['React', 'TypeScript', 'Tailwind CSS'],
-  image: '/images/test-project.jpg',
-  featured: true,
-  viewCount: 100,
-  clickCount: 50,
-  createdAt: new Date('2024-01-01'),
-  liveUrl: 'https://example.com',
-  githubUrl: 'https://github.com/example/test-project',
-}
-
 describe('Project Detail Consistency Integration', () => {
   // Set up mocks before each test and restore after
   beforeEach(() => {
@@ -69,6 +49,26 @@ describe('Project Detail Consistency Integration', () => {
   afterAll(() => {
     mock.restore()
   })
+
+  // Sample project data for testing
+  const mockProject: Project = {
+    id: '1',
+    slug: 'test-project',
+    title: 'Test Project',
+    description: 'A test project for consistency validation',
+    longDescription:
+      'This is a longer description of the test project that provides more details about the implementation and goals.',
+    category: 'Analytics',
+    tags: ['React', 'TypeScript', 'Tailwind CSS'],
+    image: '/images/test-project.jpg',
+    featured: true,
+    viewCount: 100,
+    clickCount: 50,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    link: 'https://example.com',
+    github: 'https://github.com/example/test-project',
+  }
 
   describe('Component Structure and Consistency', () => {
     it('renders with standardized components when project data is provided', () => {
@@ -137,9 +137,9 @@ describe('Project Detail Consistency Integration', () => {
         ...mockProject,
         image: '', // Empty string for required field to test fallback handling
         starData: undefined,
-        liveUrl: undefined,
-        githubUrl: undefined,
         longDescription: undefined,
+        link: undefined,
+        github: undefined,
       }
 
       const { container } = render(
@@ -185,12 +185,12 @@ describe('Project Detail Consistency Integration', () => {
         description: 'A minimal project',
         category: 'Test',
         tags: [],
-        technologies: [],
         image: '/placeholder.jpg', // Add required image field
         featured: false,
         viewCount: 0,
         clickCount: 0,
         createdAt: new Date(),
+        updatedAt: new Date(),
       }
 
       const { container } = render(

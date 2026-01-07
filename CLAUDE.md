@@ -2,10 +2,7 @@
 
 This is the authoritative guide for the modern-portfolio codebase. All development decisions should align with this document.
 
----
-
 ## Quick Reference
-
 ### Top 10 Commands
 ```bash
 bun dev                    # Start development server
@@ -24,26 +21,21 @@ bun run ci:full            # Full CI pipeline
 ```bash
 # 1. Install dependencies
 bun install
-
 # 2. Set up environment variables (copy .env.example to .env)
 # Required: DATABASE_URL, RESEND_API_KEY, JWT_SECRET, CONTACT_EMAIL
-
 # 3. Generate Prisma client
 bun run db:generate
-
 # 4. Push schema to database
 bun run db:push
-
 # 5. Seed database (optional)
 bun run db:seed
-
 # 6. Start development
 bun dev
 ```
 
 ### Key File Locations
 | Purpose | Location |
-|---------|----------|
+||-|
 | API Routes | `src/app/api/` |
 | Zod Schemas | `src/lib/validations/unified-schemas.ts` |
 | Query Keys | `src/lib/queryKeys.ts` |
@@ -53,71 +45,58 @@ bun dev
 | Test Factories | `src/test/factories.ts` |
 | Custom Hooks | `src/hooks/` |
 
----
-
 ## Tech Stack
-
 ### Runtime & Package Management
 | Tool | Version | Purpose |
-|------|---------|---------|
+||||
 | **Bun** | 1.3.5 | Runtime and package manager |
 | **Node.js** | >=22.0.0 | Runtime compatibility |
-
 ### Framework & UI
 | Package | Version | Purpose |
-|---------|---------|---------|
+||||
 | **Next.js** | 16.1.1 | React framework with App Router |
 | **React** | 19.2.3 | UI framework |
 | **TypeScript** | 5.9.3 | Type safety (strict mode) |
 | **Motion** | 12.24.0 | Animation library |
-
 ### Database & ORM
 | Package | Version | Purpose |
-|---------|---------|---------|
+||||
 | **Prisma** | 7.2.0 | ORM with Bun runtime support |
 | **PostgreSQL** | - | Primary database |
 | **pg** | 8.16.3 | PostgreSQL driver |
-
 ### State Management
 | Package | Version | Purpose |
-|---------|---------|---------|
+||||
 | **TanStack Query** | 5.90.16 | Server state & caching |
 | **TanStack Form** | 1.27.7 | Form state management |
 | **TanStack Table** | 8.21.3 | Data tables |
-
 ### Styling
 | Package | Version | Purpose |
-|---------|---------|---------|
+||||
 | **Tailwind CSS** | 4.1.18 | Utility-first CSS |
 | **CVA** | 0.7.1 | Component variants |
 | **Tailwind Merge** | 3.4.0 | Class conflict resolution |
 | **Radix UI** | Various | Accessible primitives |
-
 ### Validation & Security
 | Package | Version | Purpose |
-|---------|---------|---------|
+||||
 | **Zod** | 4.3.4 | Schema validation |
 | **DOMPurify** | 3.3.1 | HTML sanitization |
 | **LRU Cache** | 11.2.4 | In-memory caching |
-
 ### Testing
 | Package | Version | Purpose |
-|---------|---------|---------|
+||||
 | **Bun Test** | Built-in | Unit tests (Vitest-compatible) |
 | **Playwright** | 1.57.0 | E2E testing |
 | **Testing Library** | 16.3.1 | React component testing |
-
 ### Email & Analytics
 | Package | Version | Purpose |
-|---------|---------|---------|
+||||
 | **Resend** | 6.6.0 | Transactional email |
 | **Vercel Analytics** | 1.6.1 | Web analytics |
 | **Recharts** | 3.6.0 | Data visualization |
 
----
-
 ## Project Architecture
-
 ### Directory Structure
 ```
 src/
@@ -225,11 +204,9 @@ User Input
 ```
 
 ### Rendering Strategy Map
-
 **Cost Optimization**: Prefer Client Components to minimize Vercel function invocations.
-
 | Route | Strategy | Revalidation | Cost Impact |
-|-------|----------|--------------|-------------|
+|-|-|--|-|
 | `/` | Static | Build only | Free (CDN) |
 | `/about` | Static | Build only | Free (CDN) |
 | `/projects` | Client | - | Free (browser) |
@@ -241,10 +218,7 @@ User Input
 
 **Rule**: Use `'use client'` + TanStack Query for data fetching. Reserve Server Components for SEO-critical pages with ISR.
 
----
-
 ## Commands Reference
-
 ### Development
 ```bash
 bun dev                    # Start Next.js dev server
@@ -252,7 +226,6 @@ bun run build              # Production build
 bun start                  # Run production server
 bun run dev:debug          # Dev with Bun inspector
 ```
-
 ### Testing
 ```bash
 bun test                   # Run unit tests
@@ -262,7 +235,6 @@ bun run e2e                # Playwright E2E tests
 bun run e2e:ui             # E2E with UI mode
 bun run e2e:headed         # E2E in headed browser
 ```
-
 ### Database
 ```bash
 bun run db:generate        # Generate Prisma client
@@ -273,7 +245,6 @@ bun run db:migrate:reset   # Reset database + migrations
 bun run db:seed            # Seed database
 bun run db:studio          # Open Prisma Studio GUI
 ```
-
 ### Code Quality
 ```bash
 bun run lint               # ESLint check
@@ -281,7 +252,6 @@ bun run lint:fix           # ESLint with auto-fix
 bun run type-check         # TypeScript checking
 bun run validate           # Type-check + lint (parallel)
 ```
-
 ### CI/CD
 ```bash
 bun run ci:quick           # Lint + type-check (parallel)
@@ -289,24 +259,17 @@ bun run ci:local           # Lint + type-check + tests (parallel)
 bun run ci:full            # ci:quick + build
 ```
 
----
-
 ## API Routes Documentation
-
 ### Projects API
-
 #### `GET /api/projects`
 List all projects with filtering and sorting.
-
 **Rate Limit**: 100 requests/15min (burst: 20 req/5s)
-
 **Query Parameters**:
 | Param | Type | Description |
-|-------|------|-------------|
+|-||-|
 | `category` | string | Filter by category |
 | `featured` | boolean | Filter featured projects |
 | `search` | string | Search title/description |
-
 **Response**:
 ```typescript
 {
@@ -318,10 +281,8 @@ List all projects with filtering and sorting.
 
 #### `GET /api/projects/[slug]`
 Get single project by slug.
-
 #### `POST /api/projects/[slug]/interactions`
 Track project interactions (views, likes, shares).
-
 **Body**:
 ```typescript
 {
@@ -331,18 +292,13 @@ Track project interactions (views, likes, shares).
 }
 ```
 
----
-
 ### Blog API
-
 #### `GET /api/blog`
 List blog posts with filtering, sorting, and pagination.
-
 **Rate Limit**: 100 requests/15min
-
 **Query Parameters**:
 | Param | Type | Description |
-|-------|------|-------------|
+|-||-|
 | `page` | number | Page number (default: 1) |
 | `limit` | number | Items per page (max: 100, default: 10) |
 | `status` | PostStatus | Filter by status |
@@ -352,7 +308,6 @@ List blog posts with filtering, sorting, and pagination.
 | `search` | string | Full-text search |
 | `sortField` | string | Sort field |
 | `sortOrder` | 'asc' \| 'desc' | Sort direction |
-
 **Response**:
 ```typescript
 {
@@ -371,32 +326,19 @@ List blog posts with filtering, sorting, and pagination.
 
 #### `POST /api/blog`
 Create new blog post.
-
 **Rate Limit**: 10 posts/hour (progressive penalty)
-
 **Requires**: CSRF token validation
-
 **Body**: See `blogPostCreateSchema` in unified-schemas.ts
-
 #### `GET /api/blog/[slug]`
 Get single blog post with author, category, and tags.
-
 #### `POST /api/blog/[slug]/interactions`
 Track blog interactions.
-
----
-
 ### Contact API
-
 #### `POST /api/contact`
 Submit contact form.
-
 **Rate Limit**: 3 requests/hour (progressive penalty, 5min base block)
-
 **Burst Protection**: 2 requests/10s max
-
 **Requires**: CSRF token validation, honeypot check
-
 **Body**:
 ```typescript
 {
@@ -408,7 +350,6 @@ Submit contact form.
   honeypot?: string // Must be empty (bot detection)
 }
 ```
-
 **Response Headers**:
 ```
 X-RateLimit-Remaining: number
@@ -416,23 +357,16 @@ X-RateLimit-Reset: timestamp
 Retry-After: seconds (if blocked)
 ```
 
----
-
 ### Rate Limiting Configurations
-
 | Endpoint | Window | Max Attempts | Burst Protection | Penalty |
-|----------|--------|--------------|------------------|---------|
+|-|--|--|||
 | Contact Form | 1 hour | 3 | 2 req/10s | 5min base, exponential |
 | API Endpoints | 15 min | 100 | 20 req/5s | None |
 | Auth | 15 min | 5 | 3 req/30s | 10min base, exponential |
 | File Upload | 1 hour | 10 | 3 req/1min | 5min base, exponential |
 
----
-
 ## Security Implementation
-
 ### Rate Limiter (`src/lib/security/rate-limiter.ts`)
-
 **Features**:
 - Progressive penalty with exponential backoff
 - Burst protection for rapid successive requests
@@ -440,7 +374,6 @@ Retry-After: seconds (if blocked)
 - Suspicious behavior detection (bot patterns, user agent analysis)
 - Request history tracking for pattern analysis
 - Whitelist/blacklist management
-
 **Usage**:
 ```typescript
 import {
@@ -448,14 +381,12 @@ import {
   checkEnhancedApiRateLimit,
   getClientIdentifier
 } from '@/lib/security/rate-limiter'
-
 // In API route
 const clientId = getClientIdentifier(request)
 const result = checkEnhancedContactFormRateLimit(clientId, {
   userAgent: request.headers.get('user-agent'),
   path: '/api/contact'
 })
-
 if (!result.allowed) {
   return Response.json(
     { error: result.reason },
@@ -468,9 +399,8 @@ if (!result.allowed) {
 ```
 
 ### HTML Sanitization Levels (`src/lib/security/sanitize.ts`)
-
 | Level | Function | Use Case |
-|-------|----------|----------|
+|-|-|-|
 | Rich | `sanitizeBlogContent()` | CMS content (tables, images, code) |
 | Strict | `sanitizeUserContent()` | User input (basic formatting only) |
 | Strip | `stripHtml()` | Pure text output |
@@ -480,21 +410,14 @@ if (!result.allowed) {
 ```typescript
 // Generate token (server action)
 import { generateCsrfToken } from '@/lib/security/csrf-protection'
-
 // Validate in API route
 import { validateCsrfToken } from '@/lib/security/csrf-protection'
 const csrfToken = request.headers.get('x-csrf-token')
 if (!validateCsrfToken(csrfToken)) {
   return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
-}
-```
-
----
 
 ## Database Schema
-
 ### Core Models
-
 #### BlogPost
 ```prisma
 model BlogPost {
@@ -552,18 +475,15 @@ model Project {
   category        String
   tags            String[]
   featured        Boolean   @default(false)
-
   // Rich JSON Fields
   impact          Json?     // string[]
   results         Json?     // Array<{metric, before, after, improvement}>
   displayMetrics  Json?     // Array<{label, value, iconName}>
   testimonial     Json?     // {quote, author, role, company}
   gallery         Json?     // Array<{url, alt, caption}>
-
   // Analytics
   viewCount       Int       @default(0)
   clickCount      Int       @default(0)
-
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 }
@@ -649,14 +569,10 @@ BlogPost ───────< PostView
            └────< PostVersion
 ```
 
----
-
 ## Query Management
-
 ### Query Key Hierarchy
 ```typescript
 // src/lib/queryKeys.ts
-
 // Projects
 projectKeys.all()           // ['projects']
 projectKeys.lists()         // ['projects', 'list']
@@ -664,7 +580,6 @@ projectKeys.list(filters)   // ['projects', 'list', filters]
 projectKeys.details()       // ['projects', 'detail']
 projectKeys.detail(slug)    // ['projects', 'detail', slug]
 projectKeys.featured()      // ['projects', 'featured']
-
 // Blog
 blogKeys.all()              // ['blog']
 blogKeys.posts()            // ['blog', 'posts']
@@ -673,7 +588,6 @@ blogKeys.postsList(f, s)    // ['blog', 'posts', 'list', filters, sort]
 blogKeys.categories()       // ['blog', 'categories']
 blogKeys.tags()             // ['blog', 'tags']
 blogKeys.analytics()        // ['blog', 'analytics']
-
 // Analytics
 analyticsKeys.all()         // ['analytics']
 analyticsKeys.projects()    // ['analytics', 'projects']
@@ -683,16 +597,12 @@ analyticsKeys.project(slug) // ['analytics', 'projects', slug]
 ### Cache Invalidation
 ```typescript
 import { cacheInvalidation } from '@/lib/queryKeys'
-
 // Invalidate all projects
 cacheInvalidation.invalidateAllProjects(queryClient)
-
 // Invalidate specific project
 cacheInvalidation.invalidateProject(queryClient, 'project-slug')
-
 // Invalidate project lists only
 cacheInvalidation.invalidateProjectLists(queryClient)
-
 // Blog invalidation
 cacheInvalidation.invalidateAllBlog(queryClient)
 cacheInvalidation.invalidateBlogPost(queryClient, 'post-slug')
@@ -702,7 +612,6 @@ cacheInvalidation.invalidateBlogCategories(queryClient)
 ### TanStack Query Configuration
 ```typescript
 // src/components/providers/tanstack-query-provider.tsx
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -716,12 +625,8 @@ const queryClient = new QueryClient({
 })
 ```
 
----
-
 ## Validation Schemas
-
 ### Base Schemas (`src/lib/validations/unified-schemas.ts`)
-
 ```typescript
 // Primitives
 emailSchema        // Valid email, max 254 chars
@@ -737,7 +642,6 @@ datetimeSchema     // ISO datetime string
 ```
 
 ### Domain Schemas
-
 ```typescript
 // Contact Form
 contactFormSchema = z.object({
@@ -767,31 +671,23 @@ blogPostFilterSchema = z.object({
 ```
 
 ### Validation Utilities
-
 ```typescript
 // Throws ValidationError on failure
 const data = validate(contactFormSchema, input)
-
 // Returns { success, data } or { success, error }
 const result = safeValidate(contactFormSchema, input)
-
 // Convert Zod errors to field-keyed object
 const error = ValidationError.fromZodError(zodError)
 // { details: { name: ['Too short'], email: ['Invalid'] } }
 ```
 
----
-
 ## Form Handling
-
 ### TanStack Form Pattern
 ```typescript
 // src/hooks/use-contact-form.ts
-
 import { useForm } from '@tanstack/react-form'
 import { zodValidator } from '@tanstack/zod-form-adapter'
 import { contactFormSchema } from '@/lib/validations/unified-schemas'
-
 export function useContactForm() {
   const form = useForm({
     defaultValues: {
@@ -814,11 +710,9 @@ export function useContactForm() {
       // Handle response
     },
   })
-
   return { form }
 }
 ```
-
 ### Form Field Component Pattern
 ```tsx
 <form.Field
@@ -840,41 +734,31 @@ export function useContactForm() {
 />
 ```
 
----
-
 ## Design System
-
 ### Design Tokens (`src/lib/design-system/tokens.ts`)
-
 **Colors**:
 - `primary`, `secondary`, `accent`, `muted`
 - `destructive`, `success`, `warning`
 - `background`, `foreground`, `card`, `border`
-
 **Spacing**: `xs` (4px), `sm` (8px), `md` (16px), `lg` (24px), `xl` (32px), `2xl` (48px)
-
 **Typography**:
 - Fonts: `sans` (Spline Sans), `mono` (Roboto Mono), `display` (Playfair Display)
 - Sizes: `xs` to `7xl`
 - Weights: `regular` (400) to `extrabold` (800)
-
 **Animation**:
 - Durations: `fast` (150ms), `normal` (300ms), `slow` (500ms)
 - Easings: `linear`, `in`, `out`, `in-out`, `bounce`, `spring`
-
 ### Glassmorphism Pattern
 ```css
 /* Container style */
 .glass-container {
   @apply bg-white/5 backdrop-blur border border-white/10 rounded-3xl;
 }
-
 /* Card style */
 .glass-card {
   @apply bg-white/5 backdrop-blur border border-white/10 rounded-2xl;
 }
 ```
-
 ### CTA Button Pattern
 ```tsx
 <Button className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700">
@@ -882,27 +766,17 @@ export function useContactForm() {
 </Button>
 ```
 
----
-
 ## Coding Standards
-
 ### Principles (Mandatory)
-
 #### YAGNI (You Aren't Gonna Need It)
 - **Do not implement features that are not immediately required**
 - No speculative coding, no "just in case" implementations
 - Remove dead code immediately - don't comment it out
-
 #### Composition Over Inheritance
-- Build components using composition, not inheritance
-- Use hooks for shared behavior, not base classes
-- Prefer flat component structures
-
 #### Type Safety (Non-Negotiable)
 ```typescript
 // WRONG: Never use 'any'
 const data: any = response.json()
-
 // CORRECT: Type everything explicitly
 interface ProjectData {
   id: string
@@ -910,7 +784,6 @@ interface ProjectData {
   slug: string
 }
 const data: ProjectData = await response.json()
-
 // CORRECT: Validate at boundaries with Zod
 const validated = projectSchema.parse(data)
 ```
@@ -919,7 +792,6 @@ const validated = projectSchema.parse(data)
 - **Maximum component size**: 300 lines (split larger components)
 - **Maximum function size**: 50 lines (extract helper functions)
 - **One file = one export = one purpose**
-
 #### Error Handling
 ```typescript
 // WRONG: Empty catch block
@@ -937,7 +809,6 @@ try {
 ```
 
 ### shadcn/ui Patterns
-
 #### DO: Use base components directly
 ```tsx
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -964,7 +835,6 @@ function ProjectCard({ project }: { project: Project }) {
 function MyCustomCard({ children }) {
   return <Card className="custom-styles">{children}</Card>
 }
-
 // CORRECT: Use CVA for variants
 const cardVariants = cva('base-styles', {
   variants: {
@@ -978,9 +848,7 @@ const cardVariants = cva('base-styles', {
 ```
 
 ### Client Components (Preferred for Cost Optimization)
-
 **Why Client Components?** Vercel charges per Server Component invocation. Use Client Components with TanStack Query to fetch data client-side and avoid per-request costs.
-
 ```tsx
 // PREFERRED: Client Component with TanStack Query
 'use client'
@@ -1019,7 +887,6 @@ async function BlogPost({ slug }: { slug: string }) {
 // src/app/blog/[slug]/page.tsx
 
 export const revalidate = 3600 // Revalidate every hour
-
 export async function generateStaticParams() {
   const posts = await prisma.blogPost.findMany({
     where: { status: 'PUBLISHED' },
@@ -1029,18 +896,11 @@ export async function generateStaticParams() {
 }
 ```
 
----
-
 ## Testing Strategy
-
 ### Unit Tests (Bun Test)
-
 **Location**: `src/**/__tests__/*.test.ts(x)`
-
 **Coverage Target**: 80% (enforced)
-
 **Run**: `bun test` or `bun run test:coverage`
-
 **Pattern**:
 ```typescript
 import { describe, it, expect, beforeEach } from 'bun:test'
@@ -1052,7 +912,6 @@ describe('ContactForm', () => {
   beforeEach(() => {
     factory.reset()
   })
-
   it('validates email format', () => {
     const result = contactFormSchema.safeParse({
       name: 'Test',
@@ -1065,15 +924,11 @@ describe('ContactForm', () => {
 ```
 
 ### E2E Tests (Playwright)
-
 **Location**: `e2e/*.spec.ts`
-
 **Run**: `bun run e2e`
-
 **Pattern**:
 ```typescript
 import { test, expect } from '@playwright/test'
-
 test('contact form submission', async ({ page }) => {
   await page.goto('/contact')
   await page.fill('input[name="name"]', 'Test User')
@@ -1085,85 +940,25 @@ test('contact form submission', async ({ page }) => {
 ```
 
 ### Test Factories (`src/test/factories.ts`)
-
 Use factories for consistent test data across unit and E2E tests.
-
----
-
 ## Key Features
-
 ### Portfolio Projects (11+)
-- Revenue KPI Dashboard
-- Commission Optimization
-- Deal Funnel Analytics
-- Customer Lifetime Value
-- Partner Performance
-- Lead Attribution
-- Multi-Channel Attribution
-- Revenue Operations Center
-- Quota & Territory Management
-- Sales Enablement
-- Churn & Retention
-
 ### Blog System
-- Full CRUD with versioning
-- Categories and tags
-- SEO optimization (meta, OG, Twitter)
-- Reading time estimation
-- View and interaction tracking
-- RSS feed generation
-
 ### Contact Form
-- Real-time validation (TanStack Form + Zod)
-- CSRF protection
-- Rate limiting (3/hour)
-- Honeypot bot detection
-- Resend email integration
-- Auto-reply to submitter
-
 ### Resume Viewer
-- PDF iframe display
-- Download functionality
-- Section navigation
-
 ### SEO Implementation
-- Dynamic sitemap generation
-- Robots.txt configuration
-- JSON-LD structured data (Person, Website, Organization)
-- Open Graph tags
-- Twitter Card tags
-
----
-
 ## Environment Variables
-
 ### Required
 ```bash
 # Database
 DATABASE_URL="postgresql://user:pass@host:5432/db?sslmode=require"
-
 # Email
 RESEND_API_KEY="re_xxxxxxxxxxxx"
 CONTACT_EMAIL="your@email.com"
-
 # Security
 JWT_SECRET="your-32-character-minimum-secret"
 ```
-
-### Optional
-```bash
-# Site
-NEXT_PUBLIC_SITE_URL="https://richardwhudsonjr.com"
-NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION="verification-code"
-
-# Analytics (auto-detected on Vercel)
-VERCEL_ANALYTICS_ID="xxxxx"
-```
-
----
-
 ## Business Context
-
 **Professional portfolio for Richard Hudson**, Revenue Operations Professional:
 - Interactive data visualization projects showcasing RevOps expertise
 - Real business metrics: $4.8M+ revenue, 432% growth, 2,217% network expansion
@@ -1171,14 +966,9 @@ VERCEL_ANALYTICS_ID="xxxxx"
 - Modern glassmorphism UI with gradient backgrounds
 - Mobile-responsive design with Tailwind CSS
 
----
-
 ## Official Best Practices (From Authoritative Sources)
-
 These patterns are sourced directly from official documentation for each technology in our stack.
-
 ### Next.js 16 Patterns (Source: vercel/next.js)
-
 #### ISR with Revalidation
 ```typescript
 // Time-based revalidation - page regenerates every hour
@@ -1189,7 +979,6 @@ interface Post {
 }
 
 export const revalidate = 3600 // Revalidate every hour
-
 export default async function Page() {
   const data = await fetch('https://api.example.com/posts')
   const posts: Post[] = await data.json()
@@ -1210,15 +999,12 @@ export default async function Page() {
 ```typescript
 // Static data (cached until manually invalidated)
 const staticData = await fetch('https://...', { cache: 'force-cache' })
-
 // Dynamic data (fresh on every request - AVOID for cost)
 const dynamicData = await fetch('https://...', { cache: 'no-store' })
-
 // Revalidated data (cached for specific time - PREFERRED)
 const revalidatedData = await fetch('https://...', {
   next: { revalidate: 3600 }, // 1 hour
 })
-
 // Tag-based revalidation (for on-demand invalidation)
 const taggedData = await fetch('https://...', {
   next: { tags: ['products'] },
@@ -1229,14 +1015,12 @@ const taggedData = await fetch('https://...', {
 ```typescript
 // src/app/projects/[slug]/page.tsx
 export const revalidate = 3600
-
 export async function generateStaticParams() {
   const projects = await prisma.project.findMany({
     select: { slug: true },
   })
   return projects.map(({ slug }) => ({ slug }))
 }
-
 export default async function Page({
   params,
 }: {
@@ -1248,29 +1032,22 @@ export default async function Page({
 }
 ```
 
----
-
 ### React 19 Patterns (Source: react.dev)
-
 #### useTransition for Non-Blocking Updates
 ```typescript
 import { useState, useTransition } from 'react'
-
 function FilterableList() {
   const [query, setQuery] = useState('')
   const [isPending, startTransition] = useTransition()
-
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     // Immediate update for input
     setQuery(e.target.value)
-
     // Non-blocking update for expensive filtering
     startTransition(() => {
       // This won't block user input
       filterItems(e.target.value)
     })
   }
-
   return (
     <div>
       <input value={query} onChange={handleChange} />
@@ -1284,7 +1061,6 @@ function FilterableList() {
 #### useOptimistic for Instant UI Feedback
 ```typescript
 import { useOptimistic, useState } from 'react'
-
 function MessageThread({ messages, sendMessage }) {
   const [optimisticMessages, addOptimisticMessage] = useOptimistic(
     messages,
@@ -1293,13 +1069,11 @@ function MessageThread({ messages, sendMessage }) {
       { text: newMessage, sending: true },
     ]
   )
-
   async function formAction(formData: FormData) {
     const message = formData.get('message') as string
     addOptimisticMessage(message) // Instant UI update
     await sendMessage(formData)   // Actual server call
   }
-
   return (
     <>
       {optimisticMessages.map((msg, i) => (
@@ -1317,10 +1091,7 @@ function MessageThread({ messages, sendMessage }) {
 }
 ```
 
----
-
 ### Tailwind CSS 4 Patterns (Source: tailwindcss.com)
-
 #### Container Queries (Built-in, no plugin needed)
 ```tsx
 // Responsive grid based on CONTAINER size, not viewport
@@ -1359,17 +1130,13 @@ function MessageThread({ messages, sendMessage }) {
 </div>
 ```
 
----
-
 ### Motion 12 Patterns (Source: motion.dev)
-
 #### Variants for Reusable Animations
 ```typescript
 const variants = {
   visible: { opacity: 1, y: 0 },
   hidden: { opacity: 0, y: 20 },
 }
-
 <motion.div
   variants={variants}
   initial="hidden"
@@ -1390,12 +1157,10 @@ const list = {
   },
   hidden: { opacity: 0 },
 }
-
 const item = {
   visible: { opacity: 1, x: 0 },
   hidden: { opacity: 0, x: -20 },
 }
-
 <motion.ul initial="hidden" whileInView="visible" variants={list}>
   <motion.li variants={item} />
   <motion.li variants={item} />
@@ -1414,36 +1179,27 @@ const item = {
 </motion.button>
 ```
 
----
-
 ### TanStack Query Patterns (Source: tanstack.com/query)
-
 #### Optimistic Updates with Rollback
 ```typescript
 const queryClient = useQueryClient()
-
 const mutation = useMutation({
   mutationFn: updateProject,
-
   onMutate: async (newProject) => {
     // Cancel outgoing refetches
     await queryClient.cancelQueries({ queryKey: projectKeys.detail(newProject.slug) })
-
     // Snapshot previous value
     const previousProject = queryClient.getQueryData(
       projectKeys.detail(newProject.slug)
     )
-
     // Optimistically update
     queryClient.setQueryData(
       projectKeys.detail(newProject.slug),
       newProject
     )
-
     // Return rollback data
     return { previousProject }
   },
-
   onError: (err, newProject, context) => {
     // Rollback on error
     queryClient.setQueryData(
@@ -1451,7 +1207,6 @@ const mutation = useMutation({
       context?.previousProject
     )
   },
-
   onSettled: (data, error, variables) => {
     // Always refetch after mutation
     queryClient.invalidateQueries({
@@ -1468,10 +1223,8 @@ function ProjectsList() {
     queryKey: projectKeys.list(),
     queryFn: fetchProjects,
   })
-
   if (isLoading) return <Skeleton />
   if (isError) return <Error message={error.message} />
-
   return (
     <div>
       {isFetching && <RefreshIndicator />}
@@ -1481,20 +1234,15 @@ function ProjectsList() {
 }
 ```
 
----
-
 ### TanStack Form Patterns (Source: tanstack.com/form)
-
 #### Form with Zod Validation
 ```typescript
 import { useForm } from '@tanstack/react-form'
 import { z } from 'zod'
-
 const schema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters'),
   email: z.string().email('Invalid email address'),
 })
-
 function RegistrationForm() {
   const form = useForm({
     defaultValues: { username: '', email: '' },
@@ -1505,7 +1253,6 @@ function RegistrationForm() {
       await registerUser(value)
     },
   })
-
   return (
     <form onSubmit={(e) => { e.preventDefault(); form.handleSubmit() }}>
       <form.Field
@@ -1562,14 +1309,9 @@ function RegistrationForm() {
 />
 ```
 
----
-
 ### Bento Grid Component (Source: Magic UI)
-
 **Installation**: `npx shadcn@latest add https://magicui.design/r/bento-grid`
-
 **Location**: `src/components/ui/bento-grid.tsx`
-
 #### Component Structure
 ```typescript
 interface BentoCardProps {
@@ -1599,7 +1341,6 @@ import { FileTextIcon, CodeIcon, RocketIcon } from '@radix-ui/react-icons'
     cta="View Project"
     background={<AnimatedBackground />}
   />
-
   {/* Standard cards */}
   <BentoCard
     name="Documentation"
@@ -1610,7 +1351,6 @@ import { FileTextIcon, CodeIcon, RocketIcon } from '@radix-ui/react-icons'
     cta="Learn more"
     background={<div className="absolute inset-0 bg-gradient-to-br from-blue-500/10" />}
   />
-
   <BentoCard
     name="Code Examples"
     description="See it in action"
@@ -1627,13 +1367,10 @@ import { FileTextIcon, CodeIcon, RocketIcon } from '@radix-ui/react-icons'
 ```tsx
 // Mobile: 1 column, Tablet: 2 columns, Desktop: 3 columns
 <BentoGrid className="grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:grid-rows-3">
-
   {/* Full width on mobile, 2 cols on desktop */}
   <BentoCard className="col-span-1 md:col-span-2 lg:col-span-2 lg:row-span-2" />
-
   {/* Single cell */}
   <BentoCard className="col-span-1" />
-
   {/* Wide card on larger screens */}
   <BentoCard className="col-span-1 lg:col-span-2" />
 </BentoGrid>
@@ -1655,8 +1392,6 @@ const AnimatedBackground = () => (
   />
 )
 ```
-
----
 
 *Last updated: 2026-01-05*
 *Maintained by: Claude Code*

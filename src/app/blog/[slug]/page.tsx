@@ -51,11 +51,11 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     openGraph: {
       title: post.title,
       description: post.excerpt || post.metaDescription,
-      url: `https://richardhudson.dev/blog/${post.slug}`,
+      url: `https://richardwhudsonjr.com/blog/${post.slug}`,
       siteName: 'Richard Hudson - RevOps Professional',
       images: post.featuredImage ? [
         {
-          url: `https://richardhudson.dev${post.featuredImage}`,
+          url: `https://richardwhudsonjr.com${post.featuredImage}`,
           width: 1200,
           height: 630,
           alt: post.featuredImageAlt || post.title,
@@ -73,10 +73,10 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       card: 'summary_large_image',
       title: post.title,
       description: post.excerpt || post.metaDescription,
-      images: post.featuredImage ? [`https://richardhudson.dev${post.featuredImage}`] : undefined,
+      images: post.featuredImage ? [`https://richardwhudsonjr.com${post.featuredImage}`] : undefined,
     },
     alternates: {
-      canonical: post.canonicalUrl || `https://richardhudson.dev/blog/${post.slug}`,
+      canonical: post.canonicalUrl || `https://richardwhudsonjr.com/blog/${post.slug}`,
     },
   }
 }
