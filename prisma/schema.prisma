@@ -4,85 +4,59 @@
 generator client {
   provider        = "prisma-client-js"
   output          = "./generated/prisma"
-  previewFeatures = ["fullTextSearchPostgres"]
+  previewFeatures = ["fullTextSearchPostgres", "postgresqlExtensions"]
 }
 
 datasource db {
   provider = "postgresql"
+  extensions = [citext]
 }
-
-// =======================
-// CORE BLOG ENTITIES
-// =======================
 
 model BlogPost {
   id          String          @id @default(cuid())
   title       String
-  slug        String          @unique
+  slug        String          @unique @db.Citext
   excerpt     String?         @db.Text
   content     String          @db.Text
   contentType ContentType     @default(MARKDOWN)
   status      PostStatus      @default(DRAFT)
-  
-  // SEO Fields
   metaTitle       String?
   metaDescription String?       @db.VarChar(160)
   keywords        String[]
   canonicalUrl    String?
-  
-  // Social Media
   ogTitle       String?
   ogDescription String?         @db.VarChar(300)
   ogImage       String?
   twitterTitle  String?
   twitterDescription String?    @db.VarChar(200)
   twitterImage  String?
-  
-  // Content Structure
   featuredImage   String?
   featuredImageAlt String?
   readingTime     Int?            // in minutes
   wordCount       Int?
-  
-  // Publishing
   publishedAt     DateTime?
   scheduledAt     DateTime?
   archivedAt      DateTime?
-  
-  // Timestamps
+  deletedAt       DateTime?
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
-  
-  // Author relationship
   authorId        String
-  author          Author          @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  
-  // Category and tags
+  author          Author          @relation(fields: [authorId], references: [id])
   categoryId      String?
   category        Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   tags            PostTag[]
-  
-  // Content relationships
   seriesPosts     SeriesPost[]
   relatedPosts    PostRelation[]  @relation("OriginalPost")
   relatedToPosts  PostRelation[]  @relation("RelatedPost")
-  
-  // Version control
   versions        PostVersion[]
   currentVersion  Int             @default(1)
-  
-  // Analytics & Engagement
   viewCount       Int             @default(0)
   likeCount       Int             @default(0)
   shareCount      Int             @default(0)
   commentCount    Int             @default(0)
-  
-  // SEO Analytics
   seoScore        Float?          @default(0)
   seoAnalysis     Json?
   lastSeoCheck    DateTime?
-  
-  // Performance tracking
   views           PostView[]
   interactions    PostInteraction[]
   seoEvents       SEOEvent[]
@@ -93,11 +67,12 @@ model BlogPost {
   @@index([status, publishedAt(sort: Desc)]) // For querying posts by status and publish date
   @@index([status]) // For filtering by status only
   @@index([publishedAt]) // For date range queries
+  @@index([status, scheduledAt]) // For scheduled publishing workflows
+  @@index([deletedAt]) // For filtering active vs. deleted posts
   @@index([authorId]) // For author-specific queries
   @@index([categoryId]) // For category-specific queries
   @@index([viewCount(sort: Desc)]) // For popular posts
   @@index([createdAt(sort: Desc)]) // For creation date ordering
-  @@index([slug]) // For direct slug lookup
   @@index([status, authorId]) // For author's posts with specific status
   @@index([status, categoryId]) // For filtered posts by status and category
 }
@@ -105,65 +80,45 @@ model BlogPost {
 model Author {
   id              String          @id @default(cuid())
   name            String
-  email           String          @unique
-  slug            String          @unique
+  email           String          @unique @db.Citext
+  slug            String          @unique @db.Citext
   bio             String?         @db.Text
   avatar          String?
   website         String?
   twitter         String?
   linkedin        String?
   github          String?
-  
-  // SEO
   metaDescription String?         @db.VarChar(160)
-  
-  // Analytics
   totalViews      Int             @default(0)
   totalPosts      Int             @default(0)
-  
-  // Timestamps
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
-  
-  // Relationships
   posts           BlogPost[]
   postVersions    PostVersion[]   @relation("PostVersions")
   
   @@map("authors")
-  @@index([slug])
 }
 
 model Category {
   id              String          @id @default(cuid())
   name            String          @unique
-  slug            String          @unique
+  slug            String          @unique @db.Citext
   description     String?         @db.Text
   color           String?         // Hex color for UI
   icon            String?         // Icon name or URL
-  
-  // SEO
   metaTitle       String?
   metaDescription String?         @db.VarChar(160)
   keywords        String[]
-  
-  // Hierarchy
   parentId        String?
   parent          Category?       @relation("CategoryHierarchy", fields: [parentId], references: [id])
   children        Category[]      @relation("CategoryHierarchy")
-  
-  // Analytics
   postCount       Int             @default(0)
   totalViews      Int             @default(0)
-  
-  // Timestamps
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
-  
-  // Relationships
   posts           BlogPost[]
   
   @@map("categories")
-  @@index([slug]) // For direct slug lookup
   @@index([name]) // For name-based queries
   @@index([parentId]) // For hierarchical queries
   @@index([postCount(sort: Desc)]) // For popular categories
@@ -173,33 +128,20 @@ model Category {
 model Tag {
   id              String          @id @default(cuid())
   name            String          @unique
-  slug            String          @unique
+  slug            String          @unique @db.Citext
   description     String?
   color           String?         // Hex color for UI
-  
-  // SEO
   metaDescription String?         @db.VarChar(160)
-  
-  // Analytics
   postCount       Int             @default(0)
   totalViews      Int             @default(0)
-  
-  // Timestamps
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
-  
-  // Relationships
   posts           PostTag[]
   
   @@map("tags")
-  @@index([slug]) // For direct slug lookup
   @@index([name]) // For name-based searches
   @@index([name, slug]) // For combined name and slug queries
 }
-
-// =======================
-// RELATIONSHIP TABLES
-// =======================
 
 model PostTag {
   postId    String
@@ -211,6 +153,7 @@ model PostTag {
   createdAt DateTime        @default(now())
   
   @@id([postId, tagId])
+  @@index([tagId])
   @@map("post_tags")
 }
 
@@ -231,10 +174,6 @@ model PostRelation {
   @@index([relatedPostId])
 }
 
-// =======================
-// CONTENT MANAGEMENT
-// =======================
-
 model PostVersion {
   id              String          @id @default(cuid())
   postId          String
@@ -242,53 +181,35 @@ model PostVersion {
   title           String
   content         String          @db.Text
   excerpt         String?         @db.Text
-  
-  // Change tracking
   changeType      ChangeType      @default(MINOR)
   changeNotes     String?         @db.Text
-  
-  // Author of this version
   authorId        String
   author          Author          @relation("PostVersions", fields: [authorId], references: [id])
-  
-  // Timestamps
   createdAt       DateTime        @default(now())
-  
-  // Relationships
   post            BlogPost        @relation(fields: [postId], references: [id], onDelete: Cascade)
   
   @@unique([postId, version])
   @@map("post_versions")
   @@index([postId, version(sort: Desc)])
+  @@index([authorId])
 }
 
 model PostSeries {
   id              String          @id @default(cuid())
   name            String
-  slug            String          @unique
+  slug            String          @unique @db.Citext
   description     String?         @db.Text
-  
-  // SEO
   metaTitle       String?
   metaDescription String?         @db.VarChar(160)
-  
-  // Display
   coverImage      String?
   color           String?
-  
-  // Analytics
   totalPosts      Int             @default(0)
   totalViews      Int             @default(0)
-  
-  // Timestamps
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
-  
-  // Relationships
   posts           SeriesPost[]
   
   @@map("post_series")
-  @@index([slug])
 }
 
 model SeriesPost {
@@ -303,39 +224,24 @@ model SeriesPost {
   
   @@id([seriesId, postId])
   @@unique([seriesId, order])
+  @@index([postId])
   @@map("series_posts")
 }
-
-// =======================
-// ANALYTICS & TRACKING
-// =======================
 
 model PostView {
   id              String          @id @default(cuid())
   postId          String
-  
-  // Visitor tracking (anonymized)
   visitorId       String?         // Anonymous visitor ID
   sessionId       String?         // Session identifier
-  
-  // Request details
   ipAddress       String?         @db.Inet
   userAgent       String?         @db.Text
   referer         String?
-  
-  // Location (optional, anonymized)
   country         String?
   region          String?
   city            String?
-  
-  // Engagement metrics
   readingTime     Int?            // Time spent on post in seconds
   scrollDepth     Float?          // Percentage of post scrolled
-  
-  // Timestamps
   viewedAt        DateTime        @default(now())
-  
-  // Relationships
   post            BlogPost        @relation(fields: [postId], references: [id], onDelete: Cascade)
   
   @@map("post_views")
@@ -352,19 +258,11 @@ model PostInteraction {
   id              String          @id @default(cuid())
   postId          String
   type            InteractionType
-  
-  // Visitor tracking (anonymized)
   visitorId       String?
   sessionId       String?
-  
-  // Interaction details
   value           String?         // Additional data (e.g., shared platform)
   metadata        Json?           // Flexible metadata storage
-  
-  // Timestamps
   createdAt       DateTime        @default(now())
-  
-  // Relationships
   post            BlogPost        @relation(fields: [postId], references: [id], onDelete: Cascade)
   
   @@map("post_interactions")
@@ -372,33 +270,19 @@ model PostInteraction {
   @@index([createdAt(sort: Desc)])
 }
 
-// =======================
-// SEO AUTOMATION
-// =======================
-
 model SEOEvent {
   id              String          @id @default(cuid())
   postId          String?         // Nullable for site-wide events
   type            SEOEventType
-  
-  // Event details
   title           String
   description     String?         @db.Text
   severity        SEOSeverity     @default(INFO)
-  
-  // Data
   oldValue        String?         @db.Text
   newValue        String?         @db.Text
   recommendations String?         @db.Text
-  
-  // Processing
   processed       Boolean         @default(false)
   processedAt     DateTime?
-  
-  // Timestamps
   createdAt       DateTime        @default(now())
-  
-  // Relationships
   post            BlogPost?       @relation(fields: [postId], references: [id], onDelete: Cascade)
   
   @@map("seo_events")
@@ -411,24 +295,16 @@ model SEOKeyword {
   id              String          @id @default(cuid())
   keyword         String
   postId          String?
-  
-  // Tracking data
   position        Int?            // Search ranking position
   searchVolume    Int?            // Monthly search volume
   difficulty      Float?          // Keyword difficulty (0-100)
   cpc             Float?          // Cost per click
-  
-  // Performance
   clicks          Int             @default(0)
   impressions     Int             @default(0)
   ctr             Float?          // Click-through rate
-  
-  // Timestamps
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   lastChecked     DateTime?
-  
-  // Relationships
   post            BlogPost?       @relation(fields: [postId], references: [id], onDelete: Cascade)
   
   @@unique([keyword, postId])
@@ -444,27 +320,17 @@ model SitemapEntry {
   lastMod         DateTime
   changeFreq      ChangeFrequency @default(WEEKLY)
   priority        Float           @default(0.5) @db.Real
-  
-  // Content association
   postId          String?
   post            BlogPost?       @relation(fields: [postId], references: [id], onDelete: Cascade)
-  
-  // Status
   included        Boolean         @default(true)
-  
-  // Timestamps
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   
   @@map("sitemap_entries")
-  @@index([url])
   @@index([lastMod(sort: Desc)])
   @@index([included])
+  @@index([postId])
 }
-
-// =======================
-// ENUMS
-// =======================
 
 enum PostStatus {
   DRAFT
@@ -536,13 +402,9 @@ enum ChangeFrequency {
   NEVER
 }
 
-// =======================
-// PORTFOLIO PROJECTS
-// =======================
-
 model Project {
   id              String          @id @default(cuid())
-  slug            String          @unique
+  slug            String          @unique @db.Citext
   title           String
   description     String          @db.Text
   longDescription String?         @db.Text    // Extended project description
@@ -553,15 +415,11 @@ model Project {
   category        String                      // e.g., "Revenue Operations", "Marketing"
   tags            String[]                    // Array of technology and feature tags
   featured        Boolean         @default(false)
-
-  // Project metadata
   client          String?                     // Client name
   role            String?                     // Role in project
   duration        String?                     // Project duration (e.g., "6 months")
   year            Int?                        // Project year
   caseStudyUrl    String?                     // URL to case study page
-
-  // Rich content fields (JSON for complex nested data)
   impact          Json?                       // string[] - Impact statements
   results         Json?                       // Array<{metric, before, after, improvement}>
   displayMetrics  Json?                       // Array<{label, value, iconName}>
@@ -570,26 +428,18 @@ model Project {
   gallery         Json?                       // Array<{url, alt, caption?}>
   details         Json?                       // {challenge, solution, impact}
   charts          Json?                       // Array<{type, title, dataKey}>
-
-  // Analytics
   viewCount       Int             @default(0)
   clickCount      Int             @default(0)
-
-  // Timestamps
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
   @@map("projects")
-  @@index([slug])
   @@index([category])
   @@index([featured])
   @@index([createdAt(sort: Desc)])
   @@index([year])
 }
 
-// =======================
-// CONTACT SUBMISSIONS
-// =======================
 
 model ContactSubmission {
   id              String          @id @default(cuid())
@@ -599,24 +449,16 @@ model ContactSubmission {
   phone           String?         // Optional - phone number
   subject         String?         // Optional - default to "Contact Form Inquiry"
   message         String          @db.Text
-
-  // Metadata
   status          SubmissionStatus @default(NEW)
   responded       Boolean         @default(false)
   respondedAt     DateTime?
   notes           String?         @db.Text
-
-  // Security & Analytics
   ipAddress       String?         @db.Inet
   userAgent       String?         @db.Text
   referer         String?
-
-  // Email tracking
   emailSent       Boolean         @default(false)
   emailId         String?         // Resend email ID
   emailError      String?         @db.Text
-
-  // Timestamps
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
@@ -636,35 +478,21 @@ enum SubmissionStatus {
   SPAM
 }
 
-// =======================
-// SECURITY EVENTS
-// =======================
-
 model SecurityEvent {
   id              String              @id @default(cuid())
   type            SecurityEventType
   severity        SecuritySeverity    @default(MEDIUM)
-
-  // Event details
   message         String
   details         Json?               // Structured event data
-
-  // Context
   ipAddress       String?             @db.Inet
   userAgent       String?             @db.Text
   path            String?
   method          String?             // HTTP method
-
-  // User identification (anonymized)
   clientId        String?             // Hash of IP + UA
   sessionId       String?
-
-  // Processing
   acknowledged    Boolean             @default(false)
   acknowledgedAt  DateTime?
   acknowledgedBy  String?
-
-  // Timestamps
   createdAt       DateTime            @default(now())
 
   @@map("security_events")

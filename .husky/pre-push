@@ -1,2 +1,11 @@
-# Pre-commit already ran lint, type-check, and tests
-echo "Pushing to remote..."
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔨 Running build verification before push..."
+
+if ! bun run build; then
+  echo "❌ Build failed! Please fix all build errors before pushing."
+  exit 1
+fi
+
+echo "✅ Build verification passed! Ready to push."

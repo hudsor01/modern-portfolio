@@ -2,9 +2,26 @@
  * Blog system types for modern portfolio
  * Comprehensive type definitions for blog functionality, SEO, and content management
  * Part of the type-first architecture strategy
+ *
+ * NOTE: Enums are imported from @/lib/prisma-types which is the single source of truth.
+ * This file contains interfaces only - no duplicate enums.
  */
 
-// No React imports needed - PostTag uses Prisma composite key pattern
+// Import enums from single source of truth - use const imports for value usage
+import {
+  PostStatus,
+  ContentType,
+  InteractionType,
+  SEOEventType,
+  SEOSeverity,
+  ChangeFrequency,
+} from '@/lib/prisma-types'
+
+// Re-export for convenience (both as types and values)
+export { PostStatus, ContentType, InteractionType, SEOEventType, SEOSeverity, ChangeFrequency }
+
+// Also export as types for consumers
+export type { PostStatus as PostStatusType, ContentType as ContentTypeType, InteractionType as InteractionTypeType, SEOEventType as SEOEventTypeType, SEOSeverity as SEOSeverityType, ChangeFrequency as ChangeFrequencyType }
 
 // =======================
 // CORE BLOG TYPES
@@ -43,6 +60,7 @@ export interface BlogPost {
   publishedAt?: Date;
   scheduledAt?: Date;
   archivedAt?: Date;
+  deletedAt?: Date;
 
   // Timestamps
   createdAt: Date;
@@ -165,6 +183,15 @@ export interface PostTag {
   createdAt: Date;
 }
 
+// RelationType is NOT in Prisma - defined locally
+export enum RelationType {
+  RELATED = 'RELATED',
+  SEQUEL = 'SEQUEL',
+  PREQUEL = 'PREQUEL',
+  UPDATE = 'UPDATE',
+  REFERENCE = 'REFERENCE'
+}
+
 export interface PostRelation {
   id: string;
   originalPostId: string;
@@ -213,6 +240,16 @@ export interface SeriesPost {
 // =======================
 // CONTENT MANAGEMENT TYPES
 // =======================
+
+// ChangeType is NOT in Prisma - defined locally
+export enum ChangeType {
+  MAJOR = 'MAJOR',
+  MINOR = 'MINOR',
+  PATCH = 'PATCH',
+  CONTENT = 'CONTENT',
+  SEO = 'SEO',
+  STRUCTURE = 'STRUCTURE'
+}
 
 export interface PostVersion {
   id: string;
@@ -525,80 +562,6 @@ export interface SEOSummary {
   opportunities: number;
   lastAnalysis: Date;
   topKeywords: SEOKeyword[];
-}
-
-// =======================
-// ENUMS
-// =======================
-
-export enum PostStatus {
-  DRAFT = 'DRAFT',
-  REVIEW = 'REVIEW',
-  SCHEDULED = 'SCHEDULED',
-  PUBLISHED = 'PUBLISHED',
-  ARCHIVED = 'ARCHIVED',
-  DELETED = 'DELETED'
-}
-
-export enum ContentType {
-  MARKDOWN = 'MARKDOWN',
-  HTML = 'HTML',
-  RICH_TEXT = 'RICH_TEXT'
-}
-
-export enum RelationType {
-  RELATED = 'RELATED',
-  SEQUEL = 'SEQUEL',
-  PREQUEL = 'PREQUEL',
-  UPDATE = 'UPDATE',
-  REFERENCE = 'REFERENCE'
-}
-
-export enum ChangeType {
-  MAJOR = 'MAJOR',
-  MINOR = 'MINOR',
-  PATCH = 'PATCH',
-  CONTENT = 'CONTENT',
-  SEO = 'SEO',
-  STRUCTURE = 'STRUCTURE'
-}
-
-export enum InteractionType {
-  LIKE = 'LIKE',
-  SHARE = 'SHARE',
-  COMMENT = 'COMMENT',
-  BOOKMARK = 'BOOKMARK',
-  SUBSCRIBE = 'SUBSCRIBE',
-  DOWNLOAD = 'DOWNLOAD'
-}
-
-export enum SEOEventType {
-  TITLE_CHANGE = 'TITLE_CHANGE',
-  META_DESCRIPTION_CHANGE = 'META_DESCRIPTION_CHANGE',
-  KEYWORD_UPDATE = 'KEYWORD_UPDATE',
-  CONTENT_ANALYSIS = 'CONTENT_ANALYSIS',
-  PERFORMANCE_ALERT = 'PERFORMANCE_ALERT',
-  RANKING_CHANGE = 'RANKING_CHANGE',
-  TECHNICAL_ISSUE = 'TECHNICAL_ISSUE',
-  OPPORTUNITY = 'OPPORTUNITY'
-}
-
-export enum SEOSeverity {
-  LOW = 'LOW',
-  MEDIUM = 'MEDIUM',
-  HIGH = 'HIGH',
-  CRITICAL = 'CRITICAL',
-  INFO = 'INFO'
-}
-
-export enum ChangeFrequency {
-  ALWAYS = 'ALWAYS',
-  HOURLY = 'HOURLY',
-  DAILY = 'DAILY',
-  WEEKLY = 'WEEKLY',
-  MONTHLY = 'MONTHLY',
-  YEARLY = 'YEARLY',
-  NEVER = 'NEVER'
 }
 
 // =======================

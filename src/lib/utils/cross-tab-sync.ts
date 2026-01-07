@@ -9,38 +9,52 @@ import { createContextLogger } from '@/lib/monitoring/logger'
 const syncLogger = createContextLogger('CrossTabSync')
 
 export interface CrossTabMessage {
-  type: 'form-update' | 'form-clear' | 'form-restore'
+  type: 'form-update' | 'form-clear' | 'form-restore' | 'form-conflict'
   formId: string
   data?: Record<string, unknown>
   timestamp: number
   tabId: string
+  version?: number // For optimistic concurrency control
+  fieldPath?: string // For field-level updates
 }
 
 // Zod schema for runtime validation of CrossTabMessage
 const CrossTabMessageSchema = z.object({
-  type: z.enum(['form-update', 'form-clear', 'form-restore']),
+  type: z.enum(['form-update', 'form-clear', 'form-restore', 'form-conflict']),
   formId: z.string(),
   data: z.record(z.string(), z.unknown()).optional(),
   timestamp: z.number(),
-  tabId: z.string()
+  tabId: z.string(),
+  version: z.number().optional(),
+  fieldPath: z.string().optional(),
 })
 
 // Generate unique tab ID
 const TAB_ID = crypto.randomUUID()
 
-class CrossTabSync {
+class CrossTabSync implements Disposable {
   private listeners = new Map<string, Set<(data: unknown) => void>>()
   private lastUpdate = new Map<string, number>()
+  private lastKnownVersions = new Map<string, number>()
+  private conflictResolvers = new Map<
+    string,
+    (local: Record<string, unknown>, remote: Record<string, unknown>) => Record<string, unknown>
+  >()
+  private boundStorageHandler: (event: StorageEvent) => void
+  private boundBeforeUnloadHandler: () => void
+  private isEnabled: boolean = true
 
   constructor() {
+    // Bind handlers once for proper cleanup
+    this.boundStorageHandler = this.handleStorageEvent.bind(this)
+    this.boundBeforeUnloadHandler = () => this.cleanup()
+
     // Listen for storage events from other tabs
     if (typeof window !== 'undefined') {
-      window.addEventListener('storage', this.handleStorageEvent.bind(this))
-      
+      window.addEventListener('storage', this.boundStorageHandler)
+
       // Cleanup on beforeunload
-      window.addEventListener('beforeunload', () => {
-        this.cleanup()
-      })
+      window.addEventListener('beforeunload', this.boundBeforeUnloadHandler)
     }
   }
 
@@ -51,7 +65,12 @@ class CrossTabSync {
     if (!this.listeners.has(formId)) {
       this.listeners.set(formId, new Set())
     }
-    this.listeners.get(formId)!.add(callback)
+
+    // Safe access without non-null assertion
+    const listeners = this.listeners.get(formId)
+    if (listeners) {
+      listeners.add(callback)
+    }
 
     // Return unsubscribe function
     return () => {
@@ -68,13 +87,20 @@ class CrossTabSync {
   /**
    * Broadcast form update to other tabs
    */
-  broadcastUpdate(formId: string, data: Record<string, unknown>) {
+  broadcastUpdate(formId: string, data: Record<string, unknown>, fieldPath?: string) {
+    if (!this.isEnabled) return
+
+    const version = (this.lastKnownVersions.get(formId) || 0) + 1
+    this.lastKnownVersions.set(formId, version)
+
     const message: CrossTabMessage = {
       type: 'form-update',
       formId,
       data,
       timestamp: Date.now(),
-      tabId: TAB_ID
+      tabId: TAB_ID,
+      version,
+      fieldPath,
     }
 
     try {
@@ -93,7 +119,7 @@ class CrossTabSync {
       type: 'form-clear',
       formId,
       timestamp: Date.now(),
-      tabId: TAB_ID
+      tabId: TAB_ID,
     }
 
     try {
@@ -131,7 +157,7 @@ class CrossTabSync {
 
     const formId = event.key.replace('cross-tab-sync-', '')
     const listeners = this.listeners.get(formId)
-    
+
     if (!listeners || listeners.size === 0) return
 
     try {
@@ -141,35 +167,57 @@ class CrossTabSync {
       // Ignore messages from the same tab
       if (message.tabId === TAB_ID) return
 
-      // Ignore old messages
-      const lastTimestamp = this.lastUpdate.get(formId) || 0
-      if (message.timestamp <= lastTimestamp) return
-
       // Handle different message types
       switch (message.type) {
         case 'form-update': {
           if (message.data) {
-            // Only update if the data is newer
-            listeners.forEach(callback => {
-              callback({
-                type: 'update',
-                data: message.data,
-                timestamp: message.timestamp
+            // Check version for optimistic concurrency control
+            const currentVersion = this.lastKnownVersions.get(formId) || 0
+            if (message.version && message.version <= currentVersion) {
+              // Outdated message, ignore
+              return
+            }
+
+            if (message.fieldPath) {
+              // Field-level update - can be safely merged
+              listeners.forEach((callback) => {
+                callback({
+                  type: 'field-update',
+                  data: message.data,
+                  fieldPath: message.fieldPath,
+                  timestamp: message.timestamp,
+                  version: message.version,
+                })
               })
-            })
+            } else {
+              // Full form update - check for conflicts
+              listeners.forEach((callback) => {
+                callback({
+                  type: 'update',
+                  data: message.data,
+                  timestamp: message.timestamp,
+                  version: message.version,
+                })
+              })
+            }
+
+            if (message.version) {
+              this.lastKnownVersions.set(formId, message.version)
+            }
             this.lastUpdate.set(formId, message.timestamp)
           }
           break
         }
 
         case 'form-clear': {
-          listeners.forEach(callback => {
+          listeners.forEach((callback) => {
             callback({
               type: 'clear',
-              timestamp: message.timestamp
+              timestamp: message.timestamp,
             })
           })
           this.lastUpdate.delete(formId)
+          this.lastKnownVersions.delete(formId)
           break
         }
 
@@ -177,11 +225,31 @@ class CrossTabSync {
           // Handle restoration requests
           const latestData = this.getLatestData(formId)
           if (latestData) {
-            listeners.forEach(callback => {
+            listeners.forEach((callback) => {
               callback({
                 type: 'restore',
                 data: latestData,
-                timestamp: message.timestamp
+                timestamp: message.timestamp,
+              })
+            })
+          }
+          break
+        }
+
+        case 'form-conflict': {
+          // Handle conflict notifications
+          if (
+            message.data &&
+            typeof message.data === 'object' &&
+            'local' in message.data &&
+            'remote' in message.data
+          ) {
+            listeners.forEach((callback) => {
+              callback({
+                type: 'conflict',
+                localData: message.data!.local,
+                remoteData: message.data!.remote,
+                timestamp: message.timestamp,
               })
             })
           }
@@ -194,27 +262,88 @@ class CrossTabSync {
   }
 
   /**
-   * Check for conflicts and resolve them
+   * Broadcast conflict notification to other tabs
    */
-  resolveConflicts(formId: string, localData: Record<string, unknown>, remoteData: Record<string, unknown>) {
-    // Simple last-write-wins strategy
-    // In a more sophisticated implementation, you might:
-    // - Show a conflict resolution dialog
-    // - Merge non-conflicting fields
-    // - Use field-level timestamps
-    
-    const localTimestamp = this.lastUpdate.get(formId) || 0
-    const remoteTimestamp = Date.now() // Assume remote is newer for simplicity
-    
-    return remoteTimestamp > localTimestamp ? remoteData : localData
+  broadcastConflict(
+    formId: string,
+    localData: Record<string, unknown>,
+    remoteData: Record<string, unknown>
+  ) {
+    if (!this.isEnabled) return
+
+    const message: CrossTabMessage = {
+      type: 'form-conflict',
+      formId,
+      data: { local: localData, remote: remoteData },
+      timestamp: Date.now(),
+      tabId: TAB_ID,
+    }
+
+    try {
+      localStorage.setItem(`cross-tab-sync-${formId}`, JSON.stringify(message))
+    } catch (error) {
+      syncLogger.warn('Failed to broadcast cross-tab conflict', { error })
+    }
+  }
+
+  /**
+   * Set a custom conflict resolver for a form
+   */
+  setConflictResolver(
+    formId: string,
+    resolver: (
+      local: Record<string, unknown>,
+      remote: Record<string, unknown>
+    ) => Record<string, unknown>
+  ) {
+    this.conflictResolvers.set(formId, resolver)
+  }
+
+  /**
+   * Get the conflict resolver for a form
+   */
+  getConflictResolver(formId: string) {
+    return this.conflictResolvers.get(formId)
+  }
+
+  /**
+   * Enable cross-tab synchronization
+   */
+  enable() {
+    this.isEnabled = true
+  }
+
+  /**
+   * Disable cross-tab synchronization
+   */
+  disable() {
+    this.isEnabled = false
+  }
+
+  /**
+   * Check if cross-tab sync is enabled
+   */
+  isActive(): boolean {
+    return this.isEnabled
   }
 
   /**
    * Cleanup resources
    */
   cleanup() {
+    // Clean up all localStorage items for this tab
+    this.listeners.forEach((_, formId) => {
+      try {
+        localStorage.removeItem(`cross-tab-sync-${formId}`)
+        localStorage.removeItem(`form-auto-save-${formId}`)
+      } catch {
+        // Ignore cleanup errors
+      }
+    })
     this.listeners.clear()
     this.lastUpdate.clear()
+    this.lastKnownVersions.clear()
+    this.conflictResolvers.clear()
   }
 
   /**
@@ -222,6 +351,18 @@ class CrossTabSync {
    */
   getTabId() {
     return TAB_ID
+  }
+
+  /**
+   * Node.js 24: Explicit Resource Management - called automatically with 'using' keyword
+   */
+  [Symbol.dispose](): void {
+    // Remove event listeners
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('storage', this.boundStorageHandler)
+      window.removeEventListener('beforeunload', this.boundBeforeUnloadHandler)
+    }
+    this.cleanup()
   }
 }
 
@@ -235,12 +376,24 @@ export function useCrossTabSync(formId: string, onUpdate: (data: unknown) => voi
   if (typeof window === 'undefined') return null
 
   const unsubscribe = crossTabSync.subscribe(formId, onUpdate)
-  
+
   return {
-    broadcast: (data: Record<string, unknown>) => crossTabSync.broadcastUpdate(formId, data),
+    broadcast: (data: Record<string, unknown>, fieldPath?: string) =>
+      crossTabSync.broadcastUpdate(formId, data, fieldPath),
     clear: () => crossTabSync.broadcastClear(formId),
     getLatest: () => crossTabSync.getLatestData(formId),
+    setConflictResolver: (
+      resolver: (
+        local: Record<string, unknown>,
+        remote: Record<string, unknown>
+      ) => Record<string, unknown>
+    ) => crossTabSync.setConflictResolver(formId, resolver),
+    broadcastConflict: (localData: Record<string, unknown>, remoteData: Record<string, unknown>) =>
+      crossTabSync.broadcastConflict(formId, localData, remoteData),
+    enable: () => crossTabSync.enable(),
+    disable: () => crossTabSync.disable(),
+    isActive: () => crossTabSync.isActive(),
     unsubscribe,
-    tabId: crossTabSync.getTabId()
+    tabId: crossTabSync.getTabId(),
   }
 }

@@ -148,6 +148,7 @@ export interface BlogPost {
   publishedAt: Date | null
   scheduledAt: Date | null
   archivedAt: Date | null
+  deletedAt: Date | null
 
   // Timestamps
   createdAt: Date

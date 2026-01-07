@@ -2811,6 +2811,7 @@ export namespace Prisma {
     publishedAt: Date | null
     scheduledAt: Date | null
     archivedAt: Date | null
+    deletedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
     authorId: string | null
@@ -2848,6 +2849,7 @@ export namespace Prisma {
     publishedAt: Date | null
     scheduledAt: Date | null
     archivedAt: Date | null
+    deletedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
     authorId: string | null
@@ -2886,6 +2888,7 @@ export namespace Prisma {
     publishedAt: number
     scheduledAt: number
     archivedAt: number
+    deletedAt: number
     createdAt: number
     updatedAt: number
     authorId: number
@@ -2948,6 +2951,7 @@ export namespace Prisma {
     publishedAt?: true
     scheduledAt?: true
     archivedAt?: true
+    deletedAt?: true
     createdAt?: true
     updatedAt?: true
     authorId?: true
@@ -2985,6 +2989,7 @@ export namespace Prisma {
     publishedAt?: true
     scheduledAt?: true
     archivedAt?: true
+    deletedAt?: true
     createdAt?: true
     updatedAt?: true
     authorId?: true
@@ -3023,6 +3028,7 @@ export namespace Prisma {
     publishedAt?: true
     scheduledAt?: true
     archivedAt?: true
+    deletedAt?: true
     createdAt?: true
     updatedAt?: true
     authorId?: true
@@ -3149,6 +3155,7 @@ export namespace Prisma {
     publishedAt: Date | null
     scheduledAt: Date | null
     archivedAt: Date | null
+    deletedAt: Date | null
     createdAt: Date
     updatedAt: Date
     authorId: string
@@ -3207,6 +3214,7 @@ export namespace Prisma {
     publishedAt?: boolean
     scheduledAt?: boolean
     archivedAt?: boolean
+    deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     authorId?: boolean
@@ -3259,6 +3267,7 @@ export namespace Prisma {
     publishedAt?: boolean
     scheduledAt?: boolean
     archivedAt?: boolean
+    deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     authorId?: boolean
@@ -3300,6 +3309,7 @@ export namespace Prisma {
     publishedAt?: boolean
     scheduledAt?: boolean
     archivedAt?: boolean
+    deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     authorId?: boolean
@@ -3341,6 +3351,7 @@ export namespace Prisma {
     publishedAt?: boolean
     scheduledAt?: boolean
     archivedAt?: boolean
+    deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     authorId?: boolean
@@ -3355,7 +3366,7 @@ export namespace Prisma {
     lastSeoCheck?: boolean
   }
 
-  export type BlogPostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "slug" | "excerpt" | "content" | "contentType" | "status" | "metaTitle" | "metaDescription" | "keywords" | "canonicalUrl" | "ogTitle" | "ogDescription" | "ogImage" | "twitterTitle" | "twitterDescription" | "twitterImage" | "featuredImage" | "featuredImageAlt" | "readingTime" | "wordCount" | "publishedAt" | "scheduledAt" | "archivedAt" | "createdAt" | "updatedAt" | "authorId" | "categoryId" | "currentVersion" | "viewCount" | "likeCount" | "shareCount" | "commentCount" | "seoScore" | "seoAnalysis" | "lastSeoCheck", ExtArgs["result"]["blogPost"]>
+  export type BlogPostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "slug" | "excerpt" | "content" | "contentType" | "status" | "metaTitle" | "metaDescription" | "keywords" | "canonicalUrl" | "ogTitle" | "ogDescription" | "ogImage" | "twitterTitle" | "twitterDescription" | "twitterImage" | "featuredImage" | "featuredImageAlt" | "readingTime" | "wordCount" | "publishedAt" | "scheduledAt" | "archivedAt" | "deletedAt" | "createdAt" | "updatedAt" | "authorId" | "categoryId" | "currentVersion" | "viewCount" | "likeCount" | "shareCount" | "commentCount" | "seoScore" | "seoAnalysis" | "lastSeoCheck", ExtArgs["result"]["blogPost"]>
   export type BlogPostInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     author?: boolean | AuthorDefaultArgs<ExtArgs>
     category?: boolean | BlogPost$categoryArgs<ExtArgs>
@@ -3421,6 +3432,7 @@ export namespace Prisma {
       publishedAt: Date | null
       scheduledAt: Date | null
       archivedAt: Date | null
+      deletedAt: Date | null
       createdAt: Date
       updatedAt: Date
       authorId: string
@@ -3892,6 +3904,7 @@ export namespace Prisma {
     readonly publishedAt: FieldRef<"BlogPost", 'DateTime'>
     readonly scheduledAt: FieldRef<"BlogPost", 'DateTime'>
     readonly archivedAt: FieldRef<"BlogPost", 'DateTime'>
+    readonly deletedAt: FieldRef<"BlogPost", 'DateTime'>
     readonly createdAt: FieldRef<"BlogPost", 'DateTime'>
     readonly updatedAt: FieldRef<"BlogPost", 'DateTime'>
     readonly authorId: FieldRef<"BlogPost", 'String'>
@@ -23372,6 +23385,7 @@ export namespace Prisma {
     publishedAt: 'publishedAt',
     scheduledAt: 'scheduledAt',
     archivedAt: 'archivedAt',
+    deletedAt: 'deletedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     authorId: 'authorId',
@@ -24219,6 +24233,7 @@ export namespace Prisma {
     publishedAt?: DateTimeNullableFilter<"BlogPost"> | Date | string | null
     scheduledAt?: DateTimeNullableFilter<"BlogPost"> | Date | string | null
     archivedAt?: DateTimeNullableFilter<"BlogPost"> | Date | string | null
+    deletedAt?: DateTimeNullableFilter<"BlogPost"> | Date | string | null
     createdAt?: DateTimeFilter<"BlogPost"> | Date | string
     updatedAt?: DateTimeFilter<"BlogPost"> | Date | string
     authorId?: StringFilter<"BlogPost"> | string
@@ -24270,6 +24285,7 @@ export namespace Prisma {
     publishedAt?: SortOrderInput | SortOrder
     scheduledAt?: SortOrderInput | SortOrder
     archivedAt?: SortOrderInput | SortOrder
+    deletedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     authorId?: SortOrder
@@ -24325,6 +24341,7 @@ export namespace Prisma {
     publishedAt?: DateTimeNullableFilter<"BlogPost"> | Date | string | null
     scheduledAt?: DateTimeNullableFilter<"BlogPost"> | Date | string | null
     archivedAt?: DateTimeNullableFilter<"BlogPost"> | Date | string | null
+    deletedAt?: DateTimeNullableFilter<"BlogPost"> | Date | string | null
     createdAt?: DateTimeFilter<"BlogPost"> | Date | string
     updatedAt?: DateTimeFilter<"BlogPost"> | Date | string
     authorId?: StringFilter<"BlogPost"> | string
@@ -24376,6 +24393,7 @@ export namespace Prisma {
     publishedAt?: SortOrderInput | SortOrder
     scheduledAt?: SortOrderInput | SortOrder
     archivedAt?: SortOrderInput | SortOrder
+    deletedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     authorId?: SortOrder
@@ -24423,6 +24441,7 @@ export namespace Prisma {
     publishedAt?: DateTimeNullableWithAggregatesFilter<"BlogPost"> | Date | string | null
     scheduledAt?: DateTimeNullableWithAggregatesFilter<"BlogPost"> | Date | string | null
     archivedAt?: DateTimeNullableWithAggregatesFilter<"BlogPost"> | Date | string | null
+    deletedAt?: DateTimeNullableWithAggregatesFilter<"BlogPost"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"BlogPost"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"BlogPost"> | Date | string
     authorId?: StringWithAggregatesFilter<"BlogPost"> | string
@@ -25951,6 +25970,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     currentVersion?: number
@@ -26000,6 +26020,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     authorId: string
@@ -26049,6 +26070,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     currentVersion?: IntFieldUpdateOperationsInput | number
@@ -26098,6 +26120,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     authorId?: StringFieldUpdateOperationsInput | string
@@ -26147,6 +26170,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     authorId: string
@@ -26186,6 +26210,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     currentVersion?: IntFieldUpdateOperationsInput | number
@@ -26223,6 +26248,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     authorId?: StringFieldUpdateOperationsInput | string
@@ -28188,6 +28214,7 @@ export namespace Prisma {
     publishedAt?: SortOrder
     scheduledAt?: SortOrder
     archivedAt?: SortOrder
+    deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     authorId?: SortOrder
@@ -28237,6 +28264,7 @@ export namespace Prisma {
     publishedAt?: SortOrder
     scheduledAt?: SortOrder
     archivedAt?: SortOrder
+    deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     authorId?: SortOrder
@@ -28274,6 +28302,7 @@ export namespace Prisma {
     publishedAt?: SortOrder
     scheduledAt?: SortOrder
     archivedAt?: SortOrder
+    deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     authorId?: SortOrder
@@ -31892,6 +31921,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     currentVersion?: number
@@ -31940,6 +31970,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     categoryId?: string | null
@@ -32051,6 +32082,7 @@ export namespace Prisma {
     publishedAt?: DateTimeNullableFilter<"BlogPost"> | Date | string | null
     scheduledAt?: DateTimeNullableFilter<"BlogPost"> | Date | string | null
     archivedAt?: DateTimeNullableFilter<"BlogPost"> | Date | string | null
+    deletedAt?: DateTimeNullableFilter<"BlogPost"> | Date | string | null
     createdAt?: DateTimeFilter<"BlogPost"> | Date | string
     updatedAt?: DateTimeFilter<"BlogPost"> | Date | string
     authorId?: StringFilter<"BlogPost"> | string
@@ -32193,6 +32225,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     currentVersion?: number
@@ -32241,6 +32274,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     authorId: string
@@ -32434,6 +32468,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     currentVersion?: number
@@ -32482,6 +32517,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     authorId: string
@@ -32577,6 +32613,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     currentVersion?: IntFieldUpdateOperationsInput | number
@@ -32625,6 +32662,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     authorId?: StringFieldUpdateOperationsInput | string
@@ -32710,6 +32748,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     currentVersion?: number
@@ -32758,6 +32797,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     authorId: string
@@ -32811,6 +32851,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     currentVersion?: number
@@ -32859,6 +32900,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     authorId: string
@@ -32923,6 +32965,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     currentVersion?: IntFieldUpdateOperationsInput | number
@@ -32971,6 +33014,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     authorId?: StringFieldUpdateOperationsInput | string
@@ -33030,6 +33074,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     currentVersion?: IntFieldUpdateOperationsInput | number
@@ -33078,6 +33123,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     authorId?: StringFieldUpdateOperationsInput | string
@@ -33169,6 +33215,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     currentVersion?: number
@@ -33217,6 +33264,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     authorId: string
@@ -33330,6 +33378,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     currentVersion?: IntFieldUpdateOperationsInput | number
@@ -33378,6 +33427,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     authorId?: StringFieldUpdateOperationsInput | string
@@ -33499,6 +33549,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     currentVersion?: number
@@ -33547,6 +33598,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     authorId: string
@@ -33652,6 +33704,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     currentVersion?: IntFieldUpdateOperationsInput | number
@@ -33700,6 +33753,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     authorId?: StringFieldUpdateOperationsInput | string
@@ -33748,6 +33802,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     currentVersion?: number
@@ -33796,6 +33851,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     authorId: string
@@ -33860,6 +33916,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     currentVersion?: IntFieldUpdateOperationsInput | number
@@ -33908,6 +33965,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     authorId?: StringFieldUpdateOperationsInput | string
@@ -33956,6 +34014,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     currentVersion?: number
@@ -34004,6 +34063,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     authorId: string
@@ -34068,6 +34128,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     currentVersion?: IntFieldUpdateOperationsInput | number
@@ -34116,6 +34177,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     authorId?: StringFieldUpdateOperationsInput | string
@@ -34164,6 +34226,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     currentVersion?: number
@@ -34212,6 +34275,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     authorId: string
@@ -34276,6 +34340,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     currentVersion?: IntFieldUpdateOperationsInput | number
@@ -34324,6 +34389,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     authorId?: StringFieldUpdateOperationsInput | string
@@ -34372,6 +34438,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     currentVersion?: number
@@ -34420,6 +34487,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     authorId: string
@@ -34484,6 +34552,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     currentVersion?: IntFieldUpdateOperationsInput | number
@@ -34532,6 +34601,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     authorId?: StringFieldUpdateOperationsInput | string
@@ -34580,6 +34650,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     currentVersion?: number
@@ -34628,6 +34699,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     authorId: string
@@ -34692,6 +34764,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     currentVersion?: IntFieldUpdateOperationsInput | number
@@ -34740,6 +34813,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     authorId?: StringFieldUpdateOperationsInput | string
@@ -35196,6 +35270,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     categoryId?: string | null
@@ -35246,6 +35321,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     currentVersion?: IntFieldUpdateOperationsInput | number
@@ -35294,6 +35370,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35342,6 +35419,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35432,6 +35510,7 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     scheduledAt?: Date | string | null
     archivedAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     authorId: string
@@ -35522,6 +35601,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     currentVersion?: IntFieldUpdateOperationsInput | number
@@ -35570,6 +35650,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     authorId?: StringFieldUpdateOperationsInput | string
@@ -35618,6 +35699,7 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     authorId?: StringFieldUpdateOperationsInput | string

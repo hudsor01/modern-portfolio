@@ -6,50 +6,47 @@
 
 import { z } from 'zod'
 import { logger } from '@/lib/monitoring/logger'
+import { getConfigSection } from '@/lib/config'
+import type {
+  EnhancedWebVitalsData,
+  DeviceInfo,
+  ConnectionInfo,
+  AnalyticsStorage,
+  AnalyticsQueryFilters,
+  AnalyticsQueryResult,
+  AnalyticsAggregation,
+  TimeRange,
+  PerformanceAlert,
+  GroupedAnalyticsResult,
+} from '@/types/analytics'
+import { WEB_VITALS_THRESHOLDS } from '@/types/analytics'
 
-// Web Vitals data validation schema
-export const WebVitalsSchema = z.object({
+// Re-export for backward compatibility
+export type { DeviceInfo, ConnectionInfo }
+
+// Re-export thresholds
+export { WEB_VITALS_THRESHOLDS }
+
+// Web Vitals data validation schema (local definition since it's Zod-specific)
+const WebVitalsSchema = z.object({
   id: z.string().min(1, 'ID is required'),
   name: z.enum(['CLS', 'FID', 'FCP', 'LCP', 'TTFB', 'INP']),
   value: z.number().min(0, 'Value must be non-negative'),
   rating: z.enum(['good', 'needs-improvement', 'poor']).optional(),
   delta: z.number().optional(),
-  entries: z.array(z.unknown()).optional(), // Changed z.any() to z.unknown()
+  entries: z.array(z.unknown()).optional(),
   navigationType: z.enum(['navigate', 'reload', 'back-forward', 'prerender']).optional(),
   url: z.string().url().optional(),
   userAgent: z.string().optional(),
   timestamp: z.number().optional(),
 })
 
+// Export inferred type
 export type WebVitalsData = z.infer<typeof WebVitalsSchema>
 
-// Enhanced Web Vitals data with additional context
-export interface EnhancedWebVitalsData extends WebVitalsData {
-  sessionId: string
-  userId?: string
-  page: string
-  device: DeviceInfo
-  connection: ConnectionInfo
-  timestamp: number
-  buildId?: string
-  version?: string
-}
-
-export interface DeviceInfo {
-  type: 'mobile' | 'tablet' | 'desktop'
-  os?: string
-  browser?: string
-  viewport: {
-    width: number
-    height: number
-  }
-}
-
-export interface ConnectionInfo {
-  effectiveType?: string
-  downlink?: number
-  rtt?: number
-  saveData?: boolean
+// Safe division utility to prevent division by zero
+function safeDivide(numerator: number, denominator: number, defaultValue: number = 0): number {
+  return denominator === 0 ? defaultValue : numerator / denominator
 }
 
 // Type for navigator.connection
@@ -58,38 +55,65 @@ interface NetworkInformation extends EventTarget {
   readonly downlink?: number
   readonly rtt?: number
   readonly saveData?: boolean
-  // Other properties like type, onchange could be added if needed
 }
 
 interface NavigatorWithConnection extends Navigator {
   readonly connection?: NetworkInformation
 }
 
-// Thresholds for Core Web Vitals (based on Google's recommendations)
-export const WEB_VITALS_THRESHOLDS = {
-  CLS: { good: 0.1, poor: 0.25 },
-  FID: { good: 100, poor: 300 },
-  FCP: { good: 1800, poor: 3000 },
-  LCP: { good: 2500, poor: 4000 },
-  TTFB: { good: 800, poor: 1800 },
-  INP: { good: 200, poor: 500 },
-} as const
+// Get configuration from centralized config (lazy loaded)
+const getSecurityConfig = () => getConfigSection('security')
 
-// Rate limiting for analytics (prevent spam)
-const analyticsRateLimit = new Map<string, { count: number; resetTime: number }>()
-const ANALYTICS_RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
-const ANALYTICS_RATE_LIMIT_MAX = 50 // Max 50 metrics per minute per client
+// Rate limiting for analytics (prevent spam + enforce retention)
+const analyticsRateLimit = new Map<string, { count: number; resetTime: number; lastSeen: number }>()
+const getAnalyticsRateLimitWindow = () => getSecurityConfig().rateLimitWindowMs
+const getAnalyticsRateLimitMax = () => getSecurityConfig().rateLimitMaxRequests
+const getAnalyticsRateLimitRetentionMs = () => getSecurityConfig().rateLimitClientExpiryMs
+const getAnalyticsRateLimitMaxEntries = () => getSecurityConfig().rateLimitMaxHistoryPerClient
+const getAnalyticsRateLimitCleanupInterval = () => 300000 // 5 minutes - hardcoded for now
+let lastAnalyticsRateLimitCleanup = 0
+
+function cleanupAnalyticsRateLimit(now: number, force: boolean = false): void {
+  if (!force && now - lastAnalyticsRateLimitCleanup < getAnalyticsRateLimitCleanupInterval()) {
+    return
+  }
+  lastAnalyticsRateLimitCleanup = now
+
+  for (const [key, record] of analyticsRateLimit.entries()) {
+    if (now - record.lastSeen > getAnalyticsRateLimitRetentionMs()) {
+      analyticsRateLimit.delete(key)
+    }
+  }
+
+  if (analyticsRateLimit.size > getAnalyticsRateLimitMaxEntries()) {
+    const entries = Array.from(analyticsRateLimit.entries()).sort(
+      (a, b) => a[1].lastSeen - b[1].lastSeen
+    )
+    const toRemove = analyticsRateLimit.size - getAnalyticsRateLimitMaxEntries()
+    for (let i = 0; i < toRemove; i++) {
+      const entry = entries[i]
+      if (entry) analyticsRateLimit.delete(entry[0])
+    }
+  }
+}
 
 export function checkAnalyticsRateLimit(identifier: string): boolean {
   const now = Date.now()
+  cleanupAnalyticsRateLimit(now, analyticsRateLimit.size > getAnalyticsRateLimitMaxEntries())
+
   const record = analyticsRateLimit.get(identifier)
 
   if (!record || now > record.resetTime) {
-    analyticsRateLimit.set(identifier, { count: 1, resetTime: now + ANALYTICS_RATE_LIMIT_WINDOW })
+    analyticsRateLimit.set(identifier, {
+      count: 1,
+      resetTime: now + getAnalyticsRateLimitWindow(),
+      lastSeen: now,
+    })
     return true
   }
 
-  if (record.count >= ANALYTICS_RATE_LIMIT_MAX) {
+  record.lastSeen = now
+  if (record.count >= getAnalyticsRateLimitMax()) {
     return false
   }
 
@@ -137,63 +161,59 @@ export function getDeviceInfo(
   }
 }
 
-// Analytics storage interface
-export interface AnalyticsStorage {
-  store(data: EnhancedWebVitalsData): Promise<void>
-  query(filters: AnalyticsQueryFilters): Promise<AnalyticsQueryResult[]>
-  aggregate(timeRange: TimeRange, groupBy?: string): Promise<AnalyticsAggregation>
-}
-
-export interface AnalyticsQueryFilters {
-  startDate?: Date
-  endDate?: Date
-  page?: string
-  metric?: WebVitalsData['name']
-  device?: DeviceInfo['type']
-  rating?: 'good' | 'needs-improvement' | 'poor'
-  limit?: number
-}
-
-export interface AnalyticsQueryResult extends EnhancedWebVitalsData {}
-
-export interface AnalyticsAggregation {
-  totalSamples: number
-  averageValue: number
-  medianValue: number
-  p75Value: number
-  p95Value: number
-  ratingDistribution: {
-    good: number
-    needsImprovement: number
-    poor: number
-  }
-  byPage: Record<string, GroupedAnalyticsResult> // Use GroupedAnalyticsResult
-  byDevice: Record<string, GroupedAnalyticsResult> // Use GroupedAnalyticsResult
-}
-
-interface GroupedAnalyticsResult {
-  samples: number
-  average: number
-  rating: 'good' | 'needs-improvement' | 'poor' // Made rating more specific
-}
-
-export interface TimeRange {
-  start: Date
-  end: Date
-}
+// Analytics storage interface (using centralized types)
+// AnalyticsStorage, AnalyticsQueryFilters, AnalyticsQueryResult, AnalyticsAggregation, TimeRange, GroupedAnalyticsResult are imported from @/types/analytics
 
 // In-memory storage (for development/small scale)
 class InMemoryAnalyticsStorage implements AnalyticsStorage {
   private data: EnhancedWebVitalsData[] = []
   private readonly maxEntries = 10000 // Prevent memory overflow
+  private readonly maxAge = 7 * 24 * 60 * 60 * 1000 // 7 days - remove old entries
+  private cleanupInterval: NodeJS.Timeout | null = null
+
+  constructor() {
+    // Run cleanup every hour to prevent memory accumulation
+    this.cleanupInterval = setInterval(
+      () => {
+        this.cleanup()
+      },
+      60 * 60 * 1000
+    ) // 1 hour
+    this.cleanupInterval.unref?.()
+  }
 
   async store(data: EnhancedWebVitalsData): Promise<void> {
     this.data.push(data)
 
-    // Keep only recent entries
+    // Keep only recent entries by size
     if (this.data.length > this.maxEntries) {
       this.data = this.data.slice(-this.maxEntries)
     }
+  }
+
+  private cleanup(): void {
+    const now = Date.now()
+    const beforeCount = this.data.length
+
+    // Remove entries older than maxAge
+    this.data = this.data.filter((entry) => now - entry.timestamp < this.maxAge)
+
+    const removedCount = beforeCount - this.data.length
+    if (removedCount > 0) {
+      logger.debug('Web vitals cleanup', {
+        removedEntries: removedCount,
+        remainingEntries: this.data.length,
+      })
+    }
+  }
+
+  // Cleanup on destruction
+  destroy(): void {
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval)
+      this.cleanupInterval = null
+    }
+    this.data = []
   }
 
   async query(filters: AnalyticsQueryFilters): Promise<AnalyticsQueryResult[]> {
@@ -254,7 +274,10 @@ class InMemoryAnalyticsStorage implements AnalyticsStorage {
 
     return {
       totalSamples: filtered.length,
-      averageValue: values.reduce((sum, val) => sum + val, 0) / values.length,
+      averageValue: safeDivide(
+        values.reduce((sum, val) => sum + val, 0),
+        values.length
+      ),
       medianValue: values[Math.floor(values.length / 2)] || 0,
       p75Value: values[Math.floor(values.length * 0.75)] || 0,
       p95Value: values[Math.floor(values.length * 0.95)] || 0,
@@ -287,7 +310,10 @@ class InMemoryAnalyticsStorage implements AnalyticsStorage {
     const result: Record<string, GroupedAnalyticsResult> = {} // Updated type
     Object.entries(groups).forEach(([groupKey, items]) => {
       const values = items.map((item) => item.value)
-      const average = values.reduce((sum, val) => sum + val, 0) / values.length
+      const average = safeDivide(
+        values.reduce((sum, val) => sum + val, 0),
+        values.length
+      )
       result[groupKey] = {
         samples: items.length,
         average,
@@ -305,6 +331,15 @@ export class WebVitalsService {
 
   constructor(storage?: AnalyticsStorage) {
     this.storage = storage || new InMemoryAnalyticsStorage()
+  }
+
+  // ... existing methods ...
+
+  // Cleanup method for proper resource management
+  destroy(): void {
+    if (this.storage && typeof this.storage.destroy === 'function') {
+      this.storage.destroy()
+    }
   }
 
   async collect(
@@ -423,13 +458,19 @@ export class WebVitalsService {
   private generatePerformanceAlerts(metrics: AnalyticsQueryResult[]): PerformanceAlert[] {
     const alerts: PerformanceAlert[] = []
 
+    // Guard against empty metrics array
+    if (metrics.length === 0) {
+      return alerts
+    }
+
     // Check for high percentage of poor ratings
     const recentPoorRatings = metrics.filter((m) => m.rating === 'poor')
-    if (recentPoorRatings.length / metrics.length > 0.3) {
+    const poorRatingRatio = safeDivide(recentPoorRatings.length, metrics.length)
+    if (poorRatingRatio > 0.3) {
       alerts.push({
         type: 'high_poor_ratings',
         severity: 'warning',
-        message: `${Math.round((recentPoorRatings.length / metrics.length) * 100)}% of recent metrics have poor ratings`,
+        message: `${Math.round(poorRatingRatio * 100)}% of recent metrics have poor ratings`,
         metrics: recentPoorRatings.slice(0, 5),
       })
     }
@@ -437,7 +478,10 @@ export class WebVitalsService {
     // Check for specific metric degradation
     const lcpMetrics = metrics.filter((m) => m.name === 'LCP')
     if (lcpMetrics.length > 0) {
-      const avgLCP = lcpMetrics.reduce((sum, m) => sum + m.value, 0) / lcpMetrics.length
+      const avgLCP = safeDivide(
+        lcpMetrics.reduce((sum, m) => sum + m.value, 0),
+        lcpMetrics.length
+      )
       if (avgLCP > WEB_VITALS_THRESHOLDS.LCP.poor) {
         alerts.push({
           type: 'lcp_degradation',
@@ -450,13 +494,6 @@ export class WebVitalsService {
 
     return alerts
   }
-}
-
-export interface PerformanceAlert {
-  type: string
-  severity: 'info' | 'warning' | 'critical'
-  message: string
-  metrics: AnalyticsQueryResult[]
 }
 
 // Export singleton instance

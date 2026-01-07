@@ -1,5 +1,6 @@
 import type { QueryClient } from '@tanstack/react-query'
 import type { BlogPostFilters, BlogPostSort } from '@/types/shared-api'
+import type { ProjectFilters } from '@/types/query'
 
 export type QueryKeyFactories = {
   projects: {
@@ -35,14 +36,6 @@ export type QueryKeyFactories = {
     analytics: () => readonly ['blog', 'analytics']
     rss: () => readonly ['blog', 'rss']
   }
-}
-
-// Project filter types for consistent filtering
-export interface ProjectFilters {
-  category?: string
-  technology?: string
-  featured?: boolean
-  search?: string
 }
 
 /**
