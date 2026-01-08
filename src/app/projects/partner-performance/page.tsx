@@ -219,10 +219,10 @@ export default function PartnerPerformanceIntelligence() {
                             <span
                               className={`px-2 py-1 rounded-full text-xs font-medium ${
                                 tier.winRate >= 85
-                                  ? 'bg-green-500/20 text-green-400'
+                                  ? 'bg-success/20 text-success'
                                   : tier.winRate >= 70
-                                    ? 'bg-yellow-500/20 text-yellow-400'
-                                    : 'bg-red-500/20 text-red-400'
+                                    ? 'bg-warning/20 text-warning'
+                                    : 'bg-destructive/20 text-destructive'
                               }`}
                             >
                               {formatPercentage(tier.winRate / 100)}
@@ -233,10 +233,10 @@ export default function PartnerPerformanceIntelligence() {
                             <span
                               className={`px-2 py-1 rounded-full text-xs font-medium ${
                                 tier.roi >= 5
-                                  ? 'bg-green-500/20 text-green-400'
+                                  ? 'bg-success/20 text-success'
                                   : tier.roi >= 3
-                                    ? 'bg-yellow-500/20 text-yellow-400'
-                                    : 'bg-red-500/20 text-red-400'
+                                    ? 'bg-warning/20 text-warning'
+                                    : 'bg-destructive/20 text-destructive'
                               }`}
                             >
                               {tier.roi}x
