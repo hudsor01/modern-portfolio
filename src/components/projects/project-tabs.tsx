@@ -9,7 +9,7 @@ export function ProjectTabs({ projects }: ProjectTabsProps) {
   const allCategories = React.useMemo(() => {
     const categories = new Set<string>()
     projects.forEach((project) => {
-      project.technologies?.forEach((tag) => categories.add(tag))
+      project.tags?.forEach((tag) => categories.add(tag))
     })
     return ['All', ...Array.from(categories)]
   }, [projects])
@@ -19,7 +19,7 @@ export function ProjectTabs({ projects }: ProjectTabsProps) {
   // Filter projects by category
   const filteredProjects = React.useMemo(() => {
     if (activeCategory === 'All') return projects
-    return projects.filter((project) => project.technologies?.includes(activeCategory))
+    return projects.filter((project) => project.tags?.includes(activeCategory))
   }, [projects, activeCategory])
 
   // Ensure projects have required fields for ProjectSwiper
@@ -60,9 +60,7 @@ export function ProjectTabs({ projects }: ProjectTabsProps) {
           <ProjectSwiper projects={formattedProjects} showViewAll={false} />
         ) : (
           <div className="text-center py-16">
-            <p className="typography-lead">
-              No projects found in this category
-            </p>
+            <p className="typography-lead">No projects found in this category</p>
           </div>
         )}
       </div>

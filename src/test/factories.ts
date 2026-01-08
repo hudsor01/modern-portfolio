@@ -8,20 +8,25 @@ export const createMockProject = (overrides: Partial<Project> = {}): Project => 
   title: 'Test Project',
   slug: 'test-project',
   description: 'A test project for testing purposes',
-  longDescription: 'This is a longer description of the test project that provides more details about what it does and how it works.',
-  technologies: ['React', 'TypeScript', 'Next.js'],
+  longDescription:
+    'This is a longer description of the test project that provides more details about what it does and how it works.',
+  tags: ['React', 'TypeScript', 'Next.js'],
   category: 'Analytics',
-  tags: ['dashboard', 'analytics', 'revenue'],
-  image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&crop=center&q=80',
-  githubUrl: 'https://github.com/test/project',
+  image:
+    'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&crop=center&q=80',
+  github: 'https://github.com/test/project',
   featured: false,
   viewCount: 0,
   clickCount: 0,
+  createdAt: new Date('2024-01-01'),
+  updatedAt: new Date('2024-01-01'),
   ...overrides,
 })
 
 // Factory for creating mock contact form data
-export const createMockContactForm = (overrides: Partial<ContactFormData> = {}): ContactFormData => ({
+export const createMockContactForm = (
+  overrides: Partial<ContactFormData> = {}
+): ContactFormData => ({
   name: 'John Doe',
   email: 'john.doe@example.com',
   subject: 'Test Inquiry',
@@ -40,8 +45,18 @@ export const createMockChartData = (dataPoints = 5): ChartData[] => {
 // Factory for creating mock revenue data
 export const createMockRevenueData = (months = 12) => {
   const months_names = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
   ]
 
   return Array.from({ length: months }, (_, index) => ({

@@ -1,41 +1,39 @@
 /**
  * Centralized API utilities
  * Provides consistent request handling and client identification
+ *
+ * API Error Handling:
+ * - Use `handleApiError()` for consistent error responses with logging
+ * - Use `withApiErrorHandling()` to wrap route handlers
+ * - Use `createApiErrorResponse()` and `createApiSuccessResponse()` for standardized responses
+ * - All errors are logged internally with full context, client gets sanitized messages
+ * - Development shows full error details, production shows generic messages
  */
 
 import { NextRequest } from 'next/server'
 import { logger } from '@/lib/monitoring/logger'
-
-// Request metadata type
-export interface RequestMetadata {
-  userAgent?: string
-  ip?: string
-  path?: string
-  timestamp?: number
-}
+import type { RequestMetadata } from '@/types/api'
+import { ApiErrorType, ApiErrorResponse, ApiSuccessResponse } from '@/types/api'
 
 /**
  * Extract client identifier from request for rate limiting
  */
 export function getClientIdentifier(request: NextRequest | Request): string {
   const headers = request.headers
-  
+
   // Try to get IP from various headers (Vercel, Cloudflare, etc.)
   const forwarded = headers.get('x-forwarded-for')
   const realIp = headers.get('x-real-ip')
   const cfConnectingIp = headers.get('cf-connecting-ip')
   const vercelForwardedFor = headers.get('x-vercel-forwarded-for')
-  
-  const ip = forwarded?.split(',')[0]?.trim() || 
-           realIp || 
-           cfConnectingIp || 
-           vercelForwardedFor ||
-           'unknown'
-  
+
+  const ip =
+    forwarded?.split(',')[0]?.trim() || realIp || cfConnectingIp || vercelForwardedFor || 'unknown'
+
   // Add user agent hash as additional identifier
   const userAgent = headers.get('user-agent') || 'unknown'
   const userAgentHash = Buffer.from(userAgent).toString('base64').slice(0, 8)
-  
+
   return `${ip}:${userAgentHash}`
 }
 
@@ -44,7 +42,7 @@ export function getClientIdentifier(request: NextRequest | Request): string {
  */
 export function getRequestMetadata(request: NextRequest | Request): RequestMetadata {
   const headers = request.headers
-  
+
   return {
     userAgent: headers.get('user-agent') || undefined,
     ip: getClientIdentifier(request).split(':')[0],
@@ -59,15 +57,17 @@ export function getRequestMetadata(request: NextRequest | Request): RequestMetad
 export async function parseRequestBody(request: NextRequest | Request): Promise<unknown> {
   try {
     const contentType = request.headers.get('content-type')
-    
+
     if (!contentType?.includes('application/json')) {
       throw new Error('Content-Type must be application/json')
     }
-    
+
     const body = await request.json()
     return body
   } catch (error) {
-    logger.warn('Failed to parse request body', { error: error instanceof Error ? error.message : 'Unknown error' })
+    logger.warn('Failed to parse request body', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    })
     throw new Error('Invalid JSON in request body')
   }
 }
@@ -84,7 +84,7 @@ export function createResponseHeaders(rateLimitInfo?: {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   }
-  
+
   if (rateLimitInfo) {
     if (rateLimitInfo.limit !== undefined) {
       headers['X-RateLimit-Limit'] = rateLimitInfo.limit.toString()
@@ -99,7 +99,7 @@ export function createResponseHeaders(rateLimitInfo?: {
       headers['Retry-After'] = Math.ceil((rateLimitInfo.retryAfter - Date.now()) / 1000).toString()
     }
   }
-  
+
   return headers
 }
 
@@ -187,7 +187,7 @@ export function sanitizeErrorForClient(
   // Log full error internally before sanitizing
   logger.error('Sanitized error for client', new Error(errorMessage), { errorType })
 
-  return PRODUCTION_ERROR_MESSAGES[errorType] ?? PRODUCTION_ERROR_MESSAGES['DEFAULT'] as string
+  return PRODUCTION_ERROR_MESSAGES[errorType] ?? (PRODUCTION_ERROR_MESSAGES['DEFAULT'] as string)
 }
 
 /**
@@ -211,5 +211,103 @@ export function logAndSanitizeError(
     return errorMessage
   }
 
-  return PRODUCTION_ERROR_MESSAGES[errorType] ?? PRODUCTION_ERROR_MESSAGES['DEFAULT'] as string
+  return PRODUCTION_ERROR_MESSAGES[errorType] ?? (PRODUCTION_ERROR_MESSAGES['DEFAULT'] as string)
+}
+
+/**
+ * Create standardized API error response
+ * Includes proper logging and sanitization
+ */
+export function createApiErrorResponse(
+  error: unknown,
+  context: string,
+  errorType: ApiErrorType = ApiErrorType.INTERNAL_ERROR,
+  statusCode: number = 500,
+  additionalInfo?: Record<string, unknown>
+): { response: ApiErrorResponse; statusCode: number } {
+  const sanitizedMessage = logAndSanitizeError(
+    `${context} - ${errorType}`,
+    error,
+    errorType,
+    additionalInfo
+  )
+
+  const response: ApiErrorResponse = {
+    success: false,
+    error: sanitizedMessage,
+    code: errorType,
+    timestamp: new Date().toISOString(),
+  }
+
+  // Add error details in development
+  if (process.env.NODE_ENV === 'development' && error instanceof Error) {
+    response.details = {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+    }
+  }
+
+  return { response, statusCode }
+}
+
+/**
+ * Create standardized API success response
+ */
+export function createApiSuccessResponse<T = unknown>(
+  data: T,
+  message?: string
+): ApiSuccessResponse<T> {
+  return {
+    success: true,
+    data,
+    message,
+    timestamp: new Date().toISOString(),
+  }
+}
+
+/**
+ * Handle API route errors with consistent logging and response formatting
+ * This is the main utility for standardizing error handling across all API routes
+ */
+export async function handleApiError(
+  error: unknown,
+  context: string,
+  errorType: ApiErrorType = ApiErrorType.INTERNAL_ERROR,
+  statusCode: number = 500,
+  additionalInfo?: Record<string, unknown>
+): Promise<Response> {
+  const { response, statusCode: finalStatusCode } = createApiErrorResponse(
+    error,
+    context,
+    errorType,
+    statusCode,
+    additionalInfo
+  )
+
+  return new Response(JSON.stringify(response), {
+    status: finalStatusCode,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+    },
+  })
+}
+
+/**
+ * Wrap API route handlers with standardized error handling
+ * Usage: export const GET = withApiErrorHandling(async (request) => { ... }, 'RouteName')
+ */
+export function withApiErrorHandling<T extends unknown[]>(
+  handler: (...args: T) => Promise<Response>,
+  context: string,
+  errorType: ApiErrorType = ApiErrorType.INTERNAL_ERROR
+) {
+  return async (...args: T): Promise<Response> => {
+    try {
+      return await handler(...args)
+    } catch (error) {
+      return handleApiError(error, context, errorType)
+    }
+  }
 }

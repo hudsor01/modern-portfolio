@@ -7,6 +7,7 @@ import { useState, useCallback, useMemo } from 'react'
 import { useForm } from '@tanstack/react-form'
 import { useStore } from '@tanstack/react-store'
 import { contactFormSchema } from '@/lib/validations/unified-schemas'
+import { handleHookError } from '@/lib/error-handling'
 
 // ============================================================================
 // Types
@@ -55,6 +56,7 @@ export function useContactForm() {
   const [showPrivacy, setShowPrivacy] = useState(false)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<ContactFormErrors>({})
+  const [error, setError] = useState<Error | null>(null)
 
   // TanStack Form instance
   const form = useForm({
@@ -68,6 +70,7 @@ export function useContactForm() {
       }
 
       setSubmitStatus('submitting')
+      setError(null)
 
       try {
         const response = await fetch('/api/contact', {
@@ -95,7 +98,12 @@ export function useContactForm() {
             setFieldErrors(apiErrors)
           }
         }
-      } catch {
+      } catch (err) {
+        handleHookError(
+          err,
+          { operation: 'submitContactForm', component: 'useContactForm' },
+          setError
+        )
         setSubmitStatus('error')
       }
     },
@@ -214,6 +222,7 @@ export function useContactForm() {
     setAgreedToTerms,
     resetForm,
     form,
+    error,
   }
 }
 

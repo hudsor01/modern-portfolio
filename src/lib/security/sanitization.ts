@@ -1,13 +1,15 @@
+'use client'
+
 /**
  * Client-Safe HTML Sanitization
- * For use in Client Components where server-only can't be imported
+ * Used in Client Components to avoid Vercel serverless costs
+ * For use in Client Components only - do NOT import in Server Components
  */
-'use client'
 
 import DOMPurify from 'isomorphic-dompurify'
 
 // ============================================================================
-// Client-Side Sanitization Config
+// Configs
 // ============================================================================
 
 const BLOG_SANITIZE_CONFIG = {
@@ -40,19 +42,46 @@ const BLOG_SANITIZE_CONFIG = {
   FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur', 'onsubmit'],
 }
 
-/**
- * Sanitize HTML content for blog posts (client-side)
- * This runs in both SSR and client thanks to isomorphic-dompurify
- */
+// ============================================================================
+// Sanitization Functions
+// ============================================================================
+
+export function escapeHtml(text: string): string {
+  return text.replace(/[&<>"'/]/g, (char) => {
+    switch (char) {
+      case '&': return '&'
+      case '<': return '<'
+      case '>': return '>'
+      case '"': return '"'
+      case "'": return '&#x27;'
+      case '/': return '&#x2F;'
+      default: return char
+    }
+  })
+}
+
 export function sanitizeBlogHtml(html: string): string {
   const result = DOMPurify.sanitize(html, BLOG_SANITIZE_CONFIG)
   return typeof result === 'string' ? result : String(result)
 }
 
-/**
- * Strip all HTML and return plain text
- */
-export function stripAllHtml(html: string): string {
+export function stripHtml(html: string): string {
   const result = DOMPurify.sanitize(html, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
   return typeof result === 'string' ? result : String(result)
+}
+
+export function isSafeUrl(url: string): boolean {
+  const lowerUrl = url.toLowerCase().trim()
+  if (
+    lowerUrl.startsWith('javascript:') ||
+    lowerUrl.startsWith('data:') ||
+    lowerUrl.startsWith('vbscript:')
+  ) {
+    return false
+  }
+  return true
+}
+
+export function sanitizeAttribute(text: string): string {
+  return escapeHtml(text).replace(/"/g, '"')
 }

@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query'
 import { getProjects, getProject } from '@/lib/content/projects'
-import type { Project } from '@/types/project'
+import { normalizeProjectForDisplay } from '@/types/project'
 import { Metadata } from 'next'
 import { createQueryClient } from '@/lib/query-config'
 import ProjectDetailClientBoundary from '@/components/projects/project-detail-client-boundary'
@@ -78,8 +78,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     notFound()
   }
 
-  // Convert to the expected Project type for the component
-  const convertedProject: Project = {
+  // Convert to the expected Project type for the component with normalized display fields
+  const convertedProject = normalizeProjectForDisplay({
     id: project.id,
     title: project.title,
     slug: project.slug || project.id,
@@ -95,17 +95,17 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       project.createdAt instanceof Date
         ? project.createdAt
         : new Date(project.createdAt || '2024-01-01'),
-    ...(project.updatedAt && {
-      updatedAt:
-        project.updatedAt instanceof Date ? project.updatedAt : new Date(project.updatedAt),
-    }),
-    ...(project.tags && { technologies: project.tags }),
-    ...(project.link && { liveUrl: project.link }),
-    ...(project.github && { githubUrl: project.github }),
+    updatedAt: project.updatedAt
+      ? project.updatedAt instanceof Date
+        ? project.updatedAt
+        : new Date(project.updatedAt)
+      : project.createdAt instanceof Date
+        ? project.createdAt
+        : new Date(project.createdAt || '2024-01-01'),
     ...('starData' in project && project.starData && { starData: project.starData }),
     viewCount: project.viewCount ?? 0,
     clickCount: project.clickCount ?? 0,
-  }
+  })
 
   // Prefetch project data on the server
   await queryClient.prefetchQuery({

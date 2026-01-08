@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-
+import { useState, useEffect, useMemo } from 'react'
 
 interface TypewriterTitleProps {
   titles: string[]
@@ -14,55 +13,95 @@ export function TypewriterTitle({
   titles,
   typingSpeed = 100,
   pauseDuration = 2000,
-  className = ''
+  className = '',
 }: TypewriterTitleProps) {
   const [currentTitleIndex, setCurrentTitleIndex] = useState(0)
   const [displayedText, setDisplayedText] = useState('')
   const [isTyping, setIsTyping] = useState(true)
   const [cursorVisible, setCursorVisible] = useState(true)
 
+  // Enhanced validation for titles array - memoized
+  const safeTitles = useMemo(
+    () =>
+      Array.isArray(titles) && titles.length > 0
+        ? titles.filter((title) => typeof title === 'string' && title.trim().length > 0)
+        : [],
+    [titles]
+  )
+
   useEffect(() => {
-    if (titles.length === 0) return
-    
-    const currentTitle = titles[currentTitleIndex] || ''
-    
+    // Additional guard against empty or invalid titles array during runtime
+    if (!Array.isArray(safeTitles) || safeTitles.length === 0) {
+      setDisplayedText('')
+      setIsTyping(false)
+      return
+    }
+
+    // Guard against out-of-bounds index with additional safety
+    const safeIndex = Math.max(0, Math.min(currentTitleIndex, safeTitles.length - 1))
+    const currentTitle = safeTitles[safeIndex] || ''
+
     if (isTyping) {
-      // Typing phase
+      // Typing phase with bounds checking
       if (displayedText.length < currentTitle.length) {
-        const timer = setTimeout(() => {
-          setDisplayedText(currentTitle.slice(0, displayedText.length + 1))
-        }, typingSpeed)
+        const timer = setTimeout(
+          () => {
+            setDisplayedText(currentTitle.slice(0, displayedText.length + 1))
+          },
+          Math.max(10, typingSpeed)
+        ) // Ensure minimum typing speed
         return () => clearTimeout(timer)
       } else {
         // Finished typing, pause before backspacing
-        const timer = setTimeout(() => {
-          setIsTyping(false)
-        }, pauseDuration)
+        const timer = setTimeout(
+          () => {
+            setIsTyping(false)
+          },
+          Math.max(500, pauseDuration)
+        ) // Ensure minimum pause duration
         return () => clearTimeout(timer)
       }
     } else {
-      // Backspacing phase
+      // Backspacing phase with bounds checking
       if (displayedText.length > 0) {
-        const timer = setTimeout(() => {
-          setDisplayedText(displayedText.slice(0, -1))
-        }, typingSpeed / 2) // Backspace faster
+        const timer = setTimeout(
+          () => {
+            setDisplayedText(displayedText.slice(0, -1))
+          },
+          Math.max(10, typingSpeed / 2)
+        ) // Backspace faster but with minimum speed
         return () => clearTimeout(timer)
       } else {
-        // Finished backspacing, move to next title
-        setCurrentTitleIndex((prev) => (prev + 1) % titles.length)
+        // Finished backspacing, move to next title with enhanced safety
+        setCurrentTitleIndex((prev) => {
+          if (safeTitles.length === 0) return 0
+          const nextIndex = prev + 1
+          return nextIndex % safeTitles.length
+        })
         setIsTyping(true)
         return
       }
     }
-  }, [displayedText, isTyping, currentTitleIndex, titles, typingSpeed, pauseDuration])
+  }, [displayedText, isTyping, currentTitleIndex, safeTitles, typingSpeed, pauseDuration])
 
   // Cursor blinking effect
   useEffect(() => {
     const cursorTimer = setInterval(() => {
-      setCursorVisible(prev => !prev)
+      setCursorVisible((prev) => !prev)
     }, 500)
     return () => clearInterval(cursorTimer)
   }, [])
+
+  // If no valid titles, show fallback
+  if (safeTitles.length === 0) {
+    return (
+      <span className={className}>
+        <span
+          className={`inline-block w-0.5 h-[1em] bg-current ml-1 transition-opacity ${cursorVisible ? 'opacity-100' : 'opacity-0'}`}
+        />
+      </span>
+    )
+  }
 
   return (
     <span className={className}>
@@ -96,7 +135,7 @@ export function RichardTypewriterTitle({ className }: { className?: string }) {
     'Growth Operations Leader',
     'Sales Ops Automation Specialist',
     'RevOps System Architect',
-    'Strategic Revenue Analyst'
+    'Strategic Revenue Analyst',
   ]
 
   return (

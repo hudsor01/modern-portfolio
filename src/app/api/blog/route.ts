@@ -9,7 +9,7 @@ import {
   BlogPostFilters,
   BlogPostSort,
 } from '@/types/shared-api'
-import { EnhancedRateLimiter } from '@/lib/security/rate-limiter'
+import { getEnhancedRateLimiter } from '@/lib/security/rate-limiter'
 import { validateCSRFToken } from '@/lib/security/csrf-protection'
 
 const logger = createContextLogger('BlogAPI')
@@ -202,7 +202,7 @@ export async function GET(request: NextRequest) {
   const clientId = getClientId(request)
 
   // Rate limiting: 100 requests per minute for blog listing
-  using rateLimiter = new EnhancedRateLimiter()
+  const rateLimiter = getEnhancedRateLimiter()
 
   const rateLimitResult = rateLimiter.checkLimit(
     clientId,
@@ -350,7 +350,7 @@ export async function POST(request: NextRequest) {
   const clientId = getClientId(request)
 
   // Rate limiting: 10 blog post creations per hour
-  using rateLimiter = new EnhancedRateLimiter()
+  const rateLimiter = getEnhancedRateLimiter()
 
   const rateLimitResult = rateLimiter.checkLimit(
     clientId,

@@ -12,7 +12,8 @@ interface ProgressProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
   ({ className, value, max = 100, determinate = true, ...props }, ref) => {
-    const percentage = determinate ? Math.min(Math.max(0, (value || 0) / max * 100), 100) : null;
+    // Guard against division by zero when max is 0 or invalid
+    const percentage = determinate && max > 0 ? Math.min(Math.max(0, (value || 0) / max * 100), 100) : null;
 
     return (
       <div

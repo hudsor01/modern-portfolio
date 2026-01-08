@@ -12,28 +12,30 @@ interface ProjectCardProps {
   index?: number
 }
 
-export const ProjectCard = React.memo(function ProjectCard({ project, priority = false, index = 0 }: ProjectCardProps) {
+export const ProjectCard = React.memo(function ProjectCard({
+  project,
+  priority = false,
+  index = 0,
+}: ProjectCardProps) {
   const projectImage = project.image || '/images/projects/analytics-dashboard.jpg'
 
   // Get category label from client or category
   const categoryLabel = useMemo(() => {
-    return project.client || project.category || (project.tags && project.tags.length > 0 ? project.tags[0] : null)
+    return (
+      project.client ||
+      project.category ||
+      (project.tags && project.tags.length > 0 ? project.tags[0] : null)
+    )
   }, [project])
 
-  // Get technologies from technologies or tags
+  // Get technologies from tags (normalized field name)
   const technologies = useMemo(() => {
-    return project.technologies || project.tags || []
+    return project.tags || []
   }, [project])
 
   return (
-    <div
-      className="animate-fade-in-up"
-      style={{ animationDelay: `${index * 80}ms` }}
-    >
-      <Link
-        href={`/projects/${project.slug || project.id}`}
-        className="group block h-full"
-      >
+    <div className="animate-fade-in-up" style={{ animationDelay: `${index * 80}ms` }}>
+      <Link href={`/projects/${project.slug || project.id}`} className="group block h-full">
         <article className="relative h-full bg-card border border-border rounded-2xl overflow-hidden shadow-sm transition-all duration-500 ease-out hover:border-primary/40 hover:shadow-lg hover:-translate-y-1.5">
           {/* Featured Badge - Premium Design */}
           {project.featured && (
@@ -96,7 +98,9 @@ export const ProjectCard = React.memo(function ProjectCard({ project, priority =
               <div className="flex flex-wrap gap-x-4 gap-y-2 py-4 border-t border-border mt-auto">
                 {(project.displayMetrics ?? []).slice(0, 3).map((metric, i) => (
                   <div key={i} className="flex items-baseline gap-1.5">
-                    <span className="font-mono text-sm font-semibold text-foreground">{metric.value}</span>
+                    <span className="font-mono text-sm font-semibold text-foreground">
+                      {metric.value}
+                    </span>
                     <span className="text-xs text-muted-foreground">{metric.label}</span>
                   </div>
                 ))}
@@ -105,7 +109,9 @@ export const ProjectCard = React.memo(function ProjectCard({ project, priority =
 
             {/* Technologies - Works for all projects */}
             {technologies.length > 0 && (
-              <div className={`flex flex-wrap gap-2 ${(project.displayMetrics?.length ?? 0) > 0 ? 'mt-4 pt-4 border-t border-border' : 'mt-auto pt-4 border-t border-border'}`}>
+              <div
+                className={`flex flex-wrap gap-2 ${(project.displayMetrics?.length ?? 0) > 0 ? 'mt-4 pt-4 border-t border-border' : 'mt-auto pt-4 border-t border-border'}`}
+              >
                 {technologies.slice(0, 4).map((tech, i) => (
                   <span
                     key={i}
