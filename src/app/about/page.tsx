@@ -4,6 +4,8 @@ import { PersonalInfo } from '@/components/about/personal-info'
 import { SkillsSection } from '@/components/about/skills-section'
 import { ExperienceStats } from '@/components/about/experience-stats'
 import { CertificationsSection } from '@/components/about/certifications-section'
+import { BentoCard, BentoGrid } from '@/components/ui/bento-grid'
+import { TrendingUp, BarChart3, Target, Award } from 'lucide-react'
 
 const EXPERIENCE_STATS = [
   { label: 'Projects Delivered', value: '10+', icon: 'check-circle' },
@@ -33,6 +35,45 @@ const CERTIFICATIONS = [
     badge: '/images/certifications/hubspot-revops-badge.png',
     description: 'Comprehensive revenue operations strategy, process optimization, and performance analysis',
     skills: ['Revenue Operations', 'Sales Process Optimization', 'Marketing Alignment', 'Analytics & Forecasting']
+  }
+]
+
+const BENTO_FEATURES = [
+  {
+    Icon: TrendingUp,
+    name: 'Revenue Operations',
+    description: 'Strategic operations driving $4.8M+ in revenue growth',
+    href: '/projects',
+    cta: 'View Projects',
+    className: 'md:col-span-2',
+    background: <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5" />
+  },
+  {
+    Icon: BarChart3,
+    name: 'Data Analytics',
+    description: '432% average growth through data-driven insights',
+    href: '/projects',
+    cta: 'See Analytics',
+    className: '',
+    background: <div className="absolute inset-0 bg-gradient-to-br from-primary/3 to-transparent" />
+  },
+  {
+    Icon: Award,
+    name: 'Certifications',
+    description: 'SalesLoft Admin L1 & L2, HubSpot Revenue Operations',
+    href: '/resume',
+    cta: 'View Resume',
+    className: '',
+    background: <div className="absolute inset-0 bg-gradient-to-br from-secondary/3 to-transparent" />
+  },
+  {
+    Icon: Target,
+    name: 'Quick Links',
+    description: 'Explore projects, resume, and contact information',
+    href: '/contact',
+    cta: 'Get in Touch',
+    className: '',
+    background: <div className="absolute inset-0 bg-gradient-to-br from-primary/4 to-secondary/3" />
   }
 ]
 
@@ -85,6 +126,25 @@ export default function AboutPage() {
         <section className="relative py-16 lg:py-20 bg-muted/30">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <ExperienceStats stats={EXPERIENCE_STATS} />
+          </div>
+        </section>
+
+        {/* Bento Grid Section */}
+        <section className="relative py-16 lg:py-20">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="font-display text-3xl lg:text-4xl font-semibold text-foreground mb-4">
+                Explore More
+              </h2>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                Discover my work in revenue operations and data-driven growth
+              </p>
+            </div>
+            <BentoGrid>
+              {BENTO_FEATURES.map((feature) => (
+                <BentoCard key={feature.name} {...feature} />
+              ))}
+            </BentoGrid>
           </div>
         </section>
 

@@ -236,7 +236,7 @@ export default function ProjectsPage() {
             </section>
 
             {/* CTA Section */}
-            <ProjectCTASection />
+            <ProjectCTASection totalProjects={sortedProjects.length} />
           </div>
         </main>
         <Footer />
