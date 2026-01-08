@@ -4,10 +4,8 @@ import { TrendingUp, DollarSign, Target, Calculator } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
-import { LoadingState } from '@/components/projects/loading-state'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
-import { useLoadingState } from '@/hooks/use-loading-state'
 import { cacMetrics } from './data/constants'
 import { formatCurrency } from '@/lib/utils/data-formatters'
 import { OverviewTab } from './components/OverviewTab'
@@ -20,7 +18,6 @@ const tabs = ['overview', 'channels', 'products'] as const
 type Tab = (typeof tabs)[number]
 
 export default function CACUnitEconomics() {
-  const { isLoading, handleRefresh } = useLoadingState()
   const [activeTab, setActiveTab] = useQueryState('tab', { defaultValue: 'overview' as Tab })
 
   // Standardized metrics configuration using consistent data formatting
@@ -69,19 +66,13 @@ export default function CACUnitEconomics() {
         { label: 'ROI Optimization', variant: 'primary' },
         { label: 'Unit Economics', variant: 'secondary' },
       ]}
-      onRefresh={handleRefresh}
-      refreshButtonDisabled={isLoading}
       showTimeframes={true}
       timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
       activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
       onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
     >
-      {isLoading ? (
-        <LoadingState />
-      ) : (
-        <>
-          {/* Key Metrics using standardized MetricsGrid */}
-          <MetricsGrid metrics={metrics} columns={4} loading={isLoading} className="mb-8" />
+      {/* Key Metrics using standardized MetricsGrid */}
+      <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
           {/* Tab Content wrapped in SectionCard */}
           <SectionCard
@@ -104,14 +95,12 @@ export default function CACUnitEconomics() {
           </SectionCard>
 
           {/* Professional Narrative Sections wrapped in SectionCard */}
-          <SectionCard
-            title="Project Narrative"
-            description="Comprehensive case study following the STAR methodology"
-          >
-            <NarrativeSections />
-          </SectionCard>
-        </>
-      )}
+      <SectionCard
+        title="Project Narrative"
+        description="Comprehensive case study following the STAR methodology"
+      >
+        <NarrativeSections />
+      </SectionCard>
     </ProjectPageLayout>
   )
 }

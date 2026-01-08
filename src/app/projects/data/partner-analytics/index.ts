@@ -140,21 +140,45 @@ export const monthlyRevenue2024 = [
 ]
 
 export const yearOverYearGrowthExtended = [
-  { 
-    year: 2023, 
-    total_revenue: 2940000, 
-    total_transactions: 1250, 
-    total_commissions: 294000, 
-    partner_count: 45, 
-    commission_growth_percentage: 12.5 
+  {
+    year: 2020,
+    total_revenue: 2100000,
+    total_transactions: 950,
+    total_commissions: 210000,
+    partner_count: 32,
+    commission_growth_percentage: 0
   },
-  { 
-    year: 2024, 
-    total_revenue: 3720000, 
-    total_transactions: 1580, 
-    total_commissions: 372000, 
-    partner_count: 58, 
-    commission_growth_percentage: 26.5 
+  {
+    year: 2021,
+    total_revenue: 2450000,
+    total_transactions: 1050,
+    total_commissions: 245000,
+    partner_count: 37,
+    commission_growth_percentage: 16.7
+  },
+  {
+    year: 2022,
+    total_revenue: 2850000,
+    total_transactions: 1180,
+    total_commissions: 285000,
+    partner_count: 42,
+    commission_growth_percentage: 16.3
+  },
+  {
+    year: 2023,
+    total_revenue: 3350000,
+    total_transactions: 1350,
+    total_commissions: 335000,
+    partner_count: 48,
+    commission_growth_percentage: 17.5
+  },
+  {
+    year: 2024,
+    total_revenue: 4250000,
+    total_transactions: 1650,
+    total_commissions: 425000,
+    partner_count: 62,
+    commission_growth_percentage: 26.9
   }
 ]
 

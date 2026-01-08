@@ -3,8 +3,6 @@
 import { TrendingUp, Users, Settings, BarChart } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
-import { LoadingState } from '@/components/projects/loading-state'
-import { useLoadingState } from '@/hooks/use-loading-state'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 
 const achievements = [
@@ -63,7 +61,6 @@ const technicalDetails = [
 ]
 
 export default function PartnershipProgramPage() {
-  const { isLoading, handleRefresh } = useLoadingState()
 
   return (
     <>
@@ -89,13 +86,7 @@ export default function PartnershipProgramPage() {
           { label: 'Full Production', variant: 'primary' },
           { label: 'Strategic Success', variant: 'secondary' },
         ]}
-        onRefresh={handleRefresh}
-        refreshButtonDisabled={isLoading}
       >
-        {isLoading ? (
-          <LoadingState />
-        ) : (
-          <>
             {/* Key Achievements */}
             <div className="space-y-12 mb-16">
               <div className="text-center space-y-4">
@@ -310,9 +301,6 @@ export default function PartnershipProgramPage() {
                 </div>
               </div>
             </div>
-
-          </>
-        )}
       </ProjectPageLayout>
     </>
   )

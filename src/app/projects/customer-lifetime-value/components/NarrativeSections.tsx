@@ -1,8 +1,7 @@
 'use client'
 
 import { SectionCard } from '@/components/ui/section-card'
-import { ResultCard, TechGrid, FeatureCard } from '@/components/projects/shared'
-import { technologies } from '../data/constants'
+import { ResultCard, FeatureCard } from '@/components/projects/shared'
 import { formatCurrency } from '../utils'
 
 export function NarrativeSections() {
@@ -173,9 +172,6 @@ export function NarrativeSections() {
           </p>
         </div>
       </SectionCard>
-
-      {/* Technologies Used */}
-      <TechGrid technologies={technologies} />
     </div>
   )
 }

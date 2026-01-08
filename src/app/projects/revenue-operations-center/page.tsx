@@ -4,8 +4,6 @@ import { DollarSign, Target, BarChart3, Users, Activity } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
-import { LoadingState } from '@/components/projects/loading-state'
-import { useLoadingState } from '@/hooks/use-loading-state'
 import { revenueMetrics } from './data/constants'
 import { formatCurrency, formatPercent } from './utils'
 import { MetricCard } from '@/components/ui/metric-card'
@@ -21,7 +19,6 @@ const tabs = ['overview', 'pipeline', 'forecasting', 'operations'] as const
 type Tab = (typeof tabs)[number]
 
 export default function RevenueOperationsCenter() {
-  const { isLoading, handleRefresh } = useLoadingState()
   const [activeTab, setActiveTab] = useQueryState('tab', { defaultValue: 'overview' as Tab })
 
   return (
@@ -34,17 +31,11 @@ export default function RevenueOperationsCenter() {
         { label: 'Revenue Growth: +34.2%', variant: 'primary' },
         { label: 'Operations Dashboard', variant: 'secondary' },
       ]}
-      onRefresh={handleRefresh}
-      refreshButtonDisabled={isLoading}
       showTimeframes={true}
       timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
       activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
       onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
     >
-      {isLoading ? (
-        <LoadingState />
-      ) : (
-        <>
           {/* Key Metrics Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
             <MetricCard
@@ -98,8 +89,6 @@ export default function RevenueOperationsCenter() {
 
           {/* Professional Narrative Sections */}
           <NarrativeSections />
-        </>
-      )}
     </ProjectPageLayout>
   )
 }

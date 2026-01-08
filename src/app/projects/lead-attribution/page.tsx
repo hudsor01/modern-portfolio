@@ -20,7 +20,6 @@ import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { ChartContainer } from '@/components/ui/chart-container'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
-import { useLoadingState } from '@/hooks/use-loading-state'
 import { useAnalyticsData } from '@/hooks/use-analytics-data'
 import { formatNumber, formatPercentage, formatTrend } from '@/lib/utils/data-formatters'
 import { leadAttributionData } from '@/app/projects/data/partner-analytics'
@@ -32,11 +31,9 @@ import { InsightsSection } from './components/InsightsSection'
 import { NarrativeSections } from './components/NarrativeSections'
 
 export default function LeadAttribution() {
-  const { isLoading: isUiLoading, handleRefresh: handleUiRefresh } = useLoadingState()
   const {
     data: analyticsData,
-    isLoading: isAnalyticsLoading,
-    refresh: refreshAnalyticsData,
+    isLoading,
   } = useAnalyticsData()
 
   const leadSources = useMemo(() => {
@@ -122,7 +119,6 @@ export default function LeadAttribution() {
       ? ((lastMonth.leads - prevMonth.leads) / prevMonth.leads) * 100
       : 0
 
-  const isLoading = isUiLoading || isAnalyticsLoading
 
   // Standardized metrics configuration using consistent data formatting
   const metrics = [
@@ -189,11 +185,6 @@ export default function LeadAttribution() {
             variant: 'secondary',
           },
         ]}
-        onRefresh={() => {
-          handleUiRefresh()
-          void refreshAnalyticsData()
-        }}
-        refreshButtonDisabled={isLoading}
       >
         {isLoading ? (
           <LoadingState />
