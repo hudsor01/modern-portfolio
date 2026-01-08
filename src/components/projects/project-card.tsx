@@ -36,7 +36,7 @@ export const ProjectCard = React.memo(function ProjectCard({
   return (
     <div className="animate-fade-in-up" style={{ animationDelay: `${index * 80}ms` }}>
       <Link href={`/projects/${project.slug || project.id}`} className="group block h-full">
-        <article className="relative h-full bg-card border border-border rounded-2xl overflow-hidden shadow-sm transition-all duration-500 ease-out hover:border-primary/40 hover:shadow-lg hover:-translate-y-1.5">
+        <article className="relative h-full bg-card border border-border rounded-2xl overflow-hidden shadow-sm transition-all duration-500 ease-out hover:border-primary/40 hover:shadow-lg hover:-translate-y-1">
           {/* Featured Badge - Premium Design */}
           {project.featured && (
             <div className="absolute top-4 left-4 z-10 flex items-center gap-1.5 px-3 py-1.5 bg-accent text-accent-foreground text-xs font-semibold rounded-full shadow-md">

@@ -13,11 +13,11 @@ import { NarrativeSections } from './components/NarrativeSections'
 
 // Lazy-load chart components with Suspense fallback
 const PartnerTierChart = dynamic(() => import('./PartnerTierChart'), {
-  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
+  loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true,
 })
 const RevenueContributionChart = dynamic(() => import('./RevenueContributionChart'), {
-  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
+  loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true,
 })
 
@@ -219,10 +219,10 @@ export default function PartnerPerformanceIntelligence() {
                             <span
                               className={`px-2 py-1 rounded-full text-xs font-medium ${
                                 tier.winRate >= 85
-                                  ? 'bg-green-500/20 text-green-400'
+                                  ? 'bg-success/20 text-success'
                                   : tier.winRate >= 70
-                                    ? 'bg-yellow-500/20 text-yellow-400'
-                                    : 'bg-red-500/20 text-red-400'
+                                    ? 'bg-warning/20 text-warning'
+                                    : 'bg-destructive/20 text-destructive'
                               }`}
                             >
                               {formatPercentage(tier.winRate / 100)}
@@ -233,10 +233,10 @@ export default function PartnerPerformanceIntelligence() {
                             <span
                               className={`px-2 py-1 rounded-full text-xs font-medium ${
                                 tier.roi >= 5
-                                  ? 'bg-green-500/20 text-green-400'
+                                  ? 'bg-success/20 text-success'
                                   : tier.roi >= 3
-                                    ? 'bg-yellow-500/20 text-yellow-400'
-                                    : 'bg-red-500/20 text-red-400'
+                                    ? 'bg-warning/20 text-warning'
+                                    : 'bg-destructive/20 text-destructive'
                               }`}
                             >
                               {tier.roi}x

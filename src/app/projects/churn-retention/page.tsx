@@ -14,11 +14,11 @@ import { formatPercentage, formatNumber, formatCurrency } from '@/lib/utils/data
 
 // Lazy-load chart components with Suspense fallback
 const ChurnLineChart = dynamic(() => import('./ChurnLineChart'), {
-  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
+  loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true,
 })
 const RetentionHeatmap = dynamic(() => import('./RetentionHeatmap'), {
-  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
+  loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true,
 })
 

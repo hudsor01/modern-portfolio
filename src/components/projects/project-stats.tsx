@@ -56,7 +56,7 @@ export const ProjectStats: React.FC<ProjectStatsProps> = ({ totalProjects, isLoa
       {displayStats.map((stat, index) => (
         <div
           key={index}
-          className="group relative p-6 bg-card border border-border rounded-xl transition-all duration-300 ease-out hover:border-primary/20 hover:shadow-md hover:-translate-y-0.5"
+          className="group relative p-6 bg-card border border-border rounded-xl transition-all duration-300 ease-out hover:border-primary/20 hover:shadow-md hover:-translate-y-1"
         >
           {/* Icon */}
           <div className="w-10 h-10 flex items-center justify-center bg-primary/5 border border-primary/10 rounded-lg mb-4 transition-colors duration-300 ease-out group-hover:bg-primary/10 group-hover:border-primary/20">

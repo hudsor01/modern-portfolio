@@ -49,7 +49,7 @@ const RevenueContributionChart = memo(function RevenueContributionChart() {
   }
 
   return (
-    <div className="h-[350px]">
+    <div className="h-[var(--chart-height-md)]">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie

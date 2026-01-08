@@ -34,7 +34,7 @@ const chartColors = {
 
 const PartnerROIChart = memo(function PartnerROIChart() {
   return (
-    <div className="h-[350px]">
+    <div className="h-[var(--chart-height-md)]">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />

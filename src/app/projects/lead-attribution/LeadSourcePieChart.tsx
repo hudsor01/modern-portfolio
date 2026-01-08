@@ -81,7 +81,7 @@ const LeadSourcePieChart = memo(function LeadSourcePieChart({ data }: LeadSource
 
   return (
     <div className="w-full">
-      <div className="h-[400px]">
+      <div className="h-[var(--chart-height-lg)]">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie

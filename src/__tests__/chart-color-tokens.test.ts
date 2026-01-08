@@ -3,7 +3,7 @@ import { readdirSync, readFileSync } from 'fs'
 import path from 'path'
 
 const chartHexPattern = /#[0-9a-fA-F]{3,8}/
-const legacyChartTokenPattern = /--chart-/
+const legacyChartTokenPattern = /--chart-(?!height)/
 
 function collectChartFiles(dir: string): string[] {
   const entries = readdirSync(dir, { withFileTypes: true })

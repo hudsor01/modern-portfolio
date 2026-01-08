@@ -129,6 +129,35 @@ export interface ShadowTokens {
   success: string
 }
 
+// Chart Tokens
+export interface ChartTokens {
+  height: {
+    sm: string
+    md: string
+    lg: string
+    xl: string
+  }
+}
+
+// Icon Tokens (already in CSS, add to TS interface)
+export interface IconTokens {
+  size: {
+    xs: string
+    sm: string
+    base: string
+    md: string
+    lg: string
+    xl: string
+    '2xl': string
+  }
+  stroke: {
+    light: string
+    regular: string
+    medium: string
+    bold: string
+  }
+}
+
 // Complete Design Token Interface
 export interface DesignTokens {
   colors: ColorTokens
@@ -137,6 +166,8 @@ export interface DesignTokens {
   animations: AnimationTokens
   radius: RadiusTokens
   shadows: ShadowTokens
+  charts: ChartTokens
+  icons: IconTokens
 }
 
 /**
@@ -254,6 +285,31 @@ export const designTokens: DesignTokens = {
     'input-focus': 'var(--shadow-input-focus)',
     error: 'var(--shadow-error)',
     success: 'var(--shadow-success)',
+  },
+  charts: {
+    height: {
+      sm: 'var(--chart-height-sm)',
+      md: 'var(--chart-height-md)',
+      lg: 'var(--chart-height-lg)',
+      xl: 'var(--chart-height-xl)',
+    },
+  },
+  icons: {
+    size: {
+      xs: 'var(--icon-size-xs)',
+      sm: 'var(--icon-size-sm)',
+      base: 'var(--icon-size-base)',
+      md: 'var(--icon-size-md)',
+      lg: 'var(--icon-size-lg)',
+      xl: 'var(--icon-size-xl)',
+      '2xl': 'var(--icon-size-2xl)',
+    },
+    stroke: {
+      light: 'var(--icon-stroke-light)',
+      regular: 'var(--icon-stroke-regular)',
+      medium: 'var(--icon-stroke-medium)',
+      bold: 'var(--icon-stroke-bold)',
+    },
   },
 }
 
