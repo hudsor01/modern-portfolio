@@ -35,7 +35,7 @@
     "postinstall": "bunx prisma generate",
     "validate": "concurrently \"bun run type-check\" \"bun run lint\"",
     "ci:quick": "concurrently \"bun run lint\" \"bun run type-check\"",
-    "ci:local": "concurrently \"bun run lint\" \"bun run type-check\" \"bun test\"",
+    "ci:local": "bun run lint && bun run type-check && bun test",
     "ci:full": "bun run ci:quick && bun run build",
     "prepare": "husky"
   },
