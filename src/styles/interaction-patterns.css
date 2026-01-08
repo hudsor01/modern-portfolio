@@ -142,7 +142,7 @@ input[type="reset"]:active,
   border-radius: 50%;
   background: var(--color-primary) / 0.2;
   transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
+  transition: width var(--motion-duration-normal), height var(--motion-duration-normal);
 }
 
 .click-ripple:active::after {
@@ -224,7 +224,7 @@ input[type="reset"]:active,
     var(--color-primary) / 0.1,
     transparent
   );
-  transition: left 0.5s;
+  transition: left var(--motion-duration-slow);
   z-index: -1;
 }
 

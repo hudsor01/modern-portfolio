@@ -64,7 +64,7 @@ export default function TopPartnersChart({ partners }: TopPartnersChartProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+        <ChartContainer config={chartConfig} className="h-[var(--chart-height-sm)] w-full">
           <BarChart
             data={chartData}
             layout="vertical"

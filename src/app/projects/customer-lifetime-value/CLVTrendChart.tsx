@@ -34,7 +34,7 @@ const CLVTrendChart = memo(function CLVTrendChart() {
   }
 
   return (
-    <div className="h-[350px]">
+    <div className="h-[var(--chart-height-md)]">
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={clvTrendData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={trendChartColors.grid} vertical={false} />

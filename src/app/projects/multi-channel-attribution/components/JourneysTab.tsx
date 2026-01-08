@@ -6,7 +6,7 @@ import { customerJourneyStages } from '../data/constants'
 import { formatPercent } from '../utils'
 
 const CustomerJourneyChart = dynamic(() => import('../CustomerJourneyChart'), {
-  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
+  loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 
@@ -21,7 +21,7 @@ export function JourneysTab() {
           <h2 className="typography-h4 mb-1">Customer Journey Stage Analysis</h2>
           <p className="typography-small text-muted-foreground">Multi-touchpoint customer journey mapping with conversion optimization insights</p>
         </div>
-        <div className="h-[250px]">
+        <div className="h-[var(--chart-height-sm)]">
           <CustomerJourneyChart />
         </div>
       </div>

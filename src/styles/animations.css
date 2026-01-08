@@ -109,35 +109,35 @@
 
 /* Animation utility classes */
 .animate-fadeIn {
-  animation: fadeIn 0.5s ease-in-out forwards;
+  animation: fadeIn var(--motion-duration-slow) var(--motion-ease-in-out) forwards;
 }
 
 .animate-slideUp {
-  animation: slideUp 0.5s ease-out forwards;
+  animation: slideUp var(--motion-duration-slow) var(--motion-ease-out) forwards;
 }
 
 .animate-slideDown {
-  animation: slideDown 0.5s ease-out forwards;
+  animation: slideDown var(--motion-duration-slow) var(--motion-ease-out) forwards;
 }
 
 .animate-slideInLeft {
-  animation: slideInLeft 0.5s ease-out forwards;
+  animation: slideInLeft var(--motion-duration-slow) var(--motion-ease-out) forwards;
 }
 
 .animate-slideInRight {
-  animation: slideInRight 0.5s ease-out forwards;
+  animation: slideInRight var(--motion-duration-slow) var(--motion-ease-out) forwards;
 }
 
 .animate-bounce {
-  animation: bounce 2s infinite;
+  animation: bounce calc(var(--motion-duration-slow) * 4) infinite;
 }
 
 .animate-pulse {
-  animation: pulse 2s ease infinite;
+  animation: pulse calc(var(--motion-duration-slow) * 4) ease infinite;
 }
 
 .animate-blink {
-  animation: blink 1s step-end infinite;
+  animation: blink calc(var(--motion-duration-slow) * 2) step-end infinite;
 }
 
 /* Animation delays */
@@ -182,7 +182,7 @@
 @media (max-width: 768px) {
   /* Reduce motion for better mobile performance */
   .animate-blob {
-    animation-duration: 8s; /* Slower on mobile for better performance */
+    animation-duration: calc(var(--motion-duration-slow) * 16); /* Slower on mobile for better performance */
   }
   
   /* Optimize touch interactions */
@@ -233,11 +233,11 @@
 }
 
 .animate-shimmer {
-  animation: shimmer 2s infinite;
+  animation: shimmer calc(var(--motion-duration-slow) * 4) infinite;
 }
 
 .animate-skeleton {
-  animation: skeletonPulse 2s ease-in-out infinite;
+  animation: skeletonPulse calc(var(--motion-duration-slow) * 4) ease-in-out infinite;
 }
 
 /* === LUXURY MINIMALIST ANIMATIONS === */
@@ -256,7 +256,7 @@
 
 .animate-fade-in-up {
   opacity: 0;
-  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeInUp var(--motion-duration-normal) cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Staggered fade in for lists */

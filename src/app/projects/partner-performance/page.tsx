@@ -13,11 +13,11 @@ import { NarrativeSections } from './components/NarrativeSections'
 
 // Lazy-load chart components with Suspense fallback
 const PartnerTierChart = dynamic(() => import('./PartnerTierChart'), {
-  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
+  loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true,
 })
 const RevenueContributionChart = dynamic(() => import('./RevenueContributionChart'), {
-  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
+  loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true,
 })
 

@@ -4,12 +4,12 @@ import dynamic from 'next/dynamic'
 
 
 const AttributionModelChart = dynamic(() => import('../AttributionModelChart'), {
-  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
+  loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 
 const ChannelROIChart = dynamic(() => import('../ChannelROIChart'), {
-  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
+  loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 
@@ -24,7 +24,7 @@ export function OverviewTab() {
           <h2 className="typography-h4 mb-1">Attribution Model Performance Comparison</h2>
           <p className="typography-small text-muted-foreground">ML-driven data attribution vs traditional models showing 92.4% accuracy improvement</p>
         </div>
-        <div className="h-[250px]">
+        <div className="h-[var(--chart-height-sm)]">
           <AttributionModelChart />
         </div>
       </div>
@@ -37,7 +37,7 @@ export function OverviewTab() {
           <h2 className="typography-h4 mb-1">Cross-Channel ROI & Attribution Analysis</h2>
           <p className="typography-small text-muted-foreground">Multi-touch attribution revealing true channel performance and investment optimization</p>
         </div>
-        <div className="h-[250px]">
+        <div className="h-[var(--chart-height-sm)]">
           <ChannelROIChart />
         </div>
       </div>

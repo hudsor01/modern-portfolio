@@ -161,7 +161,7 @@ export default function ProjectDetailClientBoundary({
                   description="Detailed overview of the project goals, challenges, and approach"
                   variant="default"
                 >
-                  <div className="prose prose-gray dark:prose-invert max-w-none">
+                  <div className="prose prose-gray max-w-none">
                     <p className="text-muted-foreground leading-relaxed">
                       {displayProject.longDescription || displayProject.description}
                     </p>
@@ -188,7 +188,7 @@ export default function ProjectDetailClientBoundary({
                           <Badge
                             key={index}
                             variant="secondary"
-                            className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-foreground"
+                            className="bg-primary/10 text-primary"
                           >
                             {tech}
                           </Badge>
