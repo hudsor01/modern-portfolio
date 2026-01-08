@@ -4,20 +4,6 @@ import { SectionCard } from '@/components/ui/section-card'
 import { ResultCard, FeatureCard } from '@/components/projects/shared'
 import { formatCurrency, formatPercentage, formatNumber } from '@/lib/utils/data-formatters'
 
-const _technologies = [
-  'Python',
-  'Machine Learning',
-  'Predictive Analytics',
-  'D3.js',
-  'Recharts',
-  'PostgreSQL',
-  'Next.js',
-  'TypeScript',
-  'Geospatial Analysis',
-  'Regression Modeling',
-  'Clustering Algorithms',
-  'Time Series Forecasting',
-]
 
 export function NarrativeSections() {
   return (
