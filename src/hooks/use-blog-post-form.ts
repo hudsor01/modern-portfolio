@@ -154,7 +154,7 @@ export function useBlogPostForm(post?: Partial<BlogPost>) {
   const formValues = useStore(form.store, (state) => state.values)
 
   // Cross-tab synchronization
-  const crossTabSync = useCrossTabSync(formId, (message: any) => {
+  const crossTabSync = useCrossTabSync(formId, (message: unknown) => {
     if (!message || typeof message !== 'object') return
 
     const now = Date.now()
@@ -171,7 +171,7 @@ export function useBlogPostForm(post?: Partial<BlogPost>) {
             if (
               JSON.stringify(formValues[key as keyof BlogPostFormData]) !== JSON.stringify(value)
             ) {
-              form.setFieldValue(key as keyof BlogPostFormData, value as any)
+              form.setFieldValue(key as keyof BlogPostFormData, value as BlogPostFormData[keyof BlogPostFormData])
             }
           })
           // Update selected tags if they changed
@@ -194,7 +194,7 @@ export function useBlogPostForm(post?: Partial<BlogPost>) {
             newValue !== undefined &&
             JSON.stringify(formValues[fieldPath]) !== JSON.stringify(newValue)
           ) {
-            form.setFieldValue(fieldPath as any, newValue)
+            form.setFieldValue(fieldPath as keyof BlogPostFormData, newValue as BlogPostFormData[keyof BlogPostFormData])
             // Special handling for tagIds
             if (fieldPath === 'tagIds' && Array.isArray(newValue)) {
               setSelectedTags(newValue)
@@ -290,11 +290,11 @@ export function useBlogPostForm(post?: Partial<BlogPost>) {
           remoteValue !== null &&
           remoteValue !== undefined
         ) {
-          ;(merged as any)[key] = remoteValue
+          ;(merged as Record<string, unknown>)[key] = remoteValue
         }
         // Merge arrays (for tags, keywords)
         else if (Array.isArray(localValue) && Array.isArray(remoteValue)) {
-          ;(merged as any)[key] = [...new Set([...localValue, ...remoteValue])]
+          ;(merged as Record<string, unknown>)[key] = [...new Set([...localValue, ...remoteValue])]
         }
       })
 
@@ -396,7 +396,7 @@ export function useBlogPostForm(post?: Partial<BlogPost>) {
   const resolveConflictWithRemote = useCallback(() => {
     if (conflictData?.remote) {
       Object.entries(conflictData.remote).forEach(([key, value]) => {
-        form.setFieldValue(key as keyof BlogPostFormData, value as any)
+        form.setFieldValue(key as keyof BlogPostFormData, value as BlogPostFormData[keyof BlogPostFormData])
       })
       setSelectedTags(conflictData.remote.tagIds || [])
       setHasConflict(false)
@@ -411,7 +411,7 @@ export function useBlogPostForm(post?: Partial<BlogPost>) {
       // For now, use a simple merge strategy - prefer remote data
       const merged = { ...conflictData.local, ...conflictData.remote }
       Object.entries(merged).forEach(([key, value]) => {
-        form.setFieldValue(key as keyof BlogPostFormData, value as any)
+        form.setFieldValue(key as keyof BlogPostFormData, value as BlogPostFormData[keyof BlogPostFormData])
       })
       setSelectedTags((merged as BlogPostFormData).tagIds || [])
       setHasConflict(false)
