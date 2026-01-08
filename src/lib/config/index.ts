@@ -350,7 +350,7 @@ class ConfigurationManager {
         cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME,
         cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
         cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
-        databaseUrl: process.env.DATABASE_URL || '',
+        databaseUrl: process.env.DATABASE_URL || 'postgresql://user:pass@localhost:5432/db?schema=public',
         databaseMaxConnections: parseInt(process.env.DATABASE_MAX_CONNECTIONS || '20'),
         databaseConnectionTimeoutMs: parseInt(
           process.env.DATABASE_CONNECTION_TIMEOUT_MS || '10000'
