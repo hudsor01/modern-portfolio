@@ -44,7 +44,6 @@ export function BlogJsonLd() {
       ]
     },
     inLanguage: 'en-US',
-    license: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
     copyrightHolder: {
       '@type': 'Person',
       name: 'Richard Hudson'
@@ -147,7 +146,6 @@ export function BlogPostJsonLd({ post }: BlogPostJsonLdProps) {
     timeRequired: `PT${post.readingTime}M`,
     inLanguage: 'en-US',
     isAccessibleForFree: true,
-    license: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
     copyrightHolder: {
       '@type': 'Person',
       name: 'Richard Hudson'
