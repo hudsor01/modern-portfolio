@@ -4,7 +4,11 @@ import React from 'react'
 import Link from 'next/link'
 import { ArrowRight, FileText, Lightbulb, MessageSquare } from 'lucide-react'
 
-export const ProjectCTASection: React.FC = () => {
+interface ProjectCTASectionProps {
+  totalProjects: number
+}
+
+export const ProjectCTASection: React.FC<ProjectCTASectionProps> = ({ totalProjects }) => {
   return (
     <section className="mt-32 mb-16">
       {/* Section Header */}
@@ -94,7 +98,7 @@ export const ProjectCTASection: React.FC = () => {
           </div>
           <div className="hidden sm:block w-px bg-border" />
           <div>
-            <div className="font-mono text-3xl lg:text-4xl font-bold text-foreground mb-1">11+</div>
+            <div className="font-mono text-3xl lg:text-4xl font-bold text-foreground mb-1">{totalProjects}+</div>
             <div className="text-sm text-muted-foreground">Case Studies</div>
           </div>
         </div>

@@ -12,7 +12,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
 
   const handleDownload = () => {
     const link = document.createElement('a')
-    link.href = '/Richard Hudson - Resume.pdf'
+    link.href = '/Richard%20Hudson%20-%20Resume.pdf'
     link.download = 'Richard Hudson - Revenue Operations Resume.pdf'
     document.body.appendChild(link)
     link.click()
@@ -76,7 +76,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
                 className="h-14 px-8 text-base font-semibold"
               >
                 <a
-                  href="/Richard Hudson - Resume.pdf"
+                  href="/Richard%20Hudson%20-%20Resume.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center"
@@ -115,7 +115,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
 
               {!error && (
                 <iframe
-                  src="/Richard Hudson - Resume.pdf"
+                  src="/Richard%20Hudson%20-%20Resume.pdf"
                   className="w-full h-[800px] border-0 bg-white"
                   title="Richard Hudson Resume"
                   onLoad={handlePdfLoad}

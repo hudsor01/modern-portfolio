@@ -29,7 +29,7 @@ export const experience = [
       'Automated commission management system achieving 100% accuracy and reducing processing time by 73%',
       'Improved forecast accuracy by 40% through standardized metrics and reporting frameworks',
     ],
-    technologies: ['HubSpot', 'SalesLoft', 'Excel', 'JavaScript', 'API Integrations']
+    technologies: ['HubSpot', 'SalesLoft', 'Excel', 'SQL', 'API Integrations']
   },
   {
     title: 'Channel Operations Lead',
@@ -67,7 +67,7 @@ export const skills = [
   },
   {
     category: 'Technical Skills',
-    items: ['Python', 'JavaScript', 'React & Next.js', 'Webhooks', 'API Integrations', 'Financial Modeling'],
+    items: ['Python', 'SQL', 'Excel (Advanced)', 'Webhooks', 'API Integrations', 'Financial Modeling'],
   },
 ]
 
