@@ -58,7 +58,7 @@ export default function PartnerGroupPieChart({ groups }: PartnerGroupPieChartPro
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[320px] w-full">
+        <ChartContainer config={chartConfig} className="h-[var(--chart-height-md)] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie

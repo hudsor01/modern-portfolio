@@ -8,17 +8,15 @@ import { cn } from '@/lib/utils'
 import { Skeleton } from './skeleton'
 
 const metricCardVariants = cva(
-  'relative group rounded-xl border bg-card text-card-foreground transition-all duration-300 ease-out hover:shadow-md hover:-translate-y-0.5',
+  'relative group rounded-xl border bg-card text-card-foreground transition-all duration-300 ease-out hover:shadow-md hover:-translate-y-1',
   {
     variants: {
       variant: {
         primary: 'border-primary/20 hover:border-primary/40 hover:shadow-primary/10',
         secondary: 'border-secondary/20 hover:border-secondary/40 hover:shadow-secondary/10',
-        success:
-          'border-green-200 hover:border-green-300 hover:shadow-green-100 dark:border-green-800 dark:hover:border-green-700',
-        warning:
-          'border-yellow-200 hover:border-yellow-300 hover:shadow-yellow-100 dark:border-yellow-800 dark:hover:border-yellow-700',
-        info: 'border-blue-200 hover:border-blue-300 hover:shadow-blue-100 dark:border-blue-800 dark:hover:border-blue-700',
+        success: 'border-success/20 hover:border-success/30 hover:shadow-success/10',
+        warning: 'border-warning/20 hover:border-warning/30 hover:shadow-warning/10',
+        info: 'border-primary/20 hover:border-primary/30 hover:shadow-primary/10',
       },
       size: {
         sm: 'p-4',
@@ -38,9 +36,9 @@ const iconVariants = cva('rounded-xl p-3 transition-colors duration-150 ease-out
     variant: {
       primary: 'bg-primary/10 text-primary',
       secondary: 'bg-secondary/10 text-secondary',
-      success: 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400',
-      warning: 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/20 dark:text-yellow-400',
-      info: 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400',
+      success: 'bg-success/10 text-success',
+      warning: 'bg-warning/10 text-warning',
+      info: 'bg-primary/10 text-primary',
     },
   },
   defaultVariants: {
@@ -51,8 +49,8 @@ const iconVariants = cva('rounded-xl p-3 transition-colors duration-150 ease-out
 const trendVariants = cva('inline-flex items-center gap-1 text-xs font-medium', {
   variants: {
     direction: {
-      up: 'text-green-600 dark:text-green-400',
-      down: 'text-red-600 dark:text-red-400',
+      up: 'text-success',
+      down: 'text-destructive',
       neutral: 'text-muted-foreground',
     },
   },
@@ -130,9 +128,9 @@ const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
             'absolute inset-0 rounded-xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 ease-out',
             variant === 'primary' && 'bg-gradient-to-r from-primary/20 to-primary/5',
             variant === 'secondary' && 'bg-gradient-to-r from-secondary/20 to-secondary/5',
-            variant === 'success' && 'bg-gradient-to-r from-green-200/20 to-green-100/5',
-            variant === 'warning' && 'bg-gradient-to-r from-yellow-200/20 to-yellow-100/5',
-            variant === 'info' && 'bg-gradient-to-r from-blue-200/20 to-blue-100/5'
+            variant === 'success' && 'bg-gradient-to-r from-success/20 to-success/5',
+            variant === 'warning' && 'bg-gradient-to-r from-warning/20 to-warning/5',
+            variant === 'info' && 'bg-gradient-to-r from-primary/20 to-primary/5'
           )}
         />
 

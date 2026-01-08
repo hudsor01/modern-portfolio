@@ -226,7 +226,7 @@ export function ProjectSwiper({
             const originalProject = projects[index]!
             return (
               <SwiperSlide key={normalizedProject.id} className="pb-1">
-                <div className="bg-card project-card h-full rounded-xl border p-4 shadow-md transition-all duration-300 ease-in-out motion-reduce:transition-none hover:-translate-y-[5px] hover:shadow-[0_10px_25px_rgba(0,0,0,0.1)]">
+                <div className="bg-card project-card h-full rounded-xl border p-4 shadow-md transition-all duration-300 ease-in-out motion-reduce:transition-none hover:-translate-y-1 hover:shadow-lg">
                   <div className="group bg-muted/30 relative aspect-video overflow-hidden rounded-lg">
                     {/* Project image with enhanced effects */}
                     {normalizedProject.image ? (

@@ -4,12 +4,12 @@ import dynamic from 'next/dynamic'
 import { ChartContainer } from '@/components/ui/chart-container'
 
 const CommissionStructureChart = dynamic(() => import('../CommissionStructureChart'), {
-  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
+  loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true,
 })
 
 const ROIOptimizationChart = dynamic(() => import('../ROIOptimizationChart'), {
-  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
+  loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true,
 })
 

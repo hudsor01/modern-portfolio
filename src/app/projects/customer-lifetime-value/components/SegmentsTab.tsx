@@ -7,7 +7,7 @@ import { formatCurrency, formatPercent } from '../utils'
 
 function ChartLoadError() {
   return (
-    <div className="h-[250px] w-full flex items-center justify-center bg-destructive/10 rounded-lg border border-destructive/20">
+    <div className="h-[var(--chart-height-sm)] w-full flex items-center justify-center bg-destructive/10 rounded-lg border border-destructive/20">
       <p className="text-destructive text-sm">Failed to load chart</p>
     </div>
   )
@@ -16,7 +16,7 @@ function ChartLoadError() {
 const CustomerSegmentChart = dynamic(
   () => import('../CustomerSegmentChart').catch(() => ({ default: ChartLoadError })),
   {
-    loading: () => <div className="h-[250px] w-full animate-pulse bg-muted rounded-lg" />,
+    loading: () => <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />,
     ssr: true
   }
 )
@@ -32,7 +32,7 @@ export function SegmentsTab() {
           <h2 className="typography-h4 mb-1">Customer Segment Distribution & CLV Analysis</h2>
           <p className="typography-small text-muted-foreground">RFM-based customer segmentation with predictive CLV modeling across behavioral clusters</p>
         </div>
-        <div className="h-[250px]">
+        <div className="h-[var(--chart-height-sm)]">
           <CustomerSegmentChart />
         </div>
       </div>

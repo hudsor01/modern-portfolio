@@ -6,7 +6,7 @@ import { channelPerformance } from '../data/constants'
 import { formatCurrency, formatPercent } from '../utils'
 
 const TouchpointAnalysisChart = dynamic(() => import('../TouchpointAnalysisChart'), {
-  loading: () => <div className="h-[350px] w-full animate-pulse bg-muted rounded-lg" />,
+  loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 
@@ -21,7 +21,7 @@ export function ChannelsTab() {
           <h2 className="typography-h4 mb-1">Multi-Touch Attribution & Channel Performance</h2>
           <p className="typography-small text-muted-foreground">Advanced touchpoint analysis revealing true cross-channel contribution and ROI optimization</p>
         </div>
-        <div className="h-[250px]">
+        <div className="h-[var(--chart-height-sm)]">
           <TouchpointAnalysisChart />
         </div>
       </div>
