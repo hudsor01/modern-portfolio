@@ -3,9 +3,16 @@
 import { Resend } from 'resend'
 import { revalidatePath } from 'next/cache'
 import { checkEnhancedContactFormRateLimit } from '@/lib/security/rate-limiter'
-import { escapeHtml } from '@/lib/security/html-escape'
 import { createContextLogger } from '@/lib/monitoring/logger'
 import { contactFormSchema } from '@/lib/validations/unified-schemas'
+
+// Inline escape for server-side email composition (no browser rendering)
+function escapeHtml(text: string): string {
+  const map: Record<string, string> = {
+    '&': '&', '<': '<', '>': '>', '"': '"', "'": '&#x27;',
+  }
+  return text.replace(/[&<>"']/g, (c) => map[c] || c)
+}
 
 const logger = createContextLogger('ContactFormAction')
 

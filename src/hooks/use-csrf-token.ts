@@ -1,9 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createContextLogger } from '@/lib/monitoring/logger'
-
-const logger = createContextLogger('useCSRFToken')
+import { handleHookError } from '@/lib/error-handling'
 
 /**
  * Hook to manage CSRF token fetching and management
@@ -34,9 +32,7 @@ export function useCSRFToken() {
         const data = await response.json()
         setToken(data.token)
       } catch (err) {
-        const error = err instanceof Error ? err : new Error(String(err))
-        setError(error)
-        logger.error('CSRF token fetch error', error)
+        handleHookError(err, { operation: 'fetchCSRFToken', component: 'useCSRFToken' }, setError)
       } finally {
         setIsLoading(false)
       }
@@ -67,10 +63,7 @@ export function addCSRFTokenToHeaders(
 /**
  * Helper to add CSRF token to form data
  */
-export function addCSRFTokenToFormData(
-  token: string | null,
-  formData: FormData
-): FormData {
+export function addCSRFTokenToFormData(token: string | null, formData: FormData): FormData {
   if (token) {
     formData.append('_csrf_token', token)
   }

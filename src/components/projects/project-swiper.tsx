@@ -8,7 +8,8 @@ import { useSwiper } from 'swiper/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
-import type { Project } from '@/types/project' // Changed import path
+import type { Project } from '@/types/project'
+import { normalizeProjectForDisplay } from '@/types/project' // Changed import path
 import { ExternalLink, Info, ArrowRight, Zap, ChevronLeft, ChevronRight } from 'lucide-react' // Added ArrowRight, Zap
 import { ProjectQuickView } from '@/components/projects/project-quick-view'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -29,6 +30,23 @@ interface ProjectSwiperProps {
 // Inline navigation components (previously in swiper-navigation.tsx)
 function SwiperPrevButton({ className }: { className?: string }) {
   const swiper = useSwiper()
+
+  // Guard against swiper not being available (component rendered outside Swiper context)
+  if (!swiper) {
+    return (
+      <button
+        className={cn(
+          'group hover:bg-primary/10 rounded-full p-2.5 shadow-xs transition-colors duration-300 ease-out hover:shadow opacity-50 cursor-not-allowed',
+          className
+        )}
+        disabled
+        aria-label="Previous slide (disabled)"
+      >
+        <ChevronLeft className="h-5 w-5" />
+      </button>
+    )
+  }
+
   return (
     <button
       className={cn(
@@ -45,6 +63,23 @@ function SwiperPrevButton({ className }: { className?: string }) {
 
 function SwiperNextButton({ className }: { className?: string }) {
   const swiper = useSwiper()
+
+  // Guard against swiper not being available (component rendered outside Swiper context)
+  if (!swiper) {
+    return (
+      <button
+        className={cn(
+          'group hover:bg-primary/10 rounded-full p-2.5 shadow-xs transition-colors duration-300 ease-out hover:shadow opacity-50 cursor-not-allowed',
+          className
+        )}
+        disabled
+        aria-label="Next slide (disabled)"
+      >
+        <ChevronRight className="h-5 w-5" />
+      </button>
+    )
+  }
+
   return (
     <button
       className={cn(
@@ -59,8 +94,37 @@ function SwiperNextButton({ className }: { className?: string }) {
   )
 }
 
-function SwiperPagination({ totalSlides, activeIndex, className }: { totalSlides: number; activeIndex: number; className?: string }) {
+function SwiperPagination({
+  totalSlides,
+  activeIndex,
+  className,
+}: {
+  totalSlides: number
+  activeIndex: number
+  className?: string
+}) {
   const swiper = useSwiper()
+
+  // Guard against swiper not being available (component rendered outside Swiper context)
+  if (!swiper) {
+    return (
+      <div className={cn('flex items-center gap-2', className)}>
+        {Array.from({ length: totalSlides }).map((_, index) => (
+          <button
+            key={index}
+            className={cn(
+              'h-2.5 w-2.5 rounded-full transition-all duration-300 ease-out opacity-50 cursor-not-allowed',
+              activeIndex === index ? 'bg-primary scale-110 shadow-xs' : 'bg-primary/20'
+            )}
+            disabled
+            aria-label={`Slide ${index + 1} (disabled)`}
+            aria-current={activeIndex === index ? 'true' : 'false'}
+          />
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className={cn('flex items-center gap-2', className)}>
       {Array.from({ length: totalSlides }).map((_, index) => (
@@ -87,6 +151,9 @@ export function ProjectSwiper({
   projects,
   showViewAll = true,
 }: ProjectSwiperProps) {
+  // Normalize projects for display with consistent field names
+  const normalizedProjects = projects.map(normalizeProjectForDisplay)
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -99,7 +166,7 @@ export function ProjectSwiper({
   }
 
   // Return early if there are no projects
-  if (!projects || projects.length === 0) {
+  if (!normalizedProjects || normalizedProjects.length === 0) {
     return (
       <div className="bg-muted/30 rounded-lg p-6 text-center shadow-xs">No projects available</div>
     )
@@ -155,93 +222,101 @@ export function ProjectSwiper({
             setActiveIndex(swiper.realIndex)
           }}
         >
-          {projects.map((project, index) => (
-            <SwiperSlide key={project.id} className="pb-1">
-              <div className="bg-card project-card h-full rounded-xl border p-4 shadow-md transition-all duration-300 ease-in-out motion-reduce:transition-none hover:-translate-y-[5px] hover:shadow-[0_10px_25px_rgba(0,0,0,0.1)]">
-                <div className="group bg-muted/30 relative aspect-video overflow-hidden rounded-lg">
-                  {/* Project image with enhanced effects */}
-                  {project.image ? (
-                    <Image
-                      src={project.image}
-                      alt={project.title}
-                      fill
-                      className="object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-[1.02]"
-                      sizes="(max-width: 640px) 85vw, (max-width: 1024px) 40vw, (max-width: 1280px) 30vw, 25vw"
-                      loading={index < 2 ? 'eager' : 'lazy'}
-                      quality={80}
-                    />
-                  ) : (
-                    <div className="from-muted/40 to-muted/70 text-muted-foreground flex h-full w-full items-center justify-center bg-gradient-to-br">
-                      No Preview
-                    </div>
-                  )}
-                  {/* Enhanced image overlay with improved hover effects */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 backdrop-blur transition-all duration-300 ease-out group-hover:opacity-100">
-                    <div className="absolute bottom-0 w-full p-4">
-                      <div className="flex flex-wrap gap-2">
-                        <Button
-                          onClick={() => handleOpenQuickView(project)}
-                          variant="outline"
-                          size="sm"
-                          className="bg-background/95 hover:bg-background/100 text-xs backdrop-blur transition-all"
-                        >
-                          <Info className="mr-1 h-3 w-3" />
-                          Quick View
-                        </Button>
-                        <Button
-                          asChild
-                          variant="outline"
-                          size="sm"
-                          className="bg-background/95 hover:bg-background/100 text-xs backdrop-blur transition-all"
-                        >
-                          <Link href={`/projects/${project.slug}`}>Details</Link>
-                        </Button>
-                        {project.liveUrl && (
+          {normalizedProjects.map((normalizedProject, index) => {
+            const originalProject = projects[index]!
+            return (
+              <SwiperSlide key={normalizedProject.id} className="pb-1">
+                <div className="bg-card project-card h-full rounded-xl border p-4 shadow-md transition-all duration-300 ease-in-out motion-reduce:transition-none hover:-translate-y-[5px] hover:shadow-[0_10px_25px_rgba(0,0,0,0.1)]">
+                  <div className="group bg-muted/30 relative aspect-video overflow-hidden rounded-lg">
+                    {/* Project image with enhanced effects */}
+                    {normalizedProject.image ? (
+                      <Image
+                        src={normalizedProject.image}
+                        alt={normalizedProject.title}
+                        fill
+                        className="object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-[1.02]"
+                        sizes="(max-width: 640px) 85vw, (max-width: 1024px) 40vw, (max-width: 1280px) 30vw, 25vw"
+                        loading={index < 2 ? 'eager' : 'lazy'}
+                        quality={80}
+                      />
+                    ) : (
+                      <div className="from-muted/40 to-muted/70 text-muted-foreground flex h-full w-full items-center justify-center bg-gradient-to-br">
+                        No Preview
+                      </div>
+                    )}
+                    {/* Enhanced image overlay with improved hover effects */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 backdrop-blur transition-all duration-300 ease-out group-hover:opacity-100">
+                      <div className="absolute bottom-0 w-full p-4">
+                        <div className="flex flex-wrap gap-2">
+                          <Button
+                            onClick={() => handleOpenQuickView(originalProject)}
+                            variant="outline"
+                            size="sm"
+                            className="bg-background/95 hover:bg-background/100 text-xs backdrop-blur transition-all"
+                          >
+                            <Info className="mr-1 h-3 w-3" />
+                            Quick View
+                          </Button>
                           <Button
                             asChild
                             variant="outline"
                             size="sm"
                             className="bg-background/95 hover:bg-background/100 text-xs backdrop-blur transition-all"
                           >
-                            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="flex items-center">
-                              <ExternalLink className="mr-1 h-3 w-3" />
-                              Live Demo
-                            </a>
+                            <Link href={`/projects/${normalizedProject.slug}`}>Details</Link>
                           </Button>
-                        )}
+                          {normalizedProject.liveUrl && (
+                            <Button
+                              asChild
+                              variant="outline"
+                              size="sm"
+                              className="bg-background/95 hover:bg-background/100 text-xs backdrop-blur transition-all"
+                            >
+                              <a
+                                href={normalizedProject.liveUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center"
+                              >
+                                <ExternalLink className="mr-1 h-3 w-3" />
+                                Live Demo
+                              </a>
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
+                  {/* Project title and description with improved styling */}
+                  <h3 className="mt-4 line-clamp-1 typography-large">{normalizedProject.title}</h3>
+                  <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
+                    {normalizedProject.description}
+                  </p>
+                  {/* Project technologies with enhanced styling */}
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {(normalizedProject.technologies || []).slice(0, 3).map((tech) => (
+                      <Badge
+                        key={tech}
+                        variant="outline"
+                        className="bg-primary/5 hover:bg-primary/10 text-xs transition-colors"
+                      >
+                        {tech}
+                      </Badge>
+                    ))}
+                    {/* Show "+n more" badge if there are more than 3 technologies */}
+                    {(normalizedProject.technologies || []).length > 3 && (
+                      <Badge
+                        variant="outline"
+                        className="bg-muted/50 hover:bg-muted/60 text-xs transition-colors"
+                      >
+                        +{(normalizedProject.technologies || []).length - 3} more
+                      </Badge>
+                    )}
+                  </div>
                 </div>
-                {/* Project title and description with improved styling */}
-                <h3 className="mt-4 line-clamp-1 typography-large">{project.title}</h3>
-                <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
-                  {project.description}
-                </p>
-                {/* Project technologies with enhanced styling */}
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {(project.technologies || []).slice(0, 3).map((tech) => (
-                    <Badge
-                      key={tech}
-                      variant="outline"
-                      className="bg-primary/5 hover:bg-primary/10 text-xs transition-colors"
-                    >
-                      {tech}
-                    </Badge>
-                  ))}
-                  {/* Show "+n more" badge if there are more than 3 technologies */}
-                  {(project.technologies || []).length > 3 && (
-                    <Badge
-                      variant="outline"
-                      className="bg-muted/50 hover:bg-muted/60 text-xs transition-colors"
-                    >
-                      +{(project.technologies || []).length - 3} more
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            </SwiperSlide>
-          ))}
+              </SwiperSlide>
+            )
+          })}
 
           {/* Custom Navigation */}
           <div className="absolute right-0 bottom-0 left-0 z-10 mt-6 mb-2 flex justify-center">

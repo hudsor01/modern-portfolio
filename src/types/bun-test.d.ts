@@ -46,7 +46,7 @@ declare module 'bun:test' {
   const vi: Vi
 
   // Extend expect matchers with jest-dom matchers
-  interface Matchers<T> {
+  interface Matchers {
     toBeInTheDocument(): void
     toBeVisible(): void
     toBeEmpty(): void

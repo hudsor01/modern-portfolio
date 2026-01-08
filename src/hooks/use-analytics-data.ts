@@ -1,7 +1,9 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { analyticsDataService, type AllAnalyticsDataBundle } from '@/lib/analytics/data-service'
+import { analyticsDataService } from '@/lib/analytics/data-service'
+import { handleHookError } from '@/lib/error-handling'
+import type { AllAnalyticsDataBundle } from '@/types/analytics'
 
 export function useAnalyticsData() {
   const [data, setData] = useState<AllAnalyticsDataBundle | null>(null)
@@ -16,7 +18,11 @@ export function useAnalyticsData() {
       const result = await analyticsDataService.getAllAnalyticsData()
       setData(result)
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to load analytics data'))
+      handleHookError(
+        err,
+        { operation: 'fetchAnalyticsData', component: 'useAnalyticsData' },
+        setError
+      )
     } finally {
       setIsLoading(false)
     }

@@ -1,3 +1,5 @@
-echo "Pre-commit: lint, type-check, unit tests..."
-bunx lint-staged && bun run type-check && bun run test:unit || exit 1
-echo "All checks passed!"
+#!/usr/bin/env sh
+echo "🔍 Running pre-commit checks..."
+echo "📝 Linting and type-checking..."
+bunx lint-staged
+echo "✅ All checks passed!"

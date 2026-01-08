@@ -1,16 +1,18 @@
 import { describe, afterAll, expect, it, mock } from 'bun:test'
 import { render, screen } from '@testing-library/react'
+import { withNuqsTestingAdapter } from 'nuqs/adapters/testing'
 
 // Helper to wait for a specific duration (Bun doesn't support fake timers)
-const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 // Mock project data with realistic values - must be before imports
 mock.module('@/lib/content/projects', () => ({
-  getProject: () => Promise.resolve({
-    id: 'test-project',
-    title: 'Test Project',
-    description: 'Test Description',
-  }),
+  getProject: () =>
+    Promise.resolve({
+      id: 'test-project',
+      title: 'Test Project',
+      description: 'Test Description',
+    }),
 }))
 
 // Mock logger
@@ -183,7 +185,9 @@ describe('Project Pages Consistency Integration Tests', () => {
     it.each(projectPages)(
       'should render $name page without errors',
       async ({ component: Component }) => {
-        const { container } = render(<Component />)
+        const { container } = render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         // Wait for component to load
         await waitForComponentLoad()
@@ -195,7 +199,9 @@ describe('Project Pages Consistency Integration Tests', () => {
     it.each(projectPages)(
       'should have proper document structure in $name page',
       async ({ component: Component }) => {
-        render(<Component />)
+        render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         // Wait for loading to complete
         await waitForComponentLoad()
@@ -214,7 +220,9 @@ describe('Project Pages Consistency Integration Tests', () => {
     it.each(projectPages)(
       'should use ProjectPageLayout component in $name page',
       async ({ component: Component }) => {
-        render(<Component />)
+        render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         await waitForComponentLoad()
 
@@ -228,7 +236,9 @@ describe('Project Pages Consistency Integration Tests', () => {
     it.each(projectPages)(
       'should have consistent header structure in $name page',
       async ({ component: Component }) => {
-        render(<Component />)
+        render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         await waitForComponentLoad()
 
@@ -245,7 +255,9 @@ describe('Project Pages Consistency Integration Tests', () => {
     it.each(projectPages)(
       'should have navigation elements in $name page',
       async ({ component: Component }) => {
-        render(<Component />)
+        render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         await waitForComponentLoad()
 
@@ -263,7 +275,9 @@ describe('Project Pages Consistency Integration Tests', () => {
     it.each(projectPages)(
       'should use MetricsGrid or similar metric display in $name page',
       async ({ component: Component }) => {
-        render(<Component />)
+        render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         await waitForComponentLoad()
 
@@ -280,7 +294,9 @@ describe('Project Pages Consistency Integration Tests', () => {
     it.each(projectPages)(
       'should use SectionCard or similar content organization in $name page',
       async ({ component: Component }) => {
-        render(<Component />)
+        render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         await waitForComponentLoad()
 
@@ -296,7 +312,9 @@ describe('Project Pages Consistency Integration Tests', () => {
     it.each(projectPages)(
       'should have chart or visualization content in $name page',
       async ({ component: Component }) => {
-        const { container } = render(<Component />)
+        const { container } = render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         await waitForComponentLoad()
 
@@ -315,7 +333,9 @@ describe('Project Pages Consistency Integration Tests', () => {
     it.each(projectPages)(
       'should use consistent number formatting in $name page',
       async ({ component: Component }) => {
-        render(<Component />)
+        render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         await waitForComponentLoad()
 
@@ -334,7 +354,9 @@ describe('Project Pages Consistency Integration Tests', () => {
     it.each(projectPages)(
       'should handle currency and percentage formatting in $name page',
       async ({ component: Component }) => {
-        render(<Component />)
+        render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         await waitForComponentLoad()
 
@@ -357,7 +379,9 @@ describe('Project Pages Consistency Integration Tests', () => {
     it.each(projectPages)(
       'should have proper semantic HTML structure in $name page',
       async ({ component: Component }) => {
-        render(<Component />)
+        render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         await waitForComponentLoad()
 
@@ -377,7 +401,9 @@ describe('Project Pages Consistency Integration Tests', () => {
     it.each(projectPages)(
       'should have focusable interactive elements in $name page',
       async ({ component: Component }) => {
-        const { container } = render(<Component />)
+        const { container } = render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         await waitForComponentLoad()
 
@@ -394,7 +420,9 @@ describe('Project Pages Consistency Integration Tests', () => {
     it.each(projectPages)(
       'should have proper ARIA attributes where needed in $name page',
       async ({ component: Component }) => {
-        const { container } = render(<Component />)
+        const { container } = render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         await waitForComponentLoad()
 
@@ -419,7 +447,9 @@ describe('Project Pages Consistency Integration Tests', () => {
     it.each(projectPages)(
       'should handle loading states properly in $name page',
       async ({ component: Component }) => {
-        render(<Component />)
+        render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         // Initially might show loading state
         const container = screen.getByRole('main').parentElement
@@ -437,7 +467,11 @@ describe('Project Pages Consistency Integration Tests', () => {
       'should render without throwing errors in $name page',
       async ({ component: Component }) => {
         // This test verifies the component renders without throwing
-        expect(() => render(<Component />)).not.toThrow()
+        expect(() =>
+          render(<Component />, {
+            wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+          })
+        ).not.toThrow()
 
         await waitForComponentLoad()
 
@@ -451,7 +485,9 @@ describe('Project Pages Consistency Integration Tests', () => {
       const pageStructures = []
 
       for (const { name, component: Component } of projectPages) {
-        const { container, unmount } = render(<Component />)
+        const { container, unmount } = render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         await waitForComponentLoad()
 
@@ -481,7 +517,9 @@ describe('Project Pages Consistency Integration Tests', () => {
 
     it('should use consistent responsive design patterns across all pages', async () => {
       for (const { component: Component } of projectPages) {
-        const { container, unmount } = render(<Component />)
+        const { container, unmount } = render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         await waitForComponentLoad()
 
@@ -501,7 +539,9 @@ describe('Project Pages Consistency Integration Tests', () => {
       const contentPatterns = []
 
       for (const { name, component: Component } of projectPages) {
-        const { container, unmount } = render(<Component />)
+        const { container, unmount } = render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         await waitForComponentLoad()
 
@@ -533,7 +573,9 @@ describe('Project Pages Consistency Integration Tests', () => {
     it.each(projectPages)(
       'should handle re-renders gracefully in $name page',
       async ({ component: Component }) => {
-        const { rerender } = render(<Component />)
+        const { rerender } = render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         await waitForComponentLoad()
 
@@ -551,7 +593,9 @@ describe('Project Pages Consistency Integration Tests', () => {
     it.each(projectPages)(
       'should handle timer cleanup properly in $name page',
       async ({ component: Component }) => {
-        const { unmount } = render(<Component />)
+        const { unmount } = render(<Component />, {
+          wrapper: withNuqsTestingAdapter({ searchParams: '' }),
+        })
 
         await waitForComponentLoad()
 

@@ -1,2 +1,4 @@
-# Pre-commit already ran lint, type-check, and tests
-echo "Pushing to remote..."
+#!/usr/bin/env sh
+echo "🧪 Running tests before push..."
+bun test
+echo "✅ Tests passed! Safe to push."

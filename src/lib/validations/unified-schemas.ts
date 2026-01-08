@@ -94,6 +94,9 @@ export const SEOEventTypeSchema = z.nativeEnum(SEOEventType)
 export const SEOSeveritySchema = z.nativeEnum(SEOSeverity)
 export const ChangeFrequencySchema = z.nativeEnum(ChangeFrequency)
 
+// Also export the enum values themselves for use as values (not just types)
+export { PostStatus, ContentType, InteractionType, SEOEventType, SEOSeverity, ChangeFrequency }
+
 // =======================
 // CONTACT FORM SCHEMAS
 // =======================

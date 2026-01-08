@@ -89,7 +89,7 @@ export default function ProjectsPage() {
   }
 
   return (
-    <ErrorBoundary showErrorDetails>
+    <ErrorBoundary>
       <>
         <Navbar />
         <main id="main-content" className="relative min-h-screen bg-background overflow-hidden">
@@ -161,7 +161,10 @@ export default function ProjectsPage() {
                   />
                 </div>
                 {mounted ? (
-                  <Select value={category} onValueChange={(value) => setCategory(value === 'all' ? null : value)}>
+                  <Select
+                    value={category}
+                    onValueChange={(value) => setCategory(value === 'all' ? null : value)}
+                  >
                     <SelectTrigger className="w-full sm:w-48">
                       <SelectValue placeholder="All categories" />
                     </SelectTrigger>

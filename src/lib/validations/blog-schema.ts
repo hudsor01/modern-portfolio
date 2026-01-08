@@ -1,28 +1,55 @@
+/**
+ * Blog Validation Schemas
+ * Imports base schemas from unified-schemas, extends with blog-specific schemas
+ */
+
 import { z } from 'zod'
+import {
+  // Base schemas (imported to extend)
+  slugSchema,
+  metaDescriptionSchema,
+  keywordsSchema,
+  urlSchema,
+  colorSchema,
+  cuidSchema,
+  // Prisma enum schemas (imported from unified-schemas which uses nativeEnum)
+  PostStatusSchema,
+  ContentTypeSchema,
+  InteractionTypeSchema,
+  SEOEventTypeSchema,
+  SEOSeveritySchema,
+  ChangeFrequencySchema,
+  // Re-export for convenience
+  type PostStatus,
+  type ContentType,
+  type InteractionType,
+  type SEOEventType,
+  type SEOSeverity,
+  type ChangeFrequency,
+} from './unified-schemas'
 
 // =======================
-// ENUM VALIDATION SCHEMAS
+// ENUM RE-EXPORTS (for backward compatibility)
 // =======================
 
-export const PostStatusSchema = z.enum([
-  'DRAFT',
-  'REVIEW', 
-  'SCHEDULED',
-  'PUBLISHED',
-  'ARCHIVED',
-  'DELETED'
-])
+export { PostStatusSchema, ContentTypeSchema, InteractionTypeSchema, SEOEventTypeSchema, SEOSeveritySchema, ChangeFrequencySchema }
+export type { PostStatus, ContentType, InteractionType, SEOEventType, SEOSeverity, ChangeFrequency }
 
-export const ContentTypeSchema = z.enum([
-  'MARKDOWN',
-  'HTML',
-  'RICH_TEXT'
-])
+// =======================
+// UTILITY SCHEMA RE-EXPORTS
+// =======================
 
+export { slugSchema, metaDescriptionSchema, keywordsSchema, urlSchema, colorSchema, cuidSchema }
+
+// =======================
+// BLOG-SPECIFIC ENUMS
+// =======================
+
+// These are NOT in Prisma, so we define them here
 export const RelationTypeSchema = z.enum([
   'RELATED',
   'SEQUEL',
-  'PREQUEL', 
+  'PREQUEL',
   'UPDATE',
   'REFERENCE'
 ])
@@ -36,90 +63,8 @@ export const ChangeTypeSchema = z.enum([
   'STRUCTURE'
 ])
 
-export const InteractionTypeSchema = z.enum([
-  'LIKE',
-  'SHARE',
-  'COMMENT',
-  'BOOKMARK',
-  'SUBSCRIBE',
-  'DOWNLOAD'
-])
-
-export const SEOEventTypeSchema = z.enum([
-  'TITLE_CHANGE',
-  'META_DESCRIPTION_CHANGE',
-  'KEYWORD_UPDATE',
-  'CONTENT_ANALYSIS',
-  'PERFORMANCE_ALERT',
-  'RANKING_CHANGE',
-  'TECHNICAL_ISSUE',
-  'OPPORTUNITY'
-])
-
-export const SEOSeveritySchema = z.enum([
-  'LOW',
-  'MEDIUM',
-  'HIGH',
-  'CRITICAL',
-  'INFO'
-])
-
-export const ChangeFrequencySchema = z.enum([
-  'ALWAYS',
-  'HOURLY',
-  'DAILY',
-  'WEEKLY',
-  'MONTHLY',
-  'YEARLY',
-  'NEVER'
-])
-
-// =======================
-// UTILITY SCHEMAS
-// =======================
-
-// Slug validation - lowercase alphanumeric with hyphens
-export const slugSchema = z
-  .string()
-  .min(1, 'Slug is required')
-  .max(100, 'Slug cannot exceed 100 characters')
-  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
-    message: 'Slug must contain only lowercase letters, numbers, and hyphens',
-  })
-
-// SEO meta description with character limits
-export const metaDescriptionSchema = z
-  .string()
-  .max(160, 'Meta description cannot exceed 160 characters')
-  .optional()
-
-// Keywords array validation
-export const keywordsSchema = z
-  .array(z.string().min(1).max(50))
-  .max(10, 'Cannot have more than 10 keywords')
-  .default([])
-
-// URL validation
-export const urlSchema = z
-  .string()
-  .url('Must be a valid URL')
-  .optional()
-
-// Color hex validation
-export const colorSchema = z
-  .string()
-  .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Must be a valid hex color')
-  .optional()
-
-// Email validation
-export const emailSchema = z
-  .string()
-  .email('Must be a valid email address')
-
-// CUID validation
-export const cuidSchema = z
-  .string()
-  .regex(/^c[^\s-]{8,}$/, 'Must be a valid CUID')
+export type RelationType = z.infer<typeof RelationTypeSchema>
+export type ChangeType = z.infer<typeof ChangeTypeSchema>
 
 // =======================
 // CORE ENTITY SCHEMAS
@@ -127,7 +72,7 @@ export const cuidSchema = z
 
 export const authorCreateSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
-  email: emailSchema,
+  email: z.string().email('Must be a valid email address'),
   slug: slugSchema,
   bio: z.string().max(1000).optional(),
   avatar: urlSchema,
@@ -205,13 +150,13 @@ export const blogPostCreateSchema = z.object({
     .max(50000, 'Content cannot exceed 50,000 characters'),
   contentType: ContentTypeSchema.default('MARKDOWN'),
   status: PostStatusSchema.default('DRAFT'),
-  
+
   // SEO Fields
   metaTitle: z.string().max(100).optional(),
   metaDescription: metaDescriptionSchema,
   keywords: keywordsSchema,
   canonicalUrl: urlSchema,
-  
+
   // Social Media
   ogTitle: z.string().max(100).optional(),
   ogDescription: z.string().max(300).optional(),
@@ -219,15 +164,15 @@ export const blogPostCreateSchema = z.object({
   twitterTitle: z.string().max(100).optional(),
   twitterDescription: z.string().max(200).optional(),
   twitterImage: urlSchema,
-  
+
   // Content Structure
   featuredImage: urlSchema,
   featuredImageAlt: z.string().max(200).optional(),
-  
+
   // Publishing
   publishedAt: z.date().optional(),
   scheduledAt: z.date().optional(),
-  
+
   // Relationships
   authorId: cuidSchema,
   categoryId: cuidSchema.optional(),
@@ -240,7 +185,6 @@ export const blogPostUpdateSchema = blogPostCreateSchema.partial().extend({
   id: cuidSchema
 })
 
-// Blog post with auto-calculated fields for creation
 export const blogPostDraftSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   content: z.string().min(1, 'Content is required'),
@@ -337,13 +281,11 @@ export const blogPostSortSchema = z.object({
   order: z.enum(['asc', 'desc']).default('desc')
 })
 
-export const paginationSchema = z.object({
-  page: z.number().int().min(1).default(1),
-  limit: z.number().int().min(1).max(100).default(10)
-})
-
 export const blogPostListParamsSchema = z.object({
-  pagination: paginationSchema.optional(),
+  pagination: z.object({
+    page: z.number().int().min(1).default(1),
+    limit: z.number().int().min(1).max(100).default(10)
+  }).optional(),
   filter: blogPostFilterSchema.optional(),
   sort: blogPostSortSchema.optional()
 })
@@ -360,13 +302,13 @@ export const blogPostResponseSchema = z.object({
   content: z.string(),
   contentType: ContentTypeSchema,
   status: PostStatusSchema,
-  
+
   // SEO Fields
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   keywords: z.array(z.string()),
   canonicalUrl: z.string().optional(),
-  
+
   // Social Media
   ogTitle: z.string().optional(),
   ogDescription: z.string().optional(),
@@ -374,32 +316,32 @@ export const blogPostResponseSchema = z.object({
   twitterTitle: z.string().optional(),
   twitterDescription: z.string().optional(),
   twitterImage: z.string().optional(),
-  
+
   // Content Structure
   featuredImage: z.string().optional(),
   featuredImageAlt: z.string().optional(),
   readingTime: z.number().optional(),
   wordCount: z.number().optional(),
-  
+
   // Publishing
   publishedAt: z.date().optional(),
   scheduledAt: z.date().optional(),
   archivedAt: z.date().optional(),
-  
+
   // Timestamps
   createdAt: z.date(),
   updatedAt: z.date(),
-  
+
   // Analytics
   viewCount: z.number(),
   likeCount: z.number(),
   shareCount: z.number(),
   commentCount: z.number(),
-  
+
   // SEO Analytics
   seoScore: z.number().optional(),
   lastSeoCheck: z.date().optional(),
-  
+
   // Relationships (when included)
   author: z.object({
     id: z.string(),
@@ -443,15 +385,6 @@ export const blogPostListResponseSchema = z.object({
 // TYPE EXPORTS
 // =======================
 
-export type PostStatus = z.infer<typeof PostStatusSchema>
-export type ContentType = z.infer<typeof ContentTypeSchema>
-export type RelationType = z.infer<typeof RelationTypeSchema>
-export type ChangeType = z.infer<typeof ChangeTypeSchema>
-export type InteractionType = z.infer<typeof InteractionTypeSchema>
-export type SEOEventType = z.infer<typeof SEOEventTypeSchema>
-export type SEOSeverity = z.infer<typeof SEOSeveritySchema>
-export type ChangeFrequency = z.infer<typeof ChangeFrequencySchema>
-
 export type AuthorCreateInput = z.infer<typeof authorCreateSchema>
 export type AuthorUpdateInput = z.infer<typeof authorUpdateSchema>
 export type CategoryCreateInput = z.infer<typeof categoryCreateSchema>
@@ -475,7 +408,6 @@ export type SitemapEntryCreateInput = z.infer<typeof sitemapEntryCreateSchema>
 
 export type BlogPostFilter = z.infer<typeof blogPostFilterSchema>
 export type BlogPostSort = z.infer<typeof blogPostSortSchema>
-export type Pagination = z.infer<typeof paginationSchema>
 export type BlogPostListParams = z.infer<typeof blogPostListParamsSchema>
 
 // =======================
@@ -493,8 +425,3 @@ export function validateBlogPostUpdate(data: unknown) {
 export function validateBlogPostFilter(data: unknown) {
   return blogPostFilterSchema.safeParse(data)
 }
-
-export function validatePagination(data: unknown) {
-  return paginationSchema.safeParse(data)
-}
-

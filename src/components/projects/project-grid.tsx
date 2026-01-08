@@ -12,9 +12,12 @@ export function ProjectGrid({ projects }: ProjectGridProps) {
   const formattedProjects = projects.map((project, index) => ({
     ...project,
     // Ensure id exists (use slug as fallback, then deterministic index-based id)
-    id: project.id || project.slug || `project-${index}-${project.title?.replace(/\s+/g, '-').toLowerCase() || 'untitled'}`,
+    id:
+      project.id ||
+      project.slug ||
+      `project-${index}-${project.title?.replace(/\s+/g, '-').toLowerCase() || 'untitled'}`,
     // Ensure tags property exists
-    tags: project.tags || project.technologies || [],
+    tags: project.tags || [],
   }))
 
   return (

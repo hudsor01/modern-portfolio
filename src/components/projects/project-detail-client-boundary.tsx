@@ -13,6 +13,7 @@ import { ExternalLink, ArrowRight, Github } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Project } from '@/types/project'
+import { normalizeProjectForDisplay } from '@/types/project'
 import type { ProjectTag } from '@/lib/design-system/types'
 
 interface ProjectDetailClientBoundaryProps {
@@ -53,7 +54,8 @@ export default function ProjectDetailClientBoundary({
   })
 
   // Use project data or fallback
-  const displayProject = project || initialProject
+  const displayProject =
+    project || initialProject ? normalizeProjectForDisplay(project || initialProject!) : null
 
   // Convert project data to standardized format
   const projectTags: ProjectTag[] =
@@ -231,7 +233,6 @@ export default function ProjectDetailClientBoundary({
                     )}
                   </div>
                 </SectionCard>
-
               </div>
             </div>
 

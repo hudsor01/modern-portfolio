@@ -3,8 +3,6 @@ import {
   Author, 
   Category, 
   Tag, 
-  PostStatus, 
-  ContentType, 
   BlogPostCreateInput,
   BlogPostFilter,
   BlogAnalytics,
@@ -12,6 +10,9 @@ import {
   SEOIssue,
   BlogPostSummary 
 } from '@/types/blog'
+
+// Import enums for value usage
+import { PostStatus as PSType, ContentType as CTType } from '@/lib/prisma-types'
 
 // =======================
 // BLOG FACTORIES
@@ -77,8 +78,8 @@ export const createMockBlogPost = (overrides: Partial<BlogPost> = {}): BlogPost 
   slug: 'getting-started-with-react-testing',
   excerpt: 'Learn the fundamentals of testing React components with modern testing tools.',
   content: '# Getting Started with React Testing\n\nTesting React components is essential for building reliable applications...',
-  contentType: ContentType.MARKDOWN,
-  status: PostStatus.PUBLISHED,
+  contentType: CTType.MARKDOWN,
+  status: PSType.PUBLISHED,
   metaTitle: 'Getting Started with React Testing - Complete Guide',
   metaDescription: 'Comprehensive guide to testing React components with Jest, Testing Library, and best practices.',
   keywords: ['react', 'testing', 'jest', 'testing-library'],
@@ -147,8 +148,8 @@ export const createMockBlogPostInput = (overrides: Partial<BlogPostCreateInput> 
   title: 'New Blog Post',
   content: '# New Blog Post\n\nThis is a new blog post content...',
   excerpt: 'This is a new blog post excerpt.',
-  contentType: ContentType.MARKDOWN,
-  status: PostStatus.DRAFT,
+  contentType: CTType.MARKDOWN,
+  status: PSType.DRAFT,
   metaTitle: 'New Blog Post - Tech Insights',
   metaDescription: 'A comprehensive guide to the latest technology trends.',
   keywords: ['technology', 'development', 'guide'],
@@ -160,7 +161,7 @@ export const createMockBlogPostInput = (overrides: Partial<BlogPostCreateInput> 
 
 // Factory for creating mock blog filters
 export const createMockBlogFilter = (overrides: Partial<BlogPostFilter> = {}): BlogPostFilter => ({
-  status: PostStatus.PUBLISHED,
+  status: PSType.PUBLISHED,
   search: '',
   published: true,
   ...overrides,

@@ -1,6 +1,7 @@
 import { describe, expect, it, beforeEach, afterEach } from 'bun:test'
 import {
   absoluteUrl,
+  absoluteUrlTestable,
   cn,
   formatProjectName,
   delay,
@@ -9,13 +10,15 @@ import {
   truncate,
   formatRelativeTime,
   getCurrentBreakpoint,
+  getCurrentBreakpointTestable,
   generateId,
   slugify,
   parseParam,
   safeJsonParse,
   isInViewport,
+  isInViewportTestable,
   createUrl,
-  formatData
+  formatData,
 } from '@/lib/utils'
 
 // Store original window properties for restoration
@@ -55,10 +58,14 @@ describe('Utils', () => {
 
   describe('absoluteUrl', () => {
     it('should return correct URL for localhost', () => {
-      // Mock window.location.host on existing window (don't replace window object)
+      // Mock window.location.origin on existing window (don't replace window object)
       if (typeof window !== 'undefined') {
         Object.defineProperty(window, 'location', {
-          value: { host: 'localhost:3000', href: 'http://localhost:3000' },
+          value: {
+            origin: 'http://localhost:3000',
+            host: 'localhost:3000',
+            href: 'http://localhost:3000',
+          },
           writable: true,
           configurable: true,
         })
@@ -69,10 +76,14 @@ describe('Utils', () => {
     })
 
     it('should return correct URL for production', () => {
-      // Mock window.location.host on existing window (don't replace window object)
+      // Mock window.location.origin on existing window (don't replace window object)
       if (typeof window !== 'undefined') {
         Object.defineProperty(window, 'location', {
-          value: { host: 'example.com', href: 'https://example.com' },
+          value: {
+            origin: 'https://example.com',
+            host: 'example.com',
+            href: 'https://example.com',
+          },
           writable: true,
           configurable: true,
         })
@@ -82,15 +93,27 @@ describe('Utils', () => {
       expect(result).toBe('https://example.com/test')
     })
 
-    // NOTE: Tests for server-side behavior are skipped because isServer is computed
-    // at module load time. Changing window after import doesn't affect the behavior.
-    // These tests would need proper module mocking to work correctly.
-    it.skip('should use env var when window is not available', () => {
-      // Skipped: isServer is computed at module load time
+    // NOTE: Tests for server-side behavior now use testable versions
+    it('should use env var when window is not available', () => {
+      // Test server-side behavior by passing undefined window
+      const result = absoluteUrlTestable('/test', undefined)
+      expect(result).toBe('https://richardwhudsonjr.com/test')
     })
 
-    it.skip('should use default when window and env var are not available', () => {
-      // Skipped: isServer is computed at module load time
+    it('should use default when window and env var are not available', () => {
+      // Test with undefined window and no env vars
+      const originalSiteUrl = process.env.NEXT_PUBLIC_SITE_URL
+      const originalVercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL
+
+      delete process.env.NEXT_PUBLIC_SITE_URL
+      delete process.env.NEXT_PUBLIC_VERCEL_URL
+
+      const result = absoluteUrlTestable('/test', undefined)
+      expect(result).toBe('https://richardwhudsonjr.com/test')
+
+      // Restore env vars
+      process.env.NEXT_PUBLIC_SITE_URL = originalSiteUrl
+      process.env.NEXT_PUBLIC_VERCEL_URL = originalVercelUrl
     })
   })
 
@@ -121,7 +144,7 @@ describe('Utils', () => {
       const start = Date.now()
       await delay(100)
       const end = Date.now()
-      
+
       expect(end - start).toBeGreaterThanOrEqual(95) // Allow for small timing variations
     })
   })
@@ -189,9 +212,10 @@ describe('Utils', () => {
   })
 
   describe('getCurrentBreakpoint', () => {
-    // NOTE: Server-side test is skipped because isServer is computed at module load time
-    it.skip('should return md breakpoint on server', () => {
-      // Skipped: isServer is computed at module load time
+    // NOTE: Server-side test now uses testable version
+    it('should return md breakpoint on server', () => {
+      const result = getCurrentBreakpointTestable(undefined)
+      expect(result).toBe('md')
     })
 
     it('should return xs breakpoint for small screens', () => {
@@ -378,9 +402,11 @@ describe('Utils', () => {
   })
 
   describe('isInViewport', () => {
-    // NOTE: Server-side test is skipped because isServer is computed at module load time
-    it.skip('should return false on server', () => {
-      // Skipped: isServer is computed at module load time
+    // NOTE: Server-side test now uses testable version
+    it('should return false on server', () => {
+      const mockElement = document.createElement('div')
+      const result = isInViewportTestable(mockElement, 0, undefined)
+      expect(result).toBe(false)
     })
 
     it('should return true when element is in viewport', () => {
@@ -447,11 +473,11 @@ describe('Utils', () => {
     })
 
     it('should create URL with mixed param types', () => {
-      const result = createUrl('/test', { 
-        str: 'string', 
-        num: 42, 
-        bool: true, 
-        undef: undefined 
+      const result = createUrl('/test', {
+        str: 'string',
+        num: 42,
+        bool: true,
+        undef: undefined,
       })
       expect(result).toBe('/test?str=string&num=42&bool=true')
     })

@@ -5,6 +5,7 @@
  * Provides helpers for token application, validation, and component styling
  */
 
+import { handleUtilityError } from '@/lib/error-handling'
 import { designTokens } from './tokens'
 import type {
   ComponentVariant,
@@ -64,7 +65,13 @@ export function validateTokenPath(tokenPath: string): boolean {
   try {
     getTokenValue(tokenPath)
     return true
-  } catch {
+  } catch (error) {
+    handleUtilityError(
+      error,
+      { operation: 'validateTokenPath', component: 'DesignSystemUtils', metadata: { tokenPath } },
+      'return-default',
+      false
+    )
     return false
   }
 }

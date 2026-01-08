@@ -145,6 +145,7 @@ exports.Prisma.BlogPostScalarFieldEnum = {
   publishedAt: 'publishedAt',
   scheduledAt: 'scheduledAt',
   archivedAt: 'archivedAt',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   authorId: 'authorId',
