@@ -156,17 +156,20 @@ export function useBlogPostForm(post?: Partial<BlogPost>) {
   // Cross-tab synchronization
   const crossTabSync = useCrossTabSync(formId, (message: unknown) => {
     if (!message || typeof message !== 'object') return
+    
+    // Type guard for message structure
+    const msg = message as { type?: string; data?: unknown; version?: number; fieldPath?: string }
 
     const now = Date.now()
     // Prevent echo broadcasts
     if (now - lastBroadcastRef.current < 100) return
 
-    switch (message.type) {
+    switch (msg.type) {
       case 'update':
-        if (message.data && !hasConflict) {
-          logger.info('Received cross-tab form update', { formId, version: message.version })
+        if (msg.data && !hasConflict) {
+          logger.info('Received cross-tab form update', { formId, version: msg.version })
           // Merge remote data with local data to avoid conflicts
-          const mergedData = mergeFormData(formValues, message.data as BlogPostFormData)
+          const mergedData = mergeFormData(formValues, msg.data as BlogPostFormData)
           Object.entries(mergedData).forEach(([key, value]) => {
             if (
               JSON.stringify(formValues[key as keyof BlogPostFormData]) !== JSON.stringify(value)
@@ -185,11 +188,11 @@ export function useBlogPostForm(post?: Partial<BlogPost>) {
         break
 
       case 'field-update':
-        if (message.data && message.fieldPath && !hasConflict) {
-          logger.info('Received cross-tab field update', { formId, fieldPath: message.fieldPath })
+        if (msg.data && msg.fieldPath && !hasConflict) {
+          logger.info('Received cross-tab field update', { formId, fieldPath: msg.fieldPath })
           // Apply field-level update
-          const fieldPath = message.fieldPath as keyof BlogPostFormData
-          const newValue = message.data[fieldPath]
+          const fieldPath = msg.fieldPath as keyof BlogPostFormData
+          const newValue = (msg.data as Record<string, unknown>)[fieldPath]
           if (
             newValue !== undefined &&
             JSON.stringify(formValues[fieldPath]) !== JSON.stringify(newValue)
@@ -218,7 +221,7 @@ export function useBlogPostForm(post?: Partial<BlogPost>) {
         setHasConflict(true)
         setConflictData({
           local: formValues,
-          remote: message.remoteData as BlogPostFormData,
+          remote: (msg as { remoteData?: BlogPostFormData }).remoteData || formValues,
         })
         break
     }
