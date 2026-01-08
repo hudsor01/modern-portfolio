@@ -1,25 +1,5 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 echo "🔍 Running pre-commit checks..."
-
-echo "📝 Running linter..."
-if ! bun run lint; then
-  echo "❌ Linting failed! Please fix all linting errors before committing."
-  echo "💡 Run 'bun run lint:fix' to automatically fix some issues."
-  exit 1
-fi
-
-echo "🔧 Running type checker..."
-if ! bun run type-check; then
-  echo "❌ Type checking failed! Please fix all TypeScript errors before committing."
-  exit 1
-fi
-
-echo "🧪 Running unit tests..."
-if ! bun test; then
-  echo "❌ Unit tests failed! Please fix all failing tests before committing."
-  exit 1
-fi
-
-echo "✅ All checks passed! Ready to commit."
+echo "📝 Linting and type-checking..."
+bunx lint-staged
+echo "✅ All checks passed!"

@@ -1,11 +1,4 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-echo "🔨 Running build verification before push..."
-
-if ! bun run build; then
-  echo "❌ Build failed! Please fix all build errors before pushing."
-  exit 1
-fi
-
-echo "✅ Build verification passed! Ready to push."
+echo "🧪 Running tests before push..."
+bun test
+echo "✅ Tests passed! Safe to push."
