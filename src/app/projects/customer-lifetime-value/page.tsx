@@ -4,10 +4,8 @@ import { DollarSign, Brain, Users, Calendar } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
-import { LoadingState } from '@/components/projects/loading-state'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
-import { useLoadingState } from '@/hooks/use-loading-state'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data-formatters'
 import { clvMetrics } from './data/constants'
 import { OverviewTab } from './components/OverviewTab'
@@ -20,7 +18,6 @@ const tabs = ['overview', 'segments', 'predictions'] as const
 type Tab = (typeof tabs)[number]
 
 export default function CustomerLifetimeValueAnalytics() {
-  const { isLoading, handleRefresh } = useLoadingState()
   const [activeTab, setActiveTab] = useQueryState('tab', { defaultValue: 'overview' as Tab })
 
   // Standardized metrics configuration using consistent data formatting
@@ -75,19 +72,13 @@ export default function CustomerLifetimeValueAnalytics() {
         { label: 'Machine Learning', variant: 'primary' },
         { label: 'BTYD Framework', variant: 'secondary' },
       ]}
-      onRefresh={handleRefresh}
-      refreshButtonDisabled={isLoading}
       showTimeframes={true}
       timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
       activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
       onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
     >
-      {isLoading ? (
-        <LoadingState />
-      ) : (
-        <>
           {/* Key Metrics using standardized MetricsGrid */}
-          <MetricsGrid metrics={metrics} columns={4} loading={isLoading} className="mb-8" />
+          <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
           {/* Tab Content wrapped in SectionCard */}
           <SectionCard
@@ -116,8 +107,6 @@ export default function CustomerLifetimeValueAnalytics() {
           >
             <NarrativeSections />
           </SectionCard>
-        </>
-      )}
     </ProjectPageLayout>
   )
 }

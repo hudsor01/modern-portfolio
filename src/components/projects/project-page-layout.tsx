@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import { RefreshCcw } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -29,8 +28,6 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
       timeframes = [],
       activeTimeframe,
       onTimeframeChange,
-      onRefresh,
-      refreshButtonDisabled = false,
       className,
       ...props
     },
@@ -101,22 +98,6 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
                     </Button>
                   ))}
                 </div>
-              )}
-
-              {/* Refresh Button */}
-              {onRefresh && (
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={onRefresh}
-                  disabled={refreshButtonDisabled}
-                  data-testid="refresh-button"
-                  className="shadow-sm"
-                  aria-label="Refresh data"
-                >
-                  <RefreshCcw className="h-4 w-4" />
-                  <span className="sr-only">Refresh data</span>
-                </Button>
               )}
             </div>
           </header>

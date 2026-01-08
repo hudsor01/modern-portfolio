@@ -116,8 +116,6 @@ export interface ProjectPageLayoutProps {
   timeframes?: string[]
   activeTimeframe?: string
   onTimeframeChange?: (timeframe: string) => void
-  onRefresh?: () => void
-  refreshButtonDisabled?: boolean
   className?: string
 }
 

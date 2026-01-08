@@ -5,11 +5,9 @@ import { TrendingUp, Users, Target, DollarSign } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
-import { LoadingState } from '@/components/projects/loading-state'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { ChartContainer } from '@/components/ui/chart-container'
-import { useLoadingState } from '@/hooks/use-loading-state'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data-formatters'
 import { NarrativeSections } from './components/NarrativeSections'
 
@@ -94,7 +92,6 @@ const tabs = ['overview', 'tiers', 'top-performers'] as const
 type Tab = (typeof tabs)[number]
 
 export default function PartnerPerformanceIntelligence() {
-  const { isLoading, handleRefresh } = useLoadingState()
   const [activeTab, setActiveTab] = useQueryState('tab', { defaultValue: 'overview' as Tab })
 
   // Standardized metrics configuration using consistent data formatting
@@ -146,8 +143,6 @@ export default function PartnerPerformanceIntelligence() {
         { label: 'Partner Intelligence', variant: 'primary' },
         { label: 'Revenue Operations', variant: 'secondary' },
       ]}
-      onRefresh={handleRefresh}
-      refreshButtonDisabled={isLoading}
       showTimeframes={true}
       timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1).replace('-', ' '))}
       activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1).replace('-', ' ')}
@@ -156,12 +151,8 @@ export default function PartnerPerformanceIntelligence() {
         setActiveTab(tab)
       }}
     >
-      {isLoading ? (
-        <LoadingState />
-      ) : (
-        <>
           {/* Key Metrics using standardized MetricsGrid */}
-          <MetricsGrid metrics={metrics} columns={4} loading={isLoading} className="mb-8" />
+          <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
           {/* Tab Content wrapped in SectionCard */}
           <SectionCard
@@ -343,8 +334,6 @@ export default function PartnerPerformanceIntelligence() {
 
           {/* Professional Narrative Sections - STAR Method */}
           <NarrativeSections />
-        </>
-      )}
     </ProjectPageLayout>
   )
 }
