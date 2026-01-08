@@ -26,7 +26,7 @@ export function ConversionChart({ stageConversions }: ConversionChartProps) {
   return (
     <div className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out">
       <h2 className="typography-h3 mb-6">Stage Conversion Rates</h2>
-      <div className="h-[300px]">
+      <div className="h-[var(--chart-height-sm)]">
         <ResponsiveContainer width="100%" height="100%">
           <RechartsBarChart data={stageConversions} layout="horizontal">
             <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />

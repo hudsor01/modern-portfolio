@@ -247,11 +247,11 @@ function getVariantClasses(variant: string): string[] {
     case 'secondary':
       return [...baseClasses, 'border-secondary/20', 'hover:border-secondary/40']
     case 'success':
-      return [...baseClasses, 'border-green-200', 'hover:border-green-300']
+      return [...baseClasses, 'border-success/20', 'hover:border-success/30']
     case 'warning':
-      return [...baseClasses, 'border-yellow-200', 'hover:border-yellow-300']
+      return [...baseClasses, 'border-warning/20', 'hover:border-warning/30']
     case 'info':
-      return [...baseClasses, 'border-blue-200', 'hover:border-blue-300']
+      return [...baseClasses, 'border-primary/20', 'hover:border-primary/30']
     default:
       return baseClasses
   }
@@ -260,9 +260,9 @@ function getVariantClasses(variant: string): string[] {
 function getTrendColorClass(direction: string): string {
   switch (direction) {
     case 'up':
-      return 'text-green-600'
+      return 'text-success'
     case 'down':
-      return 'text-red-600'
+      return 'text-destructive'
     case 'neutral':
       return 'text-muted-foreground'
     default:

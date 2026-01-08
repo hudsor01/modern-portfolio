@@ -33,7 +33,7 @@ export function TrendsChart({ data }: TrendsChartProps) {
         <h2 className="typography-h3 mb-2">Lead Generation Trends</h2>
         <p className="typography-muted">Monthly lead volume and conversion tracking</p>
       </div>
-      <div className="h-[400px]">
+      <div className="h-[var(--chart-height-lg)]">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
             <defs>

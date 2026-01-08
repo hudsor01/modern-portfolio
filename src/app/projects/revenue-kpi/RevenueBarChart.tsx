@@ -58,7 +58,7 @@ export default function RevenueBarChart({ data }: RevenueBarChartProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+        <ChartContainer config={chartConfig} className="h-[var(--chart-height-sm)] w-full">
           <AreaChart
             data={chartData}
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
