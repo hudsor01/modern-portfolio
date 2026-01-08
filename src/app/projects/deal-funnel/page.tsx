@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { DollarSign, Clock, Target, BarChart3 } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
@@ -25,7 +25,6 @@ import {
 import { FunnelChart } from './components/FunnelChart'
 import { ConversionChart } from './components/ConversionChart'
 import { VelocityChart } from './components/VelocityChart'
-import { PipelineValue } from './components/PipelineValue'
 import { NarrativeSections } from './components/NarrativeSections'
 
 const logger = createContextLogger('DealFunnelPage')
@@ -61,15 +60,6 @@ export default function DealFunnel() {
       }
     }
     loadProjectData()
-  }, [])
-
-  const handleRefresh = useCallback(() => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    setIsLoading(true)
-    setLocalFunnelStages(initialFunnelStages)
-    setLocalPartnerConversion(initialPartnerConversion)
-    setLocalConversionRates(initialConversionRates)
-    timeoutRef.current = setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
   }, [])
 
   // Derived calculations
@@ -186,8 +176,6 @@ export default function DealFunnel() {
             variant: 'secondary',
           },
         ]}
-        onRefresh={handleRefresh}
-        refreshButtonDisabled={isLoading}
       >
         {isLoading ? (
           <LoadingState />
@@ -245,14 +233,6 @@ export default function DealFunnel() {
               className="mb-8"
             >
               <NarrativeSections />
-            </SectionCard>
-
-            {/* Revenue Impact wrapped in SectionCard */}
-            <SectionCard
-              title="Revenue Impact"
-              description="Financial impact and business value generated from pipeline optimization"
-            >
-              <PipelineValue totalRevenue={totalRevenue} />
             </SectionCard>
           </>
         )}

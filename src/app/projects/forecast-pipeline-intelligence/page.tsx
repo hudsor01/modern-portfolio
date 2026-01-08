@@ -3,10 +3,8 @@
 import { TrendingUp, AlertTriangle, Zap, CheckCircle, BarChart3 } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
-import { LoadingState } from '@/components/projects/loading-state'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
-import { useLoadingState } from '@/hooks/use-loading-state'
 import {
   formatCurrency,
   formatNumber,
@@ -17,7 +15,6 @@ import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { NarrativeSections } from './components/NarrativeSections'
 
 export default function ForecastPipelineIntelligenceProject() {
-  const { isLoading, handleRefresh } = useLoadingState()
 
   // Standardized metrics configuration using consistent data formatting
   const metrics = [
@@ -131,15 +128,9 @@ export default function ForecastPipelineIntelligenceProject() {
           { label: `${formatNumber(4200)}+ Deals Monitored`, variant: 'primary' },
           { label: `${formatPercentage(0.89)} Early Warnings`, variant: 'secondary' },
         ]}
-        onRefresh={handleRefresh}
-        refreshButtonDisabled={isLoading}
       >
-        {isLoading ? (
-          <LoadingState />
-        ) : (
-          <>
             {/* Key Metrics using standardized MetricsGrid */}
-            <MetricsGrid metrics={metrics} columns={4} loading={isLoading} className="mb-8" />
+            <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
             {/* Intelligence Modules wrapped in SectionCard */}
             <SectionCard
@@ -239,8 +230,6 @@ export default function ForecastPipelineIntelligenceProject() {
 
             {/* Professional Narrative Sections - STAR Method */}
             <NarrativeSections />
-          </>
-        )}
       </ProjectPageLayout>
     </>
   )

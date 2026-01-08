@@ -135,7 +135,6 @@ export default function ProjectDetailClientBoundary({
               backUrl: '/projects',
               backLabel: 'Back to Projects',
             }}
-            onRefresh={handleRetry}
           >
             {/* Main Content Grid */}
             <div className="grid lg:grid-cols-2 gap-8">

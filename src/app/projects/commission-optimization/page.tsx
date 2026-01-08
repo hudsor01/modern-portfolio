@@ -4,9 +4,7 @@ import { DollarSign, Percent, TrendingUp, Calculator } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
-import { LoadingState } from '@/components/projects/loading-state'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
-import { useLoadingState } from '@/hooks/use-loading-state'
 import { commissionMetrics } from './data/constants'
 import { formatCurrency, formatPercentage } from '@/lib/utils/data-formatters'
 import { ProcessingMetrics } from './components/ProcessingMetrics'
@@ -21,7 +19,6 @@ const tabs = ['overview', 'tiers', 'incentives', 'automation'] as const
 type Tab = (typeof tabs)[number]
 
 export default function CommissionOptimization() {
-  const { isLoading, handleRefresh } = useLoadingState()
   const [activeTab, setActiveTab] = useQueryState('tab', { defaultValue: 'overview' as Tab })
 
   // Standardized metrics configuration using design system types
@@ -82,19 +79,13 @@ export default function CommissionOptimization() {
           variant: 'secondary',
         },
       ]}
-      onRefresh={handleRefresh}
-      refreshButtonDisabled={isLoading}
       showTimeframes={true}
       timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
       activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
       onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
     >
-      {isLoading ? (
-        <LoadingState />
-      ) : (
-        <>
           {/* Standardized Key Metrics Grid */}
-          <MetricsGrid metrics={metrics} columns={4} loading={isLoading} className="mb-8" />
+          <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
           {/* Processing Metrics */}
           <ProcessingMetrics />
@@ -107,8 +98,6 @@ export default function CommissionOptimization() {
 
           {/* Professional Narrative Sections */}
           <NarrativeSections />
-        </>
-      )}
     </ProjectPageLayout>
   )
 }

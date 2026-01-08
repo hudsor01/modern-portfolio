@@ -1,7 +1,6 @@
 'use client'
 
 import { useMemo } from 'react'
-import { useLoadingState } from '@/hooks/use-loading-state'
 import { useAnalyticsData } from '@/hooks/use-analytics-data'
 import dynamic from 'next/dynamic'
 import { TrendingDown, Users, Activity, AlertCircle } from 'lucide-react'
@@ -27,11 +26,9 @@ const RetentionHeatmap = dynamic(() => import('./RetentionHeatmap'), {
 import { staticChurnData } from '@/app/projects/data/partner-analytics'
 
 export default function ChurnAnalysis() {
-  const { isLoading: isUiLoading, handleRefresh: handleUiRefresh } = useLoadingState()
   const {
     data: analyticsData,
-    isLoading: isAnalyticsLoading,
-    refresh: refreshAnalyticsData,
+    isLoading,
   } = useAnalyticsData()
 
   const churnData = useMemo(
@@ -47,7 +44,6 @@ export default function ChurnAnalysis() {
     [analyticsData?.churn]
   )
 
-  const isLoading = isUiLoading || isAnalyticsLoading
 
   // Ensure data exists before accessing indices
   const currentMonth = churnData?.[churnData.length - 1] ?? null
@@ -146,11 +142,6 @@ export default function ChurnAnalysis() {
             variant: 'success' as const,
           },
         ]}
-        onRefresh={() => {
-          handleUiRefresh()
-          void refreshAnalyticsData()
-        }}
-        refreshButtonDisabled={isLoading}
       >
         {isLoading ? (
           <MetricsGrid metrics={metricsData} columns={4} loading={true} className="mb-12" />

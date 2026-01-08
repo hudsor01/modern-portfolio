@@ -1,23 +1,9 @@
 'use client'
 
 import { SectionCard } from '@/components/ui/section-card'
-import { ResultCard, TechGrid, FeatureCard } from '@/components/projects/shared'
+import { ResultCard, FeatureCard } from '@/components/projects/shared'
 import { formatCurrency, formatPercentage, formatNumber } from '@/lib/utils/data-formatters'
 
-const technologies = [
-  'Python',
-  'Machine Learning',
-  'Predictive Analytics',
-  'D3.js',
-  'Recharts',
-  'PostgreSQL',
-  'Next.js',
-  'TypeScript',
-  'Geospatial Analysis',
-  'Regression Modeling',
-  'Clustering Algorithms',
-  'Time Series Forecasting',
-]
 
 export function NarrativeSections() {
   return (
@@ -197,9 +183,6 @@ export function NarrativeSections() {
           </p>
         </div>
       </SectionCard>
-
-      {/* Technologies Used */}
-      <TechGrid technologies={technologies} />
     </div>
   )
 }

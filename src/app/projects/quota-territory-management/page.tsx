@@ -3,10 +3,8 @@
 import { TrendingUp, Map, Database, Zap, Code, Check } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
-import { LoadingState } from '@/components/projects/loading-state'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
-import { useLoadingState } from '@/hooks/use-loading-state'
 import {
   formatCurrency,
   formatNumber,
@@ -17,7 +15,6 @@ import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { NarrativeSections } from './components/NarrativeSections'
 
 export default function QuotaTerritoryManagementProject() {
-  const { isLoading, handleRefresh } = useLoadingState()
 
   // Standardized metrics configuration using consistent data formatting
   const metrics = [
@@ -131,15 +128,9 @@ export default function QuotaTerritoryManagementProject() {
             variant: 'secondary',
           },
         ]}
-        onRefresh={handleRefresh}
-        refreshButtonDisabled={isLoading}
       >
-        {isLoading ? (
-          <LoadingState />
-        ) : (
-          <>
             {/* Key Metrics using standardized MetricsGrid */}
-            <MetricsGrid metrics={metrics} columns={4} loading={isLoading} className="mb-8" />
+            <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
             {/* Algorithmic Approaches wrapped in SectionCard */}
             <SectionCard
@@ -238,8 +229,6 @@ export default function QuotaTerritoryManagementProject() {
 
             {/* Professional Narrative Sections - STAR Method */}
             <NarrativeSections />
-          </>
-        )}
       </ProjectPageLayout>
     </>
   )
