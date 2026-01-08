@@ -5,7 +5,6 @@ import { TrendingUp, DollarSign, Users, Activity } from 'lucide-react'
 
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { createContextLogger } from '@/lib/monitoring/logger'
-import { useLoadingState } from '@/hooks/use-loading-state'
 import { useAnalyticsData } from '@/hooks/use-analytics-data'
 import {
   monthlyRevenue2024,
@@ -14,8 +13,8 @@ import {
   yearOverYearGrowthExtended,
 } from '@/app/projects/data/partner-analytics'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
-import { LoadingState } from '@/components/projects/loading-state'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
+import { LoadingState } from '@/components/projects/loading-state'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data-formatters'
 
 import type { GrowthData, YearOverYearData } from '@/lib/analytics/data-service'
@@ -39,12 +38,10 @@ type PartnerSeries = {
 
 export default function RevenueKPI() {
   const [activeTimeframe, setActiveTimeframe] = useState('All')
-  const { isLoading: isUiLoading, handleRefresh: handleUiRefresh } = useLoadingState()
   const {
     data: analyticsData,
-    isLoading: isAnalyticsLoading,
+    isLoading,
     error: analyticsError,
-    refresh: refreshAnalyticsData,
   } = useAnalyticsData()
 
   const yearOverYearData: YearOverYearSeries[] = analyticsData?.yearOverYear?.length
@@ -104,11 +101,6 @@ export default function RevenueKPI() {
       }))
       .sort((a, b) => b.value - a.value)
   }, [topPartners])
-
-  const handleRefresh = () => {
-    handleUiRefresh()
-    void refreshAnalyticsData()
-  }
 
   if (!currentYearData) {
     logger.error(
@@ -196,7 +188,6 @@ export default function RevenueKPI() {
     },
   ]
 
-  const isLoading = isUiLoading || isAnalyticsLoading
 
   return (
     <>
@@ -238,8 +229,6 @@ export default function RevenueKPI() {
         timeframes={timeframes}
         activeTimeframe={activeTimeframe}
         onTimeframeChange={setActiveTimeframe}
-        onRefresh={handleRefresh}
-        refreshButtonDisabled={isLoading}
       >
         {isLoading ? (
           <LoadingState />

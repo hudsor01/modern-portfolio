@@ -1,8 +1,7 @@
 'use client'
 
 import { SectionCard } from '@/components/ui/section-card'
-import { ResultCard, TechGrid, FeatureCard } from '@/components/projects/shared'
-import { technologies } from '../data/constants'
+import { ResultCard, FeatureCard } from '@/components/projects/shared'
 
 export function NarrativeSections() {
   return (
@@ -87,20 +86,15 @@ export function NarrativeSections() {
         <div className="space-y-6 text-muted-foreground">
           <p className="leading-relaxed">
             The deal funnel analytics system I built transformed how we manage our pipeline
-            and delivered measurable revenue impact:
+            and delivered measurable improvements:
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <ResultCard value="27%" label="Overall Conversion Rate Improvement" variant="primary" />
             <ResultCard
               value="31 Days"
               label="Reduction in Average Sales Cycle"
               variant="secondary"
-            />
-            <ResultCard
-              value="$2.8M"
-              label="Additional Pipeline Value Captured"
-              variant="primary"
             />
           </div>
 
@@ -173,9 +167,6 @@ export function NarrativeSections() {
           </p>
         </div>
       </SectionCard>
-
-      {/* Technologies Used */}
-      <TechGrid technologies={technologies} />
     </div>
   )
 }
