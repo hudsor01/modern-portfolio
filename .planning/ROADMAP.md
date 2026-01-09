@@ -40,13 +40,14 @@ Plans:
 - ✅ Plan 02-02: Component Nonce Integration & CSP Validation - Converted 4 JSON-LD components to Server Components with nonce support, verified zero CSP violations in dev environment, all 891 tests passing
 
 ### Phase 3: Improve Type Safety
-**Goal**: Reduce non-test `any` types from ~30 to <10, add stricter ESLint rules
+**Goal**: Reduce non-test `any` types from ~30 to <10, fix all TypeScript build errors
 **Depends on**: Phase 2
 **Research**: Unlikely (TypeScript patterns, internal code refactoring)
-**Plans**: TBD
+**Plans**: 2
 
 Plans:
-- TBD (determined during planning)
+- Plan 03-01: Fix Type Imports and Exports - Import Prisma enums in blog.ts, re-export BlogPostSummary, import SecurityEventType/SecuritySeverity in security-event-logger.ts (fixes 26 errors)
+- Plan 03-02: Clean Up Unused Variables - Remove unused test factory imports and Prisma variable (fixes 3 errors)
 
 ### Phase 4: Optimize Memoization
 **Goal**: Remove 50-70 unnecessary useMemo/useCallback instances (React Compiler handles these automatically)
@@ -81,7 +82,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Update Dependencies | 1/1 | ✅ Complete | 2026-01-09 |
 | 2. Implement Nonce-Based CSP | 2/2 | ✅ Complete | 2026-01-09 |
-| 3. Improve Type Safety | 0/TBD | Not started | - |
+| 3. Improve Type Safety | 0/2 | Planned | - |
 | 4. Optimize Memoization | 0/TBD | Not started | - |
 | 5. Create Security Documentation | 0/TBD | Not started | - |
 | 6. Final Validation | 0/TBD | Not started | - |
