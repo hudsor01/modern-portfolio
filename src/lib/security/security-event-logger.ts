@@ -5,7 +5,7 @@
 
 import { db } from '@/lib/db'
 import { Prisma } from '@/prisma/client'
-import { SecurityEventType, SecuritySeverity } from '@/lib/prisma-types'
+import { SecurityEventType, SecuritySeverity } from '@/prisma/client'
 import { createContextLogger } from '@/lib/monitoring/logger'
 
 const logger = createContextLogger('SecurityEventLogger')
