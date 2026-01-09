@@ -150,11 +150,7 @@ const nextConfig = {
       },
     ];
   },
-  
-  // Enhanced output configuration
-  // Conditionally enable standalone mode (required for Vercel, causes issues with Turbopack locally)
-  ...(process.env.VERCEL ? { output: 'standalone' } : {}),
-  
+
   // Enable static optimization
   trailingSlash: false,
   
