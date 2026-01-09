@@ -1,11 +1,8 @@
-import { headers } from 'next/headers'
-
 /**
  * Person JSON-LD Schema
  * SEO structured data for Richard Hudson's personal profile
  */
-export async function PersonJsonLd() {
-  const nonce = (await headers()).get('x-nonce')
+export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Person',

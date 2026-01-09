@@ -1,11 +1,8 @@
-import { headers } from 'next/headers'
-
 /**
  * Website JSON-LD Schema
  * SEO structured data for the main website
  */
-export async function WebsiteJsonLd() {
-  const nonce = (await headers()).get('x-nonce')
+export function WebsiteJsonLd({ nonce }: { nonce?: string | null }) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
