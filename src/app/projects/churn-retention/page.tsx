@@ -1,6 +1,5 @@
 'use client'
 
-import { useMemo } from 'react'
 import { useAnalyticsData } from '@/hooks/use-analytics-data'
 import dynamic from 'next/dynamic'
 import { TrendingDown, Users, Activity, AlertCircle } from 'lucide-react'
@@ -31,8 +30,7 @@ export default function ChurnAnalysis() {
     isLoading,
   } = useAnalyticsData()
 
-  const churnData = useMemo(
-    () =>
+  const churnData = (() =>
       analyticsData?.churn?.length
         ? analyticsData.churn.map((item) => ({
             month: item.month,
@@ -40,9 +38,8 @@ export default function ChurnAnalysis() {
             retained: item.retained_partners,
             churned: item.churned_partners,
           }))
-        : staticChurnData,
-    [analyticsData?.churn]
-  )
+        : staticChurnData
+  )()
 
 
   // Ensure data exists before accessing indices

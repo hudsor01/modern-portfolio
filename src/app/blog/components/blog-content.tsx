@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState } from 'react'
 
 import { Copy, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -32,9 +32,8 @@ export function BlogContent({
   const { theme } = useTheme()
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
 
-  // Markdown to HTML conversion with XSS protection (memoized)
-  const parseMarkdown = useMemo(() => {
-    return (markdown: string): string => {
+  // Markdown to HTML conversion with XSS protection
+  const parseMarkdown = (markdown: string): string => {
       // SECURITY: Escape HTML entities first to prevent XSS
       let html = escapeHtml(markdown)
 
@@ -89,7 +88,6 @@ export function BlogContent({
 
       return html
     }
-  }, [])
 
   // Copy code functionality
   const copyToClipboard = async (code: string) => {

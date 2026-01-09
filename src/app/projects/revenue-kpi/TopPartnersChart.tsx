@@ -1,6 +1,5 @@
 'use client'
 
-import { useMemo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   ChartContainer,
@@ -32,7 +31,7 @@ type TopPartnersChartProps = {
 }
 
 export default function TopPartnersChart({ partners }: TopPartnersChartProps) {
-  const chartData = useMemo(() => {
+  const chartData = (() => {
     if (!partners || partners.length === 0) return []
     return partners
       .slice(0, 5)
@@ -42,7 +41,7 @@ export default function TopPartnersChart({ partners }: TopPartnersChartProps) {
         fullName: partner.name,
         revenue: Math.round(partner.revenue / 1000), // in thousands
       }))
-  }, [partners])
+  })()
 
   if (!chartData.length) {
     return (
