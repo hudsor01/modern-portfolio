@@ -29,6 +29,9 @@ bun-debug.log*
 coverage/
 .nyc_output/
 
+# Git hooks
+.husky/
+
 # Test outputs
 playwright-report/
 test-results/
