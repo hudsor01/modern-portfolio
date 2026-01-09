@@ -674,9 +674,6 @@ export type BlogPostUpdateData = Partial<BlogPostCreateData> & {
 // Import API types for consistency
 import type { BlogPostData, BlogPostSummary as APIBlogPostSummary } from './shared-api';
 
-// Re-export BlogPostSummary for test factories
-export type { APIBlogPostSummary as BlogPostSummary };
-
 // Type aliases used by existing blog components
 export interface BlogFilters {
   category?: string;

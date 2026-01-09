@@ -6,11 +6,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createContextLogger } from '@/lib/monitoring/logger'
-import { getConfigSection } from '@/lib/config'
-import type { SecurityConfig } from '@/lib/config'
-
-// Re-export edge-compatible CSP builder
-export { buildEnhancedCSP } from '@/lib/security/csp-edge'
 
 const securityLogger = createContextLogger('SecurityHeaders')
 
