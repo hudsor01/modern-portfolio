@@ -159,6 +159,7 @@ export const createMockBlogPostSummary = (overrides: Partial<BlogPostSummary> = 
 // Factory for creating mock blog post create input
 export const createMockBlogPostInput = (overrides: Partial<BlogPostCreateInput> = {}): BlogPostCreateInput => ({
   title: 'New Blog Post',
+  slug: 'new-blog-post',
   content: '# New Blog Post\n\nThis is a new blog post content...',
   excerpt: 'This is a new blog post excerpt.',
   contentType: CTType.MARKDOWN,
@@ -166,17 +167,15 @@ export const createMockBlogPostInput = (overrides: Partial<BlogPostCreateInput> 
   metaTitle: 'New Blog Post - Tech Insights',
   metaDescription: 'A comprehensive guide to the latest technology trends.',
   keywords: ['technology', 'development', 'guide'],
-  authorId: 'author-1',
-  categoryId: 'category-1',
-  tagIds: ['tag-1'],
+  author: { connect: { id: 'author-1' } },
   ...overrides,
 })
 
 // Factory for creating mock blog filters
 export const createMockBlogFilter = (overrides: Partial<BlogPostFilter> = {}): BlogPostFilter => ({
-  status: PSType.PUBLISHED,
   search: '',
-  published: true,
+  sortBy: 'publishedAt',
+  sortOrder: 'desc',
   ...overrides,
 })
 

@@ -8,7 +8,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'bun:test'
 import { renderHook, act } from '@testing-library/react'
 import * as fc from 'fast-check'
 import { useBlogPostForm, blogPostFormSchema, generateSlug } from '../use-blog-post-form'
-import type { BlogPost, PostTag } from '@/types/blog'
+import type { BlogPostWithRelations } from '@/types/blog'
 
 describe('useBlogPostForm - Property-Based Tests', () => {
   beforeEach(() => {
@@ -184,7 +184,7 @@ describe('useBlogPostForm - Property-Based Tests', () => {
         useBlogPostForm({
           title: 'Initial Title',
           slug: 'existing-slug',
-        } as Partial<BlogPost>)
+        } as Partial<BlogPostWithRelations>)
       )
 
       // Slug should be the existing one
@@ -461,7 +461,7 @@ describe('useBlogPostForm - Property-Based Tests', () => {
 
       fc.assert(
         fc.property(postDataArb, (postData) => {
-          const { result } = renderHook(() => useBlogPostForm(postData as Partial<BlogPost>))
+          const { result } = renderHook(() => useBlogPostForm(postData as Partial<BlogPostWithRelations>))
 
           // Form values should match the initial data
           return (
@@ -483,13 +483,27 @@ describe('useBlogPostForm - Property-Based Tests', () => {
       fc.assert(
         fc.property(tagIdsArb, (tagIds) => {
           // Create post with tags
-          const post: Partial<BlogPost> = {
+          const post: Partial<BlogPostWithRelations> = {
             title: 'Test Post',
             slug: 'test-post',
             content: 'a'.repeat(100),
-            tags: tagIds.map(
-              (tagId) => ({ tagId, postId: 'post-1', createdAt: new Date() }) as PostTag
-            ),
+            tags: tagIds.map((tagId, index) => ({
+              tagId,
+              postId: 'post-1',
+              createdAt: new Date(),
+              tag: {
+                id: tagId,
+                name: `Tag ${index + 1}`,
+                slug: `tag-${index + 1}`,
+                description: null,
+                color: null,
+                metaDescription: null,
+                postCount: 0,
+                totalViews: 0,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              },
+            })),
           }
 
           const { result } = renderHook(() => useBlogPostForm(post))

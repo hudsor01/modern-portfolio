@@ -94,9 +94,9 @@ export const ProjectCard = React.memo(function ProjectCard({
             </p>
 
             {/* Metrics Row - Text only, no icons */}
-            {(project.displayMetrics?.length ?? 0) > 0 && (
+            {Array.isArray(project.displayMetrics) && project.displayMetrics.length > 0 && (
               <div className="flex flex-wrap gap-x-4 gap-y-2 py-4 border-t border-border mt-auto">
-                {(project.displayMetrics ?? []).slice(0, 3).map((metric, i) => (
+                {(project.displayMetrics as Array<{ label: string; value: string; iconName: string }>).slice(0, 3).map((metric: { label: string; value: string; iconName: string }, i: number) => (
                   <div key={i} className="flex items-baseline gap-1.5">
                     <span className="font-mono text-sm font-semibold text-foreground">
                       {metric.value}
@@ -110,7 +110,7 @@ export const ProjectCard = React.memo(function ProjectCard({
             {/* Technologies - Works for all projects */}
             {technologies.length > 0 && (
               <div
-                className={`flex flex-wrap gap-2 ${(project.displayMetrics?.length ?? 0) > 0 ? 'mt-4 pt-4 border-t border-border' : 'mt-auto pt-4 border-t border-border'}`}
+                className={`flex flex-wrap gap-2 ${Array.isArray(project.displayMetrics) && project.displayMetrics.length > 0 ? 'mt-4 pt-4 border-t border-border' : 'mt-auto pt-4 border-t border-border'}`}
               >
                 {technologies.slice(0, 4).map((tech, i) => (
                   <span
