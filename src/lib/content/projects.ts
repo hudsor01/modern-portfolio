@@ -2,9 +2,6 @@ import { cache } from 'react'
 import type { Project } from '@/types/project'
 import { showcaseProjects } from '@/data/projects'
 
-// Re-export the Project type for components to use
-export type { Project }
-
 // Map ShowcaseProject to Project type
 function mapToProject(showcase: (typeof showcaseProjects)[number]): Project {
   return {

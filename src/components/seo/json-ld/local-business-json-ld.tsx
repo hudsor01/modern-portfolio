@@ -1,10 +1,11 @@
-'use client'
+import { headers } from 'next/headers'
 
 /**
  * Local Business JSON-LD Schema
  * SEO structured data for local business presence in Dallas-Fort Worth
  */
-export function LocalBusinessJsonLd() {
+export async function LocalBusinessJsonLd() {
+  const nonce = (await headers()).get('x-nonce')
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ProfessionalService',
@@ -162,6 +163,7 @@ export function LocalBusinessJsonLd() {
   return (
     <script
       type="application/ld+json"
+      nonce={nonce ?? undefined}
       dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
     />
   )

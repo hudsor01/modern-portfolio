@@ -1,10 +1,11 @@
-'use client'
+import { headers } from 'next/headers'
 
 /**
  * Person JSON-LD Schema
  * SEO structured data for Richard Hudson's personal profile
  */
-export function PersonJsonLd() {
+export async function PersonJsonLd() {
+  const nonce = (await headers()).get('x-nonce')
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Person',
@@ -114,6 +115,7 @@ export function PersonJsonLd() {
   return (
     <script
       type="application/ld+json"
+      nonce={nonce ?? undefined}
       dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
     />
   )

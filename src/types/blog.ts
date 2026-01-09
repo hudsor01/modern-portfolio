@@ -7,19 +7,6 @@
  * This file contains interfaces only - no duplicate enums.
  */
 
-// Import enums from single source of truth - use const imports for value usage
-import {
-  PostStatus,
-  ContentType,
-  InteractionType,
-  SEOEventType,
-  SEOSeverity,
-  ChangeFrequency,
-} from '@/lib/prisma-types'
-
-// Re-export for convenience (both as types and values)
-export { PostStatus, ContentType, InteractionType, SEOEventType, SEOSeverity, ChangeFrequency }
-
 // Also export as types for consumers
 export type { PostStatus as PostStatusType, ContentType as ContentTypeType, InteractionType as InteractionTypeType, SEOEventType as SEOEventTypeType, SEOSeverity as SEOSeverityType, ChangeFrequency as ChangeFrequencyType }
 
@@ -696,9 +683,6 @@ export interface BlogFilters {
 export type BlogCategory = Category;
 export type BlogTag = Tag;
 export type BlogAuthor = Author;
-
-// Re-export API types for component use
-export type { BlogPostData, APIBlogPostSummary as BlogPostSummary };
 
 export interface BlogListResponse {
   posts: APIBlogPostSummary[];

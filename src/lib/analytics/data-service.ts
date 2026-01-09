@@ -14,17 +14,6 @@ import type {
   AllAnalyticsDataBundle,
 } from '@/types/analytics'
 
-// Re-export analytics types for backward compatibility
-export type {
-  ChurnAnalyticsData,
-  LeadAttributionData,
-  LeadTrendData,
-  GrowthData,
-  YearOverYearData,
-  TopPartnerData,
-  AllAnalyticsDataBundle,
-}
-
 // Data generation utilities
 class DataGenerator {
   private readonly currentYear = new Date().getFullYear()

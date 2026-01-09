@@ -21,12 +21,6 @@ import type {
 } from '@/types/analytics'
 import { WEB_VITALS_THRESHOLDS } from '@/types/analytics'
 
-// Re-export for backward compatibility
-export type { DeviceInfo, ConnectionInfo }
-
-// Re-export thresholds
-export { WEB_VITALS_THRESHOLDS }
-
 // Web Vitals data validation schema (local definition since it's Zod-specific)
 const WebVitalsSchema = z.object({
   id: z.string().min(1, 'ID is required'),

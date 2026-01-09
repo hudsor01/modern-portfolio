@@ -1,10 +1,10 @@
-'use client'
+import { headers } from 'next/headers'
 
 /**
  * Project JSON-LD Schema
  * SEO structured data for project showcase pages
  */
-export function ProjectJsonLd({
+export async function ProjectJsonLd({
   title,
   description,
   slug,
@@ -17,6 +17,7 @@ export function ProjectJsonLd({
   category?: string
   tags?: string[]
 }) {
+  const nonce = (await headers()).get('x-nonce')
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CreativeWork',
@@ -50,6 +51,7 @@ export function ProjectJsonLd({
   return (
     <script
       type="application/ld+json"
+      nonce={nonce ?? undefined}
       dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
     />
   )

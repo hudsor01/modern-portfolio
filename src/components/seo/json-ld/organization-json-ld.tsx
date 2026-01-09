@@ -1,10 +1,11 @@
-'use client'
+import { headers } from 'next/headers'
 
 /**
  * Organization JSON-LD Schema
  * SEO structured data for Hudson Digital Solutions
  */
-export function OrganizationJsonLd() {
+export async function OrganizationJsonLd() {
+  const nonce = (await headers()).get('x-nonce')
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
@@ -84,6 +85,7 @@ export function OrganizationJsonLd() {
   return (
     <script
       type="application/ld+json"
+      nonce={nonce ?? undefined}
       dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
     />
   )

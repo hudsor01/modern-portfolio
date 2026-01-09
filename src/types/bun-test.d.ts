@@ -42,9 +42,6 @@ declare module 'bun:test' {
     getTimerCount(): number
   }
 
-  // Re-export vi with extended type
-  const vi: Vi
-
   // Extend expect matchers with jest-dom matchers
   interface Matchers {
     toBeInTheDocument(): void
