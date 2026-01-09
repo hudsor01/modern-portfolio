@@ -15,8 +15,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { buildEnhancedCSP } from '@/lib/security/csp-edge'
 
 export function proxy(request: NextRequest) {
-  // Generate cryptographically secure nonce
-  const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
+  // Generate cryptographically secure nonce (Edge Runtime compatible)
+  const nonce = btoa(crypto.randomUUID())
 
   // Create nonces object for CSP (using same nonce for both script and style)
   const nonces = {
