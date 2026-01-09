@@ -7,7 +7,7 @@ import { useQueryState } from 'nuqs'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { revenueMetrics } from './data/constants'
 import { formatCurrency, formatPercent } from './utils'
-import { MetricCard } from '@/components/ui/metric-card'
+import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { KPIAlerts } from './components/KPIAlerts'
 import { OverviewTab } from './components/OverviewTab'
 import { PipelineTab } from './components/PipelineTab'
@@ -21,6 +21,49 @@ type Tab = (typeof tabs)[number]
 
 export default function RevenueOperationsCenter() {
   const [activeTab, setActiveTab] = useQueryState('tab', { defaultValue: 'overview' as Tab })
+
+  const metrics = [
+    {
+      id: 'total-revenue',
+      icon: DollarSign,
+      label: 'Total Revenue',
+      value: formatCurrency(revenueMetrics.totalRevenue),
+      subtitle: `+${formatPercent(revenueMetrics.revenueGrowth)} YoY`,
+      variant: 'primary' as const,
+    },
+    {
+      id: 'forecast-accuracy',
+      icon: Target,
+      label: 'Forecast',
+      value: formatPercent(revenueMetrics.forecastAccuracy),
+      subtitle: 'Accuracy Rate',
+      variant: 'primary' as const,
+    },
+    {
+      id: 'pipeline-health',
+      icon: BarChart3,
+      label: 'Pipeline',
+      value: formatPercent(revenueMetrics.pipelineHealth),
+      subtitle: 'Health Score',
+      variant: 'secondary' as const,
+    },
+    {
+      id: 'active-deals',
+      icon: Users,
+      label: 'Active Deals',
+      value: revenueMetrics.activeDeals.toString(),
+      subtitle: `${formatCurrency(revenueMetrics.avgDealSize)} avg`,
+      variant: 'primary' as const,
+    },
+    {
+      id: 'target-attainment',
+      icon: Activity,
+      label: 'Target',
+      value: formatPercent(revenueMetrics.targetAttainment),
+      subtitle: 'Attainment',
+      variant: 'primary' as const,
+    },
+  ]
 
   return (
     <ProjectPageLayout
@@ -37,44 +80,8 @@ export default function RevenueOperationsCenter() {
       activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
       onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
     >
-          {/* Key Metrics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
-            <MetricCard
-              icon={DollarSign}
-              label="Total Revenue"
-              value={formatCurrency(revenueMetrics.totalRevenue)}
-              subtitle={`+${formatPercent(revenueMetrics.revenueGrowth)} YoY`}
-              variant="primary"
-            />
-            <MetricCard
-              icon={Target}
-              label="Forecast"
-              value={formatPercent(revenueMetrics.forecastAccuracy)}
-              subtitle="Accuracy Rate"
-              variant="primary"
-            />
-            <MetricCard
-              icon={BarChart3}
-              label="Pipeline"
-              value={formatPercent(revenueMetrics.pipelineHealth)}
-              subtitle="Health Score"
-              variant="secondary"
-            />
-            <MetricCard
-              icon={Users}
-              label="Active Deals"
-              value={revenueMetrics.activeDeals.toString()}
-              subtitle={`${formatCurrency(revenueMetrics.avgDealSize)} avg`}
-              variant="primary"
-            />
-            <MetricCard
-              icon={Activity}
-              label="Target"
-              value={formatPercent(revenueMetrics.targetAttainment)}
-              subtitle="Attainment"
-              variant="primary"
-            />
-          </div>
+          {/* Key Metrics using standardized MetricsGrid */}
+          <MetricsGrid metrics={metrics} columns={4} className="mb-12" />
 
           {/* KPI Alerts */}
           <KPIAlerts />
