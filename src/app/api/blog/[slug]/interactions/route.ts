@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import type { InteractionType } from '@/lib/prisma-types'
+import type { InteractionType } from '@/prisma/client'
 import { ApiResponse } from '@/types/shared-api'
 import {
   validateBlogInteraction,

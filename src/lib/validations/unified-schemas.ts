@@ -12,7 +12,7 @@ import {
   SEOEventType,
   SEOSeverity,
   ChangeFrequency,
-} from '@/lib/prisma-types'
+} from '@/prisma/client'
 
 // =======================
 // BASE PRIMITIVE SCHEMAS

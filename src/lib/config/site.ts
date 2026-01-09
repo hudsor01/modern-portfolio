@@ -1,22 +1,21 @@
 import type { SiteConfig } from '@/types/seo'
-import { getConfigSection } from '@/lib/config'
 
-// Lazy-loaded site configuration to avoid circular dependency
-let _siteConfig: SiteConfig | null = null
-
-function getSiteConfig(): SiteConfig {
-  if (!_siteConfig) {
-    _siteConfig = getConfigSection('site')
-  }
-  return _siteConfig
-}
-
-export const siteConfig: SiteConfig = new Proxy({} as SiteConfig, {
-  get(_target, prop) {
-    const config = getSiteConfig()
-    return config[prop as keyof SiteConfig]
+export const siteConfig: SiteConfig = {
+  name: 'Richard Hudson - Modern Portfolio',
+  description: 'Senior Revenue Operations Leader & Full-Stack Developer showcasing enterprise analytics platforms, data visualizations, and technical projects.',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+  ogImage: '/og-image.png',
+  links: {
+    github: 'https://github.com/hudsor01',
+    linkedin: 'https://www.linkedin.com/in/hudsor01',
+    twitter: 'https://twitter.com/hudsor01',
   },
-})
+  author: {
+    name: 'Richard Hudson',
+    email: 'contact@richardhudson.dev',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+  },
+}
 
 // Navigation configuration (separate from SEO config)
 export const navConfig = {

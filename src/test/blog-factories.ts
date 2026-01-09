@@ -12,7 +12,7 @@ import {
 } from '@/types/blog'
 
 // Import enums for value usage
-import { PostStatus as PSType, ContentType as CTType } from '@/lib/prisma-types'
+import { PostStatus as PSType, ContentType as CTType } from '@/prisma/client'
 
 // =======================
 // BLOG FACTORIES
