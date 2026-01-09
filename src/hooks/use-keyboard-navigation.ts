@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useCallback, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 interface KeyboardNavigationOptions {
   onEscape?: () => void
@@ -47,7 +47,7 @@ export function useKeyboardNavigation({
     onEnd
   }
 
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
+  const handleKeyDown = (event: KeyboardEvent) => {
     if (!enabled) return
 
     const handlers = handlerRef.current
@@ -119,26 +119,27 @@ export function useKeyboardNavigation({
     if (handled && preventDefault) {
       event.preventDefault()
     }
-  }, [enabled, preventDefault])
+  }
 
   useEffect(() => {
     if (enabled) {
       document.addEventListener('keydown', handleKeyDown)
     }
-    
+
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [enabled, handleKeyDown])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabled, preventDefault])
 
   return { handleKeyDown }
 }
 
 // Hook for managing focus within a container
 export function useFocusManagement(containerRef: React.RefObject<HTMLElement>) {
-  const getFocusableElements = useCallback(() => {
+  const getFocusableElements = () => {
     if (!containerRef.current) return []
-    
+
     const selector = [
       'button:not([disabled])',
       '[href]',
@@ -150,43 +151,43 @@ export function useFocusManagement(containerRef: React.RefObject<HTMLElement>) {
     ].join(', ')
 
     return Array.from(containerRef.current.querySelectorAll(selector)) as HTMLElement[]
-  }, [containerRef])
+  }
 
-  const focusFirst = useCallback(() => {
+  const focusFirst = () => {
     const elements = getFocusableElements()
     if (elements.length > 0) {
       elements[0]?.focus()
     }
-  }, [getFocusableElements])
+  }
 
-  const focusLast = useCallback(() => {
+  const focusLast = () => {
     const elements = getFocusableElements()
     if (elements.length > 0) {
       elements[elements.length - 1]?.focus()
     }
-  }, [getFocusableElements])
+  }
 
-  const focusNext = useCallback(() => {
+  const focusNext = () => {
     const elements = getFocusableElements()
     const currentIndex = elements.indexOf(document.activeElement as HTMLElement)
-    
+
     if (currentIndex >= 0 && currentIndex < elements.length - 1) {
       elements[currentIndex + 1]?.focus()
     } else {
       elements[0]?.focus() // Wrap to first
     }
-  }, [getFocusableElements])
+  }
 
-  const focusPrevious = useCallback(() => {
+  const focusPrevious = () => {
     const elements = getFocusableElements()
     const currentIndex = elements.indexOf(document.activeElement as HTMLElement)
-    
+
     if (currentIndex > 0) {
       elements[currentIndex - 1]?.focus()
     } else {
       elements[elements.length - 1]?.focus() // Wrap to last
     }
-  }, [getFocusableElements])
+  }
 
   return {
     focusFirst,

@@ -3,6 +3,9 @@
 /**
  * Project JSON-LD Schema
  * SEO structured data for project showcase pages
+ *
+ * Note: This component remains a Client Component because it's used in Client Component pages.
+ * Nonces for JSON-LD scripts in Client Components will be handled separately if needed.
  */
 export function ProjectJsonLd({
   title,

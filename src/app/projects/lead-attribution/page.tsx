@@ -1,6 +1,6 @@
 'use client'
+export const dynamic = 'force-static'
 
-import { useMemo } from 'react'
 import {
   TrendingUp,
   Users,
@@ -36,7 +36,7 @@ export default function LeadAttribution() {
     isLoading,
   } = useAnalyticsData()
 
-  const leadSources = useMemo(() => {
+  const leadSources = (() => {
     if (analyticsData?.leadAttribution?.length) {
       return analyticsData.leadAttribution.map((item) => ({
         name: item.channel,
@@ -50,9 +50,9 @@ export default function LeadAttribution() {
       value: item.leads,
       growth: item.conversion ? `+${(item.conversion * 100).toFixed(1)}%` : undefined,
     }))
-  }, [analyticsData?.leadAttribution])
+  })()
 
-  const conversionSources = useMemo(() => {
+  const conversionSources = (() => {
     const iconByChannel: Record<string, LucideIcon> = {
       Website: Globe,
       'Organic Search': Globe,
@@ -80,9 +80,9 @@ export default function LeadAttribution() {
     }
 
     return leadConversionData
-  }, [analyticsData?.leadAttribution])
+  })()
 
-  const trendData = useMemo(() => {
+  const trendData = (() => {
     if (analyticsData?.leadTrends?.length) {
       return analyticsData.leadTrends.map((item) => ({
         month: item.month,
@@ -92,7 +92,7 @@ export default function LeadAttribution() {
     }
 
     return monthlyTrendData
-  }, [analyticsData?.leadTrends])
+  })()
 
   const totalLeads = leadSources.reduce((sum, source) => sum + (source.value || 0), 0)
   const totalConversions = conversionSources.reduce(

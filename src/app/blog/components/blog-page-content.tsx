@@ -1,6 +1,5 @@
 'use client'
 
-import { useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
@@ -38,7 +37,7 @@ export function BlogPageContent() {
       searchParams.append('sortBy', 'publishedAt')
       searchParams.append('sortOrder', 'desc')
       searchParams.append('published', 'true')
-      
+
       const response = await fetch(`/api/blog?${searchParams.toString()}`)
       if (!response.ok) throw new Error('Failed to fetch blog posts')
       return response.json()
@@ -59,12 +58,10 @@ export function BlogPageContent() {
   })
 
   // Build category list with "All" option
-  const categoryTags = useMemo(() => {
-    return ['All', ...categories.map((c) => c.name)]
-  }, [categories])
+  const categoryTags = ['All', ...categories.map((c) => c.name)]
 
   // Count posts per category
-  const categoryCounts = useMemo(() => {
+  const categoryCounts = (() => {
     const counts: Record<string, number> = { All: postsData?.data?.length || 0 }
     postsData?.data?.forEach((post) => {
       if (post.category?.name) {
@@ -72,14 +69,14 @@ export function BlogPageContent() {
       }
     })
     return counts
-  }, [postsData?.data])
+  })()
 
   // Filter posts by selected category
-  const filteredPosts = useMemo(() => {
+  const filteredPosts = (() => {
     if (!postsData?.data) return []
     if (selectedCategory === 'All') return postsData.data
     return postsData.data.filter((post) => post.category?.name === selectedCategory)
-  }, [postsData?.data, selectedCategory])
+  })()
 
   // Format date
   const formatDate = (dateString: string | undefined) => {

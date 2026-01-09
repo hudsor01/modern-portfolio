@@ -1,4 +1,5 @@
 'use client'
+export const dynamic = 'force-static'
 
 import { DollarSign, Brain, Users, Calendar } from 'lucide-react'
 import { useQueryState } from 'nuqs'

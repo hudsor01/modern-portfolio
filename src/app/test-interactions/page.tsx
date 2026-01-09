@@ -1,4 +1,5 @@
 // Simple test page for interaction patterns
+export const dynamic = 'force-static'
 export default function TestPage() {
   return (
     <div className="min-h-screen bg-background text-foreground py-12 px-4">

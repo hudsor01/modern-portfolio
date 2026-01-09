@@ -1,6 +1,5 @@
 'use client'
 
-import { useMemo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   ChartContainer,
@@ -18,16 +17,16 @@ type PartnerGroupPieChartProps = {
 }
 
 export default function PartnerGroupPieChart({ groups }: PartnerGroupPieChartProps) {
-  const chartData = useMemo(() => {
+  const chartData = (() => {
     if (!groups || groups.length === 0) return []
     return groups.map((group, index) => ({
       name: group.name,
       value: group.value,
       fill: COLORS[index % COLORS.length],
     }))
-  }, [groups])
+  })()
 
-  const chartConfig = useMemo(() => {
+  const chartConfig = (() => {
     const config: ChartConfig = {}
     chartData.forEach((item) => {
       config[item.name] = {
@@ -36,7 +35,7 @@ export default function PartnerGroupPieChart({ groups }: PartnerGroupPieChartPro
       }
     })
     return config
-  }, [chartData])
+  })()
 
   if (!chartData.length) {
     return (

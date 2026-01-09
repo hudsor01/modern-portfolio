@@ -2,7 +2,6 @@
 
 import { Card } from '@/components/ui/card'
 import { TrendingUp, DollarSign, Users, BarChart3 } from 'lucide-react'
-import { useMemo } from 'react'
 
 interface MetricCardProps {
   icon: React.ReactNode
@@ -37,7 +36,7 @@ function MetricCard({ icon, title, value, change, trend }: MetricCardProps) {
  */
 export function RevenueDashboardPreview() {
   // Deterministic chart bar heights to prevent hydration mismatch
-  const chartBars = useMemo(() => [
+  const chartBars = [
     { height: 35 },
     { height: 42 },
     { height: 28 },
@@ -46,7 +45,7 @@ export function RevenueDashboardPreview() {
     { height: 45 },
     { height: 38 },
     { height: 40 }
-  ], [])
+  ]
 
   const metrics = [
     {

@@ -4,6 +4,7 @@ import HomePageContent from '@/components/layout/home-page-content' // Corrected
 // Removed client-side imports like framer-motion and lucide-react icons as they are in HomePageContent
 
 // Define metadata for SEO
+export const dynamic = 'force-static'
 export const metadata: Metadata = {
   title: 'Richard Hudson | Revenue Operations Professional | Dallas-Fort Worth',
   description:

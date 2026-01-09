@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { analyticsDataService } from '@/lib/analytics/data-service'
 import { handleHookError } from '@/lib/error-handling'
 import type { AllAnalyticsDataBundle } from '@/types/analytics'
@@ -10,7 +10,7 @@ export function useAnalyticsData() {
   const [error, setError] = useState<Error | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  const fetchData = useCallback(async () => {
+  const fetchData = async () => {
     setIsLoading(true)
     setError(null)
 
@@ -26,11 +26,11 @@ export function useAnalyticsData() {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }
 
   useEffect(() => {
     void fetchData()
-  }, [fetchData])
+  }, []) // Run only once on mount
 
   return {
     data,

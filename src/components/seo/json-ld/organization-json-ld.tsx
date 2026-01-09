@@ -1,10 +1,8 @@
-'use client'
-
 /**
  * Organization JSON-LD Schema
  * SEO structured data for Hudson Digital Solutions
  */
-export function OrganizationJsonLd() {
+export function OrganizationJsonLd({ nonce }: { nonce?: string | null }) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
@@ -84,6 +82,7 @@ export function OrganizationJsonLd() {
   return (
     <script
       type="application/ld+json"
+      nonce={nonce ?? undefined}
       dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
     />
   )

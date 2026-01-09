@@ -126,17 +126,3 @@ export const vi: ViExt = {
     return 0
   },
 }
-
-// Re-export all bun:test exports for convenience
-export {
-  describe,
-  it,
-  test,
-  expect,
-  beforeEach,
-  afterEach,
-  beforeAll,
-  afterAll,
-  mock,
-  spyOn,
-} from 'bun:test'

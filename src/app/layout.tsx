@@ -2,6 +2,7 @@ import React from 'react'
 import './globals.css'
 import '@/styles/animations.css'
 import { Metadata } from 'next'
+import { headers } from 'next/headers'
 import { Playfair_Display, Spline_Sans, Roboto_Mono } from 'next/font/google'
 import { ClientComponentsProvider } from '@/components/providers/client-components-provider'
 import { Analytics } from '@vercel/analytics/next'
@@ -36,7 +37,9 @@ const robotoMono = Roboto_Mono({
 
 export const metadata: Metadata = baseMetadata
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const nonce = (await headers()).get('x-nonce')
+
   return (
     <html
       lang="en"
@@ -58,10 +61,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href="https://va.vercel-scripts.com" />
 
         {/* Structured Data */}
-        <PersonJsonLd />
-        <WebsiteJsonLd />
-        <LocalBusinessJsonLd />
-        <OrganizationJsonLd />
+        <PersonJsonLd nonce={nonce} />
+        <WebsiteJsonLd nonce={nonce} />
+        <LocalBusinessJsonLd nonce={nonce} />
+        <OrganizationJsonLd nonce={nonce} />
       </head>
       <body className="antialiased bg-background text-foreground">
         {/* Skip to main content link for keyboard navigation accessibility */}

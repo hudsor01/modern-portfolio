@@ -18,14 +18,7 @@ import {
   InteractionTypeSchema,
   SEOEventTypeSchema,
   SEOSeveritySchema,
-  ChangeFrequencySchema,
-  // Re-export for convenience
-  type PostStatus,
-  type ContentType,
-  type InteractionType,
-  type SEOEventType,
-  type SEOSeverity,
-  type ChangeFrequency,
+  ChangeFrequencySchema
 } from './unified-schemas'
 
 // =======================
@@ -33,7 +26,6 @@ import {
 // =======================
 
 export { PostStatusSchema, ContentTypeSchema, InteractionTypeSchema, SEOEventTypeSchema, SEOSeveritySchema, ChangeFrequencySchema }
-export type { PostStatus, ContentType, InteractionType, SEOEventType, SEOSeverity, ChangeFrequency }
 
 // =======================
 // UTILITY SCHEMA RE-EXPORTS

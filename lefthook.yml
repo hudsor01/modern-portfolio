@@ -1,0 +1,14 @@
+# Lefthook configuration
+# Replaces Husky + lint-staged
+
+pre-commit:
+  parallel: true
+  commands:
+    lint-staged:
+      run: bunx lint-staged
+      stage_fixed: true  # Auto-stage files fixed by lint-staged
+
+pre-push:
+  commands:
+    tests:
+      run: bun test

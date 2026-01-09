@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 
 interface UseQuickViewModalResult<T> {
   isOpen: boolean
@@ -16,25 +16,22 @@ export function useQuickViewModal<T>(): UseQuickViewModalResult<T> {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<T | null>(null)
 
-  const open = useCallback((item: T) => {
+  const open = (item: T) => {
     setSelectedItem(item)
     setIsOpen(true)
-  }, [])
+  }
 
-  const close = useCallback(() => {
+  const close = () => {
     setIsOpen(false)
     setSelectedItem(null)
-  }, [])
+  }
 
-  const setOpen = useCallback(
-    (open: boolean) => {
-      setIsOpen(open)
-      if (!open) {
-        setSelectedItem(null)
-      }
-    },
-    []
-  )
+  const setOpen = (open: boolean) => {
+    setIsOpen(open)
+    if (!open) {
+      setSelectedItem(null)
+    }
+  }
 
   return {
     isOpen,

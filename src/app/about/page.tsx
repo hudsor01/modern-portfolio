@@ -99,6 +99,7 @@ I specialize in the intersection of strategy and execution—building automated 
   ],
 }
 
+export const dynamic = 'force-static'
 export const metadata = generateMetadata(
   'About Richard Hudson | Revenue Operations Professional | Dallas-Fort Worth',
   'Richard Hudson - Plano, Texas Revenue Operations Professional serving Dallas-Fort Worth metroplex with 10+ years experience. SalesLoft Admin certified (Level 1 & 2) and HubSpot Revenue Operations certified. Partnership program implementation specialist with system integration experience. Expert in data analytics, process automation, and CRM optimization. $4.8M+ revenue generated across 10+ projects, 432% transaction growth achieved.',

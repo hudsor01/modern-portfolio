@@ -6,7 +6,7 @@ import { format } from 'date-fns'
 import { ArrowLeft } from 'lucide-react'
 import type { BlogPostData } from '@/types/shared-api'
 import { BlogContent } from './blog-content'
-import { ContentType } from '@/lib/prisma-types'
+import { ContentType } from '@/prisma/client'
 
 interface PostLayoutProps {
   post: BlogPostData

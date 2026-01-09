@@ -5,12 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
 import { vi } from '@/test/vitest-compat'
 import type { TestRenderOptions } from '@/types/test-utils'
-import {
-  createTestDataFactory,
-  createMockFunction,
-  runPropertyTest,
-  createMockResponse,
-} from './test-factories'
+import { createMockResponse } from './test-factories'
 
 // Mock Next.js router for testing
 const mockRouter = {
@@ -53,9 +48,6 @@ const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
 
 const customRender = (ui: ReactElement, options?: TestRenderOptions) =>
   render(ui, { wrapper: AllTheProviders, ...options })
-
-// re-export everything
-export * from '@testing-library/react'
 
 // override render method
 export { customRender as render }
@@ -102,9 +94,6 @@ export const mockNextRouter = (overrides = {}) => {
     notFound: vi.fn(),
   }))
 }
-
-// Re-export the factory functions
-export { createTestDataFactory, createMockFunction, runPropertyTest, createMockResponse }
 
 // Export userEvent for modern user interaction testing
 export { userEvent }

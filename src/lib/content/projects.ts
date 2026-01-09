@@ -2,9 +2,6 @@ import { cache } from 'react'
 import type { Project } from '@/types/project'
 import { showcaseProjects } from '@/data/projects'
 
-// Re-export the Project type for components to use
-export type { Project }
-
 // Map ShowcaseProject to Project type
 function mapToProject(showcase: (typeof showcaseProjects)[number]): Project {
   return {
@@ -13,16 +10,25 @@ function mapToProject(showcase: (typeof showcaseProjects)[number]): Project {
     title: showcase.title,
     description: showcase.description,
     longDescription: showcase.longDescription,
+    content: null,
     image: showcase.image,
+    link: null,
+    github: null,
     category: showcase.category,
     tags: showcase.technologies,
     featured: showcase.featured,
-    year: showcase.year,
     client: showcase.client,
+    role: null,
     duration: showcase.duration,
+    year: showcase.year,
     impact: showcase.impact,
     results: showcase.results,
     caseStudyUrl: showcase.caseStudyUrl,
+    metrics: null,
+    testimonial: null,
+    gallery: null,
+    details: null,
+    charts: null,
     viewCount: 0,
     clickCount: 0,
     createdAt: new Date(showcase.year, 0, 1), // Default to January 1st of the project year

@@ -1,6 +1,7 @@
 'use client'
+export const dynamic = 'force-static'
 
-import dynamic from 'next/dynamic'
+import dynamicImport from 'next/dynamic'
 import { TrendingUp, Users, Target, DollarSign } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 
@@ -12,11 +13,11 @@ import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data
 import { NarrativeSections } from './components/NarrativeSections'
 
 // Lazy-load chart components with Suspense fallback
-const PartnerTierChart = dynamic(() => import('./PartnerTierChart'), {
+const PartnerTierChart = dynamicImport(() => import('./PartnerTierChart'), {
   loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true,
 })
-const RevenueContributionChart = dynamic(() => import('./RevenueContributionChart'), {
+const RevenueContributionChart = dynamicImport(() => import('./RevenueContributionChart'), {
   loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true,
 })
