@@ -7,8 +7,14 @@
  * This file contains interfaces only - no duplicate enums.
  */
 
-// Also export as types for consumers
-export type { PostStatus as PostStatusType, ContentType as ContentTypeType, InteractionType as InteractionTypeType, SEOEventType as SEOEventTypeType, SEOSeverity as SEOSeverityType, ChangeFrequency as ChangeFrequencyType }
+import {
+  PostStatus,
+  ContentType,
+  InteractionType,
+  SEOEventType,
+  SEOSeverity,
+  ChangeFrequency,
+} from '@/lib/prisma-types'
 
 // =======================
 // CORE BLOG TYPES
@@ -667,6 +673,9 @@ export type BlogPostUpdateData = Partial<BlogPostCreateData> & {
 
 // Import API types for consistency
 import type { BlogPostData, BlogPostSummary as APIBlogPostSummary } from './shared-api';
+
+// Re-export BlogPostSummary for test factories
+export type { APIBlogPostSummary as BlogPostSummary };
 
 // Type aliases used by existing blog components
 export interface BlogFilters {
