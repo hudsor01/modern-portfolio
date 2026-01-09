@@ -54,9 +54,6 @@ const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
 const customRender = (ui: ReactElement, options?: TestRenderOptions) =>
   render(ui, { wrapper: AllTheProviders, ...options })
 
-// re-export everything
-export * from '@testing-library/react'
-
 // override render method
 export { customRender as render }
 
@@ -102,9 +99,6 @@ export const mockNextRouter = (overrides = {}) => {
     notFound: vi.fn(),
   }))
 }
-
-// Re-export the factory functions
-export { createTestDataFactory, createMockFunction, runPropertyTest, createMockResponse }
 
 // Export userEvent for modern user interaction testing
 export { userEvent }

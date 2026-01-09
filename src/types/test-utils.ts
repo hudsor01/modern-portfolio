@@ -6,32 +6,6 @@
 import { ReactNode, AnchorHTMLAttributes, ImgHTMLAttributes } from 'react'
 import { RenderOptions } from '@testing-library/react'
 
-// Re-export mock types for convenience
-export type {
-  MockDatabaseClient,
-  MockPrismaModelOperations,
-  BlogPostMockData,
-  AuthorMockData,
-  CategoryMockData,
-  TagMockData,
-  ContactSubmissionMockData,
-  ProjectMockData,
-  MockNextRouter,
-  MockNextImageProps as MockImageProps,
-  MockNextLinkProps as MockLinkProps,
-  MockUseQueryResult,
-  MockUseMutationResult,
-  MockQueryClient,
-  MockMotion,
-  MockAnimatePresenceProps,
-  MockAnimationControls,
-  MockFetchResponse,
-  MockNextRequest,
-  MockFactory,
-  MockCompatible,
-  PartialMock,
-} from './mock-types'
-
 export { isMockFunction, hasMockMethods } from './mock-types'
 
 /**

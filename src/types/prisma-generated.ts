@@ -666,11 +666,3 @@ export const Prisma = {
   PrismaClientUnknownRequestError,
   PrismaClientValidationError,
 }
-
-// Re-export types under Prisma namespace for compatibility
-export type {
-  BlogPostWhereInput as PrismaBlogPostWhereInput,
-  BlogPostOrderByWithRelationInput as PrismaBlogPostOrderByWithRelationInput,
-  PostViewWhereInput as PrismaPostViewWhereInput,
-  TransactionClient as PrismaTransactionClient,
-}

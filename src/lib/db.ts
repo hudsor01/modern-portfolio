@@ -48,10 +48,6 @@ if (process.env.NODE_ENV !== 'test') {
   validateDatabaseEnvironment()
 }
 
-// Re-export all types and enums from Prisma
-export * from '@/prisma/client'
-export { Prisma }
-
 // Extend global type to include prisma client for development hot-reload prevention
 declare global {
   var prisma: PrismaClient | undefined
