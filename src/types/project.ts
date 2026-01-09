@@ -1,8 +1,56 @@
 /**
- * Unified Project Types - Consolidated from multiple type files
- * Single source of truth for all project-related interfaces
- * Canonical field names match Prisma schema exactly
+ * Project types - Unique types not provided by Prisma
+ * For Project model type, import directly from @/prisma/client
  */
+
+import type { Project } from '@/prisma/client'
+
+// Re-export Prisma Project for convenience
+export type { Project }
+
+// ============================================================================
+// DISPLAY/UI TYPES - Not in Prisma schema
+// ============================================================================
+
+/**
+ * Display metric for project cards and detail pages
+ * Uses iconName string instead of React component for DB storage
+ */
+export interface DisplayMetric {
+  label: string
+  value: string
+  iconName: string // e.g., 'dollar-sign', 'trending-up', 'target', 'clock', 'zap', 'award'
+}
+
+/**
+ * Result metric showing before/after comparison
+ */
+export interface ResultMetric {
+  metric: string
+  before: string
+  after: string
+  improvement: string
+}
+
+/**
+ * Project image for gallery displays
+ */
+export interface ProjectImage {
+  url: string
+  alt: string
+  caption?: string
+}
+
+/**
+ * Project testimonial from clients
+ */
+export interface Testimonial {
+  quote: string
+  author: string
+  role?: string
+  company?: string
+  avatar?: string
+}
 
 /**
  * STAR format metric data for project achievements
@@ -26,104 +74,9 @@ export interface STARData {
   result: STARMetric
 }
 
-/**
- * Display metric for project cards and detail pages
- * Uses iconName string instead of React component for DB storage
- */
-export interface DisplayMetric {
-  label: string
-  value: string
-  iconName: string // e.g., 'dollar-sign', 'trending-up', 'target', 'clock', 'zap', 'award'
-}
-
-/**
- * Result metric showing before/after comparison
- */
-export interface ResultMetric {
-  metric: string
-  before: string
-  after: string
-  improvement: string
-}
-
-/**
- * Main Project interface representing a portfolio project
- * Matches Prisma schema with canonical field names - NO aliases
- */
-export interface Project {
-  id: string
-  title: string
-  slug: string
-  description: string
-  longDescription?: string
-  content?: string
-
-  // Media & URLs - canonical names from Prisma schema
-  image: string
-  link?: string // Live demo URL (canonical name)
-  github?: string // GitHub repository URL (canonical name)
-
-  // Categorization & Metadata - canonical names from Prisma schema
-  category: string
-  tags: string[] // Technology and feature tags (canonical name) - required per Prisma
-  featured: boolean // Featured status (canonical name) - required per Prisma with default
-
-  // Project metadata
-  client?: string
-  role?: string
-  duration?: string
-  year?: number
-  caseStudyUrl?: string
-
-  // Analytics (per Prisma schema)
-  viewCount: number
-  clickCount: number
-
-  // Dates - required per Prisma schema
-  createdAt: Date | string
-  updatedAt: Date | string
-
-  // Rich content fields (stored as JSON in DB)
-  impact?: string[]
-  results?: ResultMetric[]
-  displayMetrics?: DisplayMetric[]
-  metrics?: Record<string, string>
-  testimonial?: Testimonial
-  gallery?: ProjectImage[]
-  details?: {
-    challenge: string
-    solution: string
-    impact: string
-  }
-  charts?: Array<{
-    type: 'line' | 'bar' | 'pie' | 'funnel' | 'heatmap'
-    title: string
-    dataKey: string
-  }>
-
-  // STAR data - for case study/copy generation only, not UI display
-  starData?: STARData
-}
-
-/**
- * Project image for gallery displays
- */
-export interface ProjectImage {
-  url: string
-  alt: string
-  caption?: string
-}
-
-/**
- * Project testimonial from clients
- */
-export interface Testimonial {
-  quote: string
-  author: string
-  role?: string
-  company?: string
-  avatar?: string
-}
+// ============================================================================
+// API/QUERY TYPES - Not in Prisma schema
+// ============================================================================
 
 /**
  * Project filter for category filtering
@@ -160,13 +113,6 @@ export interface ProjectData extends Project {
 }
 
 /**
- * Project tabs component props
- */
-export interface ProjectTabsProps {
-  projects: Project[]
-}
-
-/**
  * Project result from filtering
  */
 export interface ProjectsResult {
@@ -185,7 +131,12 @@ export interface ProjectPageProps {
   searchParams?: Record<string, string | string[] | undefined>
 }
 
-// Chart data types moved to @/types/chart for centralization
+/**
+ * Project tabs component props
+ */
+export interface ProjectTabsProps {
+  projects: Project[]
+}
 
 /**
  * Chart event handler for interactive charts
@@ -198,9 +149,9 @@ export interface ChartEventHandler {
   color?: string
 }
 
-// =======================
+// ============================================================================
 // RUNTIME VALIDATION & TYPE GUARDS
-// =======================
+// ============================================================================
 
 /**
  * Type guard to check if an object is a valid Project
@@ -226,8 +177,10 @@ export function isProject(obj: unknown): obj is Project {
   if (project.updatedAt === undefined && project.updatedAt === null) return false
 
   // Optional fields validation
-  if (project.link !== undefined && typeof project.link !== 'string') return false
-  if (project.github !== undefined && typeof project.github !== 'string') return false
+  if (project.link !== undefined && typeof project.link !== 'string' && project.link !== null)
+    return false
+  if (project.github !== undefined && typeof project.github !== 'string' && project.github !== null)
+    return false
 
   return true
 }
@@ -262,9 +215,17 @@ export function validateProject(project: unknown): asserts project is Project {
       if (p.createdAt === undefined || p.createdAt === null) errors.push('createdAt is required')
       if (p.updatedAt === undefined || p.updatedAt === null) errors.push('updatedAt is required')
 
-      if (p.link !== undefined && typeof p.link !== 'string')
+      if (
+        p.link !== undefined &&
+        p.link !== null &&
+        typeof p.link !== 'string'
+      )
         errors.push('link must be a string if provided')
-      if (p.github !== undefined && typeof p.github !== 'string')
+      if (
+        p.github !== undefined &&
+        p.github !== null &&
+        typeof p.github !== 'string'
+      )
         errors.push('github must be a string if provided')
     }
 
@@ -272,13 +233,17 @@ export function validateProject(project: unknown): asserts project is Project {
   }
 }
 
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
 /**
  * Safely extracts project URLs with validation
  */
 export function getProjectUrls(project: Project): { liveUrl?: string; githubUrl?: string } {
   return {
-    liveUrl: project.link,
-    githubUrl: project.github,
+    liveUrl: project.link ?? undefined,
+    githubUrl: project.github ?? undefined,
   }
 }
 
@@ -290,9 +255,6 @@ export function getProjectTechnologies(project: Project): string[] {
 }
 
 /**
- * Creates a display-ready project object with normalized fields
- */
-/**
  * Normalized project type for display components
  * Includes additional computed properties for UI rendering
  */
@@ -302,6 +264,9 @@ export type NormalizedProject = Project & {
   technologies: string[]
 }
 
+/**
+ * Creates a display-ready project object with normalized fields
+ */
 export function normalizeProjectForDisplay(project: Project): NormalizedProject {
   const urls = getProjectUrls(project)
   const technologies = getProjectTechnologies(project)
