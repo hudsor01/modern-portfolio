@@ -14,6 +14,9 @@ import type {
   AllAnalyticsDataBundle,
 } from '@/types/analytics'
 
+// Re-export types for external consumers
+export type { GrowthData, YearOverYearData } from '@/types/analytics'
+
 // Data generation utilities
 class DataGenerator {
   private readonly currentYear = new Date().getFullYear()
