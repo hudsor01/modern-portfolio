@@ -37,7 +37,7 @@
     "ci:quick": "concurrently \"bun run lint\" \"bun run type-check\"",
     "ci:local": "bun run lint && bun run type-check && bun test",
     "ci:full": "bun run ci:quick && bun run build",
-    "prepare": "husky"
+    "prepare": "lefthook install"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.2.0",
@@ -110,7 +110,7 @@
     "eslint-plugin-react-hooks": "7.0.1",
     "fast-check": "4.5.3",
     "happy-dom": "20.0.11",
-    "husky": "9.1.7",
+    "lefthook": "2.0.13",
     "lint-staged": "^16.2.7",
     "playwright": "^1.57.0",
     "prisma": "^7.2.0",

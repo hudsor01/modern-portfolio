@@ -1,5 +1,0 @@
-#!/usr/bin/env sh
-echo "🔍 Running pre-commit checks..."
-echo "📝 Linting and type-checking..."
-bunx lint-staged
-echo "✅ All checks passed!"
