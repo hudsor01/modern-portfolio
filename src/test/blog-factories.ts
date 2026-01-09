@@ -46,6 +46,7 @@ export const createMockCategory = (overrides: Partial<Category> = {}): Category 
   description: 'Latest trends and insights in technology',
   color: '#3b82f6',
   icon: 'tech',
+  parentId: null,
   metaTitle: 'Technology Articles',
   metaDescription: 'Explore the latest technology articles and insights',
   keywords: ['technology', 'development', 'programming'],
@@ -83,11 +84,21 @@ export const createMockBlogPost = (overrides: Partial<BlogPost> = {}): BlogPost 
   metaTitle: 'Getting Started with React Testing - Complete Guide',
   metaDescription: 'Comprehensive guide to testing React components with Jest, Testing Library, and best practices.',
   keywords: ['react', 'testing', 'jest', 'testing-library'],
+  canonicalUrl: null,
+  ogTitle: null,
+  ogDescription: null,
+  ogImage: null,
+  twitterTitle: null,
+  twitterDescription: null,
+  twitterImage: null,
   featuredImage: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=800&h=600&fit=crop&crop=center&q=80',
   featuredImageAlt: 'React Testing Setup',
   readingTime: 8,
   wordCount: 1200,
   publishedAt: new Date('2024-01-15'),
+  scheduledAt: null,
+  archivedAt: null,
+  deletedAt: null,
   createdAt: new Date('2024-01-10'),
   updatedAt: new Date('2024-01-15'),
   authorId: 'author-1',
@@ -98,6 +109,8 @@ export const createMockBlogPost = (overrides: Partial<BlogPost> = {}): BlogPost 
   shareCount: 20,
   commentCount: 8,
   seoScore: 85,
+  seoAnalysis: null,
+  lastSeoCheck: null,
   ...overrides,
 })
 
@@ -267,14 +280,14 @@ export const createMockBlogListResponse = (count = 10) => ({
 })
 
 // Factory for creating mock RSS feed items
-export const createMockRSSFeedItem = (post: BlogPost) => ({
+export const createMockRSSFeedItem = (post: BlogPost, author?: Author, category?: Category) => ({
   title: post.title,
   description: post.excerpt || '',
   link: `https://example.com/blog/${post.slug}`,
   guid: post.id,
   pubDate: post.publishedAt?.toISOString() || new Date().toISOString(),
-  author: post.author?.email || 'noreply@example.com',
-  category: post.category?.name || 'Uncategorized',
+  author: author?.email || 'noreply@example.com',
+  category: category?.name || 'Uncategorized',
 })
 
 // Factory for creating multiple mock posts

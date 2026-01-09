@@ -229,3 +229,95 @@ export interface BlogComment {
   updatedAt: Date
   replies?: BlogComment[]
 }
+
+// ============================================================================
+// INPUT TYPES - Use Prisma-generated types
+// ============================================================================
+
+// Re-export Prisma input types
+export type BlogPostCreateInput = Prisma.BlogPostCreateInput
+export type BlogPostUpdateInput = Prisma.BlogPostUpdateInput
+
+// ============================================================================
+// ANALYTICS TYPES - For blog analytics
+// ============================================================================
+
+export interface BlogAnalytics {
+  totalPosts: number
+  publishedPosts: number
+  draftPosts: number
+  totalViews: number
+  totalInteractions: number
+  avgReadingTime: number
+  topPosts: BlogPost[]
+  topCategories: Category[]
+  topTags: Tag[]
+  recentActivity: unknown[]
+  seoSummary: {
+    averageScore: number
+    totalIssues: number
+    criticalIssues: number
+    opportunities: number
+    lastAnalysis: Date
+    topKeywords: string[]
+  }
+}
+
+// ============================================================================
+// SUMMARY TYPES - For API responses
+// ============================================================================
+
+export interface BlogPostSummary {
+  id: string
+  title: string
+  slug: string
+  excerpt: string | null
+  featuredImage: string | null
+  publishedAt: string
+  viewCount: number
+  commentCount: number
+  readingTime: number
+  author: {
+    id: string
+    name: string
+    email: string
+    slug: string
+    bio: string | null
+    avatar: string | null
+    website: string | null
+    totalPosts: number
+    totalViews: number
+    createdAt: string
+  }
+  category: {
+    id: string
+    name: string
+    slug: string
+    description: string | null
+    color: string | null
+    icon: string | null
+    parentId: string | null
+    metaTitle: string | null
+    metaDescription: string | null
+    keywords: string[]
+    postCount: number
+    totalViews: number
+    createdAt: string
+    updatedAt: string
+  }
+  tags: Array<{
+    id: string
+    name: string
+    slug: string
+    description: string | null
+    color: string | null
+    metaDescription: string | null
+    postCount: number
+    totalViews: number
+    createdAt: string
+    updatedAt: string
+  }>
+}
+
+// Alias for backward compatibility
+export type BlogPostFilter = BlogFilters
