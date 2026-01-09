@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Project } from '@/types/project'
@@ -20,18 +20,13 @@ export const ProjectCard = React.memo(function ProjectCard({
   const projectImage = project.image || '/images/projects/analytics-dashboard.jpg'
 
   // Get category label from client or category
-  const categoryLabel = useMemo(() => {
-    return (
-      project.client ||
-      project.category ||
-      (project.tags && project.tags.length > 0 ? project.tags[0] : null)
-    )
-  }, [project])
+  const categoryLabel =
+    project.client ||
+    project.category ||
+    (project.tags && project.tags.length > 0 ? project.tags[0] : null)
 
   // Get technologies from tags (normalized field name)
-  const technologies = useMemo(() => {
-    return project.tags || []
-  }, [project])
+  const technologies = project.tags || []
 
   return (
     <div className="animate-fade-in-up" style={{ animationDelay: `${index * 80}ms` }}>

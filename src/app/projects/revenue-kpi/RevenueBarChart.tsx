@@ -1,6 +1,5 @@
 'use client'
 
-import { useMemo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   ChartContainer,
@@ -29,14 +28,14 @@ type RevenueBarChartProps = {
 }
 
 export default function RevenueBarChart({ data }: RevenueBarChartProps) {
-  const chartData = useMemo(() => {
+  const chartData = (() => {
     if (!data || data.length === 0) return []
     return data.map((period) => ({
       name: period.label,
       // Convert to thousands (e.g., 284K, 365K)
       revenue: Math.round(period.revenue / 1000),
     }))
-  }, [data])
+  })()
 
   if (!chartData.length) {
     return (

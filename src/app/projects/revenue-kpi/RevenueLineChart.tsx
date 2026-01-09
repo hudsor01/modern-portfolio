@@ -1,5 +1,5 @@
 'use client'
-import React, { memo, useMemo } from 'react'
+import React, { memo } from 'react'
 import { LazyLineChart as LineChart, Line, Legend } from '@/components/charts/lazy-charts'
 import {
   ChartWrapper,
@@ -72,13 +72,12 @@ type RevenueLineChartProps = {
 }
 
 const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Element => {
-  // Memoize expensive data calculations
-  const yearlyData = useMemo(() => {
+  const yearlyData = (() => {
     if (!data || data.length === 0) return []
     return data.map((yearData: YearOverYearSeries, index: number) => {
       const previousYear = index > 0 ? data[index - 1] : null;
       const growth = previousYear ? calculateGrowthRate(yearData.total_revenue, previousYear.total_revenue) : 0;
-      
+
       return {
         name: yearData.year.toString(),
         value: yearData.total_revenue / 1000000,
@@ -93,7 +92,7 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
         }
       };
     });
-  }, [data]);
+  })();
 
   if (!yearlyData.length) {
     return (
