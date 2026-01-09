@@ -3,7 +3,7 @@
  * Migrated from react-hook-form to @tanstack/react-form
  */
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState } from 'react'
 import { useForm } from '@tanstack/react-form'
 import { useStore } from '@tanstack/react-store'
 import { contactFormSchema } from '@/lib/validations/unified-schemas'
@@ -113,7 +113,7 @@ export function useContactForm() {
   const formValues = useStore(form.store, (state) => state.values)
 
   // Derived state: form completion progress
-  const progress = useMemo(() => {
+  const progress = (() => {
     let filled = 0
     const total = 4 // Required fields: name, email, message, terms
     if (formValues.name.length >= 2) filled++
@@ -124,12 +124,12 @@ export function useContactForm() {
     if (formValues.company) filled += 0.2
     if (formValues.phone) filled += 0.2
     return Math.min(100, Math.round((filled / total) * 100))
-  }, [formValues, agreedToTerms])
+  })()
 
   const isSubmitting = submitStatus === 'submitting'
 
   // Field validation using Zod schema
-  const validateField = useCallback((name: string, value: string): string => {
+  const validateField = (name: string, value: string): string => {
     // Get the field schema from contactFormSchema
     const fieldSchema = contactFormSchema.shape[name as keyof typeof contactFormSchema.shape]
     if (!fieldSchema) return ''
@@ -139,74 +139,68 @@ export function useContactForm() {
       return result.error.issues[0]?.message || ''
     }
     return ''
-  }, [])
+  }
 
   // Input change handler - maintains backward compatibility
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const { name, value } = e.target
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
 
-      // Update TanStack Form field value
-      form.setFieldValue(name as keyof ContactFormData, value)
+    // Update TanStack Form field value
+    form.setFieldValue(name as keyof ContactFormData, value)
 
-      // Real-time validation
-      const error = validateField(name, value)
-      setFieldErrors((prev) => ({ ...prev, [name]: error || undefined }))
+    // Real-time validation
+    const error = validateField(name, value)
+    setFieldErrors((prev) => ({ ...prev, [name]: error || undefined }))
 
-      // Clear submit status on new input
-      if (submitStatus !== 'idle') {
-        setSubmitStatus('idle')
-      }
-    },
-    [form, validateField, submitStatus]
-  )
+    // Clear submit status on new input
+    if (submitStatus !== 'idle') {
+      setSubmitStatus('idle')
+    }
+  }
 
   // Reset form to initial state
-  const resetForm = useCallback(() => {
+  const resetForm = () => {
     form.reset()
     setAgreedToTerms(false)
     setFieldErrors({})
     setSubmitStatus('idle')
-  }, [form])
+  }
 
   // Form submission handler - maintains backward compatibility
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault()
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
 
-      // Validate all fields with Zod schema
-      const result = contactFormSchema.safeParse(formValues)
-      if (!result.success) {
-        const newErrors: ContactFormErrors = {}
-        result.error.issues.forEach((err) => {
-          const field = err.path[0] as string
-          if (
-            field === 'name' ||
-            field === 'email' ||
-            field === 'company' ||
-            field === 'phone' ||
-            field === 'message'
-          ) {
-            newErrors[field as keyof ContactFormErrors] = err.message
-          }
-        })
-        setFieldErrors(newErrors)
-        setSubmitStatus('error')
-        return
-      }
+    // Validate all fields with Zod schema
+    const result = contactFormSchema.safeParse(formValues)
+    if (!result.success) {
+      const newErrors: ContactFormErrors = {}
+      result.error.issues.forEach((err) => {
+        const field = err.path[0] as string
+        if (
+          field === 'name' ||
+          field === 'email' ||
+          field === 'company' ||
+          field === 'phone' ||
+          field === 'message'
+        ) {
+          newErrors[field as keyof ContactFormErrors] = err.message
+        }
+      })
+      setFieldErrors(newErrors)
+      setSubmitStatus('error')
+      return
+    }
 
-      // Check terms agreement
-      if (!agreedToTerms) {
-        setFieldErrors((prev) => ({ ...prev, terms: 'Please agree to the privacy policy' }))
-        setSubmitStatus('error')
-        return
-      }
+    // Check terms agreement
+    if (!agreedToTerms) {
+      setFieldErrors((prev) => ({ ...prev, terms: 'Please agree to the privacy policy' }))
+      setSubmitStatus('error')
+      return
+    }
 
-      // Trigger TanStack Form submission
-      await form.handleSubmit()
-    },
-    [form, formValues, agreedToTerms]
-  )
+    // Trigger TanStack Form submission
+    await form.handleSubmit()
+  }
 
   return {
     formData: formValues,
