@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { Swiper } from 'swiper'
 
 interface UseSwiperAutoplayOptions {
@@ -15,29 +15,29 @@ export function useSwiperAutoplay(
 ) {
   const [isPlaying, setIsPlaying] = useState(true)
   const { delay = 3000, disableOnInteraction = false, pauseOnMouseEnter: _pauseOnMouseEnter = true } = options
-  
+
   // Ref to store a timeout ID for delayed autoplay restart
   const delayTimeoutRef = useRef<number | null>(null)
 
-  const startAutoplay = useCallback(() => {
+  const startAutoplay = () => {
     if (!swiper?.autoplay) return
     swiper.autoplay.start()
     setIsPlaying(true)
-  }, [swiper])
+  }
 
-  const stopAutoplay = useCallback(() => {
+  const stopAutoplay = () => {
     if (!swiper?.autoplay) return
     swiper.autoplay.stop()
     setIsPlaying(false)
-  }, [swiper])
+  }
 
-  const toggleAutoplay = useCallback(() => {
+  const toggleAutoplay = () => {
     if (isPlaying) {
       stopAutoplay()
     } else {
       startAutoplay()
     }
-  }, [isPlaying, startAutoplay, stopAutoplay])
+  }
 
   useEffect(() => {
     if (!swiper?.autoplay) return
@@ -70,9 +70,10 @@ export function useSwiperAutoplay(
         swiper.el.removeEventListener('pointerdown', handleInteraction)
       }
     }
-  }, [swiper, disableOnInteraction, stopAutoplay])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [swiper, disableOnInteraction])
 
-  const handleMouseEnter = useCallback(() => {
+  const handleMouseEnter = () => {
     if (_pauseOnMouseEnter) {
       // Clear any pending delay timeout
       if (delayTimeoutRef.current !== null) {
@@ -81,16 +82,16 @@ export function useSwiperAutoplay(
       }
       stopAutoplay()
     }
-  }, [stopAutoplay, _pauseOnMouseEnter])
+  }
 
-  const handleMouseLeave = useCallback(() => {
+  const handleMouseLeave = () => {
     if (_pauseOnMouseEnter) {
       // Restart autoplay after a specified delay
       delayTimeoutRef.current = window.setTimeout(() => {
         startAutoplay()
       }, delay)
     }
-  }, [startAutoplay, _pauseOnMouseEnter, delay])
+  }
 
   return {
     isPlaying,

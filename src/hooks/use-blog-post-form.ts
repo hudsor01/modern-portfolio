@@ -3,7 +3,7 @@
  * Migrated from react-hook-form to @tanstack/react-form
  */
 
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useForm } from '@tanstack/react-form'
 import { useStore } from '@tanstack/react-store'
 import { z } from 'zod'
@@ -95,14 +95,10 @@ export function useBlogPostForm(post?: Partial<BlogPostWithRelations>) {
   const isInitialMount = useRef(true)
   const lastBroadcastRef = useRef<number>(0)
 
-  // Extract initial tag IDs from post - memoized to prevent dependency changes
-  const initialTagIds = useMemo(
-    () =>
-      post?.tags
-        ?.map((t) => t.tagId)
-        .filter((id): id is string => Boolean(id)) || [],
-    [post?.tags]
-  )
+  // Extract initial tag IDs from post
+  const initialTagIds = post?.tags
+    ?.map((t) => t.tagId)
+    .filter((id): id is string => Boolean(id)) || []
 
   // Additional state not managed by TanStack Form
   const [selectedTags, setSelectedTags] = useState<string[]>(initialTagIds)
@@ -279,48 +275,42 @@ export function useBlogPostForm(post?: Partial<BlogPostWithRelations>) {
   }, [formValues, crossTabSync])
 
   // Helper function to merge form data intelligently
-  const mergeFormData = useCallback(
-    (local: BlogPostFormData, remote: BlogPostFormData): BlogPostFormData => {
-      const merged: BlogPostFormData = { ...local }
+  const mergeFormData = (local: BlogPostFormData, remote: BlogPostFormData): BlogPostFormData => {
+    const merged: BlogPostFormData = { ...local }
 
-      Object.entries(remote).forEach(([key, remoteValue]) => {
-        const localValue = local[key as keyof BlogPostFormData]
+    Object.entries(remote).forEach(([key, remoteValue]) => {
+      const localValue = local[key as keyof BlogPostFormData]
 
-        // Prefer non-empty values
-        if (
-          (localValue === '' || localValue === null || localValue === undefined) &&
-          remoteValue !== '' &&
-          remoteValue !== null &&
-          remoteValue !== undefined
-        ) {
-          ;(merged as Record<string, unknown>)[key] = remoteValue
-        }
-        // Merge arrays (for tags, keywords)
-        else if (Array.isArray(localValue) && Array.isArray(remoteValue)) {
-          ;(merged as Record<string, unknown>)[key] = [...new Set([...localValue, ...remoteValue])]
-        }
-      })
+      // Prefer non-empty values
+      if (
+        (localValue === '' || localValue === null || localValue === undefined) &&
+        remoteValue !== '' &&
+        remoteValue !== null &&
+        remoteValue !== undefined
+      ) {
+        ;(merged as Record<string, unknown>)[key] = remoteValue
+      }
+      // Merge arrays (for tags, keywords)
+      else if (Array.isArray(localValue) && Array.isArray(remoteValue)) {
+        ;(merged as Record<string, unknown>)[key] = [...new Set([...localValue, ...remoteValue])]
+      }
+    })
 
-      return merged
-    },
-    []
-  )
+    return merged
+  }
 
   // Handle title change with auto-slug generation
-  const handleTitleChange = useCallback(
-    (title: string) => {
-      form.setFieldValue('title', title)
-      // Auto-generate slug if slug is empty
-      const currentSlug = form.getFieldValue('slug')
-      if (!currentSlug) {
-        form.setFieldValue('slug', generateSlug(title))
-      }
-    },
-    [form]
-  )
+  const handleTitleChange = (title: string) => {
+    form.setFieldValue('title', title)
+    // Auto-generate slug if slug is empty
+    const currentSlug = form.getFieldValue('slug')
+    if (!currentSlug) {
+      form.setFieldValue('slug', generateSlug(title))
+    }
+  }
 
   // Add a keyword to the keywords array
-  const addKeyword = useCallback(() => {
+  const addKeyword = () => {
     const currentKeywords = form.getFieldValue('keywords') || []
     const trimmedKeyword = newKeyword.trim()
 
@@ -338,43 +328,37 @@ export function useBlogPostForm(post?: Partial<BlogPostWithRelations>) {
         crossTabSync.broadcast({ keywords: newKeywords }, 'keywords')
       }
     }
-  }, [form, newKeyword, crossTabSync])
+  }
 
   // Remove a keyword from the keywords array
-  const removeKeyword = useCallback(
-    (keyword: string) => {
-      const currentKeywords = form.getFieldValue('keywords') || []
-      const newKeywords = currentKeywords.filter((k: string) => k !== keyword)
-      form.setFieldValue('keywords', newKeywords)
+  const removeKeyword = (keyword: string) => {
+    const currentKeywords = form.getFieldValue('keywords') || []
+    const newKeywords = currentKeywords.filter((k: string) => k !== keyword)
+    form.setFieldValue('keywords', newKeywords)
 
-      // Broadcast field-level change
-      if (crossTabSync) {
-        crossTabSync.broadcast({ keywords: newKeywords }, 'keywords')
-      }
-    },
-    [form, crossTabSync]
-  )
+    // Broadcast field-level change
+    if (crossTabSync) {
+      crossTabSync.broadcast({ keywords: newKeywords }, 'keywords')
+    }
+  }
 
   // Toggle a tag in the tagIds array
-  const toggleTag = useCallback(
-    (tagId: string) => {
-      const newSelectedTags = selectedTags.includes(tagId)
-        ? selectedTags.filter((id) => id !== tagId)
-        : [...selectedTags, tagId]
+  const toggleTag = (tagId: string) => {
+    const newSelectedTags = selectedTags.includes(tagId)
+      ? selectedTags.filter((id) => id !== tagId)
+      : [...selectedTags, tagId]
 
-      setSelectedTags(newSelectedTags)
-      form.setFieldValue('tagIds', newSelectedTags)
+    setSelectedTags(newSelectedTags)
+    form.setFieldValue('tagIds', newSelectedTags)
 
-      // Broadcast field-level change
-      if (crossTabSync) {
-        crossTabSync.broadcast({ tagIds: newSelectedTags }, 'tagIds')
-      }
-    },
-    [form, selectedTags, crossTabSync]
-  )
+    // Broadcast field-level change
+    if (crossTabSync) {
+      crossTabSync.broadcast({ tagIds: newSelectedTags }, 'tagIds')
+    }
+  }
 
   // Reset form to initial state
-  const resetForm = useCallback(() => {
+  const resetForm = () => {
     form.reset()
     setSelectedTags(initialTagIds)
     setNewKeyword('')
@@ -386,17 +370,17 @@ export function useBlogPostForm(post?: Partial<BlogPostWithRelations>) {
     if (crossTabSync) {
       crossTabSync.clear()
     }
-  }, [form, initialTagIds, crossTabSync])
+  }
 
   // Resolve conflict by choosing local data
-  const resolveConflictWithLocal = useCallback(() => {
+  const resolveConflictWithLocal = () => {
     setHasConflict(false)
     setConflictData(null)
     logger.info('Resolved conflict by keeping local data', { formId })
-  }, [formId, logger])
+  }
 
   // Resolve conflict by choosing remote data
-  const resolveConflictWithRemote = useCallback(() => {
+  const resolveConflictWithRemote = () => {
     if (conflictData?.remote) {
       Object.entries(conflictData.remote).forEach(([key, value]) => {
         form.setFieldValue(key as keyof BlogPostFormData, value as BlogPostFormData[keyof BlogPostFormData])
@@ -406,10 +390,10 @@ export function useBlogPostForm(post?: Partial<BlogPostWithRelations>) {
       setConflictData(null)
       logger.info('Resolved conflict by applying remote data', { formId })
     }
-  }, [conflictData, form, formId, logger])
+  }
 
   // Resolve conflict by merging data
-  const resolveConflictWithMerge = useCallback(() => {
+  const resolveConflictWithMerge = () => {
     if (conflictData && crossTabSync) {
       // For now, use a simple merge strategy - prefer remote data
       const merged = { ...conflictData.local, ...conflictData.remote }
@@ -421,7 +405,7 @@ export function useBlogPostForm(post?: Partial<BlogPostWithRelations>) {
       setConflictData(null)
       logger.info('Resolved conflict by merging data', { formId })
     }
-  }, [conflictData, crossTabSync, formId, form, logger])
+  }
 
   return {
     form,
