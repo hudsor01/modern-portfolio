@@ -32,12 +32,11 @@
     "db:migrate:reset": "bunx prisma migrate reset",
     "db:seed": "bun run prisma/seed.ts",
     "db:studio": "bunx prisma studio",
-    "postinstall": "bunx prisma generate",
+    "postinstall": "concurrently \"bunx prisma generate\" \"lefthook install\"",
     "validate": "concurrently \"bun run type-check\" \"bun run lint\"",
     "ci:quick": "concurrently \"bun run lint\" \"bun run type-check\"",
     "ci:local": "bun run lint && bun run type-check && bun test",
-    "ci:full": "bun run ci:quick && bun run build",
-    "prepare": "lefthook install"
+    "ci:full": "bun run ci:quick && bun run build"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.2.0",
