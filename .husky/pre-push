@@ -1,4 +1,0 @@
-#!/usr/bin/env sh
-echo "🧪 Running tests before push..."
-bun test
-echo "✅ Tests passed! Safe to push."
