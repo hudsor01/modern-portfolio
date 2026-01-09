@@ -1,10 +1,8 @@
-'use client'
-
 /**
  * Website JSON-LD Schema
  * SEO structured data for the main website
  */
-export function WebsiteJsonLd() {
+export function WebsiteJsonLd({ nonce }: { nonce?: string | null }) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -25,6 +23,7 @@ export function WebsiteJsonLd() {
   return (
     <script
       type="application/ld+json"
+      nonce={nonce ?? undefined}
       dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
     />
   )

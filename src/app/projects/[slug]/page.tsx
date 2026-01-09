@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+export const dynamic = 'force-static'
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query'
 import { getProjects, getProject } from '@/lib/content/projects'
 import { normalizeProjectForDisplay } from '@/types/project'
@@ -84,13 +85,27 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     title: project.title,
     slug: project.slug || project.id,
     description: project.description,
-    ...(project.content && { content: project.content }),
+    longDescription: project.longDescription || null,
+    content: project.content || null,
     featured: project.featured ?? false,
     image: project.image,
-    ...(project.link && { link: project.link }),
-    ...(project.github && { github: project.github }),
+    link: project.link || null,
+    github: project.github || null,
     category: project.category || 'Other',
-    ...(project.tags && { tags: project.tags }),
+    tags: project.tags || [],
+    client: project.client || null,
+    role: project.role || null,
+    duration: project.duration || null,
+    year: project.year || null,
+    caseStudyUrl: project.caseStudyUrl || null,
+    impact: project.impact || null,
+    results: project.results || null,
+    displayMetrics: project.displayMetrics || null,
+    metrics: project.metrics || null,
+    testimonial: project.testimonial || null,
+    gallery: project.gallery || null,
+    details: project.details || null,
+    charts: project.charts || null,
     createdAt:
       project.createdAt instanceof Date
         ? project.createdAt
@@ -102,7 +117,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       : project.createdAt instanceof Date
         ? project.createdAt
         : new Date(project.createdAt || '2024-01-01'),
-    ...('starData' in project && project.starData && { starData: project.starData }),
     viewCount: project.viewCount ?? 0,
     clickCount: project.clickCount ?? 0,
   })

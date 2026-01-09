@@ -14,16 +14,8 @@ import type {
   AllAnalyticsDataBundle,
 } from '@/types/analytics'
 
-// Re-export analytics types for backward compatibility
-export type {
-  ChurnAnalyticsData,
-  LeadAttributionData,
-  LeadTrendData,
-  GrowthData,
-  YearOverYearData,
-  TopPartnerData,
-  AllAnalyticsDataBundle,
-}
+// Re-export types for external consumers
+export type { GrowthData, YearOverYearData } from '@/types/analytics'
 
 // Data generation utilities
 class DataGenerator {

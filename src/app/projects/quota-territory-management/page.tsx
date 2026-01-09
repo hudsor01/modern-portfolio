@@ -1,4 +1,5 @@
 'use client'
+export const dynamic = 'force-static'
 
 import { TrendingUp, Map, Database, Zap, Code, Check } from 'lucide-react'
 

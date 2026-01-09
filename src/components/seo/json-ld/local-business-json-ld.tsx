@@ -1,10 +1,8 @@
-'use client'
-
 /**
  * Local Business JSON-LD Schema
  * SEO structured data for local business presence in Dallas-Fort Worth
  */
-export function LocalBusinessJsonLd() {
+export function LocalBusinessJsonLd({ nonce }: { nonce?: string | null }) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ProfessionalService',
@@ -162,6 +160,7 @@ export function LocalBusinessJsonLd() {
   return (
     <script
       type="application/ld+json"
+      nonce={nonce ?? undefined}
       dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
     />
   )

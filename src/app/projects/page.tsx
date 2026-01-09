@@ -1,6 +1,7 @@
 'use client'
+export const dynamic = 'force-static'
 
-import { useMemo, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useQueryState } from 'nuqs'
 import { projectKeys } from '@/lib/queryKeys'
@@ -45,22 +46,22 @@ export default function ProjectsPage() {
     staleTime: 5 * 60 * 1000,
   })
 
-  const sortedProjects = useMemo(() => {
+  const sortedProjects = (() => {
     if (!projects) return []
     return [...projects].sort((a: Project, b: Project) => {
       if (a.featured && !b.featured) return -1
       if (!a.featured && b.featured) return 1
       return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
     })
-  }, [projects])
+  })()
 
-  const categories = useMemo((): string[] => {
+  const categories = (() => {
     if (!projects) return []
     const cats = new Set((projects as Project[]).map((p) => p.category).filter(Boolean))
     return Array.from(cats)
-  }, [projects])
+  })()
 
-  const filteredProjects = useMemo(() => {
+  const filteredProjects = (() => {
     let filtered = sortedProjects
     if (search) {
       const lowerSearch = search.toLowerCase()
@@ -75,7 +76,7 @@ export default function ProjectsPage() {
       filtered = filtered.filter((p) => p.category === category)
     }
     return filtered
-  }, [sortedProjects, search, category])
+  })()
 
   if (error) {
     return (

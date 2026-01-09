@@ -1,38 +1,36 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { ProjectTabsProps } from '@/types/project'
 import { ProjectSwiper } from './project-swiper'
 
 export function ProjectTabs({ projects }: ProjectTabsProps) {
   // Extract unique categories from projects
-  const allCategories = React.useMemo(() => {
+  const allCategories = (() => {
     const categories = new Set<string>()
     projects.forEach((project) => {
       project.tags?.forEach((tag) => categories.add(tag))
     })
     return ['All', ...Array.from(categories)]
-  }, [projects])
+  })()
 
   const [activeCategory, setActiveCategory] = useState('All')
 
   // Filter projects by category
-  const filteredProjects = React.useMemo(() => {
+  const filteredProjects = (() => {
     if (activeCategory === 'All') return projects
     return projects.filter((project) => project.tags?.includes(activeCategory))
-  }, [projects, activeCategory])
+  })()
 
   // Ensure projects have required fields for ProjectSwiper
-  const formattedProjects = React.useMemo(() => {
-    return filteredProjects.map((project) => ({
-      ...project,
-      image: project.image || '',
-      id: project.id || '',
-      slug: project.slug || '',
-      featured: project.featured ?? false,
-      category: project.category || '',
-    }))
-  }, [filteredProjects])
+  const formattedProjects = filteredProjects.map((project) => ({
+    ...project,
+    image: project.image || '',
+    id: project.id || '',
+    slug: project.slug || '',
+    featured: project.featured ?? false,
+    category: project.category || '',
+  }))
 
   return (
     <div className="space-y-8">

@@ -6,12 +6,11 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createContextLogger } from '@/lib/monitoring/logger'
-import { getConfigSection } from '@/lib/config'
-import type { SecurityConfig } from '@/lib/config'
+import { securityConfig, type SecurityConfig } from '@/lib/config'
 
 const securityLogger = createContextLogger('SecurityHeaders')
 
-const DEFAULT_SECURITY_CONFIG: SecurityConfig = getConfigSection('security')
+const DEFAULT_SECURITY_CONFIG: SecurityConfig = securityConfig
 
 /**
  * Apply security headers to a response
@@ -164,34 +163,6 @@ export function getStaticAssetHeaders(): Record<string, string> {
   }
 }
 
-/**
- * Enhanced CSP with reporting
- */
-export function buildEnhancedCSP(nonces: { scriptNonce: string; styleNonce: string }): string {
-  const directives = [
-    "default-src 'self'",
-    `script-src 'self' 'nonce-${nonces.scriptNonce}' https://vercel.live https://va.vercel-scripts.com https://vitals.vercel-insights.com 'strict-dynamic'`,
-    `style-src 'self' 'nonce-${nonces.styleNonce}' https://fonts.googleapis.com 'unsafe-inline'`,
-    "img-src 'self' data: blob: https: *.unsplash.com",
-    "font-src 'self' https://fonts.gstatic.com",
-    "connect-src 'self' https://vercel.live https://va.vercel-scripts.com https://vitals.vercel-insights.com",
-    "frame-src 'none'",
-    "object-src 'none'",
-    "base-uri 'self'",
-    "form-action 'self'",
-    "frame-ancestors 'none'",
-    'upgrade-insecure-requests',
-    'block-all-mixed-content',
-  ]
-
-  // Add reporting in production
-  if (process.env.NODE_ENV === 'production') {
-    directives.push('report-uri /api/csp-report')
-    directives.push('report-to csp-endpoint')
-  }
-
-  return directives.join('; ')
-}
 
 /**
  * Security audit log entry

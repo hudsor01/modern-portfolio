@@ -1,8 +1,8 @@
 'use client'
+export const dynamic = 'force-static'
 
-import { useMemo } from 'react'
 import { useAnalyticsData } from '@/hooks/use-analytics-data'
-import dynamic from 'next/dynamic'
+import dynamicImport from 'next/dynamic'
 import { TrendingDown, Users, Activity, AlertCircle } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
@@ -13,11 +13,11 @@ import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { formatPercentage, formatNumber, formatCurrency } from '@/lib/utils/data-formatters'
 
 // Lazy-load chart components with Suspense fallback
-const ChurnLineChart = dynamic(() => import('./ChurnLineChart'), {
+const ChurnLineChart = dynamicImport(() => import('./ChurnLineChart'), {
   loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true,
 })
-const RetentionHeatmap = dynamic(() => import('./RetentionHeatmap'), {
+const RetentionHeatmap = dynamicImport(() => import('./RetentionHeatmap'), {
   loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true,
 })
@@ -31,8 +31,7 @@ export default function ChurnAnalysis() {
     isLoading,
   } = useAnalyticsData()
 
-  const churnData = useMemo(
-    () =>
+  const churnData = (() =>
       analyticsData?.churn?.length
         ? analyticsData.churn.map((item) => ({
             month: item.month,
@@ -40,9 +39,8 @@ export default function ChurnAnalysis() {
             retained: item.retained_partners,
             churned: item.churned_partners,
           }))
-        : staticChurnData,
-    [analyticsData?.churn]
-  )
+        : staticChurnData
+  )()
 
 
   // Ensure data exists before accessing indices

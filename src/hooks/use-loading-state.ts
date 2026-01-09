@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { TIMING } from '@/lib/constants/spacing'
 
 /**
@@ -31,14 +31,14 @@ export function useLoadingState(initialDelay = TIMING.LOADING_STATE_RESET) {
   }, [initialDelay])
 
   // Safe refresh function with cleanup
-  const handleRefresh = useCallback(() => {
+  const handleRefresh = () => {
     // Clear any existing timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
     }
     setIsLoading(true)
     timeoutRef.current = setTimeout(() => setIsLoading(false), initialDelay)
-  }, [initialDelay])
+  }
 
   return { isLoading, handleRefresh, setIsLoading }
 }

@@ -1,4 +1,5 @@
 'use client'
+export const dynamic = 'force-static'
 
 import { TrendingUp, Users, Settings, BarChart } from 'lucide-react'
 

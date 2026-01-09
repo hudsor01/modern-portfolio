@@ -1,3 +1,3 @@
-export { ResultCard, type ResultCardProps } from './result-card'
-export { TechGrid, type TechGridProps } from './tech-grid'
-export { FeatureCard, type FeatureCardProps } from './feature-card'
+export { FeatureCard } from './feature-card'
+export { ResultCard } from './result-card'
+export { TechGrid } from './tech-grid'

@@ -11,11 +11,8 @@ import type {
   Author,
   Category,
   Tag,
-  // PostView,
-  // PostInteraction,
-  // SEOKeyword,
   PostStatus,
-} from '@/lib/prisma-types'
+} from '@/prisma/client'
 
 const dbLogger = createContextLogger('DatabaseOps')
 

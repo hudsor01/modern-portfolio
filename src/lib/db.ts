@@ -5,7 +5,7 @@
  */
 
 import 'server-only'
-import { PrismaClient, Prisma } from '@/prisma/client'
+import { PrismaClient } from '@/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { logger } from '@/lib/monitoring/logger'
 
@@ -47,10 +47,6 @@ function validateDatabaseEnvironment() {
 if (process.env.NODE_ENV !== 'test') {
   validateDatabaseEnvironment()
 }
-
-// Re-export all types and enums from Prisma
-export * from '@/prisma/client'
-export { Prisma }
 
 // Extend global type to include prisma client for development hot-reload prevention
 declare global {

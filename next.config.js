@@ -150,10 +150,7 @@ const nextConfig = {
       },
     ];
   },
-  
-  // Enhanced output configuration
-  output: 'standalone',
-  
+
   // Enable static optimization
   trailingSlash: false,
   

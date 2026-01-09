@@ -1,6 +1,7 @@
 'use client'
+export const dynamic = 'force-static'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { TrendingUp, DollarSign, Users, Activity } from 'lucide-react'
 
 import { ProjectJsonLd } from '@/components/seo/json-ld'
@@ -48,17 +49,14 @@ export default function RevenueKPI() {
     ? analyticsData.yearOverYear
     : yearOverYearGrowthExtended
 
-  const sortedYearOverYear = useMemo(
-    () => [...yearOverYearData].sort((a, b) => a.year - b.year),
-    [yearOverYearData]
-  )
+  const sortedYearOverYear = [...yearOverYearData].sort((a, b) => a.year - b.year)
 
   const currentYearData: YearOverYearSeries | undefined =
     sortedYearOverYear[sortedYearOverYear.length - 1]
   const prevYearData: YearOverYearSeries | undefined =
     sortedYearOverYear[sortedYearOverYear.length - 2]
 
-  const revenueTrendData = useMemo(() => {
+  const revenueTrendData = (() => {
     if (analyticsData?.growth?.length) {
       return analyticsData.growth.map((item: GrowthData) => ({
         label: item.quarter,
@@ -70,13 +68,13 @@ export default function RevenueKPI() {
       label: item.month,
       revenue: item.revenue,
     }))
-  }, [analyticsData?.growth])
+  })()
 
   const topPartners: PartnerSeries[] = analyticsData?.topPartners?.length
     ? analyticsData.topPartners
     : topPartnersData
 
-  const partnerGroups = useMemo(() => {
+  const partnerGroups = (() => {
     const byTier = new Map<string, number>()
     let hasTier = false
 
@@ -100,7 +98,7 @@ export default function RevenueKPI() {
         value: totalRevenue > 0 ? Math.round((revenue / totalRevenue) * 1000) / 10 : 0,
       }))
       .sort((a, b) => b.value - a.value)
-  }, [topPartners])
+  })()
 
   if (!currentYearData) {
     logger.error(
