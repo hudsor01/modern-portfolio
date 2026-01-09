@@ -58,16 +58,30 @@ describe('Project Detail Consistency Integration', () => {
     description: 'A test project for consistency validation',
     longDescription:
       'This is a longer description of the test project that provides more details about the implementation and goals.',
+    content: null,
     category: 'Analytics',
     tags: ['React', 'TypeScript', 'Tailwind CSS'],
     image: '/images/test-project.jpg',
+    link: 'https://example.com',
+    github: 'https://github.com/example/test-project',
     featured: true,
+    client: null,
+    role: null,
+    duration: null,
+    year: null,
+    impact: null,
+    results: null,
+    displayMetrics: null,
+    metrics: null,
+    testimonial: null,
+    gallery: null,
+    details: null,
+    charts: null,
+    caseStudyUrl: null,
     viewCount: 100,
     clickCount: 50,
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
-    link: 'https://example.com',
-    github: 'https://github.com/example/test-project',
   }
 
   describe('Component Structure and Consistency', () => {
@@ -136,10 +150,9 @@ describe('Project Detail Consistency Integration', () => {
       const projectWithoutOptionalData: Project = {
         ...mockProject,
         image: '', // Empty string for required field to test fallback handling
-        starData: undefined,
-        longDescription: undefined,
-        link: undefined,
-        github: undefined,
+        longDescription: null,
+        link: null,
+        github: null,
       }
 
       const { container } = render(
@@ -163,7 +176,7 @@ describe('Project Detail Consistency Integration', () => {
     it('uses fallback description when longDescription is not available', () => {
       const projectWithoutLongDescription: Project = {
         ...mockProject,
-        longDescription: undefined,
+        longDescription: null,
       }
 
       const { container } = render(
@@ -183,10 +196,27 @@ describe('Project Detail Consistency Integration', () => {
         slug: 'minimal-project',
         title: 'Minimal Project',
         description: 'A minimal project',
+        longDescription: null,
+        content: null,
         category: 'Test',
         tags: [],
         image: '/placeholder.jpg', // Add required image field
+        link: null,
+        github: null,
         featured: false,
+        client: null,
+        role: null,
+        duration: null,
+        year: null,
+        impact: null,
+        results: null,
+        displayMetrics: null,
+        metrics: null,
+        testimonial: null,
+        gallery: null,
+        details: null,
+        charts: null,
+        caseStudyUrl: null,
         viewCount: 0,
         clickCount: 0,
         createdAt: new Date(),
