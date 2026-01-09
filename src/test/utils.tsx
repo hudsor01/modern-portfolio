@@ -5,12 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
 import { vi } from '@/test/vitest-compat'
 import type { TestRenderOptions } from '@/types/test-utils'
-import {
-  createTestDataFactory,
-  createMockFunction,
-  runPropertyTest,
-  createMockResponse,
-} from './test-factories'
+import { createMockResponse } from './test-factories'
 
 // Mock Next.js router for testing
 const mockRouter = {
