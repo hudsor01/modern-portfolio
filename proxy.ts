@@ -1,7 +1,7 @@
 /**
- * Next.js 16 Middleware - Content Security Policy with Nonce Generation
+ * Next.js 16 Proxy - Content Security Policy with Nonce Generation
  *
- * This middleware generates a unique nonce for each request to enable strict CSP
+ * This proxy generates a unique nonce for each request to enable strict CSP
  * without unsafe-inline directives. The nonce is used for both scripts and styles.
  *
  * Pattern follows Next.js 16 official CSP documentation:
@@ -14,7 +14,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { buildEnhancedCSP } from '@/lib/security/csp-edge'
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // Generate cryptographically secure nonce
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
 
