@@ -9,7 +9,7 @@ import { useStore } from '@tanstack/react-store'
 import { z } from 'zod'
 import { useCrossTabSync } from '@/lib/utils/cross-tab-sync'
 import { createContextLogger } from '@/lib/monitoring/logger'
-import type { BlogPost } from '@/types/blog'
+import type { BlogPostWithRelations } from '@/types/blog'
 
 // ============================================================================
 // Form Schema
@@ -89,7 +89,7 @@ export function generateSlug(title: string): string {
 // Hook
 // ============================================================================
 
-export function useBlogPostForm(post?: Partial<BlogPost>) {
+export function useBlogPostForm(post?: Partial<BlogPostWithRelations>) {
   const logger = createContextLogger('useBlogPostForm')
   const formId = `blog-post-form-${post?.id || 'new'}`
   const isInitialMount = useRef(true)
@@ -99,7 +99,7 @@ export function useBlogPostForm(post?: Partial<BlogPost>) {
   const initialTagIds = useMemo(
     () =>
       post?.tags
-        ?.map((t) => (typeof t === 'string' ? t : t?.tagId))
+        ?.map((t) => t.tagId)
         .filter((id): id is string => Boolean(id)) || [],
     [post?.tags]
   )
@@ -136,7 +136,7 @@ export function useBlogPostForm(post?: Partial<BlogPost>) {
     featuredImageAlt: post?.featuredImageAlt || '',
     publishedAt: post?.publishedAt ? new Date(post.publishedAt) : undefined,
     scheduledAt: post?.scheduledAt ? new Date(post.scheduledAt) : undefined,
-    categoryId: typeof post?.category === 'string' ? post.category : post?.category?.id || '',
+    categoryId: post?.category?.id || post?.categoryId || '',
     tagIds: initialTagIds,
   }
 
