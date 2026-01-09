@@ -1,7 +1,8 @@
 'use client'
+export const dynamic = 'force-static'
 
 import { useAnalyticsData } from '@/hooks/use-analytics-data'
-import dynamic from 'next/dynamic'
+import dynamicImport from 'next/dynamic'
 import { TrendingDown, Users, Activity, AlertCircle } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
@@ -12,11 +13,11 @@ import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { formatPercentage, formatNumber, formatCurrency } from '@/lib/utils/data-formatters'
 
 // Lazy-load chart components with Suspense fallback
-const ChurnLineChart = dynamic(() => import('./ChurnLineChart'), {
+const ChurnLineChart = dynamicImport(() => import('./ChurnLineChart'), {
   loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true,
 })
-const RetentionHeatmap = dynamic(() => import('./RetentionHeatmap'), {
+const RetentionHeatmap = dynamicImport(() => import('./RetentionHeatmap'), {
   loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true,
 })
