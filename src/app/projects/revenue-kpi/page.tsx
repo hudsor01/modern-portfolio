@@ -1,4 +1,5 @@
 'use client'
+export const dynamic = 'force-static'
 
 import { useState } from 'react'
 import { TrendingUp, DollarSign, Users, Activity } from 'lucide-react'

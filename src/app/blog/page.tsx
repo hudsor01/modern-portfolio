@@ -4,6 +4,7 @@ import { Footer } from '@/components/layout/footer'
 import { BlogPageContent } from './components/blog-page-content'
 import { BlogJsonLd } from '@/components/seo/blog-json-ld'
 
+export const dynamic = 'force-static'
 export const metadata: Metadata = {
   title: 'Blog | Richard Hudson - Revenue Operations Insights',
   description: 'Insights on revenue operations, data analytics, and business growth strategies.',

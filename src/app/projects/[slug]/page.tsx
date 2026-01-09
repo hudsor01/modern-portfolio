@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+export const dynamic = 'force-static'
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query'
 import { getProjects, getProject } from '@/lib/content/projects'
 import { normalizeProjectForDisplay } from '@/types/project'
