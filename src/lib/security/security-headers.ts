@@ -6,10 +6,11 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createContextLogger } from '@/lib/monitoring/logger'
+import { securityConfig, type SecurityConfig } from '@/lib/config'
 
 const securityLogger = createContextLogger('SecurityHeaders')
 
-const DEFAULT_SECURITY_CONFIG: SecurityConfig = getConfigSection('security')
+const DEFAULT_SECURITY_CONFIG: SecurityConfig = securityConfig
 
 /**
  * Apply security headers to a response
