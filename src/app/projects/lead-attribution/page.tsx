@@ -25,7 +25,7 @@ import { formatNumber, formatPercentage, formatTrend } from '@/lib/utils/data-fo
 import { leadAttributionData } from '@/app/projects/data/partner-analytics'
 
 import { leadConversionData, monthlyTrendData } from './data/constants'
-import { ChartsSection } from './components/ChartsSection'
+import { ChartsGrid } from './components/ChartsGrid'
 import { TrendsChart } from './components/TrendsChart'
 import { InsightsSection } from './components/InsightsSection'
 import { NarrativeSections } from './components/NarrativeSections'
@@ -199,7 +199,7 @@ export default function LeadAttribution() {
               description="Breakdown of lead generation and conversion performance by source"
               className="mb-8"
             >
-              <ChartsSection
+              <ChartsGrid
                 bestSource={bestSource}
                 leadSources={leadSources}
                 conversionSources={conversionSources}
