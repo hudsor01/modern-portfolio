@@ -152,7 +152,7 @@ const nextConfig = {
   },
   
   // Enhanced output configuration
-  output: 'standalone',
+  // output: 'standalone', // Temporarily disabled - causes middleware.js.nft.json issue with Next.js 16.1.1 + Turbopack
   
   // Enable static optimization
   trailingSlash: false,

@@ -1,11 +1,8 @@
-import { headers } from 'next/headers'
-
 /**
  * Organization JSON-LD Schema
  * SEO structured data for Hudson Digital Solutions
  */
-export async function OrganizationJsonLd() {
-  const nonce = (await headers()).get('x-nonce')
+export function OrganizationJsonLd({ nonce }: { nonce?: string | null }) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
