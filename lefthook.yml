@@ -8,6 +8,30 @@ pre-commit:
       run: bunx lint-staged
       stage_fixed: true  # Auto-stage files fixed by lint-staged
 
+    check-large-files:
+      run: |
+        # Check for files with >300 lines of changes
+        LARGE_FILES=$(git diff --cached --numstat | awk '$1 > 300 || $2 > 300 {print $3 ":" $1 "+" $2 "-"}')
+        if [ -n "$LARGE_FILES" ]; then
+          echo "⚠️  Warning: Large file changes detected (>300 lines):"
+          echo "$LARGE_FILES" | while read line; do
+            echo "   📄 $line"
+          done
+          echo ""
+          echo "💡 Consider:"
+          echo "   • Splitting large changes into multiple commits/PRs"
+          echo "   • Separating refactoring from feature work"
+          echo "   • Reviewing if all changes are intentional"
+          echo ""
+          echo "Continue with commit? (y/n)"
+          read -r response
+          if [[ ! "$response" =~ ^[Yy]$ ]]; then
+            echo "❌ Commit cancelled"
+            exit 1
+          fi
+        fi
+      stage_fixed: false
+
 pre-push:
   commands:
     tests:
