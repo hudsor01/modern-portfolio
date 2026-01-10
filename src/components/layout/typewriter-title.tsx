@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 
 interface TypewriterTitleProps {
   titles: string[]
@@ -20,11 +20,14 @@ export function TypewriterTitle({
   const [isTyping, setIsTyping] = useState(true)
   const [cursorVisible, setCursorVisible] = useState(true)
 
-  // Enhanced validation for titles array
-  const safeTitles =
-    Array.isArray(titles) && titles.length > 0
-      ? titles.filter((title) => typeof title === 'string' && title.trim().length > 0)
-      : []
+  // Enhanced validation for titles array - memoized to prevent useEffect re-triggering
+  const safeTitles = useMemo(
+    () =>
+      Array.isArray(titles) && titles.length > 0
+        ? titles.filter((title) => typeof title === 'string' && title.trim().length > 0)
+        : [],
+    [titles]
+  )
 
   useEffect(() => {
     // Additional guard against empty or invalid titles array during runtime

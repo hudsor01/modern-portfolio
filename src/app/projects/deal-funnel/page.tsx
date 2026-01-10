@@ -8,7 +8,6 @@ import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
-import { ChartContainer } from '@/components/ui/chart-container'
 import { getProject } from '@/lib/content/projects'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { createContextLogger } from '@/lib/monitoring/logger'
@@ -23,9 +22,7 @@ import {
   initialPartnerConversion,
   initialConversionRates,
 } from './data/constants'
-import { FunnelChart } from './components/FunnelChart'
-import { ConversionChart } from './components/ConversionChart'
-import { VelocityChart } from './components/VelocityChart'
+import { ChartsGrid } from './components/ChartsGrid'
 import { NarrativeSections } from './components/NarrativeSections'
 
 const logger = createContextLogger('DealFunnelPage')
@@ -185,47 +182,13 @@ export default function DealFunnel() {
             {/* Key Metrics using standardized MetricsGrid */}
             <MetricsGrid metrics={metrics} columns={4} loading={isLoading} className="mb-8" />
 
-            {/* Main Funnel Chart wrapped in SectionCard */}
-            <SectionCard
-              title="Sales Funnel Analysis"
-              description="Visual representation of deal progression through each stage of the sales pipeline"
-              className="mb-8"
-            >
-              <ChartContainer
-                title="Deal Stage Funnel"
-                description={`Overall conversion rate: ${overallConversionRate}%`}
-                height={400}
-              >
-                <FunnelChart
-                  stages={localFunnelStages}
-                  overallConversionRate={overallConversionRate}
-                />
-              </ChartContainer>
-            </SectionCard>
-
-            {/* Conversion Analytics wrapped in SectionCard */}
-            <SectionCard
-              title="Conversion Analytics"
-              description="Detailed analysis of stage-to-stage conversion rates and sales velocity"
-              className="mb-8"
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <ChartContainer
-                  title="Stage Conversion Rates"
-                  description="Conversion rates between each stage of the sales funnel"
-                  height={350}
-                >
-                  <ConversionChart stageConversions={stageConversions} />
-                </ChartContainer>
-                <ChartContainer
-                  title="Sales Velocity by Partner"
-                  description="Average sales cycle duration across different partner channels"
-                  height={350}
-                >
-                  <VelocityChart partnerConversion={localPartnerConversion} />
-                </ChartContainer>
-              </div>
-            </SectionCard>
+            {/* Charts Grid - Sales Funnel & Conversion Analytics */}
+            <ChartsGrid
+              funnelStages={localFunnelStages}
+              overallConversionRate={overallConversionRate}
+              stageConversions={stageConversions}
+              partnerConversion={localPartnerConversion}
+            />
 
             {/* Professional Narrative Sections wrapped in SectionCard */}
             <SectionCard

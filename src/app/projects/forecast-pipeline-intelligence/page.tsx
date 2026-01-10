@@ -1,19 +1,14 @@
 'use client'
 export const dynamic = 'force-static'
 
-import { TrendingUp, AlertTriangle, Zap, CheckCircle, BarChart3 } from 'lucide-react'
+import { TrendingUp, AlertTriangle, Zap, BarChart3 } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
-import { SectionCard } from '@/components/ui/section-card'
-import {
-  formatCurrency,
-  formatNumber,
-  formatPercentage,
-  formatTrend,
-} from '@/lib/utils/data-formatters'
+import { formatNumber, formatPercentage, formatTrend } from '@/lib/utils/data-formatters'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
 import { NarrativeSections } from './components/NarrativeSections'
+import { IntelligenceModulesGrid } from './components/IntelligenceModulesGrid'
 
 export default function ForecastPipelineIntelligenceProject() {
 
@@ -133,101 +128,8 @@ export default function ForecastPipelineIntelligenceProject() {
             {/* Key Metrics using standardized MetricsGrid */}
             <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
-            {/* Intelligence Modules wrapped in SectionCard */}
-            <SectionCard
-              title="Intelligence Modules"
-              description="Core components of the forecasting and pipeline intelligence system"
-              className="mb-8"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {intelligenceModules.map((module, index) => (
-                  <div
-                    key={index}
-                    className="bg-card border border-border rounded-xl p-6 hover:border-primary/50 transition-all"
-                  >
-                    <h3 className="text-lg font-semibold mb-3">{module.title}</h3>
-                    <p className="text-muted-foreground mb-4">{module.description}</p>
-                    <ul className="space-y-2">
-                      {module.capabilities.map((capability, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-sm">
-                          <CheckCircle className="h-5 w-5 text-secondary mt-0.5 flex-shrink-0" />
-                          <span>{capability}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </SectionCard>
-
-            {/* Business Impact wrapped in SectionCard */}
-            <SectionCard
-              title="Business Impact"
-              description="Measurable improvements in forecasting accuracy and pipeline management"
-              variant="gradient"
-              className="mb-8"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="text-center p-4">
-                  <div className="text-3xl font-bold text-secondary mb-2">
-                    {formatCurrency(12500000, { compact: true })}
-                  </div>
-                  <p className="text-muted-foreground">
-                    Revenue protected through proactive pipeline management
-                  </p>
-                </div>
-                <div className="text-center p-4">
-                  <div className="text-3xl font-bold text-primary mb-2">
-                    {formatPercentage(0.94)}
-                  </div>
-                  <p className="text-muted-foreground">Overall forecasting accuracy achieved</p>
-                </div>
-                <div className="text-center p-4">
-                  <div className="text-3xl font-bold text-secondary mb-2">
-                    {formatPercentage(0.31)}
-                  </div>
-                  <p className="text-muted-foreground">Improvement in revenue forecast accuracy</p>
-                </div>
-                <div className="text-center p-4">
-                  <div className="text-3xl font-bold text-primary mb-2">
-                    {formatPercentage(0.26)}
-                  </div>
-                  <p className="text-muted-foreground">Reduction in deal slippage</p>
-                </div>
-              </div>
-            </SectionCard>
-
-            {/* Analytics Approach wrapped in SectionCard */}
-            <SectionCard
-              title="Analytics & Signals"
-              description="Data signals and analytics approaches used for forecasting intelligence"
-              className="mb-8"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-card border border-border rounded-xl p-6">
-                  <h3 className="text-lg font-semibold mb-4">Deal Health Signals (50+)</h3>
-                  <ul className="space-y-2 text-muted-foreground text-sm">
-                    <li>• Engagement level and trend</li>
-                    <li>• Buying committee consensus</li>
-                    <li>• Competitive threat assessment</li>
-                    <li>• Budget confirmation status</li>
-                    <li>• Timeline alignment</li>
-                    <li>• Champion strength and risk</li>
-                  </ul>
-                </div>
-                <div className="bg-card border border-border rounded-xl p-6">
-                  <h3 className="text-lg font-semibold mb-4">Forecasting Signals</h3>
-                  <ul className="space-y-2 text-muted-foreground text-sm">
-                    <li>• Historical stage progression rates</li>
-                    <li>• Seasonal patterns and trends</li>
-                    <li>• Deal size and complexity</li>
-                    <li>• Rep experience and track record</li>
-                    <li>• Customer industry and maturity</li>
-                    <li>• Days in current stage</li>
-                  </ul>
-                </div>
-              </div>
-            </SectionCard>
+            {/* Intelligence Modules, Business Impact, and Analytics */}
+            <IntelligenceModulesGrid modules={intelligenceModules} />
 
             {/* Professional Narrative Sections - STAR Method */}
             <NarrativeSections />
