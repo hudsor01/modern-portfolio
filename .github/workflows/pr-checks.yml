@@ -1,0 +1,218 @@
+name: PR Quality Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+  statuses: write
+
+jobs:
+  check-pr-sync:
+    name: Check PR is up-to-date with base branch
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Fetch base branch
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }}
+
+      - name: Check if PR is behind base branch
+        id: check-sync
+        run: |
+          BASE_BRANCH="origin/${{ github.event.pull_request.base.ref }}"
+          HEAD_BRANCH="${{ github.event.pull_request.head.sha }}"
+
+          # Check if base branch has commits not in PR
+          BEHIND_COUNT=$(git rev-list --count $HEAD_BRANCH..$BASE_BRANCH)
+
+          echo "behind_count=$BEHIND_COUNT" >> $GITHUB_OUTPUT
+
+          if [ "$BEHIND_COUNT" -gt 0 ]; then
+            echo "⚠️ PR is $BEHIND_COUNT commit(s) behind ${{ github.event.pull_request.base.ref }}"
+            echo "status=behind" >> $GITHUB_OUTPUT
+          else
+            echo "✅ PR is up-to-date with ${{ github.event.pull_request.base.ref }}"
+            echo "status=up-to-date" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment on PR if behind
+        if: steps.check-sync.outputs.status == 'behind'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const behindCount = ${{ steps.check-sync.outputs.behind_count }};
+            const baseBranch = context.payload.pull_request.base.ref;
+
+            const comment = `## ⚠️ PR Branch Sync Warning
+
+            This pull request is **${behindCount} commit(s) behind** the \`${baseBranch}\` branch.
+
+            ### Why This Matters
+            - Potential merge conflicts
+            - May include outdated code
+            - CI tests might not reflect final merged state
+
+            ### How to Fix
+            \`\`\`bash
+            git fetch origin
+            git rebase origin/${baseBranch}
+            # Or: git merge origin/${baseBranch}
+            git push --force-with-lease origin $(git branch --show-current)
+            \`\`\`
+
+            This warning will automatically resolve once the branch is updated. ✅`;
+
+            // Find existing bot comments
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('PR Branch Sync Warning')
+            );
+
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: comment
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: comment
+              });
+            }
+
+      - name: Set status check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ steps.check-sync.outputs.status }}';
+            const behindCount = ${{ steps.check-sync.outputs.behind_count }};
+
+            const state = status === 'behind' ? 'failure' : 'success';
+            const description = status === 'behind'
+              ? `Branch is ${behindCount} commit(s) behind base branch`
+              : 'Branch is up-to-date';
+
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.payload.pull_request.head.sha,
+              state: state,
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/pull/${context.payload.pull_request.number}/checks`,
+              description: description,
+              context: 'PR Sync Check'
+            });
+
+  check-large-files:
+    name: Check for large file changes
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Check for large file changes
+        id: check-files
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }}
+          BASE_BRANCH="origin/${{ github.event.pull_request.base.ref }}"
+
+          # Check for files with large changes (>500 lines added in single file)
+          LARGE_FILES=$(git diff --numstat $BASE_BRANCH...HEAD | awk '$1 > 500 {print $3 ":" $1}')
+
+          if [ -n "$LARGE_FILES" ]; then
+            echo "Large file changes detected:"
+            echo "$LARGE_FILES"
+            echo "has_large_files=true" >> $GITHUB_OUTPUT
+
+            # Store file info
+            echo "LARGE_FILES<<EOF" >> $GITHUB_ENV
+            echo "$LARGE_FILES" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          else
+            echo "has_large_files=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment on PR if large files detected
+        if: steps.check-files.outputs.has_large_files == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const largeFiles = process.env.LARGE_FILES.split('\n').filter(f => f);
+
+            const fileList = largeFiles.map(file => {
+              const [path, additions] = file.split(':');
+              return `- \`${path}\` (+${additions} lines)`;
+            }).join('\n');
+
+            const comment = `## ℹ️ Large File Changes Detected
+
+            The following files have significant changes (>500 lines added):
+
+            ${fileList}
+
+            ### 📋 Best Practices Reminder
+            - **Consider splitting large changes** into multiple focused PRs
+            - **Separate refactoring from feature work** when possible
+            - **Data file updates** should ideally be in their own PR
+            - **Generated files** should be verified for correctness
+
+            ### ✅ This is Just a Reminder
+            Large changes are sometimes necessary. This is an informational comment to help with code review efficiency.
+
+            If these changes are intentional and cannot be reasonably split, you can safely proceed! 🚀`;
+
+            // Find existing bot comments
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('Large File Changes Detected')
+            );
+
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: comment
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: comment
+              });
+            }
