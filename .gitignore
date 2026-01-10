@@ -35,7 +35,10 @@ coverage/
 # Test outputs
 playwright-report/
 test-results/
-e2e/
+e2e/**/*.png
+e2e/**/*.jpg
+e2e/**/*.jpeg
+e2e/*-snapshots/
 .actrc
 
 # Development artifacts
@@ -43,6 +46,7 @@ screenshots/
 PERFORMANCE_ANALYSIS.md
 PROGRESS.md
 UPGRADE_TRACKER.md
+/*.md  # Ignore markdown in root only (not docs/)
 
 # OS
 .DS_Store
@@ -54,4 +58,3 @@ CLAUDE.md
 *.csv
 .vercel/
 reports/
-*.md

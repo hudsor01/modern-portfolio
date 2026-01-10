@@ -22,13 +22,13 @@ const LeadSourcePieChart = dynamic(
 /** Icon component type that accepts className */
 type IconComponent = ComponentType<SVGProps<SVGSVGElement>>
 
-interface ChartsSectionProps {
+interface ChartsGridProps {
   leadSources: Array<{ name: string; value: number; growth?: string; color?: string }>
   conversionSources: Array<{ source: string; conversions: number; conversion_rate: number; icon: IconComponent }>
   bestSource: { source: string }
 }
 
-export function ChartsSection({ bestSource, leadSources, conversionSources }: ChartsSectionProps) {
+export function ChartsGrid({ bestSource, leadSources, conversionSources }: ChartsGridProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
       {/* Lead Source Distribution */}
