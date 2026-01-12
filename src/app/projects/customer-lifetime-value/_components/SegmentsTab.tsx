@@ -14,7 +14,7 @@ function ChartLoadError() {
 }
 
 const CustomerSegmentChart = dynamic(
-  () => import('../CustomerSegmentChart').catch(() => ({ default: ChartLoadError })),
+  () => import('./CustomerSegmentChart').catch(() => ({ default: ChartLoadError })),
   {
     loading: () => <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />,
     ssr: true
