@@ -3,7 +3,7 @@
 import dynamicImport from 'next/dynamic'
 import { ChartContainer } from '@/components/ui/chart-container'
 
-const ChurnLineChart = dynamicImport(() => import('../ChurnLineChart'), {
+const ChurnLineChart = dynamicImport(() => import('./ChurnLineChart'), {
   loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true,
 })

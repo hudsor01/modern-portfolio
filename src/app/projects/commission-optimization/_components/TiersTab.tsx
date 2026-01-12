@@ -6,7 +6,7 @@ import { SectionCard } from '@/components/ui/section-card'
 import { commissionTiers } from '../data/constants'
 import { formatCurrency, formatPercentage } from '@/lib/utils/data-formatters'
 
-const CommissionTierChart = dynamic(() => import('../CommissionTierChart'), {
+const CommissionTierChart = dynamic(() => import('./CommissionTierChart'), {
   loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true,
 })
