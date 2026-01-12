@@ -3,12 +3,12 @@
 import dynamic from 'next/dynamic'
 
 
-const AttributionModelChart = dynamic(() => import('../AttributionModelChart'), {
+const AttributionModelChart = dynamic(() => import('./AttributionModelChart'), {
   loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
 
-const ChannelROIChart = dynamic(() => import('../ChannelROIChart'), {
+const ChannelROIChart = dynamic(() => import('./ChannelROIChart'), {
   loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })

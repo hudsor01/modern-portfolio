@@ -12,7 +12,7 @@ function ChartLoadError() {
 }
 
 const LeadSourcePieChart = dynamic(
-  () => import('../LeadSourcePieChart').catch(() => ({ default: ChartLoadError })),
+  () => import('./LeadSourcePieChart').catch(() => ({ default: ChartLoadError })),
   {
     loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
     ssr: true

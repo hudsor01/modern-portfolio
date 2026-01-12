@@ -12,7 +12,7 @@ function ChartLoadError() {
 }
 
 const CACBreakdownChart = dynamic(
-  () => import('../CACBreakdownChart').catch(() => ({ default: ChartLoadError })),
+  () => import('./CACBreakdownChart').catch(() => ({ default: ChartLoadError })),
   {
     loading: () => <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />,
     ssr: true,
@@ -20,7 +20,7 @@ const CACBreakdownChart = dynamic(
 )
 
 const UnitEconomicsChart = dynamic(
-  () => import('../UnitEconomicsChart').catch(() => ({ default: ChartLoadError })),
+  () => import('./UnitEconomicsChart').catch(() => ({ default: ChartLoadError })),
   {
     loading: () => <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />,
     ssr: true,

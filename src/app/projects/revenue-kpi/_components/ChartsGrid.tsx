@@ -3,10 +3,10 @@
 import dynamic from 'next/dynamic'
 import type { YearOverYearData } from '@/lib/analytics/data-service'
 
-const RevenueBarChart = dynamic(() => import('../RevenueBarChart'), { ssr: false })
-const RevenueLineChart = dynamic(() => import('../RevenueLineChart'), { ssr: false })
-const TopPartnersChart = dynamic(() => import('../TopPartnersChart'), { ssr: false })
-const PartnerGroupPieChart = dynamic(() => import('../PartnerGroupPieChart'), { ssr: false })
+const RevenueBarChart = dynamic(() => import('./RevenueBarChart'), { ssr: false })
+const RevenueLineChart = dynamic(() => import('./RevenueLineChart'), { ssr: false })
+const TopPartnersChart = dynamic(() => import('./TopPartnersChart'), { ssr: false })
+const PartnerGroupPieChart = dynamic(() => import('./PartnerGroupPieChart'), { ssr: false })
 
 type RevenueTrendDatum = {
   label: string

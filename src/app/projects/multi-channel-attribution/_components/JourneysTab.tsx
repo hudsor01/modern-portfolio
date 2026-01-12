@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import { customerJourneyStages } from '../data/constants'
 import { formatPercent } from '../utils'
 
-const CustomerJourneyChart = dynamic(() => import('../CustomerJourneyChart'), {
+const CustomerJourneyChart = dynamic(() => import('./CustomerJourneyChart'), {
   loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true
 })
