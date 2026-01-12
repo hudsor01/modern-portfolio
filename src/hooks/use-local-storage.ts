@@ -72,7 +72,7 @@ function createStorageAdapter<T>(
 
       const parsed = JSON.parse(item)
       cachedSnapshot = schema ? schema.parse(parsed) : parsed
-      return cachedSnapshot
+      return cachedSnapshot as T
     } catch (error) {
       const fallback = handleUtilityError(
         error,

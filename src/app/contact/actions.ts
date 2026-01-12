@@ -1,10 +1,12 @@
 'use server'
 
+import { headers } from 'next/headers'
 import { Resend } from 'resend'
 import { revalidatePath } from 'next/cache'
 import { checkEnhancedContactFormRateLimit } from '@/lib/security/rate-limiter'
 import { createContextLogger } from '@/lib/monitoring/logger'
 import { contactFormSchema } from '@/lib/validations/schemas'
+import { generateVisitorId } from '@/lib/interactions-helper'
 
 // Inline escape for server-side email composition (no browser rendering)
 function escapeHtml(text: string): string {
@@ -41,13 +43,16 @@ export async function submitContactForm(formData: unknown) {
     // Validate form data with Zod schema
     const validatedData = contactFormSchema.parse(formData)
 
-    // Rate limiting check (using client IP + user agent)
-    // Note: In a Server Action, we don't have direct request access
-    // For this implementation, we'll use a simplified rate limit key
-    // based on the email address
-    const rateLimitKey = `contact-form-${validatedData.email}`
-    const rateLimitResult = checkEnhancedContactFormRateLimit(rateLimitKey, {
-      userAgent: 'server-action',
+    // Rate limiting check using IP-based identification
+    const headersList = await headers()
+    const forwarded = headersList.get('x-forwarded-for')
+    const ip = (forwarded ? forwarded.split(/, /)[0] : headersList.get('x-real-ip')) || 'unknown'
+    const userAgent = headersList.get('user-agent') || 'unknown'
+    
+    // Generate visitor ID from IP + user agent (same pattern as interactions)
+    const clientId = await generateVisitorId(ip, userAgent)
+    const rateLimitResult = checkEnhancedContactFormRateLimit(clientId, {
+      userAgent,
       path: '/contact'
     })
 

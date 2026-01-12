@@ -11,7 +11,7 @@ import {
   CartesianGrid,
 } from '@/components/charts/lazy-charts'
 import { chartColors, chartCssVars } from '@/lib/chart-colors'
-import { paybackPeriodData } from './data/constants'
+import { paybackPeriodData } from '../data/constants'
 
 const paybackColors = {
   certified: chartColors.success,

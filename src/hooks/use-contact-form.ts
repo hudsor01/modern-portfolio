@@ -8,6 +8,7 @@ import { useForm } from '@tanstack/react-form'
 import { useStore } from '@tanstack/react-store'
 import { contactFormSchema } from '@/lib/validations/schemas'
 import { handleHookError } from '@/lib/error-handling'
+import { submitContactForm } from '@/app/contact/actions'
 
 // ============================================================================
 // Types
@@ -73,30 +74,17 @@ export function useContactForm() {
       setError(null)
 
       try {
-        const response = await fetch('/api/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(value),
-        })
+        // Call server action
+        const result = await submitContactForm(value)
 
-        if (response.ok) {
+        if (result.success) {
           setSubmitStatus('success')
           form.reset()
           setAgreedToTerms(false)
           setFieldErrors({})
         } else {
-          const data = await response.json().catch(() => ({}))
           setSubmitStatus('error')
-          if (data.details) {
-            // Map validation error details to form errors
-            const apiErrors: ContactFormErrors = {}
-            Object.entries(data.details).forEach(([key, messages]) => {
-              if (key in initialFormData || key === 'terms') {
-                apiErrors[key as keyof ContactFormErrors] = (messages as string[])[0]
-              }
-            })
-            setFieldErrors(apiErrors)
-          }
+          setError(new Error(result.error || 'Submission failed'))
         }
       } catch (err) {
         handleHookError(

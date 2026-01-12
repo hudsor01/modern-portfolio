@@ -12,7 +12,7 @@ import {
   ReferenceLine,
 } from '@/components/charts/lazy-charts'
 import { chartColors, segmentColors, chartCssVars } from '@/lib/chart-colors'
-import { clvPredictionData } from './data/constants'
+import { clvPredictionData } from '../data/constants'
 
 const scatterSegmentColors = {
   Champions: segmentColors.Champions,

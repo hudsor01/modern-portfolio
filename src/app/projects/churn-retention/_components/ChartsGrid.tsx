@@ -7,7 +7,7 @@ const ChurnLineChart = dynamicImport(() => import('./ChurnLineChart'), {
   loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true,
 })
-const RetentionHeatmap = dynamicImport(() => import('../RetentionHeatmap'), {
+const RetentionHeatmap = dynamicImport(() => import('./RetentionHeatmap'), {
   loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
   ssr: true,
 })
