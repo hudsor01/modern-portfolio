@@ -33,7 +33,8 @@
       "bun-types",
       "node",
       "next",
-      "@testing-library/jest-dom"
+      "@testing-library/jest-dom",
+      "vitest/globals"
     ],
     "plugins": [
       {
