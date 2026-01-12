@@ -5,7 +5,7 @@ import {
   validateRequest,
   ValidationError,
   createApiError,
-} from '@/lib/validations/unified-schemas'
+} from '@/lib/validations/schemas'
 import {
   getClientIdentifier,
   getRequestMetadata,

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createContextLogger } from '@/lib/monitoring/logger'
 import { db } from '@/lib/db'
-import { Prisma } from '@/prisma/client'
 import {
   PaginatedResponse,
   BlogPostData,
@@ -11,6 +10,8 @@ import {
 } from '@/types/shared-api'
 import { getEnhancedRateLimiter } from '@/lib/security/rate-limiter'
 import { validateCSRFToken } from '@/lib/security/csrf-protection'
+import { transformToBlogPostData } from '@/lib/api/blog-transformers'
+import { buildBlogWhereClause, buildBlogOrderBy } from '@/lib/api/blog-filters'
 
 const logger = createContextLogger('BlogAPI')
 
@@ -21,176 +22,6 @@ const logger = createContextLogger('BlogAPI')
  *
  * Uses Prisma database for production data
  */
-
-// Build Prisma where clause from filters
-function buildWhereClause(filters?: BlogPostFilters): Prisma.BlogPostWhereInput {
-  const where: Prisma.BlogPostWhereInput = {}
-
-  if (!filters) return where
-
-  if (filters.status) {
-    const statuses = Array.isArray(filters.status) ? filters.status : [filters.status]
-    where.status = { in: statuses as Prisma.EnumPostStatusFilter['in'] }
-  }
-
-  if (filters.authorId) {
-    where.authorId = filters.authorId
-  }
-
-  if (filters.categoryId) {
-    where.categoryId = filters.categoryId
-  }
-
-  if (filters.tagIds && filters.tagIds.length > 0) {
-    where.tags = {
-      some: {
-        tagId: { in: filters.tagIds },
-      },
-    }
-  }
-
-  if (filters.search) {
-    const searchTerm = filters.search
-    where.OR = [
-      { title: { contains: searchTerm, mode: 'insensitive' } },
-      { excerpt: { contains: searchTerm, mode: 'insensitive' } },
-      { content: { contains: searchTerm, mode: 'insensitive' } },
-      { keywords: { has: searchTerm } },
-    ]
-  }
-
-  if (filters.dateRange) {
-    where.publishedAt = {
-      gte: new Date(filters.dateRange.from),
-      lte: new Date(filters.dateRange.to),
-    }
-  }
-
-  if (filters.published !== undefined) {
-    if (filters.published) {
-      where.status = 'PUBLISHED'
-    } else {
-      where.status = { not: 'PUBLISHED' }
-    }
-  }
-
-  return where
-}
-
-// Build Prisma orderBy from sort
-function buildOrderBy(sort?: BlogPostSort): Prisma.BlogPostOrderByWithRelationInput {
-  if (!sort) {
-    // Default sort by publishedAt desc
-    return { publishedAt: 'desc' }
-  }
-
-  const direction = sort.order === 'asc' ? 'asc' : 'desc'
-
-  switch (sort.field) {
-    case 'title':
-      return { title: direction }
-    case 'createdAt':
-      return { createdAt: direction }
-    case 'updatedAt':
-      return { updatedAt: direction }
-    case 'publishedAt':
-      return { publishedAt: direction }
-    case 'viewCount':
-      return { viewCount: direction }
-    case 'likeCount':
-      return { likeCount: direction }
-    default:
-      return { publishedAt: 'desc' }
-  }
-}
-
-// Transform Prisma result to BlogPostData
-function transformToBlogPostData(
-  post: Prisma.BlogPostGetPayload<{
-    include: {
-      author: true
-      category: true
-      tags: { include: { tag: true } }
-    }
-  }>
-): BlogPostData {
-  return {
-    id: post.id,
-    title: post.title,
-    slug: post.slug,
-    excerpt: post.excerpt ?? undefined,
-    content: post.content,
-    contentType: post.contentType,
-    status: post.status,
-
-    // SEO fields
-    metaTitle: post.metaTitle ?? undefined,
-    metaDescription: post.metaDescription ?? undefined,
-    keywords: post.keywords,
-    canonicalUrl: post.canonicalUrl ?? undefined,
-
-    // Content metadata
-    featuredImage: post.featuredImage ?? undefined,
-    featuredImageAlt: post.featuredImageAlt ?? undefined,
-    readingTime: post.readingTime ?? undefined,
-    wordCount: post.wordCount ?? undefined,
-
-    // Publishing
-    publishedAt: post.publishedAt?.toISOString(),
-    scheduledAt: post.scheduledAt?.toISOString(),
-
-    // Timestamps
-    createdAt: post.createdAt.toISOString(),
-    updatedAt: post.updatedAt.toISOString(),
-
-    // Relationships
-    authorId: post.authorId,
-    author: post.author
-      ? {
-          id: post.author.id,
-          name: post.author.name,
-          email: post.author.email,
-          slug: post.author.slug,
-          bio: post.author.bio ?? undefined,
-          avatar: post.author.avatar ?? undefined,
-          website: post.author.website ?? undefined,
-          totalPosts: post.author.totalPosts,
-          totalViews: post.author.totalViews,
-          createdAt: post.author.createdAt.toISOString(),
-        }
-      : undefined,
-    categoryId: post.categoryId ?? undefined,
-    category: post.category
-      ? {
-          id: post.category.id,
-          name: post.category.name,
-          slug: post.category.slug,
-          description: post.category.description ?? undefined,
-          color: post.category.color ?? undefined,
-          icon: post.category.icon ?? undefined,
-          postCount: post.category.postCount,
-          totalViews: post.category.totalViews,
-          createdAt: post.category.createdAt.toISOString(),
-        }
-      : undefined,
-    tags: post.tags.map((pt) => ({
-      id: pt.tag.id,
-      name: pt.tag.name,
-      slug: pt.tag.slug,
-      description: pt.tag.description ?? undefined,
-      color: pt.tag.color ?? undefined,
-      postCount: pt.tag.postCount,
-      totalViews: pt.tag.totalViews,
-      createdAt: pt.tag.createdAt.toISOString(),
-    })),
-
-    // Analytics
-    viewCount: post.viewCount,
-    likeCount: post.likeCount,
-    shareCount: post.shareCount,
-    commentCount: post.commentCount,
-  }
-}
 
 // Helper function to get client identifier
 function getClientId(request: NextRequest): string {
@@ -290,8 +121,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Build Prisma query
-    const where = buildWhereClause(filters)
-    const orderBy = buildOrderBy(sort)
+    const where = buildBlogWhereClause(filters)
+    const orderBy = buildBlogOrderBy(sort)
 
     // Execute parallel queries for posts and total count
     const [posts, total] = await Promise.all([

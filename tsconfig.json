@@ -70,13 +70,13 @@
         "./src/data/*"
       ],
       "@/prisma/*": [
-        "./prisma/generated/prisma/*"
+        "./src/generated/prisma/*"
       ],
       "@/prisma/client": [
-        "./prisma/generated/prisma/index"
+        "./src/generated/prisma/index"
       ],
       "@/prisma/browser": [
-        "./prisma/generated/prisma/index-browser"
+        "./src/generated/prisma/index-browser"
       ]
     }
   },

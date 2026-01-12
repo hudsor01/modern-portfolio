@@ -4,7 +4,7 @@ import { Resend } from 'resend'
 import { revalidatePath } from 'next/cache'
 import { checkEnhancedContactFormRateLimit } from '@/lib/security/rate-limiter'
 import { createContextLogger } from '@/lib/monitoring/logger'
-import { contactFormSchema } from '@/lib/validations/unified-schemas'
+import { contactFormSchema } from '@/lib/validations/schemas'
 
 // Inline escape for server-side email composition (no browser rendering)
 function escapeHtml(text: string): string {

@@ -6,7 +6,7 @@
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form'
 import { useStore } from '@tanstack/react-store'
-import { contactFormSchema } from '@/lib/validations/unified-schemas'
+import { contactFormSchema } from '@/lib/validations/schemas'
 import { handleHookError } from '@/lib/error-handling'
 
 // ============================================================================
