@@ -3,21 +3,17 @@
  * Creates sample data for development and testing
  */
 
-import { PrismaClient, Prisma } from './generated/prisma/client'
+import { PrismaClient, Prisma } from '../src/generated/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import type {
   Author,
   BlogPost,
   Category,
   Tag,
-  PostSeries,
   PostStatus,
   ContentType,
   InteractionType,
-  SEOEventType,
-  SEOSeverity,
-  ChangeFrequency,
-} from './generated/prisma/client'
+} from '../src/generated/prisma/client'
 import { showcaseProjects } from '../src/data/projects'
 
 // Create the PostgreSQL adapter for seeding
@@ -217,44 +213,7 @@ const SAMPLE_TAGS = [
   },
 ]
 
-const SAMPLE_SERIES = [
-  {
-    name: 'Revenue Analytics Mastery',
-    slug: 'revenue-analytics-mastery',
-    description:
-      'A comprehensive series covering advanced revenue analytics techniques, from basic KPIs to predictive modeling.',
-    metaTitle: 'Revenue Analytics Mastery Course',
-    metaDescription:
-      'Complete guide to revenue analytics from KPIs to advanced predictive modeling techniques.',
-    coverImage:
-      'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=400&fit=crop&crop=center&q=80',
-    color: '#3B82F6',
-  },
-  {
-    name: 'Customer Lifecycle Analytics',
-    slug: 'customer-lifecycle-analytics',
-    description:
-      'Deep dive into customer analytics throughout the entire lifecycle, from acquisition to retention.',
-    metaTitle: 'Customer Lifecycle Analytics Guide',
-    metaDescription:
-      'Comprehensive customer analytics guide covering acquisition, engagement, and retention strategies.',
-    coverImage:
-      'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=400&fit=crop&crop=center&q=80',
-    color: '#8B5CF6',
-  },
-  {
-    name: 'Sales Tech Stack Optimization',
-    slug: 'sales-tech-stack-optimization',
-    description:
-      'Building and optimizing your sales technology stack for maximum efficiency and ROI.',
-    metaTitle: 'Sales Tech Stack Optimization Series',
-    metaDescription:
-      'Expert guide to building and optimizing your sales technology stack for better ROI.',
-    coverImage:
-      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop&crop=center&q=80',
-    color: '#F59E0B',
-  },
-]
+
 
 // =======================
 // SEEDING FUNCTIONS
@@ -330,21 +289,7 @@ async function seedTags() {
   return tags
 }
 
-async function seedPostSeries() {
-  console.log('Seeding post series...')
 
-  const series = []
-  for (const seriesData of SAMPLE_SERIES) {
-    const postSeries = await db.postSeries.upsert({
-      where: { slug: seriesData.slug },
-      create: seriesData,
-      update: seriesData,
-    })
-    series.push(postSeries)
-  }
-
-  return series
-}
 
 async function seedProjects() {
   console.log('Seeding projects...')
@@ -400,7 +345,7 @@ async function generateBlogPostContent(
     'revenue-operations': `
 # ${title}
 
-Revenue operations is the strategic alignment of sales, marketing, and customer success teams to drive predictable revenue growth. In this comprehensive guide, we'll explore the key components that make revenue operations successful.
+Revenue operations aligns sales, marketing, and customer success teams to drive predictable revenue growth. This guide covers the key components of successful revenue operations.
 
 ## Understanding Revenue Operations
 
@@ -408,7 +353,7 @@ Revenue operations (RevOps) breaks down silos between revenue-generating teams, 
 
 - **Data Management**: Centralizing customer data across all touchpoints
 - **Process Optimization**: Streamlining workflows for maximum efficiency  
-- **Technology Integration**: Connecting tools for seamless data flow
+- **Technology Integration**: Connecting tools to share data across systems
 - **Performance Analytics**: Measuring what matters for revenue growth
 
 ## Key Metrics to Track
@@ -451,9 +396,9 @@ Create dashboards that provide actionable insights:
 - Diagnostic analysis for problem identification
 - Predictive analytics for forecasting
 
-## Conclusion
+## Making It Work
 
-Revenue operations is not just about technology—it's about creating alignment, improving processes, and making data-driven decisions that drive sustainable growth.
+Revenue operations requires more than technology. You need team alignment, better processes, and decisions based on actual data.
     `,
     'data-analytics': `
 # ${title}
@@ -652,7 +597,7 @@ Use conversation data to improve sales performance:
 1. **Vendor Evaluation**: Compare features, pricing, and integrations
 2. **Pilot Testing**: Small-scale implementation and feedback collection
 3. **Data Migration**: Transfer existing data to new systems
-4. **Integration Setup**: Connect tools for seamless data flow
+4. **Integration Setup**: Connect tools to share data across systems
 
 ### Phase 3: Training and Adoption
 1. **User Training**: Comprehensive education on new tools and processes
@@ -724,8 +669,7 @@ Success with sales technology requires strategic planning, careful implementatio
 async function seedBlogPosts(
   authors: Author[],
   categories: Category[],
-  tags: Tag[],
-  series: PostSeries[]
+  tags: Tag[]
 ) {
   console.log('Seeding blog posts...')
 
@@ -756,7 +700,6 @@ async function seedBlogPosts(
       metaTitle: 'Sales Dashboard Design Best Practices',
       keywords: ['sales dashboards', 'data visualization', 'KPIs', 'Tableau'],
       tagSlugs: ['dashboards', 'kpis', 'tableau', 'salesforce'],
-      seriesSlug: 'sales-tech-stack-optimization',
     },
     {
       title: 'Advanced Customer Churn Analysis with Python',
@@ -770,7 +713,6 @@ async function seedBlogPosts(
       metaTitle: 'Customer Churn Analysis Guide with Python',
       keywords: ['customer churn', 'python', 'machine learning', 'predictive analytics'],
       tagSlugs: ['python', 'machine-learning', 'cohort-analysis'],
-      seriesSlug: 'customer-lifecycle-analytics',
     },
     {
       title: 'Multi-Touch Attribution Modeling Best Practices',
@@ -802,7 +744,6 @@ async function seedBlogPosts(
       metaTitle: 'Salesforce Revenue Analytics Setup Guide',
       keywords: ['Salesforce', 'revenue analytics', 'CRM', 'business intelligence'],
       tagSlugs: ['salesforce', 'dashboards', 'kpis'],
-      seriesSlug: 'revenue-analytics-mastery',
     },
     {
       title: 'Lead Scoring Models That Actually Work',
@@ -844,7 +785,6 @@ async function seedBlogPosts(
       metaTitle: 'Customer Lifetime Value Optimization Guide',
       keywords: ['customer lifetime value', 'CLV', 'retention analysis', 'revenue forecasting'],
       tagSlugs: ['cohort-analysis', 'forecasting', 'python'],
-      seriesSlug: 'customer-lifecycle-analytics',
     },
   ]
 
@@ -867,7 +807,7 @@ async function seedBlogPosts(
         ? new Date(Date.now() - (blogPosts.length - i) * 24 * 60 * 60 * 1000) // Stagger publication dates
         : undefined
 
-    const { tagSlugs, seriesSlug, ...postWithoutTags } = postData
+    const { tagSlugs, ...postWithoutTags } = postData
 
     const post = await db.blogPost.create({
       data: {
@@ -881,7 +821,6 @@ async function seedBlogPosts(
         likeCount: postData.status === 'PUBLISHED' ? Math.floor(Math.random() * 50) + 5 : 0,
         shareCount: postData.status === 'PUBLISHED' ? Math.floor(Math.random() * 25) + 2 : 0,
         commentCount: postData.status === 'PUBLISHED' ? Math.floor(Math.random() * 15) + 1 : 0,
-        seoScore: Math.random() * 100,
         contentType: 'MARKDOWN' as ContentType,
       },
     })
@@ -901,23 +840,7 @@ async function seedBlogPosts(
       }
     }
 
-    // Add to series
-    if (seriesSlug) {
-      const postSeries = series.find((s) => s.slug === seriesSlug)
-      if (postSeries) {
-        const existingPosts = await db.seriesPost.count({
-          where: { seriesId: postSeries.id },
-        })
 
-        await db.seriesPost.create({
-          data: {
-            seriesId: postSeries.id,
-            postId: post.id,
-            order: existingPosts + 1,
-          },
-        })
-      }
-    }
 
     createdPosts.push(post)
   }
@@ -980,136 +903,9 @@ async function seedAnalyticsData(posts: BlogPost[]) {
   console.log(`Created ${totalViews} post views and ${totalInteractions} interactions`)
 }
 
-async function seedSEOData(posts: BlogPost[]) {
-  console.log('Seeding SEO data...')
 
-  let totalKeywords = 0
-  let totalSEOEvents = 0
 
-  for (const post of posts) {
-    if (post.status !== 'PUBLISHED') continue
 
-    // Generate SEO keywords
-    const keywords = [
-      'revenue operations',
-      'data analytics',
-      'sales technology',
-      'customer analytics',
-      'business intelligence',
-      'dashboard design',
-      'KPI tracking',
-      'lead scoring',
-      'churn analysis',
-      'attribution modeling',
-      'salesforce',
-      'tableau',
-    ]
-
-    const numKeywords = Math.floor(Math.random() * 5) + 3
-    for (let i = 0; i < numKeywords; i++) {
-      const keyword = keywords[Math.floor(Math.random() * keywords.length)]
-
-      await db.sEOKeyword.create({
-        data: {
-          keyword: `${keyword} ${Math.random().toString(36).substring(7)}`,
-          postId: post.id,
-          position: Math.floor(Math.random() * 100) + 1,
-          searchVolume: Math.floor(Math.random() * 10000) + 100,
-          difficulty: Math.random() * 100,
-          cpc: Math.random() * 5,
-          clicks: Math.floor(Math.random() * 1000),
-          impressions: Math.floor(Math.random() * 10000) + 1000,
-          ctr: Math.random() * 0.1,
-        },
-      })
-      totalKeywords++
-    }
-
-    // Generate SEO events
-    const eventTypes: SEOEventType[] = ['CONTENT_ANALYSIS', 'PERFORMANCE_ALERT', 'OPPORTUNITY']
-    const severities: SEOSeverity[] = ['LOW', 'MEDIUM', 'HIGH', 'INFO']
-
-    const numEvents = Math.floor(Math.random() * 3) + 1
-    for (let i = 0; i < numEvents; i++) {
-      const daysAgo = Math.floor(Math.random() * 30)
-      const createdAt = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000)
-
-      await db.sEOEvent.create({
-        data: {
-          postId: post.id,
-          type: eventTypes[Math.floor(Math.random() * eventTypes.length)] as SEOEventType,
-          title: `SEO Analysis for ${post.title}`,
-          description: 'Automated SEO analysis completed with recommendations.',
-          severity: severities[Math.floor(Math.random() * severities.length)],
-          recommendations: 'Consider optimizing title length and adding more internal links.',
-          createdAt,
-        },
-      })
-      totalSEOEvents++
-    }
-  }
-
-  console.log(`Created ${totalKeywords} SEO keywords and ${totalSEOEvents} SEO events`)
-}
-
-async function seedSitemapEntries(posts: BlogPost[]) {
-  console.log('Seeding sitemap entries...')
-
-  const baseUrls = [
-    { url: 'https://modernportfolio.dev', priority: 1.0, changeFreq: 'DAILY' as ChangeFrequency },
-    {
-      url: 'https://modernportfolio.dev/about',
-      priority: 0.8,
-      changeFreq: 'WEEKLY' as ChangeFrequency,
-    },
-    {
-      url: 'https://modernportfolio.dev/projects',
-      priority: 0.9,
-      changeFreq: 'WEEKLY' as ChangeFrequency,
-    },
-    {
-      url: 'https://modernportfolio.dev/contact',
-      priority: 0.7,
-      changeFreq: 'MONTHLY' as ChangeFrequency,
-    },
-    {
-      url: 'https://modernportfolio.dev/blog',
-      priority: 0.9,
-      changeFreq: 'DAILY' as ChangeFrequency,
-    },
-  ]
-
-  let totalEntries = 0
-
-  // Add base URLs
-  for (const urlData of baseUrls) {
-    await db.sitemapEntry.create({
-      data: {
-        ...urlData,
-        lastMod: new Date(),
-      },
-    })
-    totalEntries++
-  }
-
-  // Add blog post URLs
-  for (const post of posts) {
-    if (post.status === 'PUBLISHED') {
-      await db.sitemapEntry.create({
-        data: {
-          url: `https://modernportfolio.dev/blog/${post.slug}`,
-          lastMod: post.updatedAt || post.createdAt,
-          changeFreq: 'WEEKLY' as ChangeFrequency,
-          priority: 0.8,
-          postId: post.id,
-        },
-      })
-      totalEntries++
-    }
-  }
-
-  console.log(`Created ${totalEntries} sitemap entries`)
-}
 
 // =======================
 // MAIN SEED FUNCTION
@@ -1122,17 +918,10 @@ async function main() {
     // Clear existing data (in development only)
     if (process.env.NODE_ENV !== 'production') {
       console.log('Cleaning existing data...')
-      await db.sitemapEntry.deleteMany()
-      await db.sEOKeyword.deleteMany()
-      await db.sEOEvent.deleteMany()
       await db.postInteraction.deleteMany()
       await db.postView.deleteMany()
-      await db.seriesPost.deleteMany()
       await db.postTag.deleteMany()
-      await db.postVersion.deleteMany()
-      await db.postRelation.deleteMany()
       await db.blogPost.deleteMany()
-      await db.postSeries.deleteMany()
       await db.tag.deleteMany()
       await db.category.deleteMany()
       await db.author.deleteMany()
@@ -1144,9 +933,8 @@ async function main() {
     const authors = await seedAuthors()
     const categories = await seedCategories()
     const tags = await seedTags()
-    const series = await seedPostSeries()
     await seedProjects()
-    const posts = await seedBlogPosts(authors, categories, tags, series)
+    const posts = await seedBlogPosts(authors, categories, tags)
 
     // Update stats after creating posts
     console.log('Updating entity statistics...')
@@ -1218,34 +1006,10 @@ async function main() {
       })
     }
 
-    // Update series stats
-    for (const postSeries of series) {
-      const stats = await db.seriesPost.aggregate({
-        where: { seriesId: postSeries.id },
-        _count: { seriesId: true },
-      })
 
-      const totalViews = await db.blogPost.aggregate({
-        where: {
-          seriesPosts: { some: { seriesId: postSeries.id } },
-          status: 'PUBLISHED',
-        },
-        _sum: { viewCount: true },
-      })
 
-      await db.postSeries.update({
-        where: { id: postSeries.id },
-        data: {
-          totalPosts: stats._count.seriesId,
-          totalViews: totalViews._sum.viewCount || 0,
-        },
-      })
-    }
-
-    // Seed analytics and SEO data
+    // Seed analytics data
     await seedAnalyticsData(posts)
-    await seedSEOData(posts)
-    await seedSitemapEntries(posts)
 
     console.log('Database seeding completed successfully!')
 
@@ -1254,28 +1018,20 @@ async function main() {
       db.author.count(),
       db.category.count(),
       db.tag.count(),
-      db.postSeries.count(),
       db.project.count(),
       db.blogPost.count(),
       db.postView.count(),
       db.postInteraction.count(),
-      db.sEOKeyword.count(),
-      db.sEOEvent.count(),
-      db.sitemapEntry.count(),
     ])
 
     console.log('\nSeeding Summary:')
     console.log(`Authors: ${summary[0]}`)
     console.log(`Categories: ${summary[1]}`)
     console.log(`Tags: ${summary[2]}`)
-    console.log(`Series: ${summary[3]}`)
-    console.log(`Projects: ${summary[4]}`)
-    console.log(`Blog Posts: ${summary[5]}`)
-    console.log(`Post Views: ${summary[6]}`)
-    console.log(`Interactions: ${summary[7]}`)
-    console.log(`SEO Keywords: ${summary[8]}`)
-    console.log(`SEO Events: ${summary[9]}`)
-    console.log(`Sitemap Entries: ${summary[10]}`)
+    console.log(`Projects: ${summary[3]}`)
+    console.log(`Blog Posts: ${summary[4]}`)
+    console.log(`Post Views: ${summary[5]}`)
+    console.log(`Interactions: ${summary[6]}`)
   } catch (error) {
     console.error('Error during seeding:', error)
     throw error

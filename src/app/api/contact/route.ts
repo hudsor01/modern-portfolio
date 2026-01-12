@@ -5,7 +5,7 @@ import { checkEnhancedContactFormRateLimit } from '@/lib/security/rate-limiter'
 import { validateCSRFToken } from '@/lib/security/csrf-protection'
 import { logRateLimitExceeded, logCSRFFailure } from '@/lib/security/security-event-logger'
 import { createContextLogger } from '@/lib/monitoring/logger'
-import { validateRequest, ValidationError, createApiError, createApiSuccess, contactFormSchema } from '@/lib/validations/unified-schemas'
+import { validateRequest, ValidationError, createApiError, createApiSuccess, contactFormSchema } from '@/lib/validations/schemas'
 import { getClientIdentifier, getRequestMetadata, parseRequestBody, createResponseHeaders, logApiRequest, logApiResponse } from '@/lib/api/utils'
 
 const logger = createContextLogger('ContactAPI')

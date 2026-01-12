@@ -1,10 +1,4 @@
 import { defineConfig, devices } from '@playwright/test'
-import path from 'path'
-import { fileURLToPath } from 'url'
-
-// Get directory paths for ES modules
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -109,10 +103,6 @@ export default defineConfig({
       NODE_ENV: 'test',
     },
   },
-
-  /* Global setup and teardown */
-  globalSetup: path.resolve(__dirname, './e2e/global-setup.ts'),
-  globalTeardown: path.resolve(__dirname, './e2e/global-teardown.ts'),
 
   /* Test timeout - increased for slow operations */
   timeout: 60 * 1000, // 1 minute per test

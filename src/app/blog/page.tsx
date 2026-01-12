@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
-import { BlogPageContent } from './components/blog-page-content'
+import { BlogList } from './_components/blog-list'
 import { BlogJsonLd } from '@/components/seo/blog-json-ld'
 
 export const dynamic = 'force-static'
@@ -29,7 +29,7 @@ export default function BlogHomePage() {
           <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
 
           <div className="relative pt-24 pb-16 lg:pt-32 lg:pb-20">
-            <BlogPageContent />
+            <BlogList />
           </div>
         </main>
         <Footer />

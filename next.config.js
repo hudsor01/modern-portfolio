@@ -14,7 +14,8 @@ const nextConfig = {
 
   // Enhanced experimental features for performance
   experimental: {
-    optimizeCss: true,
+    // optimizeCss requires critters which is deprecated, use inlineCss for Next.js 16+
+    // optimizeCss: true,
     serverMinification: true,
   },
   

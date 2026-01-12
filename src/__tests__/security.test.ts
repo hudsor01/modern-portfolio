@@ -24,11 +24,8 @@ mock.module('@/lib/db', () => ({
 
 // Import after mocks
 import { db } from '@/lib/db'
-import {
-  validateRequest,
-  contactFormSchema,
-  sanitizeUserInput,
-} from '@/lib/validations/unified-schemas'
+import { validateRequest, contactFormSchema } from '@/lib/validations/schemas'
+import { sanitizeUserInput } from '@/lib/sanitization'
 import { escapeHtml } from '@/lib/security/sanitization'
 import { getEnhancedRateLimiter } from '@/lib/security/rate-limiter'
 

@@ -9,7 +9,7 @@ import { vi } from '@/test/vitest-compat'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import * as fc from 'fast-check'
 import { useContactForm, type ContactFormData } from '../use-contact-form'
-import { contactFormSchema } from '@/lib/validations/unified-schemas'
+import { contactFormSchema } from '@/lib/validations/schemas'
 
 // Mock fetch for form submission tests
 const mockFetch = vi.fn()
