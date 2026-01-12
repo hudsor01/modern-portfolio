@@ -362,12 +362,10 @@ describe('Utils', () => {
       expect(result).toBe(false)
     })
 
-    it('should return string value for invalid boolean string (current behavior)', () => {
-      // NOTE: Current parseParam implementation returns the string value
-      // when it doesn't match 'true' or 'false', rather than the default
+    it('should return default value for invalid boolean string', () => {
+      // parseParam returns the default value when boolean string is invalid
       const result = parseParam<boolean>('maybe', true)
-      // The function returns the raw string when it can't parse as boolean
-      expect(result as unknown as string).toBe('maybe')
+      expect(result).toBe(true)
     })
 
     it('should handle array parameters', () => {

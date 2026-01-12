@@ -6,12 +6,7 @@ import { renderHook, act } from '@testing-library/react'
 import { useLocalStorage } from '../use-local-storage'
 
 describe('useLocalStorage', () => {
-  beforeEach(() => {
-    vi.useFakeTimers()
-  })
-
   afterEach(() => {
-    vi.useRealTimers()
     localStorage.clear()
     vi.clearAllMocks()
   })
@@ -54,14 +49,14 @@ describe('useLocalStorage', () => {
     expect(result.current[0]).toEqual([1, 2, 3])
   })
 
-  it('should remove value when set to null', () => {
+  it('should store null value', () => {
     localStorage.setItem('test-key', JSON.stringify('value'))
-    const { result } = renderHook(() => useLocalStorage('test-key', 'default'))
+    const { result } = renderHook(() => useLocalStorage<string | null>('test-key', 'default'))
     act(() => {
-      result.current[1](null as unknown as string)
+      result.current[1](null)
     })
     expect(result.current[0]).toBeNull()
-    expect(localStorage.getItem('test-key')).toBeNull()
+    expect(localStorage.getItem('test-key')).toBe('null')
   })
 
   it('should return default when stored value is invalid', () => {

@@ -7,16 +7,22 @@ import { useInView } from '../use-in-view'
 import { useRef } from 'react'
 
 describe('useInView', () => {
-  let mockIntersectionObserver: typeof IntersectionObserver
+  let observeMock: ReturnType<typeof vi.fn>
+  let disconnectMock: ReturnType<typeof vi.fn>
 
   beforeEach(() => {
-    // Mock IntersectionObserver
-    mockIntersectionObserver = vi.fn()
-    mockIntersectionObserver.prototype.observe = vi.fn()
-    mockIntersectionObserver.prototype.disconnect = vi.fn()
-    mockIntersectionObserver.prototype.unobserve = vi.fn()
+    observeMock = vi.fn()
+    disconnectMock = vi.fn()
 
-    global.IntersectionObserver = mockIntersectionObserver
+    // Mock IntersectionObserver
+    global.IntersectionObserver = vi.fn().mockImplementation(() => ({
+      observe: observeMock,
+      disconnect: disconnectMock,
+      unobserve: vi.fn(),
+      root: null,
+      rootMargin: '',
+      thresholds: []
+    }))
   })
 
   afterEach(() => {
@@ -33,27 +39,21 @@ describe('useInView', () => {
   })
 
   it('should observe element when ref is set', () => {
-    renderHook(() => {
-      const ref = useRef<HTMLDivElement>(null)
-      // Simulate setting the ref
-      if (!ref.current) {
-        ref.current = document.createElement('div')
-      }
-      return useInView(ref)
+    const { rerender } = renderHook(({ elementRef }) => useInView(elementRef), {
+      initialProps: { elementRef: { current: document.createElement('div') } }
     })
 
-    expect(mockIntersectionObserver.prototype.observe).toHaveBeenCalled()
+    expect(observeMock).toHaveBeenCalled()
   })
 
   it('should support once option', () => {
-    renderHook(() => {
-      const ref = useRef<HTMLDivElement>(null)
-      if (!ref.current) {
-        ref.current = document.createElement('div')
+    const { rerender } = renderHook(
+      ({ elementRef }) => useInView(elementRef, { once: true }),
+      {
+        initialProps: { elementRef: { current: document.createElement('div') } }
       }
-      return useInView(ref, { once: true })
-    })
+    )
 
-    expect(mockIntersectionObserver.prototype.observe).toHaveBeenCalled()
+    expect(observeMock).toHaveBeenCalled()
   })
 })

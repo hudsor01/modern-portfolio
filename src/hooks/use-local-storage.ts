@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useSyncExternalStore } from 'react'
+import { useCallback, useMemo, useSyncExternalStore } from 'react'
 import { z } from 'zod'
 import { handleUtilityError } from '@/lib/error-handling'
 
@@ -47,23 +47,41 @@ function createStorageAdapter<T>(
     }
   }
 
+  // Cache the snapshot to avoid infinite loops
+  let cachedSnapshot: T | undefined
+  let lastItem: string | null | undefined
+
   // Get current value from storage
   const getSnapshot = (): T => {
     if (!storage) return initialValue
 
     try {
       const item = storage.getItem(key)
-      if (item === null) return initialValue
+
+      // Return cached snapshot if storage hasn't changed
+      if (item === lastItem && cachedSnapshot !== undefined) {
+        return cachedSnapshot
+      }
+
+      lastItem = item
+
+      if (item === null) {
+        cachedSnapshot = initialValue
+        return initialValue
+      }
 
       const parsed = JSON.parse(item)
-      return schema ? schema.parse(parsed) : parsed
+      cachedSnapshot = schema ? schema.parse(parsed) : parsed
+      return cachedSnapshot
     } catch (error) {
-      return handleUtilityError(
+      const fallback = handleUtilityError(
         error,
         { operation: 'getStorageSnapshot', component: 'LocalStorage', metadata: { key } },
         'return-default',
         initialValue
       )!
+      cachedSnapshot = fallback
+      return fallback
     }
   }
 
@@ -78,6 +96,9 @@ function createStorageAdapter<T>(
       const currentValue = getSnapshot()
       const newValue = value instanceof Function ? value(currentValue) : value
       storage.setItem(key, JSON.stringify(newValue))
+      // Clear cache so next getSnapshot reads fresh value
+      lastItem = undefined
+      cachedSnapshot = undefined
       emitChange()
     } catch (error) {
       handleUtilityError(
@@ -108,7 +129,12 @@ export function useLocalStorage<T>(
   schema?: z.ZodSchema<T>
 ): [T, (value: T | ((val: T) => T)) => void] {
   const storage = typeof window !== 'undefined' ? window.localStorage : null
-  const adapter = createStorageAdapter(storage, key, initialValue, schema)
+
+  // Memoize the adapter to prevent recreation on every render
+  const adapter = useMemo(
+    () => createStorageAdapter(storage, key, initialValue, schema),
+    [storage, key, initialValue, schema]
+  )
 
   const value = useSyncExternalStore(
     adapter.subscribe,
@@ -142,7 +168,12 @@ export function useSessionStorage<T>(
   schema?: z.ZodSchema<T>
 ): [T, (value: T | ((val: T) => T)) => void] {
   const storage = typeof window !== 'undefined' ? window.sessionStorage : null
-  const adapter = createStorageAdapter(storage, key, initialValue, schema)
+
+  // Memoize the adapter to prevent recreation on every render
+  const adapter = useMemo(
+    () => createStorageAdapter(storage, key, initialValue, schema),
+    [storage, key, initialValue, schema]
+  )
 
   const value = useSyncExternalStore(
     adapter.subscribe,

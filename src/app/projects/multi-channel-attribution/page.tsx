@@ -10,12 +10,12 @@ import { SectionCard } from '@/components/ui/section-card'
 import { formatCurrency, formatNumber } from '@/lib/utils/data-formatters'
 import { attributionMetrics } from './data/constants'
 import { formatPercent } from './utils'
-import { OverviewTab } from './components/OverviewTab'
-import { ModelsTab } from './components/ModelsTab'
-import { JourneysTab } from './components/JourneysTab'
-import { ChannelsTab } from './components/ChannelsTab'
-import { StrategicImpact } from './components/StrategicImpact'
-import { NarrativeSections } from './components/NarrativeSections'
+import { OverviewTab } from './_components/OverviewTab'
+import { ModelsTab } from './_components/ModelsTab'
+import { JourneysTab } from './_components/JourneysTab'
+import { ChannelsTab } from './_components/ChannelsTab'
+import { StrategicImpact } from './_components/StrategicImpact'
+import { NarrativeSections } from './_components/NarrativeSections'
 
 const tabs = ['overview', 'models', 'journeys', 'channels'] as const
 type Tab = (typeof tabs)[number]
