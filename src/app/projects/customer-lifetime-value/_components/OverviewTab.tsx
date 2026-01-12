@@ -12,7 +12,7 @@ function ChartLoadError() {
 }
 
 const CLVPredictionChart = dynamic(
-  () => import('../CLVPredictionChart').catch(() => ({ default: ChartLoadError })),
+  () => import('./CLVPredictionChart').catch(() => ({ default: ChartLoadError })),
   {
     loading: () => <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />,
     ssr: true
@@ -20,7 +20,7 @@ const CLVPredictionChart = dynamic(
 )
 
 const CLVTrendChart = dynamic(
-  () => import('../CLVTrendChart').catch(() => ({ default: ChartLoadError })),
+  () => import('./CLVTrendChart').catch(() => ({ default: ChartLoadError })),
   {
     loading: () => <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />,
     ssr: true
