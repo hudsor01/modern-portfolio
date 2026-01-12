@@ -12,7 +12,7 @@ import {
   Legend,
 } from '@/components/charts/lazy-charts'
 import { chartColors, chartCssVars } from '@/lib/chart-colors'
-import { customerSegmentChartData } from './data/constants'
+import { customerSegmentChartData } from '../data/constants'
 
 const CustomerSegmentChart = memo(function CustomerSegmentChart() {
   const formatCurrency = (value: number) => {

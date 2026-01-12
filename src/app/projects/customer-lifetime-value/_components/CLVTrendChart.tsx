@@ -13,7 +13,7 @@ import {
   LazyComposedChart as ComposedChart,
 } from '@/components/charts/lazy-charts'
 import { chartColors, chartCssVars } from '@/lib/chart-colors'
-import { clvTrendData } from './data/constants'
+import { clvTrendData } from '../data/constants'
 
 const trendChartColors = {
   actual: chartColors.success,

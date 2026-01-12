@@ -1,7 +1,7 @@
 /**
  * Unit tests for core utility functions
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import {
   cn,
   formatProjectName,

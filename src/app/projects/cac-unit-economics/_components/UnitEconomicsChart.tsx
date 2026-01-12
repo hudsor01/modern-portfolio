@@ -12,7 +12,7 @@ import {
   Legend,
 } from '@/components/charts/lazy-charts'
 import { chartColors, chartCssVars } from '@/lib/chart-colors'
-import { unitEconomicsTrendData } from './data/constants'
+import { unitEconomicsTrendData } from '../data/constants'
 
 const unitEconColors = {
   ltv: chartColors.success,

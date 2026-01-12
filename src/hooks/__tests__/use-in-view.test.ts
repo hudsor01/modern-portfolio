@@ -39,7 +39,7 @@ describe('useInView', () => {
   })
 
   it('should observe element when ref is set', () => {
-    const { rerender } = renderHook(({ elementRef }) => useInView(elementRef), {
+    renderHook(({ elementRef }) => useInView(elementRef), {
       initialProps: { elementRef: { current: document.createElement('div') } }
     })
 
@@ -47,7 +47,7 @@ describe('useInView', () => {
   })
 
   it('should support once option', () => {
-    const { rerender } = renderHook(
+    renderHook(
       ({ elementRef }) => useInView(elementRef, { once: true }),
       {
         initialProps: { elementRef: { current: document.createElement('div') } }
