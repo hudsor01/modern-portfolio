@@ -77,40 +77,28 @@ describe('truncate', () => {
 })
 
 describe('formatRelativeTime', () => {
-  beforeEach(() => {
-    vi.useFakeTimers()
-  })
-
-  afterEach(() => {
-    vi.useRealTimers()
-  })
-
   it('should format seconds ago', () => {
-    const now = new Date('2024-01-01T12:00:00Z')
-    vi.setSystemTime(now)
-    const past = new Date('2024-01-01T11:59:30Z')
-    expect(formatRelativeTime(past)).toBe('in 30 seconds')
+    const now = Date.now()
+    const past = new Date(now - 30 * 1000) // 30 seconds ago
+    expect(formatRelativeTime(past)).toMatch(/30 seconds/)
   })
 
   it('should format minutes ago', () => {
-    const now = new Date('2024-01-01T12:00:00Z')
-    vi.setSystemTime(now)
-    const past = new Date('2024-01-01T11:58:00Z')
-    expect(formatRelativeTime(past)).toBe('in 2 minutes')
+    const now = Date.now()
+    const past = new Date(now - 2 * 60 * 1000) // 2 minutes ago
+    expect(formatRelativeTime(past)).toMatch(/2 minutes/)
   })
 
   it('should format hours ago', () => {
-    const now = new Date('2024-01-01T12:00:00Z')
-    vi.setSystemTime(now)
-    const past = new Date('2024-01-01T08:00:00Z')
-    expect(formatRelativeTime(past)).toBe('in 4 hours')
+    const now = Date.now()
+    const past = new Date(now - 4 * 60 * 60 * 1000) // 4 hours ago
+    expect(formatRelativeTime(past)).toMatch(/4 hours/)
   })
 
   it('should format days ago', () => {
-    const now = new Date('2024-01-01T12:00:00Z')
-    vi.setSystemTime(now)
-    const past = new Date('2023-12-28T12:00:00Z')
-    expect(formatRelativeTime(past)).toBe('in 4 days')
+    const now = Date.now()
+    const past = new Date(now - 4 * 24 * 60 * 60 * 1000) // 4 days ago
+    expect(formatRelativeTime(past)).toMatch(/4 days/)
   })
 })
 

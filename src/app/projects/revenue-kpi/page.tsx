@@ -21,8 +21,8 @@ import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data
 import type { GrowthData, YearOverYearData } from '@/lib/analytics/data-service'
 import { timeframes } from './data/constants'
 import { calculateGrowth } from './utils'
-import { ChartsGrid } from './components/ChartsGrid'
-import { NarrativeSections } from './components/NarrativeSections'
+import { ChartsGrid } from './_components/ChartsGrid'
+import { NarrativeSections } from './_components/NarrativeSections'
 
 const logger = createContextLogger('RevenueKPIPage')
 

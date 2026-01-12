@@ -13,8 +13,8 @@ import { formatPercentage, formatNumber, formatCurrency } from '@/lib/utils/data
 import { staticChurnData } from '@/app/projects/data/partner-analytics'
 
 // Import wrapper components
-import { ChartsGrid } from './components/ChartsGrid'
-import { NarrativeSections } from './components/NarrativeSections'
+import { ChartsGrid } from './_components/ChartsGrid'
+import { NarrativeSections } from './_components/NarrativeSections'
 
 export default function ChurnAnalysis() {
   const {

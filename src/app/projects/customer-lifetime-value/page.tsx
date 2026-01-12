@@ -9,11 +9,11 @@ import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data-formatters'
 import { clvMetrics } from './data/constants'
-import { OverviewTab } from './components/OverviewTab'
-import { SegmentsTab } from './components/SegmentsTab'
-import { PredictionsTab } from './components/PredictionsTab'
-import { StrategicImpact } from './components/StrategicImpact'
-import { NarrativeSections } from './components/NarrativeSections'
+import { OverviewTab } from './_components/OverviewTab'
+import { SegmentsTab } from './_components/SegmentsTab'
+import { PredictionsTab } from './_components/PredictionsTab'
+import { StrategicImpact } from './_components/StrategicImpact'
+import { NarrativeSections } from './_components/NarrativeSections'
 
 const tabs = ['overview', 'segments', 'predictions'] as const
 type Tab = (typeof tabs)[number]
