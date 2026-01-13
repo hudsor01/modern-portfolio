@@ -143,11 +143,17 @@ describe('Utils', () => {
 
   describe('delay', () => {
     it('should delay for specified time', async () => {
+      // Use real timers for this test since delay() uses setTimeout
+      vi.useRealTimers()
+
       const start = Date.now()
       await delay(100)
       const end = Date.now()
 
       expect(end - start).toBeGreaterThanOrEqual(95) // Allow for small timing variations
+
+      // Restore fake timers for other tests
+      vi.useFakeTimers()
     })
   })
 
