@@ -87,10 +87,13 @@ const originalEnv = process.env
 beforeEach(() => {
   vi.clearAllMocks()
   mockEmailSend.mockReset()
-  
+
+  // Set up fake timers to prevent "Fake timers are not active" errors
+  vi.useFakeTimers()
+
   // Default: email sending succeeds
   mockEmailSend.mockResolvedValue({ data: { id: 'test-email-id' }, error: null })
-  
+
   // Set required environment variables
   process.env = {
     ...originalEnv,
@@ -101,6 +104,8 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.clearAllMocks()
+  // Restore real timers after each test
+  vi.useRealTimers()
   process.env = originalEnv
 })
 
