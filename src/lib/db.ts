@@ -43,8 +43,8 @@ function validateDatabaseEnvironment() {
   }
 }
 
-// Validate environment immediately on module import (skip in test environment)
-if (process.env.NODE_ENV !== 'test') {
+// Skip validation during build and test - only validate at runtime
+if (process.env.NODE_ENV !== 'test' && process.env.NEXT_PHASE !== 'phase-production-build') {
   validateDatabaseEnvironment()
 }
 
