@@ -9,11 +9,11 @@ import { Footer } from '@/components/layout/footer'
 import { ResumeViewer } from './resume-viewer'
 import { createContextLogger } from '@/lib/monitoring/logger'
 import { useInView } from '@/hooks/use-in-view'
-import { HeroHeader } from './components/HeroHeader'
-import { AboutSection } from './components/AboutSection'
-import { ExperienceSection } from './components/ExperienceSection'
-import { EducationCertifications } from './components/EducationCertifications'
-import { SkillsSection } from './components/SkillsSection'
+import { HeroHeader } from './_components/HeroHeader'
+import { AboutSection } from './_components/AboutSection'
+import { ExperienceSection } from './_components/ExperienceSection'
+import { EducationCertifications } from './_components/EducationCertifications'
+import { SkillsSection } from './_components/SkillsSection'
 
 const logger = createContextLogger('ResumePage')
 

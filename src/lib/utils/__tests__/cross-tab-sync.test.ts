@@ -57,11 +57,13 @@ Object.defineProperty(global, 'crypto', {
 
 describe('CrossTabSync', () => {
   beforeEach(() => {
+    vi.useFakeTimers()
     localStorageMock.clear()
     vi.clearAllMocks()
   })
 
   afterEach(() => {
+    vi.useRealTimers()
     crossTabSync.cleanup()
   })
 
@@ -445,8 +447,13 @@ it('should handle conflict messages', () => {
 
 describe('useCrossTabSync', () => {
   beforeEach(() => {
+    vi.useFakeTimers()
     localStorageMock.clear()
     vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('should provide cross-tab sync functionality', () => {

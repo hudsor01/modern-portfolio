@@ -1,9 +1,9 @@
 [test]
-# Preload scripts - DOM first, then setup
-preload = ["./happydom.ts", "./src/test/setup.tsx"]
+# Preload scripts - mocks FIRST, then DOM, then setup
+preload = ["./src/test/mocks.ts", "./happydom.ts", "./src/test/setup.tsx"]
 
 # Execution
-timeout = 30000
+timeout = 5000  # 5 seconds per test is more than enough
 root = "src"
 smol = false
 

@@ -1,6 +1,6 @@
 /**
  * Blog Validation Schemas
- * Imports base schemas from unified-schemas, extends with blog-specific schemas
+ * Imports base schemas from schemas, extends with blog-specific schemas
  */
 
 import { z } from 'zod'
@@ -12,14 +12,16 @@ import {
   urlSchema,
   colorSchema,
   cuidSchema,
-  // Prisma enum schemas (imported from unified-schemas which uses nativeEnum)
+  // Enum schemas and values
+  PostStatus,
   PostStatusSchema,
+  ContentType,
   ContentTypeSchema,
   InteractionTypeSchema,
   SEOEventTypeSchema,
   SEOSeveritySchema,
   ChangeFrequencySchema
-} from './unified-schemas'
+} from './schemas'
 
 // =======================
 // ENUM RE-EXPORTS (for backward compatibility)
@@ -140,8 +142,8 @@ export const blogPostCreateSchema = z.object({
     .string()
     .min(100, 'Content must be at least 100 characters long')
     .max(50000, 'Content cannot exceed 50,000 characters'),
-  contentType: ContentTypeSchema.default('MARKDOWN'),
-  status: PostStatusSchema.default('DRAFT'),
+  contentType: ContentTypeSchema.default(ContentType.MARKDOWN),
+  status: PostStatusSchema.default(PostStatus.DRAFT),
 
   // SEO Fields
   metaTitle: z.string().max(100).optional(),

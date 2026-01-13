@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { InteractionType } from '@/prisma/client'
+import { InteractionType } from '@/generated/prisma/client'
 import { ApiResponse } from '@/types/shared-api'
 import {
   validateProjectInteraction,
   ProjectInteractionInput,
   ValidationError,
-} from '@/lib/validations/unified-schemas'
+} from '@/lib/validations/schemas'
 import { createContextLogger } from '@/lib/monitoring/logger'
+import { generateVisitorId } from '@/lib/interactions-helper'
 
 const logger = createContextLogger('InteractionsAPI')
 
-// Using centralized validation schema from unified-schemas
+// Using centralized validation schema from schemas
 
 interface ProjectInteractionResponse {
   id: string
@@ -60,12 +61,8 @@ export async function POST(
     const visitorId = await generateVisitorId(ip || '', userAgent)
     const sessionId = request.headers.get('x-session-id') || crypto.randomUUID()
 
-    // Validation is handled by validateProjectInteraction
-
-    // For projects, we'll store interactions in a custom way since projects aren't in the blog schema
-    // We could extend this to create a separate project interactions table if needed
-
-    // Create the interaction record (using blog post structure as template)
+    // Store project interactions using postId with project- prefix
+    // This allows reuse of the PostInteraction table for both blogs and projects
     const interaction = await db.postInteraction.create({
       data: {
         postId: `project-${projectSlug}`, // Use project slug as pseudo-post ID
@@ -172,16 +169,4 @@ export async function GET(
       { status: 500 }
     )
   }
-}
-
-// Helper function to generate consistent visitor ID
-async function generateVisitorId(ip: string, userAgent: string): Promise<string> {
-  const data = `${ip}-${userAgent}`
-  const encoder = new TextEncoder()
-  const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(data))
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-  return hashArray
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
-    .substring(0, 16)
 }

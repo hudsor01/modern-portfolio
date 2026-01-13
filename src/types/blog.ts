@@ -1,13 +1,13 @@
 /**
  * Blog types - Unique types not provided by Prisma
- * For model types, import directly from @/prisma/client
+ * For model types, import directly from @/generated/prisma/client
  */
 
-import type { BlogPost, Author, Category, Tag, PostTag, PostSeries, SeriesPost } from '@/prisma/client'
-import { Prisma } from '@/prisma/client'
+import type { BlogPost, Author, Category, Tag, PostTag } from '@/generated/prisma/client'
+import { Prisma } from '@/generated/prisma/client'
 
 // Re-export Prisma types for convenience
-export type { BlogPost, Author, Category, Tag, PostTag, PostSeries, SeriesPost }
+export type { BlogPost, Author, Category, Tag, PostTag }
 
 // ============================================================================
 // UTILITY TYPES - Prisma-based combinations
@@ -18,7 +18,6 @@ export type BlogPostWithRelations = Prisma.BlogPostGetPayload<{
     author: true
     category: true
     tags: { include: { tag: true } }
-    series: { include: { series: true } }
   }
 }>
 
@@ -38,12 +37,6 @@ export type TagWithPosts = Prisma.TagGetPayload<{
 export type AuthorWithPosts = Prisma.AuthorGetPayload<{
   include: {
     posts: true
-  }
-}>
-
-export type SeriesWithPosts = Prisma.PostSeriesGetPayload<{
-  include: {
-    posts: { include: { post: true } }
   }
 }>
 
@@ -149,59 +142,27 @@ export interface KeywordAnalysis {
 // TYPE GUARDS - Runtime validation
 // ============================================================================
 
+// Helper to check if value is a non-null object with required string fields
+function hasStringFields(value: unknown, fields: string[]): boolean {
+  if (typeof value !== 'object' || value === null) return false
+  const obj = value as Record<string, unknown>
+  return fields.every((field) => field in obj && typeof obj[field] === 'string')
+}
+
 export function isBlogPost(value: unknown): value is BlogPost {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'id' in value &&
-    'title' in value &&
-    'content' in value &&
-    'status' in value &&
-    typeof (value as BlogPost).id === 'string' &&
-    typeof (value as BlogPost).title === 'string' &&
-    typeof (value as BlogPost).content === 'string'
-  )
+  return hasStringFields(value, ['id', 'title', 'content']) && 'status' in (value as object)
 }
 
 export function isAuthor(value: unknown): value is Author {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'id' in value &&
-    'name' in value &&
-    'email' in value &&
-    'slug' in value &&
-    typeof (value as Author).id === 'string' &&
-    typeof (value as Author).name === 'string' &&
-    typeof (value as Author).email === 'string' &&
-    typeof (value as Author).slug === 'string'
-  )
+  return hasStringFields(value, ['id', 'name', 'email', 'slug'])
 }
 
 export function isCategory(value: unknown): value is Category {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'id' in value &&
-    'name' in value &&
-    'slug' in value &&
-    typeof (value as Category).id === 'string' &&
-    typeof (value as Category).name === 'string' &&
-    typeof (value as Category).slug === 'string'
-  )
+  return hasStringFields(value, ['id', 'name', 'slug'])
 }
 
 export function isTag(value: unknown): value is Tag {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'id' in value &&
-    'name' in value &&
-    'slug' in value &&
-    typeof (value as Tag).id === 'string' &&
-    typeof (value as Tag).name === 'string' &&
-    typeof (value as Tag).slug === 'string'
-  )
+  return hasStringFields(value, ['id', 'name', 'slug'])
 }
 
 // ============================================================================

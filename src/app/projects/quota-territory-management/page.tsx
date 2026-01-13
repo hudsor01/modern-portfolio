@@ -7,8 +7,8 @@ import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { formatNumber, formatTrend } from '@/lib/utils/data-formatters'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
-import { NarrativeSections } from './components/NarrativeSections'
-import { AlgorithmicApproachesGrid } from './components/AlgorithmicApproachesGrid'
+import { NarrativeSections } from './_components/NarrativeSections'
+import { AlgorithmicApproachesGrid } from './_components/AlgorithmicApproachesGrid'
 
 export default function QuotaTerritoryManagementProject() {
 

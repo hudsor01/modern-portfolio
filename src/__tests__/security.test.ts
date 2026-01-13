@@ -24,11 +24,8 @@ mock.module('@/lib/db', () => ({
 
 // Import after mocks
 import { db } from '@/lib/db'
-import {
-  validateRequest,
-  contactFormSchema,
-  sanitizeUserInput,
-} from '@/lib/validations/unified-schemas'
+import { validateRequest, contactFormSchema } from '@/lib/validations/schemas'
+// sanitizeUserInput was dead code (only used in tests, never in production) - removed
 import { escapeHtml } from '@/lib/security/sanitization'
 import { getEnhancedRateLimiter } from '@/lib/security/rate-limiter'
 
@@ -40,39 +37,31 @@ afterAll(() => {
 describe('Security Tests', () => {
   // XSS Prevention Tests
   describe('XSS Prevention', () => {
-    it('should sanitize HTML content to prevent XSS', () => {
-      const maliciousContent = '<script>alert("XSS")</script><p>Safe content</p>'
-      const sanitized = sanitizeUserInput(maliciousContent)
-
-      // Should remove script tags but keep safe content
-      expect(sanitized).not.toContain('<script>')
-      expect(sanitized).not.toContain('alert')
+    // sanitizeUserInput was dead code - test skipped
+    it.skip('should sanitize HTML content to prevent XSS', () => {
+      // Test removed - sanitizeUserInput was dead code (only used in tests, never in production)
     })
 
     it('should escape HTML entities properly', () => {
       const maliciousInput = '<script>alert("XSS")</script>'
       const escaped = escapeHtml(maliciousInput)
 
-      // The function escapes / to &#x2F; for extra security
-      expect(escaped).toBe('<script>alert("XSS")<&#x2F;script>')
-      // Verify angle brackets are NOT escaped (intentional behavior)
-      expect(escaped).toContain('<script>')
-      expect(escaped).toContain('<&#x2F;script>')
+      // All HTML entities should be properly escaped for security
+      expect(escaped).toBe('&lt;script&gt;alert(&quot;XSS&quot;)&lt;&#x2F;script&gt;')
+      // Verify angle brackets ARE escaped (prevents XSS)
+      expect(escaped).not.toContain('<script>')
+      expect(escaped).toContain('&lt;script&gt;')
+      expect(escaped).toContain('&lt;&#x2F;script&gt;')
     })
 
-    it('should handle malformed HTML tags', () => {
-      const malformedInput = '<img src=x onerror="alert(\'XSS\')">'
-      const sanitized = sanitizeUserInput(malformedInput)
-
-      expect(sanitized).not.toContain('onerror')
-      expect(sanitized).not.toContain('alert')
+    // sanitizeUserInput was dead code - test skipped
+    it.skip('should handle malformed HTML tags', () => {
+      // Test removed - sanitizeUserInput was dead code (only used in tests, never in production)
     })
 
-    it('should handle embedded JavaScript protocols', () => {
-      const input = '<a href="javascript:alert(\'XSS\')">Click me</a>'
-      const sanitized = sanitizeUserInput(input)
-
-      expect(sanitized).not.toContain('javascript:')
+    // sanitizeUserInput was dead code - test skipped
+    it.skip('should handle embedded JavaScript protocols', () => {
+      // Test removed - sanitizeUserInput was dead code (only used in tests, never in production)
     })
   })
 
