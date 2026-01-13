@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeEach, afterEach } from 'bun:test'
+import { describe, expect, it, beforeEach, afterEach, vi } from 'bun:test'
 import {
   absoluteUrl,
   absoluteUrlTestable,
@@ -29,6 +29,7 @@ let originalInnerHeight: number | undefined
 
 describe('Utils', () => {
   beforeEach(() => {
+    vi.useFakeTimers()
     // Save original values if window exists (happy-dom environment)
     if (typeof window !== 'undefined') {
       originalInnerWidth = window.innerWidth
@@ -37,6 +38,7 @@ describe('Utils', () => {
   })
 
   afterEach(() => {
+    vi.useRealTimers()
     // Restore original values - don't replace window object, just restore properties
     if (typeof window !== 'undefined') {
       if (originalInnerWidth !== undefined) {

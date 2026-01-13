@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeEach } from 'bun:test'
+import { describe, expect, it, beforeEach, afterEach, vi } from 'bun:test'
 import {
   generateCSRFToken,
   getCSRFTokenFromCookie,
@@ -18,7 +18,12 @@ void _mockCookiesStore // Reserved for integration tests
 
 describe('CSRF Protection', () => {
   beforeEach(() => {
+    vi.useFakeTimers()
     // Reset mocks if needed
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   describe('generateCSRFToken', () => {
