@@ -1,4 +1,4 @@
-import { describe, afterAll, it, expect, vi, beforeEach, afterEach, mock } from 'bun:test'
+import { describe, afterAll, it, expect, vi, beforeEach, afterEach, mock } from 'vitest'
 
 // Create mock function
 const mockGetProjects = vi.fn()

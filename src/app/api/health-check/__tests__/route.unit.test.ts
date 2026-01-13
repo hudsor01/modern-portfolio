@@ -1,4 +1,4 @@
-import { describe, it, expect, mock, afterAll } from 'bun:test'
+import { describe, it, expect, mock, afterAll } from 'vitest'
 
 // Mock next/server with a proper NextResponse constructor
 mock.module('next/server', () => {

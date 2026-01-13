@@ -1,4 +1,4 @@
-import { describe, afterAll, it, expect, vi, beforeEach, mock } from 'bun:test'
+import { describe, afterAll, it, expect, vi, beforeEach, mock } from 'vitest'
 
 // Create mock functions
 const mockBlogPostFindMany = vi.fn()
