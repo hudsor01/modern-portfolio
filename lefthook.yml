@@ -34,5 +34,7 @@ pre-commit:
 
 pre-push:
   commands:
-    tests:
-      run: bun test
+    # Tests are run in CI - skip on push to avoid blocking
+    # Uncomment below if you want to run tests on push (warning: slow)
+    # tests:
+    #   run: bun test

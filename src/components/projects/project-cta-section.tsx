@@ -66,18 +66,18 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = ({ totalProje
         {/* Contact Card */}
         <Link
           href="/contact"
-          className="group relative p-8 bg-primary text-primary-foreground rounded-2xl transition-all duration-300 ease-out hover:shadow-lg hover:-translate-y-1"
+          className="group relative p-8 bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/20 rounded-2xl transition-all duration-300 ease-out hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1"
         >
-          <div className="w-12 h-12 flex items-center justify-center bg-primary-foreground/10 border border-primary-foreground/20 rounded-xl mb-5 transition-colors duration-300 ease-out group-hover:bg-primary-foreground/20">
-            <MessageSquare className="w-6 h-6 text-primary-foreground" />
+          <div className="w-12 h-12 flex items-center justify-center bg-primary/10 border border-primary/20 rounded-xl mb-5 transition-colors duration-300 ease-out group-hover:bg-primary/20 group-hover:border-primary/30">
+            <MessageSquare className="w-6 h-6 text-primary" />
           </div>
-          <h3 className="font-display text-xl font-semibold mb-2">
+          <h3 className="font-display text-xl font-semibold text-foreground mb-2 transition-colors duration-300 ease-out group-hover:text-primary">
             Get in Touch
           </h3>
-          <p className="text-primary-foreground/80 text-sm leading-relaxed mb-4">
+          <p className="text-muted-foreground text-sm leading-relaxed mb-4">
             Have a project in mind? Let&apos;s discuss how I can help.
           </p>
-          <span className="inline-flex items-center gap-2 text-sm font-medium text-primary-foreground opacity-80 group-hover:opacity-100 transition-opacity duration-300 ease-out">
+          <span className="inline-flex items-center gap-2 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out">
             Contact me
             <ArrowRight className="w-4 h-4 transition-transform duration-300 ease-out group-hover:translate-x-1" />
           </span>

@@ -22,8 +22,8 @@ import {
   initialPartnerConversion,
   initialConversionRates,
 } from './data/constants'
-import { ChartsGrid } from './components/ChartsGrid'
-import { NarrativeSections } from './components/NarrativeSections'
+import { ChartsGrid } from './_components/ChartsGrid'
+import { NarrativeSections } from './_components/NarrativeSections'
 
 const logger = createContextLogger('DealFunnelPage')
 

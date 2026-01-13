@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { ZodError } from 'zod'
+import { logger } from '@/lib/monitoring/logger'
+import { ApiErrorType, ApiErrorResponse, ApiSuccessResponse as ApiSuccessResponseType } from '@/types/api'
 
 export type ApiResponse<T = unknown> = {
   success: boolean
@@ -63,5 +65,94 @@ export interface PaginatedResponse<T = unknown> extends ApiResponse<T[]> {
     limit: number
     total: number
     totalPages: number
+  }
+}
+
+/**
+ * Generic error messages for production
+ * Maps error types to user-friendly messages
+ */
+const PRODUCTION_ERROR_MESSAGES: Record<string, string> = {
+  VALIDATION_ERROR: 'Invalid request data',
+  DATABASE_ERROR: 'Service temporarily unavailable',
+  EMAIL_ERROR: 'Failed to send email. Please try again later.',
+  NETWORK_ERROR: 'Network error occurred',
+  AUTH_ERROR: 'Authentication failed',
+  DEFAULT: 'An unexpected error occurred',
+}
+
+/**
+ * Log and sanitize error - combines logging with sanitization
+ * Returns sanitized message for client while logging full error internally
+ */
+export function logAndSanitizeError(
+  context: string,
+  error: unknown,
+  errorType: keyof typeof PRODUCTION_ERROR_MESSAGES = 'DEFAULT',
+  additionalInfo?: Record<string, unknown>
+): string {
+  const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+
+  // Always log full error internally
+  logger.error(context, new Error(errorMessage), additionalInfo)
+
+  // Return sanitized message for client
+  const isDev = process.env.NODE_ENV === 'development'
+  if (isDev) {
+    return errorMessage
+  }
+
+  return PRODUCTION_ERROR_MESSAGES[errorType] ?? (PRODUCTION_ERROR_MESSAGES['DEFAULT'] as string)
+}
+
+/**
+ * Create standardized API error response
+ * Includes proper logging and sanitization
+ */
+export function createApiErrorResponse(
+  error: unknown,
+  context: string,
+  errorType: ApiErrorType = ApiErrorType.INTERNAL_ERROR,
+  statusCode: number = 500,
+  additionalInfo?: Record<string, unknown>
+): { response: ApiErrorResponse; statusCode: number } {
+  const sanitizedMessage = logAndSanitizeError(
+    `${context} - ${errorType}`,
+    error,
+    errorType,
+    additionalInfo
+  )
+
+  const response: ApiErrorResponse = {
+    success: false,
+    error: sanitizedMessage,
+    code: errorType,
+    timestamp: new Date().toISOString(),
+  }
+
+  // Add error details in development
+  if (process.env.NODE_ENV === 'development' && error instanceof Error) {
+    response.details = {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+    }
+  }
+
+  return { response, statusCode }
+}
+
+/**
+ * Create standardized API success response
+ */
+export function createApiSuccessResponse<T = unknown>(
+  data: T,
+  message?: string
+): ApiSuccessResponseType<T> {
+  return {
+    success: true,
+    data,
+    message,
+    timestamp: new Date().toISOString(),
   }
 }

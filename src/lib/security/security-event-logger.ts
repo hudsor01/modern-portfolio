@@ -4,8 +4,8 @@
  */
 
 import { db } from '@/lib/db'
-import { Prisma } from '@/prisma/client'
-import { SecurityEventType, SecuritySeverity } from '@/prisma/client'
+import { Prisma } from '@/generated/prisma/client'
+import { SecurityEventType, SecuritySeverity } from '@/generated/prisma/client'
 import { createContextLogger } from '@/lib/monitoring/logger'
 
 const logger = createContextLogger('SecurityEventLogger')
@@ -28,11 +28,13 @@ export interface SecurityEventInput {
  * Non-blocking - failures are logged but don't throw
  */
 export async function logSecurityEvent(input: SecurityEventInput): Promise<string | null> {
+  const severity = input.severity ?? 'MEDIUM'
+
   try {
     const event = await db.securityEvent.create({
       data: {
         type: input.type,
-        severity: input.severity ?? 'MEDIUM',
+        severity,
         message: input.message,
         details: input.details as Prisma.InputJsonValue | undefined,
         ipAddress: input.ipAddress ?? undefined,
@@ -47,12 +49,11 @@ export async function logSecurityEvent(input: SecurityEventInput): Promise<strin
     logger.info('Security event logged', {
       eventId: event.id,
       type: input.type,
-      severity: input.severity ?? 'MEDIUM',
+      severity,
     })
 
     return event.id
   } catch (error) {
-    // Log the error but don't throw - security logging shouldn't break the app
     logger.error('Failed to log security event', {
       error: error instanceof Error ? error.message : 'Unknown error',
       type: input.type,
@@ -170,6 +171,13 @@ export async function logBotDetected(
 /**
  * Log an input validation failure that appears malicious
  */
+// Map input types to security event types
+const INPUT_TYPE_TO_EVENT_TYPE: Record<'XSS' | 'SQL_INJECTION' | 'OTHER', SecurityEventType> = {
+  XSS: 'XSS_ATTEMPT',
+  SQL_INJECTION: 'SQL_INJECTION_ATTEMPT',
+  OTHER: 'INVALID_INPUT',
+}
+
 export async function logMaliciousInput(
   clientId: string,
   path: string,
@@ -180,12 +188,7 @@ export async function logMaliciousInput(
     sanitizedInput?: string
   }
 ): Promise<string | null> {
-  const type =
-    inputType === 'XSS'
-      ? 'XSS_ATTEMPT'
-      : inputType === 'SQL_INJECTION'
-        ? 'SQL_INJECTION_ATTEMPT'
-        : 'INVALID_INPUT'
+  const type = INPUT_TYPE_TO_EVENT_TYPE[inputType]
 
   return logSecurityEvent({
     type,

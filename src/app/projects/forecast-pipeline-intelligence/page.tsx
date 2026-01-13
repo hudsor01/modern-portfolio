@@ -7,8 +7,8 @@ import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { formatNumber, formatPercentage, formatTrend } from '@/lib/utils/data-formatters'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
-import { NarrativeSections } from './components/NarrativeSections'
-import { IntelligenceModulesGrid } from './components/IntelligenceModulesGrid'
+import { NarrativeSections } from './_components/NarrativeSections'
+import { IntelligenceModulesGrid } from './_components/IntelligenceModulesGrid'
 
 export default function ForecastPipelineIntelligenceProject() {
 

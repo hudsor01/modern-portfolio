@@ -102,10 +102,8 @@ viExt.getTimerCount = function getTimerCount() {
 // =============================================================================
 // ESSENTIAL MODULE-LEVEL MOCKS ONLY
 // Using Bun's native mock.module() API (preferred over vi.mock)
+// NOTE: next/headers and server-only mocks moved to src/test/mocks.ts (preloaded first)
 // =============================================================================
-
-// Mock server-only (throws when imported outside server context)
-mock.module('server-only', () => ({}))
 
 // Mock Next.js router
 mock.module('next/navigation', () => ({

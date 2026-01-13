@@ -123,6 +123,7 @@ export function parseParam<T>(value: string | string[] | undefined, defaultValue
     const stringValue = Array.isArray(value) ? value[0] : value
     if (stringValue === 'true') return true as T
     if (stringValue === 'false') return false as T
+    return defaultValue
   }
 
   return (Array.isArray(value) ? value[0] : value) as T

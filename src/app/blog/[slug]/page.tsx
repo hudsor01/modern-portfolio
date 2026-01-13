@@ -3,8 +3,9 @@ export const dynamic = 'force-static'
 import { notFound } from 'next/navigation'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
-import { PostLayout } from '../components/post-layout'
+import { BlogPostLayout } from '../_components/blog-post-layout'
 import { BlogPostJsonLd } from '@/components/seo/blog-json-ld'
+import type { BlogPostData } from '@/types/shared-api'
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -12,8 +13,27 @@ interface BlogPostPageProps {
   }>
 }
 
+const POST_IMAGE_OVERRIDES: Record<string, { src: string; alt: string }> = {
+  'unlocking-power-sales-automation-salesloft-game-changer': {
+    src: '/images/blog/sales-automation-salesloft-hero.jpg',
+    alt: 'Sales automation dashboard with pipeline analytics and workflow nodes',
+  },
+}
+
+function applyPostOverrides(post: BlogPostData | null) {
+  if (!post) return post
+  const override = POST_IMAGE_OVERRIDES[post.slug]
+  if (!override) return post
+
+  return {
+    ...post,
+    featuredImage: post.featuredImage ?? override.src,
+    featuredImageAlt: post.featuredImageAlt ?? override.alt,
+  }
+}
+
 // Function to fetch post data from API
-async function getBlogPost(slug: string) {
+async function getBlogPost(slug: string): Promise<BlogPostData | null> {
   try {
     const baseUrl = process.env.NODE_ENV === 'production'
       ? 'https://richardwhudsonjr.com'
@@ -36,7 +56,7 @@ async function getBlogPost(slug: string) {
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params
-  const post = await getBlogPost(slug)
+  const post = applyPostOverrides(await getBlogPost(slug))
   
   if (!post) {
     return {
@@ -66,7 +86,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       type: 'article',
       publishedTime: post.publishedAt,
       modifiedTime: post.updatedAt,
-      authors: [post.author?.name || 'Richard Hudson'],
+      authors: ['Richard Hudson'],
       section: post.category?.name,
       tags: post.tags?.map((tag: { name: string }) => tag.name),
     },
@@ -84,7 +104,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params
-  const post = await getBlogPost(slug)
+  const post = applyPostOverrides(await getBlogPost(slug))
 
   if (!post) {
     notFound()
@@ -101,7 +121,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
 
           <div className="relative pt-24 pb-16 lg:pt-32 lg:pb-20">
-            <PostLayout post={post} />
+            <BlogPostLayout post={post} />
           </div>
         </main>
         <Footer />

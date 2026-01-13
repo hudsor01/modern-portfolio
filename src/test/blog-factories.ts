@@ -12,7 +12,7 @@ import {
 } from '@/types/blog'
 
 // Import enums for value usage
-import { PostStatus as PSType, ContentType as CTType } from '@/prisma/client'
+import { PostStatus as PSType, ContentType as CTType } from '@/generated/prisma/client'
 
 // =======================
 // BLOG FACTORIES
@@ -103,14 +103,10 @@ export const createMockBlogPost = (overrides: Partial<BlogPost> = {}): BlogPost 
   updatedAt: new Date('2024-01-15'),
   authorId: 'author-1',
   categoryId: 'category-1',
-  currentVersion: 1,
   viewCount: 1500,
   likeCount: 45,
   shareCount: 20,
   commentCount: 8,
-  seoScore: 85,
-  seoAnalysis: null,
-  lastSeoCheck: null,
   ...overrides,
 })
 

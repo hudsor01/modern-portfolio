@@ -3,9 +3,9 @@ export const dynamic = 'force-static'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { ProjectJsonLd } from '@/components/seo/json-ld'
-import { AchievementsGrid } from './components/AchievementsGrid'
-import { TechnicalDetails } from './components/TechnicalDetails'
-import { NarrativeSections } from './components/NarrativeSections'
+import { AchievementsGrid } from './_components/AchievementsGrid'
+import { TechnicalDetails } from './_components/TechnicalDetails'
+import { NarrativeSections } from './_components/NarrativeSections'
 
 export default function PartnershipProgramPage() {
 

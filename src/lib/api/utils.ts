@@ -4,8 +4,6 @@
  *
  * API Error Handling:
  * - Use `handleApiError()` for consistent error responses with logging
- * - Use `withApiErrorHandling()` to wrap route handlers
- * - Use `createApiErrorResponse()` and `createApiSuccessResponse()` for standardized responses
  * - All errors are logged internally with full context, client gets sanitized messages
  * - Development shows full error details, production shows generic messages
  */
@@ -13,7 +11,8 @@
 import { NextRequest } from 'next/server'
 import { logger } from '@/lib/monitoring/logger'
 import type { RequestMetadata } from '@/types/api'
-import { ApiErrorType, ApiErrorResponse, ApiSuccessResponse } from '@/types/api'
+import { ApiErrorType } from '@/types/api'
+import { createApiErrorResponse } from './response'
 
 /**
  * Extract client identifier from request for rate limiting
@@ -156,117 +155,6 @@ export function logApiResponse(
 }
 
 /**
- * Generic error messages for production
- * Maps error types to user-friendly messages
- */
-const PRODUCTION_ERROR_MESSAGES: Record<string, string> = {
-  VALIDATION_ERROR: 'Invalid request data',
-  DATABASE_ERROR: 'Service temporarily unavailable',
-  EMAIL_ERROR: 'Failed to send email. Please try again later.',
-  NETWORK_ERROR: 'Network error occurred',
-  AUTH_ERROR: 'Authentication failed',
-  DEFAULT: 'An unexpected error occurred',
-}
-
-/**
- * Sanitize error message for client response
- * In production, returns generic error to prevent information leakage
- * In development, returns full error message for debugging
- */
-export function sanitizeErrorForClient(
-  error: unknown,
-  errorType: keyof typeof PRODUCTION_ERROR_MESSAGES = 'DEFAULT'
-): string {
-  const isDev = process.env.NODE_ENV === 'development'
-  const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-
-  if (isDev) {
-    return errorMessage
-  }
-
-  // Log full error internally before sanitizing
-  logger.error('Sanitized error for client', new Error(errorMessage), { errorType })
-
-  return PRODUCTION_ERROR_MESSAGES[errorType] ?? (PRODUCTION_ERROR_MESSAGES['DEFAULT'] as string)
-}
-
-/**
- * Log and sanitize error - combines logging with sanitization
- * Returns sanitized message for client while logging full error internally
- */
-export function logAndSanitizeError(
-  context: string,
-  error: unknown,
-  errorType: keyof typeof PRODUCTION_ERROR_MESSAGES = 'DEFAULT',
-  additionalInfo?: Record<string, unknown>
-): string {
-  const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-
-  // Always log full error internally
-  logger.error(context, new Error(errorMessage), additionalInfo)
-
-  // Return sanitized message for client
-  const isDev = process.env.NODE_ENV === 'development'
-  if (isDev) {
-    return errorMessage
-  }
-
-  return PRODUCTION_ERROR_MESSAGES[errorType] ?? (PRODUCTION_ERROR_MESSAGES['DEFAULT'] as string)
-}
-
-/**
- * Create standardized API error response
- * Includes proper logging and sanitization
- */
-export function createApiErrorResponse(
-  error: unknown,
-  context: string,
-  errorType: ApiErrorType = ApiErrorType.INTERNAL_ERROR,
-  statusCode: number = 500,
-  additionalInfo?: Record<string, unknown>
-): { response: ApiErrorResponse; statusCode: number } {
-  const sanitizedMessage = logAndSanitizeError(
-    `${context} - ${errorType}`,
-    error,
-    errorType,
-    additionalInfo
-  )
-
-  const response: ApiErrorResponse = {
-    success: false,
-    error: sanitizedMessage,
-    code: errorType,
-    timestamp: new Date().toISOString(),
-  }
-
-  // Add error details in development
-  if (process.env.NODE_ENV === 'development' && error instanceof Error) {
-    response.details = {
-      message: error.message,
-      stack: error.stack,
-      name: error.name,
-    }
-  }
-
-  return { response, statusCode }
-}
-
-/**
- * Create standardized API success response
- */
-export function createApiSuccessResponse<T = unknown>(
-  data: T,
-  message?: string
-): ApiSuccessResponse<T> {
-  return {
-    success: true,
-    data,
-    message,
-    timestamp: new Date().toISOString(),
-  }
-}
-
-/**
  * Handle API route errors with consistent logging and response formatting
  * This is the main utility for standardizing error handling across all API routes
  */
@@ -294,20 +182,3 @@ export async function handleApiError(
   })
 }
 
-/**
- * Wrap API route handlers with standardized error handling
- * Usage: export const GET = withApiErrorHandling(async (request) => { ... }, 'RouteName')
- */
-export function withApiErrorHandling<T extends unknown[]>(
-  handler: (...args: T) => Promise<Response>,
-  context: string,
-  errorType: ApiErrorType = ApiErrorType.INTERNAL_ERROR
-) {
-  return async (...args: T): Promise<Response> => {
-    try {
-      return await handler(...args)
-    } catch (error) {
-      return handleApiError(error, context, errorType)
-    }
-  }
-}

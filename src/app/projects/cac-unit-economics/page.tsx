@@ -9,11 +9,11 @@ import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { cacMetrics } from './data/constants'
 import { formatCurrency } from '@/lib/utils/data-formatters'
-import { OverviewTab } from './components/OverviewTab'
-import { ChannelsTab } from './components/ChannelsTab'
-import { ProductsTab } from './components/ProductsTab'
-import { StrategicImpact } from './components/StrategicImpact'
-import { NarrativeSections } from './components/NarrativeSections'
+import { OverviewTab } from './_components/OverviewTab'
+import { ChannelsTab } from './_components/ChannelsTab'
+import { ProductsTab } from './_components/ProductsTab'
+import { StrategicImpact } from './_components/StrategicImpact'
+import { NarrativeSections } from './_components/NarrativeSections'
 
 const tabs = ['overview', 'channels', 'products'] as const
 type Tab = (typeof tabs)[number]

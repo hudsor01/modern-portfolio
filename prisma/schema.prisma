@@ -2,8 +2,8 @@
 // Learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
-  output          = "./generated/prisma"
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
   previewFeatures = ["fullTextSearchPostgres", "postgresqlExtensions"]
 }
 
@@ -45,36 +45,17 @@ model BlogPost {
   categoryId      String?
   category        Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   tags            PostTag[]
-  seriesPosts     SeriesPost[]
-  relatedPosts    PostRelation[]  @relation("OriginalPost")
-  relatedToPosts  PostRelation[]  @relation("RelatedPost")
-  versions        PostVersion[]
-  currentVersion  Int             @default(1)
   viewCount       Int             @default(0)
   likeCount       Int             @default(0)
   shareCount      Int             @default(0)
   commentCount    Int             @default(0)
-  seoScore        Float?          @default(0)
-  seoAnalysis     Json?
-  lastSeoCheck    DateTime?
   views           PostView[]
   interactions    PostInteraction[]
-  seoEvents       SEOEvent[]
-  seoKeywords     SEOKeyword[]
-  sitemapEntries  SitemapEntry[]
   
   @@map("blog_posts")
-  @@index([status, publishedAt(sort: Desc)]) // For querying posts by status and publish date
-  @@index([status]) // For filtering by status only
-  @@index([publishedAt]) // For date range queries
-  @@index([status, scheduledAt]) // For scheduled publishing workflows
-  @@index([deletedAt]) // For filtering active vs. deleted posts
-  @@index([authorId]) // For author-specific queries
-  @@index([categoryId]) // For category-specific queries
-  @@index([viewCount(sort: Desc)]) // For popular posts
-  @@index([createdAt(sort: Desc)]) // For creation date ordering
-  @@index([status, authorId]) // For author's posts with specific status
-  @@index([status, categoryId]) // For filtered posts by status and category
+  @@index([status, publishedAt(sort: Desc)]) // Main query: posts by status and date
+  @@index([authorId]) // For author pages
+  @@index([categoryId]) // For category pages
 }
 
 model Author {
@@ -94,8 +75,7 @@ model Author {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   posts           BlogPost[]
-  postVersions    PostVersion[]   @relation("PostVersions")
-  
+
   @@map("authors")
 }
 
@@ -119,10 +99,7 @@ model Category {
   posts           BlogPost[]
   
   @@map("categories")
-  @@index([name]) // For name-based queries
   @@index([parentId]) // For hierarchical queries
-  @@index([postCount(sort: Desc)]) // For popular categories
-  @@index([name, slug]) // For combined name and slug queries
 }
 
 model Tag {
@@ -139,8 +116,6 @@ model Tag {
   posts           PostTag[]
   
   @@map("tags")
-  @@index([name]) // For name-based searches
-  @@index([name, slug]) // For combined name and slug queries
 }
 
 model PostTag {
@@ -155,77 +130,6 @@ model PostTag {
   @@id([postId, tagId])
   @@index([tagId])
   @@map("post_tags")
-}
-
-model PostRelation {
-  id              String          @id @default(cuid())
-  originalPostId  String
-  relatedPostId   String
-  relationType    RelationType    @default(RELATED)
-  
-  originalPost    BlogPost        @relation("OriginalPost", fields: [originalPostId], references: [id], onDelete: Cascade)
-  relatedPost     BlogPost        @relation("RelatedPost", fields: [relatedPostId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime        @default(now())
-  
-  @@unique([originalPostId, relatedPostId])
-  @@map("post_relations")
-  @@index([originalPostId])
-  @@index([relatedPostId])
-}
-
-model PostVersion {
-  id              String          @id @default(cuid())
-  postId          String
-  version         Int
-  title           String
-  content         String          @db.Text
-  excerpt         String?         @db.Text
-  changeType      ChangeType      @default(MINOR)
-  changeNotes     String?         @db.Text
-  authorId        String
-  author          Author          @relation("PostVersions", fields: [authorId], references: [id])
-  createdAt       DateTime        @default(now())
-  post            BlogPost        @relation(fields: [postId], references: [id], onDelete: Cascade)
-  
-  @@unique([postId, version])
-  @@map("post_versions")
-  @@index([postId, version(sort: Desc)])
-  @@index([authorId])
-}
-
-model PostSeries {
-  id              String          @id @default(cuid())
-  name            String
-  slug            String          @unique @db.Citext
-  description     String?         @db.Text
-  metaTitle       String?
-  metaDescription String?         @db.VarChar(160)
-  coverImage      String?
-  color           String?
-  totalPosts      Int             @default(0)
-  totalViews      Int             @default(0)
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  posts           SeriesPost[]
-  
-  @@map("post_series")
-}
-
-model SeriesPost {
-  seriesId      String
-  postId        String
-  order         Int
-  
-  series        PostSeries      @relation(fields: [seriesId], references: [id], onDelete: Cascade)
-  post          BlogPost        @relation(fields: [postId], references: [id], onDelete: Cascade)
-  
-  createdAt     DateTime        @default(now())
-  
-  @@id([seriesId, postId])
-  @@unique([seriesId, order])
-  @@index([postId])
-  @@map("series_posts")
 }
 
 model PostView {
@@ -270,68 +174,6 @@ model PostInteraction {
   @@index([createdAt(sort: Desc)])
 }
 
-model SEOEvent {
-  id              String          @id @default(cuid())
-  postId          String?         // Nullable for site-wide events
-  type            SEOEventType
-  title           String
-  description     String?         @db.Text
-  severity        SEOSeverity     @default(INFO)
-  oldValue        String?         @db.Text
-  newValue        String?         @db.Text
-  recommendations String?         @db.Text
-  processed       Boolean         @default(false)
-  processedAt     DateTime?
-  createdAt       DateTime        @default(now())
-  post            BlogPost?       @relation(fields: [postId], references: [id], onDelete: Cascade)
-  
-  @@map("seo_events")
-  @@index([postId])
-  @@index([type, createdAt(sort: Desc)])
-  @@index([processed, severity])
-}
-
-model SEOKeyword {
-  id              String          @id @default(cuid())
-  keyword         String
-  postId          String?
-  position        Int?            // Search ranking position
-  searchVolume    Int?            // Monthly search volume
-  difficulty      Float?          // Keyword difficulty (0-100)
-  cpc             Float?          // Cost per click
-  clicks          Int             @default(0)
-  impressions     Int             @default(0)
-  ctr             Float?          // Click-through rate
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  lastChecked     DateTime?
-  post            BlogPost?       @relation(fields: [postId], references: [id], onDelete: Cascade)
-  
-  @@unique([keyword, postId])
-  @@map("seo_keywords")
-  @@index([keyword])
-  @@index([postId])
-  @@index([position])
-}
-
-model SitemapEntry {
-  id              String          @id @default(cuid())
-  url             String          @unique
-  lastMod         DateTime
-  changeFreq      ChangeFrequency @default(WEEKLY)
-  priority        Float           @default(0.5) @db.Real
-  postId          String?
-  post            BlogPost?       @relation(fields: [postId], references: [id], onDelete: Cascade)
-  included        Boolean         @default(true)
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  
-  @@map("sitemap_entries")
-  @@index([lastMod(sort: Desc)])
-  @@index([included])
-  @@index([postId])
-}
-
 enum PostStatus {
   DRAFT
   REVIEW
@@ -347,23 +189,6 @@ enum ContentType {
   RICH_TEXT
 }
 
-enum RelationType {
-  RELATED
-  SEQUEL
-  PREQUEL
-  UPDATE
-  REFERENCE
-}
-
-enum ChangeType {
-  MAJOR
-  MINOR
-  PATCH
-  CONTENT
-  SEO
-  STRUCTURE
-}
-
 enum InteractionType {
   LIKE
   SHARE
@@ -371,35 +196,6 @@ enum InteractionType {
   BOOKMARK
   SUBSCRIBE
   DOWNLOAD
-}
-
-enum SEOEventType {
-  TITLE_CHANGE
-  META_DESCRIPTION_CHANGE
-  KEYWORD_UPDATE
-  CONTENT_ANALYSIS
-  PERFORMANCE_ALERT
-  RANKING_CHANGE
-  TECHNICAL_ISSUE
-  OPPORTUNITY
-}
-
-enum SEOSeverity {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
-  INFO
-}
-
-enum ChangeFrequency {
-  ALWAYS
-  HOURLY
-  DAILY
-  WEEKLY
-  MONTHLY
-  YEARLY
-  NEVER
 }
 
 model Project {

@@ -1,9 +1,9 @@
 /**
  * Project types - Unique types not provided by Prisma
- * For Project model type, import directly from @/prisma/client
+ * For Project model type, import directly from @/generated/prisma/client
  */
 
-import type { Project } from '@/prisma/client'
+import type { Project } from '@/generated/prisma/client'
 
 // Re-export Prisma Project for convenience
 export type { Project }
@@ -173,8 +173,8 @@ export function isProject(obj: unknown): obj is Project {
   if (typeof project.featured !== 'boolean') return false
   if (typeof project.viewCount !== 'number') return false
   if (typeof project.clickCount !== 'number') return false
-  if (project.createdAt === undefined && project.createdAt === null) return false
-  if (project.updatedAt === undefined && project.updatedAt === null) return false
+  if (project.createdAt === undefined || project.createdAt === null) return false
+  if (project.updatedAt === undefined || project.updatedAt === null) return false
 
   // Optional fields validation
   if (project.link !== undefined && typeof project.link !== 'string' && project.link !== null)
