@@ -49,9 +49,11 @@ export async function searchBlogPosts(
     ? Prisma.sql`AND status = ANY(${statusFilter})`
     : Prisma.empty
 
+  let fullTextResults: SearchResult[] = []
+
   try {
     // Primary: Full-text search using tsvector
-    const fullTextResults = await db.$queryRaw<SearchResult[]>`
+    fullTextResults = await db.$queryRaw<SearchResult[]>`
       SELECT
         id,
         title,
@@ -89,7 +91,11 @@ export async function searchBlogPosts(
       FROM blog_posts
       WHERE (title % ${query} OR COALESCE(excerpt, '') % ${query})
         ${statusCondition}
-        ${fullTextResults.length > 0 ? Prisma.sql`AND id NOT IN (${Prisma.join(fullTextResults.map(r => r.id))})` : Prisma.empty}
+        ${fullTextResults.length > 1
+          ? Prisma.sql`AND id NOT IN (${Prisma.join(fullTextResults.map(r => r.id))})`
+          : fullTextResults.length === 1
+            ? Prisma.sql`AND id != ${fullTextResults[0]!.id}`
+            : Prisma.empty}
       ORDER BY rank DESC
       LIMIT ${Math.max(0, limit - fullTextResults.length)}
       OFFSET ${offset}
@@ -98,9 +104,10 @@ export async function searchBlogPosts(
     // Combine exact and fuzzy results
     return [...fullTextResults, ...fuzzyResults]
   } catch (error) {
-    console.error('Full-text search error:', error)
-    // Fallback to empty results on error
-    return []
+    console.error('Search error during fuzzy fallback:', error)
+    // Return full-text results even if fuzzy search fails
+    // Better to return partial results than nothing
+    return fullTextResults
   }
 }
 
