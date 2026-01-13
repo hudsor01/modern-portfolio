@@ -5,7 +5,7 @@ import reactHooksPlugin from 'eslint-plugin-react-hooks'
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y'
 import nextPlugin from '@next/eslint-plugin-next'
 
-export default tseslint.config(
+export default [
   // Global ignores
   {
     ignores: [
@@ -104,9 +104,9 @@ export default tseslint.config(
 
       // TypeScript rules
       '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unused-vars': [
-        'warn',
+        'error',
         {
           args: 'all',
           argsIgnorePattern: '^_',
@@ -127,5 +127,5 @@ export default tseslint.config(
       '@next/next/no-img-element': 'warn',
       '@next/next/no-html-link-for-pages': 'error',
     },
-  }
-)
+  },
+]

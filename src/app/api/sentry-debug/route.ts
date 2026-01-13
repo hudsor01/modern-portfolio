@@ -15,13 +15,13 @@ export async function GET() {
     enabled: options?.enabled ?? false,
     environment: options?.environment,
     tracesSampleRate: options?.tracesSampleRate,
-    replaysSessionSampleRate: options?.replaysSessionSampleRate,
-    replaysOnErrorSampleRate: options?.replaysOnErrorSampleRate,
     integrations: options?.integrations?.length ?? 0,
     envVars: {
       NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN ? 'SET' : 'NOT SET',
       SENTRY_DSN: process.env.SENTRY_DSN ? 'SET' : 'NOT SET',
       NEXT_PUBLIC_SENTRY_ENVIRONMENT: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT || 'not set',
+      NEXT_PUBLIC_SENTRY_REPLAYS_SESSION_SAMPLE_RATE: process.env.NEXT_PUBLIC_SENTRY_REPLAYS_SESSION_SAMPLE_RATE || 'not set',
+      NEXT_PUBLIC_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE: process.env.NEXT_PUBLIC_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE || 'not set',
       NODE_ENV: process.env.NODE_ENV,
     },
   })
