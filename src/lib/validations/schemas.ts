@@ -25,8 +25,6 @@ export enum InteractionType {
   SHARE = 'SHARE',
   COMMENT = 'COMMENT',
   BOOKMARK = 'BOOKMARK',
-  VIEW = 'VIEW',
-  CLICK = 'CLICK',
   SUBSCRIBE = 'SUBSCRIBE',
   DOWNLOAD = 'DOWNLOAD',
 }
