@@ -7,7 +7,7 @@
  * For minimal testing, run with: LOAD_TEST=minimal bun test src/lib/security/__tests__/rate-limiter-load.test.ts
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'bun:test'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'bun:test'
 import { getEnhancedRateLimiter, EnhancedRateLimitConfigs } from '../rate-limiter'
 import { RateLimitResult } from '@/types/security'
 
@@ -23,10 +23,12 @@ const CONCURRENT_REQUESTS = Math.floor(100 * REQUEST_SCALE)
 
 describe('Rate Limiter Load Tests', () => {
   beforeEach(() => {
+    vi.useFakeTimers()
     getEnhancedRateLimiter().destroy()
   })
 
   afterEach(() => {
+    vi.useRealTimers()
     getEnhancedRateLimiter().destroy()
   })
 

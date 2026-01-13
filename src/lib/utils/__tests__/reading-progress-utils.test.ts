@@ -55,6 +55,7 @@ let originalDocumentElement: Element | undefined
 
 // Top-level setup for all tests in this file
 beforeEach(() => {
+  vi.useFakeTimers()
   // Store originals before modifying
   originalLocalStorage = window.localStorage
   originalDocumentElement = document.documentElement
@@ -78,6 +79,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
+  vi.useRealTimers()
   // Restore originals to prevent happy-dom cache corruption
   if (originalLocalStorage !== undefined) {
     Object.defineProperty(window, 'localStorage', {
