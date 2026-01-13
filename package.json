@@ -35,6 +35,7 @@
     "postinstall": "concurrently \"bunx prisma generate\" \"lefthook install\"",
     "validate": "concurrently \"bun run type-check\" \"bun run lint\"",
     "ci:quick": "concurrently \"bun run lint\" \"bun run type-check\"",
+    "ci:unit": "bun run lint && bun run type-check && bun test --test-name-pattern '^(?!.*consistency).*'",
     "ci:local": "bun run lint && bun run type-check && bun test",
     "ci:full": "bun run ci:quick && bun run build"
   },
