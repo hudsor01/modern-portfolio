@@ -58,3 +58,4 @@ CLAUDE.md
 *.csv
 .vercel/
 reports/
+*.md

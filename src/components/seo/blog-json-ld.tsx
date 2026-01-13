@@ -19,14 +19,14 @@ export function BlogJsonLd() {
     '@type': 'Blog',
     name: 'Richard Hudson - Revenue Operations Blog',
     description: 'Expert insights on revenue operations, data analytics, and business process optimization from Richard Hudson, a seasoned RevOps professional.',
-    url: 'https://richardhudson.dev/blog',
+    url: 'https://richardwhudsonjr.com/blog',
     publisher: {
       '@type': 'Person',
       name: 'Richard Hudson',
-      url: 'https://richardhudson.dev',
+      url: 'https://richardwhudsonjr.com',
       sameAs: [
-        'https://www.linkedin.com/in/richardhudsonjr',
-        'https://github.com/richardhudson'
+        'https://www.linkedin.com/in/hudsor01',
+        'https://github.com/rhudsor01'
       ],
       jobTitle: 'Revenue Operations Professional',
       worksFor: {
@@ -37,10 +37,10 @@ export function BlogJsonLd() {
     author: {
       '@type': 'Person',
       name: 'Richard Hudson',
-      url: 'https://richardhudson.dev',
+      url: 'https://richardwhudsonjr.com',
       sameAs: [
-        'https://www.linkedin.com/in/richardhudsonjr',
-        'https://github.com/richardhudson'
+        'https://www.linkedin.com/in/hudsor01',
+        'https://github.com/hudsor01'
       ]
     },
     inLanguage: 'en-US',
@@ -78,7 +78,7 @@ export function BlogJsonLd() {
     ],
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': 'https://richardhudson.dev/blog'
+      '@id': 'https://richardwhudsonjr.com/blog'
     }
   }
 
@@ -105,18 +105,18 @@ export function BlogPostJsonLd({ post }: BlogPostJsonLdProps) {
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.excerpt || post.metaDescription,
-    image: post.featuredImage ? `https://richardhudson.dev${post.featuredImage}` : undefined,
-    url: `https://richardhudson.dev/blog/${post.slug}`,
+    image: post.featuredImage ? `https://richardwhudsonjr.com${post.featuredImage}` : undefined,
+    url: `https://richardwhudsonjr.com/blog/${post.slug}`,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,
     dateCreated: post.createdAt,
     author: {
       '@type': 'Person',
       name: post.author?.name || 'Richard Hudson',
-      url: 'https://richardhudson.dev',
+      url: 'https://richardwhudsonjr.com',
       sameAs: [
-        'https://www.linkedin.com/in/richardhudsonjr',
-        'https://github.com/richardhudson'
+        'https://www.linkedin.com/in/hudsor01',
+        'https://github.com/hudsor01'
       ],
       jobTitle: 'Revenue Operations Professional',
       description: post.author?.bio,
@@ -128,7 +128,7 @@ export function BlogPostJsonLd({ post }: BlogPostJsonLdProps) {
     publisher: {
       '@type': 'Person',
       name: 'Richard Hudson',
-      url: 'https://richardhudson.dev',
+      url: 'https://richardwhudsonjr.com',
       logo: {
         '@type': 'ImageObject',
         url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop&crop=face&q=80',
@@ -138,7 +138,7 @@ export function BlogPostJsonLd({ post }: BlogPostJsonLdProps) {
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://richardhudson.dev/blog/${post.slug}`
+      '@id': `https://richardwhudsonjr.com/blog/${post.slug}`
     },
     articleSection: post.category?.name,
     keywords: post.keywords.join(', '),
@@ -190,19 +190,19 @@ export function BlogPostJsonLd({ post }: BlogPostJsonLdProps) {
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://richardhudson.dev'
+          item: 'https://richardwhudsonjr.com'
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Blog',
-          item: 'https://richardhudson.dev/blog'
+          item: 'https://richardwhudsonjr.com/blog'
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: post.title,
-          item: `https://richardhudson.dev/blog/${post.slug}`
+          item: `https://richardwhudsonjr.com/blog/${post.slug}`
         }
       ]
     }
@@ -236,7 +236,7 @@ export function BlogCategoryJsonLd({ category }: BlogCategoryJsonLdProps) {
     '@type': 'CollectionPage',
     name: `${category.name} - Richard Hudson Blog`,
     description: category.description || `Articles about ${category.name} from Richard Hudson's revenue operations blog`,
-    url: `https://richardhudson.dev/blog/category/${category.slug}`,
+    url: `https://richardwhudsonjr.com/blog/category/${category.slug}`,
     mainEntity: {
       '@type': 'ItemList',
       name: `${category.name} Articles`,
@@ -250,19 +250,19 @@ export function BlogCategoryJsonLd({ category }: BlogCategoryJsonLdProps) {
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://richardhudson.dev'
+          item: 'https://richardwhudsonjr.com'
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Blog',
-          item: 'https://richardhudson.dev/blog'
+          item: 'https://richardwhudsonjr.com/blog'
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: category.name,
-          item: `https://richardhudson.dev/blog/category/${category.slug}`
+          item: `https://richardwhudsonjr.com/blog/category/${category.slug}`
         }
       ]
     }

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Blog | Richard Hudson',
     description: 'Insights on revenue operations, data analytics, and business growth strategies.',
-    url: 'https://richardhudson.dev/blog',
+    url: 'https://richardwhudsonjr.com/blog',
     type: 'website',
   },
 }

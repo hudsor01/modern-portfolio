@@ -12,7 +12,7 @@ export const siteConfig: SiteConfig = {
   },
   author: {
     name: 'Richard Hudson',
-    email: 'contact@richardhudson.dev',
+    email: 'contact@richardwhudsonjr.com',
     url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
   },
 }
