@@ -92,7 +92,7 @@ export function generateMetadata({
       title: pageTitle,
       description: pageDescription,
       images: [pageImage],
-      creator: '@richardhudson',
+      creator: '@hudsor01',
     },
   };
 
