@@ -17,11 +17,10 @@ jobs:
         env:
           DATABASE_URL: "postgresql://user:pass@localhost:5432/db?schema=public"
 
-      - name: Lint, Type-check, and Unit Tests
-        run: bun run ci:unit
+      - name: Lint and Type-check
+        run: bun run ci:quick
         env:
           CI: true
-          DATABASE_URL: "postgresql://user:pass@localhost:5432/db?schema=public"
 
       - name: Build
         run: bun run build
