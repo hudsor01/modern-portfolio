@@ -96,7 +96,7 @@ describe('/api/blog/rss', () => {
 
       expect(data.data.title).toBe('Richard Hudson - Revenue Operations Blog')
       expect(data.data.description).toContain('Expert insights on revenue operations')
-      expect(data.data.link).toBe('https://richardhudson.dev/blog')
+      expect(data.data.link).toBe('https://richardwhudsonjr.com/blog')
       expect(data.data.language).toBe('en-us')
       expect(data.data.lastBuildDate).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)
     })
@@ -118,8 +118,8 @@ describe('/api/blog/rss', () => {
         expect(post).toHaveProperty('category')
         expect(post).toHaveProperty('guid')
         expect(post.author).toBe('Richard Hudson')
-        expect(post.link).toMatch(/^https:\/\/richardhudson\.dev\/blog\//)
-        expect(post.guid).toMatch(/^https:\/\/richardhudson\.dev\/blog\//)
+        expect(post.link).toMatch(/^https:\/\/richardwhudsonjr\.com\/blog\//)
+        expect(post.guid).toMatch(/^https:\/\/richardwhudsonjr\.com\/blog\//)
       })
     })
 
@@ -213,7 +213,7 @@ describe('/api/blog/rss', () => {
       expect(xmlContent).toContain('<rss version="2.0"')
       expect(xmlContent).toContain('<channel>')
       expect(xmlContent).toContain('<title><![CDATA[Richard Hudson - Revenue Operations Blog]]></title>')
-      expect(xmlContent).toContain('https://richardhudson.dev/blog')
+      expect(xmlContent).toContain('https://richardwhudsonjr.com/blog')
     })
 
     it('includes proper XML headers and metadata', async () => {
@@ -263,8 +263,8 @@ describe('/api/blog/rss', () => {
       data.data.posts.forEach((post: RSSFeedData['posts'][0]) => {
         expect(post.link).toMatch(/^https?:\/\//)
         expect(post.guid).toMatch(/^https?:\/\//)
-        expect(post.link).toContain('richardhudson.dev')
-        expect(post.guid).toContain('richardhudson.dev')
+        expect(post.link).toContain('richardwhudsonjr.com')
+        expect(post.guid).toContain('richardwhudsonjr.com')
       })
     })
 
