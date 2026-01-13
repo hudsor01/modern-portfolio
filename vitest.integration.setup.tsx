@@ -17,7 +17,7 @@ import type { MockNextImageProps } from '@/types/mock-types'
 // =============================================================================
 
 // Extend vi with missing APIs from our Bun setup
-const viExt = vi as Record<string, unknown>
+const viExt = vi as any
 
 // stubGlobal - for mocking global variables
 viExt.stubGlobal = function stubGlobal(name: string, value: unknown) {

@@ -104,7 +104,11 @@
     "scripts",
     "docs",
     "temp",
-    "tmp"
+    "tmp",
+    "vitest.config.ts",
+    "vitest.unit.setup.ts",
+    "vitest.integration.setup.tsx",
+    "src/app/api/**/__tests__/**/*.test.ts"
   ],
   "ts-node": {
     "compilerOptions": {
