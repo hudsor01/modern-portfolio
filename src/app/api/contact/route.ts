@@ -7,6 +7,7 @@ import { logRateLimitExceeded, logCSRFFailure } from '@/lib/security/security-ev
 import { createContextLogger } from '@/lib/monitoring/logger'
 import { validateRequest, ValidationError, createApiError, createApiSuccess, contactFormSchema } from '@/lib/validations/schemas'
 import { getClientIdentifier, getRequestMetadata, parseRequestBody, createResponseHeaders, logApiRequest, logApiResponse } from '@/lib/api/utils'
+import { escapeHtml } from '@/lib/security/sanitization'
 
 const logger = createContextLogger('ContactAPI')
 
@@ -18,12 +19,6 @@ function getResendClient(): Resend {
     resend = new Resend(process.env.RESEND_API_KEY)
   }
   return resend
-}
-
-// Inline escape for server-side email composition (no browser rendering)
-function escapeHtml(text: string): string {
-  const map: Record<string, string> = { '&': '&', '<': '<', '>': '>', '"': '"', "'": '&#x27;' }
-  return text.replace(/[&<>"']/g, (c) => map[c] || c)
 }
 
 export async function POST(request: NextRequest) {
