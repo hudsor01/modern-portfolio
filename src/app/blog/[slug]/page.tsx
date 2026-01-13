@@ -1,10 +1,12 @@
 import { Metadata } from 'next'
 export const dynamic = 'force-static'
+export const revalidate = 3600 // Revalidate every hour
 import { notFound } from 'next/navigation'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { BlogPostLayout } from '../_components/blog-post-layout'
 import { BlogPostJsonLd } from '@/components/seo/blog-json-ld'
+import { getBlogPost } from '@/lib/content/blog'
 import type { BlogPostData } from '@/types/shared-api'
 
 interface BlogPostPageProps {
@@ -32,27 +34,6 @@ function applyPostOverrides(post: BlogPostData | null) {
   }
 }
 
-// Function to fetch post data from API
-async function getBlogPost(slug: string): Promise<BlogPostData | null> {
-  try {
-    const baseUrl = process.env.NODE_ENV === 'production'
-      ? 'https://richardwhudsonjr.com'
-      : 'http://localhost:3000'
-
-    const response = await fetch(`${baseUrl}/api/blog/${slug}`, {
-      next: { revalidate: 3600 },
-    })
-
-    if (!response.ok) {
-      return null
-    }
-
-    const data = await response.json()
-    return data.success ? data.data : null
-  } catch {
-    return null
-  }
-}
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params
