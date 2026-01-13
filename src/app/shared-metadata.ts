@@ -59,7 +59,7 @@ export const baseMetadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    creator: '@richardhudson',
+    creator: '@hudsor01',
     title: 'Richard Hudson | Revenue Operations Professional',
     description:
       'Revenue Operations Professional Richard Hudson specializes in sales automation, CRM optimization, and partnership program development across Dallas-Fort Worth metroplex. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. $4.8M+ revenue impact, 432% growth achieved. Available for professional opportunities in Dallas, Fort Worth, Plano, Frisco, and surrounding DFW areas.',

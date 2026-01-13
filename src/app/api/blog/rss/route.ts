@@ -22,54 +22,54 @@ export async function GET(request: NextRequest) {
     const mockRSSData: RSSFeedData = {
       title: 'Richard Hudson - Revenue Operations Blog',
       description: 'Expert insights on revenue operations, data analytics, and business process optimization from Richard Hudson, a seasoned RevOps professional.',
-      link: 'https://richardhudson.dev/blog',
+      link: 'https://richardwhudsonjr.com/blog',
       lastBuildDate: new Date().toISOString(),
       language: 'en-us',
       posts: [
         {
           title: 'Revenue Operations Best Practices: A Complete Guide',
-          link: 'https://richardhudson.dev/blog/revenue-operations-best-practices-complete-guide',
+          link: 'https://richardwhudsonjr.com/blog/revenue-operations-best-practices-complete-guide',
           description: 'Discover proven strategies for optimizing revenue operations, from data analytics to process automation. Learn how to align sales, marketing, and customer success teams for maximum revenue impact.',
           pubDate: '2024-01-15T10:00:00Z',
           author: 'Richard Hudson',
           category: 'Revenue Operations',
-          guid: 'https://richardhudson.dev/blog/revenue-operations-best-practices-complete-guide'
+          guid: 'https://richardwhudsonjr.com/blog/revenue-operations-best-practices-complete-guide'
         },
         {
           title: 'Building Effective Sales Dashboards with Real-Time Data',
-          link: 'https://richardhudson.dev/blog/building-effective-sales-dashboards-real-time-data',
+          link: 'https://richardwhudsonjr.com/blog/building-effective-sales-dashboards-real-time-data',
           description: 'Learn how to create compelling sales dashboards that drive decision-making and improve team performance. Includes practical examples and best practices for data visualization.',
           pubDate: '2024-01-20T14:30:00Z',
           author: 'Richard Hudson',
           category: 'Data Visualization',
-          guid: 'https://richardhudson.dev/blog/building-effective-sales-dashboards-real-time-data'
+          guid: 'https://richardwhudsonjr.com/blog/building-effective-sales-dashboards-real-time-data'
         },
         {
           title: 'Advanced Customer Churn Analysis Techniques',
-          link: 'https://richardhudson.dev/blog/advanced-customer-churn-analysis-techniques',
+          link: 'https://richardwhudsonjr.com/blog/advanced-customer-churn-analysis-techniques',
           description: 'Deep dive into predictive analytics for customer retention. Learn how to identify at-risk customers and implement proactive retention strategies.',
           pubDate: '2024-02-05T09:15:00Z',
           author: 'Richard Hudson',
           category: 'Analytics',
-          guid: 'https://richardhudson.dev/blog/advanced-customer-churn-analysis-techniques'
+          guid: 'https://richardwhudsonjr.com/blog/advanced-customer-churn-analysis-techniques'
         },
         {
           title: 'Automating Revenue Reporting with Modern Tools',
-          link: 'https://richardhudson.dev/blog/automating-revenue-reporting-modern-tools',
+          link: 'https://richardwhudsonjr.com/blog/automating-revenue-reporting-modern-tools',
           description: 'Streamline your revenue reporting process using automation tools and APIs. Reduce manual work and increase accuracy in your financial reporting.',
           pubDate: '2024-02-12T11:45:00Z',
           author: 'Richard Hudson',
           category: 'Automation',
-          guid: 'https://richardhudson.dev/blog/automating-revenue-reporting-modern-tools'
+          guid: 'https://richardwhudsonjr.com/blog/automating-revenue-reporting-modern-tools'
         },
         {
           title: 'KPI Design Principles for Revenue Operations',
-          link: 'https://richardhudson.dev/blog/kpi-design-principles-revenue-operations',
+          link: 'https://richardwhudsonjr.com/blog/kpi-design-principles-revenue-operations',
           description: 'Essential guidelines for designing effective KPIs that align with business objectives. Learn how to select, measure, and optimize key performance indicators.',
           pubDate: '2024-02-18T13:20:00Z',
           author: 'Richard Hudson',
           category: 'Revenue Operations',
-          guid: 'https://richardhudson.dev/blog/kpi-design-principles-revenue-operations'
+          guid: 'https://richardwhudsonjr.com/blog/kpi-design-principles-revenue-operations'
         }
       ].sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime()).slice(0, limit)
     };
@@ -84,10 +84,10 @@ export async function GET(request: NextRequest) {
     <link>${mockRSSData.link}</link>
     <language>${mockRSSData.language}</language>
     <lastBuildDate>${mockRSSData.lastBuildDate}</lastBuildDate>
-    <atom:link href="https://richardhudson.dev/api/blog/rss?format=xml" rel="self" type="application/rss+xml"/>
+    <atom:link href="https://richardwhudsonjr.com/api/blog/rss?format=xml" rel="self" type="application/rss+xml"/>
     <generator>Richard Hudson Portfolio Blog</generator>
-    <webMaster>richard@richardhudson.dev (Richard Hudson)</webMaster>
-    <managingEditor>richard@richardhudson.dev (Richard Hudson)</managingEditor>
+    <webMaster>richard@richardwhudsonjr.com (Richard Hudson)</webMaster>
+    <managingEditor>richard@richardwhudsonjr.com (Richard Hudson)</managingEditor>
     <copyright>© ${new Date().getFullYear()} Richard Hudson</copyright>
     <category>Revenue Operations</category>
     <category>Data Analytics</category>
@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
       <link>${post.link}</link>
       <description><![CDATA[${post.description}]]></description>
       <pubDate>${new Date(post.pubDate).toUTCString()}</pubDate>
-      <author>richard@richardhudson.dev (${post.author})</author>
+      <author>richard@richardwhudsonjr.com (${post.author})</author>
       <category><![CDATA[${post.category}]]></category>
       <guid isPermaLink="true">${post.guid}</guid>
     </item>`).join('')}
