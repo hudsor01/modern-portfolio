@@ -1,4 +1,29 @@
-'use client'
+/**
+ * Server-safe HTML entity escaping
+ * No external dependencies, works in all environments
+ * Use this for email templates, server-side rendering, or anywhere DOMPurify can't run
+ */
+
+// Entity map for server-safe HTML escaping
+const HTML_ENTITIES: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#x27;',
+  '/': '&#x2F;',
+}
+
+/**
+ * Escape HTML entities for safe rendering
+ * Works in both server and client contexts (no DOM dependencies)
+ *
+ * @param text - Text to escape
+ * @returns HTML entity-escaped text
+ */
+export function escapeHtml(text: string): string {
+  return text.replace(/[&<>"'/]/g, (char) => HTML_ENTITIES[char] ?? char)
+}
 
 /**
  * Client-Safe HTML Sanitization
@@ -45,20 +70,6 @@ const BLOG_SANITIZE_CONFIG = {
 // ============================================================================
 // Sanitization Functions
 // ============================================================================
-
-export function escapeHtml(text: string): string {
-  return text.replace(/[&<>"'/]/g, (char) => {
-    switch (char) {
-      case '&': return '&'
-      case '<': return '<'
-      case '>': return '>'
-      case '"': return '"'
-      case "'": return '&#x27;'
-      case '/': return '&#x2F;'
-      default: return char
-    }
-  })
-}
 
 export function sanitizeBlogHtml(html: string): string {
   const result = DOMPurify.sanitize(html, BLOG_SANITIZE_CONFIG)
