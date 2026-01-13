@@ -50,11 +50,12 @@ describe('Security Tests', () => {
       const maliciousInput = '<script>alert("XSS")</script>'
       const escaped = escapeHtml(maliciousInput)
 
-      // The function escapes / to &#x2F; for extra security
-      expect(escaped).toBe('<script>alert("XSS")<&#x2F;script>')
-      // Verify angle brackets are NOT escaped (intentional behavior)
-      expect(escaped).toContain('<script>')
-      expect(escaped).toContain('<&#x2F;script>')
+      // All HTML entities should be properly escaped for security
+      expect(escaped).toBe('&lt;script&gt;alert(&quot;XSS&quot;)&lt;&#x2F;script&gt;')
+      // Verify angle brackets ARE escaped (prevents XSS)
+      expect(escaped).not.toContain('<script>')
+      expect(escaped).toContain('&lt;script&gt;')
+      expect(escaped).toContain('&lt;&#x2F;script&gt;')
     })
 
     it('should handle malformed HTML tags', () => {

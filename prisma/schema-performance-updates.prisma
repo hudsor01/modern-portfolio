@@ -1,0 +1,167 @@
+// PERFORMANCE IMPROVEMENTS FOR MODERN PORTFOLIO SCHEMA
+// Apply these changes to your prisma/schema.prisma
+
+// ====================================================================
+// 1. ADD MISSING INDEXES FOR ANALYTICS QUERIES
+// ====================================================================
+
+model BlogPost {
+  // ... existing fields ...
+
+  @@map("blog_posts")
+  @@index([status, publishedAt(sort: Desc)]) // Existing
+  @@index([authorId]) // Existing
+  @@index([categoryId]) // Existing
+
+  // NEW: Index for "top posts" queries
+  @@index([viewCount(sort: Desc)])
+
+  // NEW: Index for "most liked" queries
+  @@index([likeCount(sort: Desc)])
+
+  // NEW: Partial index for PUBLISHED posts only (smaller, faster)
+  @@index([publishedAt(sort: Desc)], where: "status = 'PUBLISHED'")
+}
+
+// ====================================================================
+// 2. ADD FULL-TEXT SEARCH INDEXES
+// ====================================================================
+
+model BlogPost {
+  // ... existing fields ...
+
+  // NEW: PostgreSQL full-text search indexes
+  // These enable fast text search instead of slow LIKE queries
+  @@index([title], type: Gin, ops: GinTrgmOps)  // Trigram index for fuzzy search
+  @@index([excerpt], type: Gin, ops: GinTrgmOps)
+
+  // Alternative: Use PostgreSQL's tsvector for advanced full-text search
+  // Requires adding a generated column - see migration below
+}
+
+// ====================================================================
+// 3. ADD INDEXES FOR DENORMALIZED COUNTS
+// ====================================================================
+
+model Category {
+  // ... existing fields ...
+
+  @@map("categories")
+  @@index([parentId]) // Existing
+
+  // NEW: Index for "top categories" queries
+  @@index([totalViews(sort: Desc)])
+  @@index([postCount(sort: Desc)])
+}
+
+model Tag {
+  // ... existing fields ...
+
+  @@map("tags")
+
+  // NEW: Index for "top tags" queries
+  @@index([totalViews(sort: Desc)])
+  @@index([postCount(sort: Desc)])
+}
+
+// ====================================================================
+// 4. OPTIMIZE ANALYTICS QUERIES
+// ====================================================================
+
+model PostView {
+  // ... existing fields ...
+
+  @@map("post_views")
+  @@index([postId])
+  @@index([viewedAt(sort: Desc)])
+  @@index([postId, viewedAt(sort: Desc)])
+  @@index([visitorId])
+  @@index([country])
+  @@index([sessionId])
+  @@index([viewedAt, country])
+
+  // NEW: Partial index for recent views only (smaller, faster)
+  @@index([postId, viewedAt(sort: Desc)], where: "viewedAt > NOW() - INTERVAL '90 days'")
+}
+
+// ====================================================================
+// 5. OPTIMIZE TAG FILTERING
+// ====================================================================
+
+model PostTag {
+  postId    String
+  tagId     String
+
+  post      BlogPost        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag       Tag             @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime        @default(now())
+
+  @@id([postId, tagId])
+  @@index([tagId])  // Existing
+
+  // NEW: Reverse index for efficient tag-to-posts queries
+  @@index([tagId, postId])
+
+  @@map("post_tags")
+}
+
+// ====================================================================
+// ADVANCED: FULL-TEXT SEARCH WITH TSVECTOR (Optional)
+// ====================================================================
+
+// After these changes, run this SQL migration for PostgreSQL full-text search:
+
+/*
+-- Enable required extensions
+CREATE EXTENSION IF NOT EXISTS pg_trgm;  -- For fuzzy/similarity search
+CREATE EXTENSION IF NOT EXISTS btree_gin; -- For better GIN performance
+
+-- Add generated tsvector column for full-text search
+ALTER TABLE blog_posts
+ADD COLUMN search_vector tsvector
+GENERATED ALWAYS AS (
+  setweight(to_tsvector('english', coalesce(title, '')), 'A') ||
+  setweight(to_tsvector('english', coalesce(excerpt, '')), 'B') ||
+  setweight(to_tsvector('english', coalesce(content, '')), 'C')
+) STORED;
+
+-- Create GIN index on the search vector
+CREATE INDEX blog_posts_search_vector_idx ON blog_posts USING GIN (search_vector);
+
+-- Example query (use in your API route):
+-- SELECT * FROM blog_posts
+-- WHERE search_vector @@ plainto_tsquery('english', 'react hooks')
+-- ORDER BY ts_rank(search_vector, plainto_tsquery('english', 'react hooks')) DESC;
+*/
+
+// ====================================================================
+// PERFORMANCE IMPACT ESTIMATES (for 10K+ posts)
+// ====================================================================
+
+/*
+1. viewCount index:
+   - Before: ~50-100ms for top posts query
+   - After: ~5-10ms
+   - ROI: 10x faster
+
+2. Full-text search indexes:
+   - Before: 500ms+ for LIKE queries
+   - After: 10-20ms for trigram, 5ms for tsvector
+   - ROI: 25-50x faster
+
+3. Partial indexes (PUBLISHED posts):
+   - Index size: ~60% smaller
+   - Query speed: ~2x faster
+   - ROI: Better memory usage + speed
+
+4. totalViews/postCount indexes:
+   - Before: 20-50ms
+   - After: 2-5ms
+   - ROI: 5-10x faster
+
+5. PostView partial index (90 days):
+   - Index size: ~70% smaller
+   - Query speed: ~3x faster for recent analytics
+   - ROI: Better memory + faster analytics
+*/
