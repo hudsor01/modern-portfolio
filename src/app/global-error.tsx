@@ -1,54 +1,50 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
-import { RefreshCw, AlertTriangle } from 'lucide-react'
+import { useEffect } from 'react'
+import Link from 'next/link'
+import * as Sentry from '@sentry/nextjs'
 
-// This is for root-level errors that need to replace the entire page
-export default function GlobalError({
-  error: _error,
-  reset
-}: Readonly<{
+interface GlobalErrorProps {
   error: Error & { digest?: string }
   reset: () => void
-}>) {
+}
+
+export default function GlobalError({ error, reset }: GlobalErrorProps) {
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+      Sentry.captureException(error)
+    }
+  }, [error])
+
   return (
     <html lang="en">
-      <body className="bg-slate-50 dark:bg-slate-900 font-sans">
-        <div className="flex items-center justify-center min-h-screen p-4">
-          <div className="w-full max-w-md text-center">
-            <div className="p-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xs">
-              <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 bg-destructive/10 dark:bg-destructive-bg rounded-full">
-                <AlertTriangle className="w-8 h-8 text-destructive dark:text-destructive" />
-              </div>
-
-              <h2 className="typography-h3 text-slate-900 dark:text-white mb-4">
-                Something went wrong
-              </h2>
-
-              <p className="text-slate-600 dark:text-slate-400 mb-8">
-                A critical error occurred. Please try refreshing the page or contact support if the problem persists.
-              </p>
-
-              <div className="space-y-4">
-                <Button
-                  onClick={reset}
-                  className="w-full"
-                  size="lg"
-                >
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Try Again
-                </Button>
-
-                <Button
-                  onClick={() => window.location.href = '/'}
-                  variant="outline"
-                  className="w-full"
-                  size="lg"
-                >
-                  Go Home
-                </Button>
-              </div>
+      <body className="min-h-screen bg-background text-foreground">
+        <div className="flex min-h-screen items-center justify-center p-6">
+          <div className="w-full max-w-md space-y-4 text-center">
+            <h1 className="text-2xl font-semibold">Something went wrong</h1>
+            <p className="text-sm text-muted-foreground">
+              Please refresh the page or try again in a moment.
+            </p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+              <button
+                type="button"
+                onClick={() => reset()}
+                className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+              >
+                Try again
+              </button>
+              <Link
+                href="/"
+                className="inline-flex items-center justify-center rounded-md border border-border px-4 py-2 text-sm font-medium"
+              >
+                Go home
+              </Link>
             </div>
+            {process.env.NODE_ENV === 'development' && error?.message ? (
+              <pre className="rounded-md border border-border bg-muted p-3 text-left text-xs text-muted-foreground">
+                {error.message}
+              </pre>
+            ) : null}
           </div>
         </div>
       </body>
