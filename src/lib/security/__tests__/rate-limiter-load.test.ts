@@ -2,9 +2,10 @@
  * Rate Limiter Load Tests
  * Performance and stress testing for enhanced rate limiting system
  *
- * These tests run by default but with reduced scale to prevent CI hanging.
- * For full load testing, run with: LOAD_TEST=full bun test src/lib/security/__tests__/rate-limiter-load.test.ts
- * For minimal testing, run with: LOAD_TEST=minimal bun test src/lib/security/__tests__/rate-limiter-load.test.ts
+ * SKIPPED BY DEFAULT - these are slow load tests
+ * To run: LOAD_TEST=true bun test src/lib/security/__tests__/rate-limiter-load.test.ts
+ * For full load testing: LOAD_TEST=full bun test src/lib/security/__tests__/rate-limiter-load.test.ts
+ * For minimal testing: LOAD_TEST=minimal bun test src/lib/security/__tests__/rate-limiter-load.test.ts
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'bun:test'
@@ -12,16 +13,20 @@ import { getEnhancedRateLimiter, EnhancedRateLimitConfigs } from '../rate-limite
 import { RateLimitResult } from '@/types/security'
 
 // Determine test scale based on environment
-const loadTestMode = process.env.LOAD_TEST || 'default'
+const loadTestMode = process.env.LOAD_TEST
+const shouldRunLoadTests = !!loadTestMode // Only run if LOAD_TEST env var is set
 const isFullLoadTest = loadTestMode === 'full'
 const isMinimalLoadTest = loadTestMode === 'minimal'
 
-// Scale down tests for CI/default runs to prevent hanging
+// Scale tests based on mode
 const REQUEST_SCALE = isFullLoadTest ? 1 : isMinimalLoadTest ? 0.01 : 0.1
 const HIGH_VOLUME_REQUESTS = Math.floor(10000 * REQUEST_SCALE)
 const CONCURRENT_REQUESTS = Math.floor(100 * REQUEST_SCALE)
 
-describe('Rate Limiter Load Tests', () => {
+// Skip load tests by default - only run when explicitly enabled
+const describeLoadTests = shouldRunLoadTests ? describe : describe.skip
+
+describeLoadTests('Rate Limiter Load Tests', () => {
   beforeEach(() => {
     vi.useFakeTimers()
     getEnhancedRateLimiter().destroy()
