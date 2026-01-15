@@ -43,13 +43,8 @@ function validateDatabaseEnvironment() {
   }
 }
 
-// Check if we're in a CI build environment without a real database
-const isCI = process.env.CI === 'true'
-const hasDbUrl = !!process.env.DATABASE_URL
-
-// Validate environment immediately on module import
-// Skip in test environment and during CI builds without DATABASE_URL
-if (process.env.NODE_ENV !== 'test' && hasDbUrl) {
+// Validate environment immediately on module import (skip in test environment)
+if (process.env.NODE_ENV !== 'test') {
   validateDatabaseEnvironment()
 }
 
@@ -58,12 +53,9 @@ declare global {
   var prisma: PrismaClient | undefined
 }
 
-// Use placeholder for CI builds without DATABASE_URL to allow build to complete
-const connectionString = process.env.DATABASE_URL || (isCI ? 'postgresql://placeholder:placeholder@localhost:5432/placeholder' : '')
-
-// Create the PostgreSQL adapter with connection string
+// Create the PostgreSQL adapter with validated connection string
 const adapter = new PrismaNeon({
-  connectionString,
+  connectionString: process.env.DATABASE_URL,
 })
 
 export const db =
