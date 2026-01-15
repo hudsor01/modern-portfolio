@@ -1,153 +1,112 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { ApiResponse, BlogCategoryData } from '@/types/shared-api';
-import { db } from '@/lib/db';
-import { createContextLogger } from '@/lib/monitoring/logger';
+import { NextRequest, NextResponse } from 'next/server'
+import { ApiResponse, BlogCategoryData } from '@/types/api'
+import { db } from '@/lib/db'
+import { createContextLogger } from '@/lib/logger'
+import {
+  generateSlug,
+  createErrorResponse,
+  transformToCategoryData,
+} from '@/lib/api-blog'
 
-const logger = createContextLogger('CategoriesAPI');
+const logger = createContextLogger('CategoriesAPI')
 
 /**
  * Blog Categories API Route Handler
  * GET /api/blog/categories - List all blog categories
  * POST /api/blog/categories - Create new blog category
- * 
- * Uses Prisma database integration for real data storage
+ *
+ * Uses Prisma database for production data
  */
 
 // GET /api/blog/categories - List all blog categories
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const categories = await db.category.findMany({
-      orderBy: [
-        { postCount: 'desc' },
-        { name: 'asc' }
-      ]
-    });
-    
-    const formattedCategories: BlogCategoryData[] = categories.map(category => ({
-      id: category.id,
-      name: category.name,
-      slug: category.slug,
-      description: category.description ?? undefined,
-      color: category.color ?? undefined,
-      icon: category.icon ?? undefined,
-      postCount: category.postCount,
-      totalViews: category.totalViews,
-      createdAt: category.createdAt.toISOString()
-    }));
-    
+      orderBy: [{ postCount: 'desc' }, { name: 'asc' }],
+    })
+
     const response: ApiResponse<BlogCategoryData[]> = {
-      data: formattedCategories,
-      success: true
-    };
-    
+      data: categories.map(transformToCategoryData),
+      success: true,
+    }
+
     return NextResponse.json(response, {
       headers: {
-        'Cache-Control': 'public, max-age=300, s-maxage=600', // Cache for 5 minutes, CDN for 10 minutes
-      }
-    });
-    
+        'Cache-Control': 'public, max-age=300, s-maxage=600',
+      },
+    })
   } catch (error) {
-    logger.error('Blog Categories API Error:', error instanceof Error ? error : new Error(String(error)));
-    
-    const errorResponse: ApiResponse<never> = {
-      data: undefined as never,
-      success: false,
-      error: 'Failed to fetch blog categories'
-    };
-    
-    return NextResponse.json(errorResponse, { status: 500 });
+    logger.error(
+      'Blog Categories API Error:',
+      error instanceof Error ? error : new Error(String(error))
+    )
+    return NextResponse.json(
+      createErrorResponse('Failed to fetch blog categories'),
+      { status: 500 }
+    )
   }
 }
 
 // POST /api/blog/categories - Create new blog category
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    
-    // Validate required fields
+    const body = await request.json()
+
     if (!body.name) {
-      const errorResponse: ApiResponse<never> = {
-        data: undefined as never,
-        success: false,
-        error: 'Missing required field: name'
-      };
-      
-      return NextResponse.json(errorResponse, { status: 400 });
+      return NextResponse.json(
+        createErrorResponse('Missing required field: name'),
+        { status: 400 }
+      )
     }
-    
-    // Generate slug from name
-    const slug = body.name
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim();
-    
+
+    const slug = generateSlug(body.name)
+
     // Check if category with this slug already exists
     const existingCategory = await db.category.findUnique({
-      where: { slug }
-    });
-    
+      where: { slug },
+    })
+
     if (existingCategory) {
-      const errorResponse: ApiResponse<never> = {
-        data: undefined as never,
-        success: false,
-        error: 'Category with this name already exists'
-      };
-      
-      return NextResponse.json(errorResponse, { status: 409 });
+      return NextResponse.json(
+        createErrorResponse('Category with this name already exists'),
+        { status: 409 }
+      )
     }
-    
+
     // Create new category in database
     const newCategory = await db.category.create({
       data: {
         name: body.name,
         slug,
         description: body.description,
-        color: body.color || '#6B7280', // Default gray color
+        color: body.color || '#6B7280',
         icon: body.icon,
         metaTitle: body.metaTitle,
         metaDescription: body.metaDescription,
         keywords: body.keywords || [],
-        postCount: 0, // Start with 0 posts
-        totalViews: 0, // Start with 0 views
-      }
-    });
-    
-    const formattedCategory: BlogCategoryData = {
-      id: newCategory.id,
-      name: newCategory.name,
-      slug: newCategory.slug,
-      description: newCategory.description ?? undefined,
-      color: newCategory.color ?? undefined,
-      icon: newCategory.icon ?? undefined,
-      postCount: newCategory.postCount,
-      totalViews: newCategory.totalViews,
-      createdAt: newCategory.createdAt.toISOString()
-    };
-    
+        postCount: 0,
+        totalViews: 0,
+      },
+    })
+
     const response: ApiResponse<BlogCategoryData> = {
-      data: formattedCategory,
+      data: transformToCategoryData(newCategory),
       success: true,
-      message: 'Blog category created successfully'
-    };
-    
-    return NextResponse.json(response, { 
+      message: 'Blog category created successfully',
+    }
+
+    return NextResponse.json(response, {
       status: 201,
-      headers: {
-        'Cache-Control': 'no-cache'
-      }
-    });
-    
+      headers: { 'Cache-Control': 'no-cache' },
+    })
   } catch (error) {
-    logger.error('Blog Category Creation Error:', error instanceof Error ? error : new Error(String(error)));
-    
-    const errorResponse: ApiResponse<never> = {
-      data: undefined as never,
-      success: false,
-      error: 'Failed to create blog category'
-    };
-    
-    return NextResponse.json(errorResponse, { status: 500 });
+    logger.error(
+      'Blog Category Creation Error:',
+      error instanceof Error ? error : new Error(String(error))
+    )
+    return NextResponse.json(
+      createErrorResponse('Failed to create blog category'),
+      { status: 500 }
+    )
   }
 }

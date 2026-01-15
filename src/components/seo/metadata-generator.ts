@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { siteConfig } from '@/lib/config/site';
+import { siteConfig } from '@/lib/site';
 
 interface MetadataProps {
   title?: string;

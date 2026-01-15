@@ -7,7 +7,7 @@
  */
 
 import Script from 'next/script'
-import { BlogPostData } from '@/types/shared-api'
+import { BlogPostData } from '@/types/api'
 
 /**
  * Blog Website JSON-LD Schema

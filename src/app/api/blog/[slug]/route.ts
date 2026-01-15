@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { ApiResponse, BlogPostData } from '@/types/shared-api'
-import { createContextLogger } from '@/lib/monitoring/logger'
+import { ApiResponse, BlogPostData } from '@/types/api'
+import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
 import { Prisma } from '@/generated/prisma/client'
-import { validateCSRFToken } from '@/lib/security/csrf-protection'
-import { transformToBlogPostData } from '@/lib/api/blog-transformers'
+import { validateCSRFOrRespond } from '@/lib/api-core'
+import { transformToBlogPostData, createErrorResponse } from '@/lib/api-blog'
 
 const logger = createContextLogger('SlugAPI')
 
@@ -23,13 +23,7 @@ export async function GET(_request: NextRequest, context: { params: Promise<{ sl
     const { slug } = await context.params
 
     if (!slug) {
-      const errorResponse: ApiResponse<never> = {
-        data: undefined as never,
-        success: false,
-        error: 'Slug parameter is required',
-      }
-
-      return NextResponse.json(errorResponse, { status: 400 })
+      return NextResponse.json(createErrorResponse('Slug parameter is required'), { status: 400 })
     }
 
     // Find post by slug with relations
@@ -45,13 +39,7 @@ export async function GET(_request: NextRequest, context: { params: Promise<{ sl
     })
 
     if (!post) {
-      const errorResponse: ApiResponse<never> = {
-        data: undefined as never,
-        success: false,
-        error: 'Blog post not found',
-      }
-
-      return NextResponse.json(errorResponse, { status: 404 })
+      return NextResponse.json(createErrorResponse('Blog post not found'), { status: 404 })
     }
 
     // Increment view count asynchronously (fire and forget)
@@ -69,51 +57,27 @@ export async function GET(_request: NextRequest, context: { params: Promise<{ sl
 
     return NextResponse.json(response, {
       headers: {
-        'Cache-Control': 'public, max-age=300, s-maxage=600', // Cache for 5 minutes, CDN for 10 minutes
+        'Cache-Control': 'public, max-age=300, s-maxage=600',
       },
     })
   } catch (error) {
     logger.error('Blog Post API Error:', error instanceof Error ? error : new Error(String(error)))
-
-    const errorResponse: ApiResponse<never> = {
-      data: undefined as never,
-      success: false,
-      error: 'Failed to fetch blog post',
-    }
-
-    return NextResponse.json(errorResponse, { status: 500 })
+    return NextResponse.json(createErrorResponse('Failed to fetch blog post'), { status: 500 })
   }
 }
 
 // PUT /api/blog/[slug] - Update blog post by slug
 export async function PUT(request: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  // CSRF validation using shared utility
+  const csrfResponse = await validateCSRFOrRespond(request, 'blog post update')
+  if (csrfResponse) return csrfResponse
+
   try {
-    // CSRF token validation
-    const csrfToken = request.headers.get('x-csrf-token')
-    const isCSRFValid = await validateCSRFToken(csrfToken ?? undefined)
-
-    if (!isCSRFValid) {
-      logger.warn('CSRF validation failed for blog post update')
-      const errorResponse: ApiResponse<never> = {
-        data: undefined as never,
-        success: false,
-        error: 'Security validation failed. Please refresh and try again.',
-      }
-
-      return NextResponse.json(errorResponse, { status: 403 })
-    }
-
     const { slug } = await context.params
     const body = await request.json()
 
     if (!slug) {
-      const errorResponse: ApiResponse<never> = {
-        data: undefined as never,
-        success: false,
-        error: 'Slug parameter is required',
-      }
-
-      return NextResponse.json(errorResponse, { status: 400 })
+      return NextResponse.json(createErrorResponse('Slug parameter is required'), { status: 400 })
     }
 
     // Find existing post
@@ -122,13 +86,7 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
     })
 
     if (!existingPost) {
-      const errorResponse: ApiResponse<never> = {
-        data: undefined as never,
-        success: false,
-        error: 'Blog post not found',
-      }
-
-      return NextResponse.json(errorResponse, { status: 404 })
+      return NextResponse.json(createErrorResponse('Blog post not found'), { status: 404 })
     }
 
     // Calculate reading time and word count if content changed
@@ -192,49 +150,22 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
       },
     })
   } catch (error) {
-    logger.error(
-      'Blog Post Update Error:',
-      error instanceof Error ? error : new Error(String(error))
-    )
-
-    const errorResponse: ApiResponse<never> = {
-      data: undefined as never,
-      success: false,
-      error: 'Failed to update blog post',
-    }
-
-    return NextResponse.json(errorResponse, { status: 500 })
+    logger.error('Blog Post Update Error:', error instanceof Error ? error : new Error(String(error)))
+    return NextResponse.json(createErrorResponse('Failed to update blog post'), { status: 500 })
   }
 }
 
 // DELETE /api/blog/[slug] - Delete blog post by slug
 export async function DELETE(request: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  // CSRF validation using shared utility
+  const csrfResponse = await validateCSRFOrRespond(request, 'blog post deletion')
+  if (csrfResponse) return csrfResponse
+
   try {
-    // CSRF token validation
-    const csrfToken = request.headers.get('x-csrf-token')
-    const isCSRFValid = await validateCSRFToken(csrfToken ?? undefined)
-
-    if (!isCSRFValid) {
-      logger.warn('CSRF validation failed for blog post deletion')
-      const errorResponse: ApiResponse<never> = {
-        data: undefined as never,
-        success: false,
-        error: 'Security validation failed. Please refresh and try again.',
-      }
-
-      return NextResponse.json(errorResponse, { status: 403 })
-    }
-
     const { slug } = await context.params
 
     if (!slug) {
-      const errorResponse: ApiResponse<never> = {
-        data: undefined as never,
-        success: false,
-        error: 'Slug parameter is required',
-      }
-
-      return NextResponse.json(errorResponse, { status: 400 })
+      return NextResponse.json(createErrorResponse('Slug parameter is required'), { status: 400 })
     }
 
     // Find post to get related info for updating counts
@@ -246,13 +177,7 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
     })
 
     if (!post) {
-      const errorResponse: ApiResponse<never> = {
-        data: undefined as never,
-        success: false,
-        error: 'Blog post not found',
-      }
-
-      return NextResponse.json(errorResponse, { status: 404 })
+      return NextResponse.json(createErrorResponse('Blog post not found'), { status: 404 })
     }
 
     // Delete post (cascades to PostTag relations via schema)
@@ -294,17 +219,7 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
       },
     })
   } catch (error) {
-    logger.error(
-      'Blog Post Deletion Error:',
-      error instanceof Error ? error : new Error(String(error))
-    )
-
-    const errorResponse: ApiResponse<never> = {
-      data: undefined as never,
-      success: false,
-      error: 'Failed to delete blog post',
-    }
-
-    return NextResponse.json(errorResponse, { status: 500 })
+    logger.error('Blog Post Deletion Error:', error instanceof Error ? error : new Error(String(error)))
+    return NextResponse.json(createErrorResponse('Failed to delete blog post'), { status: 500 })
   }
 }

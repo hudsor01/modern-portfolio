@@ -1,7 +1,7 @@
 'use client'
 
 import { SectionCard } from '@/components/ui/section-card'
-import { formatCurrency } from '@/lib/utils/data-formatters'
+import { formatCurrency } from '@/lib/data-formatters'
 
 interface NarrativeSectionsProps {
   revenueSaved: number

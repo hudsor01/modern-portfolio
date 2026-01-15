@@ -1,6 +1,8 @@
 /**
- * Design System Types - Centralized
- * Consolidated from src/lib/design-system/types.ts
+ * Design System Component Types
+ *
+ * TypeScript interfaces for standardized design system components
+ * These interfaces ensure consistency across all project pages
  */
 
 import type { LucideIcon } from 'lucide-react'
@@ -34,7 +36,7 @@ export interface NavigationConfig {
 export interface NavigationTab {
   id: string
   label: string
-  content?: ReactNode
+  content?: React.ReactNode
   disabled?: boolean
   badge?: string | number
 }
@@ -114,8 +116,6 @@ export interface ProjectPageLayoutProps {
   timeframes?: string[]
   activeTimeframe?: string
   onTimeframeChange?: (timeframe: string) => void
-  onRefresh?: () => void
-  refreshButtonDisabled?: boolean
   className?: string
 }
 
@@ -125,7 +125,7 @@ export interface MetricCardProps {
   label: string
   value: string | number
   subtitle?: string
-  variant: ComponentVariant
+  variant?: ComponentVariant
   trend?: MetricTrend
   animationDelay?: number
   loading?: boolean
@@ -195,10 +195,10 @@ export interface EmptyStateProps {
 // Layout Configuration
 export interface LayoutConfig {
   maxWidth: string
-  padding: string
+  padding: keyof typeof import('../lib/tokens').designTokens.spacing
   grid: {
     columns: number
-    gap: string
+    gap: keyof typeof import('../lib/tokens').designTokens.spacing
     breakpoints: Record<string, number>
   }
   sections: SectionConfig[]
@@ -387,11 +387,3 @@ export interface LoadingStateResult {
     actualAppearance: string
   }>
 }
-
-// Interactive element variants (from interactive-elements.ts)
-export type HoverVariant = Record<string, unknown>
-export type FocusVariant = Record<string, unknown>
-export type ClickFeedbackVariant = Record<string, unknown>
-export type LoadingVariant = Record<string, unknown>
-export type OverlayVariant = Record<string, unknown>
-export type RefreshVariant = Record<string, unknown>

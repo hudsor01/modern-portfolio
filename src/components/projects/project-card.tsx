@@ -41,7 +41,7 @@ export const ProjectCard = React.memo(function ProjectCard({
           )}
 
           {/* Image Section */}
-          <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+          <div className="relative aspect-16/10 overflow-hidden bg-muted">
             {projectImage && (
               <Image
                 src={projectImage}
@@ -57,7 +57,7 @@ export const ProjectCard = React.memo(function ProjectCard({
             )}
 
             {/* Subtle gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/50 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
             {/* Primary Metric Badge - Shows on hover - DISABLED due to icon serialization issue */}
 

@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from '@/components/charts/lazy-charts'
-import { chartColors, chartCssVars } from '@/lib/chart-colors'
+import { chartColors, chartCssVars } from '@/lib/charts'
 import { paybackPeriodData } from '../data/constants'
 
 const paybackColors = {

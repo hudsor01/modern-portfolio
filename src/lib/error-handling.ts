@@ -15,7 +15,7 @@
  * 6. Include relevant context in error logs for debugging
  */
 
-import { logger } from '@/lib/monitoring/logger'
+import { logger } from '@/lib/logger'
 
 /**
  * Error handling strategy types

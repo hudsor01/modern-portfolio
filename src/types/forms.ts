@@ -1,9 +1,11 @@
 /**
  * Form Types - Centralized for TanStack Form
- * Consolidated from src/lib/forms/form-types.ts and tanstack-form-types.ts
+ * Consolidated from src/lib/forms/form-types.ts
  */
 
-import { z } from 'zod'
+import type { ChangeEvent, Dispatch, FormEvent, SetStateAction } from 'react'
+import type { ContactFormData } from './api'
+import { PostStatus, ContentType } from './blog'
 
 // ============================================================================
 // TanStack Form Core Types
@@ -38,153 +40,63 @@ export interface TanStackFieldApi<TValue = unknown> {
   handleBlur: () => void
 }
 
-/** Form metadata state */
-export interface FormMeta {
-  isValid: boolean
-  isValidating: boolean
-  isSubmitting: boolean
-  isSubmitted: boolean
-  submitCount: number
-  errors: string[]
-}
 
-/** Form state containing values and metadata */
-export interface FormState<TFormData extends Record<string, unknown> = Record<string, unknown>> {
-  values: TFormData
-  meta: FormMeta
-  isSubmitting: boolean
-  isValid: boolean
-}
-
-/**
- * Simplified FormApi type for use in components
- * Represents the essential properties accessed from TanStack Form's FormApi
- */
-export interface TanStackFormApi<TFormData extends Record<string, unknown> = Record<string, unknown>> {
-  state: FormState<TFormData>
-  Field: React.ComponentType<{
-    name: keyof TFormData
-    children: (field: TanStackFieldApi) => React.ReactNode
-  }>
-  handleSubmit: () => void
-  reset: () => void
-  setFieldValue: <K extends keyof TFormData>(name: K, value: TFormData[K]) => void
-  getFieldValue: <K extends keyof TFormData>(name: K) => TFormData[K]
-}
 
 // ============================================================================
-// Form Field Config Types
+// Contact Form Types
 // ============================================================================
 
-/**
- * Type-safe form configuration for TanStack Form
- */
-export interface FormFieldConfig<T = string> {
-  name: string
-  label?: string
-  description?: string
-  hint?: string
-  required?: boolean
-  disabled?: boolean
-  validation?: z.ZodType<T>
-  defaultValue?: T
-  placeholder?: string
-  className?: string
-  containerClassName?: string
-  labelClassName?: string
-}
-
-/**
- * Input field configuration
- */
-export interface InputFieldConfig extends FormFieldConfig<string> {
-  type?: 'text' | 'email' | 'tel' | 'password' | 'url' | 'number'
-  autoComplete?: string
-  minLength?: number
-  maxLength?: number
-  pattern?: string
-}
-
-/**
- * Textarea field configuration
- */
-export interface TextareaFieldConfig extends FormFieldConfig<string> {
-  minLength?: number
-  maxLength?: number
-  rows?: number
-  showCharacterCount?: boolean
-}
-
-/**
- * Select field configuration
- */
-export interface SelectFieldConfig extends FormFieldConfig<string> {
-  options: Array<{
-    value: string
-    label: string
-    disabled?: boolean
-  }>
-}
-
-/**
- * Checkbox field configuration
- */
-export interface CheckboxFieldConfig extends FormFieldConfig<boolean> {
-  text?: string
-}
-
-/**
- * Radio group configuration
- */
-export interface RadioGroupFieldConfig extends FormFieldConfig<string> {
-  options: Array<{
-    value: string
-    label: string
-    description?: string
-    disabled?: boolean
-  }>
-  orientation?: 'horizontal' | 'vertical'
-}
-
-/**
- * Checkbox group configuration
- */
-export interface CheckboxGroupFieldConfig extends FormFieldConfig<string[]> {
-  options: Array<{
-    value: string
-    label: string
-    description?: string
-    disabled?: boolean
-  }>
-}
-
-// ============================================================================
-// Form State & Response Types
-// ============================================================================
-
-/**
- * Form state interface
- */
-export interface FormStateInterface {
-  isSubmitting: boolean
-  isValid: boolean
-  isDirty: boolean
-  errors: Record<string, string[]>
-}
-
-/**
- * Form submission response
- */
-export interface FormSubmissionResponse<T = void> {
-  success: boolean
-  data?: T
-  error?: string
+export interface ContactFormErrors {
+  name?: string
+  email?: string
+  company?: string
+  phone?: string
   message?: string
+  terms?: string
 }
 
-/**
- * Contact form field names type-safe union
- */
-export const CONTACT_FORM_FIELDS = ['name', 'email', 'subject', 'message', 'company', 'phone'] as const
+export type SubmitStatus = 'idle' | 'submitting' | 'success' | 'error'
 
-export type ContactFormFieldName = typeof CONTACT_FORM_FIELDS[number]
+export interface UseContactFormReturn {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  form: any
+  formData: ContactFormData
+  errors: ContactFormErrors
+  handleInputChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
+  handleSubmit: (event?: FormEvent) => Promise<void>
+  submitStatus: SubmitStatus
+  showPrivacy: boolean
+  agreedToTerms: boolean
+  termsError: string | null
+  progress: number
+  isSubmitting: boolean
+  setShowPrivacy: Dispatch<SetStateAction<boolean>>
+  setAgreedToTerms: Dispatch<SetStateAction<boolean>>
+  resetForm: () => void
+  error: Error | null
+}
+
+export interface BlogPostFormData {
+  title: string
+  slug: string
+  excerpt?: string
+  content: string
+  contentType: ContentType
+  status: PostStatus
+  metaTitle?: string
+  metaDescription?: string
+  keywords: string[]
+  canonicalUrl?: string
+  ogTitle?: string
+  ogDescription?: string
+  ogImage?: string
+  twitterTitle?: string
+  twitterDescription?: string
+  twitterImage?: string
+  featuredImage?: string
+  featuredImageAlt?: string
+  publishedAt?: Date
+  scheduledAt?: Date
+  categoryId?: string
+  tagIds: string[]
+}

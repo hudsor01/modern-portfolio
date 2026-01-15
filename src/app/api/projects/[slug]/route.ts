@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getProject } from '@/lib/content/projects'
+import { getProject } from '@/lib/projects'
 import { z } from 'zod'
-import { validationErrorResponse } from '@/lib/api/response'
-import { createContextLogger } from '@/lib/monitoring/logger'
-import { getEnhancedRateLimiter } from '@/lib/security/rate-limiter'
+import { validationErrorResponse, checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-core'
+import { createContextLogger } from '@/lib/logger'
 
 const logger = createContextLogger('SlugAPI')
 
@@ -16,59 +15,21 @@ const slugSchema = z.object({
     .regex(/^[a-zA-Z0-9-_]+$/, 'Invalid slug format'),
 })
 
-// Helper function to get client identifier
-function getClientId(request: NextRequest): string {
-  return request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
-}
+export async function GET(request: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  const { slug } = await context.params
 
-export async function GET(request: NextRequest, { params }: { params: { slug: string } }) {
-  const clientId = getClientId(request)
-
-  // Rate limiting: 100 requests per minute for individual project views
-  const rateLimiter = getEnhancedRateLimiter()
-
-  const rateLimitResult = rateLimiter.checkLimit(
-    clientId,
-    {
-      windowMs: 60 * 1000, // 1 minute
-      maxAttempts: 100,
-      progressivePenalty: false,
-      blockDuration: 0,
-      adaptiveThreshold: true,
-      antiAbuse: true,
-      burstProtection: {
-        enabled: true,
-        burstWindow: 5 * 1000,
-        maxBurstRequests: 120,
-      },
-    },
-    {
-      path: `/api/projects/${(await params).slug}`,
-      method: 'GET',
-    }
+  // Rate limiting using shared utility
+  const rateLimitResponse = checkRateLimitOrRespond(
+    request,
+    RateLimitPresets.read,
+    `/api/projects/${slug}`,
+    'GET'
   )
-
-  if (!rateLimitResult.allowed) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Rate limit exceeded. Please try again later.',
-      },
-      {
-        status: 429,
-        headers: {
-          'Retry-After': String(Math.ceil((rateLimitResult.retryAfter || 0) / 1000)),
-          'X-RateLimit-Remaining': String(rateLimitResult.remaining || 0),
-          'X-RateLimit-Reset': String(rateLimitResult.resetTime || 0),
-        },
-      }
-    )
-  }
+  if (rateLimitResponse) return rateLimitResponse
 
   try {
     // Validate slug parameter
-    const resolvedParams = await params
-    const validatedParams = slugSchema.parse(resolvedParams)
+    const validatedParams = slugSchema.parse({ slug })
     const project = await getProject(validatedParams.slug)
 
     if (!project) {
@@ -86,10 +47,7 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
       data: project,
     })
   } catch (error) {
-    logger.error(
-      'Error fetching project:',
-      error instanceof Error ? error : new Error(String(error))
-    )
+    logger.error('Error fetching project:', error instanceof Error ? error : new Error(String(error)))
 
     if (error instanceof z.ZodError) {
       return validationErrorResponse(error)

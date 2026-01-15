@@ -2,10 +2,10 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Award, ExternalLink, Calendar } from 'lucide-react'
-import type { Certification } from '@/types/resume'
+import type { ResumeCertification } from '@/types/resume'
 
 interface CertificationsShowcaseProps {
-  certifications: Certification[]
+  certifications: ResumeCertification[]
   className?: string
 }
 
@@ -31,7 +31,7 @@ export function CertificationsShowcase({ certifications, className = '' }: Certi
 }
 
 interface CertificationCardProps {
-  certification: Certification
+  certification: ResumeCertification
 }
 
 function CertificationCard({ certification }: CertificationCardProps) {

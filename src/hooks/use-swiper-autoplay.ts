@@ -2,12 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import type { Swiper } from 'swiper'
-
-interface UseSwiperAutoplayOptions {
-  delay?: number
-  disableOnInteraction?: boolean
-  pauseOnMouseEnter?: boolean
-}
+import type { UseSwiperAutoplayOptions } from '@/types/hooks'
 
 export function useSwiperAutoplay(
   swiper?: Swiper,

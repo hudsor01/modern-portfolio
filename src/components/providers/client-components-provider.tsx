@@ -1,16 +1,12 @@
 'use client'
 
 import React from 'react'
-import { TanStackQueryProvider } from '@/components/providers/tanstack-query-provider'
 
 /**
  * Client Components Provider
- * Wraps TanStack Query for data fetching
+ * Placeholder for future client-side providers (e.g., theme, toast, etc.)
+ * Currently just passes through children - no TanStack Query needed.
  */
 export function ClientComponentsProvider({ children }: { children: React.ReactNode }) {
-  return (
-    <TanStackQueryProvider>
-      {children}
-    </TanStackQueryProvider>
-  )
+  return <>{children}</>
 }

@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+import { withSentryConfig } from '@sentry/nextjs'
 
 const nextConfig = {
   reactStrictMode: true,
@@ -167,4 +168,12 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+const sentryBuildOptions = {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  sentryUrl: process.env.SENTRY_URL,
+  silent: true,
+};
+
+export default withSentryConfig(nextConfig, sentryBuildOptions);

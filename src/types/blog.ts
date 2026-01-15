@@ -10,6 +10,25 @@ import { Prisma } from '@/generated/prisma/client'
 export type { BlogPost, Author, Category, Tag, PostTag }
 
 // ============================================================================
+// BLOG ENUMS
+// ============================================================================
+
+export enum PostStatus {
+  DRAFT = 'DRAFT',
+  REVIEW = 'REVIEW',
+  SCHEDULED = 'SCHEDULED',
+  PUBLISHED = 'PUBLISHED',
+  ARCHIVED = 'ARCHIVED',
+  DELETED = 'DELETED',
+}
+
+export enum ContentType {
+  MARKDOWN = 'MARKDOWN',
+  HTML = 'HTML',
+  RICH_TEXT = 'RICH_TEXT',
+}
+
+// ============================================================================
 // UTILITY TYPES - Prisma-based combinations
 // ============================================================================
 
@@ -166,14 +185,6 @@ export function isTag(value: unknown): value is Tag {
 }
 
 // ============================================================================
-// TYPE ALIASES - Backward compatibility
-// ============================================================================
-
-export type BlogCategory = Category
-export type BlogTag = Tag
-export type BlogAuthor = Author
-
-// ============================================================================
 // COMMENT TYPES - Not in Prisma schema
 // ============================================================================
 
@@ -228,7 +239,7 @@ export interface BlogAnalytics {
 // SUMMARY TYPES - For API responses
 // ============================================================================
 
-export interface BlogPostSummary {
+export interface BlogPostSummaryDetailed {
   id: string
   title: string
   slug: string
@@ -279,6 +290,3 @@ export interface BlogPostSummary {
     updatedAt: string
   }>
 }
-
-// Alias for backward compatibility
-export type BlogPostFilter = BlogFilters

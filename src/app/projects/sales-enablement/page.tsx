@@ -5,8 +5,8 @@ import { TrendingUp, Users, Zap, BookOpen } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
-import { formatNumber, formatTrend } from '@/lib/utils/data-formatters'
-import { ProjectJsonLd } from '@/components/seo/json-ld'
+import { formatNumber, formatTrend } from '@/lib/data-formatters'
+import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { NarrativeSections } from './_components/NarrativeSections'
 import { PillarsGrid } from './_components/PillarsGrid'
 

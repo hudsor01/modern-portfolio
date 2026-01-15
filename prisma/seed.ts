@@ -4,7 +4,7 @@
  */
 
 import { PrismaClient, Prisma } from '../src/generated/prisma/client'
-import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaNeon } from '@prisma/adapter-neon'
 import type {
   Author,
   BlogPost,
@@ -16,8 +16,8 @@ import type {
 } from '../src/generated/prisma/client'
 import { showcaseProjects } from '../src/data/projects'
 
-// Create the PostgreSQL adapter for seeding
-const adapter = new PrismaPg({
+// Create the Neon adapter for seeding
+const adapter = new PrismaNeon({
   connectionString: process.env.DATABASE_URL!,
 })
 

@@ -7,14 +7,14 @@ import { useQueryState } from 'nuqs'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { commissionMetrics } from './data/constants'
-import { formatCurrency, formatPercentage } from '@/lib/utils/data-formatters'
+import { formatCurrency, formatPercentage } from '@/lib/data-formatters'
 import { ProcessingMetrics } from './_components/ProcessingMetrics'
 import { OverviewTab } from './_components/OverviewTab'
 import { TiersTab } from './_components/TiersTab'
 import { IncentivesTab } from './_components/IncentivesTab'
 import { AutomationTab } from './_components/AutomationTab'
 import { NarrativeSections } from './_components/NarrativeSections'
-import type { MetricConfig } from '@/lib/design-system/types'
+import type { MetricConfig } from '@/types/design-system'
 
 const tabs = ['overview', 'tiers', 'incentives', 'automation'] as const
 type Tab = (typeof tabs)[number]

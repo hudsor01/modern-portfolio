@@ -1,7 +1,6 @@
 'use client'
 
-import { CalendarIcon, FileTextIcon } from '@radix-ui/react-icons'
-import { BarChart3, Users, TrendingUp, Handshake, PieChart, Target, Zap, Database, Mail } from 'lucide-react'
+import { BarChart3, Users, TrendingUp, Handshake, PieChart, Target, Zap, Database, Mail, Calendar as CalendarIcon, FileText as FileTextIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Calendar } from '@/components/ui/calendar'
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid'

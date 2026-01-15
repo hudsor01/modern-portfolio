@@ -1,12 +1,5 @@
 import { useState } from 'react'
-
-interface UseQuickViewModalResult<T> {
-  isOpen: boolean
-  selectedItem: T | null
-  open: (item: T) => void
-  close: () => void
-  setOpen: (isOpen: boolean) => void
-}
+import type { UseQuickViewModalResult } from '@/types/hooks'
 
 /**
  * Hook for managing modal state with a selected item.

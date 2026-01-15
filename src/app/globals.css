@@ -1,14 +1,12 @@
 @import 'tailwindcss';
 @import '../styles/interaction-patterns.css';
+@import '../styles/blog-styles.css';
+@import '../styles/animations.css';
+@import '../styles/responsive-utilities.css';
 
 @custom-variant dark (&:is(.dark *));
 
-/* Light mode only - no dark mode support */
-
 @theme {
-  /* Luxury Minimalist Typography System */
-  /* Note: These use fallbacks. Actual fonts loaded via Next.js font loader */
-  /* Variables --font-playfair, --font-spline, --font-roboto-mono are set in layout.tsx */
   --font-family-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-family-mono: 'Fira Code', Consolas, monospace;
   --font-family-display: Georgia, 'Times New Roman', serif;
@@ -58,7 +56,6 @@
   --icon-stroke-medium: 1.5;
   --icon-stroke-bold: 2;
 
-  /* Chart Dimensions */
   --chart-height-sm: 250px;
   --chart-height-md: 350px;
   --chart-height-lg: 400px;
@@ -111,18 +108,15 @@
   --color-input: oklch(0.995 0.002 250);
   --color-ring: oklch(0.35 0.12 250);
 
-  /* Chart colors - Masculine palette (Navy, Forest Green, Bronze, Slate) */
   --color-chart-1: oklch(0.35 0.12 250);
   --color-chart-2: oklch(0.45 0.10 145);
   --color-chart-3: oklch(0.55 0.12 55);
   --color-chart-4: oklch(0.50 0.02 250);
   --color-chart-5: oklch(0.30 0.08 250);
 
-  /* Semantic colors for RevOps metrics */
   --color-revenue: oklch(0.55 0.12 55);
   --color-growth: oklch(0.45 0.10 145);
 
-  /* Semantic background colors with built-in opacity */
   --color-destructive-bg: oklch(0.50 0.18 25 / 0.08);
   --color-destructive-border: oklch(0.50 0.18 25 / 0.15);
   --color-success-bg: oklch(0.45 0.10 145 / 0.08);
@@ -229,7 +223,6 @@ html {
 }
 
 body {
-  /* Use Next.js loaded fonts with fallbacks */
   font-family: var(--font-spline), system-ui, -apple-system, 'Segoe UI', sans-serif;
   background-color: var(--color-background);
   color: var(--color-foreground);
@@ -695,242 +688,6 @@ label {
   padding: 1rem;
 }
 
-.glow-primary {
-  text-shadow: 0 0 20px oklch(0.55 0.17 160 / 0.5);
-}
-
-.glow-secondary {
-  text-shadow: 0 0 20px oklch(0.45 0.08 250 / 0.5);
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px) scale(1); }
-  50% { transform: translateY(-20px) scale(1.05); }
-}
-
-@keyframes float-delayed {
-  0%, 100% { transform: translateY(0px) scale(1); }
-  50% { transform: translateY(-15px) scale(1.03); }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.6; }
-}
-
-@keyframes gradient-shift {
-  0%, 100% { opacity: 1; transform: rotate(0deg) scale(1); }
-  25% { opacity: 0.8; transform: rotate(90deg) scale(1.1); }
-  50% { opacity: 0.6; transform: rotate(180deg) scale(1); }
-  75% { opacity: 0.8; transform: rotate(270deg) scale(1.1); }
-}
-
-@keyframes pulse-slow {
-  0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
-  50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.1); }
-}
-
-@keyframes shimmer {
-  100% { transform: translateX(100%); }
-}
-
-.animate-float { animation: float 6s ease-in-out infinite; }
-.animate-float-delayed { animation: float-delayed 8s ease-in-out infinite; animation-delay: 2s; }
-.animate-pulse-glow { animation: pulse-glow 4s ease-in-out infinite; }
-.animate-gradient-shift { animation: gradient-shift 30s ease-in-out infinite; }
-.animate-pulse-slow { animation: pulse-slow 8s ease-in-out infinite; }
-
-/* Magic UI Homepage Animations */
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-@keyframes gradient-x {
-  0%, 100% {
-    background-size: 200% 200%;
-    background-position: left center;
-  }
-  50% {
-    background-size: 200% 200%;
-    background-position: right center;
-  }
-}
-
-@keyframes gradient {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.02); }
-}
-
-@keyframes bounce-subtle {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-}
-
-.animate-blink { animation: blink 1s ease-in-out infinite; }
-.animate-gradient-x { animation: gradient-x 3s ease infinite; }
-.animate-gradient { animation: gradient 8s ease-in-out infinite; }
-.animate-bounce-subtle { animation: bounce-subtle 2s ease-in-out infinite; }
-
-/* Magic UI Marquee Animations */
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(calc(-100% - var(--gap))); }
-}
-
-@keyframes marquee-vertical {
-  from { transform: translateY(0); }
-  to { transform: translateY(calc(-100% - var(--gap))); }
-}
-
-.animate-marquee {
-  animation: marquee var(--duration) linear infinite;
-}
-
-.animate-marquee-vertical {
-  animation: marquee-vertical var(--duration) linear infinite;
-}
-
-/* Magic UI Orbiting Circles Animation */
-@keyframes orbit {
-  0% {
-    transform: rotate(calc(var(--angle) * 1deg)) translateY(calc(var(--radius) * 1px)) rotate(calc(var(--angle) * -1deg));
-  }
-  100% {
-    transform: rotate(calc(var(--angle) * 1deg + 360deg)) translateY(calc(var(--radius) * 1px)) rotate(calc((var(--angle) * -1deg) - 360deg));
-  }
-}
-
-.animate-orbit {
-  animation: orbit calc(var(--duration) * 1s) linear infinite;
-}
-
-@utility text-white-enhanced { color: oklch(0.99 0.005 285) !important; }
-@utility text-gray-100-enhanced { color: oklch(0.95 0.01 285) !important; }
-@utility text-gray-200-enhanced { color: oklch(0.9 0.01 285) !important; }
-@utility text-gray-300-enhanced { color: oklch(0.8 0.01 285) !important; }
-
-@utility text-responsive-xs { font-size: clamp(0.75rem, 2vw, 0.875rem); line-height: 1.4; }
-@utility text-responsive-sm { font-size: clamp(0.875rem, 2.5vw, 1rem); line-height: 1.5; }
-@utility text-responsive-base { font-size: clamp(1rem, 3vw, 1.125rem); line-height: 1.6; }
-@utility text-responsive-lg { font-size: clamp(1.125rem, 3.5vw, 1.25rem); line-height: 1.6; }
-@utility text-responsive-xl { font-size: clamp(1.25rem, 4vw, 1.5rem); line-height: 1.5; }
-@utility text-responsive-2xl { font-size: clamp(1.5rem, 5vw, 2rem); line-height: 1.4; }
-@utility text-responsive-3xl { font-size: clamp(1.875rem, 6vw, 2.5rem); line-height: 1.3; }
-@utility text-responsive-4xl { font-size: clamp(2.25rem, 7vw, 3rem); line-height: 1.2; }
-@utility text-responsive-5xl { font-size: clamp(3rem, 8vw, 4rem); line-height: 1.1; }
-@utility text-responsive-6xl { font-size: clamp(3.75rem, 10vw, 5rem); line-height: 1; }
-
-@utility icon-xs { width: var(--icon-size-xs); height: var(--icon-size-xs); }
-@utility icon-sm { width: var(--icon-size-sm); height: var(--icon-size-sm); }
-@utility icon-base { width: var(--icon-size-base); height: var(--icon-size-base); }
-@utility icon-md { width: var(--icon-size-md); height: var(--icon-size-md); }
-@utility icon-lg { width: var(--icon-size-lg); height: var(--icon-size-lg); }
-@utility icon-xl { width: var(--icon-size-xl); height: var(--icon-size-xl); }
-@utility icon-2xl { width: var(--icon-size-2xl); height: var(--icon-size-2xl); }
-
-@utility stroke-light { stroke-width: var(--icon-stroke-light); }
-@utility stroke-regular { stroke-width: var(--icon-stroke-regular); }
-@utility stroke-medium { stroke-width: var(--icon-stroke-medium); }
-@utility stroke-bold { stroke-width: var(--icon-stroke-bold); }
-
-@utility font-regular { font-weight: var(--font-weight-regular); }
-@utility font-medium { font-weight: var(--font-weight-medium); }
-@utility font-semibold { font-weight: var(--font-weight-semibold); }
-
-@utility text-size-xs { font-size: var(--font-size-xs); }
-@utility text-size-sm { font-size: var(--font-size-sm); }
-@utility text-size-base { font-size: var(--font-size-base); }
-@utility text-size-lg { font-size: var(--font-size-lg); }
-@utility text-size-xl { font-size: var(--font-size-xl); }
-@utility text-size-2xl { font-size: var(--font-size-2xl); }
-@utility text-size-3xl { font-size: var(--font-size-3xl); }
-@utility text-size-4xl { font-size: var(--font-size-4xl); }
-
-@utility glass {
-  background-color: color-mix(in oklch, var(--color-foreground) 5%, transparent);
-  backdrop-filter: blur(0.5rem);
-  border: 1px solid color-mix(in oklch, var(--color-foreground) 10%, transparent);
-}
-
-@utility glass-hover {
-  background-color: color-mix(in oklch, var(--color-foreground) 10%, transparent);
-  border-color: color-mix(in oklch, var(--color-foreground) 20%, transparent);
-}
-
-@utility glass-interactive {
-  background-color: color-mix(in oklch, var(--color-foreground) 5%, transparent);
-  backdrop-filter: blur(0.5rem);
-  border: 1px solid color-mix(in oklch, var(--color-foreground) 10%, transparent);
-  transition: all var(--transition-base);
-
-  &:hover {
-    background-color: color-mix(in oklch, var(--color-foreground) 10%, transparent);
-    border-color: color-mix(in oklch, var(--color-foreground) 20%, transparent);
-  }
-}
-
-@utility glass-card {
-  background-color: color-mix(in oklch, var(--color-foreground) 5%, transparent);
-  backdrop-filter: blur(0.5rem);
-  border: 1px solid color-mix(in oklch, var(--color-foreground) 10%, transparent);
-  border-radius: var(--radius-3xl);
-  padding: var(--spacing-lg);
-}
-
-@utility glass-card-lg {
-  background-color: color-mix(in oklch, var(--color-foreground) 5%, transparent);
-  backdrop-filter: blur(0.5rem);
-  border: 1px solid color-mix(in oklch, var(--color-foreground) 10%, transparent);
-  border-radius: var(--radius-3xl);
-  padding: var(--spacing-xl);
-}
-
-@utility glass-panel {
-  background-color: color-mix(in oklch, var(--color-foreground) 5%, transparent);
-  backdrop-filter: blur(0.5rem);
-  border: 1px solid color-mix(in oklch, var(--color-foreground) 10%, transparent);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-md);
-}
-
-@utility glass-light {
-  background-color: color-mix(in oklch, var(--color-background) 70%, transparent);
-  backdrop-filter: blur(0.5rem);
-  border: 1px solid color-mix(in oklch, var(--color-background) 20%, transparent);
-}
-
-@utility gradient-cta {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-}
-
-@utility gradient-cta-hover {
-  background: linear-gradient(135deg, var(--color-primary-hover) 0%, var(--color-secondary-hover) 100%);
-}
-
-@utility gradient-text {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-@utility bg-page {
-  background: linear-gradient(to bottom right, var(--color-background), var(--color-card));
-}
-
-@utility bg-page-light {
-  background: linear-gradient(to bottom right, var(--color-background), var(--color-muted));
-}
-
-@utility hover-lift {
-  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@utility hover-glow {
-  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 /* ============================================
    Semantic Animation Tokens - Framer Motion Replacements
    ============================================ */
@@ -1103,11 +860,6 @@ label {
     transition-duration: 0.01ms !important;
   }
 }
-
-/* ============================================
-   shadcn/ui Typography System
-   Based on: https://ui.shadcn.com/docs/components/typography
-   ============================================ */
 
 /* Heading utilities - shadcn/ui compatible */
 .typography-h1 {
@@ -1345,9 +1097,12 @@ label {
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: var(--color-border);
+    outline-color: var(--color-ring);
+    outline-width: 1px;
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
   }
 }

@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Skill } from '@/data/skills'
+import { SkillDatum } from '@/data/skills'
 
 interface SkillsChartProps {
-  skills: Skill[]
+  skills: SkillDatum[]
 }
 
 export function SkillsChart({ skills }: Readonly<SkillsChartProps>) {

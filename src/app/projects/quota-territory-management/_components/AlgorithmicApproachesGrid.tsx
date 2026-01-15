@@ -2,7 +2,7 @@
 
 import { Code, Check } from 'lucide-react'
 import { SectionCard } from '@/components/ui/section-card'
-import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data-formatters'
+import { formatCurrency, formatNumber, formatPercentage } from '@/lib/data-formatters'
 
 interface AlgorithmicApproach {
   name: string

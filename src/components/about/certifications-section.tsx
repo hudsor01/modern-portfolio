@@ -85,7 +85,7 @@ interface CertificationBadgeProps {
 
 function CertificationBadge({ badge, name }: CertificationBadgeProps) {
   return (
-    <div className="flex-shrink-0 w-16 h-16 relative rounded-xl overflow-hidden bg-primary/10 flex items-center justify-center">
+    <div className="shrink-0 w-16 h-16 relative rounded-xl overflow-hidden bg-primary/10 flex items-center justify-center">
       {badge.startsWith('/') ? (
         <Image
           src={badge}

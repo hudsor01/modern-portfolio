@@ -2,7 +2,7 @@
 
 import { SectionCard } from '@/components/ui/section-card'
 import { channelPerformance } from '../data/constants'
-import { formatCurrency } from '@/lib/utils/data-formatters'
+import { formatCurrency } from '@/lib/data-formatters'
 
 export function ChannelsTab() {
   return (

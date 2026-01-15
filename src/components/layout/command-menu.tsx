@@ -13,8 +13,8 @@ import {
   CommandItem,
   CommandSeparator,
 } from '@/components/ui/command'
-import { asRoute } from '@/lib/utils/route-utils'
-import { navConfig } from '@/lib/config/site'
+import { asRoute } from '@/lib/route-utils'
+import { navConfig } from '@/lib/site'
 
 export function CommandMenu({ ...props }: DialogProps) {
   const router = useRouter()

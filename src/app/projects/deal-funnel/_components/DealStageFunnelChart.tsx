@@ -1,6 +1,6 @@
 'use client'
 
-import { chartColors } from '@/lib/chart-colors'
+import { chartColors } from '@/lib/charts'
 
 // Define proper types for the data
 interface FunnelStage {

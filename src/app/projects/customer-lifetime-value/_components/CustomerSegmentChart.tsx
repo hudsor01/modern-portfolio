@@ -11,7 +11,7 @@ import {
   CartesianGrid,
   Legend,
 } from '@/components/charts/lazy-charts'
-import { chartColors, chartCssVars } from '@/lib/chart-colors'
+import { chartColors, chartCssVars } from '@/lib/charts'
 import { customerSegmentChartData } from '../data/constants'
 
 const CustomerSegmentChart = memo(function CustomerSegmentChart() {

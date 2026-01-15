@@ -2,10 +2,10 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { GraduationCap, MapPin, Calendar } from 'lucide-react'
-import type { Education } from '@/types/resume'
+import type { ResumeEducation } from '@/types/resume'
 
 interface EducationSectionProps {
-  education: Education[]
+  education: ResumeEducation[]
   className?: string
 }
 
@@ -31,7 +31,7 @@ export function EducationSection({ education, className = '' }: EducationSection
 }
 
 interface EducationCardProps {
-  education: Education
+  education: ResumeEducation
 }
 
 function EducationCard({ education }: EducationCardProps) {

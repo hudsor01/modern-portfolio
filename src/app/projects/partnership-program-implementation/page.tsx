@@ -2,7 +2,7 @@
 export const dynamic = 'force-static'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
-import { ProjectJsonLd } from '@/components/seo/json-ld'
+import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { AchievementsGrid } from './_components/AchievementsGrid'
 import { TechnicalDetails } from './_components/TechnicalDetails'
 import { NarrativeSections } from './_components/NarrativeSections'
