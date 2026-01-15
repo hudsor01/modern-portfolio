@@ -5,10 +5,10 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
+  type ChartThemeConfig,
 } from '@/components/ui/chart'
 import { LazyPieChart as PieChart, Pie, Cell, ResponsiveContainer } from '@/components/charts/lazy-charts'
-import { chartColors } from '@/lib/chart-colors'
+import { chartColors } from '@/lib/charts'
 
 const COLORS = [chartColors.primary, chartColors.secondary, chartColors.chart3, chartColors.chart4]
 
@@ -27,7 +27,7 @@ export default function PartnerGroupPieChart({ groups }: PartnerGroupPieChartPro
   })()
 
   const chartConfig = (() => {
-    const config: ChartConfig = {}
+    const config: ChartThemeConfig = {}
     chartData.forEach((item) => {
       config[item.name] = {
         label: item.name,

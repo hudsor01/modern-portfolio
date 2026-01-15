@@ -1,7 +1,6 @@
 'use client'
 
-import { CalendarIcon, FileTextIcon } from '@radix-ui/react-icons'
-import { BarChart3, Users, TrendingUp, Handshake, PieChart, Target, Zap, Database, Mail } from 'lucide-react'
+import { BarChart3, Users, TrendingUp, Handshake, PieChart, Target, Zap, Database, Mail, Calendar as CalendarIcon, FileText as FileTextIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Calendar } from '@/components/ui/calendar'
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid'
@@ -46,7 +45,7 @@ const Notification = ({ name, description, Icon, color, time }: NotificationItem
   return (
     <figure
       className={cn(
-        'relative mx-auto min-h-fit w-full max-w-[400px] cursor-pointer overflow-hidden rounded-2xl p-4',
+        'relative mx-auto min-h-fit w-full max-w-100 cursor-pointer overflow-hidden rounded-2xl p-4',
         'transition-all duration-200 ease-in-out hover:scale-[103%]',
         'bg-white [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)]',
         'transform-gpu dark:bg-transparent dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset] dark:backdrop-blur-md dark:[border:1px_solid_rgba(255,255,255,.1)]'
@@ -80,7 +79,7 @@ function AnimatedListDemo({ className }: { className?: string }) {
           <Notification {...item} key={idx} />
         ))}
       </AnimatedList>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-background"></div>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-linear-to-t from-background"></div>
     </div>
   )
 }
@@ -88,7 +87,7 @@ function AnimatedListDemo({ className }: { className?: string }) {
 function OrbitingCirclesDemo({ className }: { className?: string }) {
   return (
     <div className={cn('relative flex h-full w-full items-center justify-center overflow-hidden', className)}>
-      <span className="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text text-center text-4xl font-semibold leading-none text-transparent dark:from-white dark:to-slate-900/10">
+      <span className="pointer-events-none whitespace-pre-wrap bg-linear-to-b from-black to-gray-300/80 bg-clip-text text-center text-4xl font-semibold leading-none text-transparent dark:from-white dark:to-slate-900/10">
         2,217%
       </span>
       <OrbitingCircles iconSize={30} radius={80}>
@@ -162,22 +161,22 @@ const features = [
     Icon: FileTextIcon,
     name: 'Revenue Operations',
     description: '$4.8M+ revenue generated through data-driven strategies.',
-    href: '/projects',
-    cta: 'View Projects',
+    href: '/projects/revenue-operations-center',
+    cta: 'See Dashboard',
     // Responsive: 1 col on all breakpoints (uses default)
     className: '',
     background: (
       <Marquee
         pauseOnHover
-        className="absolute top-10 [--duration:20s] [mask-image:linear-gradient(to_top,transparent_40%,#000_100%)]"
+        className="absolute top-10 [--duration:20s] mask-[linear-gradient(to_top,transparent_40%,#000_100%)]"
       >
         {files.map((f, idx) => (
           <figure
             key={idx}
             className={cn(
               'relative w-32 cursor-pointer overflow-hidden rounded-xl border p-4',
-              'border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]',
-              'dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]',
+              'border-gray-950/10 bg-gray-950/1 hover:bg-gray-950/5',
+              'dark:border-gray-50/10 dark:bg-gray-50/10 dark:hover:bg-gray-50/15',
               'transform-gpu blur-[1px] transition-all duration-300 ease-out hover:blur-none'
             )}
           >
@@ -199,7 +198,7 @@ const features = [
     // Responsive: 2 cols on tablet+
     className: 'md:col-span-2',
     background: (
-      <AnimatedListDemo className="h-full w-full [mask-image:linear-gradient(to_top,transparent_40%,#000_100%)] transition-all duration-300 ease-out group-hover:scale-105" />
+      <AnimatedListDemo className="h-full w-full mask-[linear-gradient(to_top,transparent_40%,#000_100%)] transition-all duration-300 ease-out group-hover:scale-105" />
     ),
   },
   {
@@ -211,19 +210,19 @@ const features = [
     // Responsive: 2 cols on tablet+
     className: 'md:col-span-2',
     background: (
-      <OrbitingCirclesDemo className="h-full w-full [mask-image:linear-gradient(to_top,transparent_40%,#000_100%)] transition-all duration-300 ease-out group-hover:scale-105" />
+      <OrbitingCirclesDemo className="h-full w-full mask-[linear-gradient(to_top,transparent_40%,#000_100%)] transition-all duration-300 ease-out group-hover:scale-105" />
     ),
   },
   {
     Icon: CalendarIcon,
     name: 'Strategic Planning',
     description: 'Cross-functional leadership driving measurable outcomes.',
-    href: '/about',
-    cta: 'Learn More',
+    href: '/projects/forecast-pipeline-intelligence',
+    cta: 'See Intelligence',
     // Responsive: 1 col on all breakpoints (uses default)
     className: '',
     background: (
-      <div className="absolute right-0 top-10 origin-top scale-75 transition-all duration-300 ease-out group-hover:scale-90 [mask-image:linear-gradient(to_top,transparent_40%,#000_100%)]">
+      <div className="absolute right-0 top-10 origin-top scale-75 transition-all duration-300 ease-out group-hover:scale-90 mask-[linear-gradient(to_top,transparent_40%,#000_100%)]">
         <div className="relative rounded-md overflow-hidden">
           <Calendar
             mode="single"

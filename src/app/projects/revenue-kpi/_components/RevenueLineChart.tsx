@@ -1,5 +1,5 @@
 'use client'
-import React, { memo } from 'react'
+import React, { memo, useMemo } from 'react'
 import { LazyLineChart as LineChart, Line, Legend } from '@/components/charts/lazy-charts'
 import {
   ChartWrapper,
@@ -7,9 +7,9 @@ import {
   ChartXAxis,
   ChartYAxis,
   StandardTooltip,
-} from '@/lib/charts/chart-components'
-import { chartColors, chartConfig, chartTypeConfigs, formatters } from '@/lib/charts/chart-theme'
-import type { YearOverYearData } from '@/lib/analytics/data-service'
+} from '@/lib/chart-components'
+import { chartColors, chartConfig, chartTypeConfigs, formatters } from '@/lib/charts'
+import type { YearOverYearData } from '@/types/analytics'
 import type { ExtendedRevenueData, TypedTooltipProps } from '@/types/chart'
 
 // Transform the real data for the line chart with proper typing
@@ -72,7 +72,8 @@ type RevenueLineChartProps = {
 }
 
 const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Element => {
-  const yearlyData = (() => {
+  // Memoize data transformation to prevent recalculation on every render
+  const yearlyData = useMemo(() => {
     if (!data || data.length === 0) return []
     return data.map((yearData: YearOverYearSeries, index: number) => {
       const previousYear = index > 0 ? data[index - 1] : null;
@@ -92,7 +93,7 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
         }
       };
     });
-  })();
+  }, [data]);
 
   if (!yearlyData.length) {
     return (
@@ -116,7 +117,7 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
         <LineChart data={yearlyData} margin={chartConfig.margins.medium}>
           <ChartGrid />
           <ChartXAxis dataKey="name" />
-          <ChartYAxis tickFormatter={(value) => formatters.number(typeof value === 'string' ? parseFloat(value) : value)} />
+          <ChartYAxis tickFormatter={(value) => formatters.default(typeof value === 'string' ? parseFloat(value) : value)} />
           <CustomTooltip />
           <Legend />
           <Line

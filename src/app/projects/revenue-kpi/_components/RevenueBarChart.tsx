@@ -5,7 +5,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
+  type ChartThemeConfig,
 } from '@/components/ui/chart'
 import {
   LazyAreaChart as AreaChart,
@@ -14,14 +14,14 @@ import {
   YAxis,
   CartesianGrid,
 } from '@/components/charts/lazy-charts'
-import { chartColors } from '@/lib/chart-colors'
+import { chartColors } from '@/lib/charts'
 
 const chartConfig = {
   revenue: {
     label: 'Revenue',
     color: chartColors.primary,
   },
-} satisfies ChartConfig
+} satisfies ChartThemeConfig
 
 type RevenueBarChartProps = {
   data: Array<{ label: string; revenue: number }>

@@ -43,9 +43,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
   ]
-  
-  // Location-based SEO metadata (important for local search visibility)
-  // These help with "Revenue Operations Dallas", "RevOps Fort Worth", etc. searches
+
   const locationPages = [
     'locations',
     'locations/dallas',
@@ -58,8 +56,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: 'monthly' as const,
     priority: location === 'locations' ? 0.9 : 0.85,
   }))
-  
-  // Project dashboard pages
+
   const projectPages = [
     'revenue-kpi',
     'revenue-operations-center',

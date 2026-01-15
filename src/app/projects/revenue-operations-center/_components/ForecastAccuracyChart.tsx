@@ -12,7 +12,7 @@ import {
   Area,
   LazyComposedChart as ComposedChart,
 } from '@/components/charts/lazy-charts'
-import { chartColors as baseChartColors, chartCssVars } from '@/lib/chart-colors'
+import { chartColors as baseChartColors, chartCssVars } from '@/lib/charts'
 
 // Forecast accuracy data with confidence intervals
 const data = [

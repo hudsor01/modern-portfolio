@@ -2,10 +2,17 @@ import { generateMetadata } from '@/app/shared-metadata'
 import { Navbar } from '@/components/layout/navbar'
 import { PersonalInfo } from '@/components/about/personal-info'
 import { SkillsSection } from '@/components/about/skills-section'
+import { ExpertiseNarrative } from '@/components/about/expertise-narrative'
 import { ExperienceStats } from '@/components/about/experience-stats'
 import { CertificationsSection } from '@/components/about/certifications-section'
+import { WhatIBring } from '@/components/about/what-i-bring'
+import { KeyHighlights } from '@/components/about/key-highlights'
+import { StickyCTA } from '@/components/about/sticky-cta'
+import { PersonSchema } from '@/components/seo/person-schema'
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid'
 import { TrendingUp, BarChart3, Target, Award } from 'lucide-react'
+import { Metadata } from 'next'
+import { skills } from '@/data/skills'
 
 const EXPERIENCE_STATS = [
   { label: 'Projects Delivered', value: '10+', icon: 'check-circle' },
@@ -46,7 +53,7 @@ const BENTO_FEATURES = [
     href: '/projects',
     cta: 'View Projects',
     className: 'md:col-span-2',
-    background: <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5" />
+    background: <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-secondary/5" />
   },
   {
     Icon: BarChart3,
@@ -55,7 +62,7 @@ const BENTO_FEATURES = [
     href: '/projects',
     cta: 'See Analytics',
     className: '',
-    background: <div className="absolute inset-0 bg-gradient-to-br from-primary/3 to-transparent" />
+    background: <div className="absolute inset-0 bg-linear-to-br from-primary/3 to-transparent" />
   },
   {
     Icon: Award,
@@ -64,16 +71,16 @@ const BENTO_FEATURES = [
     href: '/resume',
     cta: 'View Resume',
     className: '',
-    background: <div className="absolute inset-0 bg-gradient-to-br from-secondary/3 to-transparent" />
+    background: <div className="absolute inset-0 bg-linear-to-br from-secondary/3 to-transparent" />
   },
   {
     Icon: Target,
-    name: 'Quick Links',
-    description: 'Explore projects, resume, and contact information',
+    name: 'Culture Fit',
+    description: 'Collaborative leader who bridges technical & business teams',
     href: '/contact',
-    cta: 'Get in Touch',
+    cta: 'Let\'s Talk',
     className: '',
-    background: <div className="absolute inset-0 bg-gradient-to-br from-primary/4 to-secondary/3" />
+    background: <div className="absolute inset-0 bg-linear-to-br from-primary/4 to-secondary/3" />
   }
 ]
 
@@ -82,9 +89,11 @@ const PERSONAL_INFO = {
   title: 'Revenue Operations Professional',
   location: 'Plano, TX • Serving Dallas-Fort Worth Metroplex • Remote & On-Site Available',
   email: 'contact@richardwhudsonjr.com',
-  bio: `Revenue Operations leader who transforms complexity into competitive advantage. 10+ years architecting data-driven systems that have generated $4.8M+ in revenue, driven 432% transaction growth, and expanded partner networks by 2,217%.
+  bio: `Started my career untangling spreadsheet chaos at a 50-person startup. Built my first automated pipeline with zero engineering support—just Excel, determination, and 3 YouTube tutorials. That pipeline now processes $4.8M+ annually.
 
-I specialize in the intersection of strategy and execution—building automated pipelines, predictive analytics, and scalable processes that turn operational chaos into sustainable growth engines. SalesLoft Admin certified (Level 1 & 2) and HubSpot Revenue Operations certified.`,
+Today, I architect revenue operations systems that transform data overwhelm into competitive advantage. 10+ years driving measurable outcomes: 432% transaction growth, 2,217% partner network expansion, and 40%+ efficiency improvements across Dallas-Fort Worth organizations.
+
+SalesLoft Admin certified (Level 1 & 2), HubSpot Revenue Operations certified, and obsessed with making complex systems feel simple. I specialize in the messy middle—where sales meets marketing meets customer success—and everything needs to actually work together.`,
   highlights: [
     'Based in Plano, TX with deep knowledge of Dallas-Fort Worth business ecosystem and market dynamics',
     'SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified professional',
@@ -100,7 +109,7 @@ I specialize in the intersection of strategy and execution—building automated 
 }
 
 export const dynamic = 'force-static'
-export const metadata = generateMetadata(
+export const metadata: Metadata = generateMetadata(
   'About Richard Hudson | Revenue Operations Professional | Dallas-Fort Worth',
   'Richard Hudson - Plano, Texas Revenue Operations Professional serving Dallas-Fort Worth metroplex with 10+ years experience. SalesLoft Admin certified (Level 1 & 2) and HubSpot Revenue Operations certified. Partnership program implementation specialist with system integration experience. Expert in data analytics, process automation, and CRM optimization. $4.8M+ revenue generated across 10+ projects, 432% transaction growth achieved.',
   '/about'
@@ -109,6 +118,20 @@ export const metadata = generateMetadata(
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
+      {/* SEO Structured Data */}
+      <PersonSchema
+        name={PERSONAL_INFO.name}
+        title={PERSONAL_INFO.title}
+        email={PERSONAL_INFO.email}
+        location={PERSONAL_INFO.location}
+        bio={PERSONAL_INFO.bio}
+        skills={skills.map((s) => s.name)}
+        certifications={CERTIFICATIONS.map((c) => ({
+          name: c.name,
+          issuer: c.issuer,
+        }))}
+      />
+
       <Navbar />
 
       <main className="relative overflow-hidden">
@@ -116,29 +139,64 @@ export default function AboutPage() {
         <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
 
-        {/* Personal Information Section - Hero */}
+        {/* 1. Hero - Personal Information Section */}
         <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-20">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <PersonalInfo personalInfo={PERSONAL_INFO} />
           </div>
         </section>
 
-        {/* Experience Stats Section */}
+        {/* 2. What I Bring Section - NEW */}
         <section className="relative py-16 lg:py-20 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <WhatIBring />
+          </div>
+        </section>
+
+        {/* 3. Impact & Experience Stats */}
+        <section className="relative py-16 lg:py-20">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <ExperienceStats stats={EXPERIENCE_STATS} />
           </div>
         </section>
 
-        {/* Bento Grid Section */}
+        {/* 4. Core Competencies - Bento Grid */}
+        <section className="relative py-16 lg:py-20 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <SkillsSection />
+          </div>
+        </section>
+
+        {/* 5. Expertise Narrative - Essay Style */}
+        <section className="relative py-16 lg:py-24">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <ExpertiseNarrative />
+          </div>
+        </section>
+
+        {/* 6. Certifications */}
+        <section className="relative py-16 lg:py-20 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <CertificationsSection certifications={CERTIFICATIONS} />
+          </div>
+        </section>
+
+        {/* 7. Key Highlights */}
         <section className="relative py-16 lg:py-20">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="font-display text-3xl lg:text-4xl font-semibold text-foreground mb-4">
-                Explore More
+            <KeyHighlights highlights={PERSONAL_INFO.highlights} />
+          </div>
+        </section>
+
+        {/* 8. Final CTA Section */}
+        <section className="relative py-20 lg:py-32 bg-muted/30">
+          <div className="max-w-6xl mx-auto px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="font-display text-3xl lg:text-5xl font-bold text-foreground mb-6">
+                Let's Talk About Your Goals
               </h2>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Discover my work in revenue operations and data-driven growth
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+                Ready to optimize your revenue operations? Explore my work or get in touch directly.
               </p>
             </div>
             <BentoGrid>
@@ -148,21 +206,10 @@ export default function AboutPage() {
             </BentoGrid>
           </div>
         </section>
-
-        {/* Skills Section */}
-        <section className="relative py-16 lg:py-20">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <SkillsSection />
-          </div>
-        </section>
-
-        {/* Certifications Section */}
-        <section className="relative py-16 lg:py-20 bg-muted/30">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <CertificationsSection certifications={CERTIFICATIONS} />
-          </div>
-        </section>
       </main>
+
+      {/* Sticky Mobile CTA */}
+      <StickyCTA />
     </div>
   )
 }

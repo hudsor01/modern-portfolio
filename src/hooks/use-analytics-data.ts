@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { analyticsDataService } from '@/lib/analytics/data-service'
+import { analyticsDataService } from '@/lib/data-service'
 import { handleHookError } from '@/lib/error-handling'
 import type { AllAnalyticsDataBundle } from '@/types/analytics'
 

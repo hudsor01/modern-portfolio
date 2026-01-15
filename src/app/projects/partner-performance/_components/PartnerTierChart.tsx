@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from '@/components/charts/lazy-charts'
-import { chartColors as baseChartColors, chartCssVars } from '@/lib/chart-colors'
+import { chartColors as baseChartColors, chartCssVars } from '@/lib/charts'
 
 // Partner tier performance data based on real CSV analysis
 const data = [

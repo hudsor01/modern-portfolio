@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
-import { getProjects } from '@/lib/content/projects'
-import { createApiSuccessResponse } from '@/lib/api/response'
-import { handleApiError } from '@/lib/api/utils'
+import { getProjects } from '@/lib/projects'
+import { createApiSuccessResponse } from '@/lib/api-core'
+import { handleApiError } from '@/lib/api-core'
 import { ApiErrorType } from '@/types/api'
 
 // Enable ISR with 1 hour revalidation

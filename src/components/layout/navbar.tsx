@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import type { NextLinkHref } from '@/types/next-types'
-import { getRouteKey } from '@/lib/utils'
+import { getRouteKey } from '@/lib/route-utils'
 
 type NavItem = {
   label: string

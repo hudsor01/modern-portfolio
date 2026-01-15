@@ -2,10 +2,10 @@
 
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
-import type { LucideIcon } from 'lucide-react'
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Skeleton } from './skeleton'
+import type { MetricCardProps as DesignMetricCardProps } from '@/types/design-system'
 
 const metricCardVariants = cva(
   'relative group rounded-xl border bg-card text-card-foreground transition-all duration-300 ease-out hover:shadow-md hover:-translate-y-1',
@@ -59,21 +59,19 @@ const trendVariants = cva('inline-flex items-center gap-1 text-xs font-medium', 
   },
 })
 
-export interface MetricTrend {
-  direction: 'up' | 'down' | 'neutral'
-  value: string
-  label: string
-}
+type MetricCardProps = DesignMetricCardProps &
+  React.HTMLAttributes<HTMLDivElement> &
+  VariantProps<typeof metricCardVariants>
 
-export interface MetricCardProps
-  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof metricCardVariants> {
-  icon: LucideIcon
-  label: string
-  value: string | number
-  subtitle?: string
-  trend?: MetricTrend
-  animationDelay?: number
-  loading?: boolean
+function getTrendIcon(direction?: 'up' | 'down' | 'neutral') {
+  switch (direction) {
+    case 'up':
+      return TrendingUp
+    case 'down':
+      return TrendingDown
+    default:
+      return Minus
+  }
 }
 
 const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
@@ -93,8 +91,7 @@ const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
     },
     ref
   ) => {
-    const TrendIcon =
-      trend?.direction === 'up' ? TrendingUp : trend?.direction === 'down' ? TrendingDown : Minus
+    const TrendIcon = getTrendIcon(trend?.direction)
 
     if (loading) {
       return (

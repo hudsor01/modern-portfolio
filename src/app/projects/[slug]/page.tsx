@@ -1,26 +1,22 @@
-import { notFound } from 'next/navigation'
-export const dynamic = 'force-static'
-import { HydrationBoundary, dehydrate } from '@tanstack/react-query'
-import { getProjects, getProject } from '@/lib/content/projects'
-import { normalizeProjectForDisplay } from '@/types/project'
 import { Metadata } from 'next'
-import { createQueryClient } from '@/lib/query-config'
-import ProjectDetailClientBoundary from '@/components/projects/project-detail-client-boundary'
+import { notFound } from 'next/navigation'
+import { getProjects, getProject } from '@/lib/projects'
+import ProjectDetailClientBoundary from './_components/project-detail-client-boundary'
 
-// Enable ISR with 1 hour revalidation
-export const revalidate = 3600
+// Official Next.js 16 Pattern: Static generation with ISR
+export const revalidate = 3600 // Revalidate every hour
 
-// Define our own ProjectPageProps instead of extending PageProps
 interface ProjectPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
-  searchParams?: Record<string, string | string[] | undefined>
+  }>
 }
 
-// Generate static params for all projects
+// Official Next.js 16 Pattern: generateStaticParams for SSG
+// Pre-renders all projects at build time (zero runtime cost)
 export async function generateStaticParams() {
   const projects = await getProjects()
+
   // Exclude projects that have their own dedicated pages
   const excludedSlugs = [
     'partnership-program-implementation',
@@ -35,6 +31,7 @@ export async function generateStaticParams() {
     'revenue-kpi',
     'revenue-operations-center',
   ]
+
   return projects
     .filter((project) => !excludedSlugs.includes(project.slug || ''))
     .map((project) => ({
@@ -42,14 +39,9 @@ export async function generateStaticParams() {
     }))
 }
 
-// Fix the metadata generation function
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string }
-}): Promise<Metadata> {
-  const resolvedParams = await params
-  const project = await getProject(resolvedParams.slug)
+export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
+  const { slug } = await params
+  const project = await getProject(slug)
 
   if (!project) {
     return {
@@ -64,73 +56,21 @@ export async function generateMetadata({
     openGraph: {
       title: project.title,
       description: project.description,
-      url: `/projects/${resolvedParams.slug}`,
+      url: `/projects/${slug}`,
       images: project.image ? [{ url: project.image }] : undefined,
     },
   }
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
-  const queryClient = createQueryClient()
-  const resolvedParams = await params
-  const project = await getProject(resolvedParams.slug)
+  const { slug } = await params
+  const project = await getProject(slug)
 
   if (!project) {
     notFound()
   }
 
-  // Convert to the expected Project type for the component with normalized display fields
-  const convertedProject = normalizeProjectForDisplay({
-    id: project.id,
-    title: project.title,
-    slug: project.slug || project.id,
-    description: project.description,
-    longDescription: project.longDescription || null,
-    content: project.content || null,
-    featured: project.featured ?? false,
-    image: project.image,
-    link: project.link || null,
-    github: project.github || null,
-    category: project.category || 'Other',
-    tags: project.tags || [],
-    client: project.client || null,
-    role: project.role || null,
-    duration: project.duration || null,
-    year: project.year || null,
-    caseStudyUrl: project.caseStudyUrl || null,
-    impact: project.impact || null,
-    results: project.results || null,
-    displayMetrics: project.displayMetrics || null,
-    metrics: project.metrics || null,
-    testimonial: project.testimonial || null,
-    gallery: project.gallery || null,
-    details: project.details || null,
-    charts: project.charts || null,
-    createdAt:
-      project.createdAt instanceof Date
-        ? project.createdAt
-        : new Date(project.createdAt || '2024-01-01'),
-    updatedAt: project.updatedAt
-      ? project.updatedAt instanceof Date
-        ? project.updatedAt
-        : new Date(project.updatedAt)
-      : project.createdAt instanceof Date
-        ? project.createdAt
-        : new Date(project.createdAt || '2024-01-01'),
-    viewCount: project.viewCount ?? 0,
-    clickCount: project.clickCount ?? 0,
-  })
-
-  // Prefetch project data on the server
-  await queryClient.prefetchQuery({
-    queryKey: ['projects', 'detail', resolvedParams.slug],
-    queryFn: () => getProject(resolvedParams.slug),
-    staleTime: 1000 * 60 * 10, // 10 minutes
-  })
-
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <ProjectDetailClientBoundary slug={resolvedParams.slug} initialProject={convertedProject} />
-    </HydrationBoundary>
-  )
+  // Pass project data directly to client component
+  // No TanStack Query, no fetch, no hydration boundary needed
+  return <ProjectDetailClientBoundary slug={slug} initialProject={project} />
 }

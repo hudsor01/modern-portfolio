@@ -1,17 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createContextLogger } from '@/lib/monitoring/logger'
+import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
+import { PaginatedResponse, BlogPostData, ApiResponse, BlogPostFilters, BlogPostSort } from '@/types/api'
 import {
-  PaginatedResponse,
-  BlogPostData,
-  ApiResponse,
-  BlogPostFilters,
-  BlogPostSort,
-} from '@/types/shared-api'
-import { getEnhancedRateLimiter } from '@/lib/security/rate-limiter'
-import { validateCSRFToken } from '@/lib/security/csrf-protection'
-import { transformToBlogPostData } from '@/lib/api/blog-transformers'
-import { buildBlogWhereClause, buildBlogOrderBy } from '@/lib/api/blog-filters'
+  checkRateLimitOrRespond,
+  validateCSRFOrRespond,
+  parsePaginationParams,
+  createPaginationMeta,
+  RateLimitPresets,
+} from '@/lib/api-core'
+import {
+  transformToBlogPostData,
+  buildBlogWhereClause,
+  buildBlogOrderBy,
+  createErrorResponse,
+  generateSlug,
+} from '@/lib/api-blog'
 
 const logger = createContextLogger('BlogAPI')
 
@@ -23,63 +27,17 @@ const logger = createContextLogger('BlogAPI')
  * Uses Prisma database for production data
  */
 
-// Helper function to get client identifier
-function getClientId(request: NextRequest): string {
-  return request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
-}
-
 // GET /api/blog - List blog posts with filtering and pagination
 export async function GET(request: NextRequest) {
-  const clientId = getClientId(request)
-
-  // Rate limiting: 100 requests per minute for blog listing
-  const rateLimiter = getEnhancedRateLimiter()
-
-  const rateLimitResult = rateLimiter.checkLimit(
-    clientId,
-    {
-      windowMs: 60 * 1000, // 1 minute
-      maxAttempts: 100,
-      progressivePenalty: false,
-      blockDuration: 0,
-      adaptiveThreshold: true,
-      antiAbuse: true,
-      burstProtection: {
-        enabled: true,
-        burstWindow: 5 * 1000, // 5 seconds
-        maxBurstRequests: 120,
-      },
-    },
-    {
-      path: '/api/blog',
-      method: 'GET',
-    }
-  )
-
-  if (!rateLimitResult.allowed) {
-    const errorResponse: ApiResponse<never> = {
-      data: undefined as never,
-      success: false,
-      error: 'Rate limit exceeded. Please try again later.',
-    }
-
-    return NextResponse.json(errorResponse, {
-      status: 429,
-      headers: {
-        'Retry-After': String(Math.ceil((rateLimitResult.retryAfter || 0) / 1000)),
-        'X-RateLimit-Remaining': String(rateLimitResult.remaining || 0),
-        'X-RateLimit-Reset': String(rateLimitResult.resetTime || 0),
-      },
-    })
-  }
+  // Rate limiting using shared utility
+  const rateLimitResponse = checkRateLimitOrRespond(request, RateLimitPresets.read, '/api/blog', 'GET')
+  if (rateLimitResponse) return rateLimitResponse
 
   try {
     const { searchParams } = new URL(request.url)
 
-    // Parse pagination parameters with abuse prevention
-    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10))
-    const limit = Math.min(Math.max(1, parseInt(searchParams.get('limit') || '10', 10)), 100)
-    const skip = (page - 1) * limit
+    // Parse pagination using shared utility
+    const { page, limit, skip } = parsePaginationParams(searchParams)
 
     // Parse filters
     const filters: BlogPostFilters = {}
@@ -144,119 +102,47 @@ export async function GET(request: NextRequest) {
 
     // Transform to API response format
     const data = posts.map(transformToBlogPostData)
+    const pagination = createPaginationMeta(page, limit, total)
 
     const response: PaginatedResponse<BlogPostData> = {
       data,
       success: true,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-        hasNext: skip + limit < total,
-        hasPrev: page > 1,
-      },
+      pagination,
     }
 
     return NextResponse.json(response, {
       headers: {
-        'Cache-Control': 'public, max-age=60, s-maxage=300', // Cache for 1 minute, CDN for 5 minutes
+        'Cache-Control': 'public, max-age=60, s-maxage=300',
       },
     })
   } catch (error) {
     logger.error('Blog API Error:', error instanceof Error ? error : new Error(String(error)))
-
-    const errorResponse: ApiResponse<never> = {
-      data: undefined as never,
-      success: false,
-      error: 'Failed to fetch blog posts',
-    }
-
-    return NextResponse.json(errorResponse, { status: 500 })
+    return NextResponse.json(createErrorResponse('Failed to fetch blog posts'), { status: 500 })
   }
 }
 
 // POST /api/blog - Create new blog post
 export async function POST(request: NextRequest) {
-  const clientId = getClientId(request)
+  // Rate limiting using shared utility
+  const rateLimitResponse = checkRateLimitOrRespond(request, RateLimitPresets.sensitive, '/api/blog', 'POST')
+  if (rateLimitResponse) return rateLimitResponse
 
-  // Rate limiting: 10 blog post creations per hour
-  const rateLimiter = getEnhancedRateLimiter()
-
-  const rateLimitResult = rateLimiter.checkLimit(
-    clientId,
-    {
-      windowMs: 60 * 60 * 1000, // 1 hour
-      maxAttempts: 10,
-      progressivePenalty: true,
-      blockDuration: 15 * 60 * 1000, // 15 minutes
-      adaptiveThreshold: true,
-      antiAbuse: true,
-      burstProtection: {
-        enabled: false,
-        burstWindow: 10 * 1000,
-        maxBurstRequests: 10,
-      },
-    },
-    {
-      path: '/api/blog',
-      method: 'POST',
-    }
-  )
-
-  if (!rateLimitResult.allowed) {
-    const errorResponse: ApiResponse<never> = {
-      data: undefined as never,
-      success: false,
-      error: 'Rate limit exceeded. Too many blog posts created.',
-    }
-
-    return NextResponse.json(errorResponse, {
-      status: 429,
-      headers: {
-        'Retry-After': String(Math.ceil((rateLimitResult.retryAfter || 0) / 1000)),
-        'X-RateLimit-Remaining': String(rateLimitResult.remaining || 0),
-        'X-RateLimit-Reset': String(rateLimitResult.resetTime || 0),
-      },
-    })
-  }
+  // CSRF validation using shared utility
+  const csrfResponse = await validateCSRFOrRespond(request, 'blog post creation')
+  if (csrfResponse) return csrfResponse
 
   try {
-    // CSRF token validation
-    const csrfToken = request.headers.get('x-csrf-token')
-    const isCSRFValid = await validateCSRFToken(csrfToken ?? undefined)
-
-    if (!isCSRFValid) {
-      logger.warn('CSRF validation failed for blog post creation', { clientId })
-      const errorResponse: ApiResponse<never> = {
-        data: undefined as never,
-        success: false,
-        error: 'Security validation failed. Please refresh and try again.',
-      }
-
-      return NextResponse.json(errorResponse, { status: 403 })
-    }
-
     const body = await request.json()
 
     // Validate required fields
     if (!body.title || !body.content || !body.authorId) {
-      const errorResponse: ApiResponse<never> = {
-        data: undefined as never,
-        success: false,
-        error: 'Missing required fields: title, content, authorId',
-      }
-
-      return NextResponse.json(errorResponse, { status: 400 })
+      return NextResponse.json(createErrorResponse('Missing required fields: title, content, authorId'), {
+        status: 400,
+      })
     }
 
-    // Generate slug from title
-    const slug = body.title
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim()
+    // Generate slug using shared utility
+    const slug = generateSlug(body.title)
 
     // Check if slug already exists
     const existingPost = await db.blogPost.findUnique({
@@ -264,13 +150,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingPost) {
-      const errorResponse: ApiResponse<never> = {
-        data: undefined as never,
-        success: false,
-        error: 'A post with this slug already exists',
-      }
-
-      return NextResponse.json(errorResponse, { status: 409 })
+      return NextResponse.json(createErrorResponse('A post with this slug already exists'), { status: 409 })
     }
 
     // Calculate reading time and word count
@@ -367,13 +247,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     logger.error('Blog Creation Error:', error instanceof Error ? error : new Error(String(error)))
-
-    const errorResponse: ApiResponse<never> = {
-      data: undefined as never,
-      success: false,
-      error: 'Failed to create blog post',
-    }
-
-    return NextResponse.json(errorResponse, { status: 500 })
+    return NextResponse.json(createErrorResponse('Failed to create blog post'), { status: 500 })
   }
 }

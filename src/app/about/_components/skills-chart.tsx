@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Skill } from '@/data/skills'
+import { SkillDatum } from '@/data/skills'
 
 interface SkillsChartProps {
-  skills: Skill[]
+  skills: SkillDatum[]
 }
 
 export function SkillsChart({ skills }: Readonly<SkillsChartProps>) {
@@ -40,18 +40,23 @@ export function SkillsChart({ skills }: Readonly<SkillsChartProps>) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {filteredSkills.map((skill) => (
+        {filteredSkills.map((skill, index) => (
           <div
             key={skill.name}
-            className="bg-card p-4 rounded-lg shadow-lg"
+            className="bg-card p-4 rounded-lg shadow-lg border border-border hover:border-primary/50 transition-all duration-300 animate-fade-in-up"
+            style={{ animationDelay: `${index * 50}ms` }}
           >
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="font-medium">{skill.name}</h3>
-              <span className="typography-small text-muted-foreground">{skill.proficiency}%</span>
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="font-semibold text-foreground">{skill.name}</h3>
+              <span className="text-sm font-medium text-primary">{skill.proficiency}%</span>
             </div>
-            <div className="w-full bg-muted rounded-full h-2.5">
+            <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
               <div
-                className="bg-primary h-2.5 rounded-full"
+                className="bg-linear-to-r from-primary to-primary/80 h-2.5 rounded-full transition-all duration-1000 ease-out"
+                style={{
+                  width: `${skill.proficiency}%`,
+                  animationDelay: `${index * 50 + 200}ms`
+                }}
               />
             </div>
           </div>

@@ -6,11 +6,11 @@ import { Copy, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
-import { escapeHtml } from '@/lib/security/sanitization'
+import { escapeHtml } from '@/lib/sanitization'
 import { ContentType } from '@/generated/prisma/browser'
 import DOMPurify from 'dompurify'
-import { createContextLogger } from '@/lib/monitoring/logger'
-import { TIMING_CONSTANTS } from '@/lib/constants/ui-thresholds'
+import { createContextLogger } from '@/lib/logger'
+import { TIMING_CONSTANTS } from '@/lib/ui-thresholds'
 
 const logger = createContextLogger('BlogContent')
 
@@ -52,7 +52,6 @@ interface BlogContentProps {
   content: string
   contentType: ContentType
   className?: string
-  showLineNumbers?: boolean
   allowCopy?: boolean
 }
 
@@ -60,7 +59,6 @@ export function BlogPostArticle({
   content,
   contentType = ContentType.MARKDOWN,
   className,
-  showLineNumbers: _showLineNumbers = true,
   allowCopy = true
 }: BlogContentProps) {
   const { theme } = useTheme()
@@ -170,28 +168,17 @@ export function BlogPostArticle({
     )
   }
 
-  // Process content based on type - MARKDOWN needs parsing, others pass through
-  const processContent = (): string => {
-    if (contentType === 'MARKDOWN') {
-      return parseMarkdown(content)
-    }
-    return content
-  }
-
-  // Sanitize content for all types to prevent XSS
-  const sanitizeContent = (rawContent: string): string => {
-    if (typeof window === 'undefined') {
-      return rawContent // During SSR, return content (will be sanitized on client)
-    }
-    return DOMPurify.sanitize(rawContent, DOMPURIFY_CONFIG)
+  // Helper to sanitize HTML content (no-op during SSR, sanitized on client)
+  function sanitizeHtml(html: string, config: typeof DOMPURIFY_CONFIG | typeof DOMPURIFY_INLINE_CONFIG): string {
+    if (typeof window === 'undefined') return html
+    return DOMPurify.sanitize(html, config)
   }
 
   // Extract and render code blocks for markdown
-  const renderMarkdownWithCodeBlocks = (html: string) => {
+  function renderMarkdownWithCodeBlocks(html: string): React.ReactNode[] {
     const parts = html.split(/(<pre data-language="([^"]*?)"><code>([\s\S]*?)<\/code><\/pre>)/g)
 
     return parts.map((part, index) => {
-      // Check if this part is a code block
       const codeBlockMatch = part.match(/^<pre data-language="([^"]*?)"><code>([\s\S]*?)<\/code><\/pre>$/)
 
       if (codeBlockMatch) {
@@ -201,23 +188,19 @@ export function BlogPostArticle({
         )
       }
 
-      // Regular HTML content - sanitize with DOMPurify to prevent XSS
-      const sanitizedHtml = typeof window !== 'undefined'
-        ? DOMPurify.sanitize(part, DOMPURIFY_INLINE_CONFIG)
-        : part // During SSR, return unsanitized (will be sanitized on client)
-
       return (
         <div
           key={index}
-          dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(part, DOMPURIFY_INLINE_CONFIG) }}
           className="prose prose-lg dark:prose-invert max-w-none"
         />
       )
     })
   }
 
-  const processedContent = processContent()
-  const sanitizedContent = sanitizeContent(processedContent)
+  // Process content: parse markdown if needed, sanitize for non-markdown content
+  const processedContent = contentType === 'MARKDOWN' ? parseMarkdown(content) : content
+  const sanitizedContent = sanitizeHtml(processedContent, DOMPURIFY_CONFIG)
 
   return (
     <div

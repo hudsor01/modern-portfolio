@@ -1,32 +1,8 @@
-/* Modern Animation System with Enhanced Micro-interactions */
+/* Luxury Minimalist Animation System */
 
-/* === ENHANCED KEYFRAME DEFINITIONS === */
-@keyframes blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-}
+/* === CORE ANIMATIONS === */
 
-@keyframes bounce {
-  0%,
-  20%,
-  50%,
-  80%,
-  100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-10px);
-  }
-  60% {
-    transform: translateY(-5px);
-  }
-}
-
+/* Fade Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -36,6 +12,18 @@
   }
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Directional Slide Animations */
 @keyframes slideUp {
   from {
     opacity: 0;
@@ -80,36 +68,70 @@
   }
 }
 
-@keyframes pulse {
-  0% {
+/* Subtle Scale Animation */
+@keyframes subtleScale {
+  from {
+    transform: scale(0.98);
+    opacity: 0;
+  }
+  to {
     transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Refined Pulse - Minimal Movement */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
   }
   50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
+    opacity: 0.7;
   }
 }
 
-@keyframes blob {
-  0% {
-    transform: translate(0px, 0px) scale(1);
+/* Loading Skeleton */
+@keyframes skeletonPulse {
+  0%, 100% {
+    opacity: 1;
   }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-  100% {
-    transform: translate(0px, 0px) scale(1);
+  50% {
+    opacity: 0.5;
   }
 }
 
-/* Animation utility classes */
+/* Underline Reveal for Sophisticated Headings */
+@keyframes underlineReveal {
+  from {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  to {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+/* Image Reveal with Clip Path */
+@keyframes imageReveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* === UTILITY CLASSES === */
+
+/* Primary Animation Classes */
 .animate-fadeIn {
   animation: fadeIn var(--motion-duration-slow) var(--motion-ease-in-out) forwards;
+}
+
+.animate-fade-in-up {
+  opacity: 0;
+  animation: fadeInUp var(--motion-duration-normal) cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-slideUp {
@@ -128,19 +150,27 @@
   animation: slideInRight var(--motion-duration-slow) var(--motion-ease-out) forwards;
 }
 
-.animate-bounce {
-  animation: bounce calc(var(--motion-duration-slow) * 4) infinite;
+.animate-scale-in {
+  animation: subtleScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-pulse {
-  animation: pulse calc(var(--motion-duration-slow) * 4) ease infinite;
+  animation: pulse 2s ease-in-out infinite;
 }
 
-.animate-blink {
-  animation: blink calc(var(--motion-duration-slow) * 2) step-end infinite;
+.animate-skeleton {
+  animation: skeletonPulse calc(var(--motion-duration-slow) * 4) ease-in-out infinite;
 }
 
-/* Animation delays */
+.animate-underline {
+  animation: underlineReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-image-reveal {
+  animation: imageReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* === STAGGER DELAYS === */
 .delay-100 {
   animation-delay: 100ms;
 }
@@ -161,7 +191,7 @@
   animation-delay: 500ms;
 }
 
-/* Animation durations */
+/* === DURATION MODIFIERS === */
 .duration-300 {
   animation-duration: 300ms;
 }
@@ -178,167 +208,9 @@
   animation-duration: 1000ms;
 }
 
-/* Mobile performance optimizations */
-@media (max-width: 768px) {
-  /* Reduce motion for better mobile performance */
-  .animate-blob {
-    animation-duration: calc(var(--motion-duration-slow) * 16); /* Slower on mobile for better performance */
-  }
-  
-  /* Optimize touch interactions */
-  .mobile-touch-target {
-    min-height: 44px;
-    min-width: 44px;
-  }
-  
-  /* Targeted GPU acceleration - use .gpu-accelerated class only where needed */
-  .gpu-accelerated {
-    will-change: transform;
-    transform: translateZ(0);
-  }
-}
+/* === TRANSITION UTILITIES === */
 
-/* Reduce complex animations on mobile devices */
-@media (prefers-reduced-motion: reduce) {
-  .animate-blob,
-  .animate-bounce,
-  .animate-pulse {
-    animation: none;
-  }
-  
-  .reduced-motion {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Additional animations for progressive loading */
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-@keyframes skeletonPulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-.animate-shimmer {
-  animation: shimmer calc(var(--motion-duration-slow) * 4) infinite;
-}
-
-.animate-skeleton {
-  animation: skeletonPulse calc(var(--motion-duration-slow) * 4) ease-in-out infinite;
-}
-
-/* === LUXURY MINIMALIST ANIMATIONS === */
-
-/* Refined fade-in-up for cards and content */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in-up {
-  opacity: 0;
-  animation: fadeInUp var(--motion-duration-normal) cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Staggered fade in for lists */
-@keyframes staggerFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-stagger {
-  opacity: 0;
-  animation: staggerFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Subtle scale on hover */
-@keyframes subtleScale {
-  from {
-    transform: scale(0.98);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.animate-scale-in {
-  animation: subtleScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Count up animation for numbers */
-@keyframes countReveal {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-count {
-  animation: countReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Underline reveal for headings */
-@keyframes underlineReveal {
-  from {
-    transform: scaleX(0);
-    transform-origin: left;
-  }
-  to {
-    transform: scaleX(1);
-    transform-origin: left;
-  }
-}
-
-.animate-underline {
-  animation: underlineReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Image reveal */
-@keyframes imageReveal {
-  from {
-    clip-path: inset(0 100% 0 0);
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-  }
-}
-
-.animate-image-reveal {
-  animation: imageReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Luxury hover transitions */
+/* Luxury Hover - Subtle Lift */
 .luxury-hover {
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -347,12 +219,62 @@
   transform: translateY(-2px);
 }
 
-/* Refined shadow transitions */
+/* Refined Shadow Transitions */
 .shadow-transition {
   transition: box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Border color transitions */
+/* Border Color Transitions */
 .border-transition {
   transition: border-color 0.3s ease-out;
+}
+
+/* === RESPONSIVE OPTIMIZATIONS === */
+
+/* Mobile Performance */
+@media (max-width: 768px) {
+  /* Optimize touch targets */
+  .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Selective GPU acceleration - use sparingly */
+  .gpu-accelerated {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+}
+
+/* === ACCESSIBILITY === */
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fadeIn,
+  .animate-fade-in-up,
+  .animate-slideUp,
+  .animate-slideDown,
+  .animate-slideInLeft,
+  .animate-slideInRight,
+  .animate-scale-in,
+  .animate-pulse,
+  .animate-skeleton,
+  .animate-underline,
+  .animate-image-reveal {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .luxury-hover,
+  .shadow-transition,
+  .border-transition {
+    transition-duration: 0.01ms !important;
+  }
+
+  .reduced-motion {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

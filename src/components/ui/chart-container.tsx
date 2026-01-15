@@ -2,11 +2,11 @@
 
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
-import type { LucideIcon } from 'lucide-react'
 import { RefreshCw, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from './button'
 import { Skeleton } from './skeleton'
+import type { ChartAction as DesignChartAction, ChartContainerProps as DesignChartContainerProps } from '@/types/design-system'
 
 const chartContainerVariants = cva(
   'relative rounded-xl border bg-card text-card-foreground transition-all duration-300 ease-out',
@@ -30,25 +30,46 @@ const chartContainerVariants = cva(
   }
 )
 
-export interface ChartAction {
-  label: string
-  icon?: LucideIcon
-  onClick: () => void
-  variant?: 'primary' | 'secondary'
-  disabled?: boolean
-}
+type ChartContainerProps = DesignChartContainerProps &
+  React.HTMLAttributes<HTMLDivElement> &
+  VariantProps<typeof chartContainerVariants> & {
+    height?: number
+    loading?: boolean
+    error?: string
+    actions?: DesignChartAction[]
+    onRetry?: () => void
+  }
 
-export interface ChartContainerProps
-  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof chartContainerVariants> {
+interface ChartHeaderProps {
   title: string
   description?: string
-  children: React.ReactNode
-  height?: number
-  loading?: boolean
-  error?: string
-  actions?: ChartAction[]
-  onRetry?: () => void
+  actions?: DesignChartAction[]
 }
+
+const ChartHeader: React.FC<ChartHeaderProps> = ({ title, description, actions }) => (
+  <div className="flex items-center justify-between">
+    <div className="space-y-1">
+      <h3 className="text-lg font-semibold leading-none tracking-tight">{title}</h3>
+      {description && <p className="text-sm text-muted-foreground">{description}</p>}
+    </div>
+    {actions && actions.length > 0 && (
+      <div className="flex gap-2">
+        {actions.map((action, index) => (
+          <Button
+            key={index}
+            variant={action.variant === 'primary' ? 'default' : 'outline'}
+            size="sm"
+            onClick={action.onClick}
+            disabled={action.disabled}
+          >
+            {action.icon && <action.icon className="h-4 w-4 mr-2" />}
+            {action.label}
+          </Button>
+        ))}
+      </div>
+    )}
+  </div>
+)
 
 const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
   (
@@ -113,29 +134,7 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
           {...props}
         >
           <div className="space-y-4">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <h3 className="text-lg font-semibold leading-none tracking-tight">{title}</h3>
-                {description && <p className="text-sm text-muted-foreground">{description}</p>}
-              </div>
-              {actions && actions.length > 0 && (
-                <div className="flex gap-2">
-                  {actions.map((action, index) => (
-                    <Button
-                      key={index}
-                      variant={action.variant === 'primary' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={action.onClick}
-                      disabled={action.disabled}
-                    >
-                      {action.icon && <action.icon className="h-4 w-4 mr-2" />}
-                      {action.label}
-                    </Button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <ChartHeader title={title} description={description} actions={actions} />
 
             {/* Error state */}
             <div
@@ -165,32 +164,10 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
         className={cn(chartContainerVariants({ variant, padding }), className)}
         {...props}
       >
-        <div className="space-y-4">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <h3 className="text-lg font-semibold leading-none tracking-tight">{title}</h3>
-              {description && <p className="text-sm text-muted-foreground">{description}</p>}
-            </div>
-            {actions && actions.length > 0 && (
-              <div className="flex gap-2">
-                {actions.map((action, index) => (
-                  <Button
-                    key={index}
-                    variant={action.variant === 'primary' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={action.onClick}
-                    disabled={action.disabled}
-                  >
-                    {action.icon && <action.icon className="h-4 w-4 mr-2" />}
-                    {action.label}
-                  </Button>
-                ))}
-              </div>
-            )}
-          </div>
+          <div className="space-y-4">
+            <ChartHeader title={title} description={description} actions={actions} />
 
-          {/* Chart content */}
+            {/* Chart content */}
           <div className="w-full overflow-hidden" style={{ height: `${height}px` }}>
             {children}
           </div>

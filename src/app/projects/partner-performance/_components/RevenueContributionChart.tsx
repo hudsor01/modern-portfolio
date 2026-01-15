@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from '@/components/charts/lazy-charts'
-import { chartColors as baseChartColors, chartCssVars } from '@/lib/chart-colors'
+import { chartColors as baseChartColors, chartCssVars } from '@/lib/charts'
 
 // Partner revenue distribution demonstrating 80/20 rule
 const data = [

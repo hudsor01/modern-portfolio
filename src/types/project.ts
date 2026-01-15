@@ -106,13 +106,6 @@ export interface ProjectsResponse {
 }
 
 /**
- * Project data with required image
- */
-export interface ProjectData extends Project {
-  image: string
-}
-
-/**
  * Project result from filtering
  */
 export interface ProjectsResult {
@@ -136,17 +129,6 @@ export interface ProjectPageProps {
  */
 export interface ProjectTabsProps {
   projects: Project[]
-}
-
-/**
- * Chart event handler for interactive charts
- */
-export interface ChartEventHandler {
-  dataIndex: number
-  dataKey?: string
-  value?: number
-  name?: string
-  color?: string
 }
 
 // ============================================================================

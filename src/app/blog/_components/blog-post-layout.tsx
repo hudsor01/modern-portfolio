@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { ArrowLeft, CalendarDays, Clock, Eye } from 'lucide-react'
-import type { BlogPostData } from '@/types/shared-api'
+import type { BlogPostData } from '@/types/api'
 import { BlogPostArticle } from './blog-post-article'
 import { InlineMarkdown } from './inline-markdown'
 import { ContentType } from '@/generated/prisma/client'
@@ -14,6 +14,15 @@ interface PostLayoutProps {
   post: BlogPostData
 }
 
+function getAuthorInitials(name: string): string {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('')
+}
+
 export function BlogPostLayout({ post }: PostLayoutProps) {
   const publishedDate = post.publishedAt
     ? format(new Date(post.publishedAt), 'MMMM d, yyyy')
@@ -22,19 +31,14 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
   const readingTime = post.readingTime ?? Math.max(1, Math.ceil(wordCount / 200))
   const authorName = post.author?.name ?? 'Richard Hudson'
   const authorImage = '/images/richard.jpg'
-  const authorInitials = authorName
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join('')
+  const authorInitials = getAuthorInitials(authorName)
 
-  const detailItems = [
-    publishedDate ? { label: 'Published', value: publishedDate } : null,
-    readingTime ? { label: 'Reading time', value: `${readingTime} min` } : null,
-    wordCount ? { label: 'Word count', value: wordCount.toLocaleString() } : null,
-    post.category?.name ? { label: 'Category', value: post.category.name } : null,
-  ].filter(Boolean) as Array<{ label: string; value: string }>
+  // Build detail items, filtering out nulls
+  const detailItems: Array<{ label: string; value: string }> = []
+  if (publishedDate) detailItems.push({ label: 'Published', value: publishedDate })
+  if (readingTime) detailItems.push({ label: 'Reading time', value: `${readingTime} min` })
+  if (wordCount) detailItems.push({ label: 'Word count', value: wordCount.toLocaleString() })
+  if (post.category?.name) detailItems.push({ label: 'Category', value: post.category.name })
 
   return (
     <article className="portfolio-container py-10 lg:py-14">
@@ -66,18 +70,18 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
                     <time dateTime={post.publishedAt}>{publishedDate}</time>
                   </span>
                 )}
-                {readingTime ? (
+                {readingTime > 0 && (
                   <span className="inline-flex items-center gap-2">
                     <Clock className="icon-sm" />
                     {readingTime} min read
                   </span>
-                ) : null}
-                {post.viewCount > 0 ? (
+                )}
+                {post.viewCount > 0 && (
                   <span className="inline-flex items-center gap-2">
                     <Eye className="icon-sm" />
                     {post.viewCount.toLocaleString()} views
                   </span>
-                ) : null}
+                )}
               </div>
 
               {/* Title */}
@@ -175,7 +179,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
             </div>
           </Card>
 
-          {post.author?.bio ? (
+          {post.author?.bio && (
             <Card variant="outline" className="p-6">
               <p className="text-xs uppercase tracking-wide text-muted-foreground">
                 About the author
@@ -193,7 +197,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
                 {post.author.bio}
               </p>
             </Card>
-          ) : null}
+          )}
         </aside>
       </div>
     </article>
