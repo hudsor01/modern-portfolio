@@ -43,8 +43,9 @@ function validateDatabaseEnvironment() {
   }
 }
 
-// Validate environment immediately on module import (skip in test environment)
-if (process.env.NODE_ENV !== 'test') {
+// Validate environment immediately on module import
+// Skip in test environment or during CI builds (SKIP_DB_VALIDATION=true)
+if (process.env.NODE_ENV !== 'test' && process.env.SKIP_DB_VALIDATION !== 'true') {
   validateDatabaseEnvironment()
 }
 
@@ -54,8 +55,9 @@ declare global {
 }
 
 // Create the PostgreSQL adapter with validated connection string
+// Use empty string during build to allow compilation (db won't be used)
 const adapter = new PrismaNeon({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL || '',
 })
 
 export const db =
