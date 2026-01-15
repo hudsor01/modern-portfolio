@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { ZodError } from 'zod'
-import { logger } from '@/lib/monitoring/logger'
+import { logger } from '@/lib/logger'
 import { ApiErrorType, ApiErrorResponse, ApiSuccessResponse as ApiSuccessResponseType } from '@/types/api'
 
 export type ApiResponse<T = unknown> = {
