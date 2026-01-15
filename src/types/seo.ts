@@ -191,3 +191,36 @@ export interface KeywordRanking {
   volume: number
   difficulty: number
 }
+
+// ============================================================================
+// SEO ENUMS AND TYPES
+// ============================================================================
+
+export enum SEOEventType {
+  TITLE_CHANGE = 'TITLE_CHANGE',
+  META_DESCRIPTION_CHANGE = 'META_DESCRIPTION_CHANGE',
+  KEYWORD_UPDATE = 'KEYWORD_UPDATE',
+  CONTENT_ANALYSIS = 'CONTENT_ANALYSIS',
+  PERFORMANCE_ALERT = 'PERFORMANCE_ALERT',
+  RANKING_CHANGE = 'RANKING_CHANGE',
+  TECHNICAL_ISSUE = 'TECHNICAL_ISSUE',
+  OPPORTUNITY = 'OPPORTUNITY',
+}
+
+export enum SEOSeverity {
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+  CRITICAL = 'CRITICAL',
+  INFO = 'INFO',
+}
+
+export enum ChangeFrequency {
+  ALWAYS = 'ALWAYS',
+  HOURLY = 'HOURLY',
+  DAILY = 'DAILY',
+  WEEKLY = 'WEEKLY',
+  MONTHLY = 'MONTHLY',
+  YEARLY = 'YEARLY',
+  NEVER = 'NEVER',
+}

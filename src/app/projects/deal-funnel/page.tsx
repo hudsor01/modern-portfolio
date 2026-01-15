@@ -8,11 +8,11 @@ import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { LoadingState } from '@/components/projects/loading-state'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
-import { getProject } from '@/lib/content/projects'
-import { ProjectJsonLd } from '@/components/seo/json-ld'
-import { createContextLogger } from '@/lib/monitoring/logger'
-import { TIMING } from '@/lib/constants/spacing'
-import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data-formatters'
+import { getProject } from '@/lib/projects'
+import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { createContextLogger } from '@/lib/logger'
+import { TIMING } from '@/lib/spacing'
+import { formatCurrency, formatNumber, formatPercentage } from '@/lib/data-formatters'
 
 import {
   type FunnelStage,

@@ -1,8 +1,9 @@
 'use client'
 
 import { SectionCard } from '@/components/ui/section-card'
-import { ResultCard, FeatureCard } from '@/components/projects/shared'
-import { formatCurrency } from '@/lib/utils/data-formatters'
+import { FeatureCard } from '@/components/projects/shared/feature-card'
+import { ResultCard } from '@/components/projects/shared/result-card'
+import { formatCurrency } from '@/lib/data-formatters'
 
 interface NarrativeSectionsProps {
   totalRevenue: number

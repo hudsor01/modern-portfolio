@@ -6,17 +6,7 @@ import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useKeyboardNavigation } from './keyboard-navigation'
-
-export interface BackButtonProps {
-  href: string
-  label?: string
-  className?: string
-  variant?: 'ghost' | 'outline' | 'secondary'
-  size?: 'sm' | 'default' | 'lg'
-  showIcon?: boolean
-  disabled?: boolean
-  style?: React.CSSProperties
-}
+import type { BackButtonProps } from '@/types/design-system'
 
 /**
  * Standardized back button component with consistent styling and behavior

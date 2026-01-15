@@ -4,7 +4,7 @@ import React from 'react';
 import { usePathname } from 'next/navigation';
 import { GlobalSEO } from './global-seo';
 import { WebsiteStructuredData, PersonStructuredData } from './structured-data';
-import { siteConfig } from '@/lib/config/site';
+import { siteConfig } from '@/lib/site';
 
 interface SEOProviderProps {
   children: React.ReactNode;

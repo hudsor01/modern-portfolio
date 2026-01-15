@@ -11,7 +11,7 @@ import {
   CartesianGrid,
   Cell,
 } from '@/components/charts/lazy-charts'
-import { chartColors as baseChartColors, chartCssVars } from '@/lib/chart-colors'
+import { chartColors as baseChartColors, chartCssVars } from '@/lib/charts'
 
 // Channel performance data for scatter plot
 const data = [

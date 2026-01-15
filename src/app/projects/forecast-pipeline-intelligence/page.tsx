@@ -5,8 +5,8 @@ import { TrendingUp, AlertTriangle, Zap, BarChart3 } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
-import { formatNumber, formatPercentage, formatTrend } from '@/lib/utils/data-formatters'
-import { ProjectJsonLd } from '@/components/seo/json-ld'
+import { formatNumber, formatPercentage, formatTrend } from '@/lib/data-formatters'
+import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { NarrativeSections } from './_components/NarrativeSections'
 import { IntelligenceModulesGrid } from './_components/IntelligenceModulesGrid'
 

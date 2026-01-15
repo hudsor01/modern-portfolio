@@ -1,7 +1,8 @@
 import { headers } from 'next/headers'
-import { emailService, type ContactFormData } from '@/lib/email/email-service'
-import { getClientIdentifier } from '@/lib/security/rate-limiter'
-import { createContextLogger } from '@/lib/monitoring/logger';
+import { emailService } from '@/lib/email-service'
+import type { ContactFormData } from '@/types/api'
+import { getClientIdentifier } from '@/lib/rate-limiter'
+import { createContextLogger } from '@/lib/logger';
 
 const logger = createContextLogger('SendemailAPI');
 

@@ -2,7 +2,7 @@
 
 import { CheckCircle } from 'lucide-react'
 import { SectionCard } from '@/components/ui/section-card'
-import { formatCurrency, formatPercentage } from '@/lib/utils/data-formatters'
+import { formatCurrency, formatPercentage } from '@/lib/data-formatters'
 
 interface Module {
   title: string

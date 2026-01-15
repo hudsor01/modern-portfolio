@@ -10,7 +10,7 @@ import {
   Bar,
   Cell,
 } from '@/components/charts/lazy-charts'
-import { chartColors, chartCssVars } from '@/lib/chart-colors'
+import { chartColors, chartCssVars } from '@/lib/charts'
 
 interface StageConversion {
   stage: string

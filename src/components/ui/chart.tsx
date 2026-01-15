@@ -43,7 +43,7 @@ type ChartMouseEventHandler = (event: ChartMouseEvent) => void
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: '', dark: '.dark' } as const
 
-export type ChartConfig = {
+export type ChartThemeConfig = {
   [k in string]: {
     label?: React.ReactNode
     icon?: React.ComponentType
@@ -54,7 +54,7 @@ export type ChartConfig = {
 }
 
 type ChartContextProps = {
-  config: ChartConfig
+  config: ChartThemeConfig
 }
 
 const ChartContext = React.createContext<ChartContextProps | null>(null)
@@ -79,7 +79,7 @@ function ChartContainer({
   onMouseLeave,
   ...props
 }: React.ComponentProps<'div'> & {
-  config: ChartConfig
+  config: ChartThemeConfig
   children: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>['children']
   onClick?: ChartEventHandler
   onMouseEnter?: ChartMouseEventHandler
@@ -139,7 +139,7 @@ function ChartContainer({
   )
 }
 
-const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
+const ChartStyle = ({ id, config }: { id: string; config: ChartThemeConfig }) => {
   const colorConfig = Object.entries(config).filter(([, config]) => config.theme || config.color)
 
   if (!colorConfig.length) {
@@ -378,7 +378,7 @@ function ChartLegendContent({
 
 // Helper to extract item config from a payload.
 function getPayloadConfigFromPayload(
-  config: ChartConfig,
+  config: ChartThemeConfig,
   payload: ChartTooltipPayload | ChartLegendPayload,
   key: string
 ) {

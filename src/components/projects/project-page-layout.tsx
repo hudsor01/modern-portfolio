@@ -4,9 +4,10 @@ import * as React from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { BackButton, NavigationBreadcrumbs } from '@/components/navigation'
-import type { ProjectPageLayoutProps } from '@/lib/design-system/types'
-import { designTokens } from '@/lib/design-system/tokens'
+import { BackButton } from '@/components/navigation/back-button'
+import { NavigationBreadcrumbs } from '@/components/navigation/navigation-breadcrumbs'
+import type { ProjectPageLayoutProps } from '@/types/design-system'
+import { designTokens } from '@/lib/tokens'
 
 /**
  * Standardized Project Page Layout Component

@@ -1,15 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { db } from '@/lib/db'
-import { checkEnhancedContactFormRateLimit } from '@/lib/security/rate-limiter'
-import { validateCSRFToken } from '@/lib/security/csrf-protection'
-import { logRateLimitExceeded, logCSRFFailure } from '@/lib/security/security-event-logger'
-import { createContextLogger } from '@/lib/monitoring/logger'
-import { validateRequest, ValidationError, createApiError, createApiSuccess, contactFormSchema } from '@/lib/validations/schemas'
-import { getClientIdentifier, getRequestMetadata, parseRequestBody, createResponseHeaders, logApiRequest, logApiResponse } from '@/lib/api/utils'
-import { escapeHtml } from '@/lib/security/sanitization'
-
-const logger = createContextLogger('ContactAPI')
+import { checkEnhancedContactFormRateLimit } from '@/lib/rate-limiter'
+import { contactFormSchema } from '@/lib/schemas'
+import { escapeHtml } from '@/lib/sanitization'
 
 let resend: Resend | null = null
 
@@ -22,91 +15,58 @@ function getResendClient(): Resend {
 }
 
 export async function POST(request: NextRequest) {
-  const startTime = Date.now()
-  const clientId = getClientIdentifier(request)
-  const metadata = getRequestMetadata(request)
-
-  logApiRequest('POST', '/api/contact', clientId, metadata)
-
-  let submission: { id: string; email: string } | undefined
-
   try {
-    // Rate limit FIRST to prevent abuse before any validation
-    const rateLimitResult = checkEnhancedContactFormRateLimit(clientId, { userAgent: metadata.userAgent, path: '/api/contact' })
+    // Get IP from headers
+    const forwarded = request.headers.get('x-forwarded-for')
+    const ip = (forwarded ? forwarded.split(/, /)[0] : request.headers.get('x-real-ip')) || 'unknown'
+
+    // Rate limit
+    const rateLimitResult = checkEnhancedContactFormRateLimit(`${ip}`, { path: '/api/contact' })
 
     if (!rateLimitResult.allowed) {
-      void logRateLimitExceeded(clientId, '/api/contact', { ipAddress: clientId, userAgent: metadata.userAgent, retryAfter: rateLimitResult.retryAfter, reason: rateLimitResult.reason })
-      const response = createApiError(rateLimitResult.reason === 'penalty_block' ? 'Account temporarily blocked due to excessive attempts' : 'Too many contact form submissions. Please try again later.', 'RATE_LIMIT_EXCEEDED', undefined, { retryAfter: rateLimitResult.retryAfter, resetTime: rateLimitResult.resetTime, blocked: rateLimitResult.blocked })
-      const headers = createResponseHeaders({ limit: 3, remaining: 0, resetTime: rateLimitResult.resetTime, retryAfter: rateLimitResult.retryAfter })
-      logApiResponse('POST', '/api/contact', clientId, 429, false, Date.now() - startTime)
-      return NextResponse.json(response, { status: 429, headers })
+      return NextResponse.json(
+        { success: false, error: 'Too many contact form submissions. Please try again later.' },
+        { status: 429 }
+      )
     }
 
-    // THEN validate CSRF token
-    const csrfToken = request.headers.get('x-csrf-token')
-    const isCSRFValid = await validateCSRFToken(csrfToken ?? undefined)
-
-    if (!isCSRFValid) {
-      logger.warn('CSRF validation failed for contact form', { clientId })
-      void logCSRFFailure(clientId, '/api/contact', { ipAddress: clientId, userAgent: metadata.userAgent })
-      const response = createApiError('Security validation failed. Please refresh and try again.', 'CSRF_VALIDATION_FAILED', undefined)
-      logApiResponse('POST', '/api/contact', clientId, 403, false, Date.now() - startTime)
-      return NextResponse.json(response, { status: 403 })
-    }
-
-    const body = await parseRequestBody(request)
-    const formData = validateRequest(contactFormSchema, body)
-    const { name, email, company, phone, message } = formData
-
-    submission = await db.contactSubmission.create({
-      data: { name, email, company: company || null, phone: phone || null, subject: 'Contact Form Inquiry', message, ipAddress: clientId, userAgent: metadata.userAgent, referer: request.headers.get('referer') }
-    })
-
-    logger.info('Contact form submission saved to database', { submissionId: submission.id, email: submission.email })
+    const body = await request.json()
+    const formData = contactFormSchema.parse(body)
+    const { name, email, message } = formData
 
     const contactEmail = process.env.CONTACT_EMAIL
     if (!contactEmail) {
-      logger.error('CONTACT_EMAIL environment variable not configured')
-      await db.contactSubmission.update({ where: { id: submission.id }, data: { emailSent: false, emailError: 'CONTACT_EMAIL not configured' } })
-      return NextResponse.json(createApiError('Email service misconfigured. Please try again later.', 'SERVICE_ERROR', undefined), { status: 500 })
+      return NextResponse.json(
+        { success: false, error: 'Email service misconfigured. Please try again later.' },
+        { status: 500 }
+      )
     }
 
-    const companyHtml = company ? `<p><strong>Company:</strong> ${escapeHtml(company)}</p>` : ''
-    const phoneHtml = phone ? `<p><strong>Phone:</strong> ${escapeHtml(phone)}</p>` : ''
-
-    const emailResult = await getResendClient().emails.send({
+    await getResendClient().emails.send({
       from: 'Portfolio Contact <hello@richardwhudsonjr.com>',
       to: contactEmail,
       replyTo: email,
       subject: `New Contact from ${escapeHtml(name)}`,
-      text: `Name: ${name}\nEmail: ${email}\n${company ? `Company: ${company}\n` : ''}${phone ? `Phone: ${phone}\n` : ''}\nMessage:\n${message}`,
-      html: `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;"><h2 style="color: #1e293b; border-bottom: 2px solid #3b82f6; padding-bottom: 8px;">New Contact Form Submission</h2><p><strong>From:</strong> ${escapeHtml(name)}</p><p><strong>Email:</strong> <a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></p>${companyHtml}${phoneHtml}<div style="background: #f8fafc; padding: 16px; border-radius: 8px; margin-top: 16px;"><p><strong>Message:</strong></p><p style="white-space: pre-wrap;">${escapeHtml(message).replace(/\n/g, '<br>')}</p></div></div>`,
+      text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
+      html: `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;"><h2 style="color: #1e293b; border-bottom: 2px solid #3b82f6; padding-bottom: 8px;">New Contact Form Submission</h2><p><strong>From:</strong> ${escapeHtml(name)}</p><p><strong>Email:</strong> <a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></p><div style="background: #f8fafc; padding: 16px; border-radius: 8px; margin-top: 16px;"><p><strong>Message:</strong></p><p style="white-space: pre-wrap;">${escapeHtml(message).replace(/\n/g, '<br>')}</p></div></div>`,
     })
 
-    await db.contactSubmission.update({ where: { id: submission.id }, data: { emailSent: true, emailId: emailResult.data?.id || null } })
-
-    logger.info('Email sent successfully', { submissionId: submission.id, emailId: emailResult.data?.id })
-
-    const response = createApiSuccess('Form submitted successfully', undefined, { remaining: rateLimitResult.remaining, resetTime: rateLimitResult.resetTime })
-    const headers = createResponseHeaders({ limit: 3, remaining: rateLimitResult.remaining, resetTime: rateLimitResult.resetTime })
-    logApiResponse('POST', '/api/contact', clientId, 200, true, Date.now() - startTime)
-    return NextResponse.json(response, { status: 200, headers })
+    return NextResponse.json({
+      success: true,
+      message: 'Form submitted successfully!',
+    })
 
   } catch (error) {
-    const isValidationError = error instanceof ValidationError
-    const status = isValidationError ? 400 : 500
-
-    if (!isValidationError && typeof submission !== 'undefined') {
-      try {
-        await db.contactSubmission.update({ where: { id: submission.id }, data: { emailSent: false, emailError: error instanceof Error ? error.message : 'Unknown error sending email' } })
-        logger.warn('Email send failed but submission saved to database', { submissionId: submission.id, error: error instanceof Error ? error.message : 'Unknown error' })
-      } catch (dbError) {
-        logger.error('Failed to update submission with email error', { error: dbError instanceof Error ? dbError.message : 'Unknown DB error' })
-      }
+    if (error instanceof Error && error.name === 'ZodError') {
+      return NextResponse.json(
+        { success: false, error: 'Invalid form data' },
+        { status: 400 }
+      )
     }
 
-    const response = createApiError(isValidationError ? 'Validation failed' : 'Error processing form', isValidationError ? 'VALIDATION_ERROR' : 'INTERNAL_ERROR', isValidationError ? error.details : undefined)
-    logApiResponse('POST', '/api/contact', clientId, status, false, Date.now() - startTime, { error: error instanceof Error ? error.message : 'Unknown error' })
-    return NextResponse.json(response, { status })
+    return NextResponse.json(
+      { success: false, error: 'Error processing form' },
+      { status: 500 }
+    )
   }
 }

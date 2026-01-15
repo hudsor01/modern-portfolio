@@ -126,30 +126,6 @@ input[type="reset"]:active,
   box-shadow: var(--shadow-sm);
 }
 
-/* Click ripple effect */
-.click-ripple {
-  position: relative;
-  overflow: hidden;
-}
-
-.click-ripple::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: var(--color-primary) / 0.2;
-  transform: translate(-50%, -50%);
-  transition: width var(--motion-duration-normal), height var(--motion-duration-normal);
-}
-
-.click-ripple:active::after {
-  width: 200%;
-  height: 200%;
-}
-
 /* Click scale effect */
 .click-scale {
   transition: transform var(--transition-fast);
@@ -180,91 +156,6 @@ input[type="reset"]:active,
 
 .click-bg:active {
   background-color: var(--color-muted);
-}
-
-/* ============================================
-   ADVANCED HOVER PATTERNS
-   ============================================ */
-
-/* Slide in content on hover */
-.hover-slide-in::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--color-primary) / 0.1;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform var(--transition-base);
-  z-index: -1;
-}
-
-.hover-slide-in:hover::before {
-  transform: scaleX(1);
-}
-
-/* Gradient overlay on hover */
-.hover-gradient-overlay {
-  position: relative;
-  overflow: hidden;
-}
-
-.hover-gradient-overlay::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--color-primary) / 0.1,
-    transparent
-  );
-  transition: left var(--motion-duration-slow);
-  z-index: -1;
-}
-
-.hover-gradient-overlay:hover::before {
-  left: 100%;
-}
-
-/* Border animation on hover */
-.hover-border-animate {
-  position: relative;
-}
-
-.hover-border-animate::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: 2px solid transparent;
-  border-radius: inherit;
-  transition: all var(--transition-base);
-  pointer-events: none;
-}
-
-.hover-border-animate:hover::before {
-  border-top-color: var(--color-primary);
-  border-right-color: var(--color-primary);
-  border-bottom-color: var(--color-secondary);
-  border-left-color: var(--color-secondary);
-  animation: border-rotate 1.5s linear infinite;
-}
-
-@keyframes border-rotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 
 /* ============================================
@@ -299,20 +190,6 @@ input[type="reset"]:active,
 }
 
 /* ============================================
-   CLICK FEEDBACK COMBINATIONS
-   ============================================ */
-
-/* Combined click effects */
-.click-lift-scale:active {
-  transform: translateY(1px) scale(0.98);
-}
-
-.click-lift-scale-glow:active {
-  transform: translateY(1px) scale(0.98);
-  box-shadow: var(--shadow-sm);
-}
-
-/* ============================================
    ACCESSIBILITY & REDUCED MOTION
    ============================================ */
 
@@ -332,11 +209,7 @@ input[type="reset"]:active,
   .hover-lift,
   .hover-glow,
   .hover-scale,
-  .click-ripple,
-  .click-scale,
-  .hover-slide-in,
-  .hover-gradient-overlay,
-  .hover-border-animate {
+  .click-scale {
     transition: none;
     animation: none;
   }
@@ -351,15 +224,8 @@ input[type="reset"]:active,
   }
 
   .click-scale:active,
-  .click-scale-lg:active,
-  .click-lift-scale:active,
-  .click-lift-scale-glow:active {
+  .click-scale-lg:active {
     transform: none;
-  }
-
-  .hover-slide-in::before,
-  .hover-gradient-overlay::before {
-    display: none;
   }
 }
 

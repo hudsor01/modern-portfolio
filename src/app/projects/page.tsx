@@ -8,10 +8,8 @@ import type { Project } from '@/types/project'
 
 // Server-side data fetching
 async function getProjects(): Promise<Project[]> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-  
   try {
-    const response = await fetch(`${baseUrl}/api/projects`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/projects`, {
       next: { revalidate: 3600 }, // Revalidate every hour
     })
 

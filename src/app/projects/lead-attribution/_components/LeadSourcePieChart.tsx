@@ -2,7 +2,7 @@
 import { memo } from 'react'
 
 import { LazyPieChart as PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from '@/components/charts/lazy-charts'
-import { chartColors } from '@/lib/chart-colors'
+import { chartColors } from '@/lib/charts'
 import type { PieLabelRenderProps } from 'recharts'
 
 interface CustomTooltipProps {

@@ -6,8 +6,8 @@ import { TrendingDown, Users, Activity, AlertCircle } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
-import { ProjectJsonLd } from '@/components/seo/json-ld'
-import { formatPercentage, formatNumber, formatCurrency } from '@/lib/utils/data-formatters'
+import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { formatPercentage, formatNumber, formatCurrency } from '@/lib/data-formatters'
 
 // Import static churn data
 import { staticChurnData } from '@/app/projects/data/partner-analytics'

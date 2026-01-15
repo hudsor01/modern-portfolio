@@ -11,7 +11,7 @@ import {
   Legend,
   CartesianGrid,
 } from '@/components/charts/lazy-charts'
-import { chartColors, chartCssVars } from '@/lib/chart-colors'
+import { chartColors, chartCssVars } from '@/lib/charts'
 
 type ChurnDatum = {
   month: string

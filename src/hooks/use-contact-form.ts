@@ -1,43 +1,20 @@
 /**
- * useContactForm - Custom hook for contact form state management using TanStack Form
- * Migrated from react-hook-form to @tanstack/react-form
+ * useContactForm - Simplified contact form hook using TanStack Form
+ * Consolidates validation, state management, and submission logic
  */
 
-import { useState } from 'react'
+import type { ChangeEvent, FormEvent } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useForm } from '@tanstack/react-form'
-import { useStore } from '@tanstack/react-store'
-import { contactFormSchema } from '@/lib/validations/schemas'
+import { contactFormSchema } from '@/lib/schemas'
 import { handleHookError } from '@/lib/error-handling'
 import { submitContactForm } from '@/app/contact/actions'
-
-// ============================================================================
-// Types
-// ============================================================================
-
-export interface ContactFormData {
-  name: string
-  email: string
-  company: string
-  phone: string
-  message: string
-}
-
-export interface ContactFormErrors {
-  name?: string
-  email?: string
-  company?: string
-  phone?: string
-  message?: string
-  terms?: string
-}
-
-export type SubmitStatus = 'idle' | 'submitting' | 'success' | 'error'
-
-// Return type is inferred - exported below for external use
-
-// ============================================================================
-// Initial State
-// ============================================================================
+import type { ContactFormData } from '@/types/api'
+import type {
+  ContactFormErrors,
+  SubmitStatus,
+  UseContactFormReturn,
+} from '@/types/forms'
 
 const initialFormData: ContactFormData = {
   name: '',
@@ -47,41 +24,37 @@ const initialFormData: ContactFormData = {
   message: '',
 }
 
-// ============================================================================
-// Hook
-// ============================================================================
-
-export function useContactForm() {
-  // Additional state not managed by TanStack Form
+export function useContactForm(): UseContactFormReturn {
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>('idle')
   const [showPrivacy, setShowPrivacy] = useState(false)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
-  const [fieldErrors, setFieldErrors] = useState<ContactFormErrors>({})
   const [error, setError] = useState<Error | null>(null)
+  const [termsError, setTermsError] = useState<string | null>(null)
 
-  // TanStack Form instance
   const form = useForm({
     defaultValues: initialFormData,
+    validators: {
+      onChange: contactFormSchema,
+    },
     onSubmit: async ({ value }) => {
-      // Validate terms agreement
+      setSubmitStatus('submitting')
+      setError(null)
+      setTermsError(null) // Clear any previous terms error
+
+      // Check terms agreement before submitting
       if (!agreedToTerms) {
-        setFieldErrors((prev) => ({ ...prev, terms: 'Please agree to the privacy policy' }))
+        setTermsError('Please agree to the privacy policy')
         setSubmitStatus('error')
         return
       }
 
-      setSubmitStatus('submitting')
-      setError(null)
-
       try {
-        // Call server action
         const result = await submitContactForm(value)
 
         if (result.success) {
           setSubmitStatus('success')
           form.reset()
           setAgreedToTerms(false)
-          setFieldErrors({})
         } else {
           setSubmitStatus('error')
           setError(new Error(result.error || 'Submission failed'))
@@ -97,116 +70,85 @@ export function useContactForm() {
     },
   })
 
-  // Get current form values using useStore
-  const formValues = useStore(form.store, (state) => state.values)
+  const formData = form.state.values as ContactFormData
+  const errors = useMemo<ContactFormErrors>(() => {
+    const result = contactFormSchema.safeParse(formData)
+    if (result.success) {
+      return {}
+    }
 
-  // Derived state: form completion progress
-  const progress = (() => {
-    let filled = 0
-    const total = 4 // Required fields: name, email, message, terms
-    if (formValues.name.length >= 2) filled++
-    if (formValues.email.includes('@')) filled++
-    if (formValues.message.length >= 10) filled++
-    if (agreedToTerms) filled++
-    // Bonus for optional fields (adds up to 10% extra)
-    if (formValues.company) filled += 0.2
-    if (formValues.phone) filled += 0.2
-    return Math.min(100, Math.round((filled / total) * 100))
-  })()
+    const fieldErrors = result.error.flatten().fieldErrors
+    const mapped: ContactFormErrors = {}
 
+    for (const key in fieldErrors) {
+      const messages = fieldErrors[key as keyof typeof fieldErrors]
+      if (messages && messages.length > 0) {
+        mapped[key as keyof ContactFormErrors] = messages[0]
+      }
+    }
+
+    return mapped
+  }, [formData])
+
+  // Calculate form progress
+  const progress = calculateProgress(formData, agreedToTerms)
   const isSubmitting = submitStatus === 'submitting'
 
-  // Field validation using Zod schema
-  const validateField = (name: string, value: string): string => {
-    // Get the field schema from contactFormSchema
-    const fieldSchema = contactFormSchema.shape[name as keyof typeof contactFormSchema.shape]
-    if (!fieldSchema) return ''
+  const handleInputChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = event.target
+      if (!name) return
+      form.setFieldValue(name as keyof ContactFormData, value as ContactFormData[keyof ContactFormData])
+    },
+    [form]
+  )
 
-    const result = fieldSchema.safeParse(value)
-    if (!result.success) {
-      return result.error.issues[0]?.message || ''
-    }
-    return ''
-  }
+  const handleSubmit = useCallback(
+    async (event?: FormEvent) => {
+      event?.preventDefault()
+      await form.handleSubmit()
+    },
+    [form]
+  )
 
-  // Input change handler - maintains backward compatibility
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-
-    // Update TanStack Form field value
-    form.setFieldValue(name as keyof ContactFormData, value)
-
-    // Real-time validation
-    const error = validateField(name, value)
-    setFieldErrors((prev) => ({ ...prev, [name]: error || undefined }))
-
-    // Clear submit status on new input
-    if (submitStatus !== 'idle') {
-      setSubmitStatus('idle')
-    }
-  }
-
-  // Reset form to initial state
-  const resetForm = () => {
+  function resetForm(): void {
     form.reset()
     setAgreedToTerms(false)
-    setFieldErrors({})
     setSubmitStatus('idle')
-  }
-
-  // Form submission handler - maintains backward compatibility
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    // Validate all fields with Zod schema
-    const result = contactFormSchema.safeParse(formValues)
-    if (!result.success) {
-      const newErrors: ContactFormErrors = {}
-      result.error.issues.forEach((err) => {
-        const field = err.path[0] as string
-        if (
-          field === 'name' ||
-          field === 'email' ||
-          field === 'company' ||
-          field === 'phone' ||
-          field === 'message'
-        ) {
-          newErrors[field as keyof ContactFormErrors] = err.message
-        }
-      })
-      setFieldErrors(newErrors)
-      setSubmitStatus('error')
-      return
-    }
-
-    // Check terms agreement
-    if (!agreedToTerms) {
-      setFieldErrors((prev) => ({ ...prev, terms: 'Please agree to the privacy policy' }))
-      setSubmitStatus('error')
-      return
-    }
-
-    // Trigger TanStack Form submission
-    await form.handleSubmit()
+    setError(null)
   }
 
   return {
-    formData: formValues,
-    errors: fieldErrors,
+    form,
+    formData,
+    errors,
+    handleInputChange,
+    handleSubmit,
     submitStatus,
     showPrivacy,
     agreedToTerms,
+    termsError,
     progress,
     isSubmitting,
-    handleInputChange,
-    handleSubmit,
     setShowPrivacy,
     setAgreedToTerms,
     resetForm,
-    form,
     error,
   }
 }
 
-// Export inferred type for external use - TanStack Form types flow naturally
-export type UseContactFormReturn = ReturnType<typeof useContactForm>
+function calculateProgress(values: ContactFormData, termsAccepted: boolean): number {
+  let filled = 0
+  const total = 4
+
+  if (values.name.length >= 2) filled += 1
+  if (values.email.includes('@')) filled += 1
+  if (values.message.length >= 10) filled += 1
+  if (termsAccepted) filled += 1
+
+  // Bonus points for optional fields
+  if (values.company) filled += 0.2
+  if (values.phone) filled += 0.2
+
+  return Math.min(100, Math.round((filled / total) * 100))
+}

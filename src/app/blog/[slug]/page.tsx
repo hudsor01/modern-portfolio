@@ -1,11 +1,13 @@
 import { Metadata } from 'next'
-export const dynamic = 'force-static'
+import { cache } from 'react'
 import { notFound } from 'next/navigation'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { BlogPostLayout } from '../_components/blog-post-layout'
 import { BlogPostJsonLd } from '@/components/seo/blog-json-ld'
-import type { BlogPostData } from '@/types/shared-api'
+import { transformToBlogPostData } from '@/lib/api-blog'
+import type { BlogPostData } from '@/types/api'
+import { db } from '@/lib/db'
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -20,6 +22,27 @@ const POST_IMAGE_OVERRIDES: Record<string, { src: string; alt: string }> = {
   },
 }
 
+// Official Next.js 16 Pattern: Use React cache() for database queries
+// This automatically deduplicates requests across generateMetadata and page component
+const getBlogPost = cache(async (slug: string): Promise<BlogPostData | null> => {
+  const post = await db.blogPost.findUnique({
+    where: { slug, status: 'PUBLISHED' },
+    include: {
+      author: true,
+      category: true,
+      tags: {
+        include: {
+          tag: true
+        }
+      }
+    }
+  })
+
+  if (!post) return null
+
+  return transformToBlogPostData(post)
+})
+
 function applyPostOverrides(post: BlogPostData | null) {
   if (!post) return post
   const override = POST_IMAGE_OVERRIDES[post.slug]
@@ -32,39 +55,17 @@ function applyPostOverrides(post: BlogPostData | null) {
   }
 }
 
-// Function to fetch post data from API
-async function getBlogPost(slug: string): Promise<BlogPostData | null> {
-  try {
-    const baseUrl = process.env.NODE_ENV === 'production'
-      ? 'https://richardwhudsonjr.com'
-      : 'http://localhost:3000'
-
-    const response = await fetch(`${baseUrl}/api/blog/${slug}`, {
-      next: { revalidate: 3600 },
-    })
-
-    if (!response.ok) {
-      return null
-    }
-
-    const data = await response.json()
-    return data.success ? data.data : null
-  } catch {
-    return null
-  }
-}
-
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params
   const post = applyPostOverrides(await getBlogPost(slug))
-  
+
   if (!post) {
     return {
       title: 'Post Not Found',
       description: 'The requested blog post could not be found.'
     }
   }
-  
+
   return {
     title: post.metaTitle || post.title,
     description: post.metaDescription || post.excerpt,
@@ -88,7 +89,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       modifiedTime: post.updatedAt,
       authors: ['Richard Hudson'],
       section: post.category?.name,
-      tags: post.tags?.map((tag: { name: string }) => tag.name),
+      tags: post.tags?.map(tag => tag.name),
     },
     twitter: {
       card: 'summary_large_image',
@@ -97,7 +98,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       images: post.featuredImage ? [`https://richardwhudsonjr.com${post.featuredImage}`] : undefined,
     },
     alternates: {
-      canonical: post.canonicalUrl || `https://richardwhudsonjr.com/blog/${post.slug}`,
+      canonical: `https://richardwhudsonjr.com/blog/${post.slug}`,
     },
   }
 }
@@ -130,14 +131,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   )
 }
 
-// Generate static params for known blog posts
+// Official Next.js 16 Pattern: generateStaticParams for Static Site Generation
+// This pre-renders all blog posts at build time (zero runtime cost)
 export async function generateStaticParams() {
-  // In real implementation, fetch all published post slugs
-  return [
-    { slug: 'revenue-operations-best-practices-complete-guide' },
-    { slug: 'building-effective-sales-dashboards-real-time-data' },
-    { slug: 'advanced-customer-churn-analysis-techniques' },
-    { slug: 'automating-revenue-reporting-modern-tools' },
-    { slug: 'kpi-design-principles-revenue-operations' },
-  ]
+  const posts = await db.blogPost.findMany({
+    where: { status: 'PUBLISHED' },
+    select: { slug: true },
+    orderBy: { publishedAt: 'desc' },
+  })
+
+  return posts.map((post) => ({ slug: post.slug }))
 }

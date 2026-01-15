@@ -3,12 +3,15 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { 
-  Mail, 
-  MapPin, 
-  ArrowRight 
+import {
+  Mail,
+  MapPin,
+  ArrowRight,
+  FileText,
+  Briefcase
 } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 interface PersonalInfo {
   name: string
@@ -55,24 +58,51 @@ export function PersonalInfo({
             <ContactInfo personalInfo={personalInfo} />
           </div>
 
-          <p 
-            className="text-xl leading-relaxed text-muted-foreground dark:text-muted-foreground"
-          >
-            {personalInfo.bio}
-          </p>
+          <div className="prose prose-lg dark:prose-invert max-w-none">
+            {personalInfo.bio.split('\n\n').map((paragraph, index) => (
+              <p
+                key={index}
+                className="text-lg leading-relaxed text-muted-foreground mb-4 last:mb-0"
+              >
+                {paragraph}
+              </p>
+            ))}
+          </div>
 
-          {onContactClick && (
-            <div className="pt-4">
+          <div className="flex flex-wrap gap-4 pt-6">
+            <Button
+              asChild
+              size="lg"
+              className="h-12 px-8 text-base font-semibold"
+            >
+              <Link href="/projects">
+                <Briefcase className="mr-2 h-5 w-5" />
+                View Case Studies
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="h-12 px-8 text-base font-semibold"
+            >
+              <Link href="/resume">
+                <FileText className="mr-2 h-5 w-5" />
+                Download Resume
+              </Link>
+            </Button>
+            {onContactClick && (
               <Button
                 onClick={onContactClick}
+                variant="outline"
                 size="lg"
-                className="h-14 px-8 text-base font-semibold"
+                className="h-12 px-8 text-base font-semibold"
               >
                 Let's Connect
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         <ProfileImage />

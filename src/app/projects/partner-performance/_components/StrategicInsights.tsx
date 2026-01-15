@@ -1,6 +1,6 @@
 'use client'
 
-import { formatPercentage } from '@/lib/utils/data-formatters'
+import { formatPercentage } from '@/lib/data-formatters'
 import { SectionCard } from '@/components/ui/section-card'
 
 interface StrategicInsightsProps {

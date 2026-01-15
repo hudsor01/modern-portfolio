@@ -2,9 +2,10 @@
 
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { TrendingUp, TrendingDown, Minus, type LucideIcon } from 'lucide-react'
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
+import type { MetricCardProps as DesignMetricCardProps } from '@/types/design-system'
 
 const metricCardVariants = cva(
   'relative group rounded-xl border bg-card text-card-foreground transition-all duration-300 ease-out hover:shadow-md hover:-translate-y-1',
@@ -58,22 +59,9 @@ const trendVariants = cva('inline-flex items-center gap-1 text-xs font-medium', 
   },
 })
 
-export interface MetricTrend {
-  direction: 'up' | 'down' | 'neutral'
-  value: string
-  label: string
-}
-
-export interface MetricCardProps
-  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof metricCardVariants> {
-  icon: LucideIcon
-  label: string
-  value: string | number
-  subtitle?: string
-  trend?: MetricTrend
-  animationDelay?: number
-  loading?: boolean
-}
+type MetricCardProps = DesignMetricCardProps &
+  React.HTMLAttributes<HTMLDivElement> &
+  VariantProps<typeof metricCardVariants>
 
 function getTrendIcon(direction: 'up' | 'down' | 'neutral' | undefined): typeof TrendingUp {
   switch (direction) {

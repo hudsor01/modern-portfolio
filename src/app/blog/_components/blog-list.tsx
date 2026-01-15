@@ -2,70 +2,34 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useQuery } from '@tanstack/react-query'
 import { useQueryState } from 'nuqs'
-import type { BlogPostData, BlogCategoryData } from '@/types/shared-api'
-
-interface BlogPostsResponse {
-  data: BlogPostData[]
-  success: boolean
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-    hasNext: boolean
-    hasPrev: boolean
-  }
-}
+import type { BlogPostData, BlogCategoryData } from '@/types/api'
 import { BlogTagFilter } from './blog-tag-filter'
 import { InlineMarkdown } from './inline-markdown'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
-export function BlogList() {
+interface BlogListProps {
+  initialPosts: BlogPostData[]
+  initialCategories: BlogCategoryData[]
+}
+
+/**
+ * Official Next.js 16 / React 19 Pattern: Client Component with Server-Provided Data
+ *
+ * Data is fetched on the server and passed as props.
+ * This component only handles client-side filtering via URL state.
+ * No client-side fetching - zero cost, instant load.
+ */
+export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
   // URL state management with nuqs - shareable category links
   const [selectedCategory, setSelectedCategory] = useQueryState('category', { defaultValue: 'All' })
 
-  // Fetch all posts - direct TanStack Query usage
-  const { data: postsData, isLoading: postsLoading } = useQuery({
-    queryKey: ['blog', 'posts', { published: true }, { field: 'publishedAt', order: 'desc' }, 1, 50],
-    queryFn: async (): Promise<BlogPostsResponse> => {
-      const searchParams = new URLSearchParams()
-      searchParams.append('page', '1')
-      searchParams.append('limit', '50')
-      searchParams.append('sortBy', 'publishedAt')
-      searchParams.append('sortOrder', 'desc')
-      searchParams.append('published', 'true')
-
-      const response = await fetch(`/api/blog?${searchParams.toString()}`)
-      if (!response.ok) throw new Error('Failed to fetch blog posts')
-      return response.json()
-    },
-    staleTime: 5 * 60 * 1000,
-  })
-
-  // Fetch categories - direct TanStack Query usage
-  const { data: categories = [] } = useQuery({
-    queryKey: ['blog', 'categories'],
-    queryFn: async (): Promise<BlogCategoryData[]> => {
-      const response = await fetch('/api/blog/categories')
-      if (!response.ok) throw new Error('Failed to fetch categories')
-      const result = await response.json()
-      return result.success ? result.data : result
-    },
-    staleTime: 15 * 60 * 1000,
-  })
-
   // Build category list with "All" option
-  const categoryTags = ['All', ...categories.map((c) => c.name)]
-
-  // Get posts data with fallback
-  const posts = postsData?.data ?? []
+  const categoryTags = ['All', ...initialCategories.map((c) => c.name)]
 
   // Count posts per category
-  const categoryCounts = posts.reduce<Record<string, number>>(
+  const categoryCounts = initialPosts.reduce<Record<string, number>>(
     (counts, post) => {
       const categoryName = post.category?.name
       if (categoryName) {
@@ -73,16 +37,15 @@ export function BlogList() {
       }
       return counts
     },
-    { All: posts.length }
+    { All: initialPosts.length }
   )
 
   // Filter posts by selected category
   const filteredPosts = selectedCategory === 'All'
-    ? posts
-    : posts.filter((post) => post.category?.name === selectedCategory)
+    ? initialPosts
+    : initialPosts.filter((post) => post.category?.name === selectedCategory)
 
-  // Format date
-  const formatDate = (dateString: string | undefined) => {
+  function formatDate(dateString: string | undefined): string {
     if (!dateString) return ''
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -114,20 +77,7 @@ export function BlogList() {
       </div>
 
       {/* Posts Grid */}
-      {postsLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="rounded-xl bg-card border border-border overflow-hidden">
-              <Skeleton className="aspect-[16/10] w-full" />
-              <div className="p-5 space-y-3">
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-1/3" />
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : filteredPosts.length > 0 ? (
+      {filteredPosts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredPosts.map((post) => (
             <Link key={post.id} href={`/blog/${post.slug}`} className="group block h-full">
@@ -171,7 +121,7 @@ export function BlogList() {
         </div>
       ) : (
         <div className="py-16 text-center">
-          <p className="typography-muted">No posts found.</p>
+          <p className="typography-muted">No posts found in this category.</p>
         </div>
       )}
     </div>

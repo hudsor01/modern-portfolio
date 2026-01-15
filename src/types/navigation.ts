@@ -81,12 +81,6 @@ export interface MenuItem {
 /**
  * Breadcrumb item for breadcrumb navigation
  */
-export interface BreadcrumbItem {
-  title: string;
-  href: string;
-  isCurrent?: boolean;
-}
-
 /**
  * Mobile navigation props
  */

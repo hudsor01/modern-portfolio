@@ -11,7 +11,7 @@ import {
   CartesianGrid,
   ReferenceLine,
 } from '@/components/charts/lazy-charts'
-import { chartColors, segmentColors, chartCssVars } from '@/lib/chart-colors'
+import { chartColors, segmentColors, chartCssVars } from '@/lib/charts'
 import { clvPredictionData } from '../data/constants'
 
 const scatterSegmentColors = {

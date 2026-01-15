@@ -1,6 +1,6 @@
 'use client'
 
-import { siteConfig } from '@/lib/config/site';
+import { siteConfig } from '@/lib/site';
 
 interface GlobalSEOProps {
   title?: string;

@@ -1,12 +1,11 @@
 'use client'
 
-import { useMutation } from '@tanstack/react-query'
-import type { ResumeData } from '@/types/shared-api'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { FileDown } from 'lucide-react'
 import { useToast } from '@/hooks/use-sonner-toast'
 import { cn } from '@/lib/utils'
-import { createContextLogger } from '@/lib/monitoring/logger'
+import { createContextLogger } from '@/lib/logger'
 
 const logger = createContextLogger('ResumeDownload')
 
@@ -18,14 +17,21 @@ interface ResumeDownloadProps {
   fallbackToPDF?: boolean
 }
 
+/**
+ * Official Next.js 16 / React 19 Pattern: Native State Management
+ *
+ * No TanStack Query needed - just useState and fetch for mutations.
+ * Simpler, lighter, and follows React 19 best practices.
+ */
 export function ResumeDownload({
   className,
   variant = 'default',
   size = 'default',
   label = 'Download Resume',
-  fallbackToPDF = false, // Default to false, meaning try API first
+  fallbackToPDF = false,
 }: Readonly<ResumeDownloadProps>) {
   const { success: showSuccessToast, error: showErrorToast, loading: showLoadingToast } = useToast()
+  const [isDownloading, setIsDownloading] = useState(false)
 
   // Helper function for downloading files
   const downloadFile = (url: string, filename: string) => {
@@ -38,27 +44,25 @@ export function ResumeDownload({
     document.body.removeChild(link)
   }
 
-  // Direct TanStack Query mutation usage
-  const downloadResumeMutation = useMutation({
-    mutationFn: async (): Promise<ResumeData> => {
-      const response = await fetch('/api/generate-resume-pdf', { 
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      })
-      if (!response.ok) throw new Error('Resume generation failed')
-      return response.json()
-    },
-    retry: 2,
-  })
-
   const handleDownload = async () => {
+    if (isDownloading) return
+
+    setIsDownloading(true)
     const toastId = showLoadingToast('Preparing your resume...')
 
     try {
       // First try to use the API to get a fresh PDF
       if (!fallbackToPDF) {
-        await downloadResumeMutation.mutateAsync()
+        const response = await fetch('/api/generate-resume-pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        })
+
+        if (!response.ok) throw new Error('Resume generation failed')
+
+        await response.json()
         showSuccessToast('Resume downloaded successfully!', { id: toastId })
+        setIsDownloading(false)
         return
       }
 
@@ -77,21 +81,21 @@ export function ResumeDownload({
       logger.error('Error downloading resume', error instanceof Error ? error : new Error(String(error)))
       const errorMessage = error instanceof Error ? error.message : 'Failed to download resume'
       showErrorToast(errorMessage, { id: toastId })
+    } finally {
+      setIsDownloading(false)
     }
   }
 
   return (
     <Button
+      onClick={handleDownload}
+      disabled={isDownloading}
       variant={variant}
       size={size}
-      className={cn('group transform transition-all duration-300 ease-out hover:shadow-lg', className)}
-      onClick={handleDownload}
-      disabled={downloadResumeMutation.isPending}
+      className={cn('gap-2', className)}
     >
-      <FileDown className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
-      <span className="transition-transform group-hover:translate-x-0.5">
-        {downloadResumeMutation.isPending ? 'Downloading...' : label}
-      </span>
+      <FileDown className="h-4 w-4" />
+      {isDownloading ? 'Downloading...' : label}
     </Button>
   )
 }

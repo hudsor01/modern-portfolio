@@ -2,7 +2,7 @@
 import { memo } from 'react'
 
 import { LazyRadarChart as RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Legend } from '@/components/charts/lazy-charts'
-import { chartColors as baseChartColors, chartCssVars } from '@/lib/chart-colors'
+import { chartColors as baseChartColors, chartCssVars } from '@/lib/charts'
 
 // Operational efficiency metrics across different areas
 const data = [

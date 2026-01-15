@@ -12,17 +12,7 @@ import {
 } from '@/components/ui/breadcrumb'
 import { cn } from '@/lib/utils'
 import { useKeyboardNavigation } from './keyboard-navigation'
-import type { BreadcrumbItem as BreadcrumbItemType } from '@/lib/design-system/types'
-
-export interface NavigationBreadcrumbsProps {
-  items: BreadcrumbItemType[]
-  currentPage: string
-  className?: string
-  maxItems?: number
-  showHome?: boolean
-  homeLabel?: string
-  homeHref?: string
-}
+import type { NavigationBreadcrumbsProps } from '@/types/design-system'
 
 /**
  * Standardized breadcrumb navigation component with uniform appearance

@@ -9,7 +9,7 @@ import * as React from 'react'
  * Implements standardized focus management and visual focus indicators
  */
 
-export interface KeyboardNavigationOptions {
+export interface NavigationKeyboardOptions {
   onEnter?: () => void
   onSpace?: () => void
   onEscape?: () => void
@@ -23,7 +23,7 @@ export interface KeyboardNavigationOptions {
   stopPropagation?: boolean
 }
 
-export function useKeyboardNavigation(options: KeyboardNavigationOptions = {}) {
+export function useKeyboardNavigation(options: NavigationKeyboardOptions = {}) {
   const {
     onEnter,
     onSpace,

@@ -8,8 +8,8 @@ import {
   ChartXAxis,
   ChartYAxis,
   StandardTooltip,
-} from '@/lib/charts/chart-components'
-import { chartColors, chartConfig, chartTypeConfigs } from '@/lib/charts/chart-theme'
+} from '@/lib/chart-components'
+import { chartColors, chartConfig, chartTypeConfigs } from '@/lib/charts'
 
 // Real data based on partner analysis
 const data = [

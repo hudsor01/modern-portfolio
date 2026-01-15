@@ -12,7 +12,7 @@ import {
   Area,
   LazyComposedChart as ComposedChart,
 } from '@/components/charts/lazy-charts'
-import { chartColors, chartCssVars } from '@/lib/chart-colors'
+import { chartColors, chartCssVars } from '@/lib/charts'
 
 type TrendDatum = {
   month: string

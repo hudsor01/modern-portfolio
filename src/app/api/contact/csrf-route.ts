@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createContextLogger } from '@/lib/monitoring/logger'
-import { createNewCSRFToken, csrfProtectionMiddleware } from '@/lib/security/csrf-protection'
+import { createContextLogger } from '@/lib/logger'
+import { createNewCSRFToken, csrfProtectionMiddleware } from '@/lib/csrf-protection'
 
 const logger = createContextLogger('ContactCSRFRoute')
 

@@ -1,7 +1,8 @@
-// Split utilities into client and server files
+// Core utility functions
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { z } from 'zod'
+import type { ChangeEvent, FormEvent } from 'react'
 
 // Create a client-safe absoluteUrl function
 export function absoluteUrl(path: string): string {
@@ -145,11 +146,6 @@ export function safeJsonParse<T>(json: string, schema: z.ZodSchema<T>, fallback:
   }
 }
 
-/**
- * Re-export route utilities from their dedicated module
- */
-export * from './utils/route-utils'
-
 export function isInViewport(element: HTMLElement, offset = 0): boolean {
   if (isServer) return false
 
@@ -190,8 +186,7 @@ export function createUrl(
   return `${pathname}${searchParams.toString() ? `?${searchParams}` : ''}`
 }
 
-// Define proper types for React events
-import type { ChangeEvent, FormEvent } from 'react'
+// React event types
 export type InputChangeEvent = ChangeEvent<HTMLInputElement>
 export type TextAreaChangeEvent = ChangeEvent<HTMLTextAreaElement>
 export type SelectChangeEvent = ChangeEvent<HTMLSelectElement>
@@ -208,4 +203,33 @@ export function formatData<T>(data: T): FormattedData<T> {
     formatted: data,
     timestamp: new Date().toISOString(),
   }
+}
+
+/**
+ * Smart merge two records intelligently
+ * Strategy: prefer non-empty values, merge arrays, last-write-wins for conflicts
+ */
+export function smartMerge<T extends Record<string, unknown>>(local: T, remote: T): T {
+  const merged: Record<string, unknown> = { ...local }
+
+  Object.entries(remote).forEach(([key, remoteValue]) => {
+    const localValue = local[key]
+
+    // If local value is empty/null and remote has content, use remote
+    if (
+      (localValue === '' || localValue === null || localValue === undefined) &&
+      remoteValue !== '' &&
+      remoteValue !== null &&
+      remoteValue !== undefined
+    ) {
+      merged[key] = remoteValue
+    }
+    // For arrays, merge them (deduplicate)
+    else if (Array.isArray(localValue) && Array.isArray(remoteValue)) {
+      merged[key] = [...new Set([...localValue, ...remoteValue])]
+    }
+    // For other cases, keep local value (last-write-wins for conflicts)
+  })
+
+  return merged as T
 }
