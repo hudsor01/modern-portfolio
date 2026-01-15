@@ -4,7 +4,7 @@
  */
 
 import { Prisma } from '@/generated/prisma/client'
-import type { BlogPostFilters, BlogPostSort } from '@/types/shared-api'
+import type { BlogPostFilters, BlogPostSort } from '@/types/api'
 
 /**
  * Build Prisma where clause from blog post filters

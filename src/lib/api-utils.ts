@@ -9,10 +9,10 @@
  */
 
 import { NextRequest } from 'next/server'
-import { logger } from '@/lib/monitoring/logger'
+import { logger } from '@/lib/logger'
 import type { RequestMetadata } from '@/types/api'
 import { ApiErrorType } from '@/types/api'
-import { createApiErrorResponse } from './response'
+import { createApiErrorResponse } from './api-response'
 
 /**
  * Extract client identifier from request for rate limiting

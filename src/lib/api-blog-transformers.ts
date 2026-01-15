@@ -4,7 +4,7 @@
  */
 
 import { Prisma } from '@/generated/prisma/client'
-import type { BlogPostData } from '@/types/shared-api'
+import type { BlogPostData } from '@/types/api'
 
 type BlogPostWithRelations = Prisma.BlogPostGetPayload<{
   include: {
