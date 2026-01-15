@@ -22,7 +22,7 @@ export interface YearOverYearGrowthExtended {
   commission_growth_percentage: number
 }
 
-export interface TopPartnerData {
+export interface TopPartnerSnapshot {
   name: string
   revenue: number
   deals: number

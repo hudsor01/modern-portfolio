@@ -1,25 +1,7 @@
 'use client'
 
 import { toast } from 'sonner'
-import type { MouseEvent } from 'react'
-
-type ToastType = 'success' | 'error' | 'info' | 'warning'
-
-interface ToastOptions {
-  duration?: number
-  id?: string | number
-  description?: string
-  action?: {
-    label: string
-    onClick: (event: MouseEvent<HTMLButtonElement>) => void
-  }
-  cancel?: {
-    label: string
-    onClick?: (event: MouseEvent<HTMLButtonElement>) => void
-  }
-  onDismiss?: () => void
-  onAutoClose?: () => void
-}
+import type { ToastOptions, ToastType } from '@/types/hooks'
 
 function mapToastOptions(options?: ToastOptions) {
   if (!options) return undefined
@@ -41,20 +23,18 @@ function mapToastOptions(options?: ToastOptions) {
   }
 }
 
+const TOAST_METHODS: Record<ToastType, typeof toast.success> = {
+  success: toast.success,
+  error: toast.error,
+  warning: toast.warning,
+  info: toast.info,
+}
+
 export function useToast() {
   const showToast = (message: string, type: ToastType = 'info', options?: ToastOptions) => {
     const mappedOptions = mapToastOptions(options)
-    switch (type) {
-      case 'success':
-        return toast.success(message, mappedOptions)
-      case 'error':
-        return toast.error(message, mappedOptions)
-      case 'warning':
-        return toast.warning(message, mappedOptions)
-      case 'info':
-      default:
-        return toast.info(message, mappedOptions)
-    }
+    const toastMethod = TOAST_METHODS[type] || toast.info
+    return toastMethod(message, mappedOptions)
   }
 
   return {

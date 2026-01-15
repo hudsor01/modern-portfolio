@@ -6,7 +6,7 @@
 import { JSX, ReactNode } from 'react'
 import { ImageProps } from 'next/image'
 import { ButtonHTMLAttributes } from 'react'
-import { ContactFormData } from '@/types/shared-api'
+import { ContactFormData } from '@/types/api'
 // Motion types - no longer using framer-motion
 export type MotionVariant = Record<string, unknown>
 

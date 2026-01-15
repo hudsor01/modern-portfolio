@@ -6,8 +6,8 @@
 
 import 'server-only'
 import { PrismaClient } from '@/generated/prisma/client'
-import { PrismaPg } from '@prisma/adapter-pg'
-import { logger } from '@/lib/monitoring/logger'
+import { PrismaNeon } from '@prisma/adapter-neon'
+import { logger } from '@/lib/logger'
 
 // Environment validation - runs at module load time
 function validateDatabaseEnvironment() {
@@ -43,8 +43,9 @@ function validateDatabaseEnvironment() {
   }
 }
 
-// Validate environment immediately on module import (skip in test environment)
-if (process.env.NODE_ENV !== 'test') {
+// Validate environment immediately on module import
+// Skip in test environment or during CI builds (SKIP_DB_VALIDATION=true)
+if (process.env.NODE_ENV !== 'test' && process.env.SKIP_DB_VALIDATION !== 'true') {
   validateDatabaseEnvironment()
 }
 
@@ -54,8 +55,9 @@ declare global {
 }
 
 // Create the PostgreSQL adapter with validated connection string
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL,
+// Use empty string during build to allow compilation (db won't be used)
+const adapter = new PrismaNeon({
+  connectionString: process.env.DATABASE_URL || '',
 })
 
 export const db =

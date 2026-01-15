@@ -16,49 +16,23 @@ import {
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Field, FieldError } from '@/components/ui/field'
-import { type UseContactFormReturn } from '@/hooks/use-contact-form'
-import type { AnyFieldApi } from '@tanstack/react-form'
-
-// ============================================================================
-// Props
-// ============================================================================
+import { Label } from '@/components/ui/label'
+import { type TanStackFieldApi, type UseContactFormReturn } from '@/types/forms'
 
 interface ContactFormProps {
   form: UseContactFormReturn
 }
 
-// ============================================================================
-// Helper Component for Field Info
-// ============================================================================
-
-function FieldErrorDisplay({
-  field,
-  fallbackError,
-}: {
-  field: AnyFieldApi
-  fallbackError?: string
-}) {
-  const hasFieldErrors = field.state.meta.isTouched && field.state.meta.errors.length > 0
-  const errorMessage = hasFieldErrors ? field.state.meta.errors[0] : fallbackError
-
-  if (!errorMessage) return null
-
-  return <FieldError>{errorMessage}</FieldError>
-}
-
-// ============================================================================
-// Component
-// ============================================================================
-
 export function ContactForm({ form: formHook }: ContactFormProps) {
   const {
+    form,
     submitStatus,
     showPrivacy,
     agreedToTerms,
-    errors,
-    form,
     setShowPrivacy,
     setAgreedToTerms,
+    isSubmitting,
+    error,
   } = formHook
 
   return (
@@ -68,7 +42,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
       <form
         onSubmit={(e) => {
           e.preventDefault()
-          formHook.handleSubmit(e)
+          form.handleSubmit()
         }}
         className="space-y-6"
       >
@@ -76,8 +50,9 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
         <div className="grid md:grid-cols-2 gap-4">
           <form.Field
             name="name"
-            children={(field: AnyFieldApi) => (
-              <Field data-invalid={field.state.meta.errors.length > 0 || !!errors.name}>
+            children={(field: TanStackFieldApi<string>) => (
+              <Field data-invalid={(field.state.meta.errors?.length ?? 0) > 0}>
+                <Label htmlFor={field.name}>Name *</Label>
                 <div className="relative">
                   <div className="absolute left-3 top-3.5 text-muted-foreground">
                     <User className="w-5 h-5" />
@@ -86,27 +61,25 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                     id={field.name}
                     name={field.name}
                     type="text"
-                    value={field.state.value}
-                    onChange={(e) => {
-                      field.handleChange(e.target.value)
-                      formHook.handleInputChange(e)
-                    }}
+                    value={field.state.value as string}
+                    onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
                     placeholder="Your name *"
                     required
-                    aria-invalid={field.state.meta.errors.length > 0 || !!errors.name}
+                    aria-invalid={(field.state.meta.errors?.length ?? 0) > 0}
                     className="pl-12"
                   />
                 </div>
-                <FieldErrorDisplay field={field} fallbackError={errors.name} />
+                <FieldError>{(field.state.meta.errors ?? []).join(', ')}</FieldError>
               </Field>
             )}
           />
 
           <form.Field
             name="email"
-            children={(field: AnyFieldApi) => (
-              <Field data-invalid={field.state.meta.errors.length > 0 || !!errors.email}>
+            children={(field: TanStackFieldApi<string>) => (
+              <Field data-invalid={(field.state.meta.errors?.length ?? 0) > 0}>
+                <Label htmlFor={field.name}>Email *</Label>
                 <div className="relative">
                   <div className="absolute left-3 top-3.5 text-muted-foreground">
                     <Mail className="w-5 h-5" />
@@ -115,19 +88,16 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                     id={field.name}
                     name={field.name}
                     type="email"
-                    value={field.state.value}
-                    onChange={(e) => {
-                      field.handleChange(e.target.value)
-                      formHook.handleInputChange(e)
-                    }}
+                    value={field.state.value as string}
+                    onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
                     placeholder="Your email *"
                     required
-                    aria-invalid={field.state.meta.errors.length > 0 || !!errors.email}
+                    aria-invalid={(field.state.meta.errors?.length ?? 0) > 0}
                     className="pl-12"
                   />
                 </div>
-                <FieldErrorDisplay field={field} fallbackError={errors.email} />
+                <FieldError>{field.state.meta.errors?.join(', ') ?? ''}</FieldError>
               </Field>
             )}
           />
@@ -137,8 +107,9 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
         <div className="grid md:grid-cols-2 gap-4">
           <form.Field
             name="company"
-            children={(field: AnyFieldApi) => (
-              <Field data-invalid={field.state.meta.errors.length > 0 || !!errors.company}>
+            children={(field: TanStackFieldApi<string>) => (
+              <Field data-invalid={(field.state.meta.errors?.length ?? 0) > 0}>
+                <Label htmlFor={field.name}>Company / Organization</Label>
                 <div className="relative">
                   <div className="absolute left-3 top-3.5 text-muted-foreground">
                     <Building2 className="w-5 h-5" />
@@ -147,26 +118,24 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                     id={field.name}
                     name={field.name}
                     type="text"
-                    value={field.state.value}
-                    onChange={(e) => {
-                      field.handleChange(e.target.value)
-                      formHook.handleInputChange(e)
-                    }}
+                    value={field.state.value as string}
+                    onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
                     placeholder="Company / Organization"
-                    aria-invalid={field.state.meta.errors.length > 0 || !!errors.company}
+                    aria-invalid={(field.state.meta.errors?.length ?? 0) > 0}
                     className="pl-12"
                   />
                 </div>
-                <FieldErrorDisplay field={field} fallbackError={errors.company} />
+                <FieldError>{field.state.meta.errors?.join(', ') ?? ''}</FieldError>
               </Field>
             )}
           />
 
           <form.Field
             name="phone"
-            children={(field: AnyFieldApi) => (
-              <Field data-invalid={field.state.meta.errors.length > 0 || !!errors.phone}>
+            children={(field: TanStackFieldApi<string>) => (
+              <Field data-invalid={(field.state.meta.errors?.length ?? 0) > 0}>
+                <Label htmlFor={field.name}>Phone number</Label>
                 <div className="relative">
                   <div className="absolute left-3 top-3.5 text-muted-foreground">
                     <Phone className="w-5 h-5" />
@@ -175,18 +144,15 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                     id={field.name}
                     name={field.name}
                     type="tel"
-                    value={field.state.value}
-                    onChange={(e) => {
-                      field.handleChange(e.target.value)
-                      formHook.handleInputChange(e)
-                    }}
+                    value={field.state.value as string}
+                    onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
                     placeholder="Phone number"
-                    aria-invalid={field.state.meta.errors.length > 0 || !!errors.phone}
+                    aria-invalid={(field.state.meta.errors?.length ?? 0) > 0}
                     className="pl-12"
                   />
                 </div>
-                <FieldErrorDisplay field={field} fallbackError={errors.phone} />
+                <FieldError>{field.state.meta.errors?.join(', ') ?? ''}</FieldError>
               </Field>
             )}
           />
@@ -195,33 +161,31 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
         {/* Message */}
         <form.Field
           name="message"
-          children={(field: AnyFieldApi) => (
-            <Field data-invalid={field.state.meta.errors.length > 0 || !!errors.message}>
+          children={(field: TanStackFieldApi<string>) => (
+            <Field data-invalid={(field.state.meta.errors?.length ?? 0) > 0}>
+              <Label htmlFor={field.name}>Message *</Label>
               <div className="relative">
                 <MessageSquare className="absolute left-3 top-3.5 w-5 h-5 text-muted-foreground" />
                 <textarea
                   id={field.name}
                   name={field.name}
-                  value={field.state.value}
-                  onChange={(e) => {
-                    field.handleChange(e.target.value)
-                    formHook.handleInputChange(e)
-                  }}
+                  value={field.state.value as string}
+                  onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
                   required
                   rows={6}
                   className={`w-full pl-12 pr-4 py-3 bg-background border rounded-xl focus:outline-hidden focus:ring-[3px] text-foreground placeholder-muted-foreground resize-none transition-all duration-300 ease-out ${
-                    field.state.meta.errors.length > 0 || errors.message
+                    (field.state.meta.errors?.length ?? 0) > 0
                       ? 'border-destructive focus:ring-destructive/50'
                       : 'border-border focus:ring-primary/50'
                   }`}
                   placeholder="What would you like to discuss? *"
                 />
                 <div className="absolute bottom-3 right-3 typography-small text-muted-foreground">
-                  {String(field.state.value).length}/500
+                  {(field.state.value as string).length}/500
                 </div>
               </div>
-              <FieldErrorDisplay field={field} fallbackError={errors.message} />
+              <FieldError>{field.state.meta.errors?.join(', ') ?? ''}</FieldError>
             </Field>
           )}
         />
@@ -254,40 +218,31 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                 personal data with third parties and you can request deletion at any time.
               </div>
             )}
-            {errors.terms && <FieldError>{errors.terms}</FieldError>}
+            {error && (
+              <FieldError>{error.message}</FieldError>
+            )}
           </div>
         </div>
 
-        {/* Submit Button - Using form.Subscribe for reactive state */}
-        <form.Subscribe
-          selector={(state: { canSubmit: boolean; isSubmitting: boolean }) => [
-            state.canSubmit,
-            state.isSubmitting,
-          ]}
-          children={(state) => {
-            const isSubmitting = state[1] as boolean
-            return (
-            <button
-              type="submit"
-              disabled={isSubmitting || !agreedToTerms}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-4 px-6 rounded-xl transition-all duration-300 ease-out flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group shadow-sm hover:shadow-md"
-            >
-              {isSubmitting ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                  Sending Message...
-                </>
-              ) : (
-                <>
-                  <Send className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
-                  Send Message
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                </>
-              )}
-            </button>
-          )
-          }}
-        />
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={isSubmitting || !agreedToTerms}
+          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-4 px-6 rounded-xl transition-all duration-300 ease-out flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group shadow-sm hover:shadow-md"
+        >
+          {isSubmitting ? (
+            <>
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+              Sending Message...
+            </>
+          ) : (
+            <>
+              <Send className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+              Send Message
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            </>
+          )}
+        </button>
 
         {/* Status Messages */}
         {submitStatus === 'success' && (

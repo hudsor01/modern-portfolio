@@ -3,10 +3,10 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { TrendingUp, BarChart3, Users, Code } from 'lucide-react'
-import type { Skill } from '@/types/resume'
+import type { ResumeSkillCategory } from '@/types/resume'
 
 interface SkillsBentoProps {
-  skills: Skill[]
+  skills: ResumeSkillCategory[]
   className?: string
 }
 
@@ -39,7 +39,7 @@ export function SkillsBento({ skills, className = '' }: SkillsBentoProps) {
 }
 
 interface SkillCardProps {
-  skillGroup: Skill
+  skillGroup: ResumeSkillCategory
 }
 
 function SkillCard({ skillGroup }: SkillCardProps) {

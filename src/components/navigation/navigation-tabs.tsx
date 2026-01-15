@@ -4,26 +4,7 @@ import * as React from 'react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
 import { useAccessibilityAnnouncer } from './keyboard-navigation'
-
-export interface NavigationTab {
-  id: string
-  label: string
-  content?: React.ReactNode
-  disabled?: boolean
-  badge?: string | number
-}
-
-export interface NavigationTabsProps {
-  tabs: NavigationTab[]
-  defaultValue?: string
-  value?: string
-  onValueChange?: (value: string) => void
-  className?: string
-  variant?: 'default' | 'pills' | 'underline'
-  size?: 'sm' | 'default' | 'lg'
-  orientation?: 'horizontal' | 'vertical'
-  fullWidth?: boolean
-}
+import type { NavigationTabsProps } from '@/types/design-system'
 
 /**
  * Standardized tab navigation component with consistent interaction patterns

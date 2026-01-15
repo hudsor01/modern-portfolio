@@ -42,15 +42,21 @@ export function AnimatedCounter({
   duration = 2000,
   className = ''
 }: AnimatedCounterProps) {
-  const [displayValue, setDisplayValue] = useState('0')
+  const [displayValue, setDisplayValue] = useState(value)
   const ref = useRef<HTMLSpanElement>(null)
   const isInView = useInView(ref, { once: true })
+  const hasAnimated = useRef(false)
 
   const animateNumber = useCallback((
     targetNum: number,
-    formatter: (current: number) => string
+    formatter: (current: number) => string,
+    initialValue: string
   ) => {
+    if (hasAnimated.current) return
+    hasAnimated.current = true
+
     let startTime: number
+    setDisplayValue(initialValue)
 
     const animate = (currentTime: number) => {
       if (!startTime) startTime = currentTime
@@ -70,7 +76,7 @@ export function AnimatedCounter({
   }, [duration, value])
 
   useEffect(() => {
-    if (!isInView) return
+    if (!isInView || hasAnimated.current) return
 
     // Handle different value formats
     if (value.includes('$') && value.includes('M')) {
@@ -78,8 +84,10 @@ export function AnimatedCounter({
       const numMatch = value.match(/(\d+\.?\d*)/)
       if (numMatch?.[1]) {
         const targetNum = parseFloat(numMatch[1])
-        animateNumber(targetNum, (current) =>
-          value.replace(/\d+\.?\d*/, current.toFixed(1))
+        animateNumber(
+          targetNum,
+          (current) => value.replace(/\d+\.?\d*/, current.toFixed(1)),
+          value.replace(/\d+\.?\d*/, '0.0')
         )
       }
     } else if (value.includes('%')) {
@@ -87,18 +95,24 @@ export function AnimatedCounter({
       const numMatch = value.match(/(\d+,?\d*)/)
       if (numMatch?.[1]) {
         const targetNum = parseInt(numMatch[1].replace(',', ''))
-        animateNumber(targetNum, (current) => {
-          const formatted = current >= 1000 ? current.toLocaleString() : current.toString()
-          return value.replace(/\d+,?\d*/, formatted)
-        })
+        animateNumber(
+          targetNum,
+          (current) => {
+            const formatted = current >= 1000 ? current.toLocaleString() : current.toString()
+            return value.replace(/\d+,?\d*/, formatted)
+          },
+          value.replace(/\d+,?\d*/, '0')
+        )
       }
     } else {
       // Handle simple numbers like "8+"
       const numMatch = value.match(/(\d+)/)
       if (numMatch?.[1]) {
         const targetNum = parseInt(numMatch[1])
-        animateNumber(targetNum, (current) =>
-          value.replace(/\d+/, current.toString())
+        animateNumber(
+          targetNum,
+          (current) => value.replace(/\d+/, current.toString()),
+          value.replace(/\d+/, '0')
         )
       }
     }

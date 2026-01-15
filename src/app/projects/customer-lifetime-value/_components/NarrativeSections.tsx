@@ -1,7 +1,8 @@
 'use client'
 
 import { SectionCard } from '@/components/ui/section-card'
-import { ResultCard, FeatureCard } from '@/components/projects/shared'
+import { FeatureCard } from '@/components/projects/shared/feature-card'
+import { ResultCard } from '@/components/projects/shared/result-card'
 import { formatCurrency } from '../utils'
 
 export function NarrativeSections() {

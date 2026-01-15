@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+import { withSentryConfig } from '@sentry/nextjs'
 
 const nextConfig = {
   reactStrictMode: true,
@@ -6,8 +7,8 @@ const nextConfig = {
   compress: true,
   basePath: '',
 
-  // React Compiler for automatic memoization (Next.js 16+)
-  reactCompiler: true,
+  // React Compiler disabled - requires babel-plugin-react-compiler
+  // reactCompiler: true,
 
   // External packages that shouldn't be bundled (required for Prisma + Turbopack)
   serverExternalPackages: ['@prisma/client', '@prisma/adapter-pg'],
@@ -167,4 +168,12 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+const sentryBuildOptions = {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  sentryUrl: process.env.SENTRY_URL,
+  silent: true,
+};
+
+export default withSentryConfig(nextConfig, sentryBuildOptions);

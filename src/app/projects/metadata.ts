@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { siteConfig } from '@/lib/config/site'
+import { siteConfig } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: 'Projects | Richard Hudson',

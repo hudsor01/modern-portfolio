@@ -1,11 +1,11 @@
-export interface Skill {
+export interface SkillDatum {
   name: string
   category: 'data' | 'tools' | 'business' | 'technical'
   proficiency: number // 1-100
   icon?: string
 }
 
-export const skills: Skill[] = [
+export const skills: SkillDatum[] = [
   {
     name: 'Data Analysis',
     category: 'data',

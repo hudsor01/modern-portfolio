@@ -1,6 +1,6 @@
 'use client'
 
-import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data-formatters'
+import { formatCurrency, formatNumber, formatPercentage } from '@/lib/data-formatters'
 
 const top80PercentPartners = [
   { partner: 'TechFlow Solutions', revenue: 287650, deals: 89, winRate: 94.2, tier: 'Certified' },

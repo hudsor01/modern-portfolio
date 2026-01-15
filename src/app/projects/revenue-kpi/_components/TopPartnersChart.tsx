@@ -5,17 +5,17 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
+  type ChartThemeConfig,
 } from '@/components/ui/chart'
 import { LazyBarChart as BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell } from '@/components/charts/lazy-charts'
-import { chartColors } from '@/lib/chart-colors'
+import { chartColors } from '@/lib/charts'
 
 const chartConfig = {
   revenue: {
     label: 'Revenue',
     color: chartColors.primary,
   },
-} satisfies ChartConfig
+} satisfies ChartThemeConfig
 
 // Gradient colors for visual hierarchy
 const BAR_COLORS = [

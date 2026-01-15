@@ -12,7 +12,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { buildEnhancedCSP } from '@/lib/security/csp-edge'
+import { buildEnhancedCSP } from '@/lib/csp-edge'
 
 export function proxy(request: NextRequest) {
   // Generate cryptographically secure nonce (Edge Runtime compatible)

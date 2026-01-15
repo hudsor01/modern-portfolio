@@ -1,12 +1,30 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import type { YearOverYearData } from '@/lib/analytics/data-service'
+import type { YearOverYearData } from '@/types/analytics'
 
-const RevenueBarChart = dynamic(() => import('./RevenueBarChart'), { ssr: false })
-const RevenueLineChart = dynamic(() => import('./RevenueLineChart'), { ssr: false })
-const TopPartnersChart = dynamic(() => import('./TopPartnersChart'), { ssr: false })
-const PartnerGroupPieChart = dynamic(() => import('./PartnerGroupPieChart'), { ssr: false })
+// Chart loading skeleton
+function ChartSkeleton() {
+  return <div className="h-[300px] w-full animate-pulse bg-muted rounded-lg" />
+}
+
+// Enable SSR for faster initial render - charts will hydrate on client
+const RevenueBarChart = dynamic(() => import('./RevenueBarChart'), {
+  ssr: true,
+  loading: () => <ChartSkeleton />,
+})
+const RevenueLineChart = dynamic(() => import('./RevenueLineChart'), {
+  ssr: true,
+  loading: () => <ChartSkeleton />,
+})
+const TopPartnersChart = dynamic(() => import('./TopPartnersChart'), {
+  ssr: true,
+  loading: () => <ChartSkeleton />,
+})
+const PartnerGroupPieChart = dynamic(() => import('./PartnerGroupPieChart'), {
+  ssr: true,
+  loading: () => <ChartSkeleton />,
+})
 
 type RevenueTrendDatum = {
   label: string

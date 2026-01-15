@@ -11,7 +11,7 @@ export interface WorkExperience {
   descriptions: string[]
 }
 
-export interface Education {
+export interface ResumeEducation {
   degree: string
   institution: string
   location: string
@@ -20,12 +20,12 @@ export interface Education {
   description: string | null
 }
 
-export interface Skill {
+export interface ResumeSkillCategory {
   category: string
   items: string[]
 }
 
-export interface Certification {
+export interface ResumeCertification {
   name: string
   issuer: string
   date: string
@@ -40,9 +40,9 @@ export interface ResumeData {
   location: string
   summary: string
   workExperience: WorkExperience[]
-  education: Education[]
-  skills: Skill[]
-  certifications: Certification[]
+  education: ResumeEducation[]
+  skills: ResumeSkillCategory[]
+  certifications: ResumeCertification[]
 }
 
 export const resume: ResumeData = {

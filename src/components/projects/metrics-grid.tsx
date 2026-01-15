@@ -3,8 +3,8 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
 import { MetricCard } from '@/components/ui/metric-card'
-import type { MetricsGridProps } from '@/lib/design-system/types'
-import { designTokens } from '@/lib/design-system/tokens'
+import type { MetricsGridProps } from '@/types/design-system'
+import { designTokens } from '@/lib/tokens'
 
 /**
  * Standardized Metrics Grid Component

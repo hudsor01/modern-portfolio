@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { TIMING } from '@/lib/constants/spacing'
+import { TIMING } from '@/lib/spacing'
 
 /**
  * Safe loading state hook with automatic cleanup

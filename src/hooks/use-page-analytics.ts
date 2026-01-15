@@ -2,20 +2,48 @@
 
 import { useEffect, useRef } from 'react'
 import { handleUtilityError } from '@/lib/error-handling'
+import type { PageAnalyticsOptions, ViewTrackingData } from '@/types/hooks'
 
-interface PageAnalyticsOptions {
-  type: 'blog' | 'project'
-  slug: string
-  trackReadingTime?: boolean
-  trackScrollDepth?: boolean
+const ANALYTICS_ENDPOINT = '/api/analytics/views'
+const SCROLL_DEBOUNCE_MS = 100
+const MAX_RETRIES = 2
+
+function handleAnalyticsError(error: unknown, operation: string, metadata?: Record<string, unknown>) {
+  handleUtilityError(
+    error,
+    { operation, component: 'PageAnalytics', metadata },
+    'return-default'
+  )
 }
 
-interface ViewTrackingData {
-  type: string
-  slug: string
-  readingTime?: number
-  scrollDepth?: number
-  referrer?: string
+function getReferrer(): string | undefined {
+  return typeof document === 'undefined' ? undefined : document.referrer || undefined
+}
+
+function getScrollPercent(): number {
+  const maxScroll = document.documentElement.scrollHeight - window.innerHeight
+  if (maxScroll <= 0) return 0
+  return Math.round((window.scrollY / maxScroll) * 100)
+}
+
+function buildEngagementPayload(
+  data: Omit<ViewTrackingData, 'referrer'> & { referrer?: string }
+): ViewTrackingData {
+  return {
+    ...data,
+    referrer: data.referrer ?? getReferrer(),
+  }
+}
+
+function postAnalytics(payload: ViewTrackingData, keepalive = false) {
+  return fetch(ANALYTICS_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+    keepalive,
+  })
 }
 
 /**
@@ -52,14 +80,12 @@ export function usePageAnalytics({
 
       clearTimeout(scrollTimeout)
       scrollTimeout = setTimeout(() => {
-        const scrollPercent = Math.round(
-          (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100
-        )
+        const scrollPercent = getScrollPercent()
 
         if (scrollPercent > maxScrollRef.current) {
           maxScrollRef.current = Math.min(scrollPercent, 100)
         }
-      }, 100)
+      }, SCROLL_DEBOUNCE_MS)
     }
 
     if (trackScrollDepth) {
@@ -69,10 +95,12 @@ export function usePageAnalytics({
     // Track reading time and scroll depth on page unload
     const handleBeforeUnload = () => {
       if (startTimeRef.current || maxScrollRef.current > 0) {
-        const readingTime = startTimeRef.current
+        const readingTime = trackReadingTime
           ? Math.round((Date.now() - startTimeRef.current) / 1000)
           : undefined
-        const scrollDepth = maxScrollRef.current > 0 ? maxScrollRef.current : undefined
+        const scrollDepth = trackScrollDepth && maxScrollRef.current > 0
+          ? maxScrollRef.current
+          : undefined
 
         // Use sendBeacon for reliable tracking on page unload
         trackEngagement({
@@ -80,7 +108,7 @@ export function usePageAnalytics({
           slug,
           readingTime,
           scrollDepth,
-          referrer: document.referrer,
+          referrer: getReferrer(),
         })
       }
     }
@@ -107,40 +135,21 @@ async function trackPageView(
   data: Omit<ViewTrackingData, 'readingTime' | 'scrollDepth'>,
   retryCount = 0
 ) {
-  const maxRetries = 2
-
   try {
-    const response = await fetch('/api/analytics/views', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...data,
-        referrer: document.referrer,
-      }),
-    })
+    const response = await postAnalytics(buildEngagementPayload(data))
 
     if (!response.ok) {
-      handleUtilityError(
+      handleAnalyticsError(
         new Error(`Failed to track page view: ${response.statusText}`),
-        {
-          operation: 'trackPageView',
-          component: 'PageAnalytics',
-          metadata: { status: response.status, retryCount },
-        },
-        'return-default'
+        'trackPageView',
+        { status: response.status, retryCount }
       )
     }
   } catch (error) {
-    handleUtilityError(
-      error,
-      { operation: 'trackPageView', component: 'PageAnalytics', metadata: { retryCount } },
-      'return-default'
-    )
+    handleAnalyticsError(error, 'trackPageView', { retryCount })
 
     // Retry on network errors
-    if (retryCount < maxRetries) {
+    if (retryCount < MAX_RETRIES) {
       await new Promise((resolve) => setTimeout(resolve, Math.pow(2, retryCount) * 100))
       return trackPageView(data, retryCount + 1)
     }
@@ -152,34 +161,23 @@ async function trackPageView(
  */
 function trackEngagement(data: ViewTrackingData) {
   try {
+    const payload = buildEngagementPayload(data)
     // Use sendBeacon for reliable tracking
     if (navigator.sendBeacon) {
-      const payload = JSON.stringify(data)
-      navigator.sendBeacon('/api/analytics/views', payload)
+      const payloadString = JSON.stringify(payload)
+      navigator.sendBeacon(ANALYTICS_ENDPOINT, payloadString)
     } else {
       // Fallback to fetch with keepalive
-      fetch('/api/analytics/views', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-        keepalive: true,
-      }).catch(() => {
+      postAnalytics(payload, true).catch(() => {
         // Ignore errors on page unload - use standardized error handling for consistency
-        handleUtilityError(
+        handleAnalyticsError(
           new Error('Engagement tracking failed on page unload'),
-          { operation: 'trackEngagement', component: 'PageAnalytics' },
-          'return-default'
+          'trackEngagement'
         )
       })
     }
   } catch (error) {
-    handleUtilityError(
-      error,
-      { operation: 'trackEngagement', component: 'PageAnalytics' },
-      'return-default'
-    )
+    handleAnalyticsError(error, 'trackEngagement')
   }
 }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { formatCurrency, formatNumber, formatPercentage } from '@/lib/utils/data-formatters'
+import { formatCurrency, formatNumber, formatPercentage } from '@/lib/data-formatters'
 
 const partnerTierPerformance = [
   {
