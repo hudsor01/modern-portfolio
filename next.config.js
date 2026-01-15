@@ -7,8 +7,8 @@ const nextConfig = {
   compress: true,
   basePath: '',
 
-  // React Compiler for automatic memoization (Next.js 16+)
-  reactCompiler: true,
+  // React Compiler disabled - requires babel-plugin-react-compiler
+  // reactCompiler: true,
 
   // External packages that shouldn't be bundled (required for Prisma + Turbopack)
   serverExternalPackages: ['@prisma/client', '@prisma/adapter-pg'],
