@@ -32,9 +32,7 @@
     "types": [
       "bun-types",
       "node",
-      "next",
-      "@testing-library/jest-dom",
-      "vitest/globals"
+      "next"
     ],
     "plugins": [
       {
@@ -104,11 +102,7 @@
     "scripts",
     "docs",
     "temp",
-    "tmp",
-    "vitest.config.ts",
-    "vitest.unit.setup.ts",
-    "vitest.integration.setup.tsx",
-    "src/app/api/**/__tests__/**/*.test.ts"
+    "tmp"
   ],
   "ts-node": {
     "compilerOptions": {
