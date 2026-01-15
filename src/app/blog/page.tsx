@@ -21,41 +21,52 @@ export const metadata: Metadata = {
 }
 
 // Official Next.js 16 Pattern: React cache() for database queries
+// Gracefully handle missing database (CI builds)
 const getBlogPosts = cache(async (): Promise<BlogPostData[]> => {
-  const posts = await db.blogPost.findMany({
-    where: { status: 'PUBLISHED' },
-    include: {
-      author: true,
-      category: true,
-      tags: {
-        include: {
-          tag: true
+  try {
+    const posts = await db.blogPost.findMany({
+      where: { status: 'PUBLISHED' },
+      include: {
+        author: true,
+        category: true,
+        tags: {
+          include: {
+            tag: true
+          }
         }
-      }
-    },
-    orderBy: { publishedAt: 'desc' },
-    take: 50
-  })
+      },
+      orderBy: { publishedAt: 'desc' },
+      take: 50
+    })
 
-  return posts.map(transformToBlogPostData)
+    return posts.map(transformToBlogPostData)
+  } catch {
+    // Database not available - return empty array
+    return []
+  }
 })
 
 const getCategories = cache(async (): Promise<BlogCategoryData[]> => {
-  const categories = await db.category.findMany({
-    orderBy: { totalViews: 'desc' }
-  })
+  try {
+    const categories = await db.category.findMany({
+      orderBy: { totalViews: 'desc' }
+    })
 
-  return categories.map(cat => ({
-    id: cat.id,
-    name: cat.name,
-    slug: cat.slug,
-    description: cat.description ?? undefined,
-    color: cat.color ?? undefined,
-    icon: cat.icon ?? undefined,
-    postCount: cat.postCount,
-    totalViews: cat.totalViews,
-    createdAt: cat.createdAt.toISOString()
-  }))
+    return categories.map(cat => ({
+      id: cat.id,
+      name: cat.name,
+      slug: cat.slug,
+      description: cat.description ?? undefined,
+      color: cat.color ?? undefined,
+      icon: cat.icon ?? undefined,
+      postCount: cat.postCount,
+      totalViews: cat.totalViews,
+      createdAt: cat.createdAt.toISOString()
+    }))
+  } catch {
+    // Database not available - return empty array
+    return []
+  }
 })
 
 export default async function BlogHomePage() {

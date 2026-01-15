@@ -24,23 +24,29 @@ const POST_IMAGE_OVERRIDES: Record<string, { src: string; alt: string }> = {
 
 // Official Next.js 16 Pattern: Use React cache() for database queries
 // This automatically deduplicates requests across generateMetadata and page component
+// Gracefully handles missing database (CI builds)
 const getBlogPost = cache(async (slug: string): Promise<BlogPostData | null> => {
-  const post = await db.blogPost.findUnique({
-    where: { slug, status: 'PUBLISHED' },
-    include: {
-      author: true,
-      category: true,
-      tags: {
-        include: {
-          tag: true
+  try {
+    const post = await db.blogPost.findUnique({
+      where: { slug, status: 'PUBLISHED' },
+      include: {
+        author: true,
+        category: true,
+        tags: {
+          include: {
+            tag: true
+          }
         }
       }
-    }
-  })
+    })
 
-  if (!post) return null
+    if (!post) return null
 
-  return transformToBlogPostData(post)
+    return transformToBlogPostData(post)
+  } catch {
+    // Database not available - return null
+    return null
+  }
 })
 
 function applyPostOverrides(post: BlogPostData | null) {
@@ -133,12 +139,19 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
 // Official Next.js 16 Pattern: generateStaticParams for Static Site Generation
 // This pre-renders all blog posts at build time (zero runtime cost)
+// Falls back to empty array during CI builds without database
 export async function generateStaticParams() {
-  const posts = await db.blogPost.findMany({
-    where: { status: 'PUBLISHED' },
-    select: { slug: true },
-    orderBy: { publishedAt: 'desc' },
-  })
+  try {
+    const posts = await db.blogPost.findMany({
+      where: { status: 'PUBLISHED' },
+      select: { slug: true },
+      orderBy: { publishedAt: 'desc' },
+    })
 
-  return posts.map((post) => ({ slug: post.slug }))
+    return posts.map((post) => ({ slug: post.slug }))
+  } catch {
+    // Database not available (CI build) - return empty array
+    // Pages will be generated on-demand at runtime
+    return []
+  }
 }
