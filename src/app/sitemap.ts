@@ -1,6 +1,9 @@
 import { MetadataRoute } from 'next'
 import { db } from '@/lib/db'
 
+// Revalidate sitemap every hour to include new blog posts from n8n automation
+export const revalidate = 3600
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://richardwhudsonjr.com'
   const currentDate = new Date().toISOString()
