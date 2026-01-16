@@ -32,17 +32,7 @@ const achievements = [
 
 export function AchievementsGrid() {
   return (
-    <div className="space-y-12 mb-16">
-      <div className="text-center space-y-4">
-        <h2 className="font-display text-2xl md:text-3xl font-semibold text-foreground">
-          Key Achievements
-        </h2>
-        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          Strategic implementation results and business impact
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {achievements.map((achievement, index) => (
           <div
             key={index}
@@ -56,7 +46,6 @@ export function AchievementsGrid() {
             </div>
           </div>
         ))}
-      </div>
     </div>
   )
 }

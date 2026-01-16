@@ -5,6 +5,7 @@ import { TrendingUp, Users, Zap, BookOpen } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
+import { SectionCard } from '@/components/ui/section-card'
 import { formatNumber, formatTrend } from '@/lib/data-formatters'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { NarrativeSections } from './_components/NarrativeSections'
@@ -117,14 +118,25 @@ export default function SalesEnablementProject() {
           { label: `${formatNumber(450)}+ Content Pieces`, variant: 'secondary' },
         ]}
       >
-            {/* Key Metrics using standardized MetricsGrid */}
-            <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
+        {/* Key Metrics using standardized MetricsGrid */}
+        <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
-            {/* Implementation Pillars and Business Impact */}
-            <PillarsGrid pillars={keyPillars} />
+        {/* Implementation Pillars */}
+        <SectionCard
+          title="Implementation Pillars"
+          description="Core program components driving sales performance transformation"
+          className="mb-8"
+        >
+          <PillarsGrid pillars={keyPillars} />
+        </SectionCard>
 
-            {/* Professional Narrative Sections - STAR Method */}
-            <NarrativeSections />
+        {/* Professional Narrative Sections - STAR Method */}
+        <SectionCard
+          title="Project Narrative"
+          description="Comprehensive case study following the STAR methodology"
+        >
+          <NarrativeSections />
+        </SectionCard>
       </ProjectPageLayout>
     </>
   )

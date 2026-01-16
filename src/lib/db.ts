@@ -2,12 +2,18 @@
  * Database client configuration for the modern portfolio blog system
  * Provides singleton Prisma client instance with error handling and connection pooling
  * Updated for Prisma 7 with driver adapter pattern
+ *
+ * Supports two modes:
+ * - Local dev: USE_LOCAL_DB=true → Direct PostgreSQL connection
+ * - Production: USE_LOCAL_DB unset → Neon serverless adapter
  */
 
 import 'server-only'
-import { PrismaClient } from '@/generated/prisma/client'
-import { PrismaNeon } from '@prisma/adapter-neon'
+import { PrismaClient, Prisma } from '@/generated/prisma/client'
 import { logger } from '@/lib/logger'
+
+// Determine if we're using local database (dev container) or Neon (production)
+const useLocalDb = process.env.USE_LOCAL_DB === 'true'
 
 // Environment validation - runs at module load time
 function validateDatabaseEnvironment() {
@@ -39,7 +45,7 @@ function validateDatabaseEnvironment() {
 
   // Log successful validation in development
   if (process.env.NODE_ENV === 'development') {
-    logger.info('Database environment validated successfully')
+    logger.info(`Database environment validated successfully (mode: ${useLocalDb ? 'local' : 'neon'})`)
   }
 }
 
@@ -54,18 +60,41 @@ declare global {
   var prisma: PrismaClient | undefined
 }
 
-// Create the PostgreSQL adapter with validated connection string
-// Use empty string during build to allow compilation (db won't be used)
-const adapter = new PrismaNeon({
-  connectionString: process.env.DATABASE_URL || '',
-})
+/**
+ * Create Prisma client with appropriate adapter
+ * - Local: Direct connection (standard Prisma)
+ * - Production: Neon serverless adapter (HTTP-based)
+ */
+function createPrismaClient(): PrismaClient {
+  const logLevel: Prisma.LogLevel[] =
+    process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error']
 
-export const db =
-  global.prisma ??
-  new PrismaClient({
-    adapter,
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  })
+  if (useLocalDb) {
+    // Local development: Use pg adapter for standard PostgreSQL
+    const { PrismaPg } = require('@prisma/adapter-pg')
+    const adapter = new PrismaPg({
+      connectionString: process.env.DATABASE_URL || '',
+    })
+    logger.info('Using pg adapter (local dev)')
+    return new PrismaClient({
+      adapter,
+      log: logLevel,
+    })
+  } else {
+    // Production: Use Neon serverless adapter
+    const { PrismaNeon } = require('@prisma/adapter-neon')
+    const adapter = new PrismaNeon({
+      connectionString: process.env.DATABASE_URL || '',
+    })
+    logger.info('Using Neon serverless adapter (production)')
+    return new PrismaClient({
+      adapter,
+      log: logLevel,
+    })
+  }
+}
+
+export const db = global.prisma ?? createPrismaClient()
 
 if (process.env.NODE_ENV !== 'production') global.prisma = db
 

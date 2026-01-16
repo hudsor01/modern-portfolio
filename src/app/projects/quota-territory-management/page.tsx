@@ -5,6 +5,7 @@ import { TrendingUp, Map, Database, Zap } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
+import { SectionCard } from '@/components/ui/section-card'
 import { formatNumber, formatTrend } from '@/lib/data-formatters'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { NarrativeSections } from './_components/NarrativeSections'
@@ -125,14 +126,25 @@ export default function QuotaTerritoryManagementProject() {
           },
         ]}
       >
-            {/* Key Metrics using standardized MetricsGrid */}
-            <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
+        {/* Key Metrics using standardized MetricsGrid */}
+        <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
-            {/* Algorithmic Approaches, Revenue Impact, and Technical Stack */}
-            <AlgorithmicApproachesGrid approaches={algorithmicApproaches} />
+        {/* Algorithmic Approaches */}
+        <SectionCard
+          title="Algorithmic Approaches"
+          description="Predictive models and optimization algorithms powering territory planning"
+          className="mb-8"
+        >
+          <AlgorithmicApproachesGrid approaches={algorithmicApproaches} />
+        </SectionCard>
 
-            {/* Professional Narrative Sections - STAR Method */}
-            <NarrativeSections />
+        {/* Professional Narrative Sections - STAR Method */}
+        <SectionCard
+          title="Project Narrative"
+          description="Comprehensive case study following the STAR methodology"
+        >
+          <NarrativeSections />
+        </SectionCard>
       </ProjectPageLayout>
     </>
   )

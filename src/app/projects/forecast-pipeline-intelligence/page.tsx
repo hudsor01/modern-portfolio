@@ -5,6 +5,7 @@ import { TrendingUp, AlertTriangle, Zap, BarChart3 } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
+import { SectionCard } from '@/components/ui/section-card'
 import { formatNumber, formatPercentage, formatTrend } from '@/lib/data-formatters'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { NarrativeSections } from './_components/NarrativeSections'
@@ -125,14 +126,25 @@ export default function ForecastPipelineIntelligenceProject() {
           { label: `${formatPercentage(0.89)} Early Warnings`, variant: 'secondary' },
         ]}
       >
-            {/* Key Metrics using standardized MetricsGrid */}
-            <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
+        {/* Key Metrics using standardized MetricsGrid */}
+        <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
-            {/* Intelligence Modules, Business Impact, and Analytics */}
-            <IntelligenceModulesGrid modules={intelligenceModules} />
+        {/* Intelligence Modules */}
+        <SectionCard
+          title="Intelligence Modules"
+          description="AI-powered forecasting and pipeline health monitoring capabilities"
+          className="mb-8"
+        >
+          <IntelligenceModulesGrid modules={intelligenceModules} />
+        </SectionCard>
 
-            {/* Professional Narrative Sections - STAR Method */}
-            <NarrativeSections />
+        {/* Professional Narrative Sections - STAR Method */}
+        <SectionCard
+          title="Project Narrative"
+          description="Comprehensive case study following the STAR methodology"
+        >
+          <NarrativeSections />
+        </SectionCard>
       </ProjectPageLayout>
     </>
   )
