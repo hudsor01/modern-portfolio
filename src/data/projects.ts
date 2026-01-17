@@ -147,7 +147,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     longDescription:
       'Advanced marketing attribution platform that tracks customer journeys across multiple touchpoints and provides insights for campaign optimization.',
     image:
-      'https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=1200&h=800&fit=crop&crop=center&q=85',
+      'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1200&h=800&fit=crop&crop=center&q=85',
     category: 'data-analytics',
     technologies: ['React', 'Python', 'BigQuery', 'Looker', 'Google Analytics API'],
     displayMetrics: [
@@ -248,7 +248,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     longDescription:
       'Advanced CLV analytics platform leveraging BTYD predictive modeling framework. Achieving 94.3% prediction accuracy through machine learning algorithms and real-time customer behavior tracking.',
     image:
-      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=800&fit=crop&crop=center&q=85',
+      'https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&h=800&fit=crop&crop=center&q=85',
     category: 'data-analytics',
     technologies: ['Python', 'Machine Learning', 'React', 'PostgreSQL', 'BTYD Framework'],
     displayMetrics: [
@@ -280,7 +280,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     longDescription:
       'Enterprise forecasting and pipeline intelligence platform combining predictive analytics, deal health monitoring, and early warning systems.',
     image:
-      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=800&fit=crop&crop=center&q=85',
+      'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=1200&h=800&fit=crop&crop=center&q=85',
     category: 'revenue-ops',
     technologies: ['React', 'TypeScript', 'Python', 'Salesforce API', 'ML Models'],
     displayMetrics: [
@@ -312,7 +312,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     longDescription:
       'Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints. Delivering 92.4% attribution accuracy.',
     image:
-      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=800&fit=crop&crop=center&q=85',
+      'https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?w=1200&h=800&fit=crop&crop=center&q=85',
     category: 'data-analytics',
     technologies: ['React', 'Python', 'Machine Learning', 'BigQuery', 'Google Analytics'],
     displayMetrics: [
@@ -344,7 +344,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     longDescription:
       'Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem with real-time performance tracking.',
     image:
-      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=800&fit=crop&crop=center&q=85',
+      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=800&fit=crop&crop=center&q=85',
     category: 'revenue-ops',
     technologies: ['React', 'TypeScript', 'PostgreSQL', 'Recharts', 'Analytics APIs'],
     displayMetrics: [
@@ -408,7 +408,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     longDescription:
       'Advanced quota setting and territory assignment system using predictive analytics and fairness algorithms. Optimized territory design increased forecast accuracy by 28%.',
     image:
-      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=800&fit=crop&crop=center&q=85',
+      'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=1200&h=800&fit=crop&crop=center&q=85',
     category: 'revenue-ops',
     technologies: ['Python', 'React', 'PostgreSQL', 'Optimization Algorithms', 'Salesforce'],
     displayMetrics: [
@@ -440,7 +440,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     longDescription:
       'Comprehensive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs with real-time insights.',
     image:
-      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=800&fit=crop&crop=center&q=85',
+      'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=1200&h=800&fit=crop&crop=center&q=85',
     category: 'revenue-ops',
     technologies: ['React', 'TypeScript', 'PostgreSQL', 'Recharts', 'Multiple APIs'],
     displayMetrics: [
