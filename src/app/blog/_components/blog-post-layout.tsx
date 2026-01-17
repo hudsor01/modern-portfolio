@@ -30,7 +30,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
   const wordCount = post.wordCount ?? post.content.split(/\s+/).filter(Boolean).length
   const readingTime = post.readingTime ?? Math.max(1, Math.ceil(wordCount / 200))
   const authorName = post.author?.name ?? 'Richard Hudson'
-  const authorImage = '/images/richard.jpg'
+  const authorImage = post.author?.avatar ?? '/images/richard.jpg'
   const authorInitials = getAuthorInitials(authorName)
 
   // Build detail items, filtering out nulls

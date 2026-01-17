@@ -30,41 +30,16 @@ const db = new PrismaClient({ adapter })
 const SAMPLE_AUTHORS = [
   {
     name: 'Richard Hudson',
-    email: 'richard@modernportfolio.dev',
+    email: 'richard@richardwhudsonjr.com',
     slug: 'richard-hudson',
     bio: 'Revenue Operations Professional with expertise in data analytics, process optimization, and business intelligence. Passionate about turning data into actionable business insights.',
-    avatar:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face&q=80',
-    website: 'https://modernportfolio.dev',
+    avatar: '/images/richard.jpg',
+    website: 'https://richardwhudsonjr.com',
     twitter: 'hudsor01',
     linkedin: 'https://linkedin.com/in/hudsor01',
     github: 'hudsor01',
     metaDescription:
       'Revenue Operations expert specializing in data analytics and business intelligence for sustainable growth.',
-  },
-  {
-    name: 'Sarah Chen',
-    email: 'sarah@analyticsexpert.com',
-    slug: 'sarah-chen',
-    bio: 'Senior Data Scientist with 8+ years of experience in machine learning and predictive analytics. Specializes in customer behavior analysis and churn prediction.',
-    avatar:
-      'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face&q=80',
-    website: 'https://sarahchen.dev',
-    linkedin: 'https://linkedin.com/in/sarah-chen-data',
-    metaDescription:
-      'Data Scientist expert in machine learning, predictive analytics, and customer behavior analysis.',
-  },
-  {
-    name: 'Marcus Johnson',
-    email: 'marcus@salestech.io',
-    slug: 'marcus-johnson',
-    bio: 'Sales Operations Leader focused on CRM optimization, sales process automation, and revenue forecasting. Certified Salesforce Administrator and Revenue Operations Professional.',
-    avatar:
-      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face&q=80',
-    twitter: 'mjohnson_sales',
-    linkedin: 'https://linkedin.com/in/marcus-johnson-sales',
-    metaDescription:
-      'Sales Operations expert in CRM optimization, process automation, and revenue forecasting strategies.',
   },
 ]
 
@@ -691,7 +666,7 @@ async function seedBlogPosts(
     {
       title: 'Building High-Performance Sales Dashboards',
       slug: 'building-high-performance-sales-dashboards',
-      authorId: authors[2]?.id || '',
+      authorId: authors[0]?.id || '',
       categoryId: categories.find((c) => c.slug === 'sales-technology')?.id,
       status: 'PUBLISHED' as PostStatus,
       featuredImage:
@@ -704,7 +679,7 @@ async function seedBlogPosts(
     {
       title: 'Advanced Customer Churn Analysis with Python',
       slug: 'advanced-customer-churn-analysis-python',
-      authorId: authors[1]?.id || '',
+      authorId: authors[0]?.id || '',
       categoryId: categories.find((c) => c.slug === 'customer-analytics')?.id,
       status: 'PUBLISHED' as PostStatus,
       featuredImage:
@@ -735,7 +710,7 @@ async function seedBlogPosts(
     {
       title: 'Salesforce Revenue Analytics Implementation',
       slug: 'salesforce-revenue-analytics-implementation',
-      authorId: authors[2]?.id || '',
+      authorId: authors[0]?.id || '',
       categoryId: categories.find((c) => c.slug === 'sales-technology')?.id,
       status: 'PUBLISHED' as PostStatus,
       featuredImage:
@@ -748,7 +723,7 @@ async function seedBlogPosts(
     {
       title: 'Lead Scoring Models That Actually Work',
       slug: 'lead-scoring-models-that-actually-work',
-      authorId: authors[1]?.id || '',
+      authorId: authors[0]?.id || '',
       categoryId: categories.find((c) => c.slug === 'data-analytics')?.id,
       status: 'PUBLISHED' as PostStatus,
       featuredImage:
@@ -775,7 +750,7 @@ async function seedBlogPosts(
     {
       title: 'Optimizing Customer Lifetime Value Calculations',
       slug: 'optimizing-customer-lifetime-value-calculations',
-      authorId: authors[1]?.id || '',
+      authorId: authors[0]?.id || '',
       categoryId: categories.find((c) => c.slug === 'customer-analytics')?.id,
       status: 'SCHEDULED' as PostStatus,
       scheduledAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
