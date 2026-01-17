@@ -53,8 +53,10 @@ UPGRADE_TRACKER.md
 .DS_Store/
 
 # Claude and docs
+.claude/
 .claude.*
 CLAUDE.md
+.planning/
 *.csv
 .vercel/
 reports/
