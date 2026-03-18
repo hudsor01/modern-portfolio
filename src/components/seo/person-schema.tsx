@@ -1,4 +1,3 @@
-import Script from 'next/script'
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 
 interface PersonSchemaProps {
@@ -20,8 +19,9 @@ export function PersonSchema({
   email,
   bio,
   skills,
-  certifications
-}: PersonSchemaProps) {
+  certifications,
+  nonce,
+}: PersonSchemaProps & { nonce?: string | null }) {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Person',
@@ -63,9 +63,9 @@ export function PersonSchema({
   }
 
   return (
-    <Script
-      id="person-schema"
+    <script
       type="application/ld+json"
+      nonce={nonce ?? undefined}
       dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(schema) }}
     />
   )

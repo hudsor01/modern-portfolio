@@ -1,5 +1,3 @@
-'use client'
-
 import { siteConfig } from '@/lib/site';
 import { safeJsonLdStringify } from '@/lib/json-ld-utils';
 
@@ -41,7 +39,8 @@ export function GlobalSEO({
   article,
   noIndex: _noIndex = false,
   canonicalUrl: _canonicalUrl,
-}: GlobalSEOProps) {
+  nonce,
+}: GlobalSEOProps & { nonce?: string | null }) {
   // Use provided description or default
   const pageDescription = description || siteConfig.description;
 
@@ -85,7 +84,7 @@ export function GlobalSEO({
       {/* Structured Data (JSON-LD) */}
       <script
         type="application/ld+json"
-        suppressHydrationWarning
+        nonce={nonce ?? undefined}
         dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(structuredData) }}
       />
     </>
