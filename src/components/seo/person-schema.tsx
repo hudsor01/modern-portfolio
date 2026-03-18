@@ -1,4 +1,5 @@
 import Script from 'next/script'
+import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 
 interface PersonSchemaProps {
   name: string
@@ -65,7 +66,7 @@ export function PersonSchema({
     <Script
       id="person-schema"
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(schema) }}
     />
   )
 }
