@@ -2,6 +2,8 @@
  * Local Business JSON-LD Schema
  * SEO structured data for local business presence in Dallas-Fort Worth
  */
+import { safeJsonLdStringify } from '@/lib/json-ld-utils'
+
 export function LocalBusinessJsonLd({ nonce }: { nonce?: string | null }) {
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -29,7 +31,7 @@ export function LocalBusinessJsonLd({ nonce }: { nonce?: string | null }) {
       {
         '@type': 'City',
         name: 'Dallas',
-        sameAs: 'https://en.wikipedia.org/wiki/Dallas',
+        sameAs: 'https://en.wikipedia.org/wiki/Wikipedia:Dallas',
       },
       {
         '@type': 'City',
@@ -161,7 +163,7 @@ export function LocalBusinessJsonLd({ nonce }: { nonce?: string | null }) {
     <script
       type="application/ld+json"
       nonce={nonce ?? undefined}
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(jsonLd) }}
     />
   )
 }

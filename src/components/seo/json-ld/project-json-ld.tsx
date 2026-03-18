@@ -7,6 +7,8 @@
  * Note: This component remains a Client Component because it's used in Client Component pages.
  * Nonces for JSON-LD scripts in Client Components will be handled separately if needed.
  */
+import { safeJsonLdStringify } from '@/lib/json-ld-utils'
+
 export function ProjectJsonLd({
   title,
   description,
@@ -53,7 +55,7 @@ export function ProjectJsonLd({
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(jsonLd) }}
     />
   )
 }

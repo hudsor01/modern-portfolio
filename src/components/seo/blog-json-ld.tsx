@@ -8,6 +8,7 @@
 
 import Script from 'next/script'
 import { BlogPostData } from '@/types/api'
+import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 
 /**
  * Blog Website JSON-LD Schema
@@ -86,7 +87,7 @@ export function BlogJsonLd() {
     <Script
       id="blog-jsonld"
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(blogSchema) }}
     />
   )
 }
@@ -212,7 +213,7 @@ export function BlogPostJsonLd({ post }: BlogPostJsonLdProps) {
     <Script
       id="blogpost-jsonld"
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(postSchema) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(postSchema) }}
     />
   )
 }
@@ -272,7 +273,7 @@ export function BlogCategoryJsonLd({ category }: BlogCategoryJsonLdProps) {
     <Script
       id="blog-category-jsonld"
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(categorySchema) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(categorySchema) }}
     />
   )
 }
@@ -306,7 +307,7 @@ export function BlogFAQJsonLd({ faqs }: BlogFAQJsonLdProps) {
     <Script
       id="blog-faq-jsonld"
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(faqSchema) }}
     />
   )
 }

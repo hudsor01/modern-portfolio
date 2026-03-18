@@ -1,6 +1,7 @@
 'use client'
 
 import { siteConfig } from '@/lib/site';
+import { safeJsonLdStringify } from '@/lib/json-ld-utils';
 
 interface GlobalSEOProps {
   title?: string;
@@ -85,7 +86,7 @@ export function GlobalSEO({
       <script
         type="application/ld+json"
         suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(structuredData) }}
       />
     </>
   );

@@ -1,6 +1,7 @@
 'use client'
 
 import { siteConfig } from '@/lib/site'
+import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 
 export function HomePageSchema() {
   const schemaData = {
@@ -38,7 +39,7 @@ export function HomePageSchema() {
       type="application/ld+json"
       suppressHydrationWarning
       dangerouslySetInnerHTML={{
-        __html: JSON.stringify(schemaData)
+        __html: safeJsonLdStringify(schemaData)
       }}
     />
   )
