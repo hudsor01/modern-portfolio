@@ -3,10 +3,11 @@ import { ApiResponse, RSSFeedData } from '@/types/api'
 import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
 import { createErrorResponse } from '@/lib/api-blog'
+import { env } from '@/lib/env-validation'
 
 const logger = createContextLogger('RssAPI')
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://richardwhudsonjr.com'
+const SITE_URL = env.NEXT_PUBLIC_SITE_URL || 'https://richardwhudsonjr.com'
 const SITE_TITLE = 'Richard Hudson - Revenue Operations Blog'
 const SITE_DESCRIPTION =
   'Expert insights on revenue operations, data analytics, and business process optimization from Richard Hudson, a seasoned RevOps professional.'

@@ -13,14 +13,15 @@ import { logger } from '@/lib/logger'
 import { createContextLogger } from '@/lib/logger'
 import type { ContactFormData } from '@/types/api'
 import { contactFormSchema } from '@/lib/schemas'
+import { env } from '@/lib/env-validation'
 
 const emailLogger = createContextLogger('EmailService')
 
 // Environment configuration
-const RESEND_API_KEY = process.env.RESEND_API_KEY
-const FROM_EMAIL = process.env.FROM_EMAIL || 'contact@richardwhudsonjr.com'
-const TO_EMAIL = process.env.TO_EMAIL || 'hello@richardwhudsonjr.com'
-const NODE_ENV = process.env.NODE_ENV
+const RESEND_API_KEY = env.RESEND_API_KEY
+const FROM_EMAIL = env.FROM_EMAIL
+const TO_EMAIL = env.TO_EMAIL
+const NODE_ENV = env.NODE_ENV
 
 // Email templates
 export const EmailTemplates = {

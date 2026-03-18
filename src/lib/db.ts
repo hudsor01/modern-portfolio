@@ -11,9 +11,10 @@
 import 'server-only'
 import { PrismaClient, Prisma } from '@/generated/prisma/client'
 import { logger } from '@/lib/logger'
+import { env } from '@/lib/env-validation'
 
 // Determine if we're using local database (dev container) or Neon (production)
-const useLocalDb = process.env.USE_LOCAL_DB === 'true'
+const useLocalDb = env.USE_LOCAL_DB
 
 // Environment validation - runs at module load time
 function validateDatabaseEnvironment() {
