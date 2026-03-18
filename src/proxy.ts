@@ -1,19 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { buildEnhancedCSP } from '@/lib/csp-edge'
 
-export function middleware(request: NextRequest) {
-  // Generate cryptographically random nonces for this request
-  const array = crypto.getRandomValues(new Uint8Array(16))
-  const scriptNonce = btoa(String.fromCharCode(...array))
-  const styleArray = crypto.getRandomValues(new Uint8Array(16))
-  const styleNonce = btoa(String.fromCharCode(...styleArray))
+export function proxy(request: NextRequest) {
+  const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
+  const isDev = process.env.NODE_ENV === 'development'
 
-  // Build CSP with nonces
-  const csp = buildEnhancedCSP({ scriptNonce, styleNonce })
+  // Build CSP with nonces — proxy runs in nodejs runtime (not edge) in Next.js 16
+  const csp = buildEnhancedCSP({
+    scriptNonce: nonce,
+    styleNonce: nonce,
+    isDev,
+  })
 
-  // Clone request headers and add nonces for downstream consumption in layout.tsx
+  // Clone request headers and add nonce for downstream consumption in layout.tsx
   const requestHeaders = new Headers(request.headers)
-  requestHeaders.set('x-nonce', scriptNonce)
+  requestHeaders.set('x-nonce', nonce)
+  requestHeaders.set('Content-Security-Policy', csp)
 
   const response = NextResponse.next({
     request: { headers: requestHeaders },

@@ -75,7 +75,7 @@ const nextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
           },
-          // CSP is now handled dynamically in middleware.ts with nonces
+          // CSP is now handled dynamically in proxy.ts with nonces
         ],
       },
       {
