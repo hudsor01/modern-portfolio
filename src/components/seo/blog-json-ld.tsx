@@ -1,12 +1,9 @@
-'use client'
-
 /**
  * Blog JSON-LD Structured Data Components
  * Integrates with existing SEO architecture and follows Google's guidelines
  * Part of the comprehensive SEO optimization strategy
  */
 
-import Script from 'next/script'
 import { BlogPostData } from '@/types/api'
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 
@@ -14,7 +11,7 @@ import { safeJsonLdStringify } from '@/lib/json-ld-utils'
  * Blog Website JSON-LD Schema
  * Defines the blog as a website section with proper structured data
  */
-export function BlogJsonLd() {
+export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
   const blogSchema = {
     '@context': 'https://schema.org',
     '@type': 'Blog',
@@ -84,9 +81,9 @@ export function BlogJsonLd() {
   }
 
   return (
-    <Script
-      id="blog-jsonld"
+    <script
       type="application/ld+json"
+      nonce={nonce ?? undefined}
       dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(blogSchema) }}
     />
   )
@@ -100,7 +97,7 @@ interface BlogPostJsonLdProps {
   post: BlogPostData
 }
 
-export function BlogPostJsonLd({ post }: BlogPostJsonLdProps) {
+export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: string | null }) {
   const postSchema = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -210,9 +207,9 @@ export function BlogPostJsonLd({ post }: BlogPostJsonLdProps) {
   }
 
   return (
-    <Script
-      id="blogpost-jsonld"
+    <script
       type="application/ld+json"
+      nonce={nonce ?? undefined}
       dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(postSchema) }}
     />
   )
@@ -231,7 +228,7 @@ interface BlogCategoryJsonLdProps {
   }
 }
 
-export function BlogCategoryJsonLd({ category }: BlogCategoryJsonLdProps) {
+export function BlogCategoryJsonLd({ category, nonce }: BlogCategoryJsonLdProps & { nonce?: string | null }) {
   const categorySchema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
@@ -270,9 +267,9 @@ export function BlogCategoryJsonLd({ category }: BlogCategoryJsonLdProps) {
   }
 
   return (
-    <Script
-      id="blog-category-jsonld"
+    <script
       type="application/ld+json"
+      nonce={nonce ?? undefined}
       dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(categorySchema) }}
     />
   )
@@ -289,7 +286,7 @@ interface BlogFAQJsonLdProps {
   }>
 }
 
-export function BlogFAQJsonLd({ faqs }: BlogFAQJsonLdProps) {
+export function BlogFAQJsonLd({ faqs, nonce }: BlogFAQJsonLdProps & { nonce?: string | null }) {
   const faqSchema = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -304,9 +301,9 @@ export function BlogFAQJsonLd({ faqs }: BlogFAQJsonLdProps) {
   }
 
   return (
-    <Script
-      id="blog-faq-jsonld"
+    <script
       type="application/ld+json"
+      nonce={nonce ?? undefined}
       dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(faqSchema) }}
     />
   )

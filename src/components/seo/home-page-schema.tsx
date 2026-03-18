@@ -1,9 +1,7 @@
-'use client'
-
 import { siteConfig } from '@/lib/site'
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 
-export function HomePageSchema() {
+export function HomePageSchema({ nonce }: { nonce?: string | null }) {
   const schemaData = {
     "@context": "https://schema.org",
     "@type": "ProfilePage",
@@ -37,7 +35,7 @@ export function HomePageSchema() {
   return (
     <script
       type="application/ld+json"
-      suppressHydrationWarning
+      nonce={nonce ?? undefined}
       dangerouslySetInnerHTML={{
         __html: safeJsonLdStringify(schemaData)
       }}

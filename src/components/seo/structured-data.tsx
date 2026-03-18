@@ -1,5 +1,3 @@
-'use client'
-
 /**
  * Structured Data / JSON-LD Components
  *
@@ -30,12 +28,14 @@ interface JsonArray extends Array<JsonValue> {}
 
 interface StructuredDataProps {
   data: JsonObject;
+  nonce?: string | null;
 }
 
-export function StructuredData({ data }: StructuredDataProps) {
+export function StructuredData({ data, nonce }: StructuredDataProps) {
   return (
     <script
       type="application/ld+json"
+      nonce={nonce ?? undefined}
       dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(data) }}
     />
   );
