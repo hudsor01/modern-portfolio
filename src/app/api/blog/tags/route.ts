@@ -3,6 +3,7 @@ import { ApiResponse, BlogTagData } from '@/types/api'
 import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
 import { generateSlug, createErrorResponse, transformToTagData } from '@/lib/api-blog'
+import { validateCSRFOrRespond } from '@/lib/api-core'
 
 const logger = createContextLogger('TagsAPI')
 
@@ -62,6 +63,10 @@ export async function GET(request: NextRequest) {
 // POST /api/blog/tags - Create new blog tag
 export async function POST(request: NextRequest) {
   try {
+    // CSRF validation
+    const csrfResponse = await validateCSRFOrRespond(request, 'blog tag creation')
+    if (csrfResponse) return csrfResponse
+
     const body = await request.json()
 
     if (!body.name) {

@@ -4,6 +4,7 @@ import { checkEnhancedContactFormRateLimit } from '@/lib/rate-limiter'
 import { contactFormSchema } from '@/lib/schemas'
 import { escapeHtml } from '@/lib/sanitization'
 import { env } from '@/lib/env-validation'
+import { validateCSRFOrRespond } from '@/lib/api-core'
 
 let resend: Resend | null = null
 
@@ -30,6 +31,10 @@ export async function POST(request: NextRequest) {
         { status: 429 }
       )
     }
+
+    // CSRF validation — client must send token via x-csrf-token header
+    const csrfResponse = await validateCSRFOrRespond(request, 'contact form submission')
+    if (csrfResponse) return csrfResponse
 
     const body = await request.json()
     const formData = contactFormSchema.parse(body)
