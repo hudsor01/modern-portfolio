@@ -44,10 +44,18 @@ const envSchema = z.object({
       (url) => url.startsWith('https://') || process.env.NODE_ENV === 'development',
       'NEXT_PUBLIC_SITE_URL must use HTTPS in production'
     )
-    .default(process.env.NODE_ENV === 'production' 
-      ? 'https://richardwhudsonjr.com' 
+    .default(process.env.NODE_ENV === 'production'
+      ? 'https://richardwhudsonjr.com'
       : 'http://localhost:3000'
     ),
+  // CORS configuration
+  ALLOWED_ORIGINS: z.string()
+    .optional()
+    .transform(val => val ? val.split(',').map(s => s.trim()).filter(Boolean) : []),
+  // Local database toggle
+  USE_LOCAL_DB: z.string()
+    .optional()
+    .transform(val => val === 'true'),
 })
 
 export type EnvConfig = z.infer<typeof envSchema>

@@ -7,6 +7,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createContextLogger } from '@/lib/logger'
 import { securityConfig, type SecurityConfig } from '@/lib/security'
+import { env } from '@/lib/env-validation'
 
 const securityLogger = createContextLogger('SecurityHeaders')
 
@@ -142,11 +143,9 @@ export function getTrustedOrigins(): string[] {
   }
 
   // Add custom origins from environment
-  const customOrigins = process.env.ALLOWED_ORIGINS?.split(',') || []
+  const customOrigins = env.ALLOWED_ORIGINS
   customOrigins.forEach((origin) => {
-    if (origin.trim()) {
-      origins.push(origin.trim())
-    }
+    origins.push(origin)
   })
 
   return origins
