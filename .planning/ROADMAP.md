@@ -26,10 +26,15 @@ Plans:
 ---
 
 ## Phase 2: Critical Test Coverage
-**Goal:** Establish unit test coverage for the 3 largest untested core services and blog rendering pipeline.
+**Goal:** Establish Vitest unit test infrastructure and comprehensive coverage for the 3 largest untested core services, sanitization pipeline, and CSRF flow.
 **Depends on:** Nothing (independent, can run parallel with Phase 1)
 **Requirements:** R6, R7, R8, R9, R10
-**Plans:** None yet
+**Plans:** 3 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Vitest infrastructure setup + EnhancedRateLimiter unit tests (R6)
+- [ ] 02-02-PLAN.md — AnalyticsDataService (R7) + API core utilities (R8) unit tests
+- [ ] 02-03-PLAN.md — HTML sanitization/XSS prevention (R9) + CSRF token flow (R10) unit tests
 
 ### Scope
 - Set up unit test framework (Vitest or Bun test runner)
