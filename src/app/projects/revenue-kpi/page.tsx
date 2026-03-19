@@ -1,5 +1,5 @@
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
-import { analyticsDataService } from '@/lib/data-service'
+import { analyticsDataService } from '@/lib/data-service/service'
 import {
   monthlyRevenue2024,
   partnerGroupsData,
