@@ -72,7 +72,12 @@ Plans:
 **Goal:** Reduce client bundle size and improve load times through lazy loading and code splitting.
 **Depends on:** Phase 3 (cleaner modules make splitting easier)
 **Requirements:** R16, R17, R18, R19
-**Plans:** None yet
+**Plans:** 3 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Fix Recharts lazy loading: remove sub-exports, consolidate chart-components.tsx, update 30 chart files (R16, R18)
+- [ ] 04-02-PLAN.md — Swiper lazy loading via next/dynamic + delete dead code files (R16)
+- [ ] 04-03-PLAN.md — Bundle analyzer setup + rate limiter metrics endpoint (R17, R19)
 
 ### Scope
 - Lazy load Recharts components with next/dynamic (ssr: false)
