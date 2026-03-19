@@ -3,7 +3,7 @@ import { ApiResponse, BlogTagData } from '@/types/api'
 import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
 import { generateSlug, createErrorResponse, transformToTagData } from '@/lib/api-blog'
-import { validateCSRFOrRespond } from '@/lib/api-core'
+import { validateCSRFOrRespond } from '@/lib/api-csrf'
 
 const logger = createContextLogger('TagsAPI')
 

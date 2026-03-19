@@ -7,7 +7,7 @@ import {
   createErrorResponse,
   transformToCategoryData,
 } from '@/lib/api-blog'
-import { validateCSRFOrRespond } from '@/lib/api-core'
+import { validateCSRFOrRespond } from '@/lib/api-csrf'
 
 const logger = createContextLogger('CategoriesAPI')
 

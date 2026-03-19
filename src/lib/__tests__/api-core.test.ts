@@ -6,7 +6,7 @@ vi.mock('@/lib/csrf-protection', () => ({
   validateCSRFToken: vi.fn().mockResolvedValue(true),
 }))
 
-vi.mock('@/lib/rate-limiter', () => ({
+vi.mock('@/lib/rate-limiter/index', () => ({
   getEnhancedRateLimiter: vi.fn(() => ({
     checkLimit: vi.fn(() => ({ allowed: true, remaining: 99, blocked: false })),
     exportMetrics: vi.fn(() => ({
@@ -56,20 +56,10 @@ vi.mock('next/headers', () => ({
   cookies: vi.fn(() => ({ getAll: vi.fn(() => []), setAll: vi.fn() })),
 }))
 
-import {
-  successResponse,
-  errorResponse,
-  validationErrorResponse,
-  createApiHeaders,
-  CachePresets,
-  getClientIdentifier,
-  getRequestMetadata,
-  parseRequestBody,
-  parsePaginationParams,
-  createPaginationMeta,
-  logAndSanitizeError,
-  createApiSuccessResponse,
-} from '@/lib/api-core'
+import { successResponse, errorResponse, validationErrorResponse, logAndSanitizeError, createApiSuccessResponse } from '@/lib/api-response'
+import { createApiHeaders, CachePresets } from '@/lib/api-headers'
+import { getClientIdentifier, getRequestMetadata, parseRequestBody } from '@/lib/api-request'
+import { parsePaginationParams, createPaginationMeta } from '@/lib/api-pagination'
 
 // ============================================================================
 // Response helpers — successResponse / errorResponse
