@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getProjects } from '@/lib/projects'
-import { createApiSuccessResponse } from '@/lib/api-response'
-import { handleApiError } from '@/lib/api-utils'
+import { createApiSuccessResponse, createApiErrorResponse } from '@/lib/api-response'
 import { ApiErrorType } from '@/types/api'
 
 // Enable ISR with 1 hour revalidation
@@ -17,12 +16,19 @@ export async function GET() {
       },
     })
   } catch (error) {
-    return handleApiError(
+    const { response, statusCode } = createApiErrorResponse(
       error,
       'Projects API - Failed to fetch projects',
       ApiErrorType.INTERNAL_ERROR,
       500,
       { operation: 'getProjects' }
     )
+    return new Response(JSON.stringify(response), {
+      status: statusCode,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+      },
+    })
   }
 }
