@@ -7,7 +7,8 @@ import {
   ChartTooltipContent,
   type ChartThemeConfig,
 } from '@/components/ui/chart'
-import { LazyBarChart as BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell } from '@/components/charts/lazy-charts'
+import { LazyBarChart as BarChart } from '@/components/charts/lazy-charts'
+import { Bar, XAxis, YAxis, CartesianGrid, Cell } from 'recharts'
 import { chartColors } from '@/lib/charts'
 
 const chartConfig = {

@@ -1,17 +1,8 @@
 'use client'
 import { memo } from 'react'
 
-import {
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  Legend,
-  Area,
-  LazyComposedChart as ComposedChart,
-} from '@/components/charts/lazy-charts'
+import { LazyComposedChart as ComposedChart } from '@/components/charts/lazy-charts'
+import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Area } from 'recharts'
 import { chartColors, chartCssVars } from '@/lib/charts'
 import { clvTrendData } from '../data/constants'
 

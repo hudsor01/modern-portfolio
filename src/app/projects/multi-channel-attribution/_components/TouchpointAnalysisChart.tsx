@@ -1,16 +1,8 @@
 'use client'
 import { memo } from 'react'
 
-import {
-  LazyLineChart as LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  Legend,
-} from '@/components/charts/lazy-charts'
+import { LazyLineChart as LineChart } from '@/components/charts/lazy-charts'
+import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
 import { chartColors as baseChartColors, chartCssVars } from '@/lib/charts'
 
 // Touchpoint sequence analysis data

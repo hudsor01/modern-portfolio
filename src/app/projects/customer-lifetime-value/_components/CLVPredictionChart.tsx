@@ -1,16 +1,8 @@
 'use client'
 import { memo } from 'react'
 
-import {
-  LazyScatterChart as ScatterChart,
-  Scatter,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  ReferenceLine,
-} from '@/components/charts/lazy-charts'
+import { LazyScatterChart as ScatterChart } from '@/components/charts/lazy-charts'
+import { Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from 'recharts'
 import { chartColors, segmentColors, chartCssVars } from '@/lib/charts'
 import { clvPredictionData } from '../data/constants'
 

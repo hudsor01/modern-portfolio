@@ -1,15 +1,7 @@
 'use client'
 
-import {
-  ResponsiveContainer,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-  LazyBarChart as RechartsBarChart,
-  Bar,
-  Cell,
-} from '@/components/charts/lazy-charts'
+import { LazyBarChart as RechartsBarChart } from '@/components/charts/lazy-charts'
+import { ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip, Bar, Cell } from 'recharts'
 import { chartColors, chartCssVars } from '@/lib/charts'
 
 interface StageConversion {

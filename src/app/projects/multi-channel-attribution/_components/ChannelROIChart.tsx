@@ -1,16 +1,8 @@
 'use client'
 import { memo } from 'react'
 
-import {
-  LazyScatterChart as ScatterChart,
-  Scatter,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  Cell,
-} from '@/components/charts/lazy-charts'
+import { LazyScatterChart as ScatterChart } from '@/components/charts/lazy-charts'
+import { Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts'
 import { chartColors as baseChartColors, chartCssVars } from '@/lib/charts'
 
 // Channel performance data for scatter plot

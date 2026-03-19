@@ -1,17 +1,8 @@
 'use client'
 
 
-import {
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Area,
-  LazyComposedChart as ComposedChart,
-} from '@/components/charts/lazy-charts'
+import { LazyComposedChart as ComposedChart } from '@/components/charts/lazy-charts'
+import { Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area } from 'recharts'
 import { chartColors, chartCssVars } from '@/lib/charts'
 
 type TrendDatum = {

@@ -1,14 +1,8 @@
 'use client'
 import { memo } from 'react'
 
-import {
-  LazyPieChart as PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from '@/components/charts/lazy-charts'
+import { LazyPieChart as PieChart } from '@/components/charts/lazy-charts'
+import { Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { chartColors as baseChartColors, chartCssVars } from '@/lib/charts'
 
 // Partner revenue distribution demonstrating 80/20 rule
