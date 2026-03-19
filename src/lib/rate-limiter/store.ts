@@ -4,8 +4,7 @@
  */
 
 import { logger } from '@/lib/logger'
-import type { RateLimitRecord } from '@/types/security'
-import { EnhancedRateLimitConfig, RateLimitAnalytics, RateLimitResult } from '@/types/security'
+import type { RateLimitRecord, EnhancedRateLimitConfig, RateLimitAnalytics, RateLimitResult } from '@/types/security'
 import { securityConfig } from '@/lib/security'
 
 // Memory management constants from centralized configuration
