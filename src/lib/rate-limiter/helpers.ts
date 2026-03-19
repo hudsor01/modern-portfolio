@@ -4,13 +4,13 @@
  */
 
 import type { RateLimitResult } from '@/types/security'
-import { EnhancedRateLimitConfigs } from './configs'
-import { getEnhancedRateLimiter } from './index'
+import { RateLimitConfigs } from './configs'
+import { getRateLimiter } from './store'
 
 /**
  * Check rate limit for contact form submissions
  */
-export function checkEnhancedContactFormRateLimit(
+export function checkContactFormRateLimit(
   identifier: string,
   context?: { userAgent?: string; path?: string }
 ): RateLimitResult {
@@ -24,9 +24,9 @@ export function checkEnhancedContactFormRateLimit(
       retryAfter: Date.now() + 60000,
     }
   }
-  return getEnhancedRateLimiter().checkLimit(
+  return getRateLimiter().checkLimit(
     identifier.trim(),
-    EnhancedRateLimitConfigs.contactForm,
+    RateLimitConfigs.contactForm,
     context
   )
 }
@@ -34,21 +34,21 @@ export function checkEnhancedContactFormRateLimit(
 /**
  * Check rate limit for API endpoints
  */
-export function checkEnhancedApiRateLimit(
+export function checkApiRateLimit(
   identifier: string,
   context?: { userAgent?: string; path?: string; method?: string }
 ): RateLimitResult {
-  return getEnhancedRateLimiter().checkLimit(identifier, EnhancedRateLimitConfigs.api, context)
+  return getRateLimiter().checkLimit(identifier, RateLimitConfigs.api, context)
 }
 
 /**
  * Check rate limit for authentication endpoints
  */
-export function checkEnhancedAuthRateLimit(
+export function checkAuthRateLimit(
   identifier: string,
   context?: { userAgent?: string }
 ): RateLimitResult {
-  return getEnhancedRateLimiter().checkLimit(identifier, EnhancedRateLimitConfigs.auth, context)
+  return getRateLimiter().checkLimit(identifier, RateLimitConfigs.auth, context)
 }
 
 /**

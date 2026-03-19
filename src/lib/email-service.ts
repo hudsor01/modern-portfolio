@@ -7,7 +7,7 @@
 
 import { Resend } from 'resend'
 import { z } from 'zod'
-import { checkEnhancedContactFormRateLimit } from './rate-limiter/helpers'
+import { checkContactFormRateLimit } from './rate-limiter/helpers'
 import { escapeHtml } from '@/lib/sanitization'
 import { logger } from '@/lib/logger'
 import { createContextLogger } from '@/lib/logger'
@@ -168,9 +168,9 @@ export class EmailService {
   
   async sendContactEmail(data: ContactFormData, clientIP?: string): Promise<EmailServiceResult> {
     try {
-      // Enhanced rate limiting
+      // Rate limiting
       const identifier = clientIP || 'unknown'
-      const rateCheck = checkEnhancedContactFormRateLimit(identifier)
+      const rateCheck = checkContactFormRateLimit(identifier)
       
       if (!rateCheck.allowed) {
         return {

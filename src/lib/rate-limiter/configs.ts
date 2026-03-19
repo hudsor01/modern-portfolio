@@ -1,10 +1,9 @@
 /**
  * Rate Limiter Configs
- * Preset EnhancedRateLimitConfigs for common use cases
+ * Preset rate limit configurations for common use cases
  */
 
-// Enhanced rate limit configurations
-export const EnhancedRateLimitConfigs = {
+export const RateLimitConfigs = {
   // Contact form with anti-spam measures
   contactForm: {
     windowMs: 60 * 60 * 1000, // 1 hour

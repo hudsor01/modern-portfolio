@@ -2,7 +2,7 @@
 
 import { headers } from 'next/headers'
 import { Resend } from 'resend'
-import { checkEnhancedContactFormRateLimit } from '@/lib/rate-limiter/helpers'
+import { checkContactFormRateLimit } from '@/lib/rate-limiter/helpers'
 import { contactFormSchema } from '@/lib/schemas'
 import { escapeHtml } from '@/lib/sanitization'
 
@@ -33,7 +33,7 @@ export async function submitContactForm(formData: unknown) {
     const forwarded = headersList.get('x-forwarded-for')
     const ip = (forwarded ? forwarded.split(/, /)[0] : headersList.get('x-real-ip')) || 'unknown'
 
-    const rateLimitResult = checkEnhancedContactFormRateLimit(`${ip}`, {
+    const rateLimitResult = checkContactFormRateLimit(`${ip}`, {
       path: '/contact'
     })
 
