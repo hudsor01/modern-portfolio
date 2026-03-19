@@ -1,14 +1,8 @@
 'use client'
 import { memo } from 'react'
 
-import { LazyBarChart as BarChart, Bar } from '@/components/charts/lazy-charts'
-import {
-  ChartWrapper,
-  ChartGrid,
-  ChartXAxis,
-  ChartYAxis,
-  StandardTooltip,
-} from '@/lib/chart-components'
+import { LazyBarChart as BarChart, ChartWrapper, ChartGrid, ChartXAxis, ChartYAxis, StandardTooltip } from '@/components/charts/lazy-charts'
+import { Bar } from 'recharts'
 import { chartColors, chartConfig, chartTypeConfigs } from '@/lib/charts'
 
 // Real data based on partner analysis

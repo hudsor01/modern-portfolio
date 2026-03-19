@@ -1,7 +1,8 @@
 'use client'
 import { memo } from 'react'
 
-import { LazyRadarChart as RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Legend } from '@/components/charts/lazy-charts'
+import { LazyRadarChart as RadarChart } from '@/components/charts/lazy-charts'
+import { PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Legend } from 'recharts'
 import { chartColors as baseChartColors, chartCssVars } from '@/lib/charts'
 
 // Operational efficiency metrics across different areas

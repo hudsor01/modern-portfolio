@@ -1,16 +1,8 @@
 'use client'
 import { memo } from 'react'
 import { useState, useEffect } from 'react'
-import {
-  LazyBarChart as BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-  CartesianGrid,
-} from '@/components/charts/lazy-charts'
+import { LazyBarChart as BarChart } from '@/components/charts/lazy-charts'
+import { Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, CartesianGrid } from 'recharts'
 import { chartColors, chartCssVars } from '@/lib/charts'
 
 type ChurnDatum = {
