@@ -4,13 +4,13 @@ milestone: v1.1
 milestone_name: milestone
 current_plan: Not started
 status: planning
-stopped_at: Completed 04-02-PLAN.md
-last_updated: "2026-03-19T15:11:39.227Z"
+stopped_at: Completed 04-03-PLAN.md
+last_updated: "2026-03-19T15:15:59.300Z"
 progress:
   total_phases: 8
   completed_phases: 3
   total_plans: 13
-  completed_plans: 11
+  completed_plans: 12
 ---
 
 # Project State
@@ -25,7 +25,7 @@ progress:
 - **Phase:** 02-critical-test-coverage
 - **Current Plan:** Not started
 - **Status:** Ready to plan
-- **Stopped At:** Completed 04-02-PLAN.md
+- **Stopped At:** Completed 04-03-PLAN.md
 
 ## Decisions
 
@@ -44,6 +44,10 @@ progress:
 - [Phase 03]: api-headers.ts is single source of truth for Cache-Control and rate-limit headers (R12)
 - [Phase 03]: api-request.ts is canonical location for getClientIdentifier — duplicates in api-utils.ts and rate-limiter/helpers.ts removed
 - [Phase 04-02]: Used ssr:false for ProjectSwiper dynamic import (Swiper uses DOM APIs); named export resolved via .then(m => ({ default: m.ProjectSwiper })) pattern
+- [Phase 04-03]: Metrics endpoint returns 403 for all auth failures (not 401/404) to avoid leaking endpoint existence
+- [Phase 04-03]: crypto.timingSafeEqual with length pre-check prevents timing attacks on token comparison
+- [Phase 04-03]: withBundleAnalyzer wraps INSIDE withSentryConfig so Sentry instruments all chunks
+- [Phase 04-03]: METRICS_API_TOKEN optional in env schema — endpoint self-disabling when absent
 
 ## Accumulated Context
 
@@ -78,6 +82,7 @@ progress:
 | 02    | 03   | 2min     | 2     | 2     |
 | Phase 03 P03 | 32min | 2 tasks | 17 files |
 | Phase 04 P02 | 5min | 1 tasks | 3 files |
+| Phase 04 P03 | 9min | 2 tasks | 7 files |
 
 ## Last Session
 - **Date:** 2026-03-18T20:52:36Z
