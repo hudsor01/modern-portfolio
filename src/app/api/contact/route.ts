@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { checkEnhancedContactFormRateLimit } from '@/lib/rate-limiter/helpers'
+import { checkContactFormRateLimit } from '@/lib/rate-limiter/helpers'
 import { contactFormSchema } from '@/lib/schemas'
 import { escapeHtml } from '@/lib/sanitization'
 import { env } from '@/lib/env-validation'
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     const ip = (forwarded ? forwarded.split(/, /)[0] : request.headers.get('x-real-ip')) || 'unknown'
 
     // Rate limit
-    const rateLimitResult = checkEnhancedContactFormRateLimit(`${ip}`, { path: '/api/contact' })
+    const rateLimitResult = checkContactFormRateLimit(`${ip}`, { path: '/api/contact' })
 
     if (!rateLimitResult.allowed) {
       return NextResponse.json(

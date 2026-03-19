@@ -6,8 +6,8 @@ vi.mock('@/lib/csrf-protection', () => ({
   validateCSRFToken: vi.fn().mockResolvedValue(true),
 }))
 
-vi.mock('@/lib/rate-limiter/index', () => ({
-  getEnhancedRateLimiter: vi.fn(() => ({
+vi.mock('@/lib/rate-limiter/store', () => ({
+  getRateLimiter: vi.fn(() => ({
     checkLimit: vi.fn(() => ({ allowed: true, remaining: 99, blocked: false })),
     exportMetrics: vi.fn(() => ({
       totalRequests: 0,
@@ -16,7 +16,7 @@ vi.mock('@/lib/rate-limiter/index', () => ({
       storeSize: 0,
     })),
   })),
-  EnhancedRateLimitConfigs: {
+  RateLimitConfigs: {
     api: {
       windowMs: 60000,
       maxAttempts: 100,

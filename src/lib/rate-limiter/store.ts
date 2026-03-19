@@ -1,10 +1,10 @@
 /**
- * Enhanced Rate Limiter Store
- * The EnhancedRateLimiter class with Map store, cleanup timer, and core logic
+ * Rate Limiter Store
+ * The RateLimiter class with Map store, cleanup timer, and core logic
  */
 
 import { logger } from '@/lib/logger'
-import type { RateLimitRecord, EnhancedRateLimitConfig, RateLimitAnalytics, RateLimitResult } from '@/types/security'
+import type { RateLimitRecord, RateLimitConfig, RateLimitAnalytics, RateLimitResult } from '@/types/security'
 import { securityConfig } from '@/lib/security'
 
 // Memory management constants from centralized configuration
@@ -18,7 +18,7 @@ const EVICTION_BATCH_SIZE = 100
 const EVICTION_TARGET_RATIO = 0.8
 
 // Node.js 24: Implements Disposable for automatic cleanup via 'using' keyword
-export class EnhancedRateLimiter implements Disposable {
+export class RateLimiter implements Disposable {
   private store = new Map<string, RateLimitRecord>()
   private analytics: RateLimitAnalytics = {
     totalRequests: 0,
@@ -44,11 +44,11 @@ export class EnhancedRateLimiter implements Disposable {
   }
 
   /**
-   * Enhanced rate limiting with smart detection
+   * Check rate limit with smart detection
    */
   checkLimit(
     identifier: string,
-    config: EnhancedRateLimitConfig,
+    config: RateLimitConfig,
     context?: {
       userAgent?: string
       path?: string
@@ -389,14 +389,14 @@ export class EnhancedRateLimiter implements Disposable {
   /**
    * Add to whitelist/blacklist dynamically
    */
-  updateWhitelist(identifier: string, config: EnhancedRateLimitConfig): void {
+  updateWhitelist(identifier: string, config: RateLimitConfig): void {
     if (!config.whitelist) config.whitelist = []
     if (!config.whitelist.includes(identifier)) {
       config.whitelist.push(identifier)
     }
   }
 
-  updateBlacklist(identifier: string, config: EnhancedRateLimitConfig): void {
+  updateBlacklist(identifier: string, config: RateLimitConfig): void {
     if (!config.blacklist) config.blacklist = []
     if (!config.blacklist.includes(identifier)) {
       config.blacklist.push(identifier)
@@ -568,4 +568,13 @@ export class EnhancedRateLimiter implements Disposable {
       },
     }
   }
+}
+
+let _rateLimiter: RateLimiter | null = null
+
+export function getRateLimiter(): RateLimiter {
+  if (!_rateLimiter) {
+    _rateLimiter = new RateLimiter()
+  }
+  return _rateLimiter
 }

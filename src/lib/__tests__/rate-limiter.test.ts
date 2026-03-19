@@ -1,10 +1,10 @@
 // @vitest-environment node
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { EnhancedRateLimiter } from '@/lib/rate-limiter/store'
-import { EnhancedRateLimitConfigs } from '@/lib/rate-limiter/configs'
+import { RateLimiter } from '@/lib/rate-limiter/store'
+import { RateLimitConfigs } from '@/lib/rate-limiter/configs'
 import { getClientIdentifier } from '@/lib/rate-limiter/helpers'
 import { securityConfig } from '@/lib/security'
-import type { EnhancedRateLimitConfig } from '@/types/security'
+import type { RateLimitConfig } from '@/types/security'
 
 vi.mock('@/lib/logger', () => ({
   logger: {
@@ -17,7 +17,7 @@ vi.mock('@/lib/logger', () => ({
 }))
 
 // Base config for most tests — no burst protection, no adaptive threshold
-const baseConfig: EnhancedRateLimitConfig = {
+const baseConfig: RateLimitConfig = {
   windowMs: 60 * 1000, // 1 minute
   maxAttempts: 3,
   progressivePenalty: false,
@@ -27,18 +27,18 @@ const baseConfig: EnhancedRateLimitConfig = {
 }
 
 // Config with progressive penalty enabled
-const progressiveConfig: EnhancedRateLimitConfig = {
+const progressiveConfig: RateLimitConfig = {
   ...baseConfig,
   progressivePenalty: true,
   blockDuration: 60 * 1000, // 1 minute base block
 }
 
-describe('EnhancedRateLimiter — whitelist / blacklist', () => {
-  let limiter: EnhancedRateLimiter
+describe('RateLimiter — whitelist / blacklist', () => {
+  let limiter: RateLimiter
 
   beforeEach(() => {
     vi.useFakeTimers()
-    limiter = new EnhancedRateLimiter()
+    limiter = new RateLimiter()
   })
 
   afterEach(() => {
@@ -47,7 +47,7 @@ describe('EnhancedRateLimiter — whitelist / blacklist', () => {
   })
 
   it('returns allowed: true with reason "whitelisted" for whitelisted identifiers', () => {
-    const config: EnhancedRateLimitConfig = { ...baseConfig, whitelist: ['trusted-ip'] }
+    const config: RateLimitConfig = { ...baseConfig, whitelist: ['trusted-ip'] }
     const result = limiter.checkLimit('trusted-ip', config)
 
     expect(result.allowed).toBe(true)
@@ -55,7 +55,7 @@ describe('EnhancedRateLimiter — whitelist / blacklist', () => {
   })
 
   it('returns allowed: false and blocked: true for blacklisted identifiers', () => {
-    const config: EnhancedRateLimitConfig = { ...baseConfig, blacklist: ['banned-ip'] }
+    const config: RateLimitConfig = { ...baseConfig, blacklist: ['banned-ip'] }
     const result = limiter.checkLimit('banned-ip', config)
 
     expect(result.allowed).toBe(false)
@@ -65,7 +65,7 @@ describe('EnhancedRateLimiter — whitelist / blacklist', () => {
 
   it('sets retryAfter to approximately 24 hours in the future for blacklisted identifiers', () => {
     const now = Date.now()
-    const config: EnhancedRateLimitConfig = { ...baseConfig, blacklist: ['banned-ip'] }
+    const config: RateLimitConfig = { ...baseConfig, blacklist: ['banned-ip'] }
     const result = limiter.checkLimit('banned-ip', config)
 
     const expectedRetryAfter = now + 24 * 60 * 60 * 1000
@@ -74,7 +74,7 @@ describe('EnhancedRateLimiter — whitelist / blacklist', () => {
   })
 
   it('does not block a whitelisted identifier even after many requests', () => {
-    const config: EnhancedRateLimitConfig = { ...baseConfig, maxAttempts: 1, whitelist: ['vip'] }
+    const config: RateLimitConfig = { ...baseConfig, maxAttempts: 1, whitelist: ['vip'] }
 
     for (let i = 0; i < 10; i++) {
       const result = limiter.checkLimit('vip', config)
@@ -83,12 +83,12 @@ describe('EnhancedRateLimiter — whitelist / blacklist', () => {
   })
 })
 
-describe('EnhancedRateLimiter — rate limiting', () => {
-  let limiter: EnhancedRateLimiter
+describe('RateLimiter — rate limiting', () => {
+  let limiter: RateLimiter
 
   beforeEach(() => {
     vi.useFakeTimers()
-    limiter = new EnhancedRateLimiter()
+    limiter = new RateLimiter()
   })
 
   afterEach(() => {
@@ -153,12 +153,12 @@ describe('EnhancedRateLimiter — rate limiting', () => {
   })
 })
 
-describe('EnhancedRateLimiter — progressive penalties', () => {
-  let limiter: EnhancedRateLimiter
+describe('RateLimiter — progressive penalties', () => {
+  let limiter: RateLimiter
 
   beforeEach(() => {
     vi.useFakeTimers()
-    limiter = new EnhancedRateLimiter()
+    limiter = new RateLimiter()
   })
 
   afterEach(() => {
@@ -222,12 +222,12 @@ describe('EnhancedRateLimiter — progressive penalties', () => {
   })
 })
 
-describe('EnhancedRateLimiter — analytics and metrics', () => {
-  let limiter: EnhancedRateLimiter
+describe('RateLimiter — analytics and metrics', () => {
+  let limiter: RateLimiter
 
   beforeEach(() => {
     vi.useFakeTimers()
-    limiter = new EnhancedRateLimiter()
+    limiter = new RateLimiter()
   })
 
   afterEach(() => {
@@ -280,12 +280,12 @@ describe('EnhancedRateLimiter — analytics and metrics', () => {
   })
 })
 
-describe('EnhancedRateLimiter — eviction and cleanup', () => {
-  let limiter: EnhancedRateLimiter
+describe('RateLimiter — eviction and cleanup', () => {
+  let limiter: RateLimiter
 
   beforeEach(() => {
     vi.useFakeTimers()
-    limiter = new EnhancedRateLimiter()
+    limiter = new RateLimiter()
   })
 
   afterEach(() => {
@@ -314,7 +314,7 @@ describe('EnhancedRateLimiter — eviction and cleanup', () => {
 
   it('cleanup interval fires after CLEANUP_INTERVAL (300000ms) and removes expired entries', () => {
     const expiryMs = securityConfig.rateLimitClientExpiryMs // 900000ms (15 min)
-    const shortConfig: EnhancedRateLimitConfig = {
+    const shortConfig: RateLimitConfig = {
       ...baseConfig,
       windowMs: 1000, // 1 second window
     }
@@ -375,9 +375,9 @@ describe('getClientIdentifier', () => {
   })
 })
 
-describe('EnhancedRateLimitConfigs presets', () => {
+describe('RateLimitConfigs presets', () => {
   it('contactForm preset has expected shape', () => {
-    const config = EnhancedRateLimitConfigs.contactForm
+    const config = RateLimitConfigs.contactForm
     expect(config).toHaveProperty('windowMs')
     expect(config).toHaveProperty('maxAttempts')
     expect(config).toHaveProperty('progressivePenalty', true)
@@ -387,7 +387,7 @@ describe('EnhancedRateLimitConfigs presets', () => {
   })
 
   it('api preset has expected shape', () => {
-    const config = EnhancedRateLimitConfigs.api
+    const config = RateLimitConfigs.api
     expect(config).toHaveProperty('windowMs')
     expect(config).toHaveProperty('maxAttempts')
     expect(config).toHaveProperty('progressivePenalty', false)
@@ -395,14 +395,14 @@ describe('EnhancedRateLimitConfigs presets', () => {
   })
 
   it('auth preset has strict limits', () => {
-    const config = EnhancedRateLimitConfigs.auth
+    const config = RateLimitConfigs.auth
     expect(config).toHaveProperty('progressivePenalty', true)
     expect(config.maxAttempts).toBeLessThanOrEqual(10) // Auth is strict
     expect(config.blockDuration).toBeGreaterThan(0)
   })
 
   it('all presets have burstProtection configured', () => {
-    const { contactForm, api, auth } = EnhancedRateLimitConfigs
+    const { contactForm, api, auth } = RateLimitConfigs
     for (const preset of [contactForm, api, auth]) {
       expect(preset.burstProtection).toBeDefined()
       expect(preset.burstProtection?.enabled).toBe(true)

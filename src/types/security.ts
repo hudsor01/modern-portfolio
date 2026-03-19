@@ -14,7 +14,7 @@ export interface RateLimitRecord {
   createdAt: number
 }
 
-export interface EnhancedRateLimitConfig {
+export interface RateLimitConfig {
   windowMs: number
   maxAttempts: number
   progressivePenalty: boolean

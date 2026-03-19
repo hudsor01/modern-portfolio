@@ -1,10 +1,9 @@
 /**
  * API Rate Limiting — checkRateLimitOrRespond and RateLimitPresets
- * Integrates with EnhancedRateLimiter from rate-limiter/index.
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getEnhancedRateLimiter } from '@/lib/rate-limiter/index'
+import { getRateLimiter } from '@/lib/rate-limiter/store'
 import { getClientIdentifier } from './api-request'
 
 // ============================================================================
@@ -86,7 +85,7 @@ export function checkRateLimitOrRespond(
   method: string
 ): NextResponse | null {
   const clientId = getClientIdentifier(request)
-  const rateLimiter = getEnhancedRateLimiter()
+  const rateLimiter = getRateLimiter()
 
   const result = rateLimiter.checkLimit(
     clientId,
