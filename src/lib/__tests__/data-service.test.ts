@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { AnalyticsDataService } from '@/lib/data-service'
+import { AnalyticsDataService } from '@/lib/data-service/service'
 
 vi.mock('@/lib/logger', () => ({
   logger: {
