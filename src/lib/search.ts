@@ -5,6 +5,7 @@
 
 import { db } from '@/lib/db'
 import { Prisma } from '@/generated/prisma/client'
+import { logger } from '@/lib/logger'
 
 export interface SearchResult {
   id: string
@@ -104,7 +105,7 @@ export async function searchBlogPosts(
     // Combine exact and fuzzy results
     return [...fullTextResults, ...fuzzyResults]
   } catch (error) {
-    console.error('Search error during fuzzy fallback:', error)
+    logger.error('Search error during fuzzy fallback', error instanceof Error ? error : new Error(String(error)))
     // Return full-text results even if fuzzy search fails
     // Better to return partial results than nothing
     return fullTextResults
@@ -170,7 +171,7 @@ export async function getSearchSuggestions(
 
     return suggestions.map(s => s.keyword)
   } catch (error) {
-    console.error('Search suggestions error:', error)
+    logger.error('Search suggestions error', error instanceof Error ? error : new Error(String(error)))
     return []
   }
 }
