@@ -4,13 +4,13 @@ milestone: v1.1
 milestone_name: milestone
 current_plan: Not started
 status: planning
-stopped_at: Completed 04-03-PLAN.md
-last_updated: "2026-03-19T15:15:59.300Z"
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-03-19T15:40:55.641Z"
 progress:
   total_phases: 8
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 13
-  completed_plans: 12
+  completed_plans: 13
 ---
 
 # Project State
@@ -25,7 +25,7 @@ progress:
 - **Phase:** 02-critical-test-coverage
 - **Current Plan:** Not started
 - **Status:** Ready to plan
-- **Stopped At:** Completed 04-03-PLAN.md
+- **Stopped At:** Completed 04-01-PLAN.md
 
 ## Decisions
 
@@ -48,6 +48,8 @@ progress:
 - [Phase 04-03]: crypto.timingSafeEqual with length pre-check prevents timing attacks on token comparison
 - [Phase 04-03]: withBundleAnalyzer wraps INSIDE withSentryConfig so Sentry instruments all chunks
 - [Phase 04-03]: METRICS_API_TOKEN optional in env schema — endpoint self-disabling when absent
+- [Phase 04-01]: Recharts sub-components import directly from 'recharts' in consumers — lazy-charts.tsx has zero re-exports; one internal import for helpers only
+- [Phase 04-01]: chart-components.tsx deleted; ChartWrapper/ChartGrid/ChartXAxis/ChartYAxis/StandardTooltip consolidated into lazy-charts.tsx
 
 ## Accumulated Context
 
@@ -83,6 +85,7 @@ progress:
 | Phase 03 P03 | 32min | 2 tasks | 17 files |
 | Phase 04 P02 | 5min | 1 tasks | 3 files |
 | Phase 04 P03 | 9min | 2 tasks | 7 files |
+| Phase 04 P01 | 34min | 2 tasks | 32 files |
 
 ## Last Session
 - **Date:** 2026-03-18T20:52:36Z
