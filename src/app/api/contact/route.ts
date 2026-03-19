@@ -4,7 +4,7 @@ import { checkEnhancedContactFormRateLimit } from '@/lib/rate-limiter/helpers'
 import { contactFormSchema } from '@/lib/schemas'
 import { escapeHtml } from '@/lib/sanitization'
 import { env } from '@/lib/env-validation'
-import { validateCSRFOrRespond } from '@/lib/api-core'
+import { validateCSRFOrRespond } from '@/lib/api-csrf'
 
 let resend: Resend | null = null
 
