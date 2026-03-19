@@ -155,6 +155,51 @@ export const LazyScatterChart = dynamic(
 )
 
 // ============================================================================
+// Chart Sub-components (loaded with parent)
+// These are re-exported for convenience when using lazy charts
+// ============================================================================
+
+export {
+  Area,
+  Bar,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Cell,
+  Pie,
+  Sector,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
+  RadialBar,
+  Funnel,
+  LabelList,
+  Scatter,
+  ZAxis,
+  ReferenceLine,
+  ReferenceArea,
+  ReferenceDot,
+  Brush,
+} from 'recharts'
+
+// ============================================================================
+// Type Exports
+// ============================================================================
+
+export type {
+  AreaProps,
+  BarProps,
+  LineProps,
+  TooltipProps,
+  LegendProps,
+} from 'recharts'
+
+// ============================================================================
 // Skeleton Export
 // ============================================================================
 
