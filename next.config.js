@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 import { withSentryConfig } from '@sentry/nextjs'
+import bundleAnalyzer from '@next/bundle-analyzer'
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+  openAnalyzer: false,
+})
 
 const nextConfig = {
   reactStrictMode: true,
@@ -176,4 +182,4 @@ const sentryBuildOptions = {
   silent: true,
 };
 
-export default withSentryConfig(nextConfig, sentryBuildOptions);
+export default withSentryConfig(withBundleAnalyzer(nextConfig), sentryBuildOptions);
