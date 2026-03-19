@@ -3,7 +3,7 @@
  * Standalone helper functions for common rate limiting use cases
  */
 
-import { RateLimitResult } from '@/types/security'
+import type { RateLimitResult } from '@/types/security'
 import { EnhancedRateLimitConfigs } from './configs'
 import { getEnhancedRateLimiter } from './index'
 

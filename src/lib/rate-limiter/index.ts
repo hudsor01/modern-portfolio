@@ -1,6 +1,5 @@
 /**
  * Rate Limiter Singleton Factory
- * Exports only the singleton getter — not a barrel re-export
  */
 
 import { EnhancedRateLimiter } from './store'
@@ -13,5 +12,3 @@ export function getEnhancedRateLimiter(): EnhancedRateLimiter {
   }
   return _enhancedRateLimiter
 }
-
-export { EnhancedRateLimiter } from './store'
