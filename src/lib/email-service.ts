@@ -7,7 +7,7 @@
 
 import { Resend } from 'resend'
 import { z } from 'zod'
-import { checkEnhancedContactFormRateLimit } from './rate-limiter'
+import { checkEnhancedContactFormRateLimit } from './rate-limiter/helpers'
 import { escapeHtml } from '@/lib/sanitization'
 import { logger } from '@/lib/logger'
 import { createContextLogger } from '@/lib/logger'

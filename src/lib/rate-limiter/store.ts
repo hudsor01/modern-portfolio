@@ -1,15 +1,12 @@
 /**
- * Enhanced Rate Limiting System
- * Advanced rate limiting with analytics, adaptive thresholds, and smart blocking
+ * Enhanced Rate Limiter Store
+ * The EnhancedRateLimiter class with Map store, cleanup timer, and core logic
  */
 
 import { logger } from '@/lib/logger'
 import type { RateLimitRecord } from '@/types/security'
 import { EnhancedRateLimitConfig, RateLimitAnalytics, RateLimitResult } from '@/types/security'
 import { securityConfig } from '@/lib/security'
-
-// Lazy singleton instance to avoid circular dependency issues
-let _enhancedRateLimiter: EnhancedRateLimiter | null = null
 
 // Memory management constants from centralized configuration
 const MAX_STORE_SIZE = securityConfig.rateLimitMaxHistoryPerClient
@@ -22,7 +19,7 @@ const EVICTION_BATCH_SIZE = 100
 const EVICTION_TARGET_RATIO = 0.8
 
 // Node.js 24: Implements Disposable for automatic cleanup via 'using' keyword
-class EnhancedRateLimiter implements Disposable {
+export class EnhancedRateLimiter implements Disposable {
   private store = new Map<string, RateLimitRecord>()
   private analytics: RateLimitAnalytics = {
     totalRequests: 0,
@@ -573,140 +570,3 @@ class EnhancedRateLimiter implements Disposable {
     }
   }
 }
-
-// Lazy getter for enhanced rate limiter singleton
-export function getEnhancedRateLimiter(): EnhancedRateLimiter {
-  if (!_enhancedRateLimiter) {
-    // Use a timeout to defer instantiation until after module initialization
-    setImmediate(() => {
-      if (!_enhancedRateLimiter) {
-        _enhancedRateLimiter = new EnhancedRateLimiter()
-      }
-    })
-    // For immediate calls, create synchronously but safely
-    _enhancedRateLimiter = new EnhancedRateLimiter()
-  }
-  return _enhancedRateLimiter
-}
-
-// Enhanced rate limit configurations
-export const EnhancedRateLimitConfigs = {
-  // Contact form with anti-spam measures
-  contactForm: {
-    windowMs: 60 * 60 * 1000, // 1 hour
-    maxAttempts: 3,
-    progressivePenalty: true,
-    blockDuration: 5 * 60 * 1000, // 5 minutes base
-    adaptiveThreshold: true,
-    antiAbuse: true,
-    burstProtection: {
-      enabled: true,
-      burstWindow: 10 * 1000, // 10 seconds
-      maxBurstRequests: 2,
-    },
-  },
-
-  // API endpoints with moderate protection
-  api: {
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    maxAttempts: 100,
-    progressivePenalty: false,
-    blockDuration: 0,
-    adaptiveThreshold: true,
-    antiAbuse: true,
-    burstProtection: {
-      enabled: true,
-      burstWindow: 5 * 1000, // 5 seconds
-      maxBurstRequests: 20,
-    },
-  },
-
-  // Authentication with strict protection
-  auth: {
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    maxAttempts: 5,
-    progressivePenalty: true,
-    blockDuration: 10 * 60 * 1000, // 10 minutes base
-    adaptiveThreshold: true,
-    antiAbuse: true,
-    burstProtection: {
-      enabled: true,
-      burstWindow: 30 * 1000, // 30 seconds
-      maxBurstRequests: 3,
-    },
-  },
-
-  // File uploads with capacity management
-  upload: {
-    windowMs: 60 * 60 * 1000, // 1 hour
-    maxAttempts: 10,
-    progressivePenalty: true,
-    blockDuration: 5 * 60 * 1000, // 5 minutes base
-    adaptiveThreshold: true,
-    antiAbuse: true,
-    burstProtection: {
-      enabled: true,
-      burstWindow: 60 * 1000, // 1 minute
-      maxBurstRequests: 3,
-    },
-  },
-} as const
-
-/**
- * Helper functions for different rate limit types
- */
-export function checkEnhancedContactFormRateLimit(
-  identifier: string,
-  context?: { userAgent?: string; path?: string }
-): RateLimitResult {
-  // Validate identifier is non-empty
-  if (!identifier || typeof identifier !== 'string' || identifier.trim().length === 0) {
-    return {
-      allowed: false,
-      blocked: true,
-      reason: 'invalid_identifier',
-      confidence: 1.0,
-      retryAfter: Date.now() + 60000,
-    }
-  }
-  return getEnhancedRateLimiter().checkLimit(
-    identifier.trim(),
-    EnhancedRateLimitConfigs.contactForm,
-    context
-  )
-}
-
-export function checkEnhancedApiRateLimit(
-  identifier: string,
-  context?: { userAgent?: string; path?: string; method?: string }
-): RateLimitResult {
-  return getEnhancedRateLimiter().checkLimit(identifier, EnhancedRateLimitConfigs.api, context)
-}
-
-export function checkEnhancedAuthRateLimit(
-  identifier: string,
-  context?: { userAgent?: string }
-): RateLimitResult {
-  return getEnhancedRateLimiter().checkLimit(identifier, EnhancedRateLimitConfigs.auth, context)
-}
-
-/**
- * Extract client identifier from request headers
- * Uses IP + user agent hash for more reliable identification
- */
-export function getClientIdentifier(req: Request): string {
-  // Try to get IP from various headers (Vercel provides x-forwarded-for)
-  const forwarded = req.headers.get('x-forwarded-for')
-  const realIp = req.headers.get('x-real-ip')
-  const cfConnectingIp = req.headers.get('cf-connecting-ip')
-
-  const ip = forwarded?.split(',')[0] || realIp || cfConnectingIp || 'unknown'
-
-  // Add user agent as additional identifier to prevent IP spoofing
-  const userAgent = req.headers.get('user-agent') || 'unknown'
-  const userAgentHash = Buffer.from(userAgent).toString('base64').slice(0, 8)
-
-  return `${ip}:${userAgentHash}`
-}
-
-export { EnhancedRateLimiter }

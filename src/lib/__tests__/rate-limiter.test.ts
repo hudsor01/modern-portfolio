@@ -1,6 +1,8 @@
 // @vitest-environment node
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { EnhancedRateLimiter, EnhancedRateLimitConfigs, getClientIdentifier } from '@/lib/rate-limiter'
+import { EnhancedRateLimiter } from '@/lib/rate-limiter/store'
+import { EnhancedRateLimitConfigs } from '@/lib/rate-limiter/configs'
+import { getClientIdentifier } from '@/lib/rate-limiter/helpers'
 import { securityConfig } from '@/lib/security'
 import type { EnhancedRateLimitConfig } from '@/types/security'
 
