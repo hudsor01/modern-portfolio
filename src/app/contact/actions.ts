@@ -2,7 +2,7 @@
 
 import { headers } from 'next/headers'
 import { Resend } from 'resend'
-import { checkEnhancedContactFormRateLimit } from '@/lib/rate-limiter'
+import { checkEnhancedContactFormRateLimit } from '@/lib/rate-limiter/helpers'
 import { contactFormSchema } from '@/lib/schemas'
 import { escapeHtml } from '@/lib/sanitization'
 

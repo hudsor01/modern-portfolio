@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { checkEnhancedContactFormRateLimit } from '@/lib/rate-limiter'
+import { checkEnhancedContactFormRateLimit } from '@/lib/rate-limiter/helpers'
 import { contactFormSchema } from '@/lib/schemas'
 import { escapeHtml } from '@/lib/sanitization'
 import { env } from '@/lib/env-validation'

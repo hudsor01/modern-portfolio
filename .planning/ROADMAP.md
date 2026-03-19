@@ -50,7 +50,13 @@ Plans:
 **Goal:** Decompose oversized files, eliminate code duplication, and replace fragile patterns.
 **Depends on:** Phase 2 (tests needed before safe refactoring)
 **Requirements:** R11, R12, R13, R14, R15
-**Plans:** None yet
+**Plans:** 4 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Decompose rate-limiter.ts (712 LOC) into subdirectory modules (R11)
+- [ ] 03-02-PLAN.md — Decompose data-service.ts (654 LOC) into subdirectory modules (R11)
+- [ ] 03-03-PLAN.md — Decompose api-core.ts (618 LOC) + deduplicate header logic (R11, R12)
+- [ ] 03-04-PLAN.md — Logger migration in search.ts (R13) + remove react-hook-form (R14) + close R15
 
 ### Scope
 - Decompose rate-limiter.ts (712 LOC) into focused modules
