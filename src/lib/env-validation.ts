@@ -11,14 +11,15 @@ const envLogger = createContextLogger('EnvValidation')
 // Define the environment schema with enhanced security validation
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  // Database - Required for all environments
+  // Database - Required at runtime, optional at build time (CI may not have it)
   DATABASE_URL: z
     .string()
     .min(1, 'DATABASE_URL is required')
     .refine(
       (url) => url.startsWith('postgresql://') || url.startsWith('postgres://'),
       'DATABASE_URL must be a valid PostgreSQL connection string'
-    ),
+    )
+    .optional(),
   // Email service
   RESEND_API_KEY: z.string().min(1, 'RESEND_API_KEY is required').optional(),
   CONTACT_EMAIL: z.string().email('CONTACT_EMAIL must be a valid email').optional(),
