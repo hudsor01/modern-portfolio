@@ -2,7 +2,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { RateLimiter } from '@/lib/rate-limiter/store'
 import { RateLimitConfigs } from '@/lib/rate-limiter/configs'
-import { getClientIdentifier } from '@/lib/rate-limiter/helpers'
+import { getClientIdentifier } from '@/lib/api-request'
 import { securityConfig } from '@/lib/security'
 import type { RateLimitConfig } from '@/types/security'
 
