@@ -25,7 +25,7 @@ const envSchema = z.object({
   CONTACT_EMAIL: z.string().email('CONTACT_EMAIL must be a valid email').optional(),
   FROM_EMAIL: z.email('FROM_EMAIL must be a valid email').default('contact@richardwhudsonjr.com'),
   TO_EMAIL: z.email('TO_EMAIL must be a valid email').default('hello@richardwhudsonjr.com'),
-  NEXT_PUBLIC_VERCEL_URL: z.url().optional(),
+  NEXT_PUBLIC_VERCEL_URL: z.string().optional(),
   VERCEL_URL: z.string().optional(),
   // Optional security variables (not used in this project)
   JWT_SECRET: z.string()
