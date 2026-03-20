@@ -2,13 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
 import { PaginatedResponse, BlogPostData, ApiResponse, BlogPostFilters, BlogPostSort } from '@/types/api'
-import {
-  checkRateLimitOrRespond,
-  validateCSRFOrRespond,
-  parsePaginationParams,
-  createPaginationMeta,
-  RateLimitPresets,
-} from '@/lib/api-core'
+import { checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-rate-limit'
+import { validateCSRFOrRespond } from '@/lib/api-csrf'
+import { parsePaginationParams, createPaginationMeta } from '@/lib/api-pagination'
 import {
   transformToBlogPostData,
   buildBlogWhereClause,

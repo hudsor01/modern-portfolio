@@ -3,7 +3,7 @@ import { ApiResponse, BlogPostData } from '@/types/api'
 import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
 import { Prisma } from '@/generated/prisma/client'
-import { validateCSRFOrRespond } from '@/lib/api-core'
+import { validateCSRFOrRespond } from '@/lib/api-csrf'
 import { transformToBlogPostData, createErrorResponse } from '@/lib/api-blog'
 
 const logger = createContextLogger('SlugAPI')

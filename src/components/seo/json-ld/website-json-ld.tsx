@@ -2,6 +2,8 @@
  * Website JSON-LD Schema
  * SEO structured data for the main website
  */
+import { safeJsonLdStringify } from '@/lib/json-ld-utils'
+
 export function WebsiteJsonLd({ nonce }: { nonce?: string | null }) {
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -24,7 +26,7 @@ export function WebsiteJsonLd({ nonce }: { nonce?: string | null }) {
     <script
       type="application/ld+json"
       nonce={nonce ?? undefined}
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(jsonLd) }}
     />
   )
 }

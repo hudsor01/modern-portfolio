@@ -7,20 +7,21 @@
 
 import { Resend } from 'resend'
 import { z } from 'zod'
-import { checkEnhancedContactFormRateLimit } from './rate-limiter'
+import { checkContactFormRateLimit } from './rate-limiter/helpers'
 import { escapeHtml } from '@/lib/sanitization'
 import { logger } from '@/lib/logger'
 import { createContextLogger } from '@/lib/logger'
 import type { ContactFormData } from '@/types/api'
 import { contactFormSchema } from '@/lib/schemas'
+import { env } from '@/lib/env-validation'
 
 const emailLogger = createContextLogger('EmailService')
 
 // Environment configuration
-const RESEND_API_KEY = process.env.RESEND_API_KEY
-const FROM_EMAIL = process.env.FROM_EMAIL || 'contact@richardwhudsonjr.com'
-const TO_EMAIL = process.env.TO_EMAIL || 'hello@richardwhudsonjr.com'
-const NODE_ENV = process.env.NODE_ENV
+const RESEND_API_KEY = env.RESEND_API_KEY
+const FROM_EMAIL = env.FROM_EMAIL
+const TO_EMAIL = env.TO_EMAIL
+const NODE_ENV = env.NODE_ENV
 
 // Email templates
 export const EmailTemplates = {
@@ -167,9 +168,9 @@ export class EmailService {
   
   async sendContactEmail(data: ContactFormData, clientIP?: string): Promise<EmailServiceResult> {
     try {
-      // Enhanced rate limiting
+      // Rate limiting
       const identifier = clientIP || 'unknown'
-      const rateCheck = checkEnhancedContactFormRateLimit(identifier)
+      const rateCheck = checkContactFormRateLimit(identifier)
       
       if (!rateCheck.allowed) {
         return {

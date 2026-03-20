@@ -1,15 +1,8 @@
 'use client'
 import { memo } from 'react'
 
-import {
-  LazyAreaChart as AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-} from '@/components/charts/lazy-charts'
+import { LazyAreaChart as AreaChart } from '@/components/charts/lazy-charts'
+import { Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { chartColors, chartCssVars } from '@/lib/charts'
 import { paybackPeriodData } from '../data/constants'
 

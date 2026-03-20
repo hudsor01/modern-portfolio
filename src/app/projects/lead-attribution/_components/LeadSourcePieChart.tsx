@@ -1,7 +1,8 @@
 'use client'
 import { memo } from 'react'
 
-import { LazyPieChart as PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from '@/components/charts/lazy-charts'
+import { LazyPieChart as PieChart } from '@/components/charts/lazy-charts'
+import { Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { chartColors } from '@/lib/charts'
 import type { PieLabelRenderProps } from 'recharts'
 

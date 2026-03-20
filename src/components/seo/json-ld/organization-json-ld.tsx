@@ -2,6 +2,8 @@
  * Organization JSON-LD Schema
  * SEO structured data for Hudson Digital Solutions
  */
+import { safeJsonLdStringify } from '@/lib/json-ld-utils'
+
 export function OrganizationJsonLd({ nonce }: { nonce?: string | null }) {
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -83,7 +85,7 @@ export function OrganizationJsonLd({ nonce }: { nonce?: string | null }) {
     <script
       type="application/ld+json"
       nonce={nonce ?? undefined}
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(jsonLd) }}
     />
   )
 }

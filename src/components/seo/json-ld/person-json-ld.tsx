@@ -2,6 +2,8 @@
  * Person JSON-LD Schema
  * SEO structured data for Richard Hudson's personal profile
  */
+import { safeJsonLdStringify } from '@/lib/json-ld-utils'
+
 export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -113,7 +115,7 @@ export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
     <script
       type="application/ld+json"
       nonce={nonce ?? undefined}
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(jsonLd) }}
     />
   )
 }

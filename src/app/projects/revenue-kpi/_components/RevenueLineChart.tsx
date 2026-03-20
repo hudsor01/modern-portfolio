@@ -1,13 +1,7 @@
 'use client'
 import React, { memo, useMemo } from 'react'
-import { LazyLineChart as LineChart, Line, Legend } from '@/components/charts/lazy-charts'
-import {
-  ChartWrapper,
-  ChartGrid,
-  ChartXAxis,
-  ChartYAxis,
-  StandardTooltip,
-} from '@/lib/chart-components'
+import { LazyLineChart as LineChart, ChartWrapper, ChartGrid, ChartXAxis, ChartYAxis, StandardTooltip } from '@/components/charts/lazy-charts'
+import { Line, Legend } from 'recharts'
 import { chartColors, chartConfig, chartTypeConfigs, formatters } from '@/lib/charts'
 import type { YearOverYearData } from '@/types/analytics'
 import type { ExtendedRevenueData, TypedTooltipProps } from '@/types/chart'
