@@ -7,13 +7,8 @@ import {
   ChartTooltipContent,
   type ChartThemeConfig,
 } from '@/components/ui/chart'
-import {
-  LazyAreaChart as AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-} from '@/components/charts/lazy-charts'
+import { LazyAreaChart as AreaChart } from '@/components/charts/lazy-charts'
+import { Area, XAxis, YAxis, CartesianGrid } from 'recharts'
 import { chartColors } from '@/lib/charts'
 
 const chartConfig = {

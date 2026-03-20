@@ -11,20 +11,21 @@ const envLogger = createContextLogger('EnvValidation')
 // Define the environment schema with enhanced security validation
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  // Database - Required for all environments
+  // Database - Required at runtime, optional at build time (CI may not have it)
   DATABASE_URL: z
     .string()
     .min(1, 'DATABASE_URL is required')
     .refine(
       (url) => url.startsWith('postgresql://') || url.startsWith('postgres://'),
       'DATABASE_URL must be a valid PostgreSQL connection string'
-    ),
+    )
+    .optional(),
   // Email service
   RESEND_API_KEY: z.string().min(1, 'RESEND_API_KEY is required').optional(),
   CONTACT_EMAIL: z.string().email('CONTACT_EMAIL must be a valid email').optional(),
   FROM_EMAIL: z.email('FROM_EMAIL must be a valid email').default('contact@richardwhudsonjr.com'),
   TO_EMAIL: z.email('TO_EMAIL must be a valid email').default('hello@richardwhudsonjr.com'),
-  NEXT_PUBLIC_VERCEL_URL: z.url().optional(),
+  NEXT_PUBLIC_VERCEL_URL: z.string().optional(),
   VERCEL_URL: z.string().optional(),
   // Optional security variables (not used in this project)
   JWT_SECRET: z.string()
@@ -37,6 +38,10 @@ const envSchema = z.object({
   ADMIN_API_TOKEN: z.string()
     .min(32, 'ADMIN_API_TOKEN must be at least 32 characters')
     .optional(),
+  // Metrics API authentication
+  METRICS_API_TOKEN: z.string()
+    .min(32, 'METRICS_API_TOKEN must be at least 32 characters')
+    .optional(),
   // Site URL validation for CSP and CORS
   NEXT_PUBLIC_SITE_URL: z
     .url('NEXT_PUBLIC_SITE_URL must be a valid URL')
@@ -44,10 +49,18 @@ const envSchema = z.object({
       (url) => url.startsWith('https://') || process.env.NODE_ENV === 'development',
       'NEXT_PUBLIC_SITE_URL must use HTTPS in production'
     )
-    .default(process.env.NODE_ENV === 'production' 
-      ? 'https://richardwhudsonjr.com' 
+    .default(process.env.NODE_ENV === 'production'
+      ? 'https://richardwhudsonjr.com'
       : 'http://localhost:3000'
     ),
+  // CORS configuration
+  ALLOWED_ORIGINS: z.string()
+    .optional()
+    .transform(val => val ? val.split(',').map(s => s.trim()).filter(Boolean) : []),
+  // Local database toggle
+  USE_LOCAL_DB: z.string()
+    .optional()
+    .transform(val => val === 'true'),
 })
 
 export type EnvConfig = z.infer<typeof envSchema>
@@ -94,7 +107,11 @@ export function performSecurityChecks(env: EnvConfig): void {
     if (env.ADMIN_API_TOKEN && env.ADMIN_API_TOKEN.length < 64) {
       warnings.push('Production ADMIN_API_TOKEN should be at least 64 characters')
     }
-    
+
+    if (env.METRICS_API_TOKEN && env.METRICS_API_TOKEN.length < 64) {
+      warnings.push('Production METRICS_API_TOKEN should be at least 64 characters')
+    }
+
     if (!env.NEXT_PUBLIC_SITE_URL?.startsWith('https://')) {
       errors.push('Production site URL must use HTTPS')
     }

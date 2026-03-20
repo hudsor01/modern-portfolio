@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getProject } from '@/lib/projects'
 import { z } from 'zod'
-import { validationErrorResponse, checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-core'
+import { validationErrorResponse } from '@/lib/api-response'
+import { checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-rate-limit'
 import { createContextLogger } from '@/lib/logger'
 
 const logger = createContextLogger('SlugAPI')

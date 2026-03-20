@@ -1,24 +1,19 @@
-'use client'
+import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 
-/**
- * Project JSON-LD Schema
- * SEO structured data for project showcase pages
- *
- * Note: This component remains a Client Component because it's used in Client Component pages.
- * Nonces for JSON-LD scripts in Client Components will be handled separately if needed.
- */
 export function ProjectJsonLd({
   title,
   description,
   slug,
   category = "Data Analytics",
-  tags = []
+  tags = [],
+  nonce,
 }: {
   title: string
   description: string
   slug: string
   category?: string
   tags?: string[]
+  nonce?: string | null
 }) {
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -53,7 +48,8 @@ export function ProjectJsonLd({
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      nonce={nonce ?? undefined}
+      dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(jsonLd) }}
     />
   )
 }

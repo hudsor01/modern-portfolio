@@ -1,24 +1,28 @@
 /**
- * Edge-Compatible Content Security Policy Utilities
+ * Content Security Policy Utilities
  *
- * This module provides CSP utilities that work in Edge Runtime (middleware).
- * It does not import any Node.js-specific APIs or the logger module.
+ * This module provides CSP utilities for the Next.js 16 proxy (nodejs runtime).
+ * It does not import any heavy dependencies to keep proxy startup fast.
  */
 
 /**
  * Build Enhanced CSP with nonce support
  *
- * This function is edge-compatible and can be used in middleware.
- * It generates a strict Content Security Policy with nonce-based inline script/style support.
+ * Used by proxy.ts to generate per-request Content Security Policy headers.
  *
- * @param nonces - Object containing scriptNonce and styleNonce values
+ * @param options - scriptNonce, styleNonce, and isDev flag
  * @returns CSP header string
  */
-export function buildEnhancedCSP(nonces: { scriptNonce: string; styleNonce: string }): string {
+export function buildEnhancedCSP(options: {
+  scriptNonce: string
+  styleNonce: string
+  isDev?: boolean
+}): string {
+  const { scriptNonce, styleNonce, isDev = false } = options
   const directives = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonces.scriptNonce}' https://vercel.live https://va.vercel-scripts.com https://vitals.vercel-insights.com 'strict-dynamic'`,
-    `style-src 'self' 'nonce-${nonces.styleNonce}' https://fonts.googleapis.com`,
+    `script-src 'self' 'nonce-${scriptNonce}' https://vercel.live https://va.vercel-scripts.com https://vitals.vercel-insights.com 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ''}`,
+    `style-src 'self' ${isDev ? "'unsafe-inline'" : `'nonce-${styleNonce}'`} https://fonts.googleapis.com`,
     "img-src 'self' data: blob: https: *.unsplash.com",
     "font-src 'self' https://fonts.gstatic.com",
     "connect-src 'self' https://vercel.live https://va.vercel-scripts.com https://vitals.vercel-insights.com",

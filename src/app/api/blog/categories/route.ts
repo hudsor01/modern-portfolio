@@ -7,6 +7,7 @@ import {
   createErrorResponse,
   transformToCategoryData,
 } from '@/lib/api-blog'
+import { validateCSRFOrRespond } from '@/lib/api-csrf'
 
 const logger = createContextLogger('CategoriesAPI')
 
@@ -50,6 +51,10 @@ export async function GET() {
 // POST /api/blog/categories - Create new blog category
 export async function POST(request: NextRequest) {
   try {
+    // CSRF validation
+    const csrfResponse = await validateCSRFOrRespond(request, 'blog category creation')
+    if (csrfResponse) return csrfResponse
+
     const body = await request.json()
 
     if (!body.name) {

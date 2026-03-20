@@ -1,8 +1,25 @@
 'use client'
 
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { ProjectTabsProps } from '@/types/project'
-import { ProjectSwiper } from './project-swiper'
+import { Skeleton } from '@/components/ui/skeleton'
+
+function SwiperSkeleton() {
+  return (
+    <div className="w-full animate-pulse" style={{ height: 400 }}>
+      <Skeleton className="w-full h-full rounded-xl bg-white/5" />
+    </div>
+  )
+}
+
+const ProjectSwiper = dynamic(
+  () => import('./project-swiper').then((m) => ({ default: m.ProjectSwiper })),
+  {
+    ssr: false,
+    loading: () => <SwiperSkeleton />,
+  }
+)
 
 export function ProjectTabs({ projects }: ProjectTabsProps) {
   // Extract unique categories from projects

@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { checkEnhancedContactFormRateLimit } from '@/lib/rate-limiter'
+import { checkContactFormRateLimit } from '@/lib/rate-limiter/helpers'
 import { contactFormSchema } from '@/lib/schemas'
 import { escapeHtml } from '@/lib/sanitization'
+import { env } from '@/lib/env-validation'
+import { validateCSRFOrRespond } from '@/lib/api-csrf'
 
 let resend: Resend | null = null
 
 function getResendClient(): Resend {
   if (!resend) {
-    if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY is not configured')
-    resend = new Resend(process.env.RESEND_API_KEY)
+    if (!env.RESEND_API_KEY) throw new Error('RESEND_API_KEY is not configured')
+    resend = new Resend(env.RESEND_API_KEY)
   }
   return resend
 }
@@ -21,7 +23,7 @@ export async function POST(request: NextRequest) {
     const ip = (forwarded ? forwarded.split(/, /)[0] : request.headers.get('x-real-ip')) || 'unknown'
 
     // Rate limit
-    const rateLimitResult = checkEnhancedContactFormRateLimit(`${ip}`, { path: '/api/contact' })
+    const rateLimitResult = checkContactFormRateLimit(`${ip}`, { path: '/api/contact' })
 
     if (!rateLimitResult.allowed) {
       return NextResponse.json(
@@ -30,11 +32,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // CSRF validation — client must send token via x-csrf-token header
+    const csrfResponse = await validateCSRFOrRespond(request, 'contact form submission')
+    if (csrfResponse) return csrfResponse
+
     const body = await request.json()
     const formData = contactFormSchema.parse(body)
     const { name, email, message } = formData
 
-    const contactEmail = process.env.CONTACT_EMAIL
+    const contactEmail = env.CONTACT_EMAIL
     if (!contactEmail) {
       return NextResponse.json(
         { success: false, error: 'Email service misconfigured. Please try again later.' },

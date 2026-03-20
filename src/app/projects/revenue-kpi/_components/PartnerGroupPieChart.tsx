@@ -7,7 +7,8 @@ import {
   ChartTooltipContent,
   type ChartThemeConfig,
 } from '@/components/ui/chart'
-import { LazyPieChart as PieChart, Pie, Cell, ResponsiveContainer } from '@/components/charts/lazy-charts'
+import { LazyPieChart as PieChart } from '@/components/charts/lazy-charts'
+import { Pie, Cell, ResponsiveContainer } from 'recharts'
 import { chartColors } from '@/lib/charts'
 
 const COLORS = [chartColors.primary, chartColors.secondary, chartColors.chart3, chartColors.chart4]
