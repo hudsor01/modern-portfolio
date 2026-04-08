@@ -1,6 +1,6 @@
 # Phase 5: Structured Data - Context
 
-**Gathered:** 2026-04-08
+**Gathered:** 2026-04-08 (updated)
 **Status:** Ready for planning
 
 <domain>
@@ -30,6 +30,13 @@ Every page type on richardwhudsonjr.com emits valid, Google-parseable JSON-LD st
 - **D-08:** Keep full Person schema details: credentials (SalesLoft, HubSpot certs), location (Plano/DFW), awards ($4.8M revenue, 432% growth, 2217% network expansion), professional memberships.
 - **D-09:** Replace placeholder phone `+1-555-REVOPS` with real number: `+1-214-566-0279`.
 
+### Organization/LocalBusiness
+- **D-10:** Remove both `organization-json-ld.tsx` and `local-business-json-ld.tsx` from `src/components/seo/json-ld/`. Neither is required by SD-01 through SD-07. LocalBusiness contains fabricated aggregate ratings (5.0 stars, 15 reviews) which is a Google spam risk. Person schema already covers professional identity.
+
+### SearchAction (SD-02)
+- **D-11:** Add blog search support via `?q=` parameter on the existing `/blog` page to satisfy SearchAction target URL. WebSite schema on homepage will include `SearchAction` pointing to `/blog?q={search_term}`.
+- **D-12:** Claude's discretion on whether search is a minimal query filter on the existing blog index or a more polished experience.
+
 </decisions>
 
 <canonical_refs>
@@ -48,8 +55,11 @@ Every page type on richardwhudsonjr.com emits valid, Google-parseable JSON-LD st
 - `src/components/seo/person-schema.tsx` — basic Person schema to migrate/remove
 - `src/components/seo/global-seo.tsx` — GlobalSEO component (Claude decides fate per D-04)
 - `src/components/seo/seo-provider.tsx` — SEOProvider wrapper (Claude decides fate per D-04)
+- `src/components/seo/json-ld/organization-json-ld.tsx` — to be REMOVED per D-10
+- `src/components/seo/json-ld/local-business-json-ld.tsx` — to be REMOVED per D-10 (contains fabricated ratings)
 - `src/lib/json-ld-utils.ts` — safeJsonLdStringify utility (keep as-is)
 - `src/lib/site.ts` — siteConfig with author, links, URL constants
+- `src/app/blog/page.tsx` — blog index, needs ?q= search parameter support per D-11
 
 </canonical_refs>
 
@@ -85,6 +95,8 @@ Every page type on richardwhudsonjr.com emits valid, Google-parseable JSON-LD st
 - Phone number for Person schema: `+1-214-566-0279` (replaces placeholder)
 - FAQ content to be drafted by Claude based on page context — not user-supplied
 - Blog JSON-LD already has embedded BreadcrumbList — this pattern could extend to project pages, or standalone breadcrumb components could be created for all nested pages
+- Organization and LocalBusiness schemas to be deleted — removes Google spam risk from fabricated ratings
+- SearchAction will target `/blog?q={search_term}` — requires adding query parameter support to blog index page
 
 </specifics>
 

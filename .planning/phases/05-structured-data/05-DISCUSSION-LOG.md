@@ -5,7 +5,7 @@
 
 **Date:** 2026-04-08
 **Phase:** 05-structured-data
-**Areas discussed:** Component consolidation, Project schema type, FAQ content, Personal info in schemas
+**Areas discussed:** Component consolidation, Project schema type, FAQ content, Personal info in schemas, Organization/LocalBusiness schemas, SearchAction (SD-02)
 
 ---
 
@@ -95,10 +95,47 @@
 
 ---
 
+## Organization/LocalBusiness Schemas (Update Session)
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Remove both | Neither required by SD-01–SD-07. LocalBusiness has fabricated ratings (Google spam risk). Person schema covers identity. | ✓ |
+| Keep Organization, remove LocalBusiness | Organization adds brand identity. Remove only the risky LocalBusiness. |  |
+| Fix and keep both | Remove fake ratings, update phone, preserve local SEO signals. |  |
+
+**User's choice:** Remove both (Recommended)
+**Notes:** Eliminates spam risk from fabricated aggregate ratings
+
+---
+
+## SearchAction (SD-02) (Update Session)
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Add blog search page | Create /blog?q={search_term} route. SearchAction points there. | ✓ |
+| Point to Google site search | SearchAction targets site:richardwhudsonjr.com via Google. |  |
+| Skip SearchAction for now | Implement WebSite schema without SearchAction. |  |
+
+**User's choice:** Add blog search page (Recommended)
+**Notes:** None
+
+### Follow-up: Search scope
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Minimal query route | /blog accepts ?q= parameter, filters existing blog list. |  |
+| Dedicated search page | Separate /search page with full search UI. |  |
+
+**User's choice:** "You decide" — deferred to Claude's discretion
+**Notes:** None
+
+---
+
 ## Claude's Discretion
 
 - SEOProvider/GlobalSEO: keep or remove (rewire or direct imports)
 - Project schema type: CreativeWork recommended, user deferred
+- Search page scope: minimal query route vs dedicated page
 
 ## Deferred Ideas
 
