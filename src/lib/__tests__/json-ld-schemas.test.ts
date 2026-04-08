@@ -153,3 +153,131 @@ describe('PersonJsonLd schema', () => {
     expect(result).toContain('<\\/script>')
   })
 })
+
+/**
+ * Build a BreadcrumbList JSON-LD object matching breadcrumb-json-ld.tsx.
+ */
+function buildBreadcrumbListJsonLd(items: Array<{ name: string; url: string }>) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((crumb, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: crumb.name,
+      item: crumb.url,
+    })),
+  }
+}
+
+describe('BreadcrumbListJsonLd schema', () => {
+  it('produces correct itemListElement with positions 1, 2, 3 for 3 items', () => {
+    const data = buildBreadcrumbListJsonLd([
+      { name: 'Home', url: 'https://richardwhudsonjr.com' },
+      { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+      { name: 'CAC Analysis', url: 'https://richardwhudsonjr.com/projects/cac-unit-economics' },
+    ])
+    const stringified = safeJsonLdStringify(data)
+    expect(data.itemListElement).toHaveLength(3)
+    expect(data.itemListElement[0].position).toBe(1)
+    expect(data.itemListElement[1].position).toBe(2)
+    expect(data.itemListElement[2].position).toBe(3)
+    expect(stringified).toContain('"name":"Home"')
+    expect(stringified).toContain('"name":"Projects"')
+    expect(stringified).toContain('"name":"CAC Analysis"')
+  })
+
+  it('contains correct @type BreadcrumbList and @context schema.org', () => {
+    const data = buildBreadcrumbListJsonLd([
+      { name: 'Home', url: 'https://richardwhudsonjr.com' },
+      { name: 'About', url: 'https://richardwhudsonjr.com/about' },
+    ])
+    const stringified = safeJsonLdStringify(data)
+    expect(stringified).toContain('"@type":"BreadcrumbList"')
+    expect(stringified).toContain('"@context":"https://schema.org"')
+  })
+
+  it('produces correct output with 2 items (minimum valid)', () => {
+    const data = buildBreadcrumbListJsonLd([
+      { name: 'Home', url: 'https://richardwhudsonjr.com' },
+      { name: 'About', url: 'https://richardwhudsonjr.com/about' },
+    ])
+    const stringified = safeJsonLdStringify(data)
+    expect(data.itemListElement).toHaveLength(2)
+    expect(data.itemListElement[0]).toEqual({
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://richardwhudsonjr.com',
+    })
+    expect(data.itemListElement[1]).toEqual({
+      '@type': 'ListItem',
+      position: 2,
+      name: 'About',
+      item: 'https://richardwhudsonjr.com/about',
+    })
+    expect(stringified).toContain('"@type":"ListItem"')
+  })
+})
+
+/**
+ * Build a FAQPage JSON-LD object matching faq-json-ld.tsx.
+ */
+function buildFAQPageJsonLd(faqs: Array<{ question: string; answer: string }>) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  }
+}
+
+describe('FAQPageJsonLd schema', () => {
+  const sampleFaqs = [
+    {
+      question: 'What does a Revenue Operations Specialist do?',
+      answer: 'A Revenue Operations Specialist aligns sales, marketing, and customer success teams.',
+    },
+    {
+      question: 'What certifications does Richard Hudson hold?',
+      answer: 'Richard holds SalesLoft Admin Certification and HubSpot Revenue Operations Certification.',
+    },
+  ]
+
+  it('produces correct mainEntity with Question and Answer types for 2 Q&A pairs', () => {
+    const data = buildFAQPageJsonLd(sampleFaqs)
+    expect(data.mainEntity).toHaveLength(2)
+    expect(data.mainEntity[0]['@type']).toBe('Question')
+    expect(data.mainEntity[0].name).toBe(sampleFaqs[0].question)
+    expect(data.mainEntity[0].acceptedAnswer['@type']).toBe('Answer')
+    expect(data.mainEntity[0].acceptedAnswer.text).toBe(sampleFaqs[0].answer)
+    expect(data.mainEntity[1]['@type']).toBe('Question')
+    expect(data.mainEntity[1].acceptedAnswer['@type']).toBe('Answer')
+  })
+
+  it('contains correct @type FAQPage and @context schema.org', () => {
+    const data = buildFAQPageJsonLd(sampleFaqs)
+    const stringified = safeJsonLdStringify(data)
+    expect(stringified).toContain('"@type":"FAQPage"')
+    expect(stringified).toContain('"@context":"https://schema.org"')
+  })
+
+  it('safeJsonLdStringify escapes </ sequences in FAQ content', () => {
+    const maliciousFaqs = [
+      {
+        question: 'Is this safe?',
+        answer: 'Yes, even with </script><script>alert(1)</script> in answers.',
+      },
+    ]
+    const data = buildFAQPageJsonLd(maliciousFaqs)
+    const stringified = safeJsonLdStringify(data)
+    expect(stringified).not.toContain('</script>')
+    expect(stringified).toContain('<\\/script>')
+  })
+})
