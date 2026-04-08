@@ -1,101 +1,87 @@
-# Roadmap - v1.1 Security & Quality Hardening
+# Roadmap - v1.2 Google Search Indexing Optimization
 
 ## Milestone Overview
-Harden the portfolio site's security posture, establish test coverage for critical services, reduce tech debt, and optimize performance. Derived from comprehensive codebase audit (2026-03-18).
+
+Improve SEO signals, structured data, metadata, and search engine discoverability for richardwhudsonjr.com. The site already has basic SEO foundations (robots.txt, sitemap.xml, blog JSON-LD, OG tags on blog pages). This milestone makes every page crawlable, correctly described, and actively indexed.
+
+**Phase numbering continues from v1.1 (ended at Phase 5). v1.2 starts at Phase 5.**
 
 ---
 
-## Phase 1: Security Hardening
-**Goal:** Eliminate XSS attack surfaces, centralize CSRF enforcement, strengthen CSP, and validate security headers.
-**Depends on:** Nothing (independent)
-**Requirements:** R1, R2, R3, R4, R5
-**Plans:** 1/3 plans executed
+## Phases
 
+- [ ] **Phase 5: Structured Data** - All pages emit valid JSON-LD schemas (Person, WebSite, Article, BreadcrumbList, Project, FAQ, Navigation)
+- [ ] **Phase 6: Metadata & Open Graph** - Every page has unique title, meta description, canonical URL, OG markup, Twitter card, and dynamic OG images
+- [ ] **Phase 7: Sitemap & Indexing** - Dynamic sitemap with live blog posts, optimized robots.txt, Search Console verified, IndexNow wired to publish events
+- [ ] **Phase 8: Technical SEO** - Semantic HTML heading hierarchy, internal link structure, Core Web Vitals audited, resource hints added, image alt text complete
+
+---
+
+## Phase Details
+
+### Phase 5: Structured Data
+**Goal**: Every page type emits valid, Google-parseable JSON-LD structured data that enables rich results in search
+**Depends on**: Nothing (pure additions, no breaking changes to existing pages)
+**Requirements**: SD-01, SD-02, SD-03, SD-04, SD-05, SD-06, SD-07
+**Success Criteria** (what must be TRUE):
+  1. Google's Rich Results Test passes for homepage (Person + WebSite + SearchAction schemas)
+  2. Blog post pages show valid Article schema with author, datePublished, dateModified — verifiable in Rich Results Test
+  3. Project case study pages emit CreativeWork/Project schema — parseable without errors
+  4. All nested pages (blog posts, projects, about) include BreadcrumbList schema reflecting the actual URL path
+  5. Google Search Console shows zero structured data errors after crawl
+**Plans:** 3 plans
 Plans:
-- [ ] 01-01-PLAN.md — XSS hardening (safe JSON-LD serializer) + CSRF enforcement on 3 unprotected routes
-- [ ] 01-02-PLAN.md — Edge middleware for CSP nonce injection + env validation centralization
-- [ ] 01-03-PLAN.md — Playwright security header E2E test suite
+- [ ] 05-01-PLAN.md — Consolidate schemas, delete duplicates/spam-risk, update Person phone
+- [ ] 05-02-PLAN.md — Add BreadcrumbList, CreativeWork to projects, FAQ to about page
+- [ ] 05-03-PLAN.md — WebSite SearchAction, NavigationJsonLd, blog search filter
+**UI hint**: yes
 
-### Scope
-- Audit and secure all 10+ dangerouslySetInnerHTML usages across SEO and blog components
-- Centralize CSRF middleware to enforce on all POST/PUT/DELETE API routes
-- Verify and strengthen CSP nonce implementation in edge middleware
-- Centralize 74+ process.env accesses into validated env config
-- Add tests verifying security headers are correctly applied
+### Phase 6: Metadata & Open Graph
+**Goal**: Every page presents a unique, accurate identity to search engines and social platforms — no missing titles, no duplicate descriptions, no untagged pages
+**Depends on**: Phase 5 (structured data should be in place before social/OG signals)
+**Requirements**: META-01, META-02, META-03, META-04, META-05
+**Success Criteria** (what must be TRUE):
+  1. Every page (home, about, blog index, each blog post, projects, each project, resume) has a distinct title and meta description — verifiable via browser DevTools or SEO browser extension
+  2. Sharing any page URL on Twitter or LinkedIn renders a correct preview card with title, description, and image
+  3. No page has a duplicate or missing canonical URL — verifiable by crawling with a tool like Screaming Frog or browser inspection
+  4. Blog post and project URLs generate unique dynamic OG images (not the generic site fallback)
+**Plans**: TBD
+**UI hint**: yes
 
----
+### Phase 7: Sitemap & Indexing
+**Goal**: Google can discover and index all content efficiently — dynamic sitemap reflects live posts, crawl directives are correct, and new content is submitted instantly on publish
+**Depends on**: Phase 5 (structured data in place), Phase 6 (canonical URLs established before sitemap submission)
+**Requirements**: IDX-01, IDX-02, IDX-03, IDX-04
+**Success Criteria** (what must be TRUE):
+  1. The /sitemap.xml response includes all published blog posts with accurate lastmod timestamps — verifiable by fetching the sitemap after a new post is published
+  2. Robots.txt correctly allows crawling of all public pages and blocks any admin/API paths — verifiable by Google's robots.txt tester in Search Console
+  3. Google Search Console shows the site as verified and the sitemap as successfully submitted with zero errors
+  4. Publishing a new blog post triggers an IndexNow ping — verifiable via server logs or IndexNow API response
+**Plans**: TBD
 
-## Phase 2: Critical Test Coverage
-**Goal:** Establish Vitest unit test infrastructure and comprehensive coverage for the 3 largest untested core services, sanitization pipeline, and CSRF flow.
-**Depends on:** Nothing (independent, can run parallel with Phase 1)
-**Requirements:** R6, R7, R8, R9, R10
-**Plans:** 3/3 plans complete
-
-Plans:
-- [ ] 02-01-PLAN.md — Vitest infrastructure setup + EnhancedRateLimiter unit tests (R6)
-- [ ] 02-02-PLAN.md — AnalyticsDataService (R7) + API core utilities (R8) unit tests
-- [ ] 02-03-PLAN.md — HTML sanitization/XSS prevention (R9) + CSRF token flow (R10) unit tests
-
-### Scope
-- Set up unit test framework (Vitest or Bun test runner)
-- Unit tests for EnhancedRateLimiter: eviction, analytics, penalties, state transitions
-- Unit tests for DataGenerator: metric calculations, edge cases, boundary conditions
-- Unit tests for API core: response helpers, error formatting, header application
-- Integration tests for markdown-to-HTML rendering with XSS prevention
-- Tests for CSRF token generation, rotation, and validation
-
----
-
-## Phase 3: Tech Debt Reduction
-**Goal:** Decompose oversized files, eliminate code duplication, and replace fragile patterns.
-**Depends on:** Phase 2 (tests needed before safe refactoring)
-**Requirements:** R11, R12, R13, R14, R15
-**Plans:** 4/4 plans complete
-
-Plans:
-- [ ] 03-01-PLAN.md — Decompose rate-limiter.ts (712 LOC) into subdirectory modules (R11)
-- [ ] 03-02-PLAN.md — Decompose data-service.ts (654 LOC) into subdirectory modules (R11)
-- [ ] 03-03-PLAN.md — Decompose api-core.ts (618 LOC) + deduplicate header logic (R11, R12)
-- [ ] 03-04-PLAN.md — Logger migration in search.ts (R13) + remove react-hook-form (R14) + close R15
-
-### Scope
-- Decompose rate-limiter.ts (712 LOC) into focused modules
-- Decompose data-service.ts (654 LOC) and api-core.ts (618 LOC)
-- Consolidate cache-control/rate-limit header logic into single source of truth
-- Replace all console.log/error calls with structured logger
-- Remove duplicate form library (keep one of React Hook Form or TanStack React Form)
-- Replace regex-based markdown parsing with established library (remark/marked)
+### Phase 8: Technical SEO
+**Goal**: The site's HTML structure, internal navigation, performance metrics, and media are all optimized for search ranking signals
+**Depends on**: Phase 6 (pages fully structured before performance audit), Phase 7 (indexing pipeline in place)
+**Requirements**: TSEO-01, TSEO-02, TSEO-03, TSEO-04, TSEO-05
+**Success Criteria** (what must be TRUE):
+  1. Every page has exactly one h1, with h2-h6 used in correct hierarchical order — verifiable via browser heading outline tool or accessibility checker
+  2. Related blog posts and projects link to each other via contextually relevant anchor text — at least 2 internal links per content page
+  3. Lighthouse or PageSpeed Insights scores LCP under 2.5s, CLS under 0.1, and INP under 200ms on the live Vercel deployment
+  4. All images across the site have descriptive, non-empty alt attributes — zero alt-text violations in axe or Lighthouse accessibility audit
+**Plans**: TBD
+**UI hint**: yes
 
 ---
 
-## Phase 4: Performance Optimization
-**Goal:** Reduce client bundle size and improve load times through lazy loading and code splitting.
-**Depends on:** Phase 3 (cleaner modules make splitting easier)
-**Requirements:** R16, R17, R18, R19
-**Plans:** 3/3 plans complete
+## Progress
 
-Plans:
-- [ ] 04-01-PLAN.md — Fix Recharts lazy loading: remove sub-exports, consolidate chart-components.tsx, update 30 chart files (R16, R18)
-- [ ] 04-02-PLAN.md — Swiper lazy loading via next/dynamic + delete dead code files (R16)
-- [ ] 04-03-PLAN.md — Bundle analyzer setup + rate limiter metrics endpoint (R17, R19)
-
-### Scope
-- Lazy load Recharts components with next/dynamic (ssr: false)
-- Lazy load Swiper carousel components
-- Run bundle analysis and set size budgets
-- Code-split project pages for independent route loading
-- Add /api/security/metrics endpoint for rate limiter visibility
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 5. Structured Data | 0/3 | Planned | — |
+| 6. Metadata & Open Graph | 0/? | Not started | — |
+| 7. Sitemap & Indexing | 0/? | Not started | — |
+| 8. Technical SEO | 0/? | Not started | — |
 
 ---
-
-## Phase 5: Operational Readiness
-**Goal:** Document operational procedures and establish monitoring baselines.
-**Depends on:** Phase 1 (security must be solid first)
-**Requirements:** R20, R21, R22
-**Plans:** None yet
-
-### Scope
-- Document Neon PostgreSQL backup and restore procedures
-- Create incident response runbook (CSRF attacks, rate limit issues, DB outages)
-- Define SLOs (99.9% availability target) and error budget tracking
-- Verify Sentry alerting covers all critical paths
+*Roadmap created: 2026-04-08*
+*Milestone: v1.2 Google Search Indexing Optimization*
