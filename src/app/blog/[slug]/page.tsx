@@ -141,6 +141,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 // This pre-renders all blog posts at build time (zero runtime cost)
 // Falls back to empty array during CI builds without database
 export async function generateStaticParams() {
+  // During build, skip DB — pages are generated on-demand via ISR
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return []
+  }
+
   try {
     const posts = await db.blogPost.findMany({
       where: { status: 'PUBLISHED' },
@@ -150,7 +155,7 @@ export async function generateStaticParams() {
 
     return posts.map((post) => ({ slug: post.slug }))
   } catch {
-    // Database not available (CI build) - return empty array
+    // Database not available - return empty array
     // Pages will be generated on-demand at runtime
     return []
   }
