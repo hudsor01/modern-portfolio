@@ -1,19 +1,24 @@
-/**
- * Person JSON-LD Schema
- * SEO structured data for Richard Hudson's personal profile
- */
+// @vitest-environment node
+import { describe, it, expect } from 'vitest'
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 
-export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
-  const jsonLd = {
+/**
+ * Build the Person JSON-LD object matching person-json-ld.tsx.
+ * Extracted here so we can test the schema data directly without
+ * rendering React server components.
+ */
+function buildPersonJsonLd() {
+  return {
     '@context': 'https://schema.org',
     '@type': 'Person',
     name: 'Richard Hudson',
     alternateName: 'Richard W. Hudson Jr.',
     jobTitle: 'Senior Revenue Operations Specialist',
-    description: 'Senior Revenue Operations Specialist in Dallas-Fort Worth with proven expertise in sales automation, partnership program development, and data-driven growth strategies. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. $4.8M+ revenue generated, 432% transaction growth achieved.',
+    description:
+      'Senior Revenue Operations Specialist in Dallas-Fort Worth with proven expertise in sales automation, partnership program development, and data-driven growth strategies. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. $4.8M+ revenue generated, 432% transaction growth achieved.',
     url: 'https://richardwhudsonjr.com',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face&q=80',
+    image:
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face&q=80',
     sameAs: [
       'https://www.linkedin.com/in/hudsor01',
       'https://github.com/hudsor01',
@@ -110,12 +115,41 @@ export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
       },
     ],
   }
-
-  return (
-    <script
-      type="application/ld+json"
-      nonce={nonce ?? undefined}
-      dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(jsonLd) }}
-    />
-  )
 }
+
+describe('PersonJsonLd schema', () => {
+  const personData = buildPersonJsonLd()
+  const stringified = safeJsonLdStringify(personData)
+
+  it('contains the real phone number +1-214-566-0279', () => {
+    expect(stringified).toContain('"telephone":"+1-214-566-0279"')
+  })
+
+  it('contains correct @type Person and @context schema.org', () => {
+    expect(stringified).toContain('"@type":"Person"')
+    expect(stringified).toContain('"@context":"https://schema.org"')
+  })
+
+  it('contains all three awards', () => {
+    expect(stringified).toContain('$4.8M+ Revenue Generated')
+    expect(stringified).toContain('432% Transaction Growth Achieved')
+    expect(stringified).toContain('2,217% Network Expansion')
+  })
+
+  it('contains all three credentials', () => {
+    expect(stringified).toContain('SalesLoft Admin Certification Level 1')
+    expect(stringified).toContain('SalesLoft Admin Certification Level 2')
+    expect(stringified).toContain('HubSpot Revenue Operations Certification')
+  })
+
+  it('does NOT contain the placeholder phone number +1-555-REVOPS', () => {
+    expect(stringified).not.toContain('+1-555-REVOPS')
+  })
+
+  it('safeJsonLdStringify escapes </script> sequences', () => {
+    const malicious = { '@context': 'https://schema.org', name: '</script><script>alert(1)</script>' }
+    const result = safeJsonLdStringify(malicious)
+    expect(result).not.toContain('</script>')
+    expect(result).toContain('<\\/script>')
+  })
+})
