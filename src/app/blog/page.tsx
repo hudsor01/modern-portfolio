@@ -23,6 +23,11 @@ export const metadata: Metadata = {
 // Official Next.js 16 Pattern: React cache() for database queries
 // Gracefully handle missing database (CI builds)
 const getBlogPosts = cache(async (): Promise<BlogPostData[]> => {
+  // During build, skip DB — blog content populates on first ISR revalidation
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return []
+  }
+
   try {
     const posts = await db.blogPost.findMany({
       where: { status: 'PUBLISHED' },
@@ -47,6 +52,11 @@ const getBlogPosts = cache(async (): Promise<BlogPostData[]> => {
 })
 
 const getCategories = cache(async (): Promise<BlogCategoryData[]> => {
+  // During build, skip DB — categories populate on first ISR revalidation
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return []
+  }
+
   try {
     const categories = await db.category.findMany({
       orderBy: { totalViews: 'desc' }
