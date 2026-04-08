@@ -75,14 +75,42 @@ class ConsoleTransport implements LogTransport {
   }
 }
 
-// Structured JSON transport (for production logging services)
-class JSONTransport implements LogTransport {
+// Sentry transport (production error tracking and breadcrumbs)
+class SentryTransport implements LogTransport {
   log(entry: LogEntry): void {
     if (!shouldLog(entry.level)) return
 
-    // In production, you'd send this to your logging service
-    // Examples: DataDog, Splunk, ELK Stack, CloudWatch, etc.
-    console.info('Logging entry:', entry)
+    const Sentry = require('@sentry/nextjs') as typeof import('@sentry/nextjs')
+
+    if (entry.level === 'error' || entry.level === 'fatal') {
+      if (entry.error) {
+        const err = new Error(entry.error.message)
+        err.name = entry.error.name
+        if (entry.error.stack) err.stack = entry.error.stack
+        Sentry.captureException(err, {
+          level: entry.level === 'fatal' ? 'fatal' : 'error',
+          extra: { ...entry.context, ...entry.metadata },
+        })
+      } else {
+        Sentry.captureMessage(entry.message, {
+          level: entry.level === 'fatal' ? 'fatal' : 'error',
+          extra: { ...entry.context, ...entry.metadata },
+        })
+      }
+    } else if (entry.level === 'warn') {
+      Sentry.captureMessage(entry.message, {
+        level: 'warning',
+        extra: { ...entry.context, ...entry.metadata },
+      })
+    } else {
+      // info/debug: breadcrumbs provide context on future error events
+      Sentry.addBreadcrumb({
+        message: entry.message,
+        level: entry.level === 'info' ? 'info' : 'debug',
+        data: entry.context,
+        timestamp: Date.now() / 1000,
+      })
+    }
   }
 }
 
@@ -418,13 +446,12 @@ function createLogger(): Logger {
   const transports: LogTransport[] = []
 
   if (IS_BUILD_PHASE) {
-    // During next build, suppress verbose logging to keep build output clean
-    transports.push(new ConsoleTransport())
+    // During build, no transports — real errors throw and Next.js reports them
   } else if (IS_PRODUCTION) {
-    // In production, use structured JSON logging
-    transports.push(new JSONTransport())
+    // In production, route errors/warnings to Sentry, info/debug as breadcrumbs
+    transports.push(new SentryTransport())
 
-    // Optionally add file transport or external service transport
+    // Optionally add file transport for local persistence
     if (process.env.ENABLE_FILE_LOGGING === 'true') {
       transports.push(new FileTransport())
     }

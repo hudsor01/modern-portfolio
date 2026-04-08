@@ -1,14 +1,65 @@
+# Dependencies (reinstalled in build)
 node_modules
+
+# Build outputs
 .next
+out
+dist
+build
+
+# Git
 .git
+.gitignore
+
+# Environment files
 .env
 .env.*
-*.md
+
+# Docker (don't copy into own context)
+Dockerfile
+docker-compose*
+.devcontainer
+
+# CI/CD
+.github
+
+# IDE
 .vscode
 .idea
+.kiro
+.serena
+
+# Turbo
 .turbo
 .turbopack
-.planning
+
+# Testing and coverage
 coverage
 playwright-report
 test-results
+e2e
+
+# Claude / planning
+.claude
+.planning
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+bun-debug.log*
+.bun-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+.vercel
+.husky
+reports
+screenshots
+*.csv
+*.md
+.sentryclirc
+.actrc

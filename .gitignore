@@ -1,38 +1,37 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Dependencies
 /node_modules
 
-# next.js
+# Build outputs
 /.next/
 /out/
-
-# production
 /build
+/dist
 
-# debug
+# Turbo
+.turbo
+.turbopack
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 bun-debug.log*
 .bun-debug.log*
 
-# env files (secrets)
+# Environment files
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.example
+.env.*
 
-# IDE and config files
+# IDE
 .vscode/
 .idea/
 .kiro/
 .serena/
-.next/
+
+# Coverage and test outputs
 coverage/
 .nyc_output/
-
-# Git hooks
-.husky/
-
-# Test outputs
 playwright-report/
 test-results/
 e2e/**/*.png
@@ -41,23 +40,27 @@ e2e/**/*.jpeg
 e2e/*-snapshots/
 .actrc
 
-# Development artifacts
-screenshots/
-PERFORMANCE_ANALYSIS.md
-PROGRESS.md
-UPGRADE_TRACKER.md
-/*.md  # Ignore markdown in root only (not docs/)
-
 # OS
 .DS_Store
-.DS_Store/
+Thumbs.db
 
-# Claude and docs
+# Git hooks
+.husky/
+
+# Claude / planning
 .claude/
 .claude.*
 CLAUDE.md
 .planning/
-*.csv
+
+# Vercel
 .vercel/
+
+# Sentry
+.sentryclirc
+
+# Misc
 reports/
+screenshots/
+*.csv
 *.md

@@ -67,9 +67,7 @@ declare global {
  * - Production: Neon serverless adapter (HTTP-based)
  */
 function createPrismaClient(): PrismaClient {
-  const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build'
   const logLevel: Prisma.LogLevel[] =
-    isBuildPhase ? [] :
     process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error']
 
   if (useLocalDb) {
