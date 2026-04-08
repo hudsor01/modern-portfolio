@@ -19,6 +19,7 @@ const LOG_LEVEL =
   (process.env.LOG_LEVEL as LogLevel) ||
   ((process.env.NODE_ENV as string) === 'production' ? 'info' : 'debug')
 const IS_PRODUCTION = (process.env.NODE_ENV as string) === 'production'
+const IS_BUILD_PHASE = process.env.NEXT_PHASE === 'phase-production-build'
 
 // Shared utility to determine if a log entry should be logged
 function shouldLog(level: LogLevel): boolean {
@@ -416,7 +417,10 @@ interface OperationMetricsSummary {
 function createLogger(): Logger {
   const transports: LogTransport[] = []
 
-  if (IS_PRODUCTION) {
+  if (IS_BUILD_PHASE) {
+    // During next build, suppress verbose logging to keep build output clean
+    transports.push(new ConsoleTransport())
+  } else if (IS_PRODUCTION) {
     // In production, use structured JSON logging
     transports.push(new JSONTransport())
 
