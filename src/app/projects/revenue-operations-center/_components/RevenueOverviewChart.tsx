@@ -121,9 +121,9 @@ const RevenueOverviewChart = memo(function RevenueOverviewChart() {
               backdropFilter: 'blur(10px)',
               color: chartCssVars.cardForeground,
             }}
-            formatter={(value: number | undefined, name: string | undefined) => {
-              const safeName = name ?? ''
-              if (value === undefined) return ['', safeName]
+            formatter={(value, name) => {
+              const safeName = String(name ?? '')
+              const safeValue = Number(value ?? 0)
               const labels: Record<string, string> = {
                 direct: 'Direct Sales',
                 partners: 'Partner Channel',
@@ -131,7 +131,7 @@ const RevenueOverviewChart = memo(function RevenueOverviewChart() {
                 total: 'Total Revenue',
                 target: 'Target',
               }
-              return [formatCurrency(value), labels[safeName] || safeName]
+              return [formatCurrency(safeValue), labels[safeName] || safeName]
             }}
           />
           <Legend />
