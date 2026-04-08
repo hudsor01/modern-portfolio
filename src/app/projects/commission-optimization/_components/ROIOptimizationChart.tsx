@@ -102,9 +102,9 @@ const ROIOptimizationChart = memo(function ROIOptimizationChart() {
               backdropFilter: 'blur(10px)',
               color: chartCssVars.cardForeground,
             }}
-            formatter={(value: number | undefined, name: string | undefined) => {
-              const safeValue = value ?? 0
-              const safeName = name ?? ''
+            formatter={(value, name) => {
+              const safeValue = Number(value ?? 0)
+              const safeName = String(name ?? '')
               if (safeName === 'commissionInvestment')
                 return [formatCurrency(safeValue), 'Commission Investment']
               if (safeName === 'revenueGenerated')

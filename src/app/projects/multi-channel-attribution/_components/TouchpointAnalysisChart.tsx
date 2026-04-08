@@ -101,9 +101,9 @@ const TouchpointAnalysisChart = memo(function TouchpointAnalysisChart() {
               backdropFilter: 'blur(10px)',
               color: chartCssVars.cardForeground,
             }}
-            formatter={(value: number | undefined, name: string | undefined) => {
-              const safeName = name ?? ''
-              if (value === undefined) return ['', safeName]
+            formatter={(value, name) => {
+              const safeName = String(name ?? '')
+              const safeValue = Number(value ?? 0)
               const labels: Record<string, string> = {
                 paidSearch: 'Paid Search',
                 email: 'Email Marketing',
@@ -111,7 +111,7 @@ const TouchpointAnalysisChart = memo(function TouchpointAnalysisChart() {
                 organic: 'Organic Search',
                 direct: 'Direct Traffic',
               }
-              return [`${value}%`, labels[safeName] || safeName]
+              return [`${safeValue}%`, labels[safeName] || safeName]
             }}
           />
           <Legend />

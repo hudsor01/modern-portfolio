@@ -44,8 +44,8 @@ export function ConversionChart({ stageConversions }: ConversionChartProps) {
                 border: `1px solid ${chartCssVars.border}`,
                 backdropFilter: 'blur(10px)',
               }}
-              formatter={(value: number | undefined) => [
-                `${(value ?? 0).toFixed(1)}%`,
+              formatter={(value) => [
+                `${Number(value ?? 0).toFixed(1)}%`,
                 'Conversion Rate',
               ]}
             />

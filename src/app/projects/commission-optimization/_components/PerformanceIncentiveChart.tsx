@@ -105,15 +105,16 @@ const PerformanceIncentiveChart = memo(function PerformanceIncentiveChart() {
               backdropFilter: 'blur(10px)',
               color: chartCssVars.cardForeground,
             }}
-            formatter={(value: number | undefined, name: string | undefined) => {
-              const safeName = name ?? ''
-              if (safeName === 'budget') return [formatCurrency(value), 'Budget']
-              if (safeName === 'payout') return [formatCurrency(value), 'Payout']
-              if (safeName === 'effectiveness') return [`${value}%`, 'Effectiveness']
-              if (safeName === 'avgBonus') return [formatCurrency(value), 'Avg Bonus']
-              if (safeName === 'performanceLift') return [`${value}%`, 'Performance Lift']
-              if (safeName === 'participants') return [value, 'Participants']
-              return [value, safeName]
+            formatter={(value, name) => {
+              const safeName = String(name ?? '')
+              const safeValue = Number(value ?? 0)
+              if (safeName === 'budget') return [formatCurrency(safeValue), 'Budget']
+              if (safeName === 'payout') return [formatCurrency(safeValue), 'Payout']
+              if (safeName === 'effectiveness') return [`${safeValue}%`, 'Effectiveness']
+              if (safeName === 'avgBonus') return [formatCurrency(safeValue), 'Avg Bonus']
+              if (safeName === 'performanceLift') return [`${safeValue}%`, 'Performance Lift']
+              if (safeName === 'participants') return [safeValue, 'Participants']
+              return [safeValue, safeName]
             }}
             labelFormatter={(label) => `${label} Program`}
           />

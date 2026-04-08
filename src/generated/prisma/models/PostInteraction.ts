@@ -175,7 +175,7 @@ export type PostInteractionGroupByOutputType = {
   _max: PostInteractionMaxAggregateOutputType | null
 }
 
-type GetPostInteractionGroupByPayload<T extends PostInteractionGroupByArgs> = Prisma.PrismaPromise<
+export type GetPostInteractionGroupByPayload<T extends PostInteractionGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<PostInteractionGroupByOutputType, T['by']> &
       {
@@ -1232,6 +1232,11 @@ export type PostInteractionFindManyArgs<ExtArgs extends runtime.Types.Extensions
    * Skip the first `n` PostInteractions.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of PostInteractions.
+   */
   distinct?: Prisma.PostInteractionScalarFieldEnum | Prisma.PostInteractionScalarFieldEnum[]
 }
 

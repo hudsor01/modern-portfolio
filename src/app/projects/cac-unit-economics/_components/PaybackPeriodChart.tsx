@@ -59,9 +59,9 @@ const PaybackPeriodChart = memo(function PaybackPeriodChart() {
               backdropFilter: 'blur(10px)',
               color: chartCssVars.cardForeground,
             }}
-            formatter={(value: number | undefined, name: string | undefined) => [
-              `${(value ?? 0).toFixed(1)} months`,
-              (name ?? '').replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()),
+            formatter={(value, name) => [
+              `${(Number(value) || 0).toFixed(1)} months`,
+              (String(name ?? '')).replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()),
             ]}
           />
           <Area

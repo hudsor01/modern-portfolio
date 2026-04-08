@@ -122,9 +122,9 @@ const ChannelROIChart = memo(function ChannelROIChart() {
               backdropFilter: 'blur(10px)',
               color: chartCssVars.cardForeground,
             }}
-            formatter={(value: number | undefined, name: string | undefined, props: unknown) => {
+            formatter={(value, name, props: unknown) => {
               const payload = (props as { payload?: (typeof normalizedData)[0] })?.payload
-              if (!payload) return [String(value), name]
+              if (!payload) return [String(value), String(name ?? '')]
               return [
                 [
                   `Attribution: ${payload.attribution}%`,
