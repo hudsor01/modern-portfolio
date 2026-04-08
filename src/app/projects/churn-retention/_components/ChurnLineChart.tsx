@@ -78,9 +78,9 @@ const ChurnLineChart = memo(function ChurnLineChart({ data }: ChurnLineChartProp
               color: chartCssVars.cardForeground,
             }}
             itemStyle={{ color: chartCssVars.cardForeground }}
-            formatter={(value: number | undefined, name: string | undefined) => [
-              `${(value ?? 0).toFixed(1)}%`,
-              (name ?? '') === 'churn' ? 'Churn Rate' : 'Retention Rate',
+            formatter={(value, name) => [
+              `${Number(value ?? 0).toFixed(1)}%`,
+              String(name ?? '') === 'churn' ? 'Churn Rate' : 'Retention Rate',
             ]}
           />
           <Legend

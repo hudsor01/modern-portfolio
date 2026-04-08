@@ -52,9 +52,9 @@ const UnitEconomicsChart = memo(function UnitEconomicsChart() {
               backdropFilter: 'blur(10px)',
               color: chartCssVars.cardForeground,
             }}
-            formatter={(value: number | undefined, name: string | undefined) => {
-              const safeValue = value ?? 0
-              const safeName = name ?? ''
+            formatter={(value, name) => {
+              const safeValue = Number(value ?? 0)
+              const safeName = String(name ?? '')
               if (safeName === 'ratio') return [`${safeValue.toFixed(1)}:1`, 'LTV:CAC Ratio']
               if (safeName === 'payback') return [`${safeValue.toFixed(1)} mo`, 'Payback Period']
               return [`${safeValue}`, safeName.toUpperCase()]

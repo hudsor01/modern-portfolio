@@ -7,7 +7,7 @@
  */
 
 import 'dotenv/config'
-import { defineConfig, env } from 'prisma/config'
+import { defineConfig } from 'prisma/config'
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',
@@ -18,6 +18,7 @@ export default defineConfig({
   datasource: {
     // Use DIRECT_URL for migrations and other CLI operations
     // This should be the direct connection string (not pooled)
-    url: env('DIRECT_URL') || env('DATABASE_URL'),
+    // Falls back to DATABASE_URL, then a dummy URL for generate-only (CI)
+    url: process.env.DIRECT_URL || process.env.DATABASE_URL || 'postgresql://localhost:5432/placeholder',
   },
 })

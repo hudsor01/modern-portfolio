@@ -61,12 +61,12 @@ const PartnerTierChart = memo(function PartnerTierChart() {
               backdropFilter: 'blur(10px)',
               color: chartCssVars.cardForeground,
             }}
-            formatter={(value: number | undefined, name: string | undefined) => {
-              const safeName = name ?? ''
-              if (value === undefined) return [0, safeName]
-              if (safeName === 'revenue') return [`$${(value / 1000).toFixed(0)}K`, 'Revenue']
-              if (safeName === 'roi') return [`${value}x`, 'ROI Multiple']
-              return [value, safeName]
+            formatter={(value, name) => {
+              const safeName = String(name ?? '')
+              const safeValue = Number(value ?? 0)
+              if (safeName === 'revenue') return [`$${(safeValue / 1000).toFixed(0)}K`, 'Revenue']
+              if (safeName === 'roi') return [`${safeValue}x`, 'ROI Multiple']
+              return [safeValue, safeName]
             }}
           />
           <Bar

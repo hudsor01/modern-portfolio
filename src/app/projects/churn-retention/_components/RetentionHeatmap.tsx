@@ -79,7 +79,7 @@ const RetentionHeatmap = memo(function RetentionHeatmap({ data }: RetentionHeatm
               color: chartCssVars.cardForeground,
             }}
             itemStyle={{ color: chartCssVars.cardForeground }}
-            formatter={(value: number | undefined) => `${(value ?? 0).toFixed(1)}%`}
+            formatter={(value) => `${Number(value ?? 0).toFixed(1)}%`}
           />
           <Legend iconType="rect" wrapperStyle={{ paddingTop: '20px' }} />
           <Bar

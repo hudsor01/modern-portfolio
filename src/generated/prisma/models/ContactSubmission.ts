@@ -256,7 +256,7 @@ export type ContactSubmissionGroupByOutputType = {
   _max: ContactSubmissionMaxAggregateOutputType | null
 }
 
-type GetContactSubmissionGroupByPayload<T extends ContactSubmissionGroupByArgs> = Prisma.PrismaPromise<
+export type GetContactSubmissionGroupByPayload<T extends ContactSubmissionGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ContactSubmissionGroupByOutputType, T['by']> &
       {
@@ -1357,6 +1357,11 @@ export type ContactSubmissionFindManyArgs<ExtArgs extends runtime.Types.Extensio
    * Skip the first `n` ContactSubmissions.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of ContactSubmissions.
+   */
   distinct?: Prisma.ContactSubmissionScalarFieldEnum | Prisma.ContactSubmissionScalarFieldEnum[]
 }
 

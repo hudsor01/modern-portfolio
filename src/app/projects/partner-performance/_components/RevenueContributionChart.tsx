@@ -68,13 +68,13 @@ const RevenueContributionChart = memo(function RevenueContributionChart() {
               backdropFilter: 'blur(10px)',
               color: chartCssVars.cardForeground,
             }}
-            formatter={(value: number | undefined, name: string | undefined, props: unknown) => {
-              if (value === undefined) return ['', name]
+            formatter={(value, name, props: unknown) => {
+              if (value === undefined) return ['', String(name ?? '')]
               const payload = (props as { payload?: (typeof data)[0] })?.payload
-              if (!payload) return [String(value), name]
+              if (!payload) return [String(value), String(name ?? '')]
               return [
                 [`${value}% (${formatCurrency(payload.revenue)})`, `${payload.count} partners`],
-                name,
+                String(name ?? ''),
               ]
             }}
           />

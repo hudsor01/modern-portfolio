@@ -75,9 +75,9 @@ const AttributionModelChart = memo(function AttributionModelChart() {
               backdropFilter: 'blur(10px)',
               color: chartCssVars.cardForeground,
             }}
-            formatter={(value: number | undefined, name: string | undefined) => {
-              const safeValue = value ?? 0
-              const safeName = name ?? ''
+            formatter={(value, name) => {
+              const safeValue = Number(value ?? 0)
+              const safeName = String(name ?? '')
               if (safeName === 'accuracy') return [`${safeValue}%`, 'Attribution Accuracy']
               if (safeName === 'conversions')
                 return [safeValue.toLocaleString(), 'Attributed Conversions']

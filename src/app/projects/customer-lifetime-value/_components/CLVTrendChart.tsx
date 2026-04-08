@@ -54,17 +54,17 @@ const CLVTrendChart = memo(function CLVTrendChart() {
               backdropFilter: 'blur(10px)',
               color: chartCssVars.cardForeground,
             }}
-            formatter={(value: unknown, name: string | undefined) => {
-              const safeName = name ?? ''
+            formatter={(value, name) => {
+              const safeName = String(name ?? '')
               if (value === null) return ['N/A', safeName]
               if (safeName === 'actual') return [formatCurrency(Number(value)), 'Actual CLV']
-              if (name === 'predicted') return [formatCurrency(Number(value)), 'Predicted CLV']
-              if (name === 'confidence_high')
+              if (safeName === 'predicted') return [formatCurrency(Number(value)), 'Predicted CLV']
+              if (safeName === 'confidence_high')
                 return [formatCurrency(Number(value)), 'Upper Confidence']
-              if (name === 'confidence_low')
+              if (safeName === 'confidence_low')
                 return [formatCurrency(Number(value)), 'Lower Confidence']
-              if (name === 'customers') return [Number(value).toLocaleString(), 'Customer Count']
-              return [String(value), name]
+              if (safeName === 'customers') return [Number(value).toLocaleString(), 'Customer Count']
+              return [String(value), safeName]
             }}
           />
           <Legend />

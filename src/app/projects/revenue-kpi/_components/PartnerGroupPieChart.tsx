@@ -8,7 +8,7 @@ import {
   type ChartThemeConfig,
 } from '@/components/ui/chart'
 import { LazyPieChart as PieChart } from '@/components/charts/lazy-charts'
-import { Pie, Cell, ResponsiveContainer } from 'recharts'
+import { Pie, Cell } from 'recharts'
 import { chartColors } from '@/lib/charts'
 
 const COLORS = [chartColors.primary, chartColors.secondary, chartColors.chart3, chartColors.chart4]
@@ -59,29 +59,27 @@ export default function PartnerGroupPieChart({ groups }: PartnerGroupPieChartPro
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[var(--chart-height-md)] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={chartData}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={100}
-                paddingAngle={2}
-                dataKey="value"
-                nameKey="name"
-                label={({ name, value }) => `${name}: ${value}%`}
-                labelLine={{ stroke: chartColors.axis, strokeWidth: 1 }}
-              >
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.fill} />
-                ))}
-              </Pie>
-              <ChartTooltip
-                content={<ChartTooltipContent nameKey="name" />}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+          <PieChart>
+            <Pie
+              data={chartData}
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={100}
+              paddingAngle={2}
+              dataKey="value"
+              nameKey="name"
+              label={({ name, value }) => `${name}: ${value}%`}
+              labelLine={{ stroke: chartColors.axis, strokeWidth: 1 }}
+            >
+              {chartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.fill} />
+              ))}
+            </Pie>
+            <ChartTooltip
+              content={<ChartTooltipContent nameKey="name" />}
+            />
+          </PieChart>
         </ChartContainer>
       </CardContent>
     </Card>

@@ -8,21 +8,22 @@ function ChartSkeleton() {
   return <div className="h-[300px] w-full animate-pulse bg-muted rounded-lg" />
 }
 
-// Enable SSR for faster initial render - charts will hydrate on client
+// Disable SSR for chart components — they require DOM measurements (ResponsiveContainer)
+// and produce width(-1)/height(-1) warnings during static generation
 const RevenueBarChart = dynamic(() => import('./RevenueBarChart'), {
-  ssr: true,
+  ssr: false,
   loading: () => <ChartSkeleton />,
 })
 const RevenueLineChart = dynamic(() => import('./RevenueLineChart'), {
-  ssr: true,
+  ssr: false,
   loading: () => <ChartSkeleton />,
 })
 const TopPartnersChart = dynamic(() => import('./TopPartnersChart'), {
-  ssr: true,
+  ssr: false,
   loading: () => <ChartSkeleton />,
 })
 const PartnerGroupPieChart = dynamic(() => import('./PartnerGroupPieChart'), {
-  ssr: true,
+  ssr: false,
   loading: () => <ChartSkeleton />,
 })
 

@@ -116,15 +116,15 @@ const PipelineHealthChart = memo(function PipelineHealthChart() {
               backdropFilter: 'blur(10px)',
               color: chartCssVars.cardForeground,
             }}
-            formatter={(value: number | undefined, name: string | undefined) => {
-              const safeName = name ?? ''
-              if (value === undefined) return ['', safeName]
-              if (safeName === 'count') return [value.toLocaleString(), 'Deal Count']
-              if (safeName === 'value') return [formatCurrency(value), 'Pipeline Value']
-              if (safeName === 'health') return [`${value}%`, 'Health Score']
-              if (safeName === 'conversion') return [`${value}%`, 'Conversion Rate']
-              if (safeName === 'velocity') return [`${value} days`, 'Avg Days in Stage']
-              return [value, safeName]
+            formatter={(value, name) => {
+              const safeName = String(name ?? '')
+              const safeValue = Number(value ?? 0)
+              if (safeName === 'count') return [safeValue.toLocaleString(), 'Deal Count']
+              if (safeName === 'value') return [formatCurrency(safeValue), 'Pipeline Value']
+              if (safeName === 'health') return [`${safeValue}%`, 'Health Score']
+              if (safeName === 'conversion') return [`${safeValue}%`, 'Conversion Rate']
+              if (safeName === 'velocity') return [`${safeValue} days`, 'Avg Days in Stage']
+              return [safeValue, safeName]
             }}
             labelFormatter={(label) => `Stage: ${label}`}
           />

@@ -9,7 +9,7 @@
  */
 
 import 'server-only'
-import { PrismaClient, Prisma } from '@/generated/prisma/client'
+import type { PrismaClient } from '@/generated/prisma/client'
 import { logger } from '@/lib/logger'
 import { env } from '@/lib/env-validation'
 
@@ -58,7 +58,7 @@ if (process.env.NODE_ENV !== 'test' && process.env.SKIP_DB_VALIDATION !== 'true'
 
 // Extend global type to include prisma client for development hot-reload prevention
 declare global {
-  var prisma: PrismaClient | undefined
+  var __prisma: PrismaClient | undefined
 }
 
 /**
@@ -67,7 +67,12 @@ declare global {
  * - Production: Neon serverless adapter (HTTP-based)
  */
 function createPrismaClient(): PrismaClient {
-  const logLevel: Prisma.LogLevel[] =
+  // Lazy require — avoids evaluating Prisma runtime at module load time.
+  // The generated client has side effects on import (runtime init, WASM check)
+  // that produce prisma:error logs in build workers that never query the DB.
+  const { PrismaClient: PrismaClientClass } = require('@/generated/prisma/client')
+
+  const logLevel: Array<'info' | 'query' | 'warn' | 'error'> =
     process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error']
 
   if (useLocalDb) {
@@ -77,7 +82,7 @@ function createPrismaClient(): PrismaClient {
       connectionString: process.env.DATABASE_URL || '',
     })
     logger.info('Using pg adapter (local dev)')
-    return new PrismaClient({
+    return new PrismaClientClass({
       adapter,
       log: logLevel,
     })
@@ -88,16 +93,35 @@ function createPrismaClient(): PrismaClient {
       connectionString: process.env.DATABASE_URL || '',
     })
     logger.info('Using Neon serverless adapter (production)')
-    return new PrismaClient({
+    return new PrismaClientClass({
       adapter,
       log: logLevel,
     })
   }
 }
 
-export const db = global.prisma ?? createPrismaClient()
+/**
+ * Get or create singleton PrismaClient.
+ * Called on first property access via the Proxy below.
+ */
+function getClient(): PrismaClient {
+  if (!global.__prisma) {
+    global.__prisma = createPrismaClient()
+  }
+  return global.__prisma
+}
 
-if (process.env.NODE_ENV !== 'production') global.prisma = db
+/**
+ * Lazy-initialized Prisma client.
+ * PrismaClient + Neon adapter are only created on first actual use,
+ * not at module load time. This prevents build workers from
+ * instantiating adapters they never query.
+ */
+export const db: PrismaClient = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    return Reflect.get(getClient(), prop)
+  },
+})
 
 // Database connection helper
 export async function connectDB() {
