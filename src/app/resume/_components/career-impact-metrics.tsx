@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, CardContent } from '@/components/ui/card'
-import { AnimatedCounter } from './animated-counter'
+import { AnimatedCounter } from '@/components/about/animated-counter'
 import {
   TrendingUp,
   Briefcase,
