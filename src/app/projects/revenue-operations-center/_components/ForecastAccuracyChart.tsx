@@ -167,8 +167,8 @@ const ForecastAccuracyChart = memo(function ForecastAccuracyChart() {
               backdropFilter: 'blur(10px)',
               color: chartCssVars.cardForeground,
             }}
-            formatter={(value: unknown, name: string | undefined) => {
-              const safeName = name ?? ''
+            formatter={(value, name) => {
+              const safeName = String(name ?? '')
               if (safeName === '') return ['', '']
               if (value === null) return ['N/A', safeName]
               if (safeName === 'forecast') return [formatCurrency(Number(value)), 'Forecast']

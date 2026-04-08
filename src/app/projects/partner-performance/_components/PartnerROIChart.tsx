@@ -62,16 +62,16 @@ const PartnerROIChart = memo(function PartnerROIChart() {
               backdropFilter: 'blur(10px)',
               color: chartCssVars.cardForeground,
             }}
-            formatter={(value: number | undefined, name: string | undefined) => {
-              const safeName = name ?? ''
-              if (value === undefined) return ['', safeName]
+            formatter={(value, name) => {
+              const safeName = String(name ?? '')
+              const safeValue = Number(value ?? 0)
               const labels: Record<string, string> = {
                 certified: 'Certified Partners ROI',
                 legacy: 'Legacy Partners ROI',
                 newPartners: 'New Partners ROI',
                 quickRatio: 'SaaS Quick Ratio',
               }
-              return [`${value}x`, labels[safeName] || safeName]
+              return [`${safeValue}x`, labels[safeName] || safeName]
             }}
           />
           <Legend />

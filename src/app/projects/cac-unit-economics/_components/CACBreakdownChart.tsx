@@ -30,9 +30,9 @@ const CACBreakdownChart = memo(function CACBreakdownChart() {
         <ChartXAxis dataKey="channel" angle={-45} textAnchor="end" height={80} />
         <ChartYAxis tickFormatter={(value) => `$${value}`} />
         <StandardTooltip
-          formatter={(value: number, name: string | undefined) => [
-            `$${value}`,
-            (name ?? '') === 'cac' ? 'Customer Acquisition Cost' : 'Lifetime Value',
+          formatter={(value: string | number, name: string | number) => [
+            `$${Number(value ?? 0)}`,
+            String(name ?? '') === 'cac' ? 'Customer Acquisition Cost' : 'Lifetime Value',
           ]}
         />
         <Bar dataKey="cac" fill={dataColors.cac} {...chartTypeConfigs.bar} name="cac" />

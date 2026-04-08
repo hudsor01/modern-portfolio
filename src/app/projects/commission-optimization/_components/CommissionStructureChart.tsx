@@ -96,9 +96,9 @@ const CommissionStructureChart = memo(function CommissionStructureChart() {
               backdropFilter: 'blur(10px)',
               color: chartCssVars.cardForeground,
             }}
-            formatter={(value: number | undefined, name: string | undefined) => {
-              const safeValue = value ?? 0
-              const safeName = name ?? ''
+            formatter={(value, name) => {
+              const safeValue = Number(value ?? 0)
+              const safeName = String(name ?? '')
               if (safeName === 'totalEarnings') return [formatCurrency(safeValue), 'Total Earnings']
               if (safeName === 'avgEarnings') return [formatCurrency(safeValue), 'Avg Earnings']
               if (safeName === 'commissionRate') return [`${safeValue}%`, 'Commission Rate']

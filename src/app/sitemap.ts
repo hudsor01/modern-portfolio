@@ -1,5 +1,4 @@
 import { MetadataRoute } from 'next'
-import { db } from '@/lib/db'
 
 // Revalidate sitemap every hour to include new blog posts from n8n automation
 export const revalidate = 3600
@@ -71,9 +70,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
+  // During build, skip DB — blog posts are added on first ISR revalidation
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return [...mainPages, ...projectPages]
+  }
+
   // Dynamic blog posts from database
   let blogPages: MetadataRoute.Sitemap = []
   try {
+    const { db } = await import('@/lib/db')
     const posts = await db.blogPost.findMany({
       where: { status: 'PUBLISHED' },
       select: {
@@ -91,7 +96,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }))
   } catch {
-    // Database not available during build - return empty blog pages
+    // Database unavailable — return static pages only
     blogPages = []
   }
 

@@ -206,7 +206,7 @@ export function ChartContainer({
 
   return (
     <div className={`w-full ${className}`} style={{ height: containerHeight }}>
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" minWidth={0}>
         {children as React.ReactElement}
       </ResponsiveContainer>
     </div>
