@@ -15,11 +15,11 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
 
-      - name: Lint and Type-check
-        run: bun run ci:quick
-
       - name: Generate Prisma Client
         run: bunx prisma generate
+
+      - name: Lint and Type-check
+        run: bun run ci:quick
 
       - name: Build
         run: bun run build
