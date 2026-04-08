@@ -1,10 +1,14 @@
 node_modules
 .next
 .git
-.env*.local
+.env
+.env.*
 *.md
 .vscode
 .idea
+.turbo
+.turbopack
+.planning
 coverage
 playwright-report
 test-results
