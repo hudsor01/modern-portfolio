@@ -281,3 +281,99 @@ describe('FAQPageJsonLd schema', () => {
     expect(stringified).toContain('<\\/script>')
   })
 })
+
+/**
+ * Build a WebSite JSON-LD object matching website-json-ld.tsx.
+ */
+function buildWebsiteJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Richard Hudson - Senior Revenue Operations Specialist',
+    description:
+      'Portfolio and experience of Richard Hudson, Senior Revenue Operations Specialist with proven track record in business growth strategies.',
+    url: 'https://richardwhudsonjr.com',
+    author: {
+      '@type': 'Person',
+      name: 'Richard Hudson',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Hudson Digital Solutions',
+      url: 'https://hudsondigitalsolutions.com',
+    },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: 'https://richardwhudsonjr.com/blog?q={search_term_string}',
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  }
+}
+
+describe('WebsiteJsonLd schema', () => {
+  const websiteData = buildWebsiteJsonLd()
+  const stringified = safeJsonLdStringify(websiteData)
+
+  it('contains potentialAction with SearchAction type', () => {
+    expect(stringified).toContain('"potentialAction"')
+    expect(stringified).toContain('"@type":"SearchAction"')
+  })
+
+  it('SearchAction urlTemplate contains blog?q={search_term_string}', () => {
+    expect(stringified).toContain('blog?q={search_term_string}')
+  })
+
+  it('SearchAction contains query-input with required name=search_term_string', () => {
+    expect(stringified).toContain('"query-input":"required name=search_term_string"')
+  })
+})
+
+/**
+ * Build a NavigationJsonLd JSON-LD object matching navigation-json-ld.tsx.
+ */
+function buildNavigationJsonLd() {
+  const navItems = [
+    { title: 'Home', href: '/' },
+    { title: 'About', href: '/about' },
+    { title: 'Projects', href: '/projects' },
+    { title: 'Resume', href: '/resume' },
+    { title: 'Contact', href: '/contact' },
+  ]
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SiteNavigationElement',
+    name: navItems.map((item) => item.title),
+    url: navItems.map((item) => `https://richardwhudsonjr.com${item.href}`),
+  }
+}
+
+describe('NavigationJsonLd schema', () => {
+  const navData = buildNavigationJsonLd()
+  const stringified = safeJsonLdStringify(navData)
+
+  it('contains SiteNavigationElement type', () => {
+    expect(stringified).toContain('"@type":"SiteNavigationElement"')
+  })
+
+  it('name array contains all 5 nav items: Home, About, Projects, Resume, Contact', () => {
+    expect(navData.name).toEqual(['Home', 'About', 'Projects', 'Resume', 'Contact'])
+    expect(stringified).toContain('"Home"')
+    expect(stringified).toContain('"About"')
+    expect(stringified).toContain('"Projects"')
+    expect(stringified).toContain('"Resume"')
+    expect(stringified).toContain('"Contact"')
+  })
+
+  it('url array contains 5 URLs with https://richardwhudsonjr.com prefix', () => {
+    expect(navData.url).toHaveLength(5)
+    expect(stringified).toContain('https://richardwhudsonjr.com/')
+    expect(stringified).toContain('https://richardwhudsonjr.com/about')
+    expect(stringified).toContain('https://richardwhudsonjr.com/projects')
+    expect(stringified).toContain('https://richardwhudsonjr.com/resume')
+    expect(stringified).toContain('https://richardwhudsonjr.com/contact')
+  })
+})
