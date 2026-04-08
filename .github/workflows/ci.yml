@@ -18,6 +18,9 @@ jobs:
       - name: Lint and Type-check
         run: bun run ci:quick
 
+      - name: Generate Prisma Client
+        run: bunx prisma generate
+
       - name: Build
         run: bun run build
         env:
