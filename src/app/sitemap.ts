@@ -70,7 +70,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  // Dynamic blog posts from database (lazy-load to avoid Prisma instantiation during build)
+  // During build, skip DB — blog posts are added on first ISR revalidation
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return [...mainPages, ...projectPages]
+  }
+
+  // Dynamic blog posts from database
   let blogPages: MetadataRoute.Sitemap = []
   try {
     const { db } = await import('@/lib/db')
@@ -91,7 +96,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }))
   } catch {
-    // Database not available during build - return empty blog pages
+    // Database unavailable — return static pages only
     blogPages = []
   }
 
