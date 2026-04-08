@@ -4,7 +4,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, Briefcase, FileText, MessageCircle, TrendingUp, Users, DollarSign, Clock } from 'lucide-react'
 import { Navbar } from '@/components/layout/navbar'
-import { HomePageSchema } from '@/components/seo/home-page-schema'
 import { NumberTicker } from '@/components/ui/number-ticker'
 import { Button } from '@/components/ui/button'
 import { useEffect, useState, useRef, useSyncExternalStore } from 'react'
@@ -85,7 +84,6 @@ export default function HomePageContent() {
   return (
     <>
       <Navbar />
-      <HomePageSchema />
 
       {/* Hero Section */}
       <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">

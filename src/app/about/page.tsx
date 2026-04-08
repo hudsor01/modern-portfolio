@@ -8,11 +8,9 @@ import { CertificationsSection } from '@/components/about/certifications-section
 import { WhatIBring } from '@/components/about/what-i-bring'
 import { KeyHighlights } from '@/components/about/key-highlights'
 import { StickyCTA } from '@/components/about/sticky-cta'
-import { PersonSchema } from '@/components/seo/person-schema'
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid'
 import { TrendingUp, BarChart3, Target, Award } from 'lucide-react'
 import { Metadata } from 'next'
-import { skills } from '@/data/skills'
 
 const EXPERIENCE_STATS = [
   { label: 'Projects Delivered', value: '10+', icon: 'check-circle' },
@@ -118,20 +116,6 @@ export const metadata: Metadata = generateMetadata(
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
-      {/* SEO Structured Data */}
-      <PersonSchema
-        name={PERSONAL_INFO.name}
-        title={PERSONAL_INFO.title}
-        email={PERSONAL_INFO.email}
-        location={PERSONAL_INFO.location}
-        bio={PERSONAL_INFO.bio}
-        skills={skills.map((s) => s.name)}
-        certifications={CERTIFICATIONS.map((c) => ({
-          name: c.name,
-          issuer: c.issuer,
-        }))}
-      />
-
       <Navbar />
 
       <main className="relative overflow-hidden">
