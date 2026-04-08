@@ -4,6 +4,7 @@ export const dynamic = 'force-static'
 import { TrendingUp, Users, Target, DollarSign } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 
+import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
@@ -67,6 +68,34 @@ export default function PartnerPerformanceIntelligence() {
   ]
 
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify({
+          '@context': 'https://schema.org',
+          '@type': 'CreativeWork',
+          name: 'Partner Performance Analytics',
+          description: 'Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem with real-time performance tracking.',
+          url: 'https://richardwhudsonjr.com/projects/partner-performance',
+          author: { '@type': 'Person', name: 'Richard Hudson', url: 'https://richardwhudsonjr.com' },
+          genre: 'Partnership Program',
+          keywords: 'Partner Analytics, Channel Performance, Partnership Program, Revenue Operations',
+          inLanguage: 'en-US',
+          isAccessibleForFree: true,
+        }) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://richardwhudsonjr.com' },
+            { '@type': 'ListItem', position: 2, name: 'Projects', item: 'https://richardwhudsonjr.com/projects' },
+            { '@type': 'ListItem', position: 3, name: 'Partner Performance Analytics', item: 'https://richardwhudsonjr.com/projects/partner-performance' },
+          ],
+        }) }}
+      />
     <ProjectPageLayout
       title="Partner Performance Intelligence Dashboard"
       description="Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem. Real-time performance tracking following industry-standard 80/20 partner revenue distribution."
@@ -107,5 +136,6 @@ export default function PartnerPerformanceIntelligence() {
       {/* Professional Narrative Sections - STAR Method */}
       <NarrativeSections />
     </ProjectPageLayout>
+    </>
   )
 }

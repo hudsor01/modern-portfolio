@@ -1,6 +1,8 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getProjects, getProject } from '@/lib/projects'
+import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import ProjectDetailClientBoundary from './_components/project-detail-client-boundary'
 
 // Official Next.js 16 Pattern: Static generation with ISR
@@ -72,5 +74,23 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   // Pass project data directly to client component
   // No TanStack Query, no fetch, no hydration boundary needed
-  return <ProjectDetailClientBoundary slug={slug} initialProject={project} />
+  return (
+    <>
+      <ProjectJsonLd
+        title={project.title}
+        description={project.description}
+        slug={slug}
+        category={project.category || undefined}
+        tags={project.tags || undefined}
+      />
+      <BreadcrumbListJsonLd
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: project.title, url: `https://richardwhudsonjr.com/projects/${slug}` },
+        ]}
+      />
+      <ProjectDetailClientBoundary slug={slug} initialProject={project} />
+    </>
+  )
 }

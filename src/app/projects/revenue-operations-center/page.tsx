@@ -5,6 +5,7 @@ import nextDynamic from 'next/dynamic'
 import { DollarSign, Target, BarChart3, Users, Activity } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 
+import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { revenueMetrics } from './data/constants'
 import { formatCurrency, formatPercent } from './utils'
@@ -92,6 +93,34 @@ export default function RevenueOperationsCenter() {
   ], [])
 
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify({
+          '@context': 'https://schema.org',
+          '@type': 'CreativeWork',
+          name: 'Revenue Operations Center',
+          description: 'Comprehensive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs with 96.8% forecast accuracy.',
+          url: 'https://richardwhudsonjr.com/projects/revenue-operations-center',
+          author: { '@type': 'Person', name: 'Richard Hudson', url: 'https://richardwhudsonjr.com' },
+          genre: 'Revenue Operations',
+          keywords: 'Revenue Operations, RevOps Dashboard, Sales Analytics, Business Intelligence',
+          inLanguage: 'en-US',
+          isAccessibleForFree: true,
+        }) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://richardwhudsonjr.com' },
+            { '@type': 'ListItem', position: 2, name: 'Projects', item: 'https://richardwhudsonjr.com/projects' },
+            { '@type': 'ListItem', position: 3, name: 'Revenue Operations Center', item: 'https://richardwhudsonjr.com/projects/revenue-operations-center' },
+          ],
+        }) }}
+      />
     <ProjectPageLayout
       title="Revenue Operations Command Center"
       description="Comprehensive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs. Real-time insights with 96.8% forecast accuracy and 89.7% operational efficiency across sales, marketing, and partner channels."
@@ -126,5 +155,6 @@ export default function RevenueOperationsCenter() {
           {/* Professional Narrative Sections */}
           <NarrativeSections />
     </ProjectPageLayout>
+    </>
   )
 }

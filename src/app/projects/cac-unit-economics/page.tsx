@@ -4,6 +4,7 @@ export const dynamic = 'force-static'
 import { TrendingUp, DollarSign, Target, Calculator } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 
+import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
@@ -58,6 +59,34 @@ export default function CACUnitEconomics() {
   ]
 
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify({
+          '@context': 'https://schema.org',
+          '@type': 'CreativeWork',
+          name: 'CAC & Unit Economics Analysis',
+          description: 'Comprehensive CAC analysis and LTV:CAC ratio optimization that achieved 32% cost reduction through strategic partner channel optimization.',
+          url: 'https://richardwhudsonjr.com/projects/cac-unit-economics',
+          author: { '@type': 'Person', name: 'Richard Hudson', url: 'https://richardwhudsonjr.com' },
+          genre: 'Data Analytics',
+          keywords: 'Customer Acquisition Cost, Unit Economics, LTV:CAC Ratio, Revenue Operations',
+          inLanguage: 'en-US',
+          isAccessibleForFree: true,
+        }) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://richardwhudsonjr.com' },
+            { '@type': 'ListItem', position: 2, name: 'Projects', item: 'https://richardwhudsonjr.com/projects' },
+            { '@type': 'ListItem', position: 3, name: 'CAC & Unit Economics Analysis', item: 'https://richardwhudsonjr.com/projects/cac-unit-economics' },
+          ],
+        }) }}
+      />
     <ProjectPageLayout
       title="Customer Acquisition Cost Optimization & Unit Economics Dashboard"
       description="Comprehensive CAC analysis and LTV:CAC ratio optimization that achieved 32% cost reduction through strategic partner channel optimization. Industry-benchmark 3.6:1 efficiency ratio with 8.4-month payback period across multi-tier SaaS products."
@@ -103,5 +132,6 @@ export default function CACUnitEconomics() {
         <NarrativeSections />
       </SectionCard>
     </ProjectPageLayout>
+    </>
   )
 }

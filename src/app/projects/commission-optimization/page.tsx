@@ -4,6 +4,7 @@ export const dynamic = 'force-static'
 import { DollarSign, Percent, TrendingUp, Calculator } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 
+import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { commissionMetrics } from './data/constants'
@@ -59,6 +60,34 @@ export default function CommissionOptimization() {
   ]
 
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify({
+          '@context': 'https://schema.org',
+          '@type': 'CreativeWork',
+          name: 'Commission Optimization',
+          description: 'Advanced commission management and partner incentive optimization platform managing $254K+ commission structures with 34% performance improvement.',
+          url: 'https://richardwhudsonjr.com/projects/commission-optimization',
+          author: { '@type': 'Person', name: 'Richard Hudson', url: 'https://richardwhudsonjr.com' },
+          genre: 'Revenue Operations',
+          keywords: 'Commission Management, Sales Compensation, Incentive Design, Revenue Operations',
+          inLanguage: 'en-US',
+          isAccessibleForFree: true,
+        }) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://richardwhudsonjr.com' },
+            { '@type': 'ListItem', position: 2, name: 'Projects', item: 'https://richardwhudsonjr.com/projects' },
+            { '@type': 'ListItem', position: 3, name: 'Commission Optimization', item: 'https://richardwhudsonjr.com/projects/commission-optimization' },
+          ],
+        }) }}
+      />
     <ProjectPageLayout
       title="Commission & Incentive Optimization System"
       description="Advanced commission management and partner incentive optimization platform managing $254K+ commission structures. Automated tier adjustments with 23% average commission rate optimization and ROI-driven compensation strategy delivering 34% performance improvement and 87.5% automation efficiency."
@@ -100,5 +129,6 @@ export default function CommissionOptimization() {
           {/* Professional Narrative Sections */}
           <NarrativeSections />
     </ProjectPageLayout>
+    </>
   )
 }

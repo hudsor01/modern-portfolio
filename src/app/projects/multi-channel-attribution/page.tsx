@@ -4,6 +4,7 @@ export const dynamic = 'force-static'
 import { Target, Eye, Share2, DollarSign } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 
+import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
@@ -65,6 +66,34 @@ export default function MultiChannelAttribution() {
   ]
 
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify({
+          '@context': 'https://schema.org',
+          '@type': 'CreativeWork',
+          name: 'Multi-Channel Attribution',
+          description: 'Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints with 92.4% attribution accuracy.',
+          url: 'https://richardwhudsonjr.com/projects/multi-channel-attribution',
+          author: { '@type': 'Person', name: 'Richard Hudson', url: 'https://richardwhudsonjr.com' },
+          genre: 'Data Analytics',
+          keywords: 'Marketing Attribution, Multi-Channel Analytics, Revenue Attribution, Data Analytics',
+          inLanguage: 'en-US',
+          isAccessibleForFree: true,
+        }) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://richardwhudsonjr.com' },
+            { '@type': 'ListItem', position: 2, name: 'Projects', item: 'https://richardwhudsonjr.com/projects' },
+            { '@type': 'ListItem', position: 3, name: 'Multi-Channel Attribution', item: 'https://richardwhudsonjr.com/projects/multi-channel-attribution' },
+          ],
+        }) }}
+      />
     <ProjectPageLayout
       title="Multi-Channel Attribution Analytics Dashboard"
       description="Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints. Delivering 92.4% attribution accuracy and $2.3M ROI optimization through data-driven attribution modeling and cross-channel insights."
@@ -117,5 +146,6 @@ export default function MultiChannelAttribution() {
             <NarrativeSections />
           </SectionCard>
     </ProjectPageLayout>
+    </>
   )
 }

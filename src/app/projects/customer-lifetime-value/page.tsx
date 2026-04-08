@@ -4,6 +4,7 @@ export const dynamic = 'force-static'
 import { DollarSign, Brain, Users, Calendar } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 
+import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
@@ -58,6 +59,34 @@ export default function CustomerLifetimeValueAnalytics() {
   ]
 
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify({
+          '@context': 'https://schema.org',
+          '@type': 'CreativeWork',
+          name: 'Customer Lifetime Value Analysis',
+          description: 'Advanced CLV analytics platform leveraging BTYD predictive modeling framework with 94.3% prediction accuracy across 5 customer segments.',
+          url: 'https://richardwhudsonjr.com/projects/customer-lifetime-value',
+          author: { '@type': 'Person', name: 'Richard Hudson', url: 'https://richardwhudsonjr.com' },
+          genre: 'Data Analytics',
+          keywords: 'Customer Lifetime Value, CLV, Retention Analytics, Revenue Operations',
+          inLanguage: 'en-US',
+          isAccessibleForFree: true,
+        }) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://richardwhudsonjr.com' },
+            { '@type': 'ListItem', position: 2, name: 'Projects', item: 'https://richardwhudsonjr.com/projects' },
+            { '@type': 'ListItem', position: 3, name: 'Customer Lifetime Value Analysis', item: 'https://richardwhudsonjr.com/projects/customer-lifetime-value' },
+          ],
+        }) }}
+      />
     <ProjectPageLayout
       title="Customer Lifetime Value Predictive Analytics Dashboard"
       description="Advanced CLV analytics platform leveraging BTYD (Buy Till You Die) predictive modeling framework. Achieving 94.3% prediction accuracy through machine learning algorithms and real-time customer behavior tracking across 5 distinct customer segments."
@@ -109,5 +138,6 @@ export default function CustomerLifetimeValueAnalytics() {
             <NarrativeSections />
           </SectionCard>
     </ProjectPageLayout>
+    </>
   )
 }
