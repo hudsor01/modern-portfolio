@@ -10,6 +10,7 @@ import { ScrollToTop } from '@/components/layout/scroll-to-top'
 import { baseMetadata } from './shared-metadata'
 import { PersonJsonLd } from '@/components/seo/json-ld/person-json-ld'
 import { WebsiteJsonLd } from '@/components/seo/json-ld/website-json-ld'
+import { NavigationJsonLd } from '@/components/seo/json-ld/navigation-json-ld'
 import { ReadingProgressBar } from './reading-progress'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
@@ -63,6 +64,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* Structured Data */}
         <PersonJsonLd nonce={nonce} />
         <WebsiteJsonLd nonce={nonce} />
+        <NavigationJsonLd nonce={nonce} />
       </head>
       <body className="antialiased bg-background text-foreground">
         {/* Skip to main content link for keyboard navigation accessibility */}

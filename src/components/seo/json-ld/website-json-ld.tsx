@@ -20,6 +20,14 @@ export function WebsiteJsonLd({ nonce }: { nonce?: string | null }) {
       name: 'Hudson Digital Solutions',
       url: 'https://hudsondigitalsolutions.com',
     },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: 'https://richardwhudsonjr.com/blog?q={search_term_string}',
+      },
+      'query-input': 'required name=search_term_string',
+    },
   }
 
   return (
