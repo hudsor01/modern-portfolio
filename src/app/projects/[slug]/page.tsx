@@ -1,8 +1,10 @@
 import { Metadata } from 'next'
+import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { getProjects, getProject } from '@/lib/projects'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
+import { siteConfig } from '@/lib/site'
 import ProjectDetailClientBoundary from './_components/project-detail-client-boundary'
 
 // Official Next.js 16 Pattern: Static generation with ISR
@@ -67,6 +69,7 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params
   const project = await getProject(slug)
+  const nonce = (await headers()).get('x-nonce')
 
   if (!project) {
     notFound()
@@ -82,13 +85,15 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         slug={slug}
         category={project.category || undefined}
         tags={project.tags || undefined}
+        nonce={nonce}
       />
       <BreadcrumbListJsonLd
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
-          { name: project.title, url: `https://richardwhudsonjr.com/projects/${slug}` },
+          { name: 'Home', url: siteConfig.url },
+          { name: 'Projects', url: `${siteConfig.url}/projects` },
+          { name: project.title, url: `${siteConfig.url}/projects/${slug}` },
         ]}
+        nonce={nonce}
       />
       <ProjectDetailClientBoundary slug={slug} initialProject={project} />
     </>

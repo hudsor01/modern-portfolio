@@ -1,4 +1,7 @@
+import { headers } from 'next/headers'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
+import { siteConfig } from '@/lib/site'
 import { analyticsDataService } from '@/lib/data-service/service'
 import {
   monthlyRevenue2024,
@@ -16,6 +19,8 @@ export const dynamic = 'force-static'
  * This eliminates client-side data generation delays (15-20s improvement).
  */
 export default async function RevenueKPI() {
+  const nonce = (await headers()).get('x-nonce')
+
   // Fetch all analytics data on the server
   const analyticsData = await analyticsDataService.getAllAnalyticsData()
 
@@ -36,6 +41,15 @@ export default async function RevenueKPI() {
           'React',
           'TypeScript',
         ]}
+        nonce={nonce}
+      />
+      <BreadcrumbListJsonLd
+        items={[
+          { name: 'Home', url: siteConfig.url },
+          { name: 'Projects', url: `${siteConfig.url}/projects` },
+          { name: 'Revenue KPI Dashboard', url: `${siteConfig.url}/projects/revenue-kpi` },
+        ]}
+        nonce={nonce}
       />
       <RevenueKPIClient
         yearOverYearData={analyticsData.yearOverYear}
