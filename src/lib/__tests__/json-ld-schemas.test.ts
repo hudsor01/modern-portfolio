@@ -366,4 +366,19 @@ describe('NavigationJsonLd schema', () => {
       expect(stringified).toContain(`${siteConfig.url}${item.href}`)
     }
   })
+
+  it('contains Blog in navigation items', () => {
+    expect(navData.name).toContain('Blog')
+    expect(stringified).toContain('/blog')
+  })
+})
+
+describe('WebsiteJsonLd SearchAction URL', () => {
+  const websiteData = buildWebsiteJsonLd()
+  const stringified = safeJsonLdStringify(websiteData)
+
+  it('SearchAction urlTemplate uses production URL, not localhost', () => {
+    expect(stringified).toContain('https://richardwhudsonjr.com/blog?q=')
+    expect(stringified).not.toContain('localhost')
+  })
 })
