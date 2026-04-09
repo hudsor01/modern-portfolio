@@ -18,15 +18,7 @@ export function WebsiteJsonLd({ nonce }: { nonce?: string | null }) {
     publisher: {
       '@type': 'Organization',
       name: 'Hudson Digital Solutions',
-      url: 'https://richardwhudsonjr.com',
-    },
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: {
-        '@type': 'EntryPoint',
-        urlTemplate: `https://richardwhudsonjr.com/blog?q={search_term_string}`,
-      },
-      'query-input': 'required name=search_term_string',
+      url: 'https://hudsondigitalsolutions.com',
     },
   }
 

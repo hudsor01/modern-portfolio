@@ -1,11 +1,10 @@
-import { generateMetadata } from '@/app/shared-metadata'
+import { Metadata } from 'next'
 import ResumeViewClient from './resume-view-client'
 
-export const metadata = generateMetadata(
-  'Resume PDF | Richard Hudson',
-  'View and download the complete resume of Richard Hudson, Revenue Operations Professional in Dallas-Fort Worth.',
-  '/resume/view'
-)
+export const metadata: Metadata = {
+  title: 'Richard Hudson - Resume PDF',
+  description: 'View and download the complete resume of Richard Hudson, Revenue Operations Professional',
+}
 
 export const dynamic = 'force-dynamic'
 

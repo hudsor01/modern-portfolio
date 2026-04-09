@@ -56,17 +56,8 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
     openGraph: {
       title: project.title,
       description: project.description,
-      url: `https://richardwhudsonjr.com/projects/${slug}`,
-      images: project.image ? [{ url: project.image }] : [{ url: 'https://richardwhudsonjr.com/og-image.png', width: 1200, height: 630, alt: project.title }],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: project.title,
-      description: project.description,
-      images: project.image ? [project.image] : ['https://richardwhudsonjr.com/og-image.png'],
-    },
-    alternates: {
-      canonical: `https://richardwhudsonjr.com/projects/${slug}`,
+      url: `/projects/${slug}`,
+      images: project.image ? [{ url: project.image }] : undefined,
     },
   }
 }

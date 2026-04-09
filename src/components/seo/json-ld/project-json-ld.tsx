@@ -1,5 +1,4 @@
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
-import { siteConfig } from '@/lib/site'
 
 export function ProjectJsonLd({
   title,
@@ -21,19 +20,21 @@ export function ProjectJsonLd({
     '@type': 'CreativeWork',
     name: title,
     description: description,
-    url: `${siteConfig.url}/projects/${slug}`,
+    url: `https://richardwhudsonjr.com/projects/${slug}`,
     author: {
       '@type': 'Person',
       name: 'Richard Hudson',
-      url: siteConfig.url,
+      url: 'https://richardwhudsonjr.com',
     },
     publisher: {
       '@type': 'Organization',
       name: 'Hudson Digital Solutions',
-      url: siteConfig.url,
+      url: 'https://hudsondigitalsolutions.com',
     },
     genre: category,
     keywords: tags.length > 0 ? tags.join(', ') : 'Revenue Operations, Data Analytics, Business Intelligence',
+    dateCreated: '2024-01-01',
+    dateModified: new Date().toISOString().split('T')[0],
     inLanguage: 'en-US',
     isAccessibleForFree: true,
     educationalUse: 'Professional Development',

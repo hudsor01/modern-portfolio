@@ -17,24 +17,6 @@ export const metadata: Metadata = {
     description: 'Insights on revenue operations, data analytics, and business growth strategies.',
     url: 'https://richardwhudsonjr.com/blog',
     type: 'website',
-    images: [
-      {
-        url: 'https://richardwhudsonjr.com/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'Richard Hudson Blog - Revenue Operations Insights',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    creator: '@hudsor01',
-    title: 'Blog | Richard Hudson',
-    description: 'Insights on revenue operations, data analytics, and business growth strategies.',
-    images: ['https://richardwhudsonjr.com/og-image.png'],
-  },
-  alternates: {
-    canonical: 'https://richardwhudsonjr.com/blog',
   },
 }
 

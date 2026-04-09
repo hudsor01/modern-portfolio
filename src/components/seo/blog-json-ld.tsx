@@ -24,7 +24,7 @@ export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
       url: 'https://richardwhudsonjr.com',
       sameAs: [
         'https://www.linkedin.com/in/hudsor01',
-        'https://github.com/hudsor01'
+        'https://github.com/rhudsor01'
       ],
       jobTitle: 'Revenue Operations Professional',
       worksFor: {
@@ -141,7 +141,7 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
     articleSection: post.category?.name,
     keywords: post.keywords.join(', '),
     wordCount: post.wordCount,
-    timeRequired: post.readingTime != null ? `PT${post.readingTime}M` : undefined,
+    timeRequired: `PT${post.readingTime}M`,
     inLanguage: 'en-US',
     isAccessibleForFree: true,
     copyrightHolder: {
