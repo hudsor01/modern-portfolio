@@ -1,10 +1,6 @@
 import { Metadata } from 'next'
-import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { getProjects, getProject } from '@/lib/projects'
-import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
-import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
-import { siteConfig } from '@/lib/site'
 import ProjectDetailClientBoundary from './_components/project-detail-client-boundary'
 
 // Official Next.js 16 Pattern: Static generation with ISR
@@ -60,8 +56,17 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
     openGraph: {
       title: project.title,
       description: project.description,
-      url: `/projects/${slug}`,
-      images: project.image ? [{ url: project.image }] : undefined,
+      url: `https://richardwhudsonjr.com/projects/${slug}`,
+      images: project.image ? [{ url: project.image }] : [{ url: 'https://richardwhudsonjr.com/og-image.png', width: 1200, height: 630, alt: project.title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: project.title,
+      description: project.description,
+      images: project.image ? [project.image] : ['https://richardwhudsonjr.com/og-image.png'],
+    },
+    alternates: {
+      canonical: `https://richardwhudsonjr.com/projects/${slug}`,
     },
   }
 }
@@ -69,7 +74,6 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params
   const project = await getProject(slug)
-  const nonce = (await headers()).get('x-nonce')
 
   if (!project) {
     notFound()
@@ -77,25 +81,5 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   // Pass project data directly to client component
   // No TanStack Query, no fetch, no hydration boundary needed
-  return (
-    <>
-      <ProjectJsonLd
-        title={project.title}
-        description={project.description}
-        slug={slug}
-        category={project.category || undefined}
-        tags={project.tags || undefined}
-        nonce={nonce}
-      />
-      <BreadcrumbListJsonLd
-        items={[
-          { name: 'Home', url: siteConfig.url },
-          { name: 'Projects', url: `${siteConfig.url}/projects` },
-          { name: project.title, url: `${siteConfig.url}/projects/${slug}` },
-        ]}
-        nonce={nonce}
-      />
-      <ProjectDetailClientBoundary slug={slug} initialProject={project} />
-    </>
-  )
+  return <ProjectDetailClientBoundary slug={slug} initialProject={project} />
 }

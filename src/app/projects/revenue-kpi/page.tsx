@@ -1,7 +1,5 @@
-import { headers } from 'next/headers'
+import { Metadata } from 'next'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
-import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
-import { siteConfig } from '@/lib/site'
 import { analyticsDataService } from '@/lib/data-service/service'
 import {
   monthlyRevenue2024,
@@ -12,6 +10,28 @@ import { RevenueKPIClient } from './_components/RevenueKPIClient'
 
 export const dynamic = 'force-static'
 
+export const metadata: Metadata = {
+  title: 'Revenue KPI Dashboard - Partner Analytics & Business Intelligence | Richard Hudson',
+  description: 'Real-time revenue analytics dashboard featuring partner performance metrics, growth trends, and business intelligence for data-driven decision making. Built with React, TypeScript, and Recharts.',
+  openGraph: {
+    title: 'Revenue KPI Dashboard - Partner Analytics & Business Intelligence',
+    description: 'Real-time revenue analytics dashboard featuring partner performance metrics, growth trends, and business intelligence for data-driven decision making. Built with React, TypeScript, and Recharts.',
+    url: 'https://richardwhudsonjr.com/projects/revenue-kpi',
+    siteName: 'Richard Hudson',
+    images: [{ url: 'https://richardwhudsonjr.com/og-image.png', width: 1200, height: 630, alt: 'Revenue KPI Dashboard - Partner Analytics & Business Intelligence' }],
+    type: 'article',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Revenue KPI Dashboard - Partner Analytics & Business Intelligence',
+    description: 'Real-time revenue analytics dashboard featuring partner performance metrics, growth trends, and business intelligence for data-driven decision making. Built with React, TypeScript, and Recharts.',
+    images: ['https://richardwhudsonjr.com/og-image.png'],
+  },
+  alternates: {
+    canonical: 'https://richardwhudsonjr.com/projects/revenue-kpi',
+  },
+}
+
 /**
  * Revenue KPI Dashboard - Server Component
  *
@@ -19,8 +39,6 @@ export const dynamic = 'force-static'
  * This eliminates client-side data generation delays (15-20s improvement).
  */
 export default async function RevenueKPI() {
-  const nonce = (await headers()).get('x-nonce')
-
   // Fetch all analytics data on the server
   const analyticsData = await analyticsDataService.getAllAnalyticsData()
 
@@ -41,15 +59,6 @@ export default async function RevenueKPI() {
           'React',
           'TypeScript',
         ]}
-        nonce={nonce}
-      />
-      <BreadcrumbListJsonLd
-        items={[
-          { name: 'Home', url: siteConfig.url },
-          { name: 'Projects', url: `${siteConfig.url}/projects` },
-          { name: 'Revenue KPI Dashboard', url: `${siteConfig.url}/projects/revenue-kpi` },
-        ]}
-        nonce={nonce}
       />
       <RevenueKPIClient
         yearOverYearData={analyticsData.yearOverYear}

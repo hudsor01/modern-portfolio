@@ -1,31 +1,30 @@
-import { headers } from 'next/headers'
-import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
-import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
-import { siteConfig } from '@/lib/site'
-import { AttributionContent } from './_components/AttributionContent'
+import { Metadata } from 'next'
+import MultiChannelPageContent from './_components/MultiChannelPageContent'
 
-export default async function MultiChannelAttribution() {
-  const nonce = (await headers()).get('x-nonce')
+export const dynamic = 'force-static'
 
-  return (
-    <>
-      <ProjectJsonLd
-        title="Multi-Channel Attribution"
-        description="Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints with 92.4% attribution accuracy."
-        slug="multi-channel-attribution"
-        category="Data Analytics"
-        tags={['Marketing Attribution', 'Multi-Channel Analytics', 'Revenue Attribution', 'Data Analytics']}
-        nonce={nonce}
-      />
-      <BreadcrumbListJsonLd
-        items={[
-          { name: 'Home', url: siteConfig.url },
-          { name: 'Projects', url: `${siteConfig.url}/projects` },
-          { name: 'Multi-Channel Attribution', url: `${siteConfig.url}/projects/multi-channel-attribution` },
-        ]}
-        nonce={nonce}
-      />
-      <AttributionContent />
-    </>
-  )
+export const metadata: Metadata = {
+  title: 'Multi-Channel Attribution Analytics Dashboard | Richard Hudson',
+  description: 'Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints. Delivering 92.4% attribution accuracy and $2.3M ROI optimization through data-driven attribution modeling and cross-channel insights.',
+  openGraph: {
+    title: 'Multi-Channel Attribution Analytics Dashboard',
+    description: 'Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints. Delivering 92.4% attribution accuracy and $2.3M ROI optimization through data-driven attribution modeling and cross-channel insights.',
+    url: 'https://richardwhudsonjr.com/projects/multi-channel-attribution',
+    siteName: 'Richard Hudson',
+    images: [{ url: 'https://richardwhudsonjr.com/og-image.png', width: 1200, height: 630, alt: 'Multi-Channel Attribution Analytics Dashboard' }],
+    type: 'article',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Multi-Channel Attribution Analytics Dashboard',
+    description: 'Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints. Delivering 92.4% attribution accuracy and $2.3M ROI optimization through data-driven attribution modeling and cross-channel insights.',
+    images: ['https://richardwhudsonjr.com/og-image.png'],
+  },
+  alternates: {
+    canonical: 'https://richardwhudsonjr.com/projects/multi-channel-attribution',
+  },
+}
+
+export default function MultiChannelAttributionPage() {
+  return <MultiChannelPageContent />
 }
