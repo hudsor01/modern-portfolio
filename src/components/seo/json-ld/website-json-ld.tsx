@@ -3,7 +3,6 @@
  * SEO structured data for the main website
  */
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
-import { siteConfig } from '@/lib/site'
 
 export function WebsiteJsonLd({ nonce }: { nonce?: string | null }) {
   const jsonLd = {
@@ -11,7 +10,7 @@ export function WebsiteJsonLd({ nonce }: { nonce?: string | null }) {
     '@type': 'WebSite',
     name: 'Richard Hudson - Senior Revenue Operations Specialist',
     description: 'Portfolio and experience of Richard Hudson, Senior Revenue Operations Specialist with proven track record in business growth strategies.',
-    url: siteConfig.url,
+    url: 'https://richardwhudsonjr.com',
     author: {
       '@type': 'Person',
       name: 'Richard Hudson',
@@ -19,13 +18,13 @@ export function WebsiteJsonLd({ nonce }: { nonce?: string | null }) {
     publisher: {
       '@type': 'Organization',
       name: 'Hudson Digital Solutions',
-      url: siteConfig.url,
+      url: 'https://richardwhudsonjr.com',
     },
     potentialAction: {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: `${siteConfig.url}/blog?q={search_term_string}`,
+        urlTemplate: `https://richardwhudsonjr.com/blog?q={search_term_string}`,
       },
       'query-input': 'required name=search_term_string',
     },
