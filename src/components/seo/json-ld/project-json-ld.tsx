@@ -33,8 +33,6 @@ export function ProjectJsonLd({
     },
     genre: category,
     keywords: tags.length > 0 ? tags.join(', ') : 'Revenue Operations, Data Analytics, Business Intelligence',
-    dateCreated: '2024-01-01',
-    dateModified: new Date().toISOString().split('T')[0],
     inLanguage: 'en-US',
     isAccessibleForFree: true,
     educationalUse: 'Professional Development',
