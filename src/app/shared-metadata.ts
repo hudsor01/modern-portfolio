@@ -112,11 +112,21 @@ export function generateMetadata(
       title,
       description,
       url: `https://richardwhudsonjr.com${path}`,
+      images: [
+        {
+          url: 'https://richardwhudsonjr.com/og-image.png',
+          width: 1200,
+          height: 630,
+          alt: 'Richard Hudson - Revenue Operations Professional',
+        },
+      ],
     },
     twitter: {
-      ...baseMetadata.twitter,
+      card: 'summary_large_image',
+      creator: '@hudsor01',
       title,
       description,
+      images: ['https://richardwhudsonjr.com/og-image.png'],
     },
     ...additionalMetadata,
   }

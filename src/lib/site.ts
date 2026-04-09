@@ -23,6 +23,7 @@ export const navConfig = {
     { title: 'Home', href: '/' },
     { title: 'About', href: '/about' },
     { title: 'Projects', href: '/projects' },
+    { title: 'Blog', href: '/blog' },
     { title: 'Resume', href: '/resume' },
     { title: 'Contact', href: '/contact' },
   ],
