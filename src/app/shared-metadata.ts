@@ -100,6 +100,7 @@ export function generateMetadata(
   path: string,
   additionalMetadata: Partial<Metadata> = {}
 ): Metadata {
+  const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({ title }).toString()}`
   return {
     ...baseMetadata,
     title,
@@ -114,19 +115,18 @@ export function generateMetadata(
       url: `https://richardwhudsonjr.com${path}`,
       images: [
         {
-          url: 'https://richardwhudsonjr.com/og-image.png',
+          url: ogImageUrl,
           width: 1200,
           height: 630,
-          alt: 'Richard Hudson - Revenue Operations Professional',
+          alt: title,
         },
       ],
     },
     twitter: {
-      card: 'summary_large_image',
-      creator: '@hudsor01',
+      ...baseMetadata.twitter,
       title,
       description,
-      images: ['https://richardwhudsonjr.com/og-image.png'],
+      images: [ogImageUrl],
     },
     ...additionalMetadata,
   }

@@ -3,6 +3,12 @@ import { Metadata } from 'next'
 import HomePageContent from '@/components/layout/home-page-content'
 
 export const dynamic = 'force-static'
+
+const HOMEPAGE_OG_IMAGE_URL = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
+  title: 'Richard Hudson',
+  subtitle: 'Revenue Operations Professional',
+}).toString()}`
+
 export const metadata: Metadata = {
   title: 'Richard Hudson | Revenue Operations Professional | Dallas-Fort Worth',
   description:
@@ -37,7 +43,7 @@ export const metadata: Metadata = {
     siteName: 'Richard Hudson - Revenue Operations Professional',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&h=630&fit=crop&crop=face&q=80',
+        url: HOMEPAGE_OG_IMAGE_URL,
         width: 1200,
         height: 630,
         alt: 'Richard Hudson - Revenue Operations Professional',
@@ -52,7 +58,7 @@ export const metadata: Metadata = {
     title: 'Richard Hudson | Revenue Operations Professional | Dallas-Fort Worth',
     description:
       'Richard Hudson: Revenue Operations Professional in Dallas-Fort Worth. Experienced RevOps specialist with $4.8M+ revenue impact and 432% growth delivered. Salesloft Certified Administrator & HubSpot RevOps certified. Expert in sales automation and CRM optimization across 10+ successful projects.',
-    images: ['https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&h=630&fit=crop&crop=face&q=80'],
+    images: [HOMEPAGE_OG_IMAGE_URL],
   },
   alternates: {
     canonical: 'https://richardwhudsonjr.com',

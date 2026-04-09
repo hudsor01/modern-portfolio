@@ -8,6 +8,11 @@ import { db } from '@/lib/db'
 import { transformToBlogPostData } from '@/lib/api-blog'
 import type { BlogPostData, BlogCategoryData } from '@/types/api'
 
+const BLOG_INDEX_OG_IMAGE_URL = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
+  title: 'Blog | Richard Hudson',
+  subtitle: 'Revenue Operations Insights',
+}).toString()}`
+
 export const metadata: Metadata = {
   title: 'Blog | Richard Hudson - Revenue Operations Insights',
   description: 'Insights on revenue operations, data analytics, and business growth strategies.',
@@ -19,7 +24,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://richardwhudsonjr.com/og-image.png',
+        url: BLOG_INDEX_OG_IMAGE_URL,
         width: 1200,
         height: 630,
         alt: 'Richard Hudson Blog - Revenue Operations Insights',
@@ -31,7 +36,7 @@ export const metadata: Metadata = {
     creator: '@hudsor01',
     title: 'Blog | Richard Hudson',
     description: 'Insights on revenue operations, data analytics, and business growth strategies.',
-    images: ['https://richardwhudsonjr.com/og-image.png'],
+    images: [BLOG_INDEX_OG_IMAGE_URL],
   },
   alternates: {
     canonical: 'https://richardwhudsonjr.com/blog',
