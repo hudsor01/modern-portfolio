@@ -7,6 +7,7 @@ import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { formatNumber, formatPercentage, formatTrend } from '@/lib/data-formatters'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { NarrativeSections } from './_components/NarrativeSections'
 import { IntelligenceModulesGrid } from './_components/IntelligenceModulesGrid'
 
@@ -106,6 +107,13 @@ export default function ForecastPipelineIntelligenceProject() {
           'Pipeline Intelligence',
           'Predictive Analytics',
           'Revenue Operations',
+        ]}
+      />
+      <BreadcrumbListJsonLd
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Forecast Accuracy & Pipeline Intelligence System', url: 'https://richardwhudsonjr.com/projects/forecast-pipeline-intelligence' },
         ]}
       />
 

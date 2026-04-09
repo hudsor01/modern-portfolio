@@ -6,6 +6,7 @@ import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { AchievementsGrid } from './_components/AchievementsGrid'
 import { TechnicalDetails } from './_components/TechnicalDetails'
 import { NarrativeSections } from './_components/NarrativeSections'
@@ -59,6 +60,13 @@ export default function PartnershipProgramPage() {
           'Channel Operations',
           'Partner Onboarding',
           'Commission Automation',
+        ]}
+      />
+      <BreadcrumbListJsonLd
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Enterprise Partnership Program Implementation', url: 'https://richardwhudsonjr.com/projects/partnership-program-implementation' },
         ]}
       />
 

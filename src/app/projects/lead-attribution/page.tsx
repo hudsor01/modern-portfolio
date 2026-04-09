@@ -19,6 +19,7 @@ import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { ChartContainer } from '@/components/ui/chart-container'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { useAnalyticsData } from '@/hooks/use-analytics-data'
 import { formatNumber, formatPercentage, formatTrend } from '@/lib/data-formatters'
 import { leadAttributionData } from '@/app/projects/data/partner-analytics'
@@ -167,6 +168,13 @@ export default function LeadAttribution() {
           'Marketing Analytics',
           'Campaign Tracking',
           'Multi-Touch Attribution',
+        ]}
+      />
+      <BreadcrumbListJsonLd
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Lead Attribution & Marketing Analytics', url: 'https://richardwhudsonjr.com/projects/lead-attribution' },
         ]}
       />
       <ProjectPageLayout

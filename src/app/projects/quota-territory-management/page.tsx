@@ -7,6 +7,7 @@ import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { formatNumber, formatTrend } from '@/lib/data-formatters'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { NarrativeSections } from './_components/NarrativeSections'
 import { AlgorithmicApproachesGrid } from './_components/AlgorithmicApproachesGrid'
 
@@ -103,6 +104,13 @@ export default function QuotaTerritoryManagementProject() {
           'Territory Planning',
           'Predictive Analytics',
           'Revenue Operations',
+        ]}
+      />
+      <BreadcrumbListJsonLd
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Intelligent Quota Management & Territory Planning', url: 'https://richardwhudsonjr.com/projects/quota-territory-management' },
         ]}
       />
 

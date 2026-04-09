@@ -6,6 +6,7 @@ import { TrendingDown, Users, Activity, AlertCircle } from 'lucide-react'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { formatPercentage, formatNumber, formatCurrency } from '@/lib/data-formatters'
 
 // Import static churn data
@@ -110,6 +111,13 @@ export default function ChurnAnalysis() {
           'Customer Analytics',
           'Data Science',
           'Machine Learning',
+        ]}
+      />
+      <BreadcrumbListJsonLd
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Customer Churn & Retention Analysis', url: 'https://richardwhudsonjr.com/projects/churn-retention' },
         ]}
       />
       <ProjectPageLayout

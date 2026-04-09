@@ -7,6 +7,7 @@ import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { formatNumber, formatTrend } from '@/lib/data-formatters'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { NarrativeSections } from './_components/NarrativeSections'
 import { PillarsGrid } from './_components/PillarsGrid'
 
@@ -99,6 +100,13 @@ export default function SalesEnablementProject() {
         slug="sales-enablement"
         category="Sales Operations"
         tags={['Sales Enablement', 'Training', 'Coaching', 'Sales Operations']}
+      />
+      <BreadcrumbListJsonLd
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Sales Enablement & Coaching Platform', url: 'https://richardwhudsonjr.com/projects/sales-enablement' },
+        ]}
       />
 
       <ProjectPageLayout

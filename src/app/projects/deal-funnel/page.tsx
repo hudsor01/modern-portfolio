@@ -9,6 +9,7 @@ import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { getProject } from '@/lib/projects'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { createContextLogger } from '@/lib/logger'
 import { TIMING } from '@/lib/spacing'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/data-formatters'
@@ -154,6 +155,13 @@ export default function DealFunnel() {
         slug="deal-funnel"
         category="Sales Operations"
         tags={['Sales Funnel', 'Deal Pipeline', 'Conversion Analysis', 'Sales Operations']}
+      />
+      <BreadcrumbListJsonLd
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Sales Pipeline Funnel Analysis', url: 'https://richardwhudsonjr.com/projects/deal-funnel' },
+        ]}
       />
       <ProjectPageLayout
         title="Deal Pipeline Analytics"
