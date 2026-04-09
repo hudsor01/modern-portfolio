@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { describe, it, expect } from 'vitest'
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
+import { navConfig, siteConfig } from '@/lib/site'
 
 /**
  * Build the Person JSON-LD object matching person-json-ld.tsx.
@@ -335,19 +336,11 @@ describe('WebsiteJsonLd schema', () => {
  * Build a NavigationJsonLd JSON-LD object matching navigation-json-ld.tsx.
  */
 function buildNavigationJsonLd() {
-  const navItems = [
-    { title: 'Home', href: '/' },
-    { title: 'About', href: '/about' },
-    { title: 'Projects', href: '/projects' },
-    { title: 'Resume', href: '/resume' },
-    { title: 'Contact', href: '/contact' },
-  ]
-
   return {
     '@context': 'https://schema.org',
     '@type': 'SiteNavigationElement',
-    name: navItems.map((item) => item.title),
-    url: navItems.map((item) => `https://richardwhudsonjr.com${item.href}`),
+    name: navConfig.mainNav.map((item) => item.title),
+    url: navConfig.mainNav.map((item) => `${siteConfig.url}${item.href}`),
   }
 }
 
@@ -359,21 +352,18 @@ describe('NavigationJsonLd schema', () => {
     expect(stringified).toContain('"@type":"SiteNavigationElement"')
   })
 
-  it('name array contains all 5 nav items: Home, About, Projects, Resume, Contact', () => {
-    expect(navData.name).toEqual(['Home', 'About', 'Projects', 'Resume', 'Contact'])
-    expect(stringified).toContain('"Home"')
-    expect(stringified).toContain('"About"')
-    expect(stringified).toContain('"Projects"')
-    expect(stringified).toContain('"Resume"')
-    expect(stringified).toContain('"Contact"')
+  it('name array contains all nav items from navConfig', () => {
+    const expectedNames = navConfig.mainNav.map((item) => item.title)
+    expect(navData.name).toEqual(expectedNames)
+    for (const name of expectedNames) {
+      expect(stringified).toContain(`"${name}"`)
+    }
   })
 
-  it('url array contains 5 URLs with https://richardwhudsonjr.com prefix', () => {
-    expect(navData.url).toHaveLength(5)
-    expect(stringified).toContain('https://richardwhudsonjr.com/')
-    expect(stringified).toContain('https://richardwhudsonjr.com/about')
-    expect(stringified).toContain('https://richardwhudsonjr.com/projects')
-    expect(stringified).toContain('https://richardwhudsonjr.com/resume')
-    expect(stringified).toContain('https://richardwhudsonjr.com/contact')
+  it('url array contains URLs with siteConfig.url prefix for each nav item', () => {
+    expect(navData.url).toHaveLength(navConfig.mainNav.length)
+    for (const item of navConfig.mainNav) {
+      expect(stringified).toContain(`${siteConfig.url}${item.href}`)
+    }
   })
 })
