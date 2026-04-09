@@ -8,8 +8,8 @@ import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { formatNumber, formatTrend } from '@/lib/data-formatters'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
-import { NarrativeSections } from './_components/NarrativeSections'
-import { PillarsGrid } from './_components/PillarsGrid'
+import { NarrativeSections } from './NarrativeSections'
+import { PillarsGrid } from './PillarsGrid'
 
 export default function SalesEnablementProject() {
 

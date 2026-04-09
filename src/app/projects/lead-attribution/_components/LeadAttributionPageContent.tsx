@@ -24,11 +24,11 @@ import { useAnalyticsData } from '@/hooks/use-analytics-data'
 import { formatNumber, formatPercentage, formatTrend } from '@/lib/data-formatters'
 import { leadAttributionData } from '@/app/projects/data/partner-analytics'
 
-import { leadConversionData, monthlyTrendData } from './data/constants'
-import { ChartsGrid } from './_components/ChartsGrid'
-import { TrendsChart } from './_components/TrendsChart'
-import { InsightsSection } from './_components/InsightsSection'
-import { NarrativeSections } from './_components/NarrativeSections'
+import { leadConversionData, monthlyTrendData } from '../data/constants'
+import { ChartsGrid } from './ChartsGrid'
+import { TrendsChart } from './TrendsChart'
+import { InsightsSection } from './InsightsSection'
+import { NarrativeSections } from './NarrativeSections'
 
 export default function LeadAttribution() {
   const {

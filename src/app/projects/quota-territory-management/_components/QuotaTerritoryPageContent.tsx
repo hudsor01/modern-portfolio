@@ -8,8 +8,8 @@ import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { formatNumber, formatTrend } from '@/lib/data-formatters'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
-import { NarrativeSections } from './_components/NarrativeSections'
-import { AlgorithmicApproachesGrid } from './_components/AlgorithmicApproachesGrid'
+import { NarrativeSections } from './NarrativeSections'
+import { AlgorithmicApproachesGrid } from './AlgorithmicApproachesGrid'
 
 export default function QuotaTerritoryManagementProject() {
 

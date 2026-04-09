@@ -8,8 +8,8 @@ import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { formatNumber, formatPercentage, formatTrend } from '@/lib/data-formatters'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
-import { NarrativeSections } from './_components/NarrativeSections'
-import { IntelligenceModulesGrid } from './_components/IntelligenceModulesGrid'
+import { NarrativeSections } from './NarrativeSections'
+import { IntelligenceModulesGrid } from './IntelligenceModulesGrid'
 
 export default function ForecastPipelineIntelligenceProject() {
 

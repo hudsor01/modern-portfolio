@@ -8,12 +8,12 @@ import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/data-formatters'
-import { clvMetrics } from './data/constants'
-import { OverviewTab } from './_components/OverviewTab'
-import { SegmentsTab } from './_components/SegmentsTab'
-import { PredictionsTab } from './_components/PredictionsTab'
-import { StrategicImpact } from './_components/StrategicImpact'
-import { NarrativeSections } from './_components/NarrativeSections'
+import { clvMetrics } from '../data/constants'
+import { OverviewTab } from './OverviewTab'
+import { SegmentsTab } from './SegmentsTab'
+import { PredictionsTab } from './PredictionsTab'
+import { StrategicImpact } from './StrategicImpact'
+import { NarrativeSections } from './NarrativeSections'
 
 const tabs = ['overview', 'segments', 'predictions'] as const
 type Tab = (typeof tabs)[number]

@@ -7,9 +7,9 @@ import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
-import { AchievementsGrid } from './_components/AchievementsGrid'
-import { TechnicalDetails } from './_components/TechnicalDetails'
-import { NarrativeSections } from './_components/NarrativeSections'
+import { AchievementsGrid } from './AchievementsGrid'
+import { TechnicalDetails } from './TechnicalDetails'
+import { NarrativeSections } from './NarrativeSections'
 
 export default function PartnershipProgramPage() {
   // Standardized metrics configuration

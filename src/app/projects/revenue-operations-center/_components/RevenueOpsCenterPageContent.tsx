@@ -6,12 +6,12 @@ import { DollarSign, Target, BarChart3, Users, Activity } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
-import { revenueMetrics } from './data/constants'
-import { formatCurrency, formatPercent } from './utils'
+import { revenueMetrics } from '../data/constants'
+import { formatCurrency, formatPercent } from '../utils'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
-import { KPIAlerts } from './_components/KPIAlerts'
-import { StrategicImpact } from './_components/StrategicImpact'
-import { NarrativeSections } from './_components/NarrativeSections'
+import { KPIAlerts } from './KPIAlerts'
+import { StrategicImpact } from './StrategicImpact'
+import { NarrativeSections } from './NarrativeSections'
 
 // Tab loading skeleton
 function TabSkeleton() {
@@ -24,19 +24,19 @@ function TabSkeleton() {
 }
 
 // Lazy load tab components - only active tab loads
-const OverviewTab = nextDynamic(() => import('./_components/OverviewTab').then(m => ({ default: m.OverviewTab })), {
+const OverviewTab = nextDynamic(() => import('./OverviewTab').then(m => ({ default: m.OverviewTab })), {
   loading: () => <TabSkeleton />,
   ssr: true,
 })
-const PipelineTab = nextDynamic(() => import('./_components/PipelineTab').then(m => ({ default: m.PipelineTab })), {
+const PipelineTab = nextDynamic(() => import('./PipelineTab').then(m => ({ default: m.PipelineTab })), {
   loading: () => <TabSkeleton />,
   ssr: true,
 })
-const ForecastingTab = nextDynamic(() => import('./_components/ForecastingTab').then(m => ({ default: m.ForecastingTab })), {
+const ForecastingTab = nextDynamic(() => import('./ForecastingTab').then(m => ({ default: m.ForecastingTab })), {
   loading: () => <TabSkeleton />,
   ssr: true,
 })
-const OperationsTab = nextDynamic(() => import('./_components/OperationsTab').then(m => ({ default: m.OperationsTab })), {
+const OperationsTab = nextDynamic(() => import('./OperationsTab').then(m => ({ default: m.OperationsTab })), {
   loading: () => <TabSkeleton />,
   ssr: true,
 })

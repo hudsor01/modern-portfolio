@@ -8,11 +8,11 @@ import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/data-formatters'
-import { NarrativeSections } from './_components/NarrativeSections'
-import { OverviewTab } from './_components/OverviewTab'
-import { TiersTab } from './_components/TiersTab'
-import { TopPerformersTab } from './_components/TopPerformersTab'
-import { StrategicInsights } from './_components/StrategicInsights'
+import { NarrativeSections } from './NarrativeSections'
+import { OverviewTab } from './OverviewTab'
+import { TiersTab } from './TiersTab'
+import { TopPerformersTab } from './TopPerformersTab'
+import { StrategicInsights } from './StrategicInsights'
 
 // Real data based on CSV analysis: 83.2% win rate, $1.1M partner revenue
 const partnerMetrics = {
