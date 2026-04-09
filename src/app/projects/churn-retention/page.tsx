@@ -1,5 +1,4 @@
 'use client'
-export const dynamic = 'force-static'
 
 import { useAnalyticsData } from '@/hooks/use-analytics-data'
 import { TrendingDown, Users, Activity, AlertCircle } from 'lucide-react'

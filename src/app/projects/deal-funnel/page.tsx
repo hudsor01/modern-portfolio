@@ -1,5 +1,4 @@
 'use client'
-export const dynamic = 'force-static'
 
 import { useState, useEffect, useRef } from 'react'
 import { DollarSign, Clock, Target, BarChart3 } from 'lucide-react'
