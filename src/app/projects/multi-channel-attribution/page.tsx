@@ -1,150 +1,31 @@
-'use client'
+import { headers } from 'next/headers'
+import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
+import { siteConfig } from '@/lib/site'
+import { AttributionContent } from './_components/AttributionContent'
 
-import { Target, Eye, Share2, DollarSign } from 'lucide-react'
-import { useQueryState } from 'nuqs'
-
-import { safeJsonLdStringify } from '@/lib/json-ld-utils'
-import { ProjectPageLayout } from '@/components/projects/project-page-layout'
-import { MetricsGrid } from '@/components/projects/metrics-grid'
-import { SectionCard } from '@/components/ui/section-card'
-import { formatCurrency, formatNumber } from '@/lib/data-formatters'
-import { attributionMetrics } from './data/constants'
-import { formatPercent } from './utils'
-import { OverviewTab } from './_components/OverviewTab'
-import { ModelsTab } from './_components/ModelsTab'
-import { JourneysTab } from './_components/JourneysTab'
-import { ChannelsTab } from './_components/ChannelsTab'
-import { StrategicImpact } from './_components/StrategicImpact'
-import { NarrativeSections } from './_components/NarrativeSections'
-
-const tabs = ['overview', 'models', 'journeys', 'channels'] as const
-type Tab = (typeof tabs)[number]
-
-export default function MultiChannelAttribution() {
-  const [activeTab, setActiveTab] = useQueryState('tab', { defaultValue: 'overview' as Tab })
-
-  // Standardized metrics configuration using consistent data formatting
-  const metrics = [
-    {
-      id: 'total-conversions',
-      icon: Target,
-      label: 'Conversions',
-      value: formatNumber(attributionMetrics.totalConversions),
-      subtitle: `+${formatPercent(attributionMetrics.conversionLift)} lift`,
-      variant: 'primary' as const,
-      trend: {
-        direction: 'up' as const,
-        value: formatPercent(attributionMetrics.conversionLift),
-        label: 'lift',
-      },
-    },
-    {
-      id: 'attribution-accuracy',
-      icon: Eye,
-      label: 'Accuracy',
-      value: formatPercent(attributionMetrics.attributionAccuracy),
-      subtitle: 'ML Model Performance',
-      variant: 'secondary' as const,
-    },
-    {
-      id: 'total-channels',
-      icon: Share2,
-      label: 'Channels',
-      value: formatNumber(attributionMetrics.totalChannels),
-      subtitle: `${attributionMetrics.avgTouchpoints.toFixed(1)} avg touchpoints`,
-      variant: 'primary' as const,
-    },
-    {
-      id: 'roi-impact',
-      icon: DollarSign,
-      label: 'ROI Impact',
-      value: formatCurrency(attributionMetrics.totalROI, { compact: true }),
-      subtitle: 'Optimization Value',
-      variant: 'secondary' as const,
-    },
-  ]
+export default async function MultiChannelAttribution() {
+  const nonce = (await headers()).get('x-nonce')
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify({
-          '@context': 'https://schema.org',
-          '@type': 'CreativeWork',
-          name: 'Multi-Channel Attribution',
-          description: 'Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints with 92.4% attribution accuracy.',
-          url: 'https://richardwhudsonjr.com/projects/multi-channel-attribution',
-          author: { '@type': 'Person', name: 'Richard Hudson', url: 'https://richardwhudsonjr.com' },
-          genre: 'Data Analytics',
-          keywords: 'Marketing Attribution, Multi-Channel Analytics, Revenue Attribution, Data Analytics',
-          inLanguage: 'en-US',
-          isAccessibleForFree: true,
-        }) }}
+      <ProjectJsonLd
+        title="Multi-Channel Attribution"
+        description="Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints with 92.4% attribution accuracy."
+        slug="multi-channel-attribution"
+        category="Data Analytics"
+        tags={['Marketing Attribution', 'Multi-Channel Analytics', 'Revenue Attribution', 'Data Analytics']}
+        nonce={nonce}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: safeJsonLdStringify({
-          '@context': 'https://schema.org',
-          '@type': 'BreadcrumbList',
-          itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://richardwhudsonjr.com' },
-            { '@type': 'ListItem', position: 2, name: 'Projects', item: 'https://richardwhudsonjr.com/projects' },
-            { '@type': 'ListItem', position: 3, name: 'Multi-Channel Attribution', item: 'https://richardwhudsonjr.com/projects/multi-channel-attribution' },
-          ],
-        }) }}
+      <BreadcrumbListJsonLd
+        items={[
+          { name: 'Home', url: siteConfig.url },
+          { name: 'Projects', url: `${siteConfig.url}/projects` },
+          { name: 'Multi-Channel Attribution', url: `${siteConfig.url}/projects/multi-channel-attribution` },
+        ]}
+        nonce={nonce}
       />
-    <ProjectPageLayout
-      title="Multi-Channel Attribution Analytics Dashboard"
-      description="Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints. Delivering 92.4% attribution accuracy and $2.3M ROI optimization through data-driven attribution modeling and cross-channel insights."
-      tags={[
-        {
-          label: `Attribution Accuracy: ${formatPercent(attributionMetrics.attributionAccuracy)}`,
-          variant: 'primary',
-        },
-        {
-          label: `ROI Optimization: ${formatCurrency(attributionMetrics.totalROI, { compact: true })}`,
-          variant: 'secondary',
-        },
-        { label: 'ML Attribution Models', variant: 'primary' },
-        { label: 'Customer Journey Analytics', variant: 'secondary' },
-      ]}
-      showTimeframes={true}
-      timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
-      activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-      onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
-    >
-          {/* Key Metrics using standardized MetricsGrid */}
-          <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
-
-          {/* Tab Content wrapped in SectionCard */}
-          <SectionCard
-            title="Attribution Analysis"
-            description="Detailed multi-channel attribution analysis and insights"
-            className="mb-8"
-          >
-            {activeTab === 'overview' && <OverviewTab />}
-            {activeTab === 'models' && <ModelsTab />}
-            {activeTab === 'journeys' && <JourneysTab />}
-            {activeTab === 'channels' && <ChannelsTab />}
-          </SectionCard>
-
-          {/* Strategic Impact wrapped in SectionCard */}
-          <SectionCard
-            title="Strategic Impact"
-            description="Business impact and strategic outcomes from attribution optimization"
-            className="mb-8"
-          >
-            <StrategicImpact />
-          </SectionCard>
-
-          {/* Professional Narrative Sections wrapped in SectionCard */}
-          <SectionCard
-            title="Project Narrative"
-            description="Comprehensive case study following the STAR methodology"
-          >
-            <NarrativeSections />
-          </SectionCard>
-    </ProjectPageLayout>
+      <AttributionContent />
     </>
   )
 }
