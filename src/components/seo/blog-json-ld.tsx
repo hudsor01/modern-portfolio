@@ -141,7 +141,7 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
     articleSection: post.category?.name,
     keywords: post.keywords.join(', '),
     wordCount: post.wordCount,
-    timeRequired: `PT${post.readingTime}M`,
+    timeRequired: post.readingTime != null ? `PT${post.readingTime}M` : undefined,
     inLanguage: 'en-US',
     isAccessibleForFree: true,
     copyrightHolder: {
