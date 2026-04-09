@@ -24,7 +24,7 @@ export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
       url: 'https://richardwhudsonjr.com',
       sameAs: [
         'https://www.linkedin.com/in/hudsor01',
-        'https://github.com/rhudsor01'
+        'https://github.com/hudsor01'
       ],
       jobTitle: 'Revenue Operations Professional',
       worksFor: {
