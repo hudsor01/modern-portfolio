@@ -301,7 +301,7 @@ function buildWebsiteJsonLd() {
     publisher: {
       '@type': 'Organization',
       name: 'Hudson Digital Solutions',
-      url: 'https://hudsondigitalsolutions.com',
+      url: 'https://richardwhudsonjr.com',
     },
     potentialAction: {
       '@type': 'SearchAction',
@@ -329,6 +329,10 @@ describe('WebsiteJsonLd schema', () => {
 
   it('SearchAction contains query-input with required name=search_term_string', () => {
     expect(stringified).toContain('"query-input":"required name=search_term_string"')
+  })
+
+  it('publisher url is the site root', () => {
+    expect(stringified).toContain('"url":"https://richardwhudsonjr.com"')
   })
 })
 
