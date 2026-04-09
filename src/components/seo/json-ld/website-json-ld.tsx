@@ -19,7 +19,7 @@ export function WebsiteJsonLd({ nonce }: { nonce?: string | null }) {
     publisher: {
       '@type': 'Organization',
       name: 'Hudson Digital Solutions',
-      url: 'https://hudsondigitalsolutions.com',
+      url: siteConfig.url,
     },
     potentialAction: {
       '@type': 'SearchAction',

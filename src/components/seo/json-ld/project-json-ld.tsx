@@ -30,7 +30,7 @@ export function ProjectJsonLd({
     publisher: {
       '@type': 'Organization',
       name: 'Hudson Digital Solutions',
-      url: 'https://hudsondigitalsolutions.com',
+      url: siteConfig.url,
     },
     genre: category,
     keywords: tags.length > 0 ? tags.join(', ') : 'Revenue Operations, Data Analytics, Business Intelligence',
