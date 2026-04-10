@@ -7,7 +7,7 @@ import { formatCurrency, formatPercent } from '../utils'
 
 const TouchpointAnalysisChart = dynamic(() => import('./TouchpointAnalysisChart'), {
   loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
-  ssr: true
+  ssr: false
 })
 
 export function ChannelsTab() {
