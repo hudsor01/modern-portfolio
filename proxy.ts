@@ -15,19 +15,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { buildEnhancedCSP } from '@/lib/csp-edge'
 
 export function proxy(request: NextRequest) {
-  // Generate cryptographically secure nonce (Edge Runtime compatible)
   const nonce = btoa(crypto.randomUUID())
+  const isDev = process.env.NODE_ENV === 'development'
 
-  // Create nonces object for CSP (using same nonce for both script and style)
-  const nonces = {
-    scriptNonce: nonce,
-    styleNonce: nonce,
-  }
+  const cspHeader = buildEnhancedCSP({ isDev })
 
-  // Build CSP header with nonces
-  const cspHeader = buildEnhancedCSP(nonces)
-
-  // Clone request headers and add nonce header for SSR
+  // Pass nonce downstream for JSON-LD and other explicit script tags
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-nonce', nonce)
   requestHeaders.set('Content-Security-Policy', cspHeader)

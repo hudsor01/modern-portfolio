@@ -5,14 +5,9 @@ export function proxy(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
   const isDev = process.env.NODE_ENV === 'development'
 
-  // Build CSP with nonces — proxy runs in nodejs runtime (not edge) in Next.js 16
-  const csp = buildEnhancedCSP({
-    scriptNonce: nonce,
-    styleNonce: nonce,
-    isDev,
-  })
+  const csp = buildEnhancedCSP({ isDev })
 
-  // Clone request headers and add nonce for downstream consumption in layout.tsx
+  // Pass nonce downstream for JSON-LD and other explicit script tags
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-nonce', nonce)
   requestHeaders.set('Content-Security-Policy', csp)
