@@ -1,16 +1,3 @@
-/**
- * Next.js 16 Proxy - Content Security Policy with Nonce Generation
- *
- * This proxy generates a unique nonce for each request to enable strict CSP
- * without unsafe-inline directives. The nonce is used for both scripts and styles.
- *
- * Pattern follows Next.js 16 official CSP documentation:
- * - Generates cryptographically secure nonce per request
- * - Sets nonce in x-nonce header for SSR components
- * - Applies CSP headers to both request and response
- * - Next.js automatically applies nonces to framework scripts
- */
-
 import { NextRequest, NextResponse } from 'next/server'
 import { buildEnhancedCSP } from '@/lib/csp-edge'
 
@@ -18,36 +5,24 @@ export function proxy(request: NextRequest) {
   const nonce = btoa(crypto.randomUUID())
   const isDev = process.env.NODE_ENV === 'development'
 
-  const cspHeader = buildEnhancedCSP({ isDev })
+  const csp = buildEnhancedCSP({ isDev })
 
-  // Pass nonce downstream for JSON-LD and other explicit script tags
+  // Pass nonce downstream for JSON-LD scripts in layout.tsx
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-nonce', nonce)
-  requestHeaders.set('Content-Security-Policy', cspHeader)
+  requestHeaders.set('Content-Security-Policy', csp)
 
-  // Create response with modified request headers
   const response = NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
+    request: { headers: requestHeaders },
   })
 
-  // Set CSP header on response for client-side
-  response.headers.set('Content-Security-Policy', cspHeader)
+  response.headers.set('Content-Security-Policy', csp)
 
   return response
 }
 
-// Matcher configuration to exclude static assets
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - static assets with common extensions
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
