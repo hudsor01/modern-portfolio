@@ -9,7 +9,7 @@ import { formatCurrency, formatPercentage } from '@/lib/data-formatters'
 
 const PerformanceIncentiveChart = dynamic(() => import('./PerformanceIncentiveChart'), {
   loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
-  ssr: true,
+  ssr: false,
 })
 
 export function IncentivesTab() {

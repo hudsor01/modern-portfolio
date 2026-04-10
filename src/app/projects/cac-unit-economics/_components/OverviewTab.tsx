@@ -15,7 +15,7 @@ const CACBreakdownChart = dynamic(
   () => import('./CACBreakdownChart').catch(() => ({ default: ChartLoadError })),
   {
     loading: () => <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />,
-    ssr: true,
+    ssr: false,
   }
 )
 
@@ -23,7 +23,7 @@ const UnitEconomicsChart = dynamic(
   () => import('./UnitEconomicsChart').catch(() => ({ default: ChartLoadError })),
   {
     loading: () => <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />,
-    ssr: true,
+    ssr: false,
   }
 )
 
