@@ -4,7 +4,6 @@ export const siteConfig: SiteConfig = {
   name: 'Richard Hudson - Modern Portfolio',
   description: 'Senior Revenue Operations Leader & Full-Stack Developer showcasing enterprise analytics platforms, data visualizations, and technical projects.',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-  ogImage: '/og-image.png',
   links: {
     github: 'https://github.com/hudsor01',
     linkedin: 'https://www.linkedin.com/in/hudsor01',

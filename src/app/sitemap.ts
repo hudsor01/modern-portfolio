@@ -5,43 +5,44 @@ export const revalidate = 3600
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://richardwhudsonjr.com'
-  const currentDate = new Date().toISOString()
+  // fallback only for blog posts with null timestamps
+  const fallbackDate = new Date().toISOString()
 
   // Main navigation pages
   const mainPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
-      lastModified: currentDate,
+      lastModified: '2026-04-09T22:27:05.000Z',
       changeFrequency: 'weekly',
       priority: 1.0,
     },
     {
       url: `${baseUrl}/about`,
-      lastModified: currentDate,
+      lastModified: '2026-04-09T17:18:26.000Z',
       changeFrequency: 'monthly',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/projects`,
-      lastModified: currentDate,
+      lastModified: '2026-04-09T17:18:26.000Z',
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/contact`,
-      lastModified: currentDate,
+      lastModified: '2026-04-09T17:18:26.000Z',
       changeFrequency: 'monthly',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/resume`,
-      lastModified: currentDate,
+      lastModified: '2026-04-09T17:18:26.000Z',
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
       url: `${baseUrl}/blog`,
-      lastModified: currentDate,
+      lastModified: '2026-04-09T22:27:05.000Z',
       changeFrequency: 'daily',
       priority: 0.9,
     },
@@ -65,7 +66,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     'sales-enablement',
   ].map(project => ({
     url: `${baseUrl}/projects/${project}`,
-    lastModified: currentDate,
+    lastModified: '2026-04-09T22:31:02.000Z',
     changeFrequency: 'monthly' as const,
     priority: 0.8,
   }))
@@ -91,7 +92,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     blogPages = posts.map(post => ({
       url: `${baseUrl}/blog/${post.slug}`,
-      lastModified: post.updatedAt?.toISOString() || post.publishedAt?.toISOString() || currentDate,
+      lastModified: post.updatedAt?.toISOString() || post.publishedAt?.toISOString() || fallbackDate,
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     }))

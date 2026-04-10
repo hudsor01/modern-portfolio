@@ -3,7 +3,6 @@
 import React from 'react';
 import { usePathname } from 'next/navigation';
 import { GlobalSEO } from './global-seo';
-import { WebsiteStructuredData, PersonStructuredData } from './structured-data';
 import { siteConfig } from '@/lib/site';
 
 interface SEOProviderProps {
@@ -54,8 +53,6 @@ export function SEOProvider({
         noIndex={noIndex}
         canonicalUrl={canonicalUrl}
       />
-      <WebsiteStructuredData />
-      <PersonStructuredData />
       {children}
     </>
   );

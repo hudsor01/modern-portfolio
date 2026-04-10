@@ -72,6 +72,11 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     }
   }
 
+  const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
+    title: post.title,
+    ...(post.category?.name && { category: post.category.name }),
+  }).toString()}`
+
   return {
     title: post.metaTitle || post.title,
     description: post.metaDescription || post.excerpt,
@@ -81,14 +86,14 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       description: post.excerpt || post.metaDescription,
       url: `https://richardwhudsonjr.com/blog/${post.slug}`,
       siteName: 'Richard Hudson - RevOps Professional',
-      images: post.featuredImage ? [
+      images: [
         {
-          url: `https://richardwhudsonjr.com${post.featuredImage}`,
+          url: ogImageUrl,
           width: 1200,
           height: 630,
-          alt: post.featuredImageAlt || post.title,
+          alt: post.title,
         },
-      ] : undefined,
+      ],
       locale: 'en_US',
       type: 'article',
       publishedTime: post.publishedAt,
@@ -101,7 +106,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       card: 'summary_large_image',
       title: post.title,
       description: post.excerpt || post.metaDescription,
-      images: post.featuredImage ? [`https://richardwhudsonjr.com${post.featuredImage}`] : undefined,
+      images: [ogImageUrl],
     },
     alternates: {
       canonical: `https://richardwhudsonjr.com/blog/${post.slug}`,
