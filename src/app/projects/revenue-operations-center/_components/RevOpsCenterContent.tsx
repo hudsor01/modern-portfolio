@@ -26,19 +26,19 @@ function TabSkeleton() {
 // Lazy load tab components - only active tab loads
 const OverviewTab = nextDynamic(() => import('./OverviewTab').then(m => ({ default: m.OverviewTab })), {
   loading: () => <TabSkeleton />,
-  ssr: true,
+  ssr: false,
 })
 const PipelineTab = nextDynamic(() => import('./PipelineTab').then(m => ({ default: m.PipelineTab })), {
   loading: () => <TabSkeleton />,
-  ssr: true,
+  ssr: false,
 })
 const ForecastingTab = nextDynamic(() => import('./ForecastingTab').then(m => ({ default: m.ForecastingTab })), {
   loading: () => <TabSkeleton />,
-  ssr: true,
+  ssr: false,
 })
 const OperationsTab = nextDynamic(() => import('./OperationsTab').then(m => ({ default: m.OperationsTab })), {
   loading: () => <TabSkeleton />,
-  ssr: true,
+  ssr: false,
 })
 
 const tabs = ['overview', 'pipeline', 'forecasting', 'operations'] as const

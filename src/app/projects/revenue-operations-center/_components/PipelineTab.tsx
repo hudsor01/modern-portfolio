@@ -15,7 +15,7 @@ const PipelineHealthChart = dynamic(
   () => import('./PipelineHealthChart').catch(() => ({ default: ChartLoadError })),
   {
     loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
-    ssr: true
+    ssr: false
   }
 )
 

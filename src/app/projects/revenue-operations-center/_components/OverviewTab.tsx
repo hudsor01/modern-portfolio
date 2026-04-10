@@ -15,7 +15,7 @@ const RevenueOverviewChart = dynamic(
   () => import('./RevenueOverviewChart').catch(() => ({ default: ChartLoadError })),
   {
     loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
-    ssr: true
+    ssr: false
   }
 )
 
@@ -23,7 +23,7 @@ const OperationalMetricsChart = dynamic(
   () => import('./OperationalMetricsChart').catch(() => ({ default: ChartLoadError })),
   {
     loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
-    ssr: true
+    ssr: false
   }
 )
 
