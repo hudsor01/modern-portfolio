@@ -18,11 +18,11 @@ export function buildEnhancedCSP(options: {
   styleNonce: string
   isDev?: boolean
 }): string {
-  const { scriptNonce, styleNonce, isDev = false } = options
+  const { scriptNonce, isDev = false } = options
   const directives = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${scriptNonce}' https://vercel.live https://va.vercel-scripts.com https://vitals.vercel-insights.com 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ''}`,
-    `style-src 'self' ${isDev ? "'unsafe-inline'" : `'nonce-${styleNonce}'`} https://fonts.googleapis.com`,
+    `script-src 'self' 'nonce-${scriptNonce}' https://vercel.live https://va.vercel-scripts.com https://vitals.vercel-insights.com${isDev ? " 'unsafe-eval'" : ''}`,
+    `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
     "img-src 'self' data: blob: https: *.unsplash.com",
     "font-src 'self' https://fonts.gstatic.com",
     "connect-src 'self' https://vercel.live https://va.vercel-scripts.com https://vitals.vercel-insights.com",
@@ -32,7 +32,6 @@ export function buildEnhancedCSP(options: {
     "form-action 'self'",
     "frame-ancestors 'none'",
     'upgrade-insecure-requests',
-    'block-all-mixed-content',
   ]
 
   // Add reporting in production
