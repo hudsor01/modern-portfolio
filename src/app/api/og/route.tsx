@@ -136,7 +136,7 @@ export async function GET(request: NextRequest) {
       width: 1200,
       height: 630,
       headers: {
-        'Cache-Control': 'public, immutable, max-age=31536000',
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=86400',
       },
     }
   )
