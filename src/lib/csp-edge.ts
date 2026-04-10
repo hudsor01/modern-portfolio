@@ -6,22 +6,20 @@
  */
 
 /**
- * Build Enhanced CSP with nonce support
+ * Build CSP header string.
  *
- * Used by proxy.ts to generate per-request Content Security Policy headers.
- *
- * @param options - scriptNonce, styleNonce, and isDev flag
- * @returns CSP header string
+ * Uses 'unsafe-inline' for script-src because Next.js 16 proxy does not
+ * propagate nonces to framework-generated inline scripts (hydration bootstrap).
+ * A nonce in script-src causes browsers to ignore 'unsafe-inline', which
+ * blocks those scripts and prevents hydration entirely.
  */
 export function buildEnhancedCSP(options: {
-  scriptNonce: string
-  styleNonce: string
   isDev?: boolean
-}): string {
-  const { scriptNonce, isDev = false } = options
+} = {}): string {
+  const { isDev = false } = options
   const directives = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${scriptNonce}' https://vercel.live https://va.vercel-scripts.com https://vitals.vercel-insights.com${isDev ? " 'unsafe-eval'" : ''}`,
+    `script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com https://vitals.vercel-insights.com${isDev ? " 'unsafe-eval'" : ''}`,
     `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
     "img-src 'self' data: blob: https: *.unsplash.com",
     "font-src 'self' https://fonts.gstatic.com",
