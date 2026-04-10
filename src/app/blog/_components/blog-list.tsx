@@ -24,6 +24,7 @@ interface BlogListProps {
 export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
   // URL state management with nuqs - shareable category links
   const [selectedCategory, setSelectedCategory] = useQueryState('category', { defaultValue: 'All' })
+  const [searchQuery, setSearchQuery] = useQueryState('q', { defaultValue: '' })
 
   // Build category list with "All" option
   const categoryTags = ['All', ...initialCategories.map((c) => c.name)]
@@ -40,10 +41,14 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
     { All: initialPosts.length }
   )
 
-  // Filter posts by selected category
-  const filteredPosts = selectedCategory === 'All'
-    ? initialPosts
-    : initialPosts.filter((post) => post.category?.name === selectedCategory)
+  // Filter posts by selected category and search query
+  const filteredPosts = initialPosts.filter((post) => {
+    const matchesCategory = selectedCategory === 'All' || post.category?.name === selectedCategory
+    const matchesSearch = !searchQuery
+      || post.title.toLowerCase().includes(searchQuery.toLowerCase())
+      || post.excerpt?.toLowerCase().includes(searchQuery.toLowerCase())
+    return matchesCategory && matchesSearch
+  })
 
   function formatDate(dateString: string | undefined): string {
     if (!dateString) return ''
@@ -65,6 +70,17 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
           Insights on revenue operations, data analytics, and business growth strategies.
         </p>
       </header>
+
+      {/* Search Input */}
+      <div className="mb-6">
+        <input
+          type="search"
+          placeholder="Search blog posts..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value || null)}
+          className="w-full max-w-md px-4 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+        />
+      </div>
 
       {/* Category Filter */}
       <div className="mb-10">
@@ -121,7 +137,7 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
         </div>
       ) : (
         <div className="py-16 text-center">
-          <p className="typography-muted">No posts found in this category.</p>
+          <p className="typography-muted">No posts found matching your filters.</p>
         </div>
       )}
     </div>

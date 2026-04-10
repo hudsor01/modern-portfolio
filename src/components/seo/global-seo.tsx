@@ -45,7 +45,7 @@ export function GlobalSEO({
   const pageDescription = description || siteConfig.description;
 
   // Use provided image or default
-  const pageImage = ogImage || siteConfig.ogImage;
+  const pageImage = ogImage || '';
 
   // JSON-LD structured data
   const structuredData = {

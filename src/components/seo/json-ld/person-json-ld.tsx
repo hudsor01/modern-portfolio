@@ -3,6 +3,7 @@
  * SEO structured data for Richard Hudson's personal profile
  */
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
+import { siteConfig } from '@/lib/site'
 
 export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
   const jsonLd = {
@@ -12,7 +13,7 @@ export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
     alternateName: 'Richard W. Hudson Jr.',
     jobTitle: 'Senior Revenue Operations Specialist',
     description: 'Senior Revenue Operations Specialist in Dallas-Fort Worth with proven expertise in sales automation, partnership program development, and data-driven growth strategies. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. $4.8M+ revenue generated, 432% transaction growth achieved.',
-    url: 'https://richardwhudsonjr.com',
+    url: siteConfig.url,
     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face&q=80',
     sameAs: [
       'https://www.linkedin.com/in/hudsor01',
@@ -27,7 +28,7 @@ export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
       addressCountry: 'US',
     },
     email: 'contact@richardwhudsonjr.com',
-    telephone: '+1-555-REVOPS',
+    telephone: '+1-214-566-0279',
     workLocation: {
       '@type': 'Place',
       name: 'Dallas-Fort Worth Metroplex',
@@ -41,7 +42,7 @@ export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
     worksFor: {
       '@type': 'Organization',
       name: 'Hudson Digital Solutions',
-      url: 'https://richardwhudsonjr.com',
+      url: siteConfig.url,
     },
     hasCredential: [
       {

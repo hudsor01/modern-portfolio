@@ -229,6 +229,34 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // IndexNow: notify search engines of new published content (per D-01)
+    // Fire-and-forget: do NOT await — must not delay the 201 response (per D-04)
+    if (newPost.status === 'PUBLISHED') {
+      const indexNowKey = process.env.INDEXNOW_KEY
+      if (indexNowKey) {
+        const postUrl = `https://richardwhudsonjr.com/blog/${newPost.slug}`
+        fetch('https://api.indexnow.org/indexnow', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json; charset=utf-8' },
+          body: JSON.stringify({
+            host: 'richardwhudsonjr.com',
+            key: indexNowKey,
+            keyLocation: `https://richardwhudsonjr.com/${indexNowKey}.txt`,
+            urlList: [postUrl],
+          }),
+        }).then(res => {
+          if (!res.ok) {
+            logger.warn(`IndexNow ping failed: HTTP ${res.status} for ${postUrl}`)
+          } else {
+            logger.info(`IndexNow ping sent for ${postUrl}`)
+          }
+        }).catch(err => {
+          // Network failure must not surface — swallow and log (per D-04)
+          logger.warn('IndexNow ping network error', { error: err instanceof Error ? err.message : String(err) })
+        })
+      }
+    }
+
     const response: ApiResponse<BlogPostData> = {
       data: transformToBlogPostData(newPost),
       success: true,
