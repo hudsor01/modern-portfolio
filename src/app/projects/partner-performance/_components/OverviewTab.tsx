@@ -5,11 +5,11 @@ import { ChartContainer } from '@/components/ui/chart-container'
 
 const PartnerTierChart = dynamicImport(() => import('./PartnerTierChart'), {
   loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
-  ssr: true,
+  ssr: false,
 })
 const RevenueContributionChart = dynamicImport(() => import('./RevenueContributionChart'), {
   loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
-  ssr: true,
+  ssr: false,
 })
 
 export function OverviewTab() {
