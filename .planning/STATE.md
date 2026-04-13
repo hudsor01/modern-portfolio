@@ -57,6 +57,10 @@ Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (0/4
 | 7 | Sitemap & Indexing | IDX-01 through IDX-04 (4 req) |
 | 8 | Technical SEO | TSEO-01 through TSEO-05 (5 req) |
 
+### Roadmap Evolution
+
+- Phase 5.2 inserted after Phase 5: Repo Hygiene & Audit Fixes (URGENT — branch audit/actionable-fixes)
+
 ### Carry-forward constraints
 
 - No DB queries at build time — NEXT_PHASE guards already in place

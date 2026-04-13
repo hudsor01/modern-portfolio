@@ -8,8 +8,10 @@ const nextConfig = {
   compress: true,
   basePath: '',
 
-  // React Compiler disabled - requires babel-plugin-react-compiler
-  // reactCompiler: true,
+  // React Compiler — stable in Next.js 16, bundled (no babel plugin dependency).
+  // SWC pre-filters JSX/hook files before Babel runs, so build-time impact is small.
+  // Ref: https://nextjs.org/docs/app/api-reference/config/next-config-js/reactCompiler
+  reactCompiler: true,
 
   // External packages that shouldn't be bundled (required for Prisma + Turbopack)
   serverExternalPackages: ['@prisma/client', '@prisma/adapter-pg'],
@@ -57,8 +59,13 @@ const nextConfig = {
             value: 'nosniff',
           },
           {
+            // Explicitly disabled. The header is non-standard, removed from
+            // Chrome/Edge/Firefox, and `1; mode=block` can enable reflected
+            // XSS via response-splitting on legacy engines that still honor
+            // it. CSP (nonced, set in proxy.ts) is the real XSS control.
+            // Refs: OWASP Secure Headers, MDN X-XSS-Protection.
             key: 'X-XSS-Protection',
-            value: '1; mode=block',
+            value: '0',
           },
           {
             key: 'Referrer-Policy',

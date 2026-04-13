@@ -1,11 +1,36 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { timingSafeEqual } from 'node:crypto';
 import { db } from '@/lib/db';
+import { logger } from '@/lib/logger';
+import { env } from '@/lib/env-validation';
 
-export async function GET() {
+function isAuthorized(request: NextRequest): boolean {
+  const expected = env.ADMIN_API_TOKEN;
+  if (!expected) return false;
+
+  const header = request.headers.get('authorization') ?? '';
+  const match = header.match(/^Bearer\s+(.+)$/i);
+  if (!match) return false;
+
+  const provided = (match[1] ?? '').trim();
+  const a = Buffer.from(provided);
+  const b = Buffer.from(expected);
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
+}
+
+export async function POST(request: NextRequest) {
+  if (!isAuthorized(request)) {
+    logger.warn('Unauthorized seed attempt', { route: 'api/seed' });
+    return NextResponse.json(
+      { success: false, error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+
   try {
-    console.log('🌱 Seeding database via API...');
-
-    // Check if already seeded
+    // Idempotency check — runs before the work-starting log so the log line
+    // reflects reality instead of firing on every 200-no-op response.
     const existingPosts = await db.blogPost.count();
     if (existingPosts > 0) {
       return NextResponse.json({
@@ -13,6 +38,8 @@ export async function GET() {
         message: 'Database already has data'
       });
     }
+
+    logger.info('Seeding database via API', { route: 'api/seed' });
 
     // Create author
     const author = await db.author.create({
@@ -136,7 +163,11 @@ In the age of big data, making decisions based on intuition alone is no longer s
     });
 
   } catch (error) {
-    console.error('Seeding failed:', error);
+    logger.error(
+      'Seeding failed',
+      error instanceof Error ? error : new Error(String(error)),
+      { route: 'api/seed' }
+    );
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'
