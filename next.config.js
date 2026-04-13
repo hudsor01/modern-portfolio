@@ -59,8 +59,13 @@ const nextConfig = {
             value: 'nosniff',
           },
           {
+            // Explicitly disabled. The header is non-standard, removed from
+            // Chrome/Edge/Firefox, and `1; mode=block` can enable reflected
+            // XSS via response-splitting on legacy engines that still honor
+            // it. CSP (nonced, set in proxy.ts) is the real XSS control.
+            // Refs: OWASP Secure Headers, MDN X-XSS-Protection.
             key: 'X-XSS-Protection',
-            value: '1; mode=block',
+            value: '0',
           },
           {
             key: 'Referrer-Policy',
