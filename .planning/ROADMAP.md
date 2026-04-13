@@ -39,13 +39,24 @@ Plans:
 
 ### Phase 05.2: Repo Hygiene & Audit Fixes (INSERTED)
 
-**Goal:** [Urgent work - to be planned]
-**Requirements**: TBD
+**Goal:** Close 7 actionable findings from the repo audit plus bring `bun audit` to zero highs/criticals.
+**Requirements:**
+- Route stray `console.*` through the structured logger
+- Add repo README and fix the `.gitignore` blanket rule hiding markdown
+- Enable React Compiler (stable in Next.js 16)
+- Re-enable pre-push vitest gate
+- Add env-validation + contact-route test coverage
+- Patch all `bun audit --audit-level=high` findings (bump swiper, override transitives)
 **Depends on:** Phase 5
-**Plans:** 0 plans
+**Plans:** delivered inline in branch `audit/actionable-fixes`
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 05.2 to break down)
+- [x] Route seed + loading-patterns logs through `logger`
+- [x] Add README.md + un-ignore `README.md`/`CLAUDE.md`
+- [x] Enable React Compiler (`babel-plugin-react-compiler@1.0.0`)
+- [x] Re-enable pre-push vitest hook
+- [x] Add env-validation tests (+11) and contact route tests (+3)
+- [x] Bump swiper to 12.1.3 and add npm-compatible `overrides` for defu/vite/minimatch/serialize-javascript/flatted/rollup/picomatch
 
 ### Phase 5.1: Structured Data Bug Fixes
 **Goal**: Fix 4 integration bugs found in Phase 5 audit — broken SearchAction URL, missing BreadcrumbList on 7 project pages, Blog omitted from navigation schema, wrong GitHub URL in blog publisher
