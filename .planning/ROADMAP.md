@@ -37,6 +37,16 @@ Plans:
 - [x] 05-03-PLAN.md — WebSite SearchAction, NavigationJsonLd, blog search filter
 **UI hint**: yes
 
+### Phase 05.2: Repo Hygiene & Audit Fixes (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Requirements**: TBD
+**Depends on:** Phase 5
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 05.2 to break down)
+
 ### Phase 5.1: Structured Data Bug Fixes
 **Goal**: Fix 4 integration bugs found in Phase 5 audit — broken SearchAction URL, missing BreadcrumbList on 7 project pages, Blog omitted from navigation schema, wrong GitHub URL in blog publisher
 **Depends on**: Phase 5 (fixes bugs in Phase 5 output)
