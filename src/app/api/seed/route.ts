@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { logger } from '@/lib/logger';
 
 export async function GET() {
   try {
-    console.log('🌱 Seeding database via API...');
+    logger.info('Seeding database via API', { route: 'api/seed' });
 
     // Check if already seeded
     const existingPosts = await db.blogPost.count();
@@ -136,7 +137,11 @@ In the age of big data, making decisions based on intuition alone is no longer s
     });
 
   } catch (error) {
-    console.error('Seeding failed:', error);
+    logger.error(
+      'Seeding failed',
+      error instanceof Error ? error : new Error(String(error)),
+      { route: 'api/seed' }
+    );
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'
