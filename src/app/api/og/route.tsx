@@ -1,7 +1,10 @@
 import { ImageResponse } from 'next/og'
 import { NextRequest } from 'next/server'
 
-export const runtime = 'edge'
+// No `runtime = 'edge'` declaration — Fluid Compute (Node.js) is the current
+// Vercel default and runs next/og ImageResponse natively. Edge runtime also
+// triggered a "disables static generation" build warning on this dynamic
+// route, which was load-bearing (query params mean it can't be static anyway).
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
