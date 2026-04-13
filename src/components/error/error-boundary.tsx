@@ -83,29 +83,29 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       return (
         <div className="flex items-center justify-center min-h-[400px] p-6">
           <div className="w-full max-w-md text-center">
-            <div className="p-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xs">
-              <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 bg-destructive/10 dark:bg-destructive-bg rounded-full">
-                <AlertTriangle className="w-8 h-8 text-destructive dark:text-destructive" />
+            <div className="p-8 bg-card border border-border rounded-xl shadow-xs">
+              <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 bg-destructive/10 rounded-full">
+                <AlertTriangle className="w-8 h-8 text-destructive" />
               </div>
-              
-              <h3 className="typography-h4 text-slate-900 dark:text-white mb-4">
+
+              <h3 className="typography-h4 text-foreground mb-4">
                 Something went wrong
               </h3>
 
               {this.props.showErrorDetails && this.state.error && process.env.NODE_ENV === 'development' && (
-                <div className="mb-6 p-4 bg-destructive/5 dark:bg-destructive-bg border border-destructive/20 dark:border-destructive/80 rounded-lg text-left">
-                  <p className="text-sm text-destructive dark:text-destructive mb-2 font-mono">
+                <div className="mb-6 p-4 bg-destructive/5 border border-destructive/20 rounded-lg text-left">
+                  <p className="text-sm text-destructive mb-2 font-mono">
                     {this.state.error.message}
                   </p>
                   {this.state.errorInfo?.componentStack && (
-                    <pre className="text-xs text-destructive dark:text-destructive overflow-auto max-h-32">
+                    <pre className="text-xs text-destructive overflow-auto max-h-32">
                       {this.state.errorInfo.componentStack}
                     </pre>
                   )}
                 </div>
               )}
 
-              <p className="text-slate-600 dark:text-slate-400 mb-8">
+              <p className="text-muted-foreground mb-8">
                 {process.env.NODE_ENV === 'development' 
                   ? 'Check the console for more details.'
                   : 'Please refresh the page or try again later.'

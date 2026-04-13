@@ -17,7 +17,7 @@ export function ProcessingMetrics() {
           <div key={index} className="bg-white/5 rounded-xl p-4 border border-white/10">
             <p className="text-sm text-muted-foreground mb-2">{metric.metric}</p>
             <p className="text-2xl font-semibold mb-1">{metric.value}</p>
-            <p className="text-sm flex items-center gap-1 text-green-600 dark:text-green-400">
+            <p className="text-sm flex items-center gap-1 text-success">
               <TrendingUp className="w-4 h-4" />
               {metric.improvement}
             </p>

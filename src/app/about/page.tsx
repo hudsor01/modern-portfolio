@@ -53,7 +53,7 @@ const BENTO_FEATURES = [
     href: '/projects',
     cta: 'View Projects',
     className: 'md:col-span-2',
-    background: <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-secondary/5" />
+    background: <div className="absolute inset-0 bg-primary/5" />
   },
   {
     Icon: BarChart3,
@@ -62,7 +62,7 @@ const BENTO_FEATURES = [
     href: '/projects',
     cta: 'See Analytics',
     className: '',
-    background: <div className="absolute inset-0 bg-linear-to-br from-primary/3 to-transparent" />
+    background: <div className="absolute inset-0 bg-primary/5" />
   },
   {
     Icon: Award,
@@ -71,7 +71,7 @@ const BENTO_FEATURES = [
     href: '/resume',
     cta: 'View Resume',
     className: '',
-    background: <div className="absolute inset-0 bg-linear-to-br from-secondary/3 to-transparent" />
+    background: <div className="absolute inset-0 bg-secondary/5" />
   },
   {
     Icon: Target,
@@ -80,7 +80,7 @@ const BENTO_FEATURES = [
     href: '/contact',
     cta: 'Let\'s Talk',
     className: '',
-    background: <div className="absolute inset-0 bg-linear-to-br from-primary/4 to-secondary/3" />
+    background: <div className="absolute inset-0 bg-accent/5" />
   }
 ]
 

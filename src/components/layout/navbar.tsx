@@ -4,22 +4,13 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
-import type { NextLinkHref } from '@/types/next-types'
-import { getRouteKey } from '@/lib/route-utils'
+import { asRoute, getRouteKey } from '@/lib/route-utils'
+import { navConfig } from '@/lib/site'
 
-type NavItem = {
-  label: string
-  href: NextLinkHref
-}
-
-const navItems: NavItem[] = [
-  { label: 'Home', href: '/' },
-  { label: 'About', href: '/about' },
-  { label: 'Projects', href: '/projects' },
-  { label: 'Blog', href: '/blog' },
-  { label: 'Resume', href: '/resume' },
-  { label: 'Contact', href: '/contact' },
-]
+// Single source of truth: navConfig.mainNav. Also consumed by
+// navigation-json-ld.tsx (SEO) and command-menu.tsx (Cmd+K) — keeping one
+// list prevents the three from drifting out of sync.
+const navItems = navConfig.mainNav
 
 export function Navbar() {
   const pathname = usePathname()
@@ -42,7 +33,7 @@ export function Navbar() {
                   {navItems.map((item, index) => (
                     <Link
                       key={getRouteKey(item.href, index)}
-                      href={item.href}
+                      href={asRoute(item.href)}
                       className={`relative text-base font-medium transition-all duration-300 ease-out px-4 py-2 rounded-lg ${
                         pathname === item.href
                           ? 'text-primary bg-primary/5'
@@ -50,7 +41,7 @@ export function Navbar() {
                       }`}
                     >
                       <div className="relative">
-                        {item.label}
+                        {item.title}
                         {pathname === item.href && (
                           <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-0.5 w-5 bg-primary rounded-full" />
                         )}
@@ -89,7 +80,7 @@ export function Navbar() {
                 {navItems.map((item, index) => (
                   <Link
                     key={getRouteKey(item.href, index)}
-                    href={item.href}
+                    href={asRoute(item.href)}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`block w-full text-left px-4 py-3 rounded-lg transition-all duration-300 ease-out text-base font-medium min-h-[44px] flex items-center ${
                       pathname === item.href
@@ -97,7 +88,7 @@ export function Navbar() {
                         : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                     }`}
                   >
-                    {item.label}
+                    {item.title}
                   </Link>
                 ))}
                 <Link

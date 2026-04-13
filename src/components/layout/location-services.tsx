@@ -37,7 +37,7 @@ export function LocationServices({ city, services }: LocationServicesProps) {
 
         <div className="grid lg:grid-cols-2 gap-8">
           {services.map((service, index) => (
-            <Card key={index} className="p-8 bg-white border-0 shadow-lg hover:shadow-xl transition-shadow">
+            <Card key={index} className="p-8 bg-card border-0 shadow-lg hover:shadow-xl transition-shadow">
               <div className="space-y-6">
                 {/* Service Header */}
                 <div>
@@ -97,7 +97,7 @@ export function LocationServices({ city, services }: LocationServicesProps) {
 
         {/* Bottom CTA */}
         <div className="text-center mt-12">
-          <Card className="max-w-2xl mx-auto p-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-primary/20">
+          <Card className="max-w-2xl mx-auto p-8 bg-primary/5 border-primary/20">
             <h3 className="typography-h3 text-foreground mb-4">
               Ready to Transform Your Revenue Operations?
             </h3>
