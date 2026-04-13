@@ -234,17 +234,6 @@ export default function HomePageContent() {
                     </div>
                   </div>
 
-                  {/* Certifications */}
-                  <div className="mt-6 pt-6 border-t border-border">
-                    <div className="flex flex-wrap gap-2">
-                      <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
-                        Salesloft Certified
-                      </span>
-                      <span className="px-3 py-1 bg-secondary/10 text-secondary text-xs font-medium rounded-full">
-                        HubSpot RevOps
-                      </span>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
