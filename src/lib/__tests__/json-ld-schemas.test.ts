@@ -371,8 +371,7 @@ describe('NavigationJsonLd schema', () => {
     }
   })
 
-  // TODO(phase-5.1): unskip once navConfig.mainNav includes Blog (ROADMAP).
-  it.skip('contains Blog in navigation items', () => {
+  it('contains Blog in navigation items', () => {
     expect(navData.name).toContain('Blog')
     expect(stringified).toContain('/blog')
   })
