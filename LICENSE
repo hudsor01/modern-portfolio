@@ -1,0 +1,35 @@
+Copyright (c) 2026 Richard Hudson. All rights reserved.
+
+This repository ("modern-portfolio") contains the source code for the
+personal website at https://richardwhudsonjr.com.
+
+The source is published for transparency and portfolio-review purposes only.
+No license — express or implied — is granted to use, copy, modify, merge,
+publish, distribute, sublicense, or sell any portion of this software or
+its associated content, including but not limited to:
+
+  - Written content (blog posts, project case studies, resume text, bio)
+  - Brand assets (name, likeness, logos, images, typography choices)
+  - Design and layout
+  - Configuration that embeds proprietary business information
+
+Exceptions:
+
+  1. Third-party dependencies declared in package.json remain governed by
+     their own licenses (found in node_modules/<pkg>/LICENSE). Nothing in
+     this file modifies or supersedes those upstream licenses.
+
+  2. Generic implementation patterns, idiomatic Next.js / React code, and
+     small code fragments that contain no proprietary content may be
+     referenced for learning purposes with attribution.
+
+If you have a specific use case that would require a license (e.g., forking
+a component, reusing an approach for a client project, or quoting content),
+contact hello@richardwhudsonjr.com to request permission.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN
+ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

@@ -6,6 +6,7 @@
  */
 
 import * as React from 'react'
+import { logger } from '@/lib/logger'
 
 // ============================================================================
 // LOADING STATE TYPES
@@ -416,7 +417,7 @@ export async function withErrorHandling<T>(
   } catch (error) {
     const errorObj = error instanceof Error ? error : new Error(String(error))
     errorHandler?.(errorObj)
-    console.error('Operation failed:', errorObj)
+    logger.error('Operation failed', errorObj)
     return null
   }
 }
