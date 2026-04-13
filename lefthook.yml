@@ -10,7 +10,7 @@ pre-commit:
 
 pre-push:
   commands:
-    # Tests are run in CI - skip on push to avoid blocking
-    # Uncomment below if you want to run tests on push (warning: slow)
-    # tests:
-    #   run: bun test
+    # Vitest suite runs in ~500ms — fast enough for pre-push.
+    # Bypass with `git push --no-verify` if needed.
+    tests:
+      run: bunx vitest run --passWithNoTests
