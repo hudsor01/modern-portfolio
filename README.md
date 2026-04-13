@@ -1,129 +1,192 @@
-# Modern Portfolio
+# modern-portfolio
 
-Personal portfolio for Richard Hudson — revenue operations, projects, blog, resume. Production site: [richardwhudsonjr.com](https://richardwhudsonjr.com).
+Personal portfolio and revenue-operations site for Richard Hudson.
+Production: **[richardwhudsonjr.com](https://richardwhudsonjr.com)**.
+
+Marketing content, project case studies, a blog backed by Postgres, a
+contact form, and a downloadable resume — all rendered by the Next.js 16
+App Router, deployed to Vercel.
+
+---
 
 ## Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | [Next.js 16](https://nextjs.org) (App Router, Turbopack) |
-| UI | React 19, Tailwind CSS 4, shadcn/ui, Radix primitives |
-| Language | TypeScript 5.9 (strict) |
-| Database | PostgreSQL via [Neon](https://neon.tech) + [Prisma 7](https://www.prisma.io) |
-| Email | [Resend](https://resend.com) |
-| Observability | [Sentry](https://sentry.io), [Vercel Analytics](https://vercel.com/analytics) |
-| Testing | Vitest 4, Playwright 1.57, `@axe-core/playwright` |
-| Runtime | Bun 1.3.6, Node.js 22–24 |
-| Hosting | [Vercel](https://vercel.com) |
+| Layer           | Choice                                                              |
+| --------------- | ------------------------------------------------------------------- |
+| Framework       | Next.js 16 (App Router, Turbopack, React Compiler)                  |
+| UI              | React 19 · Tailwind CSS 4 · shadcn/ui · Radix primitives · Motion   |
+| Language        | TypeScript 5.9 (strict)                                             |
+| Database        | PostgreSQL on [Neon](https://neon.tech) via Prisma 7                |
+| Email           | [Resend](https://resend.com)                                        |
+| Observability   | Sentry · Vercel Analytics                                           |
+| Runtime         | Bun 1.3.x · Node.js 22–24                                           |
+| Testing         | Vitest 4 · Playwright 1.57 · `@axe-core/playwright`                 |
+| Hosting         | Vercel (region `iad1`)                                              |
+
+See `package.json` for exact pinned versions.
+
+---
 
 ## Quickstart
 
 ```bash
 bun install
-cp .env.example .env.local   # fill in values (see Environment Variables)
-bun run db:generate
-bun run dev                  # http://localhost:3000
+cp .env.example .env.local          # fill in DATABASE_URL + RESEND_API_KEY at minimum
+bun run db:generate                 # generate Prisma client
+bun run dev                         # http://localhost:3000
 ```
+
+`bun install` runs under the Bun package manager. Node.js is also supported
+as a runtime (≥22 <25).
+
+---
 
 ## Scripts
 
-| Script | Purpose |
-|---|---|
-| `bun run dev` | Start Next.js dev server (Turbopack) |
-| `bun run build` | Production build |
-| `bun run start` | Serve production build |
-| `bun run lint` / `lint:fix` | ESLint (flat config) |
-| `bun run typecheck` | `tsc --noEmit` |
-| `bun run ci:quick` | lint + typecheck (CI gate) |
-| `bun test` | Vitest unit tests |
-| `bun run test:watch` | Vitest watch mode |
-| `bun run test:coverage` | Vitest + v8 coverage |
-| `bun run e2e` | Playwright end-to-end |
-| `bun run e2e:ui` | Playwright UI mode |
-| `bun run db:generate` | Regenerate Prisma client |
-| `bun run db:push` | Push schema to DB (dev) |
-| `bun run db:migrate` | Create + apply dev migration |
-| `bun run db:migrate:deploy` | Apply migrations in prod/CI |
-| `bun run db:studio` | Open Prisma Studio |
-| `bun run db:seed` | Seed via `prisma db seed` |
+| Script                              | Purpose                                           |
+| ----------------------------------- | ------------------------------------------------- |
+| `bun run dev`                       | Dev server (Turbopack)                            |
+| `bun run build` / `build:ci`        | Production build                                  |
+| `bun run start`                     | Serve the production build                        |
+| `bun run lint` / `lint:fix`         | ESLint (flat config)                              |
+| `bun run typecheck`                 | `tsc --noEmit`                                    |
+| `bun run ci:quick`                  | lint + typecheck (the gate lefthook runs locally) |
+| `bun test` / `test:watch`           | Vitest                                            |
+| `bun run test:coverage`             | Vitest + v8 coverage                              |
+| `bun run e2e` / `e2e:ui` / `e2e:headed` | Playwright                                    |
+| `bun run db:generate`               | `prisma generate`                                 |
+| `bun run db:push` / `db:push:dev`   | `prisma db push` (non-migration schema sync)      |
+| `bun run db:migrate`                | `prisma migrate dev` (create + apply locally)     |
+| `bun run db:migrate:deploy`         | `prisma migrate deploy` (apply pending in prod)   |
+| `bun run db:studio`                 | Open Prisma Studio                                |
+| `bun run db:seed`                   | Seed via `prisma db seed`                         |
+| `bun run db:reset`                  | **Destructive** — `prisma migrate reset`          |
+| `bun run generate-sitemap`          | Static sitemap generator (fallback to app/sitemap.ts) |
 
-## Environment Variables
+---
 
-Source of truth: [`src/lib/env-validation.ts`](src/lib/env-validation.ts) (Zod schema, validated at startup).
+## Environment variables
 
-### Required (runtime)
+Source of truth for user-facing variables: `.env.example` at the repo root.
+Runtime-validated variables are defined with a Zod schema in
+[`src/lib/env-validation.ts`](src/lib/env-validation.ts) and validated at
+module import time — boot fails loudly if anything is malformed.
 
-| Var | Notes |
-|---|---|
-| `DATABASE_URL` | PostgreSQL connection string (`postgresql://…` or `postgres://…`). Optional at build time (CI skips via `SKIP_DB_VALIDATION=true`). |
-| `RESEND_API_KEY` | API key for the contact form email delivery. |
+Required at runtime:
 
-### Optional (with defaults or feature-gated)
+- `DATABASE_URL` — PostgreSQL connection string (Neon or local)
+- `RESEND_API_KEY` — Resend API key for contact-form email
 
-| Var | Default | Purpose |
-|---|---|---|
-| `NODE_ENV` | `development` | `development` \| `production` \| `test` |
-| `NEXT_PUBLIC_SITE_URL` | `https://richardwhudsonjr.com` (prod) / `http://localhost:3000` (dev) | Must use HTTPS in production. Drives CSP, canonical URLs, OG. |
-| `FROM_EMAIL` | `contact@richardwhudsonjr.com` | Sender address for contact form. |
-| `TO_EMAIL` | `hello@richardwhudsonjr.com` | Inbox address for contact form. |
-| `CONTACT_EMAIL` | — | Override for `TO_EMAIL`. |
-| `ALLOWED_ORIGINS` | `[]` | Comma-separated CORS allowlist. |
-| `USE_LOCAL_DB` | `false` | Use local Postgres adapter instead of Neon. |
-| `JWT_SECRET` | — | 32–512 chars. Currently unused but validated if set. |
-| `JWT_EXPIRES_IN` | — | Format `1h`, `30m`, `7d`. |
-| `ADMIN_API_TOKEN` | — | ≥32 chars. |
-| `METRICS_API_TOKEN` | — | ≥32 chars; gates `/api/metrics`. |
-| `LOG_LEVEL` | `info` (prod) / `debug` (dev) | `debug` \| `info` \| `warn` \| `error` \| `fatal` |
-| `ENABLE_FILE_LOGGING` | `false` | Opt-in file transport in production. |
-| `VERCEL_URL` / `NEXT_PUBLIC_VERCEL_URL` | — | Set automatically by Vercel. |
+See `.env.example` for the complete list (Sentry DSN, sampling rates,
+log level, CORS allowlist, Google verification, IndexNow, etc.).
 
-Build-time tip: set `SKIP_DB_VALIDATION=true` and `NEXT_PHASE=phase-production-build` in CI environments without DB access — the build guard pattern in `src/lib/db.ts` handles this.
+Build-time tip: set `SKIP_DB_VALIDATION=true` when building in CI without a
+live DB. `src/lib/db.ts` and the Next.js `NEXT_PHASE` guards already handle
+the "no DB during `next build`" case for sitemap / blog pages.
 
-## Project Structure
+---
+
+## Project structure
 
 ```
-src/
-├── app/              # Next.js App Router (routes, API handlers, layout)
-├── components/       # UI components (shadcn, Radix, SEO JSON-LD)
-├── lib/              # db, logger, env-validation, csp, csrf, api-response
-├── hooks/            # React hooks
-├── types/            # Shared TypeScript types
-├── data/             # Static content
-├── styles/           # Tailwind globals
-└── generated/prisma/ # Prisma client (auto-generated; do not edit)
-prisma/               # schema, migrations, seed
-.planning/            # GSD workflow planning artifacts
-proxy.ts              # Next.js 16 root proxy (headers, redirects)
+.
+├── src/
+│   ├── app/                 # App Router: routes, API handlers, layout
+│   │   ├── api/             # Route handlers (contact, health, seed, metrics…)
+│   │   ├── blog/            # Blog list + [slug] detail
+│   │   ├── projects/        # Case-study pages
+│   │   └── ...              # about, contact, resume, etc.
+│   ├── components/          # UI (shadcn + Radix), SEO JSON-LD, error boundary
+│   ├── lib/                 # db, logger, env-validation, csp-edge, csrf, utils
+│   ├── hooks/               # React hooks
+│   ├── types/               # Shared TypeScript types
+│   ├── data/                # Static content (projects, etc.)
+│   ├── styles/              # Tailwind globals
+│   └── generated/prisma/    # Generated Prisma client (do not edit)
+├── prisma/                  # schema.prisma, migrations, seed
+├── e2e/                     # Playwright tests
+├── scripts/                 # generate-sitemap.js, etc.
+├── proxy.ts                 # Next.js 16 root proxy (replaces middleware.ts)
+├── instrumentation.ts       # Next.js instrumentation hook (Sentry bootstrap)
+├── sentry.{client,server,edge}.config.ts
+├── next.config.js
+├── vercel.json              # framework, buildCommand, redirects
+└── .planning/               # GSD planning artifacts (git-ignored in repo)
 ```
+
+---
 
 ## Security
 
-- Strict CSP with per-request nonces ([`src/lib/csp-edge.ts`](src/lib/csp-edge.ts))
-- CSRF protection on mutating API routes ([`src/lib/csrf-protection.ts`](src/lib/csrf-protection.ts))
-- Env validation at startup (Zod) — production requires HTTPS site URL
-- HSTS (1 yr, preload), Permissions-Policy, X-Frame-Options DENY, nosniff
-- Automated dependency patching via Renovate with security auto-merge
-- `bun audit --audit-level=high` gates every PR
+See [SECURITY.md](SECURITY.md) for the full posture and how to report
+vulnerabilities. Summary:
+
+- **Strict CSP** with per-request nonces — [`src/lib/csp-edge.ts`](src/lib/csp-edge.ts)
+- **CSRF** on mutating API routes — [`src/lib/csrf-protection.ts`](src/lib/csrf-protection.ts)
+- **Rate limiting** on contact submissions — `src/lib/rate-limiter/`
+- **Zod env validation** at startup, with production-only HTTPS enforcement
+- **Security headers**: HSTS (1 yr, preload), X-Frame-Options `DENY`,
+  `nosniff`, Permissions-Policy (camera/mic/geolocation denied)
+- **Dependency hygiene**: `bun audit --audit-level=high` gates every PR via
+  GitHub Actions; Renovate keeps dependencies current
+- **Error routing**: `console.*` is banned in application code; everything
+  flows through `src/lib/logger.ts` → Sentry in production
+
+---
+
+## Testing
+
+- **Unit / integration** — Vitest (`bun test`, 174+ tests, ~500 ms)
+- **E2E** — Playwright with Chromium by default; axe-core accessibility checks
+- **Pre-push hook** (`lefthook.yml`) runs `bunx vitest run --passWithNoTests`
+  to prevent known-broken code from reaching CI. Bypass with
+  `git push --no-verify` when intentional.
+
+---
 
 ## Deployment
 
-Vercel handles builds and deploys automatically on push to `main`:
+Vercel handles builds on push:
 
-1. Connect the repo in Vercel dashboard
-2. Set required env vars (at minimum `DATABASE_URL`, `RESEND_API_KEY`)
-3. Vercel detects Next.js 16 and builds with `bun run build`
-4. Preview deployments generated per pull request
+- **Config**: `vercel.json` (framework `nextjs`, build command `bun run build`,
+  region `iad1`)
+- **Build**: Next.js 16 with React Compiler enabled (`next.config.js`)
+- **Preview deploys** are generated for every pull request
+- **Environment variables** are set via the Vercel dashboard (or
+  `vercel env add`). `.env.local` is never uploaded
 
-Production migrations: `bun run db:migrate:deploy` runs against Neon as part of the Vercel build step.
+### Database migrations
 
-## Development Workflow
+**`prisma migrate deploy` is not currently wired into the Vercel build.**
+`vercel.json`'s `buildCommand` is just `bun run build`. Until that changes,
+migrations must be applied manually:
 
-- Lefthook runs `lint-staged` (ESLint --fix) on pre-commit
-- All non-trivial work flows through the [GSD workflow](/.planning) (see `CLAUDE.md`)
-- Atomic commits preferred — message style: `type(scope): subject`
+```bash
+# from a machine with DATABASE_URL pointed at Neon production
+bun run db:migrate:deploy
+```
+
+If this gets wired into `buildCommand` (e.g. `prisma migrate deploy && bun run build`),
+update this section.
+
+---
+
+## Development workflow
+
+- Lefthook runs `lint-staged` (ESLint `--fix`) on pre-commit
+- Lefthook runs `vitest run` on pre-push
+- Non-trivial work flows through the GSD workflow in `.planning/` (see
+  `CLAUDE.md`) — small fixes use `/gsd:quick`, investigations use
+  `/gsd:debug`, and planned phases use `/gsd:execute-phase`
+- Atomic commits preferred. Commit style: `type(scope): subject`
+- Commit trailer required by CLAUDE.md: `[hudsor01]`
+
+---
 
 ## License
 
-Private — all rights reserved.
+All rights reserved. See [LICENSE](LICENSE).
 
-Author: Richard Hudson — [richardwhudsonjr.com](https://richardwhudsonjr.com)
+---
+
+**Author**: Richard Hudson — [richardwhudsonjr.com](https://richardwhudsonjr.com) · [github.com/hudsor01](https://github.com/hudsor01) · [linkedin.com/in/hudsor01](https://linkedin.com/in/hudsor01)
