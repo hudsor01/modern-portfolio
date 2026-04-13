@@ -1,8 +1,33 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { timingSafeEqual } from 'node:crypto';
 import { db } from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { env } from '@/lib/env-validation';
 
-export async function GET() {
+function isAuthorized(request: NextRequest): boolean {
+  const expected = env.ADMIN_API_TOKEN;
+  if (!expected) return false;
+
+  const header = request.headers.get('authorization') ?? '';
+  const match = header.match(/^Bearer\s+(.+)$/i);
+  if (!match) return false;
+
+  const provided = (match[1] ?? '').trim();
+  const a = Buffer.from(provided);
+  const b = Buffer.from(expected);
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
+}
+
+export async function GET(request: NextRequest) {
+  if (!isAuthorized(request)) {
+    logger.warn('Unauthorized seed attempt', { route: 'api/seed' });
+    return NextResponse.json(
+      { success: false, error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+
   try {
     logger.info('Seeding database via API', { route: 'api/seed' });
 
