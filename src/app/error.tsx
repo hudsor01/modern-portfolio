@@ -11,18 +11,18 @@ export default function ErrorPage({
   reset: () => void
 }>) {
   return (
-    <div className="flex items-center justify-center min-h-screen p-4 bg-slate-50 dark:bg-slate-900">
+    <div className="flex items-center justify-center min-h-screen p-4 bg-background">
       <div className="w-full max-w-md text-center">
-        <div className="p-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xs">
-          <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 bg-destructive/10 dark:bg-destructive-bg rounded-full">
-            <AlertTriangle className="w-8 h-8 text-destructive dark:text-destructive" />
+        <div className="p-8 bg-card border border-border rounded-xl shadow-xs">
+          <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 bg-destructive/10 rounded-full">
+            <AlertTriangle className="w-8 h-8 text-destructive" />
           </div>
 
-          <h2 className="typography-h3 text-slate-900 dark:text-white mb-4">
+          <h2 className="typography-h3 text-foreground mb-4">
             Something went wrong
           </h2>
 
-          <p className="text-slate-600 dark:text-slate-400 mb-8">
+          <p className="text-muted-foreground mb-8">
             We're sorry, but something unexpected happened. Please try again or contact support if the problem persists.
           </p>
 

@@ -11,42 +11,46 @@ interface WhatIBringItem {
   color: string
 }
 
+// Palette rotation: primary (navy) → secondary (forest green) → accent (bronze).
+// Globals.css forbids pink/purple/burgundy and off-palette hues. Six traits
+// cycle through the three palette colors so each card still reads distinct
+// without leaving the luxury-minimalist palette.
 const WHAT_I_BRING: WhatIBringItem[] = [
   {
     title: 'Systems Thinking',
     description: "I don't just fix symptoms. I redesign workflows that prevent issues from recurring.",
     icon: Target,
-    color: 'text-blue-500'
+    color: 'text-primary'
   },
   {
     title: 'Data Fluency',
     description: 'Translate SQL queries into executive narratives. Make numbers tell stories that drive decisions.',
     icon: BarChart3,
-    color: 'text-cyan-500'
+    color: 'text-secondary'
   },
   {
     title: 'Bias for Action',
     description: "Certified in SalesLoft & HubSpot, but I ship improvements before the certification arrives.",
     icon: Zap,
-    color: 'text-yellow-500'
+    color: 'text-accent'
   },
   {
     title: 'Bridge Builder',
     description: 'Translate between sales, marketing, finance, and engineering—making everyone feel heard.',
     icon: Users,
-    color: 'text-green-500'
+    color: 'text-primary'
   },
   {
     title: 'Strategic Simplifier',
     description: 'Turn complex multi-system architectures into intuitive workflows anyone can understand.',
     icon: Brain,
-    color: 'text-purple-500'
+    color: 'text-secondary'
   },
   {
     title: 'Growth Catalyst',
     description: 'Build systems that scale with you—from startup chaos to enterprise precision.',
     icon: Rocket,
-    color: 'text-orange-500'
+    color: 'text-accent'
   }
 ]
 

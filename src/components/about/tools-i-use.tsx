@@ -20,19 +20,22 @@ interface Tool {
   color: string
 }
 
+// Tool icon backgrounds — vendor brand hex literals stripped (palette rule
+// forbids arbitrary brand colors). Each tool maps to a palette token that
+// approximates its brand hue, preserving visual variety across the grid.
 const TOOLS: Tool[] = [
-  { name: 'Salesforce', category: 'CRM', icon: Zap, color: 'bg-[#00A1E0]' },
-  { name: 'HubSpot', category: 'CRM', icon: TrendingUp, color: 'bg-[#FF7A59]' },
-  { name: 'SalesLoft', category: 'Sales Engagement', icon: Mail, color: 'bg-[#1F4788]' },
-  { name: 'PowerBI', category: 'Analytics', icon: BarChart3, color: 'bg-[#F2C811]' },
-  { name: 'Tableau', category: 'Analytics', icon: BarChart3, color: 'bg-[#E97627]' },
-  { name: 'SQL', category: 'Database', icon: Database, color: 'bg-[#00758F]' },
-  { name: 'Excel', category: 'Spreadsheet', icon: Table, color: 'bg-[#217346]' },
-  { name: 'Python', category: 'Programming', icon: Code, color: 'bg-[#3776AB]' },
-  { name: 'Zapier', category: 'Automation', icon: Zap, color: 'bg-[#FF4F00]' },
-  { name: 'Notion', category: 'Documentation', icon: FileText, color: 'bg-black dark:bg-white' },
-  { name: 'Slack', category: 'Collaboration', icon: Users, color: 'bg-[#4A154B]' },
-  { name: 'Google Sheets', category: 'Spreadsheet', icon: Table, color: 'bg-[#34A853]' },
+  { name: 'Salesforce', category: 'CRM', icon: Zap, color: 'bg-primary' },
+  { name: 'HubSpot', category: 'CRM', icon: TrendingUp, color: 'bg-accent' },
+  { name: 'SalesLoft', category: 'Sales Engagement', icon: Mail, color: 'bg-primary' },
+  { name: 'PowerBI', category: 'Analytics', icon: BarChart3, color: 'bg-warning' },
+  { name: 'Tableau', category: 'Analytics', icon: BarChart3, color: 'bg-accent' },
+  { name: 'SQL', category: 'Database', icon: Database, color: 'bg-primary' },
+  { name: 'Excel', category: 'Spreadsheet', icon: Table, color: 'bg-secondary' },
+  { name: 'Python', category: 'Programming', icon: Code, color: 'bg-primary' },
+  { name: 'Zapier', category: 'Automation', icon: Zap, color: 'bg-accent' },
+  { name: 'Notion', category: 'Documentation', icon: FileText, color: 'bg-foreground' },
+  { name: 'Slack', category: 'Collaboration', icon: Users, color: 'bg-secondary' },
+  { name: 'Google Sheets', category: 'Spreadsheet', icon: Table, color: 'bg-success' },
 ]
 
 interface ToolsIUseProps {

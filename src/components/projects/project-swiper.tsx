@@ -240,12 +240,12 @@ export function ProjectSwiper({
                         quality={80}
                       />
                     ) : (
-                      <div className="from-muted/40 to-muted/70 text-muted-foreground flex h-full w-full items-center justify-center bg-gradient-to-br">
+                      <div className="bg-muted/60 text-muted-foreground flex h-full w-full items-center justify-center">
                         No Preview
                       </div>
                     )}
                     {/* Enhanced image overlay with improved hover effects */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 backdrop-blur transition-all duration-300 ease-out group-hover:opacity-100">
+                    <div className="absolute inset-0 bg-black/50 opacity-0 backdrop-blur transition-all duration-300 ease-out group-hover:opacity-100">
                       <div className="absolute bottom-0 w-full p-4">
                         <div className="flex flex-wrap gap-2">
                           <Button

@@ -17,7 +17,6 @@ export function Achievements() {
       description:
         'Spearheaded strategies resulting in significant annual revenue growth through data-driven optimization.',
       icon: BarChart2,
-      color: '#60a5fa',
     },
     {
       stat: '2,200%',
@@ -25,14 +24,12 @@ export function Achievements() {
       description:
         'Led initiatives resulting in significant partner network growth and transaction increase.',
       icon: Users,
-      color: '#60a5fa',
     },
     {
       stat: '40%',
       title: 'Process Optimization',
       description: 'Implemented cross-functional workflow integrations, reducing processing time.',
       icon: Lightbulb,
-      color: '#60a5fa',
     },
   ]
 
@@ -60,13 +57,10 @@ export function Achievements() {
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className="flex items-center mb-4">
-                <div
-                  className="w-12 h-12 rounded-full flex items-center justify-center mr-4"
-                  style={{ backgroundColor: `${achievement.color}10` }}
-                >
-                  <achievement.icon size={24} color={achievement.color} />
+                <div className="w-12 h-12 rounded-full flex items-center justify-center mr-4 bg-primary/10">
+                  <achievement.icon size={24} className="text-primary" />
                 </div>
-                <h3 className="typography-h1 text-xl" style={{ color: achievement.color }}>
+                <h3 className="typography-h1 text-xl text-primary">
                   {achievement.stat}
                 </h3>
               </div>

@@ -59,17 +59,17 @@ export function IncentivesTab() {
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
                         program.effectiveness >= 85
-                          ? 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400'
+                          ? 'bg-success/10 text-success'
                           : program.effectiveness >= 75
-                            ? 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/20 dark:text-yellow-400'
-                            : 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
+                            ? 'bg-warning/10 text-warning'
+                            : 'bg-destructive/10 text-destructive'
                       }`}
                     >
                       {formatPercentage(program.effectiveness / 100)}
                     </span>
                   </td>
                   <td className="py-4 px-4">{formatCurrency(program.avgBonus)}</td>
-                  <td className="py-4 px-4 text-green-600 dark:text-green-400 flex items-center gap-1">
+                  <td className="py-4 px-4 text-success flex items-center gap-1">
                     <TrendingUp className="w-4 h-4" />+
                     {formatPercentage(program.performanceLift / 100)}
                   </td>

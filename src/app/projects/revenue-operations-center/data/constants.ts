@@ -61,7 +61,7 @@ export const departmentMetrics = [
 
 export const alertTypeStyles = {
   success: 'bg-success/20 text-success border-success/30',
-  warning: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+  warning: 'bg-warning/20 text-warning border-warning/30',
   error: 'bg-destructive/20 text-destructive border-destructive/30',
   info: 'bg-primary/20 text-primary border-primary/30',
 }
