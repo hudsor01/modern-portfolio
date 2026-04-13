@@ -47,8 +47,8 @@ function SkillCard({ skillGroup }: SkillCardProps) {
 
   return (
     <Card className="bg-card border border-border rounded-2xl hover:border-primary/50 hover:-translate-y-1 transition-all duration-300 overflow-hidden">
-      {/* Gradient background overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent" />
+      {/* Background tint — solid primary wash (palette rule: no gradients) */}
+      <div className="absolute inset-0 bg-primary/5" />
 
       <CardContent className="relative p-6">
         {/* Icon and Title */}

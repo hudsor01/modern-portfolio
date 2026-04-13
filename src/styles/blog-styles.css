@@ -365,15 +365,12 @@
       max-width: 100%;
       height: auto;
       
-      /* Lazy loading placeholder */
+      /* Lazy loading placeholder — solid muted tint (palette rule: no color
+         gradients). The pulse animation via @keyframes below still signals
+         "loading" without a color-gradient shimmer. */
       &[loading="lazy"] {
-        background: linear-gradient(90deg, 
-          oklch(0.95 0.005 240) 25%, 
-          oklch(0.98 0.005 240) 50%, 
-          oklch(0.95 0.005 240) 75%
-        );
-        background-size: 200% 100%;
-        animation: shimmer 2s infinite;
+        background-color: var(--color-muted);
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
       }
     }
     

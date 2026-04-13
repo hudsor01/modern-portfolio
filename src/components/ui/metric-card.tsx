@@ -119,15 +119,16 @@ const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
         style={{ animationDelay: `${animationDelay}ms` }}
         {...props}
       >
-        {/* Subtle glow effect */}
+        {/* Subtle glow effect — solid tint + blur-xl achieves the halo
+             without a gradient (palette rule: no gradients). */}
         <div
           className={cn(
             'absolute inset-0 rounded-xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 ease-out',
-            variant === 'primary' && 'bg-gradient-to-r from-primary/20 to-primary/5',
-            variant === 'secondary' && 'bg-gradient-to-r from-secondary/20 to-secondary/5',
-            variant === 'success' && 'bg-gradient-to-r from-success/20 to-success/5',
-            variant === 'warning' && 'bg-gradient-to-r from-warning/20 to-warning/5',
-            variant === 'info' && 'bg-gradient-to-r from-primary/20 to-primary/5'
+            variant === 'primary' && 'bg-primary/15',
+            variant === 'secondary' && 'bg-secondary/15',
+            variant === 'success' && 'bg-success/15',
+            variant === 'warning' && 'bg-warning/15',
+            variant === 'info' && 'bg-primary/15'
           )}
         />
 

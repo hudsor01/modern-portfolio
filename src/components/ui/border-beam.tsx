@@ -56,8 +56,11 @@ export const BorderBeam = ({
   size = 50,
   delay = 0,
   duration = 6,
-  colorFrom = '#ffaa40',
-  colorTo = '#9c40ff',
+  // Palette-compliant defaults (was: orange→purple brand hex, purple forbidden).
+  // The beam itself is a motion effect, not a color fill — palette tokens keep
+  // it aligned with the rest of the UI while preserving the animated highlight.
+  colorFrom = 'var(--color-primary)',
+  colorTo = 'var(--color-accent)',
   transition,
   style,
   reverse = false,

@@ -56,8 +56,8 @@ export const ProjectCard = React.memo(function ProjectCard({
               />
             )}
 
-            {/* Subtle gradient overlay */}
-            <div className="absolute inset-0 bg-linear-to-t from-black/50 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            {/* Hover darken — solid tint (palette rule: no gradients) */}
+            <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
             {/* Primary Metric Badge - Shows on hover - DISABLED due to icon serialization issue */}
 

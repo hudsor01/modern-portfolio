@@ -89,8 +89,8 @@ export default function HomePageContent() {
       <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
         {/* Sophisticated Background */}
         <div className="absolute inset-0 -z-10">
-          {/* Base gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/30" />
+          {/* Base surface — solid (palette: no gradients) */}
+          <div className="absolute inset-0 bg-background" />
 
           {/* Geometric pattern overlay */}
           <div
@@ -256,8 +256,8 @@ export default function HomePageContent() {
       {/* Impact Section */}
       <section className="py-16 lg:py-20 bg-muted/30 relative overflow-hidden">
         {/* Decorative elements */}
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+        <div className="absolute top-0 left-0 w-full h-px bg-border/60" />
+        <div className="absolute bottom-0 left-0 w-full h-px bg-border/60" />
 
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           {/* Section header */}

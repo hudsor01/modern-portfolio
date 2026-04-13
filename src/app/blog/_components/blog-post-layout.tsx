@@ -54,7 +54,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
       <div className="mt-8 grid gap-12 lg:grid-cols-[minmax(0,1fr)_280px]">
         <div>
           {/* Header */}
-          <header className="relative overflow-hidden rounded-md border border-border bg-gradient-to-br from-card via-card to-muted/40 p-8 shadow-sm">
+          <header className="relative overflow-hidden rounded-md border border-border bg-card p-8 shadow-sm">
 
             <div className="relative">
               {/* Category + Date */}
@@ -121,7 +121,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
                 priority
                 sizes="(max-width: 768px) 100vw, 960px"
               />
-              <div className="absolute inset-0 bg-gradient-to-tr from-black/40 via-transparent to-black/10" />
+              <div className="absolute inset-0 bg-black/20" />
               {post.featuredImageAlt && (
                 <figcaption className="absolute bottom-4 left-4 rounded-md bg-background/80 px-3 py-1 text-xs text-foreground shadow-sm">
                   {post.featuredImageAlt}

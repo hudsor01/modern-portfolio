@@ -29,12 +29,12 @@ export async function GET(request: NextRequest) {
           position: 'relative',
         }}
       >
-        {/* Top accent bar: gradient navy to blue */}
+        {/* Top accent bar — solid primary (palette rule: no gradients). */}
         <div
           style={{
             width: '1200px',
             height: '8px',
-            background: 'linear-gradient(to right, #1a1a2e, #4a90d9)',
+            backgroundColor: '#1a1a2e',
             flexShrink: 0,
           }}
         />
@@ -61,7 +61,8 @@ export async function GET(request: NextRequest) {
                 style={{
                   fontSize: '18px',
                   fontWeight: 600,
-                  color: '#4a90d9',
+                  // Accent/bronze approximating --color-accent (oklch 0.55 0.12 55)
+                  color: '#a66a30',
                   textTransform: 'uppercase',
                   letterSpacing: '0.1em',
                 }}

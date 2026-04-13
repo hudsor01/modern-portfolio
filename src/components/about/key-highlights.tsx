@@ -48,8 +48,10 @@ export function KeyHighlights({ highlights, className = '' }: KeyHighlightsProps
             ))}
           </div>
 
+          {/* Fade-out affordance for truncated content — solid card tint
+               with a mask-image (opacity-only, not a color gradient). */}
           {hasMore && !isExpanded && (
-            <div className="absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-card via-card/95 to-transparent pointer-events-none" />
+            <div className="absolute bottom-0 left-0 right-0 h-24 bg-card [mask-image:linear-gradient(to_top,black_0%,transparent_100%)] pointer-events-none" />
           )}
 
           {hasMore && (
