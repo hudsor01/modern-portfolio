@@ -131,6 +131,9 @@ vulnerabilities. Summary:
   GitHub Actions; Renovate keeps dependencies current
 - **Error routing**: `console.*` is banned in application code; everything
   flows through `src/lib/logger.ts` → Sentry in production
+- **Admin endpoints**: `/api/seed` (POST) requires `Authorization: Bearer
+  $ADMIN_API_TOKEN`, checked with `crypto.timingSafeEqual`. Fails closed
+  when the token is unset.
 
 ---
 
