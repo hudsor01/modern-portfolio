@@ -64,3 +64,5 @@ reports/
 screenshots/
 *.csv
 *.md
+!README.md
+!CLAUDE.md
