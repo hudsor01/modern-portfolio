@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 // Mock external dependencies BEFORE importing the route module.
 vi.mock('@/lib/rate-limiter/helpers', () => ({
@@ -49,7 +49,7 @@ describe('POST /api/contact', () => {
     vi.mocked(checkContactFormRateLimit).mockReturnValue({
       allowed: true,
       remaining: 4,
-      resetAt: Date.now() + 60_000,
+      resetTime: Date.now() + 60_000,
     })
     vi.mocked(validateCSRFOrRespond).mockResolvedValue(null)
   })
@@ -63,15 +63,15 @@ describe('POST /api/contact', () => {
     vi.mocked(checkContactFormRateLimit).mockReturnValue({
       allowed: false,
       remaining: 0,
-      resetAt: Date.now() + 60_000,
+      resetTime: Date.now() + 60_000,
     })
     const res = await POST(makeRequest(validBody))
     expect(res.status).toBe(429)
   })
 
   it('short-circuits on CSRF rejection', async () => {
-    const csrfRejection = new Response(
-      JSON.stringify({ success: false, error: 'csrf' }),
+    const csrfRejection = NextResponse.json(
+      { success: false, error: 'csrf' },
       { status: 403 }
     )
     vi.mocked(validateCSRFOrRespond).mockResolvedValue(csrfRejection)
