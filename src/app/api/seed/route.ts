@@ -19,7 +19,7 @@ function isAuthorized(request: NextRequest): boolean {
   return timingSafeEqual(a, b);
 }
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
   if (!isAuthorized(request)) {
     logger.warn('Unauthorized seed attempt', { route: 'api/seed' });
     return NextResponse.json(
@@ -29,9 +29,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    logger.info('Seeding database via API', { route: 'api/seed' });
-
-    // Check if already seeded
+    // Idempotency check — runs before the work-starting log so the log line
+    // reflects reality instead of firing on every 200-no-op response.
     const existingPosts = await db.blogPost.count();
     if (existingPosts > 0) {
       return NextResponse.json({
@@ -39,6 +38,8 @@ export async function GET(request: NextRequest) {
         message: 'Database already has data'
       });
     }
+
+    logger.info('Seeding database via API', { route: 'api/seed' });
 
     // Create author
     const author = await db.author.create({

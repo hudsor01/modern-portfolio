@@ -100,10 +100,10 @@ Defensive controls currently in place:
 
 - Single Postgres database on Neon, accessed only via Prisma with prepared
   statements (no string interpolation into SQL)
-- `/api/seed` is guarded by a "database already has data" check. Remains a
-  known gap: there is **no auth token on this route today** — tracked as a
-  follow-up. Do not deploy a freshly-reset DB to production without first
-  gating this route.
+- `/api/seed` is a **POST** guarded by (1) `Authorization: Bearer
+  $ADMIN_API_TOKEN` compared with `crypto.timingSafeEqual`, and (2) an
+  idempotency check that refuses to run when the blog-posts table is
+  non-empty. Fails closed when `ADMIN_API_TOKEN` is unset.
 
 ---
 
@@ -111,12 +111,9 @@ Defensive controls currently in place:
 
 These are publicly documented so reporters don't waste cycles on them:
 
-- `/api/seed` is not auth-gated beyond the "already seeded" check. Acceptable
-  on a populated prod DB; dangerous on an empty one. Tracked for a
-  follow-up PR.
-- `JWT_SECRET`, `ADMIN_API_TOKEN`, and `METRICS_API_TOKEN` are validated by
-  the env schema but not yet consumed by any route handler. Wiring them up
-  is tracked in `.planning/`.
+- `JWT_SECRET` and `METRICS_API_TOKEN` are validated by the env schema but
+  not yet consumed by any route handler. Wiring them up is tracked in
+  `.planning/`. `ADMIN_API_TOKEN` is now consumed by `/api/seed`.
 - `/api/sentry-debug` exists for observability verification and reveals
   which Sentry env vars are set (not their values). Consider removing or
   gating before any milestone where it is no longer needed.
