@@ -8,10 +8,11 @@ vi.mock('@/lib/rate-limiter/helpers', () => ({
 vi.mock('@/lib/api-csrf', () => ({
   validateCSRFOrRespond: vi.fn(),
 }))
+const sendMock = vi.fn().mockResolvedValue({ id: 'mock-id' })
 vi.mock('resend', () => ({
-  Resend: vi.fn().mockImplementation(() => ({
-    emails: { send: vi.fn().mockResolvedValue({ id: 'mock-id' }) },
-  })),
+  Resend: class {
+    emails = { send: sendMock }
+  },
 }))
 vi.mock('@/lib/env-validation', () => ({
   env: {
@@ -54,10 +55,12 @@ describe('POST /api/contact', () => {
     vi.mocked(validateCSRFOrRespond).mockResolvedValue(null)
   })
 
-  // TODO: happy-path 200 assertion needs contactFormSchema shape inspection +
-  // Resend mock wiring verification. Rate-limit, CSRF, and 400-validation
-  // paths are covered below and catch most regression classes.
-  it.todo('returns 200 on valid submission')
+  it('returns 200 on valid submission', async () => {
+    const res = await POST(makeRequest(validBody))
+    expect(res.status).toBe(200)
+    const json = await res.json()
+    expect(json).toMatchObject({ success: true })
+  })
 
   it('returns 429 when rate limit is exceeded', async () => {
     vi.mocked(checkContactFormRateLimit).mockReturnValue({
