@@ -27,44 +27,44 @@ interface NotificationItem {
   name: string
   description: string
   Icon: React.ElementType
-  color: string
+  /** Tailwind utility for the icon-bubble background (palette-compliant) */
+  bubbleClass: string
   time: string
 }
 
+// Palette-compliant semantic colors (no pink/purple/cyan/blue brand hex).
+// Icon bubbles map to functional meaning: success/accent/primary/secondary.
 const notifications: NotificationItem[] = [
-  { name: 'Revenue up 12%', description: 'Q4 targets exceeded', time: '15m ago', Icon: TrendingUp, color: '#00C9A7' },
-  { name: 'Deal closed', description: '$50K enterprise', time: '10m ago', Icon: Handshake, color: '#FFB800' },
-  { name: 'Pipeline +$2.1M', description: 'Monthly increase', time: '5m ago', Icon: PieChart, color: '#FF3D71' },
-  { name: 'Conversion +8%', description: 'Lead optimization', time: '2m ago', Icon: Target, color: '#1E86FF' },
+  { name: 'Revenue up 12%', description: 'Q4 targets exceeded', time: '15m ago', Icon: TrendingUp, bubbleClass: 'bg-success' },
+  { name: 'Deal closed', description: '$50K enterprise', time: '10m ago', Icon: Handshake, bubbleClass: 'bg-accent' },
+  { name: 'Pipeline +$2.1M', description: 'Monthly increase', time: '5m ago', Icon: PieChart, bubbleClass: 'bg-primary' },
+  { name: 'Conversion +8%', description: 'Lead optimization', time: '2m ago', Icon: Target, bubbleClass: 'bg-secondary' },
 ]
 
 // Repeat for continuous animation
 const repeatedNotifications = Array.from({ length: 10 }, () => notifications).flat()
 
-const Notification = ({ name, description, Icon, color, time }: NotificationItem) => {
+const Notification = ({ name, description, Icon, bubbleClass, time }: NotificationItem) => {
   return (
     <figure
       className={cn(
         'relative mx-auto min-h-fit w-full max-w-[400px] cursor-pointer overflow-hidden rounded-2xl p-4',
         'transition-all duration-200 ease-in-out hover:scale-[103%]',
-        'bg-white [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)]',
-        'transform-gpu dark:bg-transparent dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset] dark:backdrop-blur-md dark:[border:1px_solid_rgba(255,255,255,.1)]'
+        'bg-card border border-border shadow-sm',
+        'transform-gpu'
       )}
     >
       <div className="flex flex-row items-center gap-3">
-        <div
-          className="flex size-10 items-center justify-center rounded-2xl"
-          style={{ backgroundColor: color }}
-        >
+        <div className={cn('flex size-10 items-center justify-center rounded-2xl', bubbleClass)}>
           <Icon className="size-5 text-white" />
         </div>
         <div className="flex flex-col overflow-hidden">
-          <figcaption className="flex flex-row items-center whitespace-pre text-lg font-medium dark:text-white">
+          <figcaption className="flex flex-row items-center whitespace-pre text-lg font-medium text-foreground">
             <span className="text-sm sm:text-lg">{name}</span>
             <span className="mx-1">·</span>
-            <span className="text-xs text-gray-500">{time}</span>
+            <span className="text-xs text-muted-foreground">{time}</span>
           </figcaption>
-          <p className="text-sm font-normal dark:text-white/60">{description}</p>
+          <p className="text-sm font-normal text-muted-foreground">{description}</p>
         </div>
       </div>
     </figure>
@@ -79,7 +79,9 @@ function AnimatedListDemo({ className }: { className?: string }) {
           <Notification {...item} key={idx} />
         ))}
       </AnimatedList>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-background"></div>
+      {/* Fade-out affordance — opacity mask on solid background tint,
+           not a color gradient (palette rule). */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-background [mask-image:linear-gradient(to_top,black_0%,transparent_100%)]"></div>
     </div>
   )
 }
@@ -87,7 +89,7 @@ function AnimatedListDemo({ className }: { className?: string }) {
 function OrbitingCirclesDemo({ className }: { className?: string }) {
   return (
     <div className={cn('relative flex h-full w-full items-center justify-center overflow-hidden', className)}>
-      <span className="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text text-center text-4xl font-semibold leading-none text-transparent dark:from-white dark:to-slate-900/10">
+      <span className="pointer-events-none whitespace-pre-wrap text-center text-4xl font-semibold leading-none text-foreground">
         2,217%
       </span>
       <OrbitingCircles iconSize={30} radius={80}>
@@ -107,50 +109,52 @@ function OrbitingCirclesDemo({ className }: { className?: string }) {
   )
 }
 
-// Simple icon components
+// Orbiting icon bubbles. Brand hex literals stripped (palette rule forbids
+// cyan/purple/arbitrary brand colors); each maps to a semantic token so the
+// orbit keeps visual variety while staying on-palette.
 const Icons = {
   salesforce: () => (
-    <div className="flex size-8 items-center justify-center rounded-full bg-[#00A1E0] shadow-md">
+    <div className="flex size-8 items-center justify-center rounded-full bg-primary shadow-md">
       <Zap className="size-4 text-white" />
     </div>
   ),
   hubspot: () => (
-    <div className="flex size-8 items-center justify-center rounded-full bg-[#FF7A59] shadow-md">
+    <div className="flex size-8 items-center justify-center rounded-full bg-accent shadow-md">
       <Target className="size-4 text-white" />
     </div>
   ),
   slack: () => (
-    <div className="flex size-8 items-center justify-center rounded-full bg-[#4A154B] shadow-md">
+    <div className="flex size-8 items-center justify-center rounded-full bg-secondary shadow-md">
       <Mail className="size-4 text-white" />
     </div>
   ),
   zapier: () => (
-    <div className="flex size-8 items-center justify-center rounded-full bg-[#FF4F00] shadow-md">
+    <div className="flex size-8 items-center justify-center rounded-full bg-warning shadow-md">
       <Zap className="size-4 text-white" />
     </div>
   ),
   notion: () => (
-    <div className="flex size-8 items-center justify-center rounded-full bg-black shadow-md dark:bg-white">
-      <FileTextIcon className="size-4 text-white dark:text-black" />
+    <div className="flex size-8 items-center justify-center rounded-full bg-foreground shadow-md">
+      <FileTextIcon className="size-4 text-background" />
     </div>
   ),
   sheets: () => (
-    <div className="flex size-8 items-center justify-center rounded-full bg-[#34A853] shadow-md">
+    <div className="flex size-8 items-center justify-center rounded-full bg-success shadow-md">
       <BarChart3 className="size-4 text-white" />
     </div>
   ),
   analytics: () => (
-    <div className="flex size-8 items-center justify-center rounded-full bg-[#F9AB00] shadow-md">
+    <div className="flex size-8 items-center justify-center rounded-full bg-warning shadow-md">
       <TrendingUp className="size-4 text-white" />
     </div>
   ),
   mail: () => (
-    <div className="flex size-8 items-center justify-center rounded-full bg-[#EA4335] shadow-md">
+    <div className="flex size-8 items-center justify-center rounded-full bg-destructive shadow-md">
       <Mail className="size-4 text-white" />
     </div>
   ),
   database: () => (
-    <div className="flex size-8 items-center justify-center rounded-full bg-[#5865F2] shadow-md">
+    <div className="flex size-8 items-center justify-center rounded-full bg-primary shadow-md">
       <Database className="size-4 text-white" />
     </div>
   ),
@@ -175,15 +179,14 @@ const features = [
             key={idx}
             className={cn(
               'relative w-32 cursor-pointer overflow-hidden rounded-xl border p-4',
-              'border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]',
-              'dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]',
+              'border-border bg-muted/30 hover:bg-muted/60',
               'transform-gpu blur-[1px] transition-all duration-300 ease-out hover:blur-none'
             )}
           >
             <div className="flex flex-col">
-              <figcaption className="text-sm font-medium dark:text-white">{f.name}</figcaption>
+              <figcaption className="text-sm font-medium text-foreground">{f.name}</figcaption>
             </div>
-            <blockquote className="mt-2 text-xs">{f.body}</blockquote>
+            <blockquote className="mt-2 text-xs text-muted-foreground">{f.body}</blockquote>
           </figure>
         ))}
       </Marquee>
@@ -229,7 +232,7 @@ const features = [
             selected={new Date(2022, 4, 11, 0, 0, 0)}
             className="rounded-md border"
           />
-          <BorderBeam size={100} duration={8} colorFrom="#3b82f6" colorTo="#8b5cf6" />
+          <BorderBeam size={100} duration={8} colorFrom="var(--color-primary)" colorTo="var(--color-accent)" />
         </div>
       </div>
     ),

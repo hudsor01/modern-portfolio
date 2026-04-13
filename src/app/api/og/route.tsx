@@ -1,7 +1,10 @@
 import { ImageResponse } from 'next/og'
 import { NextRequest } from 'next/server'
 
-export const runtime = 'edge'
+// No `runtime = 'edge'` declaration — Fluid Compute (Node.js) is the current
+// Vercel default and runs next/og ImageResponse natively. Edge runtime also
+// triggered a "disables static generation" build warning on this dynamic
+// route, which was load-bearing (query params mean it can't be static anyway).
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
@@ -29,12 +32,12 @@ export async function GET(request: NextRequest) {
           position: 'relative',
         }}
       >
-        {/* Top accent bar: gradient navy to blue */}
+        {/* Top accent bar — solid primary (palette rule: no gradients). */}
         <div
           style={{
             width: '1200px',
             height: '8px',
-            background: 'linear-gradient(to right, #1a1a2e, #4a90d9)',
+            backgroundColor: '#1a1a2e',
             flexShrink: 0,
           }}
         />
@@ -61,7 +64,8 @@ export async function GET(request: NextRequest) {
                 style={{
                   fontSize: '18px',
                   fontWeight: 600,
-                  color: '#4a90d9',
+                  // Accent/bronze approximating --color-accent (oklch 0.55 0.12 55)
+                  color: '#a66a30',
                   textTransform: 'uppercase',
                   letterSpacing: '0.1em',
                 }}

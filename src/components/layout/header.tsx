@@ -47,7 +47,7 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           <Link
             href="/"
-            className="z-40 typography-h4 portfolio-text-gradient"
+            className="z-40 typography-h4 text-foreground"
             aria-label="Richard Hudson - Home"
           >
             Richard Hudson

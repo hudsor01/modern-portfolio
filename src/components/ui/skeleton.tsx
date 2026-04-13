@@ -56,7 +56,10 @@ function Skeleton({
         'bg-card/50 backdrop-blur-xs border border-border/50 rounded-lg',
         animationClasses,
         variantClasses[variant],
-        shimmer && 'relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-gray-600/20 before:to-transparent',
+        // Shimmer effect: solid muted highlight with an opacity mask for the
+        // edge fade. Keeps the shimmer UX without a color gradient (palette
+        // rule forbids color-based gradients; masks are opacity-only).
+        shimmer && 'relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-foreground/10 before:[mask-image:linear-gradient(to_right,transparent_0%,black_50%,transparent_100%)]',
         className
       )}
       {...props}

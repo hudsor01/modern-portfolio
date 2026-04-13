@@ -66,7 +66,7 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = ({ totalProje
         {/* Contact Card */}
         <Link
           href="/contact"
-          className="group relative p-8 bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/20 rounded-2xl transition-all duration-300 ease-out hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1"
+          className="group relative p-8 bg-primary/5 border-2 border-primary/20 rounded-2xl transition-all duration-300 ease-out hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1"
         >
           <div className="w-12 h-12 flex items-center justify-center bg-primary/10 border border-primary/20 rounded-xl mb-5 transition-colors duration-300 ease-out group-hover:bg-primary/20 group-hover:border-primary/30">
             <MessageSquare className="w-6 h-6 text-primary" />
