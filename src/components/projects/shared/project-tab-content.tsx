@@ -36,7 +36,6 @@ export function ProjectTabContent<T extends string>({
   const activeTabComponent = tabs.find((tab) => tab.id === activeTab)
 
   if (!activeTabComponent) {
-    console.warn(`Tab "${activeTab}" not found in tab components`)
     return null
   }
 
