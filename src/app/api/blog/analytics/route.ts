@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { ApiResponse, BlogAnalyticsData } from '@/types/api'
 import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
@@ -8,6 +9,9 @@ import {
   transformToTagData,
   createErrorResponse,
 } from '@/lib/api-blog'
+
+// Enum must stay in lockstep with getStartDate's switch cases below.
+const timeRangeSchema = z.enum(['7d', '30d', '90d', '1y']).default('30d')
 
 const logger = createContextLogger('AnalyticsAPI')
 
@@ -37,7 +41,15 @@ function getStartDate(timeRange: string): Date {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const timeRange = searchParams.get('timeRange') || '30d'
+    const timeRangeParam = searchParams.get('timeRange')
+    const timeRangeResult = timeRangeSchema.safeParse(timeRangeParam ?? undefined)
+    if (!timeRangeResult.success) {
+      return NextResponse.json(
+        createErrorResponse('Invalid timeRange; must be one of 7d, 30d, 90d, 1y'),
+        { status: 400 }
+      )
+    }
+    const timeRange = timeRangeResult.data
     const includeDetails = searchParams.get('details') === 'true'
     const startDate = getStartDate(timeRange)
 

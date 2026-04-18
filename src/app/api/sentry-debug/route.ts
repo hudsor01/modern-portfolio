@@ -1,10 +1,29 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import * as Sentry from '@sentry/nextjs'
+import { env } from '@/lib/env-validation'
+import { checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-rate-limit'
 
 /**
- * Debug endpoint to check Sentry configuration
+ * Debug endpoint to check Sentry configuration.
+ * Hidden in production (returns 404) so DSN host and env-var presence flags
+ * aren't exposed to the public internet.
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+  if (env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { success: false, error: 'Not found' },
+      { status: 404 }
+    )
+  }
+
+  const rateLimitResponse = checkRateLimitOrRespond(
+    request,
+    RateLimitPresets.read,
+    '/api/sentry-debug',
+    'GET'
+  )
+  if (rateLimitResponse) return rateLimitResponse
+
   const client = Sentry.getClient()
   const options = client?.getOptions()
 
