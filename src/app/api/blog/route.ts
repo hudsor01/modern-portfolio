@@ -12,6 +12,7 @@ import {
   createErrorResponse,
   generateSlug,
 } from '@/lib/api-blog'
+import { createBlogPostSchema } from '@/lib/schemas'
 
 const logger = createContextLogger('BlogAPI')
 
@@ -128,14 +129,13 @@ export async function POST(request: NextRequest) {
   if (csrfResponse) return csrfResponse
 
   try {
-    const body = await request.json()
-
-    // Validate required fields
-    if (!body.title || !body.content || !body.authorId) {
-      return NextResponse.json(createErrorResponse('Missing required fields: title, content, authorId'), {
-        status: 400,
-      })
+    const raw = await request.json()
+    const parsed = createBlogPostSchema.safeParse(raw)
+    if (!parsed.success) {
+      logger.warn('Blog POST validation failed', { issues: parsed.error.flatten() })
+      return NextResponse.json(createErrorResponse('Invalid request body'), { status: 400 })
     }
+    const body = parsed.data
 
     // Generate slug using shared utility
     const slug = generateSlug(body.title)
@@ -160,17 +160,17 @@ export async function POST(request: NextRequest) {
         slug,
         excerpt: body.excerpt,
         content: body.content,
-        contentType: body.contentType || 'MARKDOWN',
-        status: body.status || 'DRAFT',
+        contentType: body.contentType,
+        status: body.status,
 
         // SEO fields
         metaTitle: body.metaTitle,
         metaDescription: body.metaDescription,
-        keywords: body.keywords || [],
-        canonicalUrl: body.canonicalUrl,
+        keywords: body.keywords,
+        canonicalUrl: body.canonicalUrl || undefined,
 
         // Content metadata
-        featuredImage: body.featuredImage,
+        featuredImage: body.featuredImage || undefined,
         featuredImageAlt: body.featuredImageAlt,
         readingTime,
         wordCount,
@@ -192,7 +192,7 @@ export async function POST(request: NextRequest) {
         tags:
           body.tagIds && body.tagIds.length > 0
             ? {
-                create: body.tagIds.map((tagId: string) => ({
+                create: body.tagIds.map((tagId) => ({
                   tagId,
                 })),
               }
