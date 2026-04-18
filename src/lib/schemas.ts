@@ -139,6 +139,13 @@ export const createBlogPostSchema = z
     metaDescription: metaDescriptionSchema,
     keywords: keywordsSchema,
     canonicalUrl: optionalUrlSchema,
+    // Social card fields — match Prisma BlogPost model; max lengths come from @db.VarChar constraints
+    ogTitle: z.string().max(100).optional(),
+    ogDescription: z.string().max(300).optional(),
+    ogImage: optionalUrlSchema,
+    twitterTitle: z.string().max(100).optional(),
+    twitterDescription: z.string().max(200).optional(),
+    twitterImage: optionalUrlSchema,
     featuredImage: optionalUrlSchema,
     featuredImageAlt: z.string().max(200).optional(),
     categoryId: cuidSchema.optional(),
