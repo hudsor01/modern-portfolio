@@ -121,6 +121,36 @@ export const contactFormSchema = z.object({
 export type ContactFormValues = z.infer<typeof contactFormSchema>
 
 // =======================
+// BLOG POST SCHEMAS
+// =======================
+
+// Input schema for POST /api/blog — validates request body before Prisma create.
+// Uses cuidSchema (not uuid) because Prisma generates cuid IDs.
+// .strict() rejects unknown fields so mass-assignment attempts fail loudly.
+export const createBlogPostSchema = z
+  .object({
+    title: z.string().min(1, 'Title is required').max(200, 'Title cannot exceed 200 characters'),
+    content: z.string().min(1, 'Content is required').max(100_000, 'Content cannot exceed 100,000 characters'),
+    authorId: cuidSchema,
+    excerpt: z.string().max(500).optional(),
+    contentType: ContentTypeSchema.default(ContentType.MARKDOWN),
+    status: PostStatusSchema.default(PostStatus.DRAFT),
+    metaTitle: z.string().max(100).optional(),
+    metaDescription: metaDescriptionSchema,
+    keywords: keywordsSchema,
+    canonicalUrl: optionalUrlSchema,
+    featuredImage: optionalUrlSchema,
+    featuredImageAlt: z.string().max(200).optional(),
+    categoryId: cuidSchema.optional(),
+    tagIds: z.array(cuidSchema).max(10, 'Cannot attach more than 10 tags').optional(),
+    publishedAt: datetimeSchema.optional(),
+    scheduledAt: datetimeSchema.optional(),
+  })
+  .strict()
+
+export type CreateBlogPostInput = z.infer<typeof createBlogPostSchema>
+
+// =======================
 // PROJECT SCHEMAS
 // =======================
 

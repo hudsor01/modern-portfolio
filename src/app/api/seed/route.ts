@@ -20,6 +20,15 @@ function isAuthorized(request: NextRequest): boolean {
 }
 
 export async function POST(request: NextRequest) {
+  // Production gate: endpoint is invisible in production unless explicitly opted in.
+  // Returns 404 (not 401) so the route's existence isn't advertised to unauthenticated callers.
+  if (env.NODE_ENV === 'production' && env.ALLOW_SEED_IN_PRODUCTION !== 'true') {
+    return NextResponse.json(
+      { success: false, error: 'Not found' },
+      { status: 404 }
+    );
+  }
+
   if (!isAuthorized(request)) {
     logger.warn('Unauthorized seed attempt', { route: 'api/seed' });
     return NextResponse.json(
@@ -170,7 +179,7 @@ In the age of big data, making decisions based on intuition alone is no longer s
     );
     return NextResponse.json({
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: 'Seeding failed'
     }, { status: 500 });
   }
 }

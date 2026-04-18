@@ -38,6 +38,8 @@ const envSchema = z.object({
   ADMIN_API_TOKEN: z.string()
     .min(32, 'ADMIN_API_TOKEN must be at least 32 characters')
     .optional(),
+  // Production seed gate — /api/seed returns 404 in production unless set to 'true'
+  ALLOW_SEED_IN_PRODUCTION: z.enum(['true', 'false']).optional(),
   // Metrics API authentication
   METRICS_API_TOKEN: z.string()
     .min(32, 'METRICS_API_TOKEN must be at least 32 characters')
