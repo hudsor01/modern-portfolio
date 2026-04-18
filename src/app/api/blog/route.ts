@@ -169,6 +169,14 @@ export async function POST(request: NextRequest) {
         keywords: body.keywords,
         canonicalUrl: body.canonicalUrl || undefined,
 
+        // Social card fields (OG + Twitter)
+        ogTitle: body.ogTitle,
+        ogDescription: body.ogDescription,
+        ogImage: body.ogImage || undefined,
+        twitterTitle: body.twitterTitle,
+        twitterDescription: body.twitterDescription,
+        twitterImage: body.twitterImage || undefined,
+
         // Content metadata
         featuredImage: body.featuredImage || undefined,
         featuredImageAlt: body.featuredImageAlt,
