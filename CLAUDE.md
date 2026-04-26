@@ -24,7 +24,7 @@ Runtime: Bun 1.3.6, Node `>=22 <25` (`package.json:6-9`). Next.js 16.2.3, React 
 | `bun run db:migrate` / `db:migrate:deploy` | `migrate dev` / `migrate deploy` |
 | `bun run db:push` | Schema push, no migration file |
 | `bun run db:studio` | Prisma Studio |
-| `bun run db:seed` | `tsx prisma/seed.ts` (configured in `prisma.config.ts:16`) |
+| `bun run db:seed` | `bunx prisma db seed` (delegates to `tsx prisma/seed.ts` via `prisma.config.ts:16`) |
 | `bun run db:reset` | Wipe + reseed (dev only) |
 | `bun run generate-sitemap` | Writes `public/sitemap.xml` |
 
@@ -58,7 +58,7 @@ proxy.ts                  Next.js 16 successor to middleware.ts (see Auth/CSP).
 
 App Router conventions in use: dynamic segments (`[slug]`), private folders (`_components/`), per-route `metadata.ts` (e.g. `src/app/contact/metadata.ts`). **No** route groups (`(group)`), catch-alls, parallel routes, intercepting routes, or admin route — `vercel.json` redirects `/dashboard` → `/admin` but `/admin` does not exist.
 
-Path aliases (`tsconfig.json:43-79`): `@/*` → `src/*`. Specific aliases for `@/components`, `@/lib`, `@/hooks`, `@/types`, `@/app`, `@/styles`, `@/content`, `@/data`, `@/prisma/*`, plus `@/prisma/client` → `src/generated/prisma/index` and `@/prisma/browser` → `index-browser`. `@/content/*` is declared but no `src/content/` exists yet.
+Path aliases (`tsconfig.json:43-80`): `@/*` → `src/*`. Specific aliases for `@/components`, `@/lib`, `@/hooks`, `@/types`, `@/app`, `@/styles`, `@/content`, `@/data`, `@/prisma/*`, plus `@/prisma/client` → `src/generated/prisma/index` and `@/prisma/browser` → `index-browser`. `@/content/*` is declared but no `src/content/` exists yet.
 
 ## Database
 
@@ -78,7 +78,7 @@ Slug + email columns are `@db.Citext` (case-insensitive). `BlogPost` has soft-de
 
 **Client init** (`src/lib/db.ts`): exports `db` as a `Proxy` over a lazy singleton (`__prisma` on `globalThis`). Adapter chosen by `USE_LOCAL_DB`: `@prisma/adapter-pg` if `'true'`, `@prisma/adapter-neon` otherwise. PrismaClient is `require`'d inside `createPrismaClient()` to avoid runtime/WASM init in build workers that never query. `'server-only'` import enforces server-side use. Logging: `['query','error','warn']` in dev, `['error']` in prod.
 
-Seed (`prisma/seed.ts`): upsert-based, idempotent; uses `PrismaNeon`. Seeds 1 author, 5 categories (parent/child links built in a second upsert pass), 12 tags, projects from `src/data/projects`, 8 blog posts (6 published, 1 draft, 1 scheduled), then random views/interactions for published posts. Wipes data first when not production.
+Seed (`prisma/seed.ts`): upsert-based, idempotent; uses `PrismaNeon`. Seeds 1 author, 5 categories, 12 tags, projects from `src/data/projects`, 8 blog posts (6 published, 1 draft, 1 scheduled), then random views/interactions for published posts. Wipes data first when not production.
 
 ## API routes
 
@@ -100,7 +100,7 @@ Seed (`prisma/seed.ts`): upsert-based, idempotent; uses `PrismaNeon`. Seeds 1 au
 | `/api/projects/[slug]` | GET | `read` | — | — | `slugSchema` validates param |
 | `/api/og` | GET | — | — | — | Dynamic OG image (`route.tsx`) |
 | `/api/generate-resume-pdf` | GET | — | — | — | Returns 503 — puppeteer not installed |
-| `/api/sentry-debug` | GET | `read` | — | — | Returns 404 in production |
+| `/api/sentry-debug` | GET | — | — | — | Returns 404 in production; `RateLimitPresets.read` applied in non-prod |
 | `/api/seed` | POST | — | — | `ADMIN_API_TOKEN` | Returns 404 in production unless `ALLOW_SEED_IN_PRODUCTION='true'`; refuses if posts already exist |
 | `/api/security/metrics` | GET | — | — | `METRICS_API_TOKEN` (header `X-Metrics-Token`) | Exports rate-limiter metrics |
 
@@ -122,7 +122,7 @@ CSRF (`src/lib/csrf-protection.ts`): 32-byte hex token in HttpOnly + `SameSite=S
 
 `proxy.ts` is the **Next.js 16 successor to `middleware.ts`** — exports a function named `proxy` (not `middleware`). It generates a per-request base64 nonce, builds CSP via `buildEnhancedCSP()` from `src/lib/csp-edge.ts`, and sets it on both the downstream request (so `layout.tsx` can read `x-nonce` for inline JSON-LD) and the response. Matcher excludes `_next/static`, `_next/image`, `favicon.ico`, and image extensions.
 
-Static security headers in `next.config.js:48-161`: HSTS (`max-age=31536000; includeSubDomains; preload`), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `X-XSS-Protection: 0` (intentional — comment at L62-68 explains), `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` denies camera/mic/geolocation/topics. CSP itself is **only** set in `proxy.ts`, never in `headers()`.
+Static security headers in `next.config.js:48-162`: HSTS (`max-age=31536000; includeSubDomains; preload`), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `X-XSS-Protection: 0` (intentional — comment at L62-68 explains), `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` denies camera/mic/geolocation/topics. CSP itself is **only** set in `proxy.ts`, never in `headers()`.
 
 CORS on `/api/*`: only the prod origin (`https://richardwhudsonjr.com`) or `http://localhost:3000` in dev.
 
@@ -161,7 +161,7 @@ Logger (`src/lib/logger.ts`): exports `logger` singleton + `createContextLogger(
 - **Prisma client must not be eagerly imported.** `src/lib/db.ts` lazy-`require`s `@/generated/prisma/client` to avoid Neon adapter / WASM init in build workers. Do not refactor to `import { PrismaClient }` at module top.
 - **All IDs are CUIDs.** Use `cuidSchema` from `src/lib/schemas.ts` for ID validation. `z.string().uuid()` will reject every real ID.
 - **CSP comes from `proxy.ts`, not `headers()`.** Adding it to `next.config.js` will collide with the per-request nonce. Inline `<script>` and `<style>` in components must read the nonce via the `x-nonce` request header.
-- **`api/send-email/action.ts` is not a server action.** Despite the filename, it has no `'use server'` directive — it exports a regular function consumed elsewhere. The only real server action is `src/app/contact/actions.ts`.
+- **`api/send-email/action.ts` is not a server action and has no caller.** Despite the filename, no `'use server'` directive and no import from anywhere in `src/`. The only real server action is `src/app/contact/actions.ts`.
 - **`api/contact/csrf-route.ts` is not auto-routed.** Next.js only treats `route.ts` as an endpoint; this filename was deliberate. Confirm wiring before relying on it.
 - **`prisma/rls-policies.sql` is not applied.** It references tables that no longer exist; do not run it as-is.
 - **`/dashboard` redirect is dead.** `vercel.json:20` permanent-redirects `/dashboard` → `/admin`, but no `/admin` route exists.
