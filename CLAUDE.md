@@ -68,17 +68,17 @@ Postgres via Prisma 7 driver-adapter pattern. Generator output: `src/generated/p
 
 **6 enums**: `PostStatus` (DRAFT, REVIEW, SCHEDULED, PUBLISHED, ARCHIVED, DELETED), `ContentType` (MARKDOWN, HTML, RICH_TEXT), `InteractionType`, `SubmissionStatus`, `SecurityEventType`, `SecuritySeverity`.
 
-Slug + email columns are `@db.Citext` (case-insensitive). `BlogPost` has soft-delete via `deletedAt` (not enforced — filter in app code). `Project` stores rich content in 8 JSON columns. `PostView` and `SecurityEvent` use `@db.Inet` for IP addresses.
+Slug + email columns are `@db.Citext` (case-insensitive). `BlogPost` has soft-delete via `deletedAt` (not enforced — filter in app code). `Project` stores rich content in 8 JSON columns. `PostView`, `ContactSubmission`, and `SecurityEvent` use `@db.Inet` for IP addresses.
 
 **Migrations** (`prisma/migrations/`, 4 applied): `20250815051536_initial_blog_schema`, `20251223041651_init`, `20260106011440_add_project_rich_fields`, `20260107083000_prod_hardening` (CITEXT, soft-delete column, author FK changed to RESTRICT, status/timestamp CHECK constraints).
 
-**Two unapplied SQL files** in `prisma/migrations/`:
-- `add_fulltext_search.sql` — extensions + tsvector setup, run manually if FTS is needed.
+**Two unapplied SQL files**, both run manually if at all:
+- `prisma/migrations/add_fulltext_search.sql` — extensions + tsvector setup for FTS.
 - `prisma/rls-policies.sql` — RLS enable + policies. **Not run by any migration or seed.** References tables that don't exist in the current schema (`post_relations`, `series_posts`, `post_versions`, `post_series`, `seo_events`, `seo_keywords`, `sitemap_entries`) — applying as-is will fail. RLS is **not** active in this project; do not assume Postgres-level row filtering.
 
 **Client init** (`src/lib/db.ts`): exports `db` as a `Proxy` over a lazy singleton (`__prisma` on `globalThis`). Adapter chosen by `USE_LOCAL_DB`: `@prisma/adapter-pg` if `'true'`, `@prisma/adapter-neon` otherwise. PrismaClient is `require`'d inside `createPrismaClient()` to avoid runtime/WASM init in build workers that never query. `'server-only'` import enforces server-side use. Logging: `['query','error','warn']` in dev, `['error']` in prod.
 
-Seed (`prisma/seed.ts`): upsert-based, idempotent; uses `PrismaNeon`. Seeds 1 author, 7 categories (5 root + 2 child), 12 tags, projects from `src/data/projects`, 8 blog posts (6 published, 1 draft, 1 scheduled), then random views/interactions for published posts. Wipes data first when not production.
+Seed (`prisma/seed.ts`): upsert-based, idempotent; uses `PrismaNeon`. Seeds 1 author, 5 categories (parent/child links built in a second upsert pass), 12 tags, projects from `src/data/projects`, 8 blog posts (6 published, 1 draft, 1 scheduled), then random views/interactions for published posts. Wipes data first when not production.
 
 ## API routes
 
@@ -88,7 +88,7 @@ Seed (`prisma/seed.ts`): upsert-based, idempotent; uses `PrismaNeon`. Seeds 1 au
 |---|---|---|---|---|---|
 | `/api/health` | GET | — | — | — | DB ping; trimmed payload (no version/uptime/memory) |
 | `/api/health-check` | GET, HEAD | — | — | — | Plain `OK` text for header probes |
-| `/api/blog` | GET, POST | `read` / `sensitive` | POST | — | POST validates with `createBlogPostSchema` (strict); fires IndexNow if `INDEXNOW_KEY` set |
+| `/api/blog` | GET, POST | `read` / `sensitive` | POST | — | POST validates with `createBlogPostSchema` (strict); fires IndexNow only when `status === 'PUBLISHED'` and `INDEXNOW_KEY` is set |
 | `/api/blog/[slug]` | GET, PUT, DELETE | — | PUT, DELETE | — | GET increments `viewCount` async |
 | `/api/blog/rss` | GET | — | — | — | XML or JSON via `?format=` |
 | `/api/blog/tags` | GET, POST | — | POST | — | |
@@ -110,7 +110,7 @@ Rate limiter (`src/lib/rate-limiter/store.ts`): in-memory `Map` singleton, LRU e
 
 Use `checkRateLimitOrRespond(request, preset, path, method)` → returns a `NextResponse` (429) to short-circuit, or `null` to proceed.
 
-Validation: 25 exports in `src/lib/schemas.ts`. Notable: `cuidSchema` (use this for IDs, not `z.string().uuid()`), `slugSchema` (lowercase + hyphens, max 100), `contactFormSchema`, `createBlogPostSchema` (`.strict()` — rejects unknown fields).
+Validation: `src/lib/schemas.ts`. Notable: `cuidSchema` (use this for IDs, not `z.string().uuid()`), `slugSchema` (lowercase + hyphens, max 100), `contactFormSchema`, `createBlogPostSchema` (`.strict()` — rejects unknown fields).
 
 ## Auth & CSP
 
