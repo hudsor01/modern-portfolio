@@ -77,7 +77,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Dynamic blog posts from database
-  let blogPages: MetadataRoute.Sitemap = []
+  let blogPages: MetadataRoute.Sitemap
   try {
     const { db } = await import('@/lib/db')
     const posts = await db.blogPost.findMany({

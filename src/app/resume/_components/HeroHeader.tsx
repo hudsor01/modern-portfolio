@@ -5,7 +5,8 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { FileDown, Mail, Globe, Eye, Github, Linkedin } from 'lucide-react'
+import { FileDown, Mail, Globe, Eye } from 'lucide-react'
+import { Github, Linkedin } from '@/components/ui/brand-icons'
 
 interface HeroHeaderProps {
   isHeroInView: boolean
