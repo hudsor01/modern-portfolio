@@ -4,8 +4,10 @@ type BrandIconProps = SVGProps<SVGSVGElement> & {
   size?: number | string
 }
 
-// Defaults match lucide-react v1: decorative-by-default. If labeling the SVG
-// directly via aria-label, callers must also pass aria-hidden={false}.
+// Defaults match lucide-react v1: decorative-by-default. The icon is hidden
+// from AT — accessible name should come from a wrapping element (aria-label
+// on the link, or visible text alongside the icon). To label the SVG itself,
+// callers must pass both aria-label and aria-hidden={false}.
 const baseProps = {
   xmlns: 'http://www.w3.org/2000/svg',
   viewBox: '0 0 24 24',
