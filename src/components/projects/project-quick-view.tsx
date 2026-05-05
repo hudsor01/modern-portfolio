@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { ExternalLink, X, Github } from 'lucide-react'
+import { ExternalLink, X } from 'lucide-react'
+import { Github } from '@/components/ui/brand-icons'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {

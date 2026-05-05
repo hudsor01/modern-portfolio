@@ -1,11 +1,7 @@
 'use client'
 
-import {
-  Linkedin,
-  Github,
-  ArrowRight,
-  MessageSquare,
-} from 'lucide-react'
+import { ArrowRight, MessageSquare } from 'lucide-react'
+import { Github, Linkedin } from '@/components/ui/brand-icons'
 
 // ============================================================================
 // Static Data
