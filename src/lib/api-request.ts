@@ -72,6 +72,6 @@ export async function parseRequestBody(request: NextRequest | Request): Promise<
     logger.warn('Failed to parse request body', {
       error: error instanceof Error ? error.message : 'Unknown error',
     })
-    throw new Error('Invalid JSON in request body')
+    throw new Error('Invalid JSON in request body', { cause: error })
   }
 }
