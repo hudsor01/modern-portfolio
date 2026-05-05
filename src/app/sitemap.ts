@@ -1,4 +1,7 @@
 import { MetadataRoute } from 'next'
+import { createContextLogger } from '@/lib/logger'
+
+const logger = createContextLogger('Sitemap')
 
 // Revalidate sitemap every hour to include new blog posts from n8n automation
 export const revalidate = 3600
@@ -96,8 +99,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     }))
-  } catch {
-    // Database unavailable — return static pages only
+  } catch (error) {
+    // Sitemap degrades gracefully to static pages — surface as warn so we
+    // notice the regression without paging anyone.
+    logger.warn('Sitemap blog query failed; returning static pages only', {
+      error: error instanceof Error ? error.message : String(error),
+    })
     blogPages = []
   }
 

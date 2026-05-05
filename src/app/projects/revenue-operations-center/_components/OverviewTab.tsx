@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { safeLazy } from '@/lib/safe-lazy'
 
 
 function ChartLoadError() {
@@ -12,7 +13,7 @@ function ChartLoadError() {
 }
 
 const RevenueOverviewChart = dynamic(
-  () => import('./RevenueOverviewChart').catch(() => ({ default: ChartLoadError })),
+  safeLazy(() => import('./RevenueOverviewChart'), 'RevenueOverviewChart', ChartLoadError),
   {
     loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
     ssr: false
@@ -20,7 +21,7 @@ const RevenueOverviewChart = dynamic(
 )
 
 const OperationalMetricsChart = dynamic(
-  () => import('./OperationalMetricsChart').catch(() => ({ default: ChartLoadError })),
+  safeLazy(() => import('./OperationalMetricsChart'), 'OperationalMetricsChart', ChartLoadError),
   {
     loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
     ssr: false

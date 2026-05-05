@@ -142,6 +142,8 @@ export function safeJsonParse<T>(json: string, schema: z.ZodSchema<T>, fallback:
     const parsed = JSON.parse(json)
     return schema.parse(parsed)
   } catch {
+    // Silent by contract — caller chose `fallback` precisely because they
+    // expect malformed input. Logging here would just create noise.
     return fallback
   }
 }

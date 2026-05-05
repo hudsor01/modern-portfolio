@@ -48,7 +48,13 @@ export async function GET(_request: NextRequest, context: { params: Promise<{ sl
         where: { id: post.id },
         data: { viewCount: { increment: 1 } },
       })
-      .catch((err) => logger.error('Failed to increment view count', err))
+      .catch((err) =>
+        logger.error(
+          'Failed to increment view count',
+          err instanceof Error ? err : new Error(String(err)),
+          { slug: post.slug, postId: post.id }
+        )
+      )
 
     const response: ApiResponse<BlogPostData> = {
       data: transformToBlogPostData(post),

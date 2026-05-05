@@ -6,8 +6,11 @@ import { Footer } from '@/components/layout/footer'
 import { BlogPostLayout } from '../_components/blog-post-layout'
 import { BlogPostJsonLd } from '@/components/seo/blog-json-ld'
 import { transformToBlogPostData } from '@/lib/api-blog'
+import { createContextLogger } from '@/lib/logger'
 import type { BlogPostData } from '@/types/api'
 import { db } from '@/lib/db'
+
+const logger = createContextLogger('BlogPost')
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -43,8 +46,14 @@ const getBlogPost = cache(async (slug: string): Promise<BlogPostData | null> => 
     if (!post) return null
 
     return transformToBlogPostData(post)
-  } catch {
-    // Database not available - return null
+  } catch (error) {
+    if (process.env.NEXT_PHASE !== 'phase-production-build') {
+      logger.error(
+        'Blog post query failed',
+        error instanceof Error ? error : new Error(String(error)),
+        { slug }
+      )
+    }
     return null
   }
 })
@@ -159,8 +168,13 @@ export async function generateStaticParams() {
     })
 
     return posts.map((post) => ({ slug: post.slug }))
-  } catch {
-    // Database not available - return empty array
+  } catch (error) {
+    if (process.env.NEXT_PHASE !== 'phase-production-build') {
+      logger.error(
+        'generateStaticParams blog slug query failed',
+        error instanceof Error ? error : new Error(String(error))
+      )
+    }
     // Pages will be generated on-demand at runtime
     return []
   }
