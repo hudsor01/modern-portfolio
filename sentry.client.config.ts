@@ -45,4 +45,14 @@ Sentry.init({
     ? (integrations) => [...integrations, Sentry.replayIntegration()]
     : undefined,
   sendDefaultPii: process.env.NEXT_PUBLIC_SENTRY_SEND_DEFAULT_PII === 'true',
+  ignoreErrors: [
+    // Browser benign noise
+    /^ResizeObserver loop limit exceeded$/,
+    /^ResizeObserver loop completed with undelivered notifications/,
+    'Non-Error promise rejection captured',
+    'AbortError',
+    // Next.js client-side control flow
+    /^NEXT_REDIRECT/,
+    /^NEXT_NOT_FOUND$/,
+  ],
 })

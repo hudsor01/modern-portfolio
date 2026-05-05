@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { safeLazy } from '@/lib/safe-lazy'
 import { ChartContainer } from '@/components/ui/chart-container'
 
 function ChartLoadError() {
@@ -12,7 +13,7 @@ function ChartLoadError() {
 }
 
 const CACBreakdownChart = dynamic(
-  () => import('./CACBreakdownChart').catch(() => ({ default: ChartLoadError })),
+  safeLazy(() => import('./CACBreakdownChart'), 'CACBreakdownChart', ChartLoadError),
   {
     loading: () => <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />,
     ssr: false,
@@ -20,7 +21,7 @@ const CACBreakdownChart = dynamic(
 )
 
 const UnitEconomicsChart = dynamic(
-  () => import('./UnitEconomicsChart').catch(() => ({ default: ChartLoadError })),
+  safeLazy(() => import('./UnitEconomicsChart'), 'UnitEconomicsChart', ChartLoadError),
   {
     loading: () => <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />,
     ssr: false,

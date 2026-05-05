@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { safeLazy } from '@/lib/safe-lazy'
 
 import type { FunnelStage } from '../data/constants'
 
@@ -13,7 +14,7 @@ function ChartLoadError() {
 }
 
 const DealStageFunnelChart = dynamic(
-  () => import('./DealStageFunnelChart').catch(() => ({ default: ChartLoadError })),
+  safeLazy(() => import('./DealStageFunnelChart'), 'DealStageFunnelChart', ChartLoadError),
   {
     loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
     ssr: false
