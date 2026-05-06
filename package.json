@@ -12,8 +12,10 @@
     "build": "next build",
     "build:ci": "bun --bun next build",
     "start": "bun --bun next start",
-    "lint": "eslint src --ext .ts,.tsx,.js,.jsx",
-    "lint:fix": "eslint src --ext .ts,.tsx,.js,.jsx --fix",
+    "lint": "biome check src",
+    "lint:fix": "biome check --write src",
+    "format": "biome format src",
+    "format:fix": "biome format --write src",
     "typecheck": "tsc --noEmit",
     "ci:quick": "bun run lint && bun run typecheck",
     "test": "vitest run --passWithNoTests",
@@ -103,8 +105,8 @@
     "vitest": "4.1.5"
   },
   "lint-staged": {
-    "src/**/*.{ts,tsx,js,jsx}": [
-      "eslint --fix"
+    "src/**/*.{ts,tsx,js,jsx,json}": [
+      "biome check --write --no-errors-on-unmatched"
     ]
   },
   "overrides": {
