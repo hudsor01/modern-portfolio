@@ -1,11 +1,14 @@
-import { generateMetadata } from '@/app/shared-metadata'
+import type { Metadata } from 'next'
 import ResumeViewClient from './resume-view-client'
 
-export const metadata = generateMetadata(
-  'Resume PDF | Richard Hudson',
-  'View and download the complete resume of Richard Hudson, Revenue Operations Professional in Dallas-Fort Worth.',
-  '/resume/view'
-)
+// Duplicate-content guard. /resume is the canonical resume URL; /resume/view
+// is a viewer surface that should not be indexed independently.
+export const metadata: Metadata = {
+  title: 'Resume PDF | Richard Hudson',
+  description: 'View the resume of Richard Hudson, Revenue Operations Professional.',
+  alternates: { canonical: 'https://richardwhudsonjr.com/resume' },
+  robots: { index: false, follow: true },
+}
 
 export const dynamic = 'force-dynamic'
 

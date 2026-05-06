@@ -1,4 +1,6 @@
 import { Metadata } from 'next'
+import { headers } from 'next/headers'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import ForecastPageContent from './_components/ForecastPageContent'
 
 export const dynamic = 'force-static'
@@ -30,6 +32,19 @@ export const metadata: Metadata = {
   },
 }
 
-export default function ForecastPipelineIntelligencePage() {
-  return <ForecastPageContent />
+export default async function ForecastPipelineIntelligencePage() {
+  const nonce = (await headers()).get('x-nonce')
+  return (
+    <>
+      <BreadcrumbListJsonLd
+        nonce={nonce}
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Forecast Pipeline Intelligence', url: 'https://richardwhudsonjr.com/projects/forecast-pipeline-intelligence' },
+        ]}
+      />
+      <ForecastPageContent />
+    </>
+  )
 }

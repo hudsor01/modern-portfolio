@@ -1,0 +1,21 @@
+# Richard Hudson Jr.
+
+> Revenue Operations Professional based in Dallas, TX, serving the Dallas-Fort Worth metroplex. Personal portfolio and engineering blog covering RevOps, sales automation, partnership programs, and data analytics. SalesLoft Admin Certified (Level 1 & 2), HubSpot Revenue Operations Certified.
+
+## Pages
+
+- [About](https://richardwhudsonjr.com/about): bio, certifications, experience, FAQ
+- [Projects](https://richardwhudsonjr.com/projects): selected RevOps case studies — pipeline analytics, partner performance, CRM optimization
+- [Blog](https://richardwhudsonjr.com/blog): essays on revenue operations, data analytics, and business intelligence
+- [Resume](https://richardwhudsonjr.com/resume): professional resume with downloadable PDF
+- [Contact](https://richardwhudsonjr.com/contact): reach out for consulting engagements
+
+## Feeds
+
+- [RSS](https://richardwhudsonjr.com/api/blog/rss): blog feed (XML)
+
+## Optional
+
+- [Sitemap](https://richardwhudsonjr.com/sitemap.xml): full URL index
+- [LinkedIn](https://www.linkedin.com/in/hudsor01): professional profile
+- [GitHub](https://github.com/hudsor01): code and side projects

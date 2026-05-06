@@ -1,9 +1,12 @@
 import { Metadata } from 'next'
 import { cache } from 'react'
+import { headers } from 'next/headers'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { BlogList } from './_components/blog-list'
 import { BlogJsonLd } from '@/components/seo/blog-json-ld'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
+import { ItemListJsonLd } from '@/components/seo/json-ld/item-list-json-ld'
 import { db } from '@/lib/db'
 import { transformToBlogPostData } from '@/lib/api-blog'
 import { createContextLogger } from '@/lib/logger'
@@ -119,10 +122,26 @@ export default async function BlogHomePage() {
   // Fetch data on the server - zero client-side fetching cost
   const posts = await getBlogPosts()
   const categories = await getCategories()
+  const nonce = (await headers()).get('x-nonce')
 
   return (
     <>
-      <BlogJsonLd />
+      <BlogJsonLd nonce={nonce} />
+      <BreadcrumbListJsonLd
+        nonce={nonce}
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'Blog', url: 'https://richardwhudsonjr.com/blog' },
+        ]}
+      />
+      <ItemListJsonLd
+        nonce={nonce}
+        name="Blog posts by Richard Hudson"
+        items={posts.map((post) => ({
+          name: post.title,
+          url: `https://richardwhudsonjr.com/blog/${post.slug}`,
+        }))}
+      />
       <div className="min-h-screen bg-background">
         <Navbar />
         <main className="relative overflow-hidden">
