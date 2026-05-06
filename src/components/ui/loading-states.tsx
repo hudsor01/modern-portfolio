@@ -3,8 +3,11 @@
 import * as React from 'react'
 import { Loader2, RefreshCw, AlertCircle, CheckCircle2, FileX, WifiOff } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { createContextLogger } from '@/lib/logger'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+
+const logger = createContextLogger('LoadingStates')
 
 // ============================================================================
 // LOADING SPINNER COMPONENT
@@ -490,6 +493,14 @@ export function RefreshButton({
     setIsRefreshing(true)
     try {
       await onRefresh()
+    } catch (error) {
+      // onRefresh's type allows void or Promise<void>; rejections from
+      // arbitrary callers would otherwise become unhandled — bypassing the
+      // React tree entirely. Catch + log so Sentry sees them.
+      logger.error(
+        'RefreshButton onRefresh failed',
+        error instanceof Error ? error : new Error(String(error))
+      )
     } finally {
       setIsRefreshing(false)
     }
