@@ -7,6 +7,7 @@ import { useQueryState } from 'nuqs'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
+import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { cacMetrics } from '../data/constants'
 import { formatCurrency } from '@/lib/data-formatters'
 import { OverviewTab } from './OverviewTab'
@@ -58,50 +59,61 @@ export default function CACUnitEconomics() {
   ]
 
   return (
-    <ProjectPageLayout
-      title="Customer Acquisition Cost Optimization & Unit Economics Dashboard"
-      description="Comprehensive CAC analysis and LTV:CAC ratio optimization that achieved 32% cost reduction through strategic partner channel optimization. Industry-benchmark 3.6:1 efficiency ratio with 8.4-month payback period across multi-tier SaaS products."
-      tags={[
-        { label: 'CAC Reduction: 32%', variant: 'primary' },
-        { label: 'LTV:CAC Ratio: 3.6:1', variant: 'secondary' },
-        { label: 'ROI Optimization', variant: 'primary' },
-        { label: 'Unit Economics', variant: 'secondary' },
-      ]}
-      showTimeframes={true}
-      timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
-      activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-      onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
-    >
-      {/* Key Metrics using standardized MetricsGrid */}
-      <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
-
-      {/* Tab Content wrapped in SectionCard */}
-      <SectionCard
-        title="Analysis Details"
-        description="Detailed breakdown of CAC optimization across channels and products"
-        className="mb-8"
+    <>
+      <ProjectJsonLd
+        title="Customer Acquisition Cost Optimization & Unit Economics Dashboard"
+        description="Comprehensive CAC analysis and LTV:CAC ratio optimization that achieved 32% cost reduction through strategic partner channel optimization."
+        slug="cac-unit-economics"
+        category="Revenue Operations"
+        datePublished="2025-11-19"
+        dateModified="2026-05-06"
+        tags={['CAC', 'Unit Economics', 'LTV', 'SaaS Metrics', 'Revenue Operations']}
+      />
+      <ProjectPageLayout
+        title="Customer Acquisition Cost Optimization & Unit Economics Dashboard"
+        description="Comprehensive CAC analysis and LTV:CAC ratio optimization that achieved 32% cost reduction through strategic partner channel optimization. Industry-benchmark 3.6:1 efficiency ratio with 8.4-month payback period across multi-tier SaaS products."
+        tags={[
+          { label: 'CAC Reduction: 32%', variant: 'primary' },
+          { label: 'LTV:CAC Ratio: 3.6:1', variant: 'secondary' },
+          { label: 'ROI Optimization', variant: 'primary' },
+          { label: 'Unit Economics', variant: 'secondary' },
+        ]}
+        showTimeframes={true}
+        timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
+        activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+        onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
       >
-        {activeTab === 'overview' && <OverviewTab />}
-        {activeTab === 'channels' && <ChannelsTab />}
-        {activeTab === 'products' && <ProductsTab />}
-      </SectionCard>
+        {/* Key Metrics using standardized MetricsGrid */}
+        <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
-      {/* Strategic Impact wrapped in SectionCard */}
-      <SectionCard
-        title="Strategic Impact"
-        description="Business impact and strategic outcomes from CAC optimization initiatives"
-        className="mb-8"
-      >
-        <StrategicImpact />
-      </SectionCard>
+        {/* Tab Content wrapped in SectionCard */}
+        <SectionCard
+          title="Analysis Details"
+          description="Detailed breakdown of CAC optimization across channels and products"
+          className="mb-8"
+        >
+          {activeTab === 'overview' && <OverviewTab />}
+          {activeTab === 'channels' && <ChannelsTab />}
+          {activeTab === 'products' && <ProductsTab />}
+        </SectionCard>
 
-      {/* Professional Narrative Sections wrapped in SectionCard */}
-      <SectionCard
-        title="Project Narrative"
-        description="Comprehensive case study following the STAR methodology"
-      >
-        <NarrativeSections />
-      </SectionCard>
-    </ProjectPageLayout>
+        {/* Strategic Impact wrapped in SectionCard */}
+        <SectionCard
+          title="Strategic Impact"
+          description="Business impact and strategic outcomes from CAC optimization initiatives"
+          className="mb-8"
+        >
+          <StrategicImpact />
+        </SectionCard>
+
+        {/* Professional Narrative Sections wrapped in SectionCard */}
+        <SectionCard
+          title="Project Narrative"
+          description="Comprehensive case study following the STAR methodology"
+        >
+          <NarrativeSections />
+        </SectionCard>
+      </ProjectPageLayout>
+    </>
   )
 }

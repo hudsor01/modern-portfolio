@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { headers } from 'next/headers'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import CACPageContent from './_components/CACPageContent'
 
 export const dynamic = 'force-static'
@@ -40,6 +42,22 @@ export const metadata: Metadata = {
   },
 }
 
-export default function CACUnitEconomicsPage() {
-  return <CACPageContent />
+export default async function CACUnitEconomicsPage() {
+  const nonce = (await headers()).get('x-nonce')
+  return (
+    <>
+      <BreadcrumbListJsonLd
+        nonce={nonce}
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          {
+            name: 'CAC Optimization & Unit Economics',
+            url: 'https://richardwhudsonjr.com/projects/cac-unit-economics',
+          },
+        ]}
+      />
+      <CACPageContent />
+    </>
+  )
 }
