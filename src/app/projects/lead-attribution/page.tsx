@@ -41,7 +41,7 @@ export default async function LeadAttributionPage() {
         items={[
           { name: 'Home', url: 'https://richardwhudsonjr.com' },
           { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
-          { name: 'Lead Attribution Analytics', url: 'https://richardwhudsonjr.com/projects/lead-attribution' },
+          { name: 'Lead Attribution & Marketing Analytics', url: 'https://richardwhudsonjr.com/projects/lead-attribution' },
         ]}
       />
       <LeadAttributionPageContent />

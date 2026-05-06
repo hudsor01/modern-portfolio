@@ -41,7 +41,7 @@ export default async function SalesEnablementPage() {
         items={[
           { name: 'Home', url: 'https://richardwhudsonjr.com' },
           { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
-          { name: 'Sales Enablement & Coaching', url: 'https://richardwhudsonjr.com/projects/sales-enablement' },
+          { name: 'Sales Enablement & Coaching Platform', url: 'https://richardwhudsonjr.com/projects/sales-enablement' },
         ]}
       />
       <SalesEnablementPageContent />

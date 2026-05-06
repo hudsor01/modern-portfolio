@@ -41,7 +41,7 @@ export default async function PartnershipProgramImplementationPage() {
         items={[
           { name: 'Home', url: 'https://richardwhudsonjr.com' },
           { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
-          { name: 'Partnership Program Implementation', url: 'https://richardwhudsonjr.com/projects/partnership-program-implementation' },
+          { name: 'Enterprise Partnership Program Implementation', url: 'https://richardwhudsonjr.com/projects/partnership-program-implementation' },
         ]}
       />
       <PartnershipProgramPageContent />

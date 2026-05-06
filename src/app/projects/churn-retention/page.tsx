@@ -41,7 +41,7 @@ export default async function ChurnRetentionPage() {
         items={[
           { name: 'Home', url: 'https://richardwhudsonjr.com' },
           { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
-          { name: 'Churn & Retention Analysis', url: 'https://richardwhudsonjr.com/projects/churn-retention' },
+          { name: 'Customer Churn & Retention Analysis', url: 'https://richardwhudsonjr.com/projects/churn-retention' },
         ]}
       />
       <ChurnPageContent />

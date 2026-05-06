@@ -130,8 +130,8 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
       logo: {
         '@type': 'ImageObject',
         url: 'https://richardwhudsonjr.com/images/richard.jpg',
-        width: 400,
-        height: 400
+        width: 739,
+        height: 739
       }
     },
     mainEntityOfPage: {

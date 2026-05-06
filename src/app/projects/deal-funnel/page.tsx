@@ -41,7 +41,7 @@ export default async function DealFunnelPage() {
         items={[
           { name: 'Home', url: 'https://richardwhudsonjr.com' },
           { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
-          { name: 'Deal Funnel Analysis', url: 'https://richardwhudsonjr.com/projects/deal-funnel' },
+          { name: 'Sales Pipeline Funnel Analysis', url: 'https://richardwhudsonjr.com/projects/deal-funnel' },
         ]}
       />
       <DealFunnelPageContent />

@@ -102,6 +102,8 @@ export default function ForecastPipelineIntelligenceProject() {
         description="Forecasting system that improved accuracy by 31% and reduced slippage by 26%"
         slug="forecast-pipeline-intelligence"
         category="Revenue Operations"
+        datePublished="2025-11-19"
+        dateModified="2026-04-10"
         tags={[
           'Forecasting',
           'Pipeline Intelligence',

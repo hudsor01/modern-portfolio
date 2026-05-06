@@ -41,7 +41,7 @@ export default async function ForecastPipelineIntelligencePage() {
         items={[
           { name: 'Home', url: 'https://richardwhudsonjr.com' },
           { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
-          { name: 'Forecast Pipeline Intelligence', url: 'https://richardwhudsonjr.com/projects/forecast-pipeline-intelligence' },
+          { name: 'Forecast Accuracy & Pipeline Intelligence', url: 'https://richardwhudsonjr.com/projects/forecast-pipeline-intelligence' },
         ]}
       />
       <ForecastPageContent />

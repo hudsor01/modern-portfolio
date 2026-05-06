@@ -6,15 +6,20 @@ const logger = createContextLogger('Sitemap')
 // Revalidate sitemap every hour to include new blog posts from n8n automation
 export const revalidate = 3600
 
+// Captured at module load (i.e. deploy time / process start), NOT per
+// request. If we used `new Date()` inside the handler, every hourly
+// revalidation would mark every static page as "freshly modified" — Google
+// downweights sitemaps that lie about lastmod (Mueller, 2025). This pins
+// static-page lastmod to the deploy commit's author date when available
+// (Vercel-injected env var), falling back to process start.
+const STATIC_LAST_MODIFIED =
+  process.env.VERCEL_GIT_COMMIT_AUTHOR_DATE || new Date().toISOString()
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://richardwhudsonjr.com'
   // fallback only for blog posts with null timestamps
-  const fallbackDate = new Date().toISOString()
-  // Static pages get the build/revalidate timestamp. Honest signal —
-  // matches when the deployment that serves these pages was built.
-  // Per Mueller's lastmod guidance: faking dates trains Google to ignore
-  // your sitemap, so we use the real revalidation moment.
-  const staticLastModified = new Date().toISOString()
+  const fallbackDate = STATIC_LAST_MODIFIED
+  const staticLastModified = STATIC_LAST_MODIFIED
 
   // Main navigation pages
   const mainPages: MetadataRoute.Sitemap = [

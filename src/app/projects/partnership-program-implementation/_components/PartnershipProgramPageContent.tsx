@@ -55,6 +55,8 @@ export default function PartnershipProgramPage() {
         description="Led comprehensive design and implementation of a company's first partnership program, creating automated partner onboarding, commission tracking, and performance analytics."
         slug="partnership-program-implementation"
         category="Revenue Operations"
+        datePublished="2025-06-22"
+        dateModified="2026-04-10"
         tags={[
           'Partnership Program',
           'Channel Operations',
