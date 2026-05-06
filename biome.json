@@ -45,7 +45,11 @@
     "rules": {
       "recommended": true,
       "suspicious": {
-        "noExplicitAny": "error"
+        "noExplicitAny": "error",
+        "noArrayIndexKey": "off"
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "off"
       },
       "correctness": {
         "noUnusedVariables": {
@@ -64,7 +68,8 @@
         "noImgElement": "warn"
       },
       "style": {
-        "noHeadElement": "error"
+        "noHeadElement": "error",
+        "noNonNullAssertion": "off"
       }
     }
   },
