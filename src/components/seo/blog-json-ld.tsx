@@ -129,9 +129,9 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
       url: 'https://richardwhudsonjr.com',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop&crop=face&q=80',
-        width: 60,
-        height: 60
+        url: 'https://richardwhudsonjr.com/images/richard.jpg',
+        width: 739,
+        height: 739
       }
     },
     mainEntityOfPage: {
