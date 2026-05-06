@@ -103,6 +103,13 @@ function buildPersonJsonLd() {
       '432% Transaction Growth Achieved',
       '2,217% Network Expansion',
     ],
+    alumniOf: [
+      {
+        '@type': 'CollegeOrUniversity',
+        name: 'The University of Texas at Dallas',
+        url: 'https://www.utdallas.edu',
+      },
+    ],
     memberOf: [
       {
         '@type': 'ProfessionalService',
@@ -153,6 +160,16 @@ describe('PersonJsonLd schema', () => {
     const result = safeJsonLdStringify(malicious)
     expect(result).not.toContain('</script>')
     expect(result).toContain('<\\/script>')
+  })
+
+  it('contains alumniOf with University of Texas at Dallas', () => {
+    expect(personData).toHaveProperty('alumniOf')
+    expect(Array.isArray(personData.alumniOf)).toBe(true)
+    expect(personData.alumniOf[0]).toMatchObject({
+      '@type': 'CollegeOrUniversity',
+      name: 'The University of Texas at Dallas',
+      url: 'https://www.utdallas.edu',
+    })
   })
 })
 
