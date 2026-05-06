@@ -4,7 +4,7 @@
  * Part of the comprehensive SEO optimization strategy
  */
 
-import { BlogPostData } from '@/types/api'
+import type { BlogPostData } from '@/types/api'
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 
 /**
@@ -16,35 +16,30 @@ export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
     '@context': 'https://schema.org',
     '@type': 'Blog',
     name: 'Richard Hudson - Revenue Operations Blog',
-    description: 'Expert insights on revenue operations, data analytics, and business process optimization from Richard Hudson, a seasoned RevOps professional.',
+    description:
+      'Expert insights on revenue operations, data analytics, and business process optimization from Richard Hudson, a seasoned RevOps professional.',
     url: 'https://richardwhudsonjr.com/blog',
     publisher: {
       '@type': 'Person',
       name: 'Richard Hudson',
       url: 'https://richardwhudsonjr.com',
-      sameAs: [
-        'https://www.linkedin.com/in/hudsor01',
-        'https://github.com/hudsor01'
-      ],
+      sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
       jobTitle: 'Revenue Operations Professional',
       worksFor: {
         '@type': 'Organization',
-        name: 'Hudson Digital Solutions'
-      }
+        name: 'Hudson Digital Solutions',
+      },
     },
     author: {
       '@type': 'Person',
       name: 'Richard Hudson',
       url: 'https://richardwhudsonjr.com',
-      sameAs: [
-        'https://www.linkedin.com/in/hudsor01',
-        'https://github.com/hudsor01'
-      ]
+      sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
     },
     inLanguage: 'en-US',
     copyrightHolder: {
       '@type': 'Person',
-      name: 'Richard Hudson'
+      name: 'Richard Hudson',
     },
     copyrightYear: new Date().getFullYear(),
     keywords: [
@@ -55,29 +50,32 @@ export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
       'process automation',
       'CRM optimization',
       'dashboard development',
-      'revenue forecasting'
+      'revenue forecasting',
     ],
     about: [
       {
         '@type': 'Thing',
         name: 'Revenue Operations',
-        description: 'Strategic approach to optimizing business revenue through data-driven insights and process improvements'
+        description:
+          'Strategic approach to optimizing business revenue through data-driven insights and process improvements',
       },
       {
         '@type': 'Thing',
         name: 'Data Analytics',
-        description: 'Analysis and interpretation of business data to drive decision-making and performance optimization'
+        description:
+          'Analysis and interpretation of business data to drive decision-making and performance optimization',
       },
       {
         '@type': 'Thing',
         name: 'Business Intelligence',
-        description: 'Technologies and strategies for analyzing business information and presenting insights'
-      }
+        description:
+          'Technologies and strategies for analyzing business information and presenting insights',
+      },
     ],
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': 'https://richardwhudsonjr.com/blog'
-    }
+      '@id': 'https://richardwhudsonjr.com/blog',
+    },
   }
 
   return (
@@ -112,16 +110,13 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
       '@type': 'Person',
       name: post.author?.name || 'Richard Hudson',
       url: 'https://richardwhudsonjr.com',
-      sameAs: [
-        'https://www.linkedin.com/in/hudsor01',
-        'https://github.com/hudsor01'
-      ],
+      sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
       jobTitle: 'Revenue Operations Professional',
       description: post.author?.bio,
       worksFor: {
         '@type': 'Organization',
-        name: 'Hudson Digital Solutions'
-      }
+        name: 'Hudson Digital Solutions',
+      },
     },
     publisher: {
       '@type': 'Person',
@@ -131,12 +126,12 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
         '@type': 'ImageObject',
         url: 'https://richardwhudsonjr.com/images/richard.jpg',
         width: 739,
-        height: 739
-      }
+        height: 739,
+      },
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://richardwhudsonjr.com/blog/${post.slug}`
+      '@id': `https://richardwhudsonjr.com/blog/${post.slug}`,
     },
     articleSection: post.category?.name,
     keywords: post.keywords.join(', '),
@@ -146,39 +141,40 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
     isAccessibleForFree: true,
     copyrightHolder: {
       '@type': 'Person',
-      name: 'Richard Hudson'
+      name: 'Richard Hudson',
     },
     copyrightYear: new Date(post.createdAt).getFullYear(),
     // Add tags as keywords
-    ...(post.tags && post.tags.length > 0 && {
-      about: post.tags.map(tag => ({
-        '@type': 'Thing',
-        name: tag.name,
-        description: tag.description
-      }))
-    }),
+    ...(post.tags &&
+      post.tags.length > 0 && {
+        about: post.tags.map((tag) => ({
+          '@type': 'Thing',
+          name: tag.name,
+          description: tag.description,
+        })),
+      }),
     // Add interaction statistics
     interactionStatistic: [
       {
         '@type': 'InteractionCounter',
         interactionType: 'https://schema.org/ReadAction',
-        userInteractionCount: post.viewCount
+        userInteractionCount: post.viewCount,
       },
       {
         '@type': 'InteractionCounter',
         interactionType: 'https://schema.org/LikeAction',
-        userInteractionCount: post.likeCount
+        userInteractionCount: post.likeCount,
       },
       {
         '@type': 'InteractionCounter',
         interactionType: 'https://schema.org/ShareAction',
-        userInteractionCount: post.shareCount
+        userInteractionCount: post.shareCount,
       },
       {
         '@type': 'InteractionCounter',
         interactionType: 'https://schema.org/CommentAction',
-        userInteractionCount: post.commentCount
-      }
+        userInteractionCount: post.commentCount,
+      },
     ],
     // Add breadcrumb navigation
     breadcrumb: {
@@ -188,22 +184,22 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://richardwhudsonjr.com'
+          item: 'https://richardwhudsonjr.com',
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Blog',
-          item: 'https://richardwhudsonjr.com/blog'
+          item: 'https://richardwhudsonjr.com/blog',
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: post.title,
-          item: `https://richardwhudsonjr.com/blog/${post.slug}`
-        }
-      ]
-    }
+          item: `https://richardwhudsonjr.com/blog/${post.slug}`,
+        },
+      ],
+    },
   }
 
   return (
@@ -228,18 +224,23 @@ interface BlogCategoryJsonLdProps {
   }
 }
 
-export function BlogCategoryJsonLd({ category, nonce }: BlogCategoryJsonLdProps & { nonce?: string | null }) {
+export function BlogCategoryJsonLd({
+  category,
+  nonce,
+}: BlogCategoryJsonLdProps & { nonce?: string | null }) {
   const categorySchema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: `${category.name} - Richard Hudson Blog`,
-    description: category.description || `Articles about ${category.name} from Richard Hudson's revenue operations blog`,
+    description:
+      category.description ||
+      `Articles about ${category.name} from Richard Hudson's revenue operations blog`,
     url: `https://richardwhudsonjr.com/blog/category/${category.slug}`,
     mainEntity: {
       '@type': 'ItemList',
       name: `${category.name} Articles`,
       description: category.description,
-      numberOfItems: category.postCount
+      numberOfItems: category.postCount,
     },
     breadcrumb: {
       '@type': 'BreadcrumbList',
@@ -248,22 +249,22 @@ export function BlogCategoryJsonLd({ category, nonce }: BlogCategoryJsonLdProps 
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://richardwhudsonjr.com'
+          item: 'https://richardwhudsonjr.com',
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Blog',
-          item: 'https://richardwhudsonjr.com/blog'
+          item: 'https://richardwhudsonjr.com/blog',
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: category.name,
-          item: `https://richardwhudsonjr.com/blog/category/${category.slug}`
-        }
-      ]
-    }
+          item: `https://richardwhudsonjr.com/blog/category/${category.slug}`,
+        },
+      ],
+    },
   }
 
   return (
@@ -290,14 +291,14 @@ export function BlogFAQJsonLd({ faqs, nonce }: BlogFAQJsonLdProps & { nonce?: st
   const faqSchema = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: faqs.map(faq => ({
+    mainEntity: faqs.map((faq) => ({
       '@type': 'Question',
       name: faq.question,
       acceptedAnswer: {
         '@type': 'Answer',
-        text: faq.answer
-      }
-    }))
+        text: faq.answer,
+      },
+    })),
   }
 
   return (

@@ -3,7 +3,7 @@
  * Single source of truth for getClientIdentifier, getRequestMetadata, parseRequestBody.
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { logger } from '@/lib/logger'
 import type { RequestMetadata } from '@/types/api'
 

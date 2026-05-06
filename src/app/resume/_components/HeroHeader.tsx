@@ -28,9 +28,7 @@ export function HeroHeader({
       className={`text-center space-y-8 max-w-4xl mx-auto animate-fade-in-up ${isHeroInView ? 'opacity-100' : 'opacity-0'}`}
     >
       <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-8">
-        <span className="block hero-name-gradient">
-          Richard Hudson
-        </span>
+        <span className="block hero-name-gradient">Richard Hudson</span>
       </h1>
 
       <h2 className="text-xl sm:text-xl md:text-2xl font-light max-w-4xl mx-auto mb-6">
@@ -41,7 +39,10 @@ export function HeroHeader({
 
       <div className="flex flex-col items-center mb-8">
         <p className="text-lg md:typography-lead max-w-3xl mx-auto leading-relaxed text-center">
-          Experienced Revenue Operations Professional with a proven track record of driving business growth through data-driven insights, process optimization, and strategic operational improvements. Expert in building scalable systems that increase efficiency and revenue performance.
+          Experienced Revenue Operations Professional with a proven track record of driving business
+          growth through data-driven insights, process optimization, and strategic operational
+          improvements. Expert in building scalable systems that increase efficiency and revenue
+          performance.
         </p>
       </div>
 
@@ -61,7 +62,10 @@ export function HeroHeader({
                   disabled={isDownloading}
                 >
                   <div className="flex flex-col items-center justify-center space-y-1">
-                    <FileDown size={20} className="text-primary group-hover:scale-110 transition-all duration-300 ease-out" />
+                    <FileDown
+                      size={20}
+                      className="text-primary group-hover:scale-110 transition-all duration-300 ease-out"
+                    />
                     <span className="text-sm font-medium">
                       {isDownloading ? 'Downloading...' : 'Download PDF'}
                     </span>
@@ -77,7 +81,10 @@ export function HeroHeader({
                   onClick={onToggleView}
                 >
                   <div className="flex flex-col items-center justify-center space-y-1">
-                    <Eye size={20} className="text-secondary group-hover:scale-110 transition-all duration-300 ease-out" />
+                    <Eye
+                      size={20}
+                      className="text-secondary group-hover:scale-110 transition-all duration-300 ease-out"
+                    />
                     <span className="text-sm font-medium">
                       {showPdf ? 'Interactive View' : 'PDF View'}
                     </span>
@@ -92,7 +99,10 @@ export function HeroHeader({
                   className="relative block w-full h-20 bg-transparent hover:bg-accent/5 text-foreground p-6 rounded-lg transition-all duration-150 ease-out"
                 >
                   <div className="flex flex-col items-center justify-center space-y-1 h-full">
-                    <Mail size={20} className="text-accent group-hover:scale-110 transition-all duration-300 ease-out" />
+                    <Mail
+                      size={20}
+                      className="text-accent group-hover:scale-110 transition-all duration-300 ease-out"
+                    />
                     <span className="text-sm font-medium">Let's Connect</span>
                   </div>
                 </Link>

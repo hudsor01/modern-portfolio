@@ -29,11 +29,7 @@ export function StickyCTA() {
   return (
     <div className="fixed bottom-0 left-0 right-0 p-4 bg-card/95 backdrop-blur-sm border-t border-border lg:hidden z-50 animate-slideUp">
       <div className="max-w-screen-sm mx-auto">
-        <Button
-          asChild
-          className="w-full h-12 text-base font-semibold"
-          size="lg"
-        >
+        <Button asChild className="w-full h-12 text-base font-semibold" size="lg">
           <Link href="/contact">
             <Mail className="mr-2 h-5 w-5" />
             Get in Touch

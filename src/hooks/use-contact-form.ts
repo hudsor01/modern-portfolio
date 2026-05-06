@@ -10,11 +10,7 @@ import { contactFormSchema } from '@/lib/schemas'
 import { handleHookError } from '@/lib/error-handling'
 import { submitContactForm } from '@/app/contact/actions'
 import type { ContactFormData } from '@/types/api'
-import type {
-  ContactFormErrors,
-  SubmitStatus,
-  UseContactFormReturn,
-} from '@/types/forms'
+import type { ContactFormErrors, SubmitStatus, UseContactFormReturn } from '@/types/forms'
 
 const initialFormData: ContactFormData = {
   name: '',
@@ -98,7 +94,10 @@ export function useContactForm(): UseContactFormReturn {
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = event.target
       if (!name) return
-      form.setFieldValue(name as keyof ContactFormData, value as ContactFormData[keyof ContactFormData])
+      form.setFieldValue(
+        name as keyof ContactFormData,
+        value as ContactFormData[keyof ContactFormData]
+      )
     },
     [form]
   )

@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getProjects, getProject } from '@/lib/projects'
 import ProjectDetailClientBoundary from './_components/project-detail-client-boundary'

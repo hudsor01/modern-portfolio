@@ -23,8 +23,9 @@ const badgeVariants = cva(
   }
 )
 
-interface BadgeProps extends Omit<React.HTMLAttributes<HTMLSpanElement>, 'color'>,
-  VariantProps<typeof badgeVariants> {
+interface BadgeProps
+  extends Omit<React.HTMLAttributes<HTMLSpanElement>, 'color'>,
+    VariantProps<typeof badgeVariants> {
   asChild?: boolean
 }
 
@@ -33,26 +34,22 @@ const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
     // If asChild is true, we'll render the children directly with our props
     if (asChild && React.isValidElement(children)) {
       // Ensure the child's props are correctly typed for cloneElement
-      const childProps = children.props as React.HTMLAttributes<HTMLElement>;
+      const childProps = children.props as React.HTMLAttributes<HTMLElement>
       const newProps: React.HTMLAttributes<HTMLElement> = {
         ...props, // BadgeProps (excluding variant, asChild, children)
         className: cn(badgeVariants({ variant }), className, childProps.className),
-      };
-      return React.cloneElement(children, newProps);
+      }
+      return React.cloneElement(children, newProps)
     }
 
     return (
-      <span
-        ref={ref}
-        className={cn(badgeVariants({ variant }), className)}
-        {...props}
-      >
+      <span ref={ref} className={cn(badgeVariants({ variant }), className)} {...props}>
         {children}
       </span>
-    );
+    )
   }
-);
+)
 
-Badge.displayName = 'Badge';
+Badge.displayName = 'Badge'
 
 export { Badge, badgeVariants }

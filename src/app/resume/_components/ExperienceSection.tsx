@@ -24,9 +24,7 @@ export function ExperienceSection() {
               {/* Company and Details Header */}
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
                 <div>
-                  <h4 className="typography-h4 text-foreground">
-                    {job.company}
-                  </h4>
+                  <h4 className="typography-h4 text-foreground">{job.company}</h4>
                   <p className="text-primary flex items-center gap-2 mt-1">
                     <MapPin className="w-4 h-4" />
                     {job.location} • {job.period}
@@ -34,7 +32,10 @@ export function ExperienceSection() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {job.technologies.map((tech, i) => (
-                    <span key={i} className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-muted text-muted-foreground border border-border">
+                    <span
+                      key={i}
+                      className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-muted text-muted-foreground border border-border"
+                    >
                       {tech}
                     </span>
                   ))}

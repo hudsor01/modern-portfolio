@@ -24,22 +24,34 @@ function TabSkeleton() {
 }
 
 // Lazy load tab components - only active tab loads
-const OverviewTab = nextDynamic(() => import('./OverviewTab').then(m => ({ default: m.OverviewTab })), {
-  loading: () => <TabSkeleton />,
-  ssr: false,
-})
-const PipelineTab = nextDynamic(() => import('./PipelineTab').then(m => ({ default: m.PipelineTab })), {
-  loading: () => <TabSkeleton />,
-  ssr: false,
-})
-const ForecastingTab = nextDynamic(() => import('./ForecastingTab').then(m => ({ default: m.ForecastingTab })), {
-  loading: () => <TabSkeleton />,
-  ssr: false,
-})
-const OperationsTab = nextDynamic(() => import('./OperationsTab').then(m => ({ default: m.OperationsTab })), {
-  loading: () => <TabSkeleton />,
-  ssr: false,
-})
+const OverviewTab = nextDynamic(
+  () => import('./OverviewTab').then((m) => ({ default: m.OverviewTab })),
+  {
+    loading: () => <TabSkeleton />,
+    ssr: false,
+  }
+)
+const PipelineTab = nextDynamic(
+  () => import('./PipelineTab').then((m) => ({ default: m.PipelineTab })),
+  {
+    loading: () => <TabSkeleton />,
+    ssr: false,
+  }
+)
+const ForecastingTab = nextDynamic(
+  () => import('./ForecastingTab').then((m) => ({ default: m.ForecastingTab })),
+  {
+    loading: () => <TabSkeleton />,
+    ssr: false,
+  }
+)
+const OperationsTab = nextDynamic(
+  () => import('./OperationsTab').then((m) => ({ default: m.OperationsTab })),
+  {
+    loading: () => <TabSkeleton />,
+    ssr: false,
+  }
+)
 
 const tabs = ['overview', 'pipeline', 'forecasting', 'operations'] as const
 type Tab = (typeof tabs)[number]
@@ -48,48 +60,51 @@ export default function RevenueOperationsCenter() {
   const [activeTab, setActiveTab] = useQueryState('tab', { defaultValue: 'overview' as Tab })
 
   // Memoize metrics to prevent recreation on every render
-  const metrics = useMemo(() => [
-    {
-      id: 'total-revenue',
-      icon: DollarSign,
-      label: 'Total Revenue',
-      value: formatCurrency(revenueMetrics.totalRevenue),
-      subtitle: `+${formatPercent(revenueMetrics.revenueGrowth)} YoY`,
-      variant: 'primary' as const,
-    },
-    {
-      id: 'forecast-accuracy',
-      icon: Target,
-      label: 'Forecast',
-      value: formatPercent(revenueMetrics.forecastAccuracy),
-      subtitle: 'Accuracy Rate',
-      variant: 'primary' as const,
-    },
-    {
-      id: 'pipeline-health',
-      icon: BarChart3,
-      label: 'Pipeline',
-      value: formatPercent(revenueMetrics.pipelineHealth),
-      subtitle: 'Health Score',
-      variant: 'secondary' as const,
-    },
-    {
-      id: 'active-deals',
-      icon: Users,
-      label: 'Active Deals',
-      value: revenueMetrics.activeDeals.toString(),
-      subtitle: `${formatCurrency(revenueMetrics.avgDealSize)} avg`,
-      variant: 'primary' as const,
-    },
-    {
-      id: 'target-attainment',
-      icon: Activity,
-      label: 'Target',
-      value: formatPercent(revenueMetrics.targetAttainment),
-      subtitle: 'Attainment',
-      variant: 'primary' as const,
-    },
-  ], [])
+  const metrics = useMemo(
+    () => [
+      {
+        id: 'total-revenue',
+        icon: DollarSign,
+        label: 'Total Revenue',
+        value: formatCurrency(revenueMetrics.totalRevenue),
+        subtitle: `+${formatPercent(revenueMetrics.revenueGrowth)} YoY`,
+        variant: 'primary' as const,
+      },
+      {
+        id: 'forecast-accuracy',
+        icon: Target,
+        label: 'Forecast',
+        value: formatPercent(revenueMetrics.forecastAccuracy),
+        subtitle: 'Accuracy Rate',
+        variant: 'primary' as const,
+      },
+      {
+        id: 'pipeline-health',
+        icon: BarChart3,
+        label: 'Pipeline',
+        value: formatPercent(revenueMetrics.pipelineHealth),
+        subtitle: 'Health Score',
+        variant: 'secondary' as const,
+      },
+      {
+        id: 'active-deals',
+        icon: Users,
+        label: 'Active Deals',
+        value: revenueMetrics.activeDeals.toString(),
+        subtitle: `${formatCurrency(revenueMetrics.avgDealSize)} avg`,
+        variant: 'primary' as const,
+      },
+      {
+        id: 'target-attainment',
+        icon: Activity,
+        label: 'Target',
+        value: formatPercent(revenueMetrics.targetAttainment),
+        subtitle: 'Attainment',
+        variant: 'primary' as const,
+      },
+    ],
+    []
+  )
 
   return (
     <ProjectPageLayout
@@ -106,25 +121,25 @@ export default function RevenueOperationsCenter() {
       activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
       onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
     >
-          {/* Key Metrics using standardized MetricsGrid */}
-          <MetricsGrid metrics={metrics} columns={4} className="mb-12" />
+      {/* Key Metrics using standardized MetricsGrid */}
+      <MetricsGrid metrics={metrics} columns={4} className="mb-12" />
 
-          {/* KPI Alerts */}
-          <KPIAlerts />
+      {/* KPI Alerts */}
+      <KPIAlerts />
 
-          {/* Tab Content with Suspense */}
-          <Suspense fallback={<TabSkeleton />}>
-            {activeTab === 'overview' && <OverviewTab />}
-            {activeTab === 'pipeline' && <PipelineTab />}
-            {activeTab === 'forecasting' && <ForecastingTab />}
-            {activeTab === 'operations' && <OperationsTab />}
-          </Suspense>
+      {/* Tab Content with Suspense */}
+      <Suspense fallback={<TabSkeleton />}>
+        {activeTab === 'overview' && <OverviewTab />}
+        {activeTab === 'pipeline' && <PipelineTab />}
+        {activeTab === 'forecasting' && <ForecastingTab />}
+        {activeTab === 'operations' && <OperationsTab />}
+      </Suspense>
 
-          {/* Strategic Impact */}
-          <StrategicImpact />
+      {/* Strategic Impact */}
+      <StrategicImpact />
 
-          {/* Professional Narrative Sections */}
-          <NarrativeSections />
+      {/* Professional Narrative Sections */}
+      <NarrativeSections />
     </ProjectPageLayout>
   )
 }

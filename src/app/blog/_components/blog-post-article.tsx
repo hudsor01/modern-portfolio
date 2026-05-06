@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
+import type React from 'react'
+import { useState } from 'react'
 
 import { Copy, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -16,14 +17,45 @@ const logger = createContextLogger('BlogContent')
 
 // Base allowed tags for sanitization
 const BASE_ALLOWED_TAGS = [
-  'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-  'p', 'br', 'em', 'strong', 'a', 'code', 'pre', 'blockquote',
-  'ul', 'ol', 'li', 'img', 'table', 'thead', 'tbody', 'tr', 'td', 'th',
-  'div', 'span'
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'p',
+  'br',
+  'em',
+  'strong',
+  'a',
+  'code',
+  'pre',
+  'blockquote',
+  'ul',
+  'ol',
+  'li',
+  'img',
+  'table',
+  'thead',
+  'tbody',
+  'tr',
+  'td',
+  'th',
+  'div',
+  'span',
 ] as const
 
 // Base allowed attributes
-const BASE_ALLOWED_ATTR = ['href', 'src', 'alt', 'class', 'data-language', 'target', 'rel', 'loading'] as const
+const BASE_ALLOWED_ATTR = [
+  'href',
+  'src',
+  'alt',
+  'class',
+  'data-language',
+  'target',
+  'rel',
+  'loading',
+] as const
 
 // Shared DOMPurify base configuration
 const DOMPURIFY_BASE = {
@@ -59,72 +91,96 @@ export function BlogPostArticle({
   content,
   contentType = ContentType.MARKDOWN,
   className,
-  allowCopy = true
+  allowCopy = true,
 }: BlogContentProps) {
   const { theme } = useTheme()
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
 
   // Markdown to HTML conversion with XSS protection
   const parseMarkdown = (markdown: string): string => {
-      // SECURITY: Escape HTML entities first to prevent XSS
-      let html = escapeHtml(markdown)
+    // SECURITY: Escape HTML entities first to prevent XSS
+    let html = escapeHtml(markdown)
 
-      // Headers — Markdown `# X` is rewritten to <h2>, not <h1>. The blog
-      // post title in blog-post-layout.tsx is the page's h1; emitting another
-      // h1 from body markdown creates a double-h1 that confuses Google's
-      // content-hierarchy parser. Demote in-body `#` to h2 (with same visual
-      // styling), `##` to h3, `###` to h4 — preserving the existing visual
-      // hierarchy while fixing semantics.
-      html = html.replace(/^### (.*$)/gim, '<h4 class="typography-large mt-6 mb-3 text-foreground dark:text-white">$1</h4>')
-      html = html.replace(/^## (.*$)/gim, '<h3 class="typography-h4 mt-8 mb-4 text-foreground dark:text-white">$1</h3>')
-      html = html.replace(/^# (.*$)/gim, '<h2 class="typography-h3 mt-10 mb-6 text-foreground dark:text-white">$1</h2>')
+    // Headers — Markdown `# X` is rewritten to <h2>, not <h1>. The blog
+    // post title in blog-post-layout.tsx is the page's h1; emitting another
+    // h1 from body markdown creates a double-h1 that confuses Google's
+    // content-hierarchy parser. Demote in-body `#` to h2 (with same visual
+    // styling), `##` to h3, `###` to h4 — preserving the existing visual
+    // hierarchy while fixing semantics.
+    html = html.replace(
+      /^### (.*$)/gim,
+      '<h4 class="typography-large mt-6 mb-3 text-foreground dark:text-white">$1</h4>'
+    )
+    html = html.replace(
+      /^## (.*$)/gim,
+      '<h3 class="typography-h4 mt-8 mb-4 text-foreground dark:text-white">$1</h3>'
+    )
+    html = html.replace(
+      /^# (.*$)/gim,
+      '<h2 class="typography-h3 mt-10 mb-6 text-foreground dark:text-white">$1</h2>'
+    )
 
-      // Bold
-      html = html.replace(/\*\*(.*)\*\*/gim, '<strong class="font-semibold">$1</strong>')
-      html = html.replace(/__(.*)__/gim, '<strong class="font-semibold">$1</strong>')
+    // Bold
+    html = html.replace(/\*\*(.*)\*\*/gim, '<strong class="font-semibold">$1</strong>')
+    html = html.replace(/__(.*)__/gim, '<strong class="font-semibold">$1</strong>')
 
-      // Italic
-      html = html.replace(/\*(.*)\*/gim, '<em class="italic">$1</em>')
-      html = html.replace(/_(.*)_/gim, '<em class="italic">$1</em>')
+    // Italic
+    html = html.replace(/\*(.*)\*/gim, '<em class="italic">$1</em>')
+    html = html.replace(/_(.*)_/gim, '<em class="italic">$1</em>')
 
-      // Code blocks
-      html = html.replace(/```(\w+)?\n([\s\S]*?)```/gim, (_match: string, lang: string, code: string) => {
+    // Code blocks
+    html = html.replace(
+      /```(\w+)?\n([\s\S]*?)```/gim,
+      (_match: string, lang: string, code: string) => {
         return `<pre data-language="${lang || 'text'}"><code>${code.trim()}</code></pre>`
-      })
+      }
+    )
 
-      // Inline code
-      html = html.replace(/`([^`]+)`/gim, '<code class="px-1.5 py-0.5 bg-muted dark:bg-card rounded-xs text-sm font-mono">$1</code>')
+    // Inline code
+    html = html.replace(
+      /`([^`]+)`/gim,
+      '<code class="px-1.5 py-0.5 bg-muted dark:bg-card rounded-xs text-sm font-mono">$1</code>'
+    )
 
-      // Links - with URL validation
-      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/gim, (_match, text, url) => {
-        // Only allow safe URLs
-        const isExternalUrl = url.startsWith('http') || url.startsWith('mailto:')
-        const isRelativeUrl = url.startsWith('/')
-        if (!isExternalUrl && !isRelativeUrl) {
-          return text // Just return text if URL looks suspicious
-        }
-        return `<a href="${escapeHtml(url)}" class="text-primary dark:text-primary hover:underline" target="_blank" rel="noopener noreferrer">${text} <svg class="inline w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></a>`
-      })
+    // Links - with URL validation
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/gim, (_match, text, url) => {
+      // Only allow safe URLs
+      const isExternalUrl = url.startsWith('http') || url.startsWith('mailto:')
+      const isRelativeUrl = url.startsWith('/')
+      if (!isExternalUrl && !isRelativeUrl) {
+        return text // Just return text if URL looks suspicious
+      }
+      return `<a href="${escapeHtml(url)}" class="text-primary dark:text-primary hover:underline" target="_blank" rel="noopener noreferrer">${text} <svg class="inline w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></a>`
+    })
 
-      // Images
-      html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/gim, '<img src="$2" alt="$1" class="rounded-lg my-4 max-w-full h-auto" loading="lazy" />')
+    // Images
+    html = html.replace(
+      /!\[([^\]]*)\]\(([^)]+)\)/gim,
+      '<img src="$2" alt="$1" class="rounded-lg my-4 max-w-full h-auto" loading="lazy" />'
+    )
 
-      // Lists
-      html = html.replace(/^\* (.*$)/gim, '<li class="ml-4">$1</li>')
-      html = html.replace(/^\d+\. (.*$)/gim, '<li class="ml-4">$1</li>')
+    // Lists
+    html = html.replace(/^\* (.*$)/gim, '<li class="ml-4">$1</li>')
+    html = html.replace(/^\d+\. (.*$)/gim, '<li class="ml-4">$1</li>')
 
-      // Blockquotes
-      html = html.replace(/^> (.*$)/gim, '<blockquote class="border-l-4 border-primary pl-4 py-2 my-4 bg-primary/5 dark:bg-primary-bg italic text-muted-foreground dark:text-muted-foreground">$1</blockquote>')
+    // Blockquotes
+    html = html.replace(
+      /^> (.*$)/gim,
+      '<blockquote class="border-l-4 border-primary pl-4 py-2 my-4 bg-primary/5 dark:bg-primary-bg italic text-muted-foreground dark:text-muted-foreground">$1</blockquote>'
+    )
 
-      // Line breaks
-      html = html.replace(/\n\n/gim, '</p><p class="mb-4 text-muted-foreground dark:typography-muted">')
-      html = html.replace(/\n/gim, '<br />')
+    // Line breaks
+    html = html.replace(
+      /\n\n/gim,
+      '</p><p class="mb-4 text-muted-foreground dark:typography-muted">'
+    )
+    html = html.replace(/\n/gim, '<br />')
 
-      // Wrap in paragraphs
-      html = `<p class="mb-4 text-muted-foreground dark:typography-muted">${html}</p>`
+    // Wrap in paragraphs
+    html = `<p class="mb-4 text-muted-foreground dark:typography-muted">${html}</p>`
 
-      return html
-    }
+    return html
+  }
 
   // Copy code functionality
   const copyToClipboard = async (code: string) => {
@@ -146,7 +202,7 @@ export function BlogPostArticle({
     const codeString = String(children).replace(/\n$/, '')
 
     return (
-      <div className={cn("relative group my-6", className)}>
+      <div className={cn('relative group my-6', className)}>
         {allowCopy && (
           <Button
             size="sm"
@@ -161,20 +217,23 @@ export function BlogPostArticle({
             )}
           </Button>
         )}
-        <pre className={cn(
-          "rounded-lg text-sm p-4 overflow-x-auto",
-          theme === 'dark' ? 'bg-background text-foreground' : 'bg-muted text-foreground'
-        )}>
-          <code className={`language-${language}`}>
-            {codeString}
-          </code>
+        <pre
+          className={cn(
+            'rounded-lg text-sm p-4 overflow-x-auto',
+            theme === 'dark' ? 'bg-background text-foreground' : 'bg-muted text-foreground'
+          )}
+        >
+          <code className={`language-${language}`}>{codeString}</code>
         </pre>
       </div>
     )
   }
 
   // Helper to sanitize HTML content (no-op during SSR, sanitized on client)
-  function sanitizeHtml(html: string, config: typeof DOMPURIFY_CONFIG | typeof DOMPURIFY_INLINE_CONFIG): string {
+  function sanitizeHtml(
+    html: string,
+    config: typeof DOMPURIFY_CONFIG | typeof DOMPURIFY_INLINE_CONFIG
+  ): string {
     if (typeof window === 'undefined') return html
     return DOMPurify.sanitize(html, config)
   }
@@ -184,12 +243,16 @@ export function BlogPostArticle({
     const parts = html.split(/(<pre data-language="([^"]*?)"><code>([\s\S]*?)<\/code><\/pre>)/g)
 
     return parts.map((part, index) => {
-      const codeBlockMatch = part.match(/^<pre data-language="([^"]*?)"><code>([\s\S]*?)<\/code><\/pre>$/)
+      const codeBlockMatch = part.match(
+        /^<pre data-language="([^"]*?)"><code>([\s\S]*?)<\/code><\/pre>$/
+      )
 
       if (codeBlockMatch) {
         const [, language, code] = codeBlockMatch
         return (
-          <CodeBlock key={index} language={language || 'text'} className="my-6">{code || ''}</CodeBlock>
+          <CodeBlock key={index} language={language || 'text'} className="my-6">
+            {code || ''}
+          </CodeBlock>
         )
       }
 

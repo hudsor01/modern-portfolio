@@ -1,6 +1,7 @@
 'use client'
 
-import React, { Component, ErrorInfo, ReactNode } from 'react'
+import type React from 'react'
+import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
 import { createContextLogger } from '@/lib/logger'
@@ -88,43 +89,38 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 <AlertTriangle className="w-8 h-8 text-destructive" />
               </div>
 
-              <h3 className="typography-h4 text-foreground mb-4">
-                Something went wrong
-              </h3>
+              <h3 className="typography-h4 text-foreground mb-4">Something went wrong</h3>
 
-              {this.props.showErrorDetails && this.state.error && process.env.NODE_ENV === 'development' && (
-                <div className="mb-6 p-4 bg-destructive/5 border border-destructive/20 rounded-lg text-left">
-                  <p className="text-sm text-destructive mb-2 font-mono">
-                    {this.state.error.message}
-                  </p>
-                  {this.state.errorInfo?.componentStack && (
-                    <pre className="text-xs text-destructive overflow-auto max-h-32">
-                      {this.state.errorInfo.componentStack}
-                    </pre>
-                  )}
-                </div>
-              )}
+              {this.props.showErrorDetails &&
+                this.state.error &&
+                process.env.NODE_ENV === 'development' && (
+                  <div className="mb-6 p-4 bg-destructive/5 border border-destructive/20 rounded-lg text-left">
+                    <p className="text-sm text-destructive mb-2 font-mono">
+                      {this.state.error.message}
+                    </p>
+                    {this.state.errorInfo?.componentStack && (
+                      <pre className="text-xs text-destructive overflow-auto max-h-32">
+                        {this.state.errorInfo.componentStack}
+                      </pre>
+                    )}
+                  </div>
+                )}
 
               <p className="text-muted-foreground mb-8">
-                {process.env.NODE_ENV === 'development' 
+                {process.env.NODE_ENV === 'development'
                   ? 'Check the console for more details.'
-                  : 'Please refresh the page or try again later.'
-                }
+                  : 'Please refresh the page or try again later.'}
               </p>
 
               {this.props.showReset !== false && (
                 <div className="space-y-3">
-                  <Button
-                    onClick={this.reset}
-                    className="w-full"
-                    size="lg"
-                  >
+                  <Button onClick={this.reset} className="w-full" size="lg">
                     <RefreshCw className="w-4 h-4 mr-2" />
                     Try again
                   </Button>
-                  
+
                   <Button
-                    onClick={() => window.location.href = '/'}
+                    onClick={() => (window.location.href = '/')}
                     variant="outline"
                     className="w-full"
                     size="lg"
@@ -150,14 +146,14 @@ export function withErrorBoundary<P extends object>(
   errorBoundaryProps?: Omit<ErrorBoundaryProps, 'children'>
 ): React.FC<P> {
   const displayName = Component.displayName || Component.name || 'Component'
-  
+
   const WrappedComponent: React.FC<P> = (props) => (
     <ErrorBoundary {...errorBoundaryProps}>
       <Component {...props} />
     </ErrorBoundary>
   )
-  
+
   WrappedComponent.displayName = `withErrorBoundary(${displayName})`
-  
+
   return WrappedComponent
 }

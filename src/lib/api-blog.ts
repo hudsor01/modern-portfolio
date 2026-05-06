@@ -3,7 +3,7 @@
  * Consolidates blog query building, filtering, and data transformation
  */
 
-import { Prisma } from '@/generated/prisma/client'
+import type { Prisma } from '@/generated/prisma/client'
 import type {
   BlogPostFilters,
   BlogPostSort,

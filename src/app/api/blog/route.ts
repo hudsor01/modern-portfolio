@@ -1,7 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
-import { PaginatedResponse, BlogPostData, ApiResponse, BlogPostFilters, BlogPostSort } from '@/types/api'
+import type {
+  PaginatedResponse,
+  BlogPostData,
+  ApiResponse,
+  BlogPostFilters,
+  BlogPostSort,
+} from '@/types/api'
 import { checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-rate-limit'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
 import { parsePaginationParams, createPaginationMeta } from '@/lib/api-pagination'
@@ -27,7 +33,12 @@ const logger = createContextLogger('BlogAPI')
 // GET /api/blog - List blog posts with filtering and pagination
 export async function GET(request: NextRequest) {
   // Rate limiting using shared utility
-  const rateLimitResponse = checkRateLimitOrRespond(request, RateLimitPresets.read, '/api/blog', 'GET')
+  const rateLimitResponse = checkRateLimitOrRespond(
+    request,
+    RateLimitPresets.read,
+    '/api/blog',
+    'GET'
+  )
   if (rateLimitResponse) return rateLimitResponse
 
   try {
@@ -121,7 +132,12 @@ export async function GET(request: NextRequest) {
 // POST /api/blog - Create new blog post
 export async function POST(request: NextRequest) {
   // Rate limiting using shared utility
-  const rateLimitResponse = checkRateLimitOrRespond(request, RateLimitPresets.sensitive, '/api/blog', 'POST')
+  const rateLimitResponse = checkRateLimitOrRespond(
+    request,
+    RateLimitPresets.sensitive,
+    '/api/blog',
+    'POST'
+  )
   if (rateLimitResponse) return rateLimitResponse
 
   // CSRF validation using shared utility
@@ -146,7 +162,9 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingPost) {
-      return NextResponse.json(createErrorResponse('A post with this slug already exists'), { status: 409 })
+      return NextResponse.json(createErrorResponse('A post with this slug already exists'), {
+        status: 409,
+      })
     }
 
     // Calculate reading time and word count
@@ -252,16 +270,20 @@ export async function POST(request: NextRequest) {
             keyLocation: `https://richardwhudsonjr.com/${indexNowKey}.txt`,
             urlList: [postUrl],
           }),
-        }).then(res => {
-          if (!res.ok) {
-            logger.warn(`IndexNow ping failed: HTTP ${res.status} for ${postUrl}`)
-          } else {
-            logger.info(`IndexNow ping sent for ${postUrl}`)
-          }
-        }).catch(err => {
-          // Network failure must not surface — swallow and log (per D-04)
-          logger.warn('IndexNow ping network error', { error: err instanceof Error ? err.message : String(err) })
         })
+          .then((res) => {
+            if (!res.ok) {
+              logger.warn(`IndexNow ping failed: HTTP ${res.status} for ${postUrl}`)
+            } else {
+              logger.info(`IndexNow ping sent for ${postUrl}`)
+            }
+          })
+          .catch((err) => {
+            // Network failure must not surface — swallow and log (per D-04)
+            logger.warn('IndexNow ping network error', {
+              error: err instanceof Error ? err.message : String(err),
+            })
+          })
       }
     }
 

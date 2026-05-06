@@ -1,17 +1,16 @@
 'use client'
 
-
 import { TrendingUp } from 'lucide-react'
 import { predictiveMetrics } from '../data/constants'
 
 export function PredictionsTab() {
   return (
-    <div
-      className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out mb-8"
-    >
+    <div className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out mb-8">
       <div className="mb-4">
         <h2 className="typography-h4 mb-1">Real-Time Predictive Analytics Dashboard</h2>
-        <p className="typography-small text-muted-foreground">Advanced machine learning predictions for customer behavior and purchase patterns</p>
+        <p className="typography-small text-muted-foreground">
+          Advanced machine learning predictions for customer behavior and purchase patterns
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

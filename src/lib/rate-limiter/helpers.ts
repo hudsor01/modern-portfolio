@@ -24,11 +24,7 @@ export function checkContactFormRateLimit(
       retryAfter: Date.now() + 60000,
     }
   }
-  return getRateLimiter().checkLimit(
-    identifier.trim(),
-    RateLimitConfigs.contactForm,
-    context
-  )
+  return getRateLimiter().checkLimit(identifier.trim(), RateLimitConfigs.contactForm, context)
 }
 
 /**
@@ -50,4 +46,3 @@ export function checkAuthRateLimit(
 ): RateLimitResult {
   return getRateLimiter().checkLimit(identifier, RateLimitConfigs.auth, context)
 }
-

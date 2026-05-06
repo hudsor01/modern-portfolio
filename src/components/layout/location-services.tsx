@@ -30,37 +30,32 @@ export function LocationServices({ city, services }: LocationServicesProps) {
             Revenue Operations Services in {city}
           </h2>
           <p className="typography-lead max-w-3xl mx-auto">
-            Comprehensive RevOps solutions tailored for {city} businesses. From startup scaling to enterprise optimization, 
-            we deliver measurable results that drive sustainable growth.
+            Comprehensive RevOps solutions tailored for {city} businesses. From startup scaling to
+            enterprise optimization, we deliver measurable results that drive sustainable growth.
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
           {services.map((service, index) => (
-            <Card key={index} className="p-8 bg-card border-0 shadow-lg hover:shadow-xl transition-shadow">
+            <Card
+              key={index}
+              className="p-8 bg-card border-0 shadow-lg hover:shadow-xl transition-shadow"
+            >
               <div className="space-y-6">
                 {/* Service Header */}
                 <div>
-                  <h3 className="typography-h3 text-foreground mb-3">
-                    {service.title}
-                  </h3>
-                  <p className="typography-muted leading-relaxed">
-                    {service.description}
-                  </p>
+                  <h3 className="typography-h3 text-foreground mb-3">{service.title}</h3>
+                  <p className="typography-muted leading-relaxed">{service.description}</p>
                 </div>
 
                 {/* Features */}
                 <div>
-                  <h4 className="typography-large text-foreground mb-3">
-                    What's Included:
-                  </h4>
+                  <h4 className="typography-large text-foreground mb-3">What's Included:</h4>
                   <div className="space-y-2">
                     {service.features.map((feature, featureIndex) => (
                       <div key={featureIndex} className="flex items-start gap-2">
                         <CheckCircle className="h-4 w-4 text-success mt-0.5 flex-shrink-0" />
-                        <span className="typography-small text-muted-foreground">
-                          {feature}
-                        </span>
+                        <span className="typography-small text-muted-foreground">{feature}</span>
                       </div>
                     ))}
                   </div>
@@ -68,9 +63,7 @@ export function LocationServices({ city, services }: LocationServicesProps) {
 
                 {/* Benefits */}
                 <div>
-                  <h4 className="typography-large text-foreground mb-3">
-                    Expected Outcomes:
-                  </h4>
+                  <h4 className="typography-large text-foreground mb-3">Expected Outcomes:</h4>
                   <div className="flex flex-wrap gap-2">
                     {service.benefits.map((benefit, benefitIndex) => (
                       <Badge key={benefitIndex} variant="secondary" className="text-xs">
@@ -82,7 +75,7 @@ export function LocationServices({ city, services }: LocationServicesProps) {
 
                 {/* CTA */}
                 <div className="pt-4 border-t border-border">
-                  <Link 
+                  <Link
                     href={service.cta.href}
                     className="inline-flex items-center gap-2 text-primary hover:text-primary font-medium transition-colors"
                   >
@@ -102,16 +95,17 @@ export function LocationServices({ city, services }: LocationServicesProps) {
               Ready to Transform Your Revenue Operations?
             </h3>
             <p className="typography-muted mb-6">
-              Get a free consultation and discover how our proven RevOps strategies can accelerate your {city} business growth.
+              Get a free consultation and discover how our proven RevOps strategies can accelerate
+              your {city} business growth.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link 
+              <Link
                 href="/contact"
                 className="px-8 py-3 bg-primary-hover text-foreground rounded-lg hover:bg-primary transition-colors font-medium"
               >
                 Schedule Free Consultation
               </Link>
-              <Link 
+              <Link
                 href="/projects"
                 className="px-8 py-3 border border-primary text-primary rounded-lg hover:bg-primary/5 transition-colors font-medium"
               >

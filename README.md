@@ -48,7 +48,8 @@ as a runtime (≥22 <25).
 | `bun run dev`                       | Dev server (Turbopack)                            |
 | `bun run build` / `build:ci`        | Production build                                  |
 | `bun run start`                     | Serve the production build                        |
-| `bun run lint` / `lint:fix`         | ESLint (flat config)                              |
+| `bun run lint` / `lint:fix`         | Biome check (lint + format)                       |
+| `bun run format` / `format:fix`     | Biome format-only                                 |
 | `bun run typecheck`                 | `tsc --noEmit`                                    |
 | `bun run ci:quick`                  | lint + typecheck (the gate lefthook runs locally) |
 | `bun test` / `test:watch`           | Vitest                                            |
@@ -176,7 +177,7 @@ update this section.
 
 ## Development workflow
 
-- Lefthook runs `lint-staged` (ESLint `--fix`) on pre-commit
+- Lefthook runs `lint-staged` (`biome check --write`) on pre-commit
 - Lefthook runs `vitest run` on pre-push
 - Non-trivial work flows through the GSD workflow in `.planning/` (see
   `CLAUDE.md`) — small fixes use `/gsd:quick`, investigations use

@@ -6,20 +6,22 @@ import { customerJourneyStages } from '../data/constants'
 import { formatPercent } from '../utils'
 
 const CustomerJourneyChart = dynamic(() => import('./CustomerJourneyChart'), {
-  loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
-  ssr: false
+  loading: () => (
+    <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />
+  ),
+  ssr: false,
 })
 
 export function JourneysTab() {
   return (
     <div className="space-y-6 mb-8">
       {/* Customer Journey Visualization */}
-      <div
-        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out"
-      >
+      <div className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out">
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">Customer Journey Stage Analysis</h2>
-          <p className="typography-small text-muted-foreground">Multi-touchpoint customer journey mapping with conversion optimization insights</p>
+          <p className="typography-small text-muted-foreground">
+            Multi-touchpoint customer journey mapping with conversion optimization insights
+          </p>
         </div>
         <div className="h-[var(--chart-height-sm)]">
           <CustomerJourneyChart />
@@ -27,12 +29,12 @@ export function JourneysTab() {
       </div>
 
       {/* Journey Stages Details */}
-      <div
-        className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out"
-      >
+      <div className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out">
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">Journey Stage Performance Metrics</h2>
-          <p className="typography-small text-muted-foreground">Detailed conversion funnel analysis with touchpoint optimization opportunities</p>
+          <p className="typography-small text-muted-foreground">
+            Detailed conversion funnel analysis with touchpoint optimization opportunities
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

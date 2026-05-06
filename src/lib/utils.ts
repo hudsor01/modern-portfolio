@@ -1,7 +1,7 @@
 // Core utility functions
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { z } from 'zod'
+import type { z } from 'zod'
 import type { ChangeEvent, FormEvent } from 'react'
 
 // Create a client-safe absoluteUrl function
@@ -48,7 +48,7 @@ export const isServer = typeof window === 'undefined'
 export const isClient = !isServer
 
 export function truncate(text: string, maxLength: number): string {
-  return text.length <= maxLength ? text : text.substring(0, maxLength) + '...'
+  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`
 }
 
 export function formatRelativeTime(date: string | Date): string {
@@ -117,7 +117,7 @@ export function parseParam<T>(value: string | string[] | undefined, defaultValue
 
   if (typeof defaultValue === 'number') {
     const parsed = Number(Array.isArray(value) ? value[0] : value)
-    return (isNaN(parsed) ? defaultValue : parsed) as T
+    return (Number.isNaN(parsed) ? defaultValue : parsed) as T
   }
 
   if (typeof defaultValue === 'boolean') {

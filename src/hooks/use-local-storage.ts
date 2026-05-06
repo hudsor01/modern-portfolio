@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useMemo, useSyncExternalStore } from 'react'
-import { z } from 'zod'
+import type { z } from 'zod'
 import { handleUtilityError } from '@/lib/error-handling'
 
 /**
@@ -18,7 +18,9 @@ function createStorageAdapter<T>(
 
   // Notify all listeners of changes
   const emitChange = () => {
-    listeners.forEach((listener) => listener())
+    listeners.forEach((listener) => {
+      listener()
+    })
   }
 
   // Subscribe to storage changes

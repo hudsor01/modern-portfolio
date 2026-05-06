@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { checkContactFormRateLimit } from '@/lib/rate-limiter/helpers'
 import { contactFormSchema } from '@/lib/schemas'
@@ -23,7 +23,8 @@ export async function POST(request: NextRequest) {
   try {
     // Get IP from headers
     const forwarded = request.headers.get('x-forwarded-for')
-    const ip = (forwarded ? forwarded.split(/, /)[0] : request.headers.get('x-real-ip')) || 'unknown'
+    const ip =
+      (forwarded ? forwarded.split(/, /)[0] : request.headers.get('x-real-ip')) || 'unknown'
 
     // Rate limit
     const rateLimitResult = checkContactFormRateLimit(`${ip}`, { path: '/api/contact' })
@@ -64,22 +65,15 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Form submitted successfully!',
     })
-
   } catch (error) {
     if (error instanceof Error && error.name === 'ZodError') {
-      return NextResponse.json(
-        { success: false, error: 'Invalid form data' },
-        { status: 400 }
-      )
+      return NextResponse.json({ success: false, error: 'Invalid form data' }, { status: 400 })
     }
 
     logger.error(
       'Contact API submission failed',
       error instanceof Error ? error : new Error(String(error))
     )
-    return NextResponse.json(
-      { success: false, error: 'Error processing form' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: 'Error processing form' }, { status: 500 })
   }
 }

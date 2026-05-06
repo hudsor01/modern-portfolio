@@ -15,7 +15,9 @@ function ChartLoadError() {
 const CACBreakdownChart = dynamic(
   safeLazy(() => import('./CACBreakdownChart'), 'CACBreakdownChart', ChartLoadError),
   {
-    loading: () => <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />,
+    loading: () => (
+      <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />
+    ),
     ssr: false,
   }
 )
@@ -23,7 +25,9 @@ const CACBreakdownChart = dynamic(
 const UnitEconomicsChart = dynamic(
   safeLazy(() => import('./UnitEconomicsChart'), 'UnitEconomicsChart', ChartLoadError),
   {
-    loading: () => <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />,
+    loading: () => (
+      <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />
+    ),
     ssr: false,
   }
 )

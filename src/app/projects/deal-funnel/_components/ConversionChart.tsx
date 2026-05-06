@@ -44,10 +44,7 @@ export function ConversionChart({ stageConversions }: ConversionChartProps) {
                 border: `1px solid ${chartCssVars.border}`,
                 backdropFilter: 'blur(10px)',
               }}
-              formatter={(value) => [
-                `${Number(value ?? 0).toFixed(1)}%`,
-                'Conversion Rate',
-              ]}
+              formatter={(value) => [`${Number(value ?? 0).toFixed(1)}%`, 'Conversion Rate']}
             />
             <Bar dataKey="conversion" radius={[8, 8, 0, 0]}>
               {stageConversions.map((entry, index) => (

@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers'
-import crypto from 'crypto'
+import crypto from 'node:crypto'
 import { createContextLogger } from '@/lib/logger'
 
 const logger = createContextLogger('CSRFProtection')
@@ -41,9 +41,7 @@ export async function getCSRFTokenFromCookie(): Promise<string | undefined> {
  * Validate CSRF token from request
  * Expects token in x-csrf-token header or form field
  */
-export async function validateCSRFToken(
-  requestToken: string | undefined
-): Promise<boolean> {
+export async function validateCSRFToken(requestToken: string | undefined): Promise<boolean> {
   if (!requestToken) {
     return false
   }
@@ -55,10 +53,7 @@ export async function validateCSRFToken(
   }
 
   // Use constant-time comparison to prevent timing attacks
-  return crypto.timingSafeEqual(
-    Buffer.from(requestToken),
-    Buffer.from(storedToken)
-  )
+  return crypto.timingSafeEqual(Buffer.from(requestToken), Buffer.from(storedToken))
 }
 
 /**
@@ -93,7 +88,10 @@ export async function csrfProtectionMiddleware(
           valid: false,
           error: 'CSRF token must be sent in header for JSON requests',
         }
-      } else if (contentType.includes('application/x-www-form-urlencoded') || contentType.includes('multipart/form-data')) {
+      } else if (
+        contentType.includes('application/x-www-form-urlencoded') ||
+        contentType.includes('multipart/form-data')
+      ) {
         // For form data, we need to clone the request to read it without consuming the body elsewhere
         const clonedRequest = request.clone()
         const formData = await clonedRequest.formData()

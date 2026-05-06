@@ -27,13 +27,12 @@ export function AboutSection() {
             <h3 className="text-xl md:typography-h2 border-none pb-0 text-2xl text-foreground mb-4">
               Revenue Operations Professional
             </h3>
-            <p className="text-primary font-medium">
-              4+ Years Experience | Dallas-Fort Worth, TX
-            </p>
+            <p className="text-primary font-medium">4+ Years Experience | Dallas-Fort Worth, TX</p>
             <p className="text-muted-foreground text-base leading-relaxed">
-              Experienced Revenue Operations Professional with a proven track record of driving business growth
-              through data-driven insights, process optimization, and strategic operational improvements.
-              Expert in building scalable systems that increase efficiency and revenue performance.
+              Experienced Revenue Operations Professional with a proven track record of driving
+              business growth through data-driven insights, process optimization, and strategic
+              operational improvements. Expert in building scalable systems that increase efficiency
+              and revenue performance.
             </p>
 
             <div className="flex flex-wrap gap-2 justify-center lg:justify-start">

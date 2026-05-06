@@ -7,16 +7,16 @@ import { chartColors } from '@/lib/charts'
 import type { PieLabelRenderProps } from 'recharts'
 
 interface CustomTooltipProps {
-  active?: boolean;
+  active?: boolean
   payload?: Array<{
-    name: string;
-    value: number;
+    name: string
+    value: number
     payload: {
-      name: string;
-      value: number;
-      growth?: string;
-    };
-  }>;
+      name: string
+      value: number
+      growth?: string
+    }
+  }>
 }
 
 type LeadSourceDatum = {
@@ -49,14 +49,15 @@ const LeadSourcePieChart = memo(function LeadSourcePieChart({ data }: LeadSource
 
   const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
     if (active && payload && payload.length > 0 && payload[0]?.payload) {
-      const data = payload[0].payload;
-      const percentage = ((data.value / total) * 100).toFixed(1);
-      
+      const data = payload[0].payload
+      const percentage = ((data.value / total) * 100).toFixed(1)
+
       return (
         <div className="p-3 rounded-xl bg-popover/95 backdrop-blur-xs border border-border">
           <p className="font-medium text-foreground">{data.name}</p>
           <p className="typography-small text-muted-foreground">
-            Leads: <span className="font-medium text-foreground">{data.value.toLocaleString()}</span>
+            Leads:{' '}
+            <span className="font-medium text-foreground">{data.value.toLocaleString()}</span>
           </p>
           <p className="typography-small text-muted-foreground">
             Share: <span className="font-medium text-foreground">{percentage}%</span>
@@ -75,9 +76,9 @@ const LeadSourcePieChart = memo(function LeadSourcePieChart({ data }: LeadSource
   const renderCustomLabel = (entry: PieLabelRenderProps) => {
     if (typeof entry.value === 'number') {
       const percentage = total > 0 ? ((entry.value / total) * 100).toFixed(0) : '0'
-      return `${percentage}%`;
+      return `${percentage}%`
     }
-    return '';
+    return ''
   }
 
   return (
@@ -105,21 +106,26 @@ const LeadSourcePieChart = memo(function LeadSourcePieChart({ data }: LeadSource
           </PieChart>
         </ResponsiveContainer>
       </div>
-      
+
       {/* Legend Grid */}
       <div className="mt-6 grid grid-cols-2 gap-3">
         {leadSourceData.slice(0, 4).map((source) => {
           const percentage = ((source.value / total) * 100).toFixed(1)
-          
+
           return (
-            <div key={source.name} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-all duration-300 ease-out">
-              <div 
-                className="w-4 h-4 rounded-full flex-shrink-0" 
+            <div
+              key={source.name}
+              className="flex items-center gap-3 p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-all duration-300 ease-out"
+            >
+              <div
+                className="w-4 h-4 rounded-full flex-shrink-0"
                 style={{ backgroundColor: source.color }}
               />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">{source.name}</p>
-                <p className="typography-small text-muted-foreground">{percentage}% • {source.growth}</p>
+                <p className="typography-small text-muted-foreground">
+                  {percentage}% • {source.growth}
+                </p>
               </div>
             </div>
           )

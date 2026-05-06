@@ -1,7 +1,14 @@
 'use client'
 import { memo } from 'react'
 
-import { LazyBarChart as BarChart, ChartWrapper, ChartGrid, ChartXAxis, ChartYAxis, StandardTooltip } from '@/components/charts/lazy-charts'
+import {
+  LazyBarChart as BarChart,
+  ChartWrapper,
+  ChartGrid,
+  ChartXAxis,
+  ChartYAxis,
+  StandardTooltip,
+} from '@/components/charts/lazy-charts'
 import { Bar } from 'recharts'
 import { chartColors, chartConfig, chartTypeConfigs } from '@/lib/charts'
 

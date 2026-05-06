@@ -13,16 +13,16 @@ export function NarrativeSections() {
           <p className="text-lg leading-relaxed">
             When I inherited the marketing analytics function, I discovered the team was operating
             with a fundamentally broken attribution model. Last-click attribution was giving all
-            credit to the final touchpoint, completely undervaluing the awareness channels that
-            were actually driving qualified leads into the funnel. With 8,743 monthly leads across
-            6 primary channels and complex B2B buying journeys averaging 7.3 touchpoints, we were
+            credit to the final touchpoint, completely undervaluing the awareness channels that were
+            actually driving qualified leads into the funnel. With 8,743 monthly leads across 6
+            primary channels and complex B2B buying journeys averaging 7.3 touchpoints, we were
             making million-dollar budget decisions based on incomplete data.
           </p>
           <p className="leading-relaxed">
-            The marketing team was essentially flying blind—budget decisions were based on intuition,
-            cross-channel customer journeys were invisible, and there was no systematic way to
-            measure the assisted conversion value of different initiatives. A $2.4M annual marketing
-            budget deserved better.
+            The marketing team was essentially flying blind—budget decisions were based on
+            intuition, cross-channel customer journeys were invisible, and there was no systematic
+            way to measure the assisted conversion value of different initiatives. A $2.4M annual
+            marketing budget deserved better.
           </p>
         </div>
       </SectionCard>
@@ -36,11 +36,18 @@ export function NarrativeSections() {
             qualified leads. My specific objectives were:
           </p>
           <ul className="list-disc list-inside space-y-2 ml-4">
-            <li>Replace last-click attribution with a weighted multi-touch model that credits the full journey</li>
+            <li>
+              Replace last-click attribution with a weighted multi-touch model that credits the full
+              journey
+            </li>
             <li>Build cross-channel journey tracking to visualize complete customer paths</li>
-            <li>Create assisted conversion analysis to measure influence beyond direct conversions</li>
+            <li>
+              Create assisted conversion analysis to measure influence beyond direct conversions
+            </li>
             <li>Develop lead quality scoring that accounts for multi-touch interaction patterns</li>
-            <li>Enable data-driven budget allocation recommendations based on true channel performance</li>
+            <li>
+              Enable data-driven budget allocation recommendations based on true channel performance
+            </li>
             <li>Reduce attribution reporting time from 8+ hours to under 30 minutes</li>
           </ul>
         </div>
@@ -51,8 +58,8 @@ export function NarrativeSections() {
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
             I designed and built a comprehensive multi-touch attribution system from scratch,
-            tracking the complete customer journey and assigning weighted credit to each
-            marketing touchpoint based on its actual influence on conversion:
+            tracking the complete customer journey and assigning weighted credit to each marketing
+            touchpoint based on its actual influence on conversion:
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -77,10 +84,10 @@ export function NarrativeSections() {
           </div>
 
           <p className="leading-relaxed mt-4">
-            I personally led the integration with our marketing tech stack, designed the
-            attribution weighting methodology, and trained the marketing team on leveraging
-            the new insights for budget optimization. The rollout was phased to validate
-            accuracy before scaling recommendations.
+            I personally led the integration with our marketing tech stack, designed the attribution
+            weighting methodology, and trained the marketing team on leveraging the new insights for
+            budget optimization. The rollout was phased to validate accuracy before scaling
+            recommendations.
           </p>
         </div>
       </SectionCard>
@@ -89,9 +96,9 @@ export function NarrativeSections() {
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
           <p className="leading-relaxed">
-            The multi-touch attribution model I built revolutionized marketing decision-making
-            and enabled data-driven optimization that significantly improved both lead quality
-            and conversion rates:
+            The multi-touch attribution model I built revolutionized marketing decision-making and
+            enabled data-driven optimization that significantly improved both lead quality and
+            conversion rates:
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -105,11 +112,13 @@ export function NarrativeSections() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-primary">Quantified Business Outcomes I Delivered:</h3>
+            <h3 className="font-semibold text-primary">
+              Quantified Business Outcomes I Delivered:
+            </h3>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>
-                Discovered that organic search assists 67% of paid search conversions—preventing
-                a planned budget cut that would have cost us leads
+                Discovered that organic search assists 67% of paid search conversions—preventing a
+                planned budget cut that would have cost us leads
               </li>
               <li>
                 Proved email marketing's true contribution was 3.2x higher than last-click
@@ -123,7 +132,8 @@ export function NarrativeSections() {
                 Enabled attribution-based budget reallocation that increased qualified leads by 23%
               </li>
               <li>
-                Reduced attribution reporting time from 8 hours to 15 minutes with automated dashboards
+                Reduced attribution reporting time from 8 hours to 15 minutes with automated
+                dashboards
               </li>
             </ul>
           </div>
@@ -152,8 +162,8 @@ export function NarrativeSections() {
                   properly—this was the biggest hidden value I uncovered
                 </li>
                 <li>
-                  Time-decay attribution balances recency bias while crediting early-stage
-                  awareness efforts appropriately
+                  Time-decay attribution balances recency bias while crediting early-stage awareness
+                  efforts appropriately
                 </li>
               </ul>
             </div>
@@ -169,8 +179,8 @@ export function NarrativeSections() {
                   multiple models before recommending changes
                 </li>
                 <li>
-                  Real-time attribution dashboards enable agile campaign optimization that
-                  weekly reports can't achieve
+                  Real-time attribution dashboards enable agile campaign optimization that weekly
+                  reports can't achieve
                 </li>
                 <li>
                   Data visualization is crucial for marketing teams to understand complex
@@ -180,10 +190,10 @@ export function NarrativeSections() {
             </div>
           </div>
           <p className="leading-relaxed mt-4">
-            This project taught me that attribution modeling is as much about organizational
-            change management as it is about technical implementation. The key is building
-            confidence in the data through transparent methodology and clear business impact—
-            I now lead with outcomes, not algorithms.
+            This project taught me that attribution modeling is as much about organizational change
+            management as it is about technical implementation. The key is building confidence in
+            the data through transparent methodology and clear business impact— I now lead with
+            outcomes, not algorithms.
           </p>
         </div>
       </SectionCard>

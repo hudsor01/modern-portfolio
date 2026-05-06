@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
-import { ProjectTabsProps } from '@/types/project'
+import type { ProjectTabsProps } from '@/types/project'
 import { Skeleton } from '@/components/ui/skeleton'
 
 function SwiperSkeleton() {
@@ -26,7 +26,9 @@ export function ProjectTabs({ projects }: ProjectTabsProps) {
   const allCategories = (() => {
     const categories = new Set<string>()
     projects.forEach((project) => {
-      project.tags?.forEach((tag) => categories.add(tag))
+      project.tags?.forEach((tag) => {
+        categories.add(tag)
+      })
     })
     return ['All', ...Array.from(categories)]
   })()
@@ -56,6 +58,7 @@ export function ProjectTabs({ projects }: ProjectTabsProps) {
         {allCategories.map((category) => (
           <button
             key={category}
+            type="button"
             onClick={() => setActiveCategory(category)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-150 ease-out
               ${

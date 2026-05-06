@@ -5,7 +5,6 @@ import { FeatureCard } from '@/components/projects/shared/feature-card'
 import { ResultCard } from '@/components/projects/shared/result-card'
 import { formatCurrency, formatPercentage, formatNumber } from '@/lib/data-formatters'
 
-
 export function NarrativeSections() {
   return (
     <div className="space-y-12 mt-12">
@@ -21,12 +20,12 @@ export function NarrativeSections() {
             underperformers were protected with achievable targets.
           </p>
           <p className="leading-relaxed">
-            The results were predictable: quota attainment variance exceeded 32%, meaning some
-            reps were crushing their numbers while others missed by wide margins. Sales turnover
-            was 28% annually—largely driven by perceived quota unfairness. Territory coverage
-            was inefficient, with some markets over-resourced while high-potential areas were
-            neglected. With 47 territories and {formatCurrency(8700000)} in revenue at stake,
-            we needed a complete redesign.
+            The results were predictable: quota attainment variance exceeded 32%, meaning some reps
+            were crushing their numbers while others missed by wide margins. Sales turnover was 28%
+            annually—largely driven by perceived quota unfairness. Territory coverage was
+            inefficient, with some markets over-resourced while high-potential areas were neglected.
+            With 47 territories and {formatCurrency(8700000)} in revenue at stake, we needed a
+            complete redesign.
           </p>
         </div>
       </SectionCard>
@@ -36,8 +35,8 @@ export function NarrativeSections() {
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
             I was tasked with building an intelligent territory and quota management system that
-            would replace politics with data, creating fair quotas and optimized territories.
-            My specific objectives included:
+            would replace politics with data, creating fair quotas and optimized territories. My
+            specific objectives included:
           </p>
           <ul className="list-disc list-inside space-y-2 ml-4">
             <li>Reduce quota attainment variance from 32% to under 15%</li>
@@ -54,10 +53,10 @@ export function NarrativeSections() {
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
-            I designed and built a comprehensive territory intelligence platform combining
-            machine learning, geospatial analysis, and fairness algorithms. The system analyzed
-            {formatNumber(2500000)} data points to create scientifically-optimized territories
-            and quotas:
+            I designed and built a comprehensive territory intelligence platform combining machine
+            learning, geospatial analysis, and fairness algorithms. The system analyzed
+            {formatNumber(2500000)} data points to create scientifically-optimized territories and
+            quotas:
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -82,11 +81,11 @@ export function NarrativeSections() {
           </div>
 
           <p className="leading-relaxed mt-4">
-            I personally led the data science work, built the optimization algorithms, and
-            designed the executive scenario planning interface. I also led change management
-            with the sales leadership team, walking them through the methodology transparency
-            that would help them defend quotas to their teams. The system was validated with
-            the top 10 territories before full rollout.
+            I personally led the data science work, built the optimization algorithms, and designed
+            the executive scenario planning interface. I also led change management with the sales
+            leadership team, walking them through the methodology transparency that would help them
+            defend quotas to their teams. The system was validated with the top 10 territories
+            before full rollout.
           </p>
         </div>
       </SectionCard>
@@ -95,9 +94,9 @@ export function NarrativeSections() {
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
           <p className="leading-relaxed">
-            The territory intelligence system I built transformed how the organization sets
-            quotas and designs territories, creating measurable improvements in fairness,
-            forecast accuracy, and sales team retention:
+            The territory intelligence system I built transformed how the organization sets quotas
+            and designs territories, creating measurable improvements in fairness, forecast
+            accuracy, and sales team retention:
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -124,12 +123,22 @@ export function NarrativeSections() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-secondary">Quantified Business Outcomes I Delivered:</h3>
+            <h3 className="font-semibold text-secondary">
+              Quantified Business Outcomes I Delivered:
+            </h3>
             <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>Improved territory revenue forecast accuracy from 64% to 92%—a 28 point improvement</li>
+              <li>
+                Improved territory revenue forecast accuracy from 64% to 92%—a 28 point improvement
+              </li>
               <li>Reduced quota attainment variance from 32% to 11%—creating perceived fairness</li>
-              <li>Generated {formatCurrency(8700000)} in incremental revenue through optimized territories</li>
-              <li>Reduced sales rep turnover from 28% to 10%—saving {formatCurrency(2100000)} in recruiting costs</li>
+              <li>
+                Generated {formatCurrency(8700000)} in incremental revenue through optimized
+                territories
+              </li>
+              <li>
+                Reduced sales rep turnover from 28% to 10%—saving {formatCurrency(2100000)} in
+                recruiting costs
+              </li>
               <li>Increased average territory efficiency by 23% through better boundary design</li>
               <li>Reduced planning cycle from 8 weeks to 3 weeks through scenario automation</li>
             </ul>
@@ -145,16 +154,16 @@ export function NarrativeSections() {
               <h3 className="font-semibold text-accent-foreground">Territory Strategy Insights</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>
-                  Perceived fairness matters as much as actual fairness—transparency in
-                  methodology is essential for sales buy-in
+                  Perceived fairness matters as much as actual fairness—transparency in methodology
+                  is essential for sales buy-in
                 </li>
                 <li>
                   Territory boundaries should follow market logic, not administrative
                   convenience—geospatial optimization reveals hidden potential
                 </li>
                 <li>
-                  Quota setting should consider rep experience level—aggressive ramp
-                  expectations cause early attrition
+                  Quota setting should consider rep experience level—aggressive ramp expectations
+                  cause early attrition
                 </li>
               </ul>
             </div>
@@ -162,16 +171,16 @@ export function NarrativeSections() {
               <h3 className="font-semibold text-primary">Technical Insights</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>
-                  Clustering algorithms outperform manual boundary drawing for territory
-                  design—the data reveals patterns humans miss
+                  Clustering algorithms outperform manual boundary drawing for territory design—the
+                  data reveals patterns humans miss
                 </li>
                 <li>
-                  What-if scenario planning drives executive adoption—leaders want to
-                  explore options, not receive edicts
+                  What-if scenario planning drives executive adoption—leaders want to explore
+                  options, not receive edicts
                 </li>
                 <li>
-                  Historical performance must be adjusted for market changes—past success
-                  doesn't predict future potential
+                  Historical performance must be adjusted for market changes—past success doesn't
+                  predict future potential
                 </li>
               </ul>
             </div>
@@ -179,8 +188,8 @@ export function NarrativeSections() {
           <p className="leading-relaxed mt-4">
             This project taught me that territory and quota planning is fundamentally about
             trust—sales teams need to believe the system is fair, even if they don't understand
-            every algorithm. I now prioritize methodology transparency and change management
-            as heavily as the data science itself.
+            every algorithm. I now prioritize methodology transparency and change management as
+            heavily as the data science itself.
           </p>
         </div>
       </SectionCard>

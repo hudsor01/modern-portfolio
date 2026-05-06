@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { ApiResponse, RSSFeedData } from '@/types/api'
+import { type NextRequest, NextResponse } from 'next/server'
+import type { ApiResponse, RSSFeedData } from '@/types/api'
 import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
 import { createErrorResponse } from '@/lib/api-blog'
@@ -76,10 +76,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    logger.error(
-      'Blog RSS API Error:',
-      error instanceof Error ? error : new Error(String(error))
-    )
+    logger.error('Blog RSS API Error:', error instanceof Error ? error : new Error(String(error)))
     return NextResponse.json(createErrorResponse('Failed to generate RSS feed'), {
       status: 500,
     })

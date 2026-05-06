@@ -82,7 +82,6 @@ export function ProjectJsonLd({
     <script
       type="application/ld+json"
       nonce={nonce ?? undefined}
-       
       dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(jsonLd) }}
     />
   )

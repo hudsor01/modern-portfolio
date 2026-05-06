@@ -35,6 +35,7 @@ function SwiperPrevButton({ className }: { className?: string }) {
   if (!swiper) {
     return (
       <button
+        type="button"
         className={cn(
           'group hover:bg-primary/10 rounded-full p-2.5 shadow-xs transition-colors duration-300 ease-out hover:shadow opacity-50 cursor-not-allowed',
           className
@@ -49,6 +50,7 @@ function SwiperPrevButton({ className }: { className?: string }) {
 
   return (
     <button
+      type="button"
       className={cn(
         'group hover:bg-primary/10 rounded-full p-2.5 shadow-xs transition-colors duration-300 ease-out hover:shadow',
         className
@@ -68,6 +70,7 @@ function SwiperNextButton({ className }: { className?: string }) {
   if (!swiper) {
     return (
       <button
+        type="button"
         className={cn(
           'group hover:bg-primary/10 rounded-full p-2.5 shadow-xs transition-colors duration-300 ease-out hover:shadow opacity-50 cursor-not-allowed',
           className
@@ -82,6 +85,7 @@ function SwiperNextButton({ className }: { className?: string }) {
 
   return (
     <button
+      type="button"
       className={cn(
         'group hover:bg-primary/10 rounded-full p-2.5 shadow-xs transition-colors duration-300 ease-out hover:shadow',
         className
@@ -112,6 +116,7 @@ function SwiperPagination({
         {Array.from({ length: totalSlides }).map((_, index) => (
           <button
             key={index}
+            type="button"
             className={cn(
               'h-2.5 w-2.5 rounded-full transition-all duration-300 ease-out opacity-50 cursor-not-allowed',
               activeIndex === index ? 'bg-primary scale-110 shadow-xs' : 'bg-primary/20'
@@ -130,6 +135,7 @@ function SwiperPagination({
       {Array.from({ length: totalSlides }).map((_, index) => (
         <button
           key={index}
+          type="button"
           className={cn(
             'h-2.5 w-2.5 rounded-full transition-all duration-300 ease-out',
             activeIndex === index

@@ -7,7 +7,7 @@ import { RefreshCw, AlertTriangle } from 'lucide-react'
 
 export default function ErrorPage({
   error,
-  reset
+  reset,
 }: Readonly<{
   error: Error & { digest?: string }
   reset: () => void
@@ -24,26 +24,21 @@ export default function ErrorPage({
             <AlertTriangle className="w-8 h-8 text-destructive" />
           </div>
 
-          <h2 className="typography-h3 text-foreground mb-4">
-            Something went wrong
-          </h2>
+          <h2 className="typography-h3 text-foreground mb-4">Something went wrong</h2>
 
           <p className="text-muted-foreground mb-8">
-            We're sorry, but something unexpected happened. Please try again or contact support if the problem persists.
+            We're sorry, but something unexpected happened. Please try again or contact support if
+            the problem persists.
           </p>
 
           <div className="space-y-4">
-            <Button
-              onClick={reset}
-              className="w-full"
-              size="lg"
-            >
+            <Button onClick={reset} className="w-full" size="lg">
               <RefreshCw className="w-4 h-4 mr-2" />
               Try Again
             </Button>
 
             <Button
-              onClick={() => window.location.href = '/'}
+              onClick={() => (window.location.href = '/')}
               variant="outline"
               className="w-full"
               size="lg"

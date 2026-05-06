@@ -13,7 +13,7 @@ export const cacMetrics = {
   paybackPeriod: 8.4,
   ltv_cac_ratio: 3.6,
   grossMargin: 78.5,
-  monthlyChurn: 4.2
+  monthlyChurn: 4.2,
 }
 
 export const channelPerformance = [
@@ -31,9 +31,18 @@ export const productTierEconomics = [
 ]
 
 export const technologies = [
-  'React 19', 'TypeScript', 'Unit Economics', 'CAC Analysis',
-  'LTV Modeling', 'Cohort Analysis', 'Financial Modeling', 'Contribution Margin Analysis',
-  'Payback Period Tracking', 'Channel Optimization', 'Profitability Analysis', 'Business Intelligence'
+  'React 19',
+  'TypeScript',
+  'Unit Economics',
+  'CAC Analysis',
+  'LTV Modeling',
+  'Cohort Analysis',
+  'Financial Modeling',
+  'Contribution Margin Analysis',
+  'Payback Period Tracking',
+  'Channel Optimization',
+  'Profitability Analysis',
+  'Business Intelligence',
 ]
 
 // Unit economics progression over time (LTV, CAC, ratio trends)

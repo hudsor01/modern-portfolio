@@ -6,7 +6,10 @@ import { RefreshCw, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from './button'
 import { Skeleton } from './skeleton'
-import type { ChartAction as DesignChartAction, ChartContainerProps as DesignChartContainerProps } from '@/types/design-system'
+import type {
+  ChartAction as DesignChartAction,
+  ChartContainerProps as DesignChartContainerProps,
+} from '@/types/design-system'
 
 const chartContainerVariants = cva(
   'relative rounded-xl border bg-card text-card-foreground transition-all duration-300 ease-out',
@@ -164,10 +167,10 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
         className={cn(chartContainerVariants({ variant, padding }), className)}
         {...props}
       >
-          <div className="space-y-4">
-            <ChartHeader title={title} description={description} actions={actions} />
+        <div className="space-y-4">
+          <ChartHeader title={title} description={description} actions={actions} />
 
-            {/* Chart content */}
+          {/* Chart content */}
           <div className="w-full overflow-hidden" style={{ height: `${height}px` }}>
             {children}
           </div>

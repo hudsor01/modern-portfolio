@@ -1,6 +1,5 @@
 'use client'
 
-
 import { Card, CardContent } from '@/components/ui/card'
 import { AnimatedCounter } from './animated-counter'
 import {
@@ -11,7 +10,7 @@ import {
   CheckCircle,
   DollarSign,
   Rocket,
-  BarChart3
+  BarChart3,
 } from 'lucide-react'
 
 interface ExperienceStat {
@@ -25,15 +24,14 @@ interface ExperienceStatsProps {
   className?: string
 }
 
-
 const iconMap = {
   'trending-up': TrendingUp,
-  'star': Star,
-  'briefcase': Briefcase,
-  'clock': Clock,
+  star: Star,
+  briefcase: Briefcase,
+  clock: Clock,
   'check-circle': CheckCircle,
   'dollar-sign': DollarSign,
-  'rocket': Rocket,
+  rocket: Rocket,
   'bar-chart': BarChart3,
 }
 
@@ -51,10 +49,7 @@ export function ExperienceStats({ stats, className = '' }: ExperienceStatsProps)
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 @container">
         {stats.map((stat) => (
-          <ExperienceStatCard
-            key={stat.label}
-            stat={stat}
-          />
+          <ExperienceStatCard key={stat.label} stat={stat} />
         ))}
       </div>
     </section>
@@ -77,14 +72,9 @@ function ExperienceStatCard({ stat }: ExperienceStatCardProps) {
           </div>
         </div>
         <div className="font-display text-xl @sm:text-2xl font-bold text-foreground mb-2">
-          <AnimatedCounter
-            value={stat.value}
-            duration={2000}
-          />
+          <AnimatedCounter value={stat.value} duration={2000} />
         </div>
-        <p className="text-xs @sm:text-sm font-medium text-muted-foreground">
-          {stat.label}
-        </p>
+        <p className="text-xs @sm:text-sm font-medium text-muted-foreground">{stat.label}</p>
       </CardContent>
     </Card>
   )

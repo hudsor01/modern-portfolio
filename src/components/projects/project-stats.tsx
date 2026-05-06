@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import type React from 'react'
 import { TrendingUp, BarChart3, Target, Zap } from 'lucide-react'
 
 interface ProjectStatsProps {
@@ -69,9 +69,7 @@ export const ProjectStats: React.FC<ProjectStatsProps> = ({ totalProjects, isLoa
           </div>
 
           {/* Label */}
-          <div className="text-sm text-muted-foreground">
-            {stat.label}
-          </div>
+          <div className="text-sm text-muted-foreground">{stat.label}</div>
 
           {/* Subtle accent line */}
           <div className="absolute bottom-0 left-6 right-6 h-0.5 bg-primary/0 group-hover:bg-primary/30 transition-colors duration-300 ease-out rounded-full" />

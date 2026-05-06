@@ -2,7 +2,15 @@
 import { memo } from 'react'
 
 import { LazyScatterChart as ScatterChart } from '@/components/charts/lazy-charts'
-import { Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from 'recharts'
+import {
+  Scatter,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  ReferenceLine,
+} from 'recharts'
 import { chartColors, segmentColors, chartCssVars } from '@/lib/charts'
 import { clvPredictionData } from '../data/constants'
 
@@ -27,7 +35,10 @@ const CLVPredictionChart = memo(function CLVPredictionChart() {
   return (
     <div className="h-[var(--chart-height-md)]">
       <ResponsiveContainer width="100%" height="100%">
-        <ScatterChart data={clvPredictionData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+        <ScatterChart
+          data={clvPredictionData}
+          margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+        >
           <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
           <XAxis
             type="number"
@@ -73,7 +84,7 @@ const CLVPredictionChart = memo(function CLVPredictionChart() {
               return [safeValue, safeName]
             }}
             labelFormatter={(label, payload) => {
-              if (payload && payload[0]) {
+              if (payload?.[0]) {
                 const point = payload[0].payload
                 return [
                   `Segment: ${point.segment}`,

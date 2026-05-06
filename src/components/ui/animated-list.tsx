@@ -1,14 +1,9 @@
-"use client"
+'use client'
 
-import React, {
-  ComponentPropsWithoutRef,
-  useEffect,
-  useMemo,
-  useState,
-} from "react"
-import { AnimatePresence, motion } from "motion/react"
+import React, { type ComponentPropsWithoutRef, useEffect, useMemo, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
 
-import { cn } from "@/lib/utils"
+import { cn } from '@/lib/utils'
 
 // Named variants for better performance and reusability
 const listItemVariants = {
@@ -17,7 +12,7 @@ const listItemVariants = {
   exit: { scale: 0, opacity: 0 },
 }
 
-const listItemTransition = { type: "spring" as const, stiffness: 350, damping: 40 }
+const listItemTransition = { type: 'spring' as const, stiffness: 350, damping: 40 }
 
 export function AnimatedListItem({ children }: { children: React.ReactNode }) {
   return (
@@ -35,7 +30,7 @@ export function AnimatedListItem({ children }: { children: React.ReactNode }) {
   )
 }
 
-export interface AnimatedListProps extends ComponentPropsWithoutRef<"div"> {
+export interface AnimatedListProps extends ComponentPropsWithoutRef<'div'> {
   children: React.ReactNode
   delay?: number
 }
@@ -43,10 +38,7 @@ export interface AnimatedListProps extends ComponentPropsWithoutRef<"div"> {
 export const AnimatedList = React.memo(
   ({ children, className, delay = 1000, ...props }: AnimatedListProps) => {
     const [index, setIndex] = useState(0)
-    const childrenArray = useMemo(
-      () => React.Children.toArray(children),
-      [children]
-    )
+    const childrenArray = useMemo(() => React.Children.toArray(children), [children])
 
     useEffect(() => {
       if (index < childrenArray.length - 1) {
@@ -65,15 +57,10 @@ export const AnimatedList = React.memo(
     }, [index, childrenArray])
 
     return (
-      <div
-        className={cn(`flex flex-col items-center gap-4`, className)}
-        {...props}
-      >
+      <div className={cn(`flex flex-col items-center gap-4`, className)} {...props}>
         <AnimatePresence>
           {itemsToShow.map((item) => (
-            <AnimatedListItem key={(item as React.ReactElement).key}>
-              {item}
-            </AnimatedListItem>
+            <AnimatedListItem key={(item as React.ReactElement).key}>{item}</AnimatedListItem>
           ))}
         </AnimatePresence>
       </div>
@@ -81,4 +68,4 @@ export const AnimatedList = React.memo(
   }
 )
 
-AnimatedList.displayName = "AnimatedList"
+AnimatedList.displayName = 'AnimatedList'

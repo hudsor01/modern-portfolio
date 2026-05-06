@@ -26,15 +26,8 @@ export function FeatureCard({
   className,
 }: FeatureCardProps) {
   return (
-    <div
-      className={cn(
-        'bg-muted/50 rounded-xl p-6 border border-border',
-        className
-      )}
-    >
-      <h3 className={cn('font-semibold mb-3', titleColorMap[titleVariant])}>
-        {title}
-      </h3>
+    <div className={cn('bg-muted/50 rounded-xl p-6 border border-border', className)}>
+      <h3 className={cn('font-semibold mb-3', titleColorMap[titleVariant])}>{title}</h3>
       {children}
     </div>
   )

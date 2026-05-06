@@ -5,7 +5,6 @@ import { FeatureCard } from '@/components/projects/shared/feature-card'
 import { ResultCard } from '@/components/projects/shared/result-card'
 import { formatCurrency, formatPercentage } from '@/lib/data-formatters'
 
-
 export function NarrativeSections() {
   return (
     <div className="space-y-12 mt-12">
@@ -45,7 +44,10 @@ export function NarrativeSections() {
             <li>Identify the top-performing partners driving 80% of revenue (Pareto analysis)</li>
             <li>Develop early warning systems for underperforming or at-risk partners</li>
             <li>Enable resource allocation optimization based on partner potential</li>
-            <li>Achieve partner win rate improvements of at least 10% through better enablement targeting</li>
+            <li>
+              Achieve partner win rate improvements of at least 10% through better enablement
+              targeting
+            </li>
           </ul>
         </div>
       </SectionCard>
@@ -54,9 +56,9 @@ export function NarrativeSections() {
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
-            I designed and built a partner performance intelligence platform that transformed
-            how we manage, measure, and optimize partner relationships. The system combined
-            real-time analytics with strategic planning capabilities:
+            I designed and built a partner performance intelligence platform that transformed how we
+            manage, measure, and optimize partner relationships. The system combined real-time
+            analytics with strategic planning capabilities:
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -83,8 +85,8 @@ export function NarrativeSections() {
           <p className="leading-relaxed mt-4">
             I personally led the data integration effort, connecting CRM, billing, and partner
             portal data into a unified analytics layer. I designed the tier scoring methodology,
-            built the ROI calculation engine, and created the executive reporting framework.
-            The platform launched with the top 20 partners and expanded to all 47 within 60 days.
+            built the ROI calculation engine, and created the executive reporting framework. The
+            platform launched with the top 20 partners and expanded to all 47 within 60 days.
           </p>
         </div>
       </SectionCard>
@@ -94,8 +96,8 @@ export function NarrativeSections() {
         <div className="space-y-6 text-muted-foreground">
           <p className="leading-relaxed">
             The partner intelligence platform I built transformed channel management from
-            relationship-driven to data-driven, delivering measurable improvements across
-            every dimension of partner performance:
+            relationship-driven to data-driven, delivering measurable improvements across every
+            dimension of partner performance:
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -109,24 +111,26 @@ export function NarrativeSections() {
               label="Partner Revenue"
               variant="secondary"
             />
-            <ResultCard
-              value="4.7x"
-              label="Quick Ratio Achieved"
-              variant="primary"
-            />
-            <ResultCard
-              value="80/20"
-              label="Pareto Optimized"
-              variant="secondary"
-            />
+            <ResultCard value="4.7x" label="Quick Ratio Achieved" variant="primary" />
+            <ResultCard value="80/20" label="Pareto Optimized" variant="secondary" />
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-secondary">Quantified Business Outcomes I Delivered:</h3>
+            <h3 className="font-semibold text-secondary">
+              Quantified Business Outcomes I Delivered:
+            </h3>
             <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>Achieved {formatPercentage(0.832)} win rate for partner channel—18 points above industry average (65-75%)</li>
-              <li>Identified top 5 partners driving 80% of partner revenue, enabling focused investment</li>
-              <li>Improved certified partner revenue contribution by 63% through targeted enablement</li>
+              <li>
+                Achieved {formatPercentage(0.832)} win rate for partner channel—18 points above
+                industry average (65-75%)
+              </li>
+              <li>
+                Identified top 5 partners driving 80% of partner revenue, enabling focused
+                investment
+              </li>
+              <li>
+                Improved certified partner revenue contribution by 63% through targeted enablement
+              </li>
               <li>Reduced partner churn by 22% through early warning interventions</li>
               <li>Optimized resource allocation, saving 15 hours weekly on partner reporting</li>
               <li>Achieved 4.7x quick ratio—exceeding SaaS benchmark of 4.0x</li>
@@ -143,16 +147,16 @@ export function NarrativeSections() {
               <h3 className="font-semibold text-accent-foreground">Partner Strategy Insights</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>
-                  The Pareto principle (80/20) applies universally to partner programs—focusing
-                  on top performers yields disproportionate returns
+                  The Pareto principle (80/20) applies universally to partner programs—focusing on
+                  top performers yields disproportionate returns
                 </li>
                 <li>
-                  Partner tier should reflect ROI potential, not just revenue—I now weight
-                  margin and deal velocity in tier scoring
+                  Partner tier should reflect ROI potential, not just revenue—I now weight margin
+                  and deal velocity in tier scoring
                 </li>
                 <li>
-                  Early warning systems prevent partner churn far more effectively than
-                  reactive retention efforts
+                  Early warning systems prevent partner churn far more effectively than reactive
+                  retention efforts
                 </li>
               </ul>
             </div>
@@ -160,25 +164,25 @@ export function NarrativeSections() {
               <h3 className="font-semibold text-primary">Technical Insights</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>
-                  Unified data architecture is essential—partner data scattered across systems
-                  makes performance analysis impossible
+                  Unified data architecture is essential—partner data scattered across systems makes
+                  performance analysis impossible
                 </li>
                 <li>
-                  Real-time dashboards drive adoption; static reports get ignored by busy
-                  channel managers
+                  Real-time dashboards drive adoption; static reports get ignored by busy channel
+                  managers
                 </li>
                 <li>
-                  Visualization matters—Pareto charts and tier comparisons communicate insights
-                  that tables cannot
+                  Visualization matters—Pareto charts and tier comparisons communicate insights that
+                  tables cannot
                 </li>
               </ul>
             </div>
           </div>
           <p className="leading-relaxed mt-4">
-            This project taught me that partner programs succeed or fail based on measurement
-            rigor. You can't optimize what you don't measure, and most organizations under-invest
-            in partner analytics. I now treat partner intelligence as a core competency, not
-            a reporting function.
+            This project taught me that partner programs succeed or fail based on measurement rigor.
+            You can't optimize what you don't measure, and most organizations under-invest in
+            partner analytics. I now treat partner intelligence as a core competency, not a
+            reporting function.
           </p>
         </div>
       </SectionCard>

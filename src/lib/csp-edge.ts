@@ -13,9 +13,7 @@
  * A nonce in script-src causes browsers to ignore 'unsafe-inline', which
  * blocks those scripts and prevents hydration entirely.
  */
-export function buildEnhancedCSP(options: {
-  isDev?: boolean
-} = {}): string {
+export function buildEnhancedCSP(options: { isDev?: boolean } = {}): string {
   const { isDev = false } = options
   const directives = [
     "default-src 'self'",

@@ -10,7 +10,10 @@ interface WorkExperienceTimelineProps {
   className?: string
 }
 
-export function WorkExperienceTimeline({ experience, className = '' }: WorkExperienceTimelineProps) {
+export function WorkExperienceTimeline({
+  experience,
+  className = '',
+}: WorkExperienceTimelineProps) {
   return (
     <section className={className}>
       <div className="text-center mb-12">

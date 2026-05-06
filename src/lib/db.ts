@@ -46,7 +46,9 @@ function validateDatabaseEnvironment() {
 
   // Log successful validation in development
   if (process.env.NODE_ENV === 'development') {
-    logger.info(`Database environment validated successfully (mode: ${useLocalDb ? 'local' : 'neon'})`)
+    logger.info(
+      `Database environment validated successfully (mode: ${useLocalDb ? 'local' : 'neon'})`
+    )
   }
 }
 

@@ -14,7 +14,7 @@
  *
  * Can be used in both server components and client components.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: JSON-LD schema accepts arbitrary @context shapes
 export function safeJsonLdStringify(data: Record<string, any>): string {
   return JSON.stringify(data).replace(/<\//g, '<\\/')
 }

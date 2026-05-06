@@ -1,8 +1,7 @@
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import { cache } from 'react'
 import { headers } from 'next/headers'
 import { Navbar } from '@/components/layout/navbar'
-import { Footer } from '@/components/layout/footer'
 import { BlogList } from './_components/blog-list'
 import { BlogJsonLd } from '@/components/seo/blog-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
@@ -65,12 +64,12 @@ const getBlogPosts = cache(async (): Promise<BlogPostData[]> => {
         category: true,
         tags: {
           include: {
-            tag: true
-          }
-        }
+            tag: true,
+          },
+        },
       },
       orderBy: { publishedAt: 'desc' },
-      take: 50
+      take: 50,
     })
 
     return posts.map(transformToBlogPostData)
@@ -93,10 +92,10 @@ const getCategories = cache(async (): Promise<BlogCategoryData[]> => {
 
   try {
     const categories = await db.category.findMany({
-      orderBy: { totalViews: 'desc' }
+      orderBy: { totalViews: 'desc' },
     })
 
-    return categories.map(cat => ({
+    return categories.map((cat) => ({
       id: cat.id,
       name: cat.name,
       slug: cat.slug,
@@ -105,7 +104,7 @@ const getCategories = cache(async (): Promise<BlogCategoryData[]> => {
       icon: cat.icon ?? undefined,
       postCount: cat.postCount,
       totalViews: cat.totalViews,
-      createdAt: cat.createdAt.toISOString()
+      createdAt: cat.createdAt.toISOString(),
     }))
   } catch (error) {
     if (process.env.NEXT_PHASE !== 'phase-production-build') {
@@ -153,7 +152,6 @@ export default async function BlogHomePage() {
             <BlogList initialPosts={posts} initialCategories={categories} />
           </div>
         </main>
-        <Footer />
       </div>
     </>
   )

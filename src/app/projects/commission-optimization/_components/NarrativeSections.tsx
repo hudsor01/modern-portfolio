@@ -15,14 +15,14 @@ export function NarrativeSections() {
           <p className="text-lg leading-relaxed">
             When I took ownership of commission operations, the organization was managing{' '}
             {formatCurrency(commissionMetrics.totalCommissionPool)} in annual partner commissions
-            through manual processes that were creating significant friction. Finance spent
-            8.5 hours weekly on calculations, error rates were unacceptable, and partners were
+            through manual processes that were creating significant friction. Finance spent 8.5
+            hours weekly on calculations, error rates were unacceptable, and partners were
             increasingly frustrated with payment delays and calculation disputes.
           </p>
           <p className="leading-relaxed">
             The commission structure itself had become a strategic liability—static tiers weren't
-            motivating top performers, dispute rates hit 3.8%, and we had zero visibility into
-            which commission investments were actually driving revenue. Something had to change.
+            motivating top performers, dispute rates hit 3.8%, and we had zero visibility into which
+            commission investments were actually driving revenue. Something had to change.
           </p>
         </div>
       </SectionCard>
@@ -31,12 +31,14 @@ export function NarrativeSections() {
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
-            I was tasked with completely transforming our commission operations—not just fixing
-            the immediate problems, but building a system that would scale. My mandate was clear:
+            I was tasked with completely transforming our commission operations—not just fixing the
+            immediate problems, but building a system that would scale. My mandate was clear:
           </p>
           <ul className="list-disc list-inside space-y-2 ml-4">
             <li>Eliminate manual calculation errors and reduce processing time by at least 60%</li>
-            <li>Design commission structures that actively drive partner performance improvement</li>
+            <li>
+              Design commission structures that actively drive partner performance improvement
+            </li>
             <li>Build real-time transparency to slash dispute rates below 2%</li>
             <li>Create analytics capabilities to measure and optimize commission ROI</li>
             <li>Automate tier adjustments based on actual performance data</li>
@@ -109,10 +111,16 @@ export function NarrativeSections() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-primary">Quantified Business Outcomes I Delivered:</h3>
+            <h3 className="font-semibold text-primary">
+              Quantified Business Outcomes I Delivered:
+            </h3>
             <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>Reduced commission processing time from 8.5 to 2.3 hours weekly (73% improvement)</li>
-              <li>Decreased dispute rate from 3.8% to 1.2% through transparent real-time tracking</li>
+              <li>
+                Reduced commission processing time from 8.5 to 2.3 hours weekly (73% improvement)
+              </li>
+              <li>
+                Decreased dispute rate from 3.8% to 1.2% through transparent real-time tracking
+              </li>
               <li>Increased partner satisfaction scores by 19 points to 94.7%</li>
               <li>Improved calculation accuracy from 87.8% to 99.8%</li>
               <li>Generated $127K additional revenue through optimized incentive structures</li>
@@ -137,8 +145,8 @@ export function NarrativeSections() {
               <h3 className="font-semibold text-accent-foreground">Business Strategy Insights</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>
-                  Commission structures are behavioral levers—small, targeted adjustments
-                  yield disproportionate performance changes
+                  Commission structures are behavioral levers—small, targeted adjustments yield
+                  disproportionate performance changes
                 </li>
                 <li>
                   Transparency in calculations builds more partner trust than higher rates;
@@ -151,10 +159,13 @@ export function NarrativeSections() {
               <h3 className="font-semibold text-secondary">Technical Implementation Insights</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>
-                  Real-time calculation engines require robust error handling and atomic
-                  rollback mechanisms—I learned this the hard way
+                  Real-time calculation engines require robust error handling and atomic rollback
+                  mechanisms—I learned this the hard way
                 </li>
-                <li>Automated audit trails aren't just for compliance—they're dispute resolution accelerators</li>
+                <li>
+                  Automated audit trails aren't just for compliance—they're dispute resolution
+                  accelerators
+                </li>
                 <li>
                   Performance optimization is critical at scale; I implemented caching strategies
                   that reduced query times by 80%
@@ -164,8 +175,8 @@ export function NarrativeSections() {
           </div>
           <p className="leading-relaxed mt-4">
             This project reinforced my belief that commission optimization is both art and science.
-            The most successful strategies I've implemented combine rigorous data analysis with
-            deep understanding of what actually motivates partner behavior.
+            The most successful strategies I've implemented combine rigorous data analysis with deep
+            understanding of what actually motivates partner behavior.
           </p>
         </div>
       </SectionCard>
