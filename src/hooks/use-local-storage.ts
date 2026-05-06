@@ -18,7 +18,9 @@ function createStorageAdapter<T>(
 
   // Notify all listeners of changes
   const emitChange = () => {
-    listeners.forEach((listener) => listener())
+    listeners.forEach((listener) => {
+      listener()
+    })
   }
 
   // Subscribe to storage changes
