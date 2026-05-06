@@ -30,7 +30,7 @@ export function useAnalyticsData() {
 
   useEffect(() => {
     void fetchData()
-  }, []) // Run only once on mount
+  }, [fetchData]) // Run only once on mount
 
   return {
     data,

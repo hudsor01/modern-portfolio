@@ -4,7 +4,7 @@
  * No any/unknown/never types - explicit type safety
  */
 
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 // Base chart value types
 export type ChartValue = string | number | Date

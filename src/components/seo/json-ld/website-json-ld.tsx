@@ -9,7 +9,8 @@ export function WebsiteJsonLd({ nonce }: { nonce?: string | null }) {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Richard Hudson - Senior Revenue Operations Specialist',
-    description: 'Portfolio and experience of Richard Hudson, Senior Revenue Operations Specialist with proven track record in business growth strategies.',
+    description:
+      'Portfolio and experience of Richard Hudson, Senior Revenue Operations Specialist with proven track record in business growth strategies.',
     url: 'https://richardwhudsonjr.com',
     author: {
       '@type': 'Person',

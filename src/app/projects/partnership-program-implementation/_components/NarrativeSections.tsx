@@ -37,7 +37,9 @@ export function NarrativeSections() {
             channel. My mandate included:
           </p>
           <ul className="list-disc list-inside space-y-2 ml-4">
-            <li>Design a scalable partner program architecture with tiered commission structures</li>
+            <li>
+              Design a scalable partner program architecture with tiered commission structures
+            </li>
             <li>Build automated onboarding workflows with compliance and training requirements</li>
             <li>Create real-time commission tracking with transparent calculation engine</li>
             <li>Develop comprehensive partner performance analytics and reporting</li>
@@ -124,14 +126,10 @@ export function NarrativeSections() {
             <h3 className="font-semibold text-primary">Additional Outcomes I Delivered:</h3>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>Created new revenue stream that now accounts for 35% of total company revenue</li>
-              <li>
-                Reduced partner onboarding time from 6+ weeks to 15 days through automation
-              </li>
+              <li>Reduced partner onboarding time from 6+ weeks to 15 days through automation</li>
               <li>Established scalable infrastructure that can support 200+ partners</li>
               <li>Built partner satisfaction tracking with 4.7/5 average rating</li>
-              <li>
-                Eliminated manual commission disputes through transparent calculation engine
-              </li>
+              <li>Eliminated manual commission disputes through transparent calculation engine</li>
             </ul>
           </div>
         </div>

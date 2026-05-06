@@ -53,9 +53,7 @@ export default function PartnerGroupPieChart({ groups }: PartnerGroupPieChartPro
     <Card className="portfolio-card">
       <CardHeader className="pb-2">
         <CardTitle className="text-xl">Partner Revenue Contribution</CardTitle>
-        <CardDescription>
-          Revenue distribution by partner tier
-        </CardDescription>
+        <CardDescription>Revenue distribution by partner tier</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[var(--chart-height-md)] w-full">
@@ -76,9 +74,7 @@ export default function PartnerGroupPieChart({ groups }: PartnerGroupPieChartPro
                 <Cell key={`cell-${index}`} fill={entry.fill} />
               ))}
             </Pie>
-            <ChartTooltip
-              content={<ChartTooltipContent nameKey="name" />}
-            />
+            <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
           </PieChart>
         </ChartContainer>
       </CardContent>

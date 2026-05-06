@@ -15,7 +15,7 @@ export const attributionMetrics = {
   avgTouchpoints: 7.3,
   totalChannels: 12,
   customersAnalyzed: 45670,
-  journeyLength: 28.4
+  journeyLength: 28.4,
 }
 
 export const attributionModels = [
@@ -35,7 +35,7 @@ export const channelPerformance = [
     cost: 285000,
     revenue: 2340000,
     roi: 8.2,
-    attribution: 22.4
+    attribution: 22.4,
   },
   {
     channel: 'Social Media',
@@ -44,7 +44,7 @@ export const channelPerformance = [
     cost: 180000,
     revenue: 1560000,
     roi: 8.7,
-    attribution: 15.0
+    attribution: 15.0,
   },
   {
     channel: 'Email Marketing',
@@ -53,7 +53,7 @@ export const channelPerformance = [
     cost: 95000,
     revenue: 2850000,
     roi: 30.0,
-    attribution: 25.5
+    attribution: 25.5,
   },
   {
     channel: 'Direct Traffic',
@@ -62,7 +62,7 @@ export const channelPerformance = [
     cost: 0,
     revenue: 1890000,
     roi: 999,
-    attribution: 12.0
+    attribution: 12.0,
   },
   {
     channel: 'Display Ads',
@@ -71,7 +71,7 @@ export const channelPerformance = [
     cost: 220000,
     revenue: 980000,
     roi: 4.5,
-    attribution: 9.2
+    attribution: 9.2,
   },
   {
     channel: 'Organic Search',
@@ -80,7 +80,7 @@ export const channelPerformance = [
     cost: 65000,
     revenue: 2200000,
     roi: 33.8,
-    attribution: 17.7
+    attribution: 17.7,
   },
 ]
 
@@ -94,7 +94,16 @@ export const customerJourneyStages = [
 ]
 
 export const technologies = [
-  'React 19', 'TypeScript', 'Machine Learning', 'Attribution Modeling',
-  'Cross-Channel Analytics', 'Predictive Modeling', 'Budget Optimization', 'Marketing Mix Modeling',
-  'Customer Journey Analytics', 'Conversion Optimization', 'AI-Powered Insights', 'Performance Analytics'
+  'React 19',
+  'TypeScript',
+  'Machine Learning',
+  'Attribution Modeling',
+  'Cross-Channel Analytics',
+  'Predictive Modeling',
+  'Budget Optimization',
+  'Marketing Mix Modeling',
+  'Customer Journey Analytics',
+  'Conversion Optimization',
+  'AI-Powered Insights',
+  'Performance Analytics',
 ]

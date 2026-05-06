@@ -33,19 +33,19 @@ const achievements = [
 export function AchievementsGrid() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {achievements.map((achievement, index) => (
-          <div
-            key={index}
-            className="bg-card border border-border rounded-2xl p-6 hover:border-primary/50 transition-all duration-300 ease-out"
-          >
-            <div className="text-primary mb-4">{achievement.icon}</div>
-            <div className="space-y-2">
-              <div className="text-xl font-semibold text-foreground">{achievement.value}</div>
-              <div className="text-sm font-medium text-primary">{achievement.metric}</div>
-              <div className="text-sm text-muted-foreground">{achievement.description}</div>
-            </div>
+      {achievements.map((achievement, index) => (
+        <div
+          key={index}
+          className="bg-card border border-border rounded-2xl p-6 hover:border-primary/50 transition-all duration-300 ease-out"
+        >
+          <div className="text-primary mb-4">{achievement.icon}</div>
+          <div className="space-y-2">
+            <div className="text-xl font-semibold text-foreground">{achievement.value}</div>
+            <div className="text-sm font-medium text-primary">{achievement.metric}</div>
+            <div className="text-sm text-muted-foreground">{achievement.description}</div>
           </div>
-        ))}
+        </div>
+      ))}
     </div>
   )
 }

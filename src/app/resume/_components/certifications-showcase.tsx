@@ -9,13 +9,14 @@ interface CertificationsShowcaseProps {
   className?: string
 }
 
-export function CertificationsShowcase({ certifications, className = '' }: CertificationsShowcaseProps) {
+export function CertificationsShowcase({
+  certifications,
+  className = '',
+}: CertificationsShowcaseProps) {
   return (
     <section className={className}>
       <div className="text-center mb-12">
-        <h2 className="font-display text-3xl lg:text-4xl font-semibold mb-4">
-          Certifications
-        </h2>
+        <h2 className="font-display text-3xl lg:text-4xl font-semibold mb-4">Certifications</h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Continuous learning and professional development
         </p>
@@ -58,17 +59,13 @@ function CertificationCard({ certification }: CertificationCardProps) {
         {/* Issuer */}
         <div className="flex items-center justify-center gap-1 mb-3">
           <Award className="h-4 w-4 text-muted-foreground" />
-          <p className="text-sm font-medium text-muted-foreground">
-            {certification.issuer}
-          </p>
+          <p className="text-sm font-medium text-muted-foreground">{certification.issuer}</p>
         </div>
 
         {/* Date */}
         <div className="flex items-center justify-center gap-1 mb-4">
           <Calendar className="h-4 w-4 text-muted-foreground" />
-          <p className="text-xs text-muted-foreground">
-            {formatDate(certification.date)}
-          </p>
+          <p className="text-xs text-muted-foreground">{formatDate(certification.date)}</p>
         </div>
 
         {/* Link */}

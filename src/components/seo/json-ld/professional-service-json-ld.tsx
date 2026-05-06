@@ -61,7 +61,6 @@ export function ProfessionalServiceJsonLd({ nonce }: { nonce?: string | null }) 
     <script
       type="application/ld+json"
       nonce={nonce ?? undefined}
-       
       dangerouslySetInnerHTML={{ __html: html }}
     />
   )

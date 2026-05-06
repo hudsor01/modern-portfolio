@@ -5,7 +5,6 @@ import { FeatureCard } from '@/components/projects/shared/feature-card'
 import { ResultCard } from '@/components/projects/shared/result-card'
 import { formatCurrency, formatPercentage } from '@/lib/data-formatters'
 
-
 export function NarrativeSections() {
   return (
     <div className="space-y-12 mt-12">
@@ -15,17 +14,17 @@ export function NarrativeSections() {
           <p className="text-lg leading-relaxed">
             When I was brought in to assess the revenue forecasting function, I discovered a
             critical problem: the organization was flying blind. Forecast accuracy was hovering
-            around 63%—essentially a coin flip—and deal slippage was rampant. The sales team
-            would commit to quarterly numbers, but by quarter-end, 26% of committed deals had
-            either pushed or fallen out entirely.
+            around 63%—essentially a coin flip—and deal slippage was rampant. The sales team would
+            commit to quarterly numbers, but by quarter-end, 26% of committed deals had either
+            pushed or fallen out entirely.
           </p>
           <p className="leading-relaxed">
-            The root cause was clear: forecasting was based on gut feel and rep optimism rather
-            than data-driven signals. There was no early warning system for at-risk deals, no
-            objective deal health scoring, and no way to predict which deals would actually close.
-            With over 4,200 deals in the pipeline representing {formatCurrency(12500000)} in
-            potential revenue, the forecasting gap was costing millions in missed targets and
-            misallocated resources.
+            The root cause was clear: forecasting was based on gut feel and rep optimism rather than
+            data-driven signals. There was no early warning system for at-risk deals, no objective
+            deal health scoring, and no way to predict which deals would actually close. With over
+            4,200 deals in the pipeline representing {formatCurrency(12500000)} in potential
+            revenue, the forecasting gap was costing millions in missed targets and misallocated
+            resources.
           </p>
         </div>
       </SectionCard>
@@ -34,9 +33,9 @@ export function NarrativeSections() {
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
-            I was tasked with building an intelligent forecasting and pipeline intelligence
-            system that would transform revenue prediction from art to science. My specific
-            objectives included:
+            I was tasked with building an intelligent forecasting and pipeline intelligence system
+            that would transform revenue prediction from art to science. My specific objectives
+            included:
           </p>
           <ul className="list-disc list-inside space-y-2 ml-4">
             <li>Improve forecast accuracy from 63% to at least 90%</li>
@@ -54,8 +53,8 @@ export function NarrativeSections() {
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
             I designed and built a comprehensive forecast intelligence platform from scratch,
-            combining machine learning, behavioral analytics, and real-time data processing
-            to create an early warning system for pipeline risk:
+            combining machine learning, behavioral analytics, and real-time data processing to
+            create an early warning system for pipeline risk:
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -80,10 +79,10 @@ export function NarrativeSections() {
           </div>
 
           <p className="leading-relaxed mt-4">
-            I personally led the data science work to identify the most predictive signals,
-            built the integration layer with Salesforce CRM, and designed the user experience
-            for both individual reps and executives. The system was deployed in phases, starting
-            with the largest deals to validate accuracy before scaling across the full pipeline.
+            I personally led the data science work to identify the most predictive signals, built
+            the integration layer with Salesforce CRM, and designed the user experience for both
+            individual reps and executives. The system was deployed in phases, starting with the
+            largest deals to validate accuracy before scaling across the full pipeline.
           </p>
         </div>
       </SectionCard>
@@ -92,9 +91,9 @@ export function NarrativeSections() {
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
           <p className="leading-relaxed">
-            The forecast intelligence system I built transformed pipeline management from
-            reactive firefighting to proactive revenue optimization, delivering measurable
-            improvements that exceeded every target:
+            The forecast intelligence system I built transformed pipeline management from reactive
+            firefighting to proactive revenue optimization, delivering measurable improvements that
+            exceeded every target:
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -121,14 +120,27 @@ export function NarrativeSections() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-secondary">Quantified Business Outcomes I Delivered:</h3>
+            <h3 className="font-semibold text-secondary">
+              Quantified Business Outcomes I Delivered:
+            </h3>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>Improved forecast accuracy from 63% to 94%—a 31 percentage point improvement</li>
-              <li>Reduced deal slippage from 26% to 19%—protecting {formatCurrency(12500000)} in committed revenue</li>
+              <li>
+                Reduced deal slippage from 26% to 19%—protecting {formatCurrency(12500000)} in
+                committed revenue
+              </li>
               <li>Detected 89% of at-risk deals 2-4 weeks before slippage would have occurred</li>
-              <li>Enabled intervention success rate of 67% for deals flagged by the early warning system</li>
-              <li>Reduced forecast review meetings from weekly 2-hour sessions to 30-minute exception-based reviews</li>
-              <li>Gave executives real-time confidence in commit, best-case, and worst-case scenarios</li>
+              <li>
+                Enabled intervention success rate of 67% for deals flagged by the early warning
+                system
+              </li>
+              <li>
+                Reduced forecast review meetings from weekly 2-hour sessions to 30-minute
+                exception-based reviews
+              </li>
+              <li>
+                Gave executives real-time confidence in commit, best-case, and worst-case scenarios
+              </li>
             </ul>
           </div>
         </div>
@@ -142,16 +154,16 @@ export function NarrativeSections() {
               <h3 className="font-semibold text-accent-foreground">Forecasting Insights</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>
-                  Buyer engagement patterns are more predictive than rep confidence—I now
-                  always prioritize behavioral data over subjective assessments
+                  Buyer engagement patterns are more predictive than rep confidence—I now always
+                  prioritize behavioral data over subjective assessments
                 </li>
                 <li>
-                  Early warning effectiveness depends on actionability; alerts without
-                  intervention playbooks get ignored
+                  Early warning effectiveness depends on actionability; alerts without intervention
+                  playbooks get ignored
                 </li>
                 <li>
-                  Model accuracy improves dramatically with feedback loops—I built in
-                  mechanisms for reps to confirm or dispute predictions
+                  Model accuracy improves dramatically with feedback loops—I built in mechanisms for
+                  reps to confirm or dispute predictions
                 </li>
               </ul>
             </div>
@@ -159,25 +171,25 @@ export function NarrativeSections() {
               <h3 className="font-semibold text-primary">Technical Insights</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>
-                  Real-time data processing is essential—batch updates make predictions
-                  stale by the time they're actionable
+                  Real-time data processing is essential—batch updates make predictions stale by the
+                  time they're actionable
                 </li>
                 <li>
-                  Explainable AI matters for adoption; I learned to show why a deal is
-                  flagged, not just that it is flagged
+                  Explainable AI matters for adoption; I learned to show why a deal is flagged, not
+                  just that it is flagged
                 </li>
                 <li>
-                  Historical pattern matching outperforms pure ML for deal close prediction
-                  when you have rich CRM history
+                  Historical pattern matching outperforms pure ML for deal close prediction when you
+                  have rich CRM history
                 </li>
               </ul>
             </div>
           </div>
           <p className="leading-relaxed mt-4">
-            This project taught me that the best forecasting systems don't just predict—they
-            enable intervention. The value isn't in knowing a deal will slip; it's in preventing
-            the slip. I now design every analytics system with action enablement as the primary
-            success metric.
+            This project taught me that the best forecasting systems don't just predict—they enable
+            intervention. The value isn't in knowing a deal will slip; it's in preventing the slip.
+            I now design every analytics system with action enablement as the primary success
+            metric.
           </p>
         </div>
       </SectionCard>

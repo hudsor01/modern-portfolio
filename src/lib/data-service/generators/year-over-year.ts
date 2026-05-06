@@ -14,16 +14,16 @@ export function generateYearOverYearData(
   for (let i = 0; i < yearsCount; i++) {
     const year = currentYear - i
     const annualGrowth = growthTrend + (Math.random() - 0.5) * 0.06
-    const cumulativeGrowth = Math.pow(1 + annualGrowth, yearsCount - i - 1)
+    const cumulativeGrowth = (1 + annualGrowth) ** (yearsCount - i - 1)
 
     const totalRevenue = Math.floor(baseRevenue * cumulativeGrowth * 4) // Annual total
     const totalTransactions = Math.floor(
-      800 * Math.pow(1.08, yearsCount - i - 1) * (0.9 + Math.random() * 0.2)
+      800 * 1.08 ** (yearsCount - i - 1) * (0.9 + Math.random() * 0.2)
     )
     const commissionRate = 0.08 + (Math.random() - 0.5) * 0.02
     const totalCommissions = Math.floor(totalRevenue * commissionRate)
     const partnerCount = Math.floor(
-      basePartners * Math.pow(1.06, yearsCount - i - 1) * (0.9 + Math.random() * 0.2)
+      basePartners * 1.06 ** (yearsCount - i - 1) * (0.9 + Math.random() * 0.2)
     )
 
     const growthPercentage =

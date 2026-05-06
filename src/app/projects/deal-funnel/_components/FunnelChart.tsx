@@ -16,8 +16,10 @@ function ChartLoadError() {
 const DealStageFunnelChart = dynamic(
   safeLazy(() => import('./DealStageFunnelChart'), 'DealStageFunnelChart', ChartLoadError),
   {
-    loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
-    ssr: false
+    loading: () => (
+      <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />
+    ),
+    ssr: false,
   }
 )
 
@@ -28,9 +30,7 @@ interface FunnelChartProps {
 
 export function FunnelChart({ stages, overallConversionRate }: FunnelChartProps) {
   return (
-    <div
-      className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out mb-8"
-    >
+    <div className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out mb-8">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="typography-h3 mb-2">Sales Pipeline Funnel</h2>

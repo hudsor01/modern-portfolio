@@ -70,7 +70,16 @@ export const initialConversionRates: ConversionRate[] = [
 ]
 
 export const technologies = [
-  'React 19', 'TypeScript', 'Recharts', 'Sales Analytics',
-  'Pipeline Management', 'Conversion Tracking', 'Velocity Analysis', 'Funnel Optimization',
-  'CRM Integration', 'Real-time Dashboards', 'Mobile Design', 'Performance Metrics'
+  'React 19',
+  'TypeScript',
+  'Recharts',
+  'Sales Analytics',
+  'Pipeline Management',
+  'Conversion Tracking',
+  'Velocity Analysis',
+  'Funnel Optimization',
+  'CRM Integration',
+  'Real-time Dashboards',
+  'Mobile Design',
+  'Performance Metrics',
 ]

@@ -73,10 +73,7 @@ describe('POST /api/contact', () => {
   })
 
   it('short-circuits on CSRF rejection', async () => {
-    const csrfRejection = NextResponse.json(
-      { success: false, error: 'csrf' },
-      { status: 403 }
-    )
+    const csrfRejection = NextResponse.json({ success: false, error: 'csrf' }, { status: 403 })
     vi.mocked(validateCSRFOrRespond).mockResolvedValue(csrfRejection)
     const res = await POST(makeRequest(validBody))
     expect(res.status).toBe(403)

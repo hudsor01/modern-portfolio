@@ -12,7 +12,6 @@ import { NarrativeSections } from './NarrativeSections'
 import { AlgorithmicApproachesGrid } from './AlgorithmicApproachesGrid'
 
 export default function QuotaTerritoryManagementProject() {
-
   // Standardized metrics configuration using consistent data formatting
   const metrics = [
     {

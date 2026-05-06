@@ -14,26 +14,36 @@ const SKILL_GROUPS: SkillGroup[] = [
     title: 'Revenue Intelligence',
     context: 'The foundation of every decision I make',
     skills: ['SQL', 'Python', 'Excel', 'PowerBI', 'Tableau'],
-    impact: 'Built pipelines processing $4.8M+ annually'
+    impact: 'Built pipelines processing $4.8M+ annually',
   },
   {
     title: 'Systems Architecture',
     context: 'Connecting the dots between sales, marketing, and customer success',
     skills: ['Salesforce', 'HubSpot', 'SalesLoft', 'Zapier', 'API Integrations'],
-    impact: '90%+ workflow automation achieved'
+    impact: '90%+ workflow automation achieved',
   },
   {
     title: 'Strategic Execution',
     context: 'Turning data into action plans that teams actually follow',
-    skills: ['Revenue Operations', 'Process Optimization', 'Strategic Planning', 'Cross-functional Leadership'],
-    impact: '432% transaction growth delivered'
+    skills: [
+      'Revenue Operations',
+      'Process Optimization',
+      'Strategic Planning',
+      'Cross-functional Leadership',
+    ],
+    impact: '432% transaction growth delivered',
   },
   {
     title: 'Analytics & Insights',
     context: 'Making complex data accessible to non-technical stakeholders',
-    skills: ['Data Visualization', 'Business Intelligence', 'Predictive Modeling', 'Performance Metrics'],
-    impact: '2,217% partner network expansion'
-  }
+    skills: [
+      'Data Visualization',
+      'Business Intelligence',
+      'Predictive Modeling',
+      'Performance Metrics',
+    ],
+    impact: '2,217% partner network expansion',
+  },
 ]
 
 interface SkillsShowcaseProps {
@@ -74,9 +84,7 @@ export function SkillsShowcase({ className = '' }: SkillsShowcaseProps) {
 
                   {group.impact && (
                     <div className="pt-4 border-t border-border/50">
-                      <p className="text-sm font-medium text-primary">
-                        {group.impact}
-                      </p>
+                      <p className="text-sm font-medium text-primary">{group.impact}</p>
                     </div>
                   )}
                 </div>
@@ -88,9 +96,7 @@ export function SkillsShowcase({ className = '' }: SkillsShowcaseProps) {
                       key={skill}
                       className="px-4 py-2.5 rounded-lg bg-muted/50 border border-border/50 hover:border-primary/50 hover:bg-muted transition-all duration-300"
                     >
-                      <span className="text-sm font-medium text-foreground">
-                        {skill}
-                      </span>
+                      <span className="text-sm font-medium text-foreground">{skill}</span>
                     </div>
                   ))}
                 </div>

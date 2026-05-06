@@ -17,15 +17,11 @@ export function generateGrowthData(
 
     // Calculate realistic growth with some variance
     const quarterlyGrowthRate = growthTrend / 4 + (Math.random() - 0.5) * 0.05
-    const cumulativeGrowth = Math.pow(1 + quarterlyGrowthRate, quartersCount - i)
+    const cumulativeGrowth = (1 + quarterlyGrowthRate) ** (quartersCount - i)
 
     const revenue = Math.floor(baseRevenue * cumulativeGrowth * (0.9 + Math.random() * 0.2))
-    const partners = Math.floor(
-      150 * Math.pow(1.03, quartersCount - i) * (0.95 + Math.random() * 0.1)
-    )
-    const deals = Math.floor(
-      200 * Math.pow(1.05, quartersCount - i) * (0.9 + Math.random() * 0.2)
-    )
+    const partners = Math.floor(150 * 1.03 ** (quartersCount - i) * (0.95 + Math.random() * 0.1))
+    const deals = Math.floor(200 * 1.05 ** (quartersCount - i) * (0.9 + Math.random() * 0.2))
 
     // Calculate growth rate compared to same quarter previous year
     const yoyGrowthRate =
@@ -34,7 +30,7 @@ export function generateGrowthData(
         : quarterlyGrowthRate * 4 * 100
 
     // Target achievement (assuming targets grow with inflation + company goals)
-    const targetRevenue = baseRevenue * Math.pow(1.15, (quartersCount - i) / 4)
+    const targetRevenue = baseRevenue * 1.15 ** ((quartersCount - i) / 4)
     const targetAchievement = (revenue / targetRevenue) * 100
 
     data.unshift({

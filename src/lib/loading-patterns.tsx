@@ -79,7 +79,7 @@ export function useLoadingState<T = unknown>(config: LoadingConfig = {}) {
 
   // Execute async operation with loading state management
   const execute = React.useCallback(
-    async function <R>(
+    async <R,>(
       operation: () => Promise<R>,
       options: {
         onSuccess?: (data: R) => void
@@ -87,7 +87,7 @@ export function useLoadingState<T = unknown>(config: LoadingConfig = {}) {
         checkEmpty?: (data: R) => boolean
         skipLoading?: boolean
       } = {}
-    ): Promise<R> {
+    ): Promise<R> => {
       const { onSuccess, onError, checkEmpty, skipLoading = false } = options
 
       if (!skipLoading) {
@@ -121,16 +121,16 @@ export function useLoadingState<T = unknown>(config: LoadingConfig = {}) {
 
   // Retry with exponential backoff
   const retry = React.useCallback(
-    async function <R>(
+    async <R,>(
       operation: () => Promise<R>,
       options: Parameters<typeof execute>[1] = {}
-    ): Promise<R | undefined> {
+    ): Promise<R | undefined> => {
       if (retryCount >= retryAttempts) {
         setError(new Error(`Maximum retry attempts (${retryAttempts}) exceeded`))
         return
       }
 
-      const delay = retryDelay * Math.pow(2, retryCount)
+      const delay = retryDelay * 2 ** retryCount
       setRetryCount((prev) => prev + 1)
 
       return new Promise<R>((resolve, reject) => {
@@ -271,8 +271,6 @@ export function createSkeletonConfig(
           itemHeight: 'h-32',
         },
       }
-
-    case 'mixed':
     default:
       return {
         component: 'mixed',

@@ -41,9 +41,7 @@ export function KeyHighlights({ highlights, className = '' }: KeyHighlightsProps
                     <CheckCircle2 className="h-5 w-5 text-primary" />
                   </div>
                 </div>
-                <p className="text-foreground leading-relaxed flex-1">
-                  {highlight}
-                </p>
+                <p className="text-foreground leading-relaxed flex-1">{highlight}</p>
               </div>
             ))}
           </div>
@@ -57,7 +55,7 @@ export function KeyHighlights({ highlights, className = '' }: KeyHighlightsProps
           {hasMore && (
             <div className="mt-8 text-center relative z-10">
               <Button
-                variant={isExpanded ? "outline" : "default"}
+                variant={isExpanded ? 'outline' : 'default'}
                 onClick={() => setIsExpanded(!isExpanded)}
                 size="lg"
                 className="rounded-full px-8 shadow-md hover:shadow-lg transition-all"

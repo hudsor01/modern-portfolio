@@ -13,16 +13,17 @@ import { SEOEventType, SEOSeverity, ChangeFrequency } from '@/types/seo'
 // =======================
 
 // Email validation - single source of truth
-export const emailSchema = z.email('Please enter a valid email address').max(254, 'Email address is too long')
+export const emailSchema = z
+  .email('Please enter a valid email address')
+  .max(254, 'Email address is too long')
 
 // URL validation
 export const urlSchema = z.url('Please enter a valid URL').max(2048, 'URL is too long')
 
 // Optional URL that can be empty string
-export const optionalUrlSchema = z.union([
-  z.url('Please enter a valid URL').max(2048, 'URL is too long'),
-  z.literal('')
-]).optional()
+export const optionalUrlSchema = z
+  .union([z.url('Please enter a valid URL').max(2048, 'URL is too long'), z.literal('')])
+  .optional()
 
 // Slug validation - consistent format across all entities
 export const slugSchema = z
@@ -67,7 +68,10 @@ export const dateSchema = z.union([
 ])
 
 // ISO datetime string validation
-export const datetimeSchema = z.string().datetime('Must be a valid ISO datetime string').or(z.date())
+export const datetimeSchema = z
+  .string()
+  .datetime('Must be a valid ISO datetime string')
+  .or(z.date())
 
 // =======================
 // PRISMA ENUM SCHEMAS
@@ -130,7 +134,10 @@ export type ContactFormValues = z.infer<typeof contactFormSchema>
 export const createBlogPostSchema = z
   .object({
     title: z.string().min(1, 'Title is required').max(200, 'Title cannot exceed 200 characters'),
-    content: z.string().min(1, 'Content is required').max(100_000, 'Content cannot exceed 100,000 characters'),
+    content: z
+      .string()
+      .min(1, 'Content is required')
+      .max(100_000, 'Content cannot exceed 100,000 characters'),
     authorId: cuidSchema,
     excerpt: z.string().max(500).optional(),
     contentType: ContentTypeSchema.default(ContentType.MARKDOWN),
@@ -195,9 +202,7 @@ export const paginationSchema = z.object({
 // API RESPONSE SCHEMAS
 // =======================
 
-export function apiResponseSchema<T extends z.ZodTypeAny>(
-  dataSchema: T
-) {
+export function apiResponseSchema<T extends z.ZodTypeAny>(dataSchema: T) {
   return z.object({
     success: z.boolean(),
     data: dataSchema,
@@ -206,9 +211,7 @@ export function apiResponseSchema<T extends z.ZodTypeAny>(
   })
 }
 
-export function paginatedResponseSchema<T extends z.ZodTypeAny>(
-  dataSchema: T
-) {
+export function paginatedResponseSchema<T extends z.ZodTypeAny>(dataSchema: T) {
   return z.object({
     success: z.boolean(),
     data: z.array(dataSchema),
@@ -279,5 +282,3 @@ export function safeValidate<T>(
 export type ProjectFilterInput = z.infer<typeof projectFilterSchema>
 export type ViewTrackingInput = z.infer<typeof viewTrackingSchema>
 export type PaginationInput = z.infer<typeof paginationSchema>
-
-

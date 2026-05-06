@@ -23,9 +23,7 @@ export function HeroSection({ resume, showPdf, onTogglePdf, className = '' }: He
         </h1>
 
         {/* Title */}
-        <p className="text-xl md:text-2xl text-muted-foreground font-medium">
-          {resume.title}
-        </p>
+        <p className="text-xl md:text-2xl text-muted-foreground font-medium">{resume.title}</p>
 
         {/* Location */}
         <div className="flex items-center justify-center gap-2 text-muted-foreground">
@@ -49,23 +47,13 @@ export function HeroSection({ resume, showPdf, onTogglePdf, className = '' }: He
           />
 
           {/* Toggle PDF View Button */}
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={onTogglePdf}
-            className="gap-2"
-          >
+          <Button variant="outline" size="lg" onClick={onTogglePdf} className="gap-2">
             <Eye className="h-5 w-5" />
             {showPdf ? 'View Resume' : 'View PDF'}
           </Button>
 
           {/* Contact Button */}
-          <Button
-            variant="outline"
-            size="lg"
-            asChild
-            className="gap-2"
-          >
+          <Button variant="outline" size="lg" asChild className="gap-2">
             <Link href="/contact">
               <Mail className="h-5 w-5" />
               Contact Me

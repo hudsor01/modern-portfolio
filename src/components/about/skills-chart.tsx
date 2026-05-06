@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { SkillDatum } from '@/data/skills'
+import type { SkillDatum } from '@/data/skills'
 
 interface SkillsChartProps {
   skills: SkillDatum[]
@@ -19,9 +19,8 @@ export function SkillsChart({ skills }: Readonly<SkillsChartProps>) {
     { id: 'technical', name: 'Technical Skills' },
   ]
 
-  const filteredSkills = activeCategory === 'all'
-    ? skills
-    : skills.filter(skill => skill.category === activeCategory)
+  const filteredSkills =
+    activeCategory === 'all' ? skills : skills.filter((skill) => skill.category === activeCategory)
 
   return (
     <div className="w-full">
@@ -41,18 +40,13 @@ export function SkillsChart({ skills }: Readonly<SkillsChartProps>) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredSkills.map((skill) => (
-          <div
-            key={skill.name}
-            className="bg-card p-4 rounded-lg shadow-lg"
-          >
+          <div key={skill.name} className="bg-card p-4 rounded-lg shadow-lg">
             <div className="flex justify-between items-center mb-2">
               <h3 className="font-medium">{skill.name}</h3>
               <span className="typography-small text-muted-foreground">{skill.proficiency}%</span>
             </div>
             <div className="w-full bg-muted rounded-full h-2.5">
-              <div
-                className="bg-primary h-2.5 rounded-full"
-              />
+              <div className="bg-primary h-2.5 rounded-full" />
             </div>
           </div>
         ))}

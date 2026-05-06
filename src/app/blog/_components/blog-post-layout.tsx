@@ -5,7 +5,7 @@ import { ArrowLeft, CalendarDays, Clock, Eye } from 'lucide-react'
 import type { BlogPostData } from '@/types/api'
 import { BlogPostArticle } from './blog-post-article'
 import { InlineMarkdown } from './inline-markdown'
-import { ContentType } from '@/generated/prisma/client'
+import type { ContentType } from '@/generated/prisma/client'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -24,9 +24,7 @@ function getAuthorInitials(name: string): string {
 }
 
 export function BlogPostLayout({ post }: PostLayoutProps) {
-  const publishedDate = post.publishedAt
-    ? format(new Date(post.publishedAt), 'MMMM d, yyyy')
-    : null
+  const publishedDate = post.publishedAt ? format(new Date(post.publishedAt), 'MMMM d, yyyy') : null
   const wordCount = post.wordCount ?? post.content.split(/\s+/).filter(Boolean).length
   const readingTime = post.readingTime ?? Math.max(1, Math.ceil(wordCount / 200))
   const authorName = post.author?.name ?? 'Richard Hudson'
@@ -55,7 +53,6 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
         <div>
           {/* Header */}
           <header className="relative overflow-hidden rounded-md border border-border bg-card p-8 shadow-sm">
-
             <div className="relative">
               {/* Category + Date */}
               <div className="flex flex-wrap items-center gap-3 text-body-sm text-muted-foreground">
@@ -100,11 +97,13 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
                 <div className="flex items-center gap-3">
                   <Avatar className="h-12 w-12 ring-2 ring-border/60">
                     <AvatarImage src={authorImage} alt={authorName} />
-                    <AvatarFallback className="text-sm font-semibold">{authorInitials}</AvatarFallback>
+                    <AvatarFallback className="text-sm font-semibold">
+                      {authorInitials}
+                    </AvatarFallback>
                   </Avatar>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">{authorName}</p>
-                </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{authorName}</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -133,10 +132,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
 
           {/* Content */}
           <div className="mt-10">
-            <BlogPostArticle
-              content={post.content}
-              contentType={post.contentType as ContentType}
-            />
+            <BlogPostArticle content={post.content} contentType={post.contentType as ContentType} />
           </div>
 
           {/* Tags */}
@@ -166,9 +162,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
 
         <aside className="space-y-6 lg:sticky lg:top-24 self-start">
           <Card variant="outline" className="p-6">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              Post details
-            </p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Post details</p>
             <div className="mt-4 space-y-3 text-sm">
               {detailItems.map((detail) => (
                 <div key={detail.label} className="flex items-center justify-between gap-4">
@@ -187,15 +181,15 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
               <div className="mt-4 flex items-center gap-3">
                 <Avatar className="h-10 w-10 ring-2 ring-border/60">
                   <AvatarImage src={authorImage} alt={authorName} />
-                  <AvatarFallback className="text-sm font-semibold">{authorInitials}</AvatarFallback>
+                  <AvatarFallback className="text-sm font-semibold">
+                    {authorInitials}
+                  </AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="text-sm font-semibold text-foreground">{authorName}</p>
                 </div>
               </div>
-              <p className="mt-4 text-sm text-muted-foreground">
-                {post.author.bio}
-              </p>
+              <p className="mt-4 text-sm text-muted-foreground">{post.author.bio}</p>
             </Card>
           )}
         </aside>

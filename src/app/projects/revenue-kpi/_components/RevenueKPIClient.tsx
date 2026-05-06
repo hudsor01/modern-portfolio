@@ -15,7 +15,12 @@ import { NarrativeSections } from './NarrativeSections'
 
 type YearOverYearSeries = Pick<
   YearOverYearData,
-  'year' | 'total_revenue' | 'total_transactions' | 'total_commissions' | 'partner_count' | 'commission_growth_percentage'
+  | 'year'
+  | 'total_revenue'
+  | 'total_transactions'
+  | 'total_commissions'
+  | 'partner_count'
+  | 'commission_growth_percentage'
 >
 
 type PartnerSeries = {
@@ -59,10 +64,13 @@ export function RevenueKPIClient({
   )
 
   // Memoize current and previous year data
-  const { currentYearData, prevYearData } = useMemo(() => ({
-    currentYearData: sortedYearOverYear[sortedYearOverYear.length - 1],
-    prevYearData: sortedYearOverYear[sortedYearOverYear.length - 2],
-  }), [sortedYearOverYear])
+  const { currentYearData, prevYearData } = useMemo(
+    () => ({
+      currentYearData: sortedYearOverYear[sortedYearOverYear.length - 1],
+      prevYearData: sortedYearOverYear[sortedYearOverYear.length - 2],
+    }),
+    [sortedYearOverYear]
+  )
 
   // Memoize revenue trend data
   const revenueTrendData = useMemo(() => {
@@ -80,7 +88,7 @@ export function RevenueKPIClient({
 
   // Memoize top partners
   const topPartners: PartnerSeries[] = useMemo(
-    () => topPartnersData?.length ? topPartnersData : [],
+    () => (topPartnersData?.length ? topPartnersData : []),
     [topPartnersData]
   )
 
@@ -119,7 +127,10 @@ export function RevenueKPIClient({
     return {
       revenueGrowth: calculateGrowth(currentYearData.total_revenue, prevYearData?.total_revenue),
       partnerGrowth: calculateGrowth(currentYearData.partner_count, prevYearData?.partner_count),
-      transactionGrowth: calculateGrowth(currentYearData.total_transactions, prevYearData?.total_transactions),
+      transactionGrowth: calculateGrowth(
+        currentYearData.total_transactions,
+        prevYearData?.total_transactions
+      ),
     }
   }, [currentYearData, prevYearData])
 
@@ -135,7 +146,12 @@ export function RevenueKPIClient({
         subtitle: `${revenueGrowth > 0 ? '+' : ''}${formatPercentage(revenueGrowth / 100)} vs last year`,
         variant: 'primary' as const,
         trend: {
-          direction: revenueGrowth > 0 ? ('up' as const) : revenueGrowth < 0 ? ('down' as const) : ('neutral' as const),
+          direction:
+            revenueGrowth > 0
+              ? ('up' as const)
+              : revenueGrowth < 0
+                ? ('down' as const)
+                : ('neutral' as const),
           value: formatPercentage(Math.abs(revenueGrowth) / 100),
           label: 'vs last year',
         },
@@ -148,7 +164,12 @@ export function RevenueKPIClient({
         subtitle: `${partnerGrowth > 0 ? '+' : ''}${formatPercentage(partnerGrowth / 100)} growth`,
         variant: 'secondary' as const,
         trend: {
-          direction: partnerGrowth > 0 ? ('up' as const) : partnerGrowth < 0 ? ('down' as const) : ('neutral' as const),
+          direction:
+            partnerGrowth > 0
+              ? ('up' as const)
+              : partnerGrowth < 0
+                ? ('down' as const)
+                : ('neutral' as const),
           value: formatPercentage(Math.abs(partnerGrowth) / 100),
           label: 'growth',
         },
@@ -161,7 +182,12 @@ export function RevenueKPIClient({
         subtitle: `${transactionGrowth > 0 ? '+' : ''}${formatPercentage(transactionGrowth / 100)} transactions`,
         variant: 'primary' as const,
         trend: {
-          direction: transactionGrowth > 0 ? ('up' as const) : transactionGrowth < 0 ? ('down' as const) : ('neutral' as const),
+          direction:
+            transactionGrowth > 0
+              ? ('up' as const)
+              : transactionGrowth < 0
+                ? ('down' as const)
+                : ('neutral' as const),
           value: formatPercentage(Math.abs(transactionGrowth) / 100),
           label: 'transactions',
         },
@@ -194,7 +220,10 @@ export function RevenueKPIClient({
       tags={[
         { label: `Revenue: ${formatCurrency(currentYearData.total_revenue)}`, variant: 'primary' },
         { label: `Partners: ${formatNumber(currentYearData.partner_count)}`, variant: 'secondary' },
-        { label: `Growth: +${formatPercentage(currentYearData.commission_growth_percentage / 100)}`, variant: 'primary' },
+        {
+          label: `Growth: +${formatPercentage(currentYearData.commission_growth_percentage / 100)}`,
+          variant: 'primary',
+        },
         { label: 'Accuracy: 94%', variant: 'secondary' },
       ]}
       showTimeframes={true}

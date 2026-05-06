@@ -1,54 +1,48 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { timingSafeEqual } from 'node:crypto';
-import { db } from '@/lib/db';
-import { logger } from '@/lib/logger';
-import { env } from '@/lib/env-validation';
+import { type NextRequest, NextResponse } from 'next/server'
+import { timingSafeEqual } from 'node:crypto'
+import { db } from '@/lib/db'
+import { logger } from '@/lib/logger'
+import { env } from '@/lib/env-validation'
 
 function isAuthorized(request: NextRequest): boolean {
-  const expected = env.ADMIN_API_TOKEN;
-  if (!expected) return false;
+  const expected = env.ADMIN_API_TOKEN
+  if (!expected) return false
 
-  const header = request.headers.get('authorization') ?? '';
-  const match = header.match(/^Bearer\s+(.+)$/i);
-  if (!match) return false;
+  const header = request.headers.get('authorization') ?? ''
+  const match = header.match(/^Bearer\s+(.+)$/i)
+  if (!match) return false
 
-  const provided = (match[1] ?? '').trim();
-  const a = Buffer.from(provided);
-  const b = Buffer.from(expected);
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(a, b);
+  const provided = (match[1] ?? '').trim()
+  const a = Buffer.from(provided)
+  const b = Buffer.from(expected)
+  if (a.length !== b.length) return false
+  return timingSafeEqual(a, b)
 }
 
 export async function POST(request: NextRequest) {
   // Production gate: endpoint is invisible in production unless explicitly opted in.
   // Returns 404 (not 401) so the route's existence isn't advertised to unauthenticated callers.
   if (env.NODE_ENV === 'production' && env.ALLOW_SEED_IN_PRODUCTION !== 'true') {
-    return NextResponse.json(
-      { success: false, error: 'Not found' },
-      { status: 404 }
-    );
+    return NextResponse.json({ success: false, error: 'Not found' }, { status: 404 })
   }
 
   if (!isAuthorized(request)) {
-    logger.warn('Unauthorized seed attempt', { route: 'api/seed' });
-    return NextResponse.json(
-      { success: false, error: 'Unauthorized' },
-      { status: 401 }
-    );
+    logger.warn('Unauthorized seed attempt', { route: 'api/seed' })
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
   }
 
   try {
     // Idempotency check — runs before the work-starting log so the log line
     // reflects reality instead of firing on every 200-no-op response.
-    const existingPosts = await db.blogPost.count();
+    const existingPosts = await db.blogPost.count()
     if (existingPosts > 0) {
       return NextResponse.json({
         success: false,
-        message: 'Database already has data'
-      });
+        message: 'Database already has data',
+      })
     }
 
-    logger.info('Seeding database via API', { route: 'api/seed' });
+    logger.info('Seeding database via API', { route: 'api/seed' })
 
     // Create author
     const author = await db.author.create({
@@ -57,11 +51,12 @@ export async function POST(request: NextRequest) {
         email: 'richard@modernportfolio.dev',
         slug: 'richard-hudson',
         bio: 'Revenue Operations Professional with expertise in data analytics, process optimization, and business intelligence.',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face&q=80',
+        avatar:
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face&q=80',
         website: 'https://richardwhudsonjr.com',
-        linkedin: 'https://linkedin.com/in/hudsor01'
-      }
-    });
+        linkedin: 'https://linkedin.com/in/hudsor01',
+      },
+    })
 
     // Create categories
     const categories = await Promise.all([
@@ -69,19 +64,20 @@ export async function POST(request: NextRequest) {
         data: {
           name: 'Revenue Operations',
           slug: 'revenue-operations',
-          description: 'Insights on revenue operations, data analytics, and business growth strategies.',
-          color: '#3B82F6'
-        }
+          description:
+            'Insights on revenue operations, data analytics, and business growth strategies.',
+          color: '#3B82F6',
+        },
       }),
       db.category.create({
         data: {
           name: 'Data Analytics',
           slug: 'data-analytics',
           description: 'Data analysis techniques, visualization, and business intelligence.',
-          color: '#10B981'
-        }
-      })
-    ]);
+          color: '#10B981',
+        },
+      }),
+    ])
 
     // Create sample blog posts
     await Promise.all([
@@ -89,7 +85,8 @@ export async function POST(request: NextRequest) {
         data: {
           title: 'Getting Started with Revenue Operations',
           slug: 'getting-started-revenue-operations',
-          excerpt: 'A comprehensive guide to understanding and implementing revenue operations in your organization.',
+          excerpt:
+            'A comprehensive guide to understanding and implementing revenue operations in your organization.',
           content: `# Getting Started with Revenue Operations
 
 Revenue Operations (RevOps) is the strategic approach to aligning sales, marketing, and customer success teams around a common goal: driving revenue growth.
@@ -113,15 +110,16 @@ Start by assessing your current state and identifying quick wins. Focus on data 
           readingTime: 5,
           wordCount: 250,
           authorId: author.id,
-          categoryId: categories[0].id
-        }
+          categoryId: categories[0].id,
+        },
       }),
 
       db.blogPost.create({
         data: {
           title: 'Data-Driven Decision Making in Business',
           slug: 'data-driven-decision-making',
-          excerpt: 'How to leverage data analytics to make better business decisions and drive growth.',
+          excerpt:
+            'How to leverage data analytics to make better business decisions and drive growth.',
           content: `# Data-Driven Decision Making in Business
 
 In the age of big data, making decisions based on intuition alone is no longer sufficient. Data-driven decision making has become essential for business success.
@@ -145,20 +143,20 @@ In the age of big data, making decisions based on intuition alone is no longer s
           readingTime: 7,
           wordCount: 350,
           authorId: author.id,
-          categoryId: categories[1].id
-        }
-      })
-    ]);
+          categoryId: categories[1].id,
+        },
+      }),
+    ])
 
     // Update category post counts
     for (const category of categories) {
       const count = await db.blogPost.count({
-        where: { categoryId: category.id }
-      });
+        where: { categoryId: category.id },
+      })
       await db.category.update({
         where: { id: category.id },
-        data: { postCount: count }
-      });
+        data: { postCount: count },
+      })
     }
 
     return NextResponse.json({
@@ -167,19 +165,19 @@ In the age of big data, making decisions based on intuition alone is no longer s
       data: {
         author: 1,
         categories: categories.length,
-        posts: 2
-      }
-    });
-
+        posts: 2,
+      },
+    })
   } catch (error) {
-    logger.error(
-      'Seeding failed',
-      error instanceof Error ? error : new Error(String(error)),
-      { route: 'api/seed' }
-    );
-    return NextResponse.json({
-      success: false,
-      error: 'Seeding failed'
-    }, { status: 500 });
+    logger.error('Seeding failed', error instanceof Error ? error : new Error(String(error)), {
+      route: 'api/seed',
+    })
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Seeding failed',
+      },
+      { status: 500 }
+    )
   }
 }

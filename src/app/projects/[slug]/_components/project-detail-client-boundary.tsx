@@ -67,13 +67,9 @@ export default function ProjectDetailClientBoundary({
                   {project.featured && <Badge variant="default">Featured</Badge>}
                 </div>
 
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-                  {project.title}
-                </h1>
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight">{project.title}</h1>
 
-                <p className="text-xl text-muted-foreground">
-                  {project.description}
-                </p>
+                <p className="text-xl text-muted-foreground">{project.description}</p>
 
                 {/* Project meta */}
                 <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
@@ -139,16 +135,20 @@ export default function ProjectDetailClientBoundary({
               <div className="max-w-5xl mx-auto">
                 <SectionCard title="Key Metrics">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {(project.displayMetrics as Array<{ label: string; value: string; iconName: string }>).filter(Boolean).map((metric, index) => (
-                      <div key={index} className="text-center">
-                        <div className="text-3xl font-bold text-primary mb-2">
-                          {metric.value}
+                    {(
+                      project.displayMetrics as Array<{
+                        label: string
+                        value: string
+                        iconName: string
+                      }>
+                    )
+                      .filter(Boolean)
+                      .map((metric, index) => (
+                        <div key={index} className="text-center">
+                          <div className="text-3xl font-bold text-primary mb-2">{metric.value}</div>
+                          <div className="text-sm text-muted-foreground">{metric.label}</div>
                         </div>
-                        <div className="text-sm text-muted-foreground">
-                          {metric.label}
-                        </div>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 </SectionCard>
               </div>
@@ -204,10 +204,19 @@ export default function ProjectDetailClientBoundary({
                 {Array.isArray(project.results) && project.results.length > 0 && (
                   <SectionCard title="Results">
                     <ul className="space-y-2">
-                      {(project.results as Array<{ metric: string; before: string; after: string; improvement: string }>).map((item, index) => (
+                      {(
+                        project.results as Array<{
+                          metric: string
+                          before: string
+                          after: string
+                          improvement: string
+                        }>
+                      ).map((item, index) => (
                         <li key={index} className="flex items-start">
                           <span className="mr-2">•</span>
-                          <span>{item.metric}: {item.before} → {item.after} ({item.improvement})</span>
+                          <span>
+                            {item.metric}: {item.before} → {item.after} ({item.improvement})
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -221,12 +230,15 @@ export default function ProjectDetailClientBoundary({
           {Array.isArray(project.charts) && project.charts.length > 0 && (
             <div className="container mx-auto px-6 mb-16">
               <div className="max-w-5xl mx-auto space-y-8">
-                {(project.charts as Array<{ type: string; title: string; description?: string; dataKey: string }>).map((chart, index) => (
-                  <ChartContainer
-                    key={index}
-                    title={chart.title}
-                    description={chart.description}
-                  >
+                {(
+                  project.charts as Array<{
+                    type: string
+                    title: string
+                    description?: string
+                    dataKey: string
+                  }>
+                ).map((chart, index) => (
+                  <ChartContainer key={index} title={chart.title} description={chart.description}>
                     {/* Chart component would go here */}
                     <div className="h-64 flex items-center justify-center text-muted-foreground">
                       Chart: {chart.title}

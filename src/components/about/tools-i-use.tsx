@@ -10,7 +10,7 @@ import {
   Users,
   TrendingUp,
   Code,
-  Table
+  Table,
 } from 'lucide-react'
 
 interface Tool {
@@ -62,16 +62,14 @@ export function ToolsIUse({ className = '' }: ToolsIUseProps) {
             style={{ animationDelay: `${index * 50}ms` }}
           >
             <div className="p-6 flex flex-col items-center gap-3">
-              <div className={`p-3 rounded-lg ${tool.color} group-hover:scale-110 transition-transform duration-300`}>
+              <div
+                className={`p-3 rounded-lg ${tool.color} group-hover:scale-110 transition-transform duration-300`}
+              >
                 <tool.icon className="h-6 w-6 text-white" />
               </div>
               <div className="text-center">
-                <p className="font-semibold text-sm text-foreground">
-                  {tool.name}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {tool.category}
-                </p>
+                <p className="font-semibold text-sm text-foreground">{tool.name}</p>
+                <p className="text-xs text-muted-foreground mt-1">{tool.category}</p>
               </div>
             </div>
           </Card>

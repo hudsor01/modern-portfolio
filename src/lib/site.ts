@@ -2,7 +2,8 @@ import type { SiteConfig } from '@/types/seo'
 
 export const siteConfig: SiteConfig = {
   name: 'Richard Hudson - Modern Portfolio',
-  description: 'Senior Revenue Operations Leader & Full-Stack Developer showcasing enterprise analytics platforms, data visualizations, and technical projects.',
+  description:
+    'Senior Revenue Operations Leader & Full-Stack Developer showcasing enterprise analytics platforms, data visualizations, and technical projects.',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
   links: {
     github: 'https://github.com/hudsor01',

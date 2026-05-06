@@ -16,7 +16,7 @@ export const experience = [
       'Architected revenue modeling framework in Power BI and Salesforce achieving 95% forecast accuracy across all divisions',
       'Transformed commission processes through automation, reducing processing time by 80% and increasing accuracy to 100%',
     ],
-    technologies: ['Salesforce', 'Power BI', 'Python', 'SQL', 'Tableau']
+    technologies: ['Salesforce', 'Power BI', 'Python', 'SQL', 'Tableau'],
   },
   {
     title: 'Sales Operations Analyst',
@@ -29,7 +29,7 @@ export const experience = [
       'Automated commission management system achieving 100% accuracy and reducing processing time by 73%',
       'Improved forecast accuracy by 40% through standardized metrics and reporting frameworks',
     ],
-    technologies: ['HubSpot', 'SalesLoft', 'Excel', 'SQL', 'API Integrations']
+    technologies: ['HubSpot', 'SalesLoft', 'Excel', 'SQL', 'API Integrations'],
   },
   {
     title: 'Channel Operations Lead',
@@ -43,7 +43,7 @@ export const experience = [
       'Built scalable infrastructure driving 432% volume growth and 67% faster processing time',
       'Implemented real-time analytics framework streamlining performance tracking and reporting',
     ],
-    technologies: ['PartnerStack', 'Salesforce', 'Automation Tools', 'Data Analytics']
+    technologies: ['PartnerStack', 'Salesforce', 'Automation Tools', 'Data Analytics'],
   },
 ]
 
@@ -59,7 +59,14 @@ export const education = [
 export const skills = [
   {
     category: 'Revenue Operations',
-    items: ['Sales Operations', 'Cross-functional Collaboration', 'Process Optimization', 'Strategic Planning', 'Data Visualization', 'Forecasting & Analytics'],
+    items: [
+      'Sales Operations',
+      'Cross-functional Collaboration',
+      'Process Optimization',
+      'Strategic Planning',
+      'Data Visualization',
+      'Forecasting & Analytics',
+    ],
   },
   {
     category: 'Tools & Platforms',
@@ -67,7 +74,14 @@ export const skills = [
   },
   {
     category: 'Technical Skills',
-    items: ['Python', 'SQL', 'Excel (Advanced)', 'Webhooks', 'API Integrations', 'Financial Modeling'],
+    items: [
+      'Python',
+      'SQL',
+      'Excel (Advanced)',
+      'Webhooks',
+      'API Integrations',
+      'Financial Modeling',
+    ],
   },
 ]
 

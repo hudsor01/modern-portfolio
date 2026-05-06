@@ -73,9 +73,7 @@ export function AlgorithmicApproachesGrid({ approaches }: AlgorithmicApproachesG
             <div className="text-3xl font-bold text-secondary mb-2">
               {formatCurrency(8700000, { compact: true })}
             </div>
-            <p className="text-muted-foreground">
-              Incremental revenue from optimized territories
-            </p>
+            <p className="text-muted-foreground">Incremental revenue from optimized territories</p>
           </div>
           <div className="text-center p-4">
             <div className="text-3xl font-bold text-primary mb-2">{formatPercentage(0.28)}</div>

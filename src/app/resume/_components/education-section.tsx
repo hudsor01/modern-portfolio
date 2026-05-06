@@ -13,9 +13,7 @@ export function EducationSection({ education, className = '' }: EducationSection
   return (
     <section className={className}>
       <div className="text-center mb-12">
-        <h2 className="font-display text-3xl lg:text-4xl font-semibold mb-4">
-          Education
-        </h2>
+        <h2 className="font-display text-3xl lg:text-4xl font-semibold mb-4">Education</h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Academic foundation in business and analytics
         </p>
@@ -76,9 +74,7 @@ function EducationCard({ education }: EducationCardProps) {
 
         {/* Description */}
         {education.description && (
-          <p className="text-sm text-muted-foreground text-center">
-            {education.description}
-          </p>
+          <p className="text-sm text-muted-foreground text-center">{education.description}</p>
         )}
       </CardContent>
     </Card>

@@ -30,23 +30,11 @@ const variantStyles = {
   },
 }
 
-export function ResultCard({
-  value,
-  label,
-  variant = 'primary',
-  className,
-}: ResultCardProps) {
+export function ResultCard({ value, label, variant = 'primary', className }: ResultCardProps) {
   const styles = variantStyles[variant]
 
   return (
-    <div
-      className={cn(
-        'rounded-xl p-6 text-center border',
-        styles.bg,
-        styles.border,
-        className
-      )}
-    >
+    <div className={cn('rounded-xl p-6 text-center border', styles.bg, styles.border, className)}>
       <div className={cn('font-display text-2xl font-semibold mb-2', styles.valueColor)}>
         {value}
       </div>

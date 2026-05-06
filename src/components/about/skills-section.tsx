@@ -1,6 +1,18 @@
 'use client'
 
-import { BarChart3, Users, TrendingUp, Handshake, PieChart, Target, Zap, Database, Mail, Calendar as CalendarIcon, FileText as FileTextIcon } from 'lucide-react'
+import {
+  BarChart3,
+  Users,
+  TrendingUp,
+  Handshake,
+  PieChart,
+  Target,
+  Zap,
+  Database,
+  Mail,
+  Calendar as CalendarIcon,
+  FileText as FileTextIcon,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Calendar } from '@/components/ui/calendar'
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid'
@@ -35,10 +47,34 @@ interface NotificationItem {
 // Palette-compliant semantic colors (no pink/purple/cyan/blue brand hex).
 // Icon bubbles map to functional meaning: success/accent/primary/secondary.
 const notifications: NotificationItem[] = [
-  { name: 'Revenue up 12%', description: 'Q4 targets exceeded', time: '15m ago', Icon: TrendingUp, bubbleClass: 'bg-success' },
-  { name: 'Deal closed', description: '$50K enterprise', time: '10m ago', Icon: Handshake, bubbleClass: 'bg-accent' },
-  { name: 'Pipeline +$2.1M', description: 'Monthly increase', time: '5m ago', Icon: PieChart, bubbleClass: 'bg-primary' },
-  { name: 'Conversion +8%', description: 'Lead optimization', time: '2m ago', Icon: Target, bubbleClass: 'bg-secondary' },
+  {
+    name: 'Revenue up 12%',
+    description: 'Q4 targets exceeded',
+    time: '15m ago',
+    Icon: TrendingUp,
+    bubbleClass: 'bg-success',
+  },
+  {
+    name: 'Deal closed',
+    description: '$50K enterprise',
+    time: '10m ago',
+    Icon: Handshake,
+    bubbleClass: 'bg-accent',
+  },
+  {
+    name: 'Pipeline +$2.1M',
+    description: 'Monthly increase',
+    time: '5m ago',
+    Icon: PieChart,
+    bubbleClass: 'bg-primary',
+  },
+  {
+    name: 'Conversion +8%',
+    description: 'Lead optimization',
+    time: '2m ago',
+    Icon: Target,
+    bubbleClass: 'bg-secondary',
+  },
 ]
 
 // Repeat for continuous animation
@@ -88,7 +124,12 @@ function AnimatedListDemo({ className }: { className?: string }) {
 
 function OrbitingCirclesDemo({ className }: { className?: string }) {
   return (
-    <div className={cn('relative flex h-full w-full items-center justify-center overflow-hidden', className)}>
+    <div
+      className={cn(
+        'relative flex h-full w-full items-center justify-center overflow-hidden',
+        className
+      )}
+    >
       <span className="pointer-events-none whitespace-pre-wrap text-center text-4xl font-semibold leading-none text-foreground">
         2,217%
       </span>
@@ -232,7 +273,12 @@ const features = [
             selected={new Date(2022, 4, 11, 0, 0, 0)}
             className="rounded-md border"
           />
-          <BorderBeam size={100} duration={8} colorFrom="var(--color-primary)" colorTo="var(--color-accent)" />
+          <BorderBeam
+            size={100}
+            duration={8}
+            colorFrom="var(--color-primary)"
+            colorTo="var(--color-accent)"
+          />
         </div>
       </div>
     ),

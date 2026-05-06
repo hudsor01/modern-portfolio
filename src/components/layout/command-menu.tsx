@@ -31,13 +31,10 @@ export function CommandMenu({ ...props }: DialogProps) {
     return () => document.removeEventListener('keydown', down)
   }, [])
 
-  const runCommand = useCallback(
-    (command: () => unknown) => {
-      setOpen(false)
-      command()
-    },
-    [setOpen]
-  )
+  const runCommand = useCallback((command: () => unknown) => {
+    setOpen(false)
+    command()
+  }, [])
 
   return (
     <>

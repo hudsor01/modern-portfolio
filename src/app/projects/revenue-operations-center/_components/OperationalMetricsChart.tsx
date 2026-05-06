@@ -2,7 +2,14 @@
 import { memo } from 'react'
 
 import { LazyRadarChart as RadarChart } from '@/components/charts/lazy-charts'
-import { PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Legend } from 'recharts'
+import {
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts'
 import { chartColors as baseChartColors, chartCssVars } from '@/lib/charts'
 
 // Operational efficiency metrics across different areas
@@ -70,10 +77,8 @@ const OperationalMetricsChart = memo(function OperationalMetricsChart() {
     <div className="h-[var(--chart-height-md)]">
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-          <PolarGrid 
-            stroke={chartColors.grid}
-          />
-          <PolarAngleAxis 
+          <PolarGrid stroke={chartColors.grid} />
+          <PolarAngleAxis
             dataKey="category"
             tick={{ fontSize: 12, fill: chartColors.axis }}
             className="text-xs"
@@ -110,13 +115,12 @@ const OperationalMetricsChart = memo(function OperationalMetricsChart() {
             strokeWidth={2}
             strokeDasharray="3 3"
           />
-          <Legend
-            wrapperStyle={{ color: chartCssVars.mutedForeground }}
-          />
+          <Legend wrapperStyle={{ color: chartCssVars.mutedForeground }} />
         </RadarChart>
       </ResponsiveContainer>
       <p className="mt-4 text-center text-sm italic text-muted-foreground">
-        Operational efficiency radar showing 89.7% average performance vs 85% target and 78% industry benchmark
+        Operational efficiency radar showing 89.7% average performance vs 85% target and 78%
+        industry benchmark
       </p>
     </div>
   )

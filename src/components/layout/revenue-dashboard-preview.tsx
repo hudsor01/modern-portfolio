@@ -19,9 +19,11 @@ function MetricCard({ icon, title, value, change, trend }: MetricCardProps) {
         <span className="truncate">{title}</span>
       </div>
       <div className="text-sm font-semibold">{value}</div>
-      <div className={`text-xs flex items-center gap-0.5 ${
-        trend === 'up' ? 'text-success' : 'text-destructive'
-      }`}>
+      <div
+        className={`text-xs flex items-center gap-0.5 ${
+          trend === 'up' ? 'text-success' : 'text-destructive'
+        }`}
+      >
         <TrendingUp className="h-2.5 w-2.5" />
         {change}
       </div>
@@ -44,31 +46,31 @@ export function RevenueDashboardPreview() {
     { height: 33 },
     { height: 45 },
     { height: 38 },
-    { height: 40 }
+    { height: 40 },
   ]
 
   const metrics = [
     {
       icon: <DollarSign className="h-3 w-3" />,
-      title: "Revenue",
-      value: "$2.4M",
-      change: "+12.5%",
-      trend: 'up' as const
+      title: 'Revenue',
+      value: '$2.4M',
+      change: '+12.5%',
+      trend: 'up' as const,
     },
     {
       icon: <Users className="h-3 w-3" />,
-      title: "Partners",
-      value: "380",
-      change: "+8.2%",
-      trend: 'up' as const
+      title: 'Partners',
+      value: '380',
+      change: '+8.2%',
+      trend: 'up' as const,
     },
     {
       icon: <BarChart3 className="h-3 w-3" />,
-      title: "Growth",
-      value: "24.3%",
-      change: "+4.1%",
-      trend: 'up' as const
-    }
+      title: 'Growth',
+      value: '24.3%',
+      change: '+4.1%',
+      trend: 'up' as const,
+    },
   ]
 
   return (
@@ -86,7 +88,7 @@ export function RevenueDashboardPreview() {
           <div className="absolute inset-0 bg-card/30 animate-pulse"></div>
           <div className="absolute bottom-2 left-2 right-2 flex justify-between items-end">
             {chartBars.map((bar, i) => (
-              <div 
+              <div
                 key={i}
                 className="w-1 bg-primary/60 rounded-t"
                 style={{ height: `${bar.height}px` }}

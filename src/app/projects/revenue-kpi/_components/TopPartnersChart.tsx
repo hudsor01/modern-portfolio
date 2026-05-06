@@ -38,7 +38,7 @@ export default function TopPartnersChart({ partners }: TopPartnersChartProps) {
       .slice(0, 5)
       .sort((a, b) => b.revenue - a.revenue)
       .map((partner) => ({
-        name: partner.name.length > 15 ? partner.name.slice(0, 15) + '...' : partner.name,
+        name: partner.name.length > 15 ? `${partner.name.slice(0, 15)}...` : partner.name,
         fullName: partner.name,
         revenue: Math.round(partner.revenue / 1000), // in thousands
       }))
@@ -59,9 +59,7 @@ export default function TopPartnersChart({ partners }: TopPartnersChartProps) {
     <Card className="portfolio-card">
       <CardHeader className="pb-2">
         <CardTitle className="text-xl">Top Partners by Revenue</CardTitle>
-        <CardDescription>
-          Leading revenue contributors this period
-        </CardDescription>
+        <CardDescription>Leading revenue contributors this period</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[var(--chart-height-sm)] w-full">
@@ -70,7 +68,12 @@ export default function TopPartnersChart({ partners }: TopPartnersChartProps) {
             layout="vertical"
             margin={{ top: 10, right: 30, left: 100, bottom: 10 }}
           >
-            <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke={chartColors.grid} />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              horizontal={true}
+              vertical={false}
+              stroke={chartColors.grid}
+            />
             <XAxis
               type="number"
               stroke={chartColors.axis}
@@ -92,10 +95,7 @@ export default function TopPartnersChart({ partners }: TopPartnersChartProps) {
               content={<ChartTooltipContent />}
               cursor={{ fill: chartColors.primary, fillOpacity: 0.1 }}
             />
-            <Bar
-              dataKey="revenue"
-              radius={[0, 4, 4, 0]}
-            >
+            <Bar dataKey="revenue" radius={[0, 4, 4, 0]}>
               {chartData.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={BAR_COLORS[index % BAR_COLORS.length]} />
               ))}

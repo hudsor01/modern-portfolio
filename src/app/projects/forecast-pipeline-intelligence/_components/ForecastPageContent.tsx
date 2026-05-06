@@ -12,7 +12,6 @@ import { NarrativeSections } from './NarrativeSections'
 import { IntelligenceModulesGrid } from './IntelligenceModulesGrid'
 
 export default function ForecastPipelineIntelligenceProject() {
-
   // Standardized metrics configuration using consistent data formatting
   const metrics = [
     {

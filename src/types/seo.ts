@@ -3,7 +3,7 @@
  * Contains all SEO-related interfaces consolidated from across the application
  */
 
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 
 /**
  * Basic metadata for pages

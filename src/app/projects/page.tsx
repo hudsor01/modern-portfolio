@@ -22,26 +22,24 @@ export default async function ProjectsPage() {
 
   return (
     <ErrorBoundary>
-      <>
-        <BreadcrumbListJsonLd
-          nonce={nonce}
-          items={[
-            { name: 'Home', url: 'https://richardwhudsonjr.com' },
-            { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
-          ]}
-        />
-        <ItemListJsonLd
-          nonce={nonce}
-          name="Revenue Operations projects by Richard Hudson"
-          items={projects.map((project) => ({
-            name: project.title,
-            url: `https://richardwhudsonjr.com/projects/${project.slug}`,
-          }))}
-        />
-        <Navbar />
-        <ProjectsPageContent initialProjects={projects} />
-        <Footer />
-      </>
+      <BreadcrumbListJsonLd
+        nonce={nonce}
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+        ]}
+      />
+      <ItemListJsonLd
+        nonce={nonce}
+        name="Revenue Operations projects by Richard Hudson"
+        items={projects.map((project) => ({
+          name: project.title,
+          url: `https://richardwhudsonjr.com/projects/${project.slug}`,
+        }))}
+      />
+      <Navbar />
+      <ProjectsPageContent initialProjects={projects} />
+      <Footer />
     </ErrorBoundary>
   )
 }

@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
-import React from "react"
+import React from 'react'
 
-import { cn } from "@/lib/utils"
+import { cn } from '@/lib/utils'
 
 // Inline keyframes to ensure animation always works
 const orbitKeyframes = `
@@ -64,10 +64,10 @@ export function OrbitingCircles({
           <div
             style={
               {
-                "--duration": calculatedDuration,
-                "--radius": radius,
-                "--angle": angle,
-                "--icon-size": `${iconSize}px`,
+                '--duration': calculatedDuration,
+                '--radius': radius,
+                '--angle': angle,
+                '--icon-size': `${iconSize}px`,
                 animation: `orbit ${calculatedDuration}s linear infinite${reverse ? ' reverse' : ''}`,
               } as React.CSSProperties
             }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useMemo, useSyncExternalStore } from 'react'
-import { z } from 'zod'
+import type { z } from 'zod'
 import { handleUtilityError } from '@/lib/error-handling'
 
 /**

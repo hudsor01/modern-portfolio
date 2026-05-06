@@ -68,7 +68,8 @@ const sectionCardDescriptionVariants = cva('text-muted-foreground leading-relaxe
 })
 
 interface SectionCardProps
-  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof sectionCardVariants> {
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof sectionCardVariants> {
   title: string
   description?: string
   children: React.ReactNode

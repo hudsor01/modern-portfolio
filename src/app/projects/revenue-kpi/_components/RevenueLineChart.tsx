@@ -1,6 +1,14 @@
 'use client'
-import React, { memo, useMemo } from 'react'
-import { LazyLineChart as LineChart, ChartWrapper, ChartGrid, ChartXAxis, ChartYAxis, StandardTooltip } from '@/components/charts/lazy-charts'
+import type React from 'react'
+import { memo, useMemo } from 'react'
+import {
+  LazyLineChart as LineChart,
+  ChartWrapper,
+  ChartGrid,
+  ChartXAxis,
+  ChartYAxis,
+  StandardTooltip,
+} from '@/components/charts/lazy-charts'
 import { Line, Legend } from 'recharts'
 import { chartColors, chartConfig, chartTypeConfigs, formatters } from '@/lib/charts'
 import type { YearOverYearData } from '@/types/analytics'
@@ -9,14 +17,14 @@ import type { ExtendedRevenueData, TypedTooltipProps } from '@/types/chart'
 // Transform the real data for the line chart with proper typing
 // Calculate growth rates from year-over-year data
 const calculateGrowthRate = (current: number, previous: number): number => {
-  return previous > 0 ? ((current - previous) / previous) * 100 : 0;
-};
+  return previous > 0 ? ((current - previous) / previous) * 100 : 0
+}
 
 // Note: This quarterly data is kept for potential future use
 // const quarterlyData: ExtendedRevenueData[] = growthData.map((quarterData, index) => {
 //   const previousQuarter = index > 0 ? growthData[index - 1] : null;
 //   const baseGrowth = previousQuarter ? ((quarterData.revenue - previousQuarter.revenue) / previousQuarter.revenue) * 100 : 0;
-//   
+//
 //   return {
 //     name: quarterData.quarter,
 //     value: quarterData.revenue / 1000000,
@@ -38,18 +46,46 @@ const calculateGrowthRate = (current: number, previous: number): number => {
 // Custom tooltip for revenue data
 function CustomTooltip({ active, payload, label }: TypedTooltipProps<ExtendedRevenueData>) {
   if (!active || !payload || payload.length === 0) return null
-  
+
   const dataPoint = payload[0]?.payload
   if (!dataPoint) return null
-  
+
   return (
     <StandardTooltip
       active={active}
       payload={[
-        { name: 'Revenue', value: formatters.currency(dataPoint.revenue), color: chartColors.revenue },
-        ...(dataPoint.transactions ? [{ name: 'Transactions', value: formatters.thousands(dataPoint.transactions), color: chartColors.transactions }] : []),
-        ...(dataPoint.commissions ? [{ name: 'Commissions', value: formatters.currency(dataPoint.commissions), color: chartColors.commissions }] : []),
-        ...(dataPoint.growth !== undefined && dataPoint.growth !== 0 ? [{ name: 'Growth', value: formatters.percentage(dataPoint.growth), color: chartColors.positive }] : []),
+        {
+          name: 'Revenue',
+          value: formatters.currency(dataPoint.revenue),
+          color: chartColors.revenue,
+        },
+        ...(dataPoint.transactions
+          ? [
+              {
+                name: 'Transactions',
+                value: formatters.thousands(dataPoint.transactions),
+                color: chartColors.transactions,
+              },
+            ]
+          : []),
+        ...(dataPoint.commissions
+          ? [
+              {
+                name: 'Commissions',
+                value: formatters.currency(dataPoint.commissions),
+                color: chartColors.commissions,
+              },
+            ]
+          : []),
+        ...(dataPoint.growth !== undefined && dataPoint.growth !== 0
+          ? [
+              {
+                name: 'Growth',
+                value: formatters.percentage(dataPoint.growth),
+                color: chartColors.positive,
+              },
+            ]
+          : []),
       ]}
       label={label}
     />
@@ -70,8 +106,10 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
   const yearlyData = useMemo(() => {
     if (!data || data.length === 0) return []
     return data.map((yearData: YearOverYearSeries, index: number) => {
-      const previousYear = index > 0 ? data[index - 1] : null;
-      const growth = previousYear ? calculateGrowthRate(yearData.total_revenue, previousYear.total_revenue) : 0;
+      const previousYear = index > 0 ? data[index - 1] : null
+      const growth = previousYear
+        ? calculateGrowthRate(yearData.total_revenue, previousYear.total_revenue)
+        : 0
 
       return {
         name: yearData.year.toString(),
@@ -83,11 +121,11 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
         growth,
         metadata: {
           tooltip: `Revenue: $${(yearData.total_revenue / 1000000).toFixed(1)}M`,
-          source: 'Year-over-Year Analytics'
-        }
-      };
-    });
-  }, [data]);
+          source: 'Year-over-Year Analytics',
+        },
+      }
+    })
+  }, [data])
 
   if (!yearlyData.length) {
     return (
@@ -111,7 +149,11 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
         <LineChart data={yearlyData} margin={chartConfig.margins.medium}>
           <ChartGrid />
           <ChartXAxis dataKey="name" />
-          <ChartYAxis tickFormatter={(value) => formatters.default(typeof value === 'string' ? parseFloat(value) : value)} />
+          <ChartYAxis
+            tickFormatter={(value) =>
+              formatters.default(typeof value === 'string' ? parseFloat(value) : value)
+            }
+          />
           <CustomTooltip />
           <Legend />
           <Line
@@ -119,7 +161,11 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
             dataKey="revenue"
             stroke={chartColors.revenue}
             dot={{ ...chartTypeConfigs.line.dot, stroke: chartColors.revenue }}
-            activeDot={{ ...chartTypeConfigs.line.activeDot, stroke: chartColors.revenue, fill: chartColors.revenue }}
+            activeDot={{
+              ...chartTypeConfigs.line.activeDot,
+              stroke: chartColors.revenue,
+              fill: chartColors.revenue,
+            }}
             animationDuration={chartConfig.animation.duration}
             name="Revenue ($M)"
           />
@@ -128,7 +174,11 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
             dataKey="transactions"
             stroke={chartColors.transactions}
             dot={{ ...chartTypeConfigs.line.dot, stroke: chartColors.transactions }}
-            activeDot={{ ...chartTypeConfigs.line.activeDot, stroke: chartColors.transactions, fill: chartColors.transactions }}
+            activeDot={{
+              ...chartTypeConfigs.line.activeDot,
+              stroke: chartColors.transactions,
+              fill: chartColors.transactions,
+            }}
             animationDuration={chartConfig.animation.duration}
             animationBegin={chartConfig.animation.delay}
             name="Transactions (K)"
@@ -138,7 +188,11 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
             dataKey="commissions"
             stroke={chartColors.commissions}
             dot={{ ...chartTypeConfigs.line.dot, stroke: chartColors.commissions }}
-            activeDot={{ ...chartTypeConfigs.line.activeDot, stroke: chartColors.commissions, fill: chartColors.commissions }}
+            activeDot={{
+              ...chartTypeConfigs.line.activeDot,
+              stroke: chartColors.commissions,
+              fill: chartColors.commissions,
+            }}
             animationDuration={chartConfig.animation.duration}
             animationBegin={chartConfig.animation.stagger}
             name="Commissions ($M)"
