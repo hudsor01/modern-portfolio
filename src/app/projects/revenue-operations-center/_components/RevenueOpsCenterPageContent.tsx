@@ -9,6 +9,7 @@ import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { revenueMetrics } from '../data/constants'
 import { formatCurrency, formatPercent } from '../utils'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
+import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { KPIAlerts } from './KPIAlerts'
 import { StrategicImpact } from './StrategicImpact'
 import { NarrativeSections } from './NarrativeSections'
@@ -107,39 +108,50 @@ export default function RevenueOperationsCenter() {
   )
 
   return (
-    <ProjectPageLayout
-      title="Revenue Operations Command Center"
-      description="Comprehensive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs. Real-time insights with 96.8% forecast accuracy and 89.7% operational efficiency across sales, marketing, and partner channels."
-      tags={[
-        { label: 'Forecast Accuracy: 96.8%', variant: 'primary' },
-        { label: 'Pipeline Health: 92.4%', variant: 'secondary' },
-        { label: 'Revenue Growth: +34.2%', variant: 'primary' },
-        { label: 'Operations Dashboard', variant: 'secondary' },
-      ]}
-      showTimeframes={true}
-      timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
-      activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-      onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
-    >
-      {/* Key Metrics using standardized MetricsGrid */}
-      <MetricsGrid metrics={metrics} columns={4} className="mb-12" />
+    <>
+      <ProjectJsonLd
+        title="Revenue Operations Command Center"
+        description="Comprehensive revenue operations dashboard consolidating pipeline health, forecasting, partner performance, and operational KPIs with 96.8% forecast accuracy and 89.7% operational efficiency."
+        slug="revenue-operations-center"
+        category="Revenue Operations"
+        datePublished="2025-11-19"
+        dateModified="2026-05-06"
+        tags={['RevOps', 'Pipeline Health', 'Forecasting', 'Operations Dashboard']}
+      />
+      <ProjectPageLayout
+        title="Revenue Operations Command Center"
+        description="Comprehensive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs. Real-time insights with 96.8% forecast accuracy and 89.7% operational efficiency across sales, marketing, and partner channels."
+        tags={[
+          { label: 'Forecast Accuracy: 96.8%', variant: 'primary' },
+          { label: 'Pipeline Health: 92.4%', variant: 'secondary' },
+          { label: 'Revenue Growth: +34.2%', variant: 'primary' },
+          { label: 'Operations Dashboard', variant: 'secondary' },
+        ]}
+        showTimeframes={true}
+        timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
+        activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+        onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
+      >
+        {/* Key Metrics using standardized MetricsGrid */}
+        <MetricsGrid metrics={metrics} columns={4} className="mb-12" />
 
-      {/* KPI Alerts */}
-      <KPIAlerts />
+        {/* KPI Alerts */}
+        <KPIAlerts />
 
-      {/* Tab Content with Suspense */}
-      <Suspense fallback={<TabSkeleton />}>
-        {activeTab === 'overview' && <OverviewTab />}
-        {activeTab === 'pipeline' && <PipelineTab />}
-        {activeTab === 'forecasting' && <ForecastingTab />}
-        {activeTab === 'operations' && <OperationsTab />}
-      </Suspense>
+        {/* Tab Content with Suspense */}
+        <Suspense fallback={<TabSkeleton />}>
+          {activeTab === 'overview' && <OverviewTab />}
+          {activeTab === 'pipeline' && <PipelineTab />}
+          {activeTab === 'forecasting' && <ForecastingTab />}
+          {activeTab === 'operations' && <OperationsTab />}
+        </Suspense>
 
-      {/* Strategic Impact */}
-      <StrategicImpact />
+        {/* Strategic Impact */}
+        <StrategicImpact />
 
-      {/* Professional Narrative Sections */}
-      <NarrativeSections />
-    </ProjectPageLayout>
+        {/* Professional Narrative Sections */}
+        <NarrativeSections />
+      </ProjectPageLayout>
+    </>
   )
 }

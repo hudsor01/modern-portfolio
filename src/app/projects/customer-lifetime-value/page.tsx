@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { headers } from 'next/headers'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import CLVPageContent from './_components/CLVPageContent'
 
 export const dynamic = 'force-static'
@@ -40,6 +42,22 @@ export const metadata: Metadata = {
   },
 }
 
-export default function CustomerLifetimeValuePage() {
-  return <CLVPageContent />
+export default async function CustomerLifetimeValuePage() {
+  const nonce = (await headers()).get('x-nonce')
+  return (
+    <>
+      <BreadcrumbListJsonLd
+        nonce={nonce}
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          {
+            name: 'Customer Lifetime Value Analytics',
+            url: 'https://richardwhudsonjr.com/projects/customer-lifetime-value',
+          },
+        ]}
+      />
+      <CLVPageContent />
+    </>
+  )
 }

@@ -7,6 +7,7 @@ import { useQueryState } from 'nuqs'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
+import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/data-formatters'
 import { clvMetrics } from '../data/constants'
 import { OverviewTab } from './OverviewTab'
@@ -58,56 +59,67 @@ export default function CustomerLifetimeValueAnalytics() {
   ]
 
   return (
-    <ProjectPageLayout
-      title="Customer Lifetime Value Predictive Analytics Dashboard"
-      description="Advanced CLV analytics platform leveraging BTYD (Buy Till You Die) predictive modeling framework. Achieving 94.3% prediction accuracy through machine learning algorithms and real-time customer behavior tracking across 5 distinct customer segments."
-      tags={[
-        {
-          label: `Prediction Accuracy: ${formatPercentage(clvMetrics.predictionAccuracy / 100)}`,
-          variant: 'primary',
-        },
-        {
-          label: `Avg CLV: ${formatCurrency(clvMetrics.averageCLV, { compact: true })}`,
-          variant: 'secondary',
-        },
-        { label: 'Machine Learning', variant: 'primary' },
-        { label: 'BTYD Framework', variant: 'secondary' },
-      ]}
-      showTimeframes={true}
-      timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
-      activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-      onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
-    >
-      {/* Key Metrics using standardized MetricsGrid */}
-      <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
-
-      {/* Tab Content wrapped in SectionCard */}
-      <SectionCard
-        title="CLV Analytics"
-        description="Comprehensive customer lifetime value analysis and insights"
-        className="mb-8"
+    <>
+      <ProjectJsonLd
+        title="Customer Lifetime Value Predictive Analytics Dashboard"
+        description="Advanced CLV analytics platform leveraging BTYD (Buy Till You Die) predictive modeling, achieving 94.3% prediction accuracy through machine learning across 5 customer segments."
+        slug="customer-lifetime-value"
+        category="Predictive Analytics"
+        datePublished="2025-11-19"
+        dateModified="2026-05-06"
+        tags={['CLV', 'Predictive Analytics', 'BTYD', 'Machine Learning', 'Customer Segments']}
+      />
+      <ProjectPageLayout
+        title="Customer Lifetime Value Predictive Analytics Dashboard"
+        description="Advanced CLV analytics platform leveraging BTYD (Buy Till You Die) predictive modeling framework. Achieving 94.3% prediction accuracy through machine learning algorithms and real-time customer behavior tracking across 5 distinct customer segments."
+        tags={[
+          {
+            label: `Prediction Accuracy: ${formatPercentage(clvMetrics.predictionAccuracy / 100)}`,
+            variant: 'primary',
+          },
+          {
+            label: `Avg CLV: ${formatCurrency(clvMetrics.averageCLV, { compact: true })}`,
+            variant: 'secondary',
+          },
+          { label: 'Machine Learning', variant: 'primary' },
+          { label: 'BTYD Framework', variant: 'secondary' },
+        ]}
+        showTimeframes={true}
+        timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
+        activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+        onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
       >
-        {activeTab === 'overview' && <OverviewTab />}
-        {activeTab === 'segments' && <SegmentsTab />}
-        {activeTab === 'predictions' && <PredictionsTab />}
-      </SectionCard>
+        {/* Key Metrics using standardized MetricsGrid */}
+        <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
-      {/* Strategic Impact wrapped in SectionCard */}
-      <SectionCard
-        title="Strategic Impact"
-        description="Business impact and strategic outcomes from CLV optimization"
-        className="mb-8"
-      >
-        <StrategicImpact />
-      </SectionCard>
+        {/* Tab Content wrapped in SectionCard */}
+        <SectionCard
+          title="CLV Analytics"
+          description="Comprehensive customer lifetime value analysis and insights"
+          className="mb-8"
+        >
+          {activeTab === 'overview' && <OverviewTab />}
+          {activeTab === 'segments' && <SegmentsTab />}
+          {activeTab === 'predictions' && <PredictionsTab />}
+        </SectionCard>
 
-      {/* Professional Narrative Sections wrapped in SectionCard */}
-      <SectionCard
-        title="Project Narrative"
-        description="Comprehensive case study following the STAR methodology"
-      >
-        <NarrativeSections />
-      </SectionCard>
-    </ProjectPageLayout>
+        {/* Strategic Impact wrapped in SectionCard */}
+        <SectionCard
+          title="Strategic Impact"
+          description="Business impact and strategic outcomes from CLV optimization"
+          className="mb-8"
+        >
+          <StrategicImpact />
+        </SectionCard>
+
+        {/* Professional Narrative Sections wrapped in SectionCard */}
+        <SectionCard
+          title="Project Narrative"
+          description="Comprehensive case study following the STAR methodology"
+        >
+          <NarrativeSections />
+        </SectionCard>
+      </ProjectPageLayout>
+    </>
   )
 }

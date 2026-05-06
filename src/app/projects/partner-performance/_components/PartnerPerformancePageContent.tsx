@@ -7,6 +7,7 @@ import { useQueryState } from 'nuqs'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
+import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/data-formatters'
 import { NarrativeSections } from './NarrativeSections'
 import { OverviewTab } from './OverviewTab'
@@ -67,45 +68,59 @@ export default function PartnerPerformanceIntelligence() {
   ]
 
   return (
-    <ProjectPageLayout
-      title="Partner Performance Intelligence Dashboard"
-      description="Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem. Real-time performance tracking following industry-standard 80/20 partner revenue distribution."
-      tags={[
-        { label: `Channel ROI: ${partnerMetrics.quickRatio}x`, variant: 'primary' },
-        {
-          label: `Win Rate: ${formatPercentage(partnerMetrics.winRate / 100)}`,
-          variant: 'secondary',
-        },
-        { label: 'Partner Intelligence', variant: 'primary' },
-        { label: 'Revenue Operations', variant: 'secondary' },
-      ]}
-      showTimeframes={true}
-      timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1).replace('-', ' '))}
-      activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1).replace('-', ' ')}
-      onTimeframeChange={(timeframe) => {
-        const tab = timeframe.toLowerCase().replace(' ', '-') as Tab
-        setActiveTab(tab)
-      }}
-    >
-      {/* Key Metrics using standardized MetricsGrid */}
-      <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
-
-      {/* Tab Content wrapped in SectionCard */}
-      <SectionCard
-        title="Partner Performance Analysis"
-        description="Comprehensive partner analytics and performance insights"
-        className="mb-8"
+    <>
+      <ProjectJsonLd
+        title="Partner Performance Intelligence Dashboard"
+        description="Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem with 4.7x quick ratio."
+        slug="partner-performance"
+        category="Revenue Operations"
+        datePublished="2025-11-19"
+        dateModified="2026-05-06"
+        tags={['Partner Analytics', 'Channel Strategy', 'Revenue Operations', 'SaaS Metrics']}
+      />
+      <ProjectPageLayout
+        title="Partner Performance Intelligence Dashboard"
+        description="Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem. Real-time performance tracking following industry-standard 80/20 partner revenue distribution."
+        tags={[
+          { label: `Channel ROI: ${partnerMetrics.quickRatio}x`, variant: 'primary' },
+          {
+            label: `Win Rate: ${formatPercentage(partnerMetrics.winRate / 100)}`,
+            variant: 'secondary',
+          },
+          { label: 'Partner Intelligence', variant: 'primary' },
+          { label: 'Revenue Operations', variant: 'secondary' },
+        ]}
+        showTimeframes={true}
+        timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1).replace('-', ' '))}
+        activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1).replace('-', ' ')}
+        onTimeframeChange={(timeframe) => {
+          const tab = timeframe.toLowerCase().replace(' ', '-') as Tab
+          setActiveTab(tab)
+        }}
       >
-        {activeTab === 'overview' && <OverviewTab />}
-        {activeTab === 'tiers' && <TiersTab />}
-        {activeTab === 'top-performers' && <TopPerformersTab />}
-      </SectionCard>
+        {/* Key Metrics using standardized MetricsGrid */}
+        <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
-      {/* Strategic Insights */}
-      <StrategicInsights winRate={partnerMetrics.winRate} quickRatio={partnerMetrics.quickRatio} />
+        {/* Tab Content wrapped in SectionCard */}
+        <SectionCard
+          title="Partner Performance Analysis"
+          description="Comprehensive partner analytics and performance insights"
+          className="mb-8"
+        >
+          {activeTab === 'overview' && <OverviewTab />}
+          {activeTab === 'tiers' && <TiersTab />}
+          {activeTab === 'top-performers' && <TopPerformersTab />}
+        </SectionCard>
 
-      {/* Professional Narrative Sections - STAR Method */}
-      <NarrativeSections />
-    </ProjectPageLayout>
+        {/* Strategic Insights */}
+        <StrategicInsights
+          winRate={partnerMetrics.winRate}
+          quickRatio={partnerMetrics.quickRatio}
+        />
+
+        {/* Professional Narrative Sections - STAR Method */}
+        <NarrativeSections />
+      </ProjectPageLayout>
+    </>
   )
 }
