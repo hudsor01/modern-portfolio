@@ -1,10 +1,12 @@
 import { Metadata } from 'next'
 import { cache } from 'react'
+import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { BlogPostLayout } from '../_components/blog-post-layout'
 import { BlogPostJsonLd } from '@/components/seo/blog-json-ld'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { transformToBlogPostData } from '@/lib/api-blog'
 import { createContextLogger } from '@/lib/logger'
 import type { BlogPostData } from '@/types/api'
@@ -131,9 +133,19 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound()
   }
 
+  const nonce = (await headers()).get('x-nonce')
+
   return (
     <>
-      <BlogPostJsonLd post={post} />
+      <BlogPostJsonLd post={post} nonce={nonce} />
+      <BreadcrumbListJsonLd
+        nonce={nonce}
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'Blog', url: 'https://richardwhudsonjr.com/blog' },
+          { name: post.title, url: `https://richardwhudsonjr.com/blog/${post.slug}` },
+        ]}
+      />
       <div className="min-h-screen bg-background">
         <Navbar />
         <main className="relative overflow-hidden">

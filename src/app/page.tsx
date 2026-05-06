@@ -10,9 +10,9 @@ const HOMEPAGE_OG_IMAGE_URL = `https://richardwhudsonjr.com/api/og?${new URLSear
 }).toString()}`
 
 export const metadata: Metadata = {
-  title: 'Richard Hudson | Revenue Operations Professional | Dallas-Fort Worth',
+  title: 'Richard Hudson — RevOps Professional in Dallas-Fort Worth',
   description:
-    'Richard Hudson: Revenue Operations Professional in Dallas-Fort Worth. Experienced RevOps specialist with $4.8M+ revenue impact and 432% growth delivered. Salesloft Certified Administrator & HubSpot RevOps certified. Expert in sales automation, CRM optimization, and system implementation across 10+ successful projects.',
+    'Richard Hudson — Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. $4.8M+ revenue impact across 10+ projects.',
   keywords: [
     'Richard Hudson',
     'revenue operations professional Dallas',
@@ -36,9 +36,9 @@ export const metadata: Metadata = {
     'enterprise system integration'
   ],
   openGraph: {
-    title: 'Richard Hudson | Revenue Operations Professional | Dallas-Fort Worth',
+    title: 'Richard Hudson — RevOps Professional in Dallas-Fort Worth',
     description:
-      'Richard Hudson: Revenue Operations Professional in Dallas-Fort Worth. Experienced RevOps specialist with $4.8M+ revenue impact and 432% growth delivered. Salesloft Certified Administrator & HubSpot RevOps certified. Expert in sales automation and CRM optimization across 10+ successful projects.',
+      'Richard Hudson — Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. $4.8M+ revenue impact across 10+ projects.',
     url: 'https://richardwhudsonjr.com',
     siteName: 'Richard Hudson - Revenue Operations Professional',
     images: [
@@ -55,9 +55,9 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     creator: '@hudsor01',
-    title: 'Richard Hudson | Revenue Operations Professional | Dallas-Fort Worth',
+    title: 'Richard Hudson — RevOps Professional in Dallas-Fort Worth',
     description:
-      'Richard Hudson: Revenue Operations Professional in Dallas-Fort Worth. Experienced RevOps specialist with $4.8M+ revenue impact and 432% growth delivered. Salesloft Certified Administrator & HubSpot RevOps certified. Expert in sales automation and CRM optimization across 10+ successful projects.',
+      'Richard Hudson — Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. $4.8M+ revenue impact across 10+ projects.',
     images: [HOMEPAGE_OG_IMAGE_URL],
   },
   alternates: {

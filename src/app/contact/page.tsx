@@ -1,4 +1,7 @@
+import { headers } from 'next/headers'
 import { generateMetadata } from '@/app/shared-metadata'
+import { ProfessionalServiceJsonLd } from '@/components/seo/json-ld/professional-service-json-ld'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import ContactPageClient from './contact-client'
 
 export const dynamic = 'force-static'
@@ -8,6 +11,19 @@ export const metadata = generateMetadata(
   '/contact'
 )
 
-export default function ContactPage() {
-  return <ContactPageClient />
+export default async function ContactPage() {
+  const nonce = (await headers()).get('x-nonce')
+  return (
+    <>
+      <ProfessionalServiceJsonLd nonce={nonce} />
+      <BreadcrumbListJsonLd
+        nonce={nonce}
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'Contact', url: 'https://richardwhudsonjr.com/contact' },
+        ]}
+      />
+      <ContactPageClient />
+    </>
+  )
 }

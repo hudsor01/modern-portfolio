@@ -87,12 +87,15 @@ const nextConfig = {
         ],
       },
       {
-        source: '/api/(.*)',
+        // Negative lookahead: apply to /api/* EXCEPT /api/og (social-preview
+        // images that crawlers must fetch) and /api/blog/rss (feed surface).
+        // Both should be discoverable; everything else stays noindex.
+        source: '/api/:path((?!og$|blog/rss$).*)',
         headers: [
           // Specific CORS for API routes - only allow our domains
           {
             key: 'Access-Control-Allow-Origin',
-            value: process.env.NODE_ENV === 'production' 
+            value: process.env.NODE_ENV === 'production'
               ? 'https://richardwhudsonjr.com'
               : 'http://localhost:3000',
           },
@@ -119,6 +122,23 @@ const nextConfig = {
           {
             key: 'X-Robots-Tag',
             value: 'noindex, nofollow',
+          },
+        ],
+      },
+      {
+        // Same CORS/cache headers for /api/og and /api/blog/rss but NO
+        // X-Robots-Tag — these are crawler-facing surfaces.
+        source: '/api/:path(og|blog/rss)',
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: process.env.NODE_ENV === 'production'
+              ? 'https://richardwhudsonjr.com'
+              : 'http://localhost:3000',
+          },
+          {
+            key: 'Vary',
+            value: 'Origin',
           },
         ],
       },
