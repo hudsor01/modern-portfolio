@@ -394,6 +394,78 @@ export default function HomePageContent() {
         </div>
       </section>
 
+      {/* Featured Work — direct links to flagship projects.
+          Per Mueller SEO Office Hours: home pages forward PageRank;
+          content closer to home is crawled faster. Selecting 4 flagship
+          projects (not all 8) preserves clear hierarchy. */}
+      <section className="relative py-16 lg:py-24">
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="mb-12">
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+              Featured Work
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl">
+              Selected revenue operations projects with measured business impact.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
+            <Link
+              href="/projects/revenue-kpi"
+              className="group rounded-2xl border border-border bg-card p-6 hover:border-primary transition-colors"
+            >
+              <h3 className="text-xl font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
+                Revenue Operations Dashboard
+              </h3>
+              <p className="text-muted-foreground">
+                Real-time revenue tracking and forecasting platform with advanced analytics.
+              </p>
+            </Link>
+            <Link
+              href="/projects/forecast-pipeline-intelligence"
+              className="group rounded-2xl border border-border bg-card p-6 hover:border-primary transition-colors"
+            >
+              <h3 className="text-xl font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
+                Forecast & Pipeline Intelligence
+              </h3>
+              <p className="text-muted-foreground">
+                Predictive forecasting improving accuracy by 31% and reducing slippage 26%.
+              </p>
+            </Link>
+            <Link
+              href="/projects/partnership-program-implementation"
+              className="group rounded-2xl border border-border bg-card p-6 hover:border-primary transition-colors"
+            >
+              <h3 className="text-xl font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
+                Partnership Program Implementation
+              </h3>
+              <p className="text-muted-foreground">
+                Built first partnership program from scratch with 90%+ automation.
+              </p>
+            </Link>
+            <Link
+              href="/projects/sales-enablement"
+              className="group rounded-2xl border border-border bg-card p-6 hover:border-primary transition-colors"
+            >
+              <h3 className="text-xl font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
+                Sales Enablement Platform
+              </h3>
+              <p className="text-muted-foreground">
+                Training and coaching platform increasing win rates by 34%.
+              </p>
+            </Link>
+          </div>
+          <div className="text-center">
+            <Link
+              href="/projects"
+              className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
+            >
+              View all projects
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA Section - Clean & Consistent */}
       <section className="relative py-16 lg:py-20 overflow-hidden">
         {/* Subtle decorative elements */}
