@@ -99,6 +99,8 @@ export default function SalesEnablementProject() {
         description="Sales enablement platform that improved win rates by 34% and reduced ramp time by 45%"
         slug="sales-enablement"
         category="Sales Operations"
+        datePublished="2025-11-19"
+        dateModified="2026-04-10"
         tags={['Sales Enablement', 'Training', 'Coaching', 'Sales Operations']}
       />
 

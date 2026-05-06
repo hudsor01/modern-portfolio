@@ -1,5 +1,7 @@
 import { Metadata } from 'next'
+import { headers } from 'next/headers'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { analyticsDataService } from '@/lib/data-service/service'
 import {
   monthlyRevenue2024,
@@ -46,14 +48,18 @@ export const metadata: Metadata = {
 export default async function RevenueKPI() {
   // Fetch all analytics data on the server
   const analyticsData = await analyticsDataService.getAllAnalyticsData()
+  const nonce = (await headers()).get('x-nonce')
 
   return (
     <>
       <ProjectJsonLd
+        nonce={nonce}
         title="Revenue KPI Dashboard - Partner Analytics & Business Intelligence"
         description="Real-time revenue analytics dashboard featuring partner performance metrics, growth trends, and business intelligence for data-driven decision making. Built with React, TypeScript, and Recharts."
         slug="revenue-kpi"
         category="Business Intelligence"
+        datePublished="2025-03-05"
+        dateModified="2026-01-15"
         tags={[
           'Revenue Analytics',
           'Partner Management',
@@ -63,6 +69,14 @@ export default async function RevenueKPI() {
           'Recharts',
           'React',
           'TypeScript',
+        ]}
+      />
+      <BreadcrumbListJsonLd
+        nonce={nonce}
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Revenue KPI Dashboard', url: 'https://richardwhudsonjr.com/projects/revenue-kpi' },
         ]}
       />
       <RevenueKPIClient

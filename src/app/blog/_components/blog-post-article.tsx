@@ -69,10 +69,15 @@ export function BlogPostArticle({
       // SECURITY: Escape HTML entities first to prevent XSS
       let html = escapeHtml(markdown)
 
-      // Headers
-      html = html.replace(/^### (.*$)/gim, '<h3 class="typography-large mt-6 mb-3 text-foreground dark:text-white">$1</h3>')
-      html = html.replace(/^## (.*$)/gim, '<h2 class="typography-h4 mt-8 mb-4 text-foreground dark:text-white">$1</h2>')
-      html = html.replace(/^# (.*$)/gim, '<h1 class="typography-h3 mt-10 mb-6 text-foreground dark:text-white">$1</h1>')
+      // Headers — Markdown `# X` is rewritten to <h2>, not <h1>. The blog
+      // post title in blog-post-layout.tsx is the page's h1; emitting another
+      // h1 from body markdown creates a double-h1 that confuses Google's
+      // content-hierarchy parser. Demote in-body `#` to h2 (with same visual
+      // styling), `##` to h3, `###` to h4 — preserving the existing visual
+      // hierarchy while fixing semantics.
+      html = html.replace(/^### (.*$)/gim, '<h4 class="typography-large mt-6 mb-3 text-foreground dark:text-white">$1</h4>')
+      html = html.replace(/^## (.*$)/gim, '<h3 class="typography-h4 mt-8 mb-4 text-foreground dark:text-white">$1</h3>')
+      html = html.replace(/^# (.*$)/gim, '<h2 class="typography-h3 mt-10 mb-6 text-foreground dark:text-white">$1</h2>')
 
       // Bold
       html = html.replace(/\*\*(.*)\*\*/gim, '<strong class="font-semibold">$1</strong>')

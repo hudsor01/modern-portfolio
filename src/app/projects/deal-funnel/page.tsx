@@ -1,4 +1,6 @@
 import { Metadata } from 'next'
+import { headers } from 'next/headers'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import DealFunnelPageContent from './_components/DealFunnelPageContent'
 
 export const dynamic = 'force-static'
@@ -30,6 +32,19 @@ export const metadata: Metadata = {
   },
 }
 
-export default function DealFunnelPage() {
-  return <DealFunnelPageContent />
+export default async function DealFunnelPage() {
+  const nonce = (await headers()).get('x-nonce')
+  return (
+    <>
+      <BreadcrumbListJsonLd
+        nonce={nonce}
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Sales Pipeline Funnel Analysis', url: 'https://richardwhudsonjr.com/projects/deal-funnel' },
+        ]}
+      />
+      <DealFunnelPageContent />
+    </>
+  )
 }

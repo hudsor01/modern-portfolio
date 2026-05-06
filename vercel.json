@@ -15,9 +15,8 @@
     },
     {
       "source": "/twitter",
-      "destination": "https://twitter.com/dickswayze"
-    },
-    { "source": "/dashboard", "destination": "/admin", "permanent": true }
+      "destination": "https://twitter.com/hudsor01"
+    }
   ],
   "rewrites": []
 }

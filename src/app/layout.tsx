@@ -5,6 +5,7 @@ import { headers } from 'next/headers'
 import { Playfair_Display, Spline_Sans, Roboto_Mono } from 'next/font/google'
 import { ClientComponentsProvider } from '@/components/providers/client-components-provider'
 import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Toaster } from '@/components/ui/toaster'
 import { ScrollToTop } from '@/components/layout/scroll-to-top'
 import { baseMetadata } from './shared-metadata'
@@ -47,11 +48,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       className={`${playfair.variable} ${splineSans.variable} ${robotoMono.variable}`}
     >
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        <meta name="theme-color" content="#fafafa" />
-        <meta name="color-scheme" content="light" />
+        {/* viewport / themeColor / colorScheme set via Next.js viewport API in src/app/viewport.ts */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+        {/* Feed discovery */}
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="Richard Hudson — Revenue Operations Blog"
+          href="/api/blog/rss"
+        />
 
         {/* Preconnect hints for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -81,6 +88,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <ScrollToTop />
             <Toaster position="bottom-right" closeButton richColors />
             <Analytics />
+            <SpeedInsights />
           </ClientComponentsProvider>
         </NuqsAdapter>
       </body>
