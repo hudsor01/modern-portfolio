@@ -6,7 +6,10 @@ import { BlogList } from './_components/blog-list'
 import { BlogJsonLd } from '@/components/seo/blog-json-ld'
 import { db } from '@/lib/db'
 import { transformToBlogPostData } from '@/lib/api-blog'
+import { createContextLogger } from '@/lib/logger'
 import type { BlogPostData, BlogCategoryData } from '@/types/api'
+
+const logger = createContextLogger('BlogIndex')
 
 const BLOG_INDEX_OG_IMAGE_URL = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
   title: 'Blog | Richard Hudson',
@@ -68,8 +71,13 @@ const getBlogPosts = cache(async (): Promise<BlogPostData[]> => {
     })
 
     return posts.map(transformToBlogPostData)
-  } catch {
-    // Database not available - return empty array
+  } catch (error) {
+    if (process.env.NEXT_PHASE !== 'phase-production-build') {
+      logger.error(
+        'Blog index posts query failed',
+        error instanceof Error ? error : new Error(String(error))
+      )
+    }
     return []
   }
 })
@@ -96,8 +104,13 @@ const getCategories = cache(async (): Promise<BlogCategoryData[]> => {
       totalViews: cat.totalViews,
       createdAt: cat.createdAt.toISOString()
     }))
-  } catch {
-    // Database not available - return empty array
+  } catch (error) {
+    if (process.env.NEXT_PHASE !== 'phase-production-build') {
+      logger.error(
+        'Blog categories query failed',
+        error instanceof Error ? error : new Error(String(error))
+      )
+    }
     return []
   }
 })

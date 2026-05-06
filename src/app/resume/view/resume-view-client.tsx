@@ -43,7 +43,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
               Richard Hudson - Resume
             </h1>
             <p className="text-lg text-muted-foreground mb-8">
-              Revenue Operations Professional | Plano, TX
+              Revenue Operations Professional | Dallas, TX
             </p>
 
             {/* Action Buttons */}

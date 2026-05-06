@@ -28,4 +28,5 @@ Sentry.init({
   tracesSampleRate,
   profilesSampleRate,
   sendDefaultPii: process.env.SENTRY_SEND_DEFAULT_PII === 'true',
+  ignoreErrors: [/^NEXT_REDIRECT/, /^NEXT_NOT_FOUND$/, /^NEXT_HTTP_ERROR_FALLBACK$/],
 })

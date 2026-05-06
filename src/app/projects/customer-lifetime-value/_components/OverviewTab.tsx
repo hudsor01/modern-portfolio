@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { safeLazy } from '@/lib/safe-lazy'
 
 
 function ChartLoadError() {
@@ -12,7 +13,7 @@ function ChartLoadError() {
 }
 
 const CLVPredictionChart = dynamic(
-  () => import('./CLVPredictionChart').catch(() => ({ default: ChartLoadError })),
+  safeLazy(() => import('./CLVPredictionChart'), 'CLVPredictionChart', ChartLoadError),
   {
     loading: () => <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />,
     ssr: false
@@ -20,7 +21,7 @@ const CLVPredictionChart = dynamic(
 )
 
 const CLVTrendChart = dynamic(
-  () => import('./CLVTrendChart').catch(() => ({ default: ChartLoadError })),
+  safeLazy(() => import('./CLVTrendChart'), 'CLVTrendChart', ChartLoadError),
   {
     loading: () => <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />,
     ssr: false

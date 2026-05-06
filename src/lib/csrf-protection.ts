@@ -1,5 +1,8 @@
 import { cookies } from 'next/headers'
 import crypto from 'crypto'
+import { createContextLogger } from '@/lib/logger'
+
+const logger = createContextLogger('CSRFProtection')
 
 const CSRF_TOKEN_LENGTH = 32
 const CSRF_TOKEN_NAME = '__csrf_token'
@@ -97,7 +100,12 @@ export async function csrfProtectionMiddleware(
         const tokenValue = formData.get('_csrf_token')
         requestToken = tokenValue ? String(tokenValue) : undefined
       }
-    } catch (_error) {
+    } catch (error) {
+      // CSRF body-parse failures are security-adjacent — surface as warn so
+      // they reach Sentry without raising exception-grouping severity.
+      logger.warn('CSRF body parse failed', {
+        error: error instanceof Error ? error.message : String(error),
+      })
       return {
         valid: false,
         error: 'Failed to parse request body for CSRF token',

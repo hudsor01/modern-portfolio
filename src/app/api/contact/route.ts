@@ -5,6 +5,9 @@ import { contactFormSchema } from '@/lib/schemas'
 import { escapeHtml } from '@/lib/sanitization'
 import { env } from '@/lib/env-validation'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
+import { createContextLogger } from '@/lib/logger'
+
+const logger = createContextLogger('ContactAPI')
 
 let resend: Resend | null = null
 
@@ -70,6 +73,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    logger.error(
+      'Contact API submission failed',
+      error instanceof Error ? error : new Error(String(error))
+    )
     return NextResponse.json(
       { success: false, error: 'Error processing form' },
       { status: 500 }

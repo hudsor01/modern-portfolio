@@ -142,8 +142,19 @@ export function safeJsonParse<T>(json: string, schema: z.ZodSchema<T>, fallback:
     const parsed = JSON.parse(json)
     return schema.parse(parsed)
   } catch {
+    // Silent by contract — caller chose `fallback` precisely because they
+    // expect malformed input. Logging here would just create noise.
     return fallback
   }
+}
+
+/**
+ * Escape regex metacharacters in a string so it can be embedded literally
+ * in a `new RegExp(...)` source. Required whenever the source is built from
+ * user input — otherwise an unescaped `(`, `[`, `\`, etc. throws SyntaxError.
+ */
+export function escapeRegExp(input: string): string {
+  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 export function isInViewport(element: HTMLElement, offset = 0): boolean {
