@@ -87,7 +87,7 @@ const BENTO_FEATURES = [
 const PERSONAL_INFO = {
   name: 'Richard Hudson',
   title: 'Revenue Operations Professional',
-  location: 'Plano, TX • Serving Dallas-Fort Worth Metroplex • Remote & On-Site Available',
+  location: 'Dallas, TX • Serving Dallas-Fort Worth Metroplex • Remote & On-Site Available',
   email: 'contact@richardwhudsonjr.com',
   bio: `Started my career untangling spreadsheet chaos at a 50-person startup. Built my first automated pipeline with zero engineering support—just Excel, determination, and 3 YouTube tutorials. That pipeline now processes $4.8M+ annually.
 
@@ -95,7 +95,7 @@ Today, I architect revenue operations systems that transform data overwhelm into
 
 SalesLoft Admin certified (Level 1 & 2), HubSpot Revenue Operations certified, and obsessed with making complex systems feel simple. I specialize in the messy middle—where sales meets marketing meets customer success—and everything needs to actually work together.`,
   highlights: [
-    'Based in Plano, TX with deep knowledge of Dallas-Fort Worth business ecosystem and market dynamics',
+    'Based in Dallas, TX with deep knowledge of Dallas-Fort Worth business ecosystem and market dynamics',
     'SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified professional',
     'Specialized in revenue operations and growth analytics with proven $4.8M+ revenue generation track record',
     'Expert in partnership program development and implementation with 432% growth achievements',
@@ -111,7 +111,7 @@ SalesLoft Admin certified (Level 1 & 2), HubSpot Revenue Operations certified, a
 export const dynamic = 'force-static'
 export const metadata: Metadata = generateMetadata(
   'About Richard Hudson | Revenue Operations Professional | Dallas-Fort Worth',
-  'Richard Hudson - Plano, Texas Revenue Operations Professional serving Dallas-Fort Worth metroplex with 10+ years experience. SalesLoft Admin certified (Level 1 & 2) and HubSpot Revenue Operations certified. Partnership program implementation specialist with system integration experience. Expert in data analytics, process automation, and CRM optimization. $4.8M+ revenue generated across 10+ projects, 432% transaction growth achieved.',
+  'Richard Hudson - Dallas, Texas Revenue Operations Professional serving Dallas-Fort Worth metroplex with 10+ years experience. SalesLoft Admin certified (Level 1 & 2) and HubSpot Revenue Operations certified. Partnership program implementation specialist with system integration experience. Expert in data analytics, process automation, and CRM optimization. $4.8M+ revenue generated across 10+ projects, 432% transaction growth achieved.',
   '/about'
 )
 
@@ -133,7 +133,7 @@ export default function AboutPage() {
         },
         {
           question: 'Where is Richard Hudson located?',
-          answer: 'Richard is based in Plano, Texas, serving the Dallas-Fort Worth metroplex area.',
+          answer: 'Richard is based in Dallas, Texas, serving the Dallas-Fort Worth metroplex area.',
         },
       ]} />
       <BreadcrumbListJsonLd items={[

@@ -2,6 +2,7 @@
 
 import type { ComponentType, SVGProps } from 'react'
 import dynamic from 'next/dynamic'
+import { safeLazy } from '@/lib/safe-lazy'
 
 function ChartLoadError() {
   return (
@@ -12,7 +13,7 @@ function ChartLoadError() {
 }
 
 const LeadSourcePieChart = dynamic(
-  () => import('./LeadSourcePieChart').catch(() => ({ default: ChartLoadError })),
+  safeLazy(() => import('./LeadSourcePieChart'), 'LeadSourcePieChart', ChartLoadError),
   {
     loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
     ssr: false

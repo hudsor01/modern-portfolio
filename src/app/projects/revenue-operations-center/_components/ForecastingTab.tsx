@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { safeLazy } from '@/lib/safe-lazy'
 
 
 function ChartLoadError() {
@@ -12,7 +13,7 @@ function ChartLoadError() {
 }
 
 const ForecastAccuracyChart = dynamic(
-  () => import('./ForecastAccuracyChart').catch(() => ({ default: ChartLoadError })),
+  safeLazy(() => import('./ForecastAccuracyChart'), 'ForecastAccuracyChart', ChartLoadError),
   {
     loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
     ssr: false

@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { safeLazy } from '@/lib/safe-lazy'
 
 import { customerSegments } from '../data/constants'
 import { formatCurrency, formatPercent } from '../utils'
@@ -14,7 +15,7 @@ function ChartLoadError() {
 }
 
 const CustomerSegmentChart = dynamic(
-  () => import('./CustomerSegmentChart').catch(() => ({ default: ChartLoadError })),
+  safeLazy(() => import('./CustomerSegmentChart'), 'CustomerSegmentChart', ChartLoadError),
   {
     loading: () => <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />,
     ssr: false

@@ -155,6 +155,10 @@ export async function checkDBHealth() {
     await db.$queryRaw`SELECT 1`
     return { status: 'healthy', timestamp: new Date().toISOString() }
   } catch (error) {
+    logger.error(
+      'checkDBHealth probe failed',
+      error instanceof Error ? error : new Error(String(error))
+    )
     return {
       status: 'unhealthy',
       error: error instanceof Error ? error.message : 'Unknown error',
