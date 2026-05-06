@@ -4,7 +4,6 @@ import { useEffect, useState, useRef } from 'react'
 
 import { toast } from 'sonner'
 import { Navbar } from '@/components/layout/navbar'
-import { Footer } from '@/components/layout/footer'
 import { ResumeViewer } from '../resume-viewer'
 import { createContextLogger } from '@/lib/logger'
 import { useInView } from '@/hooks/use-in-view'
@@ -99,7 +98,6 @@ export default function ResumePageContent() {
           )}
         </div>
       </main>
-      <Footer />
     </>
   )
 }

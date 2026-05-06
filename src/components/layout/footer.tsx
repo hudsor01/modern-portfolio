@@ -1,20 +1,5 @@
-'use client'
-
-import { usePathname } from 'next/navigation'
-
 export function Footer() {
   const currentYear = new Date().getFullYear()
-  const pathname = usePathname()
-
-  // Only show footer on specific pages
-  const showFooter =
-    pathname === '/about' ||
-    pathname === '/contact' ||
-    pathname === '/projects' ||
-    pathname.startsWith('/projects/') ||
-    pathname === '/resume'
-
-  if (!showFooter) return null
 
   return (
     <footer className="bg-card border-t border-border py-4">

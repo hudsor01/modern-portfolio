@@ -3,7 +3,6 @@ export const dynamic = 'force-static'
 import { headers } from 'next/headers'
 import { generateMetadata as genMeta } from '@/app/shared-metadata'
 import { Navbar } from '@/components/layout/navbar'
-import { Footer } from '@/components/layout/footer'
 import { ErrorBoundary } from '@/components/error/error-boundary'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { ItemListJsonLd } from '@/components/seo/json-ld/item-list-json-ld'
@@ -39,7 +38,6 @@ export default async function ProjectsPage() {
       />
       <Navbar />
       <ProjectsPageContent initialProjects={projects} />
-      <Footer />
     </ErrorBoundary>
   )
 }

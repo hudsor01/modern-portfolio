@@ -3,7 +3,6 @@ import { cache } from 'react'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { Navbar } from '@/components/layout/navbar'
-import { Footer } from '@/components/layout/footer'
 import { BlogPostLayout } from '../_components/blog-post-layout'
 import { BlogPostJsonLd } from '@/components/seo/blog-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
@@ -157,7 +156,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <BlogPostLayout post={post} />
           </div>
         </main>
-        <Footer />
       </div>
     </>
   )
