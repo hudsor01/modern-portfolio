@@ -6,6 +6,7 @@
 import { db } from '@/lib/db'
 import { Prisma } from '@/generated/prisma/client'
 import { logger } from '@/lib/logger'
+import { escapeRegExp } from '@/lib/utils'
 
 export interface SearchResult {
   id: string
@@ -128,7 +129,10 @@ export function highlightSearchTerms(text: string, query: string): string {
   let highlighted = text
 
   for (const term of terms) {
-    const regex = new RegExp(`(${term})`, 'gi')
+    // Escape regex metacharacters — terms come from user query strings, so
+    // an unescaped `(`, `[`, `\`, `?`, etc. would throw SyntaxError and
+    // bubble up through highlightSearchTerms callers.
+    const regex = new RegExp(`(${escapeRegExp(term)})`, 'gi')
     highlighted = highlighted.replace(regex, '<mark>$1</mark>')
   }
 
