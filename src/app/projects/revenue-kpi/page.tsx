@@ -58,6 +58,8 @@ export default async function RevenueKPI() {
         description="Real-time revenue analytics dashboard featuring partner performance metrics, growth trends, and business intelligence for data-driven decision making. Built with React, TypeScript, and Recharts."
         slug="revenue-kpi"
         category="Business Intelligence"
+        datePublished="2025-03-05"
+        dateModified="2026-01-15"
         tags={[
           'Revenue Analytics',
           'Partner Management',

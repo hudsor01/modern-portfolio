@@ -16,8 +16,7 @@
     {
       "source": "/twitter",
       "destination": "https://twitter.com/hudsor01"
-    },
-    { "source": "/dashboard", "destination": "/", "permanent": true }
+    }
   ],
   "rewrites": []
 }

@@ -41,7 +41,7 @@ export default async function QuotaTerritoryManagementPage() {
         items={[
           { name: 'Home', url: 'https://richardwhudsonjr.com' },
           { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
-          { name: 'Quota & Territory Management', url: 'https://richardwhudsonjr.com/projects/quota-territory-management' },
+          { name: 'Intelligent Quota & Territory Planning', url: 'https://richardwhudsonjr.com/projects/quota-territory-management' },
         ]}
       />
       <QuotaTerritoryPageContent />

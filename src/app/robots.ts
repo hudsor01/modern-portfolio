@@ -97,6 +97,8 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: 'https://richardwhudsonjr.com/sitemap.xml',
-    host: 'https://richardwhudsonjr.com',
+    // No `host` field — Google deprecated it in 2018; only Yandex still
+    // honors it, and the canonical hostname is already enforced via the
+    // sitemap URL above plus `alternates.canonical` on every page.
   }
 }
