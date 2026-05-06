@@ -100,6 +100,13 @@ export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
       '432% Transaction Growth Achieved',
       '2,217% Network Expansion',
     ],
+    alumniOf: [
+      {
+        '@type': 'CollegeOrUniversity',
+        name: 'The University of Texas at Dallas',
+        url: 'https://www.utdallas.edu',
+      },
+    ],
     memberOf: [
       {
         '@type': 'ProfessionalService',
