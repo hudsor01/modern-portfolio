@@ -210,7 +210,7 @@ export default function HomePageContent() {
                     <div>
                       <h2 className="text-2xl font-bold text-foreground">Richard Hudson</h2>
                       <p className="text-muted-foreground font-medium">Revenue Operations</p>
-                      <p className="text-sm text-muted-foreground mt-1">Plano, TX</p>
+                      <p className="text-sm text-muted-foreground mt-1">Dallas, TX</p>
                     </div>
                   </div>
 
@@ -437,7 +437,7 @@ export default function HomePageContent() {
               </div>
             </div>
             <p className="text-muted-foreground text-sm">
-              Based in Plano, TX • Open to remote opportunities
+              Based in Dallas, TX • Open to remote opportunities
             </p>
           </div>
         </div>
