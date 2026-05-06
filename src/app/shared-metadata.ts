@@ -7,14 +7,13 @@ export const baseMetadata: Metadata = {
     template: '%s | Richard Hudson',
   },
   description:
-    'Revenue Operations Professional Richard Hudson specializes in sales automation, CRM optimization, and partnership program development across Dallas-Fort Worth metroplex. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. $4.8M+ revenue impact, 432% growth achieved. Available for professional opportunities in Dallas, Fort Worth, Plano, Frisco, and surrounding DFW areas.',
+    'Revenue Operations Professional Richard Hudson specializes in sales automation, CRM optimization, and partnership program development across Dallas-Fort Worth metroplex. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. $4.8M+ revenue impact, 432% growth achieved. Available for professional opportunities in Dallas, Fort Worth, Frisco, and surrounding DFW areas.',
   keywords: [
     'revenue operations professional',
     'revenue operations specialist',
     'RevOps professional',
     'Dallas RevOps professional',
     'Fort Worth RevOps professional',
-    'Plano RevOps professional',
     'Frisco RevOps professional',
     'DFW RevOps professional',
     'business optimization',
@@ -46,7 +45,7 @@ export const baseMetadata: Metadata = {
     siteName: 'Richard Hudson',
     title: 'Richard Hudson | Revenue Operations Professional',
     description:
-      'Revenue Operations Professional Richard Hudson specializes in sales automation, CRM optimization, and partnership program development across Dallas-Fort Worth metroplex. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. $4.8M+ revenue impact, 432% growth achieved. Available for professional opportunities in Dallas, Fort Worth, Plano, Frisco, and surrounding DFW areas.',
+      'Revenue Operations Professional Richard Hudson specializes in sales automation, CRM optimization, and partnership program development across Dallas-Fort Worth metroplex. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. $4.8M+ revenue impact, 432% growth achieved. Available for professional opportunities in Dallas, Fort Worth, Frisco, and surrounding DFW areas.',
     url: 'https://richardwhudsonjr.com',
     images: [
       {
@@ -62,7 +61,7 @@ export const baseMetadata: Metadata = {
     creator: '@hudsor01',
     title: 'Richard Hudson | Revenue Operations Professional',
     description:
-      'Revenue Operations Professional Richard Hudson specializes in sales automation, CRM optimization, and partnership program development across Dallas-Fort Worth metroplex. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. $4.8M+ revenue impact, 432% growth achieved. Available for professional opportunities in Dallas, Fort Worth, Plano, Frisco, and surrounding DFW areas.',
+      'Revenue Operations Professional Richard Hudson specializes in sales automation, CRM optimization, and partnership program development across Dallas-Fort Worth metroplex. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. $4.8M+ revenue impact, 432% growth achieved. Available for professional opportunities in Dallas, Fort Worth, Frisco, and surrounding DFW areas.',
     images: ['/images/richard.jpg'],
   },
   robots: {

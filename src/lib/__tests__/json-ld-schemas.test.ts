@@ -26,10 +26,10 @@ function buildPersonJsonLd() {
     ],
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'Plano Business District',
-      addressLocality: 'Plano',
+      streetAddress: 'Dallas Business District',
+      addressLocality: 'Dallas',
       addressRegion: 'TX',
-      postalCode: '75023',
+      postalCode: '75201',
       addressCountry: 'US',
     },
     email: 'contact@richardwhudsonjr.com',
