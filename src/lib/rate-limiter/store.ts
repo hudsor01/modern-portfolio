@@ -522,7 +522,9 @@ export class RateLimiter implements Disposable {
     }
 
     // Batch delete expired records
-    keysToDelete.forEach((key) => this.store.delete(key))
+    keysToDelete.forEach((key) => {
+      this.store.delete(key)
+    })
 
     if (keysToDelete.length > 0) {
       logger.debug('Rate limiter cleanup', {

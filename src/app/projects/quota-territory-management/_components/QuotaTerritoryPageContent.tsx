@@ -1,7 +1,7 @@
 'use client'
 export const dynamic = 'force-static'
 
-import { TrendingUp, Map, Database, Zap } from 'lucide-react'
+import { TrendingUp, Map as MapIcon, Database, Zap } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
@@ -32,7 +32,7 @@ export default function QuotaTerritoryManagementProject() {
     },
     {
       id: 'territories-optimized',
-      icon: Map,
+      icon: MapIcon,
       label: 'Territories',
       value: formatNumber(47),
       subtitle: 'Optimized',

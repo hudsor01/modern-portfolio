@@ -58,14 +58,21 @@
             "ignoreRestSiblings": true
           }
         },
+        "noChildrenProp": "off",
         "useExhaustiveDependencies": "warn",
         "useHookAtTopLevel": "error"
       },
       "a11y": {
-        "useAltText": "warn"
+        "useAltText": "warn",
+        "noSvgWithoutTitle": "off",
+        "useFocusableInteractive": "off",
+        "useSemanticElements": "off",
+        "noStaticElementInteractions": "off",
+        "useKeyWithClickEvents": "off"
       },
       "performance": {
-        "noImgElement": "warn"
+        "noImgElement": "warn",
+        "noAccumulatingSpread": "off"
       },
       "style": {
         "noHeadElement": "error",

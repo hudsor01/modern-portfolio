@@ -13,6 +13,7 @@ export function BlogTagFilter({ tags, selectedTag, tagCounts, onTagChange }: Tag
       {tags.map((tag) => (
         <button
           key={tag}
+          type="button"
           onClick={() => onTagChange(tag)}
           className={`
             inline-flex items-center gap-2 px-4 py-2 rounded-full text-size-sm font-medium
