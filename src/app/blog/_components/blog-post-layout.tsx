@@ -57,9 +57,14 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
               {/* Category + Date */}
               <div className="flex flex-wrap items-center gap-3 text-body-sm text-muted-foreground">
                 {post.category && (
-                  <Badge variant="secondary" className="uppercase tracking-wide text-[0.7rem]">
-                    {post.category.name}
-                  </Badge>
+                  <Link
+                    href={`/blog/category/${post.category.slug}`}
+                    className="hover:opacity-80 transition-opacity"
+                  >
+                    <Badge variant="secondary" className="uppercase tracking-wide text-[0.7rem]">
+                      {post.category.name}
+                    </Badge>
+                  </Link>
                 )}
                 {publishedDate && (
                   <span className="inline-flex items-center gap-2">

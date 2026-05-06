@@ -146,5 +146,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     blogPages = []
   }
 
-  return [...mainPages, ...projectPages, ...blogPages]
+  // Blog category pages — only those with published posts.
+  let categoryPages: MetadataRoute.Sitemap
+  try {
+    const { db } = await import('@/lib/db')
+    const categories = await db.category.findMany({
+      where: { posts: { some: { status: 'PUBLISHED', deletedAt: null } } },
+      select: { slug: true, updatedAt: true },
+    })
+    categoryPages = categories.map((cat) => ({
+      url: `${baseUrl}/blog/category/${cat.slug}`,
+      lastModified: cat.updatedAt?.toISOString() || fallbackDate,
+      changeFrequency: 'weekly' as const,
+      priority: 0.6,
+    }))
+  } catch (error) {
+    logger.warn('Sitemap category query failed; skipping category entries', {
+      error: error instanceof Error ? error.message : String(error),
+    })
+    categoryPages = []
+  }
+
+  return [...mainPages, ...projectPages, ...blogPages, ...categoryPages]
 }
