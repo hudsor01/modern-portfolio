@@ -58,7 +58,7 @@ export interface ContactFormErrors {
 export type SubmitStatus = 'idle' | 'submitting' | 'success' | 'error'
 
 export interface UseContactFormReturn {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: TanStack Form generic field shape requires any for cross-form typing
   form: any
   formData: ContactFormData
   errors: ContactFormErrors
