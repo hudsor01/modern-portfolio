@@ -85,37 +85,37 @@ export default function MultiChannelAttribution() {
       activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
       onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
     >
-          {/* Key Metrics using standardized MetricsGrid */}
-          <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
+      {/* Key Metrics using standardized MetricsGrid */}
+      <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
-          {/* Tab Content wrapped in SectionCard */}
-          <SectionCard
-            title="Attribution Analysis"
-            description="Detailed multi-channel attribution analysis and insights"
-            className="mb-8"
-          >
-            {activeTab === 'overview' && <OverviewTab />}
-            {activeTab === 'models' && <ModelsTab />}
-            {activeTab === 'journeys' && <JourneysTab />}
-            {activeTab === 'channels' && <ChannelsTab />}
-          </SectionCard>
+      {/* Tab Content wrapped in SectionCard */}
+      <SectionCard
+        title="Attribution Analysis"
+        description="Detailed multi-channel attribution analysis and insights"
+        className="mb-8"
+      >
+        {activeTab === 'overview' && <OverviewTab />}
+        {activeTab === 'models' && <ModelsTab />}
+        {activeTab === 'journeys' && <JourneysTab />}
+        {activeTab === 'channels' && <ChannelsTab />}
+      </SectionCard>
 
-          {/* Strategic Impact wrapped in SectionCard */}
-          <SectionCard
-            title="Strategic Impact"
-            description="Business impact and strategic outcomes from attribution optimization"
-            className="mb-8"
-          >
-            <StrategicImpact />
-          </SectionCard>
+      {/* Strategic Impact wrapped in SectionCard */}
+      <SectionCard
+        title="Strategic Impact"
+        description="Business impact and strategic outcomes from attribution optimization"
+        className="mb-8"
+      >
+        <StrategicImpact />
+      </SectionCard>
 
-          {/* Professional Narrative Sections wrapped in SectionCard */}
-          <SectionCard
-            title="Project Narrative"
-            description="Comprehensive case study following the STAR methodology"
-          >
-            <NarrativeSections />
-          </SectionCard>
+      {/* Professional Narrative Sections wrapped in SectionCard */}
+      <SectionCard
+        title="Project Narrative"
+        description="Comprehensive case study following the STAR methodology"
+      >
+        <NarrativeSections />
+      </SectionCard>
     </ProjectPageLayout>
   )
 }

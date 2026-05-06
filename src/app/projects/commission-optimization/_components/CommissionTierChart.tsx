@@ -2,7 +2,16 @@
 import { memo } from 'react'
 
 import { LazyComposedChart as ComposedChart } from '@/components/charts/lazy-charts'
-import { Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
+import {
+  Bar,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Legend,
+} from 'recharts'
 import { chartColors as baseChartColors, chartCssVars } from '@/lib/charts'
 
 // Commission tier performance data

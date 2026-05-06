@@ -4,7 +4,12 @@
  */
 
 import { logger } from '@/lib/logger'
-import type { RateLimitRecord, RateLimitConfig, RateLimitAnalytics, RateLimitResult } from '@/types/security'
+import type {
+  RateLimitRecord,
+  RateLimitConfig,
+  RateLimitAnalytics,
+  RateLimitResult,
+} from '@/types/security'
 import { securityConfig } from '@/lib/security'
 
 // Memory management constants from centralized configuration
@@ -131,8 +136,7 @@ export class RateLimiter implements Disposable {
     if (config.progressivePenalty && record.penalties > 0) {
       const penaltyMultiplier = record.suspicious ? 2 : 1
       const blockUntil =
-        record.lastAttempt +
-        config.blockDuration * Math.pow(2, record.penalties - 1) * penaltyMultiplier
+        record.lastAttempt + config.blockDuration * 2 ** (record.penalties - 1) * penaltyMultiplier
 
       if (now < blockUntil) {
         this.analytics.blockedRequests++
@@ -176,7 +180,7 @@ export class RateLimiter implements Disposable {
       const penaltyMultiplier = record.suspicious ? 2 : 1
       const retryAfter = config.progressivePenalty
         ? record.lastAttempt +
-          config.blockDuration * Math.pow(2, record.penalties - 1) * penaltyMultiplier
+          config.blockDuration * 2 ** (record.penalties - 1) * penaltyMultiplier
         : record.resetTime
 
       this.analytics.blockedRequests++
@@ -239,7 +243,7 @@ export class RateLimiter implements Disposable {
         // Check for uniform intervals (bot behavior)
         const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length
         const variance =
-          intervals.reduce((sum, interval) => sum + Math.pow(interval - avgInterval, 2), 0) /
+          intervals.reduce((sum, interval) => sum + (interval - avgInterval) ** 2, 0) /
           intervals.length
         const standardDeviation = Math.sqrt(variance)
 
@@ -371,7 +375,7 @@ export class RateLimiter implements Disposable {
     // Update top clients
     this.analytics.topClients = activeRecords
       .map(([identifier, record]) => ({
-        identifier: identifier.substring(0, 20) + '...', // Anonymize
+        identifier: `${identifier.substring(0, 20)}...`, // Anonymize
         requests: record.count,
         blocked: record.penalties > 0,
       }))
@@ -518,7 +522,9 @@ export class RateLimiter implements Disposable {
     }
 
     // Batch delete expired records
-    keysToDelete.forEach((key) => this.store.delete(key))
+    keysToDelete.forEach((key) => {
+      this.store.delete(key)
+    })
 
     if (keysToDelete.length > 0) {
       logger.debug('Rate limiter cleanup', {

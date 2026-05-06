@@ -2,7 +2,6 @@
 
 import { Zap, Shield, CheckCircle } from 'lucide-react'
 import { Navbar } from '@/components/layout/navbar'
-import { Footer } from '@/components/layout/footer'
 import { ContactForm } from '@/components/contact/contact-form'
 import { ContactInfo } from '@/components/contact/contact-info'
 import { FeaturedProjects } from '@/components/contact/featured-projects'
@@ -71,7 +70,6 @@ export default function ContactPageClient() {
           </div>
         </section>
       </main>
-      <Footer />
     </>
   )
 }

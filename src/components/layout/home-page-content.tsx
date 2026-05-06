@@ -2,7 +2,16 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight, Briefcase, FileText, MessageCircle, TrendingUp, Users, DollarSign, Clock } from 'lucide-react'
+import {
+  ArrowRight,
+  Briefcase,
+  FileText,
+  MessageCircle,
+  TrendingUp,
+  Users,
+  DollarSign,
+  Clock,
+} from 'lucide-react'
 import { Navbar } from '@/components/layout/navbar'
 import { NumberTicker } from '@/components/ui/number-ticker'
 import { Button } from '@/components/ui/button'
@@ -112,7 +121,8 @@ export default function HomePageContent() {
           <div
             className="absolute inset-0 opacity-[0.015]"
             style={{
-              backgroundImage: 'linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)',
+              backgroundImage:
+                'linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)',
               backgroundSize: '100px 100px',
             }}
           />
@@ -121,7 +131,9 @@ export default function HomePageContent() {
         <div className="w-full max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Left Column - Content */}
-            <div className={`space-y-8 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <div
+              className={`space-y-8 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            >
               {/* Eyebrow */}
               <div
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium transition-all duration-700 delay-100 ${mounted ? 'opacity-100' : 'opacity-0'}`}
@@ -147,8 +159,8 @@ export default function HomePageContent() {
                   className={`text-xl md:text-2xl text-muted-foreground max-w-lg leading-relaxed transition-all duration-700 delay-300 ${mounted ? 'opacity-100' : 'opacity-0'}`}
                 >
                   Data-driven strategies that deliver{' '}
-                  <span className="text-accent font-semibold">measurable impact</span>
-                  {' '}and scalable growth.
+                  <span className="text-accent font-semibold">measurable impact</span> and scalable
+                  growth.
                 </p>
               </div>
 
@@ -163,13 +175,23 @@ export default function HomePageContent() {
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-14 px-8 text-base font-semibold">
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="h-14 px-8 text-base font-semibold"
+                >
                   <Link href="/resume">
                     <FileText className="w-5 h-5" />
                     Resume
                   </Link>
                 </Button>
-                <Button asChild variant="ghost" size="lg" className="h-14 px-8 text-base font-semibold">
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="lg"
+                  className="h-14 px-8 text-base font-semibold"
+                >
                   <Link href="/contact">
                     <MessageCircle className="w-5 h-5" />
                     Let's Talk
@@ -218,28 +240,34 @@ export default function HomePageContent() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-muted/50 rounded-xl p-4 text-center">
                       <div className="text-2xl font-bold text-primary">$4.8M+</div>
-                      <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">Revenue Impact</div>
+                      <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
+                        Revenue Impact
+                      </div>
                     </div>
                     <div className="bg-muted/50 rounded-xl p-4 text-center">
                       <div className="text-2xl font-bold text-secondary">432%</div>
-                      <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">Growth Delivered</div>
+                      <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
+                        Growth Delivered
+                      </div>
                     </div>
                     <div className="bg-muted/50 rounded-xl p-4 text-center">
                       <div className="text-2xl font-bold text-accent">2,217%</div>
-                      <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">Network Growth</div>
+                      <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
+                        Network Growth
+                      </div>
                     </div>
                     <div className="bg-muted/50 rounded-xl p-4 text-center">
                       <div className="text-2xl font-bold text-foreground">10+</div>
-                      <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">Years Experience</div>
+                      <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
+                        Years Experience
+                      </div>
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
           </div>
         </div>
-
       </section>
 
       {/* Impact Section */}
@@ -284,13 +312,7 @@ export default function HomePageContent() {
               icon={Users}
               delay={0.2}
             />
-            <ImpactMetric
-              value={10}
-              suffix="+"
-              label="Years Experience"
-              icon={Clock}
-              delay={0.3}
-            />
+            <ImpactMetric value={10} suffix="+" label="Years Experience" icon={Clock} delay={0.3} />
           </div>
         </div>
       </section>
@@ -343,7 +365,9 @@ export default function HomePageContent() {
                   <div className="w-3 h-3 rounded-full bg-primary" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Data-Driven Insights</h3>
-                <p className="text-muted-foreground">Transform raw data into actionable intelligence that drives revenue decisions.</p>
+                <p className="text-muted-foreground">
+                  Transform raw data into actionable intelligence that drives revenue decisions.
+                </p>
               </div>
 
               <div className="group p-6 bg-card border border-border rounded-2xl hover:border-secondary/30 hover:shadow-lg transition-all duration-300">
@@ -351,7 +375,9 @@ export default function HomePageContent() {
                   <div className="w-3 h-3 rounded-full bg-secondary" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Process Automation</h3>
-                <p className="text-muted-foreground">Eliminate manual work and scale operations with intelligent automation.</p>
+                <p className="text-muted-foreground">
+                  Eliminate manual work and scale operations with intelligent automation.
+                </p>
               </div>
 
               <div className="group p-6 bg-card border border-border rounded-2xl hover:border-accent/30 hover:shadow-lg transition-all duration-300">
@@ -359,7 +385,9 @@ export default function HomePageContent() {
                   <div className="w-3 h-3 rounded-full bg-accent" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">System Integration</h3>
-                <p className="text-muted-foreground">Connect your tech stack for seamless data flow and unified reporting.</p>
+                <p className="text-muted-foreground">
+                  Connect your tech stack for seamless data flow and unified reporting.
+                </p>
               </div>
             </div>
           </div>
@@ -383,8 +411,8 @@ export default function HomePageContent() {
                 <span className="text-primary">revenue operations?</span>
               </h2>
               <p className="text-lg text-muted-foreground mt-4 max-w-2xl mx-auto">
-                Whether you're scaling a startup or optimizing enterprise operations,
-                let's discuss how I can help drive measurable growth.
+                Whether you're scaling a startup or optimizing enterprise operations, let's discuss
+                how I can help drive measurable growth.
               </p>
             </div>
 
@@ -397,7 +425,12 @@ export default function HomePageContent() {
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="h-14 px-8 text-base font-semibold">
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="h-14 px-8 text-base font-semibold"
+              >
                 <Link href="/resume">
                   <FileText className="w-5 h-5" />
                   View Resume

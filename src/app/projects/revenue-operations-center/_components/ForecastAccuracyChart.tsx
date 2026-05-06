@@ -2,7 +2,16 @@
 import { memo } from 'react'
 
 import { LazyComposedChart as ComposedChart } from '@/components/charts/lazy-charts'
-import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Area } from 'recharts'
+import {
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Legend,
+  Area,
+} from 'recharts'
 import { chartColors as baseChartColors, chartCssVars } from '@/lib/charts'
 
 // Forecast accuracy data with confidence intervals

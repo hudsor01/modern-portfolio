@@ -4,7 +4,7 @@
  */
 
 import type { BlogPost, Author, Category, Tag, PostTag } from '@/generated/prisma/client'
-import { Prisma } from '@/generated/prisma/client'
+import type { Prisma } from '@/generated/prisma/client'
 
 // Re-export Prisma types for convenience
 export type { BlogPost, Author, Category, Tag, PostTag }

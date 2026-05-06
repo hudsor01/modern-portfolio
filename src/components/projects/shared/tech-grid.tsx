@@ -10,11 +10,7 @@ export interface TechGridProps {
   className?: string
 }
 
-export function TechGrid({
-  technologies,
-  title = 'Technologies Used',
-  className,
-}: TechGridProps) {
+export function TechGrid({ technologies, title = 'Technologies Used', className }: TechGridProps) {
   return (
     <div
       className={cn(

@@ -28,20 +28,21 @@ const envSchema = z.object({
   NEXT_PUBLIC_VERCEL_URL: z.string().optional(),
   VERCEL_URL: z.string().optional(),
   // Optional security variables (not used in this project)
-  JWT_SECRET: z.string()
+  JWT_SECRET: z
+    .string()
     .min(32, 'JWT_SECRET must be at least 32 characters for security')
     .max(512, 'JWT_SECRET must not exceed 512 characters')
     .optional(),
-  JWT_EXPIRES_IN: z.string()
+  JWT_EXPIRES_IN: z
+    .string()
     .regex(/^\d+[smhd]$/, 'JWT_EXPIRES_IN must be in format: 1h, 30m, 7d, etc.')
     .optional(),
-  ADMIN_API_TOKEN: z.string()
-    .min(32, 'ADMIN_API_TOKEN must be at least 32 characters')
-    .optional(),
+  ADMIN_API_TOKEN: z.string().min(32, 'ADMIN_API_TOKEN must be at least 32 characters').optional(),
   // Production seed gate — /api/seed returns 404 in production unless set to 'true'
   ALLOW_SEED_IN_PRODUCTION: z.enum(['true', 'false']).optional(),
   // Metrics API authentication
-  METRICS_API_TOKEN: z.string()
+  METRICS_API_TOKEN: z
+    .string()
     .min(32, 'METRICS_API_TOKEN must be at least 32 characters')
     .optional(),
   // Site URL validation for CSP and CORS
@@ -51,18 +52,28 @@ const envSchema = z.object({
       (url) => url.startsWith('https://') || process.env.NODE_ENV === 'development',
       'NEXT_PUBLIC_SITE_URL must use HTTPS in production'
     )
-    .default(process.env.NODE_ENV === 'production'
-      ? 'https://richardwhudsonjr.com'
-      : 'http://localhost:3000'
+    .default(
+      process.env.NODE_ENV === 'production'
+        ? 'https://richardwhudsonjr.com'
+        : 'http://localhost:3000'
     ),
   // CORS configuration
-  ALLOWED_ORIGINS: z.string()
+  ALLOWED_ORIGINS: z
+    .string()
     .optional()
-    .transform(val => val ? val.split(',').map(s => s.trim()).filter(Boolean) : []),
+    .transform((val) =>
+      val
+        ? val
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : []
+    ),
   // Local database toggle
-  USE_LOCAL_DB: z.string()
+  USE_LOCAL_DB: z
+    .string()
     .optional()
-    .transform(val => val === 'true'),
+    .transform((val) => val === 'true'),
 })
 
 export type EnvConfig = z.infer<typeof envSchema>
@@ -76,7 +87,9 @@ export function validateEnvironment(): EnvConfig {
     return envSchema.parse(process.env)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const missingVars = error.issues.map(err => `${err.path.join('.')}: ${err.message}`).join('\n')
+      const missingVars = error.issues
+        .map((err) => `${err.path.join('.')}: ${err.message}`)
+        .join('\n')
       throw new Error(`Environment validation failed:\n${missingVars}`, { cause: error })
     }
     throw error
@@ -105,7 +118,7 @@ export function performSecurityChecks(env: EnvConfig): void {
     if (env.JWT_SECRET && env.JWT_SECRET.length < 64) {
       warnings.push('Production JWT_SECRET should be at least 64 characters')
     }
-    
+
     if (env.ADMIN_API_TOKEN && env.ADMIN_API_TOKEN.length < 64) {
       warnings.push('Production ADMIN_API_TOKEN should be at least 64 characters')
     }
@@ -123,10 +136,10 @@ export function performSecurityChecks(env: EnvConfig): void {
   if (env.JWT_SECRET) {
     const weakPatterns = [
       /^(123|abc|test|dev|admin|password|secret|default)/i,
-      /^.{1,10}$/,  // Too short
-      /^(.)\1{10,}$/  // Repeated characters
+      /^.{1,10}$/, // Too short
+      /^(.)\1{10,}$/, // Repeated characters
     ]
-    
+
     weakPatterns.forEach((pattern, index) => {
       if (env.JWT_SECRET && pattern.test(env.JWT_SECRET)) {
         warnings.push(`JWT_SECRET appears to be weak (pattern ${index + 1})`)
@@ -141,7 +154,7 @@ export function performSecurityChecks(env: EnvConfig): void {
 
   // Throw on errors
   if (errors.length > 0) {
-    throw new Error(`Security validation failed:\n${errors.map(e => `  - ${e}`).join('\n')}`)
+    throw new Error(`Security validation failed:\n${errors.map((e) => `  - ${e}`).join('\n')}`)
   }
 }
 

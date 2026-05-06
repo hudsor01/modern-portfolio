@@ -4,7 +4,7 @@ Public portfolio + blog system for Richard Hudson. Next.js App Router, Prisma 7 
 
 ## Stack
 
-Runtime: Bun 1.3.6, Node `>=22 <25` (`package.json:6-9`). Next.js 16.2.3, React 19.2.5, TypeScript 5.9.3 (`strict`, `noUncheckedIndexedAccess`), Tailwind 4.2.2, Zod 4.3.5, Prisma 7.7.0 (driver-adapter pattern), `@sentry/nextjs` 10.34.0, Resend 6.7.0, Vitest 4.1.0, Playwright 1.57.0, ESLint 9 flat config, Lefthook 2.
+Runtime: Bun 1.3.6, Node `>=22 <25` (`package.json:6-9`). Next.js 16.2.3, React 19.2.5, TypeScript 5.9.3 (`strict`, `noUncheckedIndexedAccess`), Tailwind 4.2.2, Zod 4.3.5, Prisma 7.7.0 (driver-adapter pattern), `@sentry/nextjs` 10.34.0, Resend 6.7.0, Vitest 4.1.0, Playwright 1.57.0, Biome 2.4.14 (linter + formatter), Lefthook 2.
 
 ## Commands
 
@@ -14,7 +14,8 @@ Runtime: Bun 1.3.6, Node `>=22 <25` (`package.json:6-9`). Next.js 16.2.3, React 
 | `bun run build` | Prod build (Node-side `next build`) |
 | `bun run build:ci` | Same, but Bun-side (`bun --bun next build`) |
 | `bun start` | Prod server |
-| `bun run lint` / `lint:fix` | ESLint over `src/**` |
+| `bun run lint` / `lint:fix` | Biome check over `src/**` (lint + format) |
+| `bun run format` / `format:fix` | Biome format-only over `src/**` |
 | `bun run typecheck` | `tsc --noEmit` |
 | `bun run ci:quick` | lint + typecheck |
 | `bunx vitest run` (or `bun run test`) | Unit tests, jsdom |

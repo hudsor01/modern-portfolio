@@ -1,4 +1,4 @@
-import { MetadataRoute } from 'next'
+import type { MetadataRoute } from 'next'
 import { createContextLogger } from '@/lib/logger'
 
 const logger = createContextLogger('Sitemap')
@@ -12,8 +12,7 @@ export const revalidate = 3600
 // downweights sitemaps that lie about lastmod (Mueller, 2025). This pins
 // static-page lastmod to the deploy commit's author date when available
 // (Vercel-injected env var), falling back to process start.
-const STATIC_LAST_MODIFIED =
-  process.env.VERCEL_GIT_COMMIT_AUTHOR_DATE || new Date().toISOString()
+const STATIC_LAST_MODIFIED = process.env.VERCEL_GIT_COMMIT_AUTHOR_DATE || new Date().toISOString()
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://richardwhudsonjr.com'
@@ -77,7 +76,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     'forecast-pipeline-intelligence',
     'quota-territory-management',
     'sales-enablement',
-  ].map(project => ({
+  ].map((project) => ({
     url: `${baseUrl}/projects/${project}`,
     lastModified: staticLastModified,
     changeFrequency: 'monthly' as const,
@@ -103,9 +102,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       orderBy: { publishedAt: 'desc' },
     })
 
-    blogPages = posts.map(post => ({
+    blogPages = posts.map((post) => ({
       url: `${baseUrl}/blog/${post.slug}`,
-      lastModified: post.updatedAt?.toISOString() || post.publishedAt?.toISOString() || fallbackDate,
+      lastModified:
+        post.updatedAt?.toISOString() || post.publishedAt?.toISOString() || fallbackDate,
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     }))

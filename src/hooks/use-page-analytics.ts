@@ -8,12 +8,12 @@ const ANALYTICS_ENDPOINT = '/api/analytics/views'
 const SCROLL_DEBOUNCE_MS = 100
 const MAX_RETRIES = 2
 
-function handleAnalyticsError(error: unknown, operation: string, metadata?: Record<string, unknown>) {
-  handleUtilityError(
-    error,
-    { operation, component: 'PageAnalytics', metadata },
-    'return-default'
-  )
+function handleAnalyticsError(
+  error: unknown,
+  operation: string,
+  metadata?: Record<string, unknown>
+) {
+  handleUtilityError(error, { operation, component: 'PageAnalytics', metadata }, 'return-default')
 }
 
 function getReferrer(): string | undefined {
@@ -98,9 +98,8 @@ export function usePageAnalytics({
         const readingTime = trackReadingTime
           ? Math.round((Date.now() - startTimeRef.current) / 1000)
           : undefined
-        const scrollDepth = trackScrollDepth && maxScrollRef.current > 0
-          ? maxScrollRef.current
-          : undefined
+        const scrollDepth =
+          trackScrollDepth && maxScrollRef.current > 0 ? maxScrollRef.current : undefined
 
         // Use sendBeacon for reliable tracking on page unload
         trackEngagement({
@@ -150,7 +149,7 @@ async function trackPageView(
 
     // Retry on network errors
     if (retryCount < MAX_RETRIES) {
-      await new Promise((resolve) => setTimeout(resolve, Math.pow(2, retryCount) * 100))
+      await new Promise((resolve) => setTimeout(resolve, 2 ** retryCount * 100))
       return trackPageView(data, retryCount + 1)
     }
   }

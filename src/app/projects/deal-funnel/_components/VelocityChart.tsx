@@ -1,6 +1,5 @@
 'use client'
 
-
 import { Zap } from 'lucide-react'
 import type { PartnerConversion } from '../data/constants'
 
@@ -12,9 +11,7 @@ export function VelocityChart({ partnerConversion }: VelocityChartProps) {
   const colors = ['bg-primary', 'bg-secondary', 'bg-accent']
 
   return (
-    <div
-      className="bg-card border border-border rounded-2xl p-8 hover:border-primary/50 transition-all duration-300 ease-out"
-    >
+    <div className="bg-card border border-border rounded-2xl p-8 hover:border-primary/50 transition-all duration-300 ease-out">
       <h2 className="typography-h3 mb-6">Sales Velocity by Segment</h2>
       <div className="space-y-6">
         {partnerConversion.map((partner, index) => {
@@ -22,12 +19,12 @@ export function VelocityChart({ partnerConversion }: VelocityChartProps) {
             <div key={partner.group}>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium">{partner.group}</span>
-                <span className="typography-small text-muted-foreground">{partner.avg_sales_cycle_days} days</span>
+                <span className="typography-small text-muted-foreground">
+                  {partner.avg_sales_cycle_days} days
+                </span>
               </div>
               <div className="w-full bg-muted rounded-full h-3">
-                <div
-                  className={`${colors[index % colors.length]} h-3 rounded-full`}
-                />
+                <div className={`${colors[index % colors.length]} h-3 rounded-full`} />
               </div>
             </div>
           )

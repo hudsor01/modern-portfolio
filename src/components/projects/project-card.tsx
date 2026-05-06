@@ -91,14 +91,22 @@ export const ProjectCard = React.memo(function ProjectCard({
             {/* Metrics Row - Text only, no icons */}
             {Array.isArray(project.displayMetrics) && project.displayMetrics.length > 0 && (
               <div className="flex flex-wrap gap-x-4 gap-y-2 py-4 border-t border-border mt-auto">
-                {(project.displayMetrics as Array<{ label: string; value: string; iconName: string }>).slice(0, 3).map((metric: { label: string; value: string; iconName: string }, i: number) => (
-                  <div key={i} className="flex items-baseline gap-1.5">
-                    <span className="font-mono text-sm font-semibold text-foreground">
-                      {metric.value}
-                    </span>
-                    <span className="text-xs text-muted-foreground">{metric.label}</span>
-                  </div>
-                ))}
+                {(
+                  project.displayMetrics as Array<{
+                    label: string
+                    value: string
+                    iconName: string
+                  }>
+                )
+                  .slice(0, 3)
+                  .map((metric: { label: string; value: string; iconName: string }, i: number) => (
+                    <div key={i} className="flex items-baseline gap-1.5">
+                      <span className="font-mono text-sm font-semibold text-foreground">
+                        {metric.value}
+                      </span>
+                      <span className="text-xs text-muted-foreground">{metric.label}</span>
+                    </div>
+                  ))}
               </div>
             )}
 

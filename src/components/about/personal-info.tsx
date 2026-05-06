@@ -1,15 +1,8 @@
 'use client'
 
-
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import {
-  Mail,
-  MapPin,
-  ArrowRight,
-  FileText,
-  Briefcase
-} from 'lucide-react'
+import { Mail, MapPin, ArrowRight, FileText, Briefcase } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -28,33 +21,20 @@ interface PersonalInfoProps {
   className?: string
 }
 
-
-export function PersonalInfo({ 
-  personalInfo, 
-  onContactClick,
-  className = '' 
-}: PersonalInfoProps) {
+export function PersonalInfo({ personalInfo, onContactClick, className = '' }: PersonalInfoProps) {
   return (
     <section className={className}>
       <div className="grid lg:grid-cols-2 gap-12 items-center">
-        <div
-          
-          
-          className="space-y-8"
-        >
+        <div className="space-y-8">
           <div>
-            <h1
-              className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-foreground"
-            >
+            <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-foreground">
               {personalInfo.name}
             </h1>
 
-            <h2
-              className="text-xl lg:text-2xl font-semibold text-primary mb-6"
-            >
+            <h2 className="text-xl lg:text-2xl font-semibold text-primary mb-6">
               {personalInfo.title}
             </h2>
-            
+
             <ContactInfo personalInfo={personalInfo} />
           </div>
 
@@ -70,11 +50,7 @@ export function PersonalInfo({
           </div>
 
           <div className="flex flex-wrap gap-4 pt-6">
-            <Button
-              asChild
-              size="lg"
-              className="h-12 px-8 text-base font-semibold"
-            >
+            <Button asChild size="lg" className="h-12 px-8 text-base font-semibold">
               <Link href="/projects">
                 <Briefcase className="mr-2 h-5 w-5" />
                 View Case Studies
@@ -124,17 +100,13 @@ function ContactInfo({ personalInfo }: ContactInfoProps) {
       </div>
       <div className="flex items-center gap-2">
         <Mail className="h-5 w-5 text-primary" />
-        <a 
-          href={`mailto:${personalInfo.email}`}
-          className="hover:text-primary transition-colors"
-        >
+        <a href={`mailto:${personalInfo.email}`} className="hover:text-primary transition-colors">
           {personalInfo.email}
         </a>
       </div>
     </div>
   )
 }
-
 
 function ProfileImage() {
   return (

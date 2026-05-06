@@ -35,12 +35,12 @@ export function routeRecord<T extends Record<string, string>>(
   routes: T
 ): Record<keyof T, Route<string>> {
   const result: Record<string, Route<string>> = {}
-  
+
   // Use Object.entries to ensure we have string keys
   Object.entries(routes).forEach(([key, value]) => {
     // Now we're explicitly using string keys
-    result[key] = asRoute(value);
-  });
-  
+    result[key] = asRoute(value)
+  })
+
   return result as Record<keyof T, Route<string>>
 }

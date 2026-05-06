@@ -160,9 +160,7 @@ export function ProjectsPageContent({ initialProjects }: ProjectsPageContentProp
                 <BarChart3 className="h-10 w-10 text-muted-foreground" />
               </div>
               <h3 className="font-display text-xl font-semibold text-foreground mb-2">
-                {initialProjects.length === 0
-                  ? 'No projects yet'
-                  : 'No projects match your search'}
+                {initialProjects.length === 0 ? 'No projects yet' : 'No projects match your search'}
               </h3>
               <p className="text-muted-foreground">
                 {initialProjects.length === 0

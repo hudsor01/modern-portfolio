@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { ApiResponse, BlogPostData } from '@/types/api'
+import { type NextRequest, NextResponse } from 'next/server'
+import type { ApiResponse, BlogPostData } from '@/types/api'
 import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
-import { Prisma } from '@/generated/prisma/client'
+import type { Prisma } from '@/generated/prisma/client'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
 import { transformToBlogPostData, createErrorResponse } from '@/lib/api-blog'
 
@@ -156,7 +156,10 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
       },
     })
   } catch (error) {
-    logger.error('Blog Post Update Error:', error instanceof Error ? error : new Error(String(error)))
+    logger.error(
+      'Blog Post Update Error:',
+      error instanceof Error ? error : new Error(String(error))
+    )
     return NextResponse.json(createErrorResponse('Failed to update blog post'), { status: 500 })
   }
 }
@@ -225,7 +228,10 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
       },
     })
   } catch (error) {
-    logger.error('Blog Post Deletion Error:', error instanceof Error ? error : new Error(String(error)))
+    logger.error(
+      'Blog Post Deletion Error:',
+      error instanceof Error ? error : new Error(String(error))
+    )
     return NextResponse.json(createErrorResponse('Failed to delete blog post'), { status: 500 })
   }
 }

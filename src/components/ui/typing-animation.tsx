@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import { useEffect, useState, useCallback } from "react"
-import { cn } from "@/lib/utils"
+import { useEffect, useState, useCallback } from 'react'
+import { cn } from '@/lib/utils'
 
 interface TypingAnimationProps {
   /**
@@ -51,15 +51,15 @@ export function TypingAnimation({
   deletingSpeed = 50,
   delayBetweenWords = 2000,
   loop = true,
-  cursor = "|",
+  cursor = '|',
   showCursor = true,
 }: TypingAnimationProps) {
-  const [displayText, setDisplayText] = useState("")
+  const [displayText, setDisplayText] = useState('')
   const [wordIndex, setWordIndex] = useState(0)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isWaiting, setIsWaiting] = useState(false)
 
-  const currentWord = words[wordIndex] || ""
+  const currentWord = words[wordIndex] || ''
 
   const typeNextChar = useCallback(() => {
     if (isWaiting) return
@@ -88,22 +88,26 @@ export function TypingAnimation({
         }
       }
     }
-  }, [displayText, currentWord, isDeleting, isWaiting, loop, wordIndex, words.length, delayBetweenWords])
+  }, [
+    displayText,
+    currentWord,
+    isDeleting,
+    isWaiting,
+    loop,
+    wordIndex,
+    words.length,
+    delayBetweenWords,
+  ])
 
   useEffect(() => {
-    const timeout = setTimeout(
-      typeNextChar,
-      isDeleting ? deletingSpeed : typingSpeed
-    )
+    const timeout = setTimeout(typeNextChar, isDeleting ? deletingSpeed : typingSpeed)
     return () => clearTimeout(timeout)
   }, [typeNextChar, isDeleting, deletingSpeed, typingSpeed])
 
   return (
-    <span className={cn("inline-flex items-center", className)}>
+    <span className={cn('inline-flex items-center', className)}>
       <span>{displayText}</span>
-      {showCursor && (
-        <span className="animate-blink ml-0.5 inline-block">{cursor}</span>
-      )}
+      {showCursor && <span className="animate-blink ml-0.5 inline-block">{cursor}</span>}
     </span>
   )
 }

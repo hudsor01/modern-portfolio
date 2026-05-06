@@ -1,5 +1,16 @@
-import React from 'react'
-import { DollarSign, Clock, Target, TrendingUp, Zap, Award, Calculator, Users, Activity, BarChart3 } from 'lucide-react'
+import type React from 'react'
+import {
+  DollarSign,
+  Clock,
+  Target,
+  TrendingUp,
+  Zap,
+  Award,
+  Calculator,
+  Users,
+  Activity,
+  BarChart3,
+} from 'lucide-react'
 
 // Showcase project interface for portfolio display
 export interface ShowcaseProject {
@@ -374,7 +385,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     title: 'Partnership Program Implementation',
     description: 'Built first partnership program from scratch with 90%+ automation',
     longDescription:
-      'Led comprehensive design and implementation of company\'s first partnership program, creating automated partner onboarding, commission tracking, and performance analytics.',
+      "Led comprehensive design and implementation of company's first partnership program, creating automated partner onboarding, commission tracking, and performance analytics.",
     image:
       'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=1200&h=800&fit=crop&crop=center&q=85',
     category: 'revenue-ops',
@@ -389,7 +400,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     client: 'Tech Startup',
     duration: '6 months',
     impact: [
-      'Launched company\'s first partnership program',
+      "Launched company's first partnership program",
       'Achieved 90%+ process automation',
       'Built production-ready integrations',
     ],

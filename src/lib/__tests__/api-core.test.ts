@@ -38,14 +38,15 @@ vi.mock('@/lib/logger', () => ({
 
 vi.mock('next/server', () => ({
   NextResponse: {
-    json: vi.fn((body: unknown, init?: ResponseInit) =>
-      new Response(JSON.stringify(body), {
-        status: init?.status ?? 200,
-        headers: {
-          'Content-Type': 'application/json',
-          ...Object.fromEntries(new Headers(init?.headers).entries()),
-        },
-      })
+    json: vi.fn(
+      (body: unknown, init?: ResponseInit) =>
+        new Response(JSON.stringify(body), {
+          status: init?.status ?? 200,
+          headers: {
+            'Content-Type': 'application/json',
+            ...Object.fromEntries(new Headers(init?.headers).entries()),
+          },
+        })
     ),
   },
   NextRequest: vi.fn(),
@@ -56,7 +57,13 @@ vi.mock('next/headers', () => ({
   cookies: vi.fn(() => ({ getAll: vi.fn(() => []), setAll: vi.fn() })),
 }))
 
-import { successResponse, errorResponse, validationErrorResponse, logAndSanitizeError, createApiSuccessResponse } from '@/lib/api-response'
+import {
+  successResponse,
+  errorResponse,
+  validationErrorResponse,
+  logAndSanitizeError,
+  createApiSuccessResponse,
+} from '@/lib/api-response'
 import { createApiHeaders, CachePresets } from '@/lib/api-headers'
 import { getClientIdentifier, getRequestMetadata, parseRequestBody } from '@/lib/api-request'
 import { parsePaginationParams, createPaginationMeta } from '@/lib/api-pagination'

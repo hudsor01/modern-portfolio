@@ -84,20 +84,20 @@ export function CommissionContent() {
       activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
       onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
     >
-          {/* Standardized Key Metrics Grid */}
-          <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
+      {/* Standardized Key Metrics Grid */}
+      <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
-          {/* Processing Metrics */}
-          <ProcessingMetrics />
+      {/* Processing Metrics */}
+      <ProcessingMetrics />
 
-          {/* Tab Content */}
-          {activeTab === 'overview' && <OverviewTab />}
-          {activeTab === 'tiers' && <TiersTab />}
-          {activeTab === 'incentives' && <IncentivesTab />}
-          {activeTab === 'automation' && <AutomationTab />}
+      {/* Tab Content */}
+      {activeTab === 'overview' && <OverviewTab />}
+      {activeTab === 'tiers' && <TiersTab />}
+      {activeTab === 'incentives' && <IncentivesTab />}
+      {activeTab === 'automation' && <AutomationTab />}
 
-          {/* Professional Narrative Sections */}
-          <NarrativeSections />
+      {/* Professional Narrative Sections */}
+      <NarrativeSections />
     </ProjectPageLayout>
   )
 }

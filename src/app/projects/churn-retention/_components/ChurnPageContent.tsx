@@ -17,22 +17,17 @@ import { ChartsGrid } from './ChartsGrid'
 import { NarrativeSections } from './NarrativeSections'
 
 export default function ChurnAnalysis() {
-  const {
-    data: analyticsData,
-    isLoading,
-  } = useAnalyticsData()
+  const { data: analyticsData, isLoading } = useAnalyticsData()
 
   const churnData = (() =>
-      analyticsData?.churn?.length
-        ? analyticsData.churn.map((item) => ({
-            month: item.month,
-            churnRate: item.churn_rate,
-            retained: item.retained_partners,
-            churned: item.churned_partners,
-          }))
-        : staticChurnData
-  )()
-
+    analyticsData?.churn?.length
+      ? analyticsData.churn.map((item) => ({
+          month: item.month,
+          churnRate: item.churn_rate,
+          retained: item.retained_partners,
+          churned: item.churned_partners,
+        }))
+      : staticChurnData)()
 
   // Ensure data exists before accessing indices
   const currentMonth = churnData?.[churnData.length - 1] ?? null

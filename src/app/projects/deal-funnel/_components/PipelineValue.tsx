@@ -1,6 +1,5 @@
 'use client'
 
-
 import { TrendingUp } from 'lucide-react'
 
 interface PipelineValueProps {
@@ -9,9 +8,7 @@ interface PipelineValueProps {
 
 export function PipelineValue({ totalRevenue }: PipelineValueProps) {
   return (
-    <div
-      className="mt-8 bg-primary/10 border border-primary/20 rounded-xl p-8"
-    >
+    <div className="mt-8 bg-primary/10 border border-primary/20 rounded-xl p-8">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="typography-h3 mb-2">Total Pipeline Value</h2>

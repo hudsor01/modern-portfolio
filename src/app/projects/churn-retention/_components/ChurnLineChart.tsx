@@ -2,7 +2,16 @@
 import { memo } from 'react'
 import { useState, useEffect } from 'react'
 import { LazyComposedChart as ComposedChart } from '@/components/charts/lazy-charts'
-import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Area } from 'recharts'
+import {
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Legend,
+  Area,
+} from 'recharts'
 import { chartColors, chartCssVars } from '@/lib/charts'
 
 type ChurnDatum = {

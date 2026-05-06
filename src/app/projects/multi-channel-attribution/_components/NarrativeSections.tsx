@@ -13,18 +13,18 @@ export function NarrativeSections() {
       <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
           <p className="text-lg leading-relaxed">
-            When I was brought in to optimize the marketing analytics stack, I inherited
-            attribution models that were fundamentally broken. Traditional linear and time-decay
-            models were underestimating channel synergy effects, cross-device journeys were
-            creating attribution gaps, and the team was making campaign optimization decisions
-            based on incomplete channel interaction data.
+            When I was brought in to optimize the marketing analytics stack, I inherited attribution
+            models that were fundamentally broken. Traditional linear and time-decay models were
+            underestimating channel synergy effects, cross-device journeys were creating attribution
+            gaps, and the team was making campaign optimization decisions based on incomplete
+            channel interaction data.
           </p>
           <p className="leading-relaxed">
             With 12 active marketing channels, complex B2B customer journeys, and a $3.2M annual
-            marketing budget at stake, the organization needed a sophisticated attribution
-            solution that could handle multi-channel complexity. Budget allocation models
-            couldn't account for diminishing returns or channel saturation, and there was no
-            way to predict the impact of budget shifts across different channel combinations.
+            marketing budget at stake, the organization needed a sophisticated attribution solution
+            that could handle multi-channel complexity. Budget allocation models couldn't account
+            for diminishing returns or channel saturation, and there was no way to predict the
+            impact of budget shifts across different channel combinations.
           </p>
         </div>
       </SectionCard>
@@ -33,12 +33,15 @@ export function NarrativeSections() {
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
-            I was charged with building an advanced multi-channel attribution system that
-            would move beyond rule-based models to machine learning-powered insights. My
-            specific mandate included:
+            I was charged with building an advanced multi-channel attribution system that would move
+            beyond rule-based models to machine learning-powered insights. My specific mandate
+            included:
           </p>
           <ul className="list-disc list-inside space-y-2 ml-4">
-            <li>Develop ML-powered attribution that captures complex channel interactions and synergies</li>
+            <li>
+              Develop ML-powered attribution that captures complex channel interactions and
+              synergies
+            </li>
             <li>Build cross-device customer journey reconstruction using probabilistic modeling</li>
             <li>Create budget optimization recommendations with scenario modeling capabilities</li>
             <li>Implement channel saturation analysis to identify diminishing returns points</li>
@@ -52,9 +55,9 @@ export function NarrativeSections() {
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
-            I designed and built a machine learning-powered multi-channel attribution platform
-            from scratch, using advanced algorithms to understand channel interactions and
-            predict optimal marketing strategies:
+            I designed and built a machine learning-powered multi-channel attribution platform from
+            scratch, using advanced algorithms to understand channel interactions and predict
+            optimal marketing strategies:
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -79,10 +82,10 @@ export function NarrativeSections() {
           </div>
 
           <p className="leading-relaxed mt-4">
-            I personally architected the ML pipeline, designed the model interpretability layer
-            for marketing team adoption, and led the change management process to shift from
-            intuition-based to data-driven budget decisions. The system was deployed in phases
-            to validate accuracy before expanding recommendations.
+            I personally architected the ML pipeline, designed the model interpretability layer for
+            marketing team adoption, and led the change management process to shift from
+            intuition-based to data-driven budget decisions. The system was deployed in phases to
+            validate accuracy before expanding recommendations.
           </p>
         </div>
       </SectionCard>
@@ -91,9 +94,9 @@ export function NarrativeSections() {
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
           <p className="leading-relaxed">
-            The ML-powered attribution system I built delivered unprecedented insights into
-            channel performance and enabled data-driven optimizations that significantly
-            improved marketing efficiency:
+            The ML-powered attribution system I built delivered unprecedented insights into channel
+            performance and enabled data-driven optimizations that significantly improved marketing
+            efficiency:
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -107,7 +110,9 @@ export function NarrativeSections() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-primary">Quantified Business Outcomes I Delivered:</h3>
+            <h3 className="font-semibold text-primary">
+              Quantified Business Outcomes I Delivered:
+            </h3>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>
                 Discovered channel synergy effects worth $890K annually in previously hidden value
@@ -116,10 +121,15 @@ export function NarrativeSections() {
                 Reduced customer acquisition cost by 31% through optimized channel mix allocation
               </li>
               <li>
-                Increased marketing qualified leads by 38% with same budget through ML-guided reallocation
+                Increased marketing qualified leads by 38% with same budget through ML-guided
+                reallocation
               </li>
-              <li>Improved campaign ROI prediction accuracy from 67% to 92.4% using my ML models</li>
-              <li>Identified optimal budget allocation across 12 channels, saving $640K annually</li>
+              <li>
+                Improved campaign ROI prediction accuracy from 67% to 92.4% using my ML models
+              </li>
+              <li>
+                Identified optimal budget allocation across 12 channels, saving $640K annually
+              </li>
               <li>
                 Reduced attribution analysis time from 3 days to 2 hours with automated insights
               </li>
@@ -143,8 +153,8 @@ export function NarrativeSections() {
                   complex environments—I now default to ML for any portfolio with 5+ channels
                 </li>
                 <li>
-                  Channel synergy effects can account for 20-30% of total conversion value;
-                  this was the most surprising finding of the project
+                  Channel synergy effects can account for 20-30% of total conversion value; this was
+                  the most surprising finding of the project
                 </li>
                 <li>
                   Cross-device attribution requires probabilistic modeling, not deterministic
@@ -160,20 +170,20 @@ export function NarrativeSections() {
               <h3 className="font-semibold text-primary">Implementation Excellence</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>
-                  Model interpretability is crucial for marketing team adoption—I invested
-                  heavily in explainable AI features
+                  Model interpretability is crucial for marketing team adoption—I invested heavily
+                  in explainable AI features
                 </li>
                 <li>
-                  Real-time attribution enables agile campaign optimization that batch
-                  analysis can't achieve
+                  Real-time attribution enables agile campaign optimization that batch analysis
+                  can't achieve
                 </li>
                 <li>
-                  Automated insights generation scales attribution analysis across large
-                  channel portfolios without added headcount
+                  Automated insights generation scales attribution analysis across large channel
+                  portfolios without added headcount
                 </li>
                 <li>
-                  Predictive capabilities transform attribution from a reporting tool to a
-                  strategic planning engine
+                  Predictive capabilities transform attribution from a reporting tool to a strategic
+                  planning engine
                 </li>
               </ul>
             </div>

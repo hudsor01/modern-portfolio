@@ -1,5 +1,3 @@
-
-
 export type YearOverYearGrowth = {
   year: number
   total_revenue: number

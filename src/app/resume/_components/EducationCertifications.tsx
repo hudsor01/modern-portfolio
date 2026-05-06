@@ -55,9 +55,7 @@ export function EducationCertifications() {
                 {certifications.map((cert, index) => (
                   <div key={index} className="flex items-center">
                     <div className="w-2 h-2 bg-primary rounded-full mr-3 flex-shrink-0"></div>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {cert}
-                    </p>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{cert}</p>
                   </div>
                 ))}
               </div>

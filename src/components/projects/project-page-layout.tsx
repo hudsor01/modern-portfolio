@@ -35,7 +35,11 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
     ref
   ) => {
     return (
-      <div ref={ref} className={cn('min-h-screen bg-background overflow-hidden', className)} {...props}>
+      <div
+        ref={ref}
+        className={cn('min-h-screen bg-background overflow-hidden', className)}
+        {...props}
+      >
         {/* Decorative background elements */}
         <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
@@ -104,7 +108,7 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
           </header>
 
           {/* Main Content */}
-          <main id="main-content" role="main">
+          <main id="main-content">
             {/* Project Title Section */}
             <div className="mb-8 animate-fade-in-up" data-testid="project-title-section">
               <h1

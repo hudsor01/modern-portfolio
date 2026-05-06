@@ -6,16 +6,11 @@
  */
 'use client'
 
-import React from 'react'
+import type React from 'react'
 import dynamic from 'next/dynamic'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tooltip, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts'
-import {
-  tooltipStyles,
-  gridStyles,
-  axisStyles,
-  chartConfig,
-} from '@/lib/charts'
+import { tooltipStyles, gridStyles, axisStyles, chartConfig } from '@/lib/charts'
 
 // ============================================================================
 // Loading Skeleton for Charts
@@ -45,46 +40,34 @@ function ChartSkeletonLarge() {
  * Lazy-loaded AreaChart
  * Most commonly used chart type in the portfolio
  */
-export const LazyAreaChart = dynamic(
-  () => import('recharts').then((mod) => mod.AreaChart),
-  {
-    ssr: false,
-    loading: () => <ChartSkeleton />,
-  }
-)
+export const LazyAreaChart = dynamic(() => import('recharts').then((mod) => mod.AreaChart), {
+  ssr: false,
+  loading: () => <ChartSkeleton />,
+})
 
 /**
  * Lazy-loaded LineChart
  */
-export const LazyLineChart = dynamic(
-  () => import('recharts').then((mod) => mod.LineChart),
-  {
-    ssr: false,
-    loading: () => <ChartSkeleton />,
-  }
-)
+export const LazyLineChart = dynamic(() => import('recharts').then((mod) => mod.LineChart), {
+  ssr: false,
+  loading: () => <ChartSkeleton />,
+})
 
 /**
  * Lazy-loaded BarChart
  */
-export const LazyBarChart = dynamic(
-  () => import('recharts').then((mod) => mod.BarChart),
-  {
-    ssr: false,
-    loading: () => <ChartSkeleton />,
-  }
-)
+export const LazyBarChart = dynamic(() => import('recharts').then((mod) => mod.BarChart), {
+  ssr: false,
+  loading: () => <ChartSkeleton />,
+})
 
 /**
  * Lazy-loaded PieChart
  */
-export const LazyPieChart = dynamic(
-  () => import('recharts').then((mod) => mod.PieChart),
-  {
-    ssr: false,
-    loading: () => <ChartSkeletonSmall />,
-  }
-)
+export const LazyPieChart = dynamic(() => import('recharts').then((mod) => mod.PieChart), {
+  ssr: false,
+  loading: () => <ChartSkeletonSmall />,
+})
 
 /**
  * Lazy-loaded ComposedChart
@@ -101,13 +84,10 @@ export const LazyComposedChart = dynamic(
 /**
  * Lazy-loaded RadarChart
  */
-export const LazyRadarChart = dynamic(
-  () => import('recharts').then((mod) => mod.RadarChart),
-  {
-    ssr: false,
-    loading: () => <ChartSkeletonSmall />,
-  }
-)
+export const LazyRadarChart = dynamic(() => import('recharts').then((mod) => mod.RadarChart), {
+  ssr: false,
+  loading: () => <ChartSkeletonSmall />,
+})
 
 /**
  * Lazy-loaded RadialBarChart
@@ -123,20 +103,18 @@ export const LazyRadialBarChart = dynamic(
 /**
  * Lazy-loaded FunnelChart
  */
-export const LazyFunnelChart = dynamic(
-  () => import('recharts').then((mod) => mod.FunnelChart),
-  {
-    ssr: false,
-    loading: () => <ChartSkeleton />,
-  }
-)
+export const LazyFunnelChart = dynamic(() => import('recharts').then((mod) => mod.FunnelChart), {
+  ssr: false,
+  loading: () => <ChartSkeleton />,
+})
 
 /**
  * Lazy-loaded Treemap
  * Using proper type definition for Treemap component
  */
 export const LazyTreemap = dynamic(
-  () => import('recharts').then((mod) => mod.Treemap as React.ComponentType<Record<string, unknown>>),
+  () =>
+    import('recharts').then((mod) => mod.Treemap as React.ComponentType<Record<string, unknown>>),
   {
     ssr: false,
     loading: () => <ChartSkeleton />,
@@ -146,13 +124,10 @@ export const LazyTreemap = dynamic(
 /**
  * Lazy-loaded ScatterChart
  */
-export const LazyScatterChart = dynamic(
-  () => import('recharts').then((mod) => mod.ScatterChart),
-  {
-    ssr: false,
-    loading: () => <ChartSkeleton />,
-  }
-)
+export const LazyScatterChart = dynamic(() => import('recharts').then((mod) => mod.ScatterChart), {
+  ssr: false,
+  loading: () => <ChartSkeleton />,
+})
 
 // ============================================================================
 // Skeleton Export
@@ -173,7 +148,12 @@ interface ChartContainerProps {
 
 interface ChartTooltipProps {
   active?: boolean
-  payload?: Array<{ value: number; name: string; color?: string; payload?: Record<string, unknown> }>
+  payload?: Array<{
+    value: number
+    name: string
+    color?: string
+    payload?: Record<string, unknown>
+  }>
   label?: string
   formatter?: (value: number, name: string) => [string, string]
   labelFormatter?: (label: string) => string
@@ -200,9 +180,7 @@ export function ChartContainer({
   height = 'standard',
   className = '',
 }: ChartContainerProps) {
-  const containerHeight = typeof height === 'number'
-    ? height
-    : chartConfig.heights[height]
+  const containerHeight = typeof height === 'number' ? height : chartConfig.heights[height]
 
   return (
     <div className={`w-full ${className}`} style={{ height: containerHeight }}>
@@ -226,16 +204,12 @@ export function ChartTooltip({
   }
 
   const formatLabel = labelFormatter || ((l: string) => `Period: ${l}`)
-  const formatValue = formatter || ((value: number, name: string) => [
-    `${value}`,
-    name.charAt(0).toUpperCase() + name.slice(1),
-  ])
+  const formatValue =
+    formatter ||
+    ((value: number, name: string) => [`${value}`, name.charAt(0).toUpperCase() + name.slice(1)])
 
   return (
-    <div
-      className="rounded-lg border bg-card p-3 shadow-lg"
-      style={tooltipStyles}
-    >
+    <div className="rounded-lg border bg-card p-3 shadow-lg" style={tooltipStyles}>
       <p className="font-medium mb-2">{formatLabel(label || '')}</p>
       {payload.map((entry, index) => {
         const [formattedValue, formattedName] = formatValue(entry.value, entry.name)
@@ -252,13 +226,7 @@ export function ChartTooltip({
 
 // Standardized grid component
 export function ChartGrid({ vertical = false, horizontal = true }: ChartGridProps) {
-  return (
-    <CartesianGrid
-      {...gridStyles}
-      vertical={vertical}
-      horizontal={horizontal}
-    />
-  )
+  return <CartesianGrid {...gridStyles} vertical={vertical} horizontal={horizontal} />
 }
 
 // Standardized X-axis component
@@ -284,12 +252,7 @@ export function ChartXAxis({
 }
 
 // Standardized Y-axis component
-export function ChartYAxis({
-  tickFormatter,
-  domain,
-  width,
-  ...props
-}: ChartAxisProps) {
+export function ChartYAxis({ tickFormatter, domain, width, ...props }: ChartAxisProps) {
   return (
     <YAxis
       {...axisStyles}
@@ -303,12 +266,7 @@ export function ChartYAxis({
 
 // Standard Recharts Tooltip with theme
 export function StandardTooltip(props: Record<string, unknown>) {
-  return (
-    <Tooltip
-      contentStyle={tooltipStyles}
-      {...props}
-    />
-  )
+  return <Tooltip contentStyle={tooltipStyles} {...props} />
 }
 
 // Chart wrapper with standard styling and caption
@@ -329,18 +287,12 @@ export function ChartWrapper({
 }: ChartWrapperProps) {
   return (
     <div className={`space-y-4 ${className}`}>
-      {title && (
-        <h3 className="typography-h4 text-center">{title}</h3>
-      )}
+      {title && <h3 className="typography-h4 text-center">{title}</h3>}
 
-      <ChartContainer height={height}>
-        {children}
-      </ChartContainer>
+      <ChartContainer height={height}>{children}</ChartContainer>
 
       {caption && (
-        <p className="text-center text-sm italic text-muted-foreground mt-4">
-          {caption}
-        </p>
+        <p className="text-center text-sm italic text-muted-foreground mt-4">{caption}</p>
       )}
     </div>
   )

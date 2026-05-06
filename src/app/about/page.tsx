@@ -12,7 +12,7 @@ import { KeyHighlights } from '@/components/about/key-highlights'
 import { StickyCTA } from '@/components/about/sticky-cta'
 import { BentoCard, BentoGrid } from '@/components/ui/bento-grid'
 import { TrendingUp, BarChart3, Target, Award } from 'lucide-react'
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 
 const EXPERIENCE_STATS = [
   { label: 'Projects Delivered', value: '10+', icon: 'check-circle' },
@@ -26,23 +26,31 @@ const CERTIFICATIONS = [
     name: 'SalesLoft Admin Certification Level 1',
     issuer: 'SalesLoft',
     badge: '/images/certifications/salesloft-admin-badge-1.png',
-    description: 'Foundational administration and configuration of SalesLoft sales engagement platform',
-    skills: ['Platform Setup', 'User Management', 'Basic Cadences', 'Email Templates']
+    description:
+      'Foundational administration and configuration of SalesLoft sales engagement platform',
+    skills: ['Platform Setup', 'User Management', 'Basic Cadences', 'Email Templates'],
   },
   {
     name: 'SalesLoft Admin Certification Level 2',
     issuer: 'SalesLoft',
     badge: '/images/certifications/salesloft-admin-badge-2.png',
-    description: 'Advanced administration including complex automation, integrations, and advanced analytics',
-    skills: ['Advanced Automation', 'CRM Integrations', 'Advanced Analytics', 'Complex Workflows']
+    description:
+      'Advanced administration including complex automation, integrations, and advanced analytics',
+    skills: ['Advanced Automation', 'CRM Integrations', 'Advanced Analytics', 'Complex Workflows'],
   },
   {
     name: 'HubSpot Revenue Operations Certification',
     issuer: 'HubSpot Academy',
     badge: '/images/certifications/hubspot-revops-badge.png',
-    description: 'Comprehensive revenue operations strategy, process optimization, and performance analysis',
-    skills: ['Revenue Operations', 'Sales Process Optimization', 'Marketing Alignment', 'Analytics & Forecasting']
-  }
+    description:
+      'Comprehensive revenue operations strategy, process optimization, and performance analysis',
+    skills: [
+      'Revenue Operations',
+      'Sales Process Optimization',
+      'Marketing Alignment',
+      'Analytics & Forecasting',
+    ],
+  },
 ]
 
 const BENTO_FEATURES = [
@@ -53,7 +61,7 @@ const BENTO_FEATURES = [
     href: '/projects',
     cta: 'View Projects',
     className: 'md:col-span-2',
-    background: <div className="absolute inset-0 bg-primary/5" />
+    background: <div className="absolute inset-0 bg-primary/5" />,
   },
   {
     Icon: BarChart3,
@@ -62,7 +70,7 @@ const BENTO_FEATURES = [
     href: '/projects',
     cta: 'See Analytics',
     className: '',
-    background: <div className="absolute inset-0 bg-primary/5" />
+    background: <div className="absolute inset-0 bg-primary/5" />,
   },
   {
     Icon: Award,
@@ -71,17 +79,17 @@ const BENTO_FEATURES = [
     href: '/resume',
     cta: 'View Resume',
     className: '',
-    background: <div className="absolute inset-0 bg-secondary/5" />
+    background: <div className="absolute inset-0 bg-secondary/5" />,
   },
   {
     Icon: Target,
     name: 'Culture Fit',
     description: 'Collaborative leader who bridges technical & business teams',
     href: '/contact',
-    cta: 'Let\'s Talk',
+    cta: "Let's Talk",
     className: '',
-    background: <div className="absolute inset-0 bg-accent/5" />
-  }
+    background: <div className="absolute inset-0 bg-accent/5" />,
+  },
 ]
 
 const PERSONAL_INFO = {
@@ -118,28 +126,36 @@ export const metadata: Metadata = generateMetadata(
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
-      <FAQPageJsonLd faqs={[
-        {
-          question: 'What does a Revenue Operations Specialist do?',
-          answer: 'A Revenue Operations Specialist aligns sales, marketing, and customer success teams through data-driven process optimization, CRM administration, and analytics to maximize revenue growth and operational efficiency.',
-        },
-        {
-          question: 'What certifications does Richard Hudson hold?',
-          answer: 'Richard holds SalesLoft Admin Certification (Level 1 and Level 2) and HubSpot Revenue Operations Certification, demonstrating expertise in sales engagement platforms and revenue operations methodology.',
-        },
-        {
-          question: 'What results has Richard Hudson achieved in Revenue Operations?',
-          answer: 'Richard has generated over $4.8M in revenue, achieved 432% transaction growth, and delivered 2,217% network expansion across partnership programs and revenue operations initiatives.',
-        },
-        {
-          question: 'Where is Richard Hudson located?',
-          answer: 'Richard is based in Dallas, Texas, serving the Dallas-Fort Worth metroplex area.',
-        },
-      ]} />
-      <BreadcrumbListJsonLd items={[
-        { name: 'Home', url: 'https://richardwhudsonjr.com' },
-        { name: 'About', url: 'https://richardwhudsonjr.com/about' },
-      ]} />
+      <FAQPageJsonLd
+        faqs={[
+          {
+            question: 'What does a Revenue Operations Specialist do?',
+            answer:
+              'A Revenue Operations Specialist aligns sales, marketing, and customer success teams through data-driven process optimization, CRM administration, and analytics to maximize revenue growth and operational efficiency.',
+          },
+          {
+            question: 'What certifications does Richard Hudson hold?',
+            answer:
+              'Richard holds SalesLoft Admin Certification (Level 1 and Level 2) and HubSpot Revenue Operations Certification, demonstrating expertise in sales engagement platforms and revenue operations methodology.',
+          },
+          {
+            question: 'What results has Richard Hudson achieved in Revenue Operations?',
+            answer:
+              'Richard has generated over $4.8M in revenue, achieved 432% transaction growth, and delivered 2,217% network expansion across partnership programs and revenue operations initiatives.',
+          },
+          {
+            question: 'Where is Richard Hudson located?',
+            answer:
+              'Richard is based in Dallas, Texas, serving the Dallas-Fort Worth metroplex area.',
+          },
+        ]}
+      />
+      <BreadcrumbListJsonLd
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'About', url: 'https://richardwhudsonjr.com/about' },
+        ]}
+      />
       <Navbar />
 
       <main className="relative overflow-hidden">

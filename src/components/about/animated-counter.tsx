@@ -9,43 +9,38 @@ interface AnimatedCounterProps {
   className?: string
 }
 
-export function AnimatedCounter({
-  value,
-  duration = 2000,
-  className = ''
-}: AnimatedCounterProps) {
+export function AnimatedCounter({ value, duration = 2000, className = '' }: AnimatedCounterProps) {
   const [displayValue, setDisplayValue] = useState(value)
   const ref = useRef<HTMLSpanElement>(null)
   const isInView = useInView(ref, { once: true })
   const hasAnimated = useRef(false)
 
-  const animateNumber = useCallback((
-    targetNum: number,
-    formatter: (current: number) => string,
-    initialValue: string
-  ) => {
-    if (hasAnimated.current) return
-    hasAnimated.current = true
+  const animateNumber = useCallback(
+    (targetNum: number, formatter: (current: number) => string, initialValue: string) => {
+      if (hasAnimated.current) return
+      hasAnimated.current = true
 
-    let startTime: number
-    setDisplayValue(initialValue)
+      let startTime: number
+      setDisplayValue(initialValue)
 
-    const animate = (currentTime: number) => {
-      if (!startTime) startTime = currentTime
-      const progress = Math.min((currentTime - startTime) / duration, 1)
-      const current = value.includes('.')
-        ? progress * targetNum
-        : Math.floor(progress * targetNum)
+      const animate = (currentTime: number) => {
+        if (!startTime) startTime = currentTime
+        const progress = Math.min((currentTime - startTime) / duration, 1)
+        const current = value.includes('.')
+          ? progress * targetNum
+          : Math.floor(progress * targetNum)
 
-      setDisplayValue(formatter(current))
+        setDisplayValue(formatter(current))
 
-      if (progress < 1) {
-        requestAnimationFrame(animate)
+        if (progress < 1) {
+          requestAnimationFrame(animate)
+        }
       }
-    }
 
-    requestAnimationFrame(animate)
-  }, [duration, value])
+      requestAnimationFrame(animate)
+    },
+    [duration, value]
+  )
 
   useEffect(() => {
     if (!isInView || hasAnimated.current) return
@@ -66,7 +61,7 @@ export function AnimatedCounter({
       // Handle percentage values like "432%" or "2,217%"
       const numMatch = value.match(/(\d+,?\d*)/)
       if (numMatch?.[1]) {
-        const targetNum = parseInt(numMatch[1].replace(',', ''))
+        const targetNum = parseInt(numMatch[1].replace(',', ''), 10)
         animateNumber(
           targetNum,
           (current) => {
@@ -80,7 +75,7 @@ export function AnimatedCounter({
       // Handle simple numbers like "8+"
       const numMatch = value.match(/(\d+)/)
       if (numMatch?.[1]) {
-        const targetNum = parseInt(numMatch[1])
+        const targetNum = parseInt(numMatch[1], 10)
         animateNumber(
           targetNum,
           (current) => value.replace(/\d+/, current.toString()),

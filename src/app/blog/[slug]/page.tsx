@@ -1,9 +1,8 @@
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import { cache } from 'react'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { Navbar } from '@/components/layout/navbar'
-import { Footer } from '@/components/layout/footer'
 import { BlogPostLayout } from '../_components/blog-post-layout'
 import { BlogPostJsonLd } from '@/components/seo/blog-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
@@ -39,10 +38,10 @@ const getBlogPost = cache(async (slug: string): Promise<BlogPostData | null> => 
         category: true,
         tags: {
           include: {
-            tag: true
-          }
-        }
-      }
+            tag: true,
+          },
+        },
+      },
     })
 
     if (!post) return null
@@ -79,7 +78,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   if (!post) {
     return {
       title: 'Post Not Found',
-      description: 'The requested blog post could not be found.'
+      description: 'The requested blog post could not be found.',
     }
   }
 
@@ -111,7 +110,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       modifiedTime: post.updatedAt,
       authors: ['Richard Hudson'],
       section: post.category?.name,
-      tags: post.tags?.map(tag => tag.name),
+      tags: post.tags?.map((tag) => tag.name),
     },
     twitter: {
       card: 'summary_large_image',
@@ -157,7 +156,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <BlogPostLayout post={post} />
           </div>
         </main>
-        <Footer />
       </div>
     </>
   )

@@ -22,36 +22,36 @@ import { formatCurrency, formatPercentage, formatCompactNumber } from '@/lib/dat
 
 export const chartColors = {
   // Primary palette
-  primary: '#1e4a7d',      // Navy Blue - oklch(0.35 0.12 250)
-  secondary: '#2d6b50',    // Forest Green - oklch(0.45 0.10 145)
+  primary: '#1e4a7d', // Navy Blue - oklch(0.35 0.12 250)
+  secondary: '#2d6b50', // Forest Green - oklch(0.45 0.10 145)
 
   // Status colors
-  success: '#2d6b50',      // Forest Green
-  warning: '#9a7535',      // Bronze/Copper - oklch(0.55 0.12 55)
-  destructive: '#b84848',  // Terracotta Red - oklch(0.50 0.18 25)
+  success: '#2d6b50', // Forest Green
+  warning: '#9a7535', // Bronze/Copper - oklch(0.55 0.12 55)
+  destructive: '#b84848', // Terracotta Red - oklch(0.50 0.18 25)
 
   // Chart series colors (for multi-series charts)
-  chart1: '#1e4a7d',       // Navy Blue
-  chart2: '#2d6b50',       // Forest Green
-  chart3: '#9a7535',       // Bronze/Copper
-  chart4: '#6b7280',       // Slate Gray
-  chart5: '#1a2b42',       // Deep Navy
+  chart1: '#1e4a7d', // Navy Blue
+  chart2: '#2d6b50', // Forest Green
+  chart3: '#9a7535', // Bronze/Copper
+  chart4: '#6b7280', // Slate Gray
+  chart5: '#1a2b42', // Deep Navy
 
   // Semantic data colors
-  revenue: '#1e4a7d',      // chart1
+  revenue: '#1e4a7d', // chart1
   transactions: '#2d6b50', // chart2
-  commissions: '#9a7535',  // chart3
-  cac: '#6b7280',          // chart4
-  ltv: '#1a2b42',          // chart5
-  positive: '#2d6b50',     // success
-  negative: '#b84848',     // destructive
-  neutral: '#1e4a7d',      // primary
+  commissions: '#9a7535', // chart3
+  cac: '#6b7280', // chart4
+  ltv: '#1a2b42', // chart5
+  positive: '#2d6b50', // success
+  negative: '#b84848', // destructive
+  neutral: '#1e4a7d', // primary
 
   // UI colors (axes, grid, etc.)
-  grid: '#e5e7eb',         // Light gray for grid lines
-  axis: '#6b7280',         // Gray for axis text
-  muted: '#9ca3af',        // Muted text
-  border: '#e5e7eb',       // Border color
+  grid: '#e5e7eb', // Light gray for grid lines
+  axis: '#6b7280', // Gray for axis text
+  muted: '#9ca3af', // Muted text
+  border: '#e5e7eb', // Border color
 } as const
 
 // Chart color palette using CSS custom properties (for components that support them)
@@ -185,7 +185,7 @@ export const axisStyles = {
   tickLine: false,
   axisLine: {
     stroke: chartCssVars.axis,
-    strokeOpacity: 0.5
+    strokeOpacity: 0.5,
   },
 } as const
 
@@ -290,7 +290,7 @@ export function formatValue(
 export const quickFormatters = {
   currency: (value: number) => `$${value.toFixed(1)}M`,
   percentage: (value: number) => `${value.toFixed(1)}%`,
-  number: (value: number) => Number.isInteger(value) ? `${value}` : value.toFixed(1),
+  number: (value: number) => (Number.isInteger(value) ? `${value}` : value.toFixed(1)),
   thousands: (value: number) => `${(value / 1000).toFixed(1)}K`,
   millions: (value: number) => `${(value / 1000000).toFixed(1)}M`,
 } as const
@@ -507,4 +507,3 @@ export function validateChartData<T extends ChartDataPoint>(
 
   return data
 }
-

@@ -61,7 +61,9 @@ const PaybackPeriodChart = memo(function PaybackPeriodChart() {
             }}
             formatter={(value, name) => [
               `${(Number(value) || 0).toFixed(1)} months`,
-              (String(name ?? '')).replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()),
+              String(name ?? '')
+                .replace(/([A-Z])/g, ' $1')
+                .replace(/^./, (str) => str.toUpperCase()),
             ]}
           />
           <Area

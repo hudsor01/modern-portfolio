@@ -213,7 +213,7 @@ export function formatDate(date: Date | string | number, options: DateFormatOpti
  */
 export function formatRelativeDate(date: Date): string {
   // Handle invalid dates
-  if (isNaN(date.getTime())) {
+  if (Number.isNaN(date.getTime())) {
     return 'Invalid date'
   }
 
@@ -221,7 +221,7 @@ export function formatRelativeDate(date: Date): string {
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
 
   // Handle cases where the difference is not finite
-  if (!isFinite(diffInSeconds)) {
+  if (!Number.isFinite(diffInSeconds)) {
     return 'Invalid date'
   }
 
@@ -305,7 +305,6 @@ export function formatTrend(value: number, options: TrendFormatOptions = {}): st
         maximumFractionDigits: decimals,
       })
       break
-    case 'percentage':
     default:
       formattedValue = formatPercentage(Math.abs(value), { decimals })
       break

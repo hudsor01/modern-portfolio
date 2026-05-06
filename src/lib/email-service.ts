@@ -26,7 +26,9 @@ const NODE_ENV = env.NODE_ENV
 // Email templates
 export const EmailTemplates = {
   contact: (data: ContactFormData) => ({
-    subject: data.subject ? `Portfolio Contact: ${escapeHtml(data.subject)}` : `Portfolio Contact from ${escapeHtml(data.name)}`,
+    subject: data.subject
+      ? `Portfolio Contact: ${escapeHtml(data.subject)}`
+      : `Portfolio Contact from ${escapeHtml(data.name)}`,
     text: `
 New contact form submission from your portfolio:
 
@@ -62,18 +64,26 @@ Time: ${new Date().toISOString()}
                 </a>
               </td>
             </tr>
-            ${data.phone ? `
+            ${
+              data.phone
+                ? `
             <tr>
               <td style="padding: 8px 0; font-weight: 600; color: #374151;">Phone:</td>
               <td style="padding: 8px 0; color: #1f2937;">${escapeHtml(data.phone)}</td>
             </tr>
-            ` : ''}
-            ${data.subject ? `
+            `
+                : ''
+            }
+            ${
+              data.subject
+                ? `
             <tr>
               <td style="padding: 8px 0; font-weight: 600; color: #374151;">Subject:</td>
               <td style="padding: 8px 0; color: #1f2937;">${escapeHtml(data.subject)}</td>
             </tr>
-            ` : ''}
+            `
+                : ''
+            }
           </table>
         </div>
 
@@ -148,45 +158,46 @@ This is an automated response. Please do not reply to this email.
   }),
 } as const
 
-
 // Email service class
 export class EmailService {
   private resend: Resend | null = null
   private isProduction: boolean
-  
+
   constructor() {
     this.isProduction = NODE_ENV === 'production'
-    
+
     if (RESEND_API_KEY && RESEND_API_KEY !== 'mock_api_key_for_development') {
       this.resend = new Resend(RESEND_API_KEY)
     }
   }
-  
+
   async validateData(data: unknown): Promise<ContactFormData> {
     return contactFormSchema.parse(data)
   }
-  
+
   async sendContactEmail(data: ContactFormData, clientIP?: string): Promise<EmailServiceResult> {
     try {
       // Rate limiting
       const identifier = clientIP || 'unknown'
       const rateCheck = checkContactFormRateLimit(identifier)
-      
+
       if (!rateCheck.allowed) {
         return {
           success: false,
-          error: rateCheck.blocked ? 'Account temporarily blocked due to excessive attempts' : 'Rate limit exceeded',
+          error: rateCheck.blocked
+            ? 'Account temporarily blocked due to excessive attempts'
+            : 'Rate limit exceeded',
           retryAfter: rateCheck.retryAfter,
         }
       }
-      
+
       // Validate data
       const validatedData = await this.validateData(data)
-      
+
       if (!this.resend) {
         return this.handleMockEmail(validatedData)
       }
-      
+
       // Send notification email to site owner
       const contactTemplate = EmailTemplates.contact(validatedData)
       const contactResult = await this.resend.emails.send({
@@ -201,15 +212,18 @@ export class EmailService {
           'X-Contact-Name': validatedData.name,
         },
       })
-      
+
       if (contactResult.error) {
-        logger.error('Failed to send contact notification', new Error(String(contactResult.error) || 'Unknown error'))
+        logger.error(
+          'Failed to send contact notification',
+          new Error(String(contactResult.error) || 'Unknown error')
+        )
         return {
           success: false,
           error: 'Failed to send notification email',
         }
       }
-      
+
       // Send auto-reply to user
       const autoReplyTemplate = EmailTemplates.autoReply(validatedData)
       const autoReplyResult = await this.resend.emails.send({
@@ -222,12 +236,12 @@ export class EmailService {
           'X-Auto-Reply': 'true',
         },
       })
-      
+
       // Auto-reply failure is not critical
       if (autoReplyResult.error) {
         emailLogger.warn('Failed to send auto-reply', { error: String(autoReplyResult.error) })
       }
-      
+
       return {
         success: true,
         data: {
@@ -236,38 +250,44 @@ export class EmailService {
         },
       }
     } catch (error) {
-      emailLogger.error('Email service error', error instanceof Error ? error : new Error(String(error)))
-      
+      emailLogger.error(
+        'Email service error',
+        error instanceof Error ? error : new Error(String(error))
+      )
+
       if (error instanceof z.ZodError) {
         const rawFieldErrors = error.flatten().fieldErrors
         const validationErrors: Record<string, string[]> = {}
-        
+
         for (const key in rawFieldErrors) {
-          if (Object.prototype.hasOwnProperty.call(rawFieldErrors, key)) {
-            const errorMessages = rawFieldErrors[key as keyof typeof rawFieldErrors];
+          if (Object.hasOwn(rawFieldErrors, key)) {
+            const errorMessages = rawFieldErrors[key as keyof typeof rawFieldErrors]
             if (errorMessages && Array.isArray(errorMessages)) {
-              validationErrors[key] = errorMessages;
+              validationErrors[key] = errorMessages
             }
           }
         }
-        
+
         return {
           success: false,
           error: 'Validation error',
           validationErrors,
         }
       }
-      
+
       return {
         success: false,
         error: 'An unexpected error occurred',
       }
     }
   }
-  
+
   private async handleMockEmail(_data: ContactFormData): Promise<EmailServiceResult> {
     if (this.isProduction) {
-      emailLogger.error('Email service not configured in production', new Error('Resend API key not configured'))
+      emailLogger.error(
+        'Email service not configured in production',
+        new Error('Resend API key not configured')
+      )
       return {
         success: false,
         error: 'Email service not available',

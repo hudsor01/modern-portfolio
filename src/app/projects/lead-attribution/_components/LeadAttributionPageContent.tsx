@@ -31,10 +31,7 @@ import { InsightsSection } from './InsightsSection'
 import { NarrativeSections } from './NarrativeSections'
 
 export default function LeadAttribution() {
-  const {
-    data: analyticsData,
-    isLoading,
-  } = useAnalyticsData()
+  const { data: analyticsData, isLoading } = useAnalyticsData()
 
   const leadSources = (() => {
     if (analyticsData?.leadAttribution?.length) {
@@ -118,7 +115,6 @@ export default function LeadAttribution() {
     prevMonth && lastMonth && prevMonth.leads > 0
       ? ((lastMonth.leads - prevMonth.leads) / prevMonth.leads) * 100
       : 0
-
 
   // Standardized metrics configuration using consistent data formatting
   const metrics = [

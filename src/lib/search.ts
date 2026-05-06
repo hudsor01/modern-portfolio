@@ -39,7 +39,7 @@ export async function searchBlogPosts(
     .replace(/[<>!*():|&]/g, ' ')
     .trim()
     .split(/\s+/)
-    .filter(term => term.length > 0)
+    .filter((term) => term.length > 0)
     .join(' & ') // Use AND operator between terms
 
   if (!sanitizedQuery) {
@@ -47,9 +47,10 @@ export async function searchBlogPosts(
   }
 
   // Build status filter for WHERE clause
-  const statusCondition = statusFilter && statusFilter.length > 0
-    ? Prisma.sql`AND status = ANY(${statusFilter})`
-    : Prisma.empty
+  const statusCondition =
+    statusFilter && statusFilter.length > 0
+      ? Prisma.sql`AND status = ANY(${statusFilter})`
+      : Prisma.empty
 
   let fullTextResults: SearchResult[] = []
 
@@ -79,7 +80,8 @@ export async function searchBlogPosts(
     // Fallback: Trigram fuzzy search for typos/misspellings
     // Only if full-text search didn't find enough results
     const needsFuzzySearch = fullTextResults.length < Math.min(limit, 5)
-    const fuzzyResults = needsFuzzySearch ? await db.$queryRaw<SearchResult[]>`
+    const fuzzyResults = needsFuzzySearch
+      ? await db.$queryRaw<SearchResult[]>`
       SELECT
         id,
         title,
@@ -93,20 +95,26 @@ export async function searchBlogPosts(
       FROM blog_posts
       WHERE (title % ${query} OR COALESCE(excerpt, '') % ${query})
         ${statusCondition}
-        ${fullTextResults.length > 1
-          ? Prisma.sql`AND id NOT IN (${Prisma.join(fullTextResults.map(r => r.id))})`
-          : fullTextResults.length === 1
-            ? Prisma.sql`AND id != ${fullTextResults[0]!.id}`
-            : Prisma.empty}
+        ${
+          fullTextResults.length > 1
+            ? Prisma.sql`AND id NOT IN (${Prisma.join(fullTextResults.map((r) => r.id))})`
+            : fullTextResults.length === 1
+              ? Prisma.sql`AND id != ${fullTextResults[0]!.id}`
+              : Prisma.empty
+        }
       ORDER BY rank DESC
       LIMIT ${Math.max(0, limit - fullTextResults.length)}
       OFFSET ${offset}
-    ` : []
+    `
+      : []
 
     // Combine exact and fuzzy results
     return [...fullTextResults, ...fuzzyResults]
   } catch (error) {
-    logger.error('Search error during fuzzy fallback', error instanceof Error ? error : new Error(String(error)))
+    logger.error(
+      'Search error during fuzzy fallback',
+      error instanceof Error ? error : new Error(String(error))
+    )
     // Return full-text results even if fuzzy search fails
     // Better to return partial results than nothing
     return fullTextResults
@@ -124,7 +132,7 @@ export function highlightSearchTerms(text: string, query: string): string {
   const terms = query
     .toLowerCase()
     .split(/\s+/)
-    .filter(term => term.length > 2) // Only highlight terms with 3+ chars
+    .filter((term) => term.length > 2) // Only highlight terms with 3+ chars
 
   let highlighted = text
 
@@ -146,10 +154,7 @@ export function highlightSearchTerms(text: string, query: string): string {
  * @param limit - Maximum suggestions to return
  * @returns Array of suggested search terms
  */
-export async function getSearchSuggestions(
-  prefix: string,
-  limit: number = 5
-): Promise<string[]> {
+export async function getSearchSuggestions(prefix: string, limit: number = 5): Promise<string[]> {
   if (prefix.length < 2) {
     return []
   }
@@ -165,17 +170,20 @@ export async function getSearchSuggestions(
         AND EXISTS (
           SELECT 1
           FROM unnest(keywords) k
-          WHERE k ILIKE ${prefix + '%'}
+          WHERE k ILIKE ${`${prefix}%`}
         )
       GROUP BY keyword
-      HAVING keyword ILIKE ${prefix + '%'}
+      HAVING keyword ILIKE ${`${prefix}%`}
       ORDER BY count DESC, keyword
       LIMIT ${limit}
     `
 
-    return suggestions.map(s => s.keyword)
+    return suggestions.map((s) => s.keyword)
   } catch (error) {
-    logger.error('Search suggestions error', error instanceof Error ? error : new Error(String(error)))
+    logger.error(
+      'Search suggestions error',
+      error instanceof Error ? error : new Error(String(error))
+    )
     return []
   }
 }

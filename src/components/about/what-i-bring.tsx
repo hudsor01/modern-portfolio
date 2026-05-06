@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Target, BarChart3, Zap, Users, Brain, Rocket } from 'lucide-react'
-import { LucideIcon } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 interface WhatIBringItem {
   title: string
@@ -18,40 +18,45 @@ interface WhatIBringItem {
 const WHAT_I_BRING: WhatIBringItem[] = [
   {
     title: 'Systems Thinking',
-    description: "I don't just fix symptoms. I redesign workflows that prevent issues from recurring.",
+    description:
+      "I don't just fix symptoms. I redesign workflows that prevent issues from recurring.",
     icon: Target,
-    color: 'text-primary'
+    color: 'text-primary',
   },
   {
     title: 'Data Fluency',
-    description: 'Translate SQL queries into executive narratives. Make numbers tell stories that drive decisions.',
+    description:
+      'Translate SQL queries into executive narratives. Make numbers tell stories that drive decisions.',
     icon: BarChart3,
-    color: 'text-secondary'
+    color: 'text-secondary',
   },
   {
     title: 'Bias for Action',
-    description: "Certified in SalesLoft & HubSpot, but I ship improvements before the certification arrives.",
+    description:
+      'Certified in SalesLoft & HubSpot, but I ship improvements before the certification arrives.',
     icon: Zap,
-    color: 'text-accent'
+    color: 'text-accent',
   },
   {
     title: 'Bridge Builder',
-    description: 'Translate between sales, marketing, finance, and engineering—making everyone feel heard.',
+    description:
+      'Translate between sales, marketing, finance, and engineering—making everyone feel heard.',
     icon: Users,
-    color: 'text-primary'
+    color: 'text-primary',
   },
   {
     title: 'Strategic Simplifier',
-    description: 'Turn complex multi-system architectures into intuitive workflows anyone can understand.',
+    description:
+      'Turn complex multi-system architectures into intuitive workflows anyone can understand.',
     icon: Brain,
-    color: 'text-secondary'
+    color: 'text-secondary',
   },
   {
     title: 'Growth Catalyst',
     description: 'Build systems that scale with you—from startup chaos to enterprise precision.',
     icon: Rocket,
-    color: 'text-accent'
-  }
+    color: 'text-accent',
+  },
 ]
 
 interface WhatIBringProps {
@@ -86,9 +91,7 @@ export function WhatIBring({ className = '' }: WhatIBringProps) {
               <h3 className="font-display text-xl font-semibold text-foreground mb-3">
                 {item.title}
               </h3>
-              <p className="text-muted-foreground leading-relaxed">
-                {item.description}
-              </p>
+              <p className="text-muted-foreground leading-relaxed">{item.description}</p>
             </CardContent>
           </Card>
         ))}

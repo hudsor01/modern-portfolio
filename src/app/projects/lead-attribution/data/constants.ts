@@ -39,7 +39,16 @@ export const monthlyTrendData = [
 ]
 
 export const technologies = [
-  'React 19', 'TypeScript', 'Attribution Modeling', 'Customer Journey Mapping',
-  'Cross-Device Tracking', 'Conversion Analysis', 'Marketing Analytics', 'ROI Optimization',
-  'Multi-Touch Attribution', 'Data Visualization', 'Campaign Performance', 'Lead Scoring'
+  'React 19',
+  'TypeScript',
+  'Attribution Modeling',
+  'Customer Journey Mapping',
+  'Cross-Device Tracking',
+  'Conversion Analysis',
+  'Marketing Analytics',
+  'ROI Optimization',
+  'Multi-Touch Attribution',
+  'Data Visualization',
+  'Campaign Performance',
+  'Lead Scoring',
 ]

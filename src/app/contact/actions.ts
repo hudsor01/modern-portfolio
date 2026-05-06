@@ -39,10 +39,11 @@ export async function submitContactForm(formData: unknown) {
         // Rate limiting check using IP-based identification
         const headersList = await headers()
         const forwarded = headersList.get('x-forwarded-for')
-        const ip = (forwarded ? forwarded.split(/, /)[0] : headersList.get('x-real-ip')) || 'unknown'
+        const ip =
+          (forwarded ? forwarded.split(/, /)[0] : headersList.get('x-real-ip')) || 'unknown'
 
         const rateLimitResult = checkContactFormRateLimit(`${ip}`, {
-          path: '/contact'
+          path: '/contact',
         })
 
         if (!rateLimitResult.allowed) {

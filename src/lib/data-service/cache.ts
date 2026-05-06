@@ -69,7 +69,9 @@ export class DataCacheService {
       }
     }
 
-    keysToDelete.forEach((key) => this.cache.delete(key))
+    keysToDelete.forEach((key) => {
+      this.cache.delete(key)
+    })
 
     if (keysToDelete.length > 0) {
       logger.debug('Cache cleanup', {

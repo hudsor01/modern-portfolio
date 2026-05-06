@@ -469,7 +469,8 @@ export const errorBoundaryLogger = new ErrorBoundaryLogger(logger)
 export const performanceMonitor = new PerformanceMonitor(logger)
 
 // Utility functions
-export function withLogging<T extends unknown[], R>( // Changed any[] to unknown[]
+export function withLogging<T extends unknown[], R>(
+  // Changed any[] to unknown[]
   operation: string,
   fn: (...args: T) => R,
   context?: LogContext
@@ -479,7 +480,8 @@ export function withLogging<T extends unknown[], R>( // Changed any[] to unknown
   }
 }
 
-export function withAsyncLogging<T extends unknown[], R>( // Changed any[] to unknown[]
+export function withAsyncLogging<T extends unknown[], R>(
+  // Changed any[] to unknown[]
   operation: string,
   fn: (...args: T) => Promise<R>,
   context?: LogContext

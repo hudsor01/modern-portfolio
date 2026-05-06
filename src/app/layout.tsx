@@ -1,6 +1,6 @@
-import React from 'react'
+import type React from 'react'
 import './globals.css'
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { Playfair_Display, Spline_Sans, Roboto_Mono } from 'next/font/google'
 import { ClientComponentsProvider } from '@/components/providers/client-components-provider'
@@ -8,6 +8,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Toaster } from '@/components/ui/toaster'
 import { ScrollToTop } from '@/components/layout/scroll-to-top'
+import { Footer } from '@/components/layout/footer'
 import { baseMetadata } from './shared-metadata'
 import { PersonJsonLd } from '@/components/seo/json-ld/person-json-ld'
 import { WebsiteJsonLd } from '@/components/seo/json-ld/website-json-ld'
@@ -85,6 +86,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <ClientComponentsProvider>
             <ReadingProgressBar />
             {children}
+            <Footer />
             <ScrollToTop />
             <Toaster position="bottom-right" closeButton richColors />
             <Analytics />

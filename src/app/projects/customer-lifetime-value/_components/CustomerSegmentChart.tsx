@@ -19,7 +19,10 @@ const CustomerSegmentChart = memo(function CustomerSegmentChart() {
   return (
     <div className="h-[var(--chart-height-md)]">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={customerSegmentChartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+        <BarChart
+          data={customerSegmentChartData}
+          margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+        >
           <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
           <XAxis
             dataKey="segment"
@@ -67,8 +70,20 @@ const CustomerSegmentChart = memo(function CustomerSegmentChart() {
             labelFormatter={(label) => `Segment: ${label}`}
           />
           <Legend />
-          <Bar yAxisId="count" dataKey="count" fill={chartColors.primary} radius={[4, 4, 0, 0]} name="count" />
-          <Bar yAxisId="clv" dataKey="clv" fill={chartColors.success} radius={[4, 4, 0, 0]} name="clv" />
+          <Bar
+            yAxisId="count"
+            dataKey="count"
+            fill={chartColors.primary}
+            radius={[4, 4, 0, 0]}
+            name="count"
+          />
+          <Bar
+            yAxisId="clv"
+            dataKey="clv"
+            fill={chartColors.success}
+            radius={[4, 4, 0, 0]}
+            name="clv"
+          />
         </BarChart>
       </ResponsiveContainer>
       <p className="mt-4 text-center text-sm italic text-muted-foreground">
