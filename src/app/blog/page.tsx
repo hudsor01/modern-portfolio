@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { cache } from 'react'
 import { headers } from 'next/headers'
 import { Navbar } from '@/components/layout/navbar'
-import { Footer } from '@/components/layout/footer'
 import { BlogList } from './_components/blog-list'
 import { BlogJsonLd } from '@/components/seo/blog-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
@@ -153,7 +152,6 @@ export default async function BlogHomePage() {
             <BlogList initialPosts={posts} initialCategories={categories} />
           </div>
         </main>
-        <Footer />
       </div>
     </>
   )
