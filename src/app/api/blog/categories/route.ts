@@ -1,12 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { ApiResponse, BlogCategoryData } from '@/types/api'
+import { type NextRequest, NextResponse } from 'next/server'
+import type { ApiResponse, BlogCategoryData } from '@/types/api'
 import { db } from '@/lib/db'
 import { createContextLogger } from '@/lib/logger'
-import {
-  generateSlug,
-  createErrorResponse,
-  transformToCategoryData,
-} from '@/lib/api-blog'
+import { generateSlug, createErrorResponse, transformToCategoryData } from '@/lib/api-blog'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
 
 const logger = createContextLogger('CategoriesAPI')
@@ -41,10 +37,9 @@ export async function GET() {
       'Blog Categories API Error:',
       error instanceof Error ? error : new Error(String(error))
     )
-    return NextResponse.json(
-      createErrorResponse('Failed to fetch blog categories'),
-      { status: 500 }
-    )
+    return NextResponse.json(createErrorResponse('Failed to fetch blog categories'), {
+      status: 500,
+    })
   }
 }
 
@@ -58,10 +53,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
 
     if (!body.name) {
-      return NextResponse.json(
-        createErrorResponse('Missing required field: name'),
-        { status: 400 }
-      )
+      return NextResponse.json(createErrorResponse('Missing required field: name'), { status: 400 })
     }
 
     const slug = generateSlug(body.name)
@@ -72,10 +64,9 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingCategory) {
-      return NextResponse.json(
-        createErrorResponse('Category with this name already exists'),
-        { status: 409 }
-      )
+      return NextResponse.json(createErrorResponse('Category with this name already exists'), {
+        status: 409,
+      })
     }
 
     // Create new category in database
@@ -109,9 +100,6 @@ export async function POST(request: NextRequest) {
       'Blog Category Creation Error:',
       error instanceof Error ? error : new Error(String(error))
     )
-    return NextResponse.json(
-      createErrorResponse('Failed to create blog category'),
-      { status: 500 }
-    )
+    return NextResponse.json(createErrorResponse('Failed to create blog category'), { status: 500 })
   }
 }

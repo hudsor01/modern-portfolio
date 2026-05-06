@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { getProject } from '@/lib/projects'
 import { z } from 'zod'
 import { validationErrorResponse } from '@/lib/api-response'
@@ -48,7 +48,10 @@ export async function GET(request: NextRequest, context: { params: Promise<{ slu
       data: project,
     })
   } catch (error) {
-    logger.error('Error fetching project:', error instanceof Error ? error : new Error(String(error)))
+    logger.error(
+      'Error fetching project:',
+      error instanceof Error ? error : new Error(String(error))
+    )
 
     if (error instanceof z.ZodError) {
       return validationErrorResponse(error)

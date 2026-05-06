@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { getProjects } from '@/lib/projects'
 import { createApiSuccessResponse, createApiErrorResponse } from '@/lib/api-response'
 import { ApiErrorType } from '@/types/api'

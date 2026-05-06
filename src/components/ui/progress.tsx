@@ -13,7 +13,8 @@ interface ProgressProps extends React.HTMLAttributes<HTMLDivElement> {
 const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
   ({ className, value, max = 100, determinate = true, ...props }, ref) => {
     // Guard against division by zero when max is 0 or invalid
-    const percentage = determinate && max > 0 ? Math.min(Math.max(0, (value || 0) / max * 100), 100) : null;
+    const percentage =
+      determinate && max > 0 ? Math.min(Math.max(0, ((value || 0) / max) * 100), 100) : null
 
     return (
       <div
@@ -22,16 +23,13 @@ const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
         aria-valuemin={0}
         aria-valuemax={max}
         aria-valuenow={determinate ? value : undefined}
-        className={cn(
-          "relative h-2 w-full overflow-hidden rounded-full bg-secondary",
-          className
-        )}
+        className={cn('relative h-2 w-full overflow-hidden rounded-full bg-secondary', className)}
         {...props}
       >
         <div
           className={cn(
-            "h-full w-full flex-1 bg-primary transition-all",
-            determinate ? "duration-300 ease-in-out" : "animate-indeterminate-progress"
+            'h-full w-full flex-1 bg-primary transition-all',
+            determinate ? 'duration-300 ease-in-out' : 'animate-indeterminate-progress'
           )}
           style={{
             width: determinate ? `${percentage}%` : undefined,
@@ -42,6 +40,6 @@ const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
     )
   }
 )
-Progress.displayName = "Progress"
+Progress.displayName = 'Progress'
 
 export { Progress }

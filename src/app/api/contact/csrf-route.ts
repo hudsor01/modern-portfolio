@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { createContextLogger } from '@/lib/logger'
 import { createNewCSRFToken, csrfProtectionMiddleware } from '@/lib/csrf-protection'
 
@@ -17,10 +17,7 @@ export async function GET(request: NextRequest) {
 
     if (!valid) {
       logger.warn('CSRF protection validation failed', { error })
-      return NextResponse.json(
-        { error: 'CSRF protection validation failed' },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: 'CSRF protection validation failed' }, { status: 403 })
     }
 
     // Generate a fresh token
@@ -34,16 +31,16 @@ export async function GET(request: NextRequest) {
         status: 200,
         headers: {
           'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0',
+          Pragma: 'no-cache',
+          Expires: '0',
         },
       }
     )
   } catch (error) {
-    logger.error('CSRF token generation error', error instanceof Error ? error : new Error(String(error)))
-    return NextResponse.json(
-      { error: 'Failed to generate CSRF token' },
-      { status: 500 }
+    logger.error(
+      'CSRF token generation error',
+      error instanceof Error ? error : new Error(String(error))
     )
+    return NextResponse.json({ error: 'Failed to generate CSRF token' }, { status: 500 })
   }
 }

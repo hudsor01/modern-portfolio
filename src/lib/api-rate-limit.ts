@@ -2,7 +2,7 @@
  * API Rate Limiting — checkRateLimitOrRespond and RateLimitPresets
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { getRateLimiter } from '@/lib/rate-limiter/store'
 import { getClientIdentifier } from './api-request'
 

@@ -70,11 +70,7 @@ describe('env-validation', () => {
       vi.stubEnv('ALLOWED_ORIGINS', 'https://a.com, https://b.com , https://c.com')
 
       const mod = await importEnvModule()
-      expect(mod.env.ALLOWED_ORIGINS).toEqual([
-        'https://a.com',
-        'https://b.com',
-        'https://c.com',
-      ])
+      expect(mod.env.ALLOWED_ORIGINS).toEqual(['https://a.com', 'https://b.com', 'https://c.com'])
     })
 
     it('transforms USE_LOCAL_DB="true" into boolean true', async () => {
@@ -98,9 +94,7 @@ describe('env-validation', () => {
       vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'http://localhost:3000')
       vi.stubEnv('JWT_SECRET', 'too-short')
 
-      await expect(importEnvModule()).rejects.toThrow(
-        /JWT_SECRET must be at least 32 characters/
-      )
+      await expect(importEnvModule()).rejects.toThrow(/JWT_SECRET must be at least 32 characters/)
     })
 
     it('rejects JWT_EXPIRES_IN in the wrong format', async () => {

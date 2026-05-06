@@ -39,19 +39,23 @@ const BreadcrumbLink = React.forwardRef<HTMLAnchorElement, BreadcrumbLinkProps>(
   ({ asChild, className, children, ...props }, ref) => {
     // If asChild is true, render the children with our props
     if (asChild && React.isValidElement(children)) {
-      const childProps = children.props as React.HTMLAttributes<HTMLElement>; 
+      const childProps = children.props as React.HTMLAttributes<HTMLElement>
       // The 'ref' prop for cloneElement needs to be correctly typed.
       // It's part of React.Attributes, not HTMLAttributes.
       const newProps = {
         ...props,
-        className: cn('hover:text-foreground transition-colors duration-150 ease-out', className, childProps.className),
+        className: cn(
+          'hover:text-foreground transition-colors duration-150 ease-out',
+          className,
+          childProps.className
+        ),
         ref, // This is the ref from React.forwardRef
-      };
+      }
       // TypeScript might still struggle here if `children` is a DOM element string like 'a'.
       // If `children` is expected to be a component that can take a ref, this is usually fine.
       // For DOM elements, React.cloneElement handles ref correctly.
       // Let's cast newProps to include ref explicitly if needed, or rely on cloneElement's typing.
-      return React.cloneElement(children as React.ReactElement<unknown>, newProps); // Changed any to unknown
+      return React.cloneElement(children as React.ReactElement<unknown>, newProps) // Changed any to unknown
     }
 
     return (
@@ -63,11 +67,11 @@ const BreadcrumbLink = React.forwardRef<HTMLAnchorElement, BreadcrumbLinkProps>(
       >
         {children}
       </a>
-    );
+    )
   }
-);
+)
 
-BreadcrumbLink.displayName = 'BreadcrumbLink';
+BreadcrumbLink.displayName = 'BreadcrumbLink'
 
 function BreadcrumbPage({ className, ...props }: React.ComponentProps<'span'>) {
   return (

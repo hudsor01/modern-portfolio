@@ -21,7 +21,7 @@ export function ProjectsTypewriter({
   const [typingDelay, setTypingDelay] = useState(typingSpeed)
 
   useEffect(() => {
-    const phrase = phrases[currentPhrase] || '';
+    const phrase = phrases[currentPhrase] || ''
 
     const timer = setTimeout(() => {
       if (!isDeleting) {

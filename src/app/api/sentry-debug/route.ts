@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import * as Sentry from '@sentry/nextjs'
 import { env } from '@/lib/env-validation'
 import { checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-rate-limit'
@@ -10,10 +10,7 @@ import { checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-rate-limit'
  */
 export async function GET(request: NextRequest) {
   if (env.NODE_ENV === 'production') {
-    return NextResponse.json(
-      { success: false, error: 'Not found' },
-      { status: 404 }
-    )
+    return NextResponse.json({ success: false, error: 'Not found' }, { status: 404 })
   }
 
   const rateLimitResponse = checkRateLimitOrRespond(
@@ -39,8 +36,10 @@ export async function GET(request: NextRequest) {
       NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN ? 'SET' : 'NOT SET',
       SENTRY_DSN: process.env.SENTRY_DSN ? 'SET' : 'NOT SET',
       NEXT_PUBLIC_SENTRY_ENVIRONMENT: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT || 'not set',
-      NEXT_PUBLIC_SENTRY_REPLAYS_SESSION_SAMPLE_RATE: process.env.NEXT_PUBLIC_SENTRY_REPLAYS_SESSION_SAMPLE_RATE || 'not set',
-      NEXT_PUBLIC_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE: process.env.NEXT_PUBLIC_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE || 'not set',
+      NEXT_PUBLIC_SENTRY_REPLAYS_SESSION_SAMPLE_RATE:
+        process.env.NEXT_PUBLIC_SENTRY_REPLAYS_SESSION_SAMPLE_RATE || 'not set',
+      NEXT_PUBLIC_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE:
+        process.env.NEXT_PUBLIC_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE || 'not set',
       NODE_ENV: process.env.NODE_ENV,
     },
   })

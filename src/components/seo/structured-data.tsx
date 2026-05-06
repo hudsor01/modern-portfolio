@@ -14,19 +14,19 @@
  * static strings with no user input — no mitigation needed.
  */
 
-import { safeJsonLdStringify } from '@/lib/json-ld-utils';
+import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 
-export { safeJsonLdStringify } from '@/lib/json-ld-utils';
+export { safeJsonLdStringify } from '@/lib/json-ld-utils'
 
 // More specific types for structured data
-type JsonPrimitive = string | number | boolean | null;
-type JsonValue = JsonPrimitive | JsonObject | JsonArray;
+type JsonPrimitive = string | number | boolean | null
+type JsonValue = JsonPrimitive | JsonObject | JsonArray
 interface JsonObject extends Record<string, JsonValue> {}
 interface JsonArray extends Array<JsonValue> {}
 
 interface StructuredDataProps {
-  data: JsonObject;
-  nonce?: string | null;
+  data: JsonObject
+  nonce?: string | null
 }
 
 export function StructuredData({ data, nonce }: StructuredDataProps) {
@@ -36,5 +36,5 @@ export function StructuredData({ data, nonce }: StructuredDataProps) {
       nonce={nonce ?? undefined}
       dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(data) }}
     />
-  );
+  )
 }

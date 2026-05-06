@@ -40,7 +40,6 @@ export function ItemListJsonLd({
     <script
       type="application/ld+json"
       nonce={nonce ?? undefined}
-       
       dangerouslySetInnerHTML={{ __html: html }}
     />
   )

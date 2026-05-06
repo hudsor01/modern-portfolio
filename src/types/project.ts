@@ -197,17 +197,9 @@ export function validateProject(project: unknown): asserts project is Project {
       if (p.createdAt === undefined || p.createdAt === null) errors.push('createdAt is required')
       if (p.updatedAt === undefined || p.updatedAt === null) errors.push('updatedAt is required')
 
-      if (
-        p.link !== undefined &&
-        p.link !== null &&
-        typeof p.link !== 'string'
-      )
+      if (p.link !== undefined && p.link !== null && typeof p.link !== 'string')
         errors.push('link must be a string if provided')
-      if (
-        p.github !== undefined &&
-        p.github !== null &&
-        typeof p.github !== 'string'
-      )
+      if (p.github !== undefined && p.github !== null && typeof p.github !== 'string')
         errors.push('github must be a string if provided')
     }
 

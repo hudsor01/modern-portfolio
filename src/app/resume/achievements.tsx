@@ -1,6 +1,5 @@
 'use client'
 
-
 import { useInView } from 'react-intersection-observer'
 import { BarChart2, Users, Lightbulb } from 'lucide-react'
 
@@ -37,14 +36,8 @@ export function Achievements() {
     <section className="py-20 bg-muted/30">
       <div className="w-full mx-auto max-w-7xl px-4">
         <div className="text-center mb-16">
-          <h2
-            className="typography-h2 border-none pb-0 text-2xl mb-4"
-          >
-            Key Achievements
-          </h2>
-          <p
-            className="text-muted-foreground max-w-2xl mx-auto"
-          >
+          <h2 className="typography-h2 border-none pb-0 text-2xl mb-4">Key Achievements</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
             Results-driven professional with a proven track record of success in revenue operations
           </p>
         </div>
@@ -60,9 +53,7 @@ export function Achievements() {
                 <div className="w-12 h-12 rounded-full flex items-center justify-center mr-4 bg-primary/10">
                   <achievement.icon size={24} className="text-primary" />
                 </div>
-                <h3 className="typography-h1 text-xl text-primary">
-                  {achievement.stat}
-                </h3>
+                <h3 className="typography-h1 text-xl text-primary">{achievement.stat}</h3>
               </div>
 
               <h4 className="typography-h4 mb-3">{achievement.title}</h4>

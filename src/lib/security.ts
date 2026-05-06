@@ -43,12 +43,7 @@ export const securityConfig: SecurityConfig = {
   hstsPreload: true,
 
   // Permissions Policy
-  permissionsPolicy: [
-    'camera=()',
-    'microphone=()',
-    'geolocation=()',
-    'interest-cohort=()',
-  ],
+  permissionsPolicy: ['camera=()', 'microphone=()', 'geolocation=()', 'interest-cohort=()'],
 
   // Cross-Origin Policies
   crossOriginEmbedderPolicy: 'require-corp',

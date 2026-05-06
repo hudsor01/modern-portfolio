@@ -3,13 +3,12 @@
  * Contains interface definitions for UI components
  */
 
-import { JSX, ReactNode } from 'react'
-import { ImageProps } from 'next/image'
-import { ButtonHTMLAttributes } from 'react'
-import { ContactFormData } from '@/types/api'
+import type { JSX, ReactNode } from 'react'
+import type { ImageProps } from 'next/image'
+import type { ButtonHTMLAttributes } from 'react'
+import type { ContactFormData } from '@/types/api'
 // Motion types - no longer using framer-motion
 export type MotionVariant = Record<string, unknown>
-
 
 // Animation related interfaces
 export interface AnimatedHeadingProps {
@@ -40,12 +39,12 @@ export interface AnimatedSectionProps {
 }
 
 export interface TextRevealProps {
-  text: string;
-  className?: string;
-  once?: boolean;
-  delay?: number; // Corresponds to delayChildren in the component's variants
-  duration?: number; // Corresponds to staggerChildren in the component's variants
-  as?: keyof HTMLElementTagNameMap; // More specific: only HTML element tag names
+  text: string
+  className?: string
+  once?: boolean
+  delay?: number // Corresponds to delayChildren in the component's variants
+  duration?: number // Corresponds to staggerChildren in the component's variants
+  as?: keyof HTMLElementTagNameMap // More specific: only HTML element tag names
   // Removed speed, staggerChildren, delayChildren as they are superseded by delay/duration or not directly used
 }
 
@@ -191,7 +190,18 @@ export interface BackgroundEffectsProps {
 }
 
 export interface TypographyProps {
-  variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'blockquote' | 'large' | 'small' | 'muted'
+  variant?:
+    | 'h1'
+    | 'h2'
+    | 'h3'
+    | 'h4'
+    | 'h5'
+    | 'h6'
+    | 'p'
+    | 'blockquote'
+    | 'large'
+    | 'small'
+    | 'muted'
   children: ReactNode
   className?: string
   as?: keyof JSX.IntrinsicElements
@@ -254,6 +264,6 @@ export interface ContactFormProps {
 
 // Dialog specific interfaces
 export interface ContactDialogProps {
-  open: boolean;
-  onCloseAction: () => void;
+  open: boolean
+  onCloseAction: () => void
 }

@@ -3,7 +3,7 @@
  * Reduces conditional rendering boilerplate across project pages
  */
 
-import { type ComponentType } from 'react'
+import type { ComponentType } from 'react'
 
 export interface TabComponent<T extends string = string> {
   id: T

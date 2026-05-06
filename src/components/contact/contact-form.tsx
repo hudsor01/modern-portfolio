@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Field, FieldError } from '@/components/ui/field'
 import { Label } from '@/components/ui/label'
-import { type TanStackFieldApi, type UseContactFormReturn } from '@/types/forms'
+import type { TanStackFieldApi, UseContactFormReturn } from '@/types/forms'
 
 interface ContactFormProps {
   form: UseContactFormReturn
@@ -218,9 +218,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                 personal data with third parties and you can request deletion at any time.
               </div>
             )}
-            {error && (
-              <FieldError>{error.message}</FieldError>
-            )}
+            {error && <FieldError>{error.message}</FieldError>}
           </div>
         </div>
 

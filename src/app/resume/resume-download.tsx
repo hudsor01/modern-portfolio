@@ -78,7 +78,10 @@ export function ResumeDownload({
       downloadFile(pdfPath, 'Richard_Hudson_Resume.pdf')
       showSuccessToast('Resume downloaded successfully!', { id: toastId })
     } catch (error) {
-      logger.error('Error downloading resume', error instanceof Error ? error : new Error(String(error)))
+      logger.error(
+        'Error downloading resume',
+        error instanceof Error ? error : new Error(String(error))
+      )
       const errorMessage = error instanceof Error ? error.message : 'Failed to download resume'
       showErrorToast(errorMessage, { id: toastId })
     } finally {

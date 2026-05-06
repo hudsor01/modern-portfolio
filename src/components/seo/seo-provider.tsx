@@ -1,30 +1,30 @@
-'use client';
+'use client'
 
-import React from 'react';
-import { usePathname } from 'next/navigation';
-import { GlobalSEO } from './global-seo';
-import { siteConfig } from '@/lib/site';
+import type React from 'react'
+import { usePathname } from 'next/navigation'
+import { GlobalSEO } from './global-seo'
+import { siteConfig } from '@/lib/site'
 
 interface SEOProviderProps {
-  children: React.ReactNode;
-  title?: string;
-  description?: string;
-  keywords?: string[];
-  ogImage?: string;
-  ogType?: 'website' | 'article';
+  children: React.ReactNode
+  title?: string
+  description?: string
+  keywords?: string[]
+  ogImage?: string
+  ogType?: 'website' | 'article'
   article?: {
-    publishedTime?: string;
-    modifiedTime?: string;
-    authors?: string[];
-    section?: string;
-    tags?: string[];
-  };
-  noIndex?: boolean;
+    publishedTime?: string
+    modifiedTime?: string
+    authors?: string[]
+    section?: string
+    tags?: string[]
+  }
+  noIndex?: boolean
 }
 
 /**
  * SEO Provider Component
- * 
+ *
  * A wrapper component that provides SEO metadata and structured data
  * for all pages in the application.
  */
@@ -38,8 +38,8 @@ export function SEOProvider({
   article,
   noIndex = false,
 }: SEOProviderProps) {
-  const pathname = usePathname();
-  const canonicalUrl = `${siteConfig.url}${pathname}`;
+  const pathname = usePathname()
+  const canonicalUrl = `${siteConfig.url}${pathname}`
 
   return (
     <>
@@ -55,5 +55,5 @@ export function SEOProvider({
       />
       {children}
     </>
-  );
+  )
 }

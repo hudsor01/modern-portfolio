@@ -1,6 +1,12 @@
 // @vitest-environment jsdom
 import { describe, it, expect } from 'vitest'
-import { escapeHtml, sanitizeBlogHtml, stripHtml, isSafeUrl, sanitizeAttribute } from '@/lib/sanitization'
+import {
+  escapeHtml,
+  sanitizeBlogHtml,
+  stripHtml,
+  isSafeUrl,
+  sanitizeAttribute,
+} from '@/lib/sanitization'
 
 describe('escapeHtml', () => {
   it('encodes & as &amp;', () => {

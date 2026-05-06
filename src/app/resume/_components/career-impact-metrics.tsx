@@ -2,12 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card'
 import { AnimatedCounter } from '@/components/about/animated-counter'
-import {
-  TrendingUp,
-  Briefcase,
-  CheckCircle,
-  DollarSign,
-} from 'lucide-react'
+import { TrendingUp, Briefcase, CheckCircle, DollarSign } from 'lucide-react'
 
 interface CareerMetric {
   label: string
@@ -23,7 +18,7 @@ interface CareerImpactMetricsProps {
 
 const iconMap = {
   'trending-up': TrendingUp,
-  'briefcase': Briefcase,
+  briefcase: Briefcase,
   'check-circle': CheckCircle,
   'dollar-sign': DollarSign,
 }
@@ -32,20 +27,16 @@ export function CareerImpactMetrics({ stats, className = '' }: CareerImpactMetri
   return (
     <section className={className}>
       <div className="text-center mb-12">
-        <h2 className="font-display text-3xl lg:text-4xl font-semibold mb-4">
-          Career Impact
-        </h2>
+        <h2 className="font-display text-3xl lg:text-4xl font-semibold mb-4">Career Impact</h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Proven track record of driving revenue growth and operational excellence through data-driven decision making
+          Proven track record of driving revenue growth and operational excellence through
+          data-driven decision making
         </p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => (
-          <CareerMetricCard
-            key={stat.label}
-            stat={stat}
-          />
+          <CareerMetricCard key={stat.label} stat={stat} />
         ))}
       </div>
     </section>
@@ -68,17 +59,10 @@ function CareerMetricCard({ stat }: CareerMetricCardProps) {
           </div>
         </div>
         <div className="font-display text-3xl font-bold text-foreground mb-2">
-          <AnimatedCounter
-            value={stat.value}
-            duration={2000}
-          />
+          <AnimatedCounter value={stat.value} duration={2000} />
         </div>
-        <p className="text-sm font-semibold text-foreground mb-1">
-          {stat.label}
-        </p>
-        <p className="text-xs text-muted-foreground">
-          {stat.subtitle}
-        </p>
+        <p className="text-sm font-semibold text-foreground mb-1">{stat.label}</p>
+        <p className="text-xs text-muted-foreground">{stat.subtitle}</p>
       </CardContent>
     </Card>
   )

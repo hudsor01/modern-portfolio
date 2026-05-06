@@ -62,7 +62,9 @@ export function FeaturedProjects({ className = '' }: FeaturedProjectsProps) {
             </div>
             <div className="flex-1 min-w-0">
               <span className="font-medium text-foreground">{project.title}</span>
-              <div className="typography-small text-muted-foreground truncate">{project.description}</div>
+              <div className="typography-small text-muted-foreground truncate">
+                {project.description}
+              </div>
             </div>
             <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform shrink-0" />
           </Link>

@@ -1,6 +1,5 @@
 'use client'
 
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Award } from 'lucide-react'
@@ -19,10 +18,9 @@ interface CertificationsSectionProps {
   className?: string
 }
 
-
 export function CertificationsSection({
   certifications,
-  className = ''
+  className = '',
 }: CertificationsSectionProps) {
   return (
     <section className={className}>
@@ -37,10 +35,7 @@ export function CertificationsSection({
 
       <div className="grid md:grid-cols-2 gap-8 @container">
         {certifications.map((cert) => (
-          <CertificationCard
-            key={cert.name}
-            certification={cert}
-          />
+          <CertificationCard key={cert.name} certification={cert} />
         ))}
       </div>
     </section>
@@ -69,9 +64,7 @@ function CertificationCard({ certification }: CertificationCardProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground mb-4">
-          {certification.description}
-        </p>
+        <p className="text-sm text-muted-foreground mb-4">{certification.description}</p>
         <SkillTags skills={certification.skills} />
       </CardContent>
     </Card>

@@ -5,7 +5,7 @@
 
 import type { ChangeEvent, Dispatch, FormEvent, SetStateAction } from 'react'
 import type { ContactFormData } from './api'
-import { PostStatus, ContentType } from './blog'
+import type { PostStatus, ContentType } from './blog'
 
 // ============================================================================
 // TanStack Form Core Types
@@ -39,8 +39,6 @@ export interface TanStackFieldApi<TValue = unknown> {
   handleChange: (value: TValue) => void
   handleBlur: () => void
 }
-
-
 
 // ============================================================================
 // Contact Form Types

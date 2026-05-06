@@ -3,7 +3,7 @@
  * Integrates with csrf-protection token validation.
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { validateCSRFToken } from '@/lib/csrf-protection'
 import { logger } from '@/lib/logger'
 import { getClientIdentifier } from './api-request'

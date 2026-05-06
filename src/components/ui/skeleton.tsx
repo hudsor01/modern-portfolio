@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import * as React from 'react'
+import type * as React from 'react'
 
 type SkeletonVariant = 'default' | 'text' | 'card' | 'avatar' | 'button' | 'image' | 'table'
 
@@ -59,7 +59,8 @@ function Skeleton({
         // Shimmer effect: solid muted highlight with an opacity mask for the
         // edge fade. Keeps the shimmer UX without a color gradient (palette
         // rule forbids color-based gradients; masks are opacity-only).
-        shimmer && 'relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-foreground/10 before:[mask-image:linear-gradient(to_right,transparent_0%,black_50%,transparent_100%)]',
+        shimmer &&
+          'relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-foreground/10 before:[mask-image:linear-gradient(to_right,transparent_0%,black_50%,transparent_100%)]',
         className
       )}
       {...props}

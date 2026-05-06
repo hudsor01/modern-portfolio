@@ -2,7 +2,16 @@
 import { memo } from 'react'
 
 import { LazyComposedChart as ComposedChart } from '@/components/charts/lazy-charts'
-import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, Area } from 'recharts'
+import {
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Legend,
+  Area,
+} from 'recharts'
 import { chartColors, chartCssVars } from '@/lib/charts'
 import { clvTrendData } from '../data/constants'
 
@@ -63,7 +72,8 @@ const CLVTrendChart = memo(function CLVTrendChart() {
                 return [formatCurrency(Number(value)), 'Upper Confidence']
               if (safeName === 'confidence_low')
                 return [formatCurrency(Number(value)), 'Lower Confidence']
-              if (safeName === 'customers') return [Number(value).toLocaleString(), 'Customer Count']
+              if (safeName === 'customers')
+                return [Number(value).toLocaleString(), 'Customer Count']
               return [String(value), safeName]
             }}
           />

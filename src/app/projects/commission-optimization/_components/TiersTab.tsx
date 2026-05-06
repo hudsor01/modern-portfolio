@@ -7,7 +7,9 @@ import { commissionTiers } from '../data/constants'
 import { formatCurrency, formatPercentage } from '@/lib/data-formatters'
 
 const CommissionTierChart = dynamic(() => import('./CommissionTierChart'), {
-  loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
+  loading: () => (
+    <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />
+  ),
   ssr: false,
 })
 

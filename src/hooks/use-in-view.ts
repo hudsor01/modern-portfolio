@@ -9,10 +9,7 @@ import { useEffect, useState } from 'react'
  * @param options.once - If true, stop observing after first intersection
  * @returns boolean indicating if element is in view
  */
-export function useInView(
-  ref: React.RefObject<HTMLElement | null>,
-  options?: { once?: boolean }
-) {
+export function useInView(ref: React.RefObject<HTMLElement | null>, options?: { once?: boolean }) {
   const [isInView, setIsInView] = useState(false)
 
   useEffect(() => {

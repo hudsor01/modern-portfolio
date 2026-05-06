@@ -44,9 +44,10 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
   // Filter posts by selected category and search query
   const filteredPosts = initialPosts.filter((post) => {
     const matchesCategory = selectedCategory === 'All' || post.category?.name === selectedCategory
-    const matchesSearch = !searchQuery
-      || post.title.toLowerCase().includes(searchQuery.toLowerCase())
-      || post.excerpt?.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesSearch =
+      !searchQuery ||
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.excerpt?.toLowerCase().includes(searchQuery.toLowerCase())
     return matchesCategory && matchesSearch
   })
 

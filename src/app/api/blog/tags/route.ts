@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { ApiResponse, BlogTagData } from '@/types/api'
+import { type NextRequest, NextResponse } from 'next/server'
+import type { ApiResponse, BlogTagData } from '@/types/api'
 import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
 import { generateSlug, createErrorResponse, transformToTagData } from '@/lib/api-blog'
@@ -81,7 +81,9 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingTag) {
-      return NextResponse.json(createErrorResponse('Tag with this name already exists'), { status: 409 })
+      return NextResponse.json(createErrorResponse('Tag with this name already exists'), {
+        status: 409,
+      })
     }
 
     // Create new tag in database
@@ -108,7 +110,10 @@ export async function POST(request: NextRequest) {
       headers: { 'Cache-Control': 'no-cache' },
     })
   } catch (error) {
-    logger.error('Blog Tag Creation Error:', error instanceof Error ? error : new Error(String(error)))
+    logger.error(
+      'Blog Tag Creation Error:',
+      error instanceof Error ? error : new Error(String(error))
+    )
     return NextResponse.json(createErrorResponse('Failed to create blog tag'), { status: 500 })
   }
 }

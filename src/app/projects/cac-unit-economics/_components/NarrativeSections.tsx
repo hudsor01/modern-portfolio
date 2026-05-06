@@ -14,16 +14,16 @@ export function NarrativeSections() {
             When I took ownership of growth analytics, I discovered the organization was flying
             blind on customer acquisition economics. CAC calculations were inconsistent across
             teams—marketing, sales, and finance each had different methodologies, leading to
-            conflicting optimization strategies. There was no systematic tracking of payback
-            periods or lifetime value relationships, and pricing strategies weren't aligned
-            with acquisition cost realities.
+            conflicting optimization strategies. There was no systematic tracking of payback periods
+            or lifetime value relationships, and pricing strategies weren't aligned with acquisition
+            cost realities.
           </p>
           <p className="leading-relaxed">
-            Rising competition was driving up acquisition costs across all channels, and there
-            was increasing pressure to achieve profitability. Without visibility into true unit
-            economics, we were essentially guessing which channels were sustainable and which
-            were destroying value. Investor reporting lacked standardized metrics, and there
-            was no early warning system for CAC inflation.
+            Rising competition was driving up acquisition costs across all channels, and there was
+            increasing pressure to achieve profitability. Without visibility into true unit
+            economics, we were essentially guessing which channels were sustainable and which were
+            destroying value. Investor reporting lacked standardized metrics, and there was no early
+            warning system for CAC inflation.
           </p>
         </div>
       </SectionCard>
@@ -32,12 +32,13 @@ export function NarrativeSections() {
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
-            I was tasked with building a comprehensive unit economics analytics platform that
-            would become the foundation for sustainable growth strategy. My specific objectives
-            included:
+            I was tasked with building a comprehensive unit economics analytics platform that would
+            become the foundation for sustainable growth strategy. My specific objectives included:
           </p>
           <ul className="list-disc list-inside space-y-2 ml-4">
-            <li>Establish standardized CAC calculation methodology across all acquisition channels</li>
+            <li>
+              Establish standardized CAC calculation methodology across all acquisition channels
+            </li>
             <li>Build cohort-based LTV analysis with predictive modeling capabilities</li>
             <li>Create payback period tracking with channel and segment-specific benchmarks</li>
             <li>Develop LTV:CAC ratio optimization to achieve industry-leading benchmarks</li>
@@ -79,10 +80,10 @@ export function NarrativeSections() {
           </div>
 
           <p className="leading-relaxed mt-4">
-            I personally led the data standardization effort across marketing, sales, and
-            finance teams, designed the calculation methodologies, and trained stakeholders
-            on using unit economics to guide their decisions. The platform was deployed in
-            phases to validate accuracy before scaling recommendations.
+            I personally led the data standardization effort across marketing, sales, and finance
+            teams, designed the calculation methodologies, and trained stakeholders on using unit
+            economics to guide their decisions. The platform was deployed in phases to validate
+            accuracy before scaling recommendations.
           </p>
         </div>
       </SectionCard>
@@ -91,9 +92,8 @@ export function NarrativeSections() {
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
           <p className="leading-relaxed">
-            The unit economics optimization system I built enabled data-driven growth
-            strategies that significantly improved acquisition efficiency and long-term
-            profitability:
+            The unit economics optimization system I built enabled data-driven growth strategies
+            that significantly improved acquisition efficiency and long-term profitability:
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -103,14 +103,14 @@ export function NarrativeSections() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-secondary">Quantified Business Outcomes I Delivered:</h3>
+            <h3 className="font-semibold text-secondary">
+              Quantified Business Outcomes I Delivered:
+            </h3>
             <ul className="list-disc list-inside space-y-2 ml-4">
+              <li>Reduced blended CAC from $247 to $168 through channel optimization I directed</li>
               <li>
-                Reduced blended CAC from $247 to $168 through channel optimization I directed
-              </li>
-              <li>
-                Achieved industry-leading LTV:CAC ratio of 3.6:1, exceeding the 3:1 benchmark
-                for sustainable growth
+                Achieved industry-leading LTV:CAC ratio of 3.6:1, exceeding the 3:1 benchmark for
+                sustainable growth
               </li>
               <li>
                 Improved customer payback period from 14.2 months to 8.4 months through pricing
@@ -121,14 +121,14 @@ export function NarrativeSections() {
                 channels I flagged
               </li>
               <li>
-                Increased overall contribution margin by 28% through better customer segment targeting
+                Increased overall contribution margin by 28% through better customer segment
+                targeting
               </li>
               <li>
-                Enabled data-driven pricing strategy that improved unit economics while maintaining growth
+                Enabled data-driven pricing strategy that improved unit economics while maintaining
+                growth
               </li>
-              <li>
-                Reduced time-to-insight for unit economics analysis from 2 weeks to 1 day
-              </li>
+              <li>Reduced time-to-insight for unit economics analysis from 2 weeks to 1 day</li>
             </ul>
           </div>
         </div>
@@ -150,12 +150,12 @@ export function NarrativeSections() {
                   dangerous for optimization decisions
                 </li>
                 <li>
-                  Customer segmentation significantly impacts unit economics; I learned to
-                  segment before optimizing
+                  Customer segmentation significantly impacts unit economics; I learned to segment
+                  before optimizing
                 </li>
                 <li>
-                  Pricing decisions have exponential impact on unit economics—a 10% price
-                  increase often improves CAC payback by 20%+
+                  Pricing decisions have exponential impact on unit economics—a 10% price increase
+                  often improves CAC payback by 20%+
                 </li>
               </ul>
             </div>
@@ -163,12 +163,12 @@ export function NarrativeSections() {
               <h3 className="font-semibold text-primary">Implementation Success Factors</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>
-                  Standardized calculation methodologies are essential—I now document and
-                  enforce definitions before building dashboards
+                  Standardized calculation methodologies are essential—I now document and enforce
+                  definitions before building dashboards
                 </li>
                 <li>
-                  Real-time monitoring enables quick intervention before unit economics
-                  deteriorate significantly
+                  Real-time monitoring enables quick intervention before unit economics deteriorate
+                  significantly
                 </li>
                 <li>
                   Cohort-based analysis provides more accurate LTV predictions than aggregate
@@ -183,9 +183,8 @@ export function NarrativeSections() {
           </div>
           <p className="leading-relaxed mt-4">
             This project reinforced my belief that sustainable growth is not about maximizing
-            acquisition volume, but optimizing the efficiency and profitability of each
-            customer acquired. I now make unit economics the north star for all growth
-            initiatives I lead.
+            acquisition volume, but optimizing the efficiency and profitability of each customer
+            acquired. I now make unit economics the north star for all growth initiatives I lead.
           </p>
         </div>
       </SectionCard>

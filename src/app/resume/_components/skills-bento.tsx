@@ -21,9 +21,7 @@ export function SkillsBento({ skills, className = '' }: SkillsBentoProps) {
   return (
     <section className={className}>
       <div className="text-center mb-12">
-        <h2 className="font-display text-3xl lg:text-4xl font-semibold mb-4">
-          Skills & Expertise
-        </h2>
+        <h2 className="font-display text-3xl lg:text-4xl font-semibold mb-4">Skills & Expertise</h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Comprehensive skill set spanning revenue operations, analytics, and partner management
         </p>
@@ -64,11 +62,7 @@ function SkillCard({ skillGroup }: SkillCardProps) {
         {/* Skills badges */}
         <div className="flex flex-wrap gap-2">
           {skillGroup.items.map((skill, idx) => (
-            <Badge
-              key={`${skill}-${idx}`}
-              variant="secondary"
-              className="text-xs font-medium"
-            >
+            <Badge key={`${skill}-${idx}`} variant="secondary" className="text-xs font-medium">
               {skill}
             </Badge>
           ))}

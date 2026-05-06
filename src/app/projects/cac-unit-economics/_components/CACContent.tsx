@@ -74,27 +74,27 @@ export function CACContent() {
       {/* Key Metrics using standardized MetricsGrid */}
       <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
-          {/* Tab Content wrapped in SectionCard */}
-          <SectionCard
-            title="Analysis Details"
-            description="Detailed breakdown of CAC optimization across channels and products"
-            className="mb-8"
-          >
-            {activeTab === 'overview' && <OverviewTab />}
-            {activeTab === 'channels' && <ChannelsTab />}
-            {activeTab === 'products' && <ProductsTab />}
-          </SectionCard>
+      {/* Tab Content wrapped in SectionCard */}
+      <SectionCard
+        title="Analysis Details"
+        description="Detailed breakdown of CAC optimization across channels and products"
+        className="mb-8"
+      >
+        {activeTab === 'overview' && <OverviewTab />}
+        {activeTab === 'channels' && <ChannelsTab />}
+        {activeTab === 'products' && <ProductsTab />}
+      </SectionCard>
 
-          {/* Strategic Impact wrapped in SectionCard */}
-          <SectionCard
-            title="Strategic Impact"
-            description="Business impact and strategic outcomes from CAC optimization initiatives"
-            className="mb-8"
-          >
-            <StrategicImpact />
-          </SectionCard>
+      {/* Strategic Impact wrapped in SectionCard */}
+      <SectionCard
+        title="Strategic Impact"
+        description="Business impact and strategic outcomes from CAC optimization initiatives"
+        className="mb-8"
+      >
+        <StrategicImpact />
+      </SectionCard>
 
-          {/* Professional Narrative Sections wrapped in SectionCard */}
+      {/* Professional Narrative Sections wrapped in SectionCard */}
       <SectionCard
         title="Project Narrative"
         description="Comprehensive case study following the STAR methodology"

@@ -1,5 +1,4 @@
-
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import HomePageContent from '@/components/layout/home-page-content'
 
 export const dynamic = 'force-static'
@@ -33,7 +32,7 @@ export const metadata: Metadata = {
     'channel program development',
     'customer lifecycle management',
     'B2B growth strategies',
-    'enterprise system integration'
+    'enterprise system integration',
   ],
   openGraph: {
     title: 'Richard Hudson — RevOps Professional in Dallas-Fort Worth',

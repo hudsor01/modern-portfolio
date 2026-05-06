@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import type React from 'react'
 import Link from 'next/link'
 import { ArrowRight, FileText, Lightbulb, MessageSquare } from 'lucide-react'
 
@@ -17,7 +17,8 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = ({ totalProje
           Let&apos;s Work Together
         </h2>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          Ready to transform your revenue operations? Explore more about my work or get in touch to discuss your project.
+          Ready to transform your revenue operations? Explore more about my work or get in touch to
+          discuss your project.
         </p>
       </div>
 
@@ -88,17 +89,23 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = ({ totalProje
       <div className="mt-16 pt-12 border-t border-border">
         <div className="flex flex-wrap justify-center gap-8 lg:gap-16 text-center">
           <div>
-            <div className="font-mono text-3xl lg:text-4xl font-bold text-foreground mb-1">$4.8M+</div>
+            <div className="font-mono text-3xl lg:text-4xl font-bold text-foreground mb-1">
+              $4.8M+
+            </div>
             <div className="text-sm text-muted-foreground">Revenue Impact</div>
           </div>
           <div className="hidden sm:block w-px bg-border" />
           <div>
-            <div className="font-mono text-3xl lg:text-4xl font-bold text-foreground mb-1">432%</div>
+            <div className="font-mono text-3xl lg:text-4xl font-bold text-foreground mb-1">
+              432%
+            </div>
             <div className="text-sm text-muted-foreground">Average Growth</div>
           </div>
           <div className="hidden sm:block w-px bg-border" />
           <div>
-            <div className="font-mono text-3xl lg:text-4xl font-bold text-foreground mb-1">{totalProjects}+</div>
+            <div className="font-mono text-3xl lg:text-4xl font-bold text-foreground mb-1">
+              {totalProjects}+
+            </div>
             <div className="text-sm text-muted-foreground">Case Studies</div>
           </div>
         </div>

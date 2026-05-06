@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server'
 import type { ZodError } from 'zod'
 import { logger } from '@/lib/logger'
-import { ApiErrorType, ApiErrorResponse, ApiSuccessResponse as ApiSuccessResponseType } from '@/types/api'
+import {
+  ApiErrorType,
+  type ApiErrorResponse,
+  type ApiSuccessResponse as ApiSuccessResponseType,
+} from '@/types/api'
 
 export type ApiResponse<T = unknown> = {
   success: boolean
@@ -33,21 +37,21 @@ export function validationErrorResponse(error: ZodError): NextResponse<ApiRespon
   const errors = error.issues.reduce(
     (acc: Record<string, string[]>, curr) => {
       // Get a safe string key from the path, defaulting to 'general'
-      let key = 'general';
-      
+      let key = 'general'
+
       if (curr.path.length > 0 && curr.path[0] !== undefined) {
-        key = String(curr.path[0]);
+        key = String(curr.path[0])
       }
-      
+
       // Create a new object with the existing properties and the new array
       return {
         ...acc,
-        [key]: [...(acc[key] || []), curr.message]
-      };
+        [key]: [...(acc[key] || []), curr.message],
+      }
     },
     {} as Record<string, string[]>
-  );
-  
+  )
+
   return NextResponse.json(
     {
       success: false,
@@ -102,7 +106,7 @@ export function logAndSanitizeError(
     return errorMessage
   }
 
-  return PRODUCTION_ERROR_MESSAGES[errorType] ?? (PRODUCTION_ERROR_MESSAGES['DEFAULT'] as string)
+  return PRODUCTION_ERROR_MESSAGES[errorType] ?? (PRODUCTION_ERROR_MESSAGES.DEFAULT as string)
 }
 
 /**

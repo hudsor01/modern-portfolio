@@ -15,8 +15,10 @@ function ChartLoadError() {
 const LeadSourcePieChart = dynamic(
   safeLazy(() => import('./LeadSourcePieChart'), 'LeadSourcePieChart', ChartLoadError),
   {
-    loading: () => <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />,
-    ssr: false
+    loading: () => (
+      <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />
+    ),
+    ssr: false,
   }
 )
 
@@ -25,7 +27,12 @@ type IconComponent = ComponentType<SVGProps<SVGSVGElement>>
 
 interface ChartsGridProps {
   leadSources: Array<{ name: string; value: number; growth?: string; color?: string }>
-  conversionSources: Array<{ source: string; conversions: number; conversion_rate: number; icon: IconComponent }>
+  conversionSources: Array<{
+    source: string
+    conversions: number
+    conversion_rate: number
+    icon: IconComponent
+  }>
   bestSource: { source: string }
 }
 
@@ -33,9 +40,7 @@ export function ChartsGrid({ bestSource, leadSources, conversionSources }: Chart
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
       {/* Lead Source Distribution */}
-      <div
-        className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out"
-      >
+      <div className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out">
         <div className="mb-6">
           <h2 className="typography-h3 mb-2">Lead Source Distribution</h2>
           <p className="typography-muted">Breakdown of leads by acquisition channel</p>
@@ -44,9 +49,7 @@ export function ChartsGrid({ bestSource, leadSources, conversionSources }: Chart
       </div>
 
       {/* Channel Performance */}
-      <div
-        className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out"
-      >
+      <div className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out">
         <div className="mb-6">
           <h2 className="typography-h3 mb-2">Channel Performance</h2>
           <p className="typography-muted">Conversion rates by source</p>
@@ -55,14 +58,19 @@ export function ChartsGrid({ bestSource, leadSources, conversionSources }: Chart
           {conversionSources.map((source) => {
             const Icon = source.icon
             return (
-              <div key={source.source} className="flex items-center justify-between p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-all duration-300 ease-out">
+              <div
+                key={source.source}
+                className="flex items-center justify-between p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-all duration-300 ease-out"
+              >
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-white/10 rounded-lg">
                     <Icon className="h-5 w-5 text-foreground" />
                   </div>
                   <div>
                     <p className="font-medium">{source.source}</p>
-                    <p className="typography-small text-muted-foreground">{source.conversions} conversions</p>
+                    <p className="typography-small text-muted-foreground">
+                      {source.conversions} conversions
+                    </p>
                   </div>
                 </div>
                 <div className="text-right">

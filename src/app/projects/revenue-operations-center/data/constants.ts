@@ -19,14 +19,34 @@ export const revenueMetrics = {
   salesCycleLength: 73,
   winRate: 83.2,
   quarterlyTarget: 13500000,
-  targetAttainment: 95.2
+  targetAttainment: 95.2,
 }
 
 export const kpiAlerts = [
-  { type: 'success', icon: CheckCircle, message: 'Q4 forecast accuracy exceeds 95% target', severity: 'low' },
-  { type: 'warning', icon: AlertTriangle, message: 'Pipeline velocity down 8% from last quarter', severity: 'medium' },
-  { type: 'info', icon: Activity, message: 'Deal stage progression improved 12% this month', severity: 'low' },
-  { type: 'warning', icon: Clock, message: 'Average sales cycle extended by 6 days', severity: 'medium' },
+  {
+    type: 'success',
+    icon: CheckCircle,
+    message: 'Q4 forecast accuracy exceeds 95% target',
+    severity: 'low',
+  },
+  {
+    type: 'warning',
+    icon: AlertTriangle,
+    message: 'Pipeline velocity down 8% from last quarter',
+    severity: 'medium',
+  },
+  {
+    type: 'info',
+    icon: Activity,
+    message: 'Deal stage progression improved 12% this month',
+    severity: 'low',
+  },
+  {
+    type: 'warning',
+    icon: Clock,
+    message: 'Average sales cycle extended by 6 days',
+    severity: 'medium',
+  },
 ]
 
 export const departmentMetrics = [
@@ -37,7 +57,7 @@ export const departmentMetrics = [
       { name: 'Win Rate', value: '83.2%', change: '+5.4%', positive: true },
       { name: 'Cycle Length', value: '73 days', change: '+6 days', positive: false },
       { name: 'Pipeline Value', value: '$24.8M', change: '+18%', positive: true },
-    ]
+    ],
   },
   {
     department: 'Partners',
@@ -46,7 +66,7 @@ export const departmentMetrics = [
       { name: 'Partner Count', value: '47', change: '+12', positive: true },
       { name: 'Partner ROI', value: '4.7x', change: '+0.8x', positive: true },
       { name: 'Channel Health', value: '89%', change: '+12%', positive: true },
-    ]
+    ],
   },
   {
     department: 'Operations',
@@ -55,8 +75,8 @@ export const departmentMetrics = [
       { name: 'Data Quality', value: '94.3%', change: '+2.1%', positive: true },
       { name: 'Process Automation', value: '78%', change: '+15%', positive: true },
       { name: 'Cost per Lead', value: '$127', change: '-23%', positive: true },
-    ]
-  }
+    ],
+  },
 ]
 
 export const alertTypeStyles = {
@@ -67,7 +87,16 @@ export const alertTypeStyles = {
 }
 
 export const technologies = [
-  'React 19', 'TypeScript', 'Revenue Operations', 'Data Integration',
-  'Predictive Analytics', 'Process Automation', 'Business Intelligence', 'Machine Learning',
-  'ETL Pipelines', 'Data Governance', 'Workflow Orchestration', 'Executive Dashboards'
+  'React 19',
+  'TypeScript',
+  'Revenue Operations',
+  'Data Integration',
+  'Predictive Analytics',
+  'Process Automation',
+  'Business Intelligence',
+  'Machine Learning',
+  'ETL Pipelines',
+  'Data Governance',
+  'Workflow Orchestration',
+  'Executive Dashboards',
 ]

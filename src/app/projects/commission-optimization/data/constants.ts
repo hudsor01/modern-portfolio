@@ -15,7 +15,7 @@ export const commissionMetrics = {
   partnerCount: 47,
   totalPayouts: 218450,
   pendingPayouts: 35550,
-  averagePartnerEarnings: 5403
+  averagePartnerEarnings: 5403,
 }
 
 export const commissionTiers = [
@@ -27,7 +27,7 @@ export const commissionTiers = [
     avgEarnings: 11200,
     requirements: '$50K+ quarterly sales',
     performanceBonus: 15.0,
-    roi: 4.2
+    roi: 4.2,
   },
   {
     tier: 'Premium Partners',
@@ -37,7 +37,7 @@ export const commissionTiers = [
     avgEarnings: 5650,
     requirements: '$25K+ quarterly sales',
     performanceBonus: 10.0,
-    roi: 3.8
+    roi: 3.8,
   },
   {
     tier: 'Standard Partners',
@@ -47,7 +47,7 @@ export const commissionTiers = [
     avgEarnings: 2400,
     requirements: '$10K+ quarterly sales',
     performanceBonus: 5.0,
-    roi: 3.2
+    roi: 3.2,
   },
   {
     tier: 'Growth Partners',
@@ -57,8 +57,8 @@ export const commissionTiers = [
     avgEarnings: 1931,
     requirements: 'New partner onboarding',
     performanceBonus: 0,
-    roi: 2.1
-  }
+    roi: 2.1,
+  },
 ]
 
 export const incentivePrograms = [
@@ -69,7 +69,7 @@ export const incentivePrograms = [
     payout: 38750,
     effectiveness: 86.1,
     avgBonus: 1140,
-    performanceLift: 28.4
+    performanceLift: 28.4,
   },
   {
     program: 'New Customer Acquisition Bonus',
@@ -78,7 +78,7 @@ export const incentivePrograms = [
     payout: 31200,
     effectiveness: 89.1,
     avgBonus: 1114,
-    performanceLift: 42.3
+    performanceLift: 42.3,
   },
   {
     program: 'Product Mix Incentive',
@@ -87,7 +87,7 @@ export const incentivePrograms = [
     payout: 24680,
     effectiveness: 88.1,
     avgBonus: 602,
-    performanceLift: 19.7
+    performanceLift: 19.7,
   },
   {
     program: 'Territory Expansion Rewards',
@@ -96,8 +96,8 @@ export const incentivePrograms = [
     payout: 18900,
     effectiveness: 85.9,
     avgBonus: 1260,
-    performanceLift: 35.6
-  }
+    performanceLift: 35.6,
+  },
 ]
 
 export const commissionCalculationMetrics = [
@@ -108,7 +108,16 @@ export const commissionCalculationMetrics = [
 ]
 
 export const technologies = [
-  'React 19', 'TypeScript', 'Recharts', 'Automated Calculations',
-  'Commission Engine', 'ROI Analytics', 'Performance Tracking', 'Dispute Resolution',
-  'Real-time Processing', 'Data Validation', 'Audit Trails', 'Business Intelligence'
+  'React 19',
+  'TypeScript',
+  'Recharts',
+  'Automated Calculations',
+  'Commission Engine',
+  'ROI Analytics',
+  'Performance Tracking',
+  'Dispute Resolution',
+  'Real-time Processing',
+  'Data Validation',
+  'Audit Trails',
+  'Business Intelligence',
 ]

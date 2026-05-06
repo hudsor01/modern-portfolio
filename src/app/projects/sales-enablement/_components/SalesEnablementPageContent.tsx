@@ -12,7 +12,6 @@ import { NarrativeSections } from './NarrativeSections'
 import { PillarsGrid } from './PillarsGrid'
 
 export default function SalesEnablementProject() {
-
   // Standardized metrics configuration using consistent data formatting
   const metrics = [
     {

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
-import { ProjectTabsProps } from '@/types/project'
+import type { ProjectTabsProps } from '@/types/project'
 import { Skeleton } from '@/components/ui/skeleton'
 
 function SwiperSkeleton() {

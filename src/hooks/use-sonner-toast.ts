@@ -13,13 +13,12 @@ function mapToastOptions(options?: ToastOptions) {
           onClick: options.action.onClick,
         }
       : undefined,
-    cancel:
-      options.cancel && options.cancel.onClick
-        ? {
-            label: options.cancel.label,
-            onClick: options.cancel.onClick,
-          }
-        : undefined,
+    cancel: options.cancel?.onClick
+      ? {
+          label: options.cancel.label,
+          onClick: options.cancel.onClick,
+        }
+      : undefined,
   }
 }
 
@@ -43,7 +42,8 @@ export function useToast() {
     error: (message: string, options?: ToastOptions) => showToast(message, 'error', options),
     warning: (message: string, options?: ToastOptions) => showToast(message, 'warning', options),
     info: (message: string, options?: ToastOptions) => showToast(message, 'info', options),
-    loading: (message: string, options?: ToastOptions) => toast.loading(message, mapToastOptions(options)),
+    loading: (message: string, options?: ToastOptions) =>
+      toast.loading(message, mapToastOptions(options)),
     dismiss: toast.dismiss,
     promise: toast.promise,
   }

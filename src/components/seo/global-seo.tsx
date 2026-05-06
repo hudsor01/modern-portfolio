@@ -1,21 +1,21 @@
-import { siteConfig } from '@/lib/site';
-import { safeJsonLdStringify } from '@/lib/json-ld-utils';
+import { siteConfig } from '@/lib/site'
+import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 
 interface GlobalSEOProps {
-  title?: string;
-  description?: string;
-  keywords?: string[];
-  ogImage?: string;
-  ogType?: 'website' | 'article';
+  title?: string
+  description?: string
+  keywords?: string[]
+  ogImage?: string
+  ogType?: 'website' | 'article'
   article?: {
-    publishedTime?: string;
-    modifiedTime?: string;
-    authors?: string[];
-    section?: string;
-    tags?: string[];
-  };
-  noIndex?: boolean;
-  canonicalUrl?: string;
+    publishedTime?: string
+    modifiedTime?: string
+    authors?: string[]
+    section?: string
+    tags?: string[]
+  }
+  noIndex?: boolean
+  canonicalUrl?: string
 }
 
 /**
@@ -42,10 +42,10 @@ export function GlobalSEO({
   nonce,
 }: GlobalSEOProps & { nonce?: string | null }) {
   // Use provided description or default
-  const pageDescription = description || siteConfig.description;
+  const pageDescription = description || siteConfig.description
 
   // Use provided image or default
-  const pageImage = ogImage || '';
+  const pageImage = ogImage || ''
 
   // JSON-LD structured data
   const structuredData = {
@@ -53,31 +53,33 @@ export function GlobalSEO({
     '@type': ogType === 'article' ? 'Article' : 'WebSite',
     name: siteConfig.name,
     url: siteConfig.url,
-    ...(ogType === 'article' && article ? {
-      headline: title,
-      image: pageImage,
-      datePublished: article.publishedTime,
-      dateModified: article.modifiedTime || article.publishedTime,
-      author: article.authors?.map(author => ({
-        '@type': 'Person',
-        name: author,
-      })) || [{ '@type': 'Person', name: siteConfig.author.name }],
-      publisher: {
-        '@type': 'Organization',
-        name: siteConfig.name,
-        logo: {
-          '@type': 'ImageObject',
-          url: `${siteConfig.url}/images/richard.jpg`,
-        },
-      },
-    } : {
-      description: pageDescription,
-      author: {
-        '@type': 'Person',
-        name: siteConfig.author.name,
-      },
-    }),
-  };
+    ...(ogType === 'article' && article
+      ? {
+          headline: title,
+          image: pageImage,
+          datePublished: article.publishedTime,
+          dateModified: article.modifiedTime || article.publishedTime,
+          author: article.authors?.map((author) => ({
+            '@type': 'Person',
+            name: author,
+          })) || [{ '@type': 'Person', name: siteConfig.author.name }],
+          publisher: {
+            '@type': 'Organization',
+            name: siteConfig.name,
+            logo: {
+              '@type': 'ImageObject',
+              url: `${siteConfig.url}/images/richard.jpg`,
+            },
+          },
+        }
+      : {
+          description: pageDescription,
+          author: {
+            '@type': 'Person',
+            name: siteConfig.author.name,
+          },
+        }),
+  }
 
   return (
     <>
@@ -88,5 +90,5 @@ export function GlobalSEO({
         dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(structuredData) }}
       />
     </>
-  );
+  )
 }

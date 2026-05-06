@@ -1,6 +1,6 @@
-import React from 'react'
+import type React from 'react'
 import './globals.css'
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { Playfair_Display, Spline_Sans, Roboto_Mono } from 'next/font/google'
 import { ClientComponentsProvider } from '@/components/providers/client-components-provider'

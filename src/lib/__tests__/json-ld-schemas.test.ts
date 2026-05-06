@@ -146,7 +146,10 @@ describe('PersonJsonLd schema', () => {
   })
 
   it('safeJsonLdStringify escapes </script> sequences', () => {
-    const malicious = { '@context': 'https://schema.org', name: '</script><script>alert(1)</script>' }
+    const malicious = {
+      '@context': 'https://schema.org',
+      name: '</script><script>alert(1)</script>',
+    }
     const result = safeJsonLdStringify(malicious)
     expect(result).not.toContain('</script>')
     expect(result).toContain('<\\/script>')
@@ -241,11 +244,13 @@ describe('FAQPageJsonLd schema', () => {
   const sampleFaqs = [
     {
       question: 'What does a Revenue Operations Specialist do?',
-      answer: 'A Revenue Operations Specialist aligns sales, marketing, and customer success teams.',
+      answer:
+        'A Revenue Operations Specialist aligns sales, marketing, and customer success teams.',
     },
     {
       question: 'What certifications does Richard Hudson hold?',
-      answer: 'Richard holds SalesLoft Admin Certification and HubSpot Revenue Operations Certification.',
+      answer:
+        'Richard holds SalesLoft Admin Certification and HubSpot Revenue Operations Certification.',
     },
   ]
 

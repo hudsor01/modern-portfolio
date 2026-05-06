@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import type React from 'react'
 import { cn } from '@/lib/utils'
 
 interface SkipToContentProps {
@@ -8,10 +8,7 @@ interface SkipToContentProps {
   className?: string
 }
 
-export function SkipToContent({ 
-  targetId = 'main-content', 
-  className 
-}: SkipToContentProps) {
+export function SkipToContent({ targetId = 'main-content', className }: SkipToContentProps) {
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault()
     const target = document.getElementById(targetId)

@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 
 export const baseMetadata: Metadata = {
   metadataBase: new URL('https://richardwhudsonjr.com'),
@@ -86,7 +86,12 @@ export const baseMetadata: Metadata = {
     shortcut: '/favicon-16x16.png',
     apple: [
       { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-      { url: '/apple-touch-icon.png', sizes: '152x152', type: 'image/png', rel: 'apple-touch-icon-precomposed' }
+      {
+        url: '/apple-touch-icon.png',
+        sizes: '152x152',
+        type: 'image/png',
+        rel: 'apple-touch-icon-precomposed',
+      },
     ],
   },
   manifest: '/manifest.webmanifest', // Corrected path

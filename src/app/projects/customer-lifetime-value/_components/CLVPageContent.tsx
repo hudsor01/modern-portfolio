@@ -78,36 +78,36 @@ export default function CustomerLifetimeValueAnalytics() {
       activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
       onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
     >
-          {/* Key Metrics using standardized MetricsGrid */}
-          <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
+      {/* Key Metrics using standardized MetricsGrid */}
+      <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
-          {/* Tab Content wrapped in SectionCard */}
-          <SectionCard
-            title="CLV Analytics"
-            description="Comprehensive customer lifetime value analysis and insights"
-            className="mb-8"
-          >
-            {activeTab === 'overview' && <OverviewTab />}
-            {activeTab === 'segments' && <SegmentsTab />}
-            {activeTab === 'predictions' && <PredictionsTab />}
-          </SectionCard>
+      {/* Tab Content wrapped in SectionCard */}
+      <SectionCard
+        title="CLV Analytics"
+        description="Comprehensive customer lifetime value analysis and insights"
+        className="mb-8"
+      >
+        {activeTab === 'overview' && <OverviewTab />}
+        {activeTab === 'segments' && <SegmentsTab />}
+        {activeTab === 'predictions' && <PredictionsTab />}
+      </SectionCard>
 
-          {/* Strategic Impact wrapped in SectionCard */}
-          <SectionCard
-            title="Strategic Impact"
-            description="Business impact and strategic outcomes from CLV optimization"
-            className="mb-8"
-          >
-            <StrategicImpact />
-          </SectionCard>
+      {/* Strategic Impact wrapped in SectionCard */}
+      <SectionCard
+        title="Strategic Impact"
+        description="Business impact and strategic outcomes from CLV optimization"
+        className="mb-8"
+      >
+        <StrategicImpact />
+      </SectionCard>
 
-          {/* Professional Narrative Sections wrapped in SectionCard */}
-          <SectionCard
-            title="Project Narrative"
-            description="Comprehensive case study following the STAR methodology"
-          >
-            <NarrativeSections />
-          </SectionCard>
+      {/* Professional Narrative Sections wrapped in SectionCard */}
+      <SectionCard
+        title="Project Narrative"
+        description="Comprehensive case study following the STAR methodology"
+      >
+        <NarrativeSections />
+      </SectionCard>
     </ProjectPageLayout>
   )
 }

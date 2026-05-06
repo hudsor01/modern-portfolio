@@ -11,8 +11,8 @@ export async function GET() {
     headers: {
       'Content-Type': 'text/plain',
       'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0',
+      Pragma: 'no-cache',
+      Expires: '0',
     },
   })
 }
@@ -23,8 +23,8 @@ export async function HEAD() {
     headers: {
       'Content-Type': 'text/plain',
       'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0',
+      Pragma: 'no-cache',
+      Expires: '0',
     },
   })
 }
