@@ -9,7 +9,12 @@ import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 import { escapeHtml } from '@/lib/sanitization'
 import { ContentType } from '@/generated/prisma/browser'
-import DOMPurify from 'dompurify'
+// MUST be isomorphic-dompurify, NOT plain dompurify. This is a 'use client'
+// component, but Next.js still server-renders the initial HTML — the bare
+// `dompurify` package is browser-only (needs window/document) and throws on
+// the server, which surfaces as 500 on every /blog/[slug] page render.
+// isomorphic-dompurify wraps it with a JSDOM window for SSR safety.
+import DOMPurify from 'isomorphic-dompurify'
 import { createContextLogger } from '@/lib/logger'
 import { TIMING_CONSTANTS } from '@/lib/ui-thresholds'
 
