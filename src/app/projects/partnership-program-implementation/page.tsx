@@ -11,7 +11,7 @@ const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
 }).toString()}`
 
 export const metadata: Metadata = {
-  title: 'Enterprise Partnership Program Implementation | Richard Hudson',
+  title: 'Enterprise Partnership Program Implementation',
   description:
     "Led comprehensive design and implementation of a company's first partnership program, creating automated partner onboarding, commission tracking, and performance analytics. Built production-ready integrations with CRM, billing systems, and partner portals.",
   openGraph: {

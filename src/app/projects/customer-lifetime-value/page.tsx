@@ -11,7 +11,7 @@ const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
 }).toString()}`
 
 export const metadata: Metadata = {
-  title: 'Customer Lifetime Value Predictive Analytics Dashboard | Richard Hudson',
+  title: 'Customer Lifetime Value Predictive Analytics Dashboard',
   description:
     'Advanced CLV analytics platform leveraging BTYD (Buy Till You Die) predictive modeling framework. Achieving 94.3% prediction accuracy through machine learning algorithms and real-time customer behavior tracking across 5 distinct customer segments.',
   openGraph: {

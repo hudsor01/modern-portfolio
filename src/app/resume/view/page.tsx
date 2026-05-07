@@ -8,7 +8,7 @@ import ResumeViewClient from './resume-view-client'
 // just override canonical (→ /resume) and robots (noindex).
 export const metadata: Metadata = {
   ...genMeta(
-    'Resume PDF | Richard Hudson',
+    'Resume PDF',
     'View the resume of Richard Hudson, Revenue Operations Professional.',
     '/resume/view'
   ),
