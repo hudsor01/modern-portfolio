@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { Navbar } from '@/components/layout/navbar'
 import { BlogPostLayout } from '../_components/blog-post-layout'
+import { RelatedPosts } from '@/components/blog/related-posts'
 import { BlogPostJsonLd } from '@/components/seo/blog-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { transformToBlogPostData } from '@/lib/api-blog'
@@ -154,6 +155,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           <div className="relative pt-24 pb-16 lg:pt-32 lg:pb-20">
             <BlogPostLayout post={post} />
+            <div className="max-w-4xl mx-auto px-6 lg:px-8">
+              <RelatedPosts
+                currentSlug={post.slug}
+                currentTags={post.tags?.map((t) => t.name) ?? []}
+              />
+            </div>
           </div>
         </main>
       </div>

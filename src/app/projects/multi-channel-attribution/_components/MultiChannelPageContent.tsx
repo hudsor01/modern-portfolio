@@ -7,6 +7,7 @@ import { useQueryState } from 'nuqs'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
+import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { formatCurrency, formatNumber } from '@/lib/data-formatters'
 import { attributionMetrics } from '../data/constants'
 import { formatPercent } from '../utils'
@@ -65,57 +66,68 @@ export default function MultiChannelAttribution() {
   ]
 
   return (
-    <ProjectPageLayout
-      title="Multi-Channel Attribution Analytics Dashboard"
-      description="Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints. Delivering 92.4% attribution accuracy and $2.3M ROI optimization through data-driven attribution modeling and cross-channel insights."
-      tags={[
-        {
-          label: `Attribution Accuracy: ${formatPercent(attributionMetrics.attributionAccuracy)}`,
-          variant: 'primary',
-        },
-        {
-          label: `ROI Optimization: ${formatCurrency(attributionMetrics.totalROI, { compact: true })}`,
-          variant: 'secondary',
-        },
-        { label: 'ML Attribution Models', variant: 'primary' },
-        { label: 'Customer Journey Analytics', variant: 'secondary' },
-      ]}
-      showTimeframes={true}
-      timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
-      activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-      onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
-    >
-      {/* Key Metrics using standardized MetricsGrid */}
-      <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
-
-      {/* Tab Content wrapped in SectionCard */}
-      <SectionCard
-        title="Attribution Analysis"
-        description="Detailed multi-channel attribution analysis and insights"
-        className="mb-8"
+    <>
+      <ProjectJsonLd
+        title="Multi-Channel Attribution Analytics Dashboard"
+        description="ML-powered marketing attribution analytics tracking customer journeys across 12+ touchpoints with 92.4% attribution accuracy and $2.3M ROI optimization."
+        slug="multi-channel-attribution"
+        category="Marketing Analytics"
+        datePublished="2025-11-19"
+        dateModified="2026-05-06"
+        tags={['Multi-Touch Attribution', 'Marketing Analytics', 'ML Models', 'Customer Journey']}
+      />
+      <ProjectPageLayout
+        title="Multi-Channel Attribution Analytics Dashboard"
+        description="Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints. Delivering 92.4% attribution accuracy and $2.3M ROI optimization through data-driven attribution modeling and cross-channel insights."
+        tags={[
+          {
+            label: `Attribution Accuracy: ${formatPercent(attributionMetrics.attributionAccuracy)}`,
+            variant: 'primary',
+          },
+          {
+            label: `ROI Optimization: ${formatCurrency(attributionMetrics.totalROI, { compact: true })}`,
+            variant: 'secondary',
+          },
+          { label: 'ML Attribution Models', variant: 'primary' },
+          { label: 'Customer Journey Analytics', variant: 'secondary' },
+        ]}
+        showTimeframes={true}
+        timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
+        activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+        onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
       >
-        {activeTab === 'overview' && <OverviewTab />}
-        {activeTab === 'models' && <ModelsTab />}
-        {activeTab === 'journeys' && <JourneysTab />}
-        {activeTab === 'channels' && <ChannelsTab />}
-      </SectionCard>
+        {/* Key Metrics using standardized MetricsGrid */}
+        <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
-      {/* Strategic Impact wrapped in SectionCard */}
-      <SectionCard
-        title="Strategic Impact"
-        description="Business impact and strategic outcomes from attribution optimization"
-        className="mb-8"
-      >
-        <StrategicImpact />
-      </SectionCard>
+        {/* Tab Content wrapped in SectionCard */}
+        <SectionCard
+          title="Attribution Analysis"
+          description="Detailed multi-channel attribution analysis and insights"
+          className="mb-8"
+        >
+          {activeTab === 'overview' && <OverviewTab />}
+          {activeTab === 'models' && <ModelsTab />}
+          {activeTab === 'journeys' && <JourneysTab />}
+          {activeTab === 'channels' && <ChannelsTab />}
+        </SectionCard>
 
-      {/* Professional Narrative Sections wrapped in SectionCard */}
-      <SectionCard
-        title="Project Narrative"
-        description="Comprehensive case study following the STAR methodology"
-      >
-        <NarrativeSections />
-      </SectionCard>
-    </ProjectPageLayout>
+        {/* Strategic Impact wrapped in SectionCard */}
+        <SectionCard
+          title="Strategic Impact"
+          description="Business impact and strategic outcomes from attribution optimization"
+          className="mb-8"
+        >
+          <StrategicImpact />
+        </SectionCard>
+
+        {/* Professional Narrative Sections wrapped in SectionCard */}
+        <SectionCard
+          title="Project Narrative"
+          description="Comprehensive case study following the STAR methodology"
+        >
+          <NarrativeSections />
+        </SectionCard>
+      </ProjectPageLayout>
+    </>
   )
 }

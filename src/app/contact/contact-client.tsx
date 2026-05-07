@@ -30,9 +30,13 @@ export default function ContactPageClient() {
               <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
                 Let's <span className="text-primary">Connect</span>
               </h1>
-              <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-4">
                 Open to new opportunities in Revenue Operations. Whether you're a recruiter, hiring
                 manager, or industry peer, I'd love to hear from you.
+              </p>
+              <p className="text-base text-muted-foreground max-w-3xl mx-auto mb-8">
+                Based in Dallas, serving Dallas, Fort Worth, Frisco, and the broader Dallas-Fort
+                Worth Metroplex — remote engagements welcome anywhere in the US.
               </p>
 
               {/* Quick Stats */}

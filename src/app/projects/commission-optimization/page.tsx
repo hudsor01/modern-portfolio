@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { headers } from 'next/headers'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import CommissionPageContent from './_components/CommissionPageContent'
 
 export const dynamic = 'force-static'
@@ -40,6 +42,22 @@ export const metadata: Metadata = {
   },
 }
 
-export default function CommissionOptimizationPage() {
-  return <CommissionPageContent />
+export default async function CommissionOptimizationPage() {
+  const nonce = (await headers()).get('x-nonce')
+  return (
+    <>
+      <BreadcrumbListJsonLd
+        nonce={nonce}
+        items={[
+          { name: 'Home', url: 'https://richardwhudsonjr.com' },
+          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          {
+            name: 'Commission & Incentive Optimization',
+            url: 'https://richardwhudsonjr.com/projects/commission-optimization',
+          },
+        ]}
+      />
+      <CommissionPageContent />
+    </>
+  )
 }
