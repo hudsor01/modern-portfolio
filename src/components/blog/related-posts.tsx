@@ -1,6 +1,9 @@
 import Link from 'next/link'
 import { db } from '@/lib/db'
+import { createContextLogger } from '@/lib/logger'
 import { selectRelatedPosts, type RelatedPostInput } from './related-posts-utils'
+
+const logger = createContextLogger('RelatedPosts')
 
 interface RelatedPostsProps {
   currentSlug: string
@@ -11,23 +14,46 @@ interface RelatedPostsProps {
 export async function RelatedPosts({ currentSlug, currentTags, limit = 3 }: RelatedPostsProps) {
   const safeLimit = Math.min(limit, 3)
 
-  const posts = await db.blogPost.findMany({
-    where: { status: 'PUBLISHED', deletedAt: null, NOT: { slug: currentSlug } },
-    select: {
-      slug: true,
-      title: true,
-      excerpt: true,
-      publishedAt: true,
-      tags: { select: { tag: { select: { name: true } } } },
-    },
-    orderBy: { publishedAt: 'desc' },
-    take: 50,
-  })
+  // Wrapped in try/catch so a failure in this widget never crashes the whole
+  // blog-post page render (Next.js Server Components rethrow uncaught errors
+  // into the parent error boundary, which surfaces as HTTP 500 to the user).
+  // RelatedPosts is a "nice-to-have" widget — DB hiccup shouldn't take down
+  // the post.
+  type PostRow = {
+    slug: string
+    title: string
+    excerpt: string | null
+    publishedAt: Date | null
+    tags: { tag: { name: string } }[]
+  }
+  let posts: PostRow[]
+  try {
+    posts = await db.blogPost.findMany({
+      where: { status: 'PUBLISHED', deletedAt: null, NOT: { slug: currentSlug } },
+      select: {
+        slug: true,
+        title: true,
+        excerpt: true,
+        publishedAt: true,
+        tags: { select: { tag: { select: { name: true } } } },
+      },
+      orderBy: { publishedAt: 'desc' },
+      take: 50,
+    })
+  } catch (error) {
+    logger.error(
+      'RelatedPosts DB query failed; rendering nothing',
+      error instanceof Error ? error : new Error(String(error)),
+      { currentSlug }
+    )
+    return null
+  }
 
   const candidates: (RelatedPostInput & { excerpt: string | null })[] = posts.map((p) => ({
     slug: p.slug,
     title: p.title,
-    tags: p.tags.map((t) => t.tag.name),
+    // Defensive against missing tag rows (orphaned PostTag with deleted Tag)
+    tags: (p.tags ?? []).map((t) => t?.tag?.name).filter((n): n is string => !!n),
     publishedAt: p.publishedAt?.toISOString() ?? '1970-01-01',
     excerpt: p.excerpt,
   }))
