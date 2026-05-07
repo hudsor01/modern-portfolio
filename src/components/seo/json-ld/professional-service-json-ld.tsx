@@ -13,6 +13,15 @@ import { siteConfig } from '@/lib/site'
  * "revenue operations consultant Dallas".
  */
 export function ProfessionalServiceJsonLd({ nonce }: { nonce?: string | null }) {
+  // Extracted so each Service.provider in makesOffer references the same
+  // object literal — the serializer will emit it inline 7 times either way,
+  // but the source-side dedupe keeps the JSON-LD definition readable.
+  const serviceProvider = {
+    '@type': 'Person',
+    name: 'Richard Hudson',
+    url: siteConfig.url,
+  } as const
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ProfessionalService',
@@ -52,11 +61,7 @@ export function ProfessionalServiceJsonLd({ nonce }: { nonce?: string | null }) 
         '@type': 'Service',
         name,
         serviceType: name,
-        provider: {
-          '@type': 'Person',
-          name: 'Richard Hudson',
-          url: siteConfig.url,
-        },
+        provider: serviceProvider,
       },
     })),
     sameAs: [
