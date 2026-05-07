@@ -11,7 +11,7 @@ const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
 }).toString()}`
 
 export const metadata: Metadata = {
-  title: 'Sales Pipeline Funnel Analysis - Deal Stage Optimization | Richard Hudson',
+  title: 'Sales Pipeline Funnel Analysis - Deal Stage Optimization',
   description:
     'Interactive sales funnel dashboard showing deal progression, conversion rates, and sales cycle optimization. Tracks pipeline opportunities through each stage with real-time metrics on deal velocity and revenue forecasting.',
   openGraph: {

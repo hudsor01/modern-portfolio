@@ -11,7 +11,7 @@ const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
 }).toString()}`
 
 export const metadata: Metadata = {
-  title: 'Lead Attribution & Marketing Analytics - Multi-Touch Attribution | Richard Hudson',
+  title: 'Lead Attribution & Marketing Analytics - Multi-Touch Attribution',
   description:
     'Comprehensive lead attribution analysis with multi-touch attribution modeling. Tracks lead sources, conversion rates, and marketing channel performance to optimize spend and improve pipeline quality.',
   openGraph: {

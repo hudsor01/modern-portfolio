@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   }).toString()}`
 
   return {
-    title: `${project.title} | Richard Hudson`,
+    title: project.title,
     description: project.description,
     openGraph: {
       title: project.title,
