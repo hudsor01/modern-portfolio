@@ -154,8 +154,8 @@ export default function DealFunnel() {
         description="Interactive sales funnel dashboard showing deal progression, conversion rates, and sales cycle optimization."
         slug="deal-funnel"
         category="Sales Operations"
-        datePublished="2025-03-04"
-        dateModified="2026-04-10"
+        datePublished="2025-03-04T00:00:00-06:00"
+        dateModified="2026-04-10T00:00:00-06:00"
         tags={['Sales Funnel', 'Deal Pipeline', 'Conversion Analysis', 'Sales Operations']}
       />
       <ProjectPageLayout
