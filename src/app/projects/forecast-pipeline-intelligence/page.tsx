@@ -11,7 +11,7 @@ const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
 }).toString()}`
 
 export const metadata: Metadata = {
-  title: 'Forecast Accuracy & Pipeline Intelligence System | Richard Hudson',
+  title: 'Forecast Accuracy & Pipeline Intelligence System',
   description:
     'Enterprise forecasting and pipeline intelligence platform combining predictive analytics, deal health monitoring, and early warning systems. Improved forecast accuracy by 31% and reduced slippage by 26%.',
   openGraph: {

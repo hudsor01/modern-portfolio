@@ -15,7 +15,7 @@ const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
 }).toString()}`
 
 export const metadata: Metadata = {
-  title: 'Revenue KPI Dashboard - Partner Analytics & Business Intelligence | Richard Hudson',
+  title: 'Revenue KPI Dashboard - Partner Analytics & Business Intelligence',
   description:
     'Real-time revenue analytics dashboard featuring partner performance metrics, growth trends, and business intelligence for data-driven decision making. Built with React, TypeScript, and Recharts.',
   openGraph: {

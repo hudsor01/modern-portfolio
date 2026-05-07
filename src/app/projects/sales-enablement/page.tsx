@@ -11,7 +11,7 @@ const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
 }).toString()}`
 
 export const metadata: Metadata = {
-  title: 'Sales Enablement & Coaching Platform | Richard Hudson',
+  title: 'Sales Enablement & Coaching Platform',
   description:
     'Transformed sales team performance through structured training, real-time coaching, and continuous skill development. Increased win rates by 34% and reduced ramp time by 45% across a 125-person sales organization.',
   openGraph: {
