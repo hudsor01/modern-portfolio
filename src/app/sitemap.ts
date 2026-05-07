@@ -24,6 +24,14 @@ export const revalidate = 3600
 // (Vercel-injected env var), falling back to process start.
 const STATIC_LAST_MODIFIED = process.env.VERCEL_GIT_COMMIT_AUTHOR_DATE || new Date().toISOString()
 
+// Next.js's MetadataRoute.Sitemap serializer does NOT XML-escape `&` in the
+// `images[]` URL strings before emitting them inside <image:loc>. URLs that
+// contain query strings (?title=X&subtitle=Y) ship to Google with literal
+// ampersands, and Google's strict XML parser rejects the whole sitemap
+// ("Parsing error" → Discovered URLs = 0). Pre-escape ourselves; Next.js
+// emits the string as-is into the XML element value.
+const xmlSafeUrl = (url: string): string => url.replace(/&/g, '&amp;')
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://richardwhudsonjr.com'
   // fallback only for blog posts with null timestamps
@@ -100,10 +108,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'monthly' as const,
     priority: 0.8,
     images: [
-      `${baseUrl}/api/og?${new URLSearchParams({
-        title,
-        subtitle: 'Revenue Operations Project',
-      }).toString()}`,
+      xmlSafeUrl(
+        `${baseUrl}/api/og?${new URLSearchParams({
+          title,
+          subtitle: 'Revenue Operations Project',
+        }).toString()}`
+      ),
     ],
   }))
 
@@ -144,7 +154,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           post.updatedAt?.toISOString() || post.publishedAt?.toISOString() || fallbackDate,
         changeFrequency: 'monthly' as const,
         priority: 0.7,
-        images: [featuredAbsolute],
+        images: [xmlSafeUrl(featuredAbsolute)],
       }
     })
   } catch (error) {
