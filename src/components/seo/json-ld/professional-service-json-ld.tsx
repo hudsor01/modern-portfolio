@@ -36,8 +36,8 @@ export function ProfessionalServiceJsonLd({ nonce }: { nonce?: string | null }) 
     ],
     // serviceType is invalid on ProfessionalService (inherits LocalBusiness,
     // not Service). Express services via makesOffer → Offer → itemOffered →
-    // Service, which is the schema.org-strict-valid pattern for a business
-    // listing its offerings. Verified 0-warning at validator.schema.org.
+    // Service, with provider attached to each Service (where it's valid).
+    // Verified 0-warning at validator.schema.org.
     makesOffer: [
       'Revenue Operations',
       'Sales Operations',
@@ -48,18 +48,22 @@ export function ProfessionalServiceJsonLd({ nonce }: { nonce?: string | null }) 
       'Business Intelligence',
     ].map((name) => ({
       '@type': 'Offer',
-      itemOffered: { '@type': 'Service', name, serviceType: name },
+      itemOffered: {
+        '@type': 'Service',
+        name,
+        serviceType: name,
+        provider: {
+          '@type': 'Person',
+          name: 'Richard Hudson',
+          url: siteConfig.url,
+        },
+      },
     })),
     sameAs: [
       'https://www.linkedin.com/in/hudsor01',
       'https://github.com/hudsor01',
       'https://twitter.com/hudsor01',
     ],
-    provider: {
-      '@type': 'Person',
-      name: 'Richard Hudson',
-      url: siteConfig.url,
-    },
   }
 
   const html = safeJsonLdStringify(jsonLd)
