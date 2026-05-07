@@ -13,6 +13,15 @@ import { siteConfig } from '@/lib/site'
  * "revenue operations consultant Dallas".
  */
 export function ProfessionalServiceJsonLd({ nonce }: { nonce?: string | null }) {
+  // Extracted so each Service.provider in makesOffer references the same
+  // object literal — the serializer will emit it inline 7 times either way,
+  // but the source-side dedupe keeps the JSON-LD definition readable.
+  const serviceProvider = {
+    '@type': 'Person',
+    name: 'Richard Hudson',
+    url: siteConfig.url,
+  } as const
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ProfessionalService',
@@ -36,8 +45,8 @@ export function ProfessionalServiceJsonLd({ nonce }: { nonce?: string | null }) 
     ],
     // serviceType is invalid on ProfessionalService (inherits LocalBusiness,
     // not Service). Express services via makesOffer → Offer → itemOffered →
-    // Service, which is the schema.org-strict-valid pattern for a business
-    // listing its offerings. Verified 0-warning at validator.schema.org.
+    // Service, with provider attached to each Service (where it's valid).
+    // Verified 0-warning at validator.schema.org.
     makesOffer: [
       'Revenue Operations',
       'Sales Operations',
@@ -48,18 +57,18 @@ export function ProfessionalServiceJsonLd({ nonce }: { nonce?: string | null }) 
       'Business Intelligence',
     ].map((name) => ({
       '@type': 'Offer',
-      itemOffered: { '@type': 'Service', name, serviceType: name },
+      itemOffered: {
+        '@type': 'Service',
+        name,
+        serviceType: name,
+        provider: serviceProvider,
+      },
     })),
     sameAs: [
       'https://www.linkedin.com/in/hudsor01',
       'https://github.com/hudsor01',
       'https://twitter.com/hudsor01',
     ],
-    provider: {
-      '@type': 'Person',
-      name: 'Richard Hudson',
-      url: siteConfig.url,
-    },
   }
 
   const html = safeJsonLdStringify(jsonLd)
