@@ -3,7 +3,17 @@ import { createContextLogger } from '@/lib/logger'
 
 const logger = createContextLogger('Sitemap')
 
-// Revalidate sitemap every hour to include new blog posts from n8n automation
+// Force dynamic rendering at request time. The previous setup (revalidate
+// = 3600 only) caused Next.js to statically prerender the sitemap during
+// `next build` — which always took the NEXT_PHASE === 'phase-production-build'
+// short-circuit branch (no DB query). Result: blog/category URLs never
+// appeared in production sitemap until a non-build trigger forced ISR
+// regen, and Vercel often served the static artifact indefinitely.
+//
+// With force-dynamic, the sitemap renders at runtime on every request,
+// guaranteeing blog/category URLs are always fresh from the DB.
+// `revalidate = 3600` still applies as a CDN cache hint.
+export const dynamic = 'force-dynamic'
 export const revalidate = 3600
 
 // Captured at module load (i.e. deploy time / process start), NOT per
