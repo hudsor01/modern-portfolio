@@ -19,7 +19,7 @@ const BLOG_INDEX_OG_IMAGE_URL = `https://richardwhudsonjr.com/api/og?${new URLSe
 }).toString()}`
 
 export const metadata: Metadata = {
-  title: 'Blog | Richard Hudson - Revenue Operations Insights',
+  title: 'Blog - Revenue Operations Insights',
   description: 'Insights on revenue operations, data analytics, and business growth strategies.',
   keywords: ['revenue operations', 'data analytics', 'business intelligence', 'revops'],
   openGraph: {

@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: BlogCategoryPageProps): Promi
     }
   }
 
-  const title = `${category.name} — Articles | Richard Hudson`
+  const title = `${category.name} — Articles`
   const description =
     category.description ||
     `Articles about ${category.name} from Richard Hudson's revenue operations blog.`

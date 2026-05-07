@@ -11,7 +11,7 @@ const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
 }).toString()}`
 
 export const metadata: Metadata = {
-  title: 'Revenue Operations Command Center | Richard Hudson',
+  title: 'Revenue Operations Command Center',
   description:
     'Comprehensive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs. Real-time insights with 96.8% forecast accuracy and 89.7% operational efficiency across sales, marketing, and partner channels.',
   openGraph: {

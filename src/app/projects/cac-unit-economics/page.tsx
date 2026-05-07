@@ -11,7 +11,7 @@ const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
 }).toString()}`
 
 export const metadata: Metadata = {
-  title: 'Customer Acquisition Cost Optimization & Unit Economics Dashboard | Richard Hudson',
+  title: 'Customer Acquisition Cost Optimization & Unit Economics Dashboard',
   description:
     'Comprehensive CAC analysis and LTV:CAC ratio optimization that achieved 32% cost reduction through strategic partner channel optimization. Industry-benchmark 3.6:1 efficiency ratio with 8.4-month payback period across multi-tier SaaS products.',
   openGraph: {

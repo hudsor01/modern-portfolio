@@ -11,7 +11,7 @@ const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
 }).toString()}`
 
 export const metadata: Metadata = {
-  title: 'Customer Churn & Retention Analysis - Predictive Analytics | Richard Hudson',
+  title: 'Customer Churn & Retention Analysis - Predictive Analytics',
   description:
     'Advanced churn prediction and retention analysis dashboard with customer lifecycle metrics, retention heatmaps, and predictive modeling for customer success optimization.',
   openGraph: {
