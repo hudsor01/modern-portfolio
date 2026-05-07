@@ -72,8 +72,8 @@ export default function MultiChannelAttribution() {
         description="ML-powered marketing attribution analytics tracking customer journeys across 12+ touchpoints with 92.4% attribution accuracy and $2.3M ROI optimization."
         slug="multi-channel-attribution"
         category="Marketing Analytics"
-        datePublished="2025-11-19"
-        dateModified="2026-05-06"
+        datePublished="2025-11-19T00:00:00-06:00"
+        dateModified="2026-05-06T00:00:00-06:00"
         tags={['Multi-Touch Attribution', 'Marketing Analytics', 'ML Models', 'Customer Journey']}
       />
       <ProjectPageLayout

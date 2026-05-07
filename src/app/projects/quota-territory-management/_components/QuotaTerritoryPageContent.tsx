@@ -98,8 +98,8 @@ export default function QuotaTerritoryManagementProject() {
         description="Territory management system that improved forecast accuracy by 28% and reduced quota variance by 32%"
         slug="quota-territory-management"
         category="Revenue Operations"
-        datePublished="2025-11-19"
-        dateModified="2026-04-10"
+        datePublished="2025-11-19T00:00:00-06:00"
+        dateModified="2026-04-10T00:00:00-06:00"
         tags={[
           'Quota Management',
           'Territory Planning',

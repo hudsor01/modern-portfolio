@@ -65,8 +65,8 @@ export default function CACUnitEconomics() {
         description="Comprehensive CAC analysis and LTV:CAC ratio optimization that achieved 32% cost reduction through strategic partner channel optimization."
         slug="cac-unit-economics"
         category="Revenue Operations"
-        datePublished="2025-11-19"
-        dateModified="2026-05-06"
+        datePublished="2025-11-19T00:00:00-06:00"
+        dateModified="2026-05-06T00:00:00-06:00"
         tags={['CAC', 'Unit Economics', 'LTV', 'SaaS Metrics', 'Revenue Operations']}
       />
       <ProjectPageLayout

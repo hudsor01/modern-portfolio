@@ -65,8 +65,8 @@ export default function CustomerLifetimeValueAnalytics() {
         description="Advanced CLV analytics platform leveraging BTYD (Buy Till You Die) predictive modeling, achieving 94.3% prediction accuracy through machine learning across 5 customer segments."
         slug="customer-lifetime-value"
         category="Predictive Analytics"
-        datePublished="2025-11-19"
-        dateModified="2026-05-06"
+        datePublished="2025-11-19T00:00:00-06:00"
+        dateModified="2026-05-06T00:00:00-06:00"
         tags={['CLV', 'Predictive Analytics', 'BTYD', 'Machine Learning', 'Customer Segments']}
       />
       <ProjectPageLayout

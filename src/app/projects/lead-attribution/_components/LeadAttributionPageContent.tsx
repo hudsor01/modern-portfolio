@@ -159,8 +159,8 @@ export default function LeadAttribution() {
         description="Comprehensive lead attribution analysis with multi-touch attribution modeling."
         slug="lead-attribution"
         category="Marketing Analytics"
-        datePublished="2025-03-04"
-        dateModified="2026-04-10"
+        datePublished="2025-03-04T00:00:00-06:00"
+        dateModified="2026-04-10T00:00:00-06:00"
         tags={[
           'Lead Attribution',
           'Marketing Analytics',

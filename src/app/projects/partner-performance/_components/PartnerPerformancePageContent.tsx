@@ -74,8 +74,8 @@ export default function PartnerPerformanceIntelligence() {
         description="Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem with 4.7x quick ratio."
         slug="partner-performance"
         category="Revenue Operations"
-        datePublished="2025-11-19"
-        dateModified="2026-05-06"
+        datePublished="2025-11-19T00:00:00-06:00"
+        dateModified="2026-05-06T00:00:00-06:00"
         tags={['Partner Analytics', 'Channel Strategy', 'Revenue Operations', 'SaaS Metrics']}
       />
       <ProjectPageLayout

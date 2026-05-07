@@ -97,8 +97,8 @@ export default function ChurnAnalysis() {
         description="Advanced churn prediction and retention analysis dashboard with customer lifecycle metrics, retention heatmaps, and predictive modeling for customer success optimization."
         slug="churn-retention"
         category="Customer Analytics"
-        datePublished="2025-03-04"
-        dateModified="2026-04-10"
+        datePublished="2025-03-04T00:00:00-06:00"
+        dateModified="2026-04-10T00:00:00-06:00"
         tags={[
           'Churn Analysis',
           'Customer Retention',
