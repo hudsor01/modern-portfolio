@@ -60,27 +60,41 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  // All project pages (complete list)
+  // All project pages (complete list).
+  // Each entry includes the OG image URL via the `images` field — Next.js
+  // emits this as <image:image><image:loc> per Google's image-sitemap spec.
+  // Only the URL is allowed in MetadataRoute.Sitemap['images']; deprecated
+  // sub-tags (caption/title/license/geo_location) were dropped by Google
+  // in May 2022.
   const projectPages: MetadataRoute.Sitemap = [
-    'revenue-kpi',
-    'revenue-operations-center',
-    'commission-optimization',
-    'multi-channel-attribution',
-    'partnership-program-implementation',
-    'customer-lifetime-value',
-    'partner-performance',
-    'deal-funnel',
-    'churn-retention',
-    'lead-attribution',
-    'cac-unit-economics',
-    'forecast-pipeline-intelligence',
-    'quota-territory-management',
-    'sales-enablement',
-  ].map((project) => ({
-    url: `${baseUrl}/projects/${project}`,
+    { slug: 'revenue-kpi', title: 'Revenue Operations Dashboard' },
+    { slug: 'revenue-operations-center', title: 'Revenue Operations Command Center' },
+    { slug: 'commission-optimization', title: 'Commission & Incentive Optimization' },
+    { slug: 'multi-channel-attribution', title: 'Multi-Channel Attribution Analytics' },
+    {
+      slug: 'partnership-program-implementation',
+      title: 'Partnership Program Implementation',
+    },
+    { slug: 'customer-lifetime-value', title: 'Customer Lifetime Value Analytics' },
+    { slug: 'partner-performance', title: 'Partner Performance Intelligence' },
+    { slug: 'deal-funnel', title: 'Sales Funnel Optimization' },
+    { slug: 'churn-retention', title: 'Customer Churn Prediction Model' },
+    { slug: 'lead-attribution', title: 'Marketing Attribution Platform' },
+    { slug: 'cac-unit-economics', title: 'Customer Acquisition Cost Optimization' },
+    { slug: 'forecast-pipeline-intelligence', title: 'Forecast & Pipeline Intelligence' },
+    { slug: 'quota-territory-management', title: 'Quota & Territory Management' },
+    { slug: 'sales-enablement', title: 'Sales Enablement Platform' },
+  ].map(({ slug, title }) => ({
+    url: `${baseUrl}/projects/${slug}`,
     lastModified: staticLastModified,
     changeFrequency: 'monthly' as const,
     priority: 0.8,
+    images: [
+      `${baseUrl}/api/og?${new URLSearchParams({
+        title,
+        subtitle: 'Revenue Operations Project',
+      }).toString()}`,
+    ],
   }))
 
   // During build, skip DB — blog posts are added on first ISR revalidation
@@ -96,19 +110,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       where: { status: 'PUBLISHED' },
       select: {
         slug: true,
+        title: true,
         updatedAt: true,
         publishedAt: true,
+        featuredImage: true,
       },
       orderBy: { publishedAt: 'desc' },
     })
 
-    blogPages = posts.map((post) => ({
-      url: `${baseUrl}/blog/${post.slug}`,
-      lastModified:
-        post.updatedAt?.toISOString() || post.publishedAt?.toISOString() || fallbackDate,
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    }))
+    blogPages = posts.map((post) => {
+      const featuredAbsolute = post.featuredImage
+        ? post.featuredImage.startsWith('http')
+          ? post.featuredImage
+          : `${baseUrl}${post.featuredImage}`
+        : `${baseUrl}/api/og?${new URLSearchParams({
+            title: post.title,
+            subtitle: 'Blog Post',
+          }).toString()}`
+
+      return {
+        url: `${baseUrl}/blog/${post.slug}`,
+        lastModified:
+          post.updatedAt?.toISOString() || post.publishedAt?.toISOString() || fallbackDate,
+        changeFrequency: 'monthly' as const,
+        priority: 0.7,
+        images: [featuredAbsolute],
+      }
+    })
   } catch (error) {
     // Sitemap degrades gracefully to static pages — surface as warn so we
     // notice the regression without paging anyone.
@@ -118,5 +146,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     blogPages = []
   }
 
-  return [...mainPages, ...projectPages, ...blogPages]
+  // Blog category pages — only those with published posts.
+  let categoryPages: MetadataRoute.Sitemap
+  try {
+    const { db } = await import('@/lib/db')
+    const categories = await db.category.findMany({
+      where: { posts: { some: { status: 'PUBLISHED', deletedAt: null } } },
+      select: { slug: true, updatedAt: true },
+    })
+    categoryPages = categories.map((cat) => ({
+      url: `${baseUrl}/blog/category/${cat.slug}`,
+      lastModified: cat.updatedAt?.toISOString() || fallbackDate,
+      changeFrequency: 'weekly' as const,
+      priority: 0.6,
+    }))
+  } catch (error) {
+    logger.warn('Sitemap category query failed; skipping category entries', {
+      error: error instanceof Error ? error.message : String(error),
+    })
+    categoryPages = []
+  }
+
+  return [...mainPages, ...projectPages, ...blogPages, ...categoryPages]
 }

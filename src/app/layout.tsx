@@ -61,6 +61,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           href="/api/blog/rss"
         />
 
+        {/* IndieWeb identity verification (rel=me) — used by Mastodon, Bridgy, IndieAuth */}
+        <link rel="me" href="https://www.linkedin.com/in/hudsor01" />
+        <link rel="me" href="https://github.com/hudsor01" />
+        <link rel="me" href="https://twitter.com/hudsor01" />
+
         {/* Preconnect hints for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

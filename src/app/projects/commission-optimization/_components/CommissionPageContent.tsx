@@ -6,6 +6,7 @@ import { useQueryState } from 'nuqs'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
+import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { commissionMetrics } from '../data/constants'
 import { formatCurrency, formatPercentage } from '@/lib/data-formatters'
 import { ProcessingMetrics } from './ProcessingMetrics'
@@ -59,46 +60,57 @@ export default function CommissionOptimization() {
   ]
 
   return (
-    <ProjectPageLayout
-      title="Commission & Incentive Optimization System"
-      description="Advanced commission management and partner incentive optimization platform managing $254K+ commission structures. Automated tier adjustments with 23% average commission rate optimization and ROI-driven compensation strategy delivering 34% performance improvement and 87.5% automation efficiency."
-      tags={[
-        {
-          label: `Commission Pool: ${formatCurrency(commissionMetrics.totalCommissionPool)}`,
-          variant: 'primary',
-        },
-        {
-          label: `Avg Rate: ${formatPercentage(commissionMetrics.averageCommissionRate / 100)}`,
-          variant: 'secondary',
-        },
-        {
-          label: `Performance: +${formatPercentage(commissionMetrics.performanceImprovement / 100)}`,
-          variant: 'primary',
-        },
-        {
-          label: `Automation: ${formatPercentage(commissionMetrics.automationEfficiency / 100)}`,
-          variant: 'secondary',
-        },
-      ]}
-      showTimeframes={true}
-      timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
-      activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-      onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
-    >
-      {/* Standardized Key Metrics Grid */}
-      <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
+    <>
+      <ProjectJsonLd
+        title="Commission & Incentive Optimization System"
+        description="Advanced commission management and partner incentive optimization platform managing $254K+ commission structures with 34% performance improvement and 87.5% automation efficiency."
+        slug="commission-optimization"
+        category="Revenue Operations"
+        datePublished="2025-11-19"
+        dateModified="2026-05-06"
+        tags={['Commission Management', 'Partner Incentives', 'Compensation', 'Sales Operations']}
+      />
+      <ProjectPageLayout
+        title="Commission & Incentive Optimization System"
+        description="Advanced commission management and partner incentive optimization platform managing $254K+ commission structures. Automated tier adjustments with 23% average commission rate optimization and ROI-driven compensation strategy delivering 34% performance improvement and 87.5% automation efficiency."
+        tags={[
+          {
+            label: `Commission Pool: ${formatCurrency(commissionMetrics.totalCommissionPool)}`,
+            variant: 'primary',
+          },
+          {
+            label: `Avg Rate: ${formatPercentage(commissionMetrics.averageCommissionRate / 100)}`,
+            variant: 'secondary',
+          },
+          {
+            label: `Performance: +${formatPercentage(commissionMetrics.performanceImprovement / 100)}`,
+            variant: 'primary',
+          },
+          {
+            label: `Automation: ${formatPercentage(commissionMetrics.automationEfficiency / 100)}`,
+            variant: 'secondary',
+          },
+        ]}
+        showTimeframes={true}
+        timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
+        activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+        onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
+      >
+        {/* Standardized Key Metrics Grid */}
+        <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
-      {/* Processing Metrics */}
-      <ProcessingMetrics />
+        {/* Processing Metrics */}
+        <ProcessingMetrics />
 
-      {/* Tab Content */}
-      {activeTab === 'overview' && <OverviewTab />}
-      {activeTab === 'tiers' && <TiersTab />}
-      {activeTab === 'incentives' && <IncentivesTab />}
-      {activeTab === 'automation' && <AutomationTab />}
+        {/* Tab Content */}
+        {activeTab === 'overview' && <OverviewTab />}
+        {activeTab === 'tiers' && <TiersTab />}
+        {activeTab === 'incentives' && <IncentivesTab />}
+        {activeTab === 'automation' && <AutomationTab />}
 
-      {/* Professional Narrative Sections */}
-      <NarrativeSections />
-    </ProjectPageLayout>
+        {/* Professional Narrative Sections */}
+        <NarrativeSections />
+      </ProjectPageLayout>
+    </>
   )
 }
