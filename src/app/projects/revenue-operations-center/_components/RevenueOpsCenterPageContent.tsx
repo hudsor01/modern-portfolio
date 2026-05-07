@@ -114,8 +114,8 @@ export default function RevenueOperationsCenter() {
         description="Comprehensive revenue operations dashboard consolidating pipeline health, forecasting, partner performance, and operational KPIs with 96.8% forecast accuracy and 89.7% operational efficiency."
         slug="revenue-operations-center"
         category="Revenue Operations"
-        datePublished="2025-11-19"
-        dateModified="2026-05-06"
+        datePublished="2025-11-19T00:00:00-06:00"
+        dateModified="2026-05-06T00:00:00-06:00"
         tags={['RevOps', 'Pipeline Health', 'Forecasting', 'Operations Dashboard']}
       />
       <ProjectPageLayout

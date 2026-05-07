@@ -66,8 +66,8 @@ export default function CommissionOptimization() {
         description="Advanced commission management and partner incentive optimization platform managing $254K+ commission structures with 34% performance improvement and 87.5% automation efficiency."
         slug="commission-optimization"
         category="Revenue Operations"
-        datePublished="2025-11-19"
-        dateModified="2026-05-06"
+        datePublished="2025-11-19T00:00:00-06:00"
+        dateModified="2026-05-06T00:00:00-06:00"
         tags={['Commission Management', 'Partner Incentives', 'Compensation', 'Sales Operations']}
       />
       <ProjectPageLayout

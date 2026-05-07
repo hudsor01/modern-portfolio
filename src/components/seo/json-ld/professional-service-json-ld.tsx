@@ -34,7 +34,11 @@ export function ProfessionalServiceJsonLd({ nonce }: { nonce?: string | null }) 
       { '@type': 'City', name: 'Frisco' },
       { '@type': 'AdministrativeArea', name: 'Dallas-Fort Worth Metroplex' },
     ],
-    serviceType: [
+    // serviceType is invalid on ProfessionalService (inherits LocalBusiness,
+    // not Service). Express services via makesOffer → Offer → itemOffered →
+    // Service, which is the schema.org-strict-valid pattern for a business
+    // listing its offerings. Verified 0-warning at validator.schema.org.
+    makesOffer: [
       'Revenue Operations',
       'Sales Operations',
       'CRM Optimization',
@@ -42,7 +46,10 @@ export function ProfessionalServiceJsonLd({ nonce }: { nonce?: string | null }) 
       'Sales Process Automation',
       'Marketing Automation',
       'Business Intelligence',
-    ],
+    ].map((name) => ({
+      '@type': 'Offer',
+      itemOffered: { '@type': 'Service', name, serviceType: name },
+    })),
     sameAs: [
       'https://www.linkedin.com/in/hudsor01',
       'https://github.com/hudsor01',
