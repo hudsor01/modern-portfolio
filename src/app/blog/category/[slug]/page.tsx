@@ -9,7 +9,9 @@ import { BlogCategoryJsonLd } from '@/components/seo/blog-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { and, desc, eq, isNull } from 'drizzle-orm'
 import { db } from '@/lib/db'
+import { blogPosts, categories } from '@/db/schema'
 import { createContextLogger } from '@/lib/logger'
 
 const logger = createContextLogger('BlogCategoryPage')
@@ -37,25 +39,31 @@ interface CategoryWithPosts {
 
 const getCategoryWithPosts = cache(async (slug: string): Promise<CategoryWithPosts | null> => {
   try {
-    const category = await db.category.findUnique({
-      where: { slug },
-      include: {
+    const category = await db.query.categories.findFirst({
+      where: eq(categories.slug, slug),
+      with: {
         posts: {
-          where: { status: 'PUBLISHED', deletedAt: null },
-          orderBy: { publishedAt: 'desc' },
-          select: {
+          where: and(eq(blogPosts.status, 'PUBLISHED'), isNull(blogPosts.deletedAt)),
+          orderBy: desc(blogPosts.publishedAt),
+          columns: {
             id: true,
             slug: true,
             title: true,
             excerpt: true,
             featuredImage: true,
             publishedAt: true,
-            tags: { select: { tag: { select: { id: true, name: true } } } },
+          },
+          with: {
+            tags: {
+              columns: {},
+              with: { tag: { columns: { id: true, name: true } } },
+            },
           },
         },
       },
     })
-    return category
+    if (!category) return null
+    return category as CategoryWithPosts
   } catch (error) {
     if (process.env.NEXT_PHASE !== 'phase-production-build') {
       logger.error(

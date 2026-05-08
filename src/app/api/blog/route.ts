@@ -1,6 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { count, eq, inArray, sql } from 'drizzle-orm'
 import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
+import { authors, blogPosts, categories, postTags, tags } from '@/db/schema'
 import type {
   PaginatedResponse,
   BlogPostData,
@@ -26,8 +28,6 @@ const logger = createContextLogger('BlogAPI')
  * Blog API Route Handler
  * GET /api/blog - List blog posts with filtering and pagination
  * POST /api/blog - Create new blog post
- *
- * Uses Prisma database for production data
  */
 
 // GET /api/blog - List blog posts with filtering and pagination
@@ -86,29 +86,25 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Build Prisma query
     const where = buildBlogWhereClause(filters)
     const orderBy = buildBlogOrderBy(sort)
 
-    // Execute parallel queries for posts and total count
-    const [posts, total] = await Promise.all([
-      db.blogPost.findMany({
+    const [posts, totalRows] = await Promise.all([
+      db.query.blogPosts.findMany({
         where,
         orderBy,
-        skip,
-        take: limit,
-        include: {
+        offset: skip,
+        limit,
+        with: {
           author: true,
           category: true,
-          tags: {
-            include: { tag: true },
-          },
+          tags: { with: { tag: true } },
         },
       }),
-      db.blogPost.count({ where }),
+      db.select({ value: count() }).from(blogPosts).where(where),
     ])
 
-    // Transform to API response format
+    const total = totalRows[0]?.value ?? 0
     const data = posts.map(transformToBlogPostData)
     const pagination = createPaginationMeta(page, limit, total)
 
@@ -153,12 +149,11 @@ export async function POST(request: NextRequest) {
     }
     const body = parsed.data
 
-    // Generate slug using shared utility
     const slug = generateSlug(body.title)
 
-    // Check if slug already exists
-    const existingPost = await db.blogPost.findUnique({
-      where: { slug },
+    const existingPost = await db.query.blogPosts.findFirst({
+      where: eq(blogPosts.slug, slug),
+      columns: { id: true },
     })
 
     if (existingPost) {
@@ -167,92 +162,84 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Calculate reading time and word count
     const wordCount = body.content.split(/\s+/).length
-    const readingTime = Math.ceil(wordCount / 200) // ~200 WPM
+    const readingTime = Math.ceil(wordCount / 200)
 
-    // Create blog post in database
-    const newPost = await db.blogPost.create({
-      data: {
+    const insertedRows = await db
+      .insert(blogPosts)
+      .values({
         title: body.title,
         slug,
         excerpt: body.excerpt,
         content: body.content,
         contentType: body.contentType,
         status: body.status,
-
-        // SEO fields
         metaTitle: body.metaTitle,
         metaDescription: body.metaDescription,
         keywords: body.keywords,
-        canonicalUrl: body.canonicalUrl || undefined,
-
-        // Social card fields (OG + Twitter)
+        canonicalUrl: body.canonicalUrl || null,
         ogTitle: body.ogTitle,
         ogDescription: body.ogDescription,
-        ogImage: body.ogImage || undefined,
+        ogImage: body.ogImage || null,
         twitterTitle: body.twitterTitle,
         twitterDescription: body.twitterDescription,
-        twitterImage: body.twitterImage || undefined,
-
-        // Content metadata
-        featuredImage: body.featuredImage || undefined,
+        twitterImage: body.twitterImage || null,
+        featuredImage: body.featuredImage || null,
         featuredImageAlt: body.featuredImageAlt,
         readingTime,
         wordCount,
-
-        // Publishing
         publishedAt:
           body.status === 'PUBLISHED'
             ? new Date()
             : body.publishedAt
               ? new Date(body.publishedAt)
-              : undefined,
-        scheduledAt: body.scheduledAt ? new Date(body.scheduledAt) : undefined,
-
-        // Relationships
+              : null,
+        scheduledAt: body.scheduledAt ? new Date(body.scheduledAt) : null,
         authorId: body.authorId,
-        categoryId: body.categoryId,
-
-        // Tags - create PostTag relations if tagIds provided
-        tags:
-          body.tagIds && body.tagIds.length > 0
-            ? {
-                create: body.tagIds.map((tagId) => ({
-                  tagId,
-                })),
-              }
-            : undefined,
-      },
-      include: {
-        author: true,
-        category: true,
-        tags: {
-          include: { tag: true },
-        },
-      },
-    })
-
-    // Update author's totalPosts count
-    await db.author.update({
-      where: { id: body.authorId },
-      data: { totalPosts: { increment: 1 } },
-    })
-
-    // Update category postCount if category provided
-    if (body.categoryId) {
-      await db.category.update({
-        where: { id: body.categoryId },
-        data: { postCount: { increment: 1 } },
+        categoryId: body.categoryId ?? null,
       })
+      .returning()
+
+    const insertedRow = insertedRows[0]
+    if (!insertedRow) {
+      throw new Error('Failed to insert blog post')
+    }
+    const insertedId = insertedRow.id
+
+    if (body.tagIds && body.tagIds.length > 0) {
+      await db.insert(postTags).values(body.tagIds.map((tagId) => ({ postId: insertedId, tagId })))
     }
 
-    // Update tag postCounts
+    const newPost = await db.query.blogPosts.findFirst({
+      where: eq(blogPosts.id, insertedId),
+      with: {
+        author: true,
+        category: true,
+        tags: { with: { tag: true } },
+      },
+    })
+
+    if (!newPost) {
+      throw new Error('Failed to read back inserted blog post')
+    }
+
+    await db
+      .update(authors)
+      .set({ totalPosts: sql`${authors.totalPosts} + 1` })
+      .where(eq(authors.id, body.authorId))
+
+    if (body.categoryId) {
+      await db
+        .update(categories)
+        .set({ postCount: sql`${categories.postCount} + 1` })
+        .where(eq(categories.id, body.categoryId))
+    }
+
     if (body.tagIds && body.tagIds.length > 0) {
-      await db.tag.updateMany({
-        where: { id: { in: body.tagIds } },
-        data: { postCount: { increment: 1 } },
-      })
+      await db
+        .update(tags)
+        .set({ postCount: sql`${tags.postCount} + 1` })
+        .where(inArray(tags.id, body.tagIds))
     }
 
     // IndexNow: notify search engines of new published content (per D-01)

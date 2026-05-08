@@ -6,7 +6,9 @@ import { BlogList } from './_components/blog-list'
 import { BlogJsonLd } from '@/components/seo/blog-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { ItemListJsonLd } from '@/components/seo/json-ld/item-list-json-ld'
+import { desc, eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
+import { blogPosts, categories as categoriesTable } from '@/db/schema'
 import { transformToBlogPostData } from '@/lib/api-blog'
 import { createContextLogger } from '@/lib/logger'
 import type { BlogPostData, BlogCategoryData } from '@/types/api'
@@ -57,19 +59,15 @@ const getBlogPosts = cache(async (): Promise<BlogPostData[]> => {
   }
 
   try {
-    const posts = await db.blogPost.findMany({
-      where: { status: 'PUBLISHED' },
-      include: {
+    const posts = await db.query.blogPosts.findMany({
+      where: eq(blogPosts.status, 'PUBLISHED'),
+      with: {
         author: true,
         category: true,
-        tags: {
-          include: {
-            tag: true,
-          },
-        },
+        tags: { with: { tag: true } },
       },
-      orderBy: { publishedAt: 'desc' },
-      take: 50,
+      orderBy: desc(blogPosts.publishedAt),
+      limit: 50,
     })
 
     return posts.map(transformToBlogPostData)
@@ -91,8 +89,8 @@ const getCategories = cache(async (): Promise<BlogCategoryData[]> => {
   }
 
   try {
-    const categories = await db.category.findMany({
-      orderBy: { totalViews: 'desc' },
+    const categories = await db.query.categories.findMany({
+      orderBy: desc(categoriesTable.totalViews),
     })
 
     return categories.map((cat) => ({

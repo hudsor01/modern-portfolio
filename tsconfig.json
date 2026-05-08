@@ -67,14 +67,11 @@
       "@/data/*": [
         "./src/data/*"
       ],
-      "@/prisma/*": [
-        "./src/generated/prisma/*"
+      "@/db": [
+        "./src/db/index"
       ],
-      "@/prisma/client": [
-        "./src/generated/prisma/index"
-      ],
-      "@/prisma/browser": [
-        "./src/generated/prisma/index-browser"
+      "@/db/*": [
+        "./src/db/*"
       ]
     }
   },

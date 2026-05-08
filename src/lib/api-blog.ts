@@ -1,9 +1,12 @@
-/**
- * Blog API Utilities
- * Consolidates blog query building, filtering, and data transformation
- */
-
-import type { Prisma } from '@/generated/prisma/client'
+import { and, desc, asc, eq, gte, lte, ilike, inArray, ne, or, sql, type SQL } from 'drizzle-orm'
+import {
+  blogPosts,
+  postTags,
+  type Author,
+  type Category,
+  type Tag,
+  type BlogPost,
+} from '@/db/schema'
 import type {
   BlogPostFilters,
   BlogPostSort,
@@ -13,26 +16,16 @@ import type {
   ApiResponse,
 } from '@/types/api'
 
-// ============================================================================
-// SHARED HELPERS
-// ============================================================================
-
-/**
- * Generate URL-safe slug from a string
- */
 export function generateSlug(text: string): string {
   return text
     .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
+    .replace(/^-|-$/g, '')
     .trim()
 }
 
-/**
- * Create standardized error response
- */
 export function createErrorResponse(message: string): ApiResponse<never> {
   return {
     data: undefined as never,
@@ -41,9 +34,6 @@ export function createErrorResponse(message: string): ApiResponse<never> {
   }
 }
 
-/**
- * Transform category to API response format
- */
 export function transformToCategoryData(category: {
   id: string
   name: string
@@ -68,9 +58,6 @@ export function transformToCategoryData(category: {
   }
 }
 
-/**
- * Transform tag to API response format
- */
 export function transformToTagData(tag: {
   id: string
   name: string
@@ -93,115 +80,100 @@ export function transformToTagData(tag: {
   }
 }
 
-// ============================================================================
-// TYPE DEFINITIONS
-// ============================================================================
-
-type BlogPostWithRelations = Prisma.BlogPostGetPayload<{
-  include: {
-    author: true
-    category: true
-    tags: { include: { tag: true } }
-  }
-}>
-
-// ============================================================================
-// QUERY BUILDERS
-// ============================================================================
+// Shape returned by the canonical Drizzle query (relational findFirst/findMany
+// with `with: { author, category, tags: { with: { tag } } }`).
+export type BlogPostWithRelations = BlogPost & {
+  author: Author | null
+  category: Category | null
+  tags: Array<{ tag: Tag }>
+}
 
 /**
- * Build Prisma where clause from blog post filters
+ * Drizzle WHERE clause builder. Returns `undefined` when no filters apply so
+ * callers can pass it straight into `where:` without conditional checks.
  */
-export function buildBlogWhereClause(filters?: BlogPostFilters): Prisma.BlogPostWhereInput {
-  const where: Prisma.BlogPostWhereInput = {}
+export function buildBlogWhereClause(filters?: BlogPostFilters): SQL | undefined {
+  if (!filters) return undefined
 
-  if (!filters) return where
+  const conditions: SQL[] = []
 
   if (filters.status) {
     const statuses = Array.isArray(filters.status) ? filters.status : [filters.status]
-    where.status = { in: statuses as Prisma.EnumPostStatusFilter['in'] }
+    conditions.push(inArray(blogPosts.status, statuses as BlogPost['status'][]))
   }
 
   if (filters.authorId) {
-    where.authorId = filters.authorId
+    conditions.push(eq(blogPosts.authorId, filters.authorId))
   }
 
   if (filters.categoryId) {
-    where.categoryId = filters.categoryId
+    conditions.push(eq(blogPosts.categoryId, filters.categoryId))
   }
 
   if (filters.tagIds && filters.tagIds.length > 0) {
-    where.tags = {
-      some: {
-        tagId: { in: filters.tagIds },
-      },
-    }
+    // Subquery: posts that have at least one matching tag
+    conditions.push(
+      sql`EXISTS (SELECT 1 FROM ${postTags} WHERE ${postTags.postId} = ${blogPosts.id} AND ${postTags.tagId} IN ${filters.tagIds})`
+    )
   }
 
   if (filters.search) {
-    const searchTerm = filters.search
-    where.OR = [
-      { title: { contains: searchTerm, mode: 'insensitive' } },
-      { excerpt: { contains: searchTerm, mode: 'insensitive' } },
-      { content: { contains: searchTerm, mode: 'insensitive' } },
-      { keywords: { has: searchTerm } },
-    ]
+    const term = `%${filters.search}%`
+    const searchOr = or(
+      ilike(blogPosts.title, term),
+      ilike(blogPosts.excerpt, term),
+      ilike(blogPosts.content, term),
+      sql`${filters.search} = ANY(${blogPosts.keywords})`
+    )
+    if (searchOr) conditions.push(searchOr)
   }
 
   if (filters.dateRange) {
-    where.publishedAt = {
-      gte: new Date(filters.dateRange.from),
-      lte: new Date(filters.dateRange.to),
-    }
+    conditions.push(
+      and(
+        gte(blogPosts.publishedAt, new Date(filters.dateRange.from)),
+        lte(blogPosts.publishedAt, new Date(filters.dateRange.to))
+      ) as SQL
+    )
   }
 
   if (filters.published !== undefined) {
-    if (filters.published) {
-      where.status = 'PUBLISHED'
-    } else {
-      where.status = { not: 'PUBLISHED' }
-    }
+    conditions.push(
+      filters.published ? eq(blogPosts.status, 'PUBLISHED') : ne(blogPosts.status, 'PUBLISHED')
+    )
   }
 
-  return where
+  if (conditions.length === 0) return undefined
+  return conditions.length === 1 ? conditions[0] : and(...conditions)
 }
 
+type BlogOrderClause = SQL | ReturnType<typeof desc> | ReturnType<typeof asc>
+
 /**
- * Build Prisma orderBy from blog post sort parameters
+ * Drizzle ORDER BY builder. Returns the column-direction expression to drop
+ * into `orderBy:`.
  */
-export function buildBlogOrderBy(sort?: BlogPostSort): Prisma.BlogPostOrderByWithRelationInput {
-  if (!sort) {
-    return { publishedAt: 'desc' }
-  }
-
-  const direction = sort.order === 'asc' ? 'asc' : 'desc'
-
+export function buildBlogOrderBy(sort?: BlogPostSort): BlogOrderClause {
+  if (!sort) return desc(blogPosts.publishedAt)
+  const dir = sort.order === 'asc' ? asc : desc
   switch (sort.field) {
     case 'title':
-      return { title: direction }
+      return dir(blogPosts.title)
     case 'createdAt':
-      return { createdAt: direction }
+      return dir(blogPosts.createdAt)
     case 'updatedAt':
-      return { updatedAt: direction }
+      return dir(blogPosts.updatedAt)
     case 'publishedAt':
-      return { publishedAt: direction }
+      return dir(blogPosts.publishedAt)
     case 'viewCount':
-      return { viewCount: direction }
+      return dir(blogPosts.viewCount)
     case 'likeCount':
-      return { likeCount: direction }
+      return dir(blogPosts.likeCount)
     default:
-      return { publishedAt: 'desc' }
+      return desc(blogPosts.publishedAt)
   }
 }
 
-// ============================================================================
-// DATA TRANSFORMERS
-// ============================================================================
-
-/**
- * Transform a Prisma BlogPost (with relations) to BlogPostData for API responses
- * Centralizes the transformation logic used across blog API routes
- */
 export function transformToBlogPostData(post: BlogPostWithRelations): BlogPostData {
   return {
     id: post.id,
@@ -211,28 +183,18 @@ export function transformToBlogPostData(post: BlogPostWithRelations): BlogPostDa
     content: post.content,
     contentType: post.contentType,
     status: post.status,
-
-    // SEO fields
     metaTitle: post.metaTitle ?? undefined,
     metaDescription: post.metaDescription ?? undefined,
     keywords: post.keywords,
     canonicalUrl: post.canonicalUrl ?? undefined,
-
-    // Content metadata
     featuredImage: post.featuredImage ?? undefined,
     featuredImageAlt: post.featuredImageAlt ?? undefined,
     readingTime: post.readingTime ?? undefined,
     wordCount: post.wordCount ?? undefined,
-
-    // Publishing
     publishedAt: post.publishedAt?.toISOString(),
     scheduledAt: post.scheduledAt?.toISOString(),
-
-    // Timestamps
     createdAt: post.createdAt.toISOString(),
     updatedAt: post.updatedAt.toISOString(),
-
-    // Relationships
     authorId: post.authorId,
     author: post.author
       ? {
@@ -272,8 +234,6 @@ export function transformToBlogPostData(post: BlogPostWithRelations): BlogPostDa
       totalViews: pt.tag.totalViews,
       createdAt: pt.tag.createdAt.toISOString(),
     })),
-
-    // Analytics
     viewCount: post.viewCount,
     likeCount: post.likeCount,
     shareCount: post.shareCount,

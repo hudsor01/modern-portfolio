@@ -1,23 +1,22 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { eq, inArray, sql } from 'drizzle-orm'
 import type { ApiResponse, BlogPostData } from '@/types/api'
 import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
-import type { Prisma } from '@/generated/prisma/client'
+import { authors, blogPosts, categories, postTags, tags, type NewBlogPost } from '@/db/schema'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
 import { transformToBlogPostData, createErrorResponse } from '@/lib/api-blog'
 
 const logger = createContextLogger('SlugAPI')
 
-/**
- * Individual Blog Post API Route Handler
- * GET /api/blog/[slug] - Get single blog post by slug
- * PUT /api/blog/[slug] - Update blog post by slug
- * DELETE /api/blog/[slug] - Delete blog post by slug
- *
- * Uses Prisma database for production data
- */
+const POST_WITH_RELATIONS = {
+  with: {
+    author: true,
+    category: true,
+    tags: { with: { tag: true } },
+  },
+} as const
 
-// GET /api/blog/[slug] - Get single blog post by slug
 export async function GET(_request: NextRequest, context: { params: Promise<{ slug: string }> }) {
   try {
     const { slug } = await context.params
@@ -26,28 +25,19 @@ export async function GET(_request: NextRequest, context: { params: Promise<{ sl
       return NextResponse.json(createErrorResponse('Slug parameter is required'), { status: 400 })
     }
 
-    // Find post by slug with relations
-    const post = await db.blogPost.findUnique({
-      where: { slug },
-      include: {
-        author: true,
-        category: true,
-        tags: {
-          include: { tag: true },
-        },
-      },
+    const post = await db.query.blogPosts.findFirst({
+      where: eq(blogPosts.slug, slug),
+      ...POST_WITH_RELATIONS,
     })
 
     if (!post) {
       return NextResponse.json(createErrorResponse('Blog post not found'), { status: 404 })
     }
 
-    // Increment view count asynchronously (fire and forget)
-    db.blogPost
-      .update({
-        where: { id: post.id },
-        data: { viewCount: { increment: 1 } },
-      })
+    // Fire-and-forget view count increment
+    db.update(blogPosts)
+      .set({ viewCount: sql`${blogPosts.viewCount} + 1` })
+      .where(eq(blogPosts.id, post.id))
       .catch((err) =>
         logger.error(
           'Failed to increment view count',
@@ -72,9 +62,7 @@ export async function GET(_request: NextRequest, context: { params: Promise<{ sl
   }
 }
 
-// PUT /api/blog/[slug] - Update blog post by slug
 export async function PUT(request: NextRequest, context: { params: Promise<{ slug: string }> }) {
-  // CSRF validation using shared utility
   const csrfResponse = await validateCSRFOrRespond(request, 'blog post update')
   if (csrfResponse) return csrfResponse
 
@@ -86,21 +74,18 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
       return NextResponse.json(createErrorResponse('Slug parameter is required'), { status: 400 })
     }
 
-    // Find existing post
-    const existingPost = await db.blogPost.findUnique({
-      where: { slug },
+    const existingPost = await db.query.blogPosts.findFirst({
+      where: eq(blogPosts.slug, slug),
     })
 
     if (!existingPost) {
       return NextResponse.json(createErrorResponse('Blog post not found'), { status: 404 })
     }
 
-    // Calculate reading time and word count if content changed
     const wordCount = body.content ? body.content.split(/\s+/).length : undefined
     const readingTime = wordCount ? Math.ceil(wordCount / 200) : undefined
 
-    // Build update data
-    const updateData: Prisma.BlogPostUpdateInput = {
+    const updateData: Partial<NewBlogPost> = {
       ...(body.title && { title: body.title }),
       ...(body.excerpt !== undefined && { excerpt: body.excerpt }),
       ...(body.content && { content: body.content, wordCount, readingTime }),
@@ -113,36 +98,34 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
       ...(body.featuredImage !== undefined && { featuredImage: body.featuredImage }),
       ...(body.featuredImageAlt !== undefined && { featuredImageAlt: body.featuredImageAlt }),
       ...(body.categoryId !== undefined && { categoryId: body.categoryId }),
+      updatedAt: new Date(),
     }
 
-    // If status changed to published and wasn't published before, set publishedAt
     if (body.status === 'PUBLISHED' && !existingPost.publishedAt) {
       updateData.publishedAt = new Date()
     }
 
-    // Handle tag updates if provided
+    await db.update(blogPosts).set(updateData).where(eq(blogPosts.slug, slug))
+
     if (body.tagIds !== undefined) {
-      // Delete existing tags and create new ones
-      updateData.tags = {
-        deleteMany: {},
-        create: body.tagIds.map((tagId: string) => ({
-          tagId,
-        })),
+      await db.delete(postTags).where(eq(postTags.postId, existingPost.id))
+      if (body.tagIds.length > 0) {
+        await db
+          .insert(postTags)
+          .values(body.tagIds.map((tagId: string) => ({ postId: existingPost.id, tagId })))
       }
     }
 
-    // Update post
-    const updatedPost = await db.blogPost.update({
-      where: { slug },
-      data: updateData,
-      include: {
-        author: true,
-        category: true,
-        tags: {
-          include: { tag: true },
-        },
-      },
+    const updatedPost = await db.query.blogPosts.findFirst({
+      where: eq(blogPosts.slug, slug),
+      ...POST_WITH_RELATIONS,
     })
+
+    if (!updatedPost) {
+      return NextResponse.json(createErrorResponse('Blog post not found after update'), {
+        status: 500,
+      })
+    }
 
     const response: ApiResponse<BlogPostData> = {
       data: transformToBlogPostData(updatedPost),
@@ -164,9 +147,7 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
   }
 }
 
-// DELETE /api/blog/[slug] - Delete blog post by slug
 export async function DELETE(request: NextRequest, context: { params: Promise<{ slug: string }> }) {
-  // CSRF validation using shared utility
   const csrfResponse = await validateCSRFOrRespond(request, 'blog post deletion')
   if (csrfResponse) return csrfResponse
 
@@ -177,43 +158,36 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
       return NextResponse.json(createErrorResponse('Slug parameter is required'), { status: 400 })
     }
 
-    // Find post to get related info for updating counts
-    const post = await db.blogPost.findUnique({
-      where: { slug },
-      include: {
-        tags: true,
-      },
+    const post = await db.query.blogPosts.findFirst({
+      where: eq(blogPosts.slug, slug),
+      with: { tags: true },
     })
 
     if (!post) {
       return NextResponse.json(createErrorResponse('Blog post not found'), { status: 404 })
     }
 
-    // Delete post (cascades to PostTag relations via schema)
-    await db.blogPost.delete({
-      where: { slug },
-    })
+    // Cascades to post_tags via schema FK
+    await db.delete(blogPosts).where(eq(blogPosts.slug, slug))
 
-    // Update related counts
-    await db.author.update({
-      where: { id: post.authorId },
-      data: { totalPosts: { decrement: 1 } },
-    })
+    await db
+      .update(authors)
+      .set({ totalPosts: sql`${authors.totalPosts} - 1` })
+      .where(eq(authors.id, post.authorId))
 
     if (post.categoryId) {
-      await db.category.update({
-        where: { id: post.categoryId },
-        data: { postCount: { decrement: 1 } },
-      })
+      await db
+        .update(categories)
+        .set({ postCount: sql`${categories.postCount} - 1` })
+        .where(eq(categories.id, post.categoryId))
     }
 
-    // Update tag counts
     const tagIds = post.tags.map((t) => t.tagId)
     if (tagIds.length > 0) {
-      await db.tag.updateMany({
-        where: { id: { in: tagIds } },
-        data: { postCount: { decrement: 1 } },
-      })
+      await db
+        .update(tags)
+        .set({ postCount: sql`${tags.postCount} - 1` })
+        .where(inArray(tags.id, tagIds))
     }
 
     const response: ApiResponse<{ success: boolean }> = {
