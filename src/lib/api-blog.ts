@@ -111,9 +111,17 @@ export function buildBlogWhereClause(filters?: BlogPostFilters): SQL | undefined
   }
 
   if (filters.tagIds && filters.tagIds.length > 0) {
-    // Subquery: posts that have at least one matching tag
+    // Subquery: posts that have at least one matching tag.
+    // sql.join is required here — Drizzle's tag-template binds a JS array as a
+    // single Postgres `text[]` parameter, which would produce `IN $N` against
+    // an array (yielding `operator does not exist: text = text[]`). sql.join
+    // expands to `IN ($1, $2, ...)` with each id parameterized individually.
+    const tagIdParams = sql.join(
+      filters.tagIds.map((id) => sql`${id}`),
+      sql`, `
+    )
     conditions.push(
-      sql`EXISTS (SELECT 1 FROM ${postTags} WHERE ${postTags.postId} = ${blogPosts.id} AND ${postTags.tagId} IN ${filters.tagIds})`
+      sql`EXISTS (SELECT 1 FROM ${postTags} WHERE ${postTags.postId} = ${blogPosts.id} AND ${postTags.tagId} IN (${tagIdParams}))`
     )
   }
 
