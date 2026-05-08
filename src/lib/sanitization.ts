@@ -26,6 +26,14 @@ export function escapeHtml(text: string): string {
 }
 
 /**
+ * Strip CR/LF (and runs thereof) — defense against email-header / HTTP-header
+ * injection when interpolating untrusted input into a header value.
+ */
+export function stripCrlf(value: string): string {
+  return value.replace(/[\r\n]+/g, ' ')
+}
+
+/**
  * Client-Safe HTML Sanitization
  * Used in Client Components to avoid Vercel serverless costs
  * For use in Client Components only - do NOT import in Server Components
