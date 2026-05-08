@@ -1,6 +1,4 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
-import { contactFormSchema } from '@/lib/schemas'
 import { emailService } from '@/lib/email-service'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
 import { getClientIdentifier } from '@/lib/api-request'
@@ -14,24 +12,38 @@ export async function POST(request: NextRequest) {
     if (csrfResponse) return csrfResponse
 
     const body = await request.json()
-    const formData = contactFormSchema.parse(body)
 
-    const result = await emailService.sendContactEmail(formData, getClientIdentifier(request))
+    // emailService validates internally; trust it as the single validation point
+    // so we get one place that maps zod issues to a typed validationErrors payload.
+    const result = await emailService.sendContactEmail(body, getClientIdentifier(request))
 
-    if (!result.success) {
-      const status = result.retryAfter ? 429 : 500
+    if (result.success) {
+      return NextResponse.json({ success: true, message: 'Form submitted successfully!' })
+    }
+
+    if (result.validationErrors) {
       return NextResponse.json(
-        { success: false, error: result.error ?? 'Submission failed' },
-        { status }
+        {
+          success: false,
+          error: result.error ?? 'Invalid form data',
+          validationErrors: result.validationErrors,
+        },
+        { status: 400 }
       )
     }
 
-    return NextResponse.json({ success: true, message: 'Form submitted successfully!' })
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ success: false, error: 'Invalid form data' }, { status: 400 })
+    if (result.retryAfter !== undefined) {
+      return NextResponse.json(
+        { success: false, error: result.error ?? 'Rate limit exceeded' },
+        { status: 429, headers: { 'Retry-After': String(result.retryAfter) } }
+      )
     }
 
+    return NextResponse.json(
+      { success: false, error: result.error ?? 'Submission failed' },
+      { status: 500 }
+    )
+  } catch (error) {
     logger.error(
       'Contact API submission failed',
       error instanceof Error ? error : new Error(String(error))

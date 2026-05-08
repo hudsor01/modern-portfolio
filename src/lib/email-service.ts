@@ -45,9 +45,15 @@ export class EmailService {
     return contactFormSchema.parse(data)
   }
 
-  async sendContactEmail(data: ContactFormData, clientIP?: string): Promise<EmailServiceResult> {
+  async sendContactEmail(
+    data: unknown,
+    clientIP?: string,
+    options: { autoReply?: boolean } = {}
+  ): Promise<EmailServiceResult> {
+    const { autoReply = true } = options
+
     try {
-      // Rate limiting
+      // Rate limiting (cheap; runs before any validation work)
       const identifier = clientIP || 'unknown'
       const rateCheck = checkContactFormRateLimit(identifier)
 
@@ -93,26 +99,29 @@ export class EmailService {
         }
       }
 
-      const autoReplyResult = await this.resend.emails.send({
-        from: `Richard Hudson <${FROM_EMAIL}>`,
-        to: [validatedData.email],
-        subject: 'Thank you for contacting Richard Hudson',
-        react: AutoReplyEmail({ data: validatedData }),
-        headers: {
-          'X-Auto-Reply': 'true',
-        },
-      })
+      let autoReplyEmailId: string | undefined
+      if (autoReply) {
+        const autoReplyResult = await this.resend.emails.send({
+          from: `Richard Hudson <${FROM_EMAIL}>`,
+          to: [validatedData.email],
+          subject: 'Thank you for contacting Richard Hudson',
+          react: AutoReplyEmail({ data: validatedData }),
+          headers: { 'X-Auto-Reply': 'true' },
+        })
 
-      // Auto-reply failure is not critical
-      if (autoReplyResult.error) {
-        emailLogger.warn('Failed to send auto-reply', { error: String(autoReplyResult.error) })
+        // Auto-reply failure is not critical
+        if (autoReplyResult.error) {
+          emailLogger.warn('Failed to send auto-reply', { error: String(autoReplyResult.error) })
+        } else {
+          autoReplyEmailId = autoReplyResult.data?.id
+        }
       }
 
       return {
         success: true,
         data: {
           contactEmailId: contactResult.data?.id,
-          autoReplyEmailId: autoReplyResult.data?.id,
+          autoReplyEmailId,
         },
       }
     } catch (error) {
