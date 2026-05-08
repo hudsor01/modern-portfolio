@@ -14,12 +14,11 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: [
-      // Order matters: Vite picks the first matching entry. Specific
-      // Prisma client/browser re-exports precede the generic `@/prisma/`
-      // prefix, which precedes the catch-all `@/` → `src/`.
-      { find: /^@\/prisma\/client$/, replacement: r('./src/generated/prisma/index.ts') },
-      { find: /^@\/prisma\/browser$/, replacement: r('./src/generated/prisma/index-browser.ts') },
-      { find: /^@\/prisma\//, replacement: r('./src/generated/prisma') + '/' },
+      // Order matters: Vite picks the first matching entry. Specific aliases
+      // for the Drizzle layer precede the catch-all `@/` → `src/`. Mirrors
+      // the `paths` entries in tsconfig.json.
+      { find: /^@\/db$/, replacement: r('./src/db/index.ts') },
+      { find: /^@\/db\//, replacement: r('./src/db') + '/' },
       { find: /^@\//, replacement: r('./src') + '/' },
     ],
   },
