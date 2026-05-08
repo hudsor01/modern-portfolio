@@ -25,9 +25,6 @@ docker-compose*
 
 # IDE
 .vscode
-.idea
-.kiro
-.serena
 
 # Turbo
 .turbo
@@ -44,9 +41,6 @@ e2e
 .planning
 
 # Debug logs
-npm-debug.log*
-yarn-debug.log*
-pnpm-debug.log*
 bun-debug.log*
 .bun-debug.log*
 
