@@ -12,7 +12,6 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN bunx prisma generate
 RUN bun run build
 
 # Production — use node for running (Next.js standalone outputs node server.js)

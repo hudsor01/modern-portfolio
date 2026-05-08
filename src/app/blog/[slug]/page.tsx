@@ -169,12 +169,21 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   )
 }
 
-// Official Next.js 16 Pattern: generateStaticParams for Static Site Generation
-// This pre-renders all blog posts at build time (zero runtime cost)
-// Falls back to empty array during CI builds without database
+// Query published slugs at build time so each post page is statically
+// prerendered to HTML. Real slug requests become CDN cache hits with no
+// function invocation; ISR (revalidate = 60) keeps content fresh.
+//
+// Returning [] here triggers an upstream Next.js bug
+// (vercel/next.js#79465) where the ISR runtime render pipeline 500s for
+// the dynamic-render path. Returning real slugs sidesteps it because
+// every existing post is served from the static cache.
+//
+// CI without DATABASE_URL falls back to [] — the build still succeeds,
+// the deploy just renders pages on-demand at runtime instead of at
+// build. Vercel's production build always has DATABASE_URL set so this
+// branch is only hit on GitHub Actions runs that don't deploy.
 export async function generateStaticParams() {
-  // During build, skip DB — pages are generated on-demand via ISR
-  if (process.env.NEXT_PHASE === 'phase-production-build') {
+  if (!process.env.DATABASE_URL) {
     return []
   }
 
