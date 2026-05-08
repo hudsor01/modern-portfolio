@@ -1,29 +1,23 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { asc, desc, eq } from 'drizzle-orm'
 import type { ApiResponse, BlogCategoryData } from '@/types/api'
 import { db } from '@/lib/db'
+import { categories } from '@/db/schema'
 import { createContextLogger } from '@/lib/logger'
 import { generateSlug, createErrorResponse, transformToCategoryData } from '@/lib/api-blog'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
 
 const logger = createContextLogger('CategoriesAPI')
 
-/**
- * Blog Categories API Route Handler
- * GET /api/blog/categories - List all blog categories
- * POST /api/blog/categories - Create new blog category
- *
- * Uses Prisma database for production data
- */
-
-// GET /api/blog/categories - List all blog categories
 export async function GET() {
   try {
-    const categories = await db.category.findMany({
-      orderBy: [{ postCount: 'desc' }, { name: 'asc' }],
-    })
+    const rows = await db
+      .select()
+      .from(categories)
+      .orderBy(desc(categories.postCount), asc(categories.name))
 
     const response: ApiResponse<BlogCategoryData[]> = {
-      data: categories.map(transformToCategoryData),
+      data: rows.map(transformToCategoryData),
       success: true,
     }
 
@@ -43,10 +37,8 @@ export async function GET() {
   }
 }
 
-// POST /api/blog/categories - Create new blog category
 export async function POST(request: NextRequest) {
   try {
-    // CSRF validation
     const csrfResponse = await validateCSRFOrRespond(request, 'blog category creation')
     if (csrfResponse) return csrfResponse
 
@@ -58,9 +50,9 @@ export async function POST(request: NextRequest) {
 
     const slug = generateSlug(body.name)
 
-    // Check if category with this slug already exists
-    const existingCategory = await db.category.findUnique({
-      where: { slug },
+    const existingCategory = await db.query.categories.findFirst({
+      where: eq(categories.slug, slug),
+      columns: { id: true },
     })
 
     if (existingCategory) {
@@ -69,21 +61,26 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Create new category in database
-    const newCategory = await db.category.create({
-      data: {
+    const inserted = await db
+      .insert(categories)
+      .values({
         name: body.name,
         slug,
-        description: body.description,
+        description: body.description ?? null,
         color: body.color || '#6B7280',
-        icon: body.icon,
-        metaTitle: body.metaTitle,
-        metaDescription: body.metaDescription,
-        keywords: body.keywords || [],
+        icon: body.icon ?? null,
+        metaTitle: body.metaTitle ?? null,
+        metaDescription: body.metaDescription ?? null,
+        keywords: body.keywords ?? [],
         postCount: 0,
         totalViews: 0,
-      },
-    })
+      })
+      .returning()
+
+    const newCategory = inserted[0]
+    if (!newCategory) {
+      throw new Error('Failed to insert category')
+    }
 
     const response: ApiResponse<BlogCategoryData> = {
       data: transformToCategoryData(newCategory),

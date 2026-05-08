@@ -1,7 +1,9 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { desc, eq } from 'drizzle-orm'
 import type { ApiResponse, RSSFeedData } from '@/types/api'
 import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
+import { blogPosts } from '@/db/schema'
 import { createErrorResponse } from '@/lib/api-blog'
 import { env } from '@/lib/env-validation'
 
@@ -15,8 +17,6 @@ const SITE_DESCRIPTION =
 /**
  * Blog RSS Feed API Route Handler
  * GET /api/blog/rss - Generate RSS feed for blog posts
- *
- * Uses Prisma database for production data
  */
 
 // GET /api/blog/rss - Generate RSS feed
@@ -26,12 +26,11 @@ export async function GET(request: NextRequest) {
     const format = searchParams.get('format') || 'json'
     const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 100)
 
-    // Fetch published posts from database
-    const posts = await db.blogPost.findMany({
-      where: { status: 'PUBLISHED' },
-      orderBy: { publishedAt: 'desc' },
-      take: limit,
-      include: {
+    const posts = await db.query.blogPosts.findMany({
+      where: eq(blogPosts.status, 'PUBLISHED'),
+      orderBy: desc(blogPosts.publishedAt),
+      limit,
+      with: {
         author: true,
         category: true,
       },

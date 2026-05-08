@@ -8,7 +8,9 @@ import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 import { escapeHtml } from '@/lib/sanitization'
-import { ContentType } from '@/generated/prisma/browser'
+// ContentType is a string union ('MARKDOWN' | 'HTML' | 'RICH_TEXT') in Drizzle;
+// callers compare against the literal so we don't need a runtime enum here.
+type ContentType = 'MARKDOWN' | 'HTML' | 'RICH_TEXT'
 // MUST be isomorphic-dompurify, NOT plain dompurify. This is a 'use client'
 // component, but Next.js still server-renders the initial HTML — the bare
 // `dompurify` package is browser-only (needs window/document) and throws on
@@ -94,7 +96,7 @@ interface BlogContentProps {
 
 export function BlogPostArticle({
   content,
-  contentType = ContentType.MARKDOWN,
+  contentType = 'MARKDOWN',
   className,
   allowCopy = true,
 }: BlogContentProps) {

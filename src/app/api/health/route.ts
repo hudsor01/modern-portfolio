@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
+import { sql } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { logger } from '@/lib/logger'
 
 export async function GET() {
   try {
-    await db.$queryRaw`SELECT 1`
+    await db.execute(sql`SELECT 1`)
 
     logger.info('Health check performed', { status: 'healthy' })
 
