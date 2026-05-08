@@ -3,11 +3,11 @@ import { cache } from 'react'
 import { notFound } from 'next/navigation'
 import { and, eq } from 'drizzle-orm'
 
-// Force runtime rendering. Static-rendering pipeline was failing on this
-// route despite no obvious cause; force-dynamic gets every render to a
-// known-good code path while we keep ISR caching off the CDN cache-control
-// headers from next.config.js.
-export const dynamic = 'force-dynamic'
+// ISR with 60s revalidation, matching /projects/[slug]/page.tsx:7. The
+// previous `force-dynamic` was a workaround for the recursive
+// src/app/not-found.tsx that called notFound() inside itself — fixed in
+// PR #78, so static rendering works again.
+export const revalidate = 60
 import { Navbar } from '@/components/layout/navbar'
 import { BlogPostLayout } from '../_components/blog-post-layout'
 import { RelatedPosts } from '@/components/blog/related-posts'
