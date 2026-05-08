@@ -3,8 +3,12 @@ import { notFound } from 'next/navigation'
 import { getProjects, getProject } from '@/lib/projects'
 import ProjectDetailClientBoundary from './_components/project-detail-client-boundary'
 
-// Official Next.js 16 Pattern: Static generation with ISR
-export const revalidate = 3600 // Revalidate every hour
+// Force runtime rendering. notFound() inside Next.js 16's ISR-rendered
+// Server Components doesn't propagate HTTP 404 — fake project slugs were
+// 500-ing instead of returning 404. force-dynamic + s-maxage=60 CDN
+// caching gets the same performance for real slugs while fixing 404s
+// for unknown ones. Upstream: https://github.com/vercel/next.js/issues/79465
+export const dynamic = 'force-dynamic'
 
 interface ProjectPageProps {
   params: Promise<{
