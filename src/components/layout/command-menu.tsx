@@ -2,7 +2,9 @@
 
 import React, { useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import type { DialogProps } from '@radix-ui/react-dialog'
+import type { Dialog } from 'radix-ui'
+
+type DialogProps = Dialog.DialogProps
 import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {

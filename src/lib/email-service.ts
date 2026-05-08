@@ -3,17 +3,16 @@
  * Handles email sending with proper error handling, rate limiting, and monitoring
  */
 
-// Production-ready email service with comprehensive error handling and monitoring
-
 import { Resend } from 'resend'
 import { z } from 'zod'
 import { checkContactFormRateLimit } from './rate-limiter/helpers'
-import { escapeHtml } from '@/lib/sanitization'
 import { logger } from '@/lib/logger'
 import { createContextLogger } from '@/lib/logger'
 import type { ContactFormData } from '@/types/api'
 import { contactFormSchema } from '@/lib/schemas'
 import { env } from '@/lib/env-validation'
+import { ContactNotificationEmail } from '@/emails/contact-notification'
+import { AutoReplyEmail } from '@/emails/auto-reply'
 
 const emailLogger = createContextLogger('EmailService')
 
@@ -23,140 +22,9 @@ const FROM_EMAIL = env.FROM_EMAIL
 const TO_EMAIL = env.TO_EMAIL
 const NODE_ENV = env.NODE_ENV
 
-// Email templates
-export const EmailTemplates = {
-  contact: (data: ContactFormData) => ({
-    subject: data.subject
-      ? `Portfolio Contact: ${escapeHtml(data.subject)}`
-      : `Portfolio Contact from ${escapeHtml(data.name)}`,
-    text: `
-New contact form submission from your portfolio:
-
-Name: ${data.name}
-Email: ${data.email}
-${data.phone ? `Phone: ${data.phone}` : ''}
-${data.subject ? `Subject: ${data.subject}` : ''}
-
-Message:
-${data.message}
-
----
-Sent from Portfolio Contact Form
-Time: ${new Date().toISOString()}
-    `.trim(),
-    html: `
-      <div style="font-family: system-ui, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #1f2937; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;">
-          New Portfolio Contact
-        </h2>
-
-        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-              <td style="padding: 8px 0; font-weight: 600; color: #374151; width: 80px;">Name:</td>
-              <td style="padding: 8px 0; color: #1f2937;">${escapeHtml(data.name)}</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px 0; font-weight: 600; color: #374151;">Email:</td>
-              <td style="padding: 8px 0;">
-                <a href="mailto:${escapeHtml(data.email)}" style="color: #3b82f6; text-decoration: none;">
-                  ${escapeHtml(data.email)}
-                </a>
-              </td>
-            </tr>
-            ${
-              data.phone
-                ? `
-            <tr>
-              <td style="padding: 8px 0; font-weight: 600; color: #374151;">Phone:</td>
-              <td style="padding: 8px 0; color: #1f2937;">${escapeHtml(data.phone)}</td>
-            </tr>
-            `
-                : ''
-            }
-            ${
-              data.subject
-                ? `
-            <tr>
-              <td style="padding: 8px 0; font-weight: 600; color: #374151;">Subject:</td>
-              <td style="padding: 8px 0; color: #1f2937;">${escapeHtml(data.subject)}</td>
-            </tr>
-            `
-                : ''
-            }
-          </table>
-        </div>
-
-        <div style="margin: 20px 0;">
-          <h3 style="color: #374151; margin-bottom: 10px;">Message:</h3>
-          <div style="background: white; padding: 20px; border-left: 4px solid #3b82f6; border-radius: 4px;">
-            ${escapeHtml(data.message).replace(/\n/g, '<br>')}
-          </div>
-        </div>
-
-        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 14px; color: #6b7280;">
-          <p>Sent from Portfolio Contact Form</p>
-          <p>Time: ${new Date().toISOString()}</p>
-        </div>
-      </div>
-    `,
-  }),
-
-  autoReply: (data: ContactFormData) => ({
-    subject: 'Thank you for contacting Richard Hudson',
-    text: `
-Hi ${data.name},
-
-Thank you for reaching out through my portfolio contact form. I've received your message and will get back to you as soon as possible, typically within 24 hours.
-
-Your message:
-"${data.message}"
-
-I appreciate your interest and look forward to connecting with you!
-
-Best regards,
-Richard Hudson
-
----
-This is an automated response. Please do not reply to this email.
-    `.trim(),
-    html: `
-      <div style="font-family: system-ui, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #1f2937; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;">
-          Thank You for Your Message
-        </h2>
-        
-        <p style="color: #374151; font-size: 16px; line-height: 1.6;">
-          Hi ${escapeHtml(data.name)},
-        </p>
-        
-        <p style="color: #374151; font-size: 16px; line-height: 1.6;">
-          Thank you for reaching out through my portfolio contact form. I've received your message and will get back to you as soon as possible, typically within 24 hours.
-        </p>
-        
-        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3b82f6;">
-          <h3 style="color: #374151; margin-top: 0;">Your message:</h3>
-          <p style="color: #1f2937; font-style: italic; margin-bottom: 0;">
-            "${escapeHtml(data.message)}"
-          </p>
-        </div>
-        
-        <p style="color: #374151; font-size: 16px; line-height: 1.6;">
-          I appreciate your interest and look forward to connecting with you!
-        </p>
-        
-        <p style="color: #374151; font-size: 16px; line-height: 1.6;">
-          Best regards,<br>
-          <strong>Richard Hudson</strong>
-        </p>
-        
-        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 14px; color: #6b7280;">
-          <p>This is an automated response. Please do not reply to this email.</p>
-        </div>
-      </div>
-    `,
-  }),
-} as const
+function buildContactSubject(data: ContactFormData): string {
+  return data.subject ? `Portfolio Contact: ${data.subject}` : `Portfolio Contact from ${data.name}`
+}
 
 // Email service class
 export class EmailService {
@@ -198,14 +66,13 @@ export class EmailService {
         return this.handleMockEmail(validatedData)
       }
 
-      // Send notification email to site owner
-      const contactTemplate = EmailTemplates.contact(validatedData)
+      const submittedAt = new Date().toISOString()
+
       const contactResult = await this.resend.emails.send({
         from: `Portfolio Contact <${FROM_EMAIL}>`,
         to: [TO_EMAIL],
-        subject: contactTemplate.subject,
-        text: contactTemplate.text,
-        html: contactTemplate.html,
+        subject: buildContactSubject(validatedData),
+        react: ContactNotificationEmail({ data: validatedData, submittedAt }),
         replyTo: validatedData.email,
         headers: {
           'X-Contact-Form': 'portfolio',
@@ -224,14 +91,11 @@ export class EmailService {
         }
       }
 
-      // Send auto-reply to user
-      const autoReplyTemplate = EmailTemplates.autoReply(validatedData)
       const autoReplyResult = await this.resend.emails.send({
         from: `Richard Hudson <${FROM_EMAIL}>`,
         to: [validatedData.email],
-        subject: autoReplyTemplate.subject,
-        text: autoReplyTemplate.text,
-        html: autoReplyTemplate.html,
+        subject: 'Thank you for contacting Richard Hudson',
+        react: AutoReplyEmail({ data: validatedData }),
         headers: {
           'X-Auto-Reply': 'true',
         },
