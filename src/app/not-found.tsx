@@ -7,12 +7,14 @@ import Link from 'next/link'
 // flagged dead /blog/[slug] URLs because of that.
 export default function NotFound() {
   return (
-    <main className="min-h-[70vh] grid place-items-center px-6">
+    <main id="main-content" className="min-h-[70vh] grid place-items-center px-6">
       <div className="text-center max-w-md">
-        <p className="text-sm uppercase tracking-wide text-muted-foreground">404</p>
+        <p aria-hidden="true" className="text-sm uppercase tracking-wide text-muted-foreground">
+          404
+        </p>
         <h1 className="text-3xl font-bold mt-2 mb-4 text-foreground">Page not found</h1>
         <p className="text-muted-foreground mb-6">
-          The page you&rsquo;re looking for doesn&rsquo;t exist or has been moved.
+          The page you&apos;re looking for doesn&apos;t exist or has been moved.
         </p>
         <Link href="/" className="inline-block text-primary hover:underline">
           ← Back to home
