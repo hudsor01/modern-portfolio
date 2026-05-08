@@ -12,6 +12,7 @@ import type {
 } from '@/types/api'
 import { checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-rate-limit'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
+import { isAdminRequest } from '@/lib/api-admin-auth'
 import { parsePaginationParams, createPaginationMeta } from '@/lib/api-pagination'
 import {
   transformToBlogPostData,
@@ -49,6 +50,7 @@ export async function GET(request: NextRequest) {
 
     // Parse filters
     const filters: BlogPostFilters = {}
+    const isAdmin = isAdminRequest(request)
 
     if (searchParams.get('status')) {
       filters.status = searchParams.get('status')!
@@ -75,6 +77,13 @@ export async function GET(request: NextRequest) {
         from: searchParams.get('dateFrom')!,
         to: searchParams.get('dateTo')!,
       }
+    }
+
+    // Public callers see only PUBLISHED, non-soft-deleted posts. Admin-token
+    // holders can pass `?status=DRAFT` (etc.) to see other states; if they
+    // don't pass `status`, they see everything (legacy admin behavior).
+    if (!isAdmin && !filters.status && filters.published === undefined) {
+      filters.published = true
     }
 
     // Parse sorting
