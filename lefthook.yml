@@ -1,19 +1,40 @@
 # Lefthook configuration
+#
+# Layered verification per the canonical 2026 pattern (Witowski, Motlin):
+# - Hooks are a developer-convenience layer. They give fast feedback before
+#   pushing. They can be bypassed with `--no-verify` and aren't run on fresh
+#   checkouts that didn't `lefthook install` — so they are NOT enforcement.
+# - CI (.github/workflows/ci.yml) is the authoritative gate. It re-runs every
+#   check listed here AND adds the slow ones (build, audit). Same tool running
+#   in both places is intentional, not redundancy: the hook catches it in
+#   500ms locally; CI catches it whether or not the hook ran.
+#
+# Split by SPEED, not by tool:
+#   pre-commit  : sub-second on staged files
+#   pre-push    : a few seconds on the full repo
+#   CI          : minutes (covers everything plus build + audit)
 
 pre-commit:
   parallel: true
   commands:
     biome:
-      # Biome's built-in --staged flag replaces lint-staged. Runs check + format
-      # only on staged files; lefthook's stage_fixed re-stages anything Biome
-      # rewrote.
+      # Biome's built-in --staged flag replaces lint-staged. Runs check +
+      # format only on staged files; stage_fixed re-stages anything Biome
+      # rewrote so the commit picks up the formatter's output.
       glob: 'src/**/*.{ts,tsx,js,jsx,json}'
       run: bunx biome check --staged --write --no-errors-on-unmatched
       stage_fixed: true
 
 pre-push:
+  parallel: true
   commands:
-    # Vitest suite runs in ~500ms — fast enough for pre-push.
-    # Bypass with `git push --no-verify` if needed.
+    # Vitest suite (~500ms) — catches broken tests before they cost a CI
+    # round-trip.
     tests:
       run: bunx vitest run --passWithNoTests
+
+    # Typecheck the full project (~3-5s) — catches type errors that pre-commit
+    # can't (Biome doesn't do type-checking, and pre-commit only sees staged
+    # files anyway). Same `tsc --noEmit` invocation as CI's quality job.
+    typecheck:
+      run: bun run typecheck
