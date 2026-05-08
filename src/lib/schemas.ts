@@ -201,10 +201,11 @@ export const viewTrackingSchema = z
 // Intentionally NOT .strict(): pagination is parsed from URL query strings,
 // which routinely carry unrelated params (UTM, sort, filter). Strictness here
 // would reject benign external traffic.
+// Uses z.coerce.number() because URL query values arrive as strings.
 export const paginationSchema = z.object({
-  page: z.number().int().min(1).default(1),
-  limit: z.number().int().min(1).max(100).default(10),
-  offset: z.number().int().min(0).optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(10),
+  offset: z.coerce.number().int().min(0).optional(),
 })
 
 // =======================

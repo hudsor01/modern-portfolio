@@ -6,8 +6,8 @@
 import { Resend } from 'resend'
 import { z } from 'zod'
 import { checkContactFormRateLimit } from './rate-limiter/helpers'
-import { logger } from '@/lib/logger'
-import { createContextLogger } from '@/lib/logger'
+import { logger, createContextLogger } from '@/lib/logger'
+import { stripCrlf } from '@/lib/sanitization'
 import type { ContactFormData } from '@/types/api'
 import { contactFormSchema } from '@/lib/schemas'
 import { env } from '@/lib/env-validation'
@@ -21,10 +21,6 @@ const RESEND_API_KEY = env.RESEND_API_KEY
 const FROM_EMAIL = env.FROM_EMAIL
 const TO_EMAIL = env.TO_EMAIL
 const NODE_ENV = env.NODE_ENV
-
-function stripCrlf(value: string): string {
-  return value.replace(/[\r\n]+/g, ' ')
-}
 
 function buildContactSubject(data: ContactFormData): string {
   return data.subject
@@ -82,7 +78,7 @@ export class EmailService {
         replyTo: validatedData.email,
         headers: {
           'X-Contact-Form': 'portfolio',
-          'X-Contact-Name': validatedData.name,
+          'X-Contact-Name': stripCrlf(validatedData.name),
         },
       })
 
