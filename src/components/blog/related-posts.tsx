@@ -1,5 +1,7 @@
 import Link from 'next/link'
+import { and, desc, eq, isNull, ne } from 'drizzle-orm'
 import { db } from '@/lib/db'
+import { blogPosts } from '@/db/schema'
 import { createContextLogger } from '@/lib/logger'
 import { selectRelatedPosts, type RelatedPostInput } from './related-posts-utils'
 
@@ -14,11 +16,6 @@ interface RelatedPostsProps {
 export async function RelatedPosts({ currentSlug, currentTags, limit = 3 }: RelatedPostsProps) {
   const safeLimit = Math.min(limit, 3)
 
-  // Wrapped in try/catch so a failure in this widget never crashes the whole
-  // blog-post page render (Next.js Server Components rethrow uncaught errors
-  // into the parent error boundary, which surfaces as HTTP 500 to the user).
-  // RelatedPosts is a "nice-to-have" widget — DB hiccup shouldn't take down
-  // the post.
   type PostRow = {
     slug: string
     title: string
@@ -28,17 +25,26 @@ export async function RelatedPosts({ currentSlug, currentTags, limit = 3 }: Rela
   }
   let posts: PostRow[]
   try {
-    posts = await db.blogPost.findMany({
-      where: { status: 'PUBLISHED', deletedAt: null, NOT: { slug: currentSlug } },
-      select: {
+    posts = await db.query.blogPosts.findMany({
+      where: and(
+        eq(blogPosts.status, 'PUBLISHED'),
+        isNull(blogPosts.deletedAt),
+        ne(blogPosts.slug, currentSlug)
+      ),
+      columns: {
         slug: true,
         title: true,
         excerpt: true,
         publishedAt: true,
-        tags: { select: { tag: { select: { name: true } } } },
       },
-      orderBy: { publishedAt: 'desc' },
-      take: 50,
+      with: {
+        tags: {
+          columns: {},
+          with: { tag: { columns: { name: true } } },
+        },
+      },
+      orderBy: desc(blogPosts.publishedAt),
+      limit: 50,
     })
   } catch (error) {
     logger.error(
@@ -52,7 +58,6 @@ export async function RelatedPosts({ currentSlug, currentTags, limit = 3 }: Rela
   const candidates: (RelatedPostInput & { excerpt: string | null })[] = posts.map((p) => ({
     slug: p.slug,
     title: p.title,
-    // Defensive against missing tag rows (orphaned PostTag with deleted Tag)
     tags: (p.tags ?? []).map((t) => t?.tag?.name).filter((n): n is string => !!n),
     publishedAt: p.publishedAt?.toISOString() ?? '1970-01-01',
     excerpt: p.excerpt,

@@ -1,7 +1,13 @@
 import type { Metadata } from 'next'
 import { cache } from 'react'
-import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
+import { and, eq } from 'drizzle-orm'
+
+// Force runtime rendering. Static-rendering pipeline was failing on this
+// route despite no obvious cause; force-dynamic gets every render to a
+// known-good code path while we keep ISR caching off the CDN cache-control
+// headers from next.config.js.
+export const dynamic = 'force-dynamic'
 import { Navbar } from '@/components/layout/navbar'
 import { BlogPostLayout } from '../_components/blog-post-layout'
 import { RelatedPosts } from '@/components/blog/related-posts'
@@ -11,6 +17,7 @@ import { transformToBlogPostData } from '@/lib/api-blog'
 import { createContextLogger } from '@/lib/logger'
 import type { BlogPostData } from '@/types/api'
 import { db } from '@/lib/db'
+import { blogPosts } from '@/db/schema'
 
 const logger = createContextLogger('BlogPost')
 
@@ -27,25 +34,22 @@ const POST_IMAGE_OVERRIDES: Record<string, { src: string; alt: string }> = {
   },
 }
 
-// Official Next.js 16 Pattern: Use React cache() for database queries
-// This automatically deduplicates requests across generateMetadata and page component
-// Gracefully handles missing database (CI builds)
+// Drizzle relational query — deduplicated via React cache() across
+// generateMetadata + page render. Filters are inline so the database does the
+// status check; no post-fetch JS filtering.
 const getBlogPost = cache(async (slug: string): Promise<BlogPostData | null> => {
   try {
-    const post = await db.blogPost.findUnique({
-      where: { slug, status: 'PUBLISHED' },
-      include: {
+    const post = await db.query.blogPosts.findFirst({
+      where: and(eq(blogPosts.slug, slug), eq(blogPosts.status, 'PUBLISHED')),
+      with: {
         author: true,
         category: true,
-        tags: {
-          include: {
-            tag: true,
-          },
-        },
+        tags: { with: { tag: true } },
       },
     })
 
     if (!post) return null
+    if (post.deletedAt) return null
 
     return transformToBlogPostData(post)
   } catch (error) {
@@ -133,13 +137,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound()
   }
 
-  const nonce = (await headers()).get('x-nonce')
-
   return (
     <>
-      <BlogPostJsonLd post={post} nonce={nonce} />
+      <BlogPostJsonLd post={post} />
       <BreadcrumbListJsonLd
-        nonce={nonce}
         items={[
           { name: 'Home', url: 'https://richardwhudsonjr.com' },
           { name: 'Blog', url: 'https://richardwhudsonjr.com/blog' },
@@ -178,11 +179,10 @@ export async function generateStaticParams() {
   }
 
   try {
-    const posts = await db.blogPost.findMany({
-      where: { status: 'PUBLISHED' },
-      select: { slug: true },
-      orderBy: { publishedAt: 'desc' },
-    })
+    const posts = await db
+      .select({ slug: blogPosts.slug })
+      .from(blogPosts)
+      .where(eq(blogPosts.status, 'PUBLISHED'))
 
     return posts.map((post) => ({ slug: post.slug }))
   } catch (error) {

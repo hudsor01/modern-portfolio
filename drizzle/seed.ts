@@ -1,27 +1,45 @@
 /**
  * Database Seeding Script for Blog System
  * Creates sample data for development and testing
+ *
+ * Drizzle ORM port of the original prisma/seed.ts. Same data, same idempotency
+ * semantics — only the calls changed.
  */
 
-import { PrismaClient, Prisma } from '../src/generated/prisma/client'
-import { PrismaNeon } from '@prisma/adapter-neon'
+import { neon } from '@neondatabase/serverless'
+import { drizzle } from 'drizzle-orm/neon-http'
+import { and, count, eq, sum } from 'drizzle-orm'
+import {
+  authors,
+  blogPosts,
+  categories,
+  postInteractions,
+  postTags,
+  postViews,
+  projects,
+  tags,
+} from '../src/db/schema'
 import type {
   Author,
   BlogPost,
   Category,
-  Tag,
-  PostStatus,
   ContentType,
   InteractionType,
-} from '../src/generated/prisma/client'
+  PostStatus,
+  Tag,
+} from '../src/db/schema'
 import { showcaseProjects } from '../src/data/projects'
 
-// Create the Neon adapter for seeding
-const adapter = new PrismaNeon({
-  connectionString: process.env.DATABASE_URL!,
+// Neon HTTP client — same as src/db/index.ts but instantiated locally so this
+// script doesn't pull in the `server-only` import.
+const connectionString = process.env.DATABASE_URL
+if (!connectionString) {
+  throw new Error('DATABASE_URL is required')
+}
+const sqlClient = neon(connectionString)
+const db = drizzle(sqlClient, {
+  schema: { authors, blogPosts, categories, postInteractions, postTags, postViews, projects, tags },
 })
-
-const db = new PrismaClient({ adapter })
 
 // =======================
 // SEED DATA CONSTANTS
@@ -91,7 +109,7 @@ const SAMPLE_CATEGORIES = [
     metaDescription:
       'Advanced customer analytics techniques including CLV analysis, churn prediction, and segmentation.',
     keywords: ['customer analytics', 'CLV', 'churn analysis', 'customer segmentation'],
-    parentId: null, // Will be set to Data Analytics category
+    parentId: null as string | null, // Will be set to Data Analytics category
   },
   {
     name: 'Marketing Attribution',
@@ -109,7 +127,7 @@ const SAMPLE_CATEGORIES = [
       'campaign measurement',
       'attribution modeling',
     ],
-    parentId: null, // Will be set to Data Analytics category
+    parentId: null as string | null, // Will be set to Data Analytics category
   },
 ]
 
@@ -188,135 +206,147 @@ const SAMPLE_TAGS = [
   },
 ]
 
-
-
 // =======================
 // SEEDING FUNCTIONS
 // =======================
 
-async function seedAuthors() {
+async function seedAuthors(): Promise<Author[]> {
   console.log('Seeding authors...')
 
-  const authors = []
+  const created: Author[] = []
   for (const authorData of SAMPLE_AUTHORS) {
-    const author = await db.author.upsert({
-      where: { email: authorData.email },
-      create: authorData,
-      update: authorData,
-    })
-    authors.push(author)
+    const [author] = await db
+      .insert(authors)
+      .values(authorData)
+      .onConflictDoUpdate({
+        target: authors.email,
+        set: authorData,
+      })
+      .returning()
+    if (author) created.push(author)
   }
 
-  console.log(`Created ${authors.length} authors`)
-  return authors
+  console.log(`Created ${created.length} authors`)
+  return created
 }
 
-async function seedCategories() {
+async function seedCategories(): Promise<Category[]> {
   console.log('Seeding categories...')
 
-  const categories = []
+  const created: Category[] = []
 
   // Create root categories first
   const rootCategories = SAMPLE_CATEGORIES.filter((cat) => !cat.parentId)
   for (const categoryData of rootCategories) {
-    const { parentId, ...data } = categoryData
-    const category = await db.category.upsert({
-      where: { slug: data.slug },
-      create: data,
-      update: data,
-    })
-    categories.push(category)
+    const { parentId: _parentId, ...data } = categoryData
+    const [category] = await db
+      .insert(categories)
+      .values(data)
+      .onConflictDoUpdate({
+        target: categories.slug,
+        set: data,
+      })
+      .returning()
+    if (category) created.push(category)
   }
 
-  // Create subcategories
-  const dataAnalyticsCategory = categories.find((cat) => cat.slug === 'data-analytics')
+  // Create subcategories — entries that explicitly declare a `parentId` key
+  // (Customer Analytics + Marketing Attribution). The seed-data shape mirrors
+  // the original prisma/seed.ts; we replicate by checking for the property.
+  const dataAnalyticsCategory = created.find((cat) => cat.slug === 'data-analytics')
   if (dataAnalyticsCategory) {
-    const subcategories = SAMPLE_CATEGORIES.filter((cat) => cat.parentId !== null)
+    const subcategories = SAMPLE_CATEGORIES.filter((cat) => 'parentId' in cat)
     for (const categoryData of subcategories) {
-      const { parentId, ...data } = categoryData
-      const category = await db.category.upsert({
-        where: { slug: data.slug },
-        create: { ...data, parentId: dataAnalyticsCategory.id },
-        update: { ...data, parentId: dataAnalyticsCategory.id },
-      })
-      categories.push(category)
+      const { parentId: _parentId, ...rest } = categoryData
+      const data = { ...rest, parentId: dataAnalyticsCategory.id }
+      const [category] = await db
+        .insert(categories)
+        .values(data)
+        .onConflictDoUpdate({
+          target: categories.slug,
+          set: data,
+        })
+        .returning()
+      if (category) created.push(category)
     }
   }
 
-  console.log(`Created ${categories.length} categories`)
-  return categories
+  console.log(`Created ${created.length} categories`)
+  return created
 }
 
-async function seedTags() {
+async function seedTags(): Promise<Tag[]> {
   console.log('Seeding tags...')
 
-  const tags = []
+  const created: Tag[] = []
   for (const tagData of SAMPLE_TAGS) {
-    const tag = await db.tag.upsert({
-      where: { slug: tagData.slug },
-      create: tagData,
-      update: tagData,
-    })
-    tags.push(tag)
+    const [tag] = await db
+      .insert(tags)
+      .values(tagData)
+      .onConflictDoUpdate({
+        target: tags.slug,
+        set: tagData,
+      })
+      .returning()
+    if (tag) created.push(tag)
   }
 
-  console.log(`Created ${tags.length} tags`)
-  return tags
+  console.log(`Created ${created.length} tags`)
+  return created
 }
 
-
-
-async function seedProjects() {
+async function seedProjects(): Promise<number> {
   console.log('Seeding projects...')
 
-  await db.project.createMany({
-    data: showcaseProjects.map(p => ({
-      id: p.id,
-      slug: p.slug,
-      title: p.title,
-      description: p.description,
-      longDescription: p.longDescription,
-      content: null,
-      image: p.image,
-      link: null,
-      github: null,
-      category: p.category,
-      tags: p.technologies,
-      featured: p.featured,
-      client: p.client,
-      role: null,
-      duration: p.duration,
-      year: p.year,
-      caseStudyUrl: p.caseStudyUrl,
-      // JSON fields - cast through unknown to Prisma.InputJsonValue for type compatibility
-      impact: p.impact as unknown as Prisma.InputJsonValue,
-      results: p.results as unknown as Prisma.InputJsonValue,
-      displayMetrics: p.displayMetrics.map(m => ({
-        label: m.label,
-        value: m.value,
-        iconName: m.icon.name?.toLowerCase() || 'circle',
-      })) as unknown as Prisma.InputJsonValue,
-      metrics: p.metrics ? (p.metrics as unknown as Prisma.InputJsonValue) : Prisma.DbNull,
-      testimonial: Prisma.DbNull,
-      gallery: Prisma.DbNull,
-      details: Prisma.DbNull,
-      charts: Prisma.DbNull,
-      viewCount: 0,
-      clickCount: 0,
+  const projectRows = showcaseProjects.map((p) => ({
+    id: p.id,
+    slug: p.slug,
+    title: p.title,
+    description: p.description,
+    longDescription: p.longDescription,
+    content: null,
+    image: p.image,
+    link: null,
+    github: null,
+    category: p.category,
+    tags: p.technologies,
+    featured: p.featured,
+    client: p.client,
+    role: null,
+    duration: p.duration,
+    year: p.year,
+    caseStudyUrl: p.caseStudyUrl,
+    impact: p.impact,
+    results: p.results,
+    displayMetrics: p.displayMetrics.map((m) => ({
+      label: m.label,
+      value: m.value,
+      iconName: m.icon.name?.toLowerCase() || 'circle',
     })),
-    skipDuplicates: true,
-  })
+    metrics: p.metrics ?? null,
+    testimonial: null,
+    gallery: null,
+    details: null,
+    charts: null,
+    viewCount: 0,
+    clickCount: 0,
+  }))
 
-  const count = await db.project.count()
-  console.log(`Created ${count} projects`)
-  return count
+  if (projectRows.length > 0) {
+    await db.insert(projects).values(projectRows).onConflictDoNothing({ target: projects.id })
+  }
+
+  const totals = await db.select({ c: count() }).from(projects)
+  const total = Number(totals[0]?.c ?? 0)
+  console.log(`Created ${total} projects`)
+  return total
 }
 
 async function generateBlogPostContent(
   title: string,
   category: string
 ): Promise<{ content: string; excerpt: string }> {
-  const contentTemplates = {
+  const contentTemplates: Record<string, string> = {
     'revenue-operations': `
 # ${title}
 
@@ -327,7 +357,7 @@ Revenue operations aligns sales, marketing, and customer success teams to drive 
 Revenue operations (RevOps) breaks down silos between revenue-generating teams, creating a unified approach to:
 
 - **Data Management**: Centralizing customer data across all touchpoints
-- **Process Optimization**: Streamlining workflows for maximum efficiency  
+- **Process Optimization**: Streamlining workflows for maximum efficiency
 - **Technology Integration**: Connecting tools to share data across systems
 - **Performance Analytics**: Measuring what matters for revenue growth
 
@@ -335,7 +365,7 @@ Revenue operations (RevOps) breaks down silos between revenue-generating teams, 
 
 ### Leading Indicators
 - Marketing Qualified Leads (MQLs)
-- Sales Qualified Leads (SQLs) 
+- Sales Qualified Leads (SQLs)
 - Pipeline velocity
 - Lead-to-opportunity conversion rate
 
@@ -391,7 +421,7 @@ Organizations typically progress through four stages of analytics maturity:
 - Performance summaries
 - Trend analysis
 
-### 2. Diagnostic Analytics  
+### 2. Diagnostic Analytics
 **Why did it happen?**
 - Root cause analysis
 - Correlation studies
@@ -528,7 +558,7 @@ Streamline repetitive tasks to focus on high-value activities:
 Modern sales requires engagement across multiple touchpoints:
 
 - **Email Sequences**: Personalized drip campaigns
-- **Social Selling**: LinkedIn and platform-specific outreach  
+- **Social Selling**: LinkedIn and platform-specific outreach
 - **Phone Automation**: Smart dialing and voicemail drops
 - **Video Messaging**: Personalized video communication
 
@@ -627,9 +657,7 @@ Success with sales technology requires strategic planning, careful implementatio
     `,
   }
 
-  const template =
-    contentTemplates[category as keyof typeof contentTemplates] ||
-    contentTemplates['revenue-operations']
+  const template = contentTemplates[category] ?? contentTemplates['revenue-operations'] ?? ''
   const content = template.trim()
 
   // Generate excerpt from first paragraph
@@ -642,19 +670,19 @@ Success with sales technology requires strategic planning, careful implementatio
 }
 
 async function seedBlogPosts(
-  authors: Author[],
-  categories: Category[],
-  tags: Tag[]
-) {
+  authorList: Author[],
+  categoryList: Category[],
+  tagList: Tag[]
+): Promise<BlogPost[]> {
   console.log('Seeding blog posts...')
 
-  const blogPosts = [
+  const blogPostsData = [
     // Revenue Operations Posts
     {
       title: 'Complete Guide to Revenue Operations Strategy',
       slug: 'complete-guide-revenue-operations-strategy',
-      authorId: authors[0]?.id || '',
-      categoryId: categories.find((c) => c.slug === 'revenue-operations')?.id,
+      authorId: authorList[0]?.id || '',
+      categoryId: categoryList.find((c) => c.slug === 'revenue-operations')?.id,
       status: 'PUBLISHED' as PostStatus,
       featuredImage:
         'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=600&fit=crop&crop=center&q=80',
@@ -666,8 +694,8 @@ async function seedBlogPosts(
     {
       title: 'Building High-Performance Sales Dashboards',
       slug: 'building-high-performance-sales-dashboards',
-      authorId: authors[0]?.id || '',
-      categoryId: categories.find((c) => c.slug === 'sales-technology')?.id,
+      authorId: authorList[0]?.id || '',
+      categoryId: categoryList.find((c) => c.slug === 'sales-technology')?.id,
       status: 'PUBLISHED' as PostStatus,
       featuredImage:
         'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&crop=center&q=80',
@@ -679,8 +707,8 @@ async function seedBlogPosts(
     {
       title: 'Advanced Customer Churn Analysis with Python',
       slug: 'advanced-customer-churn-analysis-python',
-      authorId: authors[0]?.id || '',
-      categoryId: categories.find((c) => c.slug === 'customer-analytics')?.id,
+      authorId: authorList[0]?.id || '',
+      categoryId: categoryList.find((c) => c.slug === 'customer-analytics')?.id,
       status: 'PUBLISHED' as PostStatus,
       featuredImage:
         'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=600&fit=crop&crop=center&q=80',
@@ -692,8 +720,8 @@ async function seedBlogPosts(
     {
       title: 'Multi-Touch Attribution Modeling Best Practices',
       slug: 'multi-touch-attribution-modeling-best-practices',
-      authorId: authors[0]?.id || '',
-      categoryId: categories.find((c) => c.slug === 'marketing-attribution')?.id,
+      authorId: authorList[0]?.id || '',
+      categoryId: categoryList.find((c) => c.slug === 'marketing-attribution')?.id,
       status: 'PUBLISHED' as PostStatus,
       featuredImage:
         'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop&crop=center&q=80',
@@ -710,8 +738,8 @@ async function seedBlogPosts(
     {
       title: 'Salesforce Revenue Analytics Implementation',
       slug: 'salesforce-revenue-analytics-implementation',
-      authorId: authors[0]?.id || '',
-      categoryId: categories.find((c) => c.slug === 'sales-technology')?.id,
+      authorId: authorList[0]?.id || '',
+      categoryId: categoryList.find((c) => c.slug === 'sales-technology')?.id,
       status: 'PUBLISHED' as PostStatus,
       featuredImage:
         'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&h=600&fit=crop&crop=center&q=80',
@@ -723,8 +751,8 @@ async function seedBlogPosts(
     {
       title: 'Lead Scoring Models That Actually Work',
       slug: 'lead-scoring-models-that-actually-work',
-      authorId: authors[0]?.id || '',
-      categoryId: categories.find((c) => c.slug === 'data-analytics')?.id,
+      authorId: authorList[0]?.id || '',
+      categoryId: categoryList.find((c) => c.slug === 'data-analytics')?.id,
       status: 'PUBLISHED' as PostStatus,
       featuredImage:
         'https://images.unsplash.com/photo-1590479773265-7464e5d48118?w=800&h=600&fit=crop&crop=center&q=80',
@@ -737,8 +765,8 @@ async function seedBlogPosts(
     {
       title: 'The Future of Revenue Operations Technology',
       slug: 'future-revenue-operations-technology',
-      authorId: authors[0]?.id || '',
-      categoryId: categories.find((c) => c.slug === 'revenue-operations')?.id,
+      authorId: authorList[0]?.id || '',
+      categoryId: categoryList.find((c) => c.slug === 'revenue-operations')?.id,
       status: 'DRAFT' as PostStatus,
       featuredImage:
         'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=800&h=600&fit=crop&crop=center&q=80',
@@ -750,8 +778,8 @@ async function seedBlogPosts(
     {
       title: 'Optimizing Customer Lifetime Value Calculations',
       slug: 'optimizing-customer-lifetime-value-calculations',
-      authorId: authors[0]?.id || '',
-      categoryId: categories.find((c) => c.slug === 'customer-analytics')?.id,
+      authorId: authorList[0]?.id || '',
+      categoryId: categoryList.find((c) => c.slug === 'customer-analytics')?.id,
       status: 'SCHEDULED' as PostStatus,
       scheduledAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       featuredImage:
@@ -763,13 +791,13 @@ async function seedBlogPosts(
     },
   ]
 
-  const createdPosts = []
-  for (let i = 0; i < blogPosts.length; i++) {
-    const postData = blogPosts[i]
+  const createdPosts: BlogPost[] = []
+  for (let i = 0; i < blogPostsData.length; i++) {
+    const postData = blogPostsData[i]
     if (!postData) continue
 
     const categoryName =
-      categories.find((c) => c.id === postData.categoryId)?.slug || 'revenue-operations'
+      categoryList.find((c) => c.id === postData.categoryId)?.slug || 'revenue-operations'
     const { content, excerpt } = await generateBlogPostContent(postData.title, categoryName)
 
     // Calculate word count and reading time
@@ -779,13 +807,14 @@ async function seedBlogPosts(
     // Set published date for published posts
     const publishedAt =
       postData.status === 'PUBLISHED'
-        ? new Date(Date.now() - (blogPosts.length - i) * 24 * 60 * 60 * 1000) // Stagger publication dates
-        : undefined
+        ? new Date(Date.now() - (blogPostsData.length - i) * 24 * 60 * 60 * 1000)
+        : null
 
     const { tagSlugs, ...postWithoutTags } = postData
 
-    const post = await db.blogPost.create({
-      data: {
+    const [post] = await db
+      .insert(blogPosts)
+      .values({
         ...postWithoutTags,
         content,
         excerpt,
@@ -797,25 +826,23 @@ async function seedBlogPosts(
         shareCount: postData.status === 'PUBLISHED' ? Math.floor(Math.random() * 25) + 2 : 0,
         commentCount: postData.status === 'PUBLISHED' ? Math.floor(Math.random() * 15) + 1 : 0,
         contentType: 'MARKDOWN' as ContentType,
-      },
-    })
+      })
+      .returning()
+
+    if (!post) continue
 
     // Add tags
     if (tagSlugs) {
       for (const tagSlug of tagSlugs) {
-        const tag = tags.find((t) => t.slug === tagSlug)
+        const tag = tagList.find((t) => t.slug === tagSlug)
         if (tag) {
-          await db.postTag.create({
-            data: {
-              postId: post.id,
-              tagId: tag.id,
-            },
-          })
+          await db
+            .insert(postTags)
+            .values({ postId: post.id, tagId: tag.id })
+            .onConflictDoNothing()
         }
       }
     }
-
-
 
     createdPosts.push(post)
   }
@@ -824,7 +851,7 @@ async function seedBlogPosts(
   return createdPosts
 }
 
-async function seedAnalyticsData(posts: BlogPost[]) {
+async function seedAnalyticsData(posts: BlogPost[]): Promise<void> {
   console.log('Seeding analytics data...')
 
   let totalViews = 0
@@ -839,37 +866,35 @@ async function seedAnalyticsData(posts: BlogPost[]) {
       const daysAgo = Math.floor(Math.random() * 30)
       const viewedAt = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000)
 
-      await db.postView.create({
-        data: {
-          postId: post.id,
-          visitorId: `visitor_${Math.random().toString(36).substring(7)}`,
-          sessionId: `session_${Math.random().toString(36).substring(7)}`,
-          ipAddress: `192.168.1.${Math.floor(Math.random() * 254) + 1}`,
-          country: ['US', 'CA', 'UK', 'DE', 'FR', 'AU', 'JP'][Math.floor(Math.random() * 7)],
-          readingTime: Math.floor(Math.random() * 600) + 60, // 1-10 minutes
-          scrollDepth: Math.random(),
-          viewedAt,
-        },
+      await db.insert(postViews).values({
+        postId: post.id,
+        visitorId: `visitor_${Math.random().toString(36).substring(7)}`,
+        sessionId: `session_${Math.random().toString(36).substring(7)}`,
+        ipAddress: `192.168.1.${Math.floor(Math.random() * 254) + 1}`,
+        country: ['US', 'CA', 'UK', 'DE', 'FR', 'AU', 'JP'][Math.floor(Math.random() * 7)] ?? 'US',
+        readingTime: Math.floor(Math.random() * 600) + 60, // 1-10 minutes
+        scrollDepth: Math.random(),
+        viewedAt,
       })
       totalViews++
     }
 
     // Generate interaction data
-    const interactions: InteractionType[] = ['LIKE', 'SHARE', 'COMMENT', 'BOOKMARK']
+    const interactionTypes: InteractionType[] = ['LIKE', 'SHARE', 'COMMENT', 'BOOKMARK']
     const numInteractions = Math.floor(Math.random() * 20) + 5
 
     for (let i = 0; i < numInteractions; i++) {
       const daysAgo = Math.floor(Math.random() * 30)
       const createdAt = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000)
+      const type =
+        interactionTypes[Math.floor(Math.random() * interactionTypes.length)] ?? 'LIKE'
 
-      await db.postInteraction.create({
-        data: {
-          postId: post.id,
-          type: interactions[Math.floor(Math.random() * interactions.length)] as InteractionType,
-          visitorId: `visitor_${Math.random().toString(36).substring(7)}`,
-          sessionId: `session_${Math.random().toString(36).substring(7)}`,
-          createdAt,
-        },
+      await db.insert(postInteractions).values({
+        postId: post.id,
+        type,
+        visitorId: `visitor_${Math.random().toString(36).substring(7)}`,
+        sessionId: `session_${Math.random().toString(36).substring(7)}`,
+        createdAt,
       })
       totalInteractions++
     }
@@ -877,10 +902,6 @@ async function seedAnalyticsData(posts: BlogPost[]) {
 
   console.log(`Created ${totalViews} post views and ${totalInteractions} interactions`)
 }
-
-
-
-
 
 // =======================
 // MAIN SEED FUNCTION
@@ -893,95 +914,84 @@ async function main() {
     // Clear existing data (in development only)
     if (process.env.NODE_ENV !== 'production') {
       console.log('Cleaning existing data...')
-      await db.postInteraction.deleteMany()
-      await db.postView.deleteMany()
-      await db.postTag.deleteMany()
-      await db.blogPost.deleteMany()
-      await db.tag.deleteMany()
-      await db.category.deleteMany()
-      await db.author.deleteMany()
-      await db.project.deleteMany()
+      await db.delete(postInteractions)
+      await db.delete(postViews)
+      await db.delete(postTags)
+      await db.delete(blogPosts)
+      await db.delete(tags)
+      await db.delete(categories)
+      await db.delete(authors)
+      await db.delete(projects)
       console.log('Cleaned existing data')
     }
 
     // Seed data in order
-    const authors = await seedAuthors()
-    const categories = await seedCategories()
-    const tags = await seedTags()
+    const authorList = await seedAuthors()
+    const categoryList = await seedCategories()
+    const tagList = await seedTags()
     await seedProjects()
-    const posts = await seedBlogPosts(authors, categories, tags)
+    const posts = await seedBlogPosts(authorList, categoryList, tagList)
 
     // Update stats after creating posts
     console.log('Updating entity statistics...')
 
     // Update category stats
-    for (const category of categories) {
-      const stats = await db.blogPost.aggregate({
-        where: {
-          categoryId: category.id,
-          status: 'PUBLISHED',
-        },
-        _count: { id: true },
-        _sum: { viewCount: true },
-      })
+    for (const category of categoryList) {
+      const [stats] = await db
+        .select({
+          c: count(blogPosts.id),
+          v: sum(blogPosts.viewCount).mapWith(Number),
+        })
+        .from(blogPosts)
+        .where(and(eq(blogPosts.categoryId, category.id), eq(blogPosts.status, 'PUBLISHED')))
 
-      await db.category.update({
-        where: { id: category.id },
-        data: {
-          postCount: stats._count.id,
-          totalViews: stats._sum.viewCount || 0,
-        },
-      })
+      await db
+        .update(categories)
+        .set({
+          postCount: Number(stats?.c ?? 0),
+          totalViews: Number(stats?.v ?? 0),
+        })
+        .where(eq(categories.id, category.id))
     }
 
     // Update tag stats
-    for (const tag of tags) {
-      const stats = await db.postTag.aggregate({
-        where: {
-          tagId: tag.id,
-          post: { status: 'PUBLISHED' },
-        },
-        _count: { tagId: true },
-      })
+    for (const tag of tagList) {
+      const [stats] = await db
+        .select({
+          c: count(postTags.tagId),
+          v: sum(blogPosts.viewCount).mapWith(Number),
+        })
+        .from(postTags)
+        .innerJoin(blogPosts, eq(blogPosts.id, postTags.postId))
+        .where(and(eq(postTags.tagId, tag.id), eq(blogPosts.status, 'PUBLISHED')))
 
-      const totalViews = await db.blogPost.aggregate({
-        where: {
-          status: 'PUBLISHED',
-          tags: { some: { tagId: tag.id } },
-        },
-        _sum: { viewCount: true },
-      })
-
-      await db.tag.update({
-        where: { id: tag.id },
-        data: {
-          postCount: stats._count.tagId,
-          totalViews: totalViews._sum.viewCount || 0,
-        },
-      })
+      await db
+        .update(tags)
+        .set({
+          postCount: Number(stats?.c ?? 0),
+          totalViews: Number(stats?.v ?? 0),
+        })
+        .where(eq(tags.id, tag.id))
     }
 
     // Update author stats
-    for (const author of authors) {
-      const stats = await db.blogPost.aggregate({
-        where: {
-          authorId: author.id,
-          status: 'PUBLISHED',
-        },
-        _count: { id: true },
-        _sum: { viewCount: true },
-      })
+    for (const author of authorList) {
+      const [stats] = await db
+        .select({
+          c: count(blogPosts.id),
+          v: sum(blogPosts.viewCount).mapWith(Number),
+        })
+        .from(blogPosts)
+        .where(and(eq(blogPosts.authorId, author.id), eq(blogPosts.status, 'PUBLISHED')))
 
-      await db.author.update({
-        where: { id: author.id },
-        data: {
-          totalPosts: stats._count.id,
-          totalViews: stats._sum.viewCount || 0,
-        },
-      })
+      await db
+        .update(authors)
+        .set({
+          totalPosts: Number(stats?.c ?? 0),
+          totalViews: Number(stats?.v ?? 0),
+        })
+        .where(eq(authors.id, author.id))
     }
-
-
 
     // Seed analytics data
     await seedAnalyticsData(posts)
@@ -990,29 +1000,30 @@ async function main() {
 
     // Print summary
     const summary = await Promise.all([
-      db.author.count(),
-      db.category.count(),
-      db.tag.count(),
-      db.project.count(),
-      db.blogPost.count(),
-      db.postView.count(),
-      db.postInteraction.count(),
+      db.select({ c: count() }).from(authors),
+      db.select({ c: count() }).from(categories),
+      db.select({ c: count() }).from(tags),
+      db.select({ c: count() }).from(projects),
+      db.select({ c: count() }).from(blogPosts),
+      db.select({ c: count() }).from(postViews),
+      db.select({ c: count() }).from(postInteractions),
     ])
 
+    const counts = summary.map((rows) => Number(rows[0]?.c ?? 0))
+
     console.log('\nSeeding Summary:')
-    console.log(`Authors: ${summary[0]}`)
-    console.log(`Categories: ${summary[1]}`)
-    console.log(`Tags: ${summary[2]}`)
-    console.log(`Projects: ${summary[3]}`)
-    console.log(`Blog Posts: ${summary[4]}`)
-    console.log(`Post Views: ${summary[5]}`)
-    console.log(`Interactions: ${summary[6]}`)
+    console.log(`Authors: ${counts[0]}`)
+    console.log(`Categories: ${counts[1]}`)
+    console.log(`Tags: ${counts[2]}`)
+    console.log(`Projects: ${counts[3]}`)
+    console.log(`Blog Posts: ${counts[4]}`)
+    console.log(`Post Views: ${counts[5]}`)
+    console.log(`Interactions: ${counts[6]}`)
   } catch (error) {
     console.error('Error during seeding:', error)
     throw error
-  } finally {
-    await db.$disconnect()
   }
+  // No explicit disconnect — neon-http is stateless (no connection pool to close).
 }
 
 // Run the seeding script
