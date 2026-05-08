@@ -28,7 +28,7 @@ Runtime: Bun 1.3.13, Node `>=22 <25` (`package.json:6-9`). Next.js 16.2.4, React
 | `bun run db:seed` | `bun run drizzle/seed.ts` — idempotent upsert seed |
 | `bun run generate-sitemap` | Writes `public/sitemap.xml` |
 
-Hooks (`lefthook.yml`): pre-commit runs `bunx lint-staged`; pre-push runs `bunx vitest run --passWithNoTests`. `--no-verify` bypasses.
+Hooks (`lefthook.yml`): pre-commit runs `bunx biome check --staged --write` over staged `src/**`; pre-push runs `bunx vitest run --passWithNoTests`. `--no-verify` bypasses.
 
 ## Layout
 
@@ -60,7 +60,7 @@ scripts/                  generate-sitemap.js (the only script).
 proxy.ts                  Next.js 16 successor to middleware.ts (see Auth/CSP).
 ```
 
-App Router conventions in use: dynamic segments (`[slug]`), private folders (`_components/`), per-route `metadata.ts` (e.g. `src/app/contact/metadata.ts`). **No** route groups (`(group)`), catch-alls, parallel routes, intercepting routes, or admin route — `vercel.json` redirects `/dashboard` → `/admin` but `/admin` does not exist.
+App Router conventions in use: dynamic segments (`[slug]`), private folders (`_components/`), per-route `metadata.ts` (e.g. `src/app/contact/metadata.ts`). **No** route groups (`(group)`), catch-alls, parallel routes, intercepting routes, or admin route.
 
 Path aliases (`tsconfig.json`): `@/*` → `src/*`. Specific aliases for `@/components`, `@/lib`, `@/hooks`, `@/types`, `@/app`, `@/styles`, `@/content`, `@/data`, `@/db` (→ `src/db/index`), `@/db/*`. `@/content/*` is declared but no `src/content/` exists yet.
 
@@ -166,7 +166,6 @@ Logger (`src/lib/logger.ts`): exports `logger` singleton + `createContextLogger(
 - **CSP comes from `proxy.ts`, not `headers()`.** Adding it to `next.config.js` will collide with the per-request nonce. Inline `<script>` and `<style>` in components must read the nonce via the `x-nonce` request header.
 - **`api/send-email/action.ts` is not a server action and has no caller.** Despite the filename, no `'use server'` directive and no import from anywhere in `src/`. The only real server action is `src/app/contact/actions.ts`.
 - **`api/contact/csrf-route.ts` is not auto-routed.** Next.js only treats `route.ts` as an endpoint; this filename was deliberate. Confirm wiring before relying on it.
-- **`/dashboard` redirect is dead.** `vercel.json:20` permanent-redirects `/dashboard` → `/admin`, but no `/admin` route exists.
 - **`bun --bun` flag matters.** `dev` and `build:ci` use it; `build` does not. The Bun-side bundler exposes different edge cases than the Node-side one — when reproducing a CI failure locally, match the script.
 - **Pre-push runs Vitest.** Bypass with `git push --no-verify` only when the failure is provably unrelated to the change.
 
@@ -176,7 +175,7 @@ Logger (`src/lib/logger.ts`): exports `logger` singleton + `createContextLogger(
 - Vercel region: `iad1` (single region, `vercel.json:6`).
 - Image whitelist: `images.unsplash.com` only (`next.config.js:38-44`).
 - Cache policy for `/projects/*` and `/blog/*`: `s-maxage=60, stale-while-revalidate=86400`, CDN 1 hour (`next.config.js:148-160`).
-- Permanent redirects: `/home` → `/` (`next.config.js:170-174`); `/github`, `/linkedin`, `/twitter`, `/dashboard` (`vercel.json:7-21`).
+- Permanent redirects: `/home` → `/` (`next.config.js`); `/github`, `/linkedin`, `/twitter` (`vercel.json`).
 - 9 unit test files under `src/lib/__tests__/` and `src/app/api/contact/__tests__/`.
 - 5 Playwright specs under `e2e/`.
 - Security audit history: `SECURITY.md` (current controls), `SECURITY_AUDIT_REPORT.md` (findings; recent commits closed S-001, B-001, H-001, B-002, P-001).
