@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm'
 import { relations } from 'drizzle-orm'
+import type { AnyPgColumn } from 'drizzle-orm/pg-core'
 import {
   boolean,
   customType,
@@ -12,7 +13,6 @@ import {
   primaryKey,
   text,
   timestamp,
-  uniqueIndex,
   varchar,
 } from 'drizzle-orm/pg-core'
 import { createId } from './cuid'
@@ -105,7 +105,11 @@ export const categories = pgTable(
     metaTitle: text('metaTitle'),
     metaDescription: varchar('metaDescription', { length: 160 }),
     keywords: text('keywords').array().notNull().default(sql`'{}'::text[]`),
-    parentId: text('parentId'),
+    // Self-referential FK — Drizzle requires the AnyPgColumn forward-ref cast
+    // because `categories` isn't defined yet at this point in the file.
+    parentId: text('parentId').references((): AnyPgColumn => categories.id, {
+      onDelete: 'set null',
+    }),
     postCount: integer('postCount').notNull().default(0),
     totalViews: integer('totalViews').notNull().default(0),
     createdAt: timestamp('createdAt', { precision: 3, withTimezone: false }).notNull().defaultNow(),
@@ -425,6 +429,3 @@ export type InteractionType = (typeof interactionType.enumValues)[number]
 export type SubmissionStatus = (typeof submissionStatus.enumValues)[number]
 export type SecurityEventType = (typeof securityEventType.enumValues)[number]
 export type SecuritySeverity = (typeof securitySeverity.enumValues)[number]
-
-// Re-export `uniqueIndex` so the kit pickup matches the existing migration baseline
-export { uniqueIndex }
