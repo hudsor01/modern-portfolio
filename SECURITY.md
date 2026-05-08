@@ -83,8 +83,9 @@ Defensive controls currently in place:
 ### Secrets & environment
 
 - All secrets injected via Vercel environment variables — never committed
-- `.env`, `.env.*` are git-ignored (`.env.example` is the only tracked env
-  file and contains no real values)
+- `.env`, `.env.*` are git-ignored. The Zod schema in
+  `src/lib/env-validation.ts` is the authoritative list of expected
+  variables — there is no committed `.env.example` to leak from
 - Zod schema at boot enforces format, length, and HTTPS requirements;
   weak `JWT_SECRET` patterns are flagged at startup
 
