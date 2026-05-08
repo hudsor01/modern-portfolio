@@ -52,9 +52,14 @@
       "groupName": "next/react"
     },
     {
-      "description": "Group Prisma",
-      "matchPackageNames": ["prisma", "@prisma/**"],
-      "groupName": "prisma"
+      "description": "Group Drizzle ORM + driver",
+      "matchPackageNames": [
+        "drizzle-orm",
+        "drizzle-kit",
+        "@neondatabase/serverless",
+        "@paralleldrive/cuid2"
+      ],
+      "groupName": "drizzle"
     },
     {
       "description": "Group Radix UI",
@@ -80,7 +85,15 @@
     },
     {
       "description": "Hold major framework/runtime upgrades for manual review",
-      "matchPackageNames": ["next", "react", "react-dom", "prisma", "@prisma/**", "node"],
+      "matchPackageNames": [
+        "next",
+        "react",
+        "react-dom",
+        "drizzle-orm",
+        "drizzle-kit",
+        "@neondatabase/serverless",
+        "node"
+      ],
       "matchUpdateTypes": ["major"],
       "automerge": false,
       "labels": ["dependencies", "major-upgrade"],
