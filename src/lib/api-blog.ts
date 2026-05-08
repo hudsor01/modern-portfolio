@@ -1,4 +1,18 @@
-import { and, asc, desc, eq, gte, ilike, inArray, lte, ne, or, sql, type SQL } from 'drizzle-orm'
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  gte,
+  ilike,
+  inArray,
+  isNull,
+  lte,
+  ne,
+  or,
+  sql,
+  type SQL,
+} from 'drizzle-orm'
 import { db } from '@/lib/db'
 import {
   blogPosts,
@@ -150,9 +164,15 @@ export function buildBlogWhereClause(filters?: BlogPostFilters): SQL | undefined
   }
 
   if (filters.published !== undefined) {
-    conditions.push(
-      filters.published ? eq(blogPosts.status, 'PUBLISHED') : ne(blogPosts.status, 'PUBLISHED')
-    )
+    if (filters.published) {
+      // Public visibility: PUBLISHED status AND not soft-deleted. Both
+      // conditions are required so that an admin who soft-deletes a post via
+      // (future) admin UI immediately removes it from public listings.
+      conditions.push(eq(blogPosts.status, 'PUBLISHED'))
+      conditions.push(isNull(blogPosts.deletedAt))
+    } else {
+      conditions.push(ne(blogPosts.status, 'PUBLISHED'))
+    }
   }
 
   if (conditions.length === 0) return undefined

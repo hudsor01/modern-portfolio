@@ -5,6 +5,7 @@ import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
 import { authors, blogPosts, categories, postTags, tags, type NewBlogPost } from '@/db/schema'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
+import { isAdminRequest } from '@/lib/api-admin-auth'
 import { transformToBlogPostData, createErrorResponse } from '@/lib/api-blog'
 
 const logger = createContextLogger('SlugAPI')
@@ -17,7 +18,7 @@ const POST_WITH_RELATIONS = {
   },
 } as const
 
-export async function GET(_request: NextRequest, context: { params: Promise<{ slug: string }> }) {
+export async function GET(request: NextRequest, context: { params: Promise<{ slug: string }> }) {
   try {
     const { slug } = await context.params
 
@@ -34,17 +35,28 @@ export async function GET(_request: NextRequest, context: { params: Promise<{ sl
       return NextResponse.json(createErrorResponse('Blog post not found'), { status: 404 })
     }
 
-    // Fire-and-forget view count increment
-    db.update(blogPosts)
-      .set({ viewCount: sql`${blogPosts.viewCount} + 1` })
-      .where(eq(blogPosts.id, post.id))
-      .catch((err) =>
-        logger.error(
-          'Failed to increment view count',
-          err instanceof Error ? err : new Error(String(err)),
-          { slug: post.slug, postId: post.id }
+    // Hide DRAFT/SCHEDULED/ARCHIVED/DELETED posts (and soft-deleted ones) from
+    // public callers. Admin-token holders bypass the gate so the future admin
+    // UI can preview unpublished content. Same 404 response so anonymous
+    // callers can't differentiate "doesn't exist" from "exists but not public".
+    const isPublic = post.status === 'PUBLISHED' && post.deletedAt === null
+    if (!isPublic && !isAdminRequest(request)) {
+      return NextResponse.json(createErrorResponse('Blog post not found'), { status: 404 })
+    }
+
+    // Fire-and-forget view count increment (only for actually-public reads)
+    if (isPublic) {
+      db.update(blogPosts)
+        .set({ viewCount: sql`${blogPosts.viewCount} + 1` })
+        .where(eq(blogPosts.id, post.id))
+        .catch((err) =>
+          logger.error(
+            'Failed to increment view count',
+            err instanceof Error ? err : new Error(String(err)),
+            { slug: post.slug, postId: post.id }
+          )
         )
-      )
+    }
 
     const response: ApiResponse<BlogPostData> = {
       data: transformToBlogPostData(post),
@@ -53,7 +65,11 @@ export async function GET(_request: NextRequest, context: { params: Promise<{ sl
 
     return NextResponse.json(response, {
       headers: {
-        'Cache-Control': 'public, max-age=300, s-maxage=600',
+        // Don't cache admin-only views in public/CDN tier — Cache-Control
+        // private prevents leaking unpublished content via shared cache.
+        'Cache-Control': isPublic
+          ? 'public, max-age=300, s-maxage=600'
+          : 'private, no-store, max-age=0, must-revalidate',
       },
     })
   } catch (error) {

@@ -1,32 +1,17 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { timingSafeEqual } from 'node:crypto'
 import { count, eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { authors, blogPosts, categories } from '@/db/schema'
 import { logger } from '@/lib/logger'
 import { env } from '@/lib/env-validation'
-
-function isAuthorized(request: NextRequest): boolean {
-  const expected = env.ADMIN_API_TOKEN
-  if (!expected) return false
-
-  const header = request.headers.get('authorization') ?? ''
-  const match = header.match(/^Bearer\s+(.+)$/i)
-  if (!match) return false
-
-  const provided = (match[1] ?? '').trim()
-  const a = Buffer.from(provided)
-  const b = Buffer.from(expected)
-  if (a.length !== b.length) return false
-  return timingSafeEqual(a, b)
-}
+import { isAdminRequest } from '@/lib/api-admin-auth'
 
 export async function POST(request: NextRequest) {
   if (env.NODE_ENV === 'production' && env.ALLOW_SEED_IN_PRODUCTION !== 'true') {
     return NextResponse.json({ success: false, error: 'Not found' }, { status: 404 })
   }
 
-  if (!isAuthorized(request)) {
+  if (!isAdminRequest(request)) {
     logger.warn('Unauthorized seed attempt', { route: 'api/seed' })
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
   }
