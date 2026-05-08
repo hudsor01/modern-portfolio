@@ -1,4 +1,19 @@
-import { and, desc, asc, eq, gte, lte, ilike, inArray, ne, or, sql, type SQL } from 'drizzle-orm'
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  exists,
+  gte,
+  ilike,
+  inArray,
+  lte,
+  ne,
+  or,
+  sql,
+  type SQL,
+} from 'drizzle-orm'
+import { db } from '@/lib/db'
 import {
   blogPosts,
   postTags,
@@ -111,17 +126,18 @@ export function buildBlogWhereClause(filters?: BlogPostFilters): SQL | undefined
   }
 
   if (filters.tagIds && filters.tagIds.length > 0) {
-    // Subquery: posts that have at least one matching tag.
-    // sql.join is required here — Drizzle's tag-template binds a JS array as a
-    // single Postgres `text[]` parameter, which would produce `IN $N` against
-    // an array (yielding `operator does not exist: text = text[]`). sql.join
-    // expands to `IN ($1, $2, ...)` with each id parameterized individually.
-    const tagIdParams = sql.join(
-      filters.tagIds.map((id) => sql`${id}`),
-      sql`, `
-    )
+    // Posts that have at least one of the requested tags. Canonical Drizzle
+    // pattern: `exists()` wrapping a correlated subquery, with `inArray()`
+    // for the IN list. Hand-rolling the SQL with template strings was tried
+    // and produced `tagId = text[]` because Drizzle binds JS arrays as a
+    // single Postgres array parameter.
     conditions.push(
-      sql`EXISTS (SELECT 1 FROM ${postTags} WHERE ${postTags.postId} = ${blogPosts.id} AND ${postTags.tagId} IN (${tagIdParams}))`
+      exists(
+        db
+          .select({ one: sql`1` })
+          .from(postTags)
+          .where(and(eq(postTags.postId, blogPosts.id), inArray(postTags.tagId, filters.tagIds)))
+      )
     )
   }
 
