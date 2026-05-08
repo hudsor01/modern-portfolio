@@ -8,8 +8,11 @@ export default defineConfig({
   dbCredentials: {
     url: process.env.DATABASE_URL ?? '',
   },
-  // citext + the existing Prisma migration history live in the DB; we baseline
-  // against the live schema rather than re-creating tables.
+  // The Postgres schema (citext extension, all tables, indexes, FKs) was
+  // already created by an earlier ORM and is the source of truth in the live
+  // DB. drizzle-kit baselines against that existing schema rather than
+  // re-creating tables — `bunx drizzle-kit generate` emits forward-only
+  // migrations from this point.
   strict: true,
   verbose: true,
 })
