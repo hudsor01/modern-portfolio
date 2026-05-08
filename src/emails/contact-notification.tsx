@@ -1,4 +1,17 @@
-import { Body, Container, Head, Heading, Hr, Html, Link, Preview, Section, Text } from 'react-email'
+import {
+  Body,
+  Column,
+  Container,
+  Head,
+  Heading,
+  Hr,
+  Html,
+  Link,
+  Preview,
+  Row,
+  Section,
+  Text,
+} from 'react-email'
 import type { ContactFormData } from '@/types/api'
 
 type ContactNotificationProps = {
@@ -28,13 +41,15 @@ const styles = {
     borderRadius: '8px',
     margin: '20px 0',
   },
-  fieldLabel: {
+  fieldRow: { paddingBottom: '8px' },
+  fieldLabelCol: {
     fontWeight: 600,
     color: '#374151',
-    width: '80px',
+    width: '92px',
+    verticalAlign: 'top' as const,
     paddingRight: '12px',
   },
-  fieldValue: { color: '#1f2937' },
+  fieldValueCol: { color: '#1f2937', verticalAlign: 'top' as const },
   link: { color: '#3b82f6', textDecoration: 'none' },
   messageBox: {
     background: '#ffffff',
@@ -57,27 +72,29 @@ export function ContactNotificationEmail({ data, submittedAt }: ContactNotificat
           <Heading style={styles.heading}>New Portfolio Contact</Heading>
 
           <Section style={styles.card}>
-            <Text>
-              <span style={styles.fieldLabel}>Name:</span>
-              <span style={styles.fieldValue}>{data.name}</span>
-            </Text>
-            <Text>
-              <span style={styles.fieldLabel}>Email:</span>
-              <Link href={`mailto:${data.email}`} style={styles.link}>
-                {data.email}
-              </Link>
-            </Text>
+            <Row style={styles.fieldRow}>
+              <Column style={styles.fieldLabelCol}>Name:</Column>
+              <Column style={styles.fieldValueCol}>{data.name}</Column>
+            </Row>
+            <Row style={styles.fieldRow}>
+              <Column style={styles.fieldLabelCol}>Email:</Column>
+              <Column style={styles.fieldValueCol}>
+                <Link href={`mailto:${data.email}`} style={styles.link}>
+                  {data.email}
+                </Link>
+              </Column>
+            </Row>
             {data.phone ? (
-              <Text>
-                <span style={styles.fieldLabel}>Phone:</span>
-                <span style={styles.fieldValue}>{data.phone}</span>
-              </Text>
+              <Row style={styles.fieldRow}>
+                <Column style={styles.fieldLabelCol}>Phone:</Column>
+                <Column style={styles.fieldValueCol}>{data.phone}</Column>
+              </Row>
             ) : null}
             {data.subject ? (
-              <Text>
-                <span style={styles.fieldLabel}>Subject:</span>
-                <span style={styles.fieldValue}>{data.subject}</span>
-              </Text>
+              <Row style={styles.fieldRow}>
+                <Column style={styles.fieldLabelCol}>Subject:</Column>
+                <Column style={styles.fieldValueCol}>{data.subject}</Column>
+              </Row>
             ) : null}
           </Section>
 
