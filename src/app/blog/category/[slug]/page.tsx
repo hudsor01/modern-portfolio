@@ -14,6 +14,12 @@ import { db } from '@/lib/db'
 import { blogPosts, categories } from '@/db/schema'
 import { createContextLogger } from '@/lib/logger'
 
+// Force runtime rendering — see /blog/[slug]/page.tsx for the rationale.
+// notFound() inside ISR-rendered Server Components ships HTTP 200 with a
+// 404 body, which Google flags as Soft 404. force-dynamic gets reliable
+// HTTP 404 for unknown categories.
+export const dynamic = 'force-dynamic'
+
 const logger = createContextLogger('BlogCategoryPage')
 
 interface BlogCategoryPageProps {

@@ -13,11 +13,20 @@ import type { BlogPostData } from '@/types/api'
 import { db } from '@/lib/db'
 import { blogPosts } from '@/db/schema'
 
-// ISR with 60s revalidation, matching /projects/[slug]/page.tsx:7. The
-// previous `force-dynamic` was a workaround for the recursive
-// src/app/not-found.tsx that called notFound() inside itself — fixed in
-// PR #78, so static rendering works again.
-export const revalidate = 60
+// Force runtime rendering. notFound() inside Next.js 16's ISR-rendered
+// Server Components doesn't propagate HTTP 404 status to Vercel — the
+// rendered template ships with HTTP 200, which Google flags as Soft 404
+// in Search Console. force-dynamic skips the ISR pipeline so notFound()
+// reliably yields HTTP 404 from the runtime render path.
+//
+// Performance: s-maxage=60 + stale-while-revalidate=86400 in next.config.js
+// caches successful responses at the CDN, so real-slug requests are still
+// served without function invocation after the first hit. Net effect for
+// real slugs is nearly identical to ISR; the difference is that fake
+// slugs now correctly emit HTTP 404 instead of 200-with-body.
+//
+// Upstream tracking: https://github.com/vercel/next.js/issues/79465
+export const dynamic = 'force-dynamic'
 
 const logger = createContextLogger('BlogPost')
 
