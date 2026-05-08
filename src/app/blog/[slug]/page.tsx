@@ -2,12 +2,6 @@ import type { Metadata } from 'next'
 import { cache } from 'react'
 import { notFound } from 'next/navigation'
 import { and, eq } from 'drizzle-orm'
-
-// ISR with 60s revalidation, matching /projects/[slug]/page.tsx:7. The
-// previous `force-dynamic` was a workaround for the recursive
-// src/app/not-found.tsx that called notFound() inside itself — fixed in
-// PR #78, so static rendering works again.
-export const revalidate = 60
 import { Navbar } from '@/components/layout/navbar'
 import { BlogPostLayout } from '../_components/blog-post-layout'
 import { RelatedPosts } from '@/components/blog/related-posts'
@@ -18,6 +12,12 @@ import { createContextLogger } from '@/lib/logger'
 import type { BlogPostData } from '@/types/api'
 import { db } from '@/lib/db'
 import { blogPosts } from '@/db/schema'
+
+// ISR with 60s revalidation, matching /projects/[slug]/page.tsx:7. The
+// previous `force-dynamic` was a workaround for the recursive
+// src/app/not-found.tsx that called notFound() inside itself — fixed in
+// PR #78, so static rendering works again.
+export const revalidate = 60
 
 const logger = createContextLogger('BlogPost')
 

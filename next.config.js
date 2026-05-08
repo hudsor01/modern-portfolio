@@ -39,7 +39,11 @@ const nextConfig = {
       '@radix-ui/react-switch',
       '@radix-ui/react-tabs',
       '@radix-ui/react-toggle',
+      '@tanstack/react-form',
+      '@tanstack/react-table',
+      'cmdk',
       'date-fns',
+      'motion',
     ],
   },
 
