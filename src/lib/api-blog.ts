@@ -1,18 +1,4 @@
-import {
-  and,
-  asc,
-  desc,
-  eq,
-  exists,
-  gte,
-  ilike,
-  inArray,
-  lte,
-  ne,
-  or,
-  sql,
-  type SQL,
-} from 'drizzle-orm'
+import { and, asc, desc, eq, gte, ilike, inArray, lte, ne, or, sql, type SQL } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import {
   blogPosts,
@@ -126,17 +112,19 @@ export function buildBlogWhereClause(filters?: BlogPostFilters): SQL | undefined
   }
 
   if (filters.tagIds && filters.tagIds.length > 0) {
-    // Posts that have at least one of the requested tags. Canonical Drizzle
-    // pattern: `exists()` wrapping a correlated subquery, with `inArray()`
-    // for the IN list. Hand-rolling the SQL with template strings was tried
-    // and produced `tagId = text[]` because Drizzle binds JS arrays as a
-    // single Postgres array parameter.
+    // Posts whose id appears in the set of postIds that have any of the
+    // requested tag ids. inArray(column, subquery) compiles to
+    // `WHERE id IN (SELECT postId FROM post_tags WHERE tagId IN (...))`,
+    // which neon-http handles correctly. Earlier attempts with
+    // `sql\`... IN ${filters.tagIds}\`` and `exists()` both 500'd against
+    // the live driver — this non-correlated form works.
     conditions.push(
-      exists(
+      inArray(
+        blogPosts.id,
         db
-          .select({ one: sql`1` })
+          .select({ id: postTags.postId })
           .from(postTags)
-          .where(and(eq(postTags.postId, blogPosts.id), inArray(postTags.tagId, filters.tagIds)))
+          .where(inArray(postTags.tagId, filters.tagIds))
       )
     )
   }
