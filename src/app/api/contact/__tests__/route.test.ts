@@ -43,7 +43,7 @@ describe('POST /api/contact', () => {
     expect(emailService.sendContactEmail).toHaveBeenCalledOnce()
   })
 
-  it('returns 429 when emailService reports rate-limit', async () => {
+  it('returns 429 with Retry-After header when emailService reports rate-limit', async () => {
     vi.mocked(emailService.sendContactEmail).mockResolvedValue({
       success: false,
       error: 'Rate limit exceeded',
@@ -51,9 +51,10 @@ describe('POST /api/contact', () => {
     })
     const res = await POST(makeRequest(validBody))
     expect(res.status).toBe(429)
+    expect(res.headers.get('Retry-After')).toBe('60')
   })
 
-  it('returns 500 when emailService reports a non-rate-limit failure', async () => {
+  it('returns 500 when emailService reports a non-rate-limit, non-validation failure', async () => {
     vi.mocked(emailService.sendContactEmail).mockResolvedValue({
       success: false,
       error: 'Failed to send notification email',
@@ -62,17 +63,26 @@ describe('POST /api/contact', () => {
     expect(res.status).toBe(500)
   })
 
+  it('returns 400 with validationErrors when emailService reports schema rejection', async () => {
+    vi.mocked(emailService.sendContactEmail).mockResolvedValue({
+      success: false,
+      error: 'Validation error',
+      validationErrors: { email: ['Please enter a valid email address'] },
+    })
+    const res = await POST(makeRequest({ name: 'X', email: 'bad', message: 'short' }))
+    expect(res.status).toBe(400)
+    const json = await res.json()
+    expect(json).toMatchObject({
+      success: false,
+      validationErrors: { email: ['Please enter a valid email address'] },
+    })
+  })
+
   it('short-circuits on CSRF rejection', async () => {
     const csrfRejection = NextResponse.json({ success: false, error: 'csrf' }, { status: 403 })
     vi.mocked(validateCSRFOrRespond).mockResolvedValue(csrfRejection)
     const res = await POST(makeRequest(validBody))
     expect(res.status).toBe(403)
-    expect(emailService.sendContactEmail).not.toHaveBeenCalled()
-  })
-
-  it('returns 400 on invalid payload (schema rejection)', async () => {
-    const res = await POST(makeRequest({ name: '', email: 'not-email', message: 'x' }))
-    expect(res.status).toBe(400)
     expect(emailService.sendContactEmail).not.toHaveBeenCalled()
   })
 })
