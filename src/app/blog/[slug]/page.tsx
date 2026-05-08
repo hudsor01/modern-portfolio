@@ -1,8 +1,13 @@
 import type { Metadata } from 'next'
 import { cache } from 'react'
-import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { and, eq } from 'drizzle-orm'
+
+// Force runtime rendering. Static-rendering pipeline was failing on this
+// route despite no obvious cause; force-dynamic gets every render to a
+// known-good code path while we keep ISR caching off the CDN cache-control
+// headers from next.config.js.
+export const dynamic = 'force-dynamic'
 import { Navbar } from '@/components/layout/navbar'
 import { BlogPostLayout } from '../_components/blog-post-layout'
 import { RelatedPosts } from '@/components/blog/related-posts'
@@ -132,13 +137,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound()
   }
 
-  const nonce = (await headers()).get('x-nonce')
-
   return (
     <>
-      <BlogPostJsonLd post={post} nonce={nonce} />
+      <BlogPostJsonLd post={post} />
       <BreadcrumbListJsonLd
-        nonce={nonce}
         items={[
           { name: 'Home', url: 'https://richardwhudsonjr.com' },
           { name: 'Blog', url: 'https://richardwhudsonjr.com/blog' },
