@@ -1,40 +1,59 @@
-/** @type {import('next').NextConfig} */
 import { withSentryConfig } from '@sentry/nextjs'
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "standalone",
+  output: 'standalone',
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
   basePath: '',
+  trailingSlash: false,
 
-  // React Compiler — stable in Next.js 16, bundled (no babel plugin dependency).
-  // SWC pre-filters JSX/hook files before Babel runs, so build-time impact is small.
+  // React Compiler — stable and bundled in Next.js 16 (no Babel plugin dep).
   // Ref: https://nextjs.org/docs/app/api-reference/config/next-config-js/reactCompiler
   reactCompiler: true,
 
-  // External packages that shouldn't be bundled (required for Prisma + Turbopack)
-  serverExternalPackages: ['@prisma/client', '@prisma/adapter-pg'],
-
-  // Enhanced experimental features for performance
-  experimental: {
-    // optimizeCss requires critters which is deprecated, use inlineCss for Next.js 16+
-    // optimizeCss: true,
-    serverMinification: true,
+  // Strip console.log/info/debug in prod bundles. Keep warn/error so Sentry
+  // breadcrumbs and runtime diagnostics still surface.
+  compiler: {
+    removeConsole:
+      process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
   },
-  
-  // Modern image optimization configuration
+
+  experimental: {
+    // Tree-shake large icon/chart libraries on first import. Each named import
+    // becomes its own subpath so the bundle only pulls in what we use, not the
+    // whole index. Big first-load TBT win for blog and project pages.
+    optimizePackageImports: [
+      'lucide-react',
+      'recharts',
+      '@radix-ui/react-avatar',
+      '@radix-ui/react-checkbox',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-label',
+      '@radix-ui/react-popover',
+      '@radix-ui/react-select',
+      '@radix-ui/react-separator',
+      '@radix-ui/react-slot',
+      '@radix-ui/react-switch',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-toggle',
+      '@tanstack/react-form',
+      '@tanstack/react-table',
+      'cmdk',
+      'date-fns',
+      'motion',
+    ],
+  },
+
   images: {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 31536000, // 1 year cache
+    minimumCacheTTL: 31536000, // 1 year
     dangerouslyAllowSVG: false,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    unoptimized: false,
-    loader: 'default',
-    loaderFile: '',
-    domains: [],
     remotePatterns: [
       {
         protocol: 'https',
@@ -43,21 +62,19 @@ const nextConfig = {
       },
     ],
   },
-  
-  // Enhanced security headers
+
   async headers() {
+    const corsOrigin =
+      process.env.NODE_ENV === 'production'
+        ? 'https://richardwhudsonjr.com'
+        : 'http://localhost:3000'
+
     return [
       {
         source: '/(.*)',
         headers: [
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
           {
             // Explicitly disabled. The header is non-standard, removed from
             // Chrome/Edge/Firefox, and `1; mode=block` can enable reflected
@@ -67,14 +84,8 @@ const nextConfig = {
             key: 'X-XSS-Protection',
             value: '0',
           },
-          {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin',
-          },
-          {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on',
-          },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'X-DNS-Prefetch-Control', value: 'on' },
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=31536000; includeSubDomains; preload',
@@ -83,7 +94,7 @@ const nextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
           },
-          // CSP is now handled dynamically in proxy.ts with nonces
+          // CSP itself is set per-request in proxy.ts so the nonce can rotate.
         ],
       },
       {
@@ -92,109 +103,59 @@ const nextConfig = {
         // Both should be discoverable; everything else stays noindex.
         source: '/api/:path((?!og$|blog/rss$).*)',
         headers: [
-          // Specific CORS for API routes - only allow our domains
-          {
-            key: 'Access-Control-Allow-Origin',
-            value: process.env.NODE_ENV === 'production'
-              ? 'https://richardwhudsonjr.com'
-              : 'http://localhost:3000',
-          },
-          {
-            key: 'Vary',
-            value: 'Origin',
-          },
-          {
-            key: 'Access-Control-Allow-Methods',
-            value: 'GET, POST, OPTIONS',
-          },
+          { key: 'Access-Control-Allow-Origin', value: corsOrigin },
+          { key: 'Vary', value: 'Origin' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET, POST, OPTIONS' },
           {
             key: 'Access-Control-Allow-Headers',
             value: 'Content-Type, Authorization, X-Requested-With',
           },
-          {
-            key: 'Access-Control-Max-Age',
-            value: '86400', // 24 hours
-          },
-          {
-            key: 'Cache-Control',
-            value: 'no-store, max-age=0, must-revalidate',
-          },
-          {
-            key: 'X-Robots-Tag',
-            value: 'noindex, nofollow',
-          },
+          { key: 'Access-Control-Max-Age', value: '86400' },
+          { key: 'Cache-Control', value: 'no-store, max-age=0, must-revalidate' },
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
         ],
       },
       {
-        // Same CORS/cache headers for /api/og and /api/blog/rss but NO
-        // X-Robots-Tag — these are crawler-facing surfaces.
+        // Same CORS for /api/og and /api/blog/rss but no X-Robots-Tag —
+        // these are crawler-facing surfaces.
         source: '/api/:path(og|blog/rss)',
         headers: [
-          {
-            key: 'Access-Control-Allow-Origin',
-            value: process.env.NODE_ENV === 'production'
-              ? 'https://richardwhudsonjr.com'
-              : 'http://localhost:3000',
-          },
-          {
-            key: 'Vary',
-            value: 'Origin',
-          },
+          { key: 'Access-Control-Allow-Origin', value: corsOrigin },
+          { key: 'Vary', value: 'Origin' },
         ],
       },
       {
         source: '/static/:path*',
         headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
       {
         source: '/:path*\\.(js|css|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)',
         headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-          {
-            key: 'Vary',
-            value: 'Accept-Encoding',
-          },
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+          { key: 'Vary', value: 'Accept-Encoding' },
         ],
       },
-      // ISR and dynamic content caching
+      // ISR + dynamic content caching for blog/project pages.
       {
         source: '/(projects|blog)/:path*',
         headers: [
-          {
-            key: 'Cache-Control',
-            value: 's-maxage=60, stale-while-revalidate=86400',
-          },
-          {
-            key: 'CDN-Cache-Control',
-            value: 'max-age=3600',
-          },
+          { key: 'Cache-Control', value: 's-maxage=60, stale-while-revalidate=86400' },
+          { key: 'CDN-Cache-Control', value: 'max-age=3600' },
         ],
       },
-    ];
+    ]
   },
 
-  // Enable static optimization
-  trailingSlash: false,
-  
-  // Redirect configuration
   async redirects() {
     return [
-      {
-        source: '/home',
-        destination: '/',
-        permanent: true,
-      },
-    ];
+      // Legacy URL → home. /github, /linkedin, /twitter live in vercel.json
+      // so they redirect at the edge before hitting the Next.js server.
+      { source: '/home', destination: '/', permanent: true },
+    ]
   },
-};
+}
 
 const sentryBuildOptions = {
   org: process.env.SENTRY_ORG,
@@ -202,6 +163,6 @@ const sentryBuildOptions = {
   authToken: process.env.SENTRY_AUTH_TOKEN,
   sentryUrl: process.env.SENTRY_URL,
   silent: true,
-};
+}
 
-export default withSentryConfig(nextConfig, sentryBuildOptions);
+export default withSentryConfig(nextConfig, sentryBuildOptions)
