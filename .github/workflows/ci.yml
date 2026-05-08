@@ -18,9 +18,6 @@ jobs:
       - name: Audit dependencies
         run: bun audit --audit-level=high
 
-      - name: Generate Prisma Client
-        run: bunx prisma generate
-
       - name: Lint and Type-check
         run: bun run ci:quick
 

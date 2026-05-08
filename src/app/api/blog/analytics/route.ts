@@ -1,8 +1,10 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { asc, avg, count, desc, eq, gte, sum } from 'drizzle-orm'
 import type { ApiResponse, BlogAnalyticsData } from '@/types/api'
 import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
+import { blogPosts, categories, postViews, tags } from '@/db/schema'
 import {
   transformToBlogPostData,
   transformToCategoryData,
@@ -18,8 +20,6 @@ const logger = createContextLogger('AnalyticsAPI')
 /**
  * Blog Analytics API Route Handler
  * GET /api/blog/analytics - Get comprehensive blog analytics data
- *
- * Uses Prisma database for production data
  */
 
 function getStartDate(timeRange: string): Date {
@@ -53,46 +53,58 @@ export async function GET(request: NextRequest) {
     const includeDetails = searchParams.get('details') === 'true'
     const startDate = getStartDate(timeRange)
 
-    // Execute parallel queries for efficiency
     const [
-      totalPosts,
-      publishedPosts,
-      draftPosts,
-      viewsAndInteractions,
+      totalPostsRows,
+      publishedPostsRows,
+      draftPostsRows,
+      viewsAndInteractionsRows,
       topPostsRaw,
       topCategoriesRaw,
       topTagsRaw,
       monthlyViewsRaw,
       popularKeywordsRaw,
     ] = await Promise.all([
-      db.blogPost.count(),
-      db.blogPost.count({ where: { status: 'PUBLISHED' } }),
-      db.blogPost.count({ where: { status: 'DRAFT' } }),
-      db.blogPost.aggregate({
-        _sum: { viewCount: true, likeCount: true, shareCount: true, commentCount: true },
-        _avg: { readingTime: true },
+      db.select({ value: count() }).from(blogPosts),
+      db.select({ value: count() }).from(blogPosts).where(eq(blogPosts.status, 'PUBLISHED')),
+      db.select({ value: count() }).from(blogPosts).where(eq(blogPosts.status, 'DRAFT')),
+      db
+        .select({
+          totalViews: sum(blogPosts.viewCount).mapWith(Number),
+          totalLikes: sum(blogPosts.likeCount).mapWith(Number),
+          totalShares: sum(blogPosts.shareCount).mapWith(Number),
+          totalComments: sum(blogPosts.commentCount).mapWith(Number),
+          avgReadingTime: avg(blogPosts.readingTime).mapWith(Number),
+        })
+        .from(blogPosts),
+      db.query.blogPosts.findMany({
+        where: eq(blogPosts.status, 'PUBLISHED'),
+        orderBy: desc(blogPosts.viewCount),
+        limit: 5,
+        with: {
+          author: true,
+          category: true,
+          tags: { with: { tag: true } },
+        },
       }),
-      db.blogPost.findMany({
-        where: { status: 'PUBLISHED' },
-        orderBy: { viewCount: 'desc' },
-        take: 5,
-        include: { author: true, category: true, tags: { include: { tag: true } } },
-      }),
-      db.category.findMany({ orderBy: { totalViews: 'desc' }, take: 5 }),
-      db.tag.findMany({ orderBy: { totalViews: 'desc' }, take: 5 }),
-      db.postView.groupBy({
-        by: ['viewedAt'],
-        _count: true,
-        where: { viewedAt: { gte: startDate } },
-        orderBy: { viewedAt: 'asc' },
-      }),
-      db.blogPost.findMany({
-        where: { status: 'PUBLISHED' },
-        select: { keywords: true },
-      }),
+      db.select().from(categories).orderBy(desc(categories.totalViews)).limit(5),
+      db.select().from(tags).orderBy(desc(tags.totalViews)).limit(5),
+      db
+        .select({ viewedAt: postViews.viewedAt, count: count() })
+        .from(postViews)
+        .where(gte(postViews.viewedAt, startDate))
+        .groupBy(postViews.viewedAt)
+        .orderBy(asc(postViews.viewedAt)),
+      db
+        .select({ keywords: blogPosts.keywords })
+        .from(blogPosts)
+        .where(eq(blogPosts.status, 'PUBLISHED')),
     ])
 
-    // Transform using shared helpers (removes ~60 lines of duplication)
+    const totalPosts = totalPostsRows[0]?.value ?? 0
+    const publishedPosts = publishedPostsRows[0]?.value ?? 0
+    const draftPosts = draftPostsRows[0]?.value ?? 0
+    const aggregates = viewsAndInteractionsRows[0]
+
     const topPosts = topPostsRaw.map((post) => {
       const transformed = transformToBlogPostData(post)
       // Optionally exclude content for summary views
@@ -105,20 +117,19 @@ export async function GET(request: NextRequest) {
     const topCategories = topCategoriesRaw.map(transformToCategoryData)
     const topTags = topTagsRaw.map(transformToTagData)
 
-    // Process monthly views (group by month)
+    // Group views by month
     const monthlyViewsMap = new Map<string, number>()
     for (const view of monthlyViewsRaw) {
       const month = view.viewedAt.toISOString().slice(0, 7)
-      monthlyViewsMap.set(month, (monthlyViewsMap.get(month) || 0) + view._count)
+      monthlyViewsMap.set(month, (monthlyViewsMap.get(month) || 0) + view.count)
     }
     const monthlyViews = Array.from(monthlyViewsMap.entries())
       .map(([month, views]) => ({ month, views }))
       .sort((a, b) => a.month.localeCompare(b.month))
 
-    // Process popular keywords
     const keywordCounts = new Map<string, number>()
     for (const post of popularKeywordsRaw) {
-      for (const keyword of post.keywords) {
+      for (const keyword of post.keywords ?? []) {
         keywordCounts.set(keyword, (keywordCounts.get(keyword) || 0) + 1)
       }
     }
@@ -127,11 +138,11 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => b.count - a.count)
       .slice(0, 10)
 
-    // Calculate totals
-    const sums = viewsAndInteractions._sum
-    const totalViews = sums.viewCount || 0
+    const totalViews = aggregates?.totalViews ?? 0
     const totalInteractions =
-      (sums.likeCount || 0) + (sums.shareCount || 0) + (sums.commentCount || 0)
+      (aggregates?.totalLikes ?? 0) +
+      (aggregates?.totalShares ?? 0) +
+      (aggregates?.totalComments ?? 0)
 
     const analytics: BlogAnalyticsData = {
       totalPosts,
@@ -139,7 +150,7 @@ export async function GET(request: NextRequest) {
       draftPosts,
       totalViews,
       totalInteractions,
-      avgReadingTime: viewsAndInteractions._avg.readingTime || 0,
+      avgReadingTime: aggregates?.avgReadingTime ?? 0,
       topPosts,
       topCategories,
       topTags,

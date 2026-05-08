@@ -1,12 +1,10 @@
 /**
- * Blog types - Unique types not provided by Prisma
- * For model types, import directly from @/generated/prisma/client
+ * Blog types — model types come from the Drizzle schema.
+ * For row shapes, import directly from `@/db/schema` (or via `@/lib/db`).
  */
 
-import type { BlogPost, Author, Category, Tag, PostTag } from '@/generated/prisma/client'
-import type { Prisma } from '@/generated/prisma/client'
+import type { BlogPost, Author, Category, Tag, PostTag, NewBlogPost } from '@/db/schema'
 
-// Re-export Prisma types for convenience
 export type { BlogPost, Author, Category, Tag, PostTag }
 
 // ============================================================================
@@ -29,35 +27,27 @@ export enum ContentType {
 }
 
 // ============================================================================
-// UTILITY TYPES - Prisma-based combinations
+// UTILITY TYPES — Drizzle relational shapes
 // ============================================================================
 
-export type BlogPostWithRelations = Prisma.BlogPostGetPayload<{
-  include: {
-    author: true
-    category: true
-    tags: { include: { tag: true } }
-  }
-}>
+export type BlogPostWithRelations = BlogPost & {
+  author: Author | null
+  category: Category | null
+  tags: Array<{ tag: Tag }>
+}
 
-export type CategoryWithPosts = Prisma.CategoryGetPayload<{
-  include: {
-    posts: true
-    children: true
-  }
-}>
+export type CategoryWithPosts = Category & {
+  posts: BlogPost[]
+  children: Category[]
+}
 
-export type TagWithPosts = Prisma.TagGetPayload<{
-  include: {
-    posts: { include: { post: true } }
-  }
-}>
+export type TagWithPosts = Tag & {
+  posts: Array<{ post: BlogPost }>
+}
 
-export type AuthorWithPosts = Prisma.AuthorGetPayload<{
-  include: {
-    posts: true
-  }
-}>
+export type AuthorWithPosts = Author & {
+  posts: BlogPost[]
+}
 
 // ============================================================================
 // API/UI TYPES - Not in Prisma schema
@@ -206,9 +196,9 @@ export interface BlogComment {
 // INPUT TYPES - Use Prisma-generated types
 // ============================================================================
 
-// Re-export Prisma input types
-export type BlogPostCreateInput = Prisma.BlogPostCreateInput
-export type BlogPostUpdateInput = Prisma.BlogPostUpdateInput
+// Drizzle insert/update shapes
+export type BlogPostCreateInput = NewBlogPost
+export type BlogPostUpdateInput = Partial<NewBlogPost>
 
 // ============================================================================
 // ANALYTICS TYPES - For blog analytics

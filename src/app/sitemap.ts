@@ -126,17 +126,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let blogPages: MetadataRoute.Sitemap
   try {
     const { db } = await import('@/lib/db')
-    const posts = await db.blogPost.findMany({
-      where: { status: 'PUBLISHED' },
-      select: {
-        slug: true,
-        title: true,
-        updatedAt: true,
-        publishedAt: true,
-        featuredImage: true,
-      },
-      orderBy: { publishedAt: 'desc' },
-    })
+    const { blogPosts } = await import('@/db/schema')
+    const { desc, eq } = await import('drizzle-orm')
+    const posts = await db
+      .select({
+        slug: blogPosts.slug,
+        title: blogPosts.title,
+        updatedAt: blogPosts.updatedAt,
+        publishedAt: blogPosts.publishedAt,
+        featuredImage: blogPosts.featuredImage,
+      })
+      .from(blogPosts)
+      .where(eq(blogPosts.status, 'PUBLISHED'))
+      .orderBy(desc(blogPosts.publishedAt))
 
     blogPages = posts.map((post) => {
       const featuredAbsolute = post.featuredImage
@@ -166,14 +168,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     blogPages = []
   }
 
-  // Blog category pages — only those with published posts.
+  // Blog category pages — only those with at least one published, non-deleted post.
   let categoryPages: MetadataRoute.Sitemap
   try {
     const { db } = await import('@/lib/db')
-    const categories = await db.category.findMany({
-      where: { posts: { some: { status: 'PUBLISHED', deletedAt: null } } },
-      select: { slug: true, updatedAt: true },
-    })
+    const { categories: categoriesTable, blogPosts } = await import('@/db/schema')
+    const { sql } = await import('drizzle-orm')
+    const categories = await db
+      .select({ slug: categoriesTable.slug, updatedAt: categoriesTable.updatedAt })
+      .from(categoriesTable)
+      .where(
+        sql`EXISTS (SELECT 1 FROM ${blogPosts} WHERE ${blogPosts.categoryId} = ${categoriesTable.id} AND ${blogPosts.status} = 'PUBLISHED' AND ${blogPosts.deletedAt} IS NULL)`
+      )
     categoryPages = categories.map((cat) => ({
       url: `${baseUrl}/blog/category/${cat.slug}`,
       lastModified: cat.updatedAt?.toISOString() || fallbackDate,

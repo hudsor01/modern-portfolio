@@ -1,11 +1,9 @@
 /**
- * Project types - Unique types not provided by Prisma
- * For Project model type, import directly from @/generated/prisma/client
+ * Project types — model row type comes from the Drizzle schema.
  */
 
-import type { Project } from '@/generated/prisma/client'
+import type { Project } from '@/db/schema'
 
-// Re-export Prisma Project for convenience
 export type { Project }
 
 // ============================================================================

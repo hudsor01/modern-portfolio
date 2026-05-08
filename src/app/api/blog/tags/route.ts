@@ -1,51 +1,39 @@
 import { type NextRequest, NextResponse } from 'next/server'
+import { asc, desc, eq, ilike, or, type SQL } from 'drizzle-orm'
 import type { ApiResponse, BlogTagData } from '@/types/api'
 import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
+import { tags } from '@/db/schema'
 import { generateSlug, createErrorResponse, transformToTagData } from '@/lib/api-blog'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
 
 const logger = createContextLogger('TagsAPI')
 
-/**
- * Blog Tags API Route Handler
- * GET /api/blog/tags - List all blog tags
- * POST /api/blog/tags - Create new blog tag
- *
- * Uses Prisma database for production data
- */
-
-// GET /api/blog/tags - List all blog tags
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search')
     const popular = searchParams.get('popular') === 'true'
-    const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!, 10) : undefined
+    const limitParam = searchParams.get('limit')
+    const limit = limitParam ? Math.min(parseInt(limitParam, 10), 50) : undefined
 
-    // Build where clause for search
-    const where = search
-      ? {
-          OR: [
-            { name: { contains: search, mode: 'insensitive' as const } },
-            { description: { contains: search, mode: 'insensitive' as const } },
-          ],
-        }
-      : {}
+    let where: SQL | undefined
+    if (search) {
+      const term = `%${search}%`
+      where = or(ilike(tags.name, term), ilike(tags.description, term))
+    }
 
-    // Build orderBy based on popularity flag
-    const orderBy = popular
-      ? [{ totalViews: 'desc' as const }, { postCount: 'desc' as const }]
-      : [{ name: 'asc' as const }]
+    const orderBy = popular ? [desc(tags.totalViews), desc(tags.postCount)] : [asc(tags.name)]
 
-    const tags = await db.tag.findMany({
-      where,
-      orderBy,
-      take: limit ? Math.min(limit, 50) : undefined,
-    })
+    const baseQuery = db
+      .select()
+      .from(tags)
+      .where(where)
+      .orderBy(...orderBy)
+    const rows = await (limit ? baseQuery.limit(limit) : baseQuery)
 
     const response: ApiResponse<BlogTagData[]> = {
-      data: tags.map(transformToTagData),
+      data: rows.map(transformToTagData),
       success: true,
     }
 
@@ -60,10 +48,8 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/blog/tags - Create new blog tag
 export async function POST(request: NextRequest) {
   try {
-    // CSRF validation
     const csrfResponse = await validateCSRFOrRespond(request, 'blog tag creation')
     if (csrfResponse) return csrfResponse
 
@@ -75,9 +61,9 @@ export async function POST(request: NextRequest) {
 
     const slug = generateSlug(body.name)
 
-    // Check if tag with this slug already exists
-    const existingTag = await db.tag.findUnique({
-      where: { slug },
+    const existingTag = await db.query.tags.findFirst({
+      where: eq(tags.slug, slug),
+      columns: { id: true },
     })
 
     if (existingTag) {
@@ -86,18 +72,23 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Create new tag in database
-    const newTag = await db.tag.create({
-      data: {
+    const inserted = await db
+      .insert(tags)
+      .values({
         name: body.name,
         slug,
-        description: body.description,
+        description: body.description ?? null,
         color: body.color || '#6B7280',
-        metaDescription: body.metaDescription,
+        metaDescription: body.metaDescription ?? null,
         postCount: 0,
         totalViews: 0,
-      },
-    })
+      })
+      .returning()
+
+    const newTag = inserted[0]
+    if (!newTag) {
+      throw new Error('Failed to insert tag')
+    }
 
     const response: ApiResponse<BlogTagData> = {
       data: transformToTagData(newTag),

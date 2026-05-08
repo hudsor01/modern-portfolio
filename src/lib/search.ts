@@ -1,10 +1,15 @@
 /**
  * Full-Text Search Utilities for PostgreSQL
- * Uses tsvector and trigram indexes for fast, typo-tolerant search
+ * Uses tsvector and trigram indexes for fast, typo-tolerant search.
+ *
+ * Requires the `search_vector` column on `blog_posts` and the trigram +
+ * tsvector indexes installed by the legacy `add_fulltext_search.sql`
+ * migration (still applied to the production DB; not part of the Drizzle
+ * migration history).
  */
 
+import { sql } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { Prisma } from '@/generated/prisma/client'
 import { logger } from '@/lib/logger'
 import { escapeRegExp } from '@/lib/utils'
 
@@ -17,13 +22,6 @@ export interface SearchResult {
   matchType: 'exact' | 'fuzzy'
 }
 
-/**
- * Search blog posts using PostgreSQL full-text search
- *
- * @param query - Search query string
- * @param options - Search options
- * @returns Array of blog post IDs with relevance ranking
- */
 export async function searchBlogPosts(
   query: string,
   options: {
@@ -34,29 +32,24 @@ export async function searchBlogPosts(
 ): Promise<SearchResult[]> {
   const { limit = 20, offset = 0, statusFilter } = options
 
-  // Sanitize query - remove special characters that could break tsquery
   const sanitizedQuery = query
     .replace(/[<>!*():|&]/g, ' ')
     .trim()
     .split(/\s+/)
     .filter((term) => term.length > 0)
-    .join(' & ') // Use AND operator between terms
+    .join(' & ')
 
   if (!sanitizedQuery) {
     return []
   }
 
-  // Build status filter for WHERE clause
   const statusCondition =
-    statusFilter && statusFilter.length > 0
-      ? Prisma.sql`AND status = ANY(${statusFilter})`
-      : Prisma.empty
+    statusFilter && statusFilter.length > 0 ? sql`AND status = ANY(${statusFilter})` : sql``
 
   let fullTextResults: SearchResult[] = []
 
   try {
-    // Primary: Full-text search using tsvector
-    fullTextResults = await db.$queryRaw<SearchResult[]>`
+    const ftRows = await db.execute(sql`
       SELECT
         id,
         title,
@@ -70,18 +63,27 @@ export async function searchBlogPosts(
       ORDER BY rank DESC
       LIMIT ${limit}
       OFFSET ${offset}
-    `
+    `)
+    fullTextResults = ftRows as unknown as SearchResult[]
 
-    // If full-text search found enough results, return them
     if (fullTextResults.length >= Math.min(limit, 5)) {
       return fullTextResults
     }
 
-    // Fallback: Trigram fuzzy search for typos/misspellings
-    // Only if full-text search didn't find enough results
     const needsFuzzySearch = fullTextResults.length < Math.min(limit, 5)
-    const fuzzyResults = needsFuzzySearch
-      ? await db.$queryRaw<SearchResult[]>`
+    if (!needsFuzzySearch) {
+      return fullTextResults
+    }
+
+    const exclusion =
+      fullTextResults.length > 0
+        ? sql`AND id NOT IN (${sql.join(
+            fullTextResults.map((r) => sql`${r.id}`),
+            sql`, `
+          )})`
+        : sql``
+
+    const fzRows = await db.execute(sql`
       SELECT
         id,
         title,
@@ -95,44 +97,28 @@ export async function searchBlogPosts(
       FROM blog_posts
       WHERE (title % ${query} OR COALESCE(excerpt, '') % ${query})
         ${statusCondition}
-        ${
-          fullTextResults.length > 1
-            ? Prisma.sql`AND id NOT IN (${Prisma.join(fullTextResults.map((r) => r.id))})`
-            : fullTextResults.length === 1
-              ? Prisma.sql`AND id != ${fullTextResults[0]!.id}`
-              : Prisma.empty
-        }
+        ${exclusion}
       ORDER BY rank DESC
       LIMIT ${Math.max(0, limit - fullTextResults.length)}
       OFFSET ${offset}
-    `
-      : []
+    `)
+    const fuzzyResults = fzRows as unknown as SearchResult[]
 
-    // Combine exact and fuzzy results
     return [...fullTextResults, ...fuzzyResults]
   } catch (error) {
     logger.error(
       'Search error during fuzzy fallback',
       error instanceof Error ? error : new Error(String(error))
     )
-    // Return full-text results even if fuzzy search fails
-    // Better to return partial results than nothing
     return fullTextResults
   }
 }
 
-/**
- * Highlight search terms in text
- *
- * @param text - Text to highlight
- * @param query - Search query
- * @returns Text with search terms wrapped in <mark> tags
- */
 export function highlightSearchTerms(text: string, query: string): string {
   const terms = query
     .toLowerCase()
     .split(/\s+/)
-    .filter((term) => term.length > 2) // Only highlight terms with 3+ chars
+    .filter((term) => term.length > 2)
 
   let highlighted = text
 
@@ -147,21 +133,13 @@ export function highlightSearchTerms(text: string, query: string): string {
   return highlighted
 }
 
-/**
- * Generate search suggestions/autocomplete
- *
- * @param prefix - Search prefix
- * @param limit - Maximum suggestions to return
- * @returns Array of suggested search terms
- */
 export async function getSearchSuggestions(prefix: string, limit: number = 5): Promise<string[]> {
   if (prefix.length < 2) {
     return []
   }
 
   try {
-    // Get popular keywords that match prefix
-    const suggestions = await db.$queryRaw<{ keyword: string; count: bigint }[]>`
+    const rows = await db.execute(sql`
       SELECT
         unnest(keywords) as keyword,
         COUNT(*) as count
@@ -176,9 +154,9 @@ export async function getSearchSuggestions(prefix: string, limit: number = 5): P
       HAVING keyword ILIKE ${`${prefix}%`}
       ORDER BY count DESC, keyword
       LIMIT ${limit}
-    `
+    `)
 
-    return suggestions.map((s) => s.keyword)
+    return (rows as unknown as { keyword: string }[]).map((s) => s.keyword)
   } catch (error) {
     logger.error(
       'Search suggestions error',
