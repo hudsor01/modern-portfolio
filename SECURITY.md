@@ -98,8 +98,9 @@ Defensive controls currently in place:
 
 ### Data
 
-- Single Postgres database on Neon, accessed only via Prisma with prepared
-  statements (no string interpolation into SQL)
+- Single Postgres database on Neon, accessed only via Drizzle ORM with
+  parameterized queries (`drizzle-orm/neon-http`); no string interpolation
+  into SQL
 - `/api/seed` is a **POST** guarded by (1) `Authorization: Bearer
   $ADMIN_API_TOKEN` compared with `crypto.timingSafeEqual`, and (2) an
   idempotency check that refuses to run when the blog-posts table is
@@ -111,9 +112,10 @@ Defensive controls currently in place:
 
 These are publicly documented so reporters don't waste cycles on them:
 
-- `JWT_SECRET` and `METRICS_API_TOKEN` are validated by the env schema but
-  not yet consumed by any route handler. Wiring them up is tracked in
-  `.planning/`. `ADMIN_API_TOKEN` is now consumed by `/api/seed`.
+- `JWT_SECRET` is validated by the env schema but not yet consumed by any
+  route handler — there is no JWT-based auth surface in this project.
+  `ADMIN_API_TOKEN` is consumed by `/api/seed`; `METRICS_API_TOKEN` is
+  consumed by `/api/security/metrics`.
 - `/api/sentry-debug` exists for observability verification and reveals
   which Sentry env vars are set (not their values). Consider removing or
   gating before any milestone where it is no longer needed.
