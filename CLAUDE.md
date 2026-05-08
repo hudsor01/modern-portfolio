@@ -28,7 +28,7 @@ Runtime: Bun 1.3.13, Node `>=22 <25` (`package.json:6-9`). Next.js 16.2.4, React
 | `bun run db:seed` | `bun run drizzle/seed.ts` — idempotent upsert seed |
 | `bun run generate-sitemap` | Writes `public/sitemap.xml` |
 
-Hooks (`lefthook.yml`): pre-commit runs `bunx lint-staged`; pre-push runs `bunx vitest run --passWithNoTests`. `--no-verify` bypasses.
+Hooks (`lefthook.yml`): pre-commit runs `bunx biome check --staged --write` over staged `src/**`; pre-push runs `bunx vitest run --passWithNoTests`. `--no-verify` bypasses.
 
 ## Layout
 
@@ -60,7 +60,7 @@ scripts/                  generate-sitemap.js (the only script).
 proxy.ts                  Next.js 16 successor to middleware.ts (see Auth/CSP).
 ```
 
-App Router conventions in use: dynamic segments (`[slug]`), private folders (`_components/`), per-route `metadata.ts` (e.g. `src/app/contact/metadata.ts`). **No** route groups (`(group)`), catch-alls, parallel routes, intercepting routes, or admin route — `vercel.json` redirects `/dashboard` → `/admin` but `/admin` does not exist.
+App Router conventions in use: dynamic segments (`[slug]`), private folders (`_components/`), per-route `metadata.ts` (e.g. `src/app/contact/metadata.ts`). **No** route groups (`(group)`), catch-alls, parallel routes, intercepting routes, or admin route.
 
 Path aliases (`tsconfig.json`): `@/*` → `src/*`. Specific aliases for `@/components`, `@/lib`, `@/hooks`, `@/types`, `@/app`, `@/styles`, `@/content`, `@/data`, `@/db` (→ `src/db/index`), `@/db/*`. `@/content/*` is declared but no `src/content/` exists yet.
 
@@ -159,13 +159,13 @@ Logger (`src/lib/logger.ts`): exports `logger` singleton + `createContextLogger(
 ## Gotchas
 
 - **No Prisma.** The repo migrated off Prisma 7 → Drizzle ORM in May 2026 after [prisma/prisma#28588](https://github.com/prisma/prisma/issues/28588) caused `/blog/[slug]` Server Component queries to suspend indefinitely on Vercel + adapter-neon. Don't reintroduce `@prisma/*` packages or import from `@/generated/prisma/*`.
+- **Never call `notFound()` inside a `not-found.tsx`.** It's recursive and Vercel serves HTTP 200 with a 404-marker body, which Google flags as "Soft 404." A `not-found.tsx` should be a plain Server Component that just renders the 404 UI — the HTTP 404 status comes from the `notFound()` call in the page or layout, not from the template itself. Segment-level templates exist at `src/app/blog/[slug]/`, `src/app/blog/category/[slug]/`, and `src/app/projects/[slug]/` for themed 404s; the root template at `src/app/not-found.tsx` is the global fallback.
 - **Drizzle relational queries** use `db.query.<table>.findFirst({ where, with: { ... } })` for relations and `db.select().from(table)` for plain SQL-style queries. `db.execute(sql\`...\`)` is the raw-SQL escape hatch (used in `src/lib/search.ts` for full-text search).
 - **All IDs are CUIDs.** New rows use cuid2 via `src/db/cuid.ts`; legacy rows from the Prisma era use cuid v1. Both are 24–25-char alphanumeric strings — use `cuidSchema` from `src/lib/schemas.ts` for ID validation, never `z.string().uuid()`.
 - **citext + inet are custom Drizzle types.** Defined in `src/db/schema.ts` via `customType<{ data: string; driverData: string }>`. Don't replace with plain `text()` — case-insensitive slug/email matching depends on it.
 - **CSP comes from `proxy.ts`, not `headers()`.** Adding it to `next.config.js` will collide with the per-request nonce. Inline `<script>` and `<style>` in components must read the nonce via the `x-nonce` request header.
 - **`api/send-email/action.ts` is not a server action and has no caller.** Despite the filename, no `'use server'` directive and no import from anywhere in `src/`. The only real server action is `src/app/contact/actions.ts`.
 - **`api/contact/csrf-route.ts` is not auto-routed.** Next.js only treats `route.ts` as an endpoint; this filename was deliberate. Confirm wiring before relying on it.
-- **`/dashboard` redirect is dead.** `vercel.json:20` permanent-redirects `/dashboard` → `/admin`, but no `/admin` route exists.
 - **`bun --bun` flag matters.** `dev` and `build:ci` use it; `build` does not. The Bun-side bundler exposes different edge cases than the Node-side one — when reproducing a CI failure locally, match the script.
 - **Pre-push runs Vitest.** Bypass with `git push --no-verify` only when the failure is provably unrelated to the change.
 
@@ -175,7 +175,7 @@ Logger (`src/lib/logger.ts`): exports `logger` singleton + `createContextLogger(
 - Vercel region: `iad1` (single region, `vercel.json:6`).
 - Image whitelist: `images.unsplash.com` only (`next.config.js:38-44`).
 - Cache policy for `/projects/*` and `/blog/*`: `s-maxage=60, stale-while-revalidate=86400`, CDN 1 hour (`next.config.js:148-160`).
-- Permanent redirects: `/home` → `/` (`next.config.js:170-174`); `/github`, `/linkedin`, `/twitter`, `/dashboard` (`vercel.json:7-21`).
+- Permanent redirects: `/home` → `/` (`next.config.js`); `/github`, `/linkedin`, `/twitter` (`vercel.json`).
 - 9 unit test files under `src/lib/__tests__/` and `src/app/api/contact/__tests__/`.
 - 5 Playwright specs under `e2e/`.
 - Security audit history: `SECURITY.md` (current controls), `SECURITY_AUDIT_REPORT.md` (findings; recent commits closed S-001, B-001, H-001, B-002, P-001).
