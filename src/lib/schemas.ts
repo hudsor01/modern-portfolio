@@ -198,13 +198,14 @@ export const viewTrackingSchema = z
 // PAGINATION SCHEMAS
 // =======================
 
-export const paginationSchema = z
-  .object({
-    page: z.number().int().min(1).default(1),
-    limit: z.number().int().min(1).max(100).default(10),
-    offset: z.number().int().min(0).optional(),
-  })
-  .strict()
+// Intentionally NOT .strict(): pagination is parsed from URL query strings,
+// which routinely carry unrelated params (UTM, sort, filter). Strictness here
+// would reject benign external traffic.
+export const paginationSchema = z.object({
+  page: z.number().int().min(1).default(1),
+  limit: z.number().int().min(1).max(100).default(10),
+  offset: z.number().int().min(0).optional(),
+})
 
 // =======================
 // API RESPONSE SCHEMAS

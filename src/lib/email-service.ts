@@ -22,8 +22,14 @@ const FROM_EMAIL = env.FROM_EMAIL
 const TO_EMAIL = env.TO_EMAIL
 const NODE_ENV = env.NODE_ENV
 
+function stripCrlf(value: string): string {
+  return value.replace(/[\r\n]+/g, ' ')
+}
+
 function buildContactSubject(data: ContactFormData): string {
-  return data.subject ? `Portfolio Contact: ${data.subject}` : `Portfolio Contact from ${data.name}`
+  return data.subject
+    ? `Portfolio Contact: ${stripCrlf(data.subject)}`
+    : `Portfolio Contact from ${stripCrlf(data.name)}`
 }
 
 // Email service class
