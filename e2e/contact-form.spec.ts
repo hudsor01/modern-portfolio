@@ -130,13 +130,14 @@ test.describe('Contact Form', () => {
     // Submit form
     await page.getByRole('button', { name: /send message/i }).click()
 
-    // Wait for success or error message
-    // In dev environment, the email service may be mocked
-    const successMessage = page.getByText(/message sent successfully/i)
-    const errorMessage = page.getByText(/failed to send/i)
+    // Wait for the form's submission-status alert (the live region beneath
+    // the submit button). Per-field errors also use role="alert" but contain
+    // different copy — scope to the bottom-of-form status messages only.
+    const successAlert = page.getByRole('alert').filter({ hasText: /message sent successfully/i })
+    const errorAlert = page.getByRole('alert').filter({ hasText: /failed to send message/i })
 
     // Either success or handled error is acceptable in test environment
-    await expect(successMessage.or(errorMessage)).toBeVisible({ timeout: 15000 })
+    await expect(successAlert.or(errorAlert)).toBeVisible({ timeout: 15000 })
   })
 
   test('keyboard navigation works correctly', async ({ page }) => {
