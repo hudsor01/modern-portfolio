@@ -106,13 +106,8 @@ export function ExpertiseNarrative({ className = '' }: ExpertiseNarrativeProps) 
                   executives can act on. No jargon. No fluff. Just clarity.
                 </p>
                 <div className="text-base text-muted-foreground/70">
-                  <span className="text-foreground font-medium">432% transaction growth</span>{' '}
-                  delivered.
-                  <span className="text-foreground font-medium">
-                    {' '}
-                    2,217% partner network expansion
-                  </span>{' '}
-                  achieved. Not because I had better tools—because I asked better questions.
+                  Outcomes don't come from better tools—they come from asking better questions and
+                  owning the answers all the way through to what shipped.
                 </div>
               </div>
               <div className="space-y-2 text-sm text-muted-foreground">

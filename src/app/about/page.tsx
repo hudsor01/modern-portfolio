@@ -7,7 +7,6 @@ import { ExpertiseNarrative } from '@/components/about/expertise-narrative'
 import { ExperienceStats } from '@/components/about/experience-stats'
 import { CertificationsSection } from '@/components/about/certifications-section'
 import { WhatIBring } from '@/components/about/what-i-bring'
-import { StickyCTA } from '@/components/about/sticky-cta'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Mail } from 'lucide-react'
 import Link from 'next/link'
@@ -106,46 +105,40 @@ export default function AboutPage() {
       />
       <Navbar />
 
-      <main className="relative overflow-hidden">
-        {/* Decorative background elements */}
-        <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
-
-        {/* 1. Hero - Personal Information Section */}
-        <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-20">
+      <main>
+        {/* 1. Hero - Personal Information */}
+        <section aria-label="Introduction" className="pt-24 pb-16 lg:pt-32 lg:pb-20">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <PersonalInfo personalInfo={PERSONAL_INFO} />
           </div>
         </section>
 
         {/* 2. What I Bring */}
-        <section className="relative py-16 lg:py-20 bg-muted/30">
+        <section aria-label="Working principles" className="py-16 lg:py-20 bg-muted/30">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <WhatIBring />
           </div>
         </section>
 
         {/* 3. Impact & Experience Stats */}
-        <section className="relative py-16 lg:py-20">
+        <section aria-label="Impact metrics" className="py-16 lg:py-20">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <ExperienceStats stats={EXPERIENCE_STATS} />
           </div>
         </section>
 
-        {/* 4. Expertise Narrative + Certifications */}
-        <section className="relative py-16 lg:py-24 bg-muted/30">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        {/* 4. Expertise + Certifications — paired: how the work happens, then what proves it */}
+        <section aria-label="Expertise and certifications" className="py-16 lg:py-24 bg-muted/30">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 space-y-20 lg:space-y-24">
             <ExpertiseNarrative />
-          </div>
-        </section>
-        <section className="relative py-16 lg:py-20">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <CertificationsSection certifications={CERTIFICATIONS} />
+            <div className="border-t border-border pt-16 lg:pt-20">
+              <CertificationsSection certifications={CERTIFICATIONS} />
+            </div>
           </div>
         </section>
 
         {/* 5. Final CTA */}
-        <section className="relative py-20 lg:py-28 bg-muted/30">
+        <section aria-label="Contact" className="py-20 lg:py-28">
           <div className="max-w-3xl mx-auto px-6 lg:px-8 text-center">
             <h2 className="font-display text-3xl lg:text-5xl font-bold text-foreground mb-6">
               Let's talk about your goals
@@ -176,9 +169,6 @@ export default function AboutPage() {
           </div>
         </section>
       </main>
-
-      {/* Sticky Mobile CTA */}
-      <StickyCTA />
     </div>
   )
 }
