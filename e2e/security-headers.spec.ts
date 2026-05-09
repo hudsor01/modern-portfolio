@@ -30,7 +30,7 @@ test.describe('Security Headers', () => {
       expect(response.headers()['referrer-policy']).toBe('strict-origin-when-cross-origin')
     })
 
-    test('home page returns Content-Security-Policy', async ({ request }) => {
+    test('home page returns Content-Security-Policy', async ({ request, baseURL }) => {
       // Note: nonces and strict-dynamic were intentionally removed (commit 20f2fab):
       // Next.js 16 proxy doesn't propagate nonces to framework-generated inline
       // scripts (hydration bootstrap), so we use 'unsafe-inline' without a nonce.
@@ -39,7 +39,19 @@ test.describe('Security Headers', () => {
       expect(csp).toBeDefined()
       expect(csp).toContain("default-src 'self'")
       expect(csp).toContain("frame-ancestors 'none'")
-      expect(csp).toContain('upgrade-insecure-requests')
+
+      // upgrade-insecure-requests is stripped by proxy.ts when the request host
+      // is localhost (WebKit doesn't have Chromium's localhost exemption and
+      // would otherwise upgrade subresource URLs to https://localhost and 404).
+      // Assert it only when the test is hitting a non-local origin.
+      const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(:\d+)?\/?$/.test(
+        baseURL ?? ''
+      )
+      if (!isLocal) {
+        expect(csp).toContain('upgrade-insecure-requests')
+      } else {
+        expect(csp).not.toContain('upgrade-insecure-requests')
+      }
     })
 
     test('CSP locks frame-src and object-src to self', async ({ request }) => {

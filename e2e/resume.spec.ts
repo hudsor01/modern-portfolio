@@ -146,7 +146,11 @@ test.describe('Resume Page', () => {
     }
   })
 
-  test('keyboard navigation works correctly', async ({ page }) => {
+  test('keyboard navigation works correctly', async ({ page, browserName }) => {
+    // WebKit/Safari Tab-to-links is OFF by default (real Safari setting,
+    // not a bug). Tab only moves through form fields. Skip in webkit.
+    test.skip(browserName === 'webkit', 'WebKit Tab does not focus links by default')
+
     // Focus on main content
     await page.keyboard.press('Tab')
 
