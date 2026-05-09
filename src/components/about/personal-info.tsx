@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Mail, MapPin, ArrowRight, FileText, Briefcase } from 'lucide-react'
+import { Mail, MapPin, FileText, Briefcase } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -12,16 +12,14 @@ interface PersonalInfo {
   location: string
   email: string
   bio: string
-  highlights: string[]
 }
 
 interface PersonalInfoProps {
   personalInfo: PersonalInfo
-  onContactClick?: () => void
   className?: string
 }
 
-export function PersonalInfo({ personalInfo, onContactClick, className = '' }: PersonalInfoProps) {
+export function PersonalInfo({ personalInfo, className = '' }: PersonalInfoProps) {
   return (
     <section className={className}>
       <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -67,17 +65,6 @@ export function PersonalInfo({ personalInfo, onContactClick, className = '' }: P
                 Download Resume
               </Link>
             </Button>
-            {onContactClick && (
-              <Button
-                onClick={onContactClick}
-                variant="outline"
-                size="lg"
-                className="h-12 px-8 text-base font-semibold"
-              >
-                Let's Connect
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            )}
           </div>
         </div>
 
