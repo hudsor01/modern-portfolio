@@ -30,40 +30,37 @@ test.describe('Security Headers', () => {
       expect(response.headers()['referrer-policy']).toBe('strict-origin-when-cross-origin')
     })
 
-    test('home page returns Content-Security-Policy with nonce', async ({ request }) => {
+    test('home page returns Content-Security-Policy', async ({ request }) => {
+      // Note: nonces and strict-dynamic were intentionally removed (commit 20f2fab):
+      // Next.js 16 proxy doesn't propagate nonces to framework-generated inline
+      // scripts (hydration bootstrap), so we use 'unsafe-inline' without a nonce.
       const response = await request.get('/')
       const csp = response.headers()['content-security-policy']
       expect(csp).toBeDefined()
       expect(csp).toContain("default-src 'self'")
-      expect(csp).toMatch(/nonce-[A-Za-z0-9+/=]+/)
-      expect(csp).not.toContain("'unsafe-inline'")
-      expect(csp).not.toContain("'unsafe-eval'")
+      expect(csp).toContain("frame-ancestors 'none'")
+      expect(csp).toContain('upgrade-insecure-requests')
     })
 
-    test('CSP nonce is unique per request', async ({ request }) => {
-      const response1 = await request.get('/')
-      const response2 = await request.get('/')
-      const csp1 = response1.headers()['content-security-policy'] || ''
-      const csp2 = response2.headers()['content-security-policy'] || ''
-      const nonce1 = csp1.match(/nonce-([A-Za-z0-9+/=]+)/)?.[1]
-      const nonce2 = csp2.match(/nonce-([A-Za-z0-9+/=]+)/)?.[1]
-      expect(nonce1).toBeDefined()
-      expect(nonce2).toBeDefined()
-      expect(nonce1).not.toBe(nonce2)
-    })
-
-    test('CSP contains strict-dynamic for script-src', async ({ request }) => {
+    test('CSP locks frame-src and object-src to self', async ({ request }) => {
       const response = await request.get('/')
       const csp = response.headers()['content-security-policy'] || ''
-      expect(csp).toContain("'strict-dynamic'")
+      const frameSrc = csp.split(';').find((d) => d.trim().startsWith('frame-src')) || ''
+      const objectSrc = csp.split(';').find((d) => d.trim().startsWith('object-src')) || ''
+      expect(frameSrc).toContain("'self'")
+      expect(objectSrc).toContain("'self'")
+      // Neither should permit arbitrary HTTPS hosts
+      expect(frameSrc).not.toContain('https:')
+      expect(objectSrc).not.toContain('https:')
     })
 
-    test('CSP script-src does not contain unsafe-inline', async ({ request }) => {
+    test('CSP script-src does not contain unsafe-eval in production', async ({ request }) => {
+      // 'unsafe-inline' is deliberately retained on script-src (see comment above);
+      // 'unsafe-eval' is only added in development for HMR.
       const response = await request.get('/')
       const csp = response.headers()['content-security-policy'] || ''
-      // Extract only the script-src directive for targeted assertion
       const scriptSrc = csp.split(';').find((d) => d.trim().startsWith('script-src')) || ''
-      expect(scriptSrc).not.toContain("'unsafe-inline'")
+      expect(scriptSrc).not.toContain("'unsafe-eval'")
     })
 
     test('home page returns Permissions-Policy header', async ({ request }) => {
@@ -80,7 +77,7 @@ test.describe('Security Headers', () => {
       const csp = response.headers()['content-security-policy']
       expect(csp).toBeDefined()
       expect(csp).toContain("default-src 'self'")
-      expect(csp).toMatch(/nonce-[A-Za-z0-9+/=]+/)
+      expect(csp).toContain("frame-ancestors 'none'")
     })
 
     test('projects page returns X-Frame-Options: DENY', async ({ request }) => {
@@ -89,12 +86,12 @@ test.describe('Security Headers', () => {
       expect(response.headers()['x-content-type-options']).toBe('nosniff')
     })
 
-    test('contact page returns security headers and CSP with nonce', async ({ request }) => {
+    test('contact page returns security headers and CSP', async ({ request }) => {
       const response = await request.get('/contact')
       expect(response.headers()['x-frame-options']).toBe('DENY')
       const csp = response.headers()['content-security-policy']
       expect(csp).toBeDefined()
-      expect(csp).toMatch(/nonce-[A-Za-z0-9+/=]+/)
+      expect(csp).toContain("default-src 'self'")
     })
 
   })

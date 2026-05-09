@@ -32,7 +32,7 @@ export function BlogTagFilter({ tags, selectedTag, tagCounts, onTagChange }: Tag
                 text-size-xs px-2 py-0.5 rounded-md font-medium
                 ${
                   selectedTag === tag
-                    ? 'bg-primary/30 text-primary'
+                    ? 'bg-primary text-primary-foreground'
                     : 'bg-muted text-muted-foreground'
                 }
               `}
