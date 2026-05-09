@@ -97,11 +97,7 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
       {filteredPosts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredPosts.map((post) => (
-            <Link
-              key={post.id}
-              href={`/blog/${post.slug}`}
-              className="group relative block h-full after:absolute after:inset-0 after:z-10 after:content-['']"
-            >
+            <Link key={post.id} href={`/blog/${post.slug}`} className="group block h-full">
               <Card className="hover-lift hover:border-primary/50 transition-all h-full overflow-hidden">
                 {post.featuredImage && (
                   <div className="relative aspect-[16/10] overflow-hidden">
