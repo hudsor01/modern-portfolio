@@ -32,6 +32,13 @@ describe('buildEnhancedCSP', () => {
       const csp = buildEnhancedCSP({ isDev: false, isHttps: false })
       expect(csp).not.toContain('upgrade-insecure-requests')
     })
+
+    it('omits the directive in dev on HTTP (closes the 4-corner matrix)', () => {
+      // Final corner — guards against a logic flip from `&&` to `||` in the
+      // gating predicate. Dev mode + HTTP must not emit the directive.
+      const csp = buildEnhancedCSP({ isDev: true, isHttps: false })
+      expect(csp).not.toContain('upgrade-insecure-requests')
+    })
   })
 
   describe('script-src', () => {
