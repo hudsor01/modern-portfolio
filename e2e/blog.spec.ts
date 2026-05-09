@@ -303,7 +303,7 @@ test.describe('Blog Keyboard Navigation', () => {
       await page.keyboard.press('Tab')
     }
 
-    // Should have a focused element
+    // Should have a focused element after tabbing through page content
     const focusedElement = page.locator(':focus')
     await expect(focusedElement).toBeVisible()
   })
@@ -332,6 +332,31 @@ test.describe('Blog Keyboard Navigation', () => {
         await expect(page).toHaveURL(new RegExp(href.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
       }
     }
+  })
+
+  test('Tab advances focus once a button is focused (cross-browser)', async ({ page }) => {
+    // Webkit-safe equivalent of the skipped Tab-from-body test above.
+    // Safari excludes <a> links from Tab order by default but always
+    // includes <button>s. Putting focus on a button and asserting Tab
+    // moves it elsewhere catches the same regression class (global
+    // tabindex=-1 leak, broken focus-visible CSS) cross-browser.
+    await page.goto('/blog')
+    await page.waitForLoadState('networkidle')
+
+    const firstButton = page.getByRole('button').first()
+    await firstButton.focus()
+    await expect(firstButton).toBeFocused()
+
+    await page.evaluate(() =>
+      document.activeElement?.setAttribute('data-was-focused-before-tab', '1')
+    )
+
+    await page.keyboard.press('Tab')
+
+    const stillOnSameElement = await page.evaluate(
+      () => document.activeElement?.getAttribute('data-was-focused-before-tab') === '1'
+    )
+    expect(stillOnSameElement).toBe(false)
   })
 })
 

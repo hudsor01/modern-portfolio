@@ -40,14 +40,12 @@ test.describe('Security Headers', () => {
       expect(csp).toContain("default-src 'self'")
       expect(csp).toContain("frame-ancestors 'none'")
 
-      // upgrade-insecure-requests is stripped by proxy.ts when the request host
-      // is localhost (WebKit doesn't have Chromium's localhost exemption and
-      // would otherwise upgrade subresource URLs to https://localhost and 404).
-      // Assert it only when the test is hitting a non-local origin.
-      const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(:\d+)?\/?$/.test(
-        baseURL ?? ''
-      )
-      if (!isLocal) {
+      // proxy.ts emits `upgrade-insecure-requests` only when the request was
+      // served over HTTPS. For HTTP origins (local dev / standalone smoke
+      // test), it's omitted to keep WebKit from upgrading subresource URLs
+      // and 404'ing. Mirror that: assert presence iff baseURL is HTTPS.
+      const isHttps = baseURL?.startsWith('https://') ?? false
+      if (isHttps) {
         expect(csp).toContain('upgrade-insecure-requests')
       } else {
         expect(csp).not.toContain('upgrade-insecure-requests')

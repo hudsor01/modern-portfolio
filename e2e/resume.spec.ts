@@ -172,6 +172,32 @@ test.describe('Resume Page', () => {
     }
   })
 
+  test('Tab advances focus once a button is focused (cross-browser)', async ({ page }) => {
+    // Webkit-friendly equivalent of the skipped Tab-from-body test above.
+    // Safari excludes <a> links from Tab order by default, but always
+    // includes <button>s and other form controls. Starting focus on a
+    // visible button and asserting Tab moves it elsewhere exercises the
+    // same regression class (a global tabindex=-1 leak, missing
+    // focus-visible CSS, etc.) without depending on the platform setting.
+    const firstButton = page.getByRole('button').first()
+    await firstButton.focus()
+    await expect(firstButton).toBeFocused()
+
+    // Mark the focused element so we can compare references through
+    // serialization. `document.activeElement` cannot be returned across
+    // the eval boundary directly.
+    await page.evaluate(() =>
+      document.activeElement?.setAttribute('data-was-focused-before-tab', '1')
+    )
+
+    await page.keyboard.press('Tab')
+
+    const stillOnSameElement = await page.evaluate(
+      () => document.activeElement?.getAttribute('data-was-focused-before-tab') === '1'
+    )
+    expect(stillOnSameElement).toBe(false)
+  })
+
   test('passes accessibility audit', async ({ page }) => {
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
