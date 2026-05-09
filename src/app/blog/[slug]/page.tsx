@@ -158,12 +158,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       />
       <div className="min-h-screen bg-background">
         <Navbar />
-        <main className="relative overflow-hidden">
-          {/* Decorative background elements */}
-          <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
-
-          <div className="relative pt-24 pb-16 lg:pt-32 lg:pb-20">
+        <main>
+          <div className="pt-24 pb-16 lg:pt-32 lg:pb-20">
             <BlogPostLayout post={post} />
             <div className="max-w-4xl mx-auto px-6 lg:px-8">
               <RelatedPosts
