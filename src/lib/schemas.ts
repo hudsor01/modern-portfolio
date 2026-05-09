@@ -89,38 +89,40 @@ export const ChangeFrequencySchema = z.enum(ChangeFrequency)
 // CONTACT FORM SCHEMA
 // =======================
 
-export const contactFormSchema = z.object({
-  name: z
-    .string()
-    .min(2, 'Name must be at least 2 characters long')
-    .max(50, 'Name cannot exceed 50 characters')
-    .trim(),
-  email: z.email('Please enter a valid email address').max(254, 'Email address is too long'),
-  company: z
-    .string()
-    .max(100, 'Company name cannot exceed 100 characters')
-    .trim()
-    .optional()
-    .or(z.literal('')),
-  phone: z
-    .string()
-    .max(20, 'Phone number cannot exceed 20 characters')
-    .regex(/^[\d\s+()-]*$/, 'Please enter a valid phone number')
-    .optional()
-    .or(z.literal('')),
-  subject: z
-    .string()
-    .min(1, 'Subject must be at least 1 character')
-    .max(100, 'Subject must not exceed 100 characters')
-    .trim()
-    .optional(),
-  message: z
-    .string()
-    .min(10, 'Message must be at least 10 characters long')
-    .max(1000, 'Message cannot exceed 1000 characters')
-    .trim(),
-  honeypot: z.string().optional(),
-})
+export const contactFormSchema = z
+  .object({
+    name: z
+      .string()
+      .min(2, 'Name must be at least 2 characters long')
+      .max(50, 'Name cannot exceed 50 characters')
+      .trim(),
+    email: z.email('Please enter a valid email address').max(254, 'Email address is too long'),
+    company: z
+      .string()
+      .max(100, 'Company name cannot exceed 100 characters')
+      .trim()
+      .optional()
+      .or(z.literal('')),
+    phone: z
+      .string()
+      .max(20, 'Phone number cannot exceed 20 characters')
+      .regex(/^[\d\s+()-]*$/, 'Please enter a valid phone number')
+      .optional()
+      .or(z.literal('')),
+    subject: z
+      .string()
+      .min(1, 'Subject must be at least 1 character')
+      .max(100, 'Subject must not exceed 100 characters')
+      .trim()
+      .optional(),
+    message: z
+      .string()
+      .min(10, 'Message must be at least 10 characters long')
+      .max(1000, 'Message cannot exceed 1000 characters')
+      .trim(),
+    honeypot: z.string().optional(),
+  })
+  .strict()
 
 export type ContactFormValues = z.infer<typeof contactFormSchema>
 
@@ -168,34 +170,42 @@ export type CreateBlogPostInput = z.infer<typeof createBlogPostSchema>
 // PROJECT SCHEMAS
 // =======================
 
-export const projectFilterSchema = z.object({
-  category: z.string().optional(),
-  technology: z.string().optional(),
-  featured: z.boolean().optional(),
-  search: z.string().max(200).optional(),
-  tags: z.array(z.string()).optional(),
-})
+export const projectFilterSchema = z
+  .object({
+    category: z.string().optional(),
+    technology: z.string().optional(),
+    featured: z.boolean().optional(),
+    search: z.string().max(200).optional(),
+    tags: z.array(z.string()).optional(),
+  })
+  .strict()
 
 // =======================
 // ANALYTICS SCHEMAS
 // =======================
 
-export const viewTrackingSchema = z.object({
-  type: z.enum(['project', 'blog']),
-  slug: z.string().min(1, 'Slug is required'),
-  readingTime: z.number().int().min(0).max(3600).optional(),
-  scrollDepth: z.number().min(0).max(100).optional(),
-  referrer: urlSchema.optional(),
-})
+export const viewTrackingSchema = z
+  .object({
+    type: z.enum(['project', 'blog']),
+    slug: z.string().min(1, 'Slug is required'),
+    readingTime: z.number().int().min(0).max(3600).optional(),
+    scrollDepth: z.number().min(0).max(100).optional(),
+    referrer: urlSchema.optional(),
+  })
+  .strict()
 
 // =======================
 // PAGINATION SCHEMAS
 // =======================
 
+// Intentionally NOT .strict(): pagination is parsed from URL query strings,
+// which routinely carry unrelated params (UTM, sort, filter). Strictness here
+// would reject benign external traffic.
+// Uses z.coerce.number() because URL query values arrive as strings.
 export const paginationSchema = z.object({
-  page: z.number().int().min(1).default(1),
-  limit: z.number().int().min(1).max(100).default(10),
-  offset: z.number().int().min(0).optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(10),
+  offset: z.coerce.number().int().min(0).optional(),
 })
 
 // =======================

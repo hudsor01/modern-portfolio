@@ -2,8 +2,8 @@
 
 import React, { useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import type { DialogProps } from '@radix-ui/react-dialog'
 import { Search } from 'lucide-react'
+import type { Dialog } from 'radix-ui'
 import { Button } from '@/components/ui/button'
 import {
   CommandDialog,
@@ -15,6 +15,8 @@ import {
 } from '@/components/ui/command'
 import { asRoute } from '@/lib/route-utils'
 import { navConfig } from '@/lib/site'
+
+type DialogProps = Dialog.DialogProps
 
 export function CommandMenu({ ...props }: DialogProps) {
   const router = useRouter()

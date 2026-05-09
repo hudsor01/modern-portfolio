@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 
-import { toast } from 'sonner'
+import { useToast } from '@/hooks/use-sonner-toast'
 import { Navbar } from '@/components/layout/navbar'
 import { ResumeViewer } from '../resume-viewer'
 import { createContextLogger } from '@/lib/logger'
@@ -16,6 +16,7 @@ import { SkillsSection } from './SkillsSection'
 const logger = createContextLogger('ResumePage')
 
 export default function ResumePageContent() {
+  const { loading: showLoadingToast, success: showSuccessToast, error: showErrorToast } = useToast()
   const [showPdf, setShowPdf] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
   const [pdfUrl, setPdfUrl] = useState('')
@@ -35,10 +36,9 @@ export default function ResumePageContent() {
 
   const handleDownloadResume = async () => {
     setIsDownloading(true)
-    toast.loading('Preparing your resume...', { id: 'resume-download', duration: 3000 })
+    const toastId = showLoadingToast('Preparing your resume...', { duration: 3000 })
 
     try {
-      // Direct download of the PDF file with proper encoding
       const a = document.createElement('a')
       a.href = '/Richard%20Hudson%20-%20Resume.pdf'
       a.download = 'Richard_Hudson_Resume.pdf'
@@ -46,10 +46,10 @@ export default function ResumePageContent() {
       a.click()
       a.remove()
 
-      toast.success('Resume downloaded successfully!', { id: 'resume-download' })
+      showSuccessToast('Resume downloaded successfully!', { id: toastId })
     } catch (error) {
       logger.error('Download error', error instanceof Error ? error : new Error(String(error)))
-      toast.error('Failed to download resume. Please try again.', { id: 'resume-download' })
+      showErrorToast('Failed to download resume. Please try again.', { id: toastId })
     } finally {
       setIsDownloading(false)
     }
