@@ -30,7 +30,10 @@ export const ProjectCard = React.memo(function ProjectCard({
 
   return (
     <div className="animate-fade-in-up" style={{ animationDelay: `${index * 80}ms` }}>
-      <Link href={`/projects/${project.slug || project.id}`} className="group block h-full">
+      <Link
+        href={`/projects/${project.slug || project.id}`}
+        className="group relative block h-full after:absolute after:inset-0 after:z-10 after:content-['']"
+      >
         <article className="relative h-full bg-card border border-border rounded-2xl overflow-hidden shadow-sm transition-all duration-500 ease-out hover:border-primary/40 hover:shadow-lg hover:-translate-y-1">
           {/* Featured Badge - Premium Design */}
           {project.featured && (
@@ -47,7 +50,7 @@ export const ProjectCard = React.memo(function ProjectCard({
                 src={projectImage}
                 alt={`${project.title} - Revenue Operations Project`}
                 fill
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                className="pointer-events-none object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                 quality={90}
                 priority={priority || index < 2}
