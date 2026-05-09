@@ -21,9 +21,12 @@ test.describe('Blog Listing Page', () => {
     // Verify page has main content
     await expect(page.locator('main')).toBeVisible()
 
-    // Look for blog-related heading or content
-    const blogContent = page.getByText(/blog|insights|articles/i).first()
-    await expect(blogContent).toBeVisible()
+    // Target the page H1 specifically. The earlier `getByText(/blog/i).first()`
+    // matched any element containing the word — on mobile viewports it picked
+    // up a hidden navigation/menu element with the word "blog" in it.
+    const heading = page.getByRole('heading', { level: 1 })
+    await expect(heading).toBeVisible()
+    await expect(heading).toContainText(/blog|insights|articles/i)
   })
 
   test('displays blog posts or empty state', async ({ page }) => {
