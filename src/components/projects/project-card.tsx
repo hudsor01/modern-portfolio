@@ -47,7 +47,7 @@ export const ProjectCard = React.memo(function ProjectCard({
                 src={projectImage}
                 alt={`${project.title} - Revenue Operations Project`}
                 fill
-                className="pointer-events-none object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
                 quality={90}
                 priority={priority || index < 2}

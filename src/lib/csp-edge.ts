@@ -13,8 +13,23 @@
  * A nonce in script-src causes browsers to ignore 'unsafe-inline', which
  * blocks those scripts and prevents hydration entirely.
  */
-export function buildEnhancedCSP(options: { isDev?: boolean; isLocalHost?: boolean } = {}): string {
-  const { isDev = false, isLocalHost = false } = options
+export interface BuildCSPOptions {
+  /** True when the running app is in development mode (NODE_ENV=development). */
+  isDev?: boolean
+  /**
+   * True when the request was served over HTTPS. The directive
+   * `upgrade-insecure-requests` is only emitted for HTTPS-served pages — on
+   * an HTTP origin (local dev / production-build smoke test on localhost),
+   * WebKit would otherwise rewrite subresource URLs to https://… and 404
+   * (Chromium exempts localhost per spec but WebKit doesn't). The caller
+   * derives this from a server-controlled signal (e.g.
+   * `request.nextUrl.protocol === 'https:'`), not a client-spoofable header.
+   */
+  isHttps?: boolean
+}
+
+export function buildEnhancedCSP(options: BuildCSPOptions = {}): string {
+  const { isDev = false, isHttps = false } = options
   const directives = [
     "default-src 'self'",
     `script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com https://vitals.vercel-insights.com${isDev ? " 'unsafe-eval'" : ''}`,
@@ -29,13 +44,11 @@ export function buildEnhancedCSP(options: { isDev?: boolean; isLocalHost?: boole
     "frame-ancestors 'none'",
   ]
 
-  // upgrade-insecure-requests breaks Safari/WebKit when the server listens on
-  // http://localhost — Chromium exempts localhost from the upgrade per spec
-  // but WebKit doesn't, so subresource URLs are rewritten to https://localhost
-  // and fail silently. Skip the directive when we know the host is local
-  // (dev or production-build smoke tests on localhost). Real prod (https
-  // origin) still emits it.
-  if (!isDev && !isLocalHost) {
+  // Only emit upgrade-insecure-requests on HTTPS-served pages in production.
+  // On HTTP (local dev or production-build smoke tests on localhost), the
+  // directive would force WebKit to upgrade subresource URLs to https://…
+  // and 404 (Chromium exempts localhost per spec; WebKit doesn't).
+  if (!isDev && isHttps) {
     directives.push('upgrade-insecure-requests')
   }
 
