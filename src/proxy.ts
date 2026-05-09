@@ -6,7 +6,13 @@ export function proxy(request: NextRequest) {
   const nonce = btoa(crypto.randomUUID())
   const isDev = process.env.NODE_ENV === 'development'
 
-  const csp = buildEnhancedCSP({ isDev })
+  // Local hostnames (dev OR production-build smoke-tested on localhost) get
+  // upgrade-insecure-requests stripped from CSP. Other directives stay at
+  // production strictness. See csp-edge.ts for the WebKit details.
+  const host = request.headers.get('host') ?? ''
+  const isLocalHost = /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(:\d+)?$/.test(host)
+
+  const csp = buildEnhancedCSP({ isDev, isLocalHost })
 
   // Pass nonce downstream for JSON-LD scripts in layout.tsx
   const requestHeaders = new Headers(request.headers)
