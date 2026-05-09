@@ -28,17 +28,17 @@ test.describe('Resume Page', () => {
   })
 
   test('displays all resume sections when not in PDF view', async ({ page }) => {
-    // Verify About section exists
-    await expect(page.getByText(/about/i).first()).toBeVisible()
-
-    // Verify Experience section exists
-    await expect(page.getByText(/experience/i).first()).toBeVisible()
-
-    // Verify Education section exists
-    await expect(page.getByText(/education/i).first()).toBeVisible()
-
-    // Verify Skills section exists
-    await expect(page.getByText(/skills/i).first()).toBeVisible()
+    // Target each section by an unambiguous heading actually rendered on
+    // the page. The page does not have a top-level "About" or "Experience"
+    // heading (About uses sub-heading "Revenue Operations Professional",
+    // Experience renders one h3 per job). Assert headings inside <main>
+    // so we don't pick up the hidden mobile navbar links.
+    const main = page.locator('main')
+    await expect(
+      main.getByRole('heading', { name: /revenue operations professional/i }).first()
+    ).toBeVisible()
+    await expect(main.getByRole('heading', { name: /education/i }).first()).toBeVisible()
+    await expect(main.getByRole('heading', { name: /skills & expertise/i })).toBeVisible()
   })
 
   test('has download resume button', async ({ page }) => {
@@ -54,8 +54,14 @@ test.describe('Resume Page', () => {
   })
 
   test('toggles between resume content and PDF view', async ({ page }) => {
-    // Initially should show resume content (not PDF)
-    const aboutSection = page.getByText(/about/i).first()
+    // Initially should show resume content (not PDF). The About section's
+    // actual heading is "Revenue Operations Professional"; assert that's
+    // visible in main rather than searching the whole DOM (which picks up
+    // the hidden mobile navbar link "About").
+    const aboutSection = page
+      .locator('main')
+      .getByRole('heading', { name: /revenue operations professional/i })
+      .first()
     await expect(aboutSection).toBeVisible()
 
     // Find and click the PDF View toggle
@@ -83,8 +89,12 @@ test.describe('Resume Page', () => {
         await viewResumeButton.click()
         await page.waitForTimeout(500)
 
-        // Should show resume content again
-        await expect(page.getByText(/about|experience|skills/i).first()).toBeVisible()
+        // Should show resume content again — assert the visible Skills
+        // section heading rather than any text match (mobile navbar
+        // contains hidden links matching the same regex).
+        await expect(
+          page.locator('main').getByRole('heading', { name: /skills & expertise/i })
+        ).toBeVisible()
       }
     }
   })
