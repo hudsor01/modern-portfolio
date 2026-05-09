@@ -3,15 +3,14 @@ import { FAQPageJsonLd } from '@/components/seo/json-ld/faq-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { Navbar } from '@/components/layout/navbar'
 import { PersonalInfo } from '@/components/about/personal-info'
-import { SkillsSection } from '@/components/about/skills-section'
 import { ExpertiseNarrative } from '@/components/about/expertise-narrative'
 import { ExperienceStats } from '@/components/about/experience-stats'
 import { CertificationsSection } from '@/components/about/certifications-section'
 import { WhatIBring } from '@/components/about/what-i-bring'
-import { KeyHighlights } from '@/components/about/key-highlights'
 import { StickyCTA } from '@/components/about/sticky-cta'
-import { BentoCard, BentoGrid } from '@/components/ui/bento-grid'
-import { TrendingUp, BarChart3, Target, Award } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { ArrowRight, Mail } from 'lucide-react'
+import Link from 'next/link'
 import type { Metadata } from 'next'
 
 const EXPERIENCE_STATS = [
@@ -53,67 +52,16 @@ const CERTIFICATIONS = [
   },
 ]
 
-const BENTO_FEATURES = [
-  {
-    Icon: TrendingUp,
-    name: 'Revenue Operations',
-    description: 'Strategic operations driving $4.8M+ in revenue growth',
-    href: '/projects',
-    cta: 'View Projects',
-    className: 'md:col-span-2',
-    background: <div className="absolute inset-0 bg-primary/5" />,
-  },
-  {
-    Icon: BarChart3,
-    name: 'Data Analytics',
-    description: '432% average growth through data-driven insights',
-    href: '/projects',
-    cta: 'See Analytics',
-    className: '',
-    background: <div className="absolute inset-0 bg-primary/5" />,
-  },
-  {
-    Icon: Award,
-    name: 'Certifications',
-    description: 'SalesLoft Admin L1 & L2, HubSpot Revenue Operations',
-    href: '/resume',
-    cta: 'View Resume',
-    className: '',
-    background: <div className="absolute inset-0 bg-secondary/5" />,
-  },
-  {
-    Icon: Target,
-    name: 'Culture Fit',
-    description: 'Collaborative leader who bridges technical & business teams',
-    href: '/contact',
-    cta: "Let's Talk",
-    className: '',
-    background: <div className="absolute inset-0 bg-accent/5" />,
-  },
-]
-
 const PERSONAL_INFO = {
   name: 'Richard Hudson',
   title: 'Revenue Operations Professional',
-  location: 'Dallas, TX • Serving Dallas-Fort Worth Metroplex • Remote & On-Site Available',
+  location: 'Dallas, TX • Dallas-Fort Worth Metroplex • Remote & On-Site',
   email: 'contact@richardwhudsonjr.com',
   bio: `Started my career untangling spreadsheet chaos at a 50-person startup. Built my first automated pipeline with zero engineering support—just Excel, determination, and 3 YouTube tutorials. That pipeline now processes $4.8M+ annually.
 
-Today, I architect revenue operations systems that transform data overwhelm into competitive advantage. 10+ years driving measurable outcomes: 432% transaction growth, 2,217% partner network expansion, and 40%+ efficiency improvements across Dallas-Fort Worth organizations.
+Today, I architect revenue operations systems that transform data overwhelm into competitive advantage. Ten years working the messy middle—where sales meets marketing meets customer success—turning manual reporting nightmares into automated workflows that scale.
 
-SalesLoft Admin certified (Level 1 & 2), HubSpot Revenue Operations certified, and obsessed with making complex systems feel simple. I specialize in the messy middle—where sales meets marketing meets customer success—and everything needs to actually work together.`,
-  highlights: [
-    'Based in Dallas, TX with deep knowledge of Dallas-Fort Worth business ecosystem and market dynamics',
-    'SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified professional',
-    'Specialized in revenue operations and growth analytics with proven $4.8M+ revenue generation track record',
-    'Expert in partnership program development and implementation with 432% growth achievements',
-    'Proven track record of increasing revenue efficiency by 40%+ across multiple DFW organizations',
-    'Comprehensive experience with Dallas tech startups, Fort Worth traditional industries, and enterprise headquarters',
-    'Expert in building automated reporting systems and data-driven decision frameworks',
-    'Active member of Dallas-Fort Worth business community with extensive local network',
-    'Available for professional opportunities and consulting throughout DFW metroplex',
-    'Specialized knowledge of Texas business regulations, local market conditions, and industry best practices',
-  ],
+SalesLoft Admin certified (Level 1 & 2), HubSpot Revenue Operations certified, and obsessed with making complex systems feel simple.`,
 }
 
 export const dynamic = 'force-static'
@@ -170,7 +118,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* 2. What I Bring Section - NEW */}
+        {/* 2. What I Bring */}
         <section className="relative py-16 lg:py-20 bg-muted/30">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <WhatIBring />
@@ -184,50 +132,47 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* 4. Core Competencies - Bento Grid */}
-        <section className="relative py-16 lg:py-20 bg-muted/30">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <SkillsSection />
-          </div>
-        </section>
-
-        {/* 5. Expertise Narrative - Essay Style */}
-        <section className="relative py-16 lg:py-24">
+        {/* 4. Expertise Narrative + Certifications */}
+        <section className="relative py-16 lg:py-24 bg-muted/30">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <ExpertiseNarrative />
           </div>
         </section>
-
-        {/* 6. Certifications */}
-        <section className="relative py-16 lg:py-20 bg-muted/30">
+        <section className="relative py-16 lg:py-20">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <CertificationsSection certifications={CERTIFICATIONS} />
           </div>
         </section>
 
-        {/* 7. Key Highlights */}
-        <section className="relative py-16 lg:py-20">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <KeyHighlights highlights={PERSONAL_INFO.highlights} />
-          </div>
-        </section>
-
-        {/* 8. Final CTA Section */}
-        <section className="relative py-20 lg:py-32 bg-muted/30">
-          <div className="max-w-6xl mx-auto px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="font-display text-3xl lg:text-5xl font-bold text-foreground mb-6">
-                Let's Talk About Your Goals
-              </h2>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-                Ready to optimize your revenue operations? Explore my work or get in touch directly.
-              </p>
+        {/* 5. Final CTA */}
+        <section className="relative py-20 lg:py-28 bg-muted/30">
+          <div className="max-w-3xl mx-auto px-6 lg:px-8 text-center">
+            <h2 className="font-display text-3xl lg:text-5xl font-bold text-foreground mb-6">
+              Let's talk about your goals
+            </h2>
+            <p className="text-xl text-muted-foreground mb-10">
+              Ready to turn revenue operations into a competitive advantage? See the work, or get in
+              touch directly.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Button asChild size="lg" className="h-12 px-8 text-base font-semibold">
+                <Link href="/projects">
+                  View Case Studies
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="h-12 px-8 text-base font-semibold"
+              >
+                <Link href="/contact">
+                  <Mail className="mr-2 h-5 w-5" />
+                  Get in Touch
+                </Link>
+              </Button>
             </div>
-            <BentoGrid>
-              {BENTO_FEATURES.map((feature) => (
-                <BentoCard key={feature.name} {...feature} />
-              ))}
-            </BentoGrid>
           </div>
         </section>
       </main>
