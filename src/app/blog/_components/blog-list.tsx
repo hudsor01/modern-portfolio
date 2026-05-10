@@ -6,7 +6,7 @@ import { useQueryState } from 'nuqs'
 import type { BlogPostData, BlogCategoryData } from '@/types/api'
 import { BlogTagFilter } from './blog-tag-filter'
 import { InlineMarkdown } from './inline-markdown'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import { Card, CardHeader, CardDescription, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
 interface BlogListProps {
@@ -120,9 +120,12 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
                       ))}
                     </div>
                   )}
-                  <CardTitle className="text-xl line-clamp-2 group-hover:text-primary transition-colors">
+                  <h2
+                    data-slot="card-title"
+                    className="leading-none font-semibold text-xl line-clamp-2 group-hover:text-primary transition-colors"
+                  >
                     <InlineMarkdown value={post.title} />
-                  </CardTitle>
+                  </h2>
                   <CardDescription className="line-clamp-3">
                     {post.excerpt ? <InlineMarkdown value={post.excerpt} /> : ''}
                   </CardDescription>
