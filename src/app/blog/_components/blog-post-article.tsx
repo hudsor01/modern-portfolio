@@ -273,8 +273,15 @@ export function BlogPostArticle({
     })
   }
 
-  // Process content: parse markdown if needed, sanitize for non-markdown content
-  const processedContent = contentType === 'MARKDOWN' ? parseMarkdown(content) : content
+  // Process content: parse markdown if needed, sanitize for non-markdown content.
+  // For HTML/RICH_TEXT content, defensively demote any in-body <h1> to <h2> so
+  // we never get a double-h1 alongside the page title in blog-post-layout.tsx.
+  // (Markdown content is already handled by parseMarkdown above.) Browser audit
+  // surfaced this on `/blog/stop-using-generic-scripts...` — the post body
+  // shipped with a literal <h1> matching the page title.
+  const demoteH1 = (html: string): string =>
+    html.replace(/<h1(\s[^>]*)?>/gi, '<h2$1>').replace(/<\/h1>/gi, '</h2>')
+  const processedContent = contentType === 'MARKDOWN' ? parseMarkdown(content) : demoteH1(content)
   const sanitizedContent = sanitizeHtml(processedContent, DOMPURIFY_CONFIG)
 
   return (
