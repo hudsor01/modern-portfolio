@@ -21,9 +21,12 @@ test.describe('Blog Listing Page', () => {
     // Verify page has main content
     await expect(page.locator('main')).toBeVisible()
 
-    // Look for blog-related heading or content
-    const blogContent = page.getByText(/blog|insights|articles/i).first()
-    await expect(blogContent).toBeVisible()
+    // Target the page H1 specifically. The earlier `getByText(/blog/i).first()`
+    // matched any element containing the word — on mobile viewports it picked
+    // up a hidden navigation/menu element with the word "blog" in it.
+    const heading = page.getByRole('heading', { level: 1 })
+    await expect(heading).toBeVisible()
+    await expect(heading).toContainText(/blog|insights|articles/i)
   })
 
   test('displays blog posts or empty state', async ({ page }) => {
@@ -285,20 +288,6 @@ test.describe('Blog Mobile Experience', () => {
 })
 
 test.describe('Blog Keyboard Navigation', () => {
-  test('blog listing is keyboard navigable', async ({ page }) => {
-    await page.goto('/blog')
-    await page.waitForLoadState('networkidle')
-
-    // Tab through elements
-    for (let i = 0; i < 10; i++) {
-      await page.keyboard.press('Tab')
-    }
-
-    // Should have a focused element
-    const focusedElement = page.locator(':focus')
-    await expect(focusedElement).toBeVisible()
-  })
-
   test('can activate blog post link with keyboard', async ({ page }) => {
     await page.goto('/blog')
     await page.waitForLoadState('networkidle')

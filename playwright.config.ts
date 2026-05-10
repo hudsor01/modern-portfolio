@@ -79,11 +79,15 @@ export default defineConfig({
     },
   ],
 
-  // Start dev server before tests
-  webServer: {
-    command: 'bun run dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000,
-  },
+  // Start dev server before tests — skip when PLAYWRIGHT_BASE_URL is set so
+  // the suite can run against a pre-started server (e.g. `bunx next start`
+  // or the standalone server on a non-default port).
+  webServer: process.env.PLAYWRIGHT_BASE_URL
+    ? undefined
+    : {
+        command: 'bun run dev',
+        url: 'http://localhost:3000',
+        reuseExistingServer: !process.env.CI,
+        timeout: 120000,
+      },
 })

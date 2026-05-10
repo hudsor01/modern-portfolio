@@ -30,7 +30,7 @@ test.describe('Security Headers', () => {
       expect(response.headers()['referrer-policy']).toBe('strict-origin-when-cross-origin')
     })
 
-    test('home page returns Content-Security-Policy', async ({ request }) => {
+    test('home page returns Content-Security-Policy', async ({ request, baseURL }) => {
       // Note: nonces and strict-dynamic were intentionally removed (commit 20f2fab):
       // Next.js 16 proxy doesn't propagate nonces to framework-generated inline
       // scripts (hydration bootstrap), so we use 'unsafe-inline' without a nonce.
@@ -39,7 +39,17 @@ test.describe('Security Headers', () => {
       expect(csp).toBeDefined()
       expect(csp).toContain("default-src 'self'")
       expect(csp).toContain("frame-ancestors 'none'")
-      expect(csp).toContain('upgrade-insecure-requests')
+
+      // proxy.ts emits `upgrade-insecure-requests` only when the request was
+      // served over HTTPS. For HTTP origins (local dev / standalone smoke
+      // test), it's omitted to keep WebKit from upgrading subresource URLs
+      // and 404'ing. Mirror that: assert presence iff baseURL is HTTPS.
+      const isHttps = baseURL?.startsWith('https://') ?? false
+      if (isHttps) {
+        expect(csp).toContain('upgrade-insecure-requests')
+      } else {
+        expect(csp).not.toContain('upgrade-insecure-requests')
+      }
     })
 
     test('CSP locks frame-src and object-src to self', async ({ request }) => {
