@@ -9,7 +9,6 @@ import { FileDown, Mail, Globe, Eye } from 'lucide-react'
 import { Github, Linkedin } from '@/components/ui/brand-icons'
 
 interface HeroHeaderProps {
-  isHeroInView: boolean
   showPdf: boolean
   isDownloading: boolean
   onDownloadResume: () => void
@@ -17,16 +16,15 @@ interface HeroHeaderProps {
 }
 
 export function HeroHeader({
-  isHeroInView,
   showPdf,
   isDownloading,
   onDownloadResume,
   onToggleView,
 }: HeroHeaderProps) {
+  // Above-the-fold; no in-view opacity gate (browser audit found
+  // a 2-6s flash because IntersectionObserver hadn't fired yet).
   return (
-    <div
-      className={`text-center space-y-8 max-w-4xl mx-auto animate-fade-in-up ${isHeroInView ? 'opacity-100' : 'opacity-0'}`}
-    >
+    <div className="text-center space-y-8 max-w-4xl mx-auto animate-fade-in-up">
       <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-8">
         <span className="block hero-name-gradient">Richard Hudson</span>
       </h1>

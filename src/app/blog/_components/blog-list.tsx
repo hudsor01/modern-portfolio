@@ -120,7 +120,10 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
                       ))}
                     </div>
                   )}
-                  <CardTitle className="text-xl line-clamp-2 group-hover:text-primary transition-colors">
+                  <CardTitle
+                    as="h2"
+                    className="text-xl line-clamp-2 group-hover:text-primary transition-colors"
+                  >
                     <InlineMarkdown value={post.title} />
                   </CardTitle>
                   <CardDescription className="line-clamp-3">

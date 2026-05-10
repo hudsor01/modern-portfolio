@@ -21,12 +21,10 @@ export default function ResumePageContent() {
   const [isDownloading, setIsDownloading] = useState(false)
   const [pdfUrl, setPdfUrl] = useState('')
 
-  // Refs for scroll animations
-  const heroRef = useRef(null)
+  // Refs for scroll animations (hero is above-the-fold; no in-view gate)
   const contentRef = useRef(null)
 
   // In-view hooks
-  const isHeroInView = useInView(heroRef, { once: true })
   const isContentInView = useInView(contentRef, { once: true })
 
   useEffect(() => {
@@ -69,9 +67,8 @@ export default function ResumePageContent() {
 
         <div className="relative max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16 lg:pt-32 lg:pb-20 space-y-16">
           {/* Hero Header */}
-          <div ref={heroRef}>
+          <div>
             <HeroHeader
-              isHeroInView={isHeroInView}
               showPdf={showPdf}
               isDownloading={isDownloading}
               onDownloadResume={handleDownloadResume}
