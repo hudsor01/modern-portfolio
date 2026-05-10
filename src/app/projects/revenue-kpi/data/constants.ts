@@ -28,5 +28,3 @@ export const technologies = [
   'Data Visualization',
   'Business Intelligence',
 ]
-
-export const timeframes = ['2020', '2022', '2024', 'All']
