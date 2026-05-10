@@ -84,7 +84,14 @@ const SectionCard = React.forwardRef<HTMLDivElement, SectionCardProps>(
         {...props}
       >
         <div className={cn(sectionCardHeaderVariants({ padding }))}>
-          <h3 className={cn(sectionCardTitleVariants({ padding }))}>{title}</h3>
+          {/*
+           * h2: SectionCard renders a top-level page section under the page <h1>.
+           * Browser audit found 12/14 project pages skipped H1 → H3 with no H2,
+           * triggering screen-reader outline gaps. Promoting to h2 here fixes
+           * every consumer at once. Children that nest below SectionCard should
+           * use h3+ for their internal headings.
+           */}
+          <h2 className={cn(sectionCardTitleVariants({ padding }))}>{title}</h2>
           {description && (
             <p className={cn(sectionCardDescriptionVariants({ padding }))}>{description}</p>
           )}
