@@ -15,7 +15,7 @@ import {
 import { Navbar } from '@/components/layout/navbar'
 import { NumberTicker } from '@/components/ui/number-ticker'
 import { Button } from '@/components/ui/button'
-import { useEffect, useState, useRef, useSyncExternalStore } from 'react'
+import { useSyncExternalStore } from 'react'
 
 // Safe mounted check using useSyncExternalStore to avoid hydration mismatch
 function useMounted(): boolean {
@@ -44,29 +44,8 @@ function ImpactMetric({
   delay?: number
   decimalPlaces?: number
 }) {
-  const [isVisible, setIsVisible] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          setTimeout(() => setIsVisible(true), delay * 1000)
-        }
-      },
-      { threshold: 0.3 }
-    )
-    if (ref.current) observer.observe(ref.current)
-    return () => observer.disconnect()
-  }, [delay])
-
   return (
-    <div
-      ref={ref}
-      className={`group relative transition-all duration-700 ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-      }`}
-    >
+    <div className="group relative">
       <div className="flex items-start gap-4">
         <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
           <Icon className="w-6 h-6 text-primary" />
@@ -74,8 +53,7 @@ function ImpactMetric({
         <div>
           <div className="text-4xl md:text-5xl font-bold text-foreground tabular-nums tracking-tight">
             {prefix}
-            {isVisible && <NumberTicker value={value} delay={0} decimalPlaces={decimalPlaces} />}
-            {!isVisible && '0'}
+            <NumberTicker value={value} delay={delay} decimalPlaces={decimalPlaces} />
             {suffix}
           </div>
           <div className="text-sm text-muted-foreground font-medium mt-1 uppercase tracking-wider">

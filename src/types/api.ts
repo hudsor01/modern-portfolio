@@ -357,17 +357,6 @@ export interface RSSFeedData {
 }
 
 // ============================================================================
-// RESUME TYPES
-// ============================================================================
-
-export interface ResumeDownloadData {
-  url: string
-  filename: string
-  size: number
-  generatedAt: string
-}
-
-// ============================================================================
 // API ENDPOINTS INTERFACE
 // ============================================================================
 
@@ -381,9 +370,6 @@ export interface ApiEndpoints {
   }
   contact: {
     send: (data: ContactFormData) => Promise<ApiResponse<ContactResponse>>
-  }
-  resume: {
-    generate: () => Promise<ApiResponse<ResumeDownloadData>>
   }
   blog: {
     getPosts: (params?: {
