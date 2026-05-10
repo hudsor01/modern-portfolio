@@ -63,6 +63,44 @@ describe('parsePaginationParams', () => {
     const sp = new URLSearchParams({ page: '5', limit: '15' })
     expect(parsePaginationParams(sp).skip).toBe(60)
   })
+
+  it('clamps negative page to 1', () => {
+    const sp = new URLSearchParams({ page: '-5' })
+    expect(parsePaginationParams(sp).page).toBe(1)
+  })
+
+  it('clamps negative limit to 1', () => {
+    const sp = new URLSearchParams({ limit: '-5' })
+    expect(parsePaginationParams(sp).limit).toBe(1)
+  })
+
+  it('rejects partial-parse strings (5abc) and falls back to default', () => {
+    const sp = new URLSearchParams({ page: '5abc', limit: '20xyz' })
+    const r = parsePaginationParams(sp)
+    expect(r.page).toBe(1)
+    expect(r.limit).toBe(10)
+  })
+
+  it('rejects decimals (5.5) and falls back to default', () => {
+    const sp = new URLSearchParams({ page: '5.5', limit: '20.7' })
+    const r = parsePaginationParams(sp)
+    expect(r.page).toBe(1)
+    expect(r.limit).toBe(10)
+  })
+
+  it('rejects whitespace-only inputs and falls back to default', () => {
+    const sp = new URLSearchParams({ page: '   ', limit: '   ' })
+    const r = parsePaginationParams(sp)
+    expect(r.page).toBe(1)
+    expect(r.limit).toBe(10)
+  })
+
+  it('trims surrounding whitespace before parsing', () => {
+    const sp = new URLSearchParams({ page: ' 3 ', limit: ' 20 ' })
+    const r = parsePaginationParams(sp)
+    expect(r.page).toBe(3)
+    expect(r.limit).toBe(20)
+  })
 })
 
 describe('createPaginationMeta', () => {
