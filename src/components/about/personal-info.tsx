@@ -62,7 +62,7 @@ export function PersonalInfo({ personalInfo, className = '' }: PersonalInfoProps
             >
               <Link href="/resume">
                 <FileText className="mr-2 h-5 w-5" />
-                Download Resume
+                View Resume
               </Link>
             </Button>
           </div>

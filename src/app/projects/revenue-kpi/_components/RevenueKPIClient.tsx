@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, Suspense } from 'react'
+import { useMemo, Suspense } from 'react'
 import { TrendingUp, DollarSign, Users, Activity } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
@@ -8,7 +8,6 @@ import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/data-formatters'
 
 import type { GrowthData, YearOverYearData, TopPartnerData } from '@/types/analytics'
-import { timeframes } from '../data/constants'
 import { calculateGrowth } from '../utils'
 import { ChartsGrid } from './ChartsGrid'
 import { NarrativeSections } from './NarrativeSections'
@@ -55,8 +54,6 @@ export function RevenueKPIClient({
   monthlyRevenue,
   partnerGroupsData,
 }: RevenueKPIClientProps) {
-  const [activeTimeframe, setActiveTimeframe] = useState('All')
-
   // Memoize sorted year-over-year data
   const sortedYearOverYear = useMemo(
     () => [...yearOverYearData].sort((a, b) => a.year - b.year),
@@ -226,10 +223,6 @@ export function RevenueKPIClient({
         },
         { label: 'Accuracy: 94%', variant: 'secondary' },
       ]}
-      showTimeframes={true}
-      timeframes={timeframes}
-      activeTimeframe={activeTimeframe}
-      onTimeframeChange={setActiveTimeframe}
     >
       {/* KPI Cards using standardized MetricsGrid */}
       <div className="mb-8">
