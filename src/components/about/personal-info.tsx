@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Mail, MapPin, FileText, Briefcase } from 'lucide-react'
+import { Mail, MapPin, Eye, Briefcase } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -61,8 +61,8 @@ export function PersonalInfo({ personalInfo, className = '' }: PersonalInfoProps
               className="h-12 px-8 text-base font-semibold"
             >
               <Link href="/resume">
-                <FileText className="mr-2 h-5 w-5" />
-                Download Resume
+                <Eye className="mr-2 h-5 w-5" />
+                View Resume
               </Link>
             </Button>
           </div>

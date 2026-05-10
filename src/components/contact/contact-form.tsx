@@ -46,6 +46,19 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
         }}
         className="space-y-6"
       >
+        <noscript>
+          <div className="flex items-center gap-2 text-foreground bg-muted p-4 rounded-xl mb-2 border border-border">
+            <Mail className="w-5 h-5 flex-shrink-0 text-primary" />
+            <span>
+              This form requires JavaScript. Please email{' '}
+              <a href="mailto:richard@richardwhudsonjr.com" className="underline font-medium">
+                richard@richardwhudsonjr.com
+              </a>{' '}
+              directly.
+            </span>
+          </div>
+        </noscript>
+
         {/* Name & Email Row */}
         <div className="grid md:grid-cols-2 gap-4">
           <form.Field
