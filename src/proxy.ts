@@ -30,5 +30,17 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  // PDFs are excluded so they can be embedded same-origin in <object> on the
+  // resume viewer. Excluding them here means the per-request CSP is NOT set
+  // on PDF responses — every directive (default-src, script-src, style-src,
+  // frame-ancestors, etc.) is dropped, not just frame-ancestors. That's
+  // acceptable today because the only PDF in /public is a static résumé;
+  // adding a PDF that needs a stricter CSP requires emitting one inside
+  // proxy() conditionally rather than excluding the path here. Pairs with
+  // the route-specific X-Frame-Options: SAMEORIGIN override in next.config.js
+  // — both rules must move together; relaxing one in isolation re-blocks
+  // the embed.
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|pdf)$).*)',
+  ],
 }

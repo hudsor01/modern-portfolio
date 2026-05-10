@@ -134,6 +134,26 @@ const nextConfig = {
           { key: 'CDN-Cache-Control', value: 'max-age=3600' },
         ],
       },
+      {
+        // PDF assets need to be embeddable in same-origin <object> for the
+        // resume viewer (/resume PDF toggle, /resume/view). Override the
+        // global X-Frame-Options: DENY with SAMEORIGIN. The CSP
+        // frame-ancestors directive is dropped on PDFs by excluding them
+        // from the proxy matcher in src/proxy.ts — both must be loosened
+        // together for browsers to render the PDF in a frame.
+        //
+        // NOTE: this rule applies to ALL .pdf paths under /public. Only one
+        // exists today (Richard Hudson - Resume.pdf). If a future PDF
+        // should NOT be framable (e.g., signed contract, gated content),
+        // narrow the source to the literal résumé filename and add an
+        // explicit deny rule for the new path.
+        //
+        // Other security headers from the global /(.*) rule (nosniff, HSTS,
+        // Referrer-Policy, Permissions-Policy) are preserved — Next.js
+        // merges by header key, only colliding keys override.
+        source: '/:path*\\.pdf',
+        headers: [{ key: 'X-Frame-Options', value: 'SAMEORIGIN' }],
+      },
     ]
   },
 

@@ -24,12 +24,12 @@ export function ResumeViewer({ pdfUrl }: ResumeViewerProps) {
     return () => window.removeEventListener('resize', updateHeight)
   }, [])
 
-  // Handle iframe load
+  // Handle object load
   const handleLoad = () => {
     setIsLoading(false)
   }
 
-  // Handle iframe error
+  // Handle object error
   const handleError = () => {
     setLoadError(true)
     setIsLoading(false)
@@ -107,12 +107,13 @@ export function ResumeViewer({ pdfUrl }: ResumeViewerProps) {
           </div>
         </div>
       )}
-      <iframe
-        src={`${pdfUrl}#toolbar=1&navpanes=0&scrollbar=1&view=FitH`}
+      <object
+        data={pdfUrl}
+        type="application/pdf"
         style={{ height }}
         width="100%"
-        title="Richard Hudson Resume"
-        className="border border-border rounded-lg"
+        aria-label="Richard Hudson Resume"
+        className="border border-border rounded-lg block"
         onLoad={handleLoad}
         onError={handleError}
       >
@@ -127,7 +128,7 @@ export function ResumeViewer({ pdfUrl }: ResumeViewerProps) {
             Open PDF in new tab
           </a>
         </p>
-      </iframe>
+      </object>
     </div>
   )
 }
