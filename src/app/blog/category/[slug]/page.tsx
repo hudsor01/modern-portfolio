@@ -214,7 +214,10 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                               ))}
                             </div>
                           )}
-                          <CardTitle className="text-xl line-clamp-2 group-hover:text-primary transition-colors">
+                          <CardTitle
+                            as="h2"
+                            className="text-xl line-clamp-2 group-hover:text-primary transition-colors"
+                          >
                             {post.title}
                           </CardTitle>
                           {post.excerpt && (

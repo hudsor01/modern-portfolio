@@ -67,16 +67,28 @@ const sectionCardDescriptionVariants = cva('text-muted-foreground leading-relaxe
   },
 })
 
+type HeadingLevel = 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+
 interface SectionCardProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof sectionCardVariants> {
   title: string
   description?: string
   children: React.ReactNode
+  /**
+   * Semantic heading element for the title. Defaults to `h2` because
+   * SectionCard is the canonical wrapper for top-level page sections
+   * directly under the page `<h1>`. Override when nesting (e.g. a
+   * SectionCard inside another SectionCard should pass `as="h3"`).
+   */
+  as?: HeadingLevel
 }
 
 const SectionCard = React.forwardRef<HTMLDivElement, SectionCardProps>(
-  ({ className, variant, padding, title, description, children, ...props }, ref) => {
+  (
+    { className, variant, padding, title, description, children, as: Heading = 'h2', ...props },
+    ref
+  ) => {
     return (
       <div
         ref={ref}
@@ -84,7 +96,7 @@ const SectionCard = React.forwardRef<HTMLDivElement, SectionCardProps>(
         {...props}
       >
         <div className={cn(sectionCardHeaderVariants({ padding }))}>
-          <h3 className={cn(sectionCardTitleVariants({ padding }))}>{title}</h3>
+          <Heading className={cn(sectionCardTitleVariants({ padding }))}>{title}</Heading>
           {description && (
             <p className={cn(sectionCardDescriptionVariants({ padding }))}>{description}</p>
           )}
