@@ -106,4 +106,23 @@ describe('buildEnhancedCSP', () => {
       expect(csp).toContain("default-src 'self'")
     })
   })
+
+  describe('reporting directives', () => {
+    it('omits report-uri / report-to when addReporting is false', () => {
+      const csp = buildEnhancedCSP({ addReporting: false })
+      expect(csp).not.toContain('report-uri')
+      expect(csp).not.toContain('report-to')
+    })
+
+    it('emits report-uri and report-to when addReporting is true', () => {
+      const csp = buildEnhancedCSP({ addReporting: true })
+      expect(csp).toContain('report-uri /api/csp-report')
+      expect(csp).toContain('report-to csp-endpoint')
+    })
+
+    it('omits reporting by default (caller must opt in explicitly)', () => {
+      const csp = buildEnhancedCSP()
+      expect(csp).not.toContain('report-uri')
+    })
+  })
 })

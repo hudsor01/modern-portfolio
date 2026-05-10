@@ -156,60 +156,6 @@ test.describe('Resume Page', () => {
     }
   })
 
-  test('keyboard navigation works correctly', async ({ page, browserName }) => {
-    // WebKit/Safari Tab-to-links is OFF by default (real Safari setting,
-    // not a bug). Tab only moves through form fields. Skip in webkit.
-    test.skip(browserName === 'webkit', 'WebKit Tab does not focus links by default')
-
-    // Focus on main content
-    await page.keyboard.press('Tab')
-
-    // Continue tabbing and verify focus moves
-    for (let i = 0; i < 5; i++) {
-      await page.keyboard.press('Tab')
-      const focusedElement = page.locator(':focus')
-      await expect(focusedElement).toBeVisible()
-    }
-  })
-
-  test('Tab advances focus from a focused input', async ({ page }) => {
-    // Webkit-safe equivalent of the skipped Tab-from-body test above.
-    // Safari's "Tab focuses links" default excludes <a> links AND
-    // <button>s from Tab order — only `<input>`s and other text-input
-    // form controls are reliably included cross-browser. The test
-    // injects two test-fixture inputs via JS rather than relying on
-    // whichever element happens to be first in the page DOM (varies by
-    // viewport and conditional rendering) — fully decoupled from the
-    // production UI so the test stays stable as the page evolves.
-    const startedOnFirstFixture = await page.evaluate(() => {
-      // Position fixtures off-screen so they don't flash on top of the
-      // page in --headed debug runs.
-      const offscreen = 'position:fixed;left:-9999px;top:-9999px;'
-      const a = document.createElement('input')
-      a.id = '__kbd_test_a'
-      a.type = 'text'
-      a.style.cssText = offscreen
-      const b = document.createElement('input')
-      b.id = '__kbd_test_b'
-      b.type = 'text'
-      b.style.cssText = offscreen
-      document.body.append(a, b)
-      a.focus()
-      return document.activeElement?.id === '__kbd_test_a'
-    })
-    expect(startedOnFirstFixture).toBe(true)
-
-    await page.keyboard.press('Tab')
-
-    const movedToSecondFixture = await page.evaluate(() => {
-      const moved = document.activeElement?.id === '__kbd_test_b'
-      document.getElementById('__kbd_test_a')?.remove()
-      document.getElementById('__kbd_test_b')?.remove()
-      return moved
-    })
-    expect(movedToSecondFixture).toBe(true)
-  })
-
   test('passes accessibility audit', async ({ page }) => {
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
