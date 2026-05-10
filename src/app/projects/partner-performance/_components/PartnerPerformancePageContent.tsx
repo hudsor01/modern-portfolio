@@ -1,5 +1,4 @@
 'use client'
-export const dynamic = 'force-static'
 
 import { TrendingUp, Users, Target, DollarSign } from 'lucide-react'
 import { useQueryState } from 'nuqs'
