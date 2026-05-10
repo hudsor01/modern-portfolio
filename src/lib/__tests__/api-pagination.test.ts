@@ -46,13 +46,17 @@ describe('parsePaginationParams', () => {
 
   it('falls back to defaults on NaN', () => {
     const sp = new URLSearchParams({ page: 'abc', limit: 'xyz' })
-    // parseInt('abc') is NaN; Math.max(1, NaN) is NaN — actual behavior under
-    // current implementation: `parseInt(searchParams.get('page') || '1')` does
-    // get the raw value 'abc' which parses to NaN. Math.max(1, NaN) = NaN. The
-    // resulting `page` is NaN. Document the contract to flag for future cleanup.
     const r = parsePaginationParams(sp)
-    expect(Number.isNaN(r.page) || r.page === 1).toBe(true)
-    expect(Number.isNaN(r.limit) || r.limit === 10).toBe(true)
+    expect(r.page).toBe(1)
+    expect(r.limit).toBe(10)
+    expect(r.skip).toBe(0)
+  })
+
+  it('uses provided defaults on NaN', () => {
+    const sp = new URLSearchParams({ page: 'abc', limit: 'xyz' })
+    const r = parsePaginationParams(sp, { page: 3, limit: 25 })
+    expect(r.page).toBe(3)
+    expect(r.limit).toBe(25)
   })
 
   it('skip math works for arbitrary page+limit', () => {

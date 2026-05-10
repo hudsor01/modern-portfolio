@@ -121,12 +121,8 @@ describe('cuidSchema', () => {
     expect(cuidSchema.safeParse(validCuid).success).toBe(true)
   })
 
-  // KNOWN BUG: cuidSchema uses z.cuid() which validates cuid v1 only. New IDs
-  // written by Drizzle use cuid2 (createId from @paralleldrive/cuid2) and FAIL
-  // this schema. Documented at schemas.ts:38. Test asserts current (broken)
-  // behavior; flip the assertion when the schema is migrated to z.cuid2().
-  it('rejects a cuid2 ID (currently — schemas.ts:38 BUG)', () => {
-    expect(cuidSchema.safeParse(validCuid2).success).toBe(false)
+  it('accepts a cuid2 ID (new rows from src/db/cuid.ts)', () => {
+    expect(cuidSchema.safeParse(validCuid2).success).toBe(true)
   })
 
   it('rejects a uuid', () => {
