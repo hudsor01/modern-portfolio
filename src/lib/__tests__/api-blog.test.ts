@@ -201,7 +201,7 @@ describe('transformToBlogPostData', () => {
     } as unknown as BlogPostWithRelations
     const r = transformToBlogPostData(withTag)
     expect(r.tags).toHaveLength(1)
-    expect(r.tags[0]?.slug).toBe('react')
+    expect(r.tags?.[0]?.slug).toBe('react')
   })
 })
 
