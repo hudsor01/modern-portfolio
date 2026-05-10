@@ -30,12 +30,13 @@ beforeAll(() => {
 })
 
 afterAll(() => {
-  if (ORIG_DATABASE_URL === undefined) delete process.env.DATABASE_URL
-  else
+  if (ORIG_DATABASE_URL === undefined) {
+    delete process.env.DATABASE_URL
+  } else {
     process.env.DATABASE_URL = ORIG_DATABASE_URL
-    // Reset the drizzle singleton so other test files don't reuse the mock client
-    // biome-ignore lint/suspicious/noExplicitAny: test cleanup of global cache
-  ;(globalThis as any).__drizzle = undefined
+  }
+  // Reset the drizzle singleton so other test files don't reuse the mock client
+  ;(globalThis as unknown as { __drizzle: unknown }).__drizzle = undefined
 })
 
 describe('@/lib/db re-exports', () => {
@@ -60,8 +61,7 @@ describe('@/lib/db re-exports', () => {
   })
 
   it('throws DATABASE_URL is required when env var is unset', async () => {
-    // biome-ignore lint/suspicious/noExplicitAny: clearing global cache
-    ;(globalThis as any).__drizzle = undefined
+    ;(globalThis as unknown as { __drizzle: unknown }).__drizzle = undefined
     delete process.env.DATABASE_URL
     vi.resetModules()
     const { db } = await import('@/db')
