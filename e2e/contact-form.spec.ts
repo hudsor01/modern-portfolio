@@ -157,6 +157,34 @@ test.describe('Contact Form', () => {
     await expect(focusedElement).toBeVisible()
   })
 
+  test('Tab from a real form input stays inside the page DOM (regression gate)', async ({
+    page,
+  }) => {
+    // This is the cross-browser DOM-coverage equivalent of the
+    // chromium/firefox-only Tab-from-body tests in blog.spec.ts and
+    // resume.spec.ts. The fixture-input tests there verify browser
+    // keyboard infrastructure; this one verifies the actual page's
+    // interactive controls stay in Tab order. If a future change
+    // accidentally puts `tabindex="-1"` on every form field (or the
+    // wrapping `<main>` traps focus), this test fails on every browser.
+    const nameInput = page.getByLabel(/^name/i)
+    await nameInput.focus()
+    await expect(nameInput).toBeFocused()
+
+    await page.keyboard.press('Tab')
+
+    // After Tab, the active element must still live inside the page's
+    // <main> region (not <body> directly, not somewhere outside the
+    // app's content tree).
+    const stillInsideMain = await page.evaluate(() => {
+      const active = document.activeElement
+      if (!active || active === document.body) return false
+      const main = document.querySelector('main')
+      return main?.contains(active) ?? false
+    })
+    expect(stillInsideMain).toBe(true)
+  })
+
   test('passes accessibility audit', async ({ page }) => {
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])

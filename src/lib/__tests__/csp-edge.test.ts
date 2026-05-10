@@ -1,11 +1,43 @@
 import { describe, expect, it } from 'vitest'
-import { buildEnhancedCSP } from '../csp-edge'
+import { buildEnhancedCSP, shouldEmitUpgradeInsecureRequests } from '../csp-edge'
 
 /**
  * Unit-test the CSP builder's directive matrix. The behavior is also covered
  * end-to-end by `e2e/security-headers.spec.ts`, but those don't gate CI; this
  * spec runs in vitest and locks the contract on every PR.
  */
+
+describe('shouldEmitUpgradeInsecureRequests', () => {
+  // 4-corner matrix on the two server-controlled signals.
+  it('emits when on Vercel production (HTTPS-fronted)', () => {
+    expect(shouldEmitUpgradeInsecureRequests({ VERCEL_ENV: 'production' }, 'http:')).toBe(true)
+  })
+
+  it('emits when the request was served over HTTPS', () => {
+    expect(shouldEmitUpgradeInsecureRequests({}, 'https:')).toBe(true)
+  })
+
+  it('emits when both signals agree (Vercel production over HTTPS)', () => {
+    expect(shouldEmitUpgradeInsecureRequests({ VERCEL_ENV: 'production' }, 'https:')).toBe(true)
+  })
+
+  it('does NOT emit on local HTTP (no Vercel, http: protocol)', () => {
+    expect(shouldEmitUpgradeInsecureRequests({}, 'http:')).toBe(false)
+  })
+
+  it('does NOT emit on Vercel preview (preview is treated like non-production)', () => {
+    // Preview deployments are HTTPS, so the protocol check carries the load.
+    expect(shouldEmitUpgradeInsecureRequests({ VERCEL_ENV: 'preview' }, 'http:')).toBe(false)
+  })
+
+  it('emits on Vercel preview when the request is HTTPS', () => {
+    expect(shouldEmitUpgradeInsecureRequests({ VERCEL_ENV: 'preview' }, 'https:')).toBe(true)
+  })
+
+  it('does NOT emit when `vercel dev` runs locally on HTTP', () => {
+    expect(shouldEmitUpgradeInsecureRequests({ VERCEL_ENV: 'development' }, 'http:')).toBe(false)
+  })
+})
 
 describe('buildEnhancedCSP', () => {
   describe('upgrade-insecure-requests', () => {
@@ -14,29 +46,29 @@ describe('buildEnhancedCSP', () => {
       expect(csp).not.toContain('upgrade-insecure-requests')
     })
 
-    it('emits the directive in production over HTTPS', () => {
-      const csp = buildEnhancedCSP({ isDev: false, isHttps: true })
+    it('emits the directive in production when caller signals upgrade', () => {
+      const csp = buildEnhancedCSP({ isDev: false, emitUpgradeInsecureRequests: true })
       expect(csp).toContain('upgrade-insecure-requests')
     })
 
-    it('omits the directive on HTTPS in dev mode', () => {
-      // Dev mode never wants the upgrade — HMR/local-only resources may be HTTP.
-      const csp = buildEnhancedCSP({ isDev: true, isHttps: true })
+    it('omits the directive in dev mode regardless of emit flag', () => {
+      // Dev mode never wants the upgrade — HMR/local resources may be HTTP.
+      const csp = buildEnhancedCSP({ isDev: true, emitUpgradeInsecureRequests: true })
       expect(csp).not.toContain('upgrade-insecure-requests')
     })
 
-    it('omits the directive on HTTP in production (standalone smoke test)', () => {
+    it('omits the directive in production when caller does not signal upgrade', () => {
       // The bug this gating exists to prevent: WebKit, on an http://localhost
       // page, would otherwise rewrite subresource URLs to https://localhost
       // and 404 every CSS/font/image request.
-      const csp = buildEnhancedCSP({ isDev: false, isHttps: false })
+      const csp = buildEnhancedCSP({ isDev: false, emitUpgradeInsecureRequests: false })
       expect(csp).not.toContain('upgrade-insecure-requests')
     })
 
     it('omits the directive in dev on HTTP (closes the 4-corner matrix)', () => {
       // Final corner — guards against a logic flip from `&&` to `||` in the
-      // gating predicate. Dev mode + HTTP must not emit the directive.
-      const csp = buildEnhancedCSP({ isDev: true, isHttps: false })
+      // gating predicate. Dev mode + no-upgrade must not emit.
+      const csp = buildEnhancedCSP({ isDev: true, emitUpgradeInsecureRequests: false })
       expect(csp).not.toContain('upgrade-insecure-requests')
     })
   })

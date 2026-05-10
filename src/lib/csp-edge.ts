@@ -17,19 +17,42 @@ export interface BuildCSPOptions {
   /** True when the running app is in development mode (NODE_ENV=development). */
   isDev?: boolean
   /**
-   * True when the request was served over HTTPS. The directive
-   * `upgrade-insecure-requests` is only emitted for HTTPS-served pages — on
-   * an HTTP origin (local dev / production-build smoke test on localhost),
-   * WebKit would otherwise rewrite subresource URLs to https://… and 404
-   * (Chromium exempts localhost per spec but WebKit doesn't). The caller
-   * derives this from a server-controlled signal (e.g.
-   * `request.nextUrl.protocol === 'https:'`), not a client-spoofable header.
+   * True when the response should include the `upgrade-insecure-requests`
+   * directive. Caller derives this from server-controlled signals via
+   * {@link shouldEmitUpgradeInsecureRequests} — never from a client header.
    */
-  isHttps?: boolean
+  emitUpgradeInsecureRequests?: boolean
+}
+
+/**
+ * Decide whether to emit `upgrade-insecure-requests`. Two server-controlled
+ * signals — only emit when at least one says "the deployed origin serves
+ * HTTPS"; on HTTP, the directive forces WebKit to rewrite subresource URLs
+ * to https://… (Chromium exempts localhost per spec, WebKit doesn't) and
+ * every CSS / font / image 404s.
+ *
+ *   1. `VERCEL_ENV === 'production'` — set by the Vercel runtime itself;
+ *      server-only (no NEXT_PUBLIC_ prefix), can't be spoofed by a client
+ *      request header. When this is true, the deployment is HTTPS-fronted
+ *      and the directive is safe.
+ *
+ *   2. `protocol === 'https:'` — derived from the actual TLS state when
+ *      Node terminates TLS directly, or from `X-Forwarded-Proto` when
+ *      behind a trusted upstream. Reliable on Vercel and any direct HTTPS
+ *      Node server. A self-hosted deployment behind a misconfigured
+ *      reverse proxy that passes through client-supplied
+ *      `X-Forwarded-Proto` unchanged inherits that proxy's trust model —
+ *      same caveat as any other Forwarded-header-based check.
+ */
+export function shouldEmitUpgradeInsecureRequests(
+  env: Record<string, string | undefined>,
+  protocol: string
+): boolean {
+  return env.VERCEL_ENV === 'production' || protocol === 'https:'
 }
 
 export function buildEnhancedCSP(options: BuildCSPOptions = {}): string {
-  const { isDev = false, isHttps = false } = options
+  const { isDev = false, emitUpgradeInsecureRequests = false } = options
   const directives = [
     "default-src 'self'",
     `script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com https://vitals.vercel-insights.com${isDev ? " 'unsafe-eval'" : ''}`,
@@ -44,11 +67,9 @@ export function buildEnhancedCSP(options: BuildCSPOptions = {}): string {
     "frame-ancestors 'none'",
   ]
 
-  // Only emit upgrade-insecure-requests on HTTPS-served pages in production.
-  // On HTTP (local dev or production-build smoke tests on localhost), the
-  // directive would force WebKit to upgrade subresource URLs to https://…
-  // and 404 (Chromium exempts localhost per spec; WebKit doesn't).
-  if (!isDev && isHttps) {
+  // Dev mode never emits the directive (HMR/local resources may be HTTP).
+  // Otherwise, defer to the caller-derived emit signal.
+  if (!isDev && emitUpgradeInsecureRequests) {
     directives.push('upgrade-insecure-requests')
   }
 
