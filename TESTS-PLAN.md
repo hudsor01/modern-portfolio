@@ -150,6 +150,37 @@ Skip pure-presentation primitives in `components/ui/` (Radix wrappers — alread
 - `e2e/contact-form.spec.ts` extension: assert visible `<noscript>` fallback when JS disabled — regression #4 (use `browser.newContext({ javaScriptEnabled: false })`)
 - `e2e/security-headers.spec.ts` extension: assert `GET /api/generate-resume-pdf` returns 404 (route deleted) — regression #5
 
+## Wave 4 — Components (DONE)
+
+Delivered 25 component test files / +180 tests (793 → 973). Coverage:
+
+**Critical interactive (regression-locked):**
+- `contact/__tests__/contact-form.test.tsx` — submit/disabled, privacy toggle, **<noscript> fallback (regression #5)**
+- `layout/__tests__/navbar.test.tsx` — mobile menu, aria-expanded, Let's Talk CTA
+- `layout/__tests__/scroll-to-top.test.tsx` — 500px threshold, smooth scrollTo, hide-on-return
+- `about/__tests__/personal-info.test.tsx` — **"View Resume" button text (regression #2)**
+- `layout/__tests__/home-page-content.test.tsx` — **ImpactMetric renders NumberTicker unconditionally with delay/value forwarded (regression #3)**
+- `projects/__tests__/project-page-layout.test.tsx` — back link, tags, conditional timeframe pills, metrics
+- `error/__tests__/error-boundary.test.tsx` — catches throws, fallback (node + function), reset, onError, HOC
+
+**Animation / display:**
+- `ui/__tests__/number-ticker.test.tsx` — startValue, className, span props
+- `ui/__tests__/typing-animation.test.tsx` — typing tick, custom cursor, className
+- `about/__tests__/animated-counter.test.tsx` — in-view trigger, currency/%/integer formats
+- `projects/__tests__/metrics-grid.test.tsx` — N cards, columns prop, loading skeletons (capped at 8), presets
+
+**SEO:**
+- `seo/__tests__/structured-data.test.tsx` — JSON serialization, </script> escape, nonce
+- `seo/__tests__/blog-json-ld.test.tsx` — Blog/BlogPosting/CollectionPage/FAQPage schemas
+
+**Other:**
+- `contact/__tests__/contact-info.test.tsx`, `featured-projects.test.tsx`, `success-stories.test.tsx`
+- `projects/__tests__/project-stats.test.tsx`, `project-card.test.tsx`, `project-tab-content.test.tsx`, `shared-cards.test.tsx`
+- `about/__tests__/expertise-narrative.test.tsx`, `what-i-bring.test.tsx`, `certifications-section.test.tsx`
+- `navigation/__tests__/keyboard-navigation.test.tsx`, `back-button.test.tsx`
+
+**Skipped:** Pure Radix-wrapper UI primitives in `src/components/ui/` (button, card, input, label, badge, dialog, etc.) — covered upstream by Radix tests. Also `layout/footer.tsx` (pure presentation), `providers/*` (DI shells), `seo/json-ld/*` per-schema files (data shape covered by `lib/__tests__/json-ld-schemas.test.ts` Wave 2), `projects/animated-background.tsx` and `loading-state.tsx` (CSS-only), `charts/lazy-charts.tsx` (recharts wrapper).
+
 ## Bugs found
 
 (Populate as test-writing surfaces issues — do NOT fix in this branch.)
@@ -164,3 +195,7 @@ _None yet — see commit log if Wave 1 turns up findings._
 - All API handlers wrap their body in `try/catch` and return a sanitized `createErrorResponse(...)` — verify response.error never includes a stack trace.
 - `vitest.config.mts` uses `jsdom` env globally; route-handler tests can opt into `// @vitest-environment node` directive (used by `metrics-endpoint.test.ts`).
 - `getClientIdentifier` requires `x-forwarded-for` or similar to compute a non-"unknown" IP — set on every test request to avoid bucket collisions.
+- **jsdom strips `<noscript>` children at parse time.** To assert noscript content, render with `react-dom/server`'s `renderToStaticMarkup` and inspect the SSR string.
+- **Radix primitives need `ResizeObserver` polyfilled** in jsdom — Checkbox/Dialog/etc. rely on `@radix-ui/react-use-size`. Stub it locally before render.
+- **Motion/`useInView` needs `IntersectionObserver` polyfilled.** Either stub globally or fire entries through a mock that captures the constructor callback (see `src/hooks/__tests__/use-in-view.test.ts` for the pattern).
+- **`@testing-library/user-event` is NOT installed.** Use `fireEvent` from `@testing-library/react` for clicks/submits.
