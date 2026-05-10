@@ -34,8 +34,9 @@ export const slugSchema = z
     message: 'Slug must contain only lowercase letters, numbers, and hyphens',
   })
 
-// CUID validation for database IDs
-export const cuidSchema = z.cuid('Must be a valid CUID')
+// CUID validation for database IDs.
+// Accepts both legacy cuid v1 (Prisma-era rows) and cuid2 (new rows from src/db/cuid.ts).
+export const cuidSchema = z.union([z.cuid(), z.cuid2()], { error: 'Must be a valid CUID' })
 
 // Phone number validation
 export const phoneSchema = z

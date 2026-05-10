@@ -26,11 +26,13 @@ export function parsePaginationParams(
 ): PaginationParams {
   const { page: defaultPage = 1, limit: defaultLimit = 10, maxLimit = 100 } = defaults || {}
 
-  const page = Math.max(1, parseInt(searchParams.get('page') || String(defaultPage), 10))
-  const limit = Math.min(
-    Math.max(1, parseInt(searchParams.get('limit') || String(defaultLimit), 10)),
-    maxLimit
-  )
+  const parsedPage = parseInt(searchParams.get('page') || String(defaultPage), 10)
+  const page = Number.isNaN(parsedPage) ? defaultPage : Math.max(1, parsedPage)
+
+  const parsedLimit = parseInt(searchParams.get('limit') || String(defaultLimit), 10)
+  const limit = Number.isNaN(parsedLimit)
+    ? defaultLimit
+    : Math.min(Math.max(1, parsedLimit), maxLimit)
   const skip = (page - 1) * limit
 
   return { page, limit, skip }
