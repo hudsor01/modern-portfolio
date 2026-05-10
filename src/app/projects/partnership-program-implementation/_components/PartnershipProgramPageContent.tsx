@@ -1,5 +1,4 @@
 'use client'
-export const dynamic = 'force-static'
 
 import { Zap, Clock, Settings, Users } from 'lucide-react'
 
