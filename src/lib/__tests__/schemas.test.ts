@@ -132,6 +132,31 @@ describe('cuidSchema', () => {
   it('rejects empty string', () => {
     expect(cuidSchema.safeParse('').success).toBe(false)
   })
+
+  it('rejects uppercase letters (cuid2 must be lowercase)', () => {
+    expect(cuidSchema.safeParse('TZ4A98XXAT96IWS9ZMBRGJ3A').success).toBe(false)
+  })
+
+  it('rejects special characters', () => {
+    expect(cuidSchema.safeParse('tz4a98xxat96iws9zmbrg-j3').success).toBe(false)
+    expect(cuidSchema.safeParse('tz4a98xxat96iws9zmbrg_j3').success).toBe(false)
+  })
+
+  it('accepts short lowercase-alphanumeric strings (z.cuid2 has no min length)', () => {
+    // z.cuid2() validates format only (must start with a letter, lowercase
+    // alphanumeric); it does not enforce the spec's default 24-char length.
+    // Document this so a future regression toward stricter validation is caught.
+    expect(cuidSchema.safeParse('abc123').success).toBe(true)
+  })
+
+  it('surfaces the custom error message on rejection', () => {
+    const result = cuidSchema.safeParse('not-a-cuid')
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      const messages = result.error.issues.map((i) => i.message)
+      expect(messages.some((m) => m.includes('valid CUID'))).toBe(true)
+    }
+  })
 })
 
 describe('phoneSchema', () => {
