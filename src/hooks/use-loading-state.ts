@@ -7,7 +7,7 @@ import { TIMING } from '@/lib/spacing'
  * Safe loading state hook with automatic cleanup
  * Prevents memory leaks from setTimeout on unmount
  */
-export function useLoadingState(initialDelay = TIMING.LOADING_STATE_RESET) {
+export function useLoadingState(initialDelay: number = TIMING.LOADING_STATE_RESET) {
   const [isLoading, setIsLoading] = useState(true)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
