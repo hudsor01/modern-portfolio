@@ -57,6 +57,9 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
               className="p-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
             >
               {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
@@ -74,34 +77,40 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Navigation Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-16 left-0 right-0 bg-card/98 backdrop-blur-sm border-b border-border shadow-md">
-            <div className="px-4 py-4 space-y-2">
-              {navItems.map((item, index) => (
-                <Link
-                  key={getRouteKey(item.href, index)}
-                  href={asRoute(item.href)}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`block w-full text-left px-4 py-3 rounded-lg transition-all duration-300 ease-out text-base font-medium min-h-[44px] flex items-center ${
-                    pathname === item.href
-                      ? 'text-primary bg-primary/5'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                  }`}
-                >
-                  {item.title}
-                </Link>
-              ))}
+        {/* Mobile Navigation Menu — always rendered so the hamburger
+            button's `aria-controls="mobile-menu"` always references a
+            valid IDREF (WAI-ARIA disclosure pattern). The native `hidden`
+            attribute removes it from layout, the a11y tree, and tab
+            order when collapsed. */}
+        <div
+          id="mobile-menu"
+          hidden={!isMobileMenuOpen}
+          className="md:hidden absolute top-16 left-0 right-0 bg-card/98 backdrop-blur-sm border-b border-border shadow-md"
+        >
+          <div className="px-4 py-4 space-y-2">
+            {navItems.map((item, index) => (
               <Link
-                href="/contact"
+                key={getRouteKey(item.href, index)}
+                href={asRoute(item.href)}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full bg-primary text-primary-foreground text-base font-medium px-4 py-3 rounded-lg transition-all duration-300 ease-out shadow-sm hover:bg-primary/95 min-h-[44px] flex items-center justify-center"
+                className={`block w-full text-left px-4 py-3 rounded-lg transition-all duration-300 ease-out text-base font-medium min-h-[44px] flex items-center ${
+                  pathname === item.href
+                    ? 'text-primary bg-primary/5'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                }`}
               >
-                Let's Talk
+                {item.title}
               </Link>
-            </div>
+            ))}
+            <Link
+              href="/contact"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="w-full bg-primary text-primary-foreground text-base font-medium px-4 py-3 rounded-lg transition-all duration-300 ease-out shadow-sm hover:bg-primary/95 min-h-[44px] flex items-center justify-center"
+            >
+              Let's Talk
+            </Link>
           </div>
-        )}
+        </div>
       </div>
     </div>
   )

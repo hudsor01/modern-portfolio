@@ -1,12 +1,19 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { buildEnhancedCSP } from '@/lib/csp-edge'
+import { buildEnhancedCSP, shouldEmitUpgradeInsecureRequests } from '@/lib/csp-edge'
 
 export function proxy(request: NextRequest) {
   const nonce = btoa(crypto.randomUUID())
   const isDev = process.env.NODE_ENV === 'development'
 
-  const csp = buildEnhancedCSP({ isDev })
+  const csp = buildEnhancedCSP({
+    isDev,
+    emitUpgradeInsecureRequests: shouldEmitUpgradeInsecureRequests(
+      process.env,
+      request.nextUrl.protocol
+    ),
+    addReporting: process.env.NODE_ENV === 'production',
+  })
 
   // Pass nonce downstream for JSON-LD scripts in layout.tsx
   const requestHeaders = new Headers(request.headers)
