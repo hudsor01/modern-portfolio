@@ -347,12 +347,17 @@ test.describe('Blog Keyboard Navigation', () => {
     await page.waitForLoadState('networkidle')
 
     const startedOnFirstFixture = await page.evaluate(() => {
+      // Position fixtures off-screen so they don't flash on top of the
+      // page in --headed debug runs.
+      const offscreen = 'position:fixed;left:-9999px;top:-9999px;'
       const a = document.createElement('input')
       a.id = '__kbd_test_a'
       a.type = 'text'
+      a.style.cssText = offscreen
       const b = document.createElement('input')
       b.id = '__kbd_test_b'
       b.type = 'text'
+      b.style.cssText = offscreen
       document.body.append(a, b)
       a.focus()
       return document.activeElement?.id === '__kbd_test_a'
