@@ -46,18 +46,60 @@ describe('parsePaginationParams', () => {
 
   it('falls back to defaults on NaN', () => {
     const sp = new URLSearchParams({ page: 'abc', limit: 'xyz' })
-    // parseInt('abc') is NaN; Math.max(1, NaN) is NaN — actual behavior under
-    // current implementation: `parseInt(searchParams.get('page') || '1')` does
-    // get the raw value 'abc' which parses to NaN. Math.max(1, NaN) = NaN. The
-    // resulting `page` is NaN. Document the contract to flag for future cleanup.
     const r = parsePaginationParams(sp)
-    expect(Number.isNaN(r.page) || r.page === 1).toBe(true)
-    expect(Number.isNaN(r.limit) || r.limit === 10).toBe(true)
+    expect(r.page).toBe(1)
+    expect(r.limit).toBe(10)
+    expect(r.skip).toBe(0)
+  })
+
+  it('uses provided defaults on NaN', () => {
+    const sp = new URLSearchParams({ page: 'abc', limit: 'xyz' })
+    const r = parsePaginationParams(sp, { page: 3, limit: 25 })
+    expect(r.page).toBe(3)
+    expect(r.limit).toBe(25)
   })
 
   it('skip math works for arbitrary page+limit', () => {
     const sp = new URLSearchParams({ page: '5', limit: '15' })
     expect(parsePaginationParams(sp).skip).toBe(60)
+  })
+
+  it('clamps negative page to 1', () => {
+    const sp = new URLSearchParams({ page: '-5' })
+    expect(parsePaginationParams(sp).page).toBe(1)
+  })
+
+  it('clamps negative limit to 1', () => {
+    const sp = new URLSearchParams({ limit: '-5' })
+    expect(parsePaginationParams(sp).limit).toBe(1)
+  })
+
+  it('rejects partial-parse strings (5abc) and falls back to default', () => {
+    const sp = new URLSearchParams({ page: '5abc', limit: '20xyz' })
+    const r = parsePaginationParams(sp)
+    expect(r.page).toBe(1)
+    expect(r.limit).toBe(10)
+  })
+
+  it('rejects decimals (5.5) and falls back to default', () => {
+    const sp = new URLSearchParams({ page: '5.5', limit: '20.7' })
+    const r = parsePaginationParams(sp)
+    expect(r.page).toBe(1)
+    expect(r.limit).toBe(10)
+  })
+
+  it('rejects whitespace-only inputs and falls back to default', () => {
+    const sp = new URLSearchParams({ page: '   ', limit: '   ' })
+    const r = parsePaginationParams(sp)
+    expect(r.page).toBe(1)
+    expect(r.limit).toBe(10)
+  })
+
+  it('trims surrounding whitespace before parsing', () => {
+    const sp = new URLSearchParams({ page: ' 3 ', limit: ' 20 ' })
+    const r = parsePaginationParams(sp)
+    expect(r.page).toBe(3)
+    expect(r.limit).toBe(20)
   })
 })
 

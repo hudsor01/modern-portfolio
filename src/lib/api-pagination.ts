@@ -16,6 +16,17 @@ export interface PaginationParams {
 // PAGINATION PARSING
 // ============================================================================
 
+// Strict integer-string parse: rejects NaN, partial parses ('5abc'),
+// decimals ('5.5'), and whitespace-only ('  '). Falls back to defaultValue
+// for any non-integer input. Negative integers pass through and are clamped
+// downstream by Math.max(1, ...).
+function parseIntegerParam(value: string | null, defaultValue: number): number {
+  if (value === null) return defaultValue
+  const trimmed = value.trim()
+  if (!/^-?\d+$/.test(trimmed)) return defaultValue
+  return parseInt(trimmed, 10)
+}
+
 /**
  * Parse pagination parameters from URL search params.
  * Includes validation and abuse prevention.
@@ -26,9 +37,9 @@ export function parsePaginationParams(
 ): PaginationParams {
   const { page: defaultPage = 1, limit: defaultLimit = 10, maxLimit = 100 } = defaults || {}
 
-  const page = Math.max(1, parseInt(searchParams.get('page') || String(defaultPage), 10))
+  const page = Math.max(1, parseIntegerParam(searchParams.get('page'), defaultPage))
   const limit = Math.min(
-    Math.max(1, parseInt(searchParams.get('limit') || String(defaultLimit), 10)),
+    Math.max(1, parseIntegerParam(searchParams.get('limit'), defaultLimit)),
     maxLimit
   )
   const skip = (page - 1) * limit
