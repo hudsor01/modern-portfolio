@@ -7,7 +7,7 @@ import Image from 'next/image'
 import { Navbar } from '@/components/layout/navbar'
 import { BlogCategoryJsonLd } from '@/components/seo/blog-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
-import { Card, CardHeader, CardDescription, CardContent } from '@/components/ui/card'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { and, desc, eq, isNull } from 'drizzle-orm'
 import { db } from '@/lib/db'
@@ -214,12 +214,12 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                               ))}
                             </div>
                           )}
-                          <h2
-                            data-slot="card-title"
-                            className="leading-none font-semibold text-xl line-clamp-2 group-hover:text-primary transition-colors"
+                          <CardTitle
+                            as="h2"
+                            className="text-xl line-clamp-2 group-hover:text-primary transition-colors"
                           >
                             {post.title}
-                          </h2>
+                          </CardTitle>
                           {post.excerpt && (
                             <CardDescription className="line-clamp-3">
                               {post.excerpt}
