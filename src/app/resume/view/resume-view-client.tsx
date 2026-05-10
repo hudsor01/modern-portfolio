@@ -113,14 +113,27 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
               )}
 
               {!error && (
-                <iframe
-                  src="/Richard%20Hudson%20-%20Resume.pdf"
+                <object
+                  data="/Richard%20Hudson%20-%20Resume.pdf"
+                  type="application/pdf"
                   className="w-full h-[800px] border-0 bg-white"
-                  title="Richard Hudson Resume"
+                  aria-label="Richard Hudson Resume"
                   onLoad={handlePdfLoad}
                   onError={handlePdfError}
                   style={{ display: isLoading ? 'none' : 'block' }}
-                />
+                >
+                  <p className="text-center text-muted-foreground p-8">
+                    Your browser can't display PDFs inline.{' '}
+                    <a
+                      href="/Richard%20Hudson%20-%20Resume.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary underline"
+                    >
+                      Open PDF in new tab
+                    </a>
+                  </p>
+                </object>
               )}
             </div>
 
