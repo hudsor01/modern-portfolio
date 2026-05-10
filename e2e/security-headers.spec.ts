@@ -104,6 +104,23 @@ test.describe('Security Headers', () => {
       expect(csp).toContain("default-src 'self'")
     })
 
+    // PDF assets are an intentional carve-out: the resume viewer embeds
+    // /Richard%20Hudson%20-%20Resume.pdf in <object>, which requires both
+    // X-Frame-Options: SAMEORIGIN (set by the route-specific rule in
+    // next.config.js) AND no CSP `frame-ancestors 'none'` (achieved by
+    // excluding .pdf from src/proxy.ts matcher). Both rules silently
+    // coupled to cause the original bug — this test pins both directions.
+    test('PDF assets return SAMEORIGIN, no CSP, and preserved global headers', async ({ request }) => {
+      const response = await request.get('/Richard%20Hudson%20-%20Resume.pdf')
+      expect(response.status()).toBe(200)
+      // Carve-out: SAMEORIGIN (not the global DENY) and CSP fully absent.
+      expect(response.headers()['x-frame-options']).toBe('SAMEORIGIN')
+      expect(response.headers()['content-security-policy']).toBeUndefined()
+      // Global headers from next.config.js /(.*) rule still merged in.
+      expect(response.headers()['x-content-type-options']).toBe('nosniff')
+      expect(response.headers()['referrer-policy']).toBe('strict-origin-when-cross-origin')
+    })
+
   })
 
   test.describe('CSRF Enforcement', () => {
