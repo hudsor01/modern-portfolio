@@ -90,23 +90,24 @@ describe('createApiSuccessResponse', () => {
 describe('logAndSanitizeError', () => {
   const origEnv = process.env.NODE_ENV
   afterEach(() => {
-    process.env.NODE_ENV = origEnv
+    if (origEnv !== undefined) vi.stubEnv('NODE_ENV', origEnv)
+    else vi.unstubAllEnvs()
   })
 
   it('returns full error message in development', () => {
-    process.env.NODE_ENV = 'development'
+    vi.stubEnv('NODE_ENV', 'development')
     const r = logAndSanitizeError('ctx', new Error('detailed root cause'), 'DATABASE_ERROR')
     expect(r).toBe('detailed root cause')
   })
 
   it('returns sanitized message in production by error type', () => {
-    process.env.NODE_ENV = 'production'
+    vi.stubEnv('NODE_ENV', 'production')
     const r = logAndSanitizeError('ctx', new Error('leaky internals'), 'DATABASE_ERROR')
     expect(r).toBe('Service temporarily unavailable')
   })
 
   it('falls back to DEFAULT message for unknown type in production', () => {
-    process.env.NODE_ENV = 'production'
+    vi.stubEnv('NODE_ENV', 'production')
     const r = logAndSanitizeError('ctx', new Error('x'), 'DEFAULT')
     expect(r).toBe('An unexpected error occurred')
   })
@@ -115,10 +116,11 @@ describe('logAndSanitizeError', () => {
 describe('createApiErrorResponse', () => {
   const origEnv = process.env.NODE_ENV
   beforeEach(() => {
-    process.env.NODE_ENV = 'production'
+    vi.stubEnv('NODE_ENV', 'production')
   })
   afterEach(() => {
-    process.env.NODE_ENV = origEnv
+    if (origEnv !== undefined) vi.stubEnv('NODE_ENV', origEnv)
+    else vi.unstubAllEnvs()
   })
 
   it('returns sanitized payload + statusCode in production', () => {
@@ -136,7 +138,7 @@ describe('createApiErrorResponse', () => {
   })
 
   it('includes details in development', () => {
-    process.env.NODE_ENV = 'development'
+    vi.stubEnv('NODE_ENV', 'development')
     const { response } = createApiErrorResponse(
       new Error('dev detail'),
       'ctx',

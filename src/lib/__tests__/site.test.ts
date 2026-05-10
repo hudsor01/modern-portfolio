@@ -21,7 +21,8 @@ describe('siteConfig', () => {
   it('author has name + email + url', () => {
     expect(siteConfig.author.name).toBeTruthy()
     expect(siteConfig.author.email).toContain('@')
-    expect(() => new URL(siteConfig.author.url)).not.toThrow()
+    expect(siteConfig.author.url).toBeDefined()
+    expect(() => new URL(siteConfig.author.url ?? '')).not.toThrow()
   })
 })
 

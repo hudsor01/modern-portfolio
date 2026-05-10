@@ -10,17 +10,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 // transports fire (or don't) at the observable layer; deeper assertions about
 // which Sentry method was invoked are covered by the integration / e2e suite.
 
-const ORIG_NODE_ENV = process.env.NODE_ENV
-const ORIG_LOG_LEVEL = process.env.LOG_LEVEL
-const ORIG_NEXT_PHASE = process.env.NEXT_PHASE
-
 afterEach(() => {
-  if (ORIG_NODE_ENV === undefined) delete process.env.NODE_ENV
-  else process.env.NODE_ENV = ORIG_NODE_ENV
-  if (ORIG_LOG_LEVEL === undefined) delete process.env.LOG_LEVEL
-  else process.env.LOG_LEVEL = ORIG_LOG_LEVEL
-  if (ORIG_NEXT_PHASE === undefined) delete process.env.NEXT_PHASE
-  else process.env.NEXT_PHASE = ORIG_NEXT_PHASE
+  vi.unstubAllEnvs()
 })
 
 describe('logger development routing (ConsoleTransport)', () => {
@@ -28,8 +19,8 @@ describe('logger development routing (ConsoleTransport)', () => {
 
   beforeEach(() => {
     consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-    process.env.NODE_ENV = 'development'
-    delete process.env.NEXT_PHASE
+    vi.stubEnv('NODE_ENV', 'development')
+    vi.stubEnv('NEXT_PHASE', '')
     vi.resetModules()
   })
   afterEach(() => {
@@ -63,7 +54,7 @@ describe('logger development routing (ConsoleTransport)', () => {
   })
 
   it('writes debug when LOG_LEVEL=debug', async () => {
-    process.env.LOG_LEVEL = 'debug'
+    vi.stubEnv('LOG_LEVEL', 'debug')
     vi.resetModules()
     const { logger } = await import('@/lib/logger')
     logger.debug('detail')
@@ -72,7 +63,7 @@ describe('logger development routing (ConsoleTransport)', () => {
   })
 
   it('skips debug when LOG_LEVEL=info (default in dev=debug, must override)', async () => {
-    process.env.LOG_LEVEL = 'info'
+    vi.stubEnv('LOG_LEVEL', 'info')
     vi.resetModules()
     const { logger } = await import('@/lib/logger')
     logger.debug('detail')
@@ -85,8 +76,8 @@ describe('ConsoleTransport suppression in production', () => {
 
   beforeEach(() => {
     consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-    process.env.NODE_ENV = 'production'
-    delete process.env.NEXT_PHASE
+    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('NEXT_PHASE', '')
     vi.resetModules()
   })
   afterEach(() => {
@@ -107,8 +98,8 @@ describe('build-phase short-circuit', () => {
 
   beforeEach(() => {
     consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-    process.env.NODE_ENV = 'production'
-    process.env.NEXT_PHASE = 'phase-production-build'
+    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('NEXT_PHASE', 'phase-production-build')
     vi.resetModules()
   })
   afterEach(() => {
@@ -132,8 +123,8 @@ describe('createContextLogger', () => {
 
   beforeEach(() => {
     consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-    process.env.NODE_ENV = 'development'
-    delete process.env.NEXT_PHASE
+    vi.stubEnv('NODE_ENV', 'development')
+    vi.stubEnv('NEXT_PHASE', '')
     vi.resetModules()
   })
   afterEach(() => {
@@ -165,7 +156,7 @@ describe('createContextLogger', () => {
   })
 
   it('debug + info + warn helpers pass through without throwing', async () => {
-    process.env.LOG_LEVEL = 'debug'
+    vi.stubEnv('LOG_LEVEL', 'debug')
     vi.resetModules()
     const { createContextLogger } = await import('@/lib/logger')
     const ctxLogger = createContextLogger('TestCtx')
@@ -179,8 +170,8 @@ describe('createContextLogger', () => {
 
 describe('LoggerImpl public API surface (smoke)', () => {
   beforeEach(() => {
-    process.env.NODE_ENV = 'production'
-    delete process.env.NEXT_PHASE
+    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('NEXT_PHASE', '')
     vi.resetModules()
   })
 
@@ -210,7 +201,7 @@ describe('LoggerImpl public API surface (smoke)', () => {
 
 describe('PerformanceMonitor + ErrorBoundaryLogger exports', () => {
   it('all expected utility classes are exported', async () => {
-    process.env.NODE_ENV = 'development'
+    vi.stubEnv('NODE_ENV', 'development')
     vi.resetModules()
     const mod = await import('@/lib/logger')
     expect(typeof mod.ErrorBoundaryLogger).toBe('function')
@@ -221,21 +212,21 @@ describe('PerformanceMonitor + ErrorBoundaryLogger exports', () => {
   })
 
   it('PerformanceMonitor.measure returns the function result', async () => {
-    process.env.NODE_ENV = 'development'
+    vi.stubEnv('NODE_ENV', 'development')
     vi.resetModules()
     const { performanceMonitor } = await import('@/lib/logger')
     expect(performanceMonitor.measure('op', () => 42)).toBe(42)
   })
 
   it('PerformanceMonitor.measureAsync returns the awaited result', async () => {
-    process.env.NODE_ENV = 'development'
+    vi.stubEnv('NODE_ENV', 'development')
     vi.resetModules()
     const { performanceMonitor } = await import('@/lib/logger')
     expect(await performanceMonitor.measureAsync('op', async () => 'x')).toBe('x')
   })
 
   it('PerformanceMonitor records metrics and exposes summary', async () => {
-    process.env.NODE_ENV = 'development'
+    vi.stubEnv('NODE_ENV', 'development')
     vi.resetModules()
     const { PerformanceMonitor, logger } = await import('@/lib/logger')
     const pm = new PerformanceMonitor(logger)
@@ -249,7 +240,7 @@ describe('PerformanceMonitor + ErrorBoundaryLogger exports', () => {
 
 describe('withLogging / withAsyncLogging', () => {
   it('withLogging wraps a sync function preserving return value', async () => {
-    process.env.NODE_ENV = 'development'
+    vi.stubEnv('NODE_ENV', 'development')
     vi.resetModules()
     const { withLogging } = await import('@/lib/logger')
     const wrapped = withLogging('op', (a: number, b: number) => a + b)
@@ -257,7 +248,7 @@ describe('withLogging / withAsyncLogging', () => {
   })
 
   it('withAsyncLogging wraps an async function', async () => {
-    process.env.NODE_ENV = 'development'
+    vi.stubEnv('NODE_ENV', 'development')
     vi.resetModules()
     const { withAsyncLogging } = await import('@/lib/logger')
     const wrapped = withAsyncLogging('op', async (n: number) => n * 2)
