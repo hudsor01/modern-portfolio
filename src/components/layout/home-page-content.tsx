@@ -15,16 +15,6 @@ import {
 import { Navbar } from '@/components/layout/navbar'
 import { NumberTicker } from '@/components/ui/number-ticker'
 import { Button } from '@/components/ui/button'
-import { useSyncExternalStore } from 'react'
-
-// Safe mounted check using useSyncExternalStore to avoid hydration mismatch
-function useMounted(): boolean {
-  return useSyncExternalStore(
-    () => () => {}, // No-op subscribe - we only care about initial state
-    () => true, // Client is always mounted
-    () => false // Server is never mounted
-  )
-}
 
 // Animated counter with visual impact
 function ImpactMetric({
@@ -66,8 +56,6 @@ function ImpactMetric({
 }
 
 export default function HomePageContent() {
-  const mounted = useMounted()
-
   return (
     <>
       <Navbar />
@@ -108,23 +96,27 @@ export default function HomePageContent() {
 
         <div className="w-full max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            {/* Left Column - Content */}
-            <div
-              className={`space-y-8 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-            >
+            {/*
+             * Left Column - Content
+             *
+             * Above-the-fold hero. Browser audit found a 2-6s
+             * opacity-flash on initial paint because the prior
+             * `mounted ? 'opacity-100' : 'opacity-0'` gate held
+             * content invisible until the client hydrated AND the
+             * 1000ms transition completed. Since this section is
+             * always visible at first paint, the gate added cost
+             * with no UX benefit. Removed entirely.
+             */}
+            <div className="space-y-8">
               {/* Eyebrow */}
-              <div
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium transition-all duration-700 delay-100 ${mounted ? 'opacity-100' : 'opacity-0'}`}
-              >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
                 <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
                 Available for opportunities
               </div>
 
               {/* Main Headline */}
               <div className="space-y-4">
-                <h1
-                  className={`font-display text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-[1.1] tracking-tight transition-all duration-700 delay-200 ${mounted ? 'opacity-100' : 'opacity-0'}`}
-                >
+                <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-[1.1] tracking-tight">
                   Transforming{' '}
                   <span className="relative">
                     <span className="relative z-10 text-primary">Revenue</span>
@@ -133,9 +125,7 @@ export default function HomePageContent() {
                   <br />
                   Operations
                 </h1>
-                <p
-                  className={`text-xl md:text-2xl text-muted-foreground max-w-lg leading-relaxed transition-all duration-700 delay-300 ${mounted ? 'opacity-100' : 'opacity-0'}`}
-                >
+                <p className="text-xl md:text-2xl text-muted-foreground max-w-lg leading-relaxed">
                   Data-driven strategies that deliver{' '}
                   <span className="text-accent font-semibold">measurable impact</span> and scalable
                   growth.
@@ -143,9 +133,7 @@ export default function HomePageContent() {
               </div>
 
               {/* CTA Buttons */}
-              <div
-                className={`flex flex-wrap gap-4 transition-all duration-700 delay-500 ${mounted ? 'opacity-100' : 'opacity-0'}`}
-              >
+              <div className="flex flex-wrap gap-4">
                 <Button asChild size="lg" className="group h-14 px-8 text-base font-semibold">
                   <Link href="/projects">
                     <Briefcase className="w-5 h-5" />
@@ -178,10 +166,8 @@ export default function HomePageContent() {
               </div>
             </div>
 
-            {/* Right Column - Profile Card */}
-            <div
-              className={`relative transition-all duration-1000 delay-300 ${mounted ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95'}`}
-            >
+            {/* Right Column - Profile Card (above-the-fold; no mount-gate, see hero comment above) */}
+            <div className="relative">
               {/* Card with depth */}
               <div className="relative">
                 {/* Shadow layer */}
