@@ -34,6 +34,27 @@ describe('parsePaginationParams', () => {
     expect(parsePaginationParams(sp, { maxLimit: 25 }).limit).toBe(25)
   })
 
+  it('clamps page to maxPage (default 10_000) to prevent OFFSET overflow', () => {
+    const sp = new URLSearchParams({ page: '999999999' })
+    const r = parsePaginationParams(sp)
+    expect(r.page).toBe(10_000)
+    // Confirm skip stays within Postgres int4 bounds.
+    expect(r.skip).toBeLessThan(2 ** 31)
+  })
+
+  it('respects custom maxPage', () => {
+    const sp = new URLSearchParams({ page: '500' })
+    expect(parsePaginationParams(sp, { maxPage: 100 }).page).toBe(100)
+  })
+
+  it('skip stays under int4 max even at maxPage * maxLimit', () => {
+    const sp = new URLSearchParams({ page: '999999999', limit: '999999999' })
+    const r = parsePaginationParams(sp)
+    // Default maxPage=10_000, maxLimit=100 → max skip = 9_999 * 100 = 999_900
+    expect(r.skip).toBe(999_900)
+    expect(r.skip).toBeLessThan(2 ** 31)
+  })
+
   it('coerces page < 1 to 1', () => {
     const sp = new URLSearchParams({ page: '0' })
     expect(parsePaginationParams(sp).page).toBe(1)
