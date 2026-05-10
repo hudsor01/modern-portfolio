@@ -89,7 +89,7 @@ Order by leverage. Files most likely to harbor bugs (parsing, security, formatti
 - `src/lib/__tests__/db.test.ts` — env-validation gate behavior with SKIP_DB_VALIDATION
 - `src/lib/__tests__/search.test.ts` — full-text search SQL builder
 - `src/lib/__tests__/data-service-cache.test.ts` — TTL and revalidation
-- `src/lib/__tests__/data-service-service.test.ts`
+- ~~`src/lib/__tests__/data-service-service.test.ts`~~ — **COVERED** by pre-existing `data-service.test.ts` (which imports `AnalyticsDataService` from `@/lib/data-service/service`). No separate file needed.
 - `src/lib/__tests__/rate-limiter-configs.test.ts` — preset shapes
 - `src/lib/__tests__/rate-limiter-helpers.test.ts`
 - `src/lib/__tests__/rate-limiter-store.test.ts` — eviction batch ratio, cleanup interval, exportMetrics shape
@@ -107,7 +107,7 @@ Order by leverage. Files most likely to harbor bugs (parsing, security, formatti
 | `src/hooks/__tests__/use-media-query.test.ts` | matchMedia mock |
 | `src/hooks/__tests__/use-scroll-position.test.ts` | window scroll listener |
 | `src/hooks/__tests__/use-in-view.test.ts` | IntersectionObserver mock |
-| `src/hooks/__tests__/use-loading-state.test.ts` | start / stop / error |
+| ~~`src/hooks/__tests__/use-loading-state.test.ts`~~ | **REMOVED** — source `src/hooks/use-loading-state.ts` deleted in PR #94 (dead code, naming collision with `loading-patterns.tsx`'s identically-named hook, both had zero non-test consumers). |
 | `src/hooks/__tests__/use-quick-view-modal.test.ts` | open / close / target tracking |
 | `src/hooks/__tests__/use-contact-form.test.ts` | TanStack Form integration |
 | `src/hooks/__tests__/use-page-analytics.test.ts` | route change effect |
