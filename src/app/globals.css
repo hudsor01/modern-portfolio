@@ -1794,13 +1794,6 @@ input[type="reset"]:active,
 
 html {
   font-size: var(--font-size-base, 0.875rem);
-  /* Safety net: prevent horizontal page scroll caused by inner content
-     overflow (charts, badges, decorative blurs). Browser audit found
-     documentElement.scrollWidth > window.innerWidth at <=1024px on every
-     project detail page. TODO: identify specific overflowing components
-     (suspect: chart containers, decorative -right-32 background blurs)
-     and remove this rule once they're constrained at the source. */
-  overflow-x: hidden;
 }
 
 body {
@@ -1812,7 +1805,6 @@ body {
   font-feature-settings: 'rlig' 1, 'calt' 1;
   font-weight: var(--font-weight-regular, 400);
   line-height: var(--line-height-normal, 1.5);
-  overflow-x: hidden;
 }
 
 /* Headings use Playfair Display (serif) - loaded via Next.js */

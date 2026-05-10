@@ -55,9 +55,22 @@ function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
-function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
+// Polymorphic via `as` so consumers can render CardTitle as the correct
+// semantic heading for the document outline (h2/h3/etc.) without forking
+// the styling. Defaults to <div> for backwards compatibility with existing
+// consumers that don't need a heading (e.g. dashboards, status panels).
+type CardTitleProps<T extends React.ElementType = 'div'> = {
+  as?: T
+} & Omit<React.ComponentPropsWithoutRef<T>, 'as'>
+
+function CardTitle<T extends React.ElementType = 'div'>({
+  as,
+  className,
+  ...props
+}: CardTitleProps<T>) {
+  const Component = (as ?? 'div') as React.ElementType
   return (
-    <div
+    <Component
       data-slot="card-title"
       className={cn('leading-none font-semibold', className)}
       {...props}

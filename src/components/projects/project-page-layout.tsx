@@ -37,7 +37,12 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
     return (
       <div
         ref={ref}
-        className={cn('min-h-screen bg-background overflow-hidden', className)}
+        // `relative` establishes the positioning context so the decorative
+        // -right-32/-left-32 blurs below are clipped by `overflow-hidden`.
+        // Without it, absolute children escape to body coordinates and
+        // produce horizontal page scroll on every project detail route
+        // (browser audit 2026-05-10: scrollWidth>innerWidth at <=1024px).
+        className={cn('relative min-h-screen bg-background overflow-hidden', className)}
         {...props}
       >
         {/* Decorative background elements */}
