@@ -73,8 +73,10 @@ test.describe('Resume Page', () => {
       // Wait for PDF viewer to appear
       await page.waitForTimeout(500)
 
-      // Should now show PDF viewer (iframe or embed)
-      const pdfViewer = page.locator('iframe, embed, object').first()
+      // PDF viewer must be an <object type="application/pdf"> — Chrome
+      // PDFium has been progressively restricting <iframe src=pdf>, so a
+      // regression to iframe should fail this test (not silently pass).
+      const pdfViewer = page.locator('object[type="application/pdf"]').first()
 
       // If PDF viewer is present, the toggle worked
       // If not visible, might be loading or the viewer renders differently
@@ -160,7 +162,7 @@ test.describe('Resume Page', () => {
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
       .exclude('.blur-3xl') // Exclude decorative elements
-      .exclude('iframe') // PDF viewer iframe may have issues
+      .exclude('object[type="application/pdf"]') // PDF viewer object may have issues
       .exclude('.bg-accent\\/10') // Known contrast issue with accent badges - tracked for fix
       .analyze()
 
