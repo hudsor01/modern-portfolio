@@ -99,7 +99,6 @@ Seed (`drizzle/seed.ts`): upsert-based, idempotent. Seeds 1 author, categories, 
 | `/api/projects` | GET | `read` | — | — | |
 | `/api/projects/[slug]` | GET | `read` | — | — | `slugSchema` validates param |
 | `/api/og` | GET | — | — | — | Dynamic OG image (`route.tsx`) |
-| `/api/generate-resume-pdf` | GET | — | — | — | Returns 503 — puppeteer not installed |
 | `/api/sentry-debug` | GET | — | — | — | Returns 404 in production; `RateLimitPresets.read` applied in non-prod |
 | `/api/seed` | POST | — | — | `ADMIN_API_TOKEN` | Returns 404 in production unless `ALLOW_SEED_IN_PRODUCTION='true'`; refuses if posts already exist |
 | `/api/security/metrics` | GET | — | — | `METRICS_API_TOKEN` (header `X-Metrics-Token`) | Exports rate-limiter metrics |
