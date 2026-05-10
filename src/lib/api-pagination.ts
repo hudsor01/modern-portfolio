@@ -33,11 +33,23 @@ function parseIntegerParam(value: string | null, defaultValue: number): number {
  */
 export function parsePaginationParams(
   searchParams: URLSearchParams,
-  defaults?: { page?: number; limit?: number; maxLimit?: number }
+  defaults?: { page?: number; limit?: number; maxLimit?: number; maxPage?: number }
 ): PaginationParams {
-  const { page: defaultPage = 1, limit: defaultLimit = 10, maxLimit = 100 } = defaults || {}
+  const {
+    page: defaultPage = 1,
+    limit: defaultLimit = 10,
+    maxLimit = 100,
+    // maxPage exists to prevent Postgres OFFSET overflow. With default
+    // maxPage * maxLimit = 10_000 * 100 = 1_000_000, skip stays well below
+    // int4 max (2^31-1). Without this cap, ?page=999999999&limit=100 would
+    // produce skip=~10^11 and crash Drizzle's offset() with "out of range".
+    maxPage = 10_000,
+  } = defaults || {}
 
-  const page = Math.max(1, parseIntegerParam(searchParams.get('page'), defaultPage))
+  const page = Math.min(
+    Math.max(1, parseIntegerParam(searchParams.get('page'), defaultPage)),
+    maxPage
+  )
   const limit = Math.min(
     Math.max(1, parseIntegerParam(searchParams.get('limit'), defaultLimit)),
     maxLimit
