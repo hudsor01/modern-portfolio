@@ -89,11 +89,13 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   const { slug } = await params
   const post = applyPostOverrides(await getBlogPost(slug))
 
+  // Commit to 404 from the metadata phase. Returning fake "Post Not Found"
+  // metadata here used to ship HTTP 200 with a Soft-404 body (title set,
+  // canonical pointing at the homepage) — exactly the signal Search Console
+  // bucketed as "Crawled - currently not indexed". notFound() here renders
+  // not-found.tsx and propagates HTTP 404 before the page body runs.
   if (!post) {
-    return {
-      title: 'Post Not Found',
-      description: 'The requested blog post could not be found.',
-    }
+    notFound()
   }
 
   const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
