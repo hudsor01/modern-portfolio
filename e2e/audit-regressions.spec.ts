@@ -23,6 +23,11 @@ import { test, expect } from '@playwright/test'
  *  #11 Project pages have <h2> between page <h1> and any <h3> (no skipped level)
  *  #12 Homepage hero <h1> has opacity 1 immediately after navigation
  *  #13 /nonexistent document.title starts with "404"
+ *
+ * Google Search Console "Crawled - currently not indexed" fix (PR #97):
+ *  #14 src/app/loading.tsx does not exist (kills "Loading..." in initial HTML)
+ *  #15 Initial HTML body of a real blog post does NOT contain "Loading..."
+ *  #16 /blog/<bad>, /projects/<bad>, /blog/category/<bad> page titles start with "404"
  */
 
 test.describe('Audit regressions', () => {
@@ -227,5 +232,57 @@ test.describe('Audit regressions', () => {
     await page.goto('/nonexistent')
     await page.waitForLoadState('domcontentloaded')
     await expect(page).toHaveTitle(/^404/)
+  })
+
+  test('#14 src/app/loading.tsx does not exist (forbidden — would leak "Loading..." into Googlebot HTML)', async () => {
+    // The deleted root loading.tsx was Next.js's default Suspense fallback
+    // for every route. Its "Loading..." text shipped in the static HTML
+    // body for every dynamic page, which Google's quality algorithm read
+    // as thin content and bucketed under "Crawled - currently not
+    // indexed". A future PR that reintroduces it must be caught here.
+    // If a route truly needs a fallback, use a SKELETON of the page
+    // content with real headings, not a literal "Loading..." string.
+    const { existsSync } = await import('node:fs')
+    const { resolve } = await import('node:path')
+    const loadingPath = resolve(process.cwd(), 'src/app/loading.tsx')
+    expect(existsSync(loadingPath), 'src/app/loading.tsx must not exist').toBe(false)
+  })
+
+  test('#15 initial HTML of a real blog post does not contain "Loading..." string', async ({
+    page,
+  }) => {
+    // Fetch the raw server-rendered HTML for a known published slug.
+    // Googlebot's initial fetch sees this body — it must contain article
+    // text up front, never a "Loading..." placeholder. The slug "lead-
+    // scoring-models-that-actually-work" is referenced as a related post
+    // in src/app/blog/[slug]/page.tsx output, so it exists in seed.
+    const response = await page.request.get('/blog/lead-scoring-models-that-actually-work', {
+      headers: { 'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)' },
+    })
+    // Accept 200 (published) or 404 (slug rotated); never assert on 200
+    // alone — content can change. The thin-content guard applies regardless.
+    if (response.status() === 200) {
+      const html = await response.text()
+      expect(html, 'static HTML must not contain "Loading..." spinner text').not.toContain(
+        'Loading...'
+      )
+    }
+  })
+
+  test('#16 segment 404 page titles start with "404" (no homepage-title leak)', async ({ page }) => {
+    // Each segment not-found.tsx (blog/[slug], blog/category/[slug],
+    // projects/[slug]) exports metadata so the 404 <title> doesn't fall
+    // through to the layout default ("Richard Hudson | Revenue Operations
+    // Professional") — which would make bad URLs look identical to the
+    // homepage in browser tab strips and social-share previews.
+    for (const path of [
+      '/blog/this-slug-does-not-exist',
+      '/projects/this-slug-does-not-exist',
+      '/blog/category/this-slug-does-not-exist',
+    ]) {
+      await page.goto(path)
+      await page.waitForLoadState('domcontentloaded')
+      await expect(page, `${path} title must start with "404"`).toHaveTitle(/^404/)
+    }
   })
 })

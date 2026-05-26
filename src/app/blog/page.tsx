@@ -116,9 +116,11 @@ const getCategories = cache(async (): Promise<BlogCategoryData[]> => {
 })
 
 export default async function BlogHomePage() {
-  // Fetch data on the server - zero client-side fetching cost
-  const posts = await getBlogPosts()
-  const categories = await getCategories()
+  // Independent queries — parallelize so cold-CDN TTFB is a single Neon
+  // roundtrip, not two. Especially important now that the global
+  // loading.tsx is removed; the user sees the previous page until both
+  // resolve.
+  const [posts, categories] = await Promise.all([getBlogPosts(), getCategories()])
   const nonce = (await headers()).get('x-nonce')
 
   return (

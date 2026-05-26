@@ -127,7 +127,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const { db } = await import('@/lib/db')
     const { blogPosts } = await import('@/db/schema')
-    const { desc, eq } = await import('drizzle-orm')
+    const { and, desc, eq, isNull } = await import('drizzle-orm')
     const posts = await db
       .select({
         slug: blogPosts.slug,
@@ -137,7 +137,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         featuredImage: blogPosts.featuredImage,
       })
       .from(blogPosts)
-      .where(eq(blogPosts.status, 'PUBLISHED'))
+      // Exclude soft-deleted posts. Without isNull(deletedAt), the sitemap
+      // would advertise URLs that runtime getBlogPost now rejects with
+      // notFound() → HTTP 404, which Search Console upgrades to
+      // "Submitted URL not found (404)" — a stricter verdict.
+      .where(and(eq(blogPosts.status, 'PUBLISHED'), isNull(blogPosts.deletedAt)))
       .orderBy(desc(blogPosts.publishedAt))
 
     blogPages = posts.map((post) => {

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { cache } from 'react'
 import { notFound } from 'next/navigation'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, isNull } from 'drizzle-orm'
 import { Navbar } from '@/components/layout/navbar'
 import { BlogPostLayout } from '../_components/blog-post-layout'
 import { RelatedPosts } from '@/components/blog/related-posts'
@@ -62,6 +62,11 @@ const getBlogPost = cache(async (slug: string): Promise<BlogPostData | null> => 
 
     return transformToBlogPostData(post)
   } catch (error) {
+    // Distinguish "not found" (null) from "query failed" (re-throw).
+    // Without this, a transient Neon outage would return null → trigger
+    // notFound() in generateMetadata → ship HTTP 404 → get CDN-cached for
+    // up to 24h via the /blog/* cache rule. Re-throwing lets error.tsx
+    // handle it as 500, which Vercel does not cache.
     if (process.env.NEXT_PHASE !== 'phase-production-build') {
       logger.error(
         'Blog post query failed',
@@ -69,7 +74,7 @@ const getBlogPost = cache(async (slug: string): Promise<BlogPostData | null> => 
         { slug }
       )
     }
-    return null
+    throw error
   }
 })
 
@@ -89,11 +94,13 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   const { slug } = await params
   const post = applyPostOverrides(await getBlogPost(slug))
 
+  // Commit to 404 from the metadata phase. Returning fake "Post Not Found"
+  // metadata here used to ship HTTP 200 with a Soft-404 body (title set,
+  // canonical pointing at the homepage) — exactly the signal Search Console
+  // bucketed as "Crawled - currently not indexed". notFound() here renders
+  // not-found.tsx and propagates HTTP 404 before the page body runs.
   if (!post) {
-    return {
-      title: 'Post Not Found',
-      description: 'The requested blog post could not be found.',
-    }
+    notFound()
   }
 
   const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
@@ -196,7 +203,9 @@ export async function generateStaticParams() {
     const posts = await db
       .select({ slug: blogPosts.slug })
       .from(blogPosts)
-      .where(eq(blogPosts.status, 'PUBLISHED'))
+      // Exclude soft-deleted posts so the build doesn't prerender slugs
+      // that runtime getBlogPost now rejects with notFound() → HTTP 404.
+      .where(and(eq(blogPosts.status, 'PUBLISHED'), isNull(blogPosts.deletedAt)))
 
     return posts.map((post) => ({ slug: post.slug }))
   } catch (error) {
