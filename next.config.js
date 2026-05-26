@@ -20,6 +20,16 @@ const nextConfig = {
       process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
   },
 
+  // Externalize Node-native packages that ship runtime data files Turbopack
+  // can't statically resolve. `isomorphic-dompurify` (used in
+  // src/app/blog/_components/blog-post-article.tsx for SSR HTML sanitization)
+  // loads `jsdom` under the hood, and jsdom's `data/patch.json` lookup
+  // breaks under Turbopack production bundling — every /blog/[slug] render
+  // 500s on "Cannot find module '../data/patch.json'". Listing these as
+  // external tells Turbopack to require() them from node_modules at runtime
+  // instead of trying to bundle them.
+  serverExternalPackages: ['jsdom', 'isomorphic-dompurify'],
+
   experimental: {
     // Tree-shake large icon/chart libraries on first import. Each named import
     // becomes its own subpath so the bundle only pulls in what we use, not the
