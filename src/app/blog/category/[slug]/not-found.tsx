@@ -1,10 +1,17 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
 
 // Segment-level not-found for /blog/category/[slug]. Rendered when the
 // category lookup returns null and the page calls notFound(). HTTP 404
 // status comes from the notFound() call in the page; this template just
-// supplies the body.
+// supplies the body. Metadata export prevents the layout default title
+// from leaking into 404 responses.
+export const metadata: Metadata = {
+  title: '404 — Category not found',
+  robots: { index: false, follow: false },
+}
+
 export default function BlogCategoryNotFound() {
   return (
     <div className="min-h-screen bg-background">

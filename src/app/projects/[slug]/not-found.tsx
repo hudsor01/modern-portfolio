@@ -1,9 +1,17 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
 
 // Segment-level not-found for /projects/[slug]. Rendered when getProject
 // returns null and the page calls notFound(). HTTP 404 status comes from
 // the notFound() call in the page; this template just supplies the body.
+// Metadata export prevents the layout default title from leaking into
+// 404 responses.
+export const metadata: Metadata = {
+  title: '404 — Project not found',
+  robots: { index: false, follow: false },
+}
+
 export default function ProjectNotFound() {
   return (
     <div className="min-h-screen bg-background">
