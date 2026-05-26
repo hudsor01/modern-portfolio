@@ -367,9 +367,15 @@ interface LoadingOverlayProps {
   className?: string
 }
 
+// `message` has no default. A "Loading..." literal here would SSR if this
+// component were used as a Suspense fallback in a Server Component, which
+// is exactly the thin-content signal Google's quality algorithm flagged
+// when src/app/loading.tsx existed. Callers must pass a message
+// explicitly; absence renders only the spinner (aria-label still announces
+// "Loading..." to assistive tech).
 export function LoadingOverlay({
   loading = false,
-  message = 'Loading...',
+  message,
   children,
   className,
 }: LoadingOverlayProps) {
@@ -380,7 +386,9 @@ export function LoadingOverlay({
         <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
           <div className="flex flex-col items-center gap-3">
             <LoadingSpinner size="lg" variant="primary" />
-            <p className="text-sm text-muted-foreground font-medium">{message}</p>
+            {message ? (
+              <p className="text-sm text-muted-foreground font-medium">{message}</p>
+            ) : null}
           </div>
         </div>
       )}

@@ -47,11 +47,11 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   const { slug } = await params
   const project = await getProject(slug)
 
+  // Commit to 404 from the metadata phase. Returning fake "Project Not Found"
+  // metadata shipped HTTP 200 + Soft-404 body — same Search Console "Crawled
+  // - currently not indexed" signal fixed on /blog/[slug]. Symmetric fix.
   if (!project) {
-    return {
-      title: 'Project Not Found',
-      description: 'The requested project could not be found',
-    }
+    notFound()
   }
 
   const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
