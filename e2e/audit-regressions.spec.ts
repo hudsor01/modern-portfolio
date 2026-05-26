@@ -248,25 +248,41 @@ test.describe('Audit regressions', () => {
     expect(existsSync(loadingPath), 'src/app/loading.tsx must not exist').toBe(false)
   })
 
-  test('#15 initial HTML of a real blog post does not contain "Loading..." string', async ({
+  test('#15 a real blog post returns HTTP 200 and initial HTML has no "Loading..." leak', async ({
     page,
   }) => {
-    // Fetch the raw server-rendered HTML for a known published slug.
-    // Googlebot's initial fetch sees this body — it must contain article
-    // text up front, never a "Loading..." placeholder. The slug "lead-
-    // scoring-models-that-actually-work" is referenced as a related post
-    // in src/app/blog/[slug]/page.tsx output, so it exists in seed.
+    // Two-pronged Googlebot-eye-view regression guard:
+    //
+    //   (a) HTTP 200 — guards against the server-side module-load failure
+    //       that hit prod after PR #97 merged. isomorphic-dompurify pulled
+    //       jsdom into the server bundle, and jsdom's `data/patch.json`
+    //       lookup failed at Turbopack runtime, 500-ing every /blog/[slug]
+    //       render. The old getBlogPost catch silently swallowed it into a
+    //       null → soft-404; the new throw exposed it. Asserting only the
+    //       absence of "Loading..." misses this class of bug entirely
+    //       because the error page also has no "Loading..." text.
+    //
+    //   (b) No "Loading..." string in initial HTML — guards against
+    //       re-introducing a global loading.tsx (or a Suspense fallback
+    //       that SSRs that literal), which is the original thin-content
+    //       signal Google's quality algorithm bucketed under "Crawled -
+    //       currently not indexed".
+    //
+    // The slug below ('lead-scoring-models-that-actually-work') is
+    // hard-coded in src/app/blog/[slug]/page.tsx output as a related
+    // post and is present in drizzle/seed.ts. If the slug ever rotates,
+    // update both call sites together.
     const response = await page.request.get('/blog/lead-scoring-models-that-actually-work', {
       headers: { 'User-Agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)' },
     })
-    // Accept 200 (published) or 404 (slug rotated); never assert on 200
-    // alone — content can change. The thin-content guard applies regardless.
-    if (response.status() === 200) {
-      const html = await response.text()
-      expect(html, 'static HTML must not contain "Loading..." spinner text').not.toContain(
-        'Loading...'
-      )
-    }
+    expect(
+      response.status(),
+      'a known-seeded blog slug must return HTTP 200 (regression guard for server-side module-load failures, e.g. jsdom/Turbopack)'
+    ).toBe(200)
+    const html = await response.text()
+    expect(html, 'static HTML must not contain "Loading..." spinner text').not.toContain(
+      'Loading...'
+    )
   })
 
   test('#16 segment 404 page titles start with "404" (no homepage-title leak)', async ({ page }) => {
