@@ -35,7 +35,7 @@ Hooks (`lefthook.yml`): pre-commit runs `bunx biome check --staged --write` over
 ```
 src/
   app/                    Next.js App Router. Top-level routes: about, blog, contact, projects, resume.
-                          Plus root layout/page/error/global-error/not-found/loading/sitemap/robots/viewport.
+                          Plus root layout/page/error/global-error/not-found/sitemap/robots/viewport.
   app/api/                15 route.ts handlers + 1 route.tsx (og). See API table.
   app/contact/actions.ts  The ONLY 'use server' file in the repo.
   components/             10 subdirs: ui (42 primitives), layout, navigation, charts, projects, contact,

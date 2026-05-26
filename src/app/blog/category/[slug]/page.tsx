@@ -71,6 +71,9 @@ const getCategoryWithPosts = cache(async (slug: string): Promise<CategoryWithPos
     if (!category) return null
     return category as CategoryWithPosts
   } catch (error) {
+    // Distinguish "not found" (null) from "query failed" (re-throw).
+    // Returning null on DB errors would trigger notFound() → cached 404.
+    // Re-throw lets error.tsx ship 500, which Vercel does not cache.
     if (process.env.NEXT_PHASE !== 'phase-production-build') {
       logger.error(
         'Blog category query failed',
@@ -78,7 +81,7 @@ const getCategoryWithPosts = cache(async (slug: string): Promise<CategoryWithPos
         { slug }
       )
     }
-    return null
+    throw error
   }
 })
 
@@ -86,12 +89,11 @@ export async function generateMetadata({ params }: BlogCategoryPageProps): Promi
   const { slug } = await params
   const category = await getCategoryWithPosts(slug)
 
+  // Commit to 404 from the metadata phase. Returning fake metadata (even
+  // with robots:noindex) shipped HTTP 200 with a Soft-404 body — same
+  // Search Console verdict fixed on /blog/[slug]. Symmetric fix.
   if (!category) {
-    return {
-      title: 'Category Not Found',
-      description: 'The requested blog category could not be found.',
-      robots: { index: false, follow: false },
-    }
+    notFound()
   }
 
   const title = `${category.name} — Articles`
