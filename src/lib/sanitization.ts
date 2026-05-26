@@ -36,10 +36,18 @@ export function stripCrlf(value: string): string {
 /**
  * Client-Safe HTML Sanitization
  * Used in Client Components to avoid Vercel serverless costs
- * For use in Client Components only - do NOT import in Server Components
+ * For use in Client Components only - do NOT import in Server Components.
+ *
+ * Uses plain `dompurify` (not `isomorphic-dompurify`). Plain dompurify's
+ * module-load is side-effect-free; the factory only touches `window` when
+ * `.sanitize()` is called. `isomorphic-dompurify` pulled `jsdom` into the
+ * server bundle and 500'd every /blog/[slug] render under Next.js 16 /
+ * Turbopack because jsdom's runtime `data/patch.json` lookup fails.
+ * Calling sanitizeBlogHtml/stripHtml on the server will throw — by
+ * contract they are client-only.
  */
 
-import DOMPurify from 'isomorphic-dompurify'
+import DOMPurify from 'dompurify'
 
 // ============================================================================
 // Configs

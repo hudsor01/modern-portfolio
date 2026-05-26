@@ -11,12 +11,16 @@ import { escapeHtml } from '@/lib/sanitization'
 // ContentType is a string union ('MARKDOWN' | 'HTML' | 'RICH_TEXT') in Drizzle;
 // callers compare against the literal so we don't need a runtime enum here.
 type ContentType = 'MARKDOWN' | 'HTML' | 'RICH_TEXT'
-// MUST be isomorphic-dompurify, NOT plain dompurify. This is a 'use client'
-// component, but Next.js still server-renders the initial HTML — the bare
-// `dompurify` package is browser-only (needs window/document) and throws on
-// the server, which surfaces as 500 on every /blog/[slug] page render.
-// isomorphic-dompurify wraps it with a JSDOM window for SSR safety.
-import DOMPurify from 'isomorphic-dompurify'
+// Plain `dompurify` (browser-only). Module-load is side-effect-free —
+// the factory only touches `window` when `.sanitize()` is called. We
+// previously used `isomorphic-dompurify`, which pulled `jsdom` into the
+// server bundle; under Next.js 16 / Turbopack production runtime, jsdom's
+// `data/patch.json` lookup fails ("Cannot find module '../data/patch.json'
+// from ''") and 500s every /blog/[slug] render. The `sanitizeHtml` helper
+// below already gates the actual sanitize call on `typeof window`, so the
+// server returns raw HTML (acceptable — blog content is from our own DB,
+// not untrusted user input). Sanitization happens after hydration.
+import DOMPurify from 'dompurify'
 import { createContextLogger } from '@/lib/logger'
 import { TIMING_CONSTANTS } from '@/lib/ui-thresholds'
 
