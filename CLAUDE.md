@@ -56,7 +56,10 @@ src/
 
 drizzle/                  seed.ts (idempotent upsert seed) + migrations/ (drizzle-kit output).
 e2e/                      5 Playwright specs: blog, contact-form, projects, resume, security-headers.
-scripts/                  generate-sitemap.js (the only script).
+scripts/                  generate-sitemap.js, touch-blog-lastmod.ts (one-off
+                          DB nudge — bumps updatedAt on all PUBLISHED blog posts
+                          to refresh sitemap <lastmod> when Google's index is
+                          stale on a content-or-status change).
 proxy.ts                  Next.js 16 successor to middleware.ts (see Auth/CSP).
 ```
 
