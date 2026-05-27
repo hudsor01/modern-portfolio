@@ -9,7 +9,7 @@ import { ChartContainer } from '@/components/ui/chart-container'
 import { ExternalLink, ArrowRight } from 'lucide-react'
 import { Github } from '@/components/ui/brand-icons'
 import Link from 'next/link'
-import Image from 'next/image'
+import { ImageWithFallback } from '@/components/ui/image-with-fallback'
 import type { Project } from '@/types/project'
 import { normalizeProjectForDisplay } from '@/types/project'
 
@@ -117,8 +117,9 @@ export default function ProjectDetailClientBoundary({
             <div className="container mx-auto px-6 mb-16">
               <div className="max-w-5xl mx-auto">
                 <div className="relative aspect-video rounded-lg overflow-hidden border">
-                  <Image
+                  <ImageWithFallback
                     src={project.image}
+                    fallbackSrc={`/api/og?${new URLSearchParams({ title: project.title }).toString()}`}
                     alt={project.title}
                     fill
                     className="object-cover"

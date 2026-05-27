@@ -6,7 +6,7 @@
 
 import type { BlogPostData } from '@/types/api'
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
-import { canonicalUrl } from '@/lib/absolute-url'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 /**
  * Blog Website JSON-LD Schema
@@ -19,11 +19,11 @@ export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
     name: 'Richard Hudson - Revenue Operations Blog',
     description:
       'Expert insights on revenue operations, data analytics, and business process optimization from Richard Hudson, a seasoned RevOps professional.',
-    url: 'https://richardwhudsonjr.com/blog',
+    url: `${SITE_ORIGIN}/blog`,
     publisher: {
       '@type': 'Person',
       name: 'Richard Hudson',
-      url: 'https://richardwhudsonjr.com',
+      url: SITE_ORIGIN,
       sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
       jobTitle: 'Revenue Operations Professional',
       worksFor: {
@@ -34,7 +34,7 @@ export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
     author: {
       '@type': 'Person',
       name: 'Richard Hudson',
-      url: 'https://richardwhudsonjr.com',
+      url: SITE_ORIGIN,
       sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
     },
     inLanguage: 'en-US',
@@ -75,7 +75,7 @@ export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
     ],
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': 'https://richardwhudsonjr.com/blog',
+      '@id': `${SITE_ORIGIN}/blog`,
     },
   }
 
@@ -107,14 +107,14 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
     // interpolation here produced `https://richardwhudsonjr.comhttps://images.unsplash.com/...`
     // in BlogPosting.image once featuredImage values moved to absolute URLs.
     image: post.featuredImage ? canonicalUrl(post.featuredImage) : undefined,
-    url: `https://richardwhudsonjr.com/blog/${post.slug}`,
+    url: `${SITE_ORIGIN}/blog/${post.slug}`,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,
     dateCreated: post.createdAt,
     author: {
       '@type': 'Person',
       name: post.author?.name || 'Richard Hudson',
-      url: 'https://richardwhudsonjr.com',
+      url: SITE_ORIGIN,
       sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
       jobTitle: 'Revenue Operations Professional',
       description: post.author?.bio,
@@ -126,17 +126,17 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
     publisher: {
       '@type': 'Person',
       name: 'Richard Hudson',
-      url: 'https://richardwhudsonjr.com',
+      url: SITE_ORIGIN,
       logo: {
         '@type': 'ImageObject',
-        url: 'https://richardwhudsonjr.com/images/richard.jpg',
+        url: `${SITE_ORIGIN}/images/richard.jpg`,
         width: 739,
         height: 739,
       },
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://richardwhudsonjr.com/blog/${post.slug}`,
+      '@id': `${SITE_ORIGIN}/blog/${post.slug}`,
     },
     articleSection: post.category?.name,
     keywords: post.keywords.join(', '),
@@ -189,19 +189,19 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://richardwhudsonjr.com',
+          item: SITE_ORIGIN,
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Blog',
-          item: 'https://richardwhudsonjr.com/blog',
+          item: `${SITE_ORIGIN}/blog`,
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: post.title,
-          item: `https://richardwhudsonjr.com/blog/${post.slug}`,
+          item: `${SITE_ORIGIN}/blog/${post.slug}`,
         },
       ],
     },
@@ -240,7 +240,7 @@ export function BlogCategoryJsonLd({
     description:
       category.description ||
       `Articles about ${category.name} from Richard Hudson's revenue operations blog`,
-    url: `https://richardwhudsonjr.com/blog/category/${category.slug}`,
+    url: `${SITE_ORIGIN}/blog/category/${category.slug}`,
     mainEntity: {
       '@type': 'ItemList',
       name: `${category.name} Articles`,
@@ -254,19 +254,19 @@ export function BlogCategoryJsonLd({
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://richardwhudsonjr.com',
+          item: SITE_ORIGIN,
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Blog',
-          item: 'https://richardwhudsonjr.com/blog',
+          item: `${SITE_ORIGIN}/blog`,
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: category.name,
-          item: `https://richardwhudsonjr.com/blog/category/${category.slug}`,
+          item: `${SITE_ORIGIN}/blog/category/${category.slug}`,
         },
       ],
     },

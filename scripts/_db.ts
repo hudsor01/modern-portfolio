@@ -13,8 +13,15 @@ import { drizzle } from 'drizzle-orm/neon-http'
  * Create a Drizzle client bound to the given schema. Throws synchronously
  * if `DATABASE_URL` is unset so the failure surfaces at script start
  * rather than at first query.
+ *
+ * Schema is `Record<string, unknown>` rather than a tighter generic
+ * because callers use the table-arg form (`db.update(table)`,
+ * `db.select().from(table)`) which gets its types from the table arg
+ * itself, not the schema parameter. No caller uses `db.query.<table>`
+ * (which would benefit from a propagated schema type), so the generic
+ * was erased in practice — using `unknown` keeps the type honest.
  */
-export function createScriptDb<TSchema extends Record<string, unknown>>(schema: TSchema) {
+export function createScriptDb(schema: Record<string, unknown>) {
   if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL not set')
   }

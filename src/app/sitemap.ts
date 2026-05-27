@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { createContextLogger } from '@/lib/logger'
+import { SITE_ORIGIN, canonicalUrl } from '@/lib/absolute-url'
 
 const logger = createContextLogger('Sitemap')
 
@@ -33,7 +34,7 @@ const STATIC_LAST_MODIFIED = process.env.VERCEL_GIT_COMMIT_AUTHOR_DATE || new Da
 const xmlSafeUrl = (url: string): string => url.replace(/&/g, '&amp;')
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://richardwhudsonjr.com'
+  const baseUrl = SITE_ORIGIN
   // fallback only for blog posts with null timestamps
   const fallbackDate = STATIC_LAST_MODIFIED
   const staticLastModified = STATIC_LAST_MODIFIED
@@ -146,13 +147,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     blogPages = posts.map((post) => {
       const featuredAbsolute = post.featuredImage
-        ? post.featuredImage.startsWith('http')
-          ? post.featuredImage
-          : `${baseUrl}${post.featuredImage}`
-        : `${baseUrl}/api/og?${new URLSearchParams({
-            title: post.title,
-            subtitle: 'Blog Post',
-          }).toString()}`
+        ? canonicalUrl(post.featuredImage)
+        : canonicalUrl(
+            `/api/og?${new URLSearchParams({ title: post.title, subtitle: 'Blog Post' }).toString()}`
+          )
 
       return {
         url: `${baseUrl}/blog/${post.slug}`,

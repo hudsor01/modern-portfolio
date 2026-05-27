@@ -182,6 +182,21 @@ export const blogPosts = pgTable(
     // class at the DB layer, regardless of who's writing. Multiple
     // rows can still have NULL featuredImage because Postgres treats
     // NULLs as distinct in unique indexes by default.
+    //
+    // Applied to prod via scripts/apply-featured-image-unique-index.ts
+    // (raw `CREATE UNIQUE INDEX IF NOT EXISTS … WHERE`). drizzle-kit
+    // has no baseline against the Prisma-era schema, so `bun run
+    // db:generate` would emit a 0000 full-schema migration unsafe to
+    // apply against prod. Until baselining via `drizzle-kit pull` (the
+    // canonical drizzle-kit recipe for adopting an existing DB), this
+    // declaration is documentation + DSL-typesafety only; the DDL
+    // truth lives in the focused script.
+    //
+    // Limitation: partial UNIQUE INDEX cannot be DEFERRABLE in
+    // Postgres. scripts/update-blog-featured-images.ts pre-checks for
+    // swap-mode UPDATE patterns and fails loudly with operator
+    // guidance instead of letting the per-row constraint check fire
+    // an opaque 23505 mid-statement.
     uniqueIndex('blog_posts_featuredImage_published_unique_idx')
       .on(t.featuredImage)
       .where(sql`${t.status} = 'PUBLISHED' AND ${t.deletedAt} IS NULL`),

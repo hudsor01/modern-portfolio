@@ -23,6 +23,17 @@ import {
 } from '@/lib/api-blog'
 import { createBlogPostSchema } from '@/lib/schemas'
 
+// POST/PUT contract asymmetry (kept here so a future admin client knows
+// what to send):
+//   - POST applies defaults: omitting `status` lands a row as DRAFT;
+//     omitting `contentType` defaults to MARKDOWN; omitting `keywords`
+//     defaults to []. See createBlogPostSchema in src/lib/schemas.ts.
+//   - PUT applies no defaults (PATCH semantics): omitting a field
+//     leaves the DB value unchanged. Sending `null` clears nullable
+//     columns. See updateBlogPostSchema.
+// If a future "clone post" UI POSTs the body of an existing post, it
+// must pass `status` explicitly or the clone lands as DRAFT.
+
 const logger = createContextLogger('BlogAPI')
 
 /**

@@ -28,9 +28,11 @@ export const optionalUrlSchema = z
 
 // Featured-image / OG / Twitter image URL validator. Accepts:
 //   - null or '' (canonical "no image" — column is nullable)
-//   - Relative path under /public, with `..`, `.`, `//`, and dotfile
-//     segments blocked (traversal smuggled into the DB would end up in
-//     JSON-LD `image` and sitemap `<image:loc>` output)
+//   - Relative path under /public, with `..`, `.`, `//`, and ANY dotfile
+//     segment blocked (lookaheads reject `/.x` at start AND `/.x` mid-path
+//     like `/foo/.env`, `/images/.git/HEAD`). Path traversal tokens
+//     smuggled into the DB would end up in JSON-LD `image` and sitemap
+//     `<image:loc>` output, so we block at the entry point.
 //   - Absolute HTTPS URL whose host is in FEATURED_IMAGE_ALLOWED_HOSTS
 //
 // The host allowlist lives in `featured-image-hosts.ts` (a leaf module)
@@ -38,16 +40,17 @@ export const optionalUrlSchema = z
 // module is reachable from a 'use client' boundary via contactFormSchema.
 // Drift between the two lists is enforced at test time — see
 // `__tests__/featured-image-hosts.test.ts`.
-const _FEATURED_IMAGE_HOST_SET: ReadonlySet<string> = new Set(FEATURED_IMAGE_ALLOWED_HOSTS)
 export const featuredImageSchema = z
   .union([
     z.literal(''),
-    z
-      .string()
-      .regex(
-        /^(?!.*\/\/)(?!.*\/\.{1,2}(?:\/|$))\/[A-Za-z0-9_-][A-Za-z0-9._/-]*$/,
-        'Relative paths must point under /public (no "..", no ".", no "//", no leading dot)'
-      ),
+    z.string().regex(
+      // Three lookaheads then the body:
+      //   (?!.*\/\.{1,2}(?:\/|$))   — block `/.` and `/..` segments anywhere
+      //   (?!.*\/\.)                — block any dotfile segment (`/foo/.env`)
+      //   (?!.*\/\/)                — block `//`
+      /^(?!.*\/\.{1,2}(?:\/|$))(?!.*\/\.)(?!.*\/\/)\/[A-Za-z0-9_-][A-Za-z0-9._/-]*$/,
+      'Relative paths must point under /public (no "..", no dotfile segments, no "//")'
+    ),
     z
       .url('Please enter a valid URL')
       .max(2048, 'URL is too long')
@@ -55,12 +58,15 @@ export const featuredImageSchema = z
         (url) => {
           try {
             const u = new URL(url)
-            return u.protocol === 'https:' && _FEATURED_IMAGE_HOST_SET.has(u.host)
+            return (
+              u.protocol === 'https:' &&
+              (FEATURED_IMAGE_ALLOWED_HOSTS as readonly string[]).includes(u.host)
+            )
           } catch {
             return false
           }
         },
-        `Must be an https URL whose host is one of: ${[...FEATURED_IMAGE_ALLOWED_HOSTS].join(', ')}`
+        `Must be an https URL whose host is one of: ${FEATURED_IMAGE_ALLOWED_HOSTS.join(', ')}`
       ),
   ])
   .nullable()
@@ -181,6 +187,14 @@ export type ContactFormValues = z.infer<typeof contactFormSchema>
 // that omitted a field — downgrading PUBLISHED posts and stomping
 // content types.
 //
+// Nullable text columns use `.nullish()` (accepts both `undefined` and
+// `null`) so a PATCH client can send `{ featuredImageAlt: null }` to
+// clear a field. With `.optional()` alone, null is rejected and a
+// client has no way to express "clear this column" — they're stuck
+// with empty string or leaving the column unchanged. The
+// `body.X !== undefined && { X: body.X }` spread in the PUT handler
+// honors both undefined-omit and null-write correctly.
+//
 // All shared validation rules (length caps, the host-allowlist on
 // image URLs, slug/cuid formats) live in this base shape exactly once.
 const blogPostBaseShape = {
@@ -190,28 +204,28 @@ const blogPostBaseShape = {
     .min(1, 'Content is required')
     .max(100_000, 'Content cannot exceed 100,000 characters'),
   authorId: cuidSchema,
-  excerpt: z.string().max(500).optional(),
+  excerpt: z.string().max(500).nullish(),
   contentType: ContentTypeSchema,
   status: PostStatusSchema,
-  metaTitle: z.string().max(100).optional(),
-  metaDescription: metaDescriptionSchema,
+  metaTitle: z.string().max(100).nullish(),
+  metaDescription: z.string().max(160).nullish(),
   keywords: z.array(z.string().min(1).max(50)).max(10, 'Cannot have more than 10 keywords'),
-  canonicalUrl: optionalUrlSchema,
+  canonicalUrl: z.union([z.url('Please enter a valid URL').max(2048), z.literal('')]).nullish(),
   // Social card image fields reuse featuredImageSchema — same host
   // allowlist applies because these get scraped by Twitter/Facebook
   // unfurlers and would render broken if pointed at unwhitelisted CDNs.
-  ogTitle: z.string().max(100).optional(),
-  ogDescription: z.string().max(300).optional(),
+  ogTitle: z.string().max(100).nullish(),
+  ogDescription: z.string().max(300).nullish(),
   ogImage: featuredImageSchema,
-  twitterTitle: z.string().max(100).optional(),
-  twitterDescription: z.string().max(200).optional(),
+  twitterTitle: z.string().max(100).nullish(),
+  twitterDescription: z.string().max(200).nullish(),
   twitterImage: featuredImageSchema,
   featuredImage: featuredImageSchema,
-  featuredImageAlt: z.string().max(200).optional(),
-  categoryId: cuidSchema.optional(),
+  featuredImageAlt: z.string().max(200).nullish(),
+  categoryId: cuidSchema.nullish(),
   tagIds: z.array(cuidSchema).max(10, 'Cannot attach more than 10 tags').optional(),
-  publishedAt: datetimeSchema.optional(),
-  scheduledAt: datetimeSchema.optional(),
+  publishedAt: datetimeSchema.nullish(),
+  scheduledAt: datetimeSchema.nullish(),
 } as const
 
 // POST /api/blog — derives from the base, then adds defaults where the

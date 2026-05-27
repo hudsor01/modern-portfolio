@@ -41,16 +41,18 @@ const db = createScriptDb({
   tags,
 })
 
-// Resolve the canonical featured image for a seeded post by slug. Throws
-// loudly if the slug is missing from src/data/blog-featured-images.ts —
-// silent fallback would let us re-introduce the duplicated-image bug
-// this whole subsystem exists to prevent.
-function featuredImageFor(slug: string): { src: string; alt: string } {
+// Resolve the canonical featured-image fields for a seeded post by slug.
+// Returns an object shaped to spread directly into a blog-post seed
+// row. Throws loudly if the slug is missing from
+// src/data/blog-featured-images.ts — silent fallback would let us
+// re-introduce the duplicated-image bug this whole subsystem exists to
+// prevent (and loud-fail also catches copy-paste typos on first run).
+function featuredImageFor(slug: string): { featuredImage: string; featuredImageAlt: string } {
   const entry = BLOG_FEATURED_IMAGE_BY_SLUG[slug]
   if (!entry) {
     throw new Error(`Missing featured-image mapping for blog slug "${slug}"`)
   }
-  return entry
+  return { featuredImage: entry.src, featuredImageAlt: entry.alt }
 }
 
 // =======================
@@ -696,8 +698,7 @@ async function seedBlogPosts(
       authorId: authorList[0]?.id || '',
       categoryId: categoryList.find((c) => c.slug === 'revenue-operations')?.id,
       status: 'PUBLISHED' as PostStatus,
-      featuredImage: featuredImageFor('richard-hudson').src,
-      featuredImageAlt: featuredImageFor('richard-hudson').alt,
+      ...featuredImageFor('complete-guide-revenue-operations-strategy'),
       metaTitle: 'Complete Revenue Operations Strategy Guide 2024',
       keywords: ['revenue operations', 'strategy', 'business growth', 'process optimization'],
       tagSlugs: ['kpis', 'dashboards', 'forecasting'],
@@ -708,8 +709,7 @@ async function seedBlogPosts(
       authorId: authorList[0]?.id || '',
       categoryId: categoryList.find((c) => c.slug === 'sales-technology')?.id,
       status: 'PUBLISHED' as PostStatus,
-      featuredImage: featuredImageFor('building-high-performance-sales-dashboards').src,
-      featuredImageAlt: featuredImageFor('building-high-performance-sales-dashboards').alt,
+      ...featuredImageFor('building-high-performance-sales-dashboards'),
       metaTitle: 'Sales Dashboard Design Best Practices',
       keywords: ['sales dashboards', 'data visualization', 'KPIs', 'Tableau'],
       tagSlugs: ['dashboards', 'kpis', 'tableau', 'salesforce'],
@@ -720,8 +720,7 @@ async function seedBlogPosts(
       authorId: authorList[0]?.id || '',
       categoryId: categoryList.find((c) => c.slug === 'customer-analytics')?.id,
       status: 'PUBLISHED' as PostStatus,
-      featuredImage: featuredImageFor('advanced-customer-churn-analysis-python').src,
-      featuredImageAlt: featuredImageFor('advanced-customer-churn-analysis-python').alt,
+      ...featuredImageFor('advanced-customer-churn-analysis-python'),
       metaTitle: 'Customer Churn Analysis Guide with Python',
       keywords: ['customer churn', 'python', 'machine learning', 'predictive analytics'],
       tagSlugs: ['python', 'machine-learning', 'cohort-analysis'],
@@ -732,8 +731,7 @@ async function seedBlogPosts(
       authorId: authorList[0]?.id || '',
       categoryId: categoryList.find((c) => c.slug === 'marketing-attribution')?.id,
       status: 'PUBLISHED' as PostStatus,
-      featuredImage: featuredImageFor('multi-touch-attribution-modeling-best-practices').src,
-      featuredImageAlt: featuredImageFor('multi-touch-attribution-modeling-best-practices').alt,
+      ...featuredImageFor('multi-touch-attribution-modeling-best-practices'),
       metaTitle: 'Multi-Touch Attribution Models Guide',
       keywords: [
         'marketing attribution',
@@ -749,8 +747,7 @@ async function seedBlogPosts(
       authorId: authorList[0]?.id || '',
       categoryId: categoryList.find((c) => c.slug === 'sales-technology')?.id,
       status: 'PUBLISHED' as PostStatus,
-      featuredImage: featuredImageFor('salesforce-revenue-analytics-implementation').src,
-      featuredImageAlt: featuredImageFor('salesforce-revenue-analytics-implementation').alt,
+      ...featuredImageFor('salesforce-revenue-analytics-implementation'),
       metaTitle: 'Salesforce Revenue Analytics Setup Guide',
       keywords: ['Salesforce', 'revenue analytics', 'CRM', 'business intelligence'],
       tagSlugs: ['salesforce', 'dashboards', 'kpis'],
@@ -761,8 +758,7 @@ async function seedBlogPosts(
       authorId: authorList[0]?.id || '',
       categoryId: categoryList.find((c) => c.slug === 'data-analytics')?.id,
       status: 'PUBLISHED' as PostStatus,
-      featuredImage: featuredImageFor('lead-scoring-models-that-actually-work').src,
-      featuredImageAlt: featuredImageFor('lead-scoring-models-that-actually-work').alt,
+      ...featuredImageFor('lead-scoring-models-that-actually-work'),
       metaTitle: 'Effective Lead Scoring Model Implementation',
       keywords: ['lead scoring', 'predictive analytics', 'machine learning', 'sales qualification'],
       tagSlugs: ['lead-scoring', 'machine-learning', 'python'],
@@ -774,8 +770,7 @@ async function seedBlogPosts(
       authorId: authorList[0]?.id || '',
       categoryId: categoryList.find((c) => c.slug === 'revenue-operations')?.id,
       status: 'DRAFT' as PostStatus,
-      featuredImage: featuredImageFor('future-revenue-operations-technology').src,
-      featuredImageAlt: featuredImageFor('future-revenue-operations-technology').alt,
+      ...featuredImageFor('future-revenue-operations-technology'),
       metaTitle: 'Future of Revenue Operations Technology Trends',
       keywords: ['revenue operations', 'technology trends', 'AI', 'automation'],
       tagSlugs: ['forecasting', 'machine-learning'],
@@ -787,8 +782,7 @@ async function seedBlogPosts(
       categoryId: categoryList.find((c) => c.slug === 'customer-analytics')?.id,
       status: 'SCHEDULED' as PostStatus,
       scheduledAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-      featuredImage: featuredImageFor('optimizing-customer-lifetime-value-calculations').src,
-      featuredImageAlt: featuredImageFor('optimizing-customer-lifetime-value-calculations').alt,
+      ...featuredImageFor('optimizing-customer-lifetime-value-calculations'),
       metaTitle: 'Customer Lifetime Value Optimization Guide',
       keywords: ['customer lifetime value', 'CLV', 'retention analysis', 'revenue forecasting'],
       tagSlugs: ['cohort-analysis', 'forecasting', 'python'],
