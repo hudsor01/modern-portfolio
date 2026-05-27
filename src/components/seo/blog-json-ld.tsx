@@ -6,7 +6,7 @@
 
 import type { BlogPostData } from '@/types/api'
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
-import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { SITE_ORIGIN, safeFeaturedImageUrl } from '@/lib/absolute-url'
 
 /**
  * Blog Website JSON-LD Schema
@@ -102,11 +102,12 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.excerpt || post.metaDescription,
-    // canonicalUrl is idempotent: passes through Unsplash URLs unchanged
-    // and only prepends SITE_ORIGIN to /relative paths. Naked template
-    // interpolation here produced `https://richardwhudsonjr.comhttps://images.unsplash.com/...`
-    // in BlogPosting.image once featuredImage values moved to absolute URLs.
-    image: post.featuredImage ? canonicalUrl(post.featuredImage) : undefined,
+    // safeFeaturedImageUrl re-validates at read time so a legacy or
+    // imported row with a bad value (`//evil.com/x`, traversal token,
+    // off-allowlist host) doesn't ship verbatim into Google's
+    // structured-data validator. Bad values fall back to the branded
+    // /api/og card — same guarantee as the sitemap.
+    image: safeFeaturedImageUrl(post.featuredImage, post.title, 'Blog Post'),
     url: `${SITE_ORIGIN}/blog/${post.slug}`,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,

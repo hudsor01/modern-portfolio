@@ -26,8 +26,24 @@ export const optionalUrlSchema = z
   .union([z.url('Please enter a valid URL').max(2048, 'URL is too long'), z.literal('')])
   .optional()
 
+// Coerce empty string → null on parse. Lets HTML form submissions
+// (where missing fields become '') land in the canonical "cleared"
+// state without every handler call site needing to remember the
+// `body.X || null` dance. Critically: the partial unique index on
+// featuredImage treats multiple NULLs as distinct but two empty
+// strings as equal, so '' → null at the schema layer prevents 23505
+// collisions regardless of writer discipline.
+const nullishText = (max: number, message?: string) =>
+  z
+    .union([
+      z.literal('').transform(() => null),
+      message ? z.string().max(max, message) : z.string().max(max),
+      z.null(),
+    ])
+    .optional()
+
 // Featured-image / OG / Twitter image URL validator. Accepts:
-//   - null or '' (canonical "no image" — column is nullable)
+//   - null, undefined, or '' (all coalesce to null — column is nullable)
 //   - Relative path under /public, with `..`, `.`, `//`, and ANY dotfile
 //     segment blocked (lookaheads reject `/.x` at start AND `/.x` mid-path
 //     like `/foo/.env`, `/images/.git/HEAD`). Path traversal tokens
@@ -42,7 +58,11 @@ export const optionalUrlSchema = z
 // `__tests__/featured-image-hosts.test.ts`.
 export const featuredImageSchema = z
   .union([
-    z.literal(''),
+    // Empty string is the canonical HTML-form-cleared sentinel —
+    // transform to null at parse so handlers never see '' for this
+    // column and the partial unique index can't be tripped by two
+    // empty-string PUBLISHED rows.
+    z.literal('').transform(() => null),
     z.string().regex(
       // Two lookaheads then the body:
       //   (?!.*\/\.)   — block any segment starting with `.` (this
@@ -208,24 +228,35 @@ const blogPostBaseShape = {
     .min(1, 'Content is required')
     .max(100_000, 'Content cannot exceed 100,000 characters'),
   authorId: cuidSchema,
-  excerpt: z.string().max(500).nullish(),
+  // Nullable text columns use `nullishText` so empty strings from HTML
+  // form submissions are coerced to null at the schema layer (rather
+  // than each handler call site doing its own `|| null` dance). See
+  // `nullishText` definition above for the partial-unique-index
+  // collision rationale.
+  excerpt: nullishText(500),
   contentType: ContentTypeSchema,
   status: PostStatusSchema,
-  metaTitle: z.string().max(100).nullish(),
-  metaDescription: metaDescriptionSchema.unwrap().nullish(),
+  metaTitle: nullishText(100),
+  metaDescription: nullishText(160, 'Meta description cannot exceed 160 characters'),
   keywords: z.array(z.string().min(1).max(50)).max(10, 'Cannot have more than 10 keywords'),
-  canonicalUrl: z.union([z.url('Please enter a valid URL').max(2048), z.literal('')]).nullish(),
+  canonicalUrl: z
+    .union([
+      z.literal('').transform(() => null),
+      z.url('Please enter a valid URL').max(2048),
+      z.null(),
+    ])
+    .optional(),
   // Social card image fields reuse featuredImageSchema — same host
   // allowlist applies because these get scraped by Twitter/Facebook
   // unfurlers and would render broken if pointed at unwhitelisted CDNs.
-  ogTitle: z.string().max(100).nullish(),
-  ogDescription: z.string().max(300).nullish(),
+  ogTitle: nullishText(100),
+  ogDescription: nullishText(300),
   ogImage: featuredImageSchema,
-  twitterTitle: z.string().max(100).nullish(),
-  twitterDescription: z.string().max(200).nullish(),
+  twitterTitle: nullishText(100),
+  twitterDescription: nullishText(200),
   twitterImage: featuredImageSchema,
   featuredImage: featuredImageSchema,
-  featuredImageAlt: z.string().max(200).nullish(),
+  featuredImageAlt: nullishText(200),
   categoryId: cuidSchema.nullish(),
   tagIds: z.array(cuidSchema).max(10, 'Cannot attach more than 10 tags').optional(),
   publishedAt: datetimeSchema.nullish(),

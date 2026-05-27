@@ -191,18 +191,22 @@ export const BLOG_FEATURED_IMAGES: readonly BlogFeaturedImage[] = [
  * duplicate detection — silently dropping a duplicate via
  * `Object.fromEntries` would let one post's photo disappear with no
  * error, the same failure class this module exists to prevent.
+ *
+ * Intentionally NOT exported: callers must go through `featuredImageFor`,
+ * which enforces the throw-on-missing contract. Direct map access
+ * permits `?? ''` silent-fallback bypass — exactly the bug class the
+ * throw was added to prevent.
  */
-export const BLOG_FEATURED_IMAGE_BY_SLUG: Readonly<Record<string, { src: string; alt: string }>> =
-  (() => {
-    const map: Record<string, { src: string; alt: string }> = {}
-    for (const entry of BLOG_FEATURED_IMAGES) {
-      if (entry.slug in map) {
-        throw new Error(`Duplicate slug in BLOG_FEATURED_IMAGES: "${entry.slug}"`)
-      }
-      map[entry.slug] = { src: unsplashUrl(entry.photoId, 'blog'), alt: entry.alt }
+const BLOG_FEATURED_IMAGE_BY_SLUG: Readonly<Record<string, { src: string; alt: string }>> = (() => {
+  const map: Record<string, { src: string; alt: string }> = {}
+  for (const entry of BLOG_FEATURED_IMAGES) {
+    if (entry.slug in map) {
+      throw new Error(`Duplicate slug in BLOG_FEATURED_IMAGES: "${entry.slug}"`)
     }
-    return map
-  })()
+    map[entry.slug] = { src: unsplashUrl(entry.photoId, 'blog'), alt: entry.alt }
+  }
+  return map
+})()
 
 /**
  * Resolve the canonical featured-image fields for a seeded post by slug.

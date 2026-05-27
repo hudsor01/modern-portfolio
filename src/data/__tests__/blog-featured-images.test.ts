@@ -6,35 +6,22 @@
 // Asserting the round-trip here closes that gap.
 
 import { describe, it, expect } from 'vitest'
-import {
-  BLOG_FEATURED_IMAGES,
-  BLOG_FEATURED_IMAGE_BY_SLUG,
-  featuredImageFor,
-} from '../blog-featured-images'
+import { BLOG_FEATURED_IMAGES, featuredImageFor } from '../blog-featured-images'
 
+// The duplicate-slug guard lives in the module's load-time IIFE — if a
+// duplicate ever lands, this module's `import` would throw before any
+// test runs, failing CI at load. We don't assert it here (the assertion
+// would be unreachable). The photoId-uniqueness assertion below IS
+// load-bearing because nothing else enforces it.
 describe('BLOG_FEATURED_IMAGES', () => {
-  it('has no duplicate slugs', () => {
-    const slugs = BLOG_FEATURED_IMAGES.map((e) => e.slug)
-    expect(new Set(slugs).size).toBe(slugs.length)
-  })
-
   it('has no duplicate photoIds (would violate the partial unique index in prod)', () => {
     const photoIds = BLOG_FEATURED_IMAGES.map((e) => e.photoId)
     expect(new Set(photoIds).size).toBe(photoIds.length)
   })
-
-  it('every entry resolves via BLOG_FEATURED_IMAGE_BY_SLUG with non-empty src + alt', () => {
-    for (const entry of BLOG_FEATURED_IMAGES) {
-      const resolved = BLOG_FEATURED_IMAGE_BY_SLUG[entry.slug]
-      expect(resolved, `slug ${entry.slug}`).toBeDefined()
-      expect(resolved?.src).toMatch(/^https:\/\/images\.unsplash\.com\/photo-/)
-      expect(resolved?.alt.length).toBeGreaterThan(0)
-    }
-  })
 })
 
 describe('featuredImageFor', () => {
-  it('returns Drizzle-row-shaped fields for every canonical slug', () => {
+  it('returns Drizzle-row-shaped fields with non-empty src + alt for every canonical slug', () => {
     for (const entry of BLOG_FEATURED_IMAGES) {
       const result = featuredImageFor(entry.slug)
       expect(result.featuredImage).toMatch(/^https:\/\/images\.unsplash\.com\/photo-/)

@@ -1,7 +1,7 @@
 // Mirrors existing JSON-LD components — `safeJsonLdStringify` is the
 // project's OWASP-compliant serializer. See src/lib/json-ld-utils.ts.
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
-import { siteConfig } from '@/lib/site'
+import { SITE_ORIGIN } from '@/lib/absolute-url'
 
 /**
  * ProfessionalService JSON-LD — Dallas-targeted local SEO signal.
@@ -19,15 +19,15 @@ export function ProfessionalServiceJsonLd({ nonce }: { nonce?: string | null }) 
   const serviceProvider = {
     '@type': 'Person',
     name: 'Richard Hudson',
-    url: siteConfig.url,
+    url: SITE_ORIGIN,
   } as const
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ProfessionalService',
     name: 'Richard Hudson — Revenue Operations Professional',
-    image: `${siteConfig.url}/images/richard.jpg`,
-    url: siteConfig.url,
+    image: `${SITE_ORIGIN}/images/richard.jpg`,
+    url: SITE_ORIGIN,
     email: 'contact@richardwhudsonjr.com',
     telephone: '+1-214-566-0279',
     priceRange: '$$',

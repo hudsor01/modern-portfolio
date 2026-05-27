@@ -194,23 +194,22 @@ export async function POST(request: NextRequest) {
         content: body.content,
         contentType: body.contentType,
         status: body.status,
-        // Coerce empty-string → null on nullable text columns so a
-        // client posting an HTML form (where missing fields become '')
-        // lands in the canonical "cleared" state. Critical for
-        // featuredImage: two empty strings would collide on the
-        // partial unique index.
-        metaTitle: body.metaTitle || null,
-        metaDescription: body.metaDescription || null,
+        // createBlogPostSchema coerces empty-string → null at parse
+        // (via nullishText / featuredImageSchema), so no per-field
+        // `|| null` coalesce is needed here. The DB always sees null
+        // for cleared fields — single canonical state.
+        metaTitle: body.metaTitle,
+        metaDescription: body.metaDescription,
         keywords: body.keywords,
-        canonicalUrl: body.canonicalUrl || null,
-        ogTitle: body.ogTitle || null,
-        ogDescription: body.ogDescription || null,
-        ogImage: body.ogImage || null,
-        twitterTitle: body.twitterTitle || null,
-        twitterDescription: body.twitterDescription || null,
-        twitterImage: body.twitterImage || null,
-        featuredImage: body.featuredImage || null,
-        featuredImageAlt: body.featuredImageAlt || null,
+        canonicalUrl: body.canonicalUrl,
+        ogTitle: body.ogTitle,
+        ogDescription: body.ogDescription,
+        ogImage: body.ogImage,
+        twitterTitle: body.twitterTitle,
+        twitterDescription: body.twitterDescription,
+        twitterImage: body.twitterImage,
+        featuredImage: body.featuredImage,
+        featuredImageAlt: body.featuredImageAlt,
         readingTime,
         wordCount,
         publishedAt:

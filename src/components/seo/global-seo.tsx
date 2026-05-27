@@ -1,5 +1,6 @@
 import { siteConfig } from '@/lib/site'
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
+import { SITE_ORIGIN } from '@/lib/absolute-url'
 
 interface GlobalSEOProps {
   title?: string
@@ -52,7 +53,7 @@ export function GlobalSEO({
     '@context': 'https://schema.org',
     '@type': ogType === 'article' ? 'Article' : 'WebSite',
     name: siteConfig.name,
-    url: siteConfig.url,
+    url: SITE_ORIGIN,
     ...(ogType === 'article' && article
       ? {
           headline: title,
@@ -68,7 +69,7 @@ export function GlobalSEO({
             name: siteConfig.name,
             logo: {
               '@type': 'ImageObject',
-              url: `${siteConfig.url}/images/richard.jpg`,
+              url: `${SITE_ORIGIN}/images/richard.jpg`,
             },
           },
         }

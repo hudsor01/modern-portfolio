@@ -196,7 +196,14 @@ export const blogPosts = pgTable(
     // Postgres. scripts/update-blog-featured-images.ts pre-checks for
     // swap-mode UPDATE patterns and fails loudly with operator
     // guidance instead of letting the per-row constraint check fire
-    // an opaque 23505 mid-statement.
+    // an opaque 23505 mid-statement. We deliberately don't switch to
+    // `EXCLUDE … USING gist (col WITH =) WHERE … DEFERRABLE INITIALLY
+    // DEFERRED` (the canonical Postgres deferrable-partial primitive)
+    // because (a) it requires the `btree_gist` extension which adds a
+    // Neon-side review surface, (b) Drizzle's DSL has no EXCLUDE
+    // helper so the constraint would only live in the apply script,
+    // and (c) the swap scenario is already caught at the script's
+    // pre-flight — cheaper enforcement at the only known writer.
     uniqueIndex('blog_posts_featuredImage_published_unique_idx')
       .on(t.featuredImage)
       .where(sql`${t.status} = 'PUBLISHED' AND ${t.deletedAt} IS NULL`),

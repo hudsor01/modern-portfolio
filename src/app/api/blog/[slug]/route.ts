@@ -115,41 +115,34 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
     const wordCount = body.content ? body.content.split(/\s+/).length : undefined
     const readingTime = wordCount ? Math.ceil(wordCount / 200) : undefined
 
-    // Coerce empty-string → null on nullable text columns to keep the
-    // DB in a single canonical "cleared" state (NULL). The partial
-    // unique index on featuredImage treats NULL as distinct (multiple
-    // rows can hold NULL) but two empty strings as equal — without
-    // this coalesce, a PATCH client sending `featuredImage: ''` from
-    // an HTML form would land empty strings that collide on the index.
-    const blank = <T>(v: T | null | undefined | ''): T | null =>
-      v === undefined || v === '' ? null : (v as T)
+    // updateBlogPostSchema coerces empty-string → null on every
+    // nullable text column at parse time (via nullishText), so the
+    // handler only needs `body.X !== undefined` to distinguish
+    // "client omitted the field" from "client cleared it" — no per-call
+    // `|| null` coalesce required.
     const updateData: Partial<NewBlogPost> = {
       ...(body.title && { title: body.title }),
-      ...(body.excerpt !== undefined && { excerpt: blank(body.excerpt) }),
+      ...(body.excerpt !== undefined && { excerpt: body.excerpt }),
       ...(body.content && { content: body.content, wordCount, readingTime }),
       ...(body.contentType && { contentType: body.contentType }),
       ...(body.status && { status: body.status }),
-      ...(body.metaTitle !== undefined && { metaTitle: blank(body.metaTitle) }),
-      ...(body.metaDescription !== undefined && {
-        metaDescription: blank(body.metaDescription),
-      }),
+      ...(body.metaTitle !== undefined && { metaTitle: body.metaTitle }),
+      ...(body.metaDescription !== undefined && { metaDescription: body.metaDescription }),
       ...(body.keywords && { keywords: body.keywords }),
-      ...(body.canonicalUrl !== undefined && { canonicalUrl: blank(body.canonicalUrl) }),
-      // Social-card fields — schema accepts these on PUT (`.nullish()`
-      // in blogPostBaseShape), so the handler must spread them through
-      // or silently drop a valid client payload.
-      ...(body.ogTitle !== undefined && { ogTitle: blank(body.ogTitle) }),
-      ...(body.ogDescription !== undefined && { ogDescription: blank(body.ogDescription) }),
-      ...(body.ogImage !== undefined && { ogImage: blank(body.ogImage) }),
-      ...(body.twitterTitle !== undefined && { twitterTitle: blank(body.twitterTitle) }),
+      ...(body.canonicalUrl !== undefined && { canonicalUrl: body.canonicalUrl }),
+      // Social-card fields — schema accepts these on PUT (nullish in
+      // blogPostBaseShape), so the handler must spread them through or
+      // silently drop a valid client payload.
+      ...(body.ogTitle !== undefined && { ogTitle: body.ogTitle }),
+      ...(body.ogDescription !== undefined && { ogDescription: body.ogDescription }),
+      ...(body.ogImage !== undefined && { ogImage: body.ogImage }),
+      ...(body.twitterTitle !== undefined && { twitterTitle: body.twitterTitle }),
       ...(body.twitterDescription !== undefined && {
-        twitterDescription: blank(body.twitterDescription),
+        twitterDescription: body.twitterDescription,
       }),
-      ...(body.twitterImage !== undefined && { twitterImage: blank(body.twitterImage) }),
-      ...(body.featuredImage !== undefined && { featuredImage: blank(body.featuredImage) }),
-      ...(body.featuredImageAlt !== undefined && {
-        featuredImageAlt: blank(body.featuredImageAlt),
-      }),
+      ...(body.twitterImage !== undefined && { twitterImage: body.twitterImage }),
+      ...(body.featuredImage !== undefined && { featuredImage: body.featuredImage }),
+      ...(body.featuredImageAlt !== undefined && { featuredImageAlt: body.featuredImageAlt }),
       ...(body.categoryId !== undefined && { categoryId: body.categoryId ?? null }),
       ...(body.publishedAt !== undefined && {
         publishedAt: body.publishedAt ? new Date(body.publishedAt) : null,
@@ -160,7 +153,17 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
       updatedAt: new Date(),
     }
 
-    if (body.status === 'PUBLISHED' && !existingPost.publishedAt) {
+    // First-publish auto-stamp: only set publishedAt if the row has
+    // never been published AND the client didn't supply an explicit
+    // publishedAt (which would be a back-date for an imported post).
+    // Without the `body.publishedAt === undefined` guard, a client
+    // PATCHing `{status:'PUBLISHED', publishedAt:'2025-01-01...'}` to
+    // back-date an import would get `new Date()` (now) silently.
+    if (
+      body.status === 'PUBLISHED' &&
+      !existingPost.publishedAt &&
+      body.publishedAt === undefined
+    ) {
       updateData.publishedAt = new Date()
     }
 
