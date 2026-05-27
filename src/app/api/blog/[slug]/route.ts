@@ -7,6 +7,7 @@ import { authors, blogPosts, categories, postTags, tags, type NewBlogPost } from
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
 import { isAdminRequest } from '@/lib/api-admin-auth'
 import { transformToBlogPostData, createErrorResponse } from '@/lib/api-blog'
+import { updateBlogPostSchema } from '@/lib/schemas'
 
 const logger = createContextLogger('SlugAPI')
 
@@ -84,11 +85,24 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
 
   try {
     const { slug } = await context.params
-    const body = await request.json()
+    const rawBody = await request.json()
 
     if (!slug) {
       return NextResponse.json(createErrorResponse('Slug parameter is required'), { status: 400 })
     }
+
+    // Validate against updateBlogPostSchema (partial of createBlogPostSchema).
+    // This is what enforces featuredImage's host allowlist on the update path
+    // — POST already enforced it, but without this PUT was a clean bypass.
+    const parsed = updateBlogPostSchema.safeParse(rawBody)
+    if (!parsed.success) {
+      const firstIssue = parsed.error.issues[0]
+      const msg = firstIssue
+        ? `Invalid request body: ${firstIssue.path.join('.')}: ${firstIssue.message}`
+        : 'Invalid request body'
+      return NextResponse.json(createErrorResponse(msg), { status: 400 })
+    }
+    const body = parsed.data
 
     const existingPost = await db.query.blogPosts.findFirst({
       where: eq(blogPosts.slug, slug),

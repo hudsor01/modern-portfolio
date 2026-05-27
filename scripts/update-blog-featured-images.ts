@@ -14,7 +14,7 @@
  *
  * Usage: `bun run scripts/update-blog-featured-images.ts`
  */
-import { and, eq, inArray, isNull, sql } from 'drizzle-orm'
+import { and, inArray, isNull, sql } from 'drizzle-orm'
 import { blogPosts } from '@/db/schema'
 import { BLOG_FEATURED_IMAGES } from '../src/data/blog-featured-images'
 import { unsplashUrl } from '../src/lib/unsplash'
@@ -31,6 +31,12 @@ async function main() {
   // canonical mapping for seed consistency but aren't expected to match
   // any prod row — exclude them before building the UPDATE.
   const entries = BLOG_FEATURED_IMAGES.filter((e) => !e.seedOnly)
+  if (entries.length === 0) {
+    // sql.join over an empty array would emit `CASE  END` — a Postgres
+    // syntax error before the UPDATE even runs. Bail cleanly instead.
+    console.log('No non-seedOnly entries in canonical mapping; nothing to do.')
+    return 0
+  }
   const slugs = entries.map((e) => e.slug)
   const imageCase = sql.join(
     entries.map(

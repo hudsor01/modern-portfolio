@@ -25,40 +25,55 @@ export const optionalUrlSchema = z
   .union([z.url('Please enter a valid URL').max(2048, 'URL is too long'), z.literal('')])
   .optional()
 
-// Hosts allowed as `featuredImage`. Must stay in sync with the
-// `remotePatterns` whitelist in next.config.js — `next/image` rejects any
-// URL whose host isn't in that allowlist at request time, and accepting
-// it here would produce a row that renders as a broken image.
-const FEATURED_IMAGE_ALLOWED_HOSTS = new Set(['images.unsplash.com'])
+// Hosts allowed as `featuredImage`, sourced from next.config.js so the
+// schema and `next/image`'s `remotePatterns` whitelist can't drift.
+// Reading at module load (rather than hardcoding the set here) means a
+// new image host added to next.config.js is automatically accepted by
+// POST/PUT validation — no second place to update, no silent drift.
+import nextConfig from '../../next.config.js'
+const FEATURED_IMAGE_ALLOWED_HOSTS: ReadonlySet<string> = new Set(
+  (nextConfig.images?.remotePatterns ?? [])
+    .map((p: { hostname?: string }) => p.hostname)
+    .filter((h: string | undefined): h is string => typeof h === 'string')
+)
 
 // Featured-image URL validator. Accepts:
-//   - Empty string (column is nullable in the DB)
-//   - Relative path starting with `/` (locally-hosted assets in /public)
-//   - Absolute URL whose host is in FEATURED_IMAGE_ALLOWED_HOSTS
+//   - null / undefined / empty string (column is nullable in the DB —
+//     null is the canonical "clear this image" value from an admin client)
+//   - Relative path under /public, with traversal blocked (no `/..`,
+//     no `//`, no `/.well-known/` style dotsegments)
+//   - Absolute HTTPS URL whose host is in FEATURED_IMAGE_ALLOWED_HOSTS
 //
 // This is the validation layer where "no random third-party hotlinks"
-// is enforceable cheaply. Without it, an admin could POST a URL from
-// an unwhitelisted CDN, the row inserts, and the blog ships a broken
-// image — exactly the failure class that produced the "UNDER
-// CONSTRUCTION" regression on aged photos in May 2026.
+// and "no path-traversal smuggled into structured data" are enforceable
+// cheaply. Without it, an admin could POST a URL from an unwhitelisted
+// CDN — exactly the failure class that produced the "UNDER CONSTRUCTION"
+// regression on aged photos in May 2026.
 export const featuredImageSchema = z
   .union([
     z.literal(''),
-    z.string().regex(/^\/[^/]/, 'Relative paths must start with a single "/"'),
+    z
+      .string()
+      .regex(
+        /^\/[A-Za-z0-9_-][A-Za-z0-9._/-]*$/,
+        'Relative paths must point under /public (no "..", no "//", no leading dot)'
+      ),
     z
       .url('Please enter a valid URL')
       .max(2048, 'URL is too long')
       .refine(
         (url) => {
           try {
-            return FEATURED_IMAGE_ALLOWED_HOSTS.has(new URL(url).host)
+            const u = new URL(url)
+            return u.protocol === 'https:' && FEATURED_IMAGE_ALLOWED_HOSTS.has(u.host)
           } catch {
             return false
           }
         },
-        `Host must be one of: ${[...FEATURED_IMAGE_ALLOWED_HOSTS].join(', ')}`
+        `Must be an https URL whose host is one of: ${[...FEATURED_IMAGE_ALLOWED_HOSTS].join(', ')}`
       ),
   ])
+  .nullable()
   .optional()
 
 // Slug validation - consistent format across all entities
@@ -202,6 +217,14 @@ export const createBlogPostSchema = z
   .strict()
 
 export type CreateBlogPostInput = z.infer<typeof createBlogPostSchema>
+
+// PATCH-shaped schema for PUT /api/blog/[slug]. Every field is optional
+// (mirroring HTTP PUT-as-PATCH semantics that the route already uses
+// via `body.field !== undefined && {...}` spreads). Critically: this
+// inherits the featuredImage host allowlist so a PUT request can't
+// bypass the validation that POST enforces.
+export const updateBlogPostSchema = createBlogPostSchema.partial()
+export type UpdateBlogPostInput = z.infer<typeof updateBlogPostSchema>
 
 // =======================
 // PROJECT SCHEMAS

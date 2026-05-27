@@ -13,6 +13,7 @@ import {
   primaryKey,
   text,
   timestamp,
+  uniqueIndex,
   varchar,
 } from 'drizzle-orm/pg-core'
 import { createId } from './cuid'
@@ -176,6 +177,16 @@ export const blogPosts = pgTable(
     index('blog_posts_status_publishedAt_idx').on(t.status, t.publishedAt.desc()),
     index('blog_posts_authorId_idx').on(t.authorId),
     index('blog_posts_categoryId_idx').on(t.categoryId),
+    // Partial unique index: PUBLISHED, non-deleted posts can't share a
+    // featured image. Prevents the original failure class (27 posts
+    // sharing 9 URLs, one being a literal "UNDER CONSTRUCTION" mockup)
+    // at the database layer — no matter who's writing (admin POST/PUT,
+    // seed re-run, hand SQL). NULL featuredImage stays allowed by
+    // multiple rows because Postgres treats NULLs as distinct in
+    // unique indexes by default.
+    uniqueIndex('blog_posts_featuredImage_published_unique_idx')
+      .on(t.featuredImage)
+      .where(sql`${t.status} = 'PUBLISHED' AND ${t.deletedAt} IS NULL`),
   ]
 )
 

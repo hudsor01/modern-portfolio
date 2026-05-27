@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { absoluteUrl } from '@/lib/absolute-url'
 
 export const baseMetadata: Metadata = {
   metadataBase: new URL('https://richardwhudsonjr.com'),
@@ -104,19 +105,20 @@ export function generateMetadata(
   path: string,
   additionalMetadata: Partial<Metadata> = {}
 ): Metadata {
-  const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({ title }).toString()}`
+  const ogImageUrl = absoluteUrl(`/api/og?${new URLSearchParams({ title }).toString()}`)
+  const pageUrl = absoluteUrl(path)
   return {
     ...baseMetadata,
     title,
     description,
     alternates: {
-      canonical: `https://richardwhudsonjr.com${path}`,
+      canonical: pageUrl,
     },
     openGraph: {
       ...baseMetadata.openGraph,
       title,
       description,
-      url: `https://richardwhudsonjr.com${path}`,
+      url: pageUrl,
       images: [
         {
           url: ogImageUrl,

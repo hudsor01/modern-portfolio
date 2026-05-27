@@ -1,7 +1,7 @@
 'use client'
 
 import Image, { type ImageProps } from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface BlogFeaturedImageProps extends Omit<ImageProps, 'src' | 'onError'> {
   src: string
@@ -34,11 +34,13 @@ export function BlogFeaturedImage({
 }: BlogFeaturedImageProps) {
   const [currentSrc, setCurrentSrc] = useState(src)
 
-  const fallback = () => {
-    const params = new URLSearchParams({ title: postTitle })
-    if (postCategory) params.set('category', postCategory)
-    setCurrentSrc(`/api/og?${params.toString()}`)
-  }
+  // Resync when the parent passes a new src — without this, a client-side
+  // filter/route transition that keeps the wrapper mounted (e.g. nuqs tag
+  // filter on BlogList) would freeze the image on a stale URL, or worse,
+  // leave it stuck on /api/og after an earlier error.
+  useEffect(() => {
+    setCurrentSrc(src)
+  }, [src])
 
   return (
     <Image
@@ -46,9 +48,12 @@ export function BlogFeaturedImage({
       src={currentSrc}
       alt={alt}
       onError={() => {
-        // Guard against a fallback loop: if /api/og itself errors,
-        // don't keep swapping.
-        if (!currentSrc.startsWith('/api/og')) fallback()
+        // Guard against a fallback loop: if /api/og itself errors, don't
+        // keep swapping.
+        if (currentSrc.startsWith('/api/og')) return
+        const params = new URLSearchParams({ title: postTitle })
+        if (postCategory) params.set('category', postCategory)
+        setCurrentSrc(`/api/og?${params.toString()}`)
       }}
     />
   )

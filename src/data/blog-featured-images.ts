@@ -186,13 +186,23 @@ export const BLOG_FEATURED_IMAGES: readonly BlogFeaturedImage[] = [
 ] as const
 
 /**
- * Resolved (URL + alt) record, keyed by slug. Built once at module load —
- * cheap and avoids consumers repeatedly mapping the list.
+ * Resolved (URL + alt) record, keyed by slug. Built once at module load.
+ * Throws on duplicate slugs so a copy-paste mistake fails loudly rather
+ * than silently overwriting one entry with another (Object.fromEntries
+ * keeps the last value, which would let one post's photo silently
+ * vanish — exactly the regression class this whole module exists to
+ * prevent).
  */
 export const BLOG_FEATURED_IMAGE_BY_SLUG: Readonly<Record<string, { src: string; alt: string }>> =
-  Object.fromEntries(
-    BLOG_FEATURED_IMAGES.map((entry) => [
-      entry.slug,
-      { src: unsplashUrl(entry.photoId, 'blog'), alt: entry.alt },
-    ])
-  )
+  (() => {
+    const seen = new Set<string>()
+    const map: Record<string, { src: string; alt: string }> = {}
+    for (const entry of BLOG_FEATURED_IMAGES) {
+      if (seen.has(entry.slug)) {
+        throw new Error(`Duplicate slug in BLOG_FEATURED_IMAGES: "${entry.slug}"`)
+      }
+      seen.add(entry.slug)
+      map[entry.slug] = { src: unsplashUrl(entry.photoId, 'blog'), alt: entry.alt }
+    }
+    return map
+  })()
