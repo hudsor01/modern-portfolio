@@ -1,11 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { useQueryState } from 'nuqs'
 import type { BlogPostData, BlogCategoryData } from '@/types/api'
 import { BlogTagFilter } from './blog-tag-filter'
 import { InlineMarkdown } from './inline-markdown'
+import { BlogFeaturedImage } from '@/components/blog/blog-featured-image'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
@@ -101,9 +101,11 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
               <Card className="hover-lift hover:border-primary/50 transition-all h-full overflow-hidden">
                 {post.featuredImage && (
                   <div className="relative aspect-[16/10] overflow-hidden">
-                    <Image
+                    <BlogFeaturedImage
                       src={post.featuredImage}
                       alt={post.title}
+                      postTitle={post.title}
+                      postCategory={post.category?.name}
                       fill
                       className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

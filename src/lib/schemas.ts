@@ -25,6 +25,42 @@ export const optionalUrlSchema = z
   .union([z.url('Please enter a valid URL').max(2048, 'URL is too long'), z.literal('')])
   .optional()
 
+// Hosts allowed as `featuredImage`. Must stay in sync with the
+// `remotePatterns` whitelist in next.config.js — `next/image` rejects any
+// URL whose host isn't in that allowlist at request time, and accepting
+// it here would produce a row that renders as a broken image.
+const FEATURED_IMAGE_ALLOWED_HOSTS = new Set(['images.unsplash.com'])
+
+// Featured-image URL validator. Accepts:
+//   - Empty string (column is nullable in the DB)
+//   - Relative path starting with `/` (locally-hosted assets in /public)
+//   - Absolute URL whose host is in FEATURED_IMAGE_ALLOWED_HOSTS
+//
+// This is the validation layer where "no random third-party hotlinks"
+// is enforceable cheaply. Without it, an admin could POST a URL from
+// an unwhitelisted CDN, the row inserts, and the blog ships a broken
+// image — exactly the failure class that produced the "UNDER
+// CONSTRUCTION" regression on aged photos in May 2026.
+export const featuredImageSchema = z
+  .union([
+    z.literal(''),
+    z.string().regex(/^\/[^/]/, 'Relative paths must start with a single "/"'),
+    z
+      .url('Please enter a valid URL')
+      .max(2048, 'URL is too long')
+      .refine(
+        (url) => {
+          try {
+            return FEATURED_IMAGE_ALLOWED_HOSTS.has(new URL(url).host)
+          } catch {
+            return false
+          }
+        },
+        `Host must be one of: ${[...FEATURED_IMAGE_ALLOWED_HOSTS].join(', ')}`
+      ),
+  ])
+  .optional()
+
 // Slug validation - consistent format across all entities
 export const slugSchema = z
   .string()
@@ -156,7 +192,7 @@ export const createBlogPostSchema = z
     twitterTitle: z.string().max(100).optional(),
     twitterDescription: z.string().max(200).optional(),
     twitterImage: optionalUrlSchema,
-    featuredImage: optionalUrlSchema,
+    featuredImage: featuredImageSchema,
     featuredImageAlt: z.string().max(200).optional(),
     categoryId: cuidSchema.optional(),
     tagIds: z.array(cuidSchema).max(10, 'Cannot attach more than 10 tags').optional(),
