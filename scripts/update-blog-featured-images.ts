@@ -31,25 +31,28 @@ async function main() {
   // PUBLISHED rows' URLs (A wants B's current value, B wants A's
   // current value) would trip the per-row constraint check mid-statement.
   //
-  // The canonical mapping in src/data/blog-featured-images.ts asserts
-  // uniqueness at module-load (the IIFE throws on duplicate slugs), so
-  // no two entries can target the same URL. A swap scenario therefore
-  // only arises if the operator edits the canonical mapping to rotate
-  // URLs between existing posts. Detect that case up front and fail
-  // with operator guidance, rather than getting an opaque 23505 from
-  // mid-statement constraint check.
-  const slugs = entries.map((e) => e.slug)
-  const current = await db
+  // Scope: we query ALL PUBLISHED non-deleted rows (not just canonical
+  // slugs) because the constraint spans the whole table. A row outside
+  // the canonical mapping (legacy import, future blog post added via
+  // POST /api/blog) that happens to hold a URL the script wants to
+  // assign would otherwise pass pre-flight and then trigger 23505
+  // mid-statement — exactly the opaque failure mode this check exists
+  // to prevent.
+  const allPublished = await db
     .select({ slug: blogPosts.slug, featuredImage: blogPosts.featuredImage })
     .from(blogPosts)
-    .where(and(inArray(blogPosts.slug, slugs), isNull(blogPosts.deletedAt), eq(blogPosts.status, 'PUBLISHED')))
-  const currentBySlug = new Map(current.map((r) => [r.slug, r.featuredImage]))
-  const targetBySlug = new Map(entries.map((e) => [e.slug, unsplashUrl(e.photoId, 'blog')]))
-  const currentlyUsed = new Set(current.map((r) => r.featuredImage).filter((v): v is string => v !== null))
+    .where(and(eq(blogPosts.status, 'PUBLISHED'), isNull(blogPosts.deletedAt)))
+  const currentBySlug = new Map(allPublished.map((r) => [r.slug, r.featuredImage]))
+  const currentlyUsed = new Set(
+    allPublished.map((r) => r.featuredImage).filter((v): v is string => v !== null && v !== '')
+  )
   const swapConflicts: string[] = []
-  for (const [slug, target] of targetBySlug) {
-    if (currentBySlug.get(slug) === target) continue // no change needed
-    if (currentlyUsed.has(target)) swapConflicts.push(slug)
+  for (const entry of entries) {
+    const target = unsplashUrl(entry.photoId, 'blog')
+    if (currentBySlug.get(entry.slug) === target) continue // no change needed
+    // Conflict if another row already holds this URL. Self-match (the
+    // entry's own current value) is caught by the equality check above.
+    if (currentlyUsed.has(target)) swapConflicts.push(entry.slug)
   }
   if (swapConflicts.length > 0) {
     console.error(
@@ -64,6 +67,7 @@ async function main() {
     )
     return swapConflicts.length
   }
+  const slugs = entries.map((e) => e.slug)
 
   // Single atomic batched UPDATE — one round-trip instead of N. Matches
   // the official Drizzle "Update many with different values" recipe:

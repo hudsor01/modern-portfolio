@@ -194,18 +194,23 @@ export async function POST(request: NextRequest) {
         content: body.content,
         contentType: body.contentType,
         status: body.status,
-        metaTitle: body.metaTitle,
-        metaDescription: body.metaDescription,
+        // Coerce empty-string → null on nullable text columns so a
+        // client posting an HTML form (where missing fields become '')
+        // lands in the canonical "cleared" state. Critical for
+        // featuredImage: two empty strings would collide on the
+        // partial unique index.
+        metaTitle: body.metaTitle || null,
+        metaDescription: body.metaDescription || null,
         keywords: body.keywords,
         canonicalUrl: body.canonicalUrl || null,
-        ogTitle: body.ogTitle,
-        ogDescription: body.ogDescription,
+        ogTitle: body.ogTitle || null,
+        ogDescription: body.ogDescription || null,
         ogImage: body.ogImage || null,
-        twitterTitle: body.twitterTitle,
-        twitterDescription: body.twitterDescription,
+        twitterTitle: body.twitterTitle || null,
+        twitterDescription: body.twitterDescription || null,
         twitterImage: body.twitterImage || null,
         featuredImage: body.featuredImage || null,
-        featuredImageAlt: body.featuredImageAlt,
+        featuredImageAlt: body.featuredImageAlt || null,
         readingTime,
         wordCount,
         publishedAt:

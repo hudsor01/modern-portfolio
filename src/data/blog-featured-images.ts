@@ -203,3 +203,27 @@ export const BLOG_FEATURED_IMAGE_BY_SLUG: Readonly<Record<string, { src: string;
     }
     return map
   })()
+
+/**
+ * Resolve the canonical featured-image fields for a seeded post by slug.
+ * Returns an object shaped to spread directly into a blog-post insert
+ * row (Drizzle column names). Throws loudly if the slug is missing —
+ * silent fallback (e.g. `BLOG_FEATURED_IMAGE_BY_SLUG[slug]?.src ?? ''`)
+ * would let a typo'd slug write an empty string into prod, which
+ * collides on the partial unique index and re-introduces exactly the
+ * duplicated-image silent-failure class this module exists to prevent.
+ *
+ * Lives in this module (not in seed.ts) so any future caller —
+ * backfill scripts, admin enrichment, alternative seeders — inherits
+ * the throw-on-missing contract automatically.
+ */
+export function featuredImageFor(slug: string): {
+  featuredImage: string
+  featuredImageAlt: string
+} {
+  const entry = BLOG_FEATURED_IMAGE_BY_SLUG[slug]
+  if (!entry) {
+    throw new Error(`Missing featured-image mapping for blog slug "${slug}"`)
+  }
+  return { featuredImage: entry.src, featuredImageAlt: entry.alt }
+}

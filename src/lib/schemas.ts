@@ -44,12 +44,13 @@ export const featuredImageSchema = z
   .union([
     z.literal(''),
     z.string().regex(
-      // Three lookaheads then the body:
-      //   (?!.*\/\.{1,2}(?:\/|$))   — block `/.` and `/..` segments anywhere
-      //   (?!.*\/\.)                — block any dotfile segment (`/foo/.env`)
-      //   (?!.*\/\/)                — block `//`
-      /^(?!.*\/\.{1,2}(?:\/|$))(?!.*\/\.)(?!.*\/\/)\/[A-Za-z0-9_-][A-Za-z0-9._/-]*$/,
-      'Relative paths must point under /public (no "..", no dotfile segments, no "//")'
+      // Two lookaheads then the body:
+      //   (?!.*\/\.)   — block any segment starting with `.` (this
+      //                  subsumes `.` and `..` traversal AND any
+      //                  dotfile like `/foo/.env`)
+      //   (?!.*\/\/)   — block `//` (protocol-relative or doubled-slash)
+      /^(?!.*\/\.)(?!.*\/\/)\/[A-Za-z0-9_-][A-Za-z0-9._/-]*$/,
+      'Relative paths must point under /public (no dotfile segments, no "//")'
     ),
     z
       .url('Please enter a valid URL')
@@ -97,7 +98,10 @@ export const colorSchema = z
   .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Must be a valid hex color')
   .optional()
 
-// Meta description with proper character limits
+// Meta description with proper character limits. Used by blog post
+// schemas (where it's wrapped as `.nullish()` to support PATCH-clear)
+// and by SEO event schemas elsewhere. Keep the `.optional()` form
+// here as the leaf primitive; nullability is composed at the use site.
 export const metaDescriptionSchema = z
   .string()
   .max(160, 'Meta description cannot exceed 160 characters')
@@ -208,7 +212,7 @@ const blogPostBaseShape = {
   contentType: ContentTypeSchema,
   status: PostStatusSchema,
   metaTitle: z.string().max(100).nullish(),
-  metaDescription: z.string().max(160).nullish(),
+  metaDescription: metaDescriptionSchema.unwrap().nullish(),
   keywords: z.array(z.string().min(1).max(50)).max(10, 'Cannot have more than 10 keywords'),
   canonicalUrl: z.union([z.url('Please enter a valid URL').max(2048), z.literal('')]).nullish(),
   // Social card image fields reuse featuredImageSchema — same host

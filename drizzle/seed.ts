@@ -27,7 +27,7 @@ import type {
   Tag,
 } from '../src/db/schema'
 import { showcaseProjects } from '../src/data/projects'
-import { BLOG_FEATURED_IMAGE_BY_SLUG } from '../src/data/blog-featured-images'
+import { featuredImageFor } from '../src/data/blog-featured-images'
 import { createScriptDb } from '../scripts/_db'
 
 const db = createScriptDb({
@@ -41,19 +41,9 @@ const db = createScriptDb({
   tags,
 })
 
-// Resolve the canonical featured-image fields for a seeded post by slug.
-// Returns an object shaped to spread directly into a blog-post seed
-// row. Throws loudly if the slug is missing from
-// src/data/blog-featured-images.ts — silent fallback would let us
-// re-introduce the duplicated-image bug this whole subsystem exists to
-// prevent (and loud-fail also catches copy-paste typos on first run).
-function featuredImageFor(slug: string): { featuredImage: string; featuredImageAlt: string } {
-  const entry = BLOG_FEATURED_IMAGE_BY_SLUG[slug]
-  if (!entry) {
-    throw new Error(`Missing featured-image mapping for blog slug "${slug}"`)
-  }
-  return { featuredImage: entry.src, featuredImageAlt: entry.alt }
-}
+// `featuredImageFor` is imported from src/data/blog-featured-images.ts
+// so the throw-on-missing contract has one home (and any future script
+// or backfill enrichment inherits it).
 
 // =======================
 // SEED DATA CONSTANTS

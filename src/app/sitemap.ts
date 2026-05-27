@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { createContextLogger } from '@/lib/logger'
 import { SITE_ORIGIN, canonicalUrl } from '@/lib/absolute-url'
+import { featuredImageSchema } from '@/lib/schemas'
 
 const logger = createContextLogger('Sitemap')
 
@@ -146,11 +147,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .orderBy(desc(blogPosts.publishedAt))
 
     blogPages = posts.map((post) => {
-      const featuredAbsolute = post.featuredImage
-        ? canonicalUrl(post.featuredImage)
-        : canonicalUrl(
-            `/api/og?${new URLSearchParams({ title: post.title, subtitle: 'Blog Post' }).toString()}`
-          )
+      // Re-validate featuredImage at read time. The schema guards the
+      // write path (POST/PUT), but legacy Prisma-era rows or imports
+      // never went through it — a bad value (`//evil.com/x`, garbage
+      // CDN host, traversal token) would otherwise be emitted verbatim
+      // into <image:loc> and indexed by Google. Fall back to the OG
+      // route on parse failure so the sitemap entry is always valid.
+      const validFeatured =
+        post.featuredImage && featuredImageSchema.safeParse(post.featuredImage).success
+          ? canonicalUrl(post.featuredImage)
+          : canonicalUrl(
+              `/api/og?${new URLSearchParams({ title: post.title, subtitle: 'Blog Post' }).toString()}`
+            )
 
       return {
         url: `${baseUrl}/blog/${post.slug}`,
@@ -158,7 +166,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           post.updatedAt?.toISOString() || post.publishedAt?.toISOString() || fallbackDate,
         changeFrequency: 'monthly' as const,
         priority: 0.7,
-        images: [xmlSafeUrl(featuredAbsolute)],
+        images: [xmlSafeUrl(validFeatured)],
       }
     })
   } catch (error) {
