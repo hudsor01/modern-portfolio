@@ -3,8 +3,8 @@ import { cache } from 'react'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import { Navbar } from '@/components/layout/navbar'
+import { BlogFeaturedImage } from '@/components/blog/blog-featured-image'
 import { BlogCategoryJsonLd } from '@/components/seo/blog-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
@@ -197,9 +197,11 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                       <Card className="hover-lift hover:border-primary/50 transition-all h-full overflow-hidden">
                         {post.featuredImage && (
                           <div className="relative aspect-[16/10] overflow-hidden">
-                            <Image
+                            <BlogFeaturedImage
                               src={post.featuredImage}
                               alt={post.title}
+                              postTitle={post.title}
+                              postCategory={category.name}
                               fill
                               className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

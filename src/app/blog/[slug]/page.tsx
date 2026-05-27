@@ -36,13 +36,6 @@ interface BlogPostPageProps {
   }>
 }
 
-const POST_IMAGE_OVERRIDES: Record<string, { src: string; alt: string }> = {
-  'unlocking-power-sales-automation-salesloft-game-changer': {
-    src: '/images/blog/sales-automation-salesloft-hero.jpg',
-    alt: 'Sales automation dashboard with pipeline analytics and workflow nodes',
-  },
-}
-
 // Drizzle relational query — deduplicated via React cache() across
 // generateMetadata + page render. Filters are inline so the database does the
 // status check; no post-fetch JS filtering.
@@ -78,21 +71,9 @@ const getBlogPost = cache(async (slug: string): Promise<BlogPostData | null> => 
   }
 })
 
-function applyPostOverrides(post: BlogPostData | null) {
-  if (!post) return post
-  const override = POST_IMAGE_OVERRIDES[post.slug]
-  if (!override) return post
-
-  return {
-    ...post,
-    featuredImage: post.featuredImage ?? override.src,
-    featuredImageAlt: post.featuredImageAlt ?? override.alt,
-  }
-}
-
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params
-  const post = applyPostOverrides(await getBlogPost(slug))
+  const post = await getBlogPost(slug)
 
   // Commit to 404 from the metadata phase. Returning fake "Post Not Found"
   // metadata here used to ship HTTP 200 with a Soft-404 body (title set,
@@ -147,7 +128,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params
-  const post = applyPostOverrides(await getBlogPost(slug))
+  const post = await getBlogPost(slug)
 
   if (!post) {
     notFound()

@@ -6,6 +6,7 @@
 
 import type { BlogPostData } from '@/types/api'
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
+import { canonicalUrl } from '@/lib/absolute-url'
 
 /**
  * Blog Website JSON-LD Schema
@@ -101,7 +102,11 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.excerpt || post.metaDescription,
-    image: post.featuredImage ? `https://richardwhudsonjr.com${post.featuredImage}` : undefined,
+    // canonicalUrl is idempotent: passes through Unsplash URLs unchanged
+    // and only prepends SITE_ORIGIN to /relative paths. Naked template
+    // interpolation here produced `https://richardwhudsonjr.comhttps://images.unsplash.com/...`
+    // in BlogPosting.image once featuredImage values moved to absolute URLs.
+    image: post.featuredImage ? canonicalUrl(post.featuredImage) : undefined,
     url: `https://richardwhudsonjr.com/blog/${post.slug}`,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,

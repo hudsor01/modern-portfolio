@@ -6,8 +6,6 @@
  * semantics — only the calls changed.
  */
 
-import { neon } from '@neondatabase/serverless'
-import { drizzle } from 'drizzle-orm/neon-http'
 import { and, count, eq, sum } from 'drizzle-orm'
 import {
   authors,
@@ -29,17 +27,31 @@ import type {
   Tag,
 } from '../src/db/schema'
 import { showcaseProjects } from '../src/data/projects'
+import { BLOG_FEATURED_IMAGE_BY_SLUG } from '../src/data/blog-featured-images'
+import { createScriptDb } from '../scripts/_db'
 
-// Neon HTTP client — same as src/db/index.ts but instantiated locally so this
-// script doesn't pull in the `server-only` import.
-const connectionString = process.env.DATABASE_URL
-if (!connectionString) {
-  throw new Error('DATABASE_URL is required')
-}
-const sqlClient = neon(connectionString)
-const db = drizzle(sqlClient, {
-  schema: { authors, blogPosts, categories, postInteractions, postTags, postViews, projects, tags },
+const db = createScriptDb({
+  authors,
+  blogPosts,
+  categories,
+  postInteractions,
+  postTags,
+  postViews,
+  projects,
+  tags,
 })
+
+// Resolve the canonical featured image for a seeded post by slug. Throws
+// loudly if the slug is missing from src/data/blog-featured-images.ts —
+// silent fallback would let us re-introduce the duplicated-image bug
+// this whole subsystem exists to prevent.
+function featuredImageFor(slug: string): { src: string; alt: string } {
+  const entry = BLOG_FEATURED_IMAGE_BY_SLUG[slug]
+  if (!entry) {
+    throw new Error(`Missing featured-image mapping for blog slug "${slug}"`)
+  }
+  return entry
+}
 
 // =======================
 // SEED DATA CONSTANTS
@@ -684,9 +696,8 @@ async function seedBlogPosts(
       authorId: authorList[0]?.id || '',
       categoryId: categoryList.find((c) => c.slug === 'revenue-operations')?.id,
       status: 'PUBLISHED' as PostStatus,
-      featuredImage:
-        'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=600&fit=crop&crop=center&q=80',
-      featuredImageAlt: 'Revenue Operations Strategy Dashboard',
+      featuredImage: featuredImageFor('richard-hudson').src,
+      featuredImageAlt: featuredImageFor('richard-hudson').alt,
       metaTitle: 'Complete Revenue Operations Strategy Guide 2024',
       keywords: ['revenue operations', 'strategy', 'business growth', 'process optimization'],
       tagSlugs: ['kpis', 'dashboards', 'forecasting'],
@@ -697,9 +708,8 @@ async function seedBlogPosts(
       authorId: authorList[0]?.id || '',
       categoryId: categoryList.find((c) => c.slug === 'sales-technology')?.id,
       status: 'PUBLISHED' as PostStatus,
-      featuredImage:
-        'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&crop=center&q=80',
-      featuredImageAlt: 'Interactive Sales Performance Dashboard',
+      featuredImage: featuredImageFor('building-high-performance-sales-dashboards').src,
+      featuredImageAlt: featuredImageFor('building-high-performance-sales-dashboards').alt,
       metaTitle: 'Sales Dashboard Design Best Practices',
       keywords: ['sales dashboards', 'data visualization', 'KPIs', 'Tableau'],
       tagSlugs: ['dashboards', 'kpis', 'tableau', 'salesforce'],
@@ -710,9 +720,8 @@ async function seedBlogPosts(
       authorId: authorList[0]?.id || '',
       categoryId: categoryList.find((c) => c.slug === 'customer-analytics')?.id,
       status: 'PUBLISHED' as PostStatus,
-      featuredImage:
-        'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=600&fit=crop&crop=center&q=80',
-      featuredImageAlt: 'Customer Churn Analysis Visualization',
+      featuredImage: featuredImageFor('advanced-customer-churn-analysis-python').src,
+      featuredImageAlt: featuredImageFor('advanced-customer-churn-analysis-python').alt,
       metaTitle: 'Customer Churn Analysis Guide with Python',
       keywords: ['customer churn', 'python', 'machine learning', 'predictive analytics'],
       tagSlugs: ['python', 'machine-learning', 'cohort-analysis'],
@@ -723,9 +732,8 @@ async function seedBlogPosts(
       authorId: authorList[0]?.id || '',
       categoryId: categoryList.find((c) => c.slug === 'marketing-attribution')?.id,
       status: 'PUBLISHED' as PostStatus,
-      featuredImage:
-        'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop&crop=center&q=80',
-      featuredImageAlt: 'Marketing Attribution Model Diagram',
+      featuredImage: featuredImageFor('multi-touch-attribution-modeling-best-practices').src,
+      featuredImageAlt: featuredImageFor('multi-touch-attribution-modeling-best-practices').alt,
       metaTitle: 'Multi-Touch Attribution Models Guide',
       keywords: [
         'marketing attribution',
@@ -741,9 +749,8 @@ async function seedBlogPosts(
       authorId: authorList[0]?.id || '',
       categoryId: categoryList.find((c) => c.slug === 'sales-technology')?.id,
       status: 'PUBLISHED' as PostStatus,
-      featuredImage:
-        'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&h=600&fit=crop&crop=center&q=80',
-      featuredImageAlt: 'Salesforce Analytics Cloud Dashboard',
+      featuredImage: featuredImageFor('salesforce-revenue-analytics-implementation').src,
+      featuredImageAlt: featuredImageFor('salesforce-revenue-analytics-implementation').alt,
       metaTitle: 'Salesforce Revenue Analytics Setup Guide',
       keywords: ['Salesforce', 'revenue analytics', 'CRM', 'business intelligence'],
       tagSlugs: ['salesforce', 'dashboards', 'kpis'],
@@ -754,9 +761,8 @@ async function seedBlogPosts(
       authorId: authorList[0]?.id || '',
       categoryId: categoryList.find((c) => c.slug === 'data-analytics')?.id,
       status: 'PUBLISHED' as PostStatus,
-      featuredImage:
-        'https://images.unsplash.com/photo-1590479773265-7464e5d48118?w=800&h=600&fit=crop&crop=center&q=80',
-      featuredImageAlt: 'Lead Scoring Model Visualization',
+      featuredImage: featuredImageFor('lead-scoring-models-that-actually-work').src,
+      featuredImageAlt: featuredImageFor('lead-scoring-models-that-actually-work').alt,
       metaTitle: 'Effective Lead Scoring Model Implementation',
       keywords: ['lead scoring', 'predictive analytics', 'machine learning', 'sales qualification'],
       tagSlugs: ['lead-scoring', 'machine-learning', 'python'],
@@ -768,9 +774,8 @@ async function seedBlogPosts(
       authorId: authorList[0]?.id || '',
       categoryId: categoryList.find((c) => c.slug === 'revenue-operations')?.id,
       status: 'DRAFT' as PostStatus,
-      featuredImage:
-        'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=800&h=600&fit=crop&crop=center&q=80',
-      featuredImageAlt: 'Future Technology Trends in Revenue Operations',
+      featuredImage: featuredImageFor('future-revenue-operations-technology').src,
+      featuredImageAlt: featuredImageFor('future-revenue-operations-technology').alt,
       metaTitle: 'Future of Revenue Operations Technology Trends',
       keywords: ['revenue operations', 'technology trends', 'AI', 'automation'],
       tagSlugs: ['forecasting', 'machine-learning'],
@@ -782,9 +787,8 @@ async function seedBlogPosts(
       categoryId: categoryList.find((c) => c.slug === 'customer-analytics')?.id,
       status: 'SCHEDULED' as PostStatus,
       scheduledAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-      featuredImage:
-        'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=600&fit=crop&crop=center&q=80',
-      featuredImageAlt: 'Customer Lifetime Value Analysis Dashboard',
+      featuredImage: featuredImageFor('optimizing-customer-lifetime-value-calculations').src,
+      featuredImageAlt: featuredImageFor('optimizing-customer-lifetime-value-calculations').alt,
       metaTitle: 'Customer Lifetime Value Optimization Guide',
       keywords: ['customer lifetime value', 'CLV', 'retention analysis', 'revenue forecasting'],
       tagSlugs: ['cohort-analysis', 'forecasting', 'python'],

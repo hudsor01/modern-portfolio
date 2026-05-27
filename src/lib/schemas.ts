@@ -7,6 +7,7 @@
 import { z } from 'zod'
 import { PostStatus, ContentType } from '@/types/blog'
 import { SEOEventType, SEOSeverity, ChangeFrequency } from '@/types/seo'
+import { FEATURED_IMAGE_ALLOWED_HOSTS } from './featured-image-hosts'
 
 // =======================
 // BASE PRIMITIVE SCHEMAS
@@ -23,6 +24,46 @@ export const urlSchema = z.url('Please enter a valid URL').max(2048, 'URL is too
 // Optional URL that can be empty string
 export const optionalUrlSchema = z
   .union([z.url('Please enter a valid URL').max(2048, 'URL is too long'), z.literal('')])
+  .optional()
+
+// Featured-image / OG / Twitter image URL validator. Accepts:
+//   - null or '' (canonical "no image" — column is nullable)
+//   - Relative path under /public, with `..`, `.`, `//`, and dotfile
+//     segments blocked (traversal smuggled into the DB would end up in
+//     JSON-LD `image` and sitemap `<image:loc>` output)
+//   - Absolute HTTPS URL whose host is in FEATURED_IMAGE_ALLOWED_HOSTS
+//
+// The host allowlist lives in `featured-image-hosts.ts` (a leaf module)
+// rather than being derived from `next.config.js` here, because this
+// module is reachable from a 'use client' boundary via contactFormSchema.
+// Drift between the two lists is enforced at test time — see
+// `__tests__/featured-image-hosts.test.ts`.
+const _FEATURED_IMAGE_HOST_SET: ReadonlySet<string> = new Set(FEATURED_IMAGE_ALLOWED_HOSTS)
+export const featuredImageSchema = z
+  .union([
+    z.literal(''),
+    z
+      .string()
+      .regex(
+        /^(?!.*\/\/)(?!.*\/\.{1,2}(?:\/|$))\/[A-Za-z0-9_-][A-Za-z0-9._/-]*$/,
+        'Relative paths must point under /public (no "..", no ".", no "//", no leading dot)'
+      ),
+    z
+      .url('Please enter a valid URL')
+      .max(2048, 'URL is too long')
+      .refine(
+        (url) => {
+          try {
+            const u = new URL(url)
+            return u.protocol === 'https:' && _FEATURED_IMAGE_HOST_SET.has(u.host)
+          } catch {
+            return false
+          }
+        },
+        `Must be an https URL whose host is one of: ${[...FEATURED_IMAGE_ALLOWED_HOSTS].join(', ')}`
+      ),
+  ])
+  .nullable()
   .optional()
 
 // Slug validation - consistent format across all entities
@@ -131,41 +172,67 @@ export type ContactFormValues = z.infer<typeof contactFormSchema>
 // BLOG POST SCHEMAS
 // =======================
 
-// Input schema for POST /api/blog — validates request body before Prisma create.
-// Uses cuidSchema (not uuid) because Prisma generates cuid IDs.
-// .strict() rejects unknown fields so mass-assignment attempts fail loudly.
+// Base blog post field shape — NO defaults. Create and Update both
+// derive from this. The canonical pattern for build-a-PATCH-schema in
+// Zod is to keep defaults out of the base; `.partial()` doesn't strip
+// them (verified empirically in Zod 4.4.3) and Zod 4 explicitly applies
+// defaults inside optional fields, so deriving an update schema from a
+// defaulted base would silently fill in DRAFT/MARKDOWN/[] on every PUT
+// that omitted a field — downgrading PUBLISHED posts and stomping
+// content types.
+//
+// All shared validation rules (length caps, the host-allowlist on
+// image URLs, slug/cuid formats) live in this base shape exactly once.
+const blogPostBaseShape = {
+  title: z.string().min(1, 'Title is required').max(200, 'Title cannot exceed 200 characters'),
+  content: z
+    .string()
+    .min(1, 'Content is required')
+    .max(100_000, 'Content cannot exceed 100,000 characters'),
+  authorId: cuidSchema,
+  excerpt: z.string().max(500).optional(),
+  contentType: ContentTypeSchema,
+  status: PostStatusSchema,
+  metaTitle: z.string().max(100).optional(),
+  metaDescription: metaDescriptionSchema,
+  keywords: z.array(z.string().min(1).max(50)).max(10, 'Cannot have more than 10 keywords'),
+  canonicalUrl: optionalUrlSchema,
+  // Social card image fields reuse featuredImageSchema — same host
+  // allowlist applies because these get scraped by Twitter/Facebook
+  // unfurlers and would render broken if pointed at unwhitelisted CDNs.
+  ogTitle: z.string().max(100).optional(),
+  ogDescription: z.string().max(300).optional(),
+  ogImage: featuredImageSchema,
+  twitterTitle: z.string().max(100).optional(),
+  twitterDescription: z.string().max(200).optional(),
+  twitterImage: featuredImageSchema,
+  featuredImage: featuredImageSchema,
+  featuredImageAlt: z.string().max(200).optional(),
+  categoryId: cuidSchema.optional(),
+  tagIds: z.array(cuidSchema).max(10, 'Cannot attach more than 10 tags').optional(),
+  publishedAt: datetimeSchema.optional(),
+  scheduledAt: datetimeSchema.optional(),
+} as const
+
+// POST /api/blog — derives from the base, then adds defaults where the
+// create flow needs them. `.strict()` rejects unknown fields so
+// mass-assignment attempts fail loudly.
 export const createBlogPostSchema = z
   .object({
-    title: z.string().min(1, 'Title is required').max(200, 'Title cannot exceed 200 characters'),
-    content: z
-      .string()
-      .min(1, 'Content is required')
-      .max(100_000, 'Content cannot exceed 100,000 characters'),
-    authorId: cuidSchema,
-    excerpt: z.string().max(500).optional(),
+    ...blogPostBaseShape,
     contentType: ContentTypeSchema.default(ContentType.MARKDOWN),
     status: PostStatusSchema.default(PostStatus.DRAFT),
-    metaTitle: z.string().max(100).optional(),
-    metaDescription: metaDescriptionSchema,
-    keywords: keywordsSchema,
-    canonicalUrl: optionalUrlSchema,
-    // Social card fields — match Prisma BlogPost model; max lengths come from @db.VarChar constraints
-    ogTitle: z.string().max(100).optional(),
-    ogDescription: z.string().max(300).optional(),
-    ogImage: optionalUrlSchema,
-    twitterTitle: z.string().max(100).optional(),
-    twitterDescription: z.string().max(200).optional(),
-    twitterImage: optionalUrlSchema,
-    featuredImage: optionalUrlSchema,
-    featuredImageAlt: z.string().max(200).optional(),
-    categoryId: cuidSchema.optional(),
-    tagIds: z.array(cuidSchema).max(10, 'Cannot attach more than 10 tags').optional(),
-    publishedAt: datetimeSchema.optional(),
-    scheduledAt: datetimeSchema.optional(),
+    keywords: z.array(z.string().min(1).max(50)).max(10).default([]),
   })
   .strict()
-
 export type CreateBlogPostInput = z.infer<typeof createBlogPostSchema>
+
+// PUT /api/blog/[slug] — every field optional, NO defaults (PATCH
+// semantics). The base shape has no defaults, so `.partial()` produces
+// the right thing: missing fields stay `undefined` instead of being
+// filled in.
+export const updateBlogPostSchema = z.object(blogPostBaseShape).partial().strict()
+export type UpdateBlogPostInput = z.infer<typeof updateBlogPostSchema>
 
 // =======================
 // PROJECT SCHEMAS
