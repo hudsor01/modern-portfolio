@@ -1,60 +1,34 @@
 'use client'
 
-import Image, { type ImageProps } from 'next/image'
-import { useEffect, useState } from 'react'
+import type { ImageProps } from 'next/image'
+import { ImageWithFallback } from '@/components/ui/image-with-fallback'
 
 interface BlogFeaturedImageProps extends Omit<ImageProps, 'src' | 'onError'> {
   src: string
   /**
    * Post title — used to build the branded `/api/og?title=...` fallback
-   * when the primary src 404s, errors, or is removed upstream (e.g. an
-   * Unsplash photo gets yanked). Without this fallback, a removed photo
-   * renders as a broken-image icon or Unsplash's grey placeholder until
-   * a human notices and runs scripts/update-blog-featured-images.ts.
+   * when the primary src 404s or is removed upstream (e.g. an Unsplash
+   * photo gets yanked).
    */
   postTitle: string
-  /** Optional category to pass to /api/og for richer fallback rendering. */
+  /** Optional category for richer fallback rendering. */
   postCategory?: string
 }
 
 /**
- * `next/image` wrapper for blog featured images with a branded fallback.
- *
- * If the upstream image fails to load (Unsplash deleted/rotated the
- * photo, CDN burp, host whitelist regression), we swap to the project's
- * own `/api/og` route which generates a branded card from the post
- * title. The user sees something cohesive instead of a broken icon.
+ * Blog-flavoured wrapper over `<ImageWithFallback>`: builds the
+ * `/api/og?title=…` fallback URL from the post's title + category. The
+ * generic fallback behavior (useEffect resync, swap-loop guard) lives
+ * in `<ImageWithFallback>` so project cards and other external-image
+ * surfaces can compose the same pattern.
  */
 export function BlogFeaturedImage({
-  src,
   postTitle,
   postCategory,
   alt,
   ...rest
 }: BlogFeaturedImageProps) {
-  const [currentSrc, setCurrentSrc] = useState(src)
-
-  // Resync when the parent passes a new src — without this, a client-side
-  // filter/route transition that keeps the wrapper mounted (e.g. nuqs tag
-  // filter on BlogList) would freeze the image on a stale URL, or worse,
-  // leave it stuck on /api/og after an earlier error.
-  useEffect(() => {
-    setCurrentSrc(src)
-  }, [src])
-
-  return (
-    <Image
-      {...rest}
-      src={currentSrc}
-      alt={alt}
-      onError={() => {
-        // Guard against a fallback loop: if /api/og itself errors, don't
-        // keep swapping.
-        if (currentSrc.startsWith('/api/og')) return
-        const params = new URLSearchParams({ title: postTitle })
-        if (postCategory) params.set('category', postCategory)
-        setCurrentSrc(`/api/og?${params.toString()}`)
-      }}
-    />
-  )
+  const params = new URLSearchParams({ title: postTitle })
+  if (postCategory) params.set('category', postCategory)
+  return <ImageWithFallback {...rest} alt={alt} fallbackSrc={`/api/og?${params.toString()}`} />
 }

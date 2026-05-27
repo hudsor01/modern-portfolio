@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
+import { ImageWithFallback } from '@/components/ui/image-with-fallback'
 import type { Project } from '@/types/project'
 import { ArrowUpRight, Sparkles } from 'lucide-react'
 
@@ -43,8 +43,9 @@ export const ProjectCard = React.memo(function ProjectCard({
           {/* Image Section */}
           <div className="relative aspect-16/10 overflow-hidden bg-muted">
             {projectImage && (
-              <Image
+              <ImageWithFallback
                 src={projectImage}
+                fallbackSrc={`/api/og?${new URLSearchParams({ title: project.title }).toString()}`}
                 alt={`${project.title} - Revenue Operations Project`}
                 fill
                 className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"

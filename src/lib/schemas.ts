@@ -25,17 +25,14 @@ export const optionalUrlSchema = z
   .union([z.url('Please enter a valid URL').max(2048, 'URL is too long'), z.literal('')])
   .optional()
 
-// Hosts allowed as `featuredImage`, sourced from next.config.js so the
-// schema and `next/image`'s `remotePatterns` whitelist can't drift.
-// Reading at module load (rather than hardcoding the set here) means a
-// new image host added to next.config.js is automatically accepted by
-// POST/PUT validation — no second place to update, no silent drift.
-import nextConfig from '../../next.config.js'
-const FEATURED_IMAGE_ALLOWED_HOSTS: ReadonlySet<string> = new Set(
-  (nextConfig.images?.remotePatterns ?? [])
-    .map((p: { hostname?: string }) => p.hostname)
-    .filter((h: string | undefined): h is string => typeof h === 'string')
-)
+// Hosts allowed as `featuredImage`. Imported from a leaf module rather
+// than derived from next.config.js — schemas.ts is reachable from
+// 'use client' boundaries (contact form), and importing next.config.js
+// here would drag `withSentryConfig` and the Sentry build graph into
+// the client bundle. Drift between this list and next.config.js's
+// remotePatterns is enforced by src/lib/__tests__/featured-image-hosts.test.ts.
+import { FEATURED_IMAGE_ALLOWED_HOSTS as _ALLOWED } from './featured-image-hosts'
+const FEATURED_IMAGE_ALLOWED_HOSTS: ReadonlySet<string> = new Set(_ALLOWED)
 
 // Featured-image URL validator. Accepts:
 //   - null / undefined / empty string (column is nullable in the DB —
@@ -54,9 +51,15 @@ export const featuredImageSchema = z
     z.literal(''),
     z
       .string()
+      // Negative lookaheads block: (1) `//` anywhere, (2) any segment
+      // that's `.` or `..` whether mid-path (`/foo/../bar`) or terminal
+      // (`/foo/.`). The leading-char gate then forbids dotfile-style
+      // segments like `/.well-known/...`. Together these stop traversal
+      // tokens from being smuggled into the DB and rendered into
+      // structured-data / sitemap output downstream.
       .regex(
-        /^\/[A-Za-z0-9_-][A-Za-z0-9._/-]*$/,
-        'Relative paths must point under /public (no "..", no "//", no leading dot)'
+        /^(?!.*\/\/)(?!.*\/\.{1,2}(?:\/|$))\/[A-Za-z0-9_-][A-Za-z0-9._/-]*$/,
+        'Relative paths must point under /public (no "..", no ".", no "//", no leading dot)'
       ),
     z
       .url('Please enter a valid URL')
@@ -200,13 +203,17 @@ export const createBlogPostSchema = z
     metaDescription: metaDescriptionSchema,
     keywords: keywordsSchema,
     canonicalUrl: optionalUrlSchema,
-    // Social card fields — match Prisma BlogPost model; max lengths come from @db.VarChar constraints
+    // Social card fields — match Prisma BlogPost model; max lengths come from @db.VarChar constraints.
+    // ogImage/twitterImage reuse featuredImageSchema for the same host-allowlist
+    // protection — these get scraped by Twitter/Facebook unfurlers, so allowing
+    // arbitrary CDNs here would have the same "broken card in the wild" failure
+    // as featuredImage.
     ogTitle: z.string().max(100).optional(),
     ogDescription: z.string().max(300).optional(),
-    ogImage: optionalUrlSchema,
+    ogImage: featuredImageSchema,
     twitterTitle: z.string().max(100).optional(),
     twitterDescription: z.string().max(200).optional(),
-    twitterImage: optionalUrlSchema,
+    twitterImage: featuredImageSchema,
     featuredImage: featuredImageSchema,
     featuredImageAlt: z.string().max(200).optional(),
     categoryId: cuidSchema.optional(),
@@ -220,10 +227,26 @@ export type CreateBlogPostInput = z.infer<typeof createBlogPostSchema>
 
 // PATCH-shaped schema for PUT /api/blog/[slug]. Every field is optional
 // (mirroring HTTP PUT-as-PATCH semantics that the route already uses
-// via `body.field !== undefined && {...}` spreads). Critically: this
-// inherits the featuredImage host allowlist so a PUT request can't
-// bypass the validation that POST enforces.
-export const updateBlogPostSchema = createBlogPostSchema.partial()
+// via `body.field !== undefined && {...}` spreads). Critically:
+//
+//   1. The featuredImage host allowlist is inherited so a PUT can't
+//      bypass POST validation.
+//   2. Fields that had `.default(...)` on createBlogPostSchema
+//      (`status`, `contentType`, `keywords`) are explicitly redefined
+//      WITHOUT defaults. `.partial()` alone does NOT strip defaults in
+//      Zod — `parsed.data.status` would become `'DRAFT'` whenever the
+//      client omitted status, then the route's spread
+//      `...(body.status && { status: body.status })` would silently
+//      DOWNGRADE a PUBLISHED post to DRAFT on every PUT that didn't
+//      include status. Verified empirically against Zod 4.4.3.
+export const updateBlogPostSchema = createBlogPostSchema
+  .omit({ contentType: true, status: true, keywords: true })
+  .partial()
+  .extend({
+    contentType: ContentTypeSchema.optional(),
+    status: PostStatusSchema.optional(),
+    keywords: z.array(z.string().min(1).max(50)).max(10).optional(),
+  })
 export type UpdateBlogPostInput = z.infer<typeof updateBlogPostSchema>
 
 // =======================
