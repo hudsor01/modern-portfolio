@@ -30,14 +30,38 @@ export const optionalUrlSchema = z
 // (where missing fields become '') land in the canonical "cleared"
 // state without every handler call site needing to remember the
 // `body.X || null` dance. Critically: the partial unique index on
-// featuredImage treats multiple NULLs as distinct but two empty
-// strings as equal, so '' → null at the schema layer prevents 23505
-// collisions regardless of writer discipline.
-const nullishText = (max: number, message?: string) =>
+// blog_posts.featuredImage treats multiple NULLs as distinct but two
+// empty strings as equal, so '' → null at the schema layer prevents
+// 23505 collisions regardless of writer discipline.
+//
+// Exported so any future schema with a nullable text column (admin
+// projects, contact-submission overrides, etc.) inherits the same
+// `'' → null` contract by composition rather than each schema
+// re-inventing the union.
+export const nullishText = (max: number, message?: string) =>
   z
     .union([
       z.literal('').transform(() => null),
-      message ? z.string().max(max, message) : z.string().max(max),
+      // Zod's .max accepts `undefined` for `message`, so the explicit
+      // ternary was dead weight — pass `message` through unchanged.
+      z.string().max(max, message),
+      z.null(),
+    ])
+    .optional()
+
+/**
+ * URL-flavoured sibling of `nullishText`. Accepts undefined / null /
+ * '' / a valid URL up to 2048 chars. Empty string transforms to null
+ * at parse so the column lands in the canonical cleared state.
+ *
+ * Used for nullable URL columns (canonicalUrl, etc.). For featured
+ * images, use `featuredImageSchema` which adds the host allowlist.
+ */
+export const nullishUrl = (max = 2048) =>
+  z
+    .union([
+      z.literal('').transform(() => null),
+      z.url('Please enter a valid URL').max(max),
       z.null(),
     ])
     .optional()
@@ -211,13 +235,12 @@ export type ContactFormValues = z.infer<typeof contactFormSchema>
 // that omitted a field — downgrading PUBLISHED posts and stomping
 // content types.
 //
-// Nullable text columns use `.nullish()` (accepts both `undefined` and
-// `null`) so a PATCH client can send `{ featuredImageAlt: null }` to
-// clear a field. With `.optional()` alone, null is rejected and a
-// client has no way to express "clear this column" — they're stuck
-// with empty string or leaving the column unchanged. The
-// `body.X !== undefined && { X: body.X }` spread in the PUT handler
-// honors both undefined-omit and null-write correctly.
+// Nullable text columns use `nullishText`/`nullishUrl` (which return
+// `z.union([literal(''→null), validator, null]).optional()`). Three
+// inputs all collapse to null at parse: `undefined` (omit), `null`
+// (explicit clear), `''` (HTML form clear). The `body.X !== undefined`
+// spread in the PUT handler distinguishes omit from clear; once past
+// the schema, an empty string never reaches the DB.
 //
 // All shared validation rules (length caps, the host-allowlist on
 // image URLs, slug/cuid formats) live in this base shape exactly once.
@@ -239,13 +262,7 @@ const blogPostBaseShape = {
   metaTitle: nullishText(100),
   metaDescription: nullishText(160, 'Meta description cannot exceed 160 characters'),
   keywords: z.array(z.string().min(1).max(50)).max(10, 'Cannot have more than 10 keywords'),
-  canonicalUrl: z
-    .union([
-      z.literal('').transform(() => null),
-      z.url('Please enter a valid URL').max(2048),
-      z.null(),
-    ])
-    .optional(),
+  canonicalUrl: nullishUrl(),
   // Social card image fields reuse featuredImageSchema — same host
   // allowlist applies because these get scraped by Twitter/Facebook
   // unfurlers and would render broken if pointed at unwhitelisted CDNs.

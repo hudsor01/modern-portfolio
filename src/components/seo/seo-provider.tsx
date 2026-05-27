@@ -3,7 +3,7 @@
 import type React from 'react'
 import { usePathname } from 'next/navigation'
 import { GlobalSEO } from './global-seo'
-import { canonicalUrl as buildCanonicalUrl } from '@/lib/absolute-url'
+import { canonicalUrl } from '@/lib/absolute-url'
 
 interface SEOProviderProps {
   children: React.ReactNode
@@ -41,7 +41,7 @@ export function SEOProvider({
   const pathname = usePathname()
   // Pin canonical to prod even on preview deploys — Search Console
   // expects the production URL in `<link rel=canonical>`.
-  const canonicalUrl = buildCanonicalUrl(pathname)
+  const pageCanonicalUrl = canonicalUrl(pathname)
 
   return (
     <>
@@ -53,7 +53,7 @@ export function SEOProvider({
         ogType={ogType}
         article={article}
         noIndex={noIndex}
-        canonicalUrl={canonicalUrl}
+        canonicalUrl={pageCanonicalUrl}
       />
       {children}
     </>

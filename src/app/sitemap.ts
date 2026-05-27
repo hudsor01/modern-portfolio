@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { createContextLogger } from '@/lib/logger'
-import { SITE_ORIGIN, safeFeaturedImageUrl } from '@/lib/absolute-url'
+import { SITE_ORIGIN } from '@/lib/absolute-url'
+import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 
 const logger = createContextLogger('Sitemap')
 
@@ -149,7 +150,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       // safeFeaturedImageUrl re-validates at read time. Shared with
       // BlogPostJsonLd so sitemap and JSON-LD can never diverge on
       // what's considered a "safe" image URL for a given post.
-      const validFeatured = safeFeaturedImageUrl(post.featuredImage, post.title, 'Blog Post')
+      const validFeatured = safeFeaturedImageUrl(post.featuredImage, post.title)
 
       return {
         url: `${baseUrl}/blog/${post.slug}`,

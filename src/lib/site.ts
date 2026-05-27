@@ -1,24 +1,21 @@
 import type { SiteConfig } from '@/types/seo'
+import { SITE_ORIGIN } from '@/lib/absolute-url'
 
-// Production-aware site URL.
-//
-// NEXT_PUBLIC_* env vars are inlined into the bundle at BUILD time. If the var
-// isn't set on the Vercel project at build, the fallback value gets baked into
-// the bundle and ships to production. Falling back to localhost was leaking
-// `http://localhost:3000` into Person/Article/ProfessionalService JSON-LD
-// schemas on prod (caught by Rich Results Test 2026-05-07). Mirror the
-// production-aware default that env-validation.ts already enforces server-side.
-const productionUrl = 'https://richardwhudsonjr.com'
-const devUrl = 'http://localhost:3000'
-const resolvedSiteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.NODE_ENV === 'production' ? productionUrl : devUrl)
+// `siteConfig.url` and `siteConfig.author.url` were previously
+// env-aware (NEXT_PUBLIC_SITE_URL || prod-on-NODE_ENV=production ||
+// localhost). That fallback chain was leaking `http://localhost:3000`
+// into Person/Article/ProfessionalService JSON-LD schemas on preview
+// deploys (caught by Rich Results Test 2026-05-07). The fix in that
+// incident was the env-aware fallback; the canonical fix here is to
+// pin SEO URLs to the production origin via `SITE_ORIGIN`, eliminating
+// the env source entirely. siteConfig still owns non-URL identity
+// (name, description, social links, author name/email).
 
 export const siteConfig: SiteConfig = {
   name: 'Richard Hudson - Modern Portfolio',
   description:
     'Senior Revenue Operations Leader & Full-Stack Developer showcasing enterprise analytics platforms, data visualizations, and technical projects.',
-  url: resolvedSiteUrl,
+  url: SITE_ORIGIN,
   links: {
     github: 'https://github.com/hudsor01',
     linkedin: 'https://www.linkedin.com/in/hudsor01',
@@ -27,7 +24,7 @@ export const siteConfig: SiteConfig = {
   author: {
     name: 'Richard Hudson',
     email: 'contact@richardwhudsonjr.com',
-    url: resolvedSiteUrl,
+    url: SITE_ORIGIN,
   },
 }
 

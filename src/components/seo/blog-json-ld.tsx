@@ -6,7 +6,8 @@
 
 import type { BlogPostData } from '@/types/api'
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
-import { SITE_ORIGIN, safeFeaturedImageUrl } from '@/lib/absolute-url'
+import { SITE_ORIGIN } from '@/lib/absolute-url'
+import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 
 /**
  * Blog Website JSON-LD Schema
@@ -107,7 +108,7 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
     // off-allowlist host) doesn't ship verbatim into Google's
     // structured-data validator. Bad values fall back to the branded
     // /api/og card — same guarantee as the sitemap.
-    image: safeFeaturedImageUrl(post.featuredImage, post.title, 'Blog Post'),
+    image: safeFeaturedImageUrl(post.featuredImage, post.title),
     url: `${SITE_ORIGIN}/blog/${post.slug}`,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,
