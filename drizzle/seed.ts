@@ -685,8 +685,8 @@ async function seedBlogPosts(
       categoryId: categoryList.find((c) => c.slug === 'revenue-operations')?.id,
       status: 'PUBLISHED' as PostStatus,
       featuredImage:
-        'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=600&fit=crop&crop=center&q=80',
-      featuredImageAlt: 'Revenue Operations Strategy Dashboard',
+        'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=1200&h=630&fit=crop&q=80',
+      featuredImageAlt: 'Open MacBook on a clean desk',
       metaTitle: 'Complete Revenue Operations Strategy Guide 2024',
       keywords: ['revenue operations', 'strategy', 'business growth', 'process optimization'],
       tagSlugs: ['kpis', 'dashboards', 'forecasting'],
@@ -698,8 +698,8 @@ async function seedBlogPosts(
       categoryId: categoryList.find((c) => c.slug === 'sales-technology')?.id,
       status: 'PUBLISHED' as PostStatus,
       featuredImage:
-        'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&crop=center&q=80',
-      featuredImageAlt: 'Interactive Sales Performance Dashboard',
+        'https://images.unsplash.com/photo-1686061592689-312bbfb5c055?w=1200&h=630&fit=crop&q=80',
+      featuredImageAlt: 'Analytics dashboard with sparkline charts and cohort grid',
       metaTitle: 'Sales Dashboard Design Best Practices',
       keywords: ['sales dashboards', 'data visualization', 'KPIs', 'Tableau'],
       tagSlugs: ['dashboards', 'kpis', 'tableau', 'salesforce'],
@@ -711,8 +711,8 @@ async function seedBlogPosts(
       categoryId: categoryList.find((c) => c.slug === 'customer-analytics')?.id,
       status: 'PUBLISHED' as PostStatus,
       featuredImage:
-        'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=600&fit=crop&crop=center&q=80',
-      featuredImageAlt: 'Customer Churn Analysis Visualization',
+        'https://images.unsplash.com/photo-1573496528681-9b0f4fb0c660?w=1200&h=630&fit=crop&q=80',
+      featuredImageAlt: "O'Reilly Python book in shallow focus",
       metaTitle: 'Customer Churn Analysis Guide with Python',
       keywords: ['customer churn', 'python', 'machine learning', 'predictive analytics'],
       tagSlugs: ['python', 'machine-learning', 'cohort-analysis'],
@@ -724,8 +724,8 @@ async function seedBlogPosts(
       categoryId: categoryList.find((c) => c.slug === 'marketing-attribution')?.id,
       status: 'PUBLISHED' as PostStatus,
       featuredImage:
-        'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop&crop=center&q=80',
-      featuredImageAlt: 'Marketing Attribution Model Diagram',
+        'https://images.unsplash.com/photo-1586936893354-362ad6ae47ba?w=1200&h=630&fit=crop&q=80',
+      featuredImageAlt: 'Team mapping a customer journey with sticky notes on a wall',
       metaTitle: 'Multi-Touch Attribution Models Guide',
       keywords: [
         'marketing attribution',
@@ -742,8 +742,8 @@ async function seedBlogPosts(
       categoryId: categoryList.find((c) => c.slug === 'sales-technology')?.id,
       status: 'PUBLISHED' as PostStatus,
       featuredImage:
-        'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800&h=600&fit=crop&crop=center&q=80',
-      featuredImageAlt: 'Salesforce Analytics Cloud Dashboard',
+        'https://images.unsplash.com/photo-1759752394755-1241472b589d?w=1200&h=630&fit=crop&q=80',
+      featuredImageAlt: 'Hands typing on a MacBook showing a dark enterprise dashboard',
       metaTitle: 'Salesforce Revenue Analytics Setup Guide',
       keywords: ['Salesforce', 'revenue analytics', 'CRM', 'business intelligence'],
       tagSlugs: ['salesforce', 'dashboards', 'kpis'],
@@ -755,8 +755,8 @@ async function seedBlogPosts(
       categoryId: categoryList.find((c) => c.slug === 'data-analytics')?.id,
       status: 'PUBLISHED' as PostStatus,
       featuredImage:
-        'https://images.unsplash.com/photo-1590479773265-7464e5d48118?w=800&h=600&fit=crop&crop=center&q=80',
-      featuredImageAlt: 'Lead Scoring Model Visualization',
+        'https://images.unsplash.com/photo-1758685734643-db77920292bc?w=1200&h=630&fit=crop&q=80',
+      featuredImageAlt: 'Professor writing complex mathematical equations on a chalkboard',
       metaTitle: 'Effective Lead Scoring Model Implementation',
       keywords: ['lead scoring', 'predictive analytics', 'machine learning', 'sales qualification'],
       tagSlugs: ['lead-scoring', 'machine-learning', 'python'],
