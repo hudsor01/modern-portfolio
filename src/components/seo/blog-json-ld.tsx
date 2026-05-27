@@ -101,7 +101,11 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.excerpt || post.metaDescription,
-    image: post.featuredImage ? `https://richardwhudsonjr.com${post.featuredImage}` : undefined,
+    image: post.featuredImage
+      ? post.featuredImage.startsWith('http')
+        ? post.featuredImage
+        : `https://richardwhudsonjr.com${post.featuredImage}`
+      : undefined,
     url: `https://richardwhudsonjr.com/blog/${post.slug}`,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,

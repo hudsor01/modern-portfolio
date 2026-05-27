@@ -769,7 +769,7 @@ async function seedBlogPosts(
       categoryId: categoryList.find((c) => c.slug === 'revenue-operations')?.id,
       status: 'DRAFT' as PostStatus,
       featuredImage:
-        'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=800&h=600&fit=crop&crop=center&q=80',
+        'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=1200&h=630&fit=crop&q=80',
       featuredImageAlt: 'Future Technology Trends in Revenue Operations',
       metaTitle: 'Future of Revenue Operations Technology Trends',
       keywords: ['revenue operations', 'technology trends', 'AI', 'automation'],
@@ -783,7 +783,7 @@ async function seedBlogPosts(
       status: 'SCHEDULED' as PostStatus,
       scheduledAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       featuredImage:
-        'https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=600&fit=crop&crop=center&q=80',
+        'https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&h=630&fit=crop&q=80',
       featuredImageAlt: 'Customer Lifetime Value Analysis Dashboard',
       metaTitle: 'Customer Lifetime Value Optimization Guide',
       keywords: ['customer lifetime value', 'CLV', 'retention analysis', 'revenue forecasting'],

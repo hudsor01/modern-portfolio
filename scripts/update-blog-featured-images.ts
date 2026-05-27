@@ -19,7 +19,7 @@
 // rejects script execution outside Next.js's server context.
 import { neon } from '@neondatabase/serverless'
 import { drizzle } from 'drizzle-orm/neon-http'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { blogPosts } from '@/db/schema'
 
 if (!process.env.DATABASE_URL) {
@@ -181,9 +181,14 @@ async function main() {
   let updated = 0
   let skipped = 0
   for (const { slug, photoId, alt } of UPDATES) {
+    // Bump updatedAt: Drizzle has no $onUpdate hook on this column, so a
+    // bare .set() leaves updatedAt stale. Sitemap.ts reads it into the
+    // <lastmod> field, and Google only re-crawls when <lastmod> moves —
+    // without this, the whole point of swapping the image is invisible
+    // to Search Console. Same reason scripts/touch-blog-lastmod.ts exists.
     const result = await db
       .update(blogPosts)
-      .set({ featuredImage: u(photoId), featuredImageAlt: alt })
+      .set({ featuredImage: u(photoId), featuredImageAlt: alt, updatedAt: sql`NOW()` })
       .where(eq(blogPosts.slug, slug))
       .returning({ slug: blogPosts.slug, featuredImage: blogPosts.featuredImage })
 
@@ -197,10 +202,13 @@ async function main() {
   }
 
   console.log(`\nUpdated ${updated} blog posts (${skipped} not found).`)
+  // Exit nonzero if any slug was missing — otherwise a typo or schema
+  // drift hides behind a clean exit and the operator declares success.
+  return skipped
 }
 
 main()
-  .then(() => process.exit(0))
+  .then((skipped) => process.exit(skipped > 0 ? 1 : 0))
   .catch((err) => {
     console.error('update-blog-featured-images failed:', err)
     process.exit(1)
