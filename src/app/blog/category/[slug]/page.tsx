@@ -13,6 +13,7 @@ import { and, desc, eq, isNull } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { blogPosts, categories } from '@/db/schema'
 import { createContextLogger } from '@/lib/logger'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 // Force runtime rendering — see /blog/[slug]/page.tsx for the rationale.
 // notFound() inside ISR-rendered Server Components ships HTTP 200 with a
@@ -107,7 +108,7 @@ export async function generateMetadata({ params }: BlogCategoryPageProps): Promi
     openGraph: {
       title,
       description,
-      url: `https://richardwhudsonjr.com/blog/category/${category.slug}`,
+      url: canonicalUrl(`/blog/category/${category.slug}`),
       siteName: 'Richard Hudson',
       type: 'website',
     },
@@ -117,7 +118,7 @@ export async function generateMetadata({ params }: BlogCategoryPageProps): Promi
       description,
     },
     alternates: {
-      canonical: `https://richardwhudsonjr.com/blog/category/${category.slug}`,
+      canonical: canonicalUrl(`/blog/category/${category.slug}`),
     },
   }
 }
@@ -155,11 +156,11 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
       <BreadcrumbListJsonLd
         nonce={nonce}
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Blog', url: 'https://richardwhudsonjr.com/blog' },
+          { name: 'Home', url: SITE_ORIGIN },
+          { name: 'Blog', url: canonicalUrl('/blog') },
           {
             name: category.name,
-            url: `https://richardwhudsonjr.com/blog/category/${category.slug}`,
+            url: canonicalUrl(`/blog/category/${category.slug}`),
           },
         ]}
       />

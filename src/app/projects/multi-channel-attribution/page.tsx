@@ -2,13 +2,16 @@ import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import MultiChannelPageContent from './_components/MultiChannelPageContent'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 export const dynamic = 'force-static'
 
-const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
-  title: 'Multi-Channel Attribution Analytics Dashboard',
-  subtitle: 'Revenue Operations Project',
-}).toString()}`
+const ogImageUrl = canonicalUrl(
+  `/api/og?${new URLSearchParams({
+    title: 'Multi-Channel Attribution Analytics Dashboard',
+    subtitle: 'Revenue Operations Project',
+  }).toString()}`
+)
 
 export const metadata: Metadata = {
   title: 'Multi-Channel Attribution Analytics Dashboard',
@@ -18,7 +21,7 @@ export const metadata: Metadata = {
     title: 'Multi-Channel Attribution Analytics Dashboard',
     description:
       'Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints. Delivering 92.4% attribution accuracy and $2.3M ROI optimization through data-driven attribution modeling and cross-channel insights.',
-    url: 'https://richardwhudsonjr.com/projects/multi-channel-attribution',
+    url: canonicalUrl('/projects/multi-channel-attribution'),
     siteName: 'Richard Hudson',
     images: [
       {
@@ -38,7 +41,7 @@ export const metadata: Metadata = {
     images: [ogImageUrl],
   },
   alternates: {
-    canonical: 'https://richardwhudsonjr.com/projects/multi-channel-attribution',
+    canonical: canonicalUrl('/projects/multi-channel-attribution'),
   },
 }
 
@@ -49,11 +52,11 @@ export default async function MultiChannelAttributionPage() {
       <BreadcrumbListJsonLd
         nonce={nonce}
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Home', url: SITE_ORIGIN },
+          { name: 'Projects', url: canonicalUrl('/projects') },
           {
             name: 'Multi-Channel Attribution Analytics',
-            url: 'https://richardwhudsonjr.com/projects/multi-channel-attribution',
+            url: canonicalUrl('/projects/multi-channel-attribution'),
           },
         ]}
       />

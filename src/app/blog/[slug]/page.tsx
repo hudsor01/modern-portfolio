@@ -93,8 +93,22 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   // so a post with a perfectly good Unsplash hero shared as a generic
   // brand placeholder on Twitter/LinkedIn — three SEO surfaces
   // disagreed about the canonical image for the same URL.
-  const ogImage = safeFeaturedImageUrl(post.featuredImage, post.title)
+  //
+  // `category` flows through to /api/og when isFallback so the card
+  // still renders the bronze category badge (the same `?category=…`
+  // param that the pre-helper hand-rolled URL passed).
+  const ogImage = safeFeaturedImageUrl(post.featuredImage, {
+    title: post.title,
+    subtitle: 'Blog Post',
+    category: post.category?.name,
+  })
+  // Alt-text contract: when ogImage.url IS the fallback card, the
+  // stored featuredImageAlt describes the absent hero (not the card),
+  // so it's a misleading alt for screen readers / unfurlers. Use the
+  // title — which is the visible text on the /api/og card.
+  const ogImageAlt = ogImage.isFallback ? post.title : post.featuredImageAlt || post.title
 
+  const postUrl = canonicalUrl(`/blog/${post.slug}`)
   return {
     title: post.metaTitle || post.title,
     description: post.metaDescription || post.excerpt,
@@ -102,14 +116,14 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     openGraph: {
       title: post.title,
       description: post.excerpt || post.metaDescription,
-      url: canonicalUrl(`/blog/${post.slug}`),
+      url: postUrl,
       siteName: 'Richard Hudson - RevOps Professional',
       images: [
         {
           url: ogImage.url,
           width: 1200,
           height: 630,
-          alt: post.featuredImageAlt || post.title,
+          alt: ogImageAlt,
         },
       ],
       locale: 'en_US',
@@ -127,7 +141,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       images: [ogImage.url],
     },
     alternates: {
-      canonical: canonicalUrl(`/blog/${post.slug}`),
+      canonical: postUrl,
     },
   }
 }
@@ -145,9 +159,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <BlogPostJsonLd post={post} />
       <BreadcrumbListJsonLd
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Blog', url: 'https://richardwhudsonjr.com/blog' },
-          { name: post.title, url: `https://richardwhudsonjr.com/blog/${post.slug}` },
+          { name: 'Home', url: canonicalUrl('/') },
+          { name: 'Blog', url: canonicalUrl('/blog') },
+          { name: post.title, url: canonicalUrl(`/blog/${post.slug}`) },
         ]}
       />
       <div className="min-h-screen bg-background">

@@ -6,13 +6,16 @@ import { analyticsDataService } from '@/lib/data-service/service'
 import { monthlyRevenue2024, partnerGroupsData } from '@/app/projects/data/partner-analytics'
 
 import { RevenueKPIClient } from './_components/RevenueKPIClient'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 export const dynamic = 'force-static'
 
-const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
-  title: 'Revenue KPI Dashboard - Partner Analytics & Business Intelligence',
-  subtitle: 'Revenue Operations Project',
-}).toString()}`
+const ogImageUrl = canonicalUrl(
+  `/api/og?${new URLSearchParams({
+    title: 'Revenue KPI Dashboard - Partner Analytics & Business Intelligence',
+    subtitle: 'Revenue Operations Project',
+  }).toString()}`
+)
 
 export const metadata: Metadata = {
   title: 'Revenue KPI Dashboard - Partner Analytics & Business Intelligence',
@@ -22,7 +25,7 @@ export const metadata: Metadata = {
     title: 'Revenue KPI Dashboard - Partner Analytics & Business Intelligence',
     description:
       'Real-time revenue analytics dashboard featuring partner performance metrics, growth trends, and business intelligence for data-driven decision making. Built with React, TypeScript, and Recharts.',
-    url: 'https://richardwhudsonjr.com/projects/revenue-kpi',
+    url: canonicalUrl('/projects/revenue-kpi'),
     siteName: 'Richard Hudson',
     images: [
       {
@@ -42,7 +45,7 @@ export const metadata: Metadata = {
     images: [ogImageUrl],
   },
   alternates: {
-    canonical: 'https://richardwhudsonjr.com/projects/revenue-kpi',
+    canonical: canonicalUrl('/projects/revenue-kpi'),
   },
 }
 
@@ -81,11 +84,11 @@ export default async function RevenueKPI() {
       <BreadcrumbListJsonLd
         nonce={nonce}
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Home', url: SITE_ORIGIN },
+          { name: 'Projects', url: canonicalUrl('/projects') },
           {
             name: 'Revenue KPI Dashboard',
-            url: 'https://richardwhudsonjr.com/projects/revenue-kpi',
+            url: canonicalUrl('/projects/revenue-kpi'),
           },
         ]}
       />

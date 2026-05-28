@@ -3,6 +3,7 @@ import { generateMetadata } from '@/app/shared-metadata'
 import { ProfessionalServiceJsonLd } from '@/components/seo/json-ld/professional-service-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import ContactPageClient from './contact-client'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 export const dynamic = 'force-static'
 export const metadata = generateMetadata(
@@ -19,8 +20,8 @@ export default async function ContactPage() {
       <BreadcrumbListJsonLd
         nonce={nonce}
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Contact', url: 'https://richardwhudsonjr.com/contact' },
+          { name: 'Home', url: SITE_ORIGIN },
+          { name: 'Contact', url: canonicalUrl('/contact') },
         ]}
       />
       <ContactPageClient />

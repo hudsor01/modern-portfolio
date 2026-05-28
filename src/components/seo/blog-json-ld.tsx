@@ -109,8 +109,15 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
     // structured-data validator. Bad values fall back to the branded
     // /api/og card — JSON-LD always needs an image (BlogPosting
     // schema requires it), unlike the sitemap which omits <image:loc>
-    // for the fallback case.
-    image: safeFeaturedImageUrl(post.featuredImage, post.title).url,
+    // for the fallback case. Sitemap aggregates the bad-row signal
+    // once per build; this surface isn't separately logged because
+    // every BlogPostJsonLd render is also covered by the sitemap log
+    // for the same post (and JSON-LD renders happen on every blog
+    // page render, which would amplify the same signal N×).
+    image: safeFeaturedImageUrl(post.featuredImage, {
+      title: post.title,
+      subtitle: 'Blog Post',
+    }).url,
     url: `${SITE_ORIGIN}/blog/${post.slug}`,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,

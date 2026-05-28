@@ -22,6 +22,7 @@ import {
   generateSlug,
 } from '@/lib/api-blog'
 import { createBlogPostSchema } from '@/lib/schemas'
+import { SITE_ORIGIN, canonicalUrl } from '@/lib/absolute-url'
 
 // POST/PUT contract asymmetry (kept here so a future admin client knows
 // what to send):
@@ -270,15 +271,27 @@ export async function POST(request: NextRequest) {
     // Fire-and-forget: do NOT await — must not delay the 201 response (per D-04)
     if (newPost.status === 'PUBLISHED') {
       const indexNowKey = process.env.INDEXNOW_KEY
-      if (indexNowKey) {
-        const postUrl = `https://richardwhudsonjr.com/blog/${newPost.slug}`
+      if (!indexNowKey) {
+        // Observability: silent no-op without a log would make a
+        // missing env var (key rotation that forgot to update Vercel)
+        // invisible — new posts would stop pinging Bing/Yandex with
+        // no signal until SEO traffic dipped.
+        logger.warn('IndexNow ping skipped: INDEXNOW_KEY env var is not set', {
+          slug: newPost.slug,
+          silentSkip: true,
+        })
+      } else {
+        const postUrl = canonicalUrl(`/blog/${newPost.slug}`)
+        // IndexNow `host` field is a bare hostname (no scheme). Derive
+        // from SITE_ORIGIN so a future origin change updates here too.
+        const indexNowHost = new URL(SITE_ORIGIN).host
         fetch('https://api.indexnow.org/indexnow', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json; charset=utf-8' },
           body: JSON.stringify({
-            host: 'richardwhudsonjr.com',
+            host: indexNowHost,
             key: indexNowKey,
-            keyLocation: `https://richardwhudsonjr.com/${indexNowKey}.txt`,
+            keyLocation: canonicalUrl(`/${indexNowKey}.txt`),
             urlList: [postUrl],
           }),
         })
@@ -297,6 +310,9 @@ export async function POST(request: NextRequest) {
           })
       }
     }
+    // Note: the contact-form removed `Pre-existing POST/PUT contract
+    // doc-comment now lives at the top of this file` covers default
+    // semantics already.
 
     const response: ApiResponse<BlogPostData> = {
       data: transformToBlogPostData(newPost),

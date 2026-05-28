@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { ArrowRight, Mail } from 'lucide-react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 const EXPERIENCE_STATS = [
   { label: 'Projects Delivered', value: '10+', icon: 'check-circle' },
@@ -99,8 +100,8 @@ export default function AboutPage() {
       />
       <BreadcrumbListJsonLd
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'About', url: 'https://richardwhudsonjr.com/about' },
+          { name: 'Home', url: SITE_ORIGIN },
+          { name: 'About', url: canonicalUrl('/about') },
         ]}
       />
       <Navbar />

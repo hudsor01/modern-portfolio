@@ -2,13 +2,16 @@ import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import PartnerPerformancePageContent from './_components/PartnerPerformancePageContent'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 export const dynamic = 'force-static'
 
-const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
-  title: 'Partner Performance Intelligence Dashboard',
-  subtitle: 'Revenue Operations Project',
-}).toString()}`
+const ogImageUrl = canonicalUrl(
+  `/api/og?${new URLSearchParams({
+    title: 'Partner Performance Intelligence Dashboard',
+    subtitle: 'Revenue Operations Project',
+  }).toString()}`
+)
 
 export const metadata: Metadata = {
   title: 'Partner Performance Intelligence Dashboard',
@@ -18,7 +21,7 @@ export const metadata: Metadata = {
     title: 'Partner Performance Intelligence Dashboard',
     description:
       'Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem. Real-time performance tracking following industry-standard 80/20 partner revenue distribution.',
-    url: 'https://richardwhudsonjr.com/projects/partner-performance',
+    url: canonicalUrl('/projects/partner-performance'),
     siteName: 'Richard Hudson',
     images: [
       {
@@ -38,7 +41,7 @@ export const metadata: Metadata = {
     images: [ogImageUrl],
   },
   alternates: {
-    canonical: 'https://richardwhudsonjr.com/projects/partner-performance',
+    canonical: canonicalUrl('/projects/partner-performance'),
   },
 }
 
@@ -49,11 +52,11 @@ export default async function PartnerPerformancePage() {
       <BreadcrumbListJsonLd
         nonce={nonce}
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Home', url: SITE_ORIGIN },
+          { name: 'Projects', url: canonicalUrl('/projects') },
           {
             name: 'Partner Performance Intelligence',
-            url: 'https://richardwhudsonjr.com/projects/partner-performance',
+            url: canonicalUrl('/projects/partner-performance'),
           },
         ]}
       />

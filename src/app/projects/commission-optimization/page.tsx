@@ -2,13 +2,16 @@ import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import CommissionPageContent from './_components/CommissionPageContent'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 export const dynamic = 'force-static'
 
-const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
-  title: 'Commission & Incentive Optimization System',
-  subtitle: 'Revenue Operations Project',
-}).toString()}`
+const ogImageUrl = canonicalUrl(
+  `/api/og?${new URLSearchParams({
+    title: 'Commission & Incentive Optimization System',
+    subtitle: 'Revenue Operations Project',
+  }).toString()}`
+)
 
 export const metadata: Metadata = {
   title: 'Commission & Incentive Optimization System',
@@ -18,7 +21,7 @@ export const metadata: Metadata = {
     title: 'Commission & Incentive Optimization System',
     description:
       'Advanced commission management and partner incentive optimization platform managing $254K+ commission structures. Automated tier adjustments with 23% average commission rate optimization and ROI-driven compensation strategy delivering 34% performance improvement and 87.5% automation efficiency.',
-    url: 'https://richardwhudsonjr.com/projects/commission-optimization',
+    url: canonicalUrl('/projects/commission-optimization'),
     siteName: 'Richard Hudson',
     images: [
       {
@@ -38,7 +41,7 @@ export const metadata: Metadata = {
     images: [ogImageUrl],
   },
   alternates: {
-    canonical: 'https://richardwhudsonjr.com/projects/commission-optimization',
+    canonical: canonicalUrl('/projects/commission-optimization'),
   },
 }
 
@@ -49,11 +52,11 @@ export default async function CommissionOptimizationPage() {
       <BreadcrumbListJsonLd
         nonce={nonce}
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Home', url: SITE_ORIGIN },
+          { name: 'Projects', url: canonicalUrl('/projects') },
           {
             name: 'Commission & Incentive Optimization',
-            url: 'https://richardwhudsonjr.com/projects/commission-optimization',
+            url: canonicalUrl('/projects/commission-optimization'),
           },
         ]}
       />

@@ -60,7 +60,10 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   // when not — same contract as blog/[slug] generateMetadata and the
   // sitemap. Subtitle reflects the project domain so the OG card
   // copy matches the page context.
-  const ogImage = safeFeaturedImageUrl(project.image, project.title, 'Revenue Operations Project')
+  const ogImage = safeFeaturedImageUrl(project.image, {
+    title: project.title,
+    subtitle: 'Revenue Operations Project',
+  })
   const projectUrl = canonicalUrl(`/projects/${slug}`)
 
   return {
