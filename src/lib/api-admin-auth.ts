@@ -1,6 +1,6 @@
 import 'server-only'
-import { timingSafeEqual } from 'node:crypto'
 import { env } from '@/lib/env-validation'
+import { timingSafeEqualString } from '@/lib/timing-safe-equal'
 
 /**
  * Constant-time check for the admin bearer token.
@@ -26,8 +26,5 @@ export function isAdminRequest(request: Request): boolean {
   if (!match) return false
 
   const provided = (match[1] ?? '').trim()
-  const a = Buffer.from(provided)
-  const b = Buffer.from(expected)
-  if (a.length !== b.length) return false
-  return timingSafeEqual(a, b)
+  return timingSafeEqualString(provided, expected)
 }

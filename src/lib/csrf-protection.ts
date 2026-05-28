@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
 import crypto from 'node:crypto'
 import { createContextLogger } from '@/lib/logger'
+import { timingSafeEqualString } from '@/lib/timing-safe-equal'
 
 const logger = createContextLogger('CSRFProtection')
 
@@ -52,16 +53,7 @@ export async function validateCSRFToken(requestToken: string | undefined): Promi
     return false
   }
 
-  const requestBuffer = Buffer.from(requestToken)
-  const storedBuffer = Buffer.from(storedToken)
-
-  // timingSafeEqual throws RangeError on length mismatch — guard before calling
-  // so a malformed header returns 403 (via the caller) instead of crashing to 500.
-  if (requestBuffer.length !== storedBuffer.length) {
-    return false
-  }
-
-  return crypto.timingSafeEqual(requestBuffer, storedBuffer)
+  return timingSafeEqualString(requestToken, storedToken)
 }
 
 /**
