@@ -183,14 +183,15 @@ export const blogPosts = pgTable(
     // rows can still have NULL featuredImage because Postgres treats
     // NULLs as distinct in unique indexes by default.
     //
-    // Applied to prod via scripts/apply-featured-image-unique-index.ts
-    // (raw `CREATE UNIQUE INDEX IF NOT EXISTS … WHERE`). drizzle-kit
-    // has no baseline against the Prisma-era schema, so `bun run
-    // db:generate` would emit a 0000 full-schema migration unsafe to
-    // apply against prod. Until baselining via `drizzle-kit pull` (the
-    // canonical drizzle-kit recipe for adopting an existing DB), this
-    // declaration is documentation + DSL-typesafety only; the DDL
-    // truth lives in the focused script.
+    // Originally applied to prod via
+    // scripts/apply-featured-image-unique-index.ts (raw `CREATE UNIQUE
+    // INDEX IF NOT EXISTS … WHERE`) before drizzle-kit had a baseline.
+    // As of the 0000_rename_referer_to_referrer migration, the snapshot
+    // in drizzle/migrations/meta/0000_snapshot.json includes this index,
+    // so future `bun run db:generate` runs diff against it and will
+    // emit a migration for any DSL change here (e.g., updating the
+    // WHERE clause). The apply script is kept for backfilling against
+    // any DB that pre-dates the baseline.
     //
     // Limitation: partial UNIQUE INDEX cannot be DEFERRABLE in
     // Postgres. scripts/update-blog-featured-images.ts pre-checks for
