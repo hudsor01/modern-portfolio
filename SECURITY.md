@@ -76,12 +76,13 @@ Defensive controls currently in place:
   `src/lib/api-csrf.ts`
 - **Rate limiting** on contact submissions — `src/lib/rate-limiter/`
 - **Input validation** — all external input parsed through Zod schemas
-- **URL protocol allowlist** — URL fields constrained to `http` / `https` /
-  `mailto` via Zod 4's `protocol` option (`src/lib/schemas.ts`) and a
-  matching DOMPurify-pattern runtime helper (`isSafeUrl` in
+- **URL protocol allowlist** — URL fields constrained to `http` / `https`
+  via Zod 4's `protocol` option (`src/lib/schemas.ts`) and a matching
+  DOMPurify-pattern runtime helper (`isSafeUrl` in
   `src/lib/sanitization.ts`). Defends against `javascript:` / `data:` /
   `vbscript:` injection, including the WHATWG-parser-divergence bypass
-  class (CVE-2026-31809 — embedded ASCII tab/CR/LF in the scheme)
+  class (CVE-2026-31809 — embedded ASCII tab/CR/LF in the scheme) and
+  protocol-relative URLs (`//evil.com`, open-redirect class)
 - **Output sanitization** — `isomorphic-dompurify` for any user-provided HTML
 - **Structured logging** — `console.*` banned in application code; all error
   paths route through `src/lib/logger.ts` → Sentry in production
