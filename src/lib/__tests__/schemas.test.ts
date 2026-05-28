@@ -61,6 +61,10 @@ describe('urlSchema', () => {
     expect(urlSchema.safeParse('https://example.com/path').success).toBe(true)
   })
 
+  it('accepts an http URL', () => {
+    expect(urlSchema.safeParse('http://example.com').success).toBe(true)
+  })
+
   it('rejects non-URLs', () => {
     expect(urlSchema.safeParse('not a url').success).toBe(false)
   })
@@ -68,6 +72,26 @@ describe('urlSchema', () => {
   it('rejects URLs over 2048 chars', () => {
     const long = `https://example.com/${'a'.repeat(2050)}`
     expect(urlSchema.safeParse(long).success).toBe(false)
+  })
+
+  // Protocol allowlist — bare z.url() accepts these because they are
+  // WHATWG-valid URLs. The `protocol: /^https?$/` option rejects them
+  // at the schema boundary. See SECURITY.md → Application.
+  it('rejects javascript: URLs (XSS vector)', () => {
+    expect(urlSchema.safeParse('javascript:alert(1)').success).toBe(false)
+  })
+
+  it('rejects data: URLs', () => {
+    expect(urlSchema.safeParse('data:text/html,<script>evil</script>').success).toBe(false)
+  })
+
+  it('rejects vbscript: URLs', () => {
+    expect(urlSchema.safeParse('vbscript:msgbox(1)').success).toBe(false)
+  })
+
+  it('rejects non-http(s) protocols (ftp, file)', () => {
+    expect(urlSchema.safeParse('ftp://example.com').success).toBe(false)
+    expect(urlSchema.safeParse('file:///etc/passwd').success).toBe(false)
   })
 })
 
@@ -134,6 +158,25 @@ describe('nullishUrl', () => {
   it('rejects URLs over the max length', () => {
     const tiny = nullishUrl(20)
     expect(tiny.safeParse('https://example.com/this-is-too-long').success).toBe(false)
+  })
+
+  // Protocol allowlist — `canonicalUrl` flows through this helper and
+  // is stored to blogPosts. Even though no current render path emits it,
+  // a `javascript:` value in the DB is a footgun for any future consumer.
+  it('rejects javascript: URLs (XSS vector for any future render path)', () => {
+    expect(schema.safeParse('javascript:alert(1)').success).toBe(false)
+  })
+
+  it('rejects data: URLs', () => {
+    expect(schema.safeParse('data:text/html,<script>evil</script>').success).toBe(false)
+  })
+
+  it('rejects vbscript: URLs', () => {
+    expect(schema.safeParse('vbscript:msgbox(1)').success).toBe(false)
+  })
+
+  it('accepts http URLs in addition to https', () => {
+    expect(schema.safeParse('http://example.com').success).toBe(true)
   })
 })
 

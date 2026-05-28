@@ -18,8 +18,16 @@ export const emailSchema = z
   .email('Please enter a valid email address')
   .max(254, 'Email address is too long')
 
-// URL validation
-export const urlSchema = z.url('Please enter a valid URL').max(2048, 'URL is too long')
+// URL validation. `protocol: /^https?$/` is the Zod 4 documented idiom
+// for rejecting `javascript:` / `data:` / `vbscript:` etc. at the schema
+// boundary — bare `z.url()` accepts any WHATWG-valid URL including
+// `javascript:alert(1)`. The runtime `isSafeUrl` helper in
+// `src/lib/sanitization.ts` is the matching defense for non-schema sinks
+// (and additionally rejects whitespace-injection bypasses per
+// CVE-2026-31809). See SECURITY.md → Application → Input validation.
+export const urlSchema = z
+  .url({ protocol: /^https?$/, error: 'Please enter a valid http(s) URL' })
+  .max(2048, 'URL is too long')
 
 // Coerce empty string → null on parse. Lets HTML form submissions
 // (where missing fields become '') land in the canonical "cleared"
@@ -51,12 +59,19 @@ export const nullishText = (max: number, message?: string) =>
  *
  * Used for nullable URL columns (canonicalUrl, etc.). For featured
  * images, use `featuredImageSchema` which adds the host allowlist.
+ *
+ * The `protocol: /^https?$/` constraint blocks `javascript:` / `data:` /
+ * `vbscript:` / etc. at the schema boundary — these would otherwise pass
+ * bare `z.url()` because Zod 4's URL validator delegates to WHATWG's
+ * `new URL()` which accepts any well-formed scheme. Hostname is left
+ * unconstrained on purpose: `canonicalUrl` legitimately points to
+ * arbitrary external domains.
  */
 export const nullishUrl = (max = 2048) =>
   z
     .union([
       z.literal('').transform(() => null),
-      z.url('Please enter a valid URL').max(max),
+      z.url({ protocol: /^https?$/, error: 'Please enter a valid http(s) URL' }).max(max),
       z.null(),
     ])
     .optional()
