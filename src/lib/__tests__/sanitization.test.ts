@@ -106,6 +106,7 @@ describe('stripHtml', () => {
 })
 
 describe('isSafeUrl', () => {
+  // Allowlist (http, https, mailto, relative paths).
   it('accepts https:// URLs as safe', () => {
     expect(isSafeUrl('https://example.com')).toBe(true)
   })
@@ -114,10 +115,15 @@ describe('isSafeUrl', () => {
     expect(isSafeUrl('http://example.com')).toBe(true)
   })
 
+  it('accepts mailto: URLs as safe', () => {
+    expect(isSafeUrl('mailto:hello@example.com')).toBe(true)
+  })
+
   it('accepts relative URLs as safe', () => {
     expect(isSafeUrl('/some/path')).toBe(true)
   })
 
+  // Direct scheme rejections (basic blocklist coverage).
   it('rejects javascript: URLs', () => {
     expect(isSafeUrl('javascript:alert(1)')).toBe(false)
   })
@@ -136,6 +142,71 @@ describe('isSafeUrl', () => {
 
   it('rejects data: with mixed case', () => {
     expect(isSafeUrl('DATA:text/plain,hello')).toBe(false)
+  })
+
+  // Extended blocklist — DOMPurify's IS_SCRIPT_OR_DATA pattern, plus
+  // file/blob/about. None of these are XSS-execution sinks in isolation,
+  // but they exfiltrate or navigate to attacker-controlled contexts.
+  it('rejects file: URLs (local filesystem disclosure)', () => {
+    expect(isSafeUrl('file:///etc/passwd')).toBe(false)
+  })
+
+  it('rejects blob: URLs (cross-origin opener risk)', () => {
+    expect(isSafeUrl('blob:https://example.com/abc-123')).toBe(false)
+  })
+
+  it('rejects about: URLs (about:blank can be navigation-hijack target)', () => {
+    expect(isSafeUrl('about:blank')).toBe(false)
+  })
+
+  it('rejects *script: variants (livescript, mocha) per DOMPurify blocklist', () => {
+    expect(isSafeUrl('livescript:foo()')).toBe(false)
+    expect(isSafeUrl('mocha:foo()')).toBe(false)
+  })
+
+  // CVE-2026-31809 / GHSA-pmc9-f5qr-2pcr regression. WHATWG URL parsing
+  // (url.spec.whatwg.org §4.4) strips ASCII tab/CR/LF from the input
+  // BEFORE matching the scheme, so `\tjavascript:` and `java\tscript:`
+  // both execute in the browser. A `.trim() + startsWith()` check passes
+  // them through; the rewritten helper must catch them.
+  it('rejects leading ASCII-tab before javascript: (CVE-2026-31809)', () => {
+    expect(isSafeUrl('\tjavascript:alert(1)')).toBe(false)
+  })
+
+  it('rejects embedded ASCII-tab inside javascript: (CVE-2026-31809)', () => {
+    expect(isSafeUrl('java\tscript:alert(1)')).toBe(false)
+  })
+
+  it('rejects embedded LF inside javascript: (CVE-2026-31809)', () => {
+    expect(isSafeUrl('java\nscript:alert(1)')).toBe(false)
+  })
+
+  it('rejects embedded CR inside javascript: (CVE-2026-31809)', () => {
+    expect(isSafeUrl('java\rscript:alert(1)')).toBe(false)
+  })
+
+  it('rejects all-three-strewn javascript: (CVE-2026-31809 worst-case payload)', () => {
+    expect(isSafeUrl('j\ta\nv\ra\ts\nc\rr\ti\np\rt:alert(1)')).toBe(false)
+  })
+
+  it('rejects javascript: prefixed with NBSP (whitespace-class bypass)', () => {
+    // U+00A0 NO-BREAK SPACE — not stripped by .trim() but DOMPurify's
+    // ATTR_WHITESPACE class covers it, matching what some URL parsers do.
+    expect(isSafeUrl(' javascript:alert(1)')).toBe(false)
+  })
+
+  it('rejects javascript: with surrounding whitespace runs', () => {
+    expect(isSafeUrl('   javascript:alert(1)   ')).toBe(false)
+  })
+
+  // Non-string defensive guard.
+  it('rejects non-string input (defensive)', () => {
+    // @ts-expect-error — testing runtime guard for callers that bypass TS
+    expect(isSafeUrl(null)).toBe(false)
+    // @ts-expect-error — testing runtime guard for callers that bypass TS
+    expect(isSafeUrl(undefined)).toBe(false)
+    // @ts-expect-error — testing runtime guard for callers that bypass TS
+    expect(isSafeUrl(123)).toBe(false)
   })
 })
 
