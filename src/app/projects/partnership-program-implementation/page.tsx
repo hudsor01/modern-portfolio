@@ -2,13 +2,16 @@ import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import PartnershipProgramPageContent from './_components/PartnershipProgramPageContent'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 export const dynamic = 'force-static'
 
-const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
-  title: 'Enterprise Partnership Program Implementation',
-  subtitle: 'Revenue Operations Project',
-}).toString()}`
+const ogImageUrl = canonicalUrl(
+  `/api/og?${new URLSearchParams({
+    title: 'Enterprise Partnership Program Implementation',
+    subtitle: 'Revenue Operations Project',
+  }).toString()}`
+)
 
 export const metadata: Metadata = {
   title: 'Enterprise Partnership Program Implementation',
@@ -18,7 +21,7 @@ export const metadata: Metadata = {
     title: 'Enterprise Partnership Program Implementation',
     description:
       "Led comprehensive design and implementation of a company's first partnership program, creating automated partner onboarding, commission tracking, and performance analytics. Built production-ready integrations with CRM, billing systems, and partner portals.",
-    url: 'https://richardwhudsonjr.com/projects/partnership-program-implementation',
+    url: canonicalUrl('/projects/partnership-program-implementation'),
     siteName: 'Richard Hudson',
     images: [
       {
@@ -38,7 +41,7 @@ export const metadata: Metadata = {
     images: [ogImageUrl],
   },
   alternates: {
-    canonical: 'https://richardwhudsonjr.com/projects/partnership-program-implementation',
+    canonical: canonicalUrl('/projects/partnership-program-implementation'),
   },
 }
 
@@ -49,11 +52,11 @@ export default async function PartnershipProgramImplementationPage() {
       <BreadcrumbListJsonLd
         nonce={nonce}
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Home', url: SITE_ORIGIN },
+          { name: 'Projects', url: canonicalUrl('/projects') },
           {
             name: 'Enterprise Partnership Program Implementation',
-            url: 'https://richardwhudsonjr.com/projects/partnership-program-implementation',
+            url: canonicalUrl('/projects/partnership-program-implementation'),
           },
         ]}
       />

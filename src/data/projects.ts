@@ -1,4 +1,5 @@
 import type React from 'react'
+import { unsplashUrl } from '@/lib/unsplash'
 import {
   DollarSign,
   Clock,
@@ -51,8 +52,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Real-time revenue tracking and forecasting platform with advanced analytics',
     longDescription:
       'A comprehensive revenue operations dashboard that provides real-time insights into sales performance, pipeline health, and revenue forecasting.',
-    image:
-      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=800&fit=crop&crop=center&q=85',
+    image: unsplashUrl('1551288049-bebda4e38f71', 'project'),
     category: 'revenue-ops',
     technologies: ['React', 'TypeScript', 'D3.js', 'PostgreSQL', 'Salesforce API'],
     displayMetrics: [
@@ -93,8 +93,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Machine learning model to predict and prevent customer churn',
     longDescription:
       'Advanced analytics platform using machine learning to identify at-risk customers and recommend retention strategies.',
-    image:
-      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=800&fit=crop&crop=center&q=85',
+    image: unsplashUrl('1460925895917-afdab827c52f', 'project'),
     category: 'data-analytics',
     technologies: ['Python', 'Scikit-learn', 'React', 'PostgreSQL', 'Docker'],
     displayMetrics: [
@@ -125,8 +124,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Interactive sales funnel analysis with conversion optimization insights',
     longDescription:
       'Comprehensive sales funnel analysis platform providing deep insights into conversion rates, bottlenecks, and optimization opportunities.',
-    image:
-      'https://images.unsplash.com/photo-1543286386-713bdd548da4?w=1200&h=800&fit=crop&crop=center&q=85',
+    image: unsplashUrl('1543286386-713bdd548da4', 'project'),
     category: 'business-intelligence',
     technologies: ['Vue.js', 'Node.js', 'MongoDB', 'Chart.js', 'Stripe API'],
     displayMetrics: [
@@ -157,8 +155,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Multi-touch attribution model for marketing campaign optimization',
     longDescription:
       'Advanced marketing attribution platform that tracks customer journeys across multiple touchpoints and provides insights for campaign optimization.',
-    image:
-      'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1200&h=800&fit=crop&crop=center&q=85',
+    image: unsplashUrl('1559136555-9303baea8ebd', 'project'),
     category: 'data-analytics',
     technologies: ['React', 'Python', 'BigQuery', 'Looker', 'Google Analytics API'],
     displayMetrics: [
@@ -194,8 +191,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'CAC analysis and LTV:CAC ratio optimization achieving 32% cost reduction',
     longDescription:
       'Comprehensive CAC analysis and LTV:CAC ratio optimization that achieved 32% cost reduction through strategic partner channel optimization. Industry-benchmark 3.6:1 efficiency ratio with 8.4-month payback period.',
-    image:
-      'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=1200&h=800&fit=crop&crop=center&q=85',
+    image: unsplashUrl('1554224155-8d04cb21cd6c', 'project'),
     category: 'revenue-ops',
     technologies: ['React', 'TypeScript', 'SQL', 'Tableau', 'Salesforce'],
     displayMetrics: [
@@ -226,8 +222,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Automated commission management delivering 34% performance improvement',
     longDescription:
       'Advanced commission management and partner incentive optimization platform managing $254K+ commission structures with 87.5% automation efficiency.',
-    image:
-      'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&h=800&fit=crop&crop=center&q=85',
+    image: unsplashUrl('1454165804606-c3d57bc86b40', 'project'),
     category: 'revenue-ops',
     technologies: ['React', 'Node.js', 'PostgreSQL', 'Python', 'REST APIs'],
     displayMetrics: [
@@ -258,8 +253,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Predictive CLV analytics with 94.3% ML accuracy across customer segments',
     longDescription:
       'Advanced CLV analytics platform leveraging BTYD predictive modeling framework. Achieving 94.3% prediction accuracy through machine learning algorithms and real-time customer behavior tracking.',
-    image:
-      'https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&h=800&fit=crop&crop=center&q=85',
+    image: unsplashUrl('1551434678-e076c223a692', 'project'),
     category: 'data-analytics',
     technologies: ['Python', 'Machine Learning', 'React', 'PostgreSQL', 'BTYD Framework'],
     displayMetrics: [
@@ -290,8 +284,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Predictive forecasting improving accuracy by 31% and reducing slippage 26%',
     longDescription:
       'Enterprise forecasting and pipeline intelligence platform combining predictive analytics, deal health monitoring, and early warning systems.',
-    image:
-      'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=1200&h=800&fit=crop&crop=center&q=85',
+    image: unsplashUrl('1504868584819-f8e8b4b6d7e3', 'project'),
     category: 'revenue-ops',
     technologies: ['React', 'TypeScript', 'Python', 'Salesforce API', 'ML Models'],
     displayMetrics: [
@@ -322,8 +315,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'ML-powered attribution across 12+ channels with $2.3M ROI optimization',
     longDescription:
       'Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints. Delivering 92.4% attribution accuracy.',
-    image:
-      'https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?w=1200&h=800&fit=crop&crop=center&q=85',
+    image: unsplashUrl('1563986768494-4dee2763ff3f', 'project'),
     category: 'data-analytics',
     technologies: ['React', 'Python', 'Machine Learning', 'BigQuery', 'Google Analytics'],
     displayMetrics: [
@@ -354,8 +346,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Channel analytics with 83.2% win rate and 4.7x quick ratio',
     longDescription:
       'Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem with real-time performance tracking.',
-    image:
-      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=800&fit=crop&crop=center&q=85',
+    image: unsplashUrl('1522071820081-009f0129c71c', 'project'),
     category: 'revenue-ops',
     technologies: ['React', 'TypeScript', 'PostgreSQL', 'Recharts', 'Analytics APIs'],
     displayMetrics: [
@@ -386,8 +377,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Built first partnership program from scratch with 90%+ automation',
     longDescription:
       "Led comprehensive design and implementation of company's first partnership program, creating automated partner onboarding, commission tracking, and performance analytics.",
-    image:
-      'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=1200&h=800&fit=crop&crop=center&q=85',
+    image: unsplashUrl('1551836022-d5d88e9218df', 'project'),
     category: 'revenue-ops',
     technologies: ['Salesforce', 'DocuSign API', 'React', 'TypeScript', 'REST APIs'],
     displayMetrics: [
@@ -418,8 +408,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Intelligent quota optimization increasing forecast accuracy by 28%',
     longDescription:
       'Advanced quota setting and territory assignment system using predictive analytics and fairness algorithms. Optimized territory design increased forecast accuracy by 28%.',
-    image:
-      'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=1200&h=800&fit=crop&crop=center&q=85',
+    image: unsplashUrl('1581291518857-4e27b48ff24e', 'project'),
     category: 'revenue-ops',
     technologies: ['Python', 'React', 'PostgreSQL', 'Optimization Algorithms', 'Salesforce'],
     displayMetrics: [
@@ -450,8 +439,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Unified RevOps dashboard with 96.8% forecast accuracy',
     longDescription:
       'Comprehensive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs with real-time insights.',
-    image:
-      'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=1200&h=800&fit=crop&crop=center&q=85',
+    image: unsplashUrl('1639762681485-074b7f938ba0', 'project'),
     category: 'revenue-ops',
     technologies: ['React', 'TypeScript', 'PostgreSQL', 'Recharts', 'Multiple APIs'],
     displayMetrics: [
@@ -482,8 +470,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Training and coaching platform increasing win rates by 34%',
     longDescription:
       'Transformed sales team performance through structured training, real-time coaching, and continuous skill development. Increased win rates by 34% and reduced ramp time by 45%.',
-    image:
-      'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&h=800&fit=crop&crop=center&q=85',
+    image: unsplashUrl('1552664730-d307ca884978', 'project'),
     category: 'revenue-ops',
     technologies: ['React', 'Node.js', 'MongoDB', 'Video Platform', 'LMS Integration'],
     displayMetrics: [

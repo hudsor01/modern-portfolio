@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+import { SITE_ORIGIN } from '@/lib/absolute-url'
 
 /**
  * robots.txt policy.
@@ -96,7 +97,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: '/',
       },
     ],
-    sitemap: 'https://richardwhudsonjr.com/sitemap.xml',
+    sitemap: `${SITE_ORIGIN}/sitemap.xml`,
     // No `host` field — Google deprecated it in 2018; only Yandex still
     // honors it, and the canonical hostname is already enforced via the
     // sitemap URL above plus `alternates.canonical` on every page.

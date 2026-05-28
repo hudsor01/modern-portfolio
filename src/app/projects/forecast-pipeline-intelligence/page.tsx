@@ -2,13 +2,16 @@ import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import ForecastPageContent from './_components/ForecastPageContent'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 export const dynamic = 'force-static'
 
-const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
-  title: 'Forecast Accuracy & Pipeline Intelligence System',
-  subtitle: 'Revenue Operations Project',
-}).toString()}`
+const ogImageUrl = canonicalUrl(
+  `/api/og?${new URLSearchParams({
+    title: 'Forecast Accuracy & Pipeline Intelligence System',
+    subtitle: 'Revenue Operations Project',
+  }).toString()}`
+)
 
 export const metadata: Metadata = {
   title: 'Forecast Accuracy & Pipeline Intelligence System',
@@ -18,7 +21,7 @@ export const metadata: Metadata = {
     title: 'Forecast Accuracy & Pipeline Intelligence System',
     description:
       'Enterprise forecasting and pipeline intelligence platform combining predictive analytics, deal health monitoring, and early warning systems. Improved forecast accuracy by 31% and reduced slippage by 26%.',
-    url: 'https://richardwhudsonjr.com/projects/forecast-pipeline-intelligence',
+    url: canonicalUrl('/projects/forecast-pipeline-intelligence'),
     siteName: 'Richard Hudson',
     images: [
       {
@@ -38,7 +41,7 @@ export const metadata: Metadata = {
     images: [ogImageUrl],
   },
   alternates: {
-    canonical: 'https://richardwhudsonjr.com/projects/forecast-pipeline-intelligence',
+    canonical: canonicalUrl('/projects/forecast-pipeline-intelligence'),
   },
 }
 
@@ -49,11 +52,11 @@ export default async function ForecastPipelineIntelligencePage() {
       <BreadcrumbListJsonLd
         nonce={nonce}
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Home', url: SITE_ORIGIN },
+          { name: 'Projects', url: canonicalUrl('/projects') },
           {
             name: 'Forecast Accuracy & Pipeline Intelligence',
-            url: 'https://richardwhudsonjr.com/projects/forecast-pipeline-intelligence',
+            url: canonicalUrl('/projects/forecast-pipeline-intelligence'),
           },
         ]}
       />

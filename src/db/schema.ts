@@ -13,6 +13,7 @@ import {
   primaryKey,
   text,
   timestamp,
+  uniqueIndex,
   varchar,
 } from 'drizzle-orm/pg-core'
 import { createId } from './cuid'
@@ -176,6 +177,36 @@ export const blogPosts = pgTable(
     index('blog_posts_status_publishedAt_idx').on(t.status, t.publishedAt.desc()),
     index('blog_posts_authorId_idx').on(t.authorId),
     index('blog_posts_categoryId_idx').on(t.categoryId),
+    // Partial unique index: PUBLISHED, non-deleted posts can't share a
+    // featured image. Prevents the original duplicate-image failure
+    // class at the DB layer, regardless of who's writing. Multiple
+    // rows can still have NULL featuredImage because Postgres treats
+    // NULLs as distinct in unique indexes by default.
+    //
+    // Applied to prod via scripts/apply-featured-image-unique-index.ts
+    // (raw `CREATE UNIQUE INDEX IF NOT EXISTS … WHERE`). drizzle-kit
+    // has no baseline against the Prisma-era schema, so `bun run
+    // db:generate` would emit a 0000 full-schema migration unsafe to
+    // apply against prod. Until baselining via `drizzle-kit pull` (the
+    // canonical drizzle-kit recipe for adopting an existing DB), this
+    // declaration is documentation + DSL-typesafety only; the DDL
+    // truth lives in the focused script.
+    //
+    // Limitation: partial UNIQUE INDEX cannot be DEFERRABLE in
+    // Postgres. scripts/update-blog-featured-images.ts pre-checks for
+    // swap-mode UPDATE patterns and fails loudly with operator
+    // guidance instead of letting the per-row constraint check fire
+    // an opaque 23505 mid-statement. We deliberately don't switch to
+    // `EXCLUDE … USING gist (col WITH =) WHERE … DEFERRABLE INITIALLY
+    // DEFERRED` (the canonical Postgres deferrable-partial primitive)
+    // because (a) it requires the `btree_gist` extension which adds a
+    // Neon-side review surface, (b) Drizzle's DSL has no EXCLUDE
+    // helper so the constraint would only live in the apply script,
+    // and (c) the swap scenario is already caught at the script's
+    // pre-flight — cheaper enforcement at the only known writer.
+    uniqueIndex('blog_posts_featuredImage_published_unique_idx')
+      .on(t.featuredImage)
+      .where(sql`${t.status} = 'PUBLISHED' AND ${t.deletedAt} IS NULL`),
   ]
 )
 

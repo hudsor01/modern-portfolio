@@ -3,14 +3,15 @@
  * SEO structured data for main site navigation
  */
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
-import { navConfig, siteConfig } from '@/lib/site'
+import { navConfig } from '@/lib/site'
+import { SITE_ORIGIN } from '@/lib/absolute-url'
 
 export function NavigationJsonLd({ nonce }: { nonce?: string | null }) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'SiteNavigationElement',
     name: navConfig.mainNav.map((item) => item.title),
-    url: navConfig.mainNav.map((item) => `${siteConfig.url}${item.href}`),
+    url: navConfig.mainNav.map((item) => `${SITE_ORIGIN}${item.href}`),
   }
 
   return (

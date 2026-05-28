@@ -85,6 +85,22 @@ describe('BlogPostJsonLd', () => {
     const { container } = render(<BlogPostJsonLd post={samplePost} nonce="abc" />)
     expect(container.querySelector('script')?.getAttribute('nonce')).toBe('abc')
   })
+
+  it('prefixes site origin onto relative featuredImage paths', () => {
+    const { container } = render(<BlogPostJsonLd post={samplePost} />)
+    const parsed = JSON.parse(container.querySelector('script')!.innerHTML)
+    expect(parsed.image).toBe('https://richardwhudsonjr.com/images/post1.jpg')
+  })
+
+  it('passes through absolute featuredImage URLs without double-prefixing', () => {
+    const absolutePost = {
+      ...samplePost,
+      featuredImage: 'https://images.unsplash.com/photo-1542744173-05336fcc7ad4?w=1200',
+    } as BlogPostData
+    const { container } = render(<BlogPostJsonLd post={absolutePost} />)
+    const parsed = JSON.parse(container.querySelector('script')!.innerHTML)
+    expect(parsed.image).toBe('https://images.unsplash.com/photo-1542744173-05336fcc7ad4?w=1200')
+  })
 })
 
 describe('BlogCategoryJsonLd', () => {

@@ -14,12 +14,6 @@ vi.mock('@/lib/db', () => ({
   },
 }))
 
-vi.mock('@/lib/env-validation', () => ({
-  env: {
-    NEXT_PUBLIC_SITE_URL: 'https://richardwhudsonjr.com',
-  },
-}))
-
 vi.mock('@/lib/logger', () => ({
   createContextLogger: () => ({
     info: vi.fn(),

@@ -8,6 +8,7 @@ import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-l
 import { ItemListJsonLd } from '@/components/seo/json-ld/item-list-json-ld'
 import { ProjectsPageContent } from './_components/projects-page-content'
 import { getProjects } from '@/lib/projects'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 export const metadata = genMeta(
   'Projects | Richard Hudson - Revenue Operations Portfolio',
@@ -24,8 +25,8 @@ export default async function ProjectsPage() {
       <BreadcrumbListJsonLd
         nonce={nonce}
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Home', url: SITE_ORIGIN },
+          { name: 'Projects', url: canonicalUrl('/projects') },
         ]}
       />
       <ItemListJsonLd
@@ -33,7 +34,7 @@ export default async function ProjectsPage() {
         name="Revenue Operations projects by Richard Hudson"
         items={projects.map((project) => ({
           name: project.title,
-          url: `https://richardwhudsonjr.com/projects/${project.slug}`,
+          url: canonicalUrl(`/projects/${project.slug}`),
         }))}
       />
       <Navbar />

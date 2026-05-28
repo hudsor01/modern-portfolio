@@ -1,6 +1,6 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import { format } from 'date-fns'
+import { BlogFeaturedImage } from '@/components/blog/blog-featured-image'
 import { ArrowLeft, CalendarDays, Clock, Eye } from 'lucide-react'
 import type { BlogPostData } from '@/types/api'
 import { BlogPostArticle } from './blog-post-article'
@@ -117,9 +117,11 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
           {/* Featured Image */}
           {post.featuredImage && (
             <figure className="relative mt-10 aspect-[16/9] overflow-hidden rounded-md border border-border shadow-sm">
-              <Image
+              <BlogFeaturedImage
                 src={post.featuredImage}
                 alt={post.featuredImageAlt || post.title}
+                postTitle={post.title}
+                postCategory={post.category?.name}
                 fill
                 className="object-cover"
                 priority

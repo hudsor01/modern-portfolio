@@ -1,5 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { createContextLogger } from '@/lib/logger'
+import { SITE_ORIGIN } from '@/lib/absolute-url'
+import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 
 const logger = createContextLogger('Sitemap')
 
@@ -33,7 +35,7 @@ const STATIC_LAST_MODIFIED = process.env.VERCEL_GIT_COMMIT_AUTHOR_DATE || new Da
 const xmlSafeUrl = (url: string): string => url.replace(/&/g, '&amp;')
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://richardwhudsonjr.com'
+  const baseUrl = SITE_ORIGIN
   // fallback only for blog posts with null timestamps
   const fallbackDate = STATIC_LAST_MODIFIED
   const staticLastModified = STATIC_LAST_MODIFIED
@@ -102,19 +104,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { slug: 'forecast-pipeline-intelligence', title: 'Forecast & Pipeline Intelligence' },
     { slug: 'quota-territory-management', title: 'Quota & Territory Management' },
     { slug: 'sales-enablement', title: 'Sales Enablement Platform' },
-  ].map(({ slug, title }) => ({
+  ].map(({ slug }) => ({
     url: `${baseUrl}/projects/${slug}`,
     lastModified: staticLastModified,
     changeFrequency: 'monthly' as const,
     priority: 0.8,
-    images: [
-      xmlSafeUrl(
-        `${baseUrl}/api/og?${new URLSearchParams({
-          title,
-          subtitle: 'Revenue Operations Project',
-        }).toString()}`
-      ),
-    ],
+    // No `images` field — static project pages don't have stored
+    // featuredImage values to validate; emitting the branded /api/og
+    // card as <image:loc> would pollute Google's image sitemap with
+    // identical placeholder URLs for 14 distinct project pages,
+    // diluting per-project image-search ranking. Same rationale as
+    // the blog branch below for failed re-validation.
   }))
 
   // During build, skip DB — blog posts are added on first ISR revalidation
@@ -144,15 +144,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .where(and(eq(blogPosts.status, 'PUBLISHED'), isNull(blogPosts.deletedAt)))
       .orderBy(desc(blogPosts.publishedAt))
 
+    // Aggregate content-quality signals into one warn-per-build
+    // instead of one-per-post-per-build. Sentry routes warn →
+    // captureMessage; without aggregation a backlog of N stale
+    // featuredImage rows would emit N events per sitemap render,
+    // and the sitemap revalidates hourly — that's N×24 events/day
+    // for the same set of bad rows, drowning real signal.
+    const rejectedFeaturedImages: Array<{ slug: string; stored: string }> = []
+
     blogPages = posts.map((post) => {
-      const featuredAbsolute = post.featuredImage
-        ? post.featuredImage.startsWith('http')
-          ? post.featuredImage
-          : `${baseUrl}${post.featuredImage}`
-        : `${baseUrl}/api/og?${new URLSearchParams({
-            title: post.title,
-            subtitle: 'Blog Post',
-          }).toString()}`
+      // safeFeaturedImageUrl re-validates at read time. Shared with
+      // BlogPostJsonLd so sitemap and JSON-LD can never diverge on
+      // what's considered a "safe" image URL for a given post.
+      //
+      // Omit `images` entirely when isFallback=true: the `/api/og`
+      // card is a brand placeholder, not indexable per-post imagery.
+      // Including it in <image:loc> would dilute image-search ranking
+      // (Google indexes the placeholder as the "real" blog image and
+      // serves it for image-search queries that bounce on click).
+      const featured = safeFeaturedImageUrl(post.featuredImage, {
+        title: post.title,
+        subtitle: 'Blog Post',
+      })
+
+      if (featured.isFallback && post.featuredImage) {
+        rejectedFeaturedImages.push({ slug: post.slug, stored: post.featuredImage })
+      }
 
       return {
         url: `${baseUrl}/blog/${post.slug}`,
@@ -160,9 +177,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           post.updatedAt?.toISOString() || post.publishedAt?.toISOString() || fallbackDate,
         changeFrequency: 'monthly' as const,
         priority: 0.7,
-        images: [xmlSafeUrl(featuredAbsolute)],
+        ...(featured.isFallback ? {} : { images: [xmlSafeUrl(featured.url)] }),
       }
     })
+
+    // Distinguish 'never had a featured image' (null stored, silent
+    // skip) from 'had one but it failed schema re-validation'
+    // (non-null stored, fallback returned). The latter is a
+    // content-quality signal — silent drop would let bad imports
+    // rot undetected. One warn per sitemap build covers all rejects.
+    if (rejectedFeaturedImages.length > 0) {
+      logger.warn(
+        `${rejectedFeaturedImages.length} blog post(s) failed sitemap featuredImage re-validation; omitted from <image:loc>`,
+        { rejected: rejectedFeaturedImages }
+      )
+    }
   } catch (error) {
     // Sitemap degrades gracefully to static pages — surface as warn so we
     // notice the regression without paging anyone.

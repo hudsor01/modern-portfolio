@@ -1,12 +1,15 @@
 import type { Metadata } from 'next'
 import HomePageContent from '@/components/layout/home-page-content'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 export const dynamic = 'force-static'
 
-const HOMEPAGE_OG_IMAGE_URL = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
-  title: 'Richard Hudson',
-  subtitle: 'Revenue Operations Professional',
-}).toString()}`
+const HOMEPAGE_OG_IMAGE_URL = canonicalUrl(
+  `/api/og?${new URLSearchParams({
+    title: 'Richard Hudson',
+    subtitle: 'Revenue Operations Professional',
+  }).toString()}`
+)
 
 export const metadata: Metadata = {
   title: 'Richard Hudson — RevOps Professional in Dallas-Fort Worth',
@@ -38,7 +41,7 @@ export const metadata: Metadata = {
     title: 'Richard Hudson — RevOps Professional in Dallas-Fort Worth',
     description:
       'Richard Hudson — Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. $4.8M+ revenue impact.',
-    url: 'https://richardwhudsonjr.com',
+    url: SITE_ORIGIN,
     siteName: 'Richard Hudson - Revenue Operations Professional',
     images: [
       {
@@ -60,7 +63,7 @@ export const metadata: Metadata = {
     images: [HOMEPAGE_OG_IMAGE_URL],
   },
   alternates: {
-    canonical: 'https://richardwhudsonjr.com',
+    canonical: SITE_ORIGIN,
   },
 }
 

@@ -3,8 +3,8 @@ import { cache } from 'react'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import { Navbar } from '@/components/layout/navbar'
+import { BlogFeaturedImage } from '@/components/blog/blog-featured-image'
 import { BlogCategoryJsonLd } from '@/components/seo/blog-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
@@ -13,6 +13,7 @@ import { and, desc, eq, isNull } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { blogPosts, categories } from '@/db/schema'
 import { createContextLogger } from '@/lib/logger'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 // Force runtime rendering — see /blog/[slug]/page.tsx for the rationale.
 // notFound() inside ISR-rendered Server Components ships HTTP 200 with a
@@ -107,7 +108,7 @@ export async function generateMetadata({ params }: BlogCategoryPageProps): Promi
     openGraph: {
       title,
       description,
-      url: `https://richardwhudsonjr.com/blog/category/${category.slug}`,
+      url: canonicalUrl(`/blog/category/${category.slug}`),
       siteName: 'Richard Hudson',
       type: 'website',
     },
@@ -117,7 +118,7 @@ export async function generateMetadata({ params }: BlogCategoryPageProps): Promi
       description,
     },
     alternates: {
-      canonical: `https://richardwhudsonjr.com/blog/category/${category.slug}`,
+      canonical: canonicalUrl(`/blog/category/${category.slug}`),
     },
   }
 }
@@ -155,11 +156,11 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
       <BreadcrumbListJsonLd
         nonce={nonce}
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Blog', url: 'https://richardwhudsonjr.com/blog' },
+          { name: 'Home', url: SITE_ORIGIN },
+          { name: 'Blog', url: canonicalUrl('/blog') },
           {
             name: category.name,
-            url: `https://richardwhudsonjr.com/blog/category/${category.slug}`,
+            url: canonicalUrl(`/blog/category/${category.slug}`),
           },
         ]}
       />
@@ -197,9 +198,11 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                       <Card className="hover-lift hover:border-primary/50 transition-all h-full overflow-hidden">
                         {post.featuredImage && (
                           <div className="relative aspect-[16/10] overflow-hidden">
-                            <Image
+                            <BlogFeaturedImage
                               src={post.featuredImage}
                               alt={post.title}
+                              postTitle={post.title}
+                              postCategory={category.name}
                               fill
                               className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

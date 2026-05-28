@@ -5,11 +5,15 @@ import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
 import { blogPosts } from '@/db/schema'
 import { createErrorResponse } from '@/lib/api-blog'
-import { env } from '@/lib/env-validation'
+import { SITE_ORIGIN } from '@/lib/absolute-url'
 
 const logger = createContextLogger('RssAPI')
 
-const SITE_URL = env.NEXT_PUBLIC_SITE_URL || 'https://richardwhudsonjr.com'
+// RSS feed URL pins to prod (via SITE_ORIGIN) — preview deploys must
+// not advertise themselves as the syndication source because feed
+// readers cache <link> by URL and a one-time preview hit would poison
+// subscribers' caches for that post slug.
+const SITE_URL = SITE_ORIGIN
 const SITE_TITLE = 'Richard Hudson - Revenue Operations Blog'
 const SITE_DESCRIPTION =
   'Expert insights on revenue operations, data analytics, and business process optimization from Richard Hudson, a seasoned RevOps professional.'

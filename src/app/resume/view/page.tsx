@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { generateMetadata as genMeta } from '@/app/shared-metadata'
 import ResumeViewClient from './resume-view-client'
+import { canonicalUrl } from '@/lib/absolute-url'
 
 // Duplicate-content guard. /resume is the canonical resume URL; /resume/view
 // is a viewer surface that should not be indexed independently. Build on
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
     'View the resume of Richard Hudson, Revenue Operations Professional.',
     '/resume/view'
   ),
-  alternates: { canonical: 'https://richardwhudsonjr.com/resume' },
+  alternates: { canonical: canonicalUrl('/resume') },
   robots: { index: false, follow: true },
 }
 

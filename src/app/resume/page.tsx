@@ -2,6 +2,7 @@ import { headers } from 'next/headers'
 import { generateMetadata } from '@/app/shared-metadata'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import ResumePageContent from './_components/resume-page-content'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 export const dynamic = 'force-static'
 
@@ -18,8 +19,8 @@ export default async function ResumePage() {
       <BreadcrumbListJsonLd
         nonce={nonce}
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Resume', url: 'https://richardwhudsonjr.com/resume' },
+          { name: 'Home', url: SITE_ORIGIN },
+          { name: 'Resume', url: canonicalUrl('/resume') },
         ]}
       />
       <ResumePageContent />

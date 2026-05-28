@@ -95,7 +95,6 @@
     "e2e/**/*",
     "playwright-report",
     "test-results",
-    "scripts",
     "docs",
     "temp",
     "tmp"

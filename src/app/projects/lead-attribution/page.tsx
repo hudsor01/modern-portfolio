@@ -2,13 +2,16 @@ import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import LeadAttributionPageContent from './_components/LeadAttributionPageContent'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 export const dynamic = 'force-static'
 
-const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
-  title: 'Lead Attribution & Marketing Analytics - Multi-Touch Attribution',
-  subtitle: 'Revenue Operations Project',
-}).toString()}`
+const ogImageUrl = canonicalUrl(
+  `/api/og?${new URLSearchParams({
+    title: 'Lead Attribution & Marketing Analytics - Multi-Touch Attribution',
+    subtitle: 'Revenue Operations Project',
+  }).toString()}`
+)
 
 export const metadata: Metadata = {
   title: 'Lead Attribution & Marketing Analytics - Multi-Touch Attribution',
@@ -18,7 +21,7 @@ export const metadata: Metadata = {
     title: 'Lead Attribution & Marketing Analytics - Multi-Touch Attribution',
     description:
       'Comprehensive lead attribution analysis with multi-touch attribution modeling. Tracks lead sources, conversion rates, and marketing channel performance to optimize spend and improve pipeline quality.',
-    url: 'https://richardwhudsonjr.com/projects/lead-attribution',
+    url: canonicalUrl('/projects/lead-attribution'),
     siteName: 'Richard Hudson',
     images: [
       {
@@ -38,7 +41,7 @@ export const metadata: Metadata = {
     images: [ogImageUrl],
   },
   alternates: {
-    canonical: 'https://richardwhudsonjr.com/projects/lead-attribution',
+    canonical: canonicalUrl('/projects/lead-attribution'),
   },
 }
 
@@ -49,11 +52,11 @@ export default async function LeadAttributionPage() {
       <BreadcrumbListJsonLd
         nonce={nonce}
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Home', url: SITE_ORIGIN },
+          { name: 'Projects', url: canonicalUrl('/projects') },
           {
             name: 'Lead Attribution & Marketing Analytics',
-            url: 'https://richardwhudsonjr.com/projects/lead-attribution',
+            url: canonicalUrl('/projects/lead-attribution'),
           },
         ]}
       />

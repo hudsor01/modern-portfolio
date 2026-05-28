@@ -12,13 +12,16 @@ import { blogPosts, categories as categoriesTable } from '@/db/schema'
 import { transformToBlogPostData } from '@/lib/api-blog'
 import { createContextLogger } from '@/lib/logger'
 import type { BlogPostData, BlogCategoryData } from '@/types/api'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 const logger = createContextLogger('BlogIndex')
 
-const BLOG_INDEX_OG_IMAGE_URL = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
-  title: 'Blog | Richard Hudson',
-  subtitle: 'Revenue Operations Insights',
-}).toString()}`
+const BLOG_INDEX_OG_IMAGE_URL = canonicalUrl(
+  `/api/og?${new URLSearchParams({
+    title: 'Blog | Richard Hudson',
+    subtitle: 'Revenue Operations Insights',
+  }).toString()}`
+)
 
 export const metadata: Metadata = {
   title: 'Blog - Revenue Operations Insights',
@@ -27,7 +30,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Blog | Richard Hudson',
     description: 'Insights on revenue operations, data analytics, and business growth strategies.',
-    url: 'https://richardwhudsonjr.com/blog',
+    url: canonicalUrl('/blog'),
     type: 'website',
     images: [
       {
@@ -46,7 +49,7 @@ export const metadata: Metadata = {
     images: [BLOG_INDEX_OG_IMAGE_URL],
   },
   alternates: {
-    canonical: 'https://richardwhudsonjr.com/blog',
+    canonical: canonicalUrl('/blog'),
   },
 }
 
@@ -129,8 +132,8 @@ export default async function BlogHomePage() {
       <BreadcrumbListJsonLd
         nonce={nonce}
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Blog', url: 'https://richardwhudsonjr.com/blog' },
+          { name: 'Home', url: SITE_ORIGIN },
+          { name: 'Blog', url: canonicalUrl('/blog') },
         ]}
       />
       <ItemListJsonLd
@@ -138,7 +141,7 @@ export default async function BlogHomePage() {
         name="Blog posts by Richard Hudson"
         items={posts.map((post) => ({
           name: post.title,
-          url: `https://richardwhudsonjr.com/blog/${post.slug}`,
+          url: canonicalUrl(`/blog/${post.slug}`),
         }))}
       />
       <div className="min-h-screen bg-background">
