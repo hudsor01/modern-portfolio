@@ -551,6 +551,40 @@ describe('viewTrackingSchema', () => {
       false
     )
   })
+
+  // Referrer is informational, not a security boundary. The field accepts
+  // any string up to 2048 chars — including the empty-string default for
+  // direct navigation and non-http(s) schemes Chrome uses on Android
+  // (android-app://, intent://, chrome-extension://, etc.) — because the
+  // value is stored for aggregation and never rendered as an href.
+  it('accepts empty-string referrer (document.referrer default)', () => {
+    expect(viewTrackingSchema.safeParse({ type: 'blog', slug: 'x', referrer: '' }).success).toBe(
+      true
+    )
+  })
+
+  it('accepts non-http(s) referrer schemes (Android app, browser extension)', () => {
+    expect(
+      viewTrackingSchema.safeParse({
+        type: 'blog',
+        slug: 'x',
+        referrer: 'android-app://com.google.android.googlequicksearchbox/',
+      }).success
+    ).toBe(true)
+    expect(
+      viewTrackingSchema.safeParse({
+        type: 'blog',
+        slug: 'x',
+        referrer: 'chrome-extension://abcdefghijklmnop/popup.html',
+      }).success
+    ).toBe(true)
+  })
+
+  it('rejects referrer over 2048 chars (DoS cap)', () => {
+    expect(
+      viewTrackingSchema.safeParse({ type: 'blog', slug: 'x', referrer: 'a'.repeat(2049) }).success
+    ).toBe(false)
+  })
 })
 
 // ============================================================================
