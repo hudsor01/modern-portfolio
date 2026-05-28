@@ -27,14 +27,11 @@ describe('RateLimiter — exportMetrics', () => {
   let limiter: RateLimiter
 
   beforeEach(() => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date(2026, 0, 1))
     limiter = new RateLimiter()
   })
 
   afterEach(() => {
     limiter[Symbol.dispose]()
-    vi.useRealTimers()
   })
 
   it('exposes timestamp + activeClients + systemLoad + metrics', () => {
@@ -58,14 +55,11 @@ describe('RateLimiter — clearLimit + getClientInfo', () => {
   let limiter: RateLimiter
 
   beforeEach(() => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date(2026, 0, 1))
     limiter = new RateLimiter()
   })
 
   afterEach(() => {
     limiter[Symbol.dispose]()
-    vi.useRealTimers()
   })
 
   it('getClientInfo returns null for unknown client', () => {
@@ -82,15 +76,12 @@ describe('RateLimiter — clearLimit + getClientInfo', () => {
 
 describe('RateLimiter — Symbol.dispose', () => {
   it('clears the store and stops the cleanup interval', () => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date(2026, 0, 1))
     const limiter = new RateLimiter()
     limiter.checkLimit('a', baseConfig)
     expect(limiter.getClientInfo('a')).not.toBeNull()
 
     limiter[Symbol.dispose]()
     expect(limiter.getClientInfo('a')).toBeNull()
-    vi.useRealTimers()
   })
 })
 

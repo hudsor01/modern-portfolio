@@ -26,23 +26,3 @@ export function checkContactFormRateLimit(
   }
   return getRateLimiter().checkLimit(identifier.trim(), RateLimitConfigs.contactForm, context)
 }
-
-/**
- * Check rate limit for API endpoints
- */
-export function checkApiRateLimit(
-  identifier: string,
-  context?: { userAgent?: string; path?: string; method?: string }
-): RateLimitResult {
-  return getRateLimiter().checkLimit(identifier, RateLimitConfigs.api, context)
-}
-
-/**
- * Check rate limit for authentication endpoints
- */
-export function checkAuthRateLimit(
-  identifier: string,
-  context?: { userAgent?: string }
-): RateLimitResult {
-  return getRateLimiter().checkLimit(identifier, RateLimitConfigs.auth, context)
-}
