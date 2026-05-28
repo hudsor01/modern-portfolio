@@ -106,17 +106,15 @@ describe('stripHtml', () => {
 })
 
 describe('isSafeUrl', () => {
-  // Allowlist (http, https, mailto, relative paths).
+  // Allowlist (http, https, relative paths). `mailto:` is NOT accepted —
+  // matches the schema-layer allowlist; all mailto: links in this app are
+  // hard-coded literals.
   it('accepts https:// URLs as safe', () => {
     expect(isSafeUrl('https://example.com')).toBe(true)
   })
 
   it('accepts http:// URLs as safe', () => {
     expect(isSafeUrl('http://example.com')).toBe(true)
-  })
-
-  it('accepts mailto: URLs as safe', () => {
-    expect(isSafeUrl('mailto:hello@example.com')).toBe(true)
   })
 
   it('accepts relative URLs as safe', () => {
@@ -132,7 +130,7 @@ describe('isSafeUrl', () => {
     expect(isSafeUrl('data:text/html,<script>evil</script>')).toBe(false)
   })
 
-  it('rejects vbscript: URLs', () => {
+  it('rejects vbscript: URLs (matched by \\w+script in DANGEROUS_SCHEME_RE)', () => {
     expect(isSafeUrl('vbscript:evil')).toBe(false)
   })
 
@@ -142,6 +140,10 @@ describe('isSafeUrl', () => {
 
   it('rejects data: with mixed case', () => {
     expect(isSafeUrl('DATA:text/plain,hello')).toBe(false)
+  })
+
+  it('rejects mailto: URLs (allowlist excludes; schema layer does too)', () => {
+    expect(isSafeUrl('mailto:hello@example.com')).toBe(false)
   })
 
   // Extended blocklist — DOMPurify's IS_SCRIPT_OR_DATA pattern, plus
@@ -159,9 +161,38 @@ describe('isSafeUrl', () => {
     expect(isSafeUrl('about:blank')).toBe(false)
   })
 
-  it('rejects *script: variants (livescript, mocha) per DOMPurify blocklist', () => {
+  it('rejects *script: variants per DOMPurify blocklist (livescript)', () => {
+    // `livescript:` is rejected by the DANGEROUS_SCHEME_RE blocklist
+    // (matches `\w+script:`), not just by allowlist fallthrough.
     expect(isSafeUrl('livescript:foo()')).toBe(false)
+  })
+
+  it('rejects unknown schemes not in SAFE_PROTOCOLS (mocha, gopher)', () => {
+    // These schemes are NOT in the DOMPurify blocklist — they're rejected
+    // because the parsed protocol fails the SAFE_PROTOCOLS allowlist check.
+    // Documents the allowlist-fallthrough leg of the defense.
     expect(isSafeUrl('mocha:foo()')).toBe(false)
+    expect(isSafeUrl('gopher://example.com')).toBe(false)
+  })
+
+  // Empty / whitespace-only input is not a URL — reject so a future caller
+  // doesn't render `<a href="">` (self-navigation footgun).
+  it('rejects empty string', () => {
+    expect(isSafeUrl('')).toBe(false)
+  })
+
+  it('rejects whitespace-only input', () => {
+    expect(isSafeUrl('   ')).toBe(false)
+    expect(isSafeUrl('\t\n\r')).toBe(false)
+  })
+
+  // Protocol-relative URLs (`//evil.com`) resolve to the BASE's protocol
+  // but an attacker-controlled host — open-redirect-class if a future caller
+  // plumbs the result into window.location.href or window.open.
+  it('rejects protocol-relative URLs (open-redirect class)', () => {
+    expect(isSafeUrl('//evil.com')).toBe(false)
+    expect(isSafeUrl('//evil.com/path?foo=bar')).toBe(false)
+    expect(isSafeUrl('///evil.com')).toBe(false)
   })
 
   // CVE-2026-31809 / GHSA-pmc9-f5qr-2pcr regression. WHATWG URL parsing

@@ -165,26 +165,38 @@ export function stripHtml(html: string): string {
 // biome-ignore lint/suspicious/noControlCharactersInRegex: stripping control characters is the whole point of this regex (defends against CVE-2026-31809 bypass class)
 const URL_WHITESPACE_STRIP = /[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g
 
-// Defense-in-depth blocklist (DOMPurify's IS_SCRIPT_OR_DATA pattern,
-// extended). The new URL().protocol allowlist below is the primary check;
-// this catches `*script:` / `data:` / `vbscript:` / `file:` / `blob:` /
-// `about:` pre-parse so any future URL constructor change can't silently
-// widen the surface.
-const DANGEROUS_SCHEME_RE = /^(?:\w+script|data|vbscript|file|blob|about):/i
+// Defense-in-depth blocklist. Mirrors DOMPurify's IS_SCRIPT_OR_DATA pattern
+// (`/^(?:\w+script|data):/i`) plus `file:` / `blob:` / `about:` for
+// filesystem/origin/navigation surfaces. `vbscript:` is intentionally NOT
+// listed separately — `\w+script` already matches it. The new URL().protocol
+// allowlist below is the primary check; this catches the same schemes
+// pre-parse so any future URL constructor change can't silently widen the
+// surface.
+const DANGEROUS_SCHEME_RE = /^(?:\w+script|data|file|blob|about):/i
 
-// Allowlist: schemes that are safe to render as href/src. http/https for
-// navigation, mailto for contact links. Extend only when a sink needs it.
-// (OWASP XSS Prevention Cheat Sheet: "Allow-list http and HTTPS URLs only".)
-const SAFE_PROTOCOLS = new Set(['http:', 'https:', 'mailto:'])
+// Allowlist: schemes that are safe to render as href/src. Kept to http/https
+// to match the schema-layer allowlist in `src/lib/schemas.ts` (urlSchema /
+// nullishUrl). `mailto:` links exist in the app but are all hard-coded
+// literals — no user-supplied value flows through this helper into a
+// `mailto:` sink. (OWASP XSS Prevention Cheat Sheet: "Allow-list http and
+// HTTPS URLs only".) See SECURITY.md → Application → URL protocol allowlist.
+const SAFE_PROTOCOLS = new Set(['http:', 'https:'])
+const BASE_URL = 'https://placeholder.invalid'
 
 export function isSafeUrl(url: string): boolean {
   if (typeof url !== 'string') return false
   const cleaned = url.replace(URL_WHITESPACE_STRIP, '')
+  // Empty/whitespace-only is not a URL — reject so callers don't render an
+  // <a href=""> that self-navigates.
+  if (cleaned === '') return false
+  // Protocol-relative URLs (`//evil.com`) resolve to the base's protocol but
+  // an attacker-controlled host — open-redirect class. Reject before parsing.
+  if (cleaned.startsWith('//')) return false
   if (DANGEROUS_SCHEME_RE.test(cleaned)) return false
   try {
     // Base URL lets relative paths ('/some/path') resolve to https: and
     // pass the allowlist; absolute URLs ignore the base per WHATWG.
-    const parsed = new URL(cleaned, 'https://placeholder.invalid')
+    const parsed = new URL(cleaned, BASE_URL)
     return SAFE_PROTOCOLS.has(parsed.protocol)
   } catch {
     return false
