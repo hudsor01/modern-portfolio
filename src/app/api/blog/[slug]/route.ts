@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 import { authors, blogPosts, categories, postTags, tags, type NewBlogPost } from '@/db/schema'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
 import { isAdminRequest } from '@/lib/api-admin-auth'
+import { checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-rate-limit'
 import { transformToBlogPostData, createErrorResponse } from '@/lib/api-blog'
 import { updateBlogPostSchema } from '@/lib/schemas'
 
@@ -80,6 +81,19 @@ export async function GET(request: NextRequest, context: { params: Promise<{ slu
 }
 
 export async function PUT(request: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  const rateLimitResponse = checkRateLimitOrRespond(
+    request,
+    RateLimitPresets.sensitive,
+    '/api/blog/[slug]',
+    'PUT'
+  )
+  if (rateLimitResponse) return rateLimitResponse
+
+  if (!isAdminRequest(request)) {
+    logger.warn('Unauthorized blog mutation attempt', { route: '/api/blog/[slug]', method: 'PUT' })
+    return NextResponse.json(createErrorResponse('Unauthorized'), { status: 401 })
+  }
+
   const csrfResponse = await validateCSRFOrRespond(request, 'blog post update')
   if (csrfResponse) return csrfResponse
 
@@ -210,6 +224,22 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
 }
 
 export async function DELETE(request: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  const rateLimitResponse = checkRateLimitOrRespond(
+    request,
+    RateLimitPresets.sensitive,
+    '/api/blog/[slug]',
+    'DELETE'
+  )
+  if (rateLimitResponse) return rateLimitResponse
+
+  if (!isAdminRequest(request)) {
+    logger.warn('Unauthorized blog mutation attempt', {
+      route: '/api/blog/[slug]',
+      method: 'DELETE',
+    })
+    return NextResponse.json(createErrorResponse('Unauthorized'), { status: 401 })
+  }
+
   const csrfResponse = await validateCSRFOrRespond(request, 'blog post deletion')
   if (csrfResponse) return csrfResponse
 

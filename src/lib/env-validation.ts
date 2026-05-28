@@ -119,7 +119,11 @@ export function performSecurityChecks(env: EnvConfig): void {
       warnings.push('Production JWT_SECRET should be at least 64 characters')
     }
 
-    if (env.ADMIN_API_TOKEN && env.ADMIN_API_TOKEN.length < 64) {
+    if (!env.ADMIN_API_TOKEN) {
+      warnings.push(
+        'ADMIN_API_TOKEN unset in production — /api/seed and all blog mutation endpoints (POST/PUT/DELETE) will return 401 to every caller, including legitimate admins'
+      )
+    } else if (env.ADMIN_API_TOKEN.length < 64) {
       warnings.push('Production ADMIN_API_TOKEN should be at least 64 characters')
     }
 

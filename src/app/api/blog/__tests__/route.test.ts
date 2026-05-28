@@ -71,6 +71,7 @@ vi.mock('@/lib/logger', () => ({
 import { GET, POST } from '@/app/api/blog/route'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
 import { checkRateLimitOrRespond } from '@/lib/api-rate-limit'
+import { isAdminRequest } from '@/lib/api-admin-auth'
 
 const sampleAuthorId = 'cl1234567890abcdefghijkl'
 const sampleCategoryId = 'cl9876543210abcdefghijkl'
@@ -190,6 +191,7 @@ describe('POST /api/blog', () => {
     vi.clearAllMocks()
     vi.mocked(checkRateLimitOrRespond).mockReturnValue(null)
     vi.mocked(validateCSRFOrRespond).mockResolvedValue(null)
+    vi.mocked(isAdminRequest).mockReturnValue(true)
     // findFirst by slug → no existing post; then second findFirst for read-back returns the new post.
     dbMocks.findFirst.mockResolvedValueOnce(undefined).mockResolvedValueOnce(samplePost)
     dbMocks.insertReturning.mockResolvedValue([{ id: samplePost.id }])
@@ -203,6 +205,14 @@ describe('POST /api/blog', () => {
     authorId: sampleAuthorId,
     status: 'DRAFT' as const,
   }
+
+  it('returns 401 when admin token missing', async () => {
+    vi.mocked(isAdminRequest).mockReturnValueOnce(false)
+    const res = await POST(reqPost(validBody))
+    expect(res.status).toBe(401)
+    expect(vi.mocked(validateCSRFOrRespond)).not.toHaveBeenCalled()
+    expect(dbMocks.findFirst).not.toHaveBeenCalled()
+  })
 
   it('returns 403 when CSRF guard responds', async () => {
     vi.mocked(validateCSRFOrRespond).mockResolvedValueOnce(
