@@ -8,6 +8,10 @@ vi.mock('@/lib/api-csrf', () => ({
 vi.mock('@/lib/api-admin-auth', () => ({
   isAdminRequest: vi.fn(() => true),
 }))
+vi.mock('@/lib/api-rate-limit', () => ({
+  checkRateLimitOrRespond: vi.fn(() => null),
+  RateLimitPresets: { read: {}, write: {}, sensitive: {} },
+}))
 
 const dbMocks = vi.hoisted(() => ({
   selectRows: vi.fn(),

@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (!isAdminRequest(request)) {
-    logger.warn('Unauthorized seed attempt', { route: 'api/seed' })
+    logger.warn('Unauthorized seed attempt', { route: '/api/seed' })
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    logger.info('Seeding database via API', { route: 'api/seed' })
+    logger.info('Seeding database via API', { route: '/api/seed' })
 
     const authorRows = await db
       .insert(authors)
@@ -150,7 +150,7 @@ In the age of big data, making decisions based on intuition alone is no longer s
     })
   } catch (error) {
     logger.error('Seeding failed', error instanceof Error ? error : new Error(String(error)), {
-      route: 'api/seed',
+      route: '/api/seed',
     })
     return NextResponse.json(
       {
