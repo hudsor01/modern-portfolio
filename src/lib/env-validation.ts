@@ -20,8 +20,19 @@ const envSchema = z.object({
       'DATABASE_URL must be a valid PostgreSQL connection string'
     )
     .optional(),
-  // Email service
-  RESEND_API_KEY: z.string().min(1, 'RESEND_API_KEY is required').optional(),
+  // Email service. Optional — when absent, emailService falls back to mock IDs
+  // in development and returns a 503-shape "service not available" result in
+  // production. The `.min(1)` only fires when the var is explicitly set to an
+  // empty string (e.g. `RESEND_API_KEY=` in a .env file), which is almost
+  // always a misconfiguration; reject loudly with a precise message rather
+  // than silently treating empty as absent.
+  RESEND_API_KEY: z
+    .string()
+    .min(
+      1,
+      'RESEND_API_KEY must be a non-empty string when set (use absent/unset to disable email)'
+    )
+    .optional(),
   CONTACT_EMAIL: z.string().email('CONTACT_EMAIL must be a valid email').optional(),
   FROM_EMAIL: z.email('FROM_EMAIL must be a valid email').default('contact@richardwhudsonjr.com'),
   TO_EMAIL: z.email('TO_EMAIL must be a valid email').default('hello@richardwhudsonjr.com'),
