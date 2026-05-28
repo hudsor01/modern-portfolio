@@ -78,6 +78,29 @@ describe('validateCSRFToken', () => {
     const result = await validateCSRFToken('')
     expect(result).toBe(false)
   })
+
+  it('returns false (no throw) when requestToken is shorter than stored token', async () => {
+    mockCookieStore.get.mockReturnValue({ value: generateCSRFToken() })
+    await expect(validateCSRFToken('short')).resolves.toBe(false)
+  })
+
+  it('returns false (no throw) when requestToken is longer than stored token', async () => {
+    mockCookieStore.get.mockReturnValue({ value: generateCSRFToken() })
+    await expect(validateCSRFToken('a'.repeat(128))).resolves.toBe(false)
+  })
+
+  it('returns false (no throw) when requestToken differs by one byte in length', async () => {
+    mockCookieStore.get.mockReturnValue({ value: generateCSRFToken() })
+    await expect(validateCSRFToken('a'.repeat(63))).resolves.toBe(false)
+    await expect(validateCSRFToken('a'.repeat(65))).resolves.toBe(false)
+  })
+
+  it('returns false (no throw) for multi-byte UTF-8 chars that change byte length vs char length', async () => {
+    // 'é' is 2 bytes in UTF-8; 32 'é' chars = 64 chars but 128 bytes.
+    // Buffer comparison must use byte length, not char length.
+    mockCookieStore.get.mockReturnValue({ value: generateCSRFToken() })
+    await expect(validateCSRFToken('é'.repeat(32))).resolves.toBe(false)
+  })
 })
 
 describe('createNewCSRFToken', () => {
