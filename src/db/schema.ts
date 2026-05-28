@@ -237,7 +237,12 @@ export const postViews = pgTable(
     sessionId: text('sessionId'),
     ipAddress: inet('ipAddress'),
     userAgent: text('userAgent'),
-    referer: text('referer'),
+    // DB column name matches the correct English spelling + the
+    // `document.referrer` JS API. The HTTP wire-format header "Referer"
+    // (RFC 7231 §5.5.2) was a historical typo; persisted analytics columns
+    // are a different concern from header parsing, so we use the standard
+    // spelling here.
+    referrer: text('referrer'),
     country: text('country'),
     region: text('region'),
     city: text('city'),
@@ -348,7 +353,9 @@ export const contactSubmissions = pgTable(
     notes: text('notes'),
     ipAddress: inet('ipAddress'),
     userAgent: text('userAgent'),
-    referer: text('referer'),
+    // See note on post_views.referrer — standard spelling, not the wire-format
+    // HTTP header typo.
+    referrer: text('referrer'),
     emailSent: boolean('emailSent').notNull().default(false),
     emailId: text('emailId'),
     emailError: text('emailError'),
