@@ -83,7 +83,11 @@ Defensive controls currently in place:
   `vbscript:` injection, including the WHATWG-parser-divergence bypass
   class (CVE-2026-31809 — embedded ASCII tab/CR/LF in the scheme) and
   protocol-relative URLs (`//evil.com`, open-redirect class)
-- **Output sanitization** — `isomorphic-dompurify` for any user-provided HTML
+- **Output sanitization** — `dompurify` for any user-provided HTML
+  (client-only — see `src/lib/sanitization.ts`; the prior
+  `isomorphic-dompurify` was dropped in commit `bdf52f4` because it pulled
+  `jsdom` into the server bundle and broke `/blog/[slug]` under Next.js 16
+  Turbopack)
 - **Structured logging** — `console.*` banned in application code; all error
   paths route through `src/lib/logger.ts` → Sentry in production
 

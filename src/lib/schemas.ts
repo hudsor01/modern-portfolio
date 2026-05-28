@@ -334,7 +334,20 @@ export const viewTrackingSchema = z
     slug: z.string().min(1, 'Slug is required'),
     readingTime: z.number().int().min(0).max(3600).optional(),
     scrollDepth: z.number().min(0).max(100).optional(),
-    referrer: urlSchema.optional(),
+    // Analytics-only field. Per WHATWG HTML
+    // (html.spec.whatwg.org/multipage/dom.html#dom-document-referrer),
+    // `document.referrer` is "a string (representing a URL)" with no
+    // scheme guarantee, and is the empty string when not set. Real-world
+    // values include '', http(s) URLs (often with fragments),
+    // `android-app://com.foo.bar/` (Chrome Android app-to-web), and
+    // extension URIs (`chrome-extension://`, `moz-extension://`). The
+    // value is stored in postViews.referer for aggregation only — never
+    // rendered as href — so urlSchema's `/^https?$/` gate (designed to
+    // block javascript:/data:/vbscript: in user-typed URL fields) is
+    // inappropriate here. Length cap is the DoS guard; treat the stored
+    // value as untrusted when surfacing in any admin UI (escape, never
+    // use as href).
+    referrer: z.string().max(2048).optional(),
   })
   .strict()
 

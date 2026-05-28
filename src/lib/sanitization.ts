@@ -155,13 +155,27 @@ export function stripHtml(html: string): string {
   return typeof result === 'string' ? result : String(result)
 }
 
-// Whitespace strip used before scheme parsing. Mirrors DOMPurify's
-// ATTR_WHITESPACE class (NULL + ASCII control + NBSP + en-quad block +
-// ideographic space) — a superset of the WHATWG strip set browsers apply
-// before parsing the scheme (url.spec.whatwg.org §4.4). A naive .trim()
-// leaves embedded \t/\n/\r in place — the CVE-2026-31809 / GHSA-pmc9-f5qr-2pcr
-// class — so the browser would see `javascript:` while the server saw
-// something else.
+// Whitespace strip used before scheme parsing. Byte-identical to DOMPurify's
+// ATTR_WHITESPACE (github.com/cure53/DOMPurify/blob/main/src/regexp.ts) and
+// a strict superset of the WHATWG URL parser's strip set
+// (url.spec.whatwg.org §4.4 step 1.2 trims leading/trailing
+// U+0000-U+0020 via "C0 control or space"; step 2 globally removes
+// U+0009/U+000A/U+000D via "Remove all ASCII tab or newline"). That strip
+// set is the entire attack surface for scheme-confusion against
+// `new URL().protocol` — covers the CVE-2026-31809 / GHSA-pmc9-f5qr-2pcr
+// class (embedded tab/CR/LF in `javascript:` that .trim() misses).
+//
+// Invisible Unicode that this class does NOT strip — U+200B-U+200F (ZW
+// family), U+FEFF (BOM), U+00AD (soft hyphen), U+2060-U+2064 (word joiner /
+// invisible math), U+E0000-U+E007F (Tag block) — is intentionally omitted.
+// The WHATWG URL parser does not strip those code points, so e.g.
+// `new URL("​javascript:alert(1)", base).protocol === "https:"` (the
+// character becomes path content under the base URL, not part of the
+// scheme). Verified empirically against Node v26.0.0. CVE-2026-48760
+// (Symfony HtmlSanitizer) targets the same character class but exploits
+// host-component allow-list comparison after downstream trim — not
+// scheme-allowlisting against parsed.protocol — and so does not apply to
+// this helper's call shape.
 // biome-ignore lint/suspicious/noControlCharactersInRegex: stripping control characters is the whole point of this regex (defends against CVE-2026-31809 bypass class)
 const URL_WHITESPACE_STRIP = /[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g
 
