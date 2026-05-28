@@ -3,7 +3,6 @@ import { describe, it, expect } from 'vitest'
 import {
   emailSchema,
   urlSchema,
-  optionalUrlSchema,
   slugSchema,
   cuidSchema,
   phoneSchema,
@@ -24,6 +23,8 @@ import {
   ValidationError,
   validate,
   safeValidate,
+  nullishText,
+  nullishUrl,
 } from '@/lib/schemas'
 import { z } from 'zod'
 import { createId as createCuid2 } from '@paralleldrive/cuid2'
@@ -70,21 +71,59 @@ describe('urlSchema', () => {
   })
 })
 
-describe('optionalUrlSchema', () => {
-  it('accepts undefined', () => {
-    expect(optionalUrlSchema.safeParse(undefined).success).toBe(true)
+describe('nullishText', () => {
+  const schema = nullishText(50)
+
+  it('returns null for undefined input (omitted field)', () => {
+    expect(schema.parse(undefined)).toBeUndefined()
   })
 
-  it('accepts an empty string', () => {
-    expect(optionalUrlSchema.safeParse('').success).toBe(true)
+  it('returns null for explicit null input (PATCH-clear)', () => {
+    expect(schema.parse(null)).toBeNull()
+  })
+
+  it('returns null for empty string input (HTML form clear)', () => {
+    expect(schema.parse('')).toBeNull()
+  })
+
+  it('returns the trimmed string for a real value', () => {
+    expect(schema.parse('hello')).toBe('hello')
+  })
+
+  it('rejects strings over the max length', () => {
+    expect(schema.safeParse('a'.repeat(51)).success).toBe(false)
+  })
+
+  it('honours a custom error message when provided', () => {
+    const custom = nullishText(10, 'Too long, sorry')
+    const result = custom.safeParse('a'.repeat(20))
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0]?.message).toBe('Too long, sorry')
+    }
+  })
+})
+
+describe('nullishUrl', () => {
+  const schema = nullishUrl()
+
+  it('returns null for empty string, null, and undefined', () => {
+    expect(schema.parse('')).toBeNull()
+    expect(schema.parse(null)).toBeNull()
+    expect(schema.parse(undefined)).toBeUndefined()
   })
 
   it('accepts a valid URL', () => {
-    expect(optionalUrlSchema.safeParse('https://example.com').success).toBe(true)
+    expect(schema.parse('https://example.com')).toBe('https://example.com')
   })
 
-  it('rejects an invalid non-empty string', () => {
-    expect(optionalUrlSchema.safeParse('not-a-url').success).toBe(false)
+  it('rejects non-URL strings', () => {
+    expect(schema.safeParse('not-a-url').success).toBe(false)
+  })
+
+  it('rejects URLs over the max length', () => {
+    const tiny = nullishUrl(20)
+    expect(tiny.safeParse('https://example.com/this-is-too-long').success).toBe(false)
   })
 })
 

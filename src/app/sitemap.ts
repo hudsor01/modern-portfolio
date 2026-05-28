@@ -150,7 +150,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       // safeFeaturedImageUrl re-validates at read time. Shared with
       // BlogPostJsonLd so sitemap and JSON-LD can never diverge on
       // what's considered a "safe" image URL for a given post.
-      const validFeatured = safeFeaturedImageUrl(post.featuredImage, post.title)
+      //
+      // Omit `images` entirely when isFallback=true: the `/api/og`
+      // card is a brand placeholder, not indexable per-post imagery.
+      // Including it in <image:loc> would dilute image-search ranking
+      // (Google indexes the placeholder as the "real" blog image and
+      // serves it for image-search queries that bounce on click).
+      const featured = safeFeaturedImageUrl(post.featuredImage, post.title)
 
       return {
         url: `${baseUrl}/blog/${post.slug}`,
@@ -158,7 +164,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           post.updatedAt?.toISOString() || post.publishedAt?.toISOString() || fallbackDate,
         changeFrequency: 'monthly' as const,
         priority: 0.7,
-        images: [xmlSafeUrl(validFeatured)],
+        ...(featured.isFallback ? {} : { images: [xmlSafeUrl(featured.url)] }),
       }
     })
   } catch (error) {

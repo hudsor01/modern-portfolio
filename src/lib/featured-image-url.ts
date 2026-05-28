@@ -1,20 +1,28 @@
 import { canonicalUrl } from '@/lib/absolute-url'
 import { featuredImageSchema } from '@/lib/schemas'
 
-const BLOG_OG_SUBTITLE = 'Blog Post'
+export interface SafeFeaturedImage {
+  url: string
+  /**
+   * `true` when the returned URL is the branded `/api/og?title=…` card
+   * (the stored value was null/empty or failed re-validation). Callers
+   * use this to decide whether to emit the URL into Google's image
+   * sitemap (`<image:loc>`) — fallback cards are placeholders, not
+   * indexable per-post imagery, and polluting the image sitemap with
+   * /api/og URLs dilutes image-search ranking.
+   */
+  isFallback: boolean
+}
 
 /**
- * Return a canonical absolute URL for a stored `featuredImage` value,
- * re-validating against `featuredImageSchema` first and falling back
- * to the branded `/api/og?title=…` card if validation fails or the
- * column is null/empty. Used by sitemap + BlogPostJsonLd + any future
- * surface that emits a featured image.
+ * Re-validate a stored `featuredImage` value against `featuredImageSchema`
+ * and return either its canonical URL (`isFallback: false`) or a
+ * branded `/api/og?title=…&subtitle=…` fallback (`isFallback: true`).
  *
- * Lives in its own module (rather than absolute-url.ts) so that
- * absolute-url.ts stays a pure URL primitive with zero schema/zod
- * dependencies — keeps the dependency graph layered (schemas →
- * featured-image-url → absolute-url) and avoids a backwards import
- * that would invite future circulars.
+ * Used by sitemap + BlogPostJsonLd + any future surface that emits a
+ * featured image. Lives in its own module so `absolute-url.ts` stays
+ * a pure URL primitive with zero schema/zod dependencies (layering:
+ * schemas → featured-image-url → absolute-url, never the reverse).
  *
  * Re-validation is necessary because legacy/Prisma-era rows never
  * went through `featuredImageSchema` on the write path; a bad value
@@ -25,10 +33,12 @@ const BLOG_OG_SUBTITLE = 'Blog Post'
 export function safeFeaturedImageUrl(
   stored: string | null | undefined,
   fallbackTitle: string,
-  fallbackSubtitle: string = BLOG_OG_SUBTITLE
-): string {
+  fallbackSubtitle: string = 'Blog Post'
+): SafeFeaturedImage {
   const parsed = stored ? featuredImageSchema.safeParse(stored) : null
-  if (parsed?.success && parsed.data) return canonicalUrl(parsed.data)
+  if (parsed?.success && parsed.data) {
+    return { url: canonicalUrl(parsed.data), isFallback: false }
+  }
   const params = new URLSearchParams({ title: fallbackTitle, subtitle: fallbackSubtitle })
-  return canonicalUrl(`/api/og?${params.toString()}`)
+  return { url: canonicalUrl(`/api/og?${params.toString()}`), isFallback: true }
 }

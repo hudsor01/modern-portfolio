@@ -107,8 +107,10 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
     // imported row with a bad value (`//evil.com/x`, traversal token,
     // off-allowlist host) doesn't ship verbatim into Google's
     // structured-data validator. Bad values fall back to the branded
-    // /api/og card — same guarantee as the sitemap.
-    image: safeFeaturedImageUrl(post.featuredImage, post.title),
+    // /api/og card — JSON-LD always needs an image (BlogPosting
+    // schema requires it), unlike the sitemap which omits <image:loc>
+    // for the fallback case.
+    image: safeFeaturedImageUrl(post.featuredImage, post.title).url,
     url: `${SITE_ORIGIN}/blog/${post.slug}`,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,

@@ -21,11 +21,6 @@ export const emailSchema = z
 // URL validation
 export const urlSchema = z.url('Please enter a valid URL').max(2048, 'URL is too long')
 
-// Optional URL that can be empty string
-export const optionalUrlSchema = z
-  .union([z.url('Please enter a valid URL').max(2048, 'URL is too long'), z.literal('')])
-  .optional()
-
 // Coerce empty string → null on parse. Lets HTML form submissions
 // (where missing fields become '') land in the canonical "cleared"
 // state without every handler call site needing to remember the
