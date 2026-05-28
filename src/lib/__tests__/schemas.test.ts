@@ -74,19 +74,23 @@ describe('urlSchema', () => {
 describe('nullishText', () => {
   const schema = nullishText(50)
 
-  it('returns null for undefined input (omitted field)', () => {
+  // `.optional()` wraps the union, so undefined short-circuits before
+  // the transform branch fires. That's the right shape: PATCH clients
+  // can OMIT a field (undefined) and the spread `body.X !== undefined`
+  // distinguishes that from explicit clear (null).
+  it('preserves undefined for omitted fields (does not coerce)', () => {
     expect(schema.parse(undefined)).toBeUndefined()
   })
 
-  it('returns null for explicit null input (PATCH-clear)', () => {
+  it('returns null for explicit null input (PATCH-clear semantics)', () => {
     expect(schema.parse(null)).toBeNull()
   })
 
-  it('returns null for empty string input (HTML form clear)', () => {
+  it('coerces empty string to null (HTML form clear)', () => {
     expect(schema.parse('')).toBeNull()
   })
 
-  it('returns the trimmed string for a real value', () => {
+  it('passes through a real string value unchanged (no trimming)', () => {
     expect(schema.parse('hello')).toBe('hello')
   })
 
@@ -107,10 +111,16 @@ describe('nullishText', () => {
 describe('nullishUrl', () => {
   const schema = nullishUrl()
 
-  it('returns null for empty string, null, and undefined', () => {
-    expect(schema.parse('')).toBeNull()
-    expect(schema.parse(null)).toBeNull()
+  // Same shape as nullishText: undefined preserved (omit), null
+  // preserved (PATCH-clear), empty string coerced to null
+  // (HTML form clear).
+  it('preserves undefined for omitted fields', () => {
     expect(schema.parse(undefined)).toBeUndefined()
+  })
+
+  it('returns null for explicit null and empty string inputs', () => {
+    expect(schema.parse(null)).toBeNull()
+    expect(schema.parse('')).toBeNull()
   })
 
   it('accepts a valid URL', () => {

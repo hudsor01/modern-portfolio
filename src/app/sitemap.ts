@@ -158,6 +158,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       // serves it for image-search queries that bounce on click).
       const featured = safeFeaturedImageUrl(post.featuredImage, post.title)
 
+      // Observability: distinguish 'never had a featured image' (null
+      // stored) from 'had one but it failed schema re-validation'
+      // (non-null stored, fallback returned). The latter is a content-
+      // quality signal — silent drop would let bad imports rot
+      // undetected. Filterable in logs by the `silentDropOnSitemap`
+      // tag.
+      if (featured.isFallback && post.featuredImage) {
+        logger.warn('Post featuredImage failed sitemap re-validation; omitting <image:loc>', {
+          slug: post.slug,
+          storedFeaturedImage: post.featuredImage,
+          silentDropOnSitemap: true,
+        })
+      }
+
       return {
         url: `${baseUrl}/blog/${post.slug}`,
         lastModified:

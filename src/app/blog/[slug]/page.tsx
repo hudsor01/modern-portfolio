@@ -12,6 +12,8 @@ import { createContextLogger } from '@/lib/logger'
 import type { BlogPostData } from '@/types/api'
 import { db } from '@/lib/db'
 import { blogPosts } from '@/db/schema'
+import { canonicalUrl } from '@/lib/absolute-url'
+import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 
 // Force runtime rendering. notFound() inside Next.js 16's ISR-rendered
 // Server Components doesn't propagate HTTP 404 status to Vercel — the
@@ -84,10 +86,14 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     notFound()
   }
 
-  const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
-    title: post.title,
-    ...(post.category?.name && { category: post.category.name }),
-  }).toString()}`
+  // OG/Twitter share previews now share the same image resolution
+  // path as sitemap + BlogPostJsonLd: prefer the validated stored
+  // featuredImage, fall back to the branded /api/og card. Previously
+  // this handler hand-rolled the OG URL and ALWAYS shipped the card,
+  // so a post with a perfectly good Unsplash hero shared as a generic
+  // brand placeholder on Twitter/LinkedIn — three SEO surfaces
+  // disagreed about the canonical image for the same URL.
+  const ogImage = safeFeaturedImageUrl(post.featuredImage, post.title)
 
   return {
     title: post.metaTitle || post.title,
@@ -96,14 +102,14 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     openGraph: {
       title: post.title,
       description: post.excerpt || post.metaDescription,
-      url: `https://richardwhudsonjr.com/blog/${post.slug}`,
+      url: canonicalUrl(`/blog/${post.slug}`),
       siteName: 'Richard Hudson - RevOps Professional',
       images: [
         {
-          url: ogImageUrl,
+          url: ogImage.url,
           width: 1200,
           height: 630,
-          alt: post.title,
+          alt: post.featuredImageAlt || post.title,
         },
       ],
       locale: 'en_US',
@@ -118,10 +124,10 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       card: 'summary_large_image',
       title: post.title,
       description: post.excerpt || post.metaDescription,
-      images: [ogImageUrl],
+      images: [ogImage.url],
     },
     alternates: {
-      canonical: `https://richardwhudsonjr.com/blog/${post.slug}`,
+      canonical: canonicalUrl(`/blog/${post.slug}`),
     },
   }
 }
