@@ -97,8 +97,9 @@ Defensive controls currently in place:
 - `.env`, `.env.*` are git-ignored. The Zod schema in
   `src/lib/env-validation.ts` is the authoritative list of expected
   variables — there is no committed `.env.example` to leak from
-- Zod schema at boot enforces format, length, and HTTPS requirements;
-  weak `JWT_SECRET` patterns are flagged at startup
+- Zod schema at boot enforces format, length, and HTTPS requirements
+  (`src/lib/env-validation.ts`); production warns on short admin/metrics
+  tokens and fails closed if `NEXT_PUBLIC_SITE_URL` isn't HTTPS
 
 ### Supply chain
 
@@ -124,13 +125,10 @@ Defensive controls currently in place:
 
 These are publicly documented so reporters don't waste cycles on them:
 
-- `JWT_SECRET` is validated by the env schema but not yet consumed by any
-  route handler — there is no JWT-based auth surface in this project.
-  `ADMIN_API_TOKEN` is consumed by `/api/seed`; `METRICS_API_TOKEN` is
-  consumed by `/api/security/metrics`.
-- `/api/sentry-debug` exists for observability verification and reveals
-  which Sentry env vars are set (not their values). Consider removing or
-  gating before any milestone where it is no longer needed.
+- `ADMIN_API_TOKEN` is the only Bearer-token auth surface — consumed by
+  `/api/seed` and the blog mutation endpoints (POST/PUT/DELETE).
+  `METRICS_API_TOKEN` is consumed by `/api/security/metrics`. There is no
+  user-facing auth (no login, no sessions, no JWT).
 
 ---
 
