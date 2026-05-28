@@ -341,7 +341,7 @@ export const viewTrackingSchema = z
     // values include '', http(s) URLs (often with fragments),
     // `android-app://com.foo.bar/` (Chrome Android app-to-web), and
     // extension URIs (`chrome-extension://`, `moz-extension://`). The
-    // value is stored in postViews.referer for aggregation only — never
+    // value is stored in postViews.referrer for aggregation only — never
     // rendered as href — so urlSchema's `/^https?$/` gate (designed to
     // block javascript:/data:/vbscript: in user-typed URL fields) is
     // inappropriate here. Length cap is the DoS guard; treat the stored
