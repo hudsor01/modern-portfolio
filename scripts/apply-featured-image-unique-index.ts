@@ -5,13 +5,13 @@
  * original 27-posts-share-9-URLs failure class is now blocked at row
  * level, regardless of who's writing (admin POST/PUT, seed, hand SQL).
  *
- * Why not via drizzle-kit migrate: the Postgres schema was created by
- * Prisma (pre-Drizzle), so drizzle-kit has no baseline — `db:generate`
- * emits the entire schema as migration 0000, unsafe to run against
- * prod which already has those tables. Until someone baselines
- * drizzle-kit, focused one-off scripts are the project's documented
- * idiom (see also scripts/update-blog-featured-images.ts and
- * scripts/touch-blog-lastmod.ts).
+ * Originally a one-off because drizzle-kit had no baseline against the
+ * Prisma-era schema. As of the 0000_rename_referer_to_referrer
+ * migration, drizzle-kit IS baselined and the partial unique index is
+ * in the snapshot — but this script is kept for backfilling against
+ * any DB that pre-dates the Drizzle baseline (e.g. a stale Neon dev
+ * branch). For new DBs and forward changes, prefer `bun run
+ * db:generate` + `bun run db:migrate`.
  *
  * Idempotent via `IF NOT EXISTS`. Safe to re-run.
  *

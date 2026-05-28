@@ -14,6 +14,13 @@
 -- and modern analytics products use the standard spelling. These are
 -- persisted analytics columns, not header values being parsed verbatim,
 -- so the canonical English spelling is the right choice.
+--
+-- Deploy: `bun run db:migrate` (drizzle-kit uses node-postgres for the
+-- connection; ensure DATABASE_URL has `?sslmode=require` if running outside
+-- Vercel — Neon's HTTP driver enforces TLS automatically, the pg driver
+-- doesn't). Pre-deploy verification queries are in the v2 review report at
+-- .planning/code-reviews/url-protocol-allowlist-REVIEW-v2.md.
 
-ALTER TABLE "post_views" RENAME COLUMN "referer" TO "referrer";--> statement-breakpoint
+ALTER TABLE "post_views" RENAME COLUMN "referer" TO "referrer";
+--> statement-breakpoint
 ALTER TABLE "contact_submissions" RENAME COLUMN "referer" TO "referrer";
