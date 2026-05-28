@@ -88,7 +88,7 @@ Seed (`drizzle/seed.ts`): upsert-based, idempotent. Seeds 1 author, categories, 
 
 ## API routes
 
-15 `route.ts` + 1 `route.tsx` (`og/route.tsx` uses `next/og` `ImageResponse`).
+14 `route.ts` + 1 `route.tsx` (`og/route.tsx` uses `next/og` `ImageResponse`).
 
 | Path | Methods | Rate limit | CSRF | Auth | Notes |
 |---|---|---|---|---|---|
@@ -105,7 +105,6 @@ Seed (`drizzle/seed.ts`): upsert-based, idempotent. Seeds 1 author, categories, 
 | `/api/projects` | GET | `read` | — | — | |
 | `/api/projects/[slug]` | GET | `read` | — | — | `slugSchema` validates param |
 | `/api/og` | GET | — | — | — | Dynamic OG image (`route.tsx`) |
-| `/api/sentry-debug` | GET | — | — | — | Returns 404 in production; `RateLimitPresets.read` applied in non-prod |
 | `/api/seed` | POST | — | — | `ADMIN_API_TOKEN` | Returns 404 in production unless `ALLOW_SEED_IN_PRODUCTION='true'`; refuses if posts already exist |
 | `/api/security/metrics` | GET | — | — | `METRICS_API_TOKEN` (header `X-Metrics-Token`) | Exports rate-limiter metrics |
 
@@ -147,8 +146,6 @@ All declared in `src/lib/env-validation.ts` (Zod, no `@t3-oss/env-nextjs`). Vali
 | `NEXT_PUBLIC_SITE_URL` | default per env | Must be HTTPS in production |
 | `ALLOWED_ORIGINS` | optional | CSV, transformed to `string[]` |
 | `NEXT_PUBLIC_VERCEL_URL`, `VERCEL_URL` | optional | Vercel-injected |
-| `JWT_SECRET` | optional | 32–512 chars; **declared but not yet consumed** anywhere |
-| `JWT_EXPIRES_IN` | optional | Format `\d+[smhd]` |
 | `ADMIN_API_TOKEN` | optional | min 32 chars; production warning if <64 |
 | `METRICS_API_TOKEN` | optional | min 32 chars; production warning if <64 |
 | `ALLOW_SEED_IN_PRODUCTION` | optional | Enum `'true'`/`'false'` — enum (not string) so misspellings fail at boot |

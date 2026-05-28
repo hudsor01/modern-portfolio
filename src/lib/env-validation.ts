@@ -38,16 +38,6 @@ const envSchema = z.object({
   TO_EMAIL: z.email('TO_EMAIL must be a valid email').default('hello@richardwhudsonjr.com'),
   NEXT_PUBLIC_VERCEL_URL: z.string().optional(),
   VERCEL_URL: z.string().optional(),
-  // Optional security variables (not used in this project)
-  JWT_SECRET: z
-    .string()
-    .min(32, 'JWT_SECRET must be at least 32 characters for security')
-    .max(512, 'JWT_SECRET must not exceed 512 characters')
-    .optional(),
-  JWT_EXPIRES_IN: z
-    .string()
-    .regex(/^\d+[smhd]$/, 'JWT_EXPIRES_IN must be in format: 1h, 30m, 7d, etc.')
-    .optional(),
   ADMIN_API_TOKEN: z.string().min(32, 'ADMIN_API_TOKEN must be at least 32 characters').optional(),
   // Production seed gate — /api/seed returns 404 in production unless set to 'true'
   ALLOW_SEED_IN_PRODUCTION: z.enum(['true', 'false']).optional(),
@@ -125,11 +115,6 @@ export function performSecurityChecks(env: EnvConfig): void {
 
   // Check for production security requirements
   if (env.NODE_ENV === 'production') {
-    // Only check JWT if it's provided (optional)
-    if (env.JWT_SECRET && env.JWT_SECRET.length < 64) {
-      warnings.push('Production JWT_SECRET should be at least 64 characters')
-    }
-
     if (!env.ADMIN_API_TOKEN) {
       warnings.push(
         'ADMIN_API_TOKEN unset in production — /api/seed and all blog mutation endpoints (POST/PUT/DELETE) will return 401 to every caller, including legitimate admins'
@@ -145,21 +130,6 @@ export function performSecurityChecks(env: EnvConfig): void {
     if (!env.NEXT_PUBLIC_SITE_URL?.startsWith('https://')) {
       errors.push('Production site URL must use HTTPS')
     }
-  }
-
-  // Check for weak or predictable secrets (only if JWT is provided)
-  if (env.JWT_SECRET) {
-    const weakPatterns = [
-      /^(123|abc|test|dev|admin|password|secret|default)/i,
-      /^.{1,10}$/, // Too short
-      /^(.)\1{10,}$/, // Repeated characters
-    ]
-
-    weakPatterns.forEach((pattern, index) => {
-      if (env.JWT_SECRET && pattern.test(env.JWT_SECRET)) {
-        warnings.push(`JWT_SECRET appears to be weak (pattern ${index + 1})`)
-      }
-    })
   }
 
   // Log warnings
