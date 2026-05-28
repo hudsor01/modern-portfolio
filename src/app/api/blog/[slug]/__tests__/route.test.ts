@@ -8,6 +8,10 @@ vi.mock('@/lib/api-csrf', () => ({
 vi.mock('@/lib/api-admin-auth', () => ({
   isAdminRequest: vi.fn(() => false),
 }))
+vi.mock('@/lib/api-rate-limit', () => ({
+  checkRateLimitOrRespond: vi.fn(() => null),
+  RateLimitPresets: { read: {}, write: {}, sensitive: {} },
+}))
 
 const dbMocks = vi.hoisted(() => ({
   findFirst: vi.fn(),
@@ -167,7 +171,16 @@ describe('GET /api/blog/[slug]', () => {
 describe('PUT /api/blog/[slug]', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(isAdminRequest).mockReturnValue(true)
     vi.mocked(validateCSRFOrRespond).mockResolvedValue(null)
+  })
+
+  it('returns 401 when admin token missing', async () => {
+    vi.mocked(isAdminRequest).mockReturnValueOnce(false)
+    const res = await PUT(reqPut('hello', { title: 'New' }), ctx('hello'))
+    expect(res.status).toBe(401)
+    expect(vi.mocked(validateCSRFOrRespond)).not.toHaveBeenCalled()
+    expect(dbMocks.findFirst).not.toHaveBeenCalled()
   })
 
   it('returns 403 when CSRF guard responds (CSRF required for mutation)', async () => {
@@ -201,7 +214,16 @@ describe('PUT /api/blog/[slug]', () => {
 describe('DELETE /api/blog/[slug]', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(isAdminRequest).mockReturnValue(true)
     vi.mocked(validateCSRFOrRespond).mockResolvedValue(null)
+  })
+
+  it('returns 401 when admin token missing', async () => {
+    vi.mocked(isAdminRequest).mockReturnValueOnce(false)
+    const res = await DELETE(reqDelete('hello'), ctx('hello'))
+    expect(res.status).toBe(401)
+    expect(vi.mocked(validateCSRFOrRespond)).not.toHaveBeenCalled()
+    expect(dbMocks.findFirst).not.toHaveBeenCalled()
   })
 
   it('returns 403 when CSRF guard responds', async () => {

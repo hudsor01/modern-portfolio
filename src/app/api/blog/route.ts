@@ -157,6 +157,11 @@ export async function POST(request: NextRequest) {
   )
   if (rateLimitResponse) return rateLimitResponse
 
+  if (!isAdminRequest(request)) {
+    logger.warn('Unauthorized blog mutation attempt', { route: '/api/blog', method: 'POST' })
+    return NextResponse.json(createErrorResponse('Unauthorized'), { status: 401 })
+  }
+
   // CSRF validation using shared utility
   const csrfResponse = await validateCSRFOrRespond(request, 'blog post creation')
   if (csrfResponse) return csrfResponse
