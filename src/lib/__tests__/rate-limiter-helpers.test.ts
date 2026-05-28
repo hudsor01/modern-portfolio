@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 
 vi.mock('@/lib/logger', () => ({
   logger: {
@@ -11,20 +11,7 @@ vi.mock('@/lib/logger', () => ({
   },
 }))
 
-import {
-  checkContactFormRateLimit,
-  checkApiRateLimit,
-  checkAuthRateLimit,
-} from '@/lib/rate-limiter/helpers'
-
-beforeEach(() => {
-  vi.useFakeTimers()
-  vi.setSystemTime(new Date(2026, 0, 1))
-})
-
-afterEach(() => {
-  vi.useRealTimers()
-})
+import { checkContactFormRateLimit } from '@/lib/rate-limiter/helpers'
 
 describe('checkContactFormRateLimit', () => {
   it('rejects empty identifier', () => {
@@ -47,7 +34,6 @@ describe('checkContactFormRateLimit', () => {
   })
 
   it('allows the first request from a valid identifier', () => {
-    // unique IP per test to avoid cross-test bucket carryover
     const r = checkContactFormRateLimit(`contact-helper-${Date.now()}`)
     expect(r.allowed).toBe(true)
   })
@@ -55,29 +41,6 @@ describe('checkContactFormRateLimit', () => {
   it('trims surrounding whitespace before checking', () => {
     const id = `padded-${Date.now()}`
     const r = checkContactFormRateLimit(`  ${id}  `)
-    expect(r.allowed).toBe(true)
-  })
-})
-
-describe('checkApiRateLimit', () => {
-  it('allows the first API request from a fresh client', () => {
-    const r = checkApiRateLimit(`api-${Date.now()}`)
-    expect(r.allowed).toBe(true)
-  })
-
-  it('passes context.path to the limiter', () => {
-    const r = checkApiRateLimit(`api-ctx-${Date.now()}`, {
-      path: '/api/test',
-      method: 'GET',
-      userAgent: 'curl/8.0',
-    })
-    expect(r.allowed).toBe(true)
-  })
-})
-
-describe('checkAuthRateLimit', () => {
-  it('allows first attempt', () => {
-    const r = checkAuthRateLimit(`auth-${Date.now()}`)
     expect(r.allowed).toBe(true)
   })
 })

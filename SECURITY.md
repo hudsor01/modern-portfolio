@@ -76,7 +76,18 @@ Defensive controls currently in place:
   `src/lib/api-csrf.ts`
 - **Rate limiting** on contact submissions — `src/lib/rate-limiter/`
 - **Input validation** — all external input parsed through Zod schemas
-- **Output sanitization** — `isomorphic-dompurify` for any user-provided HTML
+- **URL protocol allowlist** — URL fields constrained to `http` / `https`
+  via Zod 4's `protocol` option (`src/lib/schemas.ts`) and a matching
+  DOMPurify-pattern runtime helper (`isSafeUrl` in
+  `src/lib/sanitization.ts`). Defends against `javascript:` / `data:` /
+  `vbscript:` injection, including the WHATWG-parser-divergence bypass
+  class (CVE-2026-31809 — embedded ASCII tab/CR/LF in the scheme) and
+  protocol-relative URLs (`//evil.com`, open-redirect class)
+- **Output sanitization** — `dompurify` for any user-provided HTML
+  (client-only — see `src/lib/sanitization.ts`; the prior
+  `isomorphic-dompurify` was dropped in commit `bdf52f4` because it pulled
+  `jsdom` into the server bundle and broke `/blog/[slug]` under Next.js 16
+  Turbopack)
 - **Structured logging** — `console.*` banned in application code; all error
   paths route through `src/lib/logger.ts` → Sentry in production
 
@@ -86,8 +97,9 @@ Defensive controls currently in place:
 - `.env`, `.env.*` are git-ignored. The Zod schema in
   `src/lib/env-validation.ts` is the authoritative list of expected
   variables — there is no committed `.env.example` to leak from
-- Zod schema at boot enforces format, length, and HTTPS requirements;
-  weak `JWT_SECRET` patterns are flagged at startup
+- Zod schema at boot enforces format, length, and HTTPS requirements
+  (`src/lib/env-validation.ts`); production warns on short admin/metrics
+  tokens and fails closed if `NEXT_PUBLIC_SITE_URL` isn't HTTPS
 
 ### Supply chain
 
@@ -113,13 +125,10 @@ Defensive controls currently in place:
 
 These are publicly documented so reporters don't waste cycles on them:
 
-- `JWT_SECRET` is validated by the env schema but not yet consumed by any
-  route handler — there is no JWT-based auth surface in this project.
-  `ADMIN_API_TOKEN` is consumed by `/api/seed`; `METRICS_API_TOKEN` is
-  consumed by `/api/security/metrics`.
-- `/api/sentry-debug` exists for observability verification and reveals
-  which Sentry env vars are set (not their values). Consider removing or
-  gating before any milestone where it is no longer needed.
+- `ADMIN_API_TOKEN` is the only Bearer-token auth surface — consumed by
+  `/api/seed` and the blog mutation endpoints (POST/PUT/DELETE).
+  `METRICS_API_TOKEN` is consumed by `/api/security/metrics`. There is no
+  user-facing auth (no login, no sessions, no JWT).
 
 ---
 
