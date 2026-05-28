@@ -157,6 +157,10 @@ export async function POST(request: NextRequest) {
   )
   if (rateLimitResponse) return rateLimitResponse
 
+  if (!isAdminRequest(request)) {
+    return NextResponse.json(createErrorResponse('Unauthorized'), { status: 401 })
+  }
+
   // CSRF validation using shared utility
   const csrfResponse = await validateCSRFOrRespond(request, 'blog post creation')
   if (csrfResponse) return csrfResponse

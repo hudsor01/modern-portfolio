@@ -80,6 +80,10 @@ export async function GET(request: NextRequest, context: { params: Promise<{ slu
 }
 
 export async function PUT(request: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  if (!isAdminRequest(request)) {
+    return NextResponse.json(createErrorResponse('Unauthorized'), { status: 401 })
+  }
+
   const csrfResponse = await validateCSRFOrRespond(request, 'blog post update')
   if (csrfResponse) return csrfResponse
 
@@ -210,6 +214,10 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
 }
 
 export async function DELETE(request: NextRequest, context: { params: Promise<{ slug: string }> }) {
+  if (!isAdminRequest(request)) {
+    return NextResponse.json(createErrorResponse('Unauthorized'), { status: 401 })
+  }
+
   const csrfResponse = await validateCSRFOrRespond(request, 'blog post deletion')
   if (csrfResponse) return csrfResponse
 

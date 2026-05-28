@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 import { tags } from '@/db/schema'
 import { generateSlug, createErrorResponse, transformToTagData } from '@/lib/api-blog'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
+import { isAdminRequest } from '@/lib/api-admin-auth'
 
 const logger = createContextLogger('TagsAPI')
 
@@ -50,6 +51,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    if (!isAdminRequest(request)) {
+      return NextResponse.json(createErrorResponse('Unauthorized'), { status: 401 })
+    }
+
     const csrfResponse = await validateCSRFOrRespond(request, 'blog tag creation')
     if (csrfResponse) return csrfResponse
 

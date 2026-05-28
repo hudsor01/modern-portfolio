@@ -5,6 +5,9 @@ import { NextRequest, NextResponse } from 'next/server'
 vi.mock('@/lib/api-csrf', () => ({
   validateCSRFOrRespond: vi.fn(async () => null),
 }))
+vi.mock('@/lib/api-admin-auth', () => ({
+  isAdminRequest: vi.fn(() => true),
+}))
 
 const dbMocks = vi.hoisted(() => ({
   selectRows: vi.fn(),
@@ -49,6 +52,7 @@ vi.mock('@/lib/logger', () => ({
 
 import { GET, POST } from '@/app/api/blog/tags/route'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
+import { isAdminRequest } from '@/lib/api-admin-auth'
 
 const sampleTag = {
   id: 'tag-1',
@@ -104,9 +108,18 @@ describe('GET /api/blog/tags', () => {
 describe('POST /api/blog/tags', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(isAdminRequest).mockReturnValue(true)
     vi.mocked(validateCSRFOrRespond).mockResolvedValue(null)
     dbMocks.findFirst.mockResolvedValue(undefined)
     dbMocks.insertReturning.mockResolvedValue([sampleTag])
+  })
+
+  it('returns 401 when admin token missing', async () => {
+    vi.mocked(isAdminRequest).mockReturnValueOnce(false)
+    const res = await POST(reqPost({ name: 'rev-ops' }))
+    expect(res.status).toBe(401)
+    expect(vi.mocked(validateCSRFOrRespond)).not.toHaveBeenCalled()
+    expect(dbMocks.findFirst).not.toHaveBeenCalled()
   })
 
   it('returns 403 when CSRF guard responds', async () => {
