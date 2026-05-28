@@ -88,22 +88,6 @@ describe('env-validation', () => {
 
       await expect(importEnvModule()).rejects.toThrow(/NEXT_PUBLIC_SITE_URL/)
     })
-
-    it('rejects short JWT_SECRET', async () => {
-      vi.stubEnv('NODE_ENV', 'development')
-      vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'http://localhost:3000')
-      vi.stubEnv('JWT_SECRET', 'too-short')
-
-      await expect(importEnvModule()).rejects.toThrow(/JWT_SECRET must be at least 32 characters/)
-    })
-
-    it('rejects JWT_EXPIRES_IN in the wrong format', async () => {
-      vi.stubEnv('NODE_ENV', 'development')
-      vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'http://localhost:3000')
-      vi.stubEnv('JWT_EXPIRES_IN', '1 hour')
-
-      await expect(importEnvModule()).rejects.toThrow(/JWT_EXPIRES_IN/)
-    })
   })
 
   describe('production security checks', () => {

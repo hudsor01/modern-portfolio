@@ -20,23 +20,24 @@ const envSchema = z.object({
       'DATABASE_URL must be a valid PostgreSQL connection string'
     )
     .optional(),
-  // Email service
-  RESEND_API_KEY: z.string().min(1, 'RESEND_API_KEY is required').optional(),
+  // Email service. Optional — when absent, emailService falls back to mock IDs
+  // in development and returns a 503-shape "service not available" result in
+  // production. The `.min(1)` only fires when the var is explicitly set to an
+  // empty string (e.g. `RESEND_API_KEY=` in a .env file), which is almost
+  // always a misconfiguration; reject loudly with a precise message rather
+  // than silently treating empty as absent.
+  RESEND_API_KEY: z
+    .string()
+    .min(
+      1,
+      'RESEND_API_KEY must be a non-empty string when set (use absent/unset to disable email)'
+    )
+    .optional(),
   CONTACT_EMAIL: z.string().email('CONTACT_EMAIL must be a valid email').optional(),
   FROM_EMAIL: z.email('FROM_EMAIL must be a valid email').default('contact@richardwhudsonjr.com'),
   TO_EMAIL: z.email('TO_EMAIL must be a valid email').default('hello@richardwhudsonjr.com'),
   NEXT_PUBLIC_VERCEL_URL: z.string().optional(),
   VERCEL_URL: z.string().optional(),
-  // Optional security variables (not used in this project)
-  JWT_SECRET: z
-    .string()
-    .min(32, 'JWT_SECRET must be at least 32 characters for security')
-    .max(512, 'JWT_SECRET must not exceed 512 characters')
-    .optional(),
-  JWT_EXPIRES_IN: z
-    .string()
-    .regex(/^\d+[smhd]$/, 'JWT_EXPIRES_IN must be in format: 1h, 30m, 7d, etc.')
-    .optional(),
   ADMIN_API_TOKEN: z.string().min(32, 'ADMIN_API_TOKEN must be at least 32 characters').optional(),
   // Production seed gate — /api/seed returns 404 in production unless set to 'true'
   ALLOW_SEED_IN_PRODUCTION: z.enum(['true', 'false']).optional(),
@@ -114,11 +115,6 @@ export function performSecurityChecks(env: EnvConfig): void {
 
   // Check for production security requirements
   if (env.NODE_ENV === 'production') {
-    // Only check JWT if it's provided (optional)
-    if (env.JWT_SECRET && env.JWT_SECRET.length < 64) {
-      warnings.push('Production JWT_SECRET should be at least 64 characters')
-    }
-
     if (!env.ADMIN_API_TOKEN) {
       warnings.push(
         'ADMIN_API_TOKEN unset in production — /api/seed and all blog mutation endpoints (POST/PUT/DELETE) will return 401 to every caller, including legitimate admins'
@@ -134,21 +130,6 @@ export function performSecurityChecks(env: EnvConfig): void {
     if (!env.NEXT_PUBLIC_SITE_URL?.startsWith('https://')) {
       errors.push('Production site URL must use HTTPS')
     }
-  }
-
-  // Check for weak or predictable secrets (only if JWT is provided)
-  if (env.JWT_SECRET) {
-    const weakPatterns = [
-      /^(123|abc|test|dev|admin|password|secret|default)/i,
-      /^.{1,10}$/, // Too short
-      /^(.)\1{10,}$/, // Repeated characters
-    ]
-
-    weakPatterns.forEach((pattern, index) => {
-      if (env.JWT_SECRET && pattern.test(env.JWT_SECRET)) {
-        warnings.push(`JWT_SECRET appears to be weak (pattern ${index + 1})`)
-      }
-    })
   }
 
   // Log warnings
