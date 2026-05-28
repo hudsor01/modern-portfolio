@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
 import crypto from 'node:crypto'
 import { createContextLogger } from '@/lib/logger'
+import { timingSafeEqualString } from '@/lib/timing-safe-equal'
 
 const logger = createContextLogger('CSRFProtection')
 
@@ -52,8 +53,7 @@ export async function validateCSRFToken(requestToken: string | undefined): Promi
     return false
   }
 
-  // Use constant-time comparison to prevent timing attacks
-  return crypto.timingSafeEqual(Buffer.from(requestToken), Buffer.from(storedToken))
+  return timingSafeEqualString(requestToken, storedToken)
 }
 
 /**

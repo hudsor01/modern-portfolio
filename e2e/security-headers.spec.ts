@@ -160,6 +160,24 @@ test.describe('Security Headers', () => {
       expect(body.error).toBeDefined()
     })
 
+    // Regression pin for the RangeError-on-length-mismatch bug fixed in
+    // PR #101: a malformed (wrong-length) CSRF token must return 403, not 500.
+    // Pre-fix, crypto.timingSafeEqual threw on the unequal Buffers and the
+    // throw escaped the route handler. /api/contact is CSRF-protected and
+    // (unlike /api/blog/*) doesn't require admin bearer auth, so the CSRF
+    // check is reachable end-to-end without additional setup.
+    test('POST with malformed-length CSRF token returns 403, not 500', async ({ request }) => {
+      const response = await request.post('/api/contact', {
+        data: { name: 'Test', email: 'test@example.com', message: 'Hello' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': 'short',
+          Cookie: `__csrf_token=${'a'.repeat(64)}`,
+        },
+      })
+      expect(response.status()).toBe(403)
+    })
+
   })
 
   test.describe('API Route Headers', () => {

@@ -21,7 +21,20 @@ export async function validateCSRFOrRespond(
   logContext?: string
 ): Promise<NextResponse | null> {
   const csrfToken = request.headers.get('x-csrf-token')
-  const isValid = await validateCSRFToken(csrfToken ?? undefined)
+
+  // Belt-and-suspenders: any throw inside validateCSRFToken (e.g. cookies()
+  // failing in a static-render context, or a future regression in the token
+  // comparison) collapses to a clean 403 rather than escaping to a 500 across
+  // all five mutation route handlers.
+  let isValid = false
+  try {
+    isValid = await validateCSRFToken(csrfToken ?? undefined)
+  } catch (error) {
+    logger.warn(`CSRF validation threw${logContext ? `: ${logContext}` : ''}`, {
+      clientId: getClientIdentifier(request),
+      error: error instanceof Error ? error.message : String(error),
+    })
+  }
 
   if (!isValid) {
     if (logContext) {
