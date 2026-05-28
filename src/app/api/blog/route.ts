@@ -158,6 +158,7 @@ export async function POST(request: NextRequest) {
   if (rateLimitResponse) return rateLimitResponse
 
   if (!isAdminRequest(request)) {
+    logger.warn('Unauthorized blog mutation attempt', { route: '/api/blog', method: 'POST' })
     return NextResponse.json(createErrorResponse('Unauthorized'), { status: 401 })
   }
 

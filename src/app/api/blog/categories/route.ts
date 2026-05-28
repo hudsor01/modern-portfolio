@@ -41,6 +41,10 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     if (!isAdminRequest(request)) {
+      logger.warn('Unauthorized blog mutation attempt', {
+        route: '/api/blog/categories',
+        method: 'POST',
+      })
       return NextResponse.json(createErrorResponse('Unauthorized'), { status: 401 })
     }
 

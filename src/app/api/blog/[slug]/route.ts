@@ -81,6 +81,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ slu
 
 export async function PUT(request: NextRequest, context: { params: Promise<{ slug: string }> }) {
   if (!isAdminRequest(request)) {
+    logger.warn('Unauthorized blog mutation attempt', { route: '/api/blog/[slug]', method: 'PUT' })
     return NextResponse.json(createErrorResponse('Unauthorized'), { status: 401 })
   }
 
@@ -215,6 +216,10 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
 
 export async function DELETE(request: NextRequest, context: { params: Promise<{ slug: string }> }) {
   if (!isAdminRequest(request)) {
+    logger.warn('Unauthorized blog mutation attempt', {
+      route: '/api/blog/[slug]',
+      method: 'DELETE',
+    })
     return NextResponse.json(createErrorResponse('Unauthorized'), { status: 401 })
   }
 
