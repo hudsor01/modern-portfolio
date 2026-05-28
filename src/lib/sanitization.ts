@@ -155,18 +155,42 @@ export function stripHtml(html: string): string {
   return typeof result === 'string' ? result : String(result)
 }
 
+// Whitespace strip used before scheme parsing. Mirrors DOMPurify's
+// ATTR_WHITESPACE class (NULL + ASCII control + NBSP + en-quad block +
+// ideographic space) — a superset of the WHATWG strip set browsers apply
+// before parsing the scheme (url.spec.whatwg.org §4.4). A naive .trim()
+// leaves embedded \t/\n/\r in place — the CVE-2026-31809 / GHSA-pmc9-f5qr-2pcr
+// class — so the browser would see `javascript:` while the server saw
+// something else.
+// biome-ignore lint/suspicious/noControlCharactersInRegex: stripping control characters is the whole point of this regex (defends against CVE-2026-31809 bypass class)
+const URL_WHITESPACE_STRIP = /[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g
+
+// Defense-in-depth blocklist (DOMPurify's IS_SCRIPT_OR_DATA pattern,
+// extended). The new URL().protocol allowlist below is the primary check;
+// this catches `*script:` / `data:` / `vbscript:` / `file:` / `blob:` /
+// `about:` pre-parse so any future URL constructor change can't silently
+// widen the surface.
+const DANGEROUS_SCHEME_RE = /^(?:\w+script|data|vbscript|file|blob|about):/i
+
+// Allowlist: schemes that are safe to render as href/src. http/https for
+// navigation, mailto for contact links. Extend only when a sink needs it.
+// (OWASP XSS Prevention Cheat Sheet: "Allow-list http and HTTPS URLs only".)
+const SAFE_PROTOCOLS = new Set(['http:', 'https:', 'mailto:'])
+
 export function isSafeUrl(url: string): boolean {
-  const lowerUrl = url.toLowerCase().trim()
-  if (
-    lowerUrl.startsWith('javascript:') ||
-    lowerUrl.startsWith('data:') ||
-    lowerUrl.startsWith('vbscript:')
-  ) {
+  if (typeof url !== 'string') return false
+  const cleaned = url.replace(URL_WHITESPACE_STRIP, '')
+  if (DANGEROUS_SCHEME_RE.test(cleaned)) return false
+  try {
+    // Base URL lets relative paths ('/some/path') resolve to https: and
+    // pass the allowlist; absolute URLs ignore the base per WHATWG.
+    const parsed = new URL(cleaned, 'https://placeholder.invalid')
+    return SAFE_PROTOCOLS.has(parsed.protocol)
+  } catch {
     return false
   }
-  return true
 }
 
 export function sanitizeAttribute(text: string): string {
-  return escapeHtml(text).replace(/"/g, '"')
+  return escapeHtml(text).replace(/"/g, '&quot;')
 }
