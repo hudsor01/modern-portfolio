@@ -1,7 +1,7 @@
 // Mirrors existing JSON-LD components — `safeJsonLdStringify` is the
 // project's OWASP-compliant serializer. See src/lib/json-ld-utils.ts.
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
-import { siteConfig } from '@/lib/site'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 /**
  * Article JSON-LD for project case-study pages.
@@ -32,12 +32,8 @@ export function ProjectJsonLd({
   dateModified?: string
   nonce?: string | null
 }) {
-  const url = `${siteConfig.url}/projects/${slug}`
-  const resolvedImage = image
-    ? image.startsWith('http')
-      ? image
-      : `${siteConfig.url}${image}`
-    : `${siteConfig.url}/images/richard.jpg`
+  const url = canonicalUrl(`/projects/${slug}`)
+  const resolvedImage = canonicalUrl(image ?? '/images/richard.jpg')
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -53,7 +49,7 @@ export function ProjectJsonLd({
     author: {
       '@type': 'Person',
       name: 'Richard Hudson',
-      url: siteConfig.url,
+      url: SITE_ORIGIN,
       sameAs: [
         'https://www.linkedin.com/in/hudsor01',
         'https://github.com/hudsor01',
@@ -63,7 +59,7 @@ export function ProjectJsonLd({
     publisher: {
       '@type': 'Person',
       name: 'Richard Hudson',
-      url: siteConfig.url,
+      url: SITE_ORIGIN,
     },
     articleSection: category,
     keywords:

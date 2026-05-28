@@ -7,6 +7,7 @@ import { authors, blogPosts, categories, postTags, tags, type NewBlogPost } from
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
 import { isAdminRequest } from '@/lib/api-admin-auth'
 import { transformToBlogPostData, createErrorResponse } from '@/lib/api-blog'
+import { updateBlogPostSchema } from '@/lib/schemas'
 
 const logger = createContextLogger('SlugAPI')
 
@@ -84,11 +85,24 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
 
   try {
     const { slug } = await context.params
-    const body = await request.json()
+    const rawBody = await request.json()
 
     if (!slug) {
       return NextResponse.json(createErrorResponse('Slug parameter is required'), { status: 400 })
     }
+
+    // Validate with updateBlogPostSchema (partial of the base shape, no
+    // defaults). Enforces the featuredImage host allowlist + path-traversal
+    // guard on the update path so POST and PUT have identical contracts.
+    const parsed = updateBlogPostSchema.safeParse(rawBody)
+    if (!parsed.success) {
+      const issue = parsed.error.issues[0]
+      const msg = issue
+        ? `Invalid request body: ${issue.path.join('.')}: ${issue.message}`
+        : 'Invalid request body'
+      return NextResponse.json(createErrorResponse(msg), { status: 400 })
+    }
+    const body = parsed.data
 
     const existingPost = await db.query.blogPosts.findFirst({
       where: eq(blogPosts.slug, slug),
@@ -101,6 +115,11 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
     const wordCount = body.content ? body.content.split(/\s+/).length : undefined
     const readingTime = wordCount ? Math.ceil(wordCount / 200) : undefined
 
+    // updateBlogPostSchema coerces empty-string → null on every
+    // nullable text column at parse time (via nullishText), so the
+    // handler only needs `body.X !== undefined` to distinguish
+    // "client omitted the field" from "client cleared it" — no per-call
+    // `|| null` coalesce required.
     const updateData: Partial<NewBlogPost> = {
       ...(body.title && { title: body.title }),
       ...(body.excerpt !== undefined && { excerpt: body.excerpt }),
@@ -111,13 +130,40 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
       ...(body.metaDescription !== undefined && { metaDescription: body.metaDescription }),
       ...(body.keywords && { keywords: body.keywords }),
       ...(body.canonicalUrl !== undefined && { canonicalUrl: body.canonicalUrl }),
+      // Social-card fields — schema accepts these on PUT (nullish in
+      // blogPostBaseShape), so the handler must spread them through or
+      // silently drop a valid client payload.
+      ...(body.ogTitle !== undefined && { ogTitle: body.ogTitle }),
+      ...(body.ogDescription !== undefined && { ogDescription: body.ogDescription }),
+      ...(body.ogImage !== undefined && { ogImage: body.ogImage }),
+      ...(body.twitterTitle !== undefined && { twitterTitle: body.twitterTitle }),
+      ...(body.twitterDescription !== undefined && {
+        twitterDescription: body.twitterDescription,
+      }),
+      ...(body.twitterImage !== undefined && { twitterImage: body.twitterImage }),
       ...(body.featuredImage !== undefined && { featuredImage: body.featuredImage }),
       ...(body.featuredImageAlt !== undefined && { featuredImageAlt: body.featuredImageAlt }),
-      ...(body.categoryId !== undefined && { categoryId: body.categoryId }),
+      ...(body.categoryId !== undefined && { categoryId: body.categoryId ?? null }),
+      ...(body.publishedAt !== undefined && {
+        publishedAt: body.publishedAt ? new Date(body.publishedAt) : null,
+      }),
+      ...(body.scheduledAt !== undefined && {
+        scheduledAt: body.scheduledAt ? new Date(body.scheduledAt) : null,
+      }),
       updatedAt: new Date(),
     }
 
-    if (body.status === 'PUBLISHED' && !existingPost.publishedAt) {
+    // First-publish auto-stamp: only set publishedAt if the row has
+    // never been published AND the client didn't supply an explicit
+    // publishedAt (which would be a back-date for an imported post).
+    // Without the `body.publishedAt === undefined` guard, a client
+    // PATCHing `{status:'PUBLISHED', publishedAt:'2025-01-01...'}` to
+    // back-date an import would get `new Date()` (now) silently.
+    if (
+      body.status === 'PUBLISHED' &&
+      !existingPost.publishedAt &&
+      body.publishedAt === undefined
+    ) {
       updateData.publishedAt = new Date()
     }
 

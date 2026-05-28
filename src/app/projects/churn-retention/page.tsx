@@ -2,13 +2,16 @@ import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import ChurnPageContent from './_components/ChurnPageContent'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 export const dynamic = 'force-static'
 
-const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
-  title: 'Customer Churn & Retention Analysis - Predictive Analytics',
-  subtitle: 'Revenue Operations Project',
-}).toString()}`
+const ogImageUrl = canonicalUrl(
+  `/api/og?${new URLSearchParams({
+    title: 'Customer Churn & Retention Analysis - Predictive Analytics',
+    subtitle: 'Revenue Operations Project',
+  }).toString()}`
+)
 
 export const metadata: Metadata = {
   title: 'Customer Churn & Retention Analysis - Predictive Analytics',
@@ -18,7 +21,7 @@ export const metadata: Metadata = {
     title: 'Customer Churn & Retention Analysis - Predictive Analytics',
     description:
       'Advanced churn prediction and retention analysis dashboard with customer lifecycle metrics, retention heatmaps, and predictive modeling for customer success optimization.',
-    url: 'https://richardwhudsonjr.com/projects/churn-retention',
+    url: canonicalUrl('/projects/churn-retention'),
     siteName: 'Richard Hudson',
     images: [
       {
@@ -38,7 +41,7 @@ export const metadata: Metadata = {
     images: [ogImageUrl],
   },
   alternates: {
-    canonical: 'https://richardwhudsonjr.com/projects/churn-retention',
+    canonical: canonicalUrl('/projects/churn-retention'),
   },
 }
 
@@ -49,11 +52,11 @@ export default async function ChurnRetentionPage() {
       <BreadcrumbListJsonLd
         nonce={nonce}
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Home', url: SITE_ORIGIN },
+          { name: 'Projects', url: canonicalUrl('/projects') },
           {
             name: 'Customer Churn & Retention Analysis',
-            url: 'https://richardwhudsonjr.com/projects/churn-retention',
+            url: canonicalUrl('/projects/churn-retention'),
           },
         ]}
       />

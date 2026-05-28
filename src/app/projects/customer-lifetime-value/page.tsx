@@ -2,13 +2,16 @@ import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import CLVPageContent from './_components/CLVPageContent'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 export const dynamic = 'force-static'
 
-const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
-  title: 'Customer Lifetime Value Predictive Analytics Dashboard',
-  subtitle: 'Revenue Operations Project',
-}).toString()}`
+const ogImageUrl = canonicalUrl(
+  `/api/og?${new URLSearchParams({
+    title: 'Customer Lifetime Value Predictive Analytics Dashboard',
+    subtitle: 'Revenue Operations Project',
+  }).toString()}`
+)
 
 export const metadata: Metadata = {
   title: 'Customer Lifetime Value Predictive Analytics Dashboard',
@@ -18,7 +21,7 @@ export const metadata: Metadata = {
     title: 'Customer Lifetime Value Predictive Analytics Dashboard',
     description:
       'Advanced CLV analytics platform leveraging BTYD (Buy Till You Die) predictive modeling framework. Achieving 94.3% prediction accuracy through machine learning algorithms and real-time customer behavior tracking across 5 distinct customer segments.',
-    url: 'https://richardwhudsonjr.com/projects/customer-lifetime-value',
+    url: canonicalUrl('/projects/customer-lifetime-value'),
     siteName: 'Richard Hudson',
     images: [
       {
@@ -38,7 +41,7 @@ export const metadata: Metadata = {
     images: [ogImageUrl],
   },
   alternates: {
-    canonical: 'https://richardwhudsonjr.com/projects/customer-lifetime-value',
+    canonical: canonicalUrl('/projects/customer-lifetime-value'),
   },
 }
 
@@ -49,11 +52,11 @@ export default async function CustomerLifetimeValuePage() {
       <BreadcrumbListJsonLd
         nonce={nonce}
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Home', url: SITE_ORIGIN },
+          { name: 'Projects', url: canonicalUrl('/projects') },
           {
             name: 'Customer Lifetime Value Analytics',
-            url: 'https://richardwhudsonjr.com/projects/customer-lifetime-value',
+            url: canonicalUrl('/projects/customer-lifetime-value'),
           },
         ]}
       />

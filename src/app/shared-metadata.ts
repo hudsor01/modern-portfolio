@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 export const baseMetadata: Metadata = {
-  metadataBase: new URL('https://richardwhudsonjr.com'),
+  metadataBase: new URL(SITE_ORIGIN),
   title: {
     default: 'Richard Hudson | Revenue Operations Professional',
     template: '%s | Richard Hudson',
@@ -31,7 +32,7 @@ export const baseMetadata: Metadata = {
     'SalesLoft Admin Certified',
     'HubSpot Revenue Operations Certified',
   ],
-  authors: [{ name: 'Richard Hudson', url: 'https://richardwhudsonjr.com' }],
+  authors: [{ name: 'Richard Hudson', url: SITE_ORIGIN }],
   creator: 'Richard Hudson',
   publisher: 'Richard Hudson',
   formatDetection: {
@@ -46,7 +47,7 @@ export const baseMetadata: Metadata = {
     title: 'Richard Hudson | Revenue Operations Professional',
     description:
       'Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. $4.8M+ revenue impact across 10+ projects.',
-    url: 'https://richardwhudsonjr.com',
+    url: SITE_ORIGIN,
     images: [
       {
         url: '/images/richard.jpg',
@@ -76,7 +77,7 @@ export const baseMetadata: Metadata = {
     },
   },
   alternates: {
-    canonical: 'https://richardwhudsonjr.com',
+    canonical: SITE_ORIGIN,
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || '',
@@ -104,19 +105,20 @@ export function generateMetadata(
   path: string,
   additionalMetadata: Partial<Metadata> = {}
 ): Metadata {
-  const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({ title }).toString()}`
+  const ogImageUrl = canonicalUrl(`/api/og?${new URLSearchParams({ title }).toString()}`)
+  const pageUrl = canonicalUrl(path)
   return {
     ...baseMetadata,
     title,
     description,
     alternates: {
-      canonical: `https://richardwhudsonjr.com${path}`,
+      canonical: pageUrl,
     },
     openGraph: {
       ...baseMetadata.openGraph,
       title,
       description,
-      url: `https://richardwhudsonjr.com${path}`,
+      url: pageUrl,
       images: [
         {
           url: ogImageUrl,

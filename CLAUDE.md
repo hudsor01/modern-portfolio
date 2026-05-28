@@ -26,7 +26,6 @@ Runtime: Bun 1.3.13, Node `>=22 <25` (`package.json:6-9`). Next.js 16.2.4, React
 | `bun run db:push` | `drizzle-kit push` — sync schema directly without writing a migration file (dev only) |
 | `bun run db:studio` | Drizzle Studio |
 | `bun run db:seed` | `bun run drizzle/seed.ts` — idempotent upsert seed |
-| `bun run generate-sitemap` | Writes `public/sitemap.xml` |
 
 Hooks (`lefthook.yml`): pre-commit runs `bunx biome check --staged --write` over staged `src/**`; pre-push runs `bunx vitest run --passWithNoTests`. `--no-verify` bypasses.
 
@@ -56,10 +55,14 @@ src/
 
 drizzle/                  seed.ts (idempotent upsert seed) + migrations/ (drizzle-kit output).
 e2e/                      5 Playwright specs: blog, contact-form, projects, resume, security-headers.
-scripts/                  generate-sitemap.js, touch-blog-lastmod.ts (one-off
-                          DB nudge — bumps updatedAt on all PUBLISHED blog posts
-                          to refresh sitemap <lastmod> when Google's index is
-                          stale on a content-or-status change).
+scripts/                  Drizzle one-offs (idempotent, safe to re-run):
+                          _db.ts — shared neon+drizzle bootstrap.
+                          touch-blog-lastmod.ts — bumps updatedAt on every
+                          PUBLISHED post to refresh sitemap <lastmod>.
+                          update-blog-featured-images.ts — syncs prod's
+                          featuredImage/Alt to src/data/blog-featured-images.ts.
+                          apply-featured-image-unique-index.ts — DDL one-off
+                          for the partial unique index on PUBLISHED posts.
 proxy.ts                  Next.js 16 successor to middleware.ts (see Auth/CSP).
 ```
 

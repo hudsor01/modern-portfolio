@@ -2,13 +2,16 @@ import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import DealFunnelPageContent from './_components/DealFunnelPageContent'
+import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 export const dynamic = 'force-static'
 
-const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
-  title: 'Sales Pipeline Funnel Analysis - Deal Stage Optimization',
-  subtitle: 'Revenue Operations Project',
-}).toString()}`
+const ogImageUrl = canonicalUrl(
+  `/api/og?${new URLSearchParams({
+    title: 'Sales Pipeline Funnel Analysis - Deal Stage Optimization',
+    subtitle: 'Revenue Operations Project',
+  }).toString()}`
+)
 
 export const metadata: Metadata = {
   title: 'Sales Pipeline Funnel Analysis - Deal Stage Optimization',
@@ -18,7 +21,7 @@ export const metadata: Metadata = {
     title: 'Sales Pipeline Funnel Analysis - Deal Stage Optimization',
     description:
       'Interactive sales funnel dashboard showing deal progression, conversion rates, and sales cycle optimization. Tracks pipeline opportunities through each stage with real-time metrics on deal velocity and revenue forecasting.',
-    url: 'https://richardwhudsonjr.com/projects/deal-funnel',
+    url: canonicalUrl('/projects/deal-funnel'),
     siteName: 'Richard Hudson',
     images: [
       {
@@ -38,7 +41,7 @@ export const metadata: Metadata = {
     images: [ogImageUrl],
   },
   alternates: {
-    canonical: 'https://richardwhudsonjr.com/projects/deal-funnel',
+    canonical: canonicalUrl('/projects/deal-funnel'),
   },
 }
 
@@ -49,11 +52,11 @@ export default async function DealFunnelPage() {
       <BreadcrumbListJsonLd
         nonce={nonce}
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Projects', url: 'https://richardwhudsonjr.com/projects' },
+          { name: 'Home', url: SITE_ORIGIN },
+          { name: 'Projects', url: canonicalUrl('/projects') },
           {
             name: 'Sales Pipeline Funnel Analysis',
-            url: 'https://richardwhudsonjr.com/projects/deal-funnel',
+            url: canonicalUrl('/projects/deal-funnel'),
           },
         ]}
       />

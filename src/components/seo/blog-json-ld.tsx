@@ -6,6 +6,8 @@
 
 import type { BlogPostData } from '@/types/api'
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
+import { SITE_ORIGIN } from '@/lib/absolute-url'
+import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 
 /**
  * Blog Website JSON-LD Schema
@@ -18,11 +20,11 @@ export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
     name: 'Richard Hudson - Revenue Operations Blog',
     description:
       'Expert insights on revenue operations, data analytics, and business process optimization from Richard Hudson, a seasoned RevOps professional.',
-    url: 'https://richardwhudsonjr.com/blog',
+    url: `${SITE_ORIGIN}/blog`,
     publisher: {
       '@type': 'Person',
       name: 'Richard Hudson',
-      url: 'https://richardwhudsonjr.com',
+      url: SITE_ORIGIN,
       sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
       jobTitle: 'Revenue Operations Professional',
       worksFor: {
@@ -33,7 +35,7 @@ export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
     author: {
       '@type': 'Person',
       name: 'Richard Hudson',
-      url: 'https://richardwhudsonjr.com',
+      url: SITE_ORIGIN,
       sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
     },
     inLanguage: 'en-US',
@@ -74,7 +76,7 @@ export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
     ],
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': 'https://richardwhudsonjr.com/blog',
+      '@id': `${SITE_ORIGIN}/blog`,
     },
   }
 
@@ -101,15 +103,29 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.excerpt || post.metaDescription,
-    image: post.featuredImage ? `https://richardwhudsonjr.com${post.featuredImage}` : undefined,
-    url: `https://richardwhudsonjr.com/blog/${post.slug}`,
+    // safeFeaturedImageUrl re-validates at read time so a legacy or
+    // imported row with a bad value (`//evil.com/x`, traversal token,
+    // off-allowlist host) doesn't ship verbatim into Google's
+    // structured-data validator. Bad values fall back to the branded
+    // /api/og card — JSON-LD always needs an image (BlogPosting
+    // schema requires it), unlike the sitemap which omits <image:loc>
+    // for the fallback case. Sitemap aggregates the bad-row signal
+    // once per build; this surface isn't separately logged because
+    // every BlogPostJsonLd render is also covered by the sitemap log
+    // for the same post (and JSON-LD renders happen on every blog
+    // page render, which would amplify the same signal N×).
+    image: safeFeaturedImageUrl(post.featuredImage, {
+      title: post.title,
+      subtitle: 'Blog Post',
+    }).url,
+    url: `${SITE_ORIGIN}/blog/${post.slug}`,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,
     dateCreated: post.createdAt,
     author: {
       '@type': 'Person',
       name: post.author?.name || 'Richard Hudson',
-      url: 'https://richardwhudsonjr.com',
+      url: SITE_ORIGIN,
       sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
       jobTitle: 'Revenue Operations Professional',
       description: post.author?.bio,
@@ -121,17 +137,17 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
     publisher: {
       '@type': 'Person',
       name: 'Richard Hudson',
-      url: 'https://richardwhudsonjr.com',
+      url: SITE_ORIGIN,
       logo: {
         '@type': 'ImageObject',
-        url: 'https://richardwhudsonjr.com/images/richard.jpg',
+        url: `${SITE_ORIGIN}/images/richard.jpg`,
         width: 739,
         height: 739,
       },
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://richardwhudsonjr.com/blog/${post.slug}`,
+      '@id': `${SITE_ORIGIN}/blog/${post.slug}`,
     },
     articleSection: post.category?.name,
     keywords: post.keywords.join(', '),
@@ -184,19 +200,19 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://richardwhudsonjr.com',
+          item: SITE_ORIGIN,
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Blog',
-          item: 'https://richardwhudsonjr.com/blog',
+          item: `${SITE_ORIGIN}/blog`,
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: post.title,
-          item: `https://richardwhudsonjr.com/blog/${post.slug}`,
+          item: `${SITE_ORIGIN}/blog/${post.slug}`,
         },
       ],
     },
@@ -235,7 +251,7 @@ export function BlogCategoryJsonLd({
     description:
       category.description ||
       `Articles about ${category.name} from Richard Hudson's revenue operations blog`,
-    url: `https://richardwhudsonjr.com/blog/category/${category.slug}`,
+    url: `${SITE_ORIGIN}/blog/category/${category.slug}`,
     mainEntity: {
       '@type': 'ItemList',
       name: `${category.name} Articles`,
@@ -249,19 +265,19 @@ export function BlogCategoryJsonLd({
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://richardwhudsonjr.com',
+          item: SITE_ORIGIN,
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Blog',
-          item: 'https://richardwhudsonjr.com/blog',
+          item: `${SITE_ORIGIN}/blog`,
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: category.name,
-          item: `https://richardwhudsonjr.com/blog/category/${category.slug}`,
+          item: `${SITE_ORIGIN}/blog/category/${category.slug}`,
         },
       ],
     },

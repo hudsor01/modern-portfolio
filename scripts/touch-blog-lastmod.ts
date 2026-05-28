@@ -15,17 +15,11 @@
  *
  * Usage: `bun run scripts/touch-blog-lastmod.ts`
  */
-// Build our own Drizzle client here — `@/db` uses 'server-only' which
-// rejects script execution outside Next.js's server context.
-import { neon } from '@neondatabase/serverless'
-import { drizzle } from 'drizzle-orm/neon-http'
 import { and, eq, isNull, sql } from 'drizzle-orm'
 import { blogPosts } from '@/db/schema'
+import { createScriptDb } from './_db'
 
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL not set')
-}
-const db = drizzle(neon(process.env.DATABASE_URL), { schema: { blogPosts } })
+const db = createScriptDb({ blogPosts })
 
 async function main() {
   const result = await db

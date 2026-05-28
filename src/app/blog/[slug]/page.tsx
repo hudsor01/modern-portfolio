@@ -12,6 +12,8 @@ import { createContextLogger } from '@/lib/logger'
 import type { BlogPostData } from '@/types/api'
 import { db } from '@/lib/db'
 import { blogPosts } from '@/db/schema'
+import { canonicalUrl } from '@/lib/absolute-url'
+import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 
 // Force runtime rendering. notFound() inside Next.js 16's ISR-rendered
 // Server Components doesn't propagate HTTP 404 status to Vercel — the
@@ -34,13 +36,6 @@ interface BlogPostPageProps {
   params: Promise<{
     slug: string
   }>
-}
-
-const POST_IMAGE_OVERRIDES: Record<string, { src: string; alt: string }> = {
-  'unlocking-power-sales-automation-salesloft-game-changer': {
-    src: '/images/blog/sales-automation-salesloft-hero.jpg',
-    alt: 'Sales automation dashboard with pipeline analytics and workflow nodes',
-  },
 }
 
 // Drizzle relational query — deduplicated via React cache() across
@@ -78,21 +73,9 @@ const getBlogPost = cache(async (slug: string): Promise<BlogPostData | null> => 
   }
 })
 
-function applyPostOverrides(post: BlogPostData | null) {
-  if (!post) return post
-  const override = POST_IMAGE_OVERRIDES[post.slug]
-  if (!override) return post
-
-  return {
-    ...post,
-    featuredImage: post.featuredImage ?? override.src,
-    featuredImageAlt: post.featuredImageAlt ?? override.alt,
-  }
-}
-
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params
-  const post = applyPostOverrides(await getBlogPost(slug))
+  const post = await getBlogPost(slug)
 
   // Commit to 404 from the metadata phase. Returning fake "Post Not Found"
   // metadata here used to ship HTTP 200 with a Soft-404 body (title set,
@@ -103,11 +86,29 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     notFound()
   }
 
-  const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
+  // OG/Twitter share previews now share the same image resolution
+  // path as sitemap + BlogPostJsonLd: prefer the validated stored
+  // featuredImage, fall back to the branded /api/og card. Previously
+  // this handler hand-rolled the OG URL and ALWAYS shipped the card,
+  // so a post with a perfectly good Unsplash hero shared as a generic
+  // brand placeholder on Twitter/LinkedIn — three SEO surfaces
+  // disagreed about the canonical image for the same URL.
+  //
+  // `category` flows through to /api/og when isFallback so the card
+  // still renders the bronze category badge (the same `?category=…`
+  // param that the pre-helper hand-rolled URL passed).
+  const ogImage = safeFeaturedImageUrl(post.featuredImage, {
     title: post.title,
-    ...(post.category?.name && { category: post.category.name }),
-  }).toString()}`
+    subtitle: 'Blog Post',
+    category: post.category?.name,
+  })
+  // Alt-text contract: when ogImage.url IS the fallback card, the
+  // stored featuredImageAlt describes the absent hero (not the card),
+  // so it's a misleading alt for screen readers / unfurlers. Use the
+  // title — which is the visible text on the /api/og card.
+  const ogImageAlt = ogImage.isFallback ? post.title : post.featuredImageAlt || post.title
 
+  const postUrl = canonicalUrl(`/blog/${post.slug}`)
   return {
     title: post.metaTitle || post.title,
     description: post.metaDescription || post.excerpt,
@@ -115,14 +116,14 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     openGraph: {
       title: post.title,
       description: post.excerpt || post.metaDescription,
-      url: `https://richardwhudsonjr.com/blog/${post.slug}`,
+      url: postUrl,
       siteName: 'Richard Hudson - RevOps Professional',
       images: [
         {
-          url: ogImageUrl,
+          url: ogImage.url,
           width: 1200,
           height: 630,
-          alt: post.title,
+          alt: ogImageAlt,
         },
       ],
       locale: 'en_US',
@@ -137,17 +138,17 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       card: 'summary_large_image',
       title: post.title,
       description: post.excerpt || post.metaDescription,
-      images: [ogImageUrl],
+      images: [ogImage.url],
     },
     alternates: {
-      canonical: `https://richardwhudsonjr.com/blog/${post.slug}`,
+      canonical: postUrl,
     },
   }
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params
-  const post = applyPostOverrides(await getBlogPost(slug))
+  const post = await getBlogPost(slug)
 
   if (!post) {
     notFound()
@@ -158,9 +159,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <BlogPostJsonLd post={post} />
       <BreadcrumbListJsonLd
         items={[
-          { name: 'Home', url: 'https://richardwhudsonjr.com' },
-          { name: 'Blog', url: 'https://richardwhudsonjr.com/blog' },
-          { name: post.title, url: `https://richardwhudsonjr.com/blog/${post.slug}` },
+          { name: 'Home', url: canonicalUrl('/') },
+          { name: 'Blog', url: canonicalUrl('/blog') },
+          { name: post.title, url: canonicalUrl(`/blog/${post.slug}`) },
         ]}
       />
       <div className="min-h-screen bg-background">

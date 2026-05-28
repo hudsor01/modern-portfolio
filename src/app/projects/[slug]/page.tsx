@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getProjects, getProject } from '@/lib/projects'
+import { canonicalUrl } from '@/lib/absolute-url'
+import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 import ProjectDetailClientBoundary from './_components/project-detail-client-boundary'
 
 // Force runtime rendering. notFound() inside Next.js 16's ISR-rendered
@@ -54,10 +56,15 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
     notFound()
   }
 
-  const ogImageUrl = `https://richardwhudsonjr.com/api/og?${new URLSearchParams({
+  // Use the real project image when available, branded /api/og card
+  // when not — same contract as blog/[slug] generateMetadata and the
+  // sitemap. Subtitle reflects the project domain so the OG card
+  // copy matches the page context.
+  const ogImage = safeFeaturedImageUrl(project.image, {
     title: project.title,
     subtitle: 'Revenue Operations Project',
-  }).toString()}`
+  })
+  const projectUrl = canonicalUrl(`/projects/${slug}`)
 
   return {
     title: project.title,
@@ -65,10 +72,10 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
     openGraph: {
       title: project.title,
       description: project.description,
-      url: `https://richardwhudsonjr.com/projects/${slug}`,
+      url: projectUrl,
       images: [
         {
-          url: ogImageUrl,
+          url: ogImage.url,
           width: 1200,
           height: 630,
           alt: project.title,
@@ -79,10 +86,10 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
       card: 'summary_large_image',
       title: project.title,
       description: project.description,
-      images: [ogImageUrl],
+      images: [ogImage.url],
     },
     alternates: {
-      canonical: `https://richardwhudsonjr.com/projects/${slug}`,
+      canonical: projectUrl,
     },
   }
 }

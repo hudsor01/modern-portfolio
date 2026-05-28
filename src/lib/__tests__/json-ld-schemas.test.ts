@@ -1,7 +1,8 @@
 // @vitest-environment node
 import { describe, it, expect } from 'vitest'
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
-import { navConfig, siteConfig } from '@/lib/site'
+import { navConfig } from '@/lib/site'
+import { SITE_ORIGIN } from '@/lib/absolute-url'
 
 /**
  * Build the Person JSON-LD object matching person-json-ld.tsx.
@@ -364,7 +365,7 @@ function buildNavigationJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'SiteNavigationElement',
     name: navConfig.mainNav.map((item) => item.title),
-    url: navConfig.mainNav.map((item) => `${siteConfig.url}${item.href}`),
+    url: navConfig.mainNav.map((item) => `${SITE_ORIGIN}${item.href}`),
   }
 }
 
@@ -384,10 +385,10 @@ describe('NavigationJsonLd schema', () => {
     }
   })
 
-  it('url array contains URLs with siteConfig.url prefix for each nav item', () => {
+  it('url array contains URLs with SITE_ORIGIN prefix for each nav item', () => {
     expect(navData.url).toHaveLength(navConfig.mainNav.length)
     for (const item of navConfig.mainNav) {
-      expect(stringified).toContain(`${siteConfig.url}${item.href}`)
+      expect(stringified).toContain(`${SITE_ORIGIN}${item.href}`)
     }
   })
 
