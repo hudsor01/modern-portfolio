@@ -52,8 +52,16 @@ export async function validateCSRFToken(requestToken: string | undefined): Promi
     return false
   }
 
-  // Use constant-time comparison to prevent timing attacks
-  return crypto.timingSafeEqual(Buffer.from(requestToken), Buffer.from(storedToken))
+  const requestBuffer = Buffer.from(requestToken)
+  const storedBuffer = Buffer.from(storedToken)
+
+  // timingSafeEqual throws RangeError on length mismatch — guard before calling
+  // so a malformed header returns 403 (via the caller) instead of crashing to 500.
+  if (requestBuffer.length !== storedBuffer.length) {
+    return false
+  }
+
+  return crypto.timingSafeEqual(requestBuffer, storedBuffer)
 }
 
 /**
