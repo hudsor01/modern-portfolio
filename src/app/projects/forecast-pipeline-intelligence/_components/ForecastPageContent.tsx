@@ -129,14 +129,8 @@ export default function ForecastPipelineIntelligenceProject() {
         {/* Key Metrics using standardized MetricsGrid */}
         <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
-        {/* Intelligence Modules */}
-        <SectionCard
-          title="Intelligence Modules"
-          description="AI-powered forecasting and pipeline health monitoring capabilities"
-          className="mb-8"
-        >
-          <IntelligenceModulesGrid modules={intelligenceModules} />
-        </SectionCard>
+        {/* Intelligence Modules — IntelligenceModulesGrid renders its own titled SectionCard */}
+        <IntelligenceModulesGrid modules={intelligenceModules} />
 
         {/* Professional Narrative Sections - STAR Method */}
         <SectionCard

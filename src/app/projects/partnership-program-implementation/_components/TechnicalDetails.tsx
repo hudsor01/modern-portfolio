@@ -28,17 +28,10 @@ const technicalDetails = [
 ]
 
 export function TechnicalDetails() {
+  // Heading comes from the wrapping <SectionCard title="Technical Implementation"> in
+  // PartnershipProgramPageContent — no inner <h2> here (avoids a duplicate, #117).
   return (
     <div className="space-y-12 mb-16">
-      <div className="text-center space-y-4">
-        <h2 className="font-display text-2xl md:text-3xl font-semibold text-foreground">
-          Technical Implementation
-        </h2>
-        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          Production-ready systems and integrations built from the ground up
-        </p>
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {technicalDetails.map((detail, index) => (
           <div
