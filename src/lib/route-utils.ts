@@ -20,27 +20,3 @@ export function getRouteKey(route: NextLinkHref, fallback: string | number): str
   }
   return String(fallback)
 }
-
-/**
- * Convert all string paths in an array to Next.js Routes
- */
-export function routeArray(paths: string[]): Route<string>[] {
-  return paths.map((path) => asRoute(path))
-}
-
-/**
- * Convert routes in a record to Next.js Routes
- */
-export function routeRecord<T extends Record<string, string>>(
-  routes: T
-): Record<keyof T, Route<string>> {
-  const result: Record<string, Route<string>> = {}
-
-  // Use Object.entries to ensure we have string keys
-  Object.entries(routes).forEach(([key, value]) => {
-    // Now we're explicitly using string keys
-    result[key] = asRoute(value)
-  })
-
-  return result as Record<keyof T, Route<string>>
-}

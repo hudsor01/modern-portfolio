@@ -52,7 +52,7 @@ export class AnalyticsDataService {
     }
 
     logger.info('Generating lead attribution data')
-    const data = generateLeadAttributionData(BASE_METRICS)
+    const data = generateLeadAttributionData()
 
     if (useCache) {
       this.cache.set(cacheKey, data, 15 * 60 * 1000) // Cache for 15 minutes
@@ -70,7 +70,7 @@ export class AnalyticsDataService {
     }
 
     logger.info('Generating lead trend data', { months })
-    const data = generateLeadTrendData(BASE_METRICS, months)
+    const data = generateLeadTrendData(months)
 
     if (useCache) {
       this.cache.set(cacheKey, data, 10 * 60 * 1000)
@@ -130,7 +130,7 @@ export class AnalyticsDataService {
     }
 
     logger.info('Generating top partners data', { count })
-    const data = generateTopPartnersData(BASE_METRICS, count)
+    const data = generateTopPartnersData(count)
 
     if (useCache) {
       this.cache.set(cacheKey, data, 15 * 60 * 1000) // Cache for 15 minutes

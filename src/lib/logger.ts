@@ -16,9 +16,8 @@ const LOG_LEVELS: Record<LogLevel, number> = {
 
 // Environment configuration
 const LOG_LEVEL =
-  (process.env.LOG_LEVEL as LogLevel) ||
-  ((process.env.NODE_ENV as string) === 'production' ? 'info' : 'debug')
-const IS_PRODUCTION = (process.env.NODE_ENV as string) === 'production'
+  (process.env.LOG_LEVEL as LogLevel) || (process.env.NODE_ENV === 'production' ? 'info' : 'debug')
+const IS_PRODUCTION = process.env.NODE_ENV === 'production'
 const IS_BUILD_PHASE = process.env.NEXT_PHASE === 'phase-production-build'
 
 // Shared utility to determine if a log entry should be logged
@@ -38,7 +37,7 @@ class ConsoleTransport implements LogTransport {
   }
 
   log(entry: LogEntry): void {
-    if (!shouldLog(entry.level) || (process.env.NODE_ENV as string) === 'production') return
+    if (!shouldLog(entry.level) || process.env.NODE_ENV === 'production') return
 
     const color = this.colors[entry.level]
     const timestamp = new Date(entry.timestamp).toISOString()
@@ -50,17 +49,14 @@ class ConsoleTransport implements LogTransport {
       output += `\n  Context: ${JSON.stringify(entry.context, null, 2)}`
     }
 
+    // ConsoleTransport only runs in non-production (guarded by the production
+    // early-return above, and production uses SentryTransport), so always
+    // include full error details for debugging. The previous `if (production)`
+    // branch here was unreachable dead code, masked by an `as string` cast.
     if (entry.error) {
-      if ((process.env.NODE_ENV as string) === 'production') {
-        // In production, only log error name and sanitized message
-        output += `\n  Error: ${entry.error.name}: ${entry.error.message}`
-        // Don't include stack traces in production logs to prevent information disclosure
-      } else {
-        // In development, include full error details for debugging
-        output += `\n  Error: ${entry.error.name}: ${entry.error.message}`
-        if (entry.error.stack && entry.level === 'error') {
-          output += `\n  Stack: ${entry.error.stack}`
-        }
+      output += `\n  Error: ${entry.error.name}: ${entry.error.message}`
+      if (entry.error.stack && entry.level === 'error') {
+        output += `\n  Stack: ${entry.error.stack}`
       }
     }
 
