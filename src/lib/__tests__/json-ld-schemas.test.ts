@@ -31,7 +31,7 @@ function buildPersonJsonLd() {
       addressRegion: 'TX',
       addressCountry: 'US',
     },
-    email: 'contact@richardwhudsonjr.com',
+    email: 'hudsor01@icloud.com',
     telephone: '+1-214-566-0279',
     workLocation: {
       '@type': 'Place',

@@ -48,7 +48,7 @@ export interface ResumeData {
 export const resume: ResumeData = {
   name: 'Richard Hudson',
   title: 'Revenue Operations & Process Optimization Specialist',
-  email: 'hello@richardwhudsonjr.com',
+  email: 'hudsor01@icloud.com',
   phone: '',
   location: 'Dallas, Texas',
   summary:

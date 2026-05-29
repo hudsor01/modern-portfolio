@@ -73,7 +73,7 @@ import { validateCSRFOrRespond } from '@/lib/api-csrf'
 import { checkRateLimitOrRespond } from '@/lib/api-rate-limit'
 import { isAdminRequest } from '@/lib/api-admin-auth'
 
-const sampleAuthorId = 'cl1234567890abcdefghijkl'
+const sampleAuthorId = 'cl0000000000000000000001'
 const sampleCategoryId = 'cl9876543210abcdefghijkl'
 
 const samplePost = {

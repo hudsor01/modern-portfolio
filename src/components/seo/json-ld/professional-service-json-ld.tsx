@@ -28,7 +28,7 @@ export function ProfessionalServiceJsonLd({ nonce }: { nonce?: string | null }) 
     name: 'Richard Hudson — Revenue Operations Professional',
     image: `${SITE_ORIGIN}/images/richard.jpg`,
     url: SITE_ORIGIN,
-    email: 'contact@richardwhudsonjr.com',
+    email: 'hudsor01@icloud.com',
     telephone: '+1-214-566-0279',
     priceRange: '$$',
     address: {

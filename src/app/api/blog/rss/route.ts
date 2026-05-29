@@ -99,8 +99,8 @@ function generateXmlFeed(data: RSSFeedData): string {
     <lastBuildDate>${data.lastBuildDate}</lastBuildDate>
     <atom:link href="${SITE_URL}/api/blog/rss?format=xml" rel="self" type="application/rss+xml"/>
     <generator>Richard Hudson Portfolio Blog</generator>
-    <webMaster>contact@richardwhudsonjr.com (Richard Hudson)</webMaster>
-    <managingEditor>contact@richardwhudsonjr.com (Richard Hudson)</managingEditor>
+    <webMaster>hudsor01@icloud.com (Richard Hudson)</webMaster>
+    <managingEditor>hudsor01@icloud.com (Richard Hudson)</managingEditor>
     <copyright>© ${year} Richard Hudson</copyright>
     <category>Revenue Operations</category>
     <category>Data Analytics</category>
@@ -113,7 +113,7 @@ function generateXmlFeed(data: RSSFeedData): string {
       <link>${post.link}</link>
       <description><![CDATA[${post.description}]]></description>
       <pubDate>${new Date(post.pubDate).toUTCString()}</pubDate>
-      <author>contact@richardwhudsonjr.com (${post.author})</author>
+      <author>hudsor01@icloud.com (${post.author})</author>
       <category><![CDATA[${post.category}]]></category>
       <guid isPermaLink="true">${post.guid}</guid>
     </item>`
