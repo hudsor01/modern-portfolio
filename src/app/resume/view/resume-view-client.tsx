@@ -11,7 +11,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
 
   const handleDownload = () => {
     const link = document.createElement('a')
-    link.href = '/Richard%20Hudson%20-%20Resume.pdf'
+    link.href = '/Richard_Hudson_Revenue_Operations.pdf'
     link.download = 'Richard Hudson - Revenue Operations Resume.pdf'
     document.body.appendChild(link)
     link.click()
@@ -75,7 +75,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
                 className="h-14 px-8 text-base font-semibold"
               >
                 <a
-                  href="/Richard%20Hudson%20-%20Resume.pdf"
+                  href="/Richard_Hudson_Revenue_Operations.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center"
@@ -114,7 +114,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
 
               {!error && (
                 <object
-                  data="/Richard%20Hudson%20-%20Resume.pdf"
+                  data="/Richard_Hudson_Revenue_Operations.pdf"
                   type="application/pdf"
                   className="w-full h-[800px] border-0 bg-white"
                   aria-label="Richard Hudson Resume"
@@ -125,7 +125,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
                   <p className="text-center text-muted-foreground p-8">
                     Your browser can't display PDFs inline.{' '}
                     <a
-                      href="/Richard%20Hudson%20-%20Resume.pdf"
+                      href="/Richard_Hudson_Revenue_Operations.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary underline"

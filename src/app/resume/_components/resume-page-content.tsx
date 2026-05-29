@@ -29,7 +29,7 @@ export default function ResumePageContent() {
 
   useEffect(() => {
     // Set the PDF URL once on client side with proper encoding
-    setPdfUrl('/Richard%20Hudson%20-%20Resume.pdf')
+    setPdfUrl('/Richard_Hudson_Revenue_Operations.pdf')
   }, [])
 
   const handleDownloadResume = async () => {
@@ -38,7 +38,7 @@ export default function ResumePageContent() {
 
     try {
       const a = document.createElement('a')
-      a.href = '/Richard%20Hudson%20-%20Resume.pdf'
+      a.href = '/Richard_Hudson_Revenue_Operations.pdf'
       a.download = 'Richard_Hudson_Resume.pdf'
       document.body.appendChild(a)
       a.click()

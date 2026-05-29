@@ -7,7 +7,7 @@ import { test, expect } from '@playwright/test'
  *   - Page loads (HTTP 200)
  *   - Download PDF button triggers a download
  *   - View Web Version → /resume
- *   - Open in New Tab → /Richard%20Hudson%20-%20Resume.pdf
+ *   - Open in New Tab → /Richard_Hudson_Revenue_Operations.pdf
  *   - <object data=...pdf> element renders
  *   - PDF asset response carries X-Frame-Options: SAMEORIGIN
  *     (also pinned in security-headers.spec.ts; re-asserted here in the
@@ -56,7 +56,7 @@ test.describe('/resume/view page', () => {
 
     test('Open in New Tab link points to the PDF asset', async ({ page }) => {
       const link = page.getByRole('link', { name: /open in new tab/i })
-      await expect(link).toHaveAttribute('href', '/Richard%20Hudson%20-%20Resume.pdf')
+      await expect(link).toHaveAttribute('href', '/Richard_Hudson_Revenue_Operations.pdf')
       await expect(link).toHaveAttribute('target', '_blank')
       await expect(link).toHaveAttribute('rel', /noopener/)
     })
@@ -66,7 +66,7 @@ test.describe('/resume/view page', () => {
       // <iframe src=pdf>, so the viewer must use <object type=application/pdf>.
       const pdfObject = page.locator('object[type="application/pdf"]')
       await expect(pdfObject).toHaveCount(1)
-      await expect(pdfObject).toHaveAttribute('data', /Richard.*Hudson.*Resume\.pdf$/)
+      await expect(pdfObject).toHaveAttribute('data', /Richard_Hudson_Revenue_Operations\.pdf$/)
     })
   })
 
@@ -74,7 +74,7 @@ test.describe('/resume/view page', () => {
     // Re-asserting the per-route header carve-out from next.config.js so
     // a regression on the .pdf header rule breaks the viewer-functional
     // suite as well as security-headers.spec.ts.
-    const response = await page.request.fetch('/Richard%20Hudson%20-%20Resume.pdf')
+    const response = await page.request.fetch('/Richard_Hudson_Revenue_Operations.pdf')
     expect(response.status()).toBe(200)
     expect(response.headers()['x-frame-options']).toBe('SAMEORIGIN')
   })
