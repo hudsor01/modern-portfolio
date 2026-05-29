@@ -105,6 +105,12 @@ describe('formatDate', () => {
     expect(formatDate(new Date('2026-05-09T00:00:00Z'))).toMatch(/May/)
   })
 
+  it('matches blog long-month rendering (date-fns parity)', () => {
+    expect(formatDate(new Date('2026-09-03T12:00:00Z'), { month: 'long' })).toBe(
+      'September 3, 2026'
+    )
+  })
+
   it('accepts string input', () => {
     expect(formatDate('2026-05-09T00:00:00Z')).toMatch(/2026/)
   })

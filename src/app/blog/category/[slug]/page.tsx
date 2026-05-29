@@ -14,6 +14,7 @@ import { db } from '@/lib/db'
 import { blogPosts, categories } from '@/db/schema'
 import { createContextLogger } from '@/lib/logger'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { formatDate } from '@/lib/data-formatters'
 
 // Force runtime rendering — see /blog/[slug]/page.tsx for the rationale.
 // notFound() inside ISR-rendered Server Components ships HTTP 200 with a
@@ -123,13 +124,9 @@ export async function generateMetadata({ params }: BlogCategoryPageProps): Promi
   }
 }
 
-function formatDate(value: Date | null): string {
+function formatPublishedDate(value: Date | null): string {
   if (!value) return ''
-  return new Date(value).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
+  return formatDate(value, { month: 'long' })
 }
 
 export default async function BlogCategoryPage({ params }: BlogCategoryPageProps) {
@@ -233,7 +230,7 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                         </CardHeader>
                         <CardContent>
                           <time className="text-sm text-muted-foreground">
-                            {formatDate(post.publishedAt)}
+                            {formatPublishedDate(post.publishedAt)}
                           </time>
                         </CardContent>
                       </Card>

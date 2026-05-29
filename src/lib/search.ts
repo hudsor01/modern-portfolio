@@ -22,6 +22,33 @@ export interface SearchResult {
   matchType: 'exact' | 'fuzzy'
 }
 
+/**
+ * The fuzzy fallback uses the `%` similarity operator, which only exists when
+ * the `pg_trgm` extension is installed. Probe for it once per process and
+ * cache the result so a missing extension degrades to an `ILIKE` substring
+ * fallback instead of throwing (and silently returning only the full-text
+ * hits via the outer catch). `null` = not yet probed.
+ */
+let pgTrgmAvailable: boolean | null = null
+
+export async function hasPgTrgm(): Promise<boolean> {
+  if (pgTrgmAvailable !== null) {
+    return pgTrgmAvailable
+  }
+  try {
+    const rows = await db.execute(sql`SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm' LIMIT 1`)
+    pgTrgmAvailable = (rows as unknown as unknown[]).length > 0
+  } catch {
+    pgTrgmAvailable = false
+  }
+  return pgTrgmAvailable
+}
+
+/** Test-only hook to reset the cached `pg_trgm` probe between cases. */
+export function __resetPgTrgmCache(): void {
+  pgTrgmAvailable = null
+}
+
 export async function searchBlogPosts(
   query: string,
   options: {
@@ -83,26 +110,54 @@ export async function searchBlogPosts(
           )})`
         : sql``
 
-    const fzRows = await db.execute(sql`
-      SELECT
-        id,
-        title,
-        slug,
-        excerpt,
-        GREATEST(
-          similarity(title, ${query}),
-          similarity(COALESCE(excerpt, ''), ${query})
-        ) as rank,
-        'fuzzy' as "matchType"
-      FROM blog_posts
-      WHERE (title % ${query} OR COALESCE(excerpt, '') % ${query})
-        ${statusCondition}
-        ${exclusion}
-      ORDER BY rank DESC
-      LIMIT ${Math.max(0, limit - fullTextResults.length)}
-      OFFSET ${offset}
-    `)
-    const fuzzyResults = fzRows as unknown as SearchResult[]
+    const fuzzyLimit = Math.max(0, limit - fullTextResults.length)
+
+    let fuzzyRows: unknown
+    if (await hasPgTrgm()) {
+      // Trigram similarity ranking (typo-tolerant). Requires pg_trgm.
+      fuzzyRows = await db.execute(sql`
+        SELECT
+          id,
+          title,
+          slug,
+          excerpt,
+          GREATEST(
+            similarity(title, ${query}),
+            similarity(COALESCE(excerpt, ''), ${query})
+          ) as rank,
+          'fuzzy' as "matchType"
+        FROM blog_posts
+        WHERE (title % ${query} OR COALESCE(excerpt, '') % ${query})
+          ${statusCondition}
+          ${exclusion}
+        ORDER BY rank DESC
+        LIMIT ${fuzzyLimit}
+        OFFSET ${offset}
+      `)
+    } else {
+      // pg_trgm absent — fall back to a case-insensitive substring match so
+      // search still degrades gracefully instead of returning only the
+      // full-text hits. LIKE wildcards in the user's query are escaped so
+      // they're treated literally. Title matches rank above excerpt matches.
+      const likePattern = `%${query.replace(/[\\%_]/g, '\\$&')}%`
+      fuzzyRows = await db.execute(sql`
+        SELECT
+          id,
+          title,
+          slug,
+          excerpt,
+          CASE WHEN title ILIKE ${likePattern} THEN 0.6 ELSE 0.3 END as rank,
+          'fuzzy' as "matchType"
+        FROM blog_posts
+        WHERE (title ILIKE ${likePattern} OR COALESCE(excerpt, '') ILIKE ${likePattern})
+          ${statusCondition}
+          ${exclusion}
+        ORDER BY rank DESC, title ASC
+        LIMIT ${fuzzyLimit}
+        OFFSET ${offset}
+      `)
+    }
+    const fuzzyResults = fuzzyRows as unknown as SearchResult[]
 
     return [...fullTextResults, ...fuzzyResults]
   } catch (error) {

@@ -137,13 +137,25 @@ describe('setCSRFTokenCookie', () => {
 })
 
 describe('csrfProtectionMiddleware', () => {
-  it('returns { valid: true, token } for GET requests and sets cookie', async () => {
+  it('returns { valid: true, token } for GET requests and sets cookie when absent', async () => {
+    mockCookieStore.get.mockReturnValue(undefined)
     const request = new Request('http://test.example', { method: 'GET' })
     const result = await csrfProtectionMiddleware(request)
 
     expect(result.valid).toBe(true)
     expect(result.token).toMatch(/^[0-9a-f]{64}$/)
     expect(mockCookieStore.set).toHaveBeenCalledTimes(1)
+  })
+
+  it('does NOT rotate the cookie on GET when a token already exists', async () => {
+    const existing = generateCSRFToken()
+    mockCookieStore.get.mockReturnValue({ value: existing })
+    const request = new Request('http://test.example', { method: 'GET' })
+    const result = await csrfProtectionMiddleware(request)
+
+    expect(result.valid).toBe(true)
+    expect(result.token).toBe(existing)
+    expect(mockCookieStore.set).not.toHaveBeenCalled()
   })
 
   it('returns { valid: true } for POST with valid x-csrf-token header', async () => {
@@ -185,6 +197,37 @@ describe('csrfProtectionMiddleware', () => {
     const result = await csrfProtectionMiddleware(request)
     expect(result.valid).toBe(false)
     expect(result.error).toContain('header')
+  })
+
+  it('rejects an oversized form-data POST without parsing the body', async () => {
+    mockCookieStore.get.mockReturnValue({ value: generateCSRFToken() })
+    const request = new Request('http://test.example', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
+        'content-length': String(64 * 1024 + 1),
+      },
+    })
+    const formDataSpy = vi.spyOn(request, 'clone')
+
+    const result = await csrfProtectionMiddleware(request)
+    expect(result.valid).toBe(false)
+    expect(result.error).toContain('too large')
+    // Guard must short-circuit before we ever clone/parse the body.
+    expect(formDataSpy).not.toHaveBeenCalled()
+  })
+
+  it('rejects a form-data POST with a missing Content-Length', async () => {
+    mockCookieStore.get.mockReturnValue({ value: generateCSRFToken() })
+    const request = new Request('http://test.example', {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: '_csrf_token=anything',
+    })
+
+    const result = await csrfProtectionMiddleware(request)
+    expect(result.valid).toBe(false)
+    expect(result.error).toContain('too large')
   })
 
   it('returns { valid: true } for PUT with valid x-csrf-token header', async () => {

@@ -8,6 +8,7 @@ import { InlineMarkdown } from './inline-markdown'
 import { BlogFeaturedImage } from '@/components/blog/blog-featured-image'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { formatDate } from '@/lib/data-formatters'
 
 interface BlogListProps {
   initialPosts: BlogPostData[]
@@ -51,13 +52,9 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
     return matchesCategory && matchesSearch
   })
 
-  function formatDate(dateString: string | undefined): string {
+  function formatPublishedDate(dateString: string | undefined): string {
     if (!dateString) return ''
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    })
+    return formatDate(dateString, { month: 'long' })
   }
 
   return (
@@ -134,7 +131,7 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
                 </CardHeader>
                 <CardContent>
                   <time className="typography-small text-muted-foreground">
-                    {formatDate(post.publishedAt)}
+                    {formatPublishedDate(post.publishedAt)}
                   </time>
                 </CardContent>
               </Card>
@@ -144,6 +141,16 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
       ) : (
         <div className="py-16 text-center">
           <p className="typography-muted">No posts found matching your filters.</p>
+          <button
+            type="button"
+            onClick={() => {
+              setSearchQuery(null)
+              setSelectedCategory(null)
+            }}
+            className="mt-4 inline-flex items-center px-4 py-2 rounded-lg border border-border bg-background text-sm font-medium text-foreground transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          >
+            Clear search
+          </button>
         </div>
       )}
     </div>

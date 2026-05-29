@@ -255,6 +255,16 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
           )}
         </button>
 
+        {/* Explain why the submit button is disabled until terms are accepted */}
+        {!agreedToTerms && (
+          <p
+            aria-live="polite"
+            className="typography-small text-muted-foreground text-center -mt-2"
+          >
+            Please accept the privacy policy to send your message.
+          </p>
+        )}
+
         {/* Status Messages */}
         {submitStatus === 'success' && (
           <div
