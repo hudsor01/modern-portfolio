@@ -2,6 +2,7 @@
 
 import type React from 'react'
 import { TrendingUp, BarChart3, Target, Zap } from 'lucide-react'
+import { REVENUE_IMPACT, TRANSACTION_GROWTH, NETWORK_GROWTH } from '@/lib/stats'
 
 interface ProjectStatsProps {
   totalProjects: number
@@ -11,21 +12,22 @@ interface ProjectStatsProps {
 const stats = [
   {
     icon: TrendingUp,
-    value: '$4.8M+',
+    value: REVENUE_IMPACT,
     label: 'Revenue Optimized',
   },
   {
     icon: BarChart3,
-    value: '432%',
+    value: TRANSACTION_GROWTH,
     label: 'Average Growth',
   },
   {
     icon: Target,
-    value: '2,217%',
+    value: NETWORK_GROWTH,
     label: 'Network Expansion',
   },
   {
     icon: Zap,
+    // Placeholder; overridden at render with the live project count.
     value: '11+',
     label: 'Case Studies',
   },

@@ -119,6 +119,16 @@ describe('ContactForm', () => {
     expect((btn as HTMLButtonElement).disabled).toBe(false)
   })
 
+  it('shows helper text explaining the disabled submit when terms not agreed', () => {
+    renderForm({ agreedToTerms: false })
+    expect(screen.getByText(/accept the privacy policy to send your message/i)).toBeTruthy()
+  })
+
+  it('hides the disabled-submit helper text once terms are agreed', () => {
+    renderForm({ agreedToTerms: true })
+    expect(screen.queryByText(/accept the privacy policy to send your message/i)).toBeNull()
+  })
+
   it('disables submit button while submitting even with terms agreed', () => {
     renderForm({ agreedToTerms: true, isSubmitting: true })
     // The accessible name changes to the loading state

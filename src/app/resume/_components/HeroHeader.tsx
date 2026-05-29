@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { FileDown, Mail, Globe, Eye } from 'lucide-react'
 import { Github, Linkedin } from '@/components/ui/brand-icons'
+import { AvailabilityBadge } from '@/components/ui/availability-badge'
 
 interface HeroHeaderProps {
   showPdf: boolean
@@ -25,6 +26,7 @@ export function HeroHeader({
   // a 2-6s flash because IntersectionObserver hadn't fired yet).
   return (
     <div className="text-center space-y-8 max-w-4xl mx-auto animate-fade-in-up">
+      <AvailabilityBadge className="mx-auto" />
       <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-8">
         <span className="block hero-name-gradient">Richard Hudson</span>
       </h1>
@@ -71,12 +73,15 @@ export function HeroHeader({
                 </Button>
               </div>
 
-              {/* View Toggle - Interactive */}
-              <div className="group relative overflow-hidden rounded-xl bg-secondary/10 border border-secondary/30 hover:border-secondary/50 transition-all duration-300 hover:scale-105">
+              {/* View Toggle - Interactive (ghost/outline so it reads as a
+                  secondary control, visually distinct from the primary
+                  Download PDF action) */}
+              <div className="group relative overflow-hidden rounded-xl bg-transparent border border-dashed border-border hover:border-secondary/50 hover:bg-secondary/5 transition-all duration-300">
                 <Button
                   size="lg"
-                  className="relative w-full h-20 bg-transparent hover:bg-secondary/5 text-foreground border-0 shadow-none p-6"
+                  className="relative w-full h-20 bg-transparent hover:bg-transparent text-muted-foreground border-0 shadow-none p-6"
                   onClick={onToggleView}
+                  aria-pressed={showPdf}
                 >
                   <div className="flex flex-col items-center justify-center space-y-1">
                     <Eye
@@ -84,7 +89,7 @@ export function HeroHeader({
                       className="text-secondary group-hover:scale-110 transition-all duration-300 ease-out"
                     />
                     <span className="text-sm font-medium">
-                      {showPdf ? 'Interactive View' : 'PDF View'}
+                      {showPdf ? 'Hide preview' : 'Preview PDF'}
                     </span>
                   </div>
                 </Button>

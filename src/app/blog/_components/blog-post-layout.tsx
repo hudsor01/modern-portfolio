@@ -1,10 +1,10 @@
 import Link from 'next/link'
-import { format } from 'date-fns'
 import { BlogFeaturedImage } from '@/components/blog/blog-featured-image'
 import { ArrowLeft, CalendarDays, Clock, Eye } from 'lucide-react'
 import type { BlogPostData } from '@/types/api'
 import { BlogPostArticle } from './blog-post-article'
 import { InlineMarkdown } from './inline-markdown'
+import { formatDate } from '@/lib/data-formatters'
 type ContentType = 'MARKDOWN' | 'HTML' | 'RICH_TEXT'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
@@ -24,7 +24,7 @@ function getAuthorInitials(name: string): string {
 }
 
 export function BlogPostLayout({ post }: PostLayoutProps) {
-  const publishedDate = post.publishedAt ? format(new Date(post.publishedAt), 'MMMM d, yyyy') : null
+  const publishedDate = post.publishedAt ? formatDate(post.publishedAt, { month: 'long' }) : null
   const wordCount = post.wordCount ?? post.content.split(/\s+/).filter(Boolean).length
   const readingTime = post.readingTime ?? Math.max(1, Math.ceil(wordCount / 200))
   const authorName = post.author?.name ?? 'Richard Hudson'

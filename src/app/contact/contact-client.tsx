@@ -5,6 +5,8 @@ import { Navbar } from '@/components/layout/navbar'
 import { ContactForm } from '@/components/contact/contact-form'
 import { ContactInfo } from '@/components/contact/contact-info'
 import { FeaturedProjects } from '@/components/contact/featured-projects'
+import { AvailabilityBadge } from '@/components/ui/availability-badge'
+import { REVENUE_IMPACT } from '@/lib/stats'
 import { useContactForm } from '@/hooks/use-contact-form'
 
 // ============================================================================
@@ -27,6 +29,7 @@ export default function ContactPageClient() {
           <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
             {/* Header */}
             <div className="text-center mb-12">
+              <AvailabilityBadge className="mx-auto mb-6" />
               <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
                 Let's <span className="text-primary">Connect</span>
               </h1>
@@ -51,7 +54,7 @@ export default function ContactPageClient() {
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-primary" />
-                  <span>$4.8M+ Revenue Impact</span>
+                  <span>{REVENUE_IMPACT} Revenue Impact</span>
                 </div>
               </div>
             </div>

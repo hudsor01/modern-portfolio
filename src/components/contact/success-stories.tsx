@@ -1,6 +1,7 @@
 'use client'
 
 import { CheckCircle } from 'lucide-react'
+import { REVENUE_IMPACT, TRANSACTION_GROWTH, NETWORK_GROWTH } from '@/lib/stats'
 
 // ============================================================================
 // Component
@@ -13,15 +14,15 @@ export function SuccessStories() {
       <div className="space-y-3 text-sm">
         <div className="flex items-center gap-2">
           <CheckCircle className="w-4 h-4 text-success" />
-          <span>$4.8M+ revenue generated</span>
+          <span>{REVENUE_IMPACT} revenue generated</span>
         </div>
         <div className="flex items-center gap-2">
           <CheckCircle className="w-4 h-4 text-success" />
-          <span>432% transaction growth</span>
+          <span>{TRANSACTION_GROWTH} transaction growth</span>
         </div>
         <div className="flex items-center gap-2">
           <CheckCircle className="w-4 h-4 text-success" />
-          <span>2,217% network expansion</span>
+          <span>{NETWORK_GROWTH} network expansion</span>
         </div>
       </div>
       <div className="mt-4 typography-small text-muted-foreground">
