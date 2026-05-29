@@ -81,6 +81,46 @@ describe('RateLimiter — whitelist / blacklist', () => {
       expect(result.allowed).toBe(true)
     }
   })
+
+  it('addToWhitelist allows an identifier at runtime without mutating the config', () => {
+    const config: RateLimitConfig = { ...baseConfig, maxAttempts: 1 }
+
+    limiter.addToWhitelist('runtime-vip')
+    const result = limiter.checkLimit('runtime-vip', config)
+
+    expect(result.allowed).toBe(true)
+    expect(result.reason).toBe('whitelisted')
+    // The shared config object must be untouched (HIGH-03 regression guard)
+    expect(config.whitelist).toBeUndefined()
+  })
+
+  it('addToBlacklist denies an identifier at runtime without mutating the config', () => {
+    const config: RateLimitConfig = { ...baseConfig }
+
+    limiter.addToBlacklist('runtime-banned')
+    const result = limiter.checkLimit('runtime-banned', config)
+
+    expect(result.allowed).toBe(false)
+    expect(result.reason).toBe('blacklisted')
+    expect(config.blacklist).toBeUndefined()
+  })
+
+  it('allow/deny are mutually exclusive and removable', () => {
+    const config: RateLimitConfig = { ...baseConfig, maxAttempts: 1 }
+
+    limiter.addToBlacklist('flip')
+    expect(limiter.checkLimit('flip', config).reason).toBe('blacklisted')
+
+    // Promoting to whitelist clears the blacklist entry
+    limiter.addToWhitelist('flip')
+    expect(limiter.checkLimit('flip', config).reason).toBe('whitelisted')
+
+    // Removing from whitelist falls back to normal rate limiting
+    limiter.removeFromWhitelist('flip')
+    const after = limiter.checkLimit('flip', config)
+    expect(after.reason).not.toBe('whitelisted')
+    expect(after.reason).not.toBe('blacklisted')
+  })
 })
 
 describe('RateLimiter — rate limiting', () => {
@@ -294,7 +334,7 @@ describe('RateLimiter — eviction and cleanup', () => {
   })
 
   it('evicts oldest entries when store size reaches MAX_STORE_SIZE', () => {
-    const maxSize = securityConfig.rateLimitMaxHistoryPerClient // 100
+    const maxSize = securityConfig.rateLimitMaxStoreSize // distinct from per-client history cap
 
     // Fill the store to MAX_STORE_SIZE
     for (let i = 0; i < maxSize; i++) {
@@ -308,7 +348,7 @@ describe('RateLimiter — eviction and cleanup', () => {
     limiter.checkLimit('trigger-eviction', baseConfig)
 
     const afterEviction = limiter.exportMetrics()
-    // Store should be reduced — eviction target is 0.8 of MAX_STORE_SIZE = 80, plus the new entry
+    // Store should be reduced — eviction target is EVICTION_TARGET_RATIO of MAX_STORE_SIZE
     expect(afterEviction.activeClients).toBeLessThan(maxSize)
   })
 
