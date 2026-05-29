@@ -114,58 +114,6 @@ class SentryTransport implements LogTransport {
   }
 }
 
-// File transport (for persistent logging)
-// Node.js 24: Implements Disposable for automatic cleanup via 'using' keyword
-class FileTransport implements LogTransport, Disposable {
-  private buffer: LogEntry[] = []
-  private readonly maxBufferSize = 100
-  private readonly flushInterval = 5000 // 5 seconds
-  private flushIntervalId: NodeJS.Timeout | null = null
-
-  constructor() {
-    // Flush buffer periodically
-    this.flushIntervalId = setInterval(() => this.flush(), this.flushInterval)
-
-    // Flush on process exit
-    process.on('exit', () => this.flush())
-    process.on('SIGINT', () => this.flush())
-    process.on('SIGTERM', () => this.flush())
-  }
-
-  log(entry: LogEntry): void {
-    if (!shouldLog(entry.level)) return
-
-    this.buffer.push(entry)
-
-    // Flush if buffer is full
-    if (this.buffer.length >= this.maxBufferSize) {
-      this.flush()
-    }
-  }
-
-  private flush(): void {
-    if (this.buffer.length === 0) return
-
-    try {
-      // In a real implementation, you'd write to a file or send to a service
-      // For now, we'll just clear the buffer
-      this.buffer = []
-    } catch (error) {
-      console.error('Failed to flush log buffer:', error)
-    }
-  }
-
-  // Node.js 24: Explicit Resource Management - called automatically with 'using' keyword
-  [Symbol.dispose](): void {
-    if (this.flushIntervalId) {
-      clearInterval(this.flushIntervalId)
-      this.flushIntervalId = null
-    }
-    // Flush remaining logs before disposal
-    this.flush()
-  }
-}
-
 // Main logger implementation
 class LoggerImpl implements Logger {
   private transports: LogTransport[]
@@ -448,13 +396,10 @@ function createLogger(): Logger {
   if (IS_BUILD_PHASE) {
     // During build, no transports — real errors throw and Next.js reports them
   } else if (IS_PRODUCTION) {
-    // In production, route errors/warnings to Sentry, info/debug as breadcrumbs
+    // In production, route errors/warnings to Sentry, info/debug as breadcrumbs.
+    // (Sentry is the production log sink; there is no file transport — the old
+    // FileTransport silently discarded everything it buffered. See #149.)
     transports.push(new SentryTransport())
-
-    // Optionally add file transport for local persistence
-    if (process.env.ENABLE_FILE_LOGGING === 'true') {
-      transports.push(new FileTransport())
-    }
   } else {
     // In development, use colored console output
     transports.push(new ConsoleTransport())

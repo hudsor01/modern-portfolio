@@ -156,7 +156,7 @@ Sentry vars (`SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJE
 
 Three Sentry configs at repo root: `sentry.server.config.ts`, `sentry.client.config.ts`, `sentry.edge.config.ts`. Wrapped via `withSentryConfig(nextConfig, …)` in `next.config.js:187`. Disabled when `NODE_ENV='test'` or DSN absent. Sample rates parsed via local `parseSampleRate()`, clamped `[0,1]`, default `0.1` in prod / `1` in dev. No tunnel route.
 
-Logger (`src/lib/logger.ts`): exports `logger` singleton + `createContextLogger(name)` factory. Levels: `debug`/`info`/`warn`/`error`/`fatal` (controlled by `LOG_LEVEL`). Three transports: `ConsoleTransport` (colored, suppressed in prod), `SentryTransport` (error → `captureException`, warn → `captureMessage`, info/debug → `addBreadcrumb`), `FileTransport` (buffered, flushes every 5s). Lazy-requires `@sentry/nextjs`.
+Logger (`src/lib/logger.ts`): exports `logger` singleton + `createContextLogger(name)` factory. Levels: `debug`/`info`/`warn`/`error`/`fatal` (controlled by `LOG_LEVEL`). Two transports: `ConsoleTransport` (colored, suppressed in prod) and `SentryTransport` (error → `captureException`, warn → `captureMessage`, info/debug → `addBreadcrumb`). Sentry is the production sink — there is no file transport. Lazy-requires `@sentry/nextjs`.
 
 ## Gotchas
 
