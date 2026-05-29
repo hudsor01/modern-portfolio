@@ -179,20 +179,3 @@ function trackEngagement(data: ViewTrackingData) {
     handleAnalyticsError(error, 'trackEngagement')
   }
 }
-
-/**
- * Hook to get analytics data for a specific page
- */
-export function usePageAnalyticsData(type: 'blog' | 'project', slug?: string) {
-  const baseUrl =
-    process.env.NODE_ENV === 'production' ? 'https://richardwhudsonjr.com' : 'http://localhost:3000'
-
-  const params = new URLSearchParams({ type })
-  if (slug) params.append('slug', slug)
-
-  const url = `${baseUrl}/api/analytics/views?${params.toString()}`
-
-  // This would typically use SWR or React Query for caching
-  // For now, return the URL that can be fetched manually
-  return { analyticsUrl: url }
-}
