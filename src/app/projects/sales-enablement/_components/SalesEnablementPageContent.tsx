@@ -121,14 +121,8 @@ export default function SalesEnablementProject() {
         {/* Key Metrics using standardized MetricsGrid */}
         <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
-        {/* Implementation Pillars */}
-        <SectionCard
-          title="Implementation Pillars"
-          description="Core program components driving sales performance transformation"
-          className="mb-8"
-        >
-          <PillarsGrid pillars={keyPillars} />
-        </SectionCard>
+        {/* Implementation Pillars — PillarsGrid renders its own titled SectionCard */}
+        <PillarsGrid pillars={keyPillars} />
 
         {/* Professional Narrative Sections - STAR Method */}
         <SectionCard

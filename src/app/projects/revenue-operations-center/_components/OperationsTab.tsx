@@ -11,7 +11,10 @@ export function OperationsTab() {
           key={index}
           className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out"
         >
-          <h3 className="typography-h4 mb-6">{dept.department} Operations</h3>
+          {/* Avoid "Operations Operations" when the department is itself "Operations" */}
+          <h3 className="typography-h4 mb-6">
+            {dept.department === 'Operations' ? 'Operations' : `${dept.department} Operations`}
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {dept.metrics.map((metric, metricIndex) => (
               <div key={metricIndex} className="bg-white/5 rounded-xl p-4 border border-white/10">

@@ -7,6 +7,7 @@ import { ProjectStats } from '@/components/projects/project-stats'
 import { ProjectCTASection } from '@/components/projects/project-cta-section'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
@@ -109,7 +110,7 @@ export function ProjectsPageContent({ initialProjects }: ProjectsPageContentProp
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
             <div>
               <h2 className="font-display text-2xl lg:text-3xl font-semibold text-foreground mb-2">
-                Featured Work
+                All Case Studies
               </h2>
               <p className="text-muted-foreground">
                 Explore case studies in revenue operations and data analytics
@@ -143,7 +144,7 @@ export function ProjectsPageContent({ initialProjects }: ProjectsPageContentProp
                   <SelectItem value="all">All categories</SelectItem>
                   {categories.map((cat) => (
                     <SelectItem key={cat} value={cat}>
-                      {cat}
+                      {cat.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -167,6 +168,18 @@ export function ProjectsPageContent({ initialProjects }: ProjectsPageContentProp
                   ? 'Projects are currently being updated'
                   : 'Try adjusting your search or filters'}
               </p>
+              {initialProjects.length > 0 && (search || category !== 'all') && (
+                <Button
+                  variant="outline"
+                  className="mt-6"
+                  onClick={() => {
+                    setSearch(null)
+                    setCategory(null)
+                  }}
+                >
+                  Clear filters
+                </Button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
