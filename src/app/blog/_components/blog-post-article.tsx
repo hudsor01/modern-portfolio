@@ -7,7 +7,7 @@ import { Copy, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
-import { escapeHtml } from '@/lib/sanitization'
+import { markdownToHtml, decodeHtmlEntities } from '@/lib/markdown'
 // ContentType is a string union ('MARKDOWN' | 'HTML' | 'RICH_TEXT') in Drizzle;
 // callers compare against the literal so we don't need a runtime enum here.
 type ContentType = 'MARKDOWN' | 'HTML' | 'RICH_TEXT'
@@ -107,92 +107,6 @@ export function BlogPostArticle({
   const { theme } = useTheme()
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
 
-  // Markdown to HTML conversion with XSS protection
-  const parseMarkdown = (markdown: string): string => {
-    // SECURITY: Escape HTML entities first to prevent XSS
-    let html = escapeHtml(markdown)
-
-    // Headers — Markdown `# X` is rewritten to <h2>, not <h1>. The blog
-    // post title in blog-post-layout.tsx is the page's h1; emitting another
-    // h1 from body markdown creates a double-h1 that confuses Google's
-    // content-hierarchy parser. Demote in-body `#` to h2 (with same visual
-    // styling), `##` to h3, `###` to h4 — preserving the existing visual
-    // hierarchy while fixing semantics.
-    html = html.replace(
-      /^### (.*$)/gim,
-      '<h4 class="typography-large mt-6 mb-3 text-foreground dark:text-white">$1</h4>'
-    )
-    html = html.replace(
-      /^## (.*$)/gim,
-      '<h3 class="typography-h4 mt-8 mb-4 text-foreground dark:text-white">$1</h3>'
-    )
-    html = html.replace(
-      /^# (.*$)/gim,
-      '<h2 class="typography-h3 mt-10 mb-6 text-foreground dark:text-white">$1</h2>'
-    )
-
-    // Bold
-    html = html.replace(/\*\*(.*)\*\*/gim, '<strong class="font-semibold">$1</strong>')
-    html = html.replace(/__(.*)__/gim, '<strong class="font-semibold">$1</strong>')
-
-    // Italic
-    html = html.replace(/\*(.*)\*/gim, '<em class="italic">$1</em>')
-    html = html.replace(/_(.*)_/gim, '<em class="italic">$1</em>')
-
-    // Code blocks
-    html = html.replace(
-      /```(\w+)?\n([\s\S]*?)```/gim,
-      (_match: string, lang: string, code: string) => {
-        return `<pre data-language="${lang || 'text'}"><code>${code.trim()}</code></pre>`
-      }
-    )
-
-    // Inline code
-    html = html.replace(
-      /`([^`]+)`/gim,
-      '<code class="px-1.5 py-0.5 bg-muted dark:bg-card rounded-xs text-sm font-mono">$1</code>'
-    )
-
-    // Links - with URL validation
-    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/gim, (_match, text, url) => {
-      // Only allow safe URLs
-      const isExternalUrl = url.startsWith('http') || url.startsWith('mailto:')
-      const isRelativeUrl = url.startsWith('/')
-      if (!isExternalUrl && !isRelativeUrl) {
-        return text // Just return text if URL looks suspicious
-      }
-      return `<a href="${escapeHtml(url)}" class="text-primary dark:text-primary hover:underline" target="_blank" rel="noopener noreferrer">${text} <svg class="inline w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg></a>`
-    })
-
-    // Images
-    html = html.replace(
-      /!\[([^\]]*)\]\(([^)]+)\)/gim,
-      '<img src="$2" alt="$1" class="rounded-lg my-4 max-w-full h-auto" loading="lazy" />'
-    )
-
-    // Lists
-    html = html.replace(/^\* (.*$)/gim, '<li class="ml-4">$1</li>')
-    html = html.replace(/^\d+\. (.*$)/gim, '<li class="ml-4">$1</li>')
-
-    // Blockquotes
-    html = html.replace(
-      /^> (.*$)/gim,
-      '<blockquote class="border-l-4 border-primary pl-4 py-2 my-4 bg-primary/5 dark:bg-primary-bg italic text-muted-foreground dark:text-muted-foreground">$1</blockquote>'
-    )
-
-    // Line breaks
-    html = html.replace(
-      /\n\n/gim,
-      '</p><p class="mb-4 text-muted-foreground dark:typography-muted">'
-    )
-    html = html.replace(/\n/gim, '<br />')
-
-    // Wrap in paragraphs
-    html = `<p class="mb-4 text-muted-foreground dark:typography-muted">${html}</p>`
-
-    return html
-  }
-
   // Copy code functionality
   const copyToClipboard = async (code: string) => {
     try {
@@ -249,20 +163,23 @@ export function BlogPostArticle({
     return DOMPurify.sanitize(html, config)
   }
 
-  // Extract and render code blocks for markdown
+  // Extract and render code blocks for markdown. `marked` emits
+  // `<pre><code class="language-x">…</code></pre>` with the body HTML-escaped;
+  // we split those out into the themed <CodeBlock> (copy button) and decode the
+  // entities so React renders the original source rather than double-escaping.
   function renderMarkdownWithCodeBlocks(html: string): React.ReactNode[] {
-    const parts = html.split(/(<pre data-language="([^"]*?)"><code>([\s\S]*?)<\/code><\/pre>)/g)
+    const parts = html.split(/(<pre><code(?: class="language-[\w-]+")?>[\s\S]*?<\/code><\/pre>)/g)
 
     return parts.map((part, index) => {
       const codeBlockMatch = part.match(
-        /^<pre data-language="([^"]*?)"><code>([\s\S]*?)<\/code><\/pre>$/
+        /^<pre><code(?: class="language-([\w-]+)")?>([\s\S]*?)<\/code><\/pre>$/
       )
 
       if (codeBlockMatch) {
         const [, language, code] = codeBlockMatch
         return (
           <CodeBlock key={index} language={language || 'text'} className="my-6">
-            {code || ''}
+            {decodeHtmlEntities(code || '')}
           </CodeBlock>
         )
       }
@@ -280,12 +197,12 @@ export function BlogPostArticle({
   // Process content: parse markdown if needed, sanitize for non-markdown content.
   // For HTML/RICH_TEXT content, defensively demote any in-body <h1> to <h2> so
   // we never get a double-h1 alongside the page title in blog-post-layout.tsx.
-  // (Markdown content is already handled by parseMarkdown above.) Browser audit
+  // (Markdown content has its headings demoted by markdownToHtml.) Browser audit
   // surfaced this on `/blog/stop-using-generic-scripts...` — the post body
   // shipped with a literal <h1> matching the page title.
   const demoteH1 = (html: string): string =>
     html.replace(/<h1(\s[^>]*)?>/gi, '<h2$1>').replace(/<\/h1>/gi, '</h2>')
-  const processedContent = contentType === 'MARKDOWN' ? parseMarkdown(content) : demoteH1(content)
+  const processedContent = contentType === 'MARKDOWN' ? markdownToHtml(content) : demoteH1(content)
   const sanitizedContent = sanitizeHtml(processedContent, DOMPURIFY_CONFIG)
 
   return (
