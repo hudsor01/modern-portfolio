@@ -1,9 +1,6 @@
 import type { LeadTrendData } from '@/types/analytics'
 
-export function generateLeadTrendData(
-  _baseMetrics: Map<string, number>,
-  monthsCount: number = 12
-): LeadTrendData[] {
+export function generateLeadTrendData(monthsCount: number = 12): LeadTrendData[] {
   const data: LeadTrendData[] = []
   const baseLeads = 950
   const baseConversionRate = 0.12
