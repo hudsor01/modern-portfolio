@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { BackButton } from '@/components/navigation/back-button'
 import { NavigationBreadcrumbs } from '@/components/navigation/navigation-breadcrumbs'
+import { Navbar } from '@/components/layout/navbar'
 import type { ProjectPageLayoutProps } from '@/types/design-system'
 import { designTokens } from '@/lib/tokens'
 
@@ -45,6 +46,12 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
         className={cn('relative min-h-screen bg-background overflow-hidden', className)}
         {...props}
       >
+        {/* Global site nav — these hardcoded project pages otherwise had only a
+            "Back to Projects" link (the dynamic [slug] route renders Navbar via
+            project-detail-client-boundary). The pt-24 content offset below already
+            clears the fixed h-16 navbar. */}
+        <Navbar />
+
         {/* Decorative background elements */}
         <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
@@ -92,6 +99,7 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
                       key={timeframe}
                       variant={activeTimeframe === timeframe ? 'default' : 'ghost'}
                       size="sm"
+                      aria-pressed={activeTimeframe === timeframe}
                       onClick={() => onTimeframeChange?.(timeframe)}
                       className={cn(
                         'px-4 py-2 rounded-lg text-sm font-medium',
