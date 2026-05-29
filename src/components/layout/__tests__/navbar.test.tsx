@@ -9,6 +9,24 @@ vi.mock('next/navigation', () => ({
 
 import { Navbar } from '../navbar'
 
+describe('Navbar — CTA hidden on /contact', () => {
+  beforeEach(() => {
+    cleanup()
+    vi.resetModules()
+  })
+
+  it('does not render the "Let\'s Talk" CTA on the /contact page', async () => {
+    vi.doMock('next/navigation', () => ({ usePathname: () => '/contact' }))
+    const { Navbar: ContactNavbar } = await import('../navbar')
+    const { container } = render(<ContactNavbar />)
+    const ctas = Array.from(
+      container.querySelectorAll<HTMLAnchorElement>('a[href="/contact"]')
+    ).filter((a) => a.textContent?.toLowerCase().includes("let's talk"))
+    expect(ctas.length).toBe(0)
+    vi.doUnmock('next/navigation')
+  })
+})
+
 describe('Navbar', () => {
   beforeEach(() => {
     cleanup()

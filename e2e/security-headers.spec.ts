@@ -133,20 +133,27 @@ test.describe('Security Headers', () => {
       expect(response.status()).toBe(403)
     })
 
-    test('POST /api/blog/tags without CSRF token returns 403', async ({ request }) => {
+    // /api/blog/tags and /api/blog/categories are gated by an admin Bearer token
+    // (Authorization header) BEFORE the CSRF check runs. A cross-origin CSRF
+    // attacker cannot set a custom Authorization header nor know ADMIN_API_TOKEN,
+    // so an unauthenticated POST is genuinely unauthorized: the route correctly
+    // returns 401 (auth) before it would return 403 (CSRF). This precedence is
+    // pinned in the route unit tests. The standalone CSRF-403 contract is covered
+    // by the /api/contact tests above, which have no admin gate.
+    test('POST /api/blog/tags without admin token returns 401 (auth precedes CSRF)', async ({ request }) => {
       const response = await request.post('/api/blog/tags', {
         data: { name: 'Test Tag' },
         headers: { 'Content-Type': 'application/json' },
       })
-      expect(response.status()).toBe(403)
+      expect(response.status()).toBe(401)
     })
 
-    test('POST /api/blog/categories without CSRF token returns 403', async ({ request }) => {
+    test('POST /api/blog/categories without admin token returns 401 (auth precedes CSRF)', async ({ request }) => {
       const response = await request.post('/api/blog/categories', {
         data: { name: 'Test Category' },
         headers: { 'Content-Type': 'application/json' },
       })
-      expect(response.status()).toBe(403)
+      expect(response.status()).toBe(401)
     })
 
     test('CSRF rejection response contains expected error message', async ({ request }) => {

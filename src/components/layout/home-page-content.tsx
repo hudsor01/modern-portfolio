@@ -15,6 +15,17 @@ import {
 import { Navbar } from '@/components/layout/navbar'
 import { NumberTicker } from '@/components/ui/number-ticker'
 import { Button } from '@/components/ui/button'
+import { AvailabilityBadge } from '@/components/ui/availability-badge'
+import {
+  REVENUE_IMPACT,
+  TRANSACTION_GROWTH,
+  NETWORK_GROWTH,
+  YEARS_EXPERIENCE,
+  REVENUE_IMPACT_VALUE,
+  TRANSACTION_GROWTH_VALUE,
+  NETWORK_GROWTH_VALUE,
+  YEARS_EXPERIENCE_VALUE,
+} from '@/lib/stats'
 
 // Animated counter with visual impact
 function ImpactMetric({
@@ -109,10 +120,7 @@ export default function HomePageContent() {
              */}
             <div className="space-y-8">
               {/* Eyebrow */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
-                Available for opportunities
-              </div>
+              <AvailabilityBadge />
 
               {/* Main Headline */}
               <div className="space-y-4">
@@ -203,25 +211,25 @@ export default function HomePageContent() {
                   {/* Quick stats */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-muted/50 rounded-xl p-4 text-center">
-                      <div className="text-2xl font-bold text-primary">$4.8M+</div>
+                      <div className="text-2xl font-bold text-primary">{REVENUE_IMPACT}</div>
                       <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
                         Revenue Impact
                       </div>
                     </div>
                     <div className="bg-muted/50 rounded-xl p-4 text-center">
-                      <div className="text-2xl font-bold text-secondary">432%</div>
+                      <div className="text-2xl font-bold text-secondary">{TRANSACTION_GROWTH}</div>
                       <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
                         Growth Delivered
                       </div>
                     </div>
                     <div className="bg-muted/50 rounded-xl p-4 text-center">
-                      <div className="text-2xl font-bold text-accent">2,217%</div>
+                      <div className="text-2xl font-bold text-accent">{NETWORK_GROWTH}</div>
                       <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
                         Network Growth
                       </div>
                     </div>
                     <div className="bg-muted/50 rounded-xl p-4 text-center">
-                      <div className="text-2xl font-bold text-foreground">10+</div>
+                      <div className="text-2xl font-bold text-foreground">{YEARS_EXPERIENCE}</div>
                       <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
                         Years Experience
                       </div>
@@ -254,7 +262,7 @@ export default function HomePageContent() {
           {/* Metrics grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
             <ImpactMetric
-              value={4.8}
+              value={REVENUE_IMPACT_VALUE}
               prefix="$"
               suffix="M+"
               label="Revenue Generated"
@@ -263,20 +271,26 @@ export default function HomePageContent() {
               decimalPlaces={1}
             />
             <ImpactMetric
-              value={432}
+              value={TRANSACTION_GROWTH_VALUE}
               suffix="%"
               label="Growth Achieved"
               icon={TrendingUp}
               delay={0.1}
             />
             <ImpactMetric
-              value={2217}
+              value={NETWORK_GROWTH_VALUE}
               suffix="%"
               label="Network Expansion"
               icon={Users}
               delay={0.2}
             />
-            <ImpactMetric value={10} suffix="+" label="Years Experience" icon={Clock} delay={0.3} />
+            <ImpactMetric
+              value={YEARS_EXPERIENCE_VALUE}
+              suffix="+"
+              label="Years Experience"
+              icon={Clock}
+              delay={0.3}
+            />
           </div>
         </div>
       </section>
@@ -421,10 +435,10 @@ export default function HomePageContent() {
           <div className="text-center">
             <Link
               href="/projects"
-              className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
+              className="group inline-flex items-center gap-2 text-primary hover:underline font-medium"
             >
               View all projects
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>

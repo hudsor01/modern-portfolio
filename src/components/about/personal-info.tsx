@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Mail, MapPin, Eye, Briefcase } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { AvailabilityBadge } from '@/components/ui/availability-badge'
 
 interface PersonalInfo {
   name: string
@@ -25,6 +26,7 @@ export function PersonalInfo({ personalInfo, className = '' }: PersonalInfoProps
       <div className="grid lg:grid-cols-2 gap-12 items-center">
         <div className="space-y-8">
           <div>
+            <AvailabilityBadge className="mb-6" />
             <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-foreground">
               {personalInfo.name}
             </h1>

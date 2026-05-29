@@ -350,8 +350,11 @@ export class RateLimiter implements Disposable {
       .map((record) => record.requestHistory.filter((t) => t > now - 60000).length)
       .reduce((sum, count) => sum + count, 0)
 
-    // Normalize to 0-1 scale based on reasonable thresholds
-    const maxExpectedClients = 1000
+    // Normalize to 0-1 scale based on the store's real capacity. Tie the
+    // client-load denominator to the eviction target (the steady-state ceiling
+    // LRU eviction drives the store toward) so the signal reaches 1.0 exactly
+    // as eviction begins reclaiming — not at an arbitrary 10% of capacity.
+    const maxExpectedClients = Math.floor(MAX_STORE_SIZE * EVICTION_TARGET_RATIO)
     const maxExpectedRPM = 10000 // requests per minute
 
     const clientLoad = Math.min(totalActiveClients / maxExpectedClients, 1)

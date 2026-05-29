@@ -66,14 +66,16 @@ export function Navbar() {
             </button>
           </div>
 
-          {/* Desktop CTA button */}
+          {/* Desktop CTA button — hidden on /contact (already there) */}
           <div className="hidden md:flex items-center w-32 justify-end">
-            <Link
-              href="/contact"
-              className="bg-primary text-primary-foreground text-sm font-medium px-4 py-2 rounded-lg transition-all duration-300 ease-out shadow-sm hover:bg-primary/95 hover:shadow-md"
-            >
-              Let's Talk
-            </Link>
+            {pathname !== '/contact' && (
+              <Link
+                href="/contact"
+                className="bg-primary text-primary-foreground text-sm font-medium px-4 py-2 rounded-lg transition-all duration-300 ease-out shadow-sm hover:bg-primary/95 hover:shadow-md"
+              >
+                Let's Talk
+              </Link>
+            )}
           </div>
         </div>
 
@@ -102,13 +104,15 @@ export function Navbar() {
                 {item.title}
               </Link>
             ))}
-            <Link
-              href="/contact"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="w-full bg-primary text-primary-foreground text-base font-medium px-4 py-3 rounded-lg transition-all duration-300 ease-out shadow-sm hover:bg-primary/95 min-h-[44px] flex items-center justify-center"
-            >
-              Let's Talk
-            </Link>
+            {pathname !== '/contact' && (
+              <Link
+                href="/contact"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full bg-primary text-primary-foreground text-base font-medium px-4 py-3 rounded-lg transition-all duration-300 ease-out shadow-sm hover:bg-primary/95 min-h-[44px] flex items-center justify-center"
+              >
+                Let's Talk
+              </Link>
+            )}
           </div>
         </div>
       </div>

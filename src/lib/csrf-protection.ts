@@ -8,6 +8,12 @@ const logger = createContextLogger('CSRFProtection')
 const CSRF_TOKEN_LENGTH = 32
 const CSRF_TOKEN_NAME = '__csrf_token'
 const CSRF_HEADER_NAME = 'x-csrf-token'
+// Upper bound on a form-encoded body we are willing to buffer+parse purely to
+// extract the _csrf_token field. A CSRF form only needs the token plus a few
+// small fields, so 64KB is generous. Enforced via Content-Length BEFORE
+// request.formData() to avoid a DoS amplification vector where an attacker
+// forces full-body parsing on a request that has no token.
+const CSRF_MAX_FORM_BODY_BYTES = 64 * 1024
 
 /**
  * Generate a secure CSRF token
@@ -67,7 +73,14 @@ export async function csrfProtectionMiddleware(
 ): Promise<{ valid: boolean; token?: string; error?: string }> {
   // Only validate on state-changing requests
   if (!allowedMethods.includes(request.method.toUpperCase())) {
-    // Generate a new token for GET requests
+    // Issue a token for safe (e.g. GET) requests, but do NOT rotate an existing
+    // one: regenerating the cookie on every GET would invalidate the token held
+    // by any in-flight form (e.g. one opened in another tab). Only mint+set a
+    // new token when the cookie is absent.
+    const existingToken = await getCSRFTokenFromCookie()
+    if (existingToken) {
+      return { valid: true, token: existingToken }
+    }
     const token = generateCSRFToken()
     await setCSRFTokenCookie(token)
     return { valid: true, token }
@@ -92,6 +105,21 @@ export async function csrfProtectionMiddleware(
         contentType.includes('application/x-www-form-urlencoded') ||
         contentType.includes('multipart/form-data')
       ) {
+        // Enforce a size guard BEFORE parsing the body. Parsing first would let
+        // an attacker force full-body buffering on a tokenless request (DoS
+        // amplification). A missing or unparseable Content-Length is rejected
+        // too, so a chunked body can't slip past the check.
+        const contentLength = request.headers.get('content-length')
+        if (
+          contentLength === null ||
+          !Number.isFinite(Number(contentLength)) ||
+          Number(contentLength) > CSRF_MAX_FORM_BODY_BYTES
+        ) {
+          return {
+            valid: false,
+            error: 'Request body too large for CSRF token extraction',
+          }
+        }
         // For form data, we need to clone the request to read it without consuming the body elsewhere
         const clonedRequest = request.clone()
         const formData = await clonedRequest.formData()

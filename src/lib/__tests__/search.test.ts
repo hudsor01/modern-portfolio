@@ -16,10 +16,22 @@ vi.mock('@/lib/db', () => ({
   db: { execute: executeMock },
 }))
 
-import { searchBlogPosts, highlightSearchTerms, getSearchSuggestions } from '@/lib/search'
+import {
+  searchBlogPosts,
+  highlightSearchTerms,
+  getSearchSuggestions,
+  __resetPgTrgmCache,
+} from '@/lib/search'
+
+// Probe result rows for the pg_trgm capability check (hasPgTrgm): a non-empty
+// array means the extension is present (trigram path), [] means absent (ILIKE
+// fallback path).
+const TRGM_PRESENT = [{ '?column?': 1 }]
+const TRGM_ABSENT: unknown[] = []
 
 beforeEach(() => {
   executeMock.mockReset()
+  __resetPgTrgmCache()
 })
 
 describe('searchBlogPosts', () => {
@@ -52,24 +64,65 @@ describe('searchBlogPosts', () => {
     expect(executeMock).toHaveBeenCalledTimes(1) // skipped fuzzy
   })
 
-  it('falls back to fuzzy when full-text yields too few hits', async () => {
+  it('falls back to fuzzy (trigram) when full-text yields too few hits', async () => {
     const ftRows = [
       { id: '1', title: 't', slug: 's', excerpt: null, rank: 0.9, matchType: 'exact' as const },
     ]
     const fzRows = [
       { id: '2', title: 'fuzzy', slug: 'f', excerpt: null, rank: 0.4, matchType: 'fuzzy' as const },
     ]
-    executeMock.mockResolvedValueOnce(ftRows).mockResolvedValueOnce(fzRows)
+    // ft query → pg_trgm probe (present) → trigram fuzzy query
+    executeMock
+      .mockResolvedValueOnce(ftRows)
+      .mockResolvedValueOnce(TRGM_PRESENT)
+      .mockResolvedValueOnce(fzRows)
     const result = await searchBlogPosts('react')
     expect(result).toHaveLength(2)
-    expect(executeMock).toHaveBeenCalledTimes(2)
+    expect(executeMock).toHaveBeenCalledTimes(3)
+  })
+
+  it('falls back to ILIKE fuzzy search when pg_trgm is unavailable', async () => {
+    const ftRows = [
+      { id: '1', title: 't', slug: 's', excerpt: null, rank: 0.9, matchType: 'exact' as const },
+    ]
+    const fzRows = [
+      { id: '2', title: 'fuzzy', slug: 'f', excerpt: null, rank: 0.6, matchType: 'fuzzy' as const },
+    ]
+    // ft query → pg_trgm probe (ABSENT) → ILIKE fuzzy query
+    executeMock
+      .mockResolvedValueOnce(ftRows)
+      .mockResolvedValueOnce(TRGM_ABSENT)
+      .mockResolvedValueOnce(fzRows)
+    const result = await searchBlogPosts('react')
+    expect(result).toHaveLength(2)
+    expect(executeMock).toHaveBeenCalledTimes(3)
+    // The ILIKE branch must not reference the `%` similarity operator.
+    const fuzzySql = JSON.stringify(executeMock.mock.calls[2])
+    expect(fuzzySql).toContain('ILIKE')
+    expect(fuzzySql).not.toContain('similarity(')
+  })
+
+  it('caches the pg_trgm probe across calls (probes once)', async () => {
+    const ftRows = [
+      { id: '1', title: 't', slug: 's', excerpt: null, rank: 0.9, matchType: 'exact' as const },
+    ]
+    executeMock.mockResolvedValue(ftRows) // ft hits < 5 → always tries fuzzy
+    executeMock.mockResolvedValueOnce(ftRows).mockResolvedValueOnce(TRGM_PRESENT)
+    await searchBlogPosts('react') // ft + probe + fuzzy
+    const callsAfterFirst = executeMock.mock.calls.length
+    await searchBlogPosts('react') // ft + fuzzy (no second probe)
+    expect(executeMock.mock.calls.length).toBe(callsAfterFirst + 2)
   })
 
   it('returns full-text rows even if fuzzy fallback throws', async () => {
     const ftRows = [
       { id: '1', title: 't', slug: 's', excerpt: null, rank: 0.9, matchType: 'exact' as const },
     ]
-    executeMock.mockResolvedValueOnce(ftRows).mockRejectedValueOnce(new Error('db down'))
+    // ft query → pg_trgm probe (present) → fuzzy query rejects
+    executeMock
+      .mockResolvedValueOnce(ftRows)
+      .mockResolvedValueOnce(TRGM_PRESENT)
+      .mockRejectedValueOnce(new Error('db down'))
     const result = await searchBlogPosts('react')
     expect(result).toEqual(ftRows)
   })

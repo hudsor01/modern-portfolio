@@ -208,6 +208,18 @@ const SAMPLE_TAGS = [
     description: 'Customer cohort analysis techniques',
     color: '#F97316',
   },
+  {
+    name: 'Attribution Modeling',
+    slug: 'attribution-modeling',
+    description: 'Multi-touch and marketing attribution models',
+    color: '#EC4899',
+  },
+  {
+    name: 'Marketing Analytics',
+    slug: 'marketing-analytics',
+    description: 'Campaign measurement and marketing ROI analysis',
+    color: '#0EA5E9',
+  },
 ]
 
 // =======================
@@ -729,7 +741,9 @@ async function seedBlogPosts(
         'ROI analysis',
         'campaign measurement',
       ],
-      tagSlugs: ['ab-testing', 'forecasting', 'dashboards'],
+      // Tags describe the post's subject (marketing attribution), not unrelated
+      // topics. Previously mis-tagged ab-testing/forecasting/dashboards (#125).
+      tagSlugs: ['attribution-modeling', 'marketing-analytics', 'kpis'],
     },
     {
       title: 'Salesforce Revenue Analytics Implementation',

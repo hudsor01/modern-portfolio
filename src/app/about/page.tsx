@@ -12,12 +12,13 @@ import { ArrowRight, Mail } from 'lucide-react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { REVENUE_IMPACT, TRANSACTION_GROWTH, NETWORK_GROWTH, YEARS_EXPERIENCE } from '@/lib/stats'
 
 const EXPERIENCE_STATS = [
-  { label: 'Projects Delivered', value: '10+', icon: 'check-circle' },
-  { label: 'Revenue Generated', value: '$4.8M+', icon: 'dollar-sign' },
-  { label: 'Transaction Growth', value: '432%', icon: 'bar-chart' },
-  { label: 'Network Expansion', value: '2,217%', icon: 'rocket' },
+  { label: 'Projects Delivered', value: YEARS_EXPERIENCE, icon: 'check-circle' },
+  { label: 'Revenue Generated', value: REVENUE_IMPACT, icon: 'dollar-sign' },
+  { label: 'Transaction Growth', value: TRANSACTION_GROWTH, icon: 'bar-chart' },
+  { label: 'Network Expansion', value: NETWORK_GROWTH, icon: 'rocket' },
 ]
 
 const CERTIFICATIONS = [
