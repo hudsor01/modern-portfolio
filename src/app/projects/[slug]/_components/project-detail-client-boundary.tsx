@@ -1,11 +1,9 @@
 'use client'
 
-import { usePageAnalytics } from '@/hooks/use-page-analytics'
 import { Navbar } from '@/components/layout/navbar'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { SectionCard } from '@/components/ui/section-card'
-import { ChartContainer } from '@/components/ui/chart-container'
 import { ExternalLink, ArrowRight } from 'lucide-react'
 import { Github } from '@/components/ui/brand-icons'
 import Link from 'next/link'
@@ -26,17 +24,8 @@ interface ProjectDetailClientBoundaryProps {
  * Uses React 19 patterns for optimal performance.
  */
 export default function ProjectDetailClientBoundary({
-  slug,
   initialProject,
 }: ProjectDetailClientBoundaryProps) {
-  // Track page analytics
-  usePageAnalytics({
-    type: 'project',
-    slug: slug,
-    trackReadingTime: true,
-    trackScrollDepth: true,
-  })
-
   // Use the server-provided data directly - no fetching needed
   const project = normalizeProjectForDisplay(initialProject)
 
@@ -227,28 +216,10 @@ export default function ProjectDetailClientBoundary({
             </div>
           )}
 
-          {/* Charts */}
-          {Array.isArray(project.charts) && project.charts.length > 0 && (
-            <div className="container mx-auto px-6 mb-16">
-              <div className="max-w-5xl mx-auto space-y-8">
-                {(
-                  project.charts as Array<{
-                    type: string
-                    title: string
-                    description?: string
-                    dataKey: string
-                  }>
-                ).map((chart, index) => (
-                  <ChartContainer key={index} title={chart.title} description={chart.description}>
-                    {/* Chart component would go here */}
-                    <div className="h-64 flex items-center justify-center text-muted-foreground">
-                      Chart: {chart.title}
-                    </div>
-                  </ChartContainer>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Charts are rendered by each project's dedicated page (see
+              src/app/projects/<slug>/_components/*). This generic fallback
+              boundary deliberately omits them rather than render placeholder
+              chart boxes. */}
         </div>
       </main>
     </div>
