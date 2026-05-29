@@ -6,7 +6,7 @@ import { BlogList } from './_components/blog-list'
 import { BlogJsonLd } from '@/components/seo/blog-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { ItemListJsonLd } from '@/components/seo/json-ld/item-list-json-ld'
-import { desc, eq } from 'drizzle-orm'
+import { and, desc, eq, isNull } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { blogPosts, categories as categoriesTable } from '@/db/schema'
 import { transformToBlogPostData } from '@/lib/api-blog'
@@ -63,7 +63,9 @@ const getBlogPosts = cache(async (): Promise<BlogPostData[]> => {
 
   try {
     const posts = await db.query.blogPosts.findMany({
-      where: eq(blogPosts.status, 'PUBLISHED'),
+      // Exclude soft-deleted posts so retired/consolidated dupes (which
+      // 308-redirect at the detail level) don't still render as index cards.
+      where: and(eq(blogPosts.status, 'PUBLISHED'), isNull(blogPosts.deletedAt)),
       with: {
         author: true,
         category: true,
