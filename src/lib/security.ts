@@ -28,6 +28,9 @@ export interface SecurityConfig {
   rateLimitMaxRequests: number
   rateLimitClientExpiryMs: number
   rateLimitMaxHistoryPerClient: number
+  rateLimitMaxStoreSize: number
+  rateLimitHistoryRetentionMs: number
+  rateLimitAbsoluteExpiryMs: number
 }
 
 export const securityConfig: SecurityConfig = {
@@ -53,6 +56,17 @@ export const securityConfig: SecurityConfig = {
   // Rate Limiting (per API route)
   rateLimitWindowMs: 60 * 1000, // 1 minute
   rateLimitMaxRequests: 10, // 10 requests per minute
+  // Evict a client's record after this much inactivity (no new attempts).
   rateLimitClientExpiryMs: 15 * 60 * 1000, // 15 minutes
-  rateLimitMaxHistoryPerClient: 100, // Max history entries per client
+  // Max request-timestamp entries retained per client (bounds per-record memory).
+  rateLimitMaxHistoryPerClient: 100,
+  // Max distinct clients tracked before LRU eviction kicks in (bounds total memory).
+  rateLimitMaxStoreSize: 10_000,
+  // How long request timestamps are kept for burst/abuse analysis.
+  rateLimitHistoryRetentionMs: 15 * 60 * 1000, // 15 minutes
+  // Hard ceiling: a record is dropped this long after creation regardless of
+  // activity, so penalties/blocks accrued within the window are no longer reset
+  // on every cleanup cycle. Must be >> rateLimitClientExpiryMs for the
+  // inactivity sweep to remain the dominant eviction path for idle clients.
+  rateLimitAbsoluteExpiryMs: 24 * 60 * 60 * 1000, // 24 hours
 }

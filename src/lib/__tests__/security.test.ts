@@ -34,5 +34,18 @@ describe('securityConfig', () => {
     expect(securityConfig.rateLimitMaxRequests).toBeGreaterThan(0)
     expect(securityConfig.rateLimitClientExpiryMs).toBeGreaterThan(0)
     expect(securityConfig.rateLimitMaxHistoryPerClient).toBeGreaterThan(0)
+    expect(securityConfig.rateLimitMaxStoreSize).toBeGreaterThan(0)
+    expect(securityConfig.rateLimitHistoryRetentionMs).toBeGreaterThan(0)
+    expect(securityConfig.rateLimitAbsoluteExpiryMs).toBeGreaterThan(0)
+  })
+
+  it('absolute expiry is a much longer ceiling than the inactivity window', () => {
+    // Invariant the cleanup logic depends on: the createdAt-based hard ceiling
+    // must outlast the lastAttempt-based inactivity sweep, otherwise active
+    // clients' penalties/blocks get wiped every cleanup cycle and the
+    // inactivity branch becomes unreachable.
+    expect(securityConfig.rateLimitAbsoluteExpiryMs).toBeGreaterThan(
+      securityConfig.rateLimitClientExpiryMs
+    )
   })
 })
