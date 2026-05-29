@@ -20,6 +20,12 @@ import { DataCacheService, type CacheStats } from './cache'
 // Main analytics data service
 export class AnalyticsDataService {
   private cache: DataCacheService
+  // In-flight de-duplication for getAllAnalyticsData: concurrent cache-miss
+  // callers share one generation pass instead of each regenerating. The
+  // `await Promise.all` in the generator yields the event loop between the
+  // cache read and write, so without this two overlapping requests would
+  // double-generate the bundle.
+  private inFlightAll: Promise<AllAnalyticsDataBundle> | null = null
 
   constructor() {
     this.cache = new DataCacheService()
@@ -149,6 +155,16 @@ export class AnalyticsDataService {
       return cached
     }
 
+    // Coalesce concurrent cache-miss callers onto a single generation pass.
+    if (this.inFlightAll) return this.inFlightAll
+
+    this.inFlightAll = this.generateAllAnalyticsData(cacheKey).finally(() => {
+      this.inFlightAll = null
+    })
+    return this.inFlightAll
+  }
+
+  private async generateAllAnalyticsData(cacheKey: string): Promise<AllAnalyticsDataBundle> {
     logger.info('Generating complete analytics dataset')
 
     const [churn, leadAttribution, leadTrends, growth, yearOverYear, topPartners] =
