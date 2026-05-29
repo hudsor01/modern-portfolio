@@ -47,10 +47,22 @@ async function main() {
     if (!row) {
       console.log(`  tag "${t.slug}" missing — ${APPLY ? 'creating' : 'would create'}`)
       if (APPLY) {
+        // The prod `tags` table was created by Prisma: `updatedAt` (@updatedAt)
+        // has NO database default, so Drizzle's implicit DEFAULT violates the
+        // NOT NULL constraint. Set both timestamps explicitly.
+        const now = new Date()
         row = (
           await db
             .insert(tags)
-            .values({ id: createId(), name: t.name, slug: t.slug, description: t.description, color: t.color })
+            .values({
+              id: createId(),
+              name: t.name,
+              slug: t.slug,
+              description: t.description,
+              color: t.color,
+              createdAt: now,
+              updatedAt: now,
+            })
             .returning({ id: tags.id })
         )[0]
       }
