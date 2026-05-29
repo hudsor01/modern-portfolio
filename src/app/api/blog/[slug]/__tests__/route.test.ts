@@ -58,7 +58,7 @@ import { GET, PUT, DELETE } from '@/app/api/blog/[slug]/route'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
 import { isAdminRequest } from '@/lib/api-admin-auth'
 
-const sampleAuthorId = 'cl1234567890abcdefghijkl'
+const sampleAuthorId = 'test-author-id-0000000000000000000001'
 const samplePost = {
   id: 'post-1',
   title: 'Hello',

@@ -31,8 +31,8 @@ describe('env-validation', () => {
       const env = mod.getValidatedEnv()
 
       expect(env.NODE_ENV).toBe('development')
-      expect(env.FROM_EMAIL).toBe('contact@richardwhudsonjr.com')
-      expect(env.TO_EMAIL).toBe('hello@richardwhudsonjr.com')
+      expect(env.FROM_EMAIL).toBe('noreply@richardwhudsonjr.com')
+      expect(env.TO_EMAIL).toBe('hudsor01@icloud.com')
       expect(env.ALLOWED_ORIGINS).toEqual([])
       expect(env.USE_LOCAL_DB).toBe(false)
     })

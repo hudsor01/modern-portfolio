@@ -34,8 +34,14 @@ const envSchema = z.object({
     )
     .optional(),
   CONTACT_EMAIL: z.string().email('CONTACT_EMAIL must be a valid email').optional(),
-  FROM_EMAIL: z.email('FROM_EMAIL must be a valid email').default('contact@richardwhudsonjr.com'),
-  TO_EMAIL: z.email('TO_EMAIL must be a valid email').default('hello@richardwhudsonjr.com'),
+  // Resend sender — must be on the Resend-verified domain (richardwhudsonjr.com),
+  // not a real mailbox. `noreply@` makes that explicit. Do NOT set this to the
+  // icloud address: Resend can only send FROM a verified domain.
+  FROM_EMAIL: z.email('FROM_EMAIL must be a valid email').default('noreply@richardwhudsonjr.com'),
+  // Delivery recipient for contact-form submissions — a REAL inbox. The previous
+  // default (hello@richardwhudsonjr.com) doesn't exist, so submissions had no
+  // deliverable destination.
+  TO_EMAIL: z.email('TO_EMAIL must be a valid email').default('hudsor01@icloud.com'),
   NEXT_PUBLIC_VERCEL_URL: z.string().optional(),
   VERCEL_URL: z.string().optional(),
   ADMIN_API_TOKEN: z.string().min(32, 'ADMIN_API_TOKEN must be at least 32 characters').optional(),

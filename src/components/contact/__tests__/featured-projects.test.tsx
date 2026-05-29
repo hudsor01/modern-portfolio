@@ -19,10 +19,10 @@ describe('FeaturedProjects', () => {
       screen.getByRole('link', { name: /revenue operations center/i }).getAttribute('href')
     ).toBe('/projects/revenue-operations-center')
     expect(
-      screen.getByRole('link', { name: /lead attribution system/i }).getAttribute('href')
+      screen.getByRole('link', { name: /marketing attribution platform/i }).getAttribute('href')
     ).toBe('/projects/lead-attribution')
     expect(
-      screen.getByRole('link', { name: /commission optimization/i }).getAttribute('href')
+      screen.getByRole('link', { name: /commission & incentive optimization/i }).getAttribute('href')
     ).toBe('/projects/commission-optimization')
   })
 

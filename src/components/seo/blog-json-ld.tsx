@@ -5,7 +5,7 @@
  */
 
 import type { BlogPostData } from '@/types/api'
-import { safeJsonLdStringify } from '@/lib/json-ld-utils'
+import { JsonLdScript } from '@/components/seo/json-ld-script'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 
@@ -80,13 +80,7 @@ export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
     },
   }
 
-  return (
-    <script
-      type="application/ld+json"
-      nonce={nonce ?? undefined}
-      dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(blogSchema) }}
-    />
-  )
+  return <JsonLdScript json={blogSchema} nonce={nonce} />
 }
 
 /**
@@ -218,13 +212,7 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
     },
   }
 
-  return (
-    <script
-      type="application/ld+json"
-      nonce={nonce ?? undefined}
-      dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(postSchema) }}
-    />
-  )
+  return <JsonLdScript json={postSchema} nonce={nonce} />
 }
 
 /**
@@ -283,13 +271,7 @@ export function BlogCategoryJsonLd({
     },
   }
 
-  return (
-    <script
-      type="application/ld+json"
-      nonce={nonce ?? undefined}
-      dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(categorySchema) }}
-    />
-  )
+  return <JsonLdScript json={categorySchema} nonce={nonce} />
 }
 
 /**
@@ -317,11 +299,5 @@ export function BlogFAQJsonLd({ faqs, nonce }: BlogFAQJsonLdProps & { nonce?: st
     })),
   }
 
-  return (
-    <script
-      type="application/ld+json"
-      nonce={nonce ?? undefined}
-      dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(faqSchema) }}
-    />
-  )
+  return <JsonLdScript json={faqSchema} nonce={nonce} />
 }

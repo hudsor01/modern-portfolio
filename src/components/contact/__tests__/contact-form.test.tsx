@@ -94,8 +94,8 @@ describe('ContactForm', () => {
     } as unknown as UseContactFormReturn
     const html = renderToStaticMarkup(<ContactForm form={props} />)
     expect(html).toContain('<noscript>')
-    expect(html).toContain('mailto:richard@richardwhudsonjr.com')
-    expect(html).toContain('richard@richardwhudsonjr.com')
+    expect(html).toContain('mailto:hudsor01@icloud.com')
+    expect(html).toContain('hudsor01@icloud.com')
   })
 
   it('renders all required field labels', () => {

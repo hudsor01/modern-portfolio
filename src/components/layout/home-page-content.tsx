@@ -478,10 +478,10 @@ export default function HomePageContent() {
             <p className="text-muted-foreground text-sm">
               Or email me directly at{' '}
               <a
-                href="mailto:richard@richardwhudsonjr.com"
+                href="mailto:hudsor01@icloud.com"
                 className="text-primary hover:text-primary/80 font-medium transition-colors"
               >
-                richard@richardwhudsonjr.com
+                hudsor01@icloud.com
               </a>
             </p>
           </div>

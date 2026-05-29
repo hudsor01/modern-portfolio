@@ -56,7 +56,7 @@ const PERSONAL_INFO = {
   name: 'Richard Hudson',
   title: 'Revenue Operations Professional',
   location: 'Dallas, TX • Dallas-Fort Worth Metroplex • Remote & On-Site',
-  email: 'contact@richardwhudsonjr.com',
+  email: 'hudsor01@icloud.com',
   bio: `Started my career untangling spreadsheet chaos at a 50-person startup. Built my first automated pipeline with zero engineering support—just Excel, determination, and 3 YouTube tutorials. That pipeline now processes $4.8M+ annually.
 
 Today, I architect revenue operations systems that transform data overwhelm into competitive advantage. Ten years working the messy middle—where sales meets marketing meets customer success—turning manual reporting nightmares into automated workflows that scale.

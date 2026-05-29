@@ -87,7 +87,7 @@ TypeScript fix applied: `logger.warn` second argument changed from `Error` to `L
 **What the human must do:**
 
 **Step 1: Set INDEXNOW_KEY in Vercel**
-1. The key value: `374957a2e557ab0eed4b0a1e6aacf8bd9db22b8fdfd75a9ca78df521394c5704`
+1. The key value: see your Vercel environment variables or the key file at `public/374957a2e557ab0eed4b0a1e6aacf8bd9db22b8fdfd75a9ca78df521394c5704.txt`
 2. Go to Vercel Dashboard -> Project -> Settings -> Environment Variables
 3. Add: Name=`INDEXNOW_KEY`, Value=`374957a2e557ab0eed4b0a1e6aacf8bd9db22b8fdfd75a9ca78df521394c5704`, Environment=Production
 4. Do NOT use `NEXT_PUBLIC_INDEXNOW_KEY` — must be server-only
