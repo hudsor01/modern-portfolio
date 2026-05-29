@@ -12,19 +12,32 @@ import type {
 } from '@/types/security'
 import { securityConfig } from '@/lib/security'
 
-// Memory management constants from centralized configuration
-const MAX_STORE_SIZE = securityConfig.rateLimitMaxHistoryPerClient
+// Memory-management constants, each mapped to a DISTINCT security-config field.
+// Previously several aliased the same field, which silently collapsed separate
+// concepts — most consequentially the absolute ceiling onto the 15-min
+// inactivity window, which let an active client's penalties/blocks be wiped
+// every cleanup cycle and made the inactivity sweep unreachable.
+const MAX_STORE_SIZE = securityConfig.rateLimitMaxStoreSize
 const MAX_REQUEST_HISTORY_PER_CLIENT = securityConfig.rateLimitMaxHistoryPerClient
-const REQUEST_HISTORY_RETENTION_MS = securityConfig.rateLimitClientExpiryMs
+const REQUEST_HISTORY_RETENTION_MS = securityConfig.rateLimitHistoryRetentionMs
 const CLIENT_EXPIRY_TIME = securityConfig.rateLimitClientExpiryMs
 const CLEANUP_INTERVAL = 300000 // 5 minutes
-const ABSOLUTE_EXPIRATION_MS = securityConfig.rateLimitClientExpiryMs
+const ABSOLUTE_EXPIRATION_MS = securityConfig.rateLimitAbsoluteExpiryMs
 const EVICTION_BATCH_SIZE = 100
 const EVICTION_TARGET_RATIO = 0.8
+const GLOBAL_LOAD_CACHE_TTL_MS = 1000 // recompute the global-load signal at most once/sec
 
 // Node.js 24: Implements Disposable for automatic cleanup via 'using' keyword
 export class RateLimiter implements Disposable {
   private store = new Map<string, RateLimitRecord>()
+  // Runtime allow/deny lists held as limiter state — never mutate the shared
+  // per-route RateLimitConfig singletons (see addToWhitelist/addToBlacklist).
+  private dynamicWhitelist = new Set<string>()
+  private dynamicBlacklist = new Set<string>()
+  // Cached global-load signal; recomputed at most once per TTL to avoid an
+  // O(store size) scan on every checkLimit call.
+  private cachedGlobalLoad = 0
+  private globalLoadComputedAt = 0
   private analytics: RateLimitAnalytics = {
     totalRequests: 0,
     blockedRequests: 0,
@@ -62,12 +75,12 @@ export class RateLimiter implements Disposable {
   ): RateLimitResult {
     const now = Date.now()
 
-    // Check whitelist/blacklist first
-    if (config.whitelist?.includes(identifier)) {
+    // Check whitelist/blacklist first (per-route config + runtime overrides)
+    if (config.whitelist?.includes(identifier) || this.dynamicWhitelist.has(identifier)) {
       return { allowed: true, reason: 'whitelisted', confidence: 1.0 }
     }
 
-    if (config.blacklist?.includes(identifier)) {
+    if (config.blacklist?.includes(identifier) || this.dynamicBlacklist.has(identifier)) {
       this.analytics.blockedRequests++
       return {
         allowed: false,
@@ -323,9 +336,18 @@ export class RateLimiter implements Disposable {
    * Calculate global system load
    */
   private calculateGlobalLoad(): number {
+    // Cached: this scans the whole store, but checkLimit calls it on every
+    // request. With a large store that would be O(n) per request; recomputing
+    // at most once per second keeps the hot path cheap while the signal (only
+    // used for adaptive thresholds + analytics) stays fresh enough.
+    const now = Date.now()
+    if (now - this.globalLoadComputedAt < GLOBAL_LOAD_CACHE_TTL_MS) {
+      return this.cachedGlobalLoad
+    }
+
     const totalActiveClients = this.store.size
     const recentRequests = Array.from(this.store.values())
-      .map((record) => record.requestHistory.filter((t) => t > Date.now() - 60000).length)
+      .map((record) => record.requestHistory.filter((t) => t > now - 60000).length)
       .reduce((sum, count) => sum + count, 0)
 
     // Normalize to 0-1 scale based on reasonable thresholds
@@ -335,7 +357,10 @@ export class RateLimiter implements Disposable {
     const clientLoad = Math.min(totalActiveClients / maxExpectedClients, 1)
     const requestLoad = Math.min(recentRequests / maxExpectedRPM, 1)
 
-    return (clientLoad + requestLoad) / 2
+    const load = (clientLoad + requestLoad) / 2
+    this.cachedGlobalLoad = load
+    this.globalLoadComputedAt = now
+    return load
   }
 
   /**
@@ -391,20 +416,29 @@ export class RateLimiter implements Disposable {
   }
 
   /**
-   * Add to whitelist/blacklist dynamically
+   * Dynamically allow/deny an identifier at runtime (admin functions).
+   *
+   * These mutate limiter-instance state only — they never touch the shared
+   * per-route RateLimitConfig objects (which are module-level singletons, so
+   * mutating them would leak across every request and could never be undone).
+   * Allow and deny are mutually exclusive: adding to one removes from the other.
    */
-  updateWhitelist(identifier: string, config: RateLimitConfig): void {
-    if (!config.whitelist) config.whitelist = []
-    if (!config.whitelist.includes(identifier)) {
-      config.whitelist.push(identifier)
-    }
+  addToWhitelist(identifier: string): void {
+    this.dynamicBlacklist.delete(identifier)
+    this.dynamicWhitelist.add(identifier)
   }
 
-  updateBlacklist(identifier: string, config: RateLimitConfig): void {
-    if (!config.blacklist) config.blacklist = []
-    if (!config.blacklist.includes(identifier)) {
-      config.blacklist.push(identifier)
-    }
+  addToBlacklist(identifier: string): void {
+    this.dynamicWhitelist.delete(identifier)
+    this.dynamicBlacklist.add(identifier)
+  }
+
+  removeFromWhitelist(identifier: string): void {
+    this.dynamicWhitelist.delete(identifier)
+  }
+
+  removeFromBlacklist(identifier: string): void {
+    this.dynamicBlacklist.delete(identifier)
   }
 
   /**
@@ -475,38 +509,36 @@ export class RateLimiter implements Disposable {
   }
 
   /**
-   * Evict records that have exceeded absolute expiration time
-   * This ensures no record persists forever regardless of activity
-   */
-  private evictExpiredRecords(): void {
-    const now = Date.now()
-    const expirationThreshold = now - ABSOLUTE_EXPIRATION_MS
-
-    for (const [key, record] of this.store.entries()) {
-      if (record.createdAt < expirationThreshold) {
-        // Record has existed longer than absolute expiration - remove it
-        this.store.delete(key)
-      }
-    }
-  }
-
-  /**
-   * Clean up expired entries and reset penalties
+   * Clean up expired entries and reset penalties.
+   *
+   * A single pass over the store collects keys to delete, then batch-deletes
+   * after iterating. Deleting during Map iteration is well-defined and safe in
+   * JS (the iterator simply skips not-yet-visited deleted keys), but the
+   * collect-then-delete idiom keeps every deletion site in this class uniform
+   * (see `evictOldestEntries`).
    */
   private cleanup(): void {
     const now = Date.now()
     const keysToDelete: string[] = []
 
-    this.evictExpiredRecords()
+    // Hard ceiling: a record is dropped once it exceeds absolute expiration,
+    // regardless of recent activity or penalties. Checked first so it takes
+    // precedence over the activity-based conditions below.
+    const absoluteExpirationThreshold = now - ABSOLUTE_EXPIRATION_MS
 
     for (const [key, record] of this.store.entries()) {
+      if (record.createdAt < absoluteExpirationThreshold) {
+        keysToDelete.push(key)
+        continue
+      }
+
       // Remove completely expired records (no activity + no penalties + empty history)
       if (now > record.resetTime && record.penalties === 0 && record.requestHistory.length === 0) {
         keysToDelete.push(key)
         continue
       }
 
-      // Remove records that haven't been active for 24 hours
+      // Remove records idle beyond the client-expiry window (inactivity sweep)
       if (now - record.lastAttempt > CLIENT_EXPIRY_TIME) {
         keysToDelete.push(key)
         continue
