@@ -162,6 +162,37 @@ const nextConfig = {
       // Legacy URL → home. /github, /linkedin, /twitter live in vercel.json
       // so they redirect at the edge before hitting the Next.js server.
       { source: '/home', destination: '/', permanent: true },
+
+      // Blog de-cannibalization: retire near-duplicate posts into one canonical
+      // pillar per topic so Google indexes a strong page instead of parking the
+      // whole cluster as "Discovered – currently not indexed". 308 (permanent)
+      // consolidates link equity into the keeper. The retired slugs are ALSO
+      // excluded from the sitemap (src/app/sitemap.ts RETIRED_BLOG_SLUGS) so we
+      // never advertise a URL that redirects.
+      // Forecast-accuracy cluster → keeper:
+      {
+        source: '/blog/stop-guessing-how-we-crushed-forecasting-errors-by-34-in-one-quarter',
+        destination: '/blog/stop-guessing-how-we-slashed-forecast-variance-by-34-in-90-days',
+        permanent: true,
+      },
+      {
+        source: '/blog/stop-guessing-how-to-slash-forecast-variance-by-60-in-90-days',
+        destination: '/blog/stop-guessing-how-we-slashed-forecast-variance-by-34-in-90-days',
+        permanent: true,
+      },
+      // Closed-lost / dead-deal reactivation cluster → keeper:
+      {
+        source:
+          '/blog/the-4-2m-you-left-on-the-table-why-your-closed-lost-deals-are-actually-sleeping-',
+        destination: '/blog/the-23-revenue-leak-you-re-ignoring-how-to-resurrect-dead-deals',
+        permanent: true,
+      },
+      {
+        source:
+          '/blog/stop-ignoring-your-dead-opportunities-how-we-revived-4-2m-in-lost-revenue-with-o',
+        destination: '/blog/the-23-revenue-leak-you-re-ignoring-how-to-resurrect-dead-deals',
+        permanent: true,
+      },
     ]
   },
 }

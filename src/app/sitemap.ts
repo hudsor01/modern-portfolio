@@ -34,6 +34,17 @@ const STATIC_LAST_MODIFIED = process.env.VERCEL_GIT_COMMIT_AUTHOR_DATE || new Da
 // emits the string as-is into the XML element value.
 const xmlSafeUrl = (url: string): string => url.replace(/&/g, '&amp;')
 
+// Slugs retired in the blog de-cannibalization cleanup. Each 308-redirects to
+// its canonical keeper in next.config.js, so they must NOT appear in the
+// sitemap — a sitemap URL that redirects is flagged "Page with redirect" in
+// Search Console. Keep in sync with next.config.js `redirects()`.
+const RETIRED_BLOG_SLUGS = new Set<string>([
+  'stop-guessing-how-we-crushed-forecasting-errors-by-34-in-one-quarter',
+  'stop-guessing-how-to-slash-forecast-variance-by-60-in-90-days',
+  'the-4-2m-you-left-on-the-table-why-your-closed-lost-deals-are-actually-sleeping-',
+  'stop-ignoring-your-dead-opportunities-how-we-revived-4-2m-in-lost-revenue-with-o',
+])
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = SITE_ORIGIN
   // fallback only for blog posts with null timestamps
@@ -152,34 +163,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // for the same set of bad rows, drowning real signal.
     const rejectedFeaturedImages: Array<{ slug: string; stored: string }> = []
 
-    blogPages = posts.map((post) => {
-      // safeFeaturedImageUrl re-validates at read time. Shared with
-      // BlogPostJsonLd so sitemap and JSON-LD can never diverge on
-      // what's considered a "safe" image URL for a given post.
-      //
-      // Omit `images` entirely when isFallback=true: the `/api/og`
-      // card is a brand placeholder, not indexable per-post imagery.
-      // Including it in <image:loc> would dilute image-search ranking
-      // (Google indexes the placeholder as the "real" blog image and
-      // serves it for image-search queries that bounce on click).
-      const featured = safeFeaturedImageUrl(post.featuredImage, {
-        title: post.title,
-        subtitle: 'Blog Post',
+    blogPages = posts
+      .filter((post) => !RETIRED_BLOG_SLUGS.has(post.slug))
+      .map((post) => {
+        // safeFeaturedImageUrl re-validates at read time. Shared with
+        // BlogPostJsonLd so sitemap and JSON-LD can never diverge on
+        // what's considered a "safe" image URL for a given post.
+        //
+        // Omit `images` entirely when isFallback=true: the `/api/og`
+        // card is a brand placeholder, not indexable per-post imagery.
+        // Including it in <image:loc> would dilute image-search ranking
+        // (Google indexes the placeholder as the "real" blog image and
+        // serves it for image-search queries that bounce on click).
+        const featured = safeFeaturedImageUrl(post.featuredImage, {
+          title: post.title,
+          subtitle: 'Blog Post',
+        })
+
+        if (featured.isFallback && post.featuredImage) {
+          rejectedFeaturedImages.push({ slug: post.slug, stored: post.featuredImage })
+        }
+
+        return {
+          url: `${baseUrl}/blog/${post.slug}`,
+          lastModified:
+            post.updatedAt?.toISOString() || post.publishedAt?.toISOString() || fallbackDate,
+          changeFrequency: 'monthly' as const,
+          priority: 0.7,
+          ...(featured.isFallback ? {} : { images: [xmlSafeUrl(featured.url)] }),
+        }
       })
-
-      if (featured.isFallback && post.featuredImage) {
-        rejectedFeaturedImages.push({ slug: post.slug, stored: post.featuredImage })
-      }
-
-      return {
-        url: `${baseUrl}/blog/${post.slug}`,
-        lastModified:
-          post.updatedAt?.toISOString() || post.publishedAt?.toISOString() || fallbackDate,
-        changeFrequency: 'monthly' as const,
-        priority: 0.7,
-        ...(featured.isFallback ? {} : { images: [xmlSafeUrl(featured.url)] }),
-      }
-    })
 
     // Distinguish 'never had a featured image' (null stored, silent
     // skip) from 'had one but it failed schema re-validation'
