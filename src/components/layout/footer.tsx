@@ -9,7 +9,12 @@ export function Footer() {
           <a
             href="https://hudsondigitalsolutions.com"
             target="_blank"
-            rel="noopener noreferrer"
+            // Intentionally `noopener` only (not `noreferrer`): this is an owned
+            // cross-promotion link to the business site, and keeping the Referer
+            // header lets Hudson Digital Solutions' analytics attribute the
+            // referral traffic from here. `noopener` still closes the
+            // window.opener security hole.
+            rel="noopener"
             className="hover:text-primary transition-colors"
           >
             Built by Hudson Digital Solutions
