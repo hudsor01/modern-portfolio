@@ -36,6 +36,7 @@ export function WebsiteJsonLd({ nonce }: { nonce?: string | null }) {
     <script
       type="application/ld+json"
       nonce={nonce ?? undefined}
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: server-generated JSON-LD escaped by safeJsonLdStringify (</script breakout prevented); Next.js official JSON-LD pattern, no user input
       dangerouslySetInnerHTML={{ __html: safeJsonLdStringify(jsonLd) }}
     />
   )

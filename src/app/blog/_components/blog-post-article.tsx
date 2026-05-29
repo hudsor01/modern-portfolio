@@ -187,6 +187,7 @@ export function BlogPostArticle({
       return (
         <div
           key={index}
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: blog HTML from trusted token-gated DB, sanitized client-side via DOMPurify
           dangerouslySetInnerHTML={{ __html: sanitizeHtml(part, DOMPURIFY_INLINE_CONFIG) }}
           className="prose prose-lg dark:prose-invert max-w-none"
         />
@@ -225,6 +226,7 @@ export function BlogPostArticle({
       {contentType === 'MARKDOWN' ? (
         renderMarkdownWithCodeBlocks(processedContent)
       ) : (
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: blog HTML from trusted token-gated DB, sanitized client-side via DOMPurify
         <div dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
       )}
     </div>

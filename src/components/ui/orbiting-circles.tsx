@@ -42,6 +42,7 @@ export function OrbitingCircles({
   const calculatedDuration = duration / speed
   return (
     <>
+      {/* biome-ignore lint/security/noDangerouslySetInnerHtml: static computed CSS keyframes, no user input */}
       <style dangerouslySetInnerHTML={{ __html: orbitKeyframes }} />
       {path && (
         <svg
