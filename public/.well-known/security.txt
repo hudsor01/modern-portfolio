@@ -1,4 +1,4 @@
-Contact: mailto:hello@richardwhudsonjr.com
+Contact: mailto:hudsor01@icloud.com
 Expires: 2027-05-05T00:00:00.000Z
 Preferred-Languages: en
 Canonical: https://richardwhudsonjr.com/.well-known/security.txt

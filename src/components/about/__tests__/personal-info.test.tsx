@@ -7,7 +7,7 @@ const fixture = {
   name: 'Richard Hudson',
   title: 'Revenue Operations Professional',
   location: 'Dallas, TX',
-  email: 'contact@richardwhudsonjr.com',
+  email: 'hudsor01@icloud.com',
   bio: 'First paragraph.\n\nSecond paragraph.',
 }
 

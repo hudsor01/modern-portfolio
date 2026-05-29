@@ -16,7 +16,7 @@ export const siteConfig: SiteConfig = {
   },
   author: {
     name: 'Richard Hudson',
-    email: 'contact@richardwhudsonjr.com',
+    email: 'hudsor01@icloud.com',
   },
 }
 

@@ -51,8 +51,8 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
             <Mail className="w-5 h-5 flex-shrink-0 text-primary" />
             <span>
               This form requires JavaScript. Please email{' '}
-              <a href="mailto:richard@richardwhudsonjr.com" className="underline font-medium">
-                richard@richardwhudsonjr.com
+              <a href="mailto:hudsor01@icloud.com" className="underline font-medium">
+                hudsor01@icloud.com
               </a>{' '}
               directly.
             </span>

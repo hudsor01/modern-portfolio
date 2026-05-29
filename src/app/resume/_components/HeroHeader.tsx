@@ -116,7 +116,7 @@ export function HeroHeader({
           <div className="bg-muted/50 rounded-xl p-6">
             <div className="flex justify-center gap-6">
               <a
-                href="mailto:hello@richardwhudsonjr.com"
+                href="mailto:hudsor01@icloud.com"
                 className="text-muted-foreground hover:text-primary transition-colors duration-200"
                 aria-label="Email"
               >

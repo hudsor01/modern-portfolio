@@ -16,13 +16,13 @@ const featuredProjects = [
     href: '/projects/revenue-operations-center',
   },
   {
-    title: 'Lead Attribution System',
+    title: 'Marketing Attribution Platform',
     description: 'Multi-touch attribution with ROI tracking',
     image: '/images/projects/lead-attribution.jpg',
     href: '/projects/lead-attribution',
   },
   {
-    title: 'Commission Optimization',
+    title: 'Commission & Incentive Optimization',
     description: 'Automated commission tracking with $240K savings',
     image: '/images/projects/commission-dashboard.jpg',
     href: '/projects/commission-optimization',
