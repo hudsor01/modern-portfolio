@@ -482,8 +482,11 @@ export class RateLimiter implements Disposable {
     const now = Date.now()
     const expirationThreshold = now - ABSOLUTE_EXPIRATION_MS
 
-    for (const [key, record] of this.store.entries()) {
-      if (record.createdAt < expirationThreshold) {
+    // Iterate over keys to safely delete entries during iteration.
+    // Mutating a Map while iterating over .entries() throws in modern JS engines.
+    for (const key of this.store.keys()) {
+      const record = this.store.get(key)
+      if (record && record.createdAt < expirationThreshold) {
         // Record has existed longer than absolute expiration - remove it
         this.store.delete(key)
       }
