@@ -171,10 +171,3 @@ export const resume: ResumeData = {
     },
   ],
 }
-
-/**
- * Helper function to get resume data
- */
-export function getResumeData(): ResumeData {
-  return resume
-}

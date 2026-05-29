@@ -1,8 +1,6 @@
 import type { LeadAttributionData } from '@/types/analytics'
 
-export function generateLeadAttributionData(
-  _baseMetrics: Map<string, number>
-): LeadAttributionData[] {
+export function generateLeadAttributionData(): LeadAttributionData[] {
   const sources = [
     { name: 'Website', traffic_quality: 0.8, cost_factor: 0.3 },
     { name: 'Referrals', traffic_quality: 0.95, cost_factor: 0.1 },

@@ -33,17 +33,6 @@ export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(...inputs))
 }
 
-export function formatProjectName(name: string): string {
-  return name
-    .split('-')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ')
-}
-
-export function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
 export const isServer = typeof window === 'undefined'
 export const isClient = !isServer
 
@@ -68,33 +57,6 @@ export function formatRelativeTime(date: string | Date): string {
   const diffInMonths = Math.floor(diffInDays / 30)
   if (diffInMonths < 12) return rtf.format(-diffInMonths, 'month')
   return rtf.format(-Math.floor(diffInMonths / 12), 'year')
-}
-
-export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
-
-export function getCurrentBreakpoint(): Breakpoint {
-  if (isServer) return 'md'
-
-  const width = window.innerWidth
-  if (width < 640) return 'xs'
-  if (width < 768) return 'sm'
-  if (width < 1024) return 'md'
-  if (width < 1280) return 'lg'
-  if (width < 1536) return 'xl'
-  return '2xl'
-}
-
-// Testable version that accepts window object for testing
-export function getCurrentBreakpointTestable(windowObj?: typeof window): Breakpoint {
-  if (!windowObj || typeof windowObj === 'undefined') return 'md'
-
-  const width = windowObj.innerWidth
-  if (width < 640) return 'xs'
-  if (width < 768) return 'sm'
-  if (width < 1024) return 'md'
-  if (width < 1280) return 'lg'
-  if (width < 1536) return 'xl'
-  return '2xl'
 }
 
 export function generateId(length = 8): string {
@@ -157,35 +119,6 @@ export function escapeRegExp(input: string): string {
   return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
-export function isInViewport(element: HTMLElement, offset = 0): boolean {
-  if (isServer) return false
-
-  const rect = element.getBoundingClientRect()
-  return (
-    rect.top <= window.innerHeight + offset &&
-    rect.bottom >= -offset &&
-    rect.left <= window.innerWidth + offset &&
-    rect.right >= -offset
-  )
-}
-
-// Testable version that accepts window object for testing
-export function isInViewportTestable(
-  element: HTMLElement,
-  offset = 0,
-  windowObj?: typeof window
-): boolean {
-  if (!windowObj || typeof windowObj === 'undefined') return false
-
-  const rect = element.getBoundingClientRect()
-  return (
-    rect.top <= windowObj.innerHeight + offset &&
-    rect.bottom >= -offset &&
-    rect.left <= windowObj.innerWidth + offset &&
-    rect.right >= -offset
-  )
-}
-
 export function createUrl(
   pathname: string,
   params: Record<string, string | number | boolean | undefined>
@@ -202,19 +135,6 @@ export type InputChangeEvent = ChangeEvent<HTMLInputElement>
 export type TextAreaChangeEvent = ChangeEvent<HTMLTextAreaElement>
 export type SelectChangeEvent = ChangeEvent<HTMLSelectElement>
 export type FormSubmitEvent = FormEvent<HTMLFormElement>
-
-// Generic data formatter with proper typing
-export interface FormattedData<T> {
-  formatted: T
-  timestamp: string
-}
-
-export function formatData<T>(data: T): FormattedData<T> {
-  return {
-    formatted: data,
-    timestamp: new Date().toISOString(),
-  }
-}
 
 /**
  * Smart merge two records intelligently

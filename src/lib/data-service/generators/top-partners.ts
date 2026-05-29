@@ -1,9 +1,6 @@
 import type { TopPartnerData } from '@/types/analytics'
 
-export function generateTopPartnersData(
-  _baseMetrics: Map<string, number>,
-  count: number = 15
-): TopPartnerData[] {
+export function generateTopPartnersData(count: number = 15): TopPartnerData[] {
   const partnerNames = [
     'Enterprise Solutions Inc',
     'Tech Innovations LLC',

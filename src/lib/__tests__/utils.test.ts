@@ -3,7 +3,6 @@ import { describe, it, expect } from 'vitest'
 import { z } from 'zod'
 import {
   cn,
-  formatProjectName,
   truncate,
   formatRelativeTime,
   generateId,
@@ -12,14 +11,10 @@ import {
   safeJsonParse,
   escapeRegExp,
   createUrl,
-  formatData,
   smartMerge,
   isServer,
   isClient,
-  delay,
   absoluteUrlTestable,
-  getCurrentBreakpointTestable,
-  isInViewportTestable,
 } from '@/lib/utils'
 
 describe('cn', () => {
@@ -34,16 +29,6 @@ describe('cn', () => {
 
   it('handles arrays/falsy values', () => {
     expect(cn('a', false && 'b', null, undefined, ['c', 'd'])).toBe('a c d')
-  })
-})
-
-describe('formatProjectName', () => {
-  it('converts kebab-case to Title Case', () => {
-    expect(formatProjectName('my-cool-project')).toBe('My Cool Project')
-  })
-
-  it('handles single word', () => {
-    expect(formatProjectName('single')).toBe('Single')
   })
 })
 
@@ -178,15 +163,6 @@ describe('createUrl', () => {
   })
 })
 
-describe('formatData', () => {
-  it('wraps data in { formatted, timestamp }', () => {
-    const r = formatData({ x: 1 })
-    expect(r.formatted).toEqual({ x: 1 })
-    expect(typeof r.timestamp).toBe('string')
-    expect(() => new Date(r.timestamp)).not.toThrow()
-  })
-})
-
 describe('smartMerge', () => {
   it('prefers remote value when local is empty', () => {
     expect(smartMerge({ a: '', b: 'local' }, { a: 'remote', b: 'remote' })).toEqual({
@@ -214,14 +190,6 @@ describe('environment flags (Node test env)', () => {
   })
 })
 
-describe('delay', () => {
-  it('resolves after the specified ms', async () => {
-    const start = Date.now()
-    await delay(20)
-    expect(Date.now() - start).toBeGreaterThanOrEqual(15)
-  })
-})
-
 describe('absoluteUrlTestable', () => {
   it('uses windowObj.location.origin when present', () => {
     const fakeWin = { location: { origin: 'https://test.com' } } as unknown as typeof window
@@ -231,36 +199,5 @@ describe('absoluteUrlTestable', () => {
   it('falls back to env / hardcoded when no window', () => {
     const r = absoluteUrlTestable('/p')
     expect(r.endsWith('/p')).toBe(true)
-  })
-})
-
-describe('getCurrentBreakpointTestable', () => {
-  it('returns md when no window', () => {
-    expect(getCurrentBreakpointTestable()).toBe('md')
-  })
-
-  it('classifies xs at 320px', () => {
-    expect(getCurrentBreakpointTestable({ innerWidth: 320 } as typeof window)).toBe('xs')
-  })
-
-  it('classifies 2xl at 1600px', () => {
-    expect(getCurrentBreakpointTestable({ innerWidth: 1600 } as typeof window)).toBe('2xl')
-  })
-})
-
-describe('isInViewportTestable', () => {
-  it('returns false without window', () => {
-    const fakeEl = {
-      getBoundingClientRect: () => ({ top: 0, bottom: 100, left: 0, right: 100 }),
-    } as unknown as HTMLElement
-    expect(isInViewportTestable(fakeEl)).toBe(false)
-  })
-
-  it('returns true when element rect is inside window', () => {
-    const fakeEl = {
-      getBoundingClientRect: () => ({ top: 10, bottom: 100, left: 10, right: 100 }),
-    } as unknown as HTMLElement
-    const fakeWin = { innerHeight: 800, innerWidth: 600 } as typeof window
-    expect(isInViewportTestable(fakeEl, 0, fakeWin)).toBe(true)
   })
 })
