@@ -475,34 +475,29 @@ export class RateLimiter implements Disposable {
   }
 
   /**
-   * Evict records that have exceeded absolute expiration time
-   * This ensures no record persists forever regardless of activity
-   */
-  private evictExpiredRecords(): void {
-    const now = Date.now()
-    const expirationThreshold = now - ABSOLUTE_EXPIRATION_MS
-
-    // Iterate over keys to safely delete entries during iteration.
-    // Mutating a Map while iterating over .entries() throws in modern JS engines.
-    for (const key of this.store.keys()) {
-      const record = this.store.get(key)
-      if (record && record.createdAt < expirationThreshold) {
-        // Record has existed longer than absolute expiration - remove it
-        this.store.delete(key)
-      }
-    }
-  }
-
-  /**
-   * Clean up expired entries and reset penalties
+   * Clean up expired entries and reset penalties.
+   *
+   * A single pass over the store collects keys to delete, then batch-deletes
+   * after iterating. Deleting during Map iteration is well-defined and safe in
+   * JS (the iterator simply skips not-yet-visited deleted keys), but the
+   * collect-then-delete idiom keeps every deletion site in this class uniform
+   * (see `enforceStoreSize`).
    */
   private cleanup(): void {
     const now = Date.now()
     const keysToDelete: string[] = []
 
-    this.evictExpiredRecords()
+    // Hard ceiling: a record is dropped once it exceeds absolute expiration,
+    // regardless of recent activity or penalties. Checked first so it takes
+    // precedence over the activity-based conditions below.
+    const absoluteExpirationThreshold = now - ABSOLUTE_EXPIRATION_MS
 
     for (const [key, record] of this.store.entries()) {
+      if (record.createdAt < absoluteExpirationThreshold) {
+        keysToDelete.push(key)
+        continue
+      }
+
       // Remove completely expired records (no activity + no penalties + empty history)
       if (now > record.resetTime && record.penalties === 0 && record.requestHistory.length === 0) {
         keysToDelete.push(key)
