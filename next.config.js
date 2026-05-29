@@ -143,7 +143,7 @@ const nextConfig = {
         // together for browsers to render the PDF in a frame.
         //
         // NOTE: this rule applies to ALL .pdf paths under /public. Only one
-        // exists today (Richard Hudson - Resume.pdf). If a future PDF
+        // exists today (Richard_Hudson_Revenue_Operations.pdf). If a future PDF
         // should NOT be framable (e.g., signed contract, gated content),
         // narrow the source to the literal résumé filename and add an
         // explicit deny rule for the new path.
