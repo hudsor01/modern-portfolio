@@ -12,7 +12,7 @@ vi.mock('@/lib/logger', () => ({
   },
 }))
 
-import { usePageAnalytics, usePageAnalyticsData } from '@/hooks/use-page-analytics'
+import { usePageAnalytics } from '@/hooks/use-page-analytics'
 
 let fetchSpy: ReturnType<typeof vi.spyOn>
 
@@ -68,19 +68,5 @@ describe('usePageAnalytics', () => {
       window.dispatchEvent(new Event('beforeunload'))
     })
     expect(beaconSpy).toHaveBeenCalled()
-  })
-})
-
-describe('usePageAnalyticsData', () => {
-  it('returns an analyticsUrl with type + slug', () => {
-    const { result } = renderHook(() => usePageAnalyticsData('blog', 'my-slug'))
-    expect(result.current.analyticsUrl).toContain('type=blog')
-    expect(result.current.analyticsUrl).toContain('slug=my-slug')
-  })
-
-  it('omits slug param when undefined', () => {
-    const { result } = renderHook(() => usePageAnalyticsData('project'))
-    expect(result.current.analyticsUrl).toContain('type=project')
-    expect(result.current.analyticsUrl).not.toContain('slug=')
   })
 })
