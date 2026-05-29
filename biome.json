@@ -48,7 +48,7 @@
         "noArrayIndexKey": "off"
       },
       "security": {
-        "noDangerouslySetInnerHtml": "off"
+        "noDangerouslySetInnerHtml": "error"
       },
       "correctness": {
         "noUnusedVariables": {

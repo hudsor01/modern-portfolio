@@ -150,6 +150,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartThemeConfig }) =>
 
   return (
     <style
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: server-generated CSS custom properties for chart theming, no user input
       dangerouslySetInnerHTML={{
         __html: Object.entries(THEMES)
           .map(
