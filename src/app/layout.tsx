@@ -39,6 +39,10 @@ const robotoMono = Roboto_Mono({
 })
 
 export const metadata: Metadata = baseMetadata
+// Next.js reads the `viewport` export from this module (iOS safe-area /
+// maximum-scale config lives in ./viewport). Re-exported here so the App
+// Router actually applies it — defining it in viewport.ts alone is a no-op.
+export { viewport } from './viewport'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const nonce = (await headers()).get('x-nonce')

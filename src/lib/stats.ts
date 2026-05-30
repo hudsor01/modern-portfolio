@@ -25,14 +25,3 @@ export const REVENUE_IMPACT_VALUE = 4.8
 export const TRANSACTION_GROWTH_VALUE = 432
 export const NETWORK_GROWTH_VALUE = 2217
 export const YEARS_EXPERIENCE_VALUE = 10
-
-/**
- * Labeled list for table-style consumers that want a default label alongside
- * each value. Consumers may override `label` for their surface.
- */
-export const HEADLINE_STATS = [
-  { key: 'revenue', value: REVENUE_IMPACT, label: 'Revenue Impact' },
-  { key: 'growth', value: TRANSACTION_GROWTH, label: 'Transaction Growth' },
-  { key: 'network', value: NETWORK_GROWTH, label: 'Network Expansion' },
-  { key: 'experience', value: YEARS_EXPERIENCE, label: 'Years Experience' },
-] as const
