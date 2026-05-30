@@ -57,7 +57,11 @@ export function buildEnhancedCSP(options: BuildCSPOptions = {}): string {
     "default-src 'self'",
     `script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com https://vitals.vercel-insights.com${isDev ? " 'unsafe-eval'" : ''}`,
     `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
-    "img-src 'self' data: blob: https: *.unsplash.com",
+    // Tightened off the bare `https:` wildcard (allowed images from any HTTPS
+    // host) to the single whitelisted remote host — matches next.config.js
+    // images.remotePatterns (images.unsplash.com only). 'self' covers /api/og
+    // + /public; data:/blob: cover Next placeholders + generated images.
+    "img-src 'self' data: blob: https://images.unsplash.com",
     "font-src 'self' https://fonts.gstatic.com",
     "connect-src 'self' https://vercel.live https://va.vercel-scripts.com https://vitals.vercel-insights.com",
     "frame-src 'self' blob:",
