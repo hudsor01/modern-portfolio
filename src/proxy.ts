@@ -12,7 +12,6 @@ export function proxy(request: NextRequest) {
       process.env,
       request.nextUrl.protocol
     ),
-    addReporting: process.env.NODE_ENV === 'production',
   })
 
   // Pass nonce downstream for JSON-LD scripts in layout.tsx

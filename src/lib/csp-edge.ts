@@ -22,14 +22,6 @@ export interface BuildCSPOptions {
    * {@link shouldEmitUpgradeInsecureRequests} — never from a client header.
    */
   emitUpgradeInsecureRequests?: boolean
-  /**
-   * True when the response should include `report-uri` / `report-to`
-   * directives pointing at the project's CSP report endpoint. Caller-driven
-   * (rather than reading `process.env.NODE_ENV` inside the function) so a
-   * single call to `buildEnhancedCSP` always produces a coherent header
-   * regardless of how its caller derived the production signal.
-   */
-  addReporting?: boolean
 }
 
 /**
@@ -60,7 +52,7 @@ export function shouldEmitUpgradeInsecureRequests(
 }
 
 export function buildEnhancedCSP(options: BuildCSPOptions = {}): string {
-  const { isDev = false, emitUpgradeInsecureRequests = false, addReporting = false } = options
+  const { isDev = false, emitUpgradeInsecureRequests = false } = options
   const directives = [
     "default-src 'self'",
     `script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com https://vitals.vercel-insights.com${isDev ? " 'unsafe-eval'" : ''}`,
@@ -79,11 +71,6 @@ export function buildEnhancedCSP(options: BuildCSPOptions = {}): string {
   // Otherwise, defer to the caller-derived emit signal.
   if (!isDev && emitUpgradeInsecureRequests) {
     directives.push('upgrade-insecure-requests')
-  }
-
-  if (addReporting) {
-    directives.push('report-uri /api/csp-report')
-    directives.push('report-to csp-endpoint')
   }
 
   return directives.join('; ')
