@@ -108,21 +108,15 @@ describe('buildEnhancedCSP', () => {
   })
 
   describe('reporting directives', () => {
-    it('omits report-uri / report-to when addReporting is false', () => {
-      const csp = buildEnhancedCSP({ addReporting: false })
+    // The CSP must NOT advertise report-uri / report-to: there is no
+    // /api/csp-report route and no Reporting-Endpoints/Report-To header
+    // declaring the group, so both directives were dead (the report endpoint
+    // 404s). Pin their absence so they can't be reintroduced without a live
+    // endpoint + reporting-group declaration.
+    it('never emits report-uri or report-to (no live report endpoint)', () => {
+      const csp = buildEnhancedCSP({ isDev: false, emitUpgradeInsecureRequests: true })
       expect(csp).not.toContain('report-uri')
       expect(csp).not.toContain('report-to')
-    })
-
-    it('emits report-uri and report-to when addReporting is true', () => {
-      const csp = buildEnhancedCSP({ addReporting: true })
-      expect(csp).toContain('report-uri /api/csp-report')
-      expect(csp).toContain('report-to csp-endpoint')
-    })
-
-    it('omits reporting by default (caller must opt in explicitly)', () => {
-      const csp = buildEnhancedCSP()
-      expect(csp).not.toContain('report-uri')
     })
   })
 })

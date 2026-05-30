@@ -68,7 +68,7 @@ const nextConfig = {
             // Explicitly disabled. The header is non-standard, removed from
             // Chrome/Edge/Firefox, and `1; mode=block` can enable reflected
             // XSS via response-splitting on legacy engines that still honor
-            // it. CSP (nonced, set in proxy.ts) is the real XSS control.
+            // it. CSP (set per-request in proxy.ts) is the real XSS control.
             // Refs: OWASP Secure Headers, MDN X-XSS-Protection.
             key: 'X-XSS-Protection',
             value: '0',
@@ -83,7 +83,9 @@ const nextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
           },
-          // CSP itself is set per-request in proxy.ts so the nonce can rotate.
+          // CSP itself is set per-request in proxy.ts (script-src uses
+          // 'unsafe-inline', not a nonce — see SECURITY.md for why a nonce is
+          // incompatible with this site's static prerendering).
         ],
       },
       {
