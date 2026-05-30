@@ -105,6 +105,14 @@ describe('buildEnhancedCSP', () => {
       const csp = buildEnhancedCSP()
       expect(csp).toContain("default-src 'self'")
     })
+
+    it('restricts img-src to the whitelisted host (no bare https: wildcard)', () => {
+      const csp = buildEnhancedCSP()
+      const imgSrc = csp.split(';').find((d) => d.trim().startsWith('img-src')) || ''
+      expect(imgSrc).toContain('https://images.unsplash.com')
+      // The bare `https:` scheme-source allowed images from ANY host — pin it gone.
+      expect(imgSrc).not.toMatch(/(^|\s)https:(\s|$)/)
+    })
   })
 
   describe('reporting directives', () => {
