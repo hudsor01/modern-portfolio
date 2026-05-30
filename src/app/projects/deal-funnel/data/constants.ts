@@ -1,10 +1,3 @@
-export const starData = {
-  situation: { phase: 'Situation', impact: 29, efficiency: 24, value: 19 },
-  task: { phase: 'Task', impact: 54, efficiency: 49, value: 44 },
-  action: { phase: 'Action', impact: 83, efficiency: 87, value: 79 },
-  result: { phase: 'Result', impact: 98, efficiency: 96, value: 94 },
-}
-
 export interface FunnelStage {
   name: string
   count: number
@@ -67,19 +60,4 @@ export const initialConversionRates: ConversionRate[] = [
     proposal_to_negotiation: 63.9,
     negotiation_to_closed: 85.4,
   },
-]
-
-export const technologies = [
-  'React 19',
-  'TypeScript',
-  'Recharts',
-  'Sales Analytics',
-  'Pipeline Management',
-  'Conversion Tracking',
-  'Velocity Analysis',
-  'Funnel Optimization',
-  'CRM Integration',
-  'Real-time Dashboards',
-  'Mobile Design',
-  'Performance Metrics',
 ]
