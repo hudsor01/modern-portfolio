@@ -64,7 +64,11 @@ Defensive controls currently in place:
 - HTTPS enforced — `NEXT_PUBLIC_SITE_URL` must be HTTPS in production
   (validated at boot in `src/lib/env-validation.ts`)
 - **HSTS**: `max-age=31536000; includeSubDomains; preload`
-- **CSP** with per-request nonces — `src/lib/csp-edge.ts`
+- **CSP** set per-request in `proxy.ts` (built by `src/lib/csp-edge.ts`):
+  `default-src 'self'`, `object-src 'self' blob:`, `base-uri 'self'`,
+  `form-action 'self'`, `frame-ancestors 'none'`, `upgrade-insecure-requests`.
+  `script-src`/`style-src` use `'unsafe-inline'` (not a nonce) — see the note
+  under [Known gaps](#known-gaps--follow-ups) for why.
 - `X-Frame-Options: DENY`
 - `X-Content-Type-Options: nosniff`
 - `Referrer-Policy: strict-origin-when-cross-origin`
@@ -129,6 +133,23 @@ These are publicly documented so reporters don't waste cycles on them:
   `/api/seed` and the blog mutation endpoints (POST/PUT/DELETE).
   `METRICS_API_TOKEN` is consumed by `/api/security/metrics`. There is no
   user-facing auth (no login, no sessions, no JWT).
+- **CSP `script-src` uses `'unsafe-inline'`** (accepted, bounded residual
+  risk). A per-request nonce is incompatible with this site's static
+  prerendering: Next.js 16 only injects a nonce when a route renders
+  dynamically, so adding one would force `/`, `/about`, `/projects`, `/resume`
+  off CDN static caching — and a nonce source in `script-src` makes browsers
+  ignore `'unsafe-inline'`, which would block Next's framework-generated inline
+  hydration scripts (`self.__next_f.push`) and break hydration on the
+  prerendered pages. `experimental.sri` (hash-based) does not cover those
+  dynamically-generated inline scripts either. The residual XSS surface is low:
+  no user-generated HTML is rendered, and inline JSON-LD is escaped via
+  `safeJsonLdStringify`. The rest of the policy (`object-src`, `base-uri`,
+  `form-action`, `frame-ancestors 'none'`, `upgrade-insecure-requests`) covers
+  clickjacking and injection-redirect vectors. CSP violation **reporting is
+  intentionally not configured** — a report sink with no triage workflow adds
+  an unauthenticated POST surface for no operational benefit on a static site.
+  Scanners that flag `'unsafe-inline'` as an ineffective CSP are reporting this
+  documented tradeoff, not a missing header (the header is present and enforced).
 
 ---
 
