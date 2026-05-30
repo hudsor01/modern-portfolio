@@ -1,12 +1,5 @@
 // Commission management static data and metrics
 
-export const starData = {
-  situation: { phase: 'Situation', impact: 25, efficiency: 20, value: 15 },
-  task: { phase: 'Task', impact: 50, efficiency: 45, value: 40 },
-  action: { phase: 'Action', impact: 80, efficiency: 85, value: 75 },
-  result: { phase: 'Result', impact: 98, efficiency: 95, value: 94 },
-}
-
 export const commissionMetrics = {
   totalCommissionPool: 254000,
   averageCommissionRate: 23.0,
@@ -105,19 +98,4 @@ export const commissionCalculationMetrics = [
   { metric: 'Calculation Accuracy', value: '99.8%', improvement: '+12%', status: 'excellent' },
   { metric: 'Dispute Rate', value: '1.2%', improvement: '-68%', status: 'excellent' },
   { metric: 'Partner Satisfaction', value: '94.7%', improvement: '+19%', status: 'excellent' },
-]
-
-export const technologies = [
-  'React 19',
-  'TypeScript',
-  'Recharts',
-  'Automated Calculations',
-  'Commission Engine',
-  'ROI Analytics',
-  'Performance Tracking',
-  'Dispute Resolution',
-  'Real-time Processing',
-  'Data Validation',
-  'Audit Trails',
-  'Business Intelligence',
 ]
