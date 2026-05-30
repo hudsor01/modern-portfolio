@@ -1,12 +1,5 @@
 // Multi-channel attribution static data and metrics
 
-export const starData = {
-  situation: { phase: 'Situation', impact: 22, efficiency: 18, value: 12 },
-  task: { phase: 'Task', impact: 48, efficiency: 42, value: 38 },
-  action: { phase: 'Action', impact: 77, efficiency: 82, value: 72 },
-  result: { phase: 'Result', impact: 96, efficiency: 94, value: 93 },
-}
-
 export const attributionMetrics = {
   totalConversions: 8247,
   attributionAccuracy: 92.4,
@@ -91,19 +84,4 @@ export const customerJourneyStages = [
   { stage: 'Intent', touchpoints: 1523, channels: 4, avgTime: 21.4, conversionRate: 68.9 },
   { stage: 'Purchase', touchpoints: 1049, channels: 3, avgTime: 28.4, conversionRate: 78.6 },
   { stage: 'Retention', touchpoints: 825, channels: 4, avgTime: 45.2, conversionRate: 89.3 },
-]
-
-export const technologies = [
-  'React 19',
-  'TypeScript',
-  'Machine Learning',
-  'Attribution Modeling',
-  'Cross-Channel Analytics',
-  'Predictive Modeling',
-  'Budget Optimization',
-  'Marketing Mix Modeling',
-  'Customer Journey Analytics',
-  'Conversion Optimization',
-  'AI-Powered Insights',
-  'Performance Analytics',
 ]

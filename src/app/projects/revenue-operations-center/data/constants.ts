@@ -1,13 +1,6 @@
 // Revenue operations center static data and metrics
 import { Activity, AlertTriangle, CheckCircle, Clock } from 'lucide-react'
 
-export const starData = {
-  situation: { phase: 'Situation', impact: 30, efficiency: 25, value: 20 },
-  task: { phase: 'Task', impact: 55, efficiency: 50, value: 45 },
-  action: { phase: 'Action', impact: 85, efficiency: 88, value: 80 },
-  result: { phase: 'Result', impact: 99, efficiency: 97, value: 95 },
-}
-
 export const revenueMetrics = {
   totalRevenue: 12847600,
   revenueGrowth: 34.2,
@@ -85,18 +78,3 @@ export const alertTypeStyles = {
   error: 'bg-destructive/20 text-destructive border-destructive/30',
   info: 'bg-primary/20 text-primary border-primary/30',
 }
-
-export const technologies = [
-  'React 19',
-  'TypeScript',
-  'Revenue Operations',
-  'Data Integration',
-  'Predictive Analytics',
-  'Process Automation',
-  'Business Intelligence',
-  'Machine Learning',
-  'ETL Pipelines',
-  'Data Governance',
-  'Workflow Orchestration',
-  'Executive Dashboards',
-]

@@ -1,10 +1,3 @@
-export const starData = {
-  situation: { phase: 'Situation', impact: 26, efficiency: 21, value: 16 },
-  task: { phase: 'Task', impact: 51, efficiency: 46, value: 41 },
-  action: { phase: 'Action', impact: 80, efficiency: 84, value: 76 },
-  result: { phase: 'Result', impact: 96, efficiency: 94, value: 92 },
-}
-
 export const cacMetrics = {
   partnerDrivenCAC: 127,
   directCAC: 289,
@@ -30,21 +23,6 @@ export const productTierEconomics = [
   { tier: 'Support ($9)', cac: 12, ltv: 43, margin: 65.8, payback: 2.1 },
 ]
 
-export const technologies = [
-  'React 19',
-  'TypeScript',
-  'Unit Economics',
-  'CAC Analysis',
-  'LTV Modeling',
-  'Cohort Analysis',
-  'Financial Modeling',
-  'Contribution Margin Analysis',
-  'Payback Period Tracking',
-  'Channel Optimization',
-  'Profitability Analysis',
-  'Business Intelligence',
-]
-
 // Unit economics progression over time (LTV, CAC, ratio trends)
 export const unitEconomicsTrendData = [
   { month: 'Jan', ltv: 534, cac: 189, ratio: 2.8, payback: 11.2 },
@@ -55,14 +33,4 @@ export const unitEconomicsTrendData = [
   { month: 'Jun', ltv: 612, cac: 161, ratio: 3.8, payback: 8.4 },
   { month: 'Jul', ltv: 618, cac: 158, ratio: 3.9, payback: 8.1 },
   { month: 'Aug', ltv: 625, cac: 156, ratio: 4.0, payback: 7.8 },
-]
-
-// Payback period by customer cohort and acquisition channel
-export const paybackPeriodData = [
-  { cohort: 'Jan 2024', certifiedPartners: 6.2, legacyPartners: 8.9, directSales: 14.2 },
-  { cohort: 'Feb 2024', certifiedPartners: 6.1, legacyPartners: 8.7, directSales: 13.8 },
-  { cohort: 'Mar 2024', certifiedPartners: 5.9, legacyPartners: 8.4, directSales: 13.1 },
-  { cohort: 'Apr 2024', certifiedPartners: 5.8, legacyPartners: 8.2, directSales: 12.7 },
-  { cohort: 'May 2024', certifiedPartners: 5.6, legacyPartners: 8.0, directSales: 12.3 },
-  { cohort: 'Jun 2024', certifiedPartners: 5.4, legacyPartners: 7.8, directSales: 11.9 },
 ]

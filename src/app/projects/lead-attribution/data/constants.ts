@@ -1,13 +1,6 @@
 import { Globe, Mail, Share2, Users, DollarSign } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
-export const starData = {
-  situation: { phase: 'Situation', impact: 25, efficiency: 21, value: 17 },
-  task: { phase: 'Task', impact: 51, efficiency: 46, value: 42 },
-  action: { phase: 'Action', impact: 79, efficiency: 84, value: 76 },
-  result: { phase: 'Result', impact: 96, efficiency: 94, value: 92 },
-}
-
 export interface LeadConversionSource {
   source: string
   conversions: number
@@ -36,19 +29,4 @@ export const monthlyTrendData = [
   { month: 'Oct', leads: 1150, conversions: 156 },
   { month: 'Nov', leads: 1280, conversions: 183 },
   { month: 'Dec', leads: 1340, conversions: 201 },
-]
-
-export const technologies = [
-  'React 19',
-  'TypeScript',
-  'Attribution Modeling',
-  'Customer Journey Mapping',
-  'Cross-Device Tracking',
-  'Conversion Analysis',
-  'Marketing Analytics',
-  'ROI Optimization',
-  'Multi-Touch Attribution',
-  'Data Visualization',
-  'Campaign Performance',
-  'Lead Scoring',
 ]
