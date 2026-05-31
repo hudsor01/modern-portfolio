@@ -76,9 +76,11 @@ export const baseMetadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  alternates: {
-    canonical: SITE_ORIGIN,
-  },
+  // No site-wide `alternates.canonical` here on purpose. A cascading canonical
+  // in root metadata makes any page that omits its own canonical silently point
+  // at the homepage — a duplicate-content footgun (it's exactly what made every
+  // page on the sister site canonicalize to its homepage). Every route sets its
+  // own canonical; a page without one correctly self-canonicalizes via Google.
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || '',
   },
