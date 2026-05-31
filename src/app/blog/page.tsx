@@ -8,6 +8,7 @@ import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-l
 import { ItemListJsonLd } from '@/components/seo/json-ld/item-list-json-ld'
 import { and, desc, eq, isNull } from 'drizzle-orm'
 import { db } from '@/lib/db'
+import { withDbRetry } from '@/lib/db-retry'
 import { blogPosts, categories as categoriesTable } from '@/db/schema'
 import { transformToBlogPostData } from '@/lib/api-blog'
 import { createContextLogger } from '@/lib/logger'
@@ -62,18 +63,20 @@ const getBlogPosts = cache(async (): Promise<BlogPostData[]> => {
   }
 
   try {
-    const posts = await db.query.blogPosts.findMany({
-      // Exclude soft-deleted posts so retired/consolidated dupes (which
-      // 308-redirect at the detail level) don't still render as index cards.
-      where: and(eq(blogPosts.status, 'PUBLISHED'), isNull(blogPosts.deletedAt)),
-      with: {
-        author: true,
-        category: true,
-        tags: { with: { tag: true } },
-      },
-      orderBy: desc(blogPosts.publishedAt),
-      limit: 50,
-    })
+    const posts = await withDbRetry(() =>
+      db.query.blogPosts.findMany({
+        // Exclude soft-deleted posts so retired/consolidated dupes (which
+        // 308-redirect at the detail level) don't still render as index cards.
+        where: and(eq(blogPosts.status, 'PUBLISHED'), isNull(blogPosts.deletedAt)),
+        with: {
+          author: true,
+          category: true,
+          tags: { with: { tag: true } },
+        },
+        orderBy: desc(blogPosts.publishedAt),
+        limit: 50,
+      })
+    )
 
     return posts.map(transformToBlogPostData)
   } catch (error) {
@@ -94,9 +97,11 @@ const getCategories = cache(async (): Promise<BlogCategoryData[]> => {
   }
 
   try {
-    const categories = await db.query.categories.findMany({
-      orderBy: desc(categoriesTable.totalViews),
-    })
+    const categories = await withDbRetry(() =>
+      db.query.categories.findMany({
+        orderBy: desc(categoriesTable.totalViews),
+      })
+    )
 
     return categories.map((cat) => ({
       id: cat.id,
