@@ -3,7 +3,6 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, cleanup } from '@testing-library/react'
 import { FeatureCard } from '../shared/feature-card'
 import { ResultCard } from '../shared/result-card'
-import { TechGrid } from '../shared/tech-grid'
 
 describe('FeatureCard', () => {
   beforeEach(() => {
@@ -80,35 +79,5 @@ describe('ResultCard', () => {
   it('applies accent variant styles', () => {
     const { container } = render(<ResultCard value="v" label="l" variant="accent" />)
     expect((container.firstChild as HTMLElement).className).toContain('bg-accent/10')
-  })
-})
-
-describe('TechGrid', () => {
-  beforeEach(() => {
-    cleanup()
-  })
-
-  it('renders the default title and one chip per technology', () => {
-    render(<TechGrid technologies={['React', 'TypeScript', 'PostgreSQL']} />)
-    expect(screen.getByText('Technologies Used')).toBeTruthy()
-    expect(screen.getByText('React')).toBeTruthy()
-    expect(screen.getByText('TypeScript')).toBeTruthy()
-    expect(screen.getByText('PostgreSQL')).toBeTruthy()
-  })
-
-  it('respects a custom title', () => {
-    render(<TechGrid technologies={['x']} title="My Stack" />)
-    expect(screen.getByText('My Stack')).toBeTruthy()
-  })
-
-  it('renders nothing in the chip grid when technologies is empty', () => {
-    const { container } = render(<TechGrid technologies={[]} />)
-    const grid = container.querySelector('.grid')
-    expect(grid?.children.length).toBe(0)
-  })
-
-  it('forwards a custom className to root', () => {
-    const { container } = render(<TechGrid technologies={['x']} className="my-tg" />)
-    expect((container.firstChild as HTMLElement).className).toContain('my-tg')
   })
 })

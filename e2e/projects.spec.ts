@@ -82,6 +82,12 @@ test.describe('Projects Listing Page', () => {
     // Wait for page to be interactive
     await page.waitForTimeout(1000)
 
+    const projectCards = page.locator('article, [class*="card"], [class*="project"]')
+    const initialCount = await projectCards.count()
+    // Baseline: the grid renders real projects (real assertion even if the
+    // category UI is absent in this environment).
+    expect(initialCount).toBeGreaterThan(0)
+
     // Find category select/dropdown trigger
     const categoryTrigger = page.locator('button').filter({ hasText: /categories|all/i }).first()
 
@@ -99,11 +105,17 @@ test.describe('Projects Listing Page', () => {
         // Click first non-"all" option
         await options.nth(1).click()
         await page.waitForTimeout(500)
+
+        // nuqs makes the URL the source of truth — selecting a category writes
+        // ?category=… (same contract the search test relies on).
+        await expect(page).toHaveURL(/[?&]category=/)
+
+        // Filtering narrows (or keeps) the set, never errors it away.
+        const filteredCount = await projectCards.count()
+        expect(filteredCount).toBeGreaterThan(0)
+        expect(filteredCount).toBeLessThanOrEqual(initialCount)
       }
     }
-
-    // Test passes if we get here - filter UI is present and interactive
-    expect(true).toBe(true)
   })
 
   test('shows "no projects" message when search has no results', async ({ page }) => {
