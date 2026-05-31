@@ -148,33 +148,6 @@ export interface KeywordAnalysis {
 }
 
 // ============================================================================
-// TYPE GUARDS - Runtime validation
-// ============================================================================
-
-// Helper to check if value is a non-null object with required string fields
-function hasStringFields(value: unknown, fields: string[]): boolean {
-  if (typeof value !== 'object' || value === null) return false
-  const obj = value as Record<string, unknown>
-  return fields.every((field) => field in obj && typeof obj[field] === 'string')
-}
-
-export function isBlogPost(value: unknown): value is BlogPost {
-  return hasStringFields(value, ['id', 'title', 'content']) && 'status' in (value as object)
-}
-
-export function isAuthor(value: unknown): value is Author {
-  return hasStringFields(value, ['id', 'name', 'email', 'slug'])
-}
-
-export function isCategory(value: unknown): value is Category {
-  return hasStringFields(value, ['id', 'name', 'slug'])
-}
-
-export function isTag(value: unknown): value is Tag {
-  return hasStringFields(value, ['id', 'name', 'slug'])
-}
-
-// ============================================================================
 // COMMENT TYPES - Not in Prisma schema
 // ============================================================================
 

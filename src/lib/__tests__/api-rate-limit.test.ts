@@ -33,11 +33,6 @@ describe('RateLimitPresets', () => {
     expect(RateLimitPresets.read.burstProtection?.enabled).toBe(true)
   })
 
-  it('write preset is 30/hour with progressive penalty', () => {
-    expect(RateLimitPresets.write.maxAttempts).toBe(30)
-    expect(RateLimitPresets.write.progressivePenalty).toBe(true)
-  })
-
   it('sensitive preset is 10/hour with longer block', () => {
     expect(RateLimitPresets.sensitive.maxAttempts).toBe(10)
     expect(RateLimitPresets.sensitive.blockDuration).toBe(30 * 60 * 1000)

@@ -4,8 +4,6 @@
  */
 
 import type { NextRequest } from 'next/server'
-import { logger } from '@/lib/logger'
-import type { RequestMetadata } from '@/types/api'
 
 // ============================================================================
 // CLIENT IDENTIFICATION
@@ -46,46 +44,4 @@ export function getClientIdentifierFromHeaders(headers: HeaderGetter): string {
  */
 export function getClientIdentifier(request: NextRequest | Request): string {
   return getClientIdentifierFromHeaders(request.headers)
-}
-
-// ============================================================================
-// REQUEST METADATA
-// ============================================================================
-
-/**
- * Extract request metadata for logging and analytics
- */
-export function getRequestMetadata(request: NextRequest | Request): RequestMetadata {
-  const headers = request.headers
-
-  return {
-    userAgent: headers.get('user-agent') || undefined,
-    ip: getClientIdentifier(request).split(':')[0],
-    path: 'nextUrl' in request ? (request as NextRequest).nextUrl.pathname : undefined,
-    timestamp: Date.now(),
-  }
-}
-
-// ============================================================================
-// BODY PARSING
-// ============================================================================
-
-/**
- * Parse request body with error handling
- */
-export async function parseRequestBody(request: NextRequest | Request): Promise<unknown> {
-  try {
-    const contentType = request.headers.get('content-type')
-
-    if (!contentType?.includes('application/json')) {
-      throw new Error('Content-Type must be application/json')
-    }
-
-    return await request.json()
-  } catch (error) {
-    logger.warn('Failed to parse request body', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-    })
-    throw new Error('Invalid JSON in request body', { cause: error })
-  }
 }

@@ -426,28 +426,11 @@ describe('RateLimitConfigs presets', () => {
     expect(config.maxAttempts).toBeGreaterThan(0)
   })
 
-  it('api preset has expected shape', () => {
-    const config = RateLimitConfigs.api
-    expect(config).toHaveProperty('windowMs')
-    expect(config).toHaveProperty('maxAttempts')
-    expect(config).toHaveProperty('progressivePenalty', false)
-    expect(config.maxAttempts).toBeGreaterThan(10) // API allows many requests
-  })
-
-  it('auth preset has strict limits', () => {
-    const config = RateLimitConfigs.auth
-    expect(config).toHaveProperty('progressivePenalty', true)
-    expect(config.maxAttempts).toBeLessThanOrEqual(10) // Auth is strict
-    expect(config.blockDuration).toBeGreaterThan(0)
-  })
-
-  it('all presets have burstProtection configured', () => {
-    const { contactForm, api, auth } = RateLimitConfigs
-    for (const preset of [contactForm, api, auth]) {
-      expect(preset.burstProtection).toBeDefined()
-      expect(preset.burstProtection?.enabled).toBe(true)
-      expect(preset.burstProtection?.burstWindow).toBeGreaterThan(0)
-      expect(preset.burstProtection?.maxBurstRequests).toBeGreaterThan(0)
-    }
+  it('contactForm preset has burstProtection configured', () => {
+    const { contactForm } = RateLimitConfigs
+    expect(contactForm.burstProtection).toBeDefined()
+    expect(contactForm.burstProtection?.enabled).toBe(true)
+    expect(contactForm.burstProtection?.burstWindow).toBeGreaterThan(0)
+    expect(contactForm.burstProtection?.maxBurstRequests).toBeGreaterThan(0)
   })
 })

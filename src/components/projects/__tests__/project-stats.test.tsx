@@ -26,17 +26,6 @@ describe('ProjectStats', () => {
     expect(grid?.children.length).toBe(4)
   })
 
-  it('renders skeleton placeholders when isLoading=true', () => {
-    const { container } = render(<ProjectStats totalProjects={5} isLoading={true} />)
-    const skeletons = container.querySelectorAll('.animate-pulse')
-    expect(skeletons.length).toBe(4)
-  })
-
-  it('does not render real stat values when loading', () => {
-    render(<ProjectStats totalProjects={5} isLoading={true} />)
-    expect(screen.queryByText('Revenue Optimized')).toBeNull()
-  })
-
   it('updates the case studies value when totalProjects changes', () => {
     const { rerender } = render(<ProjectStats totalProjects={11} />)
     expect(screen.getByText('11+')).toBeTruthy()

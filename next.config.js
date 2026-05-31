@@ -24,16 +24,7 @@ const nextConfig = {
     // Tree-shake large icon/chart libraries on first import. Each named import
     // becomes its own subpath so the bundle only pulls in what we use, not the
     // whole index. Big first-load TBT win for blog and project pages.
-    optimizePackageImports: [
-      'lucide-react',
-      'recharts',
-      'radix-ui',
-      '@tanstack/react-form',
-      '@tanstack/react-table',
-      'cmdk',
-      'date-fns',
-      'motion',
-    ],
+    optimizePackageImports: ['lucide-react', 'recharts', 'radix-ui', '@tanstack/react-form', 'motion'],
   },
 
   images: {
@@ -113,12 +104,6 @@ const nextConfig = {
         headers: [
           { key: 'Access-Control-Allow-Origin', value: corsOrigin },
           { key: 'Vary', value: 'Origin' },
-        ],
-      },
-      {
-        source: '/static/:path*',
-        headers: [
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
       {

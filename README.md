@@ -84,7 +84,6 @@ Required at runtime:
 Optional / situational:
 
 - `NEXT_PUBLIC_SITE_URL` — must be HTTPS in production
-- `ALLOWED_ORIGINS` — CSV; appended to the CORS allowlist
 - `ADMIN_API_TOKEN` — required for `POST /api/seed` (Bearer token, ≥32 chars)
 - `METRICS_API_TOKEN` — required for `GET /api/security/metrics` (`X-Metrics-Token` header, ≥32 chars)
 - `ALLOW_SEED_IN_PRODUCTION` — `'true'` to enable `/api/seed` in prod

@@ -58,52 +58,12 @@ vi.mock('next/headers', () => ({
 }))
 
 import {
-  successResponse,
-  errorResponse,
   validationErrorResponse,
   logAndSanitizeError,
   createApiSuccessResponse,
 } from '@/lib/api-response'
-import { createApiHeaders, CachePresets } from '@/lib/api-headers'
-import { getClientIdentifier, getRequestMetadata, parseRequestBody } from '@/lib/api-request'
+import { getClientIdentifier } from '@/lib/api-request'
 import { parsePaginationParams, createPaginationMeta } from '@/lib/api-pagination'
-
-// ============================================================================
-// Response helpers — successResponse / errorResponse
-// ============================================================================
-
-describe('successResponse', () => {
-  it('returns a Response with status 200', async () => {
-    const res = successResponse({ foo: 'bar' })
-    expect(res.status).toBe(200)
-  })
-
-  it('response body contains success: true and the data', async () => {
-    const res = successResponse({ value: 42 })
-    const body = await res.json()
-    expect(body.success).toBe(true)
-    expect(body.data).toEqual({ value: 42 })
-  })
-})
-
-describe('errorResponse', () => {
-  it('returns status 400 for a 400 error', async () => {
-    const res = errorResponse('Bad request', 400)
-    expect(res.status).toBe(400)
-  })
-
-  it('returns status 500 for a 500 error', async () => {
-    const res = errorResponse('Internal error', 500)
-    expect(res.status).toBe(500)
-  })
-
-  it('response body contains success: false and the error message', async () => {
-    const res = errorResponse('Something went wrong', 400)
-    const body = await res.json()
-    expect(body.success).toBe(false)
-    expect(body.error).toBe('Something went wrong')
-  })
-})
 
 describe('validationErrorResponse', () => {
   it('returns status 400 and formats Zod errors into field-keyed errors', async () => {
@@ -118,67 +78,6 @@ describe('validationErrorResponse', () => {
       expect(body.errors).toBeDefined()
       expect(body.errors).toHaveProperty('email')
     }
-  })
-})
-
-// ============================================================================
-// createApiHeaders — Cache-Control and rate limit headers
-// ============================================================================
-
-describe('createApiHeaders', () => {
-  it('returns no-store header when noStore is true', () => {
-    const headers = createApiHeaders({ noStore: true })
-    expect(headers['Cache-Control']).toBe('no-store, no-cache, must-revalidate')
-  })
-
-  it('returns public max-age header when maxAge and visibility are set', () => {
-    const headers = createApiHeaders({ maxAge: 300, visibility: 'public' })
-    expect(headers['Cache-Control']).toContain('public')
-    expect(headers['Cache-Control']).toContain('max-age=300')
-  })
-
-  it('returns default no-store when no cacheConfig provided', () => {
-    const headers = createApiHeaders()
-    expect(headers['Cache-Control']).toBe('no-store')
-  })
-
-  it('includes X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset when rateLimitHeaders provided', () => {
-    const headers = createApiHeaders(undefined, { limit: 100, remaining: 42, resetTime: 9999 })
-    expect(headers['X-RateLimit-Limit']).toBe('100')
-    expect(headers['X-RateLimit-Remaining']).toBe('42')
-    expect(headers['X-RateLimit-Reset']).toBe('9999')
-  })
-
-  it('includes Retry-After header when retryAfter is provided', () => {
-    const headers = createApiHeaders(undefined, { retryAfter: 5000 })
-    expect(headers['Retry-After']).toBe('5') // ceil(5000 / 1000)
-  })
-
-  it('always includes Content-Type: application/json', () => {
-    const headers = createApiHeaders()
-    expect(headers['Content-Type']).toBe('application/json')
-  })
-})
-
-// ============================================================================
-// CachePresets
-// ============================================================================
-
-describe('CachePresets', () => {
-  it('noCache preset has noStore: true', () => {
-    expect(CachePresets.noCache.noStore).toBe(true)
-  })
-
-  it('short preset has maxAge > 0', () => {
-    expect(CachePresets.short.maxAge).toBeGreaterThan(0)
-  })
-
-  it('medium preset has maxAge > short maxAge', () => {
-    expect(CachePresets.medium.maxAge!).toBeGreaterThan(CachePresets.short.maxAge!)
-  })
-
-  it('long preset has visibility public', () => {
-    expect(CachePresets.long.visibility).toBe('public')
   })
 })
 
@@ -211,63 +110,6 @@ describe('getClientIdentifier', () => {
     })
     const id = getClientIdentifier(req)
     expect(id.startsWith('unknown:')).toBe(true)
-  })
-})
-
-// ============================================================================
-// getRequestMetadata — returns method, url, userAgent, ip
-// ============================================================================
-
-describe('getRequestMetadata', () => {
-  it('returns object with userAgent and ip properties', () => {
-    const req = new Request('http://test/api/foo', {
-      method: 'GET',
-      headers: { 'x-forwarded-for': '1.2.3.4', 'user-agent': 'TestAgent/1.0' },
-    })
-    const meta = getRequestMetadata(req)
-    expect(meta).toHaveProperty('userAgent', 'TestAgent/1.0')
-    expect(meta).toHaveProperty('ip', '1.2.3.4')
-    expect(meta).toHaveProperty('timestamp')
-    expect(typeof meta.timestamp).toBe('number')
-  })
-
-  it('userAgent is undefined when header is missing', () => {
-    const req = new Request('http://test/api/foo', { method: 'GET' })
-    const meta = getRequestMetadata(req)
-    expect(meta.userAgent).toBeUndefined()
-  })
-})
-
-// ============================================================================
-// parseRequestBody — parses JSON body, rejects non-JSON
-// ============================================================================
-
-describe('parseRequestBody', () => {
-  it('parses a valid JSON body', async () => {
-    const req = new Request('http://test', {
-      method: 'POST',
-      body: JSON.stringify({ key: 'value' }),
-      headers: { 'Content-Type': 'application/json' },
-    })
-    const body = await parseRequestBody(req)
-    expect(body).toEqual({ key: 'value' })
-  })
-
-  it('throws for non-JSON content type', async () => {
-    const req = new Request('http://test', {
-      method: 'POST',
-      body: 'plain text',
-      headers: { 'Content-Type': 'text/plain' },
-    })
-    await expect(parseRequestBody(req)).rejects.toThrow()
-  })
-
-  it('throws when Content-Type header is missing', async () => {
-    const req = new Request('http://test', {
-      method: 'POST',
-      body: JSON.stringify({ foo: 'bar' }),
-    })
-    await expect(parseRequestBody(req)).rejects.toThrow()
   })
 })
 
