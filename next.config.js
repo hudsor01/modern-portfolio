@@ -195,6 +195,16 @@ const nextConfig = {
         destination: '/blog/the-23-revenue-leak-you-re-ignoring-how-to-resurrect-dead-deals',
         permanent: true,
       },
+      // Renamed RevOps pillar guide. Google indexed/ranked the OLD slug (~pos 40)
+      // but the post now lives at /blog/complete-guide-revenue-operations-strategy;
+      // the orphaned old slug 404s (and intermittently 500s when the not-found
+      // path hits a Neon hiccup), so GSC rejected its indexing request. 308 to
+      // preserve the existing ranking equity and stop the error.
+      {
+        source: '/blog/revenue-operations-best-practices-complete-guide',
+        destination: '/blog/complete-guide-revenue-operations-strategy',
+        permanent: true,
+      },
     ]
   },
 }
