@@ -79,15 +79,6 @@ export interface ConnectionInfo {
   saveData?: boolean
 }
 
-export const WEB_VITALS_THRESHOLDS = {
-  CLS: { good: 0.1, poor: 0.25 },
-  FID: { good: 100, poor: 300 },
-  FCP: { good: 1800, poor: 3000 },
-  LCP: { good: 2500, poor: 4000 },
-  TTFB: { good: 800, poor: 1800 },
-  INP: { good: 200, poor: 500 },
-} as const
-
 export interface AnalyticsStorage {
   store(data: EnhancedWebVitalsData): Promise<void>
   query(filters: AnalyticsQueryFilters): Promise<AnalyticsQueryResult[]>
