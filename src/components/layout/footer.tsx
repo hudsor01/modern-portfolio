@@ -24,6 +24,7 @@ const FOOTER_SECTIONS: ReadonlyArray<{
       { label: 'All articles', href: '/blog' },
       { label: 'RevOps insights', href: '/blog/category/revenue-operations' },
       { label: 'Pipeline coverage calculator', href: '/tools/pipeline-coverage-calculator' },
+      { label: 'RevOps maturity scorecard', href: '/tools/revops-maturity-scorecard' },
     ],
   },
   {
