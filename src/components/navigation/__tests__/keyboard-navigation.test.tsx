@@ -1,12 +1,7 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import {
-  useKeyboardNavigation,
-  useFocusManagement,
-  useAccessibilityAnnouncer,
-  useRovingTabindex,
-} from '../keyboard-navigation'
+import { useKeyboardNavigation } from '../keyboard-navigation'
 
 function makeKeyboardEvent(key: string, opts: Partial<KeyboardEventInit> = {}) {
   // React.KeyboardEvent shape — only the bits the hook reads.
@@ -112,61 +107,5 @@ describe('useKeyboardNavigation', () => {
     const { result } = renderHook(() => useKeyboardNavigation({}))
     const e = makeKeyboardEvent('Enter')
     expect(() => act(() => result.current.handleKeyDown(e))).not.toThrow()
-  })
-})
-
-describe('useAccessibilityAnnouncer', () => {
-  it('creates an aria-live region attached to document.body', () => {
-    renderHook(() => useAccessibilityAnnouncer({ politeness: 'polite' }))
-    const live = document.querySelector('[aria-live="polite"]')
-    expect(live).toBeTruthy()
-  })
-
-  it('announce() writes textContent into the live region', () => {
-    const { result } = renderHook(() => useAccessibilityAnnouncer())
-    act(() => result.current.announce('hello world'))
-    const live = document.querySelector('[aria-live="polite"]')
-    expect(live?.textContent).toBe('hello world')
-  })
-
-  it('removes the live region on unmount', () => {
-    const { unmount } = renderHook(() => useAccessibilityAnnouncer())
-    expect(document.querySelector('[aria-live]')).toBeTruthy()
-    unmount()
-    expect(document.querySelector('[aria-live]')).toBeNull()
-  })
-})
-
-describe('useFocusManagement', () => {
-  it('exposes containerRef + focusFirst + focusLast', () => {
-    const { result } = renderHook(() => useFocusManagement())
-    expect(result.current.containerRef).toBeDefined()
-    expect(typeof result.current.focusFirst).toBe('function')
-    expect(typeof result.current.focusLast).toBe('function')
-    expect(typeof result.current.handleKeyDown).toBe('function')
-  })
-})
-
-describe('useRovingTabindex', () => {
-  it('exposes activeIndex starting at defaultIndex', () => {
-    const { result } = renderHook(() => useRovingTabindex({ defaultIndex: 2 }))
-    expect(result.current.activeIndex).toBe(2)
-  })
-
-  it('moveToIndex updates the active index (with looping)', () => {
-    const { result } = renderHook(() => useRovingTabindex({ loop: true }))
-    // Register two items so moveToIndex has bounds
-    const a = document.createElement('button')
-    const b = document.createElement('button')
-    document.body.appendChild(a)
-    document.body.appendChild(b)
-    act(() => {
-      result.current.registerItem(a, 0)
-      result.current.registerItem(b, 1)
-    })
-    act(() => result.current.moveToIndex(1))
-    expect(result.current.activeIndex).toBe(1)
-    act(() => result.current.moveToIndex(2)) // loops to 0
-    expect(result.current.activeIndex).toBe(0)
   })
 })

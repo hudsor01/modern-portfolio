@@ -273,31 +273,3 @@ export function BlogCategoryJsonLd({
 
   return <JsonLdScript json={categorySchema} nonce={nonce} />
 }
-
-/**
- * Blog FAQ JSON-LD Schema
- * For posts that contain FAQ sections
- */
-interface BlogFAQJsonLdProps {
-  faqs: Array<{
-    question: string
-    answer: string
-  }>
-}
-
-export function BlogFAQJsonLd({ faqs, nonce }: BlogFAQJsonLdProps & { nonce?: string | null }) {
-  const faqSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqs.map((faq) => ({
-      '@type': 'Question',
-      name: faq.question,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: faq.answer,
-      },
-    })),
-  }
-
-  return <JsonLdScript json={faqSchema} nonce={nonce} />
-}

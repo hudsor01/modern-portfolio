@@ -2,12 +2,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, cleanup } from '@testing-library/react'
 import { TrendingUp, BarChart3, DollarSign, Target } from 'lucide-react'
-import {
-  MetricsGrid,
-  createMetricGridConfig,
-  metricGridPresets,
-  metricGridBreakpoints,
-} from '../metrics-grid'
+import { MetricsGrid } from '../metrics-grid'
 import type { MetricConfig } from '@/types/design-system'
 
 const sampleMetrics: MetricConfig[] = [
@@ -73,40 +68,5 @@ describe('MetricsGrid', () => {
     render(<MetricsGrid metrics={sampleMetrics} className="my-grid-custom" />)
     const grid = screen.getByTestId('metrics-grid')
     expect(grid.className).toContain('my-grid-custom')
-  })
-})
-
-describe('createMetricGridConfig', () => {
-  it('returns a config with default columns=3', () => {
-    const cfg = createMetricGridConfig(sampleMetrics)
-    expect(cfg.metrics).toBe(sampleMetrics)
-    expect(cfg.columns).toBe(3)
-    expect(cfg.loading).toBe(false)
-  })
-
-  it('respects user-supplied options', () => {
-    const cfg = createMetricGridConfig(sampleMetrics, {
-      columns: 4,
-      loading: true,
-      className: 'foo',
-    })
-    expect(cfg.columns).toBe(4)
-    expect(cfg.loading).toBe(true)
-    expect(cfg.className).toBe('foo')
-  })
-})
-
-describe('metricGridPresets / breakpoints', () => {
-  it('exposes compact / standard / expanded presets', () => {
-    expect(metricGridPresets.compact.columns).toBe(2)
-    expect(metricGridPresets.standard.columns).toBe(3)
-    expect(metricGridPresets.expanded.columns).toBe(4)
-  })
-
-  it('exposes responsive breakpoint utilities', () => {
-    expect(metricGridBreakpoints.mobile).toBe('grid-cols-1')
-    expect(metricGridBreakpoints.tablet).toBe('md:grid-cols-2')
-    expect(metricGridBreakpoints.desktop).toBe('lg:grid-cols-3')
-    expect(metricGridBreakpoints.wide).toBe('xl:grid-cols-4')
   })
 })
