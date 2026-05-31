@@ -95,6 +95,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.8,
     },
+    {
+      url: `${baseUrl}/tools/revops-maturity-scorecard`,
+      lastModified: staticLastModified,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
   ]
 
   // All project pages (complete list).
