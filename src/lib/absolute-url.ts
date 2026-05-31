@@ -18,10 +18,10 @@ export const SITE_ORIGIN = 'https://richardwhudsonjr.com'
  * Coerce a value into an absolute URL rooted at `SITE_ORIGIN`. Idempotent:
  * already-absolute `http://` or `https://` URLs pass through unchanged.
  *
- * Named `canonicalUrl` (not `absoluteUrl`) to avoid colliding with the
- * env-aware `absoluteUrl()` in `src/lib/utils.ts`, which exists for
- * client-side link building and uses `window.location.origin` /
- * `NEXT_PUBLIC_SITE_URL`. This one is pinned to prod by design.
+ * Named `canonicalUrl` to distinguish it from the env-aware
+ * `absoluteUrlTestable()` in `src/lib/utils.ts`, which builds client-side
+ * links from `window.location.origin` / `NEXT_PUBLIC_SITE_URL`. This one is
+ * pinned to prod (`SITE_ORIGIN`) by design.
  *
  * Use this anywhere a value of mixed provenance (DB field, function
  * argument) is rendered into JSON-LD, OG `url`, sitemap `<loc>`, or

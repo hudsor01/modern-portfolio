@@ -1,6 +1,6 @@
 /**
  * API Request Utilities — Canonical request parsing
- * Single source of truth for getClientIdentifier, getRequestMetadata, parseRequestBody.
+ * Single source of truth for getClientIdentifier / getClientIdentifierFromHeaders.
  */
 
 import type { NextRequest } from 'next/server'
@@ -40,7 +40,7 @@ export function getClientIdentifierFromHeaders(headers: HeaderGetter): string {
 
 /**
  * Extract client identifier from a Request-like object for rate limiting.
- * Canonical implementation — replaces all duplicates in api-utils.ts and rate-limiter/helpers.ts.
+ * Canonical implementation — the single source of truth for client identification.
  */
 export function getClientIdentifier(request: NextRequest | Request): string {
   return getClientIdentifierFromHeaders(request.headers)
