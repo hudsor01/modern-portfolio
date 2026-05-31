@@ -4,20 +4,8 @@ import { twMerge } from 'tailwind-merge'
 import type { z } from 'zod'
 import type { ChangeEvent, FormEvent } from 'react'
 
-// Create a client-safe absoluteUrl function
-export function absoluteUrl(path: string): string {
-  // Use validated site URL in production, dynamic host in development
-  const siteUrl =
-    typeof window !== 'undefined'
-      ? window.location.origin
-      : process.env.NEXT_PUBLIC_SITE_URL ||
-        process.env.NEXT_PUBLIC_VERCEL_URL ||
-        'https://richardwhudsonjr.com'
-
-  return `${siteUrl}${path}`
-}
-
-// Testable version that accepts window object for testing
+// Client-safe absolute-URL builder. Accepts an injectable window for testing;
+// production/server callers omit it and fall back to the validated site URL.
 export function absoluteUrlTestable(path: string, windowObj?: typeof window): string {
   const siteUrl =
     windowObj && typeof windowObj !== 'undefined'

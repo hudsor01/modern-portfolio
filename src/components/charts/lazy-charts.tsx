@@ -90,38 +90,6 @@ export const LazyRadarChart = dynamic(() => import('recharts').then((mod) => mod
 })
 
 /**
- * Lazy-loaded RadialBarChart
- */
-export const LazyRadialBarChart = dynamic(
-  () => import('recharts').then((mod) => mod.RadialBarChart),
-  {
-    ssr: false,
-    loading: () => <ChartSkeletonSmall />,
-  }
-)
-
-/**
- * Lazy-loaded FunnelChart
- */
-export const LazyFunnelChart = dynamic(() => import('recharts').then((mod) => mod.FunnelChart), {
-  ssr: false,
-  loading: () => <ChartSkeleton />,
-})
-
-/**
- * Lazy-loaded Treemap
- * Using proper type definition for Treemap component
- */
-export const LazyTreemap = dynamic(
-  () =>
-    import('recharts').then((mod) => mod.Treemap as React.ComponentType<Record<string, unknown>>),
-  {
-    ssr: false,
-    loading: () => <ChartSkeleton />,
-  }
-)
-
-/**
  * Lazy-loaded ScatterChart
  */
 export const LazyScatterChart = dynamic(() => import('recharts').then((mod) => mod.ScatterChart), {
@@ -133,7 +101,7 @@ export const LazyScatterChart = dynamic(() => import('recharts').then((mod) => m
 // Skeleton Export
 // ============================================================================
 
-export { ChartSkeleton, ChartSkeletonSmall, ChartSkeletonLarge }
+export { ChartSkeleton }
 
 // ============================================================================
 // Helper Components (consolidated from chart-components.tsx)

@@ -38,5 +38,3 @@ export const navConfig = {
     ],
   },
 }
-
-export default siteConfig

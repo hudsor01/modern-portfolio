@@ -11,7 +11,6 @@ import {
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb'
 import { cn } from '@/lib/utils'
-import { useKeyboardNavigation } from './keyboard-navigation'
 import type { NavigationBreadcrumbsProps } from '@/types/design-system'
 
 /**
@@ -32,14 +31,6 @@ export const NavigationBreadcrumbs = React.forwardRef<HTMLElement, NavigationBre
     },
     ref
   ) => {
-    // Enhanced keyboard navigation for breadcrumb links
-    const { handleKeyDown } = useKeyboardNavigation({
-      onEnter: () => {
-        // Let default link behavior work for breadcrumbs
-      },
-      preventDefault: false, // Let default link behavior work
-    })
-
     // Prepare breadcrumb items with optional home item
     const breadcrumbItems = React.useMemo(() => {
       const allItems = showHome ? [{ label: homeLabel, href: homeHref }, ...items] : items
@@ -75,7 +66,6 @@ export const NavigationBreadcrumbs = React.forwardRef<HTMLElement, NavigationBre
                       <Link
                         href={item.href}
                         className="hover:text-foreground transition-colors duration-150 ease-out focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-1 rounded-sm"
-                        onKeyDown={handleKeyDown}
                         aria-label={`Navigate to ${item.label}`}
                       >
                         {item.label}

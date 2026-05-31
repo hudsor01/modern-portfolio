@@ -251,8 +251,12 @@ async function seedCategories(): Promise<Category[]> {
 
   const created: Category[] = []
 
-  // Create root categories first
-  const rootCategories = SAMPLE_CATEGORIES.filter((cat) => !cat.parentId)
+  // Create root categories first. Subcategories declare an explicit
+  // `parentId: null` key, so `!cat.parentId` would match them too (`!null`
+  // is true) and double-insert them here AND in the subcategory pass below.
+  // Gate on key PRESENCE — the exact inverse of the subcategory filter — so
+  // the two passes are mutually exclusive.
+  const rootCategories = SAMPLE_CATEGORIES.filter((cat) => !('parentId' in cat))
   for (const categoryData of rootCategories) {
     const { parentId: _parentId, ...data } = categoryData
     const [category] = await db
@@ -676,11 +680,15 @@ Success with sales technology requires strategic planning, careful implementatio
   const template = contentTemplates[category] ?? contentTemplates['revenue-operations'] ?? ''
   const content = template.trim()
 
-  // Generate excerpt from first paragraph
+  // Generate excerpt from first substantive paragraph. NOTE: `+` binds tighter
+  // than `||`, so the old `found?.substring(0,200) + '...' || fallback` produced
+  // the literal string "undefined..." (which is truthy) whenever no paragraph
+  // matched — the fallback was unreachable. Branch explicitly instead.
   const paragraphs = content.split('\n\n')
-  const excerpt =
-    paragraphs.find((p) => p.length > 100 && !p.startsWith('#'))?.substring(0, 200) + '...' ||
-    `Comprehensive guide to ${title.toLowerCase()}. Learn key strategies, best practices, and implementation techniques.`
+  const firstParagraph = paragraphs.find((p) => p.length > 100 && !p.startsWith('#'))
+  const excerpt = firstParagraph
+    ? `${firstParagraph.substring(0, 200)}...`
+    : `Comprehensive guide to ${title.toLowerCase()}. Learn key strategies, best practices, and implementation techniques.`
 
   return { content, excerpt }
 }

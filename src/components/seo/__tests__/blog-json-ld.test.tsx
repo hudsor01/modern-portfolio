@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, cleanup } from '@testing-library/react'
-import { BlogJsonLd, BlogPostJsonLd, BlogCategoryJsonLd, BlogFAQJsonLd } from '../blog-json-ld'
+import { BlogJsonLd, BlogPostJsonLd, BlogCategoryJsonLd } from '../blog-json-ld'
 import type { BlogPostData } from '@/types/api'
 
 describe('BlogJsonLd', () => {
@@ -119,25 +119,5 @@ describe('BlogCategoryJsonLd', () => {
     expect(parsed['@type']).toBe('CollectionPage')
     expect(parsed.url).toBe('https://richardwhudsonjr.com/blog/category/revops')
     expect(parsed.mainEntity.numberOfItems).toBe(5)
-  })
-})
-
-describe('BlogFAQJsonLd', () => {
-  beforeEach(() => {
-    cleanup()
-  })
-
-  it('renders an FAQPage with one Question per faq', () => {
-    const faqs = [
-      { question: 'Q1?', answer: 'A1.' },
-      { question: 'Q2?', answer: 'A2.' },
-    ]
-    const { container } = render(<BlogFAQJsonLd faqs={faqs} />)
-    const script = container.querySelector('script')
-    const parsed = JSON.parse(script!.innerHTML)
-    expect(parsed['@type']).toBe('FAQPage')
-    expect(parsed.mainEntity.length).toBe(2)
-    expect(parsed.mainEntity[0]['@type']).toBe('Question')
-    expect(parsed.mainEntity[0].acceptedAnswer.text).toBe('A1.')
   })
 })

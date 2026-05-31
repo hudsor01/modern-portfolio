@@ -33,7 +33,6 @@ const envSchema = z.object({
       'RESEND_API_KEY must be a non-empty string when set (use absent/unset to disable email)'
     )
     .optional(),
-  CONTACT_EMAIL: z.string().email('CONTACT_EMAIL must be a valid email').optional(),
   // Resend sender — must be on the Resend-verified domain (richardwhudsonjr.com),
   // not a real mailbox. `noreply@` makes that explicit. Do NOT set this to the
   // icloud address: Resend can only send FROM a verified domain.
@@ -43,7 +42,6 @@ const envSchema = z.object({
   // deliverable destination.
   TO_EMAIL: z.email('TO_EMAIL must be a valid email').default('hudsor01@icloud.com'),
   NEXT_PUBLIC_VERCEL_URL: z.string().optional(),
-  VERCEL_URL: z.string().optional(),
   ADMIN_API_TOKEN: z.string().min(32, 'ADMIN_API_TOKEN must be at least 32 characters').optional(),
   // Production seed gate — /api/seed returns 404 in production unless set to 'true'
   ALLOW_SEED_IN_PRODUCTION: z.enum(['true', 'false']).optional(),
@@ -63,18 +61,6 @@ const envSchema = z.object({
       process.env.NODE_ENV === 'production'
         ? 'https://richardwhudsonjr.com'
         : 'http://localhost:3000'
-    ),
-  // CORS configuration
-  ALLOWED_ORIGINS: z
-    .string()
-    .optional()
-    .transform((val) =>
-      val
-        ? val
-            .split(',')
-            .map((s) => s.trim())
-            .filter(Boolean)
-        : []
     ),
   // Local database toggle
   USE_LOCAL_DB: z
