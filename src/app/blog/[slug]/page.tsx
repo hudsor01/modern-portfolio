@@ -11,6 +11,7 @@ import { transformToBlogPostData } from '@/lib/api-blog'
 import { createContextLogger } from '@/lib/logger'
 import type { BlogPostData } from '@/types/api'
 import { db } from '@/lib/db'
+import { withDbRetry } from '@/lib/db-retry'
 import { blogPosts } from '@/db/schema'
 import { canonicalUrl } from '@/lib/absolute-url'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
@@ -43,14 +44,16 @@ interface BlogPostPageProps {
 // status check; no post-fetch JS filtering.
 const getBlogPost = cache(async (slug: string): Promise<BlogPostData | null> => {
   try {
-    const post = await db.query.blogPosts.findFirst({
-      where: and(eq(blogPosts.slug, slug), eq(blogPosts.status, 'PUBLISHED')),
-      with: {
-        author: true,
-        category: true,
-        tags: { with: { tag: true } },
-      },
-    })
+    const post = await withDbRetry(() =>
+      db.query.blogPosts.findFirst({
+        where: and(eq(blogPosts.slug, slug), eq(blogPosts.status, 'PUBLISHED')),
+        with: {
+          author: true,
+          category: true,
+          tags: { with: { tag: true } },
+        },
+      })
+    )
 
     if (!post) return null
     if (post.deletedAt) return null
@@ -201,12 +204,14 @@ export async function generateStaticParams() {
   }
 
   try {
-    const posts = await db
-      .select({ slug: blogPosts.slug })
-      .from(blogPosts)
-      // Exclude soft-deleted posts so the build doesn't prerender slugs
-      // that runtime getBlogPost now rejects with notFound() → HTTP 404.
-      .where(and(eq(blogPosts.status, 'PUBLISHED'), isNull(blogPosts.deletedAt)))
+    const posts = await withDbRetry(() =>
+      db
+        .select({ slug: blogPosts.slug })
+        .from(blogPosts)
+        // Exclude soft-deleted posts so the build doesn't prerender slugs
+        // that runtime getBlogPost now rejects with notFound() → HTTP 404.
+        .where(and(eq(blogPosts.status, 'PUBLISHED'), isNull(blogPosts.deletedAt)))
+    )
 
     return posts.map((post) => ({ slug: post.slug }))
   } catch (error) {
