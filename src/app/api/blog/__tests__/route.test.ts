@@ -184,6 +184,17 @@ describe('GET /api/blog', () => {
     expect(body.success).toBe(false)
     expect(JSON.stringify(body)).not.toContain('/var/lib/postgres')
   })
+
+  it('rejects an invalid status query param with 400 (not a 500 from the enum query)', async () => {
+    const res = await GET(reqGet('?status=BOGUS'))
+    expect(res.status).toBe(400)
+    expect(dbMocks.findMany).not.toHaveBeenCalled()
+  })
+
+  it('accepts a valid PostStatus query param', async () => {
+    const res = await GET(reqGet('?status=PUBLISHED'))
+    expect(res.status).toBe(200)
+  })
 })
 
 describe('POST /api/blog', () => {
