@@ -89,6 +89,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 0.9,
     },
+    {
+      url: `${baseUrl}/tools/pipeline-coverage-calculator`,
+      lastModified: staticLastModified,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
   ]
 
   // All project pages (complete list).
