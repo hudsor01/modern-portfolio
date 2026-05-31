@@ -43,19 +43,6 @@ export const RateLimitPresets = {
     },
   } as RateLimitConfig,
 
-  // For write operations (POST, PUT, DELETE)
-  write: {
-    windowMs: 60 * 60 * 1000, // 1 hour
-    maxAttempts: 30,
-    progressivePenalty: true,
-    blockDuration: 15 * 60 * 1000,
-    burstProtection: {
-      enabled: false,
-      burstWindow: 10 * 1000,
-      maxBurstRequests: 10,
-    },
-  } as RateLimitConfig,
-
   // For sensitive operations (contact form, auth)
   sensitive: {
     windowMs: 60 * 60 * 1000, // 1 hour

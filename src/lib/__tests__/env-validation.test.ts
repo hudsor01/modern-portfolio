@@ -33,7 +33,6 @@ describe('env-validation', () => {
       expect(env.NODE_ENV).toBe('development')
       expect(env.FROM_EMAIL).toBe('noreply@richardwhudsonjr.com')
       expect(env.TO_EMAIL).toBe('hudsor01@icloud.com')
-      expect(env.ALLOWED_ORIGINS).toEqual([])
       expect(env.USE_LOCAL_DB).toBe(false)
     })
 
@@ -62,15 +61,6 @@ describe('env-validation', () => {
       vi.stubEnv('FROM_EMAIL', 'not-an-email')
 
       await expect(importEnvModule()).rejects.toThrow(/FROM_EMAIL/)
-    })
-
-    it('splits ALLOWED_ORIGINS csv into a trimmed array', async () => {
-      vi.stubEnv('NODE_ENV', 'development')
-      vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'http://localhost:3000')
-      vi.stubEnv('ALLOWED_ORIGINS', 'https://a.com, https://b.com , https://c.com')
-
-      const mod = await importEnvModule()
-      expect(mod.env.ALLOWED_ORIGINS).toEqual(['https://a.com', 'https://b.com', 'https://c.com'])
     })
 
     it('transforms USE_LOCAL_DB="true" into boolean true', async () => {
