@@ -128,9 +128,9 @@ const nextConfig = {
           { key: 'Vary', value: 'Accept-Encoding' },
         ],
       },
-      // ISR + dynamic content caching for blog/project pages.
+      // ISR + dynamic content caching for blog/project/tool pages.
       {
-        source: '/(projects|blog)/:path*',
+        source: '/(projects|blog|tools)/:path*',
         headers: [
           { key: 'Cache-Control', value: 's-maxage=60, stale-while-revalidate=86400' },
           { key: 'CDN-Cache-Control', value: 'max-age=3600' },

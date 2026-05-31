@@ -23,6 +23,7 @@ const FOOTER_SECTIONS: ReadonlyArray<{
     links: [
       { label: 'All articles', href: '/blog' },
       { label: 'RevOps insights', href: '/blog/category/revenue-operations' },
+      { label: 'Pipeline coverage calculator', href: '/tools/pipeline-coverage-calculator' },
     ],
   },
   {
