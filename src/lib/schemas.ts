@@ -6,7 +6,6 @@
 
 import { z } from 'zod'
 import { PostStatus, ContentType } from '@/types/blog'
-import { SEOEventType, SEOSeverity, ChangeFrequency } from '@/types/seo'
 import { FEATURED_IMAGE_ALLOWED_HOSTS } from './featured-image-hosts'
 
 // =======================
@@ -185,11 +184,6 @@ export const datetimeSchema = z
 
 export const PostStatusSchema = z.enum(PostStatus)
 export const ContentTypeSchema = z.enum(ContentType)
-
-// SEO-related enums - defined locally since they were removed from Prisma schema
-export const SEOEventTypeSchema = z.enum(SEOEventType)
-export const SEOSeveritySchema = z.enum(SEOSeverity)
-export const ChangeFrequencySchema = z.enum(ChangeFrequency)
 
 // =======================
 // CONTACT FORM SCHEMA

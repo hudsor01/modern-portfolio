@@ -15,24 +15,6 @@ export type ApiResponse<T = unknown> = {
   errors?: Record<string, string[]>
 }
 
-export function successResponse<T>(data: T): NextResponse<ApiResponse<T>> {
-  return NextResponse.json({
-    success: true,
-    status: 200,
-    data,
-  })
-}
-export function errorResponse(message: string, status = 400): NextResponse<ApiResponse> {
-  return NextResponse.json(
-    {
-      success: false,
-      status,
-      error: message,
-    },
-    { status }
-  )
-}
-
 export function validationErrorResponse(error: ZodError): NextResponse<ApiResponse> {
   const errors = error.issues.reduce(
     (acc: Record<string, string[]>, curr) => {

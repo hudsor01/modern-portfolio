@@ -12,12 +12,7 @@ vi.mock('@/lib/logger', () => ({
   },
 }))
 
-import {
-  getClientIdentifier,
-  getClientIdentifierFromHeaders,
-  getRequestMetadata,
-  parseRequestBody,
-} from '@/lib/api-request'
+import { getClientIdentifier, getClientIdentifierFromHeaders } from '@/lib/api-request'
 
 function makeReq(
   url: string,
@@ -80,46 +75,5 @@ describe('getClientIdentifier', () => {
       headers: { 'x-forwarded-for': '8.8.8.8', 'user-agent': 'ua' },
     })
     expect(getClientIdentifier(req).startsWith('8.8.8.8:')).toBe(true)
-  })
-})
-
-describe('getRequestMetadata', () => {
-  it('returns userAgent + ip + timestamp', () => {
-    const req = makeReq('http://localhost/x', {
-      headers: { 'x-forwarded-for': '8.8.8.8', 'user-agent': 'mozilla' },
-    })
-    const meta = getRequestMetadata(req)
-    expect(meta.userAgent).toBe('mozilla')
-    expect(meta.ip).toBe('8.8.8.8')
-    expect(typeof meta.timestamp).toBe('number')
-  })
-})
-
-describe('parseRequestBody', () => {
-  it('parses valid JSON body', async () => {
-    const req = makeReq('http://localhost/x', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ a: 1 }),
-    })
-    expect(await parseRequestBody(req)).toEqual({ a: 1 })
-  })
-
-  it('throws when content-type is not JSON', async () => {
-    const req = makeReq('http://localhost/x', {
-      method: 'POST',
-      headers: { 'content-type': 'text/plain' },
-      body: 'not json',
-    })
-    await expect(parseRequestBody(req)).rejects.toThrow(/Invalid JSON/)
-  })
-
-  it('throws on malformed JSON', async () => {
-    const req = makeReq('http://localhost/x', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: '{ not json',
-    })
-    await expect(parseRequestBody(req)).rejects.toThrow(/Invalid JSON/)
   })
 })

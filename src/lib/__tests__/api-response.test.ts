@@ -13,38 +13,12 @@ vi.mock('@/lib/logger', () => ({
 }))
 
 import {
-  successResponse,
-  errorResponse,
   validationErrorResponse,
   createApiErrorResponse,
   createApiSuccessResponse,
   logAndSanitizeError,
 } from '@/lib/api-response'
 import { ApiErrorType } from '@/types/api'
-
-describe('successResponse', () => {
-  it('returns 200 NextResponse with success=true and data', async () => {
-    const res = successResponse({ foo: 'bar' })
-    expect(res.status).toBe(200)
-    const json = await res.json()
-    expect(json).toEqual({ success: true, status: 200, data: { foo: 'bar' } })
-  })
-})
-
-describe('errorResponse', () => {
-  it('returns 400 by default with success=false and error message', async () => {
-    const res = errorResponse('something broke')
-    expect(res.status).toBe(400)
-    const json = await res.json()
-    expect(json.success).toBe(false)
-    expect(json.error).toBe('something broke')
-  })
-
-  it('respects custom status', async () => {
-    const res = errorResponse('teapot', 418)
-    expect(res.status).toBe(418)
-  })
-})
 
 describe('validationErrorResponse', () => {
   it('returns 400 with errors keyed by field path', async () => {
