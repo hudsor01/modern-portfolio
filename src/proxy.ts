@@ -14,10 +14,11 @@ export function proxy(request: NextRequest) {
     ),
   })
 
-  // Pass nonce downstream for JSON-LD scripts in layout.tsx
+  // Pass nonce downstream for JSON-LD scripts in layout.tsx. CSP is set only on
+  // the RESPONSE (below) — the browser enforces it from there; setting it on the
+  // request headers is a no-op since request headers never reach the browser.
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-nonce', nonce)
-  requestHeaders.set('Content-Security-Policy', csp)
 
   const response = NextResponse.next({
     request: { headers: requestHeaders },

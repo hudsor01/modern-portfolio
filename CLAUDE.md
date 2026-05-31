@@ -55,14 +55,10 @@ src/
 
 drizzle/                  seed.ts (idempotent upsert seed) + migrations/ (drizzle-kit output).
 e2e/                      5 Playwright specs: blog, contact-form, projects, resume, security-headers.
-scripts/                  Drizzle one-offs (idempotent, safe to re-run):
-                          _db.ts — shared neon+drizzle bootstrap.
-                          touch-blog-lastmod.ts — bumps updatedAt on every
-                          PUBLISHED post to refresh sitemap <lastmod>.
-                          update-blog-featured-images.ts — syncs prod's
-                          featuredImage/Alt to src/data/blog-featured-images.ts.
-                          apply-featured-image-unique-index.ts — DDL one-off
-                          for the partial unique index on PUBLISHED posts.
+scripts/                  _db.ts — shared neon+drizzle bootstrap (createScriptDb),
+                          consumed by drizzle/seed.ts. (Completed one-off data-fix
+                          scripts were removed after their migrations were applied
+                          to prod + codified in the seed.)
 proxy.ts                  Next.js 16 successor to middleware.ts (see Auth/CSP).
 ```
 
@@ -140,12 +136,10 @@ All declared in `src/lib/env-validation.ts` (Zod, no `@t3-oss/env-nextjs`). Vali
 | `DATABASE_URL` | optional at build, required at runtime | Must start with `postgresql://` or `postgres://` |
 | `USE_LOCAL_DB` | optional | Legacy flag from the Prisma era; the Drizzle client always uses neon-http. Local Postgres dev is supported by pointing `DATABASE_URL` at the local instance. |
 | `RESEND_API_KEY` | optional | Required to actually send contact email |
-| `CONTACT_EMAIL` | optional | Recipient for contact form |
-| `FROM_EMAIL` | default `contact@richardwhudsonjr.com` | |
-| `TO_EMAIL` | default `hello@richardwhudsonjr.com` | |
+| `FROM_EMAIL` | default `noreply@richardwhudsonjr.com` | Must be on the Resend-verified domain |
+| `TO_EMAIL` | default `hudsor01@icloud.com` | Real delivery inbox for contact submissions |
 | `NEXT_PUBLIC_SITE_URL` | default per env | Must be HTTPS in production |
-| `ALLOWED_ORIGINS` | optional | CSV, transformed to `string[]` |
-| `NEXT_PUBLIC_VERCEL_URL`, `VERCEL_URL` | optional | Vercel-injected |
+| `NEXT_PUBLIC_VERCEL_URL` | optional | Vercel-injected |
 | `ADMIN_API_TOKEN` | optional | min 32 chars; production warning if <64 |
 | `METRICS_API_TOKEN` | optional | min 32 chars; production warning if <64 |
 | `ALLOW_SEED_IN_PRODUCTION` | optional | Enum `'true'`/`'false'` — enum (not string) so misspellings fail at boot |

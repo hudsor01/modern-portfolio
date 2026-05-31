@@ -97,7 +97,7 @@ export function ProjectsPageContent({ initialProjects }: ProjectsPageContentProp
 
           {/* Stats Grid */}
           <div className="animate-fade-in-up" style={{ animationDelay: '240ms' }}>
-            <ProjectStats totalProjects={sortedProjects.length} isLoading={false} />
+            <ProjectStats totalProjects={sortedProjects.length} />
           </div>
         </section>
 

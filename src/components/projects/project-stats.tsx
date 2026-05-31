@@ -6,7 +6,6 @@ import { REVENUE_IMPACT, TRANSACTION_GROWTH, NETWORK_GROWTH } from '@/lib/stats'
 
 interface ProjectStatsProps {
   totalProjects: number
-  isLoading?: boolean
 }
 
 const stats = [
@@ -33,21 +32,7 @@ const stats = [
   },
 ]
 
-export const ProjectStats: React.FC<ProjectStatsProps> = ({ totalProjects, isLoading }) => {
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="p-6 bg-card border border-border rounded-xl animate-pulse">
-            <div className="w-10 h-10 bg-muted rounded-lg mb-4" />
-            <div className="h-8 bg-muted rounded w-20 mb-2" />
-            <div className="h-4 bg-muted rounded w-24" />
-          </div>
-        ))}
-      </div>
-    )
-  }
-
+export const ProjectStats: React.FC<ProjectStatsProps> = ({ totalProjects }) => {
   // Use actual project count for the last stat
   const displayStats = stats.map((stat, index) =>
     index === 3 ? { ...stat, value: `${totalProjects}+` } : stat

@@ -110,5 +110,7 @@ export function isSafeUrl(url: string): boolean {
 }
 
 export function sanitizeAttribute(text: string): string {
-  return escapeHtml(text).replace(/"/g, '&quot;')
+  // escapeHtml already maps " -> &quot; (and & < > ' /), so no further
+  // replacement is needed — a chained .replace(/"/g, ...) would be a no-op.
+  return escapeHtml(text)
 }
