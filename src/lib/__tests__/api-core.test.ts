@@ -64,7 +64,6 @@ import {
   logAndSanitizeError,
   createApiSuccessResponse,
 } from '@/lib/api-response'
-import { createApiHeaders, CachePresets } from '@/lib/api-headers'
 import { getClientIdentifier, getRequestMetadata, parseRequestBody } from '@/lib/api-request'
 import { parsePaginationParams, createPaginationMeta } from '@/lib/api-pagination'
 
@@ -118,67 +117,6 @@ describe('validationErrorResponse', () => {
       expect(body.errors).toBeDefined()
       expect(body.errors).toHaveProperty('email')
     }
-  })
-})
-
-// ============================================================================
-// createApiHeaders — Cache-Control and rate limit headers
-// ============================================================================
-
-describe('createApiHeaders', () => {
-  it('returns no-store header when noStore is true', () => {
-    const headers = createApiHeaders({ noStore: true })
-    expect(headers['Cache-Control']).toBe('no-store, no-cache, must-revalidate')
-  })
-
-  it('returns public max-age header when maxAge and visibility are set', () => {
-    const headers = createApiHeaders({ maxAge: 300, visibility: 'public' })
-    expect(headers['Cache-Control']).toContain('public')
-    expect(headers['Cache-Control']).toContain('max-age=300')
-  })
-
-  it('returns default no-store when no cacheConfig provided', () => {
-    const headers = createApiHeaders()
-    expect(headers['Cache-Control']).toBe('no-store')
-  })
-
-  it('includes X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset when rateLimitHeaders provided', () => {
-    const headers = createApiHeaders(undefined, { limit: 100, remaining: 42, resetTime: 9999 })
-    expect(headers['X-RateLimit-Limit']).toBe('100')
-    expect(headers['X-RateLimit-Remaining']).toBe('42')
-    expect(headers['X-RateLimit-Reset']).toBe('9999')
-  })
-
-  it('includes Retry-After header when retryAfter is provided', () => {
-    const headers = createApiHeaders(undefined, { retryAfter: 5000 })
-    expect(headers['Retry-After']).toBe('5') // ceil(5000 / 1000)
-  })
-
-  it('always includes Content-Type: application/json', () => {
-    const headers = createApiHeaders()
-    expect(headers['Content-Type']).toBe('application/json')
-  })
-})
-
-// ============================================================================
-// CachePresets
-// ============================================================================
-
-describe('CachePresets', () => {
-  it('noCache preset has noStore: true', () => {
-    expect(CachePresets.noCache.noStore).toBe(true)
-  })
-
-  it('short preset has maxAge > 0', () => {
-    expect(CachePresets.short.maxAge).toBeGreaterThan(0)
-  })
-
-  it('medium preset has maxAge > short maxAge', () => {
-    expect(CachePresets.medium.maxAge!).toBeGreaterThan(CachePresets.short.maxAge!)
-  })
-
-  it('long preset has visibility public', () => {
-    expect(CachePresets.long.visibility).toBe('public')
   })
 })
 

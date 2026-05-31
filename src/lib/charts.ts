@@ -206,40 +206,6 @@ export const barStyles = {
   radius: [4, 4, 0, 0] as [number, number, number, number],
 } as const
 
-// Gradient definitions for area charts
-export const chartGradients = {
-  primary: {
-    id: 'primaryGradient',
-    startColor: chartColors.primary,
-    startOpacity: 0.3,
-    endOpacity: 0,
-  },
-  secondary: {
-    id: 'secondaryGradient',
-    startColor: chartColors.secondary,
-    startOpacity: 0.3,
-    endOpacity: 0,
-  },
-  success: {
-    id: 'successGradient',
-    startColor: chartColors.success,
-    startOpacity: 0.3,
-    endOpacity: 0,
-  },
-  warning: {
-    id: 'warningGradient',
-    startColor: chartColors.warning,
-    startOpacity: 0.3,
-    endOpacity: 0,
-  },
-  destructive: {
-    id: 'destructiveGradient',
-    startColor: chartColors.destructive,
-    startOpacity: 0.3,
-    endOpacity: 0,
-  },
-} as const
-
 // Chart type configurations
 export const chartTypeConfigs = {
   line: {
