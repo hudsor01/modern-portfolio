@@ -30,12 +30,6 @@ export enum ContentType {
 // UTILITY TYPES — Drizzle relational shapes
 // ============================================================================
 
-export type BlogPostWithRelations = BlogPost & {
-  author: Author | null
-  category: Category | null
-  tags: Array<{ tag: Tag }>
-}
-
 export type CategoryWithPosts = Category & {
   posts: BlogPost[]
   children: Category[]
