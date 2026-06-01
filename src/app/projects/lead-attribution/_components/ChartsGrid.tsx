@@ -6,7 +6,11 @@ import dynamic from 'next/dynamic'
 import { safeLazy } from '@/lib/safe-lazy'
 
 const LeadSourcePieChart = dynamic(
-  safeLazy(() => import('./LeadSourcePieChart'), 'LeadSourcePieChart', ChartLoadError),
+  safeLazy(
+    () => import('./LeadSourcePieChart'),
+    'LeadSourcePieChart',
+    () => <ChartLoadError height="md" />
+  ),
   {
     loading: () => (
       <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />

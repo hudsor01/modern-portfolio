@@ -7,7 +7,11 @@ import { safeLazy } from '@/lib/safe-lazy'
 import type { FunnelStage } from '../data/constants'
 
 const DealStageFunnelChart = dynamic(
-  safeLazy(() => import('./DealStageFunnelChart'), 'DealStageFunnelChart', ChartLoadError),
+  safeLazy(
+    () => import('./DealStageFunnelChart'),
+    'DealStageFunnelChart',
+    () => <ChartLoadError height="md" />
+  ),
   {
     loading: () => (
       <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />

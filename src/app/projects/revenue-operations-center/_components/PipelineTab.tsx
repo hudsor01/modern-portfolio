@@ -5,7 +5,11 @@ import { ChartLoadError } from '@/components/charts/chart-load-error'
 import { safeLazy } from '@/lib/safe-lazy'
 
 const PipelineHealthChart = dynamic(
-  safeLazy(() => import('./PipelineHealthChart'), 'PipelineHealthChart', ChartLoadError),
+  safeLazy(
+    () => import('./PipelineHealthChart'),
+    'PipelineHealthChart',
+    () => <ChartLoadError height="md" />
+  ),
   {
     loading: () => (
       <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />
