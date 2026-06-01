@@ -130,6 +130,31 @@ export function formatPercentage(value: number, options: PercentageFormatOptions
 }
 
 /**
+ * Plain "NN.N%" — a pre-scaled number rendered with one decimal and NO thousands
+ * separator (e.g. 2217 → "2217.0%"). Distinct from formatPercentage(), which
+ * uses Intl percent style (÷100 + grouping). Single source for the per-project
+ * `formatPercent` helpers that shipped this exact output.
+ */
+export function formatPercentPlain(value: number): string {
+  return `${value.toFixed(1)}%`
+}
+
+/**
+ * USD with whole-dollar default below $1M, switching to 1-decimal Intl-compact
+ * (e.g. "$1.2M") at/above $1M — NOT the K-abbreviating formatCompactCurrency.
+ * Single source for the project pages that shipped this threshold behavior.
+ */
+export function formatCurrencyCompactMillions(value: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: value >= 1_000_000 ? 1 : 0,
+    notation: value >= 1_000_000 ? 'compact' : 'standard',
+  }).format(value)
+}
+
+/**
  * Format numbers with consistent thousands separators
  */
 export function formatNumber(value: number, options: NumberFormatOptions = {}): string {
