@@ -135,11 +135,11 @@ describe('POST /api/blog/tags', () => {
     expect(dbMocks.findFirst).not.toHaveBeenCalled()
   })
 
-  it('returns 400 when name missing', async () => {
+  it('returns 400 when name missing (zod validation)', async () => {
     const res = await POST(reqPost({}))
     expect(res.status).toBe(400)
     const body = await res.json()
-    expect(body).toMatchObject({ success: false, error: 'Missing required field: name' })
+    expect(body).toMatchObject({ success: false, error: 'Invalid request body' })
   })
 
   it('returns 409 when slug already exists', async () => {

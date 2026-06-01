@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 import { categories } from '@/db/schema'
 import { createContextLogger } from '@/lib/logger'
 import { generateSlug, createErrorResponse, transformToCategoryData } from '@/lib/api-blog'
+import { createCategorySchema } from '@/lib/schemas'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
 import { isAdminRequest } from '@/lib/api-admin-auth'
 import { checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-rate-limit'
@@ -60,11 +61,11 @@ export async function POST(request: NextRequest) {
     const csrfResponse = await validateCSRFOrRespond(request, 'blog category creation')
     if (csrfResponse) return csrfResponse
 
-    const body = await request.json()
-
-    if (!body.name) {
-      return NextResponse.json(createErrorResponse('Missing required field: name'), { status: 400 })
+    const parsed = createCategorySchema.safeParse(await request.json())
+    if (!parsed.success) {
+      return NextResponse.json(createErrorResponse('Invalid request body'), { status: 400 })
     }
+    const body = parsed.data
 
     const slug = generateSlug(body.name)
 
@@ -85,11 +86,11 @@ export async function POST(request: NextRequest) {
         name: body.name,
         slug,
         description: body.description ?? null,
-        color: body.color || '#6B7280',
+        color: body.color,
         icon: body.icon ?? null,
         metaTitle: body.metaTitle ?? null,
         metaDescription: body.metaDescription ?? null,
-        keywords: body.keywords ?? [],
+        keywords: body.keywords,
         postCount: 0,
         totalViews: 0,
       })

@@ -51,9 +51,16 @@ describe('GET /api/projects/[slug]', () => {
   })
 
   it('returns 400 with validation error on slug containing illegal characters', async () => {
-    // Route applies a regex `^[a-zA-Z0-9-_]+$` via slugSchema. A slash should
-    // be rejected with a Zod validation error response (400).
+    // Route applies the canonical slugSchema (lowercase + hyphens only). A slash
+    // is rejected with a Zod validation error response (400).
     const res = await GET(req('bad/slug'), ctx('bad/slug'))
+    expect(res.status).toBe(400)
+    const body = await res.json()
+    expect(body.success).toBe(false)
+  })
+
+  it('returns 400 for uppercase/underscore slugs (canonical schema is stricter)', async () => {
+    const res = await GET(req('Foo_Bar'), ctx('Foo_Bar'))
     expect(res.status).toBe(400)
     const body = await res.json()
     expect(body.success).toBe(false)

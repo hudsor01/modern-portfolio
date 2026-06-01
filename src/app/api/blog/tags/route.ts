@@ -5,6 +5,7 @@ import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
 import { tags } from '@/db/schema'
 import { generateSlug, createErrorResponse, transformToTagData } from '@/lib/api-blog'
+import { createTagSchema } from '@/lib/schemas'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
 import { isAdminRequest } from '@/lib/api-admin-auth'
 import { checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-rate-limit'
@@ -71,11 +72,11 @@ export async function POST(request: NextRequest) {
     const csrfResponse = await validateCSRFOrRespond(request, 'blog tag creation')
     if (csrfResponse) return csrfResponse
 
-    const body = await request.json()
-
-    if (!body.name) {
-      return NextResponse.json(createErrorResponse('Missing required field: name'), { status: 400 })
+    const parsed = createTagSchema.safeParse(await request.json())
+    if (!parsed.success) {
+      return NextResponse.json(createErrorResponse('Invalid request body'), { status: 400 })
     }
+    const body = parsed.data
 
     const slug = generateSlug(body.name)
 
@@ -96,7 +97,7 @@ export async function POST(request: NextRequest) {
         name: body.name,
         slug,
         description: body.description ?? null,
-        color: body.color || '#6B7280',
+        color: body.color,
         metaDescription: body.metaDescription ?? null,
         postCount: 0,
         totalViews: 0,

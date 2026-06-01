@@ -22,6 +22,14 @@ export type { BlogPost, Author, Category, Tag, PostTag, PostStatus, ContentType 
 // UTILITY TYPES — Drizzle relational shapes
 // ============================================================================
 
+// Shape returned by the canonical Drizzle blog query (relational
+// findFirst/findMany with `with: { author, category, tags: { with: { tag } } }`).
+export type BlogPostWithRelations = BlogPost & {
+  author: Author | null
+  category: Category | null
+  tags: Array<{ tag: Tag }>
+}
+
 export type CategoryWithPosts = Category & {
   posts: BlogPost[]
   children: Category[]

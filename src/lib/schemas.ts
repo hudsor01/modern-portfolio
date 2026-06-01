@@ -306,6 +306,38 @@ export const updateBlogPostSchema = z.object(blogPostBaseShape).partial().strict
 export type UpdateBlogPostInput = z.infer<typeof updateBlogPostSchema>
 
 // =======================
+// TAG / CATEGORY SCHEMAS
+// =======================
+
+// Hex color with a slate default, matching the DB column default (#6B7280).
+const hexColor = z
+  .string()
+  .regex(/^#[0-9a-fA-F]{6}$/, 'Color must be a 6-digit hex value (e.g. #6B7280)')
+
+export const createTagSchema = z
+  .object({
+    name: z.string().min(1, 'Name is required').max(60),
+    description: nullishText(500),
+    metaDescription: nullishText(160, 'Meta description cannot exceed 160 characters'),
+    color: hexColor.default('#6B7280'),
+  })
+  .strict()
+export type CreateTagInput = z.infer<typeof createTagSchema>
+
+export const createCategorySchema = z
+  .object({
+    name: z.string().min(1, 'Name is required').max(60),
+    description: nullishText(500),
+    metaTitle: nullishText(100),
+    metaDescription: nullishText(160, 'Meta description cannot exceed 160 characters'),
+    color: hexColor.default('#6B7280'),
+    icon: nullishText(50),
+    keywords: z.array(z.string().min(1).max(50)).max(10).default([]),
+  })
+  .strict()
+export type CreateCategoryInput = z.infer<typeof createCategorySchema>
+
+// =======================
 // PROJECT SCHEMAS
 // =======================
 
