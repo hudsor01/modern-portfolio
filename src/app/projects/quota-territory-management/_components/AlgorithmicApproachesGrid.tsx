@@ -1,7 +1,8 @@
 'use client'
 
-import { Code, Check } from 'lucide-react'
+import { Code } from 'lucide-react'
 import { SectionCard } from '@/components/ui/section-card'
+import { FeatureListGrid } from '@/components/projects/shared/feature-list-grid'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/data-formatters'
 
 interface AlgorithmicApproach {
@@ -31,66 +32,42 @@ export function AlgorithmicApproachesGrid({ approaches }: AlgorithmicApproachesG
 
   return (
     <>
-      {/* Algorithmic Approaches */}
-      <SectionCard
-        title="Algorithmic Approaches"
-        description="Advanced algorithms and methodologies for quota and territory optimization"
-        className="mb-8"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {approaches.map((approach, index) => (
-            <div
-              key={index}
-              className="bg-card border border-border rounded-xl p-6 hover:border-primary/50 transition-all"
-            >
-              <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                <Code className="h-5 w-5 text-primary" />
-                {approach.name}
-              </h3>
-              <p className="text-muted-foreground mb-4">{approach.description}</p>
-              <ul className="space-y-2">
-                {approach.outcomes.map((outcome, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-secondary mt-0.5 flex-shrink-0" />
-                    <span>{outcome}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </SectionCard>
+      <FeatureListGrid
+        featureTitle="Algorithmic Approaches"
+        featureDescription="Advanced algorithms and methodologies for quota and territory optimization"
+        items={approaches.map((a) => ({
+          title: a.name,
+          description: a.description,
+          bullets: a.outcomes,
+        }))}
+        itemIcon={Code}
+        impactTitle="Revenue Impact"
+        impactDescription="Measurable business impact and performance improvements"
+        impactStats={[
+          {
+            value: formatCurrency(8700000, { compact: true }),
+            label: 'Incremental revenue from optimized territories',
+            variant: 'secondary',
+          },
+          {
+            value: formatPercentage(0.28),
+            label: 'Improvement in forecast accuracy',
+            variant: 'primary',
+          },
+          {
+            value: formatPercentage(0.32),
+            label: 'Reduction in quota attainment variance',
+            variant: 'secondary',
+          },
+          {
+            value: formatPercentage(0.23),
+            label: 'Average territory efficiency increase',
+            variant: 'primary',
+          },
+        ]}
+      />
 
-      {/* Revenue Impact */}
-      <SectionCard
-        title="Revenue Impact"
-        description="Measurable business impact and performance improvements"
-        variant="gradient"
-        className="mb-8"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="text-center p-4">
-            <div className="text-3xl font-bold text-secondary mb-2">
-              {formatCurrency(8700000, { compact: true })}
-            </div>
-            <p className="text-muted-foreground">Incremental revenue from optimized territories</p>
-          </div>
-          <div className="text-center p-4">
-            <div className="text-3xl font-bold text-primary mb-2">{formatPercentage(0.28)}</div>
-            <p className="text-muted-foreground">Improvement in forecast accuracy</p>
-          </div>
-          <div className="text-center p-4">
-            <div className="text-3xl font-bold text-secondary mb-2">{formatPercentage(0.32)}</div>
-            <p className="text-muted-foreground">Reduction in quota attainment variance</p>
-          </div>
-          <div className="text-center p-4">
-            <div className="text-3xl font-bold text-primary mb-2">{formatPercentage(0.23)}</div>
-            <p className="text-muted-foreground">Average territory efficiency increase</p>
-          </div>
-        </div>
-      </SectionCard>
-
-      {/* Technical Implementation */}
+      {/* Technical Implementation — project-unique, kept inline */}
       <SectionCard
         title="Technical Stack & Methodologies"
         description="Machine learning models and data analytics approaches"
@@ -100,16 +77,16 @@ export function AlgorithmicApproachesGrid({ approaches }: AlgorithmicApproachesG
           <div className="bg-card border border-border rounded-xl p-6">
             <h3 className="text-lg font-semibold mb-4">Machine Learning Models</h3>
             <ul className="space-y-2 text-muted-foreground">
-              {mlModels.map((model, idx) => (
-                <li key={idx}>• {model}</li>
+              {mlModels.map((model) => (
+                <li key={model}>• {model}</li>
               ))}
             </ul>
           </div>
           <div className="bg-card border border-border rounded-xl p-6">
             <h3 className="text-lg font-semibold mb-4">Data & Analytics</h3>
             <ul className="space-y-2 text-muted-foreground">
-              {dataAnalytics.map((analytic, idx) => (
-                <li key={idx}>• {analytic}</li>
+              {dataAnalytics.map((analytic) => (
+                <li key={analytic}>• {analytic}</li>
               ))}
             </ul>
           </div>
