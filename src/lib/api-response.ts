@@ -7,15 +7,18 @@ import {
   type ApiSuccessResponse as ApiSuccessResponseType,
 } from '@/types/api'
 
-export type ApiResponse<T = unknown> = {
-  success: boolean
+// Body shape specific to validationErrorResponse. The app's canonical response
+// types live in @/types/api (ApiSuccessResponse / ApiErrorResponse); this
+// field-keyed validation body (with `status` + `errors`) is distinct from those,
+// so it stays local rather than masquerading as the shared ApiResponse.
+type ValidationErrorBody = {
+  success: false
   status: number
-  data?: T
-  error?: string
-  errors?: Record<string, string[]>
+  error: string
+  errors: Record<string, string[]>
 }
 
-export function validationErrorResponse(error: ZodError): NextResponse<ApiResponse> {
+export function validationErrorResponse(error: ZodError): NextResponse<ValidationErrorBody> {
   const errors = error.issues.reduce(
     (acc: Record<string, string[]>, curr) => {
       // Get a safe string key from the path, defaulting to 'general'
@@ -43,15 +46,6 @@ export function validationErrorResponse(error: ZodError): NextResponse<ApiRespon
     },
     { status: 400 }
   )
-}
-
-export interface PaginatedResponse<T = unknown> extends ApiResponse<T[]> {
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-  }
 }
 
 /**

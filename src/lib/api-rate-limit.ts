@@ -5,22 +5,11 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { getRateLimiter } from '@/lib/rate-limiter/store'
 import { getClientIdentifier } from './api-request'
+import type { RateLimitConfig } from '@/types/security'
 
-// ============================================================================
-// TYPE DEFINITIONS
-// ============================================================================
-
-export interface RateLimitConfig {
-  windowMs: number
-  maxAttempts: number
-  progressivePenalty?: boolean
-  blockDuration?: number
-  burstProtection?: {
-    enabled: boolean
-    burstWindow: number
-    maxBurstRequests: number
-  }
-}
+// Canonical RateLimitConfig lives in @/types/security; re-export so existing
+// `import { RateLimitConfig } from '@/lib/api-rate-limit'` callers keep working.
+export type { RateLimitConfig }
 
 // ============================================================================
 // RATE LIMIT PRESETS

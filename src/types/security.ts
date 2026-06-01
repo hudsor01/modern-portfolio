@@ -14,20 +14,25 @@ export interface RateLimitRecord {
   createdAt: number
 }
 
+export interface BurstProtectionConfig {
+  enabled: boolean
+  burstWindow: number
+  maxBurstRequests: number
+}
+
 export interface RateLimitConfig {
   windowMs: number
   maxAttempts: number
-  progressivePenalty: boolean
-  blockDuration: number
-  adaptiveThreshold: boolean
-  antiAbuse: boolean
+  // Optional behavioral knobs — presets may omit them; checkRateLimitOrRespond
+  // fills the defaults (`?? false` / `?? 0`, adaptiveThreshold/antiAbuse true)
+  // before the config reaches the rate-limiter store.
+  progressivePenalty?: boolean
+  blockDuration?: number
+  adaptiveThreshold?: boolean
+  antiAbuse?: boolean
   whitelist?: string[]
   blacklist?: string[]
-  burstProtection?: {
-    enabled: boolean
-    burstWindow: number
-    maxBurstRequests: number
-  }
+  burstProtection?: BurstProtectionConfig
 }
 
 export interface RateLimitAnalytics {
