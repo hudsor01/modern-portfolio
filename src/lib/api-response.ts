@@ -1,16 +1,9 @@
 import { NextResponse } from 'next/server'
 import type { ZodError } from 'zod'
 import { logger } from '@/lib/logger'
-import {
-  ApiErrorType,
-  type ApiErrorResponse,
-  type ApiSuccessResponse as ApiSuccessResponseType,
-} from '@/types/api'
 
-// Body shape specific to validationErrorResponse. The app's canonical response
-// types live in @/types/api (ApiSuccessResponse / ApiErrorResponse); this
-// field-keyed validation body (with `status` + `errors`) is distinct from those,
-// so it stays local rather than masquerading as the shared ApiResponse.
+// Body shape specific to validationErrorResponse — the field-keyed {success,
+// status, error, errors} envelope this helper returns. Local by design.
 type ValidationErrorBody = {
   success: false
   status: number
@@ -83,56 +76,4 @@ export function logAndSanitizeError(
   }
 
   return PRODUCTION_ERROR_MESSAGES[errorType] ?? (PRODUCTION_ERROR_MESSAGES.DEFAULT as string)
-}
-
-/**
- * Create standardized API error response
- * Includes proper logging and sanitization
- */
-export function createApiErrorResponse(
-  error: unknown,
-  context: string,
-  errorType: ApiErrorType = ApiErrorType.INTERNAL_ERROR,
-  statusCode: number = 500,
-  additionalInfo?: Record<string, unknown>
-): { response: ApiErrorResponse; statusCode: number } {
-  const sanitizedMessage = logAndSanitizeError(
-    `${context} - ${errorType}`,
-    error,
-    errorType,
-    additionalInfo
-  )
-
-  const response: ApiErrorResponse = {
-    success: false,
-    error: sanitizedMessage,
-    code: errorType,
-    timestamp: new Date().toISOString(),
-  }
-
-  // Add error details in development
-  if (process.env.NODE_ENV === 'development' && error instanceof Error) {
-    response.details = {
-      message: error.message,
-      stack: error.stack,
-      name: error.name,
-    }
-  }
-
-  return { response, statusCode }
-}
-
-/**
- * Create standardized API success response
- */
-export function createApiSuccessResponse<T = unknown>(
-  data: T,
-  message?: string
-): ApiSuccessResponseType<T> {
-  return {
-    success: true,
-    data,
-    message,
-    timestamp: new Date().toISOString(),
-  }
 }

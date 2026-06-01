@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { getProjects } from '@/lib/projects'
-import { createApiSuccessResponse, createApiErrorResponse } from '@/lib/api-response'
-import { ApiErrorType } from '@/types/api'
+import { logAndSanitizeError } from '@/lib/api-response'
 import { checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-rate-limit'
 
 // Enable ISR with 1 hour revalidation
@@ -18,26 +17,30 @@ export async function GET(request: NextRequest) {
 
   try {
     const projects = await getProjects()
-    const response = createApiSuccessResponse(projects)
-    return NextResponse.json(response, {
-      headers: {
-        'Cache-Control': 'public, max-age=3600, s-maxage=7200', // Cache for 1 hour, CDN for 2 hours
-      },
-    })
+    // Standard { success, data } envelope (matches the blog/contact routes).
+    return NextResponse.json(
+      { success: true, data: projects },
+      {
+        headers: {
+          'Cache-Control': 'public, max-age=3600, s-maxage=7200', // 1h browser, 2h CDN
+        },
+      }
+    )
   } catch (error) {
-    const { response, statusCode } = createApiErrorResponse(
-      error,
+    // logAndSanitizeError logs the full error internally and returns a
+    // production-safe message (no path/stack leakage).
+    const message = logAndSanitizeError(
       'Projects API - Failed to fetch projects',
-      ApiErrorType.INTERNAL_ERROR,
-      500,
+      error,
+      'DATABASE_ERROR',
       { operation: 'getProjects' }
     )
-    return new Response(JSON.stringify(response), {
-      status: statusCode,
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-      },
-    })
+    return NextResponse.json(
+      { success: false, error: message },
+      {
+        status: 500,
+        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
+      }
+    )
   }
 }
