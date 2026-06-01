@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { ChartSkeleton } from '@/components/charts/chart-skeleton'
 import { TrendingUp } from 'lucide-react'
 import { ChartContainer } from '@/components/ui/chart-container'
 import { SectionCard } from '@/components/ui/section-card'
@@ -8,9 +9,7 @@ import { incentivePrograms } from '../data/constants'
 import { formatCurrency, formatPercentage } from '@/lib/data-formatters'
 
 const PerformanceIncentiveChart = dynamic(() => import('./PerformanceIncentiveChart'), {
-  loading: () => (
-    <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />
-  ),
+  loading: () => <ChartSkeleton />,
   ssr: false,
 })
 

@@ -1,15 +1,14 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { ChartSkeleton } from '@/components/charts/chart-skeleton'
 import { ChartLoadError } from '@/components/charts/chart-load-error'
 import { safeLazy } from '@/lib/safe-lazy'
 
 const CLVPredictionChart = dynamic(
   safeLazy(() => import('./CLVPredictionChart'), 'CLVPredictionChart', ChartLoadError),
   {
-    loading: () => (
-      <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />
-    ),
+    loading: () => <ChartSkeleton height="sm" />,
     ssr: false,
   }
 )
@@ -17,9 +16,7 @@ const CLVPredictionChart = dynamic(
 const CLVTrendChart = dynamic(
   safeLazy(() => import('./CLVTrendChart'), 'CLVTrendChart', ChartLoadError),
   {
-    loading: () => (
-      <div className="h-[var(--chart-height-sm)] w-full animate-pulse bg-muted rounded-lg" />
-    ),
+    loading: () => <ChartSkeleton height="sm" />,
     ssr: false,
   }
 )

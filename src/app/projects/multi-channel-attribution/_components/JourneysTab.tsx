@@ -1,14 +1,13 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { ChartSkeleton } from '@/components/charts/chart-skeleton'
 
 import { customerJourneyStages } from '../data/constants'
 import { formatPercent } from '../utils'
 
 const CustomerJourneyChart = dynamic(() => import('./CustomerJourneyChart'), {
-  loading: () => (
-    <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />
-  ),
+  loading: () => <ChartSkeleton />,
   ssr: false,
 })
 

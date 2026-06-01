@@ -1,30 +1,26 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { ChartSkeleton } from '@/components/charts/chart-skeleton'
 import type { YearOverYearData } from '@/types/analytics'
-
-// Chart loading skeleton
-function ChartSkeleton() {
-  return <div className="h-[300px] w-full animate-pulse bg-muted rounded-lg" />
-}
 
 // Disable SSR for chart components — they require DOM measurements (ResponsiveContainer)
 // and produce width(-1)/height(-1) warnings during static generation
 const RevenueBarChart = dynamic(() => import('./RevenueBarChart'), {
   ssr: false,
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="lg" />,
 })
 const RevenueLineChart = dynamic(() => import('./RevenueLineChart'), {
   ssr: false,
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="lg" />,
 })
 const TopPartnersChart = dynamic(() => import('./TopPartnersChart'), {
   ssr: false,
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="lg" />,
 })
 const PartnerGroupPieChart = dynamic(() => import('./PartnerGroupPieChart'), {
   ssr: false,
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="lg" />,
 })
 
 type RevenueTrendDatum = {

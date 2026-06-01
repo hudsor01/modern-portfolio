@@ -11,6 +11,7 @@ import type { GrowthData, YearOverYearData, TopPartnerData } from '@/types/analy
 import { calculateGrowth } from '../utils'
 import { ChartsGrid } from './ChartsGrid'
 import { NarrativeSections } from './NarrativeSections'
+import { ChartSkeleton } from '@/components/charts/chart-skeleton'
 
 type YearOverYearSeries = Pick<
   YearOverYearData,
@@ -28,12 +29,12 @@ type PartnerSeries = {
   tier?: string
 }
 
-// Chart loading skeleton
+// Chart loading skeleton — a 2-col grid of shared ChartSkeletons
 function ChartsSkeleton() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="h-[300px] w-full animate-pulse bg-muted rounded-lg" />
+        <ChartSkeleton key={i} height="lg" />
       ))}
     </div>
   )

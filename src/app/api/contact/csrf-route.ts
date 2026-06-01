@@ -1,32 +1,32 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { createContextLogger } from '@/lib/logger'
-import { createNewCSRFToken, csrfProtectionMiddleware } from '@/lib/csrf-protection'
+import { csrfProtectionMiddleware } from '@/lib/csrf-protection'
 
 const logger = createContextLogger('ContactCSRFRoute')
 
 /**
  * GET /api/contact/csrf
- * Get a new CSRF token for the contact form
+ * Issue (or reuse) a CSRF token for the contact form.
  */
 export async function GET(request: NextRequest) {
   try {
     logger.info('CSRF token requested')
 
-    // Apply CSRF middleware (generates new token for GET)
-    const { valid, token: _token, error } = await csrfProtectionMiddleware(request, [])
+    // The middleware issues a token for safe (GET) requests — minting + setting
+    // the cookie only when absent, reusing the existing one otherwise (its
+    // anti-rotation contract). Return that same token rather than minting a
+    // second one, so each request generates and sets at most one token.
+    const { valid, token, error } = await csrfProtectionMiddleware(request, [])
 
-    if (!valid) {
+    if (!valid || !token) {
       logger.warn('CSRF protection validation failed', { error })
       return NextResponse.json({ error: 'CSRF protection validation failed' }, { status: 403 })
     }
 
-    // Generate a fresh token
-    const newToken = await createNewCSRFToken()
-
-    logger.info('CSRF token generated successfully')
+    logger.info('CSRF token issued successfully')
 
     return NextResponse.json(
-      { token: newToken },
+      { token },
       {
         status: 200,
         headers: {
