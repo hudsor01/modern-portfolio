@@ -1,7 +1,7 @@
 'use client'
 
 import { DollarSign, Brain, Users, Calendar } from 'lucide-react'
-import { useQueryState } from 'nuqs'
+import { useTabQueryState } from '@/components/projects/use-tab-query-state'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
@@ -16,10 +16,9 @@ import { StrategicImpact } from './StrategicImpact'
 import { NarrativeSections } from './NarrativeSections'
 
 const tabs = ['overview', 'segments', 'predictions'] as const
-type Tab = (typeof tabs)[number]
 
 export default function CustomerLifetimeValueAnalytics() {
-  const [activeTab, setActiveTab] = useQueryState('tab', { defaultValue: 'overview' as Tab })
+  const { activeTab, timeframes, activeTimeframe, onTimeframeChange } = useTabQueryState(tabs)
 
   // Standardized metrics configuration using consistent data formatting
   const metrics = [
@@ -84,9 +83,9 @@ export default function CustomerLifetimeValueAnalytics() {
           { label: 'BTYD Framework', variant: 'secondary' },
         ]}
         showTimeframes={true}
-        timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
-        activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-        onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
+        timeframes={timeframes}
+        activeTimeframe={activeTimeframe}
+        onTimeframeChange={onTimeframeChange}
       >
         {/* Key Metrics using standardized MetricsGrid */}
         <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
