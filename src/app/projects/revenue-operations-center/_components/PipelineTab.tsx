@@ -1,15 +1,8 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { ChartLoadError } from '@/components/charts/chart-load-error'
 import { safeLazy } from '@/lib/safe-lazy'
-
-function ChartLoadError() {
-  return (
-    <div className="h-[var(--chart-height-md)] w-full flex items-center justify-center bg-destructive/10 rounded-lg border border-destructive/20">
-      <p className="text-destructive text-sm">Failed to load chart</p>
-    </div>
-  )
-}
 
 const PipelineHealthChart = dynamic(
   safeLazy(() => import('./PipelineHealthChart'), 'PipelineHealthChart', ChartLoadError),
