@@ -5,7 +5,11 @@ import { ChartLoadError } from '@/components/charts/chart-load-error'
 import { safeLazy } from '@/lib/safe-lazy'
 
 const RevenueOverviewChart = dynamic(
-  safeLazy(() => import('./RevenueOverviewChart'), 'RevenueOverviewChart', ChartLoadError),
+  safeLazy(
+    () => import('./RevenueOverviewChart'),
+    'RevenueOverviewChart',
+    () => <ChartLoadError height="md" />
+  ),
   {
     loading: () => (
       <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />
@@ -15,7 +19,11 @@ const RevenueOverviewChart = dynamic(
 )
 
 const OperationalMetricsChart = dynamic(
-  safeLazy(() => import('./OperationalMetricsChart'), 'OperationalMetricsChart', ChartLoadError),
+  safeLazy(
+    () => import('./OperationalMetricsChart'),
+    'OperationalMetricsChart',
+    () => <ChartLoadError height="md" />
+  ),
   {
     loading: () => (
       <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />
