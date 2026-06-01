@@ -22,7 +22,10 @@ describe('GET /api/contact/csrf-route', () => {
   })
 
   it('returns 200 with the token the middleware issued (single mint)', async () => {
-    vi.mocked(csrfProtectionMiddleware).mockResolvedValueOnce({ valid: true, token: 'a'.repeat(64) })
+    vi.mocked(csrfProtectionMiddleware).mockResolvedValueOnce({
+      valid: true,
+      token: 'a'.repeat(64),
+    })
 
     const res = await GET(req())
     expect(res.status).toBe(200)
@@ -31,7 +34,10 @@ describe('GET /api/contact/csrf-route', () => {
   })
 
   it('sets aggressive no-store cache headers (token must not be cached)', async () => {
-    vi.mocked(csrfProtectionMiddleware).mockResolvedValueOnce({ valid: true, token: 't'.repeat(64) })
+    vi.mocked(csrfProtectionMiddleware).mockResolvedValueOnce({
+      valid: true,
+      token: 't'.repeat(64),
+    })
 
     const res = await GET(req())
     expect(res.headers.get('Cache-Control')).toBe(
