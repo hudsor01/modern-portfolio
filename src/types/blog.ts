@@ -3,28 +3,20 @@
  * For row shapes, import directly from `@/db/schema` (or via `@/lib/db`).
  */
 
-import type { BlogPost, Author, Category, Tag, PostTag, NewBlogPost } from '@/db/schema'
+import type {
+  BlogPost,
+  Author,
+  Category,
+  Tag,
+  PostTag,
+  NewBlogPost,
+  PostStatus,
+  ContentType,
+} from '@/db/schema'
 
-export type { BlogPost, Author, Category, Tag, PostTag }
-
-// ============================================================================
-// BLOG ENUMS
-// ============================================================================
-
-export enum PostStatus {
-  DRAFT = 'DRAFT',
-  REVIEW = 'REVIEW',
-  SCHEDULED = 'SCHEDULED',
-  PUBLISHED = 'PUBLISHED',
-  ARCHIVED = 'ARCHIVED',
-  DELETED = 'DELETED',
-}
-
-export enum ContentType {
-  MARKDOWN = 'MARKDOWN',
-  HTML = 'HTML',
-  RICH_TEXT = 'RICH_TEXT',
-}
+// Model + enum types come from the Drizzle schema (the single source of truth
+// for PostStatus / ContentType values — see src/db/schema.ts pgEnums).
+export type { BlogPost, Author, Category, Tag, PostTag, PostStatus, ContentType }
 
 // ============================================================================
 // UTILITY TYPES — Drizzle relational shapes
