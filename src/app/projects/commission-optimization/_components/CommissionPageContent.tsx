@@ -1,7 +1,7 @@
 'use client'
 
 import { DollarSign, Percent, TrendingUp, Calculator } from 'lucide-react'
-import { useQueryState } from 'nuqs'
+import { useTabQueryState } from '@/components/projects/use-tab-query-state'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
@@ -17,10 +17,9 @@ import { NarrativeSections } from './NarrativeSections'
 import type { MetricConfig } from '@/types/design-system'
 
 const tabs = ['overview', 'tiers', 'incentives', 'automation'] as const
-type Tab = (typeof tabs)[number]
 
 export default function CommissionOptimization() {
-  const [activeTab, setActiveTab] = useQueryState('tab', { defaultValue: 'overview' as Tab })
+  const { activeTab, timeframes, activeTimeframe, onTimeframeChange } = useTabQueryState(tabs)
 
   // Standardized metrics configuration using design system types
   const metrics: MetricConfig[] = [
@@ -91,9 +90,9 @@ export default function CommissionOptimization() {
           },
         ]}
         showTimeframes={true}
-        timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
-        activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-        onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
+        timeframes={timeframes}
+        activeTimeframe={activeTimeframe}
+        onTimeframeChange={onTimeframeChange}
       >
         {/* Standardized Key Metrics Grid */}
         <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
