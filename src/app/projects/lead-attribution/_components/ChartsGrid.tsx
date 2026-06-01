@@ -1,19 +1,16 @@
 'use client'
 
 import type { ComponentType, SVGProps } from 'react'
+import { ChartLoadError } from '@/components/charts/chart-load-error'
 import dynamic from 'next/dynamic'
 import { safeLazy } from '@/lib/safe-lazy'
 
-function ChartLoadError() {
-  return (
-    <div className="h-[var(--chart-height-md)] w-full flex items-center justify-center bg-destructive/10 rounded-lg border border-destructive/20">
-      <p className="text-destructive text-sm">Failed to load chart</p>
-    </div>
-  )
-}
-
 const LeadSourcePieChart = dynamic(
-  safeLazy(() => import('./LeadSourcePieChart'), 'LeadSourcePieChart', ChartLoadError),
+  safeLazy(
+    () => import('./LeadSourcePieChart'),
+    'LeadSourcePieChart',
+    () => <ChartLoadError height="md" />
+  ),
   {
     loading: () => (
       <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />

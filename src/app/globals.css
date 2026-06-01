@@ -41,13 +41,6 @@ label[for],
 }
 
 @layer utilities {
-  @keyframes fadeInUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
   @keyframes shimmer {
     0% {
       background-position: -200% 0;
@@ -233,29 +226,7 @@ label[for],
 
 /* ============================================
    Luxury Minimalist Animation System
-   (consolidated from src/styles/animations.css)
    ============================================ */
-
-@keyframes subtleScale {
-  from {
-    transform: scale(0.98);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-
-.animate-fade-in-up {
-  opacity: 0;
-  animation: fadeInUp var(--motion-duration-normal) cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-scale-in {
-  animation: subtleScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
 
 .animate-pulse {
   animation: pulse 2s ease-in-out infinite;
@@ -291,7 +262,6 @@ label[for],
 
 /* ============================================
    Responsive Design Utilities and Mobile-First Patterns
-   (consolidated from src/styles/responsive-utilities.css)
    ============================================ */
 
 /* aspect-square / aspect-video mirror Tailwind v4's native utilities and are

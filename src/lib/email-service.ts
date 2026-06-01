@@ -89,9 +89,15 @@ export class EmailService {
       })
 
       if (contactResult.error) {
+        // Resend's error is an object ({ message, name, statusCode }); String()
+        // would stringify it to "[object Object]" and lose the reason. Keep the
+        // human-readable message on the Error and the full object as context.
         logger.error(
           'Failed to send contact notification',
-          new Error(String(contactResult.error) || 'Unknown error')
+          new Error(contactResult.error.message),
+          {
+            resendError: contactResult.error,
+          }
         )
         return {
           success: false,
@@ -111,7 +117,7 @@ export class EmailService {
 
         // Auto-reply failure is not critical
         if (autoReplyResult.error) {
-          emailLogger.warn('Failed to send auto-reply', { error: String(autoReplyResult.error) })
+          emailLogger.warn('Failed to send auto-reply', { resendError: autoReplyResult.error })
         } else {
           autoReplyEmailId = autoReplyResult.data?.id
         }

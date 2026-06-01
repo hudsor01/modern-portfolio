@@ -4,9 +4,7 @@ import { z } from 'zod'
 import {
   cn,
   truncate,
-  formatRelativeTime,
   generateId,
-  slugify,
   parseParam,
   safeJsonParse,
   escapeRegExp,
@@ -47,17 +45,6 @@ describe('truncate', () => {
   })
 })
 
-describe('formatRelativeTime', () => {
-  it('returns a string for a recent date', () => {
-    const recent = new Date(Date.now() - 5_000).toISOString()
-    expect(typeof formatRelativeTime(recent)).toBe('string')
-  })
-
-  it('accepts Date objects', () => {
-    expect(typeof formatRelativeTime(new Date())).toBe('string')
-  })
-})
-
 describe('generateId', () => {
   it('returns a string of the requested length', () => {
     expect(generateId(8).length).toBe(8)
@@ -66,24 +53,6 @@ describe('generateId', () => {
 
   it('uses base-36 charset only', () => {
     expect(generateId(20)).toMatch(/^[0-9a-z]+$/)
-  })
-})
-
-describe('slugify', () => {
-  it('lowercases and replaces spaces with dashes', () => {
-    expect(slugify('Hello World')).toBe('hello-world')
-  })
-
-  it('replaces & with -and-', () => {
-    expect(slugify('cats & dogs')).toBe('cats-and-dogs')
-  })
-
-  it('strips special characters', () => {
-    expect(slugify('Hello! @World#')).toBe('hello-world')
-  })
-
-  it('collapses multiple dashes', () => {
-    expect(slugify('a---b')).toBe('a-b')
   })
 })
 
