@@ -1,5 +1,6 @@
 'use client'
 import { memo } from 'react'
+import { formatCurrencyCompact0 } from '@/lib/data-formatters'
 
 import { LazyLineChart as LineChart } from '@/components/charts/lazy-charts'
 import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
@@ -84,16 +85,6 @@ const chartColors = {
 }
 
 const RevenueOverviewChart = memo(function RevenueOverviewChart() {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-      notation: 'compact',
-    }).format(value)
-  }
-
   return (
     <div className="h-[var(--chart-height-md)]">
       <ResponsiveContainer width="100%" height="100%">
@@ -111,7 +102,7 @@ const RevenueOverviewChart = memo(function RevenueOverviewChart() {
             fontSize={12}
             tickLine={false}
             axisLine={{ stroke: chartColors.axis, strokeOpacity: 0.5 }}
-            tickFormatter={(value) => formatCurrency(value)}
+            tickFormatter={(value) => formatCurrencyCompact0(value)}
           />
           <Tooltip
             contentStyle={{
@@ -131,7 +122,7 @@ const RevenueOverviewChart = memo(function RevenueOverviewChart() {
                 total: 'Total Revenue',
                 target: 'Target',
               }
-              return [formatCurrency(safeValue), labels[safeName] || safeName]
+              return [formatCurrencyCompact0(safeValue), labels[safeName] || safeName]
             }}
           />
           <Legend />

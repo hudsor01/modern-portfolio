@@ -1,21 +1,13 @@
 'use client'
 
 import { memo } from 'react'
+import { formatCurrency } from '@/lib/data-formatters'
 import { LazyBarChart as BarChart } from '@/components/charts/lazy-charts'
 import { Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
 import { chartColors, chartCssVars } from '@/lib/charts'
 import { customerSegmentChartData } from '../data/constants'
 
 const CustomerSegmentChart = memo(function CustomerSegmentChart() {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value)
-  }
-
   return (
     <div className="h-[var(--chart-height-md)]">
       <ResponsiveContainer width="100%" height="100%">

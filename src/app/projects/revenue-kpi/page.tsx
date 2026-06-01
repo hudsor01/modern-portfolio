@@ -1,4 +1,3 @@
-import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
@@ -7,47 +6,18 @@ import { monthlyRevenue2024, partnerGroupsData } from '@/app/projects/data/partn
 
 import { RevenueKPIClient } from './_components/RevenueKPIClient'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { generateMetadata as genMeta } from '@/app/shared-metadata'
 
 export const dynamic = 'force-static'
 
-const ogImageUrl = canonicalUrl(
-  `/api/og?${new URLSearchParams({
-    title: 'Revenue KPI Dashboard - Partner Analytics & Business Intelligence',
-    subtitle: 'Revenue Operations Project',
-  }).toString()}`
-)
-
-export const metadata: Metadata = {
+export const metadata = genMeta({
   title: 'Revenue KPI Dashboard - Partner Analytics & Business Intelligence',
   description:
     'Real-time revenue analytics dashboard featuring partner performance metrics, growth trends, and business intelligence for data-driven decision making. Built with React, TypeScript, and Recharts.',
-  openGraph: {
-    title: 'Revenue KPI Dashboard - Partner Analytics & Business Intelligence',
-    description:
-      'Real-time revenue analytics dashboard featuring partner performance metrics, growth trends, and business intelligence for data-driven decision making. Built with React, TypeScript, and Recharts.',
-    url: canonicalUrl('/projects/revenue-kpi'),
-    siteName: 'Richard Hudson',
-    images: [
-      {
-        url: ogImageUrl,
-        width: 1200,
-        height: 630,
-        alt: 'Revenue KPI Dashboard - Partner Analytics & Business Intelligence',
-      },
-    ],
-    type: 'article',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Revenue KPI Dashboard - Partner Analytics & Business Intelligence',
-    description:
-      'Real-time revenue analytics dashboard featuring partner performance metrics, growth trends, and business intelligence for data-driven decision making. Built with React, TypeScript, and Recharts.',
-    images: [ogImageUrl],
-  },
-  alternates: {
-    canonical: canonicalUrl('/projects/revenue-kpi'),
-  },
-}
+  path: '/projects/revenue-kpi',
+  subtitle: 'Revenue Operations Project',
+  ogType: 'article',
+})
 
 /**
  * Revenue KPI Dashboard - Server Component

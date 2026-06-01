@@ -14,14 +14,8 @@ import {
   type SQL,
 } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import {
-  blogPosts,
-  postTags,
-  type Author,
-  type Category,
-  type Tag,
-  type BlogPost,
-} from '@/db/schema'
+import { blogPosts, postTags, type BlogPost } from '@/db/schema'
+import type { BlogPostWithRelations } from '@/types/blog'
 import type {
   BlogPostFilters,
   BlogPostSort,
@@ -30,6 +24,10 @@ import type {
   BlogTagData,
   ApiResponse,
 } from '@/types/api'
+
+// Re-export so existing `import { BlogPostWithRelations } from '@/lib/api-blog'`
+// callers keep working; the canonical definition lives in @/types/blog.
+export type { BlogPostWithRelations }
 
 export function generateSlug(text: string): string {
   return text
@@ -93,14 +91,6 @@ export function transformToTagData(tag: {
     totalViews: tag.totalViews,
     createdAt: tag.createdAt.toISOString(),
   }
-}
-
-// Shape returned by the canonical Drizzle query (relational findFirst/findMany
-// with `with: { author, category, tags: { with: { tag } } }`).
-export type BlogPostWithRelations = BlogPost & {
-  author: Author | null
-  category: Category | null
-  tags: Array<{ tag: Tag }>
 }
 
 /**

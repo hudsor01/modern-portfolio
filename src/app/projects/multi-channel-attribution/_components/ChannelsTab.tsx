@@ -1,14 +1,13 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { ChartSkeleton } from '@/components/charts/chart-skeleton'
 
 import { channelPerformance } from '../data/constants'
 import { formatCurrency, formatPercent } from '../utils'
 
 const TouchpointAnalysisChart = dynamic(() => import('./TouchpointAnalysisChart'), {
-  loading: () => (
-    <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />
-  ),
+  loading: () => <ChartSkeleton />,
   ssr: false,
 })
 

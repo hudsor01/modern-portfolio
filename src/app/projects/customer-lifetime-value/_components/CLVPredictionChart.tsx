@@ -1,5 +1,6 @@
 'use client'
 import { memo } from 'react'
+import { formatCurrency } from '@/lib/data-formatters'
 
 import { LazyScatterChart as ScatterChart } from '@/components/charts/lazy-charts'
 import {
@@ -23,15 +24,6 @@ const scatterSegmentColors = {
 }
 
 const CLVPredictionChart = memo(function CLVPredictionChart() {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value)
-  }
-
   return (
     <div className="h-[var(--chart-height-md)]">
       <ResponsiveContainer width="100%" height="100%">

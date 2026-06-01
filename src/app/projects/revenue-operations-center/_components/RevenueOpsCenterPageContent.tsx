@@ -1,9 +1,10 @@
 'use client'
 
 import { Suspense, useMemo } from 'react'
+import { ChartSkeleton } from '@/components/charts/chart-skeleton'
 import nextDynamic from 'next/dynamic'
 import { DollarSign, Target, BarChart3, Users, Activity } from 'lucide-react'
-import { useQueryState } from 'nuqs'
+import { useTabQueryState } from '@/components/projects/use-tab-query-state'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { revenueMetrics } from '../data/constants'
@@ -19,7 +20,7 @@ function TabSkeleton() {
   return (
     <div className="glass rounded-2xl p-8 mb-12">
       <div className="h-8 w-64 bg-muted animate-pulse rounded mb-4" />
-      <div className="h-[300px] w-full bg-muted animate-pulse rounded-lg" />
+      <ChartSkeleton height="lg" />
     </div>
   )
 }
@@ -55,10 +56,9 @@ const OperationsTab = nextDynamic(
 )
 
 const tabs = ['overview', 'pipeline', 'forecasting', 'operations'] as const
-type Tab = (typeof tabs)[number]
 
 export default function RevenueOperationsCenter() {
-  const [activeTab, setActiveTab] = useQueryState('tab', { defaultValue: 'overview' as Tab })
+  const { activeTab, timeframes, activeTimeframe, onTimeframeChange } = useTabQueryState(tabs)
 
   // Memoize metrics to prevent recreation on every render
   const metrics = useMemo(
@@ -128,9 +128,9 @@ export default function RevenueOperationsCenter() {
           { label: 'Operations Dashboard', variant: 'secondary' },
         ]}
         showTimeframes={true}
-        timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1))}
-        activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-        onTimeframeChange={(timeframe) => setActiveTab(timeframe.toLowerCase() as Tab)}
+        timeframes={timeframes}
+        activeTimeframe={activeTimeframe}
+        onTimeframeChange={onTimeframeChange}
       >
         {/* Key Metrics using standardized MetricsGrid */}
         <MetricsGrid metrics={metrics} columns={4} className="mb-12" />

@@ -4,6 +4,7 @@ import { memo } from 'react'
 import { LazyBarChart as BarChart } from '@/components/charts/lazy-charts'
 import { Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
 import { chartColors as baseChartColors, chartCssVars } from '@/lib/charts'
+import { formatCurrency } from '@/lib/data-formatters'
 
 // Performance incentive program data
 const data = [
@@ -55,15 +56,10 @@ const chartColors = {
 }
 
 const PerformanceIncentiveChart = memo(function PerformanceIncentiveChart() {
-  const formatCurrency = (value: number | undefined) => {
-    if (value === undefined) return ''
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value)
-  }
+  // Thin undefined-guard over the canonical formatter (recharts may pass
+  // undefined for empty data points).
+  const formatCurrencyValue = (value: number | undefined) =>
+    value === undefined ? '' : formatCurrency(value)
 
   return (
     <div className="h-[var(--chart-height-md)]">
@@ -86,7 +82,7 @@ const PerformanceIncentiveChart = memo(function PerformanceIncentiveChart() {
             fontSize={12}
             tickLine={false}
             axisLine={{ stroke: chartColors.axis, strokeOpacity: 0.5 }}
-            tickFormatter={(value) => formatCurrency(value)}
+            tickFormatter={(value) => formatCurrencyValue(value)}
           />
           <YAxis
             yAxisId="effectiveness"

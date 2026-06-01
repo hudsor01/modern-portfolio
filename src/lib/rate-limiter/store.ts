@@ -74,6 +74,10 @@ export class RateLimiter implements Disposable {
     }
   ): RateLimitResult {
     const now = Date.now()
+    // blockDuration is optional on the config type (presets may omit it); it is
+    // only ever read under a `progressivePenalty` guard, but resolve it once here
+    // so the penalty math never sees undefined.
+    const blockDuration = config.blockDuration ?? 0
 
     // Check whitelist/blacklist first (per-route config + runtime overrides)
     if (config.whitelist?.includes(identifier) || this.dynamicWhitelist.has(identifier)) {
@@ -149,7 +153,7 @@ export class RateLimiter implements Disposable {
     if (config.progressivePenalty && record.penalties > 0) {
       const penaltyMultiplier = record.suspicious ? 2 : 1
       const blockUntil =
-        record.lastAttempt + config.blockDuration * 2 ** (record.penalties - 1) * penaltyMultiplier
+        record.lastAttempt + blockDuration * 2 ** (record.penalties - 1) * penaltyMultiplier
 
       if (now < blockUntil) {
         this.analytics.blockedRequests++
@@ -192,8 +196,7 @@ export class RateLimiter implements Disposable {
 
       const penaltyMultiplier = record.suspicious ? 2 : 1
       const retryAfter = config.progressivePenalty
-        ? record.lastAttempt +
-          config.blockDuration * 2 ** (record.penalties - 1) * penaltyMultiplier
+        ? record.lastAttempt + blockDuration * 2 ** (record.penalties - 1) * penaltyMultiplier
         : record.resetTime
 
       this.analytics.blockedRequests++

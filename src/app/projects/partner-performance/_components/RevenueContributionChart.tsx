@@ -1,5 +1,6 @@
 'use client'
 import { memo } from 'react'
+import { formatCurrency } from '@/lib/data-formatters'
 
 import { LazyPieChart as PieChart } from '@/components/charts/lazy-charts'
 import { Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
@@ -33,15 +34,6 @@ const data = [
 const COLORS = data.map((item) => item.color)
 
 const RevenueContributionChart = memo(function RevenueContributionChart() {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value)
-  }
-
   return (
     <div className="h-[var(--chart-height-md)]">
       <ResponsiveContainer width="100%" height="100%">

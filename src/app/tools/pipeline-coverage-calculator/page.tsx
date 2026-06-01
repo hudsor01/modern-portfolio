@@ -1,22 +1,15 @@
-import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
 import { FAQPageJsonLd } from '@/components/seo/json-ld/faq-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { generateMetadata as genMeta } from '@/app/shared-metadata'
 import { PipelineCoverageCalculator } from './_components/pipeline-coverage-calculator'
 
 const PATH = '/tools/pipeline-coverage-calculator'
 const TITLE = 'Pipeline Coverage Calculator — Win-Rate-Driven (Not the 3× Rule)'
 const DESCRIPTION =
   'Free pipeline coverage calculator. Enter your win rate and revenue target to get the exact coverage ratio and qualified pipeline you actually need — driven by win rate, not the generic 3× rule.'
-
-const OG_IMAGE = canonicalUrl(
-  `/api/og?${new URLSearchParams({
-    title: 'Pipeline Coverage Calculator',
-    subtitle: 'Win-rate-driven, not the 3× rule',
-  }).toString()}`
-)
 
 const FAQS: Array<{ question: string; answer: string }> = [
   {
@@ -46,9 +39,13 @@ const FAQS: Array<{ question: string; answer: string }> = [
   },
 ]
 
-export const metadata: Metadata = {
+export const metadata = genMeta({
   title: TITLE,
   description: DESCRIPTION,
+  path: PATH,
+  ogTitle: 'Pipeline Coverage Calculator',
+  subtitle: 'Win-rate-driven, not the 3× rule',
+  ogAlt: 'Pipeline Coverage Calculator',
   keywords: [
     'pipeline coverage calculator',
     'pipeline coverage ratio',
@@ -57,22 +54,7 @@ export const metadata: Metadata = {
     'required pipeline coverage',
     'win rate coverage ratio',
   ],
-  alternates: { canonical: canonicalUrl(PATH) },
-  openGraph: {
-    title: TITLE,
-    description: DESCRIPTION,
-    url: canonicalUrl(PATH),
-    type: 'website',
-    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: 'Pipeline Coverage Calculator' }],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    creator: '@hudsor01',
-    title: TITLE,
-    description: DESCRIPTION,
-    images: [OG_IMAGE],
-  },
-}
+})
 
 export default function PipelineCoverageCalculatorPage() {
   return (

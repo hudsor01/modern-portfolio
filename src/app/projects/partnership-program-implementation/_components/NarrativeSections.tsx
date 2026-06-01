@@ -1,13 +1,14 @@
 'use client'
 
+import { SectionCard } from '@/components/ui/section-card'
+import { FeatureCard } from '@/components/projects/shared/feature-card'
+import { ResultCard } from '@/components/projects/shared/result-card'
+
 export function NarrativeSections() {
   return (
     <div className="space-y-16 mb-16">
       {/* Situation */}
-      <div className="bg-card border border-border rounded-2xl p-8">
-        <h2 className="font-display text-2xl md:text-3xl font-semibold text-foreground mb-6">
-          Situation
-        </h2>
+      <SectionCard title="Situation" padding="lg">
         <div className="space-y-4 text-muted-foreground">
           <p className="text-lg leading-relaxed">
             When I was brought in to evaluate revenue diversification opportunities, I discovered
@@ -23,13 +24,10 @@ export function NarrativeSections() {
             approached us proactively.
           </p>
         </div>
-      </div>
+      </SectionCard>
 
       {/* Task */}
-      <div className="bg-card border border-border rounded-2xl p-8">
-        <h2 className="font-display text-2xl md:text-3xl font-semibold text-foreground mb-6">
-          Task
-        </h2>
+      <SectionCard title="Task" padding="lg">
         <div className="space-y-4 text-muted-foreground">
           <p className="leading-relaxed">
             I was tasked with designing and building the company's first-ever enterprise partnership
@@ -47,13 +45,10 @@ export function NarrativeSections() {
             <li>Establish partner portal with self-service capabilities</li>
           </ul>
         </div>
-      </div>
+      </SectionCard>
 
       {/* Action */}
-      <div className="bg-card border border-border rounded-2xl p-8">
-        <h2 className="font-display text-2xl md:text-3xl font-semibold text-foreground mb-6">
-          Action
-        </h2>
+      <SectionCard title="Action" padding="lg">
         <div className="space-y-6 text-muted-foreground">
           <p className="text-lg leading-relaxed">
             I personally led the complete design and implementation of the partnership program,
@@ -61,8 +56,7 @@ export function NarrativeSections() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-muted/50 rounded-xl p-6 border border-border">
-              <h3 className="font-semibold text-secondary mb-4">Program Architecture I Designed</h3>
+            <FeatureCard title="Program Architecture I Designed" titleVariant="secondary">
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>Multi-tier partner classification with clear advancement criteria</li>
                 <li>Automated onboarding with document verification and compliance checks</li>
@@ -70,9 +64,8 @@ export function NarrativeSections() {
                 <li>Performance-based tier advancement algorithms I implemented</li>
                 <li>Partner portal I built with self-service deal registration</li>
               </ul>
-            </div>
-            <div className="bg-muted/50 rounded-xl p-6 border border-border">
-              <h3 className="font-semibold text-primary mb-4">Technical Systems I Built</h3>
+            </FeatureCard>
+            <FeatureCard title="Technical Systems I Built" titleVariant="primary">
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>Salesforce CRM integration for lead management and attribution</li>
                 <li>Real-time commission calculation engine I designed from scratch</li>
@@ -80,7 +73,7 @@ export function NarrativeSections() {
                 <li>Automated payment processing and dispute resolution workflows</li>
                 <li>API integrations connecting billing, support, and partner systems</li>
               </ul>
-            </div>
+            </FeatureCard>
           </div>
 
           <p className="leading-relaxed mt-4">
@@ -89,13 +82,10 @@ export function NarrativeSections() {
             capabilities.
           </p>
         </div>
-      </div>
+      </SectionCard>
 
       {/* Result */}
-      <div className="bg-card border border-border rounded-2xl p-8">
-        <h2 className="font-display text-2xl md:text-3xl font-semibold text-foreground mb-6">
-          Result
-        </h2>
+      <SectionCard title="Result" padding="lg">
         <div className="space-y-6 text-muted-foreground">
           <p className="text-lg leading-relaxed">
             The partnership program I built became a strategic revenue channel, fundamentally
@@ -104,22 +94,10 @@ export function NarrativeSections() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-primary/10 border border-primary/20 rounded-xl p-6 text-center">
-              <div className="text-2xl font-bold text-primary mb-2">47</div>
-              <div className="text-sm text-muted-foreground">Active Partners I Onboarded</div>
-            </div>
-            <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-6 text-center">
-              <div className="text-2xl font-bold text-secondary mb-2">90%+</div>
-              <div className="text-sm text-muted-foreground">Process Automation I Achieved</div>
-            </div>
-            <div className="bg-accent/10 border border-accent/20 rounded-xl p-6 text-center">
-              <div className="text-2xl font-bold text-accent mb-2">35%</div>
-              <div className="text-sm text-muted-foreground">Revenue Growth from Partners</div>
-            </div>
-            <div className="bg-primary/10 border border-primary/20 rounded-xl p-6 text-center">
-              <div className="text-2xl font-bold text-primary mb-2">15 Days</div>
-              <div className="text-sm text-muted-foreground">Average Onboarding Time</div>
-            </div>
+            <ResultCard value="47" label="Active Partners I Onboarded" variant="primary" />
+            <ResultCard value="90%+" label="Process Automation I Achieved" variant="secondary" />
+            <ResultCard value="35%" label="Revenue Growth from Partners" variant="accent" />
+            <ResultCard value="15 Days" label="Average Onboarding Time" variant="primary" />
           </div>
 
           <div className="space-y-3 mt-6">
@@ -133,7 +111,7 @@ export function NarrativeSections() {
             </ul>
           </div>
         </div>
-      </div>
+      </SectionCard>
     </div>
   )
 }

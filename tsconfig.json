@@ -58,9 +58,6 @@
       "@/app/*": [
         "./src/app/*"
       ],
-      "@/styles/*": [
-        "./src/styles/*"
-      ],
       "@/content/*": [
         "./src/content/*"
       ],

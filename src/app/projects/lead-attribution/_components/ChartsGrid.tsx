@@ -1,6 +1,7 @@
 'use client'
 
 import type { ComponentType, SVGProps } from 'react'
+import { ChartSkeleton } from '@/components/charts/chart-skeleton'
 import { ChartLoadError } from '@/components/charts/chart-load-error'
 import dynamic from 'next/dynamic'
 import { safeLazy } from '@/lib/safe-lazy'
@@ -12,9 +13,7 @@ const LeadSourcePieChart = dynamic(
     () => <ChartLoadError height="md" />
   ),
   {
-    loading: () => (
-      <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />
-    ),
+    loading: () => <ChartSkeleton />,
     ssr: false,
   }
 )
