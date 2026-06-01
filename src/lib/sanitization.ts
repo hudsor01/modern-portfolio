@@ -33,20 +33,6 @@ export function stripCrlf(value: string): string {
   return value.replace(/[\r\n]+/g, ' ')
 }
 
-/**
- * Client-Safe HTML Sanitization
- * Used in Client Components to avoid Vercel serverless costs
- * For use in Client Components only - do NOT import in Server Components.
- *
- * Uses plain `dompurify` (not `isomorphic-dompurify`). Plain dompurify's
- * module-load is side-effect-free; the factory only touches `window` when
- * `.sanitize()` is called. `isomorphic-dompurify` pulled `jsdom` into the
- * server bundle and 500'd every /blog/[slug] render under Next.js 16 /
- * Turbopack because jsdom's runtime `data/patch.json` lookup fails.
- * Calling sanitizeBlogHtml/stripHtml on the server will throw — by
- * contract they are client-only.
- */
-
 // Whitespace strip used before scheme parsing. Byte-identical to DOMPurify's
 // ATTR_WHITESPACE (github.com/cure53/DOMPurify/blob/main/src/regexp.ts) and
 // a strict superset of the WHATWG URL parser's strip set

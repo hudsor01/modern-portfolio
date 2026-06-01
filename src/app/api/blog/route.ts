@@ -21,7 +21,7 @@ import {
   createErrorResponse,
   generateSlug,
 } from '@/lib/api-blog'
-import { createBlogPostSchema } from '@/lib/schemas'
+import { createBlogPostSchema, PostStatusSchema } from '@/lib/schemas'
 import { SITE_ORIGIN, canonicalUrl } from '@/lib/absolute-url'
 
 // POST/PUT contract asymmetry (kept here so a future admin client knows
@@ -64,8 +64,23 @@ export async function GET(request: NextRequest) {
     const filters: BlogPostFilters = {}
     const isAdmin = isAdminRequest(request)
 
-    if (searchParams.get('status')) {
-      filters.status = searchParams.get('status')!
+    const statusParam = searchParams.get('status')
+    if (statusParam) {
+      // Validate against the PostStatus enum before it reaches the Drizzle
+      // inArray() clause. An invalid value would otherwise be cast straight into
+      // the Postgres enum column and rejected at query time → a 500, when the
+      // correct response to bad client input is a 400. Supports comma-separated
+      // multi-status to match buildBlogWhereClause's array handling.
+      const candidates = statusParam.split(',')
+      if (candidates.some((s) => !PostStatusSchema.safeParse(s).success)) {
+        return NextResponse.json(
+          createErrorResponse(
+            'Invalid status; must be one of DRAFT, REVIEW, SCHEDULED, PUBLISHED, ARCHIVED, DELETED'
+          ),
+          { status: 400 }
+        )
+      }
+      filters.status = candidates
     }
     if (searchParams.get('authorId')) {
       filters.authorId = searchParams.get('authorId')!
@@ -315,9 +330,6 @@ export async function POST(request: NextRequest) {
           })
       }
     }
-    // Note: the contact-form removed `Pre-existing POST/PUT contract
-    // doc-comment now lives at the top of this file` covers default
-    // semantics already.
 
     const response: ApiResponse<BlogPostData> = {
       data: transformToBlogPostData(newPost),

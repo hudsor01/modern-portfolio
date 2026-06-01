@@ -1,6 +1,6 @@
 /**
  * Comprehensive Chart System
- * Consolidates chart colors, themes, utilities, and validators
+ * Consolidates chart colors, themes, styles, and value formatters
  */
 
 import { CHART_FORMAT_TYPES } from '@/types/chart'

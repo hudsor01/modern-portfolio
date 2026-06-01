@@ -105,8 +105,8 @@ Seed (`drizzle/seed.ts`): upsert-based, idempotent. Seeds 1 author, categories, 
 | `/api/security/metrics` | GET | — | — | `METRICS_API_TOKEN` (header `X-Metrics-Token`) | Exports rate-limiter metrics |
 
 Rate limiter (`src/lib/rate-limiter/store.ts`): in-memory `Map` singleton, LRU eviction every 5 min, exponential progressive penalty with 2× multiplier. Two preset surfaces:
-- `RateLimitPresets` (`src/lib/api-rate-limit.ts:32`): `read` (100/min, burst 120/5s), `write` (30/hr, 15-min block), `sensitive` (10/hr, 30-min block).
-- `RateLimitConfigs` (`src/lib/rate-limiter/configs.ts:6`): `contactForm`, `api`, `auth`, `upload`.
+- `RateLimitPresets` (`src/lib/api-rate-limit.ts`): `read` (100/min, burst 120/5s), `sensitive` (10/hr, 30-min block).
+- `RateLimitConfigs` (`src/lib/rate-limiter/configs.ts`): `contactForm`.
 
 Use `checkRateLimitOrRespond(request, preset, path, method)` → returns a `NextResponse` (429) to short-circuit, or `null` to proceed.
 
