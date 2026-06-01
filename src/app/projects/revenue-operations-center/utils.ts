@@ -1,15 +1,7 @@
-// Utility functions for revenue operations center page
-
-export function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: value >= 1000000 ? 1 : 0,
-    notation: value >= 1000000 ? 'compact' : 'standard',
-  }).format(value)
-}
-
-export function formatPercent(value: number): string {
-  return `${value.toFixed(1)}%`
-}
+// Formatters re-exported from the canonical @/lib/data-formatters so this
+// project page shares one implementation. formatCurrency switches to 1-decimal
+// Intl-compact at/above $1M; formatPercent = plain "NN.N%".
+export {
+  formatCurrencyCompactMillions as formatCurrency,
+  formatPercentPlain as formatPercent,
+} from '@/lib/data-formatters'
