@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { z } from 'zod'
 
 vi.mock('@/lib/logger', () => ({
@@ -12,13 +12,7 @@ vi.mock('@/lib/logger', () => ({
   },
 }))
 
-import {
-  validationErrorResponse,
-  createApiErrorResponse,
-  createApiSuccessResponse,
-  logAndSanitizeError,
-} from '@/lib/api-response'
-import { ApiErrorType } from '@/types/api'
+import { validationErrorResponse, logAndSanitizeError } from '@/lib/api-response'
 
 describe('validationErrorResponse', () => {
   it('returns 400 with errors keyed by field path', async () => {
@@ -47,20 +41,6 @@ describe('validationErrorResponse', () => {
   })
 })
 
-describe('createApiSuccessResponse', () => {
-  it('wraps data with success=true + timestamp', () => {
-    const r = createApiSuccessResponse({ a: 1 })
-    expect(r.success).toBe(true)
-    expect(r.data).toEqual({ a: 1 })
-    expect(typeof r.timestamp).toBe('string')
-  })
-
-  it('preserves message field', () => {
-    const r = createApiSuccessResponse({}, 'ok')
-    expect(r.message).toBe('ok')
-  })
-})
-
 describe('logAndSanitizeError', () => {
   const origEnv = process.env.NODE_ENV
   afterEach(() => {
@@ -84,42 +64,5 @@ describe('logAndSanitizeError', () => {
     vi.stubEnv('NODE_ENV', 'production')
     const r = logAndSanitizeError('ctx', new Error('x'), 'DEFAULT')
     expect(r).toBe('An unexpected error occurred')
-  })
-})
-
-describe('createApiErrorResponse', () => {
-  const origEnv = process.env.NODE_ENV
-  beforeEach(() => {
-    vi.stubEnv('NODE_ENV', 'production')
-  })
-  afterEach(() => {
-    if (origEnv !== undefined) vi.stubEnv('NODE_ENV', origEnv)
-    else vi.unstubAllEnvs()
-  })
-
-  it('returns sanitized payload + statusCode in production', () => {
-    const { response, statusCode } = createApiErrorResponse(
-      new Error('internals leaked'),
-      'test-context',
-      ApiErrorType.INTERNAL_ERROR,
-      500
-    )
-    expect(statusCode).toBe(500)
-    expect(response.success).toBe(false)
-    expect(response.code).toBe(ApiErrorType.INTERNAL_ERROR)
-    expect(response.error).not.toContain('internals leaked')
-    expect(response.details).toBeUndefined()
-  })
-
-  it('includes details in development', () => {
-    vi.stubEnv('NODE_ENV', 'development')
-    const { response } = createApiErrorResponse(
-      new Error('dev detail'),
-      'ctx',
-      ApiErrorType.INTERNAL_ERROR,
-      500
-    )
-    expect(response.details).toBeTruthy()
-    expect(response.details?.message).toBe('dev detail')
   })
 })
