@@ -57,11 +57,7 @@ vi.mock('next/headers', () => ({
   cookies: vi.fn(() => ({ getAll: vi.fn(() => []), setAll: vi.fn() })),
 }))
 
-import {
-  validationErrorResponse,
-  logAndSanitizeError,
-  createApiSuccessResponse,
-} from '@/lib/api-response'
+import { validationErrorResponse, logAndSanitizeError } from '@/lib/api-response'
 import { getClientIdentifier } from '@/lib/api-request'
 import { parsePaginationParams, createPaginationMeta } from '@/lib/api-pagination'
 
@@ -205,28 +201,5 @@ describe('logAndSanitizeError', () => {
     const error = new Error('Some internal error')
     const result = logAndSanitizeError('test context', error, 'DEFAULT')
     expect(result).toBe('An unexpected error occurred')
-  })
-})
-
-// ============================================================================
-// createApiSuccessResponse — standardized success response object
-// ============================================================================
-
-describe('createApiSuccessResponse', () => {
-  it('returns object with success: true and the data', () => {
-    const result = createApiSuccessResponse({ items: [1, 2, 3] })
-    expect(result.success).toBe(true)
-    expect(result.data).toEqual({ items: [1, 2, 3] })
-  })
-
-  it('includes optional message when provided', () => {
-    const result = createApiSuccessResponse({ ok: true }, 'Operation complete')
-    expect(result.message).toBe('Operation complete')
-  })
-
-  it('includes a timestamp string', () => {
-    const result = createApiSuccessResponse({})
-    expect(typeof result.timestamp).toBe('string')
-    expect(result.timestamp.length).toBeGreaterThan(0)
   })
 })

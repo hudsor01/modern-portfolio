@@ -2,9 +2,6 @@
 
 /* ============================================
    Interactive-element transitions + hover-lift
-   (the rest of the consolidated interaction-patterns block —
-   hover-*, click-*, interact-*, glow-*, focus-enhanced, etc. —
-   had zero source references and was removed)
    ============================================ */
 a,
 button,
@@ -264,11 +261,8 @@ label[for],
    Responsive Design Utilities and Mobile-First Patterns
    ============================================ */
 
-/* aspect-square / aspect-video mirror Tailwind v4's native utilities and are
-   kept for explicitness; the rest of the consolidated responsive-utilities
-   block (fluid type/spacing, container queries, grid-auto, touch-target,
-   device/scheme/print variant utilities, will-change, contain) was unused
-   across the entire codebase and removed. */
+/* aspect-square / aspect-video mirror Tailwind v4's native utilities, kept
+   explicit for use in project galleries. */
 .aspect-square { aspect-ratio: 1 / 1; }
 .aspect-video { aspect-ratio: 16 / 9; }
 

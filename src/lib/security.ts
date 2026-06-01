@@ -1,28 +1,17 @@
 /**
- * Security Configuration
- * Central configuration for all security-related settings
+ * Rate-limiter tuning — the single source consumed by
+ * src/lib/rate-limiter/store.ts.
+ *
+ * NOTE: HTTP security headers (X-Frame-Options, HSTS, Referrer-Policy,
+ * Permissions-Policy, etc.) are NOT configured here. They live in
+ * next.config.js `headers()` (the values that actually ship) and are
+ * regression-pinned end-to-end in e2e/security-headers.spec.ts against the live
+ * response. A parallel copy here previously drifted out of sync (xssProtection
+ * true vs the live '0', interest-cohort vs the live browsing-topics) without any
+ * consumer — so it was removed to keep one source of truth for the header policy.
  */
 
 export interface SecurityConfig {
-  // Security Headers
-  frameOptions: string
-  contentTypeOptions: boolean
-  xssProtection: boolean
-  referrerPolicy: string
-
-  // HSTS Configuration
-  hstsMaxAge: number
-  hstsIncludeSubDomains: boolean
-  hstsPreload: boolean
-
-  // Permissions Policy
-  permissionsPolicy: string[]
-
-  // Cross-Origin Policies
-  crossOriginEmbedderPolicy: string
-  crossOriginOpenerPolicy: string
-  crossOriginResourcePolicy: string
-
   // Rate Limiting
   rateLimitWindowMs: number
   rateLimitMaxRequests: number
@@ -34,25 +23,6 @@ export interface SecurityConfig {
 }
 
 export const securityConfig: SecurityConfig = {
-  // Security Headers
-  frameOptions: 'DENY',
-  contentTypeOptions: true,
-  xssProtection: true,
-  referrerPolicy: 'strict-origin-when-cross-origin',
-
-  // HSTS Configuration (1 year)
-  hstsMaxAge: 31536000,
-  hstsIncludeSubDomains: true,
-  hstsPreload: true,
-
-  // Permissions Policy
-  permissionsPolicy: ['camera=()', 'microphone=()', 'geolocation=()', 'interest-cohort=()'],
-
-  // Cross-Origin Policies
-  crossOriginEmbedderPolicy: 'require-corp',
-  crossOriginOpenerPolicy: 'same-origin',
-  crossOriginResourcePolicy: 'same-origin',
-
   // Rate Limiting (per API route)
   rateLimitWindowMs: 60 * 1000, // 1 minute
   rateLimitMaxRequests: 10, // 10 requests per minute

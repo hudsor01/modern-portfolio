@@ -1,6 +1,8 @@
 'use client'
 
 import { SectionCard } from '@/components/ui/section-card'
+import { FeatureCard } from '@/components/projects/shared/feature-card'
+import { ResultCard } from '@/components/projects/shared/result-card'
 import { formatCurrency } from '@/lib/data-formatters'
 
 interface NarrativeSectionsProps {
@@ -59,8 +61,7 @@ export function NarrativeSections({ revenueSaved }: NarrativeSectionsProps) {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <div className="bg-muted/50 rounded-xl p-6 border border-border">
-              <h3 className="font-semibold text-primary mb-3">Predictive Analytics I Built</h3>
+            <FeatureCard title="Predictive Analytics I Built" titleVariant="primary">
               <ul className="list-disc list-inside space-y-1 text-sm">
                 <li>Machine learning models for churn probability scoring</li>
                 <li>Real-time partner engagement tracking and anomaly detection</li>
@@ -68,9 +69,8 @@ export function NarrativeSections({ revenueSaved }: NarrativeSectionsProps) {
                 <li>Cohort analysis for retention curve optimization</li>
                 <li>Predictive lifecycle modeling with 60-90 day advance warnings</li>
               </ul>
-            </div>
-            <div className="bg-muted/50 rounded-xl p-6 border border-border">
-              <h3 className="font-semibold text-secondary mb-3">Retention Operations</h3>
+            </FeatureCard>
+            <FeatureCard title="Retention Operations" titleVariant="secondary">
               <ul className="list-disc list-inside space-y-1 text-sm">
                 <li>Automated alert system for at-risk partners I configured</li>
                 <li>Segmented retention campaign workflows based on risk tier</li>
@@ -78,7 +78,7 @@ export function NarrativeSections({ revenueSaved }: NarrativeSectionsProps) {
                 <li>Success team task prioritization based on partner value and risk</li>
                 <li>ROI tracking for retention initiatives</li>
               </ul>
-            </div>
+            </FeatureCard>
           </div>
 
           <p className="leading-relaxed mt-4">
@@ -98,24 +98,14 @@ export function NarrativeSections({ revenueSaved }: NarrativeSectionsProps) {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-primary/10 border border-primary/20 rounded-xl p-6 text-center">
-              <div className="text-2xl font-semibold text-primary mb-2">23%</div>
-              <div className="text-sm text-muted-foreground">Churn Rate Reduction</div>
-            </div>
-            <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-6 text-center">
-              <div className="text-2xl font-semibold text-secondary mb-2">89%</div>
-              <div className="text-sm text-muted-foreground">Prediction Accuracy</div>
-            </div>
-            <div className="bg-accent/10 border border-accent/20 rounded-xl p-6 text-center">
-              <div className="text-2xl font-semibold text-accent mb-2">
-                {formatCurrency(revenueSaved, { compact: true })}
-              </div>
-              <div className="text-sm text-muted-foreground">Revenue Saved from Retention</div>
-            </div>
-            <div className="bg-primary/10 border border-primary/20 rounded-xl p-6 text-center">
-              <div className="text-2xl font-semibold text-primary mb-2">67%</div>
-              <div className="text-sm text-muted-foreground">Success Rate of Interventions</div>
-            </div>
+            <ResultCard value="23%" label="Churn Rate Reduction" variant="primary" />
+            <ResultCard value="89%" label="Prediction Accuracy" variant="secondary" />
+            <ResultCard
+              value={formatCurrency(revenueSaved, { compact: true })}
+              label="Revenue Saved from Retention"
+              variant="accent"
+            />
+            <ResultCard value="67%" label="Success Rate of Interventions" variant="primary" />
           </div>
 
           <div className="space-y-3">

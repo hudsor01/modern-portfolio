@@ -1,5 +1,6 @@
 'use client'
 import { memo } from 'react'
+import { formatCurrencyCompact0 } from '@/lib/data-formatters'
 
 import { LazyScatterChart as ScatterChart } from '@/components/charts/lazy-charts'
 import { Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts'
@@ -67,16 +68,6 @@ const chartColors = {
 }
 
 const ChannelROIChart = memo(function ChannelROIChart() {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-      notation: 'compact',
-    }).format(value)
-  }
-
   return (
     <div className="h-[var(--chart-height-md)]">
       <ResponsiveContainer width="100%" height="100%">
@@ -129,8 +120,8 @@ const ChannelROIChart = memo(function ChannelROIChart() {
                 [
                   `Attribution: ${payload.attribution}%`,
                   `ROI: ${payload.roi === 999 ? '∞' : `${payload.roi}x`}`,
-                  `Cost: ${formatCurrency(payload.cost)}`,
-                  `Revenue: ${formatCurrency(payload.revenue)}`,
+                  `Cost: ${formatCurrencyCompact0(payload.cost)}`,
+                  `Revenue: ${formatCurrencyCompact0(payload.revenue)}`,
                   `Conversions: ${payload.size.toLocaleString()}`,
                 ],
                 payload.channel,

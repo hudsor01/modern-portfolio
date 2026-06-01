@@ -1,22 +1,15 @@
-import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
 import { FAQPageJsonLd } from '@/components/seo/json-ld/faq-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { generateMetadata as genMeta } from '@/app/shared-metadata'
 import { RevOpsMaturityScorecard } from './_components/revops-maturity-scorecard'
 
 const PATH = '/tools/revops-maturity-scorecard'
 const TITLE = 'RevOps Maturity Scorecard — Score Your Revenue Operations (Free, No Email)'
 const DESCRIPTION =
   'Free RevOps maturity assessment. Score your revenue operations across process, data, technology, and alignment in two minutes — get your maturity level, percentile, and the single highest-ROI next move. No email required.'
-
-const OG_IMAGE = canonicalUrl(
-  `/api/og?${new URLSearchParams({
-    title: 'RevOps Maturity Scorecard',
-    subtitle: 'Score your revenue operations in 2 minutes',
-  }).toString()}`
-)
 
 const FAQS: Array<{ question: string; answer: string }> = [
   {
@@ -51,9 +44,13 @@ const FAQS: Array<{ question: string; answer: string }> = [
   },
 ]
 
-export const metadata: Metadata = {
+export const metadata = genMeta({
   title: TITLE,
   description: DESCRIPTION,
+  path: PATH,
+  ogTitle: 'RevOps Maturity Scorecard',
+  subtitle: 'Score your revenue operations in 2 minutes',
+  ogAlt: 'RevOps Maturity Scorecard',
   keywords: [
     'revops maturity',
     'revops maturity model',
@@ -63,22 +60,7 @@ export const metadata: Metadata = {
     'revops maturity scorecard',
     'how mature is my revops',
   ],
-  alternates: { canonical: canonicalUrl(PATH) },
-  openGraph: {
-    title: TITLE,
-    description: DESCRIPTION,
-    url: canonicalUrl(PATH),
-    type: 'website',
-    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: 'RevOps Maturity Scorecard' }],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    creator: '@hudsor01',
-    title: TITLE,
-    description: DESCRIPTION,
-    images: [OG_IMAGE],
-  },
-}
+})
 
 export default function RevOpsMaturityScorecardPage() {
   return (

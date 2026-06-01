@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getProjects, getProject } from '@/lib/projects'
+import { showcaseProjects } from '@/data/projects'
 import { canonicalUrl } from '@/lib/absolute-url'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 import ProjectDetailClientBoundary from './_components/project-detail-client-boundary'
@@ -18,31 +19,19 @@ interface ProjectPageProps {
   }>
 }
 
-// Official Next.js 16 Pattern: generateStaticParams for SSG
-// Pre-renders all projects at build time (zero runtime cost)
+// Every project in the catalog has its own dedicated /projects/<slug>/page.tsx,
+// which takes precedence over this dynamic segment. So this catch-all route only
+// ever runs for slugs NOT in the catalog — where getProject() returns null and
+// we notFound(). There are therefore no static params to pre-render; deriving
+// the exclusion set from the catalog (rather than a hand-kept list that drifts)
+// makes that explicit and self-maintaining: if a project ever loses its
+// dedicated page, it automatically becomes statically generated here instead.
 export async function generateStaticParams() {
+  const dedicatedPageSlugs = new Set(showcaseProjects.map((p) => p.slug))
   const projects = await getProjects()
-
-  // Exclude projects that have their own dedicated pages
-  const excludedSlugs = [
-    'partnership-program-implementation',
-    'cac-unit-economics',
-    'churn-retention',
-    'commission-optimization',
-    'customer-lifetime-value',
-    'deal-funnel',
-    'lead-attribution',
-    'multi-channel-attribution',
-    'partner-performance',
-    'revenue-kpi',
-    'revenue-operations-center',
-  ]
-
   return projects
-    .filter((project) => !excludedSlugs.includes(project.slug || ''))
-    .map((project) => ({
-      slug: project.slug,
-    }))
+    .filter((project) => project.slug && !dedicatedPageSlugs.has(project.slug))
+    .map((project) => ({ slug: project.slug }))
 }
 
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {

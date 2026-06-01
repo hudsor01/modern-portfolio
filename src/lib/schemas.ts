@@ -1,11 +1,12 @@
 /**
  * Unified Validation Schemas
- * Centralized validation logic to eliminate duplication across the application
- * All schemas are consistent with Prisma models and types directory
+ * Centralized validation logic to eliminate duplication across the application.
+ * Enum schemas derive from the Drizzle pgEnums (src/db/schema.ts), which are the
+ * single source of truth for PostStatus / ContentType values.
  */
 
 import { z } from 'zod'
-import { PostStatus, ContentType } from '@/types/blog'
+import { postStatus, contentType } from '@/db/schema'
 import { FEATURED_IMAGE_ALLOWED_HOSTS } from './featured-image-hosts'
 
 // =======================
@@ -179,11 +180,11 @@ export const datetimeSchema = z
   .or(z.date())
 
 // =======================
-// PRISMA ENUM SCHEMAS
+// ENUM SCHEMAS (derived from the Drizzle pgEnums — single source of truth)
 // =======================
 
-export const PostStatusSchema = z.enum(PostStatus)
-export const ContentTypeSchema = z.enum(ContentType)
+export const PostStatusSchema = z.enum(postStatus.enumValues)
+export const ContentTypeSchema = z.enum(contentType.enumValues)
 
 // =======================
 // CONTACT FORM SCHEMA
@@ -290,8 +291,8 @@ const blogPostBaseShape = {
 export const createBlogPostSchema = z
   .object({
     ...blogPostBaseShape,
-    contentType: ContentTypeSchema.default(ContentType.MARKDOWN),
-    status: PostStatusSchema.default(PostStatus.DRAFT),
+    contentType: ContentTypeSchema.default('MARKDOWN'),
+    status: PostStatusSchema.default('DRAFT'),
     keywords: z.array(z.string().min(1).max(50)).max(10).default([]),
   })
   .strict()
@@ -303,6 +304,38 @@ export type CreateBlogPostInput = z.infer<typeof createBlogPostSchema>
 // filled in.
 export const updateBlogPostSchema = z.object(blogPostBaseShape).partial().strict()
 export type UpdateBlogPostInput = z.infer<typeof updateBlogPostSchema>
+
+// =======================
+// TAG / CATEGORY SCHEMAS
+// =======================
+
+// Hex color with a slate default, matching the DB column default (#6B7280).
+const hexColor = z
+  .string()
+  .regex(/^#[0-9a-fA-F]{6}$/, 'Color must be a 6-digit hex value (e.g. #6B7280)')
+
+export const createTagSchema = z
+  .object({
+    name: z.string().min(1, 'Name is required').max(60),
+    description: nullishText(500),
+    metaDescription: nullishText(160, 'Meta description cannot exceed 160 characters'),
+    color: hexColor.default('#6B7280'),
+  })
+  .strict()
+export type CreateTagInput = z.infer<typeof createTagSchema>
+
+export const createCategorySchema = z
+  .object({
+    name: z.string().min(1, 'Name is required').max(60),
+    description: nullishText(500),
+    metaTitle: nullishText(100),
+    metaDescription: nullishText(160, 'Meta description cannot exceed 160 characters'),
+    color: hexColor.default('#6B7280'),
+    icon: nullishText(50),
+    keywords: z.array(z.string().min(1).max(50)).max(10).default([]),
+  })
+  .strict()
+export type CreateCategoryInput = z.infer<typeof createCategorySchema>
 
 // =======================
 // PROJECT SCHEMAS

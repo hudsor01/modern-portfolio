@@ -1,12 +1,4 @@
-export function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value)
-}
-
-export function formatPercent(value: number): string {
-  return `${value.toFixed(1)}%`
-}
+// Formatters re-exported from the canonical @/lib/data-formatters so this
+// project page shares one implementation. formatCurrency = whole-dollar USD;
+// formatPercent = plain "NN.N%" (no Intl grouping / ÷100).
+export { formatCurrency, formatPercentPlain as formatPercent } from '@/lib/data-formatters'

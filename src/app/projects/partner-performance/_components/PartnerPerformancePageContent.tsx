@@ -1,9 +1,9 @@
 'use client'
 
 import { TrendingUp, Users, Target, DollarSign } from 'lucide-react'
-import { useQueryState } from 'nuqs'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
+import { useTabQueryState } from '@/components/projects/use-tab-query-state'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
@@ -25,10 +25,9 @@ const partnerMetrics = {
 }
 
 const tabs = ['overview', 'tiers', 'top-performers'] as const
-type Tab = (typeof tabs)[number]
 
 export default function PartnerPerformanceIntelligence() {
-  const [activeTab, setActiveTab] = useQueryState('tab', { defaultValue: 'overview' as Tab })
+  const { activeTab, timeframes, activeTimeframe, onTimeframeChange } = useTabQueryState(tabs)
 
   // Standardized metrics configuration using consistent data formatting
   const metrics = [
@@ -90,12 +89,9 @@ export default function PartnerPerformanceIntelligence() {
           { label: 'Revenue Operations', variant: 'secondary' },
         ]}
         showTimeframes={true}
-        timeframes={tabs.map((t) => t.charAt(0).toUpperCase() + t.slice(1).replace('-', ' '))}
-        activeTimeframe={activeTab.charAt(0).toUpperCase() + activeTab.slice(1).replace('-', ' ')}
-        onTimeframeChange={(timeframe) => {
-          const tab = timeframe.toLowerCase().replace(' ', '-') as Tab
-          setActiveTab(tab)
-        }}
+        timeframes={timeframes}
+        activeTimeframe={activeTimeframe}
+        onTimeframeChange={onTimeframeChange}
       >
         {/* Key Metrics using standardized MetricsGrid */}
         <MetricsGrid metrics={metrics} columns={4} className="mb-8" />

@@ -1,49 +1,19 @@
-import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import CommissionPageContent from './_components/CommissionPageContent'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { generateMetadata as genMeta } from '@/app/shared-metadata'
 
 export const dynamic = 'force-static'
 
-const ogImageUrl = canonicalUrl(
-  `/api/og?${new URLSearchParams({
-    title: 'Commission & Incentive Optimization System',
-    subtitle: 'Revenue Operations Project',
-  }).toString()}`
-)
-
-export const metadata: Metadata = {
+export const metadata = genMeta({
   title: 'Commission & Incentive Optimization System',
   description:
     'Advanced commission management and partner incentive optimization platform managing $254K+ commission structures. Automated tier adjustments with 23% average commission rate optimization and ROI-driven compensation strategy delivering 34% performance improvement and 87.5% automation efficiency.',
-  openGraph: {
-    title: 'Commission & Incentive Optimization System',
-    description:
-      'Advanced commission management and partner incentive optimization platform managing $254K+ commission structures. Automated tier adjustments with 23% average commission rate optimization and ROI-driven compensation strategy delivering 34% performance improvement and 87.5% automation efficiency.',
-    url: canonicalUrl('/projects/commission-optimization'),
-    siteName: 'Richard Hudson',
-    images: [
-      {
-        url: ogImageUrl,
-        width: 1200,
-        height: 630,
-        alt: 'Commission & Incentive Optimization System',
-      },
-    ],
-    type: 'article',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Commission & Incentive Optimization System',
-    description:
-      'Advanced commission management and partner incentive optimization platform managing $254K+ commission structures. Automated tier adjustments with 23% average commission rate optimization and ROI-driven compensation strategy delivering 34% performance improvement and 87.5% automation efficiency.',
-    images: [ogImageUrl],
-  },
-  alternates: {
-    canonical: canonicalUrl('/projects/commission-optimization'),
-  },
-}
+  path: '/projects/commission-optimization',
+  subtitle: 'Revenue Operations Project',
+  ogType: 'article',
+})
 
 export default async function CommissionOptimizationPage() {
   const nonce = (await headers()).get('x-nonce')

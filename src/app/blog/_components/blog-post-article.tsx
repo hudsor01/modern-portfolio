@@ -8,9 +8,7 @@ import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 import { markdownToHtml, decodeHtmlEntities } from '@/lib/markdown'
-// ContentType is a string union ('MARKDOWN' | 'HTML' | 'RICH_TEXT') in Drizzle;
-// callers compare against the literal so we don't need a runtime enum here.
-type ContentType = 'MARKDOWN' | 'HTML' | 'RICH_TEXT'
+import type { ContentType } from '@/types/blog'
 // Plain `dompurify` (browser-only). Module-load is side-effect-free —
 // the factory only touches `window` when `.sanitize()` is called. We
 // previously used `isomorphic-dompurify`, which pulled `jsdom` into the

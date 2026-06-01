@@ -2,19 +2,15 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { getProject } from '@/lib/projects'
 import { z } from 'zod'
 import { validationErrorResponse } from '@/lib/api-response'
+import { slugSchema } from '@/lib/schemas'
 import { checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-rate-limit'
 import { createContextLogger } from '@/lib/logger'
 
 const logger = createContextLogger('SlugAPI')
 
-// Input validation schema for slug parameter
-const slugSchema = z.object({
-  slug: z
-    .string()
-    .min(1, 'Slug cannot be empty')
-    .max(100, 'Slug too long')
-    .regex(/^[a-zA-Z0-9-_]+$/, 'Invalid slug format'),
-})
+// Canonical slug rules (lowercase + hyphens, max 100) shared with blog/entity
+// validation — see src/lib/schemas.ts.
+const slugParamsSchema = z.object({ slug: slugSchema })
 
 export async function GET(request: NextRequest, context: { params: Promise<{ slug: string }> }) {
   const { slug } = await context.params
@@ -30,7 +26,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ slu
 
   try {
     // Validate slug parameter
-    const validatedParams = slugSchema.parse({ slug })
+    const validatedParams = slugParamsSchema.parse({ slug })
     const project = await getProject(validatedParams.slug)
 
     if (!project) {

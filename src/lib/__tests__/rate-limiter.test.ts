@@ -27,11 +27,13 @@ const baseConfig: RateLimitConfig = {
 }
 
 // Config with progressive penalty enabled
-const progressiveConfig: RateLimitConfig = {
+// No `: RateLimitConfig` annotation — inferring the literal keeps blockDuration
+// known-present (the type widens it to optional) for the penalty-math assertions.
+const progressiveConfig = {
   ...baseConfig,
   progressivePenalty: true,
   blockDuration: 60 * 1000, // 1 minute base block
-}
+} satisfies RateLimitConfig
 
 describe('RateLimiter — whitelist / blacklist', () => {
   let limiter: RateLimiter

@@ -1,44 +1,19 @@
-import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import RevenueOpsCenterPageContent from './_components/RevenueOpsCenterPageContent'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { generateMetadata as genMeta } from '@/app/shared-metadata'
 
 export const dynamic = 'force-static'
 
-const ogImageUrl = canonicalUrl(
-  `/api/og?${new URLSearchParams({
-    title: 'Revenue Operations Command Center',
-    subtitle: 'Revenue Operations Project',
-  }).toString()}`
-)
-
-export const metadata: Metadata = {
+export const metadata = genMeta({
   title: 'Revenue Operations Command Center',
   description:
     'Comprehensive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs. Real-time insights with 96.8% forecast accuracy and 89.7% operational efficiency across sales, marketing, and partner channels.',
-  openGraph: {
-    title: 'Revenue Operations Command Center',
-    description:
-      'Comprehensive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs. Real-time insights with 96.8% forecast accuracy and 89.7% operational efficiency across sales, marketing, and partner channels.',
-    url: canonicalUrl('/projects/revenue-operations-center'),
-    siteName: 'Richard Hudson',
-    images: [
-      { url: ogImageUrl, width: 1200, height: 630, alt: 'Revenue Operations Command Center' },
-    ],
-    type: 'article',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Revenue Operations Command Center',
-    description:
-      'Comprehensive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs. Real-time insights with 96.8% forecast accuracy and 89.7% operational efficiency across sales, marketing, and partner channels.',
-    images: [ogImageUrl],
-  },
-  alternates: {
-    canonical: canonicalUrl('/projects/revenue-operations-center'),
-  },
-}
+  path: '/projects/revenue-operations-center',
+  subtitle: 'Revenue Operations Project',
+  ogType: 'article',
+})
 
 export default async function RevenueOperationsCenterPage() {
   const nonce = (await headers()).get('x-nonce')

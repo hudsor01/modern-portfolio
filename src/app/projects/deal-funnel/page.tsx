@@ -1,49 +1,19 @@
-import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import DealFunnelPageContent from './_components/DealFunnelPageContent'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { generateMetadata as genMeta } from '@/app/shared-metadata'
 
 export const dynamic = 'force-static'
 
-const ogImageUrl = canonicalUrl(
-  `/api/og?${new URLSearchParams({
-    title: 'Sales Pipeline Funnel Analysis - Deal Stage Optimization',
-    subtitle: 'Revenue Operations Project',
-  }).toString()}`
-)
-
-export const metadata: Metadata = {
+export const metadata = genMeta({
   title: 'Sales Pipeline Funnel Analysis - Deal Stage Optimization',
   description:
     'Interactive sales funnel dashboard showing deal progression, conversion rates, and sales cycle optimization. Tracks pipeline opportunities through each stage with real-time metrics on deal velocity and revenue forecasting.',
-  openGraph: {
-    title: 'Sales Pipeline Funnel Analysis - Deal Stage Optimization',
-    description:
-      'Interactive sales funnel dashboard showing deal progression, conversion rates, and sales cycle optimization. Tracks pipeline opportunities through each stage with real-time metrics on deal velocity and revenue forecasting.',
-    url: canonicalUrl('/projects/deal-funnel'),
-    siteName: 'Richard Hudson',
-    images: [
-      {
-        url: ogImageUrl,
-        width: 1200,
-        height: 630,
-        alt: 'Sales Pipeline Funnel Analysis - Deal Stage Optimization',
-      },
-    ],
-    type: 'article',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Sales Pipeline Funnel Analysis - Deal Stage Optimization',
-    description:
-      'Interactive sales funnel dashboard showing deal progression, conversion rates, and sales cycle optimization. Tracks pipeline opportunities through each stage with real-time metrics on deal velocity and revenue forecasting.',
-    images: [ogImageUrl],
-  },
-  alternates: {
-    canonical: canonicalUrl('/projects/deal-funnel'),
-  },
-}
+  path: '/projects/deal-funnel',
+  subtitle: 'Revenue Operations Project',
+  ogType: 'article',
+})
 
 export default async function DealFunnelPage() {
   const nonce = (await headers()).get('x-nonce')

@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next'
 import { createContextLogger } from '@/lib/logger'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
+import { showcaseProjects } from '@/data/projects'
 
 const logger = createContextLogger('Sitemap')
 
@@ -103,41 +104,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  // All project pages (complete list).
-  // Each entry includes the OG image URL via the `images` field — Next.js
-  // emits this as <image:image><image:loc> per Google's image-sitemap spec.
-  // Only the URL is allowed in MetadataRoute.Sitemap['images']; deprecated
-  // sub-tags (caption/title/license/geo_location) were dropped by Google
-  // in May 2022.
-  const projectPages: MetadataRoute.Sitemap = [
-    { slug: 'revenue-kpi', title: 'Revenue Operations Dashboard' },
-    { slug: 'revenue-operations-center', title: 'Revenue Operations Command Center' },
-    { slug: 'commission-optimization', title: 'Commission & Incentive Optimization' },
-    { slug: 'multi-channel-attribution', title: 'Multi-Channel Attribution Analytics' },
-    {
-      slug: 'partnership-program-implementation',
-      title: 'Partnership Program Implementation',
-    },
-    { slug: 'customer-lifetime-value', title: 'Customer Lifetime Value Analytics' },
-    { slug: 'partner-performance', title: 'Partner Performance Intelligence' },
-    { slug: 'deal-funnel', title: 'Sales Funnel Optimization' },
-    { slug: 'churn-retention', title: 'Customer Churn Prediction Model' },
-    { slug: 'lead-attribution', title: 'Marketing Attribution Platform' },
-    { slug: 'cac-unit-economics', title: 'Customer Acquisition Cost Optimization' },
-    { slug: 'forecast-pipeline-intelligence', title: 'Forecast & Pipeline Intelligence' },
-    { slug: 'quota-territory-management', title: 'Quota & Territory Management' },
-    { slug: 'sales-enablement', title: 'Sales Enablement Platform' },
-  ].map(({ slug }) => ({
-    url: `${baseUrl}/projects/${slug}`,
+  // All project pages, single-sourced from the project catalog so this list
+  // can never drift from the actual /projects/<slug> routes.
+  //
+  // No `images` field — static project pages don't have stored featuredImage
+  // values to validate; emitting the branded /api/og card as <image:loc> would
+  // pollute Google's image sitemap with identical placeholder URLs for 14
+  // distinct project pages, diluting per-project image-search ranking. Same
+  // rationale as the blog branch below for failed re-validation.
+  const projectPages: MetadataRoute.Sitemap = showcaseProjects.map((project) => ({
+    url: `${baseUrl}/projects/${project.slug}`,
     lastModified: staticLastModified,
     changeFrequency: 'monthly' as const,
     priority: 0.8,
-    // No `images` field — static project pages don't have stored
-    // featuredImage values to validate; emitting the branded /api/og
-    // card as <image:loc> would pollute Google's image sitemap with
-    // identical placeholder URLs for 14 distinct project pages,
-    // diluting per-project image-search ranking. Same rationale as
-    // the blog branch below for failed re-validation.
   }))
 
   // During build, skip DB — blog posts are added on first ISR revalidation
