@@ -1,6 +1,5 @@
 /**
  * API Types - Centralized for type-safe communication
- * Consolidated from src/lib/api/utils.ts and src/types/api.ts
  */
 
 import type { STARData } from './project'
@@ -28,7 +27,7 @@ export enum ApiErrorType {
   INTERNAL_ERROR = 'INTERNAL_ERROR',
 }
 
-// Standardized API Error Response (used by api-core.ts)
+// Standardized API Error Response (used by api-response.ts)
 export interface ApiErrorResponse {
   success: false
   error: string
@@ -37,7 +36,7 @@ export interface ApiErrorResponse {
   timestamp: string
 }
 
-// Standardized API Success Response (used by api-core.ts)
+// Standardized API Success Response (used by api-response.ts)
 export interface ApiSuccessResponse<T = unknown> {
   success: true
   data: T

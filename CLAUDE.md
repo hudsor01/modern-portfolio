@@ -44,8 +44,8 @@ src/
                           api-rate-limit.ts, api-csrf.ts, csp-edge.ts, email-service.ts,
                           rate-limiter/{store,configs,helpers}.ts, data-service/.
   types/                  ~16 .ts files (api, blog, project, forms, monitoring, ...).
-  styles/                 fonts.ts + 4 .css files (animations, blog-styles, interaction-patterns,
-                          responsive-utilities). Note: globals.css lives in src/app/, not here.
+                          All styling now lives in the single src/app/globals.css
+                          (the former src/styles/ + fonts.ts were consolidated in).
   db/                     Drizzle schema, client, and CUID2 ID factory.
                             schema.ts — 10 tables, 6 enums (string-union types), citext + inet
                             customType, jsonb columns typed via .$type<T>().
@@ -64,7 +64,7 @@ proxy.ts                  Next.js 16 successor to middleware.ts (see Auth/CSP).
 
 App Router conventions in use: dynamic segments (`[slug]`), private folders (`_components/`), per-route `metadata.ts` (e.g. `src/app/contact/metadata.ts`). **No** route groups (`(group)`), catch-alls, parallel routes, intercepting routes, or admin route.
 
-Path aliases (`tsconfig.json`): `@/*` → `src/*`. Specific aliases for `@/components`, `@/lib`, `@/hooks`, `@/types`, `@/app`, `@/styles`, `@/content`, `@/data`, `@/db` (→ `src/db/index`), `@/db/*`. `@/content/*` is declared but no `src/content/` exists yet.
+Path aliases (`tsconfig.json`): `@/*` → `src/*`. Specific aliases for `@/components`, `@/lib`, `@/hooks`, `@/types`, `@/app`, `@/content`, `@/data`, `@/db` (→ `src/db/index`), `@/db/*`. `@/content/*` is declared but no `src/content/` exists yet.
 
 ## Database
 
