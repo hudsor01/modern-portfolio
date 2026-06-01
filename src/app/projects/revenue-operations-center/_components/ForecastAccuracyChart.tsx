@@ -1,5 +1,6 @@
 'use client'
 import { memo } from 'react'
+import { formatCurrencyCompact0 } from '@/lib/data-formatters'
 
 import { LazyComposedChart as ComposedChart } from '@/components/charts/lazy-charts'
 import {
@@ -125,16 +126,6 @@ const chartColors = {
 }
 
 const ForecastAccuracyChart = memo(function ForecastAccuracyChart() {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-      notation: 'compact',
-    }).format(value)
-  }
-
   return (
     <div className="h-[var(--chart-height-md)]">
       <ResponsiveContainer width="100%" height="100%">
@@ -156,7 +147,7 @@ const ForecastAccuracyChart = memo(function ForecastAccuracyChart() {
             fontSize={12}
             tickLine={false}
             axisLine={{ stroke: chartColors.axis, strokeOpacity: 0.5 }}
-            tickFormatter={(value) => formatCurrency(value)}
+            tickFormatter={(value) => formatCurrencyCompact0(value)}
           />
           <YAxis
             yAxisId="accuracy"
@@ -180,13 +171,15 @@ const ForecastAccuracyChart = memo(function ForecastAccuracyChart() {
               const safeName = String(name ?? '')
               if (safeName === '') return ['', '']
               if (value === null) return ['N/A', safeName]
-              if (safeName === 'forecast') return [formatCurrency(Number(value)), 'Forecast']
-              if (safeName === 'actual') return [formatCurrency(Number(value)), 'Actual Revenue']
+              if (safeName === 'forecast')
+                return [formatCurrencyCompact0(Number(value)), 'Forecast']
+              if (safeName === 'actual')
+                return [formatCurrencyCompact0(Number(value)), 'Actual Revenue']
               if (safeName === 'accuracy') return [`${Number(value)}%`, 'Accuracy']
               if (safeName === 'confidence_high')
-                return [formatCurrency(Number(value)), 'Upper Confidence']
+                return [formatCurrencyCompact0(Number(value)), 'Upper Confidence']
               if (safeName === 'confidence_low')
-                return [formatCurrency(Number(value)), 'Lower Confidence']
+                return [formatCurrencyCompact0(Number(value)), 'Lower Confidence']
               return [String(value), safeName]
             }}
           />

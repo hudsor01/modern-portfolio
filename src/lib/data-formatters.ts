@@ -155,6 +155,21 @@ export function formatCurrencyCompactMillions(value: number): string {
 }
 
 /**
+ * USD in whole-number Intl-compact notation at every magnitude (e.g. "$2K",
+ * "$5M" — no decimals, rounded). Used for chart tick/tooltip labels where the
+ * shorter zero-decimal form reads better than formatCompactCurrency's 1-decimal.
+ */
+export function formatCurrencyCompact0(value: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+    notation: 'compact',
+  }).format(value)
+}
+
+/**
  * Format numbers with consistent thousands separators
  */
 export function formatNumber(value: number, options: NumberFormatOptions = {}): string {
