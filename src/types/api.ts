@@ -3,6 +3,7 @@
  */
 
 import type { STARData } from './project'
+import type { PostStatus, ContentType } from '@/db/schema'
 
 // ============================================================================
 // REQUEST/RESPONSE CORE TYPES
@@ -217,8 +218,8 @@ export interface BlogPostData {
   slug: string
   excerpt?: string
   content: string
-  contentType: 'MARKDOWN' | 'HTML' | 'RICH_TEXT'
-  status: 'DRAFT' | 'REVIEW' | 'SCHEDULED' | 'PUBLISHED' | 'ARCHIVED' | 'DELETED'
+  contentType: ContentType
+  status: PostStatus
   metaTitle?: string
   metaDescription?: string
   keywords: string[]
