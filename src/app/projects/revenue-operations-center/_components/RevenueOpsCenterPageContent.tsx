@@ -1,6 +1,7 @@
 'use client'
 
 import { Suspense, useMemo } from 'react'
+import { ChartSkeleton } from '@/components/charts/chart-skeleton'
 import nextDynamic from 'next/dynamic'
 import { DollarSign, Target, BarChart3, Users, Activity } from 'lucide-react'
 import { useQueryState } from 'nuqs'
@@ -19,7 +20,7 @@ function TabSkeleton() {
   return (
     <div className="glass rounded-2xl p-8 mb-12">
       <div className="h-8 w-64 bg-muted animate-pulse rounded mb-4" />
-      <div className="h-[300px] w-full bg-muted animate-pulse rounded-lg" />
+      <ChartSkeleton height="lg" />
     </div>
   )
 }

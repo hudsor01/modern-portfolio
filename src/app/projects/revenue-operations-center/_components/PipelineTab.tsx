@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { ChartSkeleton } from '@/components/charts/chart-skeleton'
 import { ChartLoadError } from '@/components/charts/chart-load-error'
 import { safeLazy } from '@/lib/safe-lazy'
 
@@ -11,9 +12,7 @@ const PipelineHealthChart = dynamic(
     () => <ChartLoadError height="md" />
   ),
   {
-    loading: () => (
-      <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />
-    ),
+    loading: () => <ChartSkeleton />,
     ssr: false,
   }
 )

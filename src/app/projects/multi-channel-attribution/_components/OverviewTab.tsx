@@ -1,18 +1,15 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { ChartSkeleton } from '@/components/charts/chart-skeleton'
 
 const AttributionModelChart = dynamic(() => import('./AttributionModelChart'), {
-  loading: () => (
-    <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />
-  ),
+  loading: () => <ChartSkeleton />,
   ssr: false,
 })
 
 const ChannelROIChart = dynamic(() => import('./ChannelROIChart'), {
-  loading: () => (
-    <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />
-  ),
+  loading: () => <ChartSkeleton />,
   ssr: false,
 })
 

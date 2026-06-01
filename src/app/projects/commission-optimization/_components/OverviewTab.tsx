@@ -1,19 +1,16 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { ChartSkeleton } from '@/components/charts/chart-skeleton'
 import { ChartContainer } from '@/components/ui/chart-container'
 
 const CommissionStructureChart = dynamic(() => import('./CommissionStructureChart'), {
-  loading: () => (
-    <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />
-  ),
+  loading: () => <ChartSkeleton />,
   ssr: false,
 })
 
 const ROIOptimizationChart = dynamic(() => import('./ROIOptimizationChart'), {
-  loading: () => (
-    <div className="h-[var(--chart-height-md)] w-full animate-pulse bg-muted rounded-lg" />
-  ),
+  loading: () => <ChartSkeleton />,
   ssr: false,
 })
 
