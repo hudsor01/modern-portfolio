@@ -1,20 +1,16 @@
-import type { Metadata } from 'next'
 import HomePageContent from '@/components/layout/home-page-content'
-import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { generateMetadata as genMeta } from '@/app/shared-metadata'
 
 export const dynamic = 'force-static'
 
-const HOMEPAGE_OG_IMAGE_URL = canonicalUrl(
-  `/api/og?${new URLSearchParams({
-    title: 'Richard Hudson',
-    subtitle: 'Revenue Operations Professional',
-  }).toString()}`
-)
-
-export const metadata: Metadata = {
+export const metadata = genMeta({
   title: 'Richard Hudson — RevOps Professional in Dallas-Fort Worth',
   description:
     'Richard Hudson — Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. $4.8M+ revenue impact.',
+  path: '/',
+  ogTitle: 'Richard Hudson',
+  subtitle: 'Revenue Operations Professional',
+  ogAlt: 'Richard Hudson - Revenue Operations Professional',
   keywords: [
     'Richard Hudson',
     'revenue operations professional Dallas',
@@ -37,35 +33,7 @@ export const metadata: Metadata = {
     'B2B growth strategies',
     'enterprise system integration',
   ],
-  openGraph: {
-    title: 'Richard Hudson — RevOps Professional in Dallas-Fort Worth',
-    description:
-      'Richard Hudson — Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. $4.8M+ revenue impact.',
-    url: SITE_ORIGIN,
-    siteName: 'Richard Hudson - Revenue Operations Professional',
-    images: [
-      {
-        url: HOMEPAGE_OG_IMAGE_URL,
-        width: 1200,
-        height: 630,
-        alt: 'Richard Hudson - Revenue Operations Professional',
-      },
-    ],
-    locale: 'en_US',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    creator: '@hudsor01',
-    title: 'Richard Hudson — RevOps Professional in Dallas-Fort Worth',
-    description:
-      'Richard Hudson — Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. $4.8M+ revenue impact.',
-    images: [HOMEPAGE_OG_IMAGE_URL],
-  },
-  alternates: {
-    canonical: SITE_ORIGIN,
-  },
-}
+})
 
 export default function HomePage() {
   return (

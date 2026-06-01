@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { canonicalUrl, SITE_ORIGIN, OG_IMAGE_SIZE, ogImageUrl } from '@/lib/absolute-url'
 
 export const baseMetadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),
@@ -100,42 +100,85 @@ export const baseMetadata: Metadata = {
   manifest: '/manifest.webmanifest', // Corrected path
 }
 
-// Function to generate page-specific metadata
+/**
+ * Per-page OG card options. `ogTitle`/`subtitle`/`ogAlt` shape the dynamic
+ * `/api/og` card; `ogType` switches the OpenGraph type (project case studies
+ * use `'article'`); `keywords` and `additional` merge into the final object.
+ */
+export interface PageMetadataOptions {
+  /** OG card heading. Defaults to the page `title`. */
+  ogTitle?: string
+  /** OG card subheading (e.g. 'Revenue Operations Project'). */
+  subtitle?: string
+  /** alt text for the OG image. Defaults to the page `title`. */
+  ogAlt?: string
+  /** OpenGraph type. Defaults to `'website'`; case studies pass `'article'`. */
+  ogType?: 'website' | 'article'
+  keywords?: string[]
+  /** Escape hatch merged last (e.g. robots overrides). */
+  additional?: Partial<Metadata>
+}
+
+/**
+ * The single canonical builder for page-level metadata. Every static page
+ * (and the dynamic `[slug]` routes) routes through this so siteName, OG/Twitter
+ * cards, canonical URL, and image dimensions have exactly one source of truth.
+ *
+ * Accepts either the legacy positional form `(title, description, path,
+ * additional)` or an options object `({ title, description, path, ... })`.
+ */
 export function generateMetadata(
-  title: string,
-  description: string,
-  path: string,
+  titleOrOptions:
+    | string
+    | ({ title: string; description: string; path: string } & PageMetadataOptions),
+  description?: string,
+  path?: string,
   additionalMetadata: Partial<Metadata> = {}
 ): Metadata {
-  const ogImageUrl = canonicalUrl(`/api/og?${new URLSearchParams({ title }).toString()}`)
-  const pageUrl = canonicalUrl(path)
+  const opts =
+    typeof titleOrOptions === 'string'
+      ? {
+          title: titleOrOptions,
+          description: description as string,
+          path: path as string,
+          additional: additionalMetadata,
+        }
+      : titleOrOptions
+
+  const { title, ogTitle, subtitle, ogAlt, ogType = 'website', keywords, additional } = opts
+  // Root canonical is the bare origin (no trailing slash) — `canonicalUrl('/')`
+  // would yield '…com/', which Search Console treats as a distinct URL.
+  const pageUrl = opts.path === '/' ? SITE_ORIGIN : canonicalUrl(opts.path)
+  const cardUrl = ogImageUrl({ title: ogTitle ?? title, subtitle })
+
   return {
     ...baseMetadata,
     title,
-    description,
+    description: opts.description,
+    ...(keywords ? { keywords } : {}),
     alternates: {
       canonical: pageUrl,
     },
     openGraph: {
       ...baseMetadata.openGraph,
+      type: ogType,
       title,
-      description,
+      description: opts.description,
       url: pageUrl,
       images: [
         {
-          url: ogImageUrl,
-          width: 1200,
-          height: 630,
-          alt: title,
+          url: cardUrl,
+          ...OG_IMAGE_SIZE,
+          alt: ogAlt ?? title,
         },
       ],
     },
     twitter: {
       ...baseMetadata.twitter,
       title,
-      description,
-      images: [ogImageUrl],
+      description: opts.description,
+      images: [cardUrl],
     },
-    ...additionalMetadata,
+    ...(additional ?? {}),
   }
 }
