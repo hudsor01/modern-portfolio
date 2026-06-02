@@ -2,20 +2,11 @@
  * API Types - Centralized for type-safe communication
  */
 
-import type { STARData } from './project'
 import type { PostStatus, ContentType } from '@/db/schema'
 
 // ============================================================================
 // REQUEST/RESPONSE CORE TYPES
 // ============================================================================
-
-// Request metadata type
-export interface RequestMetadata {
-  userAgent?: string
-  ip?: string
-  path?: string
-  timestamp?: number
-}
 
 // Base API Response wrapper (used in API routes)
 export interface ApiResponse<T = unknown> {
@@ -29,12 +20,6 @@ export interface ApiResponse<T = unknown> {
 // PAGINATION TYPES
 // ============================================================================
 
-export interface PaginationParams {
-  page: number
-  limit: number
-  offset?: number
-}
-
 export interface PaginatedResponse<T> extends ApiResponse<T[]> {
   pagination: {
     page: number
@@ -44,96 +29,6 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
     hasNext: boolean
     hasPrev: boolean
   }
-}
-
-// ============================================================================
-// HTTP TYPES
-// ============================================================================
-
-export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
-
-export interface RequestConfig {
-  method: HttpMethod
-  headers?: Record<string, string>
-  body?: unknown
-  cache?: RequestCache
-  timeout?: number
-}
-
-export interface ApiClientConfig {
-  baseUrl: string
-  timeout: number
-  retries: number
-  headers: Record<string, string>
-}
-
-// ============================================================================
-// PROJECT TYPES
-// ============================================================================
-
-export interface ProjectData {
-  id: string
-  title: string
-  slug: string
-  description: string
-  longDescription?: string
-  content?: string
-  category: string
-  tags: string[]
-  image: string
-  link?: string
-  github?: string
-  featured: boolean
-  viewCount: number
-  clickCount: number
-  createdAt: string
-  updatedAt: string
-  client?: string
-  role?: string
-  metrics?: Record<string, string>
-  starData?: STARData
-  details?: {
-    challenge: string
-    solution: string
-    impact: string
-  }
-  charts?: Array<{
-    type: 'line' | 'bar' | 'pie' | 'funnel' | 'heatmap'
-    title: string
-    dataKey: string
-  }>
-}
-
-export type ProjectCategory =
-  | 'analytics'
-  | 'dashboard'
-  | 'visualization'
-  | 'automation'
-  | 'integration'
-
-// ============================================================================
-// ANALYTICS TYPES
-// ============================================================================
-
-export interface AnalyticsData {
-  pageViews: number
-  visitors: number
-  bounceRate: number
-  avgSessionDuration: number
-  topPages: PageView[]
-  vitals: WebVital[]
-}
-
-export interface PageView {
-  page: string
-  views: number
-  uniqueViews: number
-}
-
-export interface WebVital {
-  name: 'FCP' | 'LCP' | 'CLS' | 'FID' | 'TTFB' | 'INP'
-  value: number
-  rating: 'good' | 'needs-improvement' | 'poor'
 }
 
 // ============================================================================
@@ -148,33 +43,6 @@ export interface ContactFormData {
   company?: string
   phone?: string
   honeypot?: string
-}
-
-export interface ContactResponse {
-  id: string
-  status: 'sent' | 'failed' | 'pending'
-  timestamp: string
-  createdAt: string
-}
-
-// ============================================================================
-// NEWSLETTER TYPES
-// ============================================================================
-
-export interface NewsletterSubscriptionData {
-  email: string
-  name?: string
-}
-
-// ============================================================================
-// SEARCH TYPES
-// ============================================================================
-
-export interface SearchResultItem {
-  id: string
-  title: string
-  description?: string
-  url: string
 }
 
 // ============================================================================
@@ -221,7 +89,7 @@ export interface BlogPostData {
   commentCount: number
 }
 
-export interface BlogAuthorData {
+interface BlogAuthorData {
   id: string
   name: string
   email: string
@@ -258,22 +126,6 @@ export interface BlogTagData {
   totalViews: number
   createdAt: string
   updatedAt?: string
-}
-
-export interface BlogPostSummary {
-  id: string
-  title: string
-  slug: string
-  excerpt?: string
-  featuredImage?: string
-  featuredImageAlt?: string
-  publishedAt?: string
-  viewCount: number
-  commentCount: number
-  readingTime?: number
-  author: BlogAuthorData
-  category?: BlogCategoryData
-  tags: BlogTagData[]
 }
 
 export interface BlogPostFilters {
@@ -323,37 +175,4 @@ export interface RSSFeedData {
     category?: string
     guid: string
   }>
-}
-
-// ============================================================================
-// API ENDPOINTS INTERFACE
-// ============================================================================
-
-export interface ApiEndpoints {
-  projects: {
-    getAll: () => Promise<ApiResponse<ProjectData[]>>
-    getById: (id: string) => Promise<ApiResponse<ProjectData>>
-  }
-  analytics: {
-    getVitals: () => Promise<ApiResponse<AnalyticsData>>
-  }
-  contact: {
-    send: (data: ContactFormData) => Promise<ApiResponse<ContactResponse>>
-  }
-  blog: {
-    getPosts: (params?: {
-      filters?: BlogPostFilters
-      sort?: BlogPostSort
-      page?: number
-      limit?: number
-    }) => Promise<PaginatedResponse<BlogPostData>>
-    getPost: (slug: string) => Promise<ApiResponse<BlogPostData>>
-    createPost: (data: Partial<BlogPostData>) => Promise<ApiResponse<BlogPostData>>
-    updatePost: (id: string, data: Partial<BlogPostData>) => Promise<ApiResponse<BlogPostData>>
-    deletePost: (id: string) => Promise<ApiResponse<{ success: boolean }>>
-    getCategories: () => Promise<ApiResponse<BlogCategoryData[]>>
-    getTags: () => Promise<ApiResponse<BlogTagData[]>>
-    getAnalytics: () => Promise<ApiResponse<BlogAnalyticsData>>
-    getRSSFeed: () => Promise<ApiResponse<RSSFeedData>>
-  }
 }

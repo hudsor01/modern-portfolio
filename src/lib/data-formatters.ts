@@ -424,18 +424,6 @@ export function formatDuration(
 }
 
 /**
- * Utility type for all formatting functions
- */
-export type DataFormatter =
-  | typeof formatCurrency
-  | typeof formatPercentage
-  | typeof formatNumber
-  | typeof formatDate
-  | typeof formatTrend
-  | typeof formatTimePeriod
-  | typeof formatDuration
-
-/**
  * Registry of all available formatters for dynamic usage
  */
 export const formatters = {
@@ -451,5 +439,3 @@ export const formatters = {
   growthIndicator: formatGrowthIndicator,
   duration: formatDuration,
 } as const
-
-export type FormatterKey = keyof typeof formatters

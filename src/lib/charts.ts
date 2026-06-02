@@ -182,19 +182,19 @@ export const axisStyles = {
 } as const
 
 // Common dot/point styling for line charts
-export const dotStyles = {
+const dotStyles = {
   strokeWidth: 2,
   r: 4,
   fill: chartCssVars.background,
 } as const
 
-export const activeDotStyles = {
+const activeDotStyles = {
   r: 6,
   strokeWidth: 2,
 } as const
 
 // Common bar styling
-export const barStyles = {
+const barStyles = {
   radius: [4, 4, 0, 0] as [number, number, number, number],
 } as const
 
