@@ -7,7 +7,7 @@
  */
 
 // Color Tokens
-export interface ColorTokens {
+interface ColorTokens {
   primary: string
   'primary-hover': string
   'primary-foreground': string
@@ -33,7 +33,7 @@ export interface ColorTokens {
 }
 
 // Spacing Tokens
-export interface SpacingTokens {
+interface SpacingTokens {
   xs: string
   sm: string
   md: string
@@ -45,7 +45,7 @@ export interface SpacingTokens {
 }
 
 // Typography Tokens
-export interface TypographyTokens {
+interface TypographyTokens {
   fontFamily: {
     sans: string
     mono: string
@@ -90,7 +90,7 @@ export interface TypographyTokens {
 }
 
 // Animation Tokens
-export interface AnimationTokens {
+interface AnimationTokens {
   duration: {
     fast: string
     normal: string
@@ -107,7 +107,7 @@ export interface AnimationTokens {
 }
 
 // Radius Tokens
-export interface RadiusTokens {
+interface RadiusTokens {
   none: string
   sm: string
   md: string
@@ -119,7 +119,7 @@ export interface RadiusTokens {
 }
 
 // Shadow Tokens
-export interface ShadowTokens {
+interface ShadowTokens {
   sm: string
   md: string
   lg: string
@@ -130,7 +130,7 @@ export interface ShadowTokens {
 }
 
 // Chart Tokens
-export interface ChartTokens {
+interface ChartTokens {
   height: {
     sm: string
     md: string
@@ -140,7 +140,7 @@ export interface ChartTokens {
 }
 
 // Icon Tokens (already in CSS, add to TS interface)
-export interface IconTokens {
+interface IconTokens {
   size: {
     xs: string
     sm: string

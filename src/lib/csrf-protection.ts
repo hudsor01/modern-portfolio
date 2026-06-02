@@ -39,7 +39,7 @@ export async function setCSRFTokenCookie(token: string): Promise<void> {
 /**
  * Get CSRF token from cookies
  */
-export async function getCSRFTokenFromCookie(): Promise<string | undefined> {
+async function getCSRFTokenFromCookie(): Promise<string | undefined> {
   const cookieStore = await cookies()
   return cookieStore.get(CSRF_TOKEN_NAME)?.value
 }

@@ -2,7 +2,6 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import type { z } from 'zod'
-import type { ChangeEvent, FormEvent } from 'react'
 
 // Client-safe absolute-URL builder. Accepts an injectable window for testing;
 // production/server callers omit it and fall back to the validated site URL.
@@ -87,12 +86,6 @@ export function createUrl(
   })
   return `${pathname}${searchParams.toString() ? `?${searchParams}` : ''}`
 }
-
-// React event types
-export type InputChangeEvent = ChangeEvent<HTMLInputElement>
-export type TextAreaChangeEvent = ChangeEvent<HTMLTextAreaElement>
-export type SelectChangeEvent = ChangeEvent<HTMLSelectElement>
-export type FormSubmitEvent = FormEvent<HTMLFormElement>
 
 /**
  * Smart merge two records intelligently

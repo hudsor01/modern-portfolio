@@ -13,5 +13,3 @@
  * module that touches `next.config.js` directly.
  */
 export const FEATURED_IMAGE_ALLOWED_HOSTS = ['images.unsplash.com'] as const
-
-export type AllowedImageHost = (typeof FEATURED_IMAGE_ALLOWED_HOSTS)[number]

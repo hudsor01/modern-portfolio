@@ -5,14 +5,13 @@
 
 import type { ChangeEvent, Dispatch, FormEvent, SetStateAction } from 'react'
 import type { ContactFormData } from './api'
-import type { PostStatus, ContentType } from './blog'
 
 // ============================================================================
 // TanStack Form Core Types
 // ============================================================================
 
 /** Field metadata state */
-export interface FieldMeta {
+interface FieldMeta {
   errors?: (string | Error)[]
   touchedOrDirty: boolean
   touched: boolean
@@ -22,7 +21,7 @@ export interface FieldMeta {
 }
 
 /** Field state containing value and metadata */
-export interface FieldState<TValue = unknown> {
+interface FieldState<TValue = unknown> {
   value: TValue
   meta: FieldMeta
 }
@@ -72,29 +71,4 @@ export interface UseContactFormReturn {
   setAgreedToTerms: Dispatch<SetStateAction<boolean>>
   resetForm: () => void
   error: Error | null
-}
-
-export interface BlogPostFormData {
-  title: string
-  slug: string
-  excerpt?: string
-  content: string
-  contentType: ContentType
-  status: PostStatus
-  metaTitle?: string
-  metaDescription?: string
-  keywords: string[]
-  canonicalUrl?: string
-  ogTitle?: string
-  ogDescription?: string
-  ogImage?: string
-  twitterTitle?: string
-  twitterDescription?: string
-  twitterImage?: string
-  featuredImage?: string
-  featuredImageAlt?: string
-  publishedAt?: Date
-  scheduledAt?: Date
-  categoryId?: string
-  tagIds: string[]
 }
