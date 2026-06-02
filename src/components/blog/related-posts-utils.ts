@@ -18,10 +18,11 @@ export function selectRelatedPosts<T extends RelatedPostInput>(
   limit: number
 ): T[] {
   const others = all.filter((p) => p.slug !== current.slug)
+  const currentTags = new Set(current.tags)
   const tagged = others
     .map((p) => ({
       post: p,
-      overlap: p.tags.filter((t) => current.tags.includes(t)).length,
+      overlap: p.tags.filter((t) => currentTags.has(t)).length,
     }))
     .filter((x) => x.overlap > 0)
     .sort((a, b) => {
