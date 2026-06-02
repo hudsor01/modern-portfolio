@@ -166,4 +166,4 @@ const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
 
 MetricCard.displayName = 'MetricCard'
 
-export { MetricCard, metricCardVariants }
+export { MetricCard }

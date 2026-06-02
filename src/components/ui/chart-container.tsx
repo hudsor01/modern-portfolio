@@ -182,4 +182,4 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
 
 ChartContainer.displayName = 'ChartContainer'
 
-export { ChartContainer, chartContainerVariants }
+export { ChartContainer }

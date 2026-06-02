@@ -5,7 +5,7 @@ import type { ReactNode } from 'react'
 import { Check } from 'lucide-react'
 import { SectionCard } from '@/components/ui/section-card'
 
-export interface FeatureListItem {
+interface FeatureListItem {
   /** Card heading. */
   title: string
   /** Supporting paragraph under the heading. */
@@ -14,7 +14,7 @@ export interface FeatureListItem {
   bullets: string[]
 }
 
-export interface ImpactStat {
+interface ImpactStat {
   /** Large stat value (pre-formatted string or node). */
   value: ReactNode
   /** Label under the stat. */
