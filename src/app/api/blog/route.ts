@@ -314,6 +314,10 @@ export async function POST(request: NextRequest) {
             keyLocation: canonicalUrl(`/${indexNowKey}.txt`),
             urlList: [postUrl],
           }),
+          // Bound the un-awaited ping: a slow/hung IndexNow endpoint must not
+          // keep the serverless instance alive past the already-sent 201.
+          // Abort surfaces as an AbortError in the .catch below.
+          signal: AbortSignal.timeout(3000),
         })
           .then((res) => {
             if (!res.ok) {
