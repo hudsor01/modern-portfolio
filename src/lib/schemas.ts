@@ -225,8 +225,6 @@ export const contactFormSchema = z
   })
   .strict()
 
-export type ContactFormValues = z.infer<typeof contactFormSchema>
-
 // =======================
 // BLOG POST SCHEMAS
 // =======================
@@ -296,14 +294,12 @@ export const createBlogPostSchema = z
     keywords: z.array(z.string().min(1).max(50)).max(10).default([]),
   })
   .strict()
-export type CreateBlogPostInput = z.infer<typeof createBlogPostSchema>
 
 // PUT /api/blog/[slug] — every field optional, NO defaults (PATCH
 // semantics). The base shape has no defaults, so `.partial()` produces
 // the right thing: missing fields stay `undefined` instead of being
 // filled in.
 export const updateBlogPostSchema = z.object(blogPostBaseShape).partial().strict()
-export type UpdateBlogPostInput = z.infer<typeof updateBlogPostSchema>
 
 // =======================
 // TAG / CATEGORY SCHEMAS
@@ -322,7 +318,6 @@ export const createTagSchema = z
     color: hexColor.default('#6B7280'),
   })
   .strict()
-export type CreateTagInput = z.infer<typeof createTagSchema>
 
 export const createCategorySchema = z
   .object({
@@ -335,7 +330,6 @@ export const createCategorySchema = z
     keywords: z.array(z.string().min(1).max(50)).max(10).default([]),
   })
   .strict()
-export type CreateCategoryInput = z.infer<typeof createCategorySchema>
 
 // =======================
 // PROJECT SCHEMAS
@@ -468,11 +462,3 @@ export function safeValidate<T>(
   }
   return { success: false, error: result.error }
 }
-
-// =======================
-// TYPE EXPORTS
-// =======================
-
-export type ProjectFilterInput = z.infer<typeof projectFilterSchema>
-export type ViewTrackingInput = z.infer<typeof viewTrackingSchema>
-export type PaginationInput = z.infer<typeof paginationSchema>

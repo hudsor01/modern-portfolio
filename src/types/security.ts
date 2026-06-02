@@ -14,7 +14,7 @@ export interface RateLimitRecord {
   createdAt: number
 }
 
-export interface BurstProtectionConfig {
+interface BurstProtectionConfig {
   enabled: boolean
   burstWindow: number
   maxBurstRequests: number
