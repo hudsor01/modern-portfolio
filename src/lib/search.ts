@@ -175,17 +175,19 @@ export function highlightSearchTerms(text: string, query: string): string {
     .split(/\s+/)
     .filter((term) => term.length > 2)
 
-  let highlighted = text
-
-  for (const term of terms) {
-    // Escape regex metacharacters — terms come from user query strings, so
-    // an unescaped `(`, `[`, `\`, `?`, etc. would throw SyntaxError and
-    // bubble up through highlightSearchTerms callers.
-    const regex = new RegExp(`(${escapeRegExp(term)})`, 'gi')
-    highlighted = highlighted.replace(regex, '<mark>$1</mark>')
+  // No terms survive the length filter → nothing to mark. Guard before building
+  // the regex: an empty alternation (`()`) would match the empty string at every
+  // position and wrap the whole text in <mark>.
+  if (terms.length === 0) {
+    return text
   }
 
-  return highlighted
+  // Single alternation over all terms — one compile + one pass instead of
+  // recompiling a regex and re-scanning the text per term. Each term is regex-
+  // escaped: terms come from user query strings, so an unescaped `(`, `[`, `\`,
+  // `?`, etc. would throw SyntaxError and bubble up through callers.
+  const regex = new RegExp(`(${terms.map(escapeRegExp).join('|')})`, 'gi')
+  return text.replace(regex, '<mark>$1</mark>')
 }
 
 export async function getSearchSuggestions(prefix: string, limit: number = 5): Promise<string[]> {

@@ -19,21 +19,27 @@ export function markdownToHtml(markdown: string): string {
   return externalizeLinks(demoteHeadings(html))
 }
 
+// Heading-demotion passes, ordered high→low so a heading demoted on one pass
+// isn't demoted again. Compiled once at module load rather than rebuilding 10
+// RegExp objects on every render. Global regexes are safe to reuse across
+// calls: String.prototype.replace resets lastIndex when it completes.
+const HEADING_DEMOTIONS = [5, 4, 3, 2, 1].map((level) => ({
+  openTag: new RegExp(`<h${level}(\\s[^>]*)?>`, 'gi'),
+  closeTag: new RegExp(`</h${level}>`, 'gi'),
+  openReplacement: `<h${level + 1}$1>`,
+  closeReplacement: `</h${level + 1}>`,
+}))
+
 /**
  * Shift every heading down one level (h1→h2 … h5→h6; h6 unchanged) so body
  * markdown never emits an `<h1>` that competes with the page title's `<h1>`.
  * A double-h1 confuses Google's content-hierarchy parser; this preserves the
  * visual hierarchy (the `prose` wrapper styles h2–h6) while fixing semantics.
- *
- * Processed high→low so a heading demoted on one pass isn't demoted again.
  */
 function demoteHeadings(html: string): string {
   let out = html
-  for (let level = 5; level >= 1; level--) {
-    const next = level + 1
-    out = out
-      .replace(new RegExp(`<h${level}(\\s[^>]*)?>`, 'gi'), `<h${next}$1>`)
-      .replace(new RegExp(`</h${level}>`, 'gi'), `</h${next}>`)
+  for (const { openTag, closeTag, openReplacement, closeReplacement } of HEADING_DEMOTIONS) {
+    out = out.replace(openTag, openReplacement).replace(closeTag, closeReplacement)
   }
   return out
 }

@@ -30,7 +30,11 @@ export class DataCacheService {
       ttl,
     })
 
-    logger.debug('Data cached', { key, ttl, size: JSON.stringify(data).length })
+    // No `size: JSON.stringify(data).length` — the arg is evaluated eagerly on
+    // every set, even in prod where the debug log is discarded (LOG_LEVEL=info),
+    // forcing a full serialization of potentially-large analytics payloads per
+    // write for telemetry that never ships.
+    logger.debug('Data cached', { key, ttl })
     this.enforceSizeLimit()
   }
 
