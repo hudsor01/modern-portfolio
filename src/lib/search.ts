@@ -31,7 +31,7 @@ export interface SearchResult {
  */
 let pgTrgmAvailable: boolean | null = null
 
-export async function hasPgTrgm(): Promise<boolean> {
+async function hasPgTrgm(): Promise<boolean> {
   if (pgTrgmAvailable !== null) {
     return pgTrgmAvailable
   }
