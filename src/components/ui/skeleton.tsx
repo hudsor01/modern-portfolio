@@ -68,32 +68,4 @@ function Skeleton({
   )
 }
 
-/**
- * Creates a group of skeleton placeholders for lists or grids
- */
-function SkeletonGroup({
-  count = 3,
-  as: Component = 'div',
-  variant = 'default',
-  className,
-  itemClassName,
-  gap = 'gap-4',
-  ...props
-}: {
-  count?: number
-  as?: React.ElementType
-  variant?: SkeletonVariant
-  className?: string
-  itemClassName?: string
-  gap?: string
-} & React.ComponentProps<'div'>) {
-  return (
-    <Component className={cn('flex flex-col', gap, className)} {...props}>
-      {Array.from({ length: count }).map((_, i) => (
-        <Skeleton key={i} variant={variant} className={itemClassName} />
-      ))}
-    </Component>
-  )
-}
-
-export { Skeleton, SkeletonGroup }
+export { Skeleton }

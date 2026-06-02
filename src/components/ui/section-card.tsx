@@ -109,5 +109,4 @@ const SectionCard = React.forwardRef<HTMLDivElement, SectionCardProps>(
 
 SectionCard.displayName = 'SectionCard'
 
-export { SectionCard, sectionCardVariants }
-export type { SectionCardProps }
+export { SectionCard }

@@ -98,12 +98,6 @@ export const LazyScatterChart = dynamic(() => import('recharts').then((mod) => m
 })
 
 // ============================================================================
-// Skeleton Export
-// ============================================================================
-
-export { ChartSkeleton }
-
-// ============================================================================
 // Helper Components (consolidated from chart-components.tsx)
 // ============================================================================
 
@@ -112,19 +106,6 @@ interface ChartContainerProps {
   children: React.ReactNode
   height?: keyof typeof chartConfig.heights | number
   className?: string
-}
-
-interface ChartTooltipProps {
-  active?: boolean
-  payload?: Array<{
-    value: number
-    name: string
-    color?: string
-    payload?: Record<string, unknown>
-  }>
-  label?: string
-  formatter?: (value: number, name: string) => [string, string]
-  labelFormatter?: (label: string) => string
 }
 
 interface ChartGridProps {
@@ -143,11 +124,7 @@ interface ChartAxisProps {
 }
 
 // Standardized chart container
-export function ChartContainer({
-  children,
-  height = 'standard',
-  className = '',
-}: ChartContainerProps) {
+function ChartContainer({ children, height = 'standard', className = '' }: ChartContainerProps) {
   const containerHeight = typeof height === 'number' ? height : chartConfig.heights[height]
 
   return (
@@ -155,39 +132,6 @@ export function ChartContainer({
       <ResponsiveContainer width="100%" height="100%" minWidth={0}>
         {children as React.ReactElement}
       </ResponsiveContainer>
-    </div>
-  )
-}
-
-// Standardized tooltip component
-export function ChartTooltip({
-  active,
-  payload,
-  label,
-  formatter,
-  labelFormatter,
-}: ChartTooltipProps) {
-  if (!active || !payload || payload.length === 0) {
-    return null
-  }
-
-  const formatLabel = labelFormatter || ((l: string) => `Period: ${l}`)
-  const formatValue =
-    formatter ||
-    ((value: number, name: string) => [`${value}`, name.charAt(0).toUpperCase() + name.slice(1)])
-
-  return (
-    <div className="rounded-lg border bg-card p-3 shadow-lg" style={tooltipStyles}>
-      <p className="font-medium mb-2">{formatLabel(label || '')}</p>
-      {payload.map((entry, index) => {
-        const [formattedValue, formattedName] = formatValue(entry.value, entry.name)
-        return (
-          <p key={index} className="text-sm">
-            <span style={{ color: entry.color }}>{formattedName}:</span>
-            <span className="font-semibold ml-1">{formattedValue}</span>
-          </p>
-        )
-      })}
     </div>
   )
 }
