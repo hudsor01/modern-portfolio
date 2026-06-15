@@ -1,15 +1,7 @@
 import * as Sentry from '@sentry/nextjs'
+import { parseSampleRate } from './sentry.shared'
 
 const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN
-
-const parseSampleRate = (value: string | undefined, fallback: number) => {
-  if (!value) return fallback
-
-  const parsed = Number.parseFloat(value)
-  if (Number.isNaN(parsed)) return fallback
-
-  return Math.min(1, Math.max(0, parsed))
-}
 
 const tracesSampleRate = parseSampleRate(
   process.env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE,
