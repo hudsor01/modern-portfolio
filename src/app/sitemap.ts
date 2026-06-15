@@ -19,13 +19,26 @@ const logger = createContextLogger('Sitemap')
 export const dynamic = 'force-dynamic'
 export const revalidate = 3600
 
-// Captured at module load (i.e. deploy time / process start), NOT per
-// request. If we used `new Date()` inside the handler, every hourly
-// revalidation would mark every static page as "freshly modified" — Google
-// downweights sitemaps that lie about lastmod (Mueller, 2025). This pins
-// static-page lastmod to the deploy commit's author date when available
-// (Vercel-injected env var), falling back to process start.
-const STATIC_LAST_MODIFIED = process.env.VERCEL_GIT_COMMIT_AUTHOR_DATE || new Date().toISOString()
+// Static pages and project showcase pages change only when their source is
+// edited and redeployed — never on a sitemap regeneration. This route is
+// `force-dynamic` (renders per request, revalidating hourly), so lastmod must
+// NOT come from a request-time clock: Google first downweights and eventually
+// IGNORES a sitemap whose lastmod changes while the content does not (Mueller,
+// 2024–2025), which silently breaks the "fix → request validation → recrawl"
+// loop in Search Console.
+//
+// The prior attempt — `process.env.VERCEL_GIT_COMMIT_AUTHOR_DATE` — is a
+// BUILD-time-only env var. It is undefined at runtime under force-dynamic, so
+// it silently fell through to `new Date()` and stamped all 22 static + project
+// URLs with the lambda cold-start time, mutating on every regeneration.
+// (Confirmed live: 22 URLs shared a single ever-advancing timestamp.)
+//
+// Fix: a single hardcoded, stable date. Bump it ONLY when static-page or
+// project content meaningfully changes — a deploy that just touches code or
+// deps must leave it untouched so the freshness signal stays truthful. Blog
+// posts and categories below already use their real DB `updatedAt`/
+// `publishedAt`, so they are unaffected.
+const STATIC_LAST_MODIFIED = '2026-06-14T00:00:00.000Z'
 
 // Next.js's MetadataRoute.Sitemap serializer does NOT XML-escape `&` in the
 // `images[]` URL strings before emitting them inside <image:loc>. URLs that
