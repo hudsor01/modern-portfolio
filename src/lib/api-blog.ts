@@ -29,15 +29,10 @@ import type {
 // callers keep working; the canonical definition lives in @/types/blog.
 export type { BlogPostWithRelations }
 
-export function generateSlug(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-    .trim()
-}
+// generateSlug lives in the dependency-free @/lib/slug so it can also be used
+// from Node CLI scripts (which can't import this module — it pulls in the
+// `server-only`-gated db client). Re-exported here for existing callers.
+export { generateSlug } from './slug'
 
 export function createErrorResponse(message: string): ApiResponse<never> {
   return {

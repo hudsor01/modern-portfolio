@@ -42,6 +42,30 @@ describe('generateSlug', () => {
   it('handles empty string', () => {
     expect(generateSlug('')).toBe('')
   })
+
+  it('keeps a complete word boundary when the cut lands on a separator', () => {
+    expect(generateSlug('alpha bravo charlie', 11)).toBe('alpha-bravo')
+  })
+
+  it('backs up to the last word boundary instead of splitting a word', () => {
+    expect(generateSlug('one two three four five', 12)).toBe('one-two')
+  })
+
+  it('never returns a trailing hyphen after truncation', () => {
+    expect(generateSlug('vanity metrics report', 14).endsWith('-')).toBe(false)
+  })
+
+  it('hard-caps a single token longer than maxLength', () => {
+    expect(generateSlug('supercalifragilistic', 8)).toBe('supercal')
+  })
+
+  it('defaults to a 100-char ceiling that satisfies slugSchema', () => {
+    const title = Array.from({ length: 40 }, (_, i) => `keyword${i}`).join(' ')
+    const slug = generateSlug(title)
+    expect(slug.length).toBeLessThanOrEqual(100)
+    expect(slug.endsWith('-')).toBe(false)
+    expect(slug).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+  })
 })
 
 describe('createErrorResponse', () => {
