@@ -30,6 +30,16 @@ import { createScriptDb } from './_db'
 
 async function main(): Promise<void> {
   const apply = process.argv.includes('--apply')
+
+  // Resolve the connection string from DIRECT_URL (preferred — the non-pooled
+  // endpoint, ideal for a one-off write) then DATABASE_URL. Both are loaded
+  // from .env*/the environment; createScriptDb reads process.env.DATABASE_URL,
+  // so we point it at whichever is set. The value is never read into a variable
+  // here nor printed — it stays in the environment.
+  if (process.env.DIRECT_URL) process.env.DATABASE_URL = process.env.DIRECT_URL
+  const source = process.env.DIRECT_URL ? 'DIRECT_URL' : 'DATABASE_URL'
+  console.log(`Using connection from ${source}.`)
+
   const db = createScriptDb({ blogPosts })
 
   const rows = await db
