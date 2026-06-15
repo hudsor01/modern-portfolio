@@ -31,14 +31,15 @@ import { createScriptDb } from './_db'
 async function main(): Promise<void> {
   const apply = process.argv.includes('--apply')
 
-  // Resolve the connection string from DIRECT_URL (preferred — the non-pooled
-  // endpoint, ideal for a one-off write) then DATABASE_URL. Both are loaded
-  // from .env*/the environment; createScriptDb reads process.env.DATABASE_URL,
-  // so we point it at whichever is set. The value is never read into a variable
-  // here nor printed — it stays in the environment.
-  if (process.env.DIRECT_URL) process.env.DATABASE_URL = process.env.DIRECT_URL
-  const source = process.env.DIRECT_URL ? 'DIRECT_URL' : 'DATABASE_URL'
-  console.log(`Using connection from ${source}.`)
+  // Use DATABASE_URL — the pooled, HTTP-capable endpoint this neon-http app
+  // already connects with (createScriptDb reads process.env.DATABASE_URL). Fall
+  // back to DIRECT_URL only if DATABASE_URL is unset: the unpooled DIRECT_URL
+  // can't always serve the serverless SQL-over-HTTP endpoint, so it's a last
+  // resort, not the default. The value stays in the environment — only the
+  // source name is logged, never the connection string.
+  const usingFallback = !process.env.DATABASE_URL && !!process.env.DIRECT_URL
+  if (usingFallback) process.env.DATABASE_URL = process.env.DIRECT_URL
+  console.log(`Using connection from ${usingFallback ? 'DIRECT_URL' : 'DATABASE_URL'}.`)
 
   const db = createScriptDb({ blogPosts })
 
