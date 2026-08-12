@@ -41,15 +41,15 @@
     "@vercel/speed-insights": "2.0.0",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
-    "dompurify": "3.4.10",
+    "dompurify": "3.4.13",
     "drizzle-orm": "0.45.2",
     "lucide-react": "1.18.0",
     "marked": "18.0.5",
     "motion": "12.40.0",
-    "next": "16.2.9",
+    "next": "16.2.11",
     "next-themes": "0.4.6",
     "nuqs": "2.8.9",
-    "postcss": "8.5.15",
+    "postcss": "8.5.26",
     "radix-ui": "1.5.0",
     "react": "19.2.7",
     "react-dom": "19.2.7",
@@ -94,6 +94,7 @@
     "fast-uri": "^4.0.0",
     "mysql2": "^3.22.5",
     "undici": "^7.26.0",
-    "brace-expansion": "^5.0.6"
+    "brace-expansion": "^5.0.6",
+    "postcss": "8.5.26"
   }
 }
