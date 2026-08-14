@@ -1,0 +1,7 @@
+[install]
+# drizzle-orm declares 28 optional peers (every DB driver it supports).
+# Bun installs optional peers by default; npm/pnpm do not. That pulled in
+# @prisma/client + prisma (~215MB) into a repo that migrated OFF Prisma,
+# plus mysql2/pg/postgres. Those chains were the source of most transitive
+# CVE findings and most of the "overrides" block.
+peer = false
