@@ -152,6 +152,45 @@ Three Sentry configs at repo root: `sentry.server.config.ts`, `sentry.client.con
 
 Logger (`src/lib/logger.ts`): exports `logger` singleton + `createContextLogger(name)` factory. Levels: `debug`/`info`/`warn`/`error`/`fatal` (controlled by `LOG_LEVEL`). Two transports: `ConsoleTransport` (colored, suppressed in prod) and `SentryTransport` (error → `captureException`, warn → `captureMessage`, info/debug → `addBreadcrumb`). Sentry is the production sink — there is no file transport. Lazy-requires `@sentry/nextjs`.
 
+## Dependency policy
+
+**`bunfig.toml` sets `[install] peer = false`. Do not remove it.** Bun installs
+optional peer dependencies by default; npm and pnpm do not. `drizzle-orm` declares
+28 optional peers — one for every DB driver it supports — so the default behaviour
+pulled `@prisma/client` + `prisma` (~215 MB) into a repo that had deliberately
+migrated *off* Prisma, plus unused `mysql2` / `pg` / `postgres`. Those phantom
+chains were the source of most transitive CVE findings. Turning peer auto-install
+off removed 203 packages (693 → 490) and ~350 MB, and took `overrides` from 21
+entries to 3.
+
+Consequence: **anything the build actually needs must be a declared dependency.**
+`babel-plugin-react-compiler` was silently supplied as a `next` optional peer for
+months while `next.config.js` claimed no Babel plugin was needed; `peer = false`
+exposed it as a hard build failure. It is now an explicit devDependency. If a build
+breaks with "failed to resolve <pkg>" after a dependency change, declare the package
+rather than re-enabling peer auto-install.
+
+**Keep `overrides` minimal.** Only 3 are load-bearing, each pinning a *nested* copy
+that a parent pins below the fix line:
+
+| Override | Why it exists |
+|---|---|
+| `postcss` | `next` internally pins `postcss@8.4.31`; collapses every copy onto one patched version |
+| `sharp` | `next` pins `sharp ^0.34.5` as an optional dep, below the libvips CVE fix line |
+| `esbuild` | `drizzle-kit`, `react-email`, and `vite` pin versions below the dev-server disclosure fix |
+
+Before adding a fourth, check whether the package resolves to a patched version on
+its own — an override that pins a caret range *stops* that package tracking upstream
+patches and goes stale silently. That is not hypothetical: the old block pinned
+`fast-uri ^4.0.0`, which forced the tree onto the 4.x line where the vulnerable range
+(`>=4.0.0 <4.1.2`) lives, when it would otherwise have resolved to a clean 3.1.5.
+Several other pins had drifted *behind* natural resolution. Neither Dependabot nor
+Renovate updates `overrides` ([renovate#15278](https://github.com/renovatebot/renovate/issues/15278)
+is still unimplemented), so every entry is permanently hand-maintained.
+
+CI gate is `bun audit --audit-level=high` (`.github/workflows/ci.yml`), but the tree
+is currently clean at *every* severity — keep it there.
+
 ## Gotchas
 
 - **No Prisma.** The repo migrated off Prisma 7 → Drizzle ORM in May 2026 after [prisma/prisma#28588](https://github.com/prisma/prisma/issues/28588) caused `/blog/[slug]` Server Component queries to suspend indefinitely on Vercel + adapter-neon. Don't reintroduce `@prisma/*` packages or import from `@/generated/prisma/*`.

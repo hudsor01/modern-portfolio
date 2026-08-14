@@ -9,7 +9,10 @@ const nextConfig = {
   basePath: '',
   trailingSlash: false,
 
-  // React Compiler — stable and bundled in Next.js 16 (no Babel plugin dep).
+  // React Compiler. This DOES need `babel-plugin-react-compiler`, which is a
+  // declared devDependency — Next lists it as an optional peer, and bun used to
+  // auto-install it, so the requirement was invisible until `install.peer=false`
+  // (bunfig.toml) turned peer auto-install off and the build failed to resolve it.
   // Ref: https://nextjs.org/docs/app/api-reference/config/next-config-js/reactCompiler
   reactCompiler: true,
 
