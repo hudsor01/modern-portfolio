@@ -1,6 +1,5 @@
 {
   "framework": "nextjs",
-  "bunVersion": "1.x",
   "buildCommand": "bun run build",
   "devCommand": "bun run dev",
   "regions": ["iad1"],

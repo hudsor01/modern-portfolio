@@ -152,6 +152,26 @@ Three Sentry configs at repo root: `sentry.server.config.ts`, `sentry.client.con
 
 Logger (`src/lib/logger.ts`): exports `logger` singleton + `createContextLogger(name)` factory. Levels: `debug`/`info`/`warn`/`error`/`fatal` (controlled by `LOG_LEVEL`). Two transports: `ConsoleTransport` (colored, suppressed in prod) and `SentryTransport` (error → `captureException`, warn → `captureMessage`, info/debug → `addBreadcrumb`). Sentry is the production sink — there is no file transport. Lazy-requires `@sentry/nextjs`.
 
+## Vercel runtime
+
+**Don't add `bunVersion` back to `vercel.json`.** It sets the runtime for Vercel
+Functions and Routing Middleware, but `engines.node` in `package.json` takes
+precedence — so with both present Vercel logs *"`package.json` takes precedence,
+using \"node\""* and ignores `bunVersion` entirely. It was dead config, and removing
+it changed no behaviour; Node was already the runtime.
+
+Node is the deliberate choice here, not an accident:
+- The Bun runtime has **no automatic source maps** — which would defeat the Sentry
+  source-map upload wired through `withSentryConfig` in `next.config.js`.
+- This app uses ISR, and Vercel requires `bun run --bun next build` for Next.js +
+  ISR on the Bun runtime — directly at odds with the deliberate Node-side `build`
+  (see the `bun --bun` note under Gotchas).
+- Bun also lacks bytecode caching and request metrics on `node:http`/`node:https`.
+
+Bun remains the package manager and script runner on Vercel regardless: `bun.lock`
+drives `bun install` and `buildCommand` is `bun run build`. Only the *function
+runtime* is Node. Ref: https://vercel.com/docs/functions/runtimes/bun
+
 ## Dependency policy
 
 **`bunfig.toml` sets `[install] peer = false`. Do not remove it.** Bun installs
