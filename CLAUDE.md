@@ -148,7 +148,35 @@ Sentry vars (`SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJE
 
 ## Sentry & logging
 
-Three Sentry configs at repo root: `sentry.server.config.ts`, `sentry.client.config.ts`, `sentry.edge.config.ts`. Wrapped via `withSentryConfig(nextConfig, …)` in `next.config.js:187`. Disabled when `NODE_ENV='test'` or DSN absent. Sample rates parsed via local `parseSampleRate()`, clamped `[0,1]`, default `0.1` in prod / `1` in dev. No tunnel route.
+Sentry init is split by runtime, and the three entrypoints are **not** symmetrical:
+
+| Runtime | Init lives in | Loaded by |
+|---|---|---|
+| Node | `sentry.server.config.ts` | `instrumentation.ts` → `register()` |
+| Edge | `sentry.edge.config.ts` | `instrumentation.ts` → `register()` |
+| **Browser** | **`instrumentation-client.ts`** (init inline) | Next.js directly |
+
+**Never move the browser init into a `sentry.client.config.ts`.** `@sentry/nextjs`
+no longer auto-loads that filename, so config placed there is dead code and the
+browser SDK silently never initialises — while server and edge keep working, which
+makes it very easy to miss. This exact bug shipped here and went unnoticed. Verify
+after any change to Sentry wiring:
+
+```
+bun run build && grep -rl "<your-dsn-id>" .next/static   # must match a chunk
+```
+
+Shared helpers (`parseSampleRate`, the server/edge option builders) live in
+`sentry.shared.ts`. Wrapped via `withSentryConfig(nextConfig, …)` in `next.config.js`.
+Disabled when `NODE_ENV='test'` or DSN absent — `sentry.shared.ts:43` gates on
+`Boolean(dsn)`, so a missing `NEXT_PUBLIC_SENTRY_DSN` disables Sentry entirely
+rather than erroring. Sample rates clamped `[0,1]`, default `0.1` in prod / `1` in
+dev. No tunnel route.
+
+Build-time source-map upload needs `SENTRY_AUTH_TOKEN` **plus** `SENTRY_ORG` and
+`SENTRY_PROJECT` (`next.config.js` passes all three into `withSentryConfig`).
+`silent: true` means a missing one fails quietly — confirm uploads landed by
+checking that a release appears for the deployed commit SHA in Sentry.
 
 Logger (`src/lib/logger.ts`): exports `logger` singleton + `createContextLogger(name)` factory. Levels: `debug`/`info`/`warn`/`error`/`fatal` (controlled by `LOG_LEVEL`). Two transports: `ConsoleTransport` (colored, suppressed in prod) and `SentryTransport` (error → `captureException`, warn → `captureMessage`, info/debug → `addBreadcrumb`). Sentry is the production sink — there is no file transport. Lazy-requires `@sentry/nextjs`.
 
