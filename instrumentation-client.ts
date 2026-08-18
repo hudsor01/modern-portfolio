@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/nextjs'
-import { parseSampleRate } from './sentry.shared'
+import { parseSampleRate, resolveEnvironment } from './sentry.shared'
 
 // Browser-side Sentry init. This MUST live here, not in a `sentry.client.config.ts`
 // — @sentry/nextjs stopped auto-loading that file, so a config left there is dead
@@ -9,16 +9,21 @@ import { parseSampleRate } from './sentry.shared'
 
 const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN
 
-const tracesSampleRate = parseSampleRate(
-  process.env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE,
-  process.env.NODE_ENV === 'production' ? 0.1 : 1
-)
+// Full tracing. This is a low-traffic site, and span quota is separate from the
+// error quota — so sampling at 1 cannot cause errors to be dropped. Dial down via
+// env if span volume ever becomes a cost problem.
+const tracesSampleRate = parseSampleRate(process.env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE, 1)
 
 const profilesSampleRate = parseSampleRate(
   process.env.NEXT_PUBLIC_SENTRY_PROFILES_SAMPLE_RATE,
   0
 )
 
+// Session Replay quota is consumed per replay, and once it is exhausted Sentry
+// drops NEW replays — including the ones attached to errors. Sampling random
+// uneventful sessions therefore trades away error-replay coverage, so the default
+// is "a replay for every error, none otherwise". Raise the session rate only if
+// you want replay for UX research rather than debugging.
 const replaysSessionSampleRate = parseSampleRate(
   process.env.NEXT_PUBLIC_SENTRY_REPLAYS_SESSION_SAMPLE_RATE,
   0
@@ -26,7 +31,7 @@ const replaysSessionSampleRate = parseSampleRate(
 
 const replaysOnErrorSampleRate = parseSampleRate(
   process.env.NEXT_PUBLIC_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE,
-  0
+  1
 )
 
 const enableReplay = replaysSessionSampleRate > 0 || replaysOnErrorSampleRate > 0
@@ -34,14 +39,33 @@ const enableReplay = replaysSessionSampleRate > 0 || replaysOnErrorSampleRate > 
 Sentry.init({
   dsn,
   enabled: Boolean(dsn) && process.env.NODE_ENV !== 'test',
-  environment: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT || process.env.NODE_ENV,
+  environment: resolveEnvironment(
+    process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT,
+    process.env.NEXT_PUBLIC_VERCEL_ENV
+  ),
   tracesSampleRate,
   profilesSampleRate,
   replaysSessionSampleRate,
   replaysOnErrorSampleRate,
-  integrations: enableReplay
-    ? (integrations) => [...integrations, Sentry.replayIntegration()]
-    : undefined,
+  // Structured logs (Sentry SDK v10 top-level option, not `_experiments`).
+  enableLogs: true,
+  integrations: (integrations) => [
+    ...integrations,
+    // Forward console output as structured, searchable logs. `debug`/`info` are
+    // deliberately excluded — they are dev noise and would dominate the stream.
+    Sentry.consoleLoggingIntegration({ levels: ['log', 'warn', 'error'] }),
+    ...(enableReplay
+      ? [
+          Sentry.replayIntegration({
+            // Defaults, set explicitly: this is a public site but forms carry
+            // names/emails, and a replay must never become a PII leak.
+            maskAllText: true,
+            maskAllInputs: true,
+            blockAllMedia: true,
+          }),
+        ]
+      : []),
+  ],
   sendDefaultPii: process.env.NEXT_PUBLIC_SENTRY_SEND_DEFAULT_PII === 'true',
   ignoreErrors: [
     // Browser benign noise

@@ -178,6 +178,35 @@ Build-time source-map upload needs `SENTRY_AUTH_TOKEN` **plus** `SENTRY_ORG` and
 `silent: true` means a missing one fails quietly — confirm uploads landed by
 checking that a release appears for the deployed commit SHA in Sentry.
 
+**CSP and Sentry are coupled.** `connect-src` in `src/lib/csp-edge.ts` must list
+`https://*.ingest.us.sentry.io`, or the browser blocks every client envelope
+before it leaves the page — errors, traces and replays all go dark while the
+server side keeps reporting normally, so the dashboard still looks alive.
+`worker-src 'self' blob:` is equally required: Session Replay compresses payloads
+in a Web Worker created from a `blob:` URL, and without it the worker is refused,
+replay breaks, and the in-flight request never settles.
+
+**`tunnelRoute` is deliberately not set.** It would proxy events same-origin and
+dodge ad blockers, but the Next.js external rewrite it installs hangs ~10s and
+returns 408 locally (direct-to-Sentry answers in ~60ms). That leaves a pending
+request on every page load, which stalls every `waitForLoadState('networkidle')`
+— it took the e2e suite from 14 failures to 122. The accepted trade-off is that
+ad blockers can drop some client events by hostname. Only revisit with a verified
+fix, and re-run the full e2e suite if you do.
+
+Coverage currently enabled: errors (all runtimes), tracing at 100%, structured
+logs (`enableLogs`) with `console.log/warn/error` forwarded, and Session Replay
+on **errors only**. Replay session sampling defaults to 0 on purpose — replay
+quota is consumed per replay and, once exhausted, Sentry drops *new* replays
+including the ones attached to errors, so sampling idle sessions trades away
+error coverage. Every rate is env-overridable (`NEXT_PUBLIC_SENTRY_*` for the
+browser, `SENTRY_*` for server/edge). Profiling stays at 0 — it needs the extra
+`@sentry/profiling-node` package.
+
+Verify the browser side actually delivers (not just that it initialises) by
+loading a page and watching for `POST .../envelope/` returning 200 with no CSP
+violation in the console.
+
 Logger (`src/lib/logger.ts`): exports `logger` singleton + `createContextLogger(name)` factory. Levels: `debug`/`info`/`warn`/`error`/`fatal` (controlled by `LOG_LEVEL`). Two transports: `ConsoleTransport` (colored, suppressed in prod) and `SentryTransport` (error → `captureException`, warn → `captureMessage`, info/debug → `addBreadcrumb`). Sentry is the production sink — there is no file transport. Lazy-requires `@sentry/nextjs`.
 
 ## Vercel runtime
