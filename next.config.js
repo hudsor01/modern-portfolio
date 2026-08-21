@@ -216,16 +216,12 @@ const sentryBuildOptions = {
   // framework frames instead of stopping at minified boundaries.
   widenClientFileUpload: true,
 
-  // Annotate DOM nodes with their React component name, so issues and replays
-  // point at a component rather than an anonymous element.
-  reactComponentAnnotation: { enabled: true },
-
-  // Tree-shake the SDK's own debug logger out of the production bundle.
-  disableLogger: true,
-
-  // Auto-register Vercel cron jobs as Sentry Cron Monitors. No crons today; this
-  // makes any future one monitored by default rather than silently unwatched.
-  automaticVercelMonitors: true,
+  // NOT set: `reactComponentAnnotation`, `disableLogger`, `automaticVercelMonitors`.
+  // All three are deprecated in favour of `webpack.*` equivalents AND, per the
+  // SDK's own build warning, are "Not supported with Turbopack" — this app builds
+  // with Turbopack (`▲ Next.js 16.2.11 (Turbopack)`), so they were pure no-ops
+  // that logged three deprecation warnings on every deploy. Re-add only via the
+  // `webpack.*` namespace if this ever moves off Turbopack.
 }
 
 export default withSentryConfig(nextConfig, sentryBuildOptions)

@@ -194,6 +194,13 @@ request on every page load, which stalls every `waitForLoadState('networkidle')`
 ad blockers can drop some client events by hostname. Only revisit with a verified
 fix, and re-run the full e2e suite if you do.
 
+Three `withSentryConfig` options are deliberately **absent**:
+`reactComponentAnnotation`, `disableLogger`, `automaticVercelMonitors`. They are
+deprecated in favour of `webpack.*` equivalents and, per the SDK's own build
+warning, "Not supported with Turbopack" — this app builds with Turbopack, so they
+were no-ops that logged a deprecation warning per deploy. Re-add only under
+`webpack.*`, and only if the build ever moves off Turbopack.
+
 Coverage currently enabled: errors (all runtimes), tracing at 100%, structured
 logs (`enableLogs`) with `console.log/warn/error` forwarded, and Session Replay
 on **errors only**. Replay session sampling defaults to 0 on purpose — replay
