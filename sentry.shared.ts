@@ -1,8 +1,15 @@
-// Shared config for the three Sentry runtime entry points. The config FILES
-// must stay separate — @sentry/nextjs loads sentry.{server,client,edge}.config.ts
-// as distinct per-runtime instrumentation entry points, and each must call
-// Sentry.init() ITSELF so it resolves its own runtime SDK at bundle time
-// (@sentry/node for server, @sentry/vercel-edge for edge, browser for client).
+// Shared config for the three Sentry runtime entry points. The entry points must
+// stay separate, and each must call Sentry.init() ITSELF so it resolves its own
+// runtime SDK at bundle time (@sentry/node for server, @sentry/vercel-edge for
+// edge, browser for client):
+//
+//   server  -> sentry.server.config.ts   (loaded by instrumentation.ts register())
+//   edge    -> sentry.edge.config.ts     (loaded by instrumentation.ts register())
+//   browser -> instrumentation-client.ts (loaded by Next.js directly)
+//
+// The browser one is NOT `sentry.client.config.ts` — @sentry/nextjs no longer
+// auto-loads that filename. See the Sentry section in CLAUDE.md.
+//
 // This module therefore holds NO `@sentry/*` import and no Node/browser/edge
 // API, so all three runtimes — including the client bundle — import it safely;
 // it only supplies pure helpers and a plain options object.
@@ -18,6 +25,20 @@ export const parseSampleRate = (value: string | undefined, fallback: number): nu
 
   return Math.min(1, Math.max(0, parsed))
 }
+
+/**
+ * Resolve the Sentry `environment` tag.
+ *
+ * Prefers an explicit override, then Vercel's own `VERCEL_ENV`
+ * (`production` | `preview` | `development`), then `NODE_ENV`. Using `VERCEL_ENV`
+ * is what keeps preview-deploy noise separable from real production traffic in
+ * the Sentry UI — both build with `NODE_ENV=production`, so `NODE_ENV` alone
+ * would label them identically.
+ */
+export const resolveEnvironment = (
+  explicit: string | undefined,
+  vercelEnv: string | undefined
+): string => explicit || vercelEnv || process.env.NODE_ENV || 'development'
 
 // Next.js throws sentinels for redirect()/notFound()/HTTP-error control flow.
 // These are not bugs and would otherwise drown real errors. Server + edge share
@@ -41,12 +62,16 @@ export const serverRuntimeSentryOptions = () => {
   return {
     dsn,
     enabled: Boolean(dsn) && process.env.NODE_ENV !== 'test',
-    environment: process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV,
-    tracesSampleRate: parseSampleRate(
-      process.env.SENTRY_TRACES_SAMPLE_RATE,
-      process.env.NODE_ENV === 'production' ? 0.1 : 1
-    ),
+    environment: resolveEnvironment(process.env.SENTRY_ENVIRONMENT, process.env.VERCEL_ENV),
+    // Full tracing — span quota is separate from the error quota, so sampling at
+    // 1 cannot cause errors to be dropped. Dial down via env if span volume ever
+    // becomes a cost problem.
+    tracesSampleRate: parseSampleRate(process.env.SENTRY_TRACES_SAMPLE_RATE, 1),
+    // Profiling needs the extra `@sentry/profiling-node` package; left at 0
+    // rather than silently no-op'ing.
     profilesSampleRate: parseSampleRate(process.env.SENTRY_PROFILES_SAMPLE_RATE, 0),
+    // Structured logs (SDK v10 top-level option, not `_experiments`).
+    enableLogs: true,
     sendDefaultPii: process.env.SENTRY_SEND_DEFAULT_PII === 'true',
     ignoreErrors: [...NEXTJS_CONTROL_FLOW_ERRORS],
   }

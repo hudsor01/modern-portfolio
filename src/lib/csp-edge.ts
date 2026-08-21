@@ -63,7 +63,20 @@ export function buildEnhancedCSP(options: BuildCSPOptions = {}): string {
     // + /public; data:/blob: cover Next placeholders + generated images.
     "img-src 'self' data: blob: https://images.unsplash.com",
     "font-src 'self' https://fonts.gstatic.com",
-    "connect-src 'self' https://vercel.live https://va.vercel-scripts.com https://vitals.vercel-insights.com",
+    // The Sentry ingest host MUST be listed or the browser blocks every client
+    // event before it leaves the page — errors, traces and replays all go dark
+    // while the server side keeps working, which makes the failure easy to miss.
+    // Sentry's `tunnelRoute` would avoid this by proxying same-origin, but the
+    // Next.js external rewrite it installs hangs ~10s and returns 408 locally
+    // (direct-to-Sentry answers in ~60ms), which stalls every `networkidle`
+    // wait. Delivering direct is the verified-working option; the cost is that
+    // ad blockers can drop some client events by hostname.
+    "connect-src 'self' https://vercel.live https://va.vercel-scripts.com https://vitals.vercel-insights.com https://*.ingest.us.sentry.io",
+    // Sentry Session Replay compresses payloads in a Web Worker created from a
+    // blob: URL. Without this the worker is refused, replay breaks, and the
+    // in-flight tunnel request never settles — which stalls the page load event.
+    // `script-src` does not cover workers in browsers that honour `worker-src`.
+    "worker-src 'self' blob:",
     "frame-src 'self' blob:",
     "object-src 'self' blob:",
     "base-uri 'self'",

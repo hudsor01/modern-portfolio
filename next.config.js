@@ -203,6 +203,29 @@ const sentryBuildOptions = {
   authToken: process.env.SENTRY_AUTH_TOKEN,
   sentryUrl: process.env.SENTRY_URL,
   silent: true,
+
+  // NOTE: `tunnelRoute` is deliberately NOT set. It would proxy events
+  // same-origin and dodge ad blockers, but the Next.js external rewrite it
+  // installs hangs ~10s and returns 408 (direct-to-Sentry answers in ~60ms),
+  // leaving a pending request on every page load — which stalls every
+  // `waitForLoadState('networkidle')` and took the e2e suite from 14 failures
+  // to 122. Events go direct instead, which requires the Sentry ingest host in
+  // `connect-src` (src/lib/csp-edge.ts). Revisit only with a verified fix.
+
+  // Upload a wider set of client bundles so stack traces resolve through
+  // framework frames instead of stopping at minified boundaries.
+  widenClientFileUpload: true,
+
+  // Annotate DOM nodes with their React component name, so issues and replays
+  // point at a component rather than an anonymous element.
+  reactComponentAnnotation: { enabled: true },
+
+  // Tree-shake the SDK's own debug logger out of the production bundle.
+  disableLogger: true,
+
+  // Auto-register Vercel cron jobs as Sentry Cron Monitors. No crons today; this
+  // makes any future one monitored by default rather than silently unwatched.
+  automaticVercelMonitors: true,
 }
 
 export default withSentryConfig(nextConfig, sentryBuildOptions)
