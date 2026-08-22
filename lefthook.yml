@@ -25,6 +25,21 @@ pre-commit:
       run: bunx biome check --staged --write --no-errors-on-unmatched
       stage_fixed: true
 
+    # Secret scan over staged changes only (~20ms). `gitleaks git --staged` is
+    # the documented pre-commit path; `protect` is deprecated in 8.x.
+    #
+    # Skipped with a notice when gitleaks isn't installed, rather than failing:
+    # per the layering note above, hooks are convenience and the CI `secrets`
+    # job is the authoritative gate. A contributor without the binary should not
+    # be blocked from committing — CI still catches it either way.
+    gitleaks:
+      run: |
+        if command -v gitleaks >/dev/null 2>&1; then
+          gitleaks git --staged --redact --no-banner
+        else
+          echo "gitleaks not installed — skipping (brew install gitleaks). CI still enforces this."
+        fi
+
 pre-push:
   parallel: true
   commands:
