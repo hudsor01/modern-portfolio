@@ -35,7 +35,7 @@ test.describe('/contact page', () => {
     // JS-enabled DOM but is in the source). Use evaluate to check the
     // markup directly.
     const hasMailto = await page.evaluate(() => {
-      return document.documentElement.outerHTML.includes('mailto:richard@richardwhudsonjr.com')
+      return document.documentElement.outerHTML.includes('mailto:hudsor01@icloud.com')
     })
     expect(hasMailto).toBe(true)
   })
@@ -99,7 +99,7 @@ test.describe('/contact page (no JavaScript)', () => {
       ).toBeVisible()
 
       // And the mailto link inside the fallback should be reachable.
-      const mailto = page.locator('a[href="mailto:richard@richardwhudsonjr.com"]').first()
+      const mailto = page.locator('a[href="mailto:hudsor01@icloud.com"]').first()
       await expect(mailto).toBeVisible()
     } finally {
       await context.close()

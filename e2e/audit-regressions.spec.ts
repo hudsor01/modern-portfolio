@@ -103,7 +103,7 @@ test.describe('Audit regressions', () => {
       ).toBeVisible()
 
       await expect(
-        page.locator('a[href="mailto:richard@richardwhudsonjr.com"]').first()
+        page.locator('a[href="mailto:hudsor01@icloud.com"]').first()
       ).toBeVisible()
     } finally {
       await context.close()

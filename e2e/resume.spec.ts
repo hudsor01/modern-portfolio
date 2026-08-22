@@ -49,7 +49,8 @@ test.describe('Resume Page', () => {
 
   test('has view PDF toggle button', async ({ page }) => {
     // Find the view toggle button (PDF View or Interactive View)
-    const toggleButton = page.getByRole('button', { name: /pdf view|interactive view/i })
+    // Control exists in HeroHeader.tsx; it toggles between these two labels.
+    const toggleButton = page.getByRole('button', { name: /preview pdf|hide preview/i })
     await expect(toggleButton).toBeVisible()
   })
 
