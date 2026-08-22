@@ -7,7 +7,7 @@ import { test, expect } from '@playwright/test'
  *   - Hero CTAs (View My Work / Resume / Let's Talk)
  *   - Featured Work section (4 flagship project links)
  *   - Final CTA section (Start a Conversation / View Resume)
- *   - Mailto link to richard@richardwhudsonjr.com
+ *   - Mailto link to the real contact address (TO_EMAIL default)
  *   - Proven Results metrics animate to non-zero values (regression #3)
  */
 
@@ -61,8 +61,8 @@ test.describe('/ homepage', () => {
     ).toHaveAttribute('href', '/resume')
   })
 
-  test('renders mailto link to richard@richardwhudsonjr.com', async ({ page }) => {
-    const mailto = page.locator('a[href="mailto:richard@richardwhudsonjr.com"]').first()
+  test('renders mailto link to the real contact address', async ({ page }) => {
+    const mailto = page.locator('a[href="mailto:hudsor01@icloud.com"]').first()
     await expect(mailto).toBeVisible()
   })
 

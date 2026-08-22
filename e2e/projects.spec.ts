@@ -130,7 +130,8 @@ test.describe('Projects Listing Page', () => {
   })
 
   test('displays featured work section heading', async ({ page }) => {
-    await expect(page.getByText(/featured work/i)).toBeVisible()
+    // Section heading is "All Case Studies"; the old "Featured Work" wording is gone.
+    await expect(page.getByRole('heading', { name: /all case studies/i })).toBeVisible()
   })
 
   test('project count is displayed', async ({ page }) => {
@@ -210,7 +211,13 @@ test.describe('Project Detail Pages', () => {
     await page.waitForLoadState('networkidle')
 
     // Look for back button or link
-    const backButton = page.getByRole('button', { name: /back/i }).or(page.getByRole('link', { name: /back|projects/i }))
+    // .first() — the /projects/i half matches the header, mobile and footer nav
+    // links, so the bare locator is a strict-mode violation and the assertion
+    // below never ran.
+    const backButton = page
+      .getByRole('button', { name: /back/i })
+      .or(page.getByRole('link', { name: /back|projects/i }))
+      .first()
 
     if (await backButton.isVisible()) {
       await backButton.click()
