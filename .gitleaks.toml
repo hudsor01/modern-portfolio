@@ -6,32 +6,46 @@
 # Scanned in two places, matching the layering documented in lefthook.yml:
 #   pre-commit  -> `gitleaks git --staged` (staged changes only, ~20ms)
 #   CI          -> full history (authoritative; runs whether or not the hook did)
+#
+# Uses `[[allowlists]]` (array of tables), which replaced the singular
+# `[allowlist]` in v8.25.0. The old form still parses for backwards
+# compatibility but is deprecated — don't reintroduce it.
 
 title = "modern-portfolio"
 
 [extend]
 useDefault = true
 
-[allowlist]
-description = "Verified non-secrets. Every entry must say WHY it is safe."
+# Each allowlist is a SEPARATE block on purpose. Conditions inside one block
+# are combined, so folding these together would mean "path AND regex must both
+# match" and neither entry would fire. One concern per block.
 
-paths = [
-  # IndexNow protocol keys are public BY DESIGN: ownership is proven by serving
-  # the key at the domain root, so this file's NAME is the key and it must stay
-  # world-readable. Confirmed live: GET /374957a2…5704.txt -> 200.
-  # Not a leak; excluding the file stops it flagging on every commit.
-  '''^public/[0-9a-f]{64}\.txt$''',
+[[allowlists]]
+description = """
+IndexNow protocol key. Public BY DESIGN: ownership is proven by serving the key
+at the domain root, so this file's NAME is the key and it must stay
+world-readable. Confirmed live — GET /374957a2…5704.txt returns 200.
+Not a leak; excluding it stops a flag on every commit.
+"""
+paths = ['''^public/[0-9a-f]{64}\.txt$''']
 
-  # Built-in `curl-auth-header` false-positives here on a plain
-  # `curl -X GET "http://localhost:3000/api/automation/health"` line that
-  # carries no credential. Allowlisting this one path rather than overriding
-  # the shipped rule, so the rule keeps working everywhere else. The file is
-  # already deleted from the working tree; this only affects history scans.
-  '''^BLOG_AUTOMATION_SYSTEM\.md$''',
-]
+[[allowlists]]
+description = """
+The same IndexNow key where it appears in planning/docs markdown. Public for the
+reason above — documenting it discloses nothing the domain root doesn't already.
+"""
+regexes = ['''374957a2e557ab0eed4b0a1e6aacf8bd9db22b8fdfd75a9ca78df521394c5704''']
 
-regexes = [
-  # Same IndexNow key, as referenced in planning/docs markdown. Public for the
-  # reason above — documenting it discloses nothing the domain root doesn't.
-  '''374957a2e557ab0eed4b0a1e6aacf8bd9db22b8fdfd75a9ca78df521394c5704''',
-]
+[[allowlists]]
+# targetRules (v8.25.0+) scopes this to the ONE rule that misfires, so every
+# other rule still scans this file. A bare path allowlist would blind all ~170
+# rules on it, which is far more suppression than the problem warrants.
+targetRules = ["curl-auth-header"]
+description = """
+Built-in curl-auth-header false-positives on
+`curl -X GET "http://localhost:3000/api/automation/health"` — a line carrying no
+credential at all. Scoped to that rule rather than overriding it, so the rule
+keeps working everywhere else. File is already deleted from the working tree;
+this only affects history scans.
+"""
+paths = ['''^BLOG_AUTOMATION_SYSTEM\.md$''']
