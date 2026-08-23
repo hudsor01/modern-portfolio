@@ -83,3 +83,10 @@ screenshots/
 !CONTRIBUTING.md
 !CHANGELOG.md
 !CODE_OF_CONDUCT.md
+
+# Raw partner-platform exports — real names, emails, phones, company names.
+# These were committed once and had to be scrubbed from history; never again.
+# Only the derived aggregates in src/data/partner-program-metrics.ts belong in
+# this repo. Regenerate them with scripts/derive-partner-metrics.ts.
+PartnerRecordExport_*
+*.csv
