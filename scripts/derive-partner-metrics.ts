@@ -66,8 +66,44 @@ const PUBLISHABLE_TIERS = new Set([
   'AUS - Affiliate',
   'Default',
 ])
-const OTHER_TIER = 'Other programs'
-const safeTier = (raw: string): string => (PUBLISHABLE_TIERS.has(raw) ? raw : OTHER_TIER)
+/**
+ * Internal program names -> generic industry vocabulary.
+ *
+ * The source labels are a specific employer's internal taxonomy — strings like
+ * "Franchise Partner Program - 5%" and "AUS - Affiliate" are a fingerprint: the
+ * résumé names the employer, so publishing their exact program names ties these
+ * figures straight back to a named company's internal reporting. The generic
+ * equivalents carry the same analytical meaning ("certified partners outperform
+ * uncertified") without reproducing anyone's taxonomy.
+ */
+const TIER_DISPLAY: Record<string, string> = {
+  'Certified Partners': 'Certified',
+  'Uncertified Partners': 'Uncertified',
+  'Uncertified Partners - Legacy': 'Legacy',
+  'Affiliate Partners': 'Affiliate',
+  'Franchise - Affiliate': 'Franchise',
+  'Franchise Partner Program - 5%': 'Franchise',
+  'AUS - Affiliate': 'Affiliate',
+  'Inactive Partners': 'Inactive',
+  Ambassadors: 'Ambassador',
+  Default: 'Unclassified',
+}
+const OTHER_TIER = 'Other'
+const safeTier = (raw: string): string =>
+  PUBLISHABLE_TIERS.has(raw) ? (TIER_DISPLAY[raw] ?? OTHER_TIER) : OTHER_TIER
+
+
+/**
+ * Round so the published figures cannot be matched exactly against the source
+ * report. Magnitude and every ratio survive; an exact-value match does not.
+ * Rates are left alone — a percentage is an analytical result, not a fingerprint.
+ */
+const roundMoney = (n: number): number => {
+  if (n === 0) return 0
+  const mag = 10 ** (Math.floor(Math.log10(Math.abs(n))) - 2) // 3 significant figures
+  return Math.round(n / mag) * mag
+}
+const roundCount = (n: number): number => (n < 100 ? n : Math.round(n / 10) * 10)
 
 type Row = Record<string, string>
 
@@ -200,17 +236,17 @@ function main() {
 
   const out = {
     totals: {
-      partners: partners.length,
-      customers: customers.length,
-      transactions: transactions.length,
-      deals: deals.length,
-      grossVolumeUsd: Math.round(grossVolume),
-      commissionsPaidUsd: Math.round(commissions),
+      partners: roundCount(partners.length),
+      customers: roundCount(customers.length),
+      transactions: roundCount(transactions.length),
+      deals: roundCount(deals.length),
+      grossVolumeUsd: roundMoney(grossVolume),
+      commissionsPaidUsd: roundMoney(commissions),
       commissionRatePct: Number(((commissions / grossVolume) * 100).toFixed(1)),
       paidConversionPct: Number(((paidCustomers / customers.length) * 100).toFixed(1)),
     },
     dealFunnel: Object.entries(stages)
-      .map(([stage, count]) => ({ stage, count }))
+      .map(([stage, count]) => ({ stage, count: roundCount(count) }))
       .sort((a, b) => b.count - a.count),
     dealWinRatePct: won + lost > 0 ? Number(((won / (won + lost)) * 100).toFixed(1)) : 0,
     partnerTiers: tally(partners, (r) => (r.partner_group?.trim() ? safeTier(r.partner_group.trim()) : null))
@@ -219,13 +255,13 @@ function main() {
         const active = t && t.partners.size >= K ? t : null
         return {
           tier,
-          count,
-          activePartners: active ? active.partners.size : 0,
-          transactions: active ? active.transactions : 0,
-          revenueUsd: active ? Math.round(active.revenue) : 0,
+          count: roundCount(count),
+          activePartners: active ? roundCount(active.partners.size) : 0,
+          transactions: active ? roundCount(active.transactions) : 0,
+          revenueUsd: active ? roundMoney(active.revenue) : 0,
           avgTransactionUsd:
             active && active.transactions > 0
-              ? Math.round(active.revenue / active.transactions)
+              ? roundMoney(active.revenue / active.transactions)
               : 0,
           ...tierDeals(tier),
         }
@@ -233,7 +269,7 @@ function main() {
     monthlyVolume: [...monthly.entries()]
       .filter(([, v]) => v.transactions >= K)
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([month, v]) => ({ month, transactions: v.transactions, revenueUsd: Math.round(v.revenue) })),
+      .map(([month, v]) => ({ month, transactions: roundCount(v.transactions), revenueUsd: roundMoney(v.revenue) })),
   }
 
   const banner = `// GENERATED — do not edit by hand.

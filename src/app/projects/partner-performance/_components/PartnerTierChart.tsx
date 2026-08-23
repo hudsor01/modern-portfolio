@@ -16,7 +16,7 @@ import { partnerProgramMetrics } from '@/data/partner-program-metrics'
 const data = partnerProgramMetrics.partnerTiers
   .filter((t) => t.revenueUsd > 0 && t.activePartners > 0)
   .map((t) => ({
-    tier: t.tier.replace(/ Partners$/, '').replace(/^Uncertified - /, ''),
+    tier: t.tier,
     revenue: t.revenueUsd,
     perPartner: Math.round(t.revenueUsd / t.activePartners),
   }))
@@ -98,8 +98,7 @@ const PartnerTierChart = memo(function PartnerTierChart() {
       <p className="mt-4 text-center text-sm italic text-muted-foreground">
         Certified partners drove $
         {(
-          partnerProgramMetrics.partnerTiers.find((t) => t.tier === 'Certified Partners')
-            ?.revenueUsd ?? 0
+          partnerProgramMetrics.partnerTiers.find((t) => t.tier === 'Certified')?.revenueUsd ?? 0
         ).toLocaleString()}{' '}
         across {partnerProgramMetrics.totals.transactions.toLocaleString()} transactions — legacy
         partners show the highest revenue per active partner
