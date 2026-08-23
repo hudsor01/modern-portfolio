@@ -1,45 +1,27 @@
 'use client'
 
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/data-formatters'
+import { partnerProgramMetrics } from '@/data/partner-program-metrics'
 
-const partnerTierPerformance = [
-  {
-    tier: 'Certified Partners',
-    count: 12,
-    revenue: 687420,
-    avgDeal: 485,
-    winRate: 89.4,
-    cycleLength: 73,
-    roi: 8.2,
-  },
-  {
-    tier: 'Legacy Partners',
-    count: 15,
-    revenue: 216967,
-    avgDeal: 298,
-    winRate: 78.1,
-    cycleLength: 89,
-    roi: 3.1,
-  },
-  {
-    tier: 'Inactive Partners',
-    count: 7,
-    revenue: 0,
-    avgDeal: 0,
-    winRate: 0,
-    cycleLength: 126,
-    roi: 0,
-  },
-  {
-    tier: 'New Partners',
-    count: 13,
-    revenue: 183033,
-    avgDeal: 267,
-    winRate: 71.2,
-    cycleLength: 105,
-    roi: 2.4,
-  },
-]
+// Real figures, derived from the 2024 partner-platform export by
+// scripts/derive-partner-metrics.ts. Only tiers with recorded transaction
+// activity are shown; the rest are $0 rows that say nothing.
+//
+// The previous hard-coded array carried an "ROI" column. That is not derivable
+// from this export — it has no cost data — so the column is gone rather than
+// estimated. Win rate and cycle length ARE derivable (deals carry partner_id
+// plus created/close dates) and are now real.
+const partnerTierPerformance = partnerProgramMetrics.partnerTiers
+  .filter((t) => t.revenueUsd > 0)
+  .map((t) => ({
+    tier: t.tier,
+    count: t.count,
+    revenue: t.revenueUsd,
+    avgDeal: t.avgTransactionUsd,
+    winRate: t.winRatePct,
+    cycleLength: t.medianDaysToClose,
+  }))
+  .sort((a, b) => b.revenue - a.revenue)
 
 export function TiersTab() {
   return (
@@ -58,8 +40,7 @@ export function TiersTab() {
               <th className="text-left py-3 px-4 font-semibold">Revenue</th>
               <th className="text-left py-3 px-4 font-semibold">Avg Deal</th>
               <th className="text-left py-3 px-4 font-semibold">Win Rate</th>
-              <th className="text-left py-3 px-4 font-semibold">Cycle (Days)</th>
-              <th className="text-left py-3 px-4 font-semibold">ROI</th>
+              <th className="text-left py-3 px-4 font-semibold">Median Days to Close</th>
             </tr>
           </thead>
           <tbody>
@@ -86,19 +67,6 @@ export function TiersTab() {
                   </span>
                 </td>
                 <td className="py-4 px-4">{formatNumber(tier.cycleLength)}</td>
-                <td className="py-4 px-4">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      tier.roi >= 5
-                        ? 'bg-success/20 text-success'
-                        : tier.roi >= 3
-                          ? 'bg-warning/20 text-warning'
-                          : 'bg-destructive/20 text-destructive'
-                    }`}
-                  >
-                    {tier.roi}x
-                  </span>
-                </td>
               </tr>
             ))}
           </tbody>

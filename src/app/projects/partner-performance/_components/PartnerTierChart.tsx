@@ -4,18 +4,27 @@ import { memo } from 'react'
 import { LazyBarChart as BarChart } from '@/components/charts/lazy-charts'
 import { Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { chartColors as baseChartColors, chartCssVars } from '@/lib/charts'
+import { partnerProgramMetrics } from '@/data/partner-program-metrics'
 
-// Partner tier performance data based on real CSV analysis
-const data = [
-  { tier: 'Certified', count: 12, revenue: 687420, roi: 8.2, winRate: 89.4 },
-  { tier: 'Legacy', count: 15, revenue: 216967, roi: 3.1, winRate: 78.1 },
-  { tier: 'New Partners', count: 13, revenue: 183033, roi: 2.4, winRate: 71.2 },
-  { tier: 'Inactive', count: 7, revenue: 0, roi: 0, winRate: 0 },
-]
+// Real figures, derived from the 2024 partner-platform export by
+// scripts/derive-partner-metrics.ts. Only tiers with actual transaction
+// activity are charted — the rest carry $0 and would just be empty bars.
+//
+// The previous hard-coded array claimed an "ROI multiple" per tier. That is not
+// derivable from this export (it carries no cost data), so it has been replaced
+// with revenue per active partner, which is.
+const data = partnerProgramMetrics.partnerTiers
+  .filter((t) => t.revenueUsd > 0 && t.activePartners > 0)
+  .map((t) => ({
+    tier: t.tier,
+    revenue: t.revenueUsd,
+    perPartner: Math.round(t.revenueUsd / t.activePartners),
+  }))
+  .sort((a, b) => b.revenue - a.revenue)
 
 const chartColors = {
   revenue: baseChartColors.primary,
-  roi: baseChartColors.success,
+  perPartner: baseChartColors.success,
   grid: baseChartColors.grid,
   axis: baseChartColors.axis,
 }
@@ -45,13 +54,13 @@ const PartnerTierChart = memo(function PartnerTierChart() {
             tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
           />
           <YAxis
-            yAxisId="roi"
+            yAxisId="perPartner"
             orientation="right"
             stroke={chartColors.axis}
             fontSize={12}
             tickLine={false}
             axisLine={{ stroke: chartColors.axis, strokeOpacity: 0.5 }}
-            tickFormatter={(value) => `${value}x`}
+            tickFormatter={(value) => `$${(value / 1000).toFixed(1)}K`}
           />
           <Tooltip
             contentStyle={{
@@ -65,7 +74,8 @@ const PartnerTierChart = memo(function PartnerTierChart() {
               const safeName = String(name ?? '')
               const safeValue = Number(value ?? 0)
               if (safeName === 'revenue') return [`$${(safeValue / 1000).toFixed(0)}K`, 'Revenue']
-              if (safeName === 'roi') return [`${safeValue}x`, 'ROI Multiple']
+              if (safeName === 'perPartner')
+                return [`$${safeValue.toLocaleString()}`, 'Revenue / active partner']
               return [safeValue, safeName]
             }}
           />
@@ -77,17 +87,21 @@ const PartnerTierChart = memo(function PartnerTierChart() {
             name="revenue"
           />
           <Bar
-            yAxisId="roi"
-            dataKey="roi"
-            fill={chartColors.roi}
+            yAxisId="perPartner"
+            dataKey="perPartner"
+            fill={chartColors.perPartner}
             radius={[4, 4, 0, 0]}
-            name="roi"
+            name="perPartner"
           />
         </BarChart>
       </ResponsiveContainer>
       <p className="mt-4 text-center text-sm italic text-muted-foreground">
-        Partner tier performance showing certified partners deliver 8.2x ROI vs 2.4x for new partner
-        acquisitions
+        Certified partners drove $
+        {(
+          partnerProgramMetrics.partnerTiers.find((t) => t.tier === 'Certified')?.revenueUsd ?? 0
+        ).toLocaleString()}{' '}
+        across {partnerProgramMetrics.totals.transactions.toLocaleString()} transactions — legacy
+        partners show the highest revenue per active partner
       </p>
     </div>
   )
