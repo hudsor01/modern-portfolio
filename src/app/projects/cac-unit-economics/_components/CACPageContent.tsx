@@ -14,6 +14,7 @@ import { ChannelsTab } from './ChannelsTab'
 import { ProductsTab } from './ProductsTab'
 import { StrategicImpact } from './StrategicImpact'
 import { NarrativeSections } from './NarrativeSections'
+import { DataProvenance } from '@/components/projects/shared/data-provenance'
 
 const tabs = ['overview', 'channels', 'products'] as const
 
@@ -82,6 +83,7 @@ export default function CACUnitEconomics() {
         onTimeframeChange={onTimeframeChange}
       >
         {/* Key Metrics using standardized MetricsGrid */}
+        <DataProvenance variant="illustrative" className="mb-6" />
         <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
         {/* Tab Content wrapped in SectionCard */}

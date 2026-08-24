@@ -1,3 +1,5 @@
+import { partnerProgramMetrics } from '@/data/partner-program-metrics'
+
 export interface FunnelStage {
   name: string
   count: number
@@ -17,20 +19,30 @@ export interface ConversionRate {
   negotiation_to_closed: number
 }
 
-export const initialFunnelStages: FunnelStage[] = [
-  { name: 'Leads', count: 12650, avg_deal_size: 0 },
-  { name: 'Qualified', count: 7384, avg_deal_size: 285 },
-  { name: 'Proposal', count: 4592, avg_deal_size: 312 },
-  { name: 'Negotiation', count: 2847, avg_deal_size: 328 },
-  { name: 'Closed Won', count: 2368, avg_deal_size: 305 },
-]
+// REAL — derived from the 2024 partner-platform export by
+// scripts/derive-partner-metrics.ts.
+//
+// The previous version listed five stages (Leads -> Qualified -> Proposal ->
+// Negotiation -> Closed Won) with 12,650 leads. The source `deal_stage` field
+// only ever carries three values, so those intermediate stages and their counts
+// were invented. This is the funnel that actually exists.
+export const initialFunnelStages: FunnelStage[] = partnerProgramMetrics.dealFunnel.map((s) => ({
+  name: s.stage,
+  count: s.count,
+  avg_deal_size: s.avgAmountUsd,
+}))
 
-export const initialPartnerConversion: PartnerConversion[] = [
-  { group: 'Certified Partners', avg_sales_cycle_days: 73 },
-  { group: 'Legacy Partners', avg_sales_cycle_days: 89 },
-  { group: 'Inactive Partners', avg_sales_cycle_days: 126 },
-]
+// REAL — median days from deal creation to close, per partner tier. Tiers with
+// fewer than 5 closed deals are omitted rather than shown on thin evidence.
+export const initialPartnerConversion: PartnerConversion[] = partnerProgramMetrics.partnerTiers
+  .filter((t) => t.medianDaysToClose > 0)
+  .map((t) => ({ group: t.tier, avg_sales_cycle_days: t.medianDaysToClose }))
+  .sort((a, b) => a.avg_sales_cycle_days - b.avg_sales_cycle_days)
 
+// ILLUSTRATIVE — NOT derived. The export is a point-in-time snapshot with no
+// stage-transition history, so quarter-over-quarter conversion between stages
+// cannot be computed from it. These figures model the shape of the analysis;
+// the UI labels them as illustrative via <DataProvenance variant="illustrative" />.
 export const initialConversionRates: ConversionRate[] = [
   {
     month: 'Q1',

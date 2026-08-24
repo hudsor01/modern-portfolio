@@ -7,6 +7,7 @@ import { ConversionChart } from './ConversionChart'
 import { VelocityChart } from './VelocityChart'
 
 import type { FunnelStage, PartnerConversion } from '../data/constants'
+import { DataProvenance } from '@/components/projects/shared/data-provenance'
 
 interface StageConversion {
   stage: string
@@ -35,6 +36,7 @@ export function ChartsGrid({
         description="Visual representation of deal progression through each stage of the sales pipeline"
         className="mb-8"
       >
+        <DataProvenance variant="derived" className="mb-4" />
         <ChartContainer
           title="Deal Stage Funnel"
           description={`Overall conversion rate: ${overallConversionRate}%`}
@@ -50,6 +52,7 @@ export function ChartsGrid({
         description="Detailed analysis of stage-to-stage conversion rates and sales velocity"
         className="mb-8"
       >
+        <DataProvenance variant="illustrative" className="mb-4" />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <ChartContainer
             title="Stage Conversion Rates"

@@ -1,3 +1,21 @@
+// ILLUSTRATIVE DATASET — these are NOT measured results.
+//
+// Every figure here depends on customer acquisition cost, and the 2024
+// partner-platform export that backs the other project pages contains no cost,
+// spend or budget column of any kind — so CAC, LTV:CAC, payback period and
+// margin cannot be derived from it. `subscription_plan` is also empty across all
+// 5,640 transaction rows, so the product-tier economics below have no source
+// either.
+//
+// They are kept because the modelling approach is the point of the case study:
+// this is how the analysis is structured, what levers it exposes, and how the
+// output is read. The UI marks every chart on this page with
+// <DataProvenance variant="illustrative" /> so a reader is never told these are
+// outcomes that were measured.
+//
+// If a future export carries cost data, derive these the same way
+// scripts/derive-partner-metrics.ts handles the partner metrics.
+
 export const cacMetrics = {
   partnerDrivenCAC: 127,
   directCAC: 289,
