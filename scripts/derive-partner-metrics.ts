@@ -245,8 +245,25 @@ function main() {
       commissionRatePct: Number(((commissions / grossVolume) * 100).toFixed(1)),
       paidConversionPct: Number(((paidCustomers / customers.length) * 100).toFixed(1)),
     },
+    // The real funnel has THREE stages, not the five a hand-written version
+    // claimed. `deal_stage` only ever carries Working / Closed Won / Closed Lost,
+    // so any Leads -> Qualified -> Proposal -> Negotiation progression would be
+    // invented. Average value per stage is genuine.
     dealFunnel: Object.entries(stages)
-      .map(([stage, count]) => ({ stage, count: roundCount(count) }))
+      .map(([stage, count]) => {
+        const amounts = deals
+          .filter((r) => r.deal_stage?.trim() === stage)
+          .map((r) => num(r.deal_amount))
+          .filter((n) => n > 0)
+        return {
+          stage,
+          count: roundCount(count),
+          avgAmountUsd:
+            amounts.length >= K
+              ? roundMoney(amounts.reduce((s, n) => s + n, 0) / amounts.length)
+              : 0,
+        }
+      })
       .sort((a, b) => b.count - a.count),
     dealWinRatePct: won + lost > 0 ? Number(((won / (won + lost)) * 100).toFixed(1)) : 0,
     partnerTiers: tally(partners, (r) => (r.partner_group?.trim() ? safeTier(r.partner_group.trim()) : null))

@@ -24,14 +24,17 @@ export const partnerProgramMetrics = {
     {
       stage: 'Working',
       count: 1140,
+      avgAmountUsd: 1200,
     },
     {
       stage: 'Closed Won',
       count: 470,
+      avgAmountUsd: 300,
     },
     {
       stage: 'Closed Lost',
       count: 90,
+      avgAmountUsd: 317,
     },
   ],
   dealWinRatePct: 83.9,
