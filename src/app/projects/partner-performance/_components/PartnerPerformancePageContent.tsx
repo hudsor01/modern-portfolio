@@ -13,6 +13,7 @@ import { OverviewTab } from './OverviewTab'
 import { TiersTab } from './TiersTab'
 import { TopPerformersTab } from './TopPerformersTab'
 import { StrategicInsights } from './StrategicInsights'
+import { DataProvenance } from '@/components/projects/shared/data-provenance'
 
 // Real data based on CSV analysis: 83.2% win rate, $1.1M partner revenue
 const partnerMetrics = {
@@ -94,6 +95,7 @@ export default function PartnerPerformanceIntelligence() {
         onTimeframeChange={onTimeframeChange}
       >
         {/* Key Metrics using standardized MetricsGrid */}
+        <DataProvenance variant="derived" className="mb-6" />
         <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
         {/* Tab Content wrapped in SectionCard */}
