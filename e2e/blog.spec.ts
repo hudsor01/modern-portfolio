@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
+import { databaseAvailable, NEEDS_DATABASE } from './_helpers/database'
 
 /**
  * Blog Browsing and Reading E2E Tests
@@ -108,6 +109,7 @@ test.describe('Blog Listing Page', () => {
 
 test.describe('Blog Post Reading', () => {
   test('can navigate from listing to blog post', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     await page.goto('/blog')
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(1000) // Wait for dynamic content
@@ -136,6 +138,7 @@ test.describe('Blog Post Reading', () => {
   })
 
   test('blog post page has proper structure', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     // Go directly to blog to find a post
     await page.goto('/blog')
     await page.waitForLoadState('networkidle')
@@ -225,6 +228,7 @@ test.describe('Blog Post Reading', () => {
   })
 
   test('blog post page passes accessibility audit', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     await page.goto('/blog')
     await page.waitForLoadState('networkidle')
 

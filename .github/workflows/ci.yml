@@ -167,11 +167,21 @@ jobs:
   # spec that asserted a production-only CSP invariant sat permanently red
   # against the old `bun run dev` webServer without anyone noticing.
   #
-  # No DATABASE_URL, and no service container: measured, not assumed — the full
-  # 588-test suite passes with the app both BUILT and SERVED with no database
-  # (the DB-backed routes degrade to empty states the specs already tolerate).
-  # If a future spec starts asserting on seeded blog content, that is the point
-  # to add a dedicated Neon branch, not before.
+  # Database: optional, and 580 of 588 tests do not need one — the DB-backed
+  # routes degrade to empty states the specs tolerate. Exactly 8 tests do need
+  # seeded blog content (5 in audit-regressions, 3 in blog); they open a real
+  # post, or assert 404s for a slug that must be absent from a populated table.
+  # Those self-skip via e2e/_helpers/database.ts, which asks `/api/health`
+  # whether the running server actually has a database rather than guessing.
+  #
+  # Set an `E2E_DATABASE_URL` secret (a dedicated Neon branch, seeded with
+  # `bun run db:seed`) and those 8 start running with no code change. Without it
+  # they report as skipped, with the reason attached, rather than silently
+  # vanishing from the run.
+  #
+  # Note this cannot be checked locally by unsetting the variable: `.env`,
+  # `.env.local` and `.env.development.local` all carry a DATABASE_URL and Next
+  # loads them itself, so `env -u DATABASE_URL` proves nothing.
   # Sharded because `workers: 1` is Playwright's own CI recommendation and we keep
   # it: 588 tests run serially overran a 20-minute job on the first real CI run
   # (the build was not the problem — it compiled in 17 s). Playwright's documented
@@ -220,6 +230,22 @@ jobs:
           restore-keys: |
             nextjs-${{ runner.os }}-${{ hashFiles('bun.lock') }}-
             nextjs-${{ runner.os }}-
+
+      # Promote the secret to DATABASE_URL only when it is actually set. Mapping
+      # it unconditionally would export DATABASE_URL="" when the secret is
+      # absent, and env-validation.ts rejects an empty string outright
+      # (`.min(1, 'DATABASE_URL is required')`) — that would break the build
+      # instead of letting the 8 DB-dependent tests skip.
+      - name: Configure database (optional)
+        env:
+          E2E_DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
+        run: |
+          if [ -n "$E2E_DATABASE_URL" ]; then
+            echo "DATABASE_URL=$E2E_DATABASE_URL" >> "$GITHUB_ENV"
+            echo "Database configured; DB-dependent specs will run."
+          else
+            echo "No E2E_DATABASE_URL secret set; the 8 DB-dependent specs will skip."
+          fi
 
       # One step, no manual backgrounding: playwright.config.ts's `webServer`
       # runs `bun run e2e:server` (build -> copy standalone assets -> start
