@@ -39,14 +39,20 @@ export default defineConfig({
   // Retry on CI only
   retries: process.env.CI ? 2 : 0,
 
-  // Limit workers on CI
+  // Limit workers on CI. This is Playwright's own recommendation — "We recommend
+  // setting workers to '1' in CI environments to prioritize stability and
+  // reproducibility" (https://playwright.dev/docs/ci) — so it stays. The cost is
+  // wall-clock: 588 tests serially overran a 20-minute job the first time e2e
+  // actually ran in CI. The documented remedy for that is sharding, not more
+  // workers, so `.github/workflows/ci.yml` splits the run across 4 shards.
   workers: process.env.CI ? 1 : undefined,
 
-  // Reporters
-  reporter: [
-    ['list'],
-    ['html', { open: 'never', outputFolder: 'playwright-report' }],
-  ],
+  // Reporters. On CI each shard emits a blob report; the `e2e-report` job merges
+  // them into one HTML report. A per-shard HTML report would only ever describe a
+  // quarter of the suite.
+  reporter: process.env.CI
+    ? [['list'], ['blob']]
+    : [['list'], ['html', { open: 'never', outputFolder: 'playwright-report' }]],
 
   // Shared settings for all tests
   use: {
