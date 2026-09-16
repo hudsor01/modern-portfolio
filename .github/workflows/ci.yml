@@ -146,3 +146,65 @@ jobs:
 
       - name: Build
         run: bun run build
+
+  # Playwright. This job did not exist until PR #238, which is precisely why a
+  # spec that asserted a production-only CSP invariant sat permanently red
+  # against the old `bun run dev` webServer without anyone noticing.
+  #
+  # No DATABASE_URL, and no service container: measured, not assumed — the full
+  # 588-test suite passes with the app both BUILT and SERVED with no database
+  # (the DB-backed routes degrade to empty states the specs already tolerate).
+  # If a future spec starts asserting on seeded blog content, that is the point
+  # to add a dedicated Neon branch, not before.
+  e2e:
+    runs-on: ubuntu-latest
+    needs: setup
+    # Generous: browser download dominates. The suite itself is ~1.5 min and the
+    # production build it boots is ~20 s.
+    timeout-minutes: 20
+    # No job-level env on purpose. NODE_ENV is not set (unlike `build`) because
+    # this job needs devDependencies present and `next build` sets it for the
+    # build itself anyway; and SKIP_DB_VALIDATION is not set because it is dead
+    # config — it appears only in this workflow and is read nowhere under src/.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+      - uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+      - run: bun install --frozen-lockfile
+
+      # Not cached on purpose. Playwright's CI guide says so outright: "Caching
+      # browser binaries is not recommended, since the amount of time it takes to
+      # restore the cache is comparable to the time it takes to download the
+      # binaries." `--with-deps` also installs apt packages a cache cannot
+      # restore. Three engines cover all four config projects — `mobile-chrome`
+      # is the Pixel 5 descriptor running on the chromium binary.
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps chromium firefox webkit
+
+      - name: Cache Next.js incremental build
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('bun.lock') }}-${{ hashFiles('src/**/*.{ts,tsx,js,jsx}') }}
+          restore-keys: |
+            nextjs-${{ runner.os }}-${{ hashFiles('bun.lock') }}-
+            nextjs-${{ runner.os }}-
+
+      # One step, no manual backgrounding: playwright.config.ts's `webServer`
+      # runs `bun run e2e:server` (build -> copy standalone assets -> start
+      # .next/standalone/server.js on :3100), waits for readiness, and tears it
+      # down afterwards. `reuseExistingServer` is false whenever CI is set, so
+      # this always tests a freshly built server.
+      - name: Playwright
+        run: bun run e2e
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

@@ -26,6 +26,8 @@
     "e2e:headed": "playwright test --headed",
     "e2e:chromium": "playwright test --project=chromium",
     "e2e:report": "playwright show-report",
+    "e2e:serve": "rm -rf .next/standalone/.next/static .next/standalone/public && cp -r .next/static .next/standalone/.next/static && cp -r public .next/standalone/public && node .next/standalone/server.js",
+    "e2e:server": "bun run build && bun run e2e:serve",
     "db:generate": "bunx drizzle-kit generate",
     "db:push": "bunx drizzle-kit push",
     "db:migrate": "bunx drizzle-kit migrate",

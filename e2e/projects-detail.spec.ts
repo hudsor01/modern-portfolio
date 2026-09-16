@@ -66,8 +66,24 @@ test.describe('Project detail pages — basic load + nav', () => {
       expect(h1Text.length).toBeGreaterThan(0)
 
       // Back button links back to /projects (BackButton wraps a Next Link).
-      const backLink = page.locator('a[href="/projects"]').first()
+      //
+      // Target the BackButton by its own test id, NOT `a[href="/projects"]`.
+      // Four elements match that href on a detail page, in DOM order:
+      //   0. navbar desktop link   — inside `<nav class="hidden md:flex">`, so
+      //      hidden below the `md` breakpoint
+      //   1. navbar mobile-menu link — inside a collapsed `[hidden]` drawer
+      //   2. the BackButton         — the one we actually mean
+      //   3. footer link
+      // `.first()` therefore resolved the *desktop navbar* link, which is
+      // correctly hidden at the Pixel 5 viewport — so this assertion failed on
+      // mobile-chrome for every project slug while passing on desktop by
+      // coincidence of ordering. The test id is unique (count 1) and
+      // viewport-independent. Note the button lives in `<header>`, not `<main>`,
+      // and carries role="button", so neither a main-scoped locator nor
+      // getByRole('link') can reach it.
+      const backLink = page.getByTestId('back-button')
       await expect(backLink).toBeVisible()
+      await expect(backLink).toHaveAttribute('href', '/projects')
     })
   }
 })

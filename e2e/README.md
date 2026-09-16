@@ -8,29 +8,39 @@ End-to-end tests run via `bun run e2e` or `bunx playwright test`.
 bun run e2e
 ```
 
-`playwright.config.ts` boots `bun run dev` in the background, waits for
-`http://localhost:3000`, runs the suite across chromium / firefox /
-webkit / mobile-chrome, then tears down. CI uses this path.
+`playwright.config.ts` boots `bun run e2e:server` in the background — a full
+production build, the two copy steps `output: 'standalone'` requires, then
+`node .next/standalone/server.js` — waits for `http://localhost:3100`, runs the
+suite across chromium / firefox / webkit / mobile-chrome, then tears down. The
+`e2e` job in `.github/workflows/ci.yml` uses this same path.
+
+**Never point this suite at `next dev`.** `src/lib/csp-edge.ts` adds
+`'unsafe-eval'` to `script-src` in development for HMR, and
+`security-headers.spec.ts` asserts it is absent — so a dev server makes that
+spec fail 100% of the time. That was the old default, and it stayed unnoticed
+because Playwright did not run in CI until PR #238.
+
+Port 3100 is deliberate: `reuseExistingServer` adopts whatever already listens
+on the URL, so using 3000 would let a stray `bun dev` in another terminal
+silently become the server under test.
 
 ## Running against an external server (`PLAYWRIGHT_BASE_URL`)
 
 Set `PLAYWRIGHT_BASE_URL` to skip the bundled dev server and hit a
 pre-started target. Useful for:
 
-- **Standalone production-build smoke testing** (different code path
-  than `next dev` — catches issues like CSP `upgrade-insecure-requests`
-  on WebKit that only surface on a built standalone server):
+- **Reusing a build you already made**, instead of paying for the one
+  `webServer` would run:
 
   ```bash
   bun run build
-  cp -r .next/static .next/standalone/.next/
-  cp -r public .next/standalone/
-  ( cd .next/standalone && PORT=3010 node server.js ) &
+  PORT=3010 bun run e2e:serve &
   PLAYWRIGHT_BASE_URL=http://localhost:3010 bunx playwright test
   ```
 
-  Use a non-default port (`3010`) when port 3000 is claimed by an SSH
-  tunnel or another service.
+  `e2e:serve` performs the `public/` and `.next/static` copies that
+  `output: 'standalone'` leaves empty, then starts the standalone server
+  on `PORT`. Pick any free port.
 
 - **Vercel preview deployments** — point at the deploy URL to validate
   CSP, security headers, and a11y in the actual hosted environment:
@@ -40,7 +50,9 @@ pre-started target. Useful for:
   ```
 
 When `PLAYWRIGHT_BASE_URL` is set, `webServer` in `playwright.config.ts`
-becomes `undefined`, so Playwright doesn't try to spawn `bun run dev`.
+becomes `undefined`, so Playwright neither builds nor starts anything —
+whatever is at that URL is what gets tested. Make sure it is a production
+build, or `security-headers.spec.ts` will fail on `'unsafe-eval'`.
 
 ## Project layout
 

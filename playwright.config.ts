@@ -9,6 +9,24 @@ import { defineConfig, devices } from '@playwright/test'
  * - Projects browsing
  * - Blog reading
  */
+// The suite runs against a PRODUCTION build, never `next dev`.
+//
+// Next.js's own Playwright guide says so explicitly ("We recommend running your
+// tests against your production code to more closely resemble how your
+// application will behave" — https://nextjs.org/docs/app/guides/testing/playwright),
+// and here it is load-bearing rather than advisory: several specs assert things
+// that only hold in a production build. `security-headers.spec.ts` pins that
+// `script-src` contains no `'unsafe-eval'`, but `src/lib/csp-edge.ts` adds
+// `'unsafe-eval'` in development for HMR — so that spec failed 100% of the time
+// under the old `bun run dev` webServer, and nobody noticed because Playwright
+// never ran in CI.
+//
+// Port 3100, not 3000, is deliberate: with `reuseExistingServer: !CI`, a :3000
+// URL lets a `bun dev` someone left running in another terminal be silently
+// adopted as the server under test, which would quietly reintroduce the same bug.
+const E2E_PORT = Number(process.env.E2E_PORT ?? 3100)
+const E2E_URL = `http://localhost:${E2E_PORT}`
+
 export default defineConfig({
   testDir: './e2e',
 
@@ -32,7 +50,7 @@ export default defineConfig({
 
   // Shared settings for all tests
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || E2E_URL,
 
     // Capture trace on first retry
     trace: 'on-first-retry',
@@ -79,15 +97,24 @@ export default defineConfig({
     },
   ],
 
-  // Start dev server before tests — skip when PLAYWRIGHT_BASE_URL is set so
-  // the suite can run against a pre-started server (e.g. `bunx next start`
-  // or the standalone server on a non-default port).
+  // Build and serve the production standalone server before tests — skipped when
+  // PLAYWRIGHT_BASE_URL is set, so CI (and any manual run) can point the suite at
+  // a server it started itself instead of paying for a second build.
+  //
+  // `next start` is NOT usable here: next.config.js sets `output: 'standalone'`,
+  // and Next refuses it with `"next start" does not work with "output: standalone"
+  // configuration. Use "node .next/standalone/server.js" instead.` The e2e:server
+  // script does that, plus the two copy steps standalone requires (it emits an
+  // empty public/ and .next/static — verified on a clean build).
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {
-        command: 'bun run dev',
-        url: 'http://localhost:3000',
+        command: `bun run e2e:server`,
+        url: E2E_URL,
+        env: { PORT: String(E2E_PORT) },
         reuseExistingServer: !process.env.CI,
-        timeout: 120000,
+        // Generous: this command includes a full production build.
+        timeout: 180_000,
+        stdout: 'pipe',
       },
 })
