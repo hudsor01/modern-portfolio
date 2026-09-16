@@ -260,7 +260,7 @@ that a parent pins below the fix line:
 | Override | Why it exists |
 |---|---|
 | `postcss` | `next` internally pins `postcss@8.4.31`; collapses every copy onto one patched version |
-| `sharp` | `next` pins `sharp ^0.34.5` as an optional dep, below the libvips CVE fix line |
+| `sharp` | Backstop against a *nested* pre-0.35.4 copy (libvips/libheif RCE, GHSA-rgj7-g3m4-5g8c). As of `next` 16.3.5 the parent itself pins `sharp ^0.35.4`, so this no longer changes resolution — verified: removing it still lands 0.35.4. Kept only as a floor; re-check it whenever `sharp` is bumped. |
 | `esbuild` | `drizzle-kit`, `react-email`, and `vite` pin versions below the dev-server disclosure fix |
 
 Before adding a fourth, check whether the package resolves to a patched version on
@@ -299,3 +299,13 @@ is currently clean at *every* severity — keep it there.
 - 9 unit test files under `src/lib/__tests__/` and `src/app/api/contact/__tests__/`.
 - 5 Playwright specs under `e2e/`.
 - Security audit history: `SECURITY.md` (current controls), `SECURITY_AUDIT_REPORT.md` (findings; recent commits closed S-001, B-001, H-001, B-002, P-001).
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
