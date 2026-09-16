@@ -57,6 +57,22 @@ jobs:
   secrets:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    # Job-level, so only this job's token carries the extra scope. Declaring
+    # `permissions` here REPLACES the workflow-level block, so `contents: read`
+    # has to be repeated for checkout.
+    #
+    # `pull-requests: read` is required because gitleaks-action builds its scan
+    # range by enumerating the PR's commits via
+    # `GET /repos/{owner}/{repo}/pulls/{number}/commits`. While this repo was
+    # public that was readable with `contents: read` alone; it went private on
+    # 2026-08-30, and every run since has failed that call with
+    # `403 Resource not accessible by integration` — i.e. the secret scan has
+    # been broken, not passing, on every PR opened since. Confirmed by the run
+    # history: 2026-08-22 pass, 2026-08-24 pass, 2026-09-16 fail, with this file
+    # unchanged in between.
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
       # fetch-depth: 0 — the pre-commit hook only sees staged changes, so CI is
       # the only place full history is scanned. A shallow clone would silently
