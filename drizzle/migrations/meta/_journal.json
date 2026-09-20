@@ -8,6 +8,13 @@
       "when": 1779997833122,
       "tag": "0000_rename_referer_to_referrer",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789924103054,
+      "tag": "0001_hard_maverick",
+      "breakpoints": true
     }
   ]
 }

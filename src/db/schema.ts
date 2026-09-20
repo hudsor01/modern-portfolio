@@ -1,4 +1,5 @@
 import { sql } from 'drizzle-orm'
+import type { SQL } from 'drizzle-orm'
 import { relations } from 'drizzle-orm'
 import type { AnyPgColumn } from 'drizzle-orm/pg-core'
 import {
@@ -26,6 +27,13 @@ const citext = customType<{ data: string; driverData: string }>({
 // inet — Postgres native IP address type
 const inet = customType<{ data: string; driverData: string }>({
   dataType: () => 'inet',
+})
+
+// tsvector — Postgres full-text search type. Only ever written by the database
+// (blogPosts.searchVector is GENERATED ALWAYS), and never selected into app
+// code, so `data` is typed as string purely to satisfy the customType contract.
+const tsvector = customType<{ data: string; driverData: string }>({
+  dataType: () => 'tsvector',
 })
 
 // Enums
@@ -172,6 +180,26 @@ export const blogPosts = pgTable(
     likeCount: integer('likeCount').notNull().default(0),
     shareCount: integer('shareCount').notNull().default(0),
     commentCount: integer('commentCount').notNull().default(0),
+    // Full-text search index source, consumed by src/lib/search.ts.
+    //
+    // GENERATED ALWAYS ... STORED, so Postgres maintains it on every insert and
+    // update and it can never drift from the row it describes — the reason to
+    // prefer it over a trigger. Postgres requires the expression to be
+    // IMMUTABLE, which is why the text-search config is the literal 'english'
+    // rather than the session default: the one-argument to_tsvector(text) is
+    // only STABLE and is rejected in a generated column.
+    //
+    // Weighting: title A, excerpt B, content C. ts_rank then scores a title hit
+    // above a passing mention in the body. Searching `content` is the whole
+    // point — it is never shipped to the browser, so the client-side filter
+    // this replaced could not see it.
+    searchVector: tsvector('search_vector').generatedAlwaysAs(
+      (): SQL => sql`
+        setweight(to_tsvector('english', coalesce(${blogPosts.title}, '')), 'A') ||
+        setweight(to_tsvector('english', coalesce(${blogPosts.excerpt}, '')), 'B') ||
+        setweight(to_tsvector('english', coalesce(${blogPosts.content}, '')), 'C')
+      `
+    ),
   },
   (t) => [
     index('blog_posts_status_publishedAt_idx').on(t.status, t.publishedAt.desc()),
@@ -208,6 +236,15 @@ export const blogPosts = pgTable(
     uniqueIndex('blog_posts_featuredImage_published_unique_idx')
       .on(t.featuredImage)
       .where(sql`${t.status} = 'PUBLISHED' AND ${t.deletedAt} IS NULL`),
+    // GIN over the generated tsvector — the index the `@@` operator in
+    // src/lib/search.ts actually uses.
+    index('blog_posts_search_vector_idx').using('gin', t.searchVector),
+    // Trigram GIN indexes backing the `%` similarity fallback in the same
+    // module (typo tolerance). Separate from the tsvector index: `%` cannot use
+    // a tsvector GIN index, and to_tsvector lemmatisation does not survive a
+    // misspelling. gin_trgm_ops comes from pg_trgm, already installed.
+    index('blog_posts_title_trgm_idx').using('gin', sql`${t.title} gin_trgm_ops`),
+    index('blog_posts_excerpt_trgm_idx').using('gin', sql`${t.excerpt} gin_trgm_ops`),
   ]
 )
 

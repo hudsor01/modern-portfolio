@@ -11,6 +11,7 @@ import { db } from '@/lib/db'
 import { withDbRetry } from '@/lib/db-retry'
 import { blogPosts, categories as categoriesTable } from '@/db/schema'
 import { transformToBlogPostData } from '@/lib/api-blog'
+import { searchBlogPosts } from '@/lib/search'
 import { createContextLogger } from '@/lib/logger'
 import type { BlogPostData, BlogCategoryData } from '@/types/api'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
@@ -125,13 +126,58 @@ const getCategories = cache(async (): Promise<BlogCategoryData[]> => {
   }
 })
 
-export default async function BlogHomePage() {
+/**
+ * Apply the `?q=` full-text search on the server.
+ *
+ * The search runs in Postgres (src/lib/search.ts) against the generated
+ * `search_vector` column, so it ranks by relevance, tolerates typos, and — the
+ * part the old client-side filter structurally could not do — searches each
+ * post's full `content`, which is never shipped to the browser.
+ *
+ * Results are intersected with the already-fetched index rather than rendered
+ * from the search rows directly. Two reasons: the search projection has no
+ * author/category/tag/image data the cards need, and `getBlogPosts()` is the
+ * single place the PUBLISHED + not-soft-deleted rules live. Intersecting means
+ * a search can only ever narrow that set, never surface a draft or a
+ * soft-deleted post, even though `searchBlogPosts` has no `deletedAt` concept.
+ */
+async function applySearch(posts: BlogPostData[], query: string): Promise<BlogPostData[]> {
+  try {
+    const hits = await searchBlogPosts(query, { limit: 50, statusFilter: ['PUBLISHED'] })
+    const rankById = new Map(hits.map((hit, position) => [hit.id, position]))
+    return posts
+      .filter((post) => rankById.has(post.id))
+      .sort((a, b) => (rankById.get(a.id) ?? 0) - (rankById.get(b.id) ?? 0))
+  } catch (error) {
+    // Never let search failure blank the index — fall back to the unfiltered
+    // list. searchBlogPosts already swallows query errors, so reaching here
+    // means something further out went wrong.
+    logger.error(
+      'Blog search failed; falling back to unfiltered index',
+      error instanceof Error ? error : new Error(String(error))
+    )
+    return posts
+  }
+}
+
+export default async function BlogHomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>
+}) {
   // Independent queries — parallelize so cold-CDN TTFB is a single Neon
   // roundtrip, not two. Especially important now that the global
   // loading.tsx is removed; the user sees the previous page until both
   // resolve.
-  const [posts, categories] = await Promise.all([getBlogPosts(), getCategories()])
-  const nonce = (await headers()).get('x-nonce')
+  const [allPosts, categories, { q }, nonce] = await Promise.all([
+    getBlogPosts(),
+    getCategories(),
+    searchParams,
+    headers().then((h) => h.get('x-nonce')),
+  ])
+
+  const query = q?.trim() ?? ''
+  const posts = query ? await applySearch(allPosts, query) : allPosts
 
   return (
     <>
@@ -143,10 +189,13 @@ export default async function BlogHomePage() {
           { name: 'Blog', url: canonicalUrl('/blog') },
         ]}
       />
+      {/* Always the full index, never the `?q=` subset — this describes the
+          /blog collection itself, and emitting a search-dependent item list
+          would hand crawlers a different collection per query string. */}
       <ItemListJsonLd
         nonce={nonce}
         name="Blog posts by Richard Hudson"
-        items={posts.map((post) => ({
+        items={allPosts.map((post) => ({
           name: post.title,
           url: canonicalUrl(`/blog/${post.slug}`),
         }))}
