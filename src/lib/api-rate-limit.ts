@@ -4,7 +4,7 @@
 
 import { type NextRequest, NextResponse } from 'next/server'
 import { getRateLimiter } from '@/lib/rate-limiter/store'
-import { getClientIdentifier } from './api-request'
+import { getClientIdentifier, getClientUserAgent } from './api-request'
 import type { RateLimitConfig } from '@/types/security'
 
 // Canonical RateLimitConfig lives in @/types/security; re-export so existing
@@ -74,7 +74,10 @@ export function checkRateLimitOrRespond(
       antiAbuse: true,
       burstProtection: config.burstProtection,
     },
-    { path, method }
+    // userAgent is a suspicion SIGNAL, not part of the bucket key. The limiter
+    // scores it for bot/scraper patterns; it was previously baked into the
+    // identifier instead, which let anyone mint fresh buckets by varying it.
+    { path, method, userAgent: getClientUserAgent(request.headers) }
   )
 
   if (!result.allowed) {

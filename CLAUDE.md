@@ -93,7 +93,7 @@ Seed (`drizzle/seed.ts`): upsert-based, idempotent. Seeds 1 author, categories, 
 
 ## API routes
 
-13 `route.ts` + 1 `route.tsx` (`og/route.tsx` uses `next/og` `ImageResponse`) = 14 files total. `src/app/api/contact/csrf-route.ts` is a 15th file but is NOT a route (see below).
+14 `route.ts` + 1 `route.tsx` (`og/route.tsx` uses `next/og` `ImageResponse`) = 15 files total. `src/app/api/contact/csrf-route.ts` is a 16th file but is NOT a route (see below).
 
 | Path | Methods | Rate limit | CSRF | Auth | Notes |
 |---|---|---|---|---|---|
@@ -112,12 +112,15 @@ Seed (`drizzle/seed.ts`): upsert-based, idempotent. Seeds 1 author, categories, 
 | `/api/og` | GET | — | — | — | Dynamic OG image (`route.tsx`) |
 | `/api/seed` | POST | — | — | `ADMIN_API_TOKEN` | Returns 404 in production unless `ALLOW_SEED_IN_PRODUCTION='true'`; refuses if posts already exist |
 | `/api/security/metrics` | GET | — | — | `METRICS_API_TOKEN` (header `X-Metrics-Token`) | Exports rate-limiter metrics. Returns **403** (not 401) both when the token is unset (`route.ts:9`) and when it mismatches (`route.ts:15`) |
+| `/api/cron/publish-scheduled` | GET | — | — | `CRON_SECRET` (`Authorization: Bearer`) | Vercel Cron, hourly (`vercel.json`). Flips `SCHEDULED` → `PUBLISHED` once `scheduledAt` is due, skipping soft-deleted rows. **Fails closed**: 401 when `CRON_SECRET` is unset, and returns an identical 401 for unset vs. wrong token so the response can't confirm whether a secret exists. `Cache-Control: no-store` |
 
 Rate limiter (`src/lib/rate-limiter/store.ts`): in-memory `Map` singleton, LRU eviction every 5 min, exponential progressive penalty with 2× multiplier. Two preset surfaces:
 - `RateLimitPresets` (`src/lib/api-rate-limit.ts`): `read` (100/min, burst 120/5s), `sensitive` (10/hr, 30-min block).
 - `RateLimitConfigs` (`src/lib/rate-limiter/configs.ts`): `contactForm`.
 
 Use `checkRateLimitOrRespond(request, preset, path, method)` → returns a `NextResponse` (429) to short-circuit, or `null` to proceed.
+
+**Buckets key on the client IP alone** (`getClientIdentifierFromHeaders`, `src/lib/api-request.ts`). The User-Agent used to be hashed into that key, which was a rate-limit bypass: UA is client-controlled, so varying one byte minted a fresh bucket and defeated every limit here. It is now passed as `context.userAgent` instead, where the limiter already scores it for bot/scraper patterns — an attacker-supplied string may raise suspicion, never widen an allowance. Header precedence is platform-set first (`x-vercel-forwarded-for` → `x-real-ip` → `cf-connecting-ip`), with client-settable `x-forwarded-for` last; Vercel overwrites XFF to prevent spoofing, so this only matters off that path.
 
 Validation: `src/lib/schemas.ts`. Notable: `cuidSchema` (use this for IDs, not `z.string().uuid()`), `slugSchema` (lowercase + hyphens, max 100), `contactFormSchema`, `createBlogPostSchema` (`.strict()` — rejects unknown fields).
 
@@ -126,6 +129,7 @@ Validation: `src/lib/schemas.ts`. Notable: `cuidSchema` (use this for IDs, not `
 No user authentication framework. Two API tokens, both compared via `timingSafeEqualString()` (`src/lib/timing-safe-equal.ts`), a length-guarded wrapper over `crypto.timingSafeEqual`:
 - `ADMIN_API_TOKEN` — `Authorization: Bearer …` via `isAdminRequest()` (`src/lib/api-admin-auth.ts:20`). Hard-gates `POST /api/seed`, `POST /api/blog`, `PUT`+`DELETE /api/blog/[slug]`, `POST /api/blog/tags`, `POST /api/blog/categories`; also used as a soft read-gate on `GET /api/blog` and `GET /api/blog/[slug]` to expose unpublished posts. Unset in production ⇒ every blog mutation 401s (warned at `src/lib/env-validation.ts:112`).
 - `METRICS_API_TOKEN` — `X-Metrics-Token` header on `/api/security/metrics`.
+- `CRON_SECRET` — `Authorization: Bearer …` on `/api/cron/publish-scheduled`. Vercel sets this header itself on cron invocations when the env var exists ([docs](https://vercel.com/docs/cron-jobs/manage-cron-jobs)); Vercel's sample compares with `!==`, this repo uses `timingSafeEqualString` like the other two.
 
 CSRF (`src/lib/csrf-protection.ts`): 32-byte hex token in HttpOnly + `SameSite=Strict` cookie `__csrf_token`. Validated on POST/PUT/DELETE for `/api/blog*` and `/api/contact`. Token sent via `x-csrf-token` header (JSON) or `_csrf_token` form field.
 
@@ -151,6 +155,7 @@ All declared in `src/lib/env-validation.ts` (Zod, no `@t3-oss/env-nextjs`). Vali
 | `NEXT_PUBLIC_VERCEL_URL` | optional | Vercel-injected |
 | `ADMIN_API_TOKEN` | optional | min 32 chars; production warning if <64 |
 | `METRICS_API_TOKEN` | optional | min 32 chars; production warning if <64 |
+| `CRON_SECRET` | optional | min 32 chars; production warning if unset or <64. Without it `SCHEDULED` posts never publish |
 | `ALLOW_SEED_IN_PRODUCTION` | optional | Enum `'true'`/`'false'` — enum (not string) so misspellings fail at boot |
 
 Sentry vars (`SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN`, `SENTRY_URL`, `SENTRY_ENVIRONMENT`, `SENTRY_SEND_DEFAULT_PII`, plus `*_TRACES_SAMPLE_RATE` / `*_PROFILES_SAMPLE_RATE` / `*_REPLAYS_*_SAMPLE_RATE`) are read directly in `sentry.server.config.ts`, `sentry.edge.config.ts`, `instrumentation-client.ts` and `sentry.shared.ts`, plus `next.config.js:200-205` (`sentryBuildOptions`) — they are **not** in the Zod schema. There is no `sentry.client.config.ts` (deliberately — see the Sentry section). `INDEXNOW_KEY` is read directly in `src/app/api/blog/route.ts:293`. `LOG_LEVEL` is read in `src/lib/logger.ts:18`. `SKIP_DB_VALIDATION` is set at `.github/workflows/ci.yml:124` but is **not read anywhere in `src/`** — `src/lib/db.ts` is a 7-line re-export of `@/db` with no env check. Dead variable; remove it or wire it up.
