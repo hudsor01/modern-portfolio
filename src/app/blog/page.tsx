@@ -6,7 +6,7 @@ import { BlogList } from './_components/blog-list'
 import { BlogJsonLd } from '@/components/seo/blog-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { ItemListJsonLd } from '@/components/seo/json-ld/item-list-json-ld'
-import { and, desc, eq, isNull } from 'drizzle-orm'
+import { and, desc, eq, inArray, isNull } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { withDbRetry } from '@/lib/db-retry'
 import { blogPosts, categories as categoriesTable } from '@/db/schema'
@@ -134,29 +134,57 @@ const getCategories = cache(async (): Promise<BlogCategoryData[]> => {
  * part the old client-side filter structurally could not do — searches each
  * post's full `content`, which is never shipped to the browser.
  *
- * Results are intersected with the already-fetched index rather than rendered
- * from the search rows directly. Two reasons: the search projection has no
- * author/category/tag/image data the cards need, and `getBlogPosts()` is the
- * single place the PUBLISHED + not-soft-deleted rules live. Intersecting means
- * a search can only ever narrow that set, never surface a draft or a
- * soft-deleted post, even though `searchBlogPosts` has no `deletedAt` concept.
+ * Hits are re-fetched by id rather than intersected with the already-loaded
+ * index. Intersecting is tempting (no second query) but silently wrong: the
+ * index is the 50 most recent posts by `publishedAt`, while the search covers
+ * every row. Once the blog passes 50 published posts, an older post matching
+ * the query would rank correctly in Postgres and then be dropped on the way
+ * out, with no error — the search would just quietly stop finding old work.
+ * There are 23 published posts today, so this is latent rather than live, but
+ * it is the kind of bug that only shows up long after the cause is forgotten.
+ *
+ * The re-fetch repeats the PUBLISHED + not-soft-deleted predicate rather than
+ * trusting the search's `statusFilter`, so a search can still never surface a
+ * draft or a soft-deleted post — `searchBlogPosts` has no `deletedAt` concept.
  */
-async function applySearch(posts: BlogPostData[], query: string): Promise<BlogPostData[]> {
+async function getPostsByIds(ids: string[]): Promise<BlogPostData[]> {
+  if (ids.length === 0) return []
+  const posts = await withDbRetry(() =>
+    db.query.blogPosts.findMany({
+      where: and(
+        inArray(blogPosts.id, ids),
+        eq(blogPosts.status, 'PUBLISHED'),
+        isNull(blogPosts.deletedAt)
+      ),
+      with: { author: true, category: true, tags: { with: { tag: true } } },
+    })
+  )
+  return posts.map(transformToBlogPostData)
+}
+
+/**
+ * Returns the ranked matches, or `null` if the search itself failed.
+ *
+ * `null` and `[]` mean different things and the caller must distinguish them:
+ * `[]` is "searched, nothing matched" (show the empty state), `null` is
+ * "search broke" (fall back to the full index rather than telling the reader
+ * there are no posts).
+ */
+async function applySearch(query: string): Promise<BlogPostData[] | null> {
   try {
     const hits = await searchBlogPosts(query, { limit: 50, statusFilter: ['PUBLISHED'] })
+    if (hits.length === 0) return []
+
     const rankById = new Map(hits.map((hit, position) => [hit.id, position]))
-    return posts
-      .filter((post) => rankById.has(post.id))
-      .sort((a, b) => (rankById.get(a.id) ?? 0) - (rankById.get(b.id) ?? 0))
+    const posts = await getPostsByIds(hits.map((hit) => hit.id))
+    // Postgres returns the re-fetch in arbitrary order; restore relevance rank.
+    return posts.sort((a, b) => (rankById.get(a.id) ?? 0) - (rankById.get(b.id) ?? 0))
   } catch (error) {
-    // Never let search failure blank the index — fall back to the unfiltered
-    // list. searchBlogPosts already swallows query errors, so reaching here
-    // means something further out went wrong.
     logger.error(
       'Blog search failed; falling back to unfiltered index',
       error instanceof Error ? error : new Error(String(error))
     )
-    return posts
+    return null
   }
 }
 
@@ -177,7 +205,9 @@ export default async function BlogHomePage({
   ])
 
   const query = q?.trim() ?? ''
-  const posts = query ? await applySearch(allPosts, query) : allPosts
+  // `?? allPosts` only fires when applySearch returns null (it threw). An empty
+  // array is a real "no matches" result and must be preserved.
+  const posts = query ? ((await applySearch(query)) ?? allPosts) : allPosts
 
   return (
     <>
