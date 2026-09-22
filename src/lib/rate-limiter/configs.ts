@@ -6,6 +6,7 @@
 export const RateLimitConfigs = {
   // Contact form with anti-spam measures
   contactForm: {
+    bucket: 'contactForm',
     windowMs: 60 * 60 * 1000, // 1 hour
     maxAttempts: 3,
     progressivePenalty: true,

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useTransition } from 'react'
-import { useQueryState } from 'nuqs'
+import { debounce, useQueryState } from 'nuqs'
 import type { BlogPostData, BlogCategoryData } from '@/types/api'
 import { BlogTagFilter } from './blog-tag-filter'
 import { InlineMarkdown } from './inline-markdown'
@@ -41,9 +41,16 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
   const [searchQuery, setSearchQuery] = useQueryState('q', {
     defaultValue: '',
     shallow: false,
-    // Coalesce keystrokes into at most one server render per 300ms. nuqs still
-    // updates the returned value immediately, so the input stays responsive.
-    throttleMs: 300,
+    // DEBOUNCE, not throttle. Both cap the update rate, but throttle fires
+    // every 300ms *during* typing — so a 20-character query issued a burst of
+    // mid-word server renders, each re-running the blog index queries for a
+    // prefix nobody wanted results for. Debounce waits until typing stops, so
+    // one query means one render. (`throttleMs` is also deprecated in nuqs
+    // 2.8.9 in favour of `limitUrlUpdates`.)
+    //
+    // nuqs still updates the returned value immediately either way, so the
+    // input itself stays responsive regardless.
+    limitUrlUpdates: debounce(300),
     startTransition,
   })
 

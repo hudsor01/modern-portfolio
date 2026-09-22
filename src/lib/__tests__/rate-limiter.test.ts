@@ -419,6 +419,51 @@ describe('getClientIdentifier', () => {
   })
 })
 
+describe('rate-limit buckets are namespaced per config', () => {
+  let limiter: RateLimiter
+
+  beforeEach(() => {
+    vi.useFakeTimers()
+    limiter = new RateLimiter()
+  })
+  afterEach(() => {
+    limiter[Symbol.dispose]()
+    vi.useRealTimers()
+  })
+
+  const READ = { bucket: 'read', windowMs: 60_000, maxAttempts: 100 } satisfies RateLimitConfig
+  const SENSITIVE = {
+    bucket: 'sensitive',
+    windowMs: 3_600_000,
+    maxAttempts: 10,
+  } satisfies RateLimitConfig
+
+  it('cheap read traffic does not consume a stricter surface budget', () => {
+    const ip = '203.0.113.77'
+    // Well inside `read`'s own 100/min allowance...
+    for (let i = 0; i < 12; i++) {
+      expect(limiter.checkLimit(ip, READ, { path: '/api/projects' }).allowed).toBe(true)
+    }
+    // ...must not have touched `sensitive`'s 10/hr counter. The store was keyed
+    // on the client id alone, so this first request used to be REJECTED.
+    expect(limiter.checkLimit(ip, SENSITIVE, { path: '/api/blog/tags' }).allowed).toBe(true)
+  })
+
+  it('each bucket still enforces its own cap', () => {
+    const ip = '203.0.113.78'
+    for (let i = 0; i < 10; i++) limiter.checkLimit(ip, SENSITIVE, {})
+    expect(limiter.checkLimit(ip, SENSITIVE, {}).allowed).toBe(false)
+    // A different bucket for the same client is unaffected.
+    expect(limiter.checkLimit(ip, READ, {}).allowed).toBe(true)
+  })
+
+  it('different clients never share a bucket', () => {
+    for (let i = 0; i < 10; i++) limiter.checkLimit('203.0.113.1', SENSITIVE, {})
+    expect(limiter.checkLimit('203.0.113.1', SENSITIVE, {}).allowed).toBe(false)
+    expect(limiter.checkLimit('203.0.113.2', SENSITIVE, {}).allowed).toBe(true)
+  })
+})
+
 describe('rate-limit bypass via User-Agent rotation', () => {
   let limiter: RateLimiter
 

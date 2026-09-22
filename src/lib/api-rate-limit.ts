@@ -21,6 +21,7 @@ export type { RateLimitConfig }
 export const RateLimitPresets = {
   // For read operations (GET requests)
   read: {
+    bucket: 'read',
     windowMs: 60 * 1000, // 1 minute
     maxAttempts: 100,
     progressivePenalty: false,
@@ -34,6 +35,7 @@ export const RateLimitPresets = {
 
   // For sensitive operations (contact form, auth)
   sensitive: {
+    bucket: 'sensitive',
     windowMs: 60 * 60 * 1000, // 1 hour
     maxAttempts: 10,
     progressivePenalty: true,
@@ -66,6 +68,9 @@ export function checkRateLimitOrRespond(
   const result = rateLimiter.checkLimit(
     clientId,
     {
+      // Forward the namespace — without it every preset would collapse back
+      // onto one shared counter per client.
+      bucket: config.bucket,
       windowMs: config.windowMs,
       maxAttempts: config.maxAttempts,
       progressivePenalty: config.progressivePenalty ?? false,

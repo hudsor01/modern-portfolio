@@ -3,9 +3,11 @@
  * Uses tsvector and trigram indexes for fast, typo-tolerant search.
  *
  * Backed by `blog_posts.search_vector` — a GENERATED ALWAYS tsvector column
- * (title weighted A, excerpt B, content C) with a GIN index, plus trigram GIN
- * indexes on title/excerpt. All four are defined in src/db/schema.ts and
- * created by drizzle/migrations/0001_hard_maverick.sql.
+ * (title weighted A, excerpt B, content C) with a GIN index, defined in
+ * src/db/schema.ts and created by drizzle/migrations/0001_hard_maverick.sql.
+ *
+ * The typo-tolerant fallback below is deliberately NOT index-backed; see the
+ * note in src/db/schema.ts for the EXPLAIN evidence behind that.
  *
  * Until that migration this module was unreachable *and* wrong: its header
  * claimed the column was "installed by the legacy add_fulltext_search.sql
@@ -71,6 +73,32 @@ function rowsOf<T>(result: unknown): T[] {
 const TRIGRAM_MATCH_THRESHOLD = 0.45
 
 /**
+ * Shortest query the trigram fallback will run for.
+ *
+ * `word_similarity()` scores the query against the best-matching extent inside
+ * the target, so a one- or two-character query scores highly against almost any
+ * title: measured on the live corpus, `word_similarity('a', title) >= 0.45`
+ * matches all 29 posts, and so does `'the'`. The fallback would then "helpfully"
+ * return the entire blog for a single keystroke.
+ *
+ * This did not show before, only because the fallback was broken — the old `%`
+ * operator matched nothing at all, so short queries produced nothing by
+ * accident. Fixing the operator exposed it.
+ *
+ * Full-text is unaffected and still runs at any length; `plainto_tsquery` drops
+ * stopwords on its own, which is why `'a'` and `'the'` yield an empty tsquery
+ * and zero exact hits rather than noise.
+ *
+ * Length alone is not enough, though: `'the'` clears this bar at 3 characters
+ * and still matched all 29 posts, and so would a real query like `'how to'`
+ * (both words are stopwords). So the trigram branch ALSO requires
+ * `plainto_tsquery(...) <> ''` — i.e. the query must contain at least one word
+ * Postgres considers meaningful. That check rides along in the same statement,
+ * so it costs no extra round trip.
+ */
+const MIN_TRIGRAM_QUERY_LENGTH = 3
+
+/**
  * The fuzzy fallback calls `word_similarity()`, which only exists when the
  * `pg_trgm` extension is installed. Probe for it once per process and cache the
  * result so a missing extension degrades to an `ILIKE` substring fallback
@@ -87,11 +115,20 @@ async function hasPgTrgm(): Promise<boolean> {
     const result = await db.execute(
       sql`SELECT 1 FROM pg_extension WHERE extname = 'pg_trgm' LIMIT 1`
     )
+    // Cache only a DEFINITIVE answer.
     pgTrgmAvailable = rowsOf(result).length > 0
-  } catch {
-    pgTrgmAvailable = false
+    return pgTrgmAvailable
+  } catch (error) {
+    // A failed probe is not evidence the extension is missing — it is usually a
+    // cold-start or transient connection error. Caching `false` here would
+    // permanently downgrade a warm serverless instance to the ILIKE fallback
+    // for the rest of its life, with no log to explain why. Degrade for this
+    // request only, and leave the cache unset so the next call re-probes.
+    logger.warn('pg_trgm probe failed; using ILIKE fallback for this request', {
+      error: error instanceof Error ? error.message : String(error),
+    })
+    return false
   }
-  return pgTrgmAvailable
 }
 
 /** Test-only hook to reset the cached `pg_trgm` probe between cases. */
@@ -114,6 +151,13 @@ export async function searchBlogPosts(
   // which treats its whole argument as plain text and ANDs the terms itself —
   // an interleaved '&' is just a non-word token it discards. The old ' & ' join
   // implied an operator that was never honoured.
+  //
+  // This value must be what reaches SQL. It previously did not: every statement
+  // interpolated the RAW `query` and `sanitizedQuery` was only read by the
+  // emptiness guard below, so the sanitising this comment describes never
+  // actually happened. (Injection was never possible — drizzle binds these as
+  // parameters — but the trigram/ILIKE branches were matching against
+  // punctuation the caller believed had been stripped.)
   const sanitizedQuery = query
     .replace(/[<>!*():|&]/g, ' ')
     .trim()
@@ -143,31 +187,47 @@ export async function searchBlogPosts(
         )}]::"PostStatus"[])`
       : sql``
 
-  let fullTextResults: SearchResult[] = []
+  // The PRIMARY query is deliberately OUTSIDE the try below.
+  //
+  // It used to be inside it, which meant any failure here — a cold-start
+  // timeout, a dropped connection, future schema drift on search_vector — was
+  // caught and turned into `[]`. Callers cannot distinguish that from "searched,
+  // nothing matched": src/app/blog/page.tsx treats `[]` as a genuine empty
+  // result and renders "No posts found", while its documented fallback to the
+  // unfiltered index only fires on a throw. Because this function swallowed
+  // everything, that fallback was unreachable and a broken search looked
+  // exactly like an empty one. Letting this reject is what makes the
+  // null-vs-empty contract in page.tsx real.
+  const ftRows = await db.execute(sql`
+    SELECT
+      id,
+      title,
+      slug,
+      excerpt,
+      ts_rank(search_vector, plainto_tsquery('english', ${sanitizedQuery})) as rank,
+      'exact' as "matchType"
+    FROM blog_posts
+    WHERE search_vector @@ plainto_tsquery('english', ${sanitizedQuery})
+      ${statusCondition}
+    ORDER BY rank DESC
+    LIMIT ${limit}
+    OFFSET ${offset}
+  `)
+  const fullTextResults = rowsOf<SearchResult>(ftRows)
 
+  if (fullTextResults.length >= Math.min(limit, 5)) {
+    return fullTextResults
+  }
+
+  // From here on, failures are genuinely non-fatal: we already have usable
+  // full-text hits, so a broken fuzzy fallback should degrade to those rather
+  // than fail the whole search.
   try {
-    const ftRows = await db.execute(sql`
-      SELECT
-        id,
-        title,
-        slug,
-        excerpt,
-        ts_rank(search_vector, plainto_tsquery('english', ${query})) as rank,
-        'exact' as "matchType"
-      FROM blog_posts
-      WHERE search_vector @@ plainto_tsquery('english', ${query})
-        ${statusCondition}
-      ORDER BY rank DESC
-      LIMIT ${limit}
-      OFFSET ${offset}
-    `)
-    fullTextResults = rowsOf<SearchResult>(ftRows)
-
-    if (fullTextResults.length >= Math.min(limit, 5)) {
-      return fullTextResults
-    }
-
-    const needsFuzzySearch = fullTextResults.length < Math.min(limit, 5)
+    // Too-short queries are noise for trigram matching (see
+    // MIN_TRIGRAM_QUERY_LENGTH); return whatever full-text found.
+    const needsFuzzySearch =
+      fullTextResults.length < Math.min(limit, 5) &&
+      sanitizedQuery.length >= MIN_TRIGRAM_QUERY_LENGTH
     if (!needsFuzzySearch) {
       return fullTextResults
     }
@@ -198,14 +258,15 @@ export async function searchBlogPosts(
           slug,
           excerpt,
           GREATEST(
-            word_similarity(${query}, title),
-            word_similarity(${query}, COALESCE(excerpt, ''))
+            word_similarity(${sanitizedQuery}, title),
+            word_similarity(${sanitizedQuery}, COALESCE(excerpt, ''))
           ) as rank,
           'fuzzy' as "matchType"
         FROM blog_posts
-        WHERE GREATEST(
-            word_similarity(${query}, title),
-            word_similarity(${query}, COALESCE(excerpt, ''))
+        WHERE plainto_tsquery('english', ${sanitizedQuery})::text <> ''
+          AND GREATEST(
+            word_similarity(${sanitizedQuery}, title),
+            word_similarity(${sanitizedQuery}, COALESCE(excerpt, ''))
           ) >= ${TRIGRAM_MATCH_THRESHOLD}
           ${statusCondition}
           ${exclusion}
@@ -218,7 +279,7 @@ export async function searchBlogPosts(
       // search still degrades gracefully instead of returning only the
       // full-text hits. LIKE wildcards in the user's query are escaped so
       // they're treated literally. Title matches rank above excerpt matches.
-      const likePattern = `%${query.replace(/[\\%_]/g, '\\$&')}%`
+      const likePattern = `%${sanitizedQuery.replace(/[\\%_]/g, '\\$&')}%`
       fuzzyRows = await db.execute(sql`
         SELECT
           id,
@@ -240,8 +301,10 @@ export async function searchBlogPosts(
 
     return [...fullTextResults, ...fuzzyResults]
   } catch (error) {
+    // Reached only by the fuzzy fallback now — the primary query is outside
+    // this try — so the message is finally accurate.
     logger.error(
-      'Search error during fuzzy fallback',
+      'Search error during fuzzy fallback; returning full-text hits only',
       error instanceof Error ? error : new Error(String(error))
     )
     return fullTextResults
@@ -274,6 +337,11 @@ export async function getSearchSuggestions(prefix: string, limit: number = 5): P
     return []
   }
 
+  // Escape LIKE wildcards, same as the ILIKE fallback above. Without this a
+  // prefix of `%` matches every keyword and `_` matches any character, so the
+  // suggestions silently stop corresponding to what was typed.
+  const safePrefix = prefix.replace(/[\\%_]/g, '\\$&')
+
   try {
     // Unnest in a subquery so the outer query can filter on `keyword` in WHERE.
     //
@@ -291,7 +359,7 @@ export async function getSearchSuggestions(prefix: string, limit: number = 5): P
         WHERE status = 'PUBLISHED'
           AND "deletedAt" IS NULL
       ) expanded
-      WHERE keyword ILIKE ${`${prefix}%`}
+      WHERE keyword ILIKE ${`${safePrefix}%`}
       GROUP BY keyword
       ORDER BY count DESC, keyword
       LIMIT ${limit}
