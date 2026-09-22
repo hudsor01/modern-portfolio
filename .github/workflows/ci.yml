@@ -155,7 +155,11 @@ jobs:
           path: .next/cache
           # Bust the cache when source files or deps change, but reuse it
           # across same-commit reruns and on dep-only changes.
-          key: nextjs-${{ runner.os }}-${{ hashFiles('bun.lock') }}-${{ hashFiles('src/**/*.{ts,tsx,js,jsx}') }}
+          # NOT a brace pattern: @actions/glob compiles with `nobrace`, so
+          # `src/**/*.{ts,tsx,js,jsx}` matches zero files and hashFiles returns ''.
+          # The key then never varied with source changes — a stale .next/cache
+          # could be restored across unrelated commits.
+          key: nextjs-${{ runner.os }}-${{ hashFiles('bun.lock') }}-${{ hashFiles('src/**/*.ts', 'src/**/*.tsx', 'src/**/*.js', 'src/**/*.jsx', 'next.config.js') }}
           restore-keys: |
             nextjs-${{ runner.os }}-${{ hashFiles('bun.lock') }}-
             nextjs-${{ runner.os }}-
@@ -226,7 +230,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .next/cache
-          key: nextjs-${{ runner.os }}-${{ hashFiles('bun.lock') }}-${{ hashFiles('src/**/*.{ts,tsx,js,jsx}') }}
+          # NOT a brace pattern: @actions/glob compiles with `nobrace`, so
+          # `src/**/*.{ts,tsx,js,jsx}` matches zero files and hashFiles returns ''.
+          # The key then never varied with source changes — a stale .next/cache
+          # could be restored across unrelated commits.
+          key: nextjs-${{ runner.os }}-${{ hashFiles('bun.lock') }}-${{ hashFiles('src/**/*.ts', 'src/**/*.tsx', 'src/**/*.js', 'src/**/*.jsx', 'next.config.js') }}
           restore-keys: |
             nextjs-${{ runner.os }}-${{ hashFiles('bun.lock') }}-
             nextjs-${{ runner.os }}-
@@ -269,7 +277,10 @@ jobs:
   # `if: !cancelled()` so a failing shard still produces a report — that is
   # precisely when someone needs to read it.
   e2e-report:
-    if: ${{ !cancelled() }}
+    # `!cancelled()` alone drops the implicit success() gate on `needs`, so this
+    # would also run when `e2e` was SKIPPED — with no blob artifacts to
+    # download, `merge-reports` errors and posts a second, misleading red check.
+    if: ${{ !cancelled() && needs.e2e.result != 'skipped' }}
     needs: e2e
     runs-on: ubuntu-latest
     timeout-minutes: 5

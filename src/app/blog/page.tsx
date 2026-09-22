@@ -188,10 +188,30 @@ async function applySearch(query: string): Promise<BlogPostData[] | null> {
   }
 }
 
+/** Longest accepted `?q=`. Past this a query is noise, not a search. */
+const MAX_QUERY_LENGTH = 128
+
+/**
+ * Normalise `?q=` into a single bounded string.
+ *
+ * Next resolves a repeated key (`/blog?q=a&q=b`) to `string[]`, not `string`.
+ * Typing the param as `{ q?: string }` and calling `q.trim()` therefore threw a
+ * TypeError and returned HTTP 500 for any such URL — trivially reachable by
+ * hand, and crawlers do generate them. Take the first value, the same thing a
+ * single-input form means.
+ *
+ * The length cap is separate: without it an arbitrarily long string reached
+ * `plainto_tsquery` and two `word_similarity()` calls per row.
+ */
+function normalizeQuery(q: string | string[] | undefined): string {
+  const raw = Array.isArray(q) ? q[0] : q
+  return (raw ?? '').trim().slice(0, MAX_QUERY_LENGTH)
+}
+
 export default async function BlogHomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>
+  searchParams: Promise<{ q?: string | string[] }>
 }) {
   // Independent queries — parallelize so cold-CDN TTFB is a single Neon
   // roundtrip, not two. Especially important now that the global
@@ -204,7 +224,7 @@ export default async function BlogHomePage({
     headers().then((h) => h.get('x-nonce')),
   ])
 
-  const query = q?.trim() ?? ''
+  const query = normalizeQuery(q)
   // `?? allPosts` only fires when applySearch returns null (it threw). An empty
   // array is a real "no matches" result and must be preserved.
   const posts = query ? ((await applySearch(query)) ?? allPosts) : allPosts

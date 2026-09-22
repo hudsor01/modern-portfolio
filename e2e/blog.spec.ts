@@ -158,6 +158,28 @@ test.describe('Blog search (server-side full text)', () => {
     await expect(page.getByText(/no posts found/i)).toBeVisible()
   })
 
+  test('a repeated ?q= does not 500', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+
+    // Next resolves a repeated key to string[], not string. The page typed the
+    // param as `{ q?: string }` and called q.trim(), so this URL — trivially
+    // hand-craftable, and crawlers do generate them — returned HTTP 500.
+    const response = await page.goto('/blog?q=attribution&q=revenue')
+    expect(response?.status()).toBe(200)
+    await page.waitForLoadState('networkidle')
+    // First value wins, so it behaves like ?q=attribution rather than erroring.
+    expect(await cards(page).count()).toBeGreaterThan(0)
+  })
+
+  test('an overlong query is bounded, not passed through', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+
+    const response = await page.goto(`/blog?q=${'a'.repeat(5000)}`)
+    expect(response?.status()).toBe(200)
+    await page.waitForLoadState('networkidle')
+    await expect(cards(page)).toHaveCount(0)
+  })
+
   test('no query renders the full index', async ({ page }) => {
     test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
 
