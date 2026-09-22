@@ -237,14 +237,36 @@ export const blogPosts = pgTable(
       .on(t.featuredImage)
       .where(sql`${t.status} = 'PUBLISHED' AND ${t.deletedAt} IS NULL`),
     // GIN over the generated tsvector — the index the `@@` operator in
-    // src/lib/search.ts actually uses.
+    // src/lib/search.ts actually uses. Measured: the planner picks it.
     index('blog_posts_search_vector_idx').using('gin', t.searchVector),
-    // Trigram GIN indexes backing the `%` similarity fallback in the same
-    // module (typo tolerance). Separate from the tsvector index: `%` cannot use
-    // a tsvector GIN index, and to_tsvector lemmatisation does not survive a
-    // misspelling. gin_trgm_ops comes from pg_trgm, already installed.
-    index('blog_posts_title_trgm_idx').using('gin', sql`${t.title} gin_trgm_ops`),
-    index('blog_posts_excerpt_trgm_idx').using('gin', sql`${t.excerpt} gin_trgm_ops`),
+    //
+    // There are deliberately NO trigram (gin_trgm_ops) indexes here.
+    //
+    // An earlier revision of this PR added them on title and excerpt to back
+    // the typo-tolerant fallback. They were dead weight, and EXPLAIN against
+    // the live database proved it three ways:
+    //
+    //  1. The fallback's predicate is `GREATEST(word_similarity(q, title),
+    //     word_similarity(q, COALESCE(excerpt,''))) >= 0.45`. gin_trgm_ops
+    //     indexes the pg_trgm OPERATORS (`%`, `<%`, LIKE/ILIKE), not a bare
+    //     function call, so no index was ever eligible — seq scan, always.
+    //  2. Switching to the operator form does not rescue it if the column is
+    //     wrapped: `q <% COALESCE(excerpt,'')` is an expression and stays
+    //     ineligible. Only bare columns (`q <% title OR q <% excerpt`) reach
+    //     the indexes.
+    //  3. Even then it is SLOWER at this size. Forcing the issue with
+    //     `enable_seqscan = off`: seq scan cost 8.58 vs bitmap-OR 109.73 over
+    //     29 rows. The planner was right to ignore them.
+    //
+    // `<%` also reads `pg_trgm.word_similarity_threshold`, which defaults to
+    // 0.6 while this search needs 0.45 (measured against the corpus — see
+    // src/lib/search.ts) — and neon-http is stateless, so a per-session `SET`
+    // never survives to the next query.
+    //
+    // Add them back only when ALL of: the corpus is large enough that the seq
+    // scan actually hurts, the query is rewritten to bare-column `<%`, and the
+    // threshold is set at database level (`ALTER DATABASE … SET
+    // pg_trgm.word_similarity_threshold = 0.45`) rather than per session.
   ]
 )
 

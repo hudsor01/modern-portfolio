@@ -15,6 +15,13 @@
       "when": 1789924103054,
       "tag": "0001_hard_maverick",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790118321538,
+      "tag": "0002_ancient_thor",
+      "breakpoints": true
     }
   ]
 }
