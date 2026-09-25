@@ -140,11 +140,18 @@ export async function searchBlogPosts(
   query: string,
   options: {
     limit?: number
-    offset?: number
     statusFilter?: string[]
   } = {}
 ): Promise<SearchResult[]> {
-  const { limit = 20, offset = 0, statusFilter } = options
+  // No `offset` / paging option, deliberately.
+  //
+  // There used to be one, and it was incorrect: the fuzzy fallback reused the
+  // SAME offset the full-text query had already consumed, so page 2 skipped a
+  // page of fuzzy hits and could repeat rows already shown. Nothing ever passed
+  // it — the only caller is src/app/blog/page.tsx, which takes the top 50 — so
+  // the bug was latent. Removing it beats shipping a paging API that silently
+  // corrupts results; add it back only with per-phase offsets and a test.
+  const { limit = 20, statusFilter } = options
 
   // Strip tsquery operators so user input can never be parsed as query syntax.
   // Terms are joined with a space, not ' & ': the target is plainto_tsquery,
@@ -211,7 +218,6 @@ export async function searchBlogPosts(
       ${statusCondition}
     ORDER BY rank DESC
     LIMIT ${limit}
-    OFFSET ${offset}
   `)
   const fullTextResults = rowsOf<SearchResult>(ftRows)
 
@@ -272,7 +278,6 @@ export async function searchBlogPosts(
           ${exclusion}
         ORDER BY rank DESC
         LIMIT ${fuzzyLimit}
-        OFFSET ${offset}
       `)
     } else {
       // pg_trgm absent — fall back to a case-insensitive substring match so
@@ -294,7 +299,6 @@ export async function searchBlogPosts(
           ${exclusion}
         ORDER BY rank DESC, title ASC
         LIMIT ${fuzzyLimit}
-        OFFSET ${offset}
       `)
     }
     const fuzzyResults = rowsOf<SearchResult>(fuzzyRows)

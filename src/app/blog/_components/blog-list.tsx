@@ -117,12 +117,19 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
           )}
         </div>
         {/* Screen readers get the result count once the server responds, since
-            the visual change (a different set of cards) is not announced. */}
+            the visual change (a different set of cards) is not announced.
+
+            When a category filter is also active, `filteredPosts` is the search
+            hits narrowed further by category — announcing that number alone as
+            "N posts found for <query>" blamed the search for an empty grid the
+            category caused. Name both filters in that case. */}
         <p aria-live="polite" className="sr-only">
           {isPending
             ? 'Searching'
             : searchQuery
-              ? `${filteredPosts.length} ${filteredPosts.length === 1 ? 'post' : 'posts'} found for ${searchQuery}`
+              ? selectedCategory === 'All'
+                ? `${filteredPosts.length} ${filteredPosts.length === 1 ? 'post' : 'posts'} found for ${searchQuery}`
+                : `${filteredPosts.length} of ${initialPosts.length} ${initialPosts.length === 1 ? 'post' : 'posts'} found for ${searchQuery}, filtered to ${selectedCategory}`
               : ''}
         </p>
       </div>

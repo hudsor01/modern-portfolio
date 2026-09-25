@@ -239,17 +239,25 @@ export default async function BlogHomePage({
           { name: 'Blog', url: canonicalUrl('/blog') },
         ]}
       />
-      {/* Always the full index, never the `?q=` subset — this describes the
-          /blog collection itself, and emitting a search-dependent item list
-          would hand crawlers a different collection per query string. */}
-      <ItemListJsonLd
-        nonce={nonce}
-        name="Blog posts by Richard Hudson"
-        items={allPosts.map((post) => ({
-          name: post.title,
-          url: canonicalUrl(`/blog/${post.slug}`),
-        }))}
-      />
+      {/* Emitted only on the unfiltered canonical render.
+          Structured data has to describe what the page actually shows. Emitting
+          the full index on a filtered render meant `/blog?q=photosynthesis`
+          shipped an ItemList naming every published post while the visible page
+          said "No posts found" — a mismatch Google treats as misrepresentative.
+          Restricting the list to the search hits instead would be just as
+          wrong the other way: it would hand crawlers a different "collection"
+          per query string. Neither is right, so the ItemList simply belongs to
+          the canonical /blog only. */}
+      {!query && (
+        <ItemListJsonLd
+          nonce={nonce}
+          name="Blog posts by Richard Hudson"
+          items={allPosts.map((post) => ({
+            name: post.title,
+            url: canonicalUrl(`/blog/${post.slug}`),
+          }))}
+        />
+      )}
       <div className="min-h-screen bg-background">
         <Navbar />
         <main className="relative overflow-hidden">

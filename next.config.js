@@ -117,11 +117,37 @@ const nextConfig = {
         ],
       },
       // ISR + dynamic content caching for blog/project/tool pages.
+      //
+      // Note `:path*` matches zero-or-more segments, so this also covers the
+      // bare index pages (/blog, /projects) — verified against a production
+      // build, not assumed.
       {
         source: '/(projects|blog|tools)/:path*',
         headers: [
           { key: 'Cache-Control', value: 's-maxage=60, stale-while-revalidate=86400' },
           { key: 'CDN-Cache-Control', value: 'max-age=3600' },
+        ],
+      },
+      // Search-result renders (/blog?q=…) get a much shorter edge TTL.
+      //
+      // Vercel's CDN keys on the full URL including the query string, so once
+      // `?q=` became a real server render every distinct query started
+      // occupying its own edge entry for a full hour. Two consequences: the set
+      // of entries is unbounded and attacker-sprayable, and a newly published
+      // post stays invisible in search results for up to an hour while the
+      // index page it came from has already revalidated.
+      //
+      // 60s keeps the burst protection that matters (repeat submissions of the
+      // same query) without either problem. `has` query matching is the
+      // documented mechanism for this — see the "Header, Cookie, and Query
+      // Matching" section of the Next.js headers docs. This rule is declared
+      // AFTER the general one because later matches win for the same key.
+      {
+        source: '/blog',
+        has: [{ type: 'query', key: 'q' }],
+        headers: [
+          { key: 'Cache-Control', value: 's-maxage=60, stale-while-revalidate=300' },
+          { key: 'CDN-Cache-Control', value: 'max-age=60' },
         ],
       },
       {

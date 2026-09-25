@@ -87,6 +87,10 @@ Slug + email columns are `citext` (custom Drizzle type → `citext` extension, a
 
 **Migrations**: live in `drizzle/migrations/` going forward (generated via `bunx drizzle-kit generate`). The pre-existing Postgres schema was created by Prisma migrations (now removed from the repo) and remains in place — Drizzle is pointed at the same DB. Use `drizzle-kit push` for dev iteration before generating a migration file.
 
+**The migration set cannot build a database from scratch.** It baselines against the Prisma-created schema, so there are no `CREATE TABLE` migrations — pointing `DATABASE_URL` at an empty Postgres and running `db:migrate` fails immediately. A from-scratch instance also needs the `citext` extension, which no migration creates (`pg_trgm` *is* created, by `0001`). The supported paths are the existing databases or a Neon branch off one.
+
+Applied migrations are compared by **timestamp, not hash**: `drizzle-orm/neon-http/migrator.js:22` gates on `Number(lastDbMigration.created_at) < migration.folderMillis` and never reads the stored `hash`. Editing an already-applied migration file therefore cannot re-trigger it — which is what made adding the `CREATE EXTENSION` guard to `0001` safe, verified by re-running `db:migrate` against production and confirming the indexes `0002` dropped were not recreated. Do not rely on this to rewrite history casually; it is a property of the current driver.
+
 **Client init** (`src/db/index.ts`): exports `db` as a `Proxy` over a lazy `drizzle()` singleton on `globalThis.__drizzle`. `'server-only'` enforces server-side use. `src/lib/db.ts` re-exports from `@/db` so existing `import { db } from '@/lib/db'` callers keep working.
 
 Seed (`drizzle/seed.ts`): upsert-based, idempotent. Seeds 1 author, categories, tags, projects from `src/data/projects`, 8 blog posts (6 published, 1 draft, 1 scheduled), then random views/interactions for published posts. Wipes data first when `NODE_ENV !== 'production'`.

@@ -4,6 +4,7 @@
  */
 
 import type { NextRequest } from 'next/server'
+import { logger } from '@/lib/logger'
 
 // ============================================================================
 // CLIENT IDENTIFICATION
@@ -21,6 +22,22 @@ export type HeaderGetter = { get(name: string): string | null }
  * (via `headers()` from `next/headers`) — same identifier shape for both, so
  * rate-limit buckets stay aligned across entry points.
  */
+/**
+ * One-shot warning for a request with no usable client-IP header. Module-level
+ * so a flood of such requests produces one log line, not one per request.
+ */
+let warnedMissingClientIp = false
+
+function reportMissingClientIp(): string {
+  if (!warnedMissingClientIp) {
+    warnedMissingClientIp = true
+    logger.warn(
+      'No client IP header on an incoming request; rate limiting falls back to a single shared "unknown" bucket. Check the proxy configuration.'
+    )
+  }
+  return 'unknown'
+}
+
 export function getClientIdentifierFromHeaders(headers: HeaderGetter): string {
   // Platform-set headers FIRST, client-influenced ones last.
   //
@@ -39,7 +56,12 @@ export function getClientIdentifierFromHeaders(headers: HeaderGetter): string {
     headers.get('x-real-ip')?.trim() ||
     headers.get('cf-connecting-ip')?.trim() ||
     headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    'unknown'
+    // No IP header at all. Every such request shares this one bucket, which is
+    // the safe direction (over-limiting, not under-limiting) but usually means
+    // a misconfigured proxy rather than genuine anonymity — and a shared bucket
+    // would throttle real users. Warn once per process so it is visible in
+    // Sentry instead of looking like ordinary rate-limit noise.
+    reportMissingClientIp()
 
   // Deliberately IP-only — do NOT mix the User-Agent into this key.
   //

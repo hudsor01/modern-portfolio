@@ -14,10 +14,13 @@ import { test, expect } from '@playwright/test'
 /**
  * Give a request its own rate-limit bucket.
  *
- * The limiter keys on `${ip}:${base64(user-agent).slice(0,8)}` where `ip` is the
- * leftmost `x-forwarded-for` entry (src/lib/api-request.ts:24-39). Against a
- * local `next start` there is no proxy in front, so the header we send *is* the
- * key — which lets each test claim a fresh bucket.
+ * The limiter keys on `${bucket}:${clientIp}` — the preset's namespace plus the
+ * bare client IP, with NO User-Agent component (src/lib/api-request.ts,
+ * src/lib/rate-limiter/store.ts). `x-forwarded-for` is the LAST header
+ * consulted, after the platform-set `x-vercel-forwarded-for`, `x-real-ip` and
+ * `cf-connecting-ip`; against a local standalone server none of those are
+ * present, so the header we send here is what forms the key — which is what
+ * lets each test claim a fresh bucket.
  *
  * Without this, the admin-gated blog POSTs below are order- and history-
  * dependent: they hit `RateLimitPresets.sensitive` (10/hr, 30-minute block), so

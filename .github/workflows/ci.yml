@@ -249,7 +249,16 @@ jobs:
           E2E_DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
         run: |
           if [ -n "$E2E_DATABASE_URL" ]; then
-            echo "DATABASE_URL=$E2E_DATABASE_URL" >> "$GITHUB_ENV"
+            # Heredoc form, not `KEY=value`. A single-line write lets any
+            # newline inside the secret start a second assignment, so a
+            # malformed secret could define arbitrary env vars for every later
+            # step. The delimiter is a fixed literal that cannot appear in a
+            # Postgres URL. This is GitHub's documented multiline syntax.
+            {
+              echo "DATABASE_URL<<__E2E_DBURL_EOF__"
+              printf '%s\n' "$E2E_DATABASE_URL"
+              echo '__E2E_DBURL_EOF__'
+            } >> "$GITHUB_ENV"
             echo "Database configured; DB-dependent specs will run."
           else
             echo "No E2E_DATABASE_URL secret set; the 8 DB-dependent specs will skip."
