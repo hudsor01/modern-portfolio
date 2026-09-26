@@ -4,7 +4,7 @@ Public portfolio + blog system for Richard Hudson. Next.js App Router, Drizzle O
 
 ## Stack
 
-Runtime: Bun 1.3.13, Node `>=22 <25` (`package.json:6-9`). Next.js 16.2.4, React 19.2.5, TypeScript 6.0.3 (`strict`, `noUncheckedIndexedAccess`), Tailwind 4.2.4, Zod 4.4.3, Drizzle ORM 0.45 + `@neondatabase/serverless` (HTTP driver), `@sentry/nextjs` 10.51, Resend 6.12, Vitest 4.1, Playwright 1.59, Biome 2.4.14 (linter + formatter), Lefthook 2.
+Runtime: Bun 1.3.14, Node `>=22 <25` (`package.json:7-9`). Next.js 16.3.5, React 19.2.7, TypeScript 6.0.3 (`strict`, `noUncheckedIndexedAccess`), Tailwind 4.3.1, Zod 4.4.3, Drizzle ORM 0.45.2 + `@neondatabase/serverless` 1.1.0 (HTTP driver), `@sentry/nextjs` 10.57.0, Resend 6.12.4, Vitest 4.1.11, Playwright 1.60.0, Biome 2.5.0 (linter + formatter), Lefthook 2.1.9.
 
 ## Commands
 
@@ -13,37 +13,43 @@ Runtime: Bun 1.3.13, Node `>=22 <25` (`package.json:6-9`). Next.js 16.2.4, React
 | `bun dev` | Dev server (`bun --bun next dev`) |
 | `bun run build` | Prod build (Node-side `next build`) |
 | `bun run build:ci` | Same, but Bun-side (`bun --bun next build`) |
-| `bun start` | Prod server |
+| `bun start` | Prod server (`bun --bun next start`) |
 | `bun run lint` / `lint:fix` | Biome check over `src/**` (lint + format) |
 | `bun run format` / `format:fix` | Biome format-only over `src/**` |
 | `bun run typecheck` | `tsc --noEmit` |
 | `bun run ci:quick` | lint + typecheck |
-| `bunx vitest run` (or `bun run test`) | Unit tests, jsdom |
+| `bun run test` | `vitest run --passWithNoTests` — unit tests, jsdom |
+| `bun run test:watch` | `vitest` in watch mode |
 | `bun run test:coverage` | v8 coverage on `src/lib/**` |
-| `bun run e2e` (`e2e:ui`, `e2e:headed`, `e2e:chromium`, `e2e:report`) | Playwright |
+| `bun run e2e` (`e2e:ui`, `e2e:headed`, `e2e:chromium`, `e2e:report`) | Playwright. Runs against a **production** build on :3100 — see the e2e gotcha |
+| `bun run e2e:server` | `bun run build` + `e2e:serve`. What `playwright.config.ts`'s `webServer` invokes |
+| `bun run e2e:serve` | Serve an already-built app: copies `.next/static` + `public` into `.next/standalone/`, then `node .next/standalone/server.js` (honours `PORT`) |
 | `bun run db:generate` | `drizzle-kit generate` — emits a SQL migration into `drizzle/migrations/` from the current `src/db/schema.ts` |
 | `bun run db:migrate` | `drizzle-kit migrate` — applies pending migrations to `DATABASE_URL` |
 | `bun run db:push` | `drizzle-kit push` — sync schema directly without writing a migration file (dev only) |
 | `bun run db:studio` | Drizzle Studio |
 | `bun run db:seed` | `bun run drizzle/seed.ts` — idempotent upsert seed |
 
-Hooks (`lefthook.yml`): pre-commit runs `bunx biome check --staged --write` over staged `src/**`; pre-push runs `bunx vitest run --passWithNoTests`. `--no-verify` bypasses.
+Hooks (`lefthook.yml`): pre-commit runs `bunx biome check --staged --write --no-errors-on-unmatched` over staged `src/**` plus a `gitleaks git --staged` secret scan (skipped with a notice if the binary is absent); pre-push runs `bunx vitest run --passWithNoTests` **and** `bun run typecheck`, in parallel. `--no-verify` bypasses.
 
 ## Layout
 
 ```
 src/
-  app/                    Next.js App Router. Top-level routes: about, blog, contact, projects, resume.
-                          Plus root layout/page/error/global-error/not-found/sitemap/robots/viewport.
-  app/api/                14 route.ts handlers + 1 route.tsx (og). See API table.
+  app/                    Next.js App Router. Top-level routes: about, blog, contact, projects, resume, tools.
+                          Plus root layout/page/error/global-error/not-found/sitemap/robots/viewport,
+                          shared-metadata.ts, reading-progress.tsx, globals.css.
+  app/api/                13 route.ts handlers + 1 route.tsx (og). See API table.
   app/contact/actions.ts  The ONLY 'use server' file in the repo.
-  components/             10 subdirs: ui (42 primitives), layout, navigation, charts, projects, contact,
-                          about, error, providers, seo/json-ld.
-  hooks/                  13 hooks (use-mounted, use-csrf-token, use-page-analytics, ...).
+  components/             11 subdirs: ui (21 primitives), layout, navigation, charts, projects, contact,
+                          blog, about, error, providers, seo/json-ld.
+                          (regenerate: find src/components -mindepth 1 -maxdepth 1 -type d | wc -l)
+  hooks/                  4 hooks: use-analytics-data, use-contact-form, use-in-view, use-sonner-toast.
   lib/                    Shared utilities. Notable: db.ts, env-validation.ts, logger.ts, schemas.ts,
                           api-rate-limit.ts, api-csrf.ts, csp-edge.ts, email-service.ts,
                           rate-limiter/{store,configs,helpers}.ts, data-service/.
-  types/                  ~16 .ts files (api, blog, project, forms, monitoring, ...).
+  types/                  13 files, 11 .ts + 2 .d.ts (api, blog, project, forms, monitoring, security,
+                          analytics, chart, design-system, hooks, seo, assets.d.ts, next-types.d.ts).
                           All styling now lives in the single src/app/globals.css
                           (the former src/styles/ + fonts.ts were consolidated in).
   db/                     Drizzle schema, client, and CUID2 ID factory.
@@ -54,17 +60,18 @@ src/
   data/                   Static catalog data.
 
 drizzle/                  seed.ts (idempotent upsert seed) + migrations/ (drizzle-kit output).
-e2e/                      5 Playwright specs: blog, contact-form, projects, resume, security-headers.
+e2e/                      11 Playwright specs: about, audit-regressions, blog, contact, contact-form,
+                          homepage, projects, projects-detail, resume, resume-view, security-headers.
+                          4 browser projects (chromium/firefox/webkit/mobile-chrome), playwright.config.ts:62-77.
 scripts/                  _db.ts — shared neon+drizzle bootstrap (createScriptDb),
-                          consumed by drizzle/seed.ts. (Completed one-off data-fix
-                          scripts were removed after their migrations were applied
-                          to prod + codified in the seed.)
-proxy.ts                  Next.js 16 successor to middleware.ts (see Auth/CSP).
+                          consumed by drizzle/seed.ts. Also: clean-truncated-slugs.ts,
+                          derive-partner-metrics.ts, scrub-secrets-from-history.sh.
+src/proxy.ts              Next.js 16 successor to middleware.ts (see Auth/CSP). NOT at the repo root.
 ```
 
-App Router conventions in use: dynamic segments (`[slug]`), private folders (`_components/`), per-route `metadata.ts` (e.g. `src/app/contact/metadata.ts`). **No** route groups (`(group)`), catch-alls, parallel routes, intercepting routes, or admin route.
+App Router conventions in use: dynamic segments (`[slug]`), private folders (`_components/`, ~20 of them), and a shared metadata helper at `src/app/shared-metadata.ts` (pages export `metadata` inline — there are **no** per-route `metadata.ts` files). **No** route groups (`(group)`), catch-alls, parallel routes, intercepting routes, or admin route.
 
-Path aliases (`tsconfig.json`): `@/*` → `src/*`. Specific aliases for `@/components`, `@/lib`, `@/hooks`, `@/types`, `@/app`, `@/content`, `@/data`, `@/db` (→ `src/db/index`), `@/db/*`. `@/content/*` is declared but no `src/content/` exists yet.
+Path aliases (`tsconfig.json:42-73`): `@/*` → `src/*`, plus explicit wildcard entries `@/components/*`, `@/lib/*`, `@/hooks/*`, `@/types/*`, `@/app/*`, `@/content/*`, `@/data/*`, `@/db/*`, and one bare entry `@/db` → `src/db/index`. `@/content/*` is declared but no `src/content/` exists yet. `vitest.config.ts:16-23` mirrors only the three load-bearing ones (`@/db`, `@/db/`, `@/`) — order matters there.
 
 ## Database
 
@@ -76,7 +83,13 @@ Postgres via Drizzle ORM with the Neon serverless HTTP driver (`@neondatabase/se
 
 Slug + email columns are `citext` (custom Drizzle type → `citext` extension, already enabled in DB). `blogPosts.deletedAt` is a soft-delete column — filter in app code; not enforced. `projects` has 8 typed `jsonb` columns via `.$type<T>()` (impact, results, displayMetrics, metrics, testimonial, gallery, details, charts). `postViews`, `contactSubmissions`, `securityEvents` use a custom `inet` type for IP addresses.
 
+`blogPosts.searchVector` is a `tsvector` **generated column** (`GENERATED ALWAYS … STORED`) weighting title A, excerpt B, content C, with a GIN index plus trigram GIN indexes on title/excerpt — all in `0001_hard_maverick.sql`. Postgres requires an IMMUTABLE expression, so the text-search config is the literal `'english'`; the one-argument `to_tsvector(text)` is only STABLE and is rejected. It backs `/blog?q=` (searched server-side in `page.tsx`, so a query can match a post's full body text, which never reaches the browser). Migrations need the `portfolio_owner` role — the app's `DATABASE_URL` connects as `authenticated`, which has DML but not DDL.
+
 **Migrations**: live in `drizzle/migrations/` going forward (generated via `bunx drizzle-kit generate`). The pre-existing Postgres schema was created by Prisma migrations (now removed from the repo) and remains in place — Drizzle is pointed at the same DB. Use `drizzle-kit push` for dev iteration before generating a migration file.
+
+**The migration set cannot build a database from scratch.** It baselines against the Prisma-created schema, so there are no `CREATE TABLE` migrations — pointing `DATABASE_URL` at an empty Postgres and running `db:migrate` fails immediately. A from-scratch instance also needs the `citext` extension, which no migration creates (`pg_trgm` *is* created, by `0001`). The supported paths are the existing databases or a Neon branch off one.
+
+Applied migrations are compared by **timestamp, not hash**: `drizzle-orm/neon-http/migrator.js:22` gates on `Number(lastDbMigration.created_at) < migration.folderMillis` and never reads the stored `hash`. Editing an already-applied migration file therefore cannot re-trigger it — which is what made adding the `CREATE EXTENSION` guard to `0001` safe, verified by re-running `db:migrate` against production and confirming the indexes `0002` dropped were not recreated. Do not rely on this to rewrite history casually; it is a property of the current driver.
 
 **Client init** (`src/db/index.ts`): exports `db` as a `Proxy` over a lazy `drizzle()` singleton on `globalThis.__drizzle`. `'server-only'` enforces server-side use. `src/lib/db.ts` re-exports from `@/db` so existing `import { db } from '@/lib/db'` callers keep working.
 
@@ -84,25 +97,26 @@ Seed (`drizzle/seed.ts`): upsert-based, idempotent. Seeds 1 author, categories, 
 
 ## API routes
 
-14 `route.ts` + 1 `route.tsx` (`og/route.tsx` uses `next/og` `ImageResponse`).
+14 `route.ts` + 1 `route.tsx` (`og/route.tsx` uses `next/og` `ImageResponse`) = 15 files total. `src/app/api/contact/csrf-route.ts` is a 16th file but is NOT a route (see below).
 
 | Path | Methods | Rate limit | CSRF | Auth | Notes |
 |---|---|---|---|---|---|
 | `/api/health` | GET | — | — | — | DB ping; trimmed payload (no version/uptime/memory) |
 | `/api/health-check` | GET, HEAD | — | — | — | Plain `OK` text for header probes |
-| `/api/blog` | GET, POST | `read` / `sensitive` | POST | — | POST validates with `createBlogPostSchema` (strict); fires IndexNow only when `status === 'PUBLISHED'` and `INDEXNOW_KEY` is set |
-| `/api/blog/[slug]` | GET, PUT, DELETE | — | PUT, DELETE | — | GET increments `viewCount` async |
+| `/api/blog` | GET, POST | `read` / `sensitive` | POST | `ADMIN_API_TOKEN` (POST, `route.ts:175`) | POST validates with `createBlogPostSchema` (strict); fires IndexNow only when `status === 'PUBLISHED'` and `INDEXNOW_KEY` is set. GET also calls `isAdminRequest` (`route.ts:65`) so token holders can pass `?status=DRAFT`; public callers are forced to `published=true` |
+| `/api/blog/[slug]` | GET, PUT, DELETE | `sensitive` (PUT `:84`, DELETE `:227`) | PUT, DELETE | `ADMIN_API_TOKEN` (PUT `:92`, DELETE `:235`) | GET increments `viewCount` async, and hides non-PUBLISHED/soft-deleted posts behind a 404 unless `isAdminRequest` (`:45`) |
 | `/api/blog/rss` | GET | — | — | — | XML or JSON via `?format=` |
-| `/api/blog/tags` | GET, POST | — | POST | — | |
-| `/api/blog/categories` | GET, POST | — | POST | — | |
+| `/api/blog/tags` | GET, POST | `sensitive` (POST, `route.ts:55`) | POST | `ADMIN_API_TOKEN` (POST, `route.ts:64`) | Order is rate-limit → admin → CSRF → `createTagSchema` |
+| `/api/blog/categories` | GET, POST | `sensitive` (POST, `route.ts:44`) | POST | `ADMIN_API_TOKEN` (POST, `route.ts:53`) | Order is rate-limit → admin → CSRF → `createCategorySchema` |
 | `/api/blog/analytics` | GET | — | — | — | Validates `timeRange` enum (`7d`/`30d`/`90d`/`1y`) |
-| `/api/contact` | POST | `contactForm` | yes | — | Resend email; IP-based limit (3/hr, burst 2/10s) |
-| `/api/contact/csrf-route.ts` | GET | — | — | — | Issues CSRF cookie + token (note non-standard filename, not `route.ts`) |
+| `/api/contact` | POST | `contactForm` — applied **inside** `emailService.sendContactEmail()` (`src/lib/email-service.ts:58` → `rate-limiter/helpers.ts:27`), NOT via `checkRateLimitOrRespond` in the route | yes | — | Resend email; IP-based limit (3/hr, burst 2/10s, 5-min base block) |
+| ~~`/api/contact/csrf`~~ | — | — | — | — | **Not reachable.** `src/app/api/contact/csrf-route.ts` exports GET, but Next.js only routes `route.ts`/`route.tsx`, so no URL serves it — and no client code fetches `/api/contact/csrf`. Currently dead code. |
 | `/api/projects` | GET | `read` | — | — | |
 | `/api/projects/[slug]` | GET | `read` | — | — | `slugSchema` validates param |
 | `/api/og` | GET | — | — | — | Dynamic OG image (`route.tsx`) |
 | `/api/seed` | POST | — | — | `ADMIN_API_TOKEN` | Returns 404 in production unless `ALLOW_SEED_IN_PRODUCTION='true'`; refuses if posts already exist |
-| `/api/security/metrics` | GET | — | — | `METRICS_API_TOKEN` (header `X-Metrics-Token`) | Exports rate-limiter metrics |
+| `/api/security/metrics` | GET | — | — | `METRICS_API_TOKEN` (header `X-Metrics-Token`) | Exports rate-limiter metrics. Returns **403** (not 401) both when the token is unset (`route.ts:9`) and when it mismatches (`route.ts:15`) |
+| `/api/cron/publish-scheduled` | GET | — | — | `CRON_SECRET` (`Authorization: Bearer`) | Vercel Cron, **daily 06:00 UTC** (`vercel.json`). Daily is forced by the Hobby plan — sub-daily expressions like `0 * * * *` **fail deployment outright** at config validation, before a build exists ([docs](https://vercel.com/docs/cron-jobs/usage-and-pricing)). Hobby precision is ±59 min, so a post publishes up to ~25 h after `scheduledAt`. Flips `SCHEDULED` → `PUBLISHED` once `scheduledAt` is due, skipping soft-deleted rows. **Fails closed**: 401 when `CRON_SECRET` is unset, and returns an identical 401 for unset vs. wrong token so the response can't confirm whether a secret exists. `Cache-Control: no-store` |
 
 Rate limiter (`src/lib/rate-limiter/store.ts`): in-memory `Map` singleton, LRU eviction every 5 min, exponential progressive penalty with 2× multiplier. Two preset surfaces:
 - `RateLimitPresets` (`src/lib/api-rate-limit.ts`): `read` (100/min, burst 120/5s), `sensitive` (10/hr, 30-min block).
@@ -110,25 +124,28 @@ Rate limiter (`src/lib/rate-limiter/store.ts`): in-memory `Map` singleton, LRU e
 
 Use `checkRateLimitOrRespond(request, preset, path, method)` → returns a `NextResponse` (429) to short-circuit, or `null` to proceed.
 
+**Buckets key on the client IP alone** (`getClientIdentifierFromHeaders`, `src/lib/api-request.ts`). The User-Agent used to be hashed into that key, which was a rate-limit bypass: UA is client-controlled, so varying one byte minted a fresh bucket and defeated every limit here. It is now passed as `context.userAgent` instead, where the limiter already scores it for bot/scraper patterns — an attacker-supplied string may raise suspicion, never widen an allowance. Header precedence is platform-set first (`x-vercel-forwarded-for` → `x-real-ip` → `cf-connecting-ip`), with client-settable `x-forwarded-for` last; Vercel overwrites XFF to prevent spoofing, so this only matters off that path.
+
 Validation: `src/lib/schemas.ts`. Notable: `cuidSchema` (use this for IDs, not `z.string().uuid()`), `slugSchema` (lowercase + hyphens, max 100), `contactFormSchema`, `createBlogPostSchema` (`.strict()` — rejects unknown fields).
 
 ## Auth & CSP
 
-No user authentication framework. Two surfaces protected by API tokens, both compared with `crypto.timingSafeEqual`:
-- `ADMIN_API_TOKEN` — `Authorization: Bearer …` on `/api/seed`.
+No user authentication framework. Two API tokens, both compared via `timingSafeEqualString()` (`src/lib/timing-safe-equal.ts`), a length-guarded wrapper over `crypto.timingSafeEqual`:
+- `ADMIN_API_TOKEN` — `Authorization: Bearer …` via `isAdminRequest()` (`src/lib/api-admin-auth.ts:20`). Hard-gates `POST /api/seed`, `POST /api/blog`, `PUT`+`DELETE /api/blog/[slug]`, `POST /api/blog/tags`, `POST /api/blog/categories`; also used as a soft read-gate on `GET /api/blog` and `GET /api/blog/[slug]` to expose unpublished posts. Unset in production ⇒ every blog mutation 401s (warned at `src/lib/env-validation.ts:112`).
 - `METRICS_API_TOKEN` — `X-Metrics-Token` header on `/api/security/metrics`.
+- `CRON_SECRET` — `Authorization: Bearer …` on `/api/cron/publish-scheduled`. Vercel sets this header itself on cron invocations when the env var exists ([docs](https://vercel.com/docs/cron-jobs/manage-cron-jobs)); Vercel's sample compares with `!==`, this repo uses `timingSafeEqualString` like the other two.
 
 CSRF (`src/lib/csrf-protection.ts`): 32-byte hex token in HttpOnly + `SameSite=Strict` cookie `__csrf_token`. Validated on POST/PUT/DELETE for `/api/blog*` and `/api/contact`. Token sent via `x-csrf-token` header (JSON) or `_csrf_token` form field.
 
-`proxy.ts` is the **Next.js 16 successor to `middleware.ts`** — exports a function named `proxy` (not `middleware`). It generates a per-request base64 nonce, builds CSP via `buildEnhancedCSP()` from `src/lib/csp-edge.ts`, and sets it on both the downstream request (so `layout.tsx` can read `x-nonce` for inline JSON-LD) and the response. Matcher excludes `_next/static`, `_next/image`, `favicon.ico`, image extensions, and `.pdf` (the latter so the resume PDF can embed in `<object>` on `/resume` — paired with a route-specific `X-Frame-Options: SAMEORIGIN` rule for `.pdf` in `next.config.js`; both rules must move together).
+`src/proxy.ts` (under `src/`, not the repo root) is the **Next.js 16 successor to `middleware.ts`** — exports a function named `proxy` (not `middleware`). It generates a per-request base64 nonce and sets **only the nonce** on the downstream request as `x-nonce` (so `layout.tsx:48` can read it for inline JSON-LD); the CSP built by `buildEnhancedCSP()` (`src/lib/csp-edge.ts`) is set **only on the response** (`src/proxy.ts:27`) — request headers never reach the browser, so setting it there would be a no-op. Matcher excludes `_next/static`, `_next/image`, `favicon.ico`, image extensions, and `.pdf` (the latter so the resume PDF can embed in `<object>` on `/resume` — paired with a route-specific `X-Frame-Options: SAMEORIGIN` rule for `.pdf` in `next.config.js`; both rules must move together).
 
-Static security headers in `next.config.js:48-162`: HSTS (`max-age=31536000; includeSubDomains; preload`), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `X-XSS-Protection: 0` (intentional — comment at L62-68 explains), `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` denies camera/mic/geolocation/topics. CSP itself is **only** set in `proxy.ts`, never in `headers()`.
+Static security headers in `next.config.js:49-148` (the `async headers()` block): HSTS (`max-age=31536000; includeSubDomains; preload`), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `X-DNS-Prefetch-Control: on`, `X-XSS-Protection: 0` (intentional — comment at L62-66 explains), `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` denies camera/mic/geolocation/topics. CSP itself is **only** set in `proxy.ts`, never in `headers()`.
 
 CORS on `/api/*`: only the prod origin (`https://richardwhudsonjr.com`) or `http://localhost:3000` in dev.
 
 ## Environment variables
 
-All declared in `src/lib/env-validation.ts` (Zod, no `@t3-oss/env-nextjs`). Validation runs at module load (`L149-156`) and throws on failure.
+All declared in `src/lib/env-validation.ts` (Zod, no `@t3-oss/env-nextjs`). Validation runs at module load (`L139-146`) and throws on failure.
 
 | Var | Required | Notes |
 |---|---|---|
@@ -142,9 +159,10 @@ All declared in `src/lib/env-validation.ts` (Zod, no `@t3-oss/env-nextjs`). Vali
 | `NEXT_PUBLIC_VERCEL_URL` | optional | Vercel-injected |
 | `ADMIN_API_TOKEN` | optional | min 32 chars; production warning if <64 |
 | `METRICS_API_TOKEN` | optional | min 32 chars; production warning if <64 |
+| `CRON_SECRET` | optional | min 32 chars; production warning if unset or <64. Without it `SCHEDULED` posts never publish |
 | `ALLOW_SEED_IN_PRODUCTION` | optional | Enum `'true'`/`'false'` — enum (not string) so misspellings fail at boot |
 
-Sentry vars (`SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN`, `SENTRY_URL`, plus `*_TRACES_SAMPLE_RATE` / `*_PROFILES_SAMPLE_RATE` / `*_REPLAYS_*_SAMPLE_RATE`) are read directly in `sentry.{server,client,edge}.config.ts` and `next.config.js:179-185` — they are **not** in the Zod schema. `INDEXNOW_KEY` is read directly in `src/app/api/blog/route.ts:243`. `SKIP_DB_VALIDATION` (`src/lib/db.ts`) bypasses startup DB env check in test/CI.
+Sentry vars (`SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN`, `SENTRY_URL`, `SENTRY_ENVIRONMENT`, `SENTRY_SEND_DEFAULT_PII`, plus `*_TRACES_SAMPLE_RATE` / `*_PROFILES_SAMPLE_RATE` / `*_REPLAYS_*_SAMPLE_RATE`) are read directly in `sentry.server.config.ts`, `sentry.edge.config.ts`, `instrumentation-client.ts` and `sentry.shared.ts`, plus `next.config.js:200-205` (`sentryBuildOptions`) — they are **not** in the Zod schema. There is no `sentry.client.config.ts` (deliberately — see the Sentry section). `INDEXNOW_KEY` is read directly in `src/app/api/blog/route.ts:293`. `LOG_LEVEL` is read in `src/lib/logger.ts:18`. `SKIP_DB_VALIDATION` is set at `.github/workflows/ci.yml:124` but is **not read anywhere in `src/`** — `src/lib/db.ts` is a 7-line re-export of `@/db` with no env check. Dead variable; remove it or wire it up.
 
 ## Sentry & logging
 
@@ -168,10 +186,13 @@ bun run build && grep -rl "<your-dsn-id>" .next/static   # must match a chunk
 
 Shared helpers (`parseSampleRate`, the server/edge option builders) live in
 `sentry.shared.ts`. Wrapped via `withSentryConfig(nextConfig, …)` in `next.config.js`.
-Disabled when `NODE_ENV='test'` or DSN absent — `sentry.shared.ts:43` gates on
-`Boolean(dsn)`, so a missing `NEXT_PUBLIC_SENTRY_DSN` disables Sentry entirely
-rather than erroring. Sample rates clamped `[0,1]`, default `0.1` in prod / `1` in
-dev. No tunnel route.
+Disabled when `NODE_ENV='test'` or DSN absent — `sentry.shared.ts:64` gates on
+`Boolean(dsn) && process.env.NODE_ENV !== 'test'`, so a missing
+`NEXT_PUBLIC_SENTRY_DSN` disables Sentry entirely rather than erroring. Sample
+rates are clamped to `[0,1]` by `parseSampleRate` and their defaults do **not**
+vary by environment: traces `1`, profiles `0`, `replaysSessionSampleRate` `0`,
+`replaysOnErrorSampleRate` `1` (`sentry.shared.ts:69,72`;
+`instrumentation-client.ts:15,17,27,32`). No tunnel route.
 
 Build-time source-map upload needs `SENTRY_AUTH_TOKEN` **plus** `SENTRY_ORG` and
 `SENTRY_PROJECT` (`next.config.js` passes all three into `withSentryConfig`).
@@ -260,7 +281,7 @@ that a parent pins below the fix line:
 | Override | Why it exists |
 |---|---|
 | `postcss` | `next` internally pins `postcss@8.4.31`; collapses every copy onto one patched version |
-| `sharp` | `next` pins `sharp ^0.34.5` as an optional dep, below the libvips CVE fix line |
+| `sharp` | Backstop against a *nested* pre-0.35.4 copy (libvips/libheif RCE, GHSA-rgj7-g3m4-5g8c). As of `next` 16.3.5 the parent itself pins `sharp ^0.35.4`, so this no longer changes resolution — verified: removing it still lands 0.35.4. Kept only as a floor; re-check it whenever `sharp` is bumped. |
 | `esbuild` | `drizzle-kit`, `react-email`, and `vite` pin versions below the dev-server disclosure fix |
 
 Before adding a fourth, check whether the package resolves to a patched version on
@@ -280,22 +301,36 @@ is currently clean at *every* severity — keep it there.
 - **No Prisma.** The repo migrated off Prisma 7 → Drizzle ORM in May 2026 after [prisma/prisma#28588](https://github.com/prisma/prisma/issues/28588) caused `/blog/[slug]` Server Component queries to suspend indefinitely on Vercel + adapter-neon. Don't reintroduce `@prisma/*` packages or import from `@/generated/prisma/*`.
 - **Never call `notFound()` inside a `not-found.tsx`.** It's recursive and Vercel serves HTTP 200 with a 404-marker body, which Google flags as "Soft 404." A `not-found.tsx` should be a plain Server Component that just renders the 404 UI — the HTTP 404 status comes from the `notFound()` call in the page or layout, not from the template itself. Segment-level templates exist at `src/app/blog/[slug]/`, `src/app/blog/category/[slug]/`, and `src/app/projects/[slug]/` for themed 404s; the root template at `src/app/not-found.tsx` is the global fallback.
 - **Drizzle relational queries** use `db.query.<table>.findFirst({ where, with: { ... } })` for relations and `db.select().from(table)` for plain SQL-style queries. `db.execute(sql\`...\`)` is the raw-SQL escape hatch (used in `src/lib/search.ts` for full-text search).
+- **`db.execute()` returns a result OBJECT, not an array.** neon-http calls with `fullResults: true`, so you get `{ rows, fields, command, rowCount, … }`. Reading `.length` off it yields `undefined`, and `undefined > 0` / `undefined < 5` are both `false` — so a `result as unknown as T[]` cast produces silent wrong behaviour rather than a crash, and `tsc` cannot see through the double cast. Go through `rowsOf()` in `src/lib/search.ts`, and mock the object shape in tests: array-shaped mocks let this bug pass CI for the module's entire life.
+- **Binding an array into `sql` does not produce a Postgres array.** `sql\`ANY(${arr}::"PostStatus"[])\`` emits `ANY(($1)::"PostStatus"[])` with the whole array as one param, which Postgres rejects with `22P02`. Expand it instead: ``sql`ANY(ARRAY[${sql.join(arr.map((v) => sql`${v}`), sql`, `)}]::"PostStatus"[])` ``. Both `src/lib/search.ts` clauses use that form.
 - **All IDs are CUIDs.** New rows use cuid2 via `src/db/cuid.ts`; legacy rows from the Prisma era use cuid v1. Both are 24–25-char alphanumeric strings — use `cuidSchema` from `src/lib/schemas.ts` for ID validation, never `z.string().uuid()`.
 - **citext + inet are custom Drizzle types.** Defined in `src/db/schema.ts` via `customType<{ data: string; driverData: string }>`. Don't replace with plain `text()` — case-insensitive slug/email matching depends on it.
-- **CSP comes from `proxy.ts`, not `headers()`.** Adding it to `next.config.js` will collide with the per-request nonce. Inline `<script>` and `<style>` in components must read the nonce via the `x-nonce` request header.
+- **CSP comes from `src/proxy.ts`, not `headers()`.** Adding it to `next.config.js` would emit a second, conflicting `Content-Security-Policy` header. Note the CSP itself carries **no** nonce — `script-src` is `'self' 'unsafe-inline' …` (`src/lib/csp-edge.ts:58`) because a nonce is incompatible with this site's static prerendering (explained at `next.config.js:80-82`). The per-request `x-nonce` header still exists and `layout.tsx:48` threads it into the JSON-LD components, but it is not enforced by the policy today.
 - **PDF assets are an intentional carve-out.** `.pdf` paths are excluded from the `proxy.ts` matcher (no CSP) and override `X-Frame-Options` to `SAMEORIGIN` via a route-specific `next.config.js` rule, so the resume PDF can embed in `<object>` on `/resume` and `/resume/view`. Chrome PDFium has been progressively restricting `<iframe src=pdf>` since Chrome 116; use `<object data=pdf type="application/pdf">` for embedded PDFs. If a future PDF needs to stay non-framable (e.g. signed contract), narrow the `next.config.js` source from `/:path*\\.pdf` to the literal résumé filename and add an explicit deny rule for the new path. Regression-pinned in `e2e/security-headers.spec.ts`.
 - **One canonical email path: `src/lib/email-service.ts`.** Both the `submitContactForm` server action (`src/app/contact/actions.ts`) and the `POST /api/contact` route handler delegate to `emailService.sendContactEmail()`. Templates live in `src/emails/*.tsx` and use `react-email` components (passed via Resend's `react` prop). Don't reintroduce inline HTML strings or per-handler Resend clients.
 - **`api/contact/csrf-route.ts` is not auto-routed.** Next.js only treats `route.ts` as an endpoint; this filename was deliberate. Confirm wiring before relying on it.
-- **`bun --bun` flag matters.** `dev` and `build:ci` use it; `build` does not. The Bun-side bundler exposes different edge cases than the Node-side one — when reproducing a CI failure locally, match the script.
+- **`bun --bun` flag matters.** `dev`, `start` and `build:ci` use it; `build` does not. The Bun-side bundler exposes different edge cases than the Node-side one — when reproducing a CI failure locally, match the script.
+- **e2e runs against a production build, never `next dev`.** `playwright.config.ts`'s `webServer` runs `bun run e2e:server` (build → copy standalone assets → `node .next/standalone/server.js`) on port **3100**. This is not a preference: `src/lib/csp-edge.ts` adds `'unsafe-eval'` to `script-src` in development for HMR, and `e2e/security-headers.spec.ts` asserts it is absent — so under the old `bun run dev` webServer that spec failed 100% of the time. It went unnoticed because there was no e2e job in CI until PR #238. `next start` is not an option here (`output: 'standalone'` makes Next refuse it), and the standalone server ships an empty `public/` and `.next/static`, hence the copy steps. Port 3100 rather than 3000 keeps `reuseExistingServer` from silently adopting a stray `bun dev`. Point the suite elsewhere with `PLAYWRIGHT_BASE_URL`, which disables `webServer` entirely.
+- **`next build` copies `.env` into `.next/standalone/`.** Verified on this repo. Harmless as deployed — Vercel uses the Build Output API and ignores the standalone bundle — but it means `.next/standalone/` is not safe to treat as a redistributable artifact, and it silently defeats any attempt to test the app "without a database" by copying that directory elsewhere. It also means `env -u DATABASE_URL bun run build && next start` proves nothing about DB-less behaviour: `.env`, `.env.local` and `.env.development.local` all carry a `DATABASE_URL` and Next loads them itself. To genuinely test without a database, delete the `.env*` files from the copied standalone directory — `/api/health` should then report `"database":"down"`.
 - **Pre-push runs Vitest.** Bypass with `git push --no-verify` only when the failure is provably unrelated to the change.
 
 ## Where to find things
 
 - Public site URL: `NEXT_PUBLIC_SITE_URL`, defaults `https://richardwhudsonjr.com`.
-- Vercel region: `iad1` (single region, `vercel.json:6`).
-- Image whitelist: `images.unsplash.com` only (`next.config.js:38-44`).
-- Cache policy for `/projects/*` and `/blog/*`: `s-maxage=60, stale-while-revalidate=86400`, CDN 1 hour (`next.config.js:148-160`).
-- Permanent redirects: `/home` → `/` (`next.config.js`); `/github`, `/linkedin`, `/twitter` (`vercel.json`).
-- 9 unit test files under `src/lib/__tests__/` and `src/app/api/contact/__tests__/`.
-- 5 Playwright specs under `e2e/`.
-- Security audit history: `SECURITY.md` (current controls), `SECURITY_AUDIT_REPORT.md` (findings; recent commits closed S-001, B-001, H-001, B-002, P-001).
+- Vercel region: `iad1` (single region, `vercel.json:5`).
+- Image whitelist: `images.unsplash.com` only (`next.config.js:40-46`, inside the `images` block at `:33-47`).
+- Cache policy for `/projects/*`, `/blog/*` **and `/tools/*`**: `s-maxage=60, stale-while-revalidate=86400`, CDN 1 hour (`next.config.js:120-126`; source is `/(projects|blog|tools)/:path*`).
+- Permanent redirects (`next.config.js:150-197`): `/home` → `/`, plus five blog de-cannibalization 308s (two forecast-accuracy slugs, two dead-deal slugs, one renamed RevOps pillar) whose sources are also excluded from the sitemap via `RETIRED_BLOG_SLUGS`. Edge-level: `/github`, `/linkedin`, `/twitter` (`vercel.json:6-19`; `permanent` defaults to true → 308).
+- 88 Vitest files under `src/**/__tests__/` — `src/lib/` (45), `src/app/api/` (14), `src/components/` (18), `src/hooks/` (4), plus `src/app/contact/`, `src/data/`, `src/emails/`. Discovery pattern: `src/**/__tests__/**/*.test.ts{,x}` (`vitest.config.ts:28`). Regenerate: `find src -name '*.test.ts*' | wc -l`.
+- 11 Playwright specs under `e2e/`.
+- Security audit history: `SECURITY.md` (current controls). `SECURITY_AUDIT_REPORT.md` no longer exists — its findings (S-001, B-001, H-001, B-002, P-001) were closed and the file removed; check git history if you need the original text.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

@@ -48,14 +48,17 @@ export class EmailService {
   async sendContactEmail(
     data: unknown,
     clientIP?: string,
-    options: { autoReply?: boolean } = {}
+    options: { autoReply?: boolean; userAgent?: string } = {}
   ): Promise<EmailServiceResult> {
-    const { autoReply = true } = options
+    const { autoReply = true, userAgent } = options
 
     try {
       // Rate limiting (cheap; runs before any validation work)
       const identifier = clientIP || 'unknown'
-      const rateCheck = checkContactFormRateLimit(identifier)
+      // userAgent feeds suspicion scoring only. It must never reach the bucket
+      // key: it is client-controlled, so varying it would hand out fresh 3/hr
+      // allowances on demand. See getClientIdentifierFromHeaders.
+      const rateCheck = checkContactFormRateLimit(identifier, { userAgent })
 
       if (!rateCheck.allowed) {
         return {

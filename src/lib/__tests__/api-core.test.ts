@@ -88,7 +88,7 @@ describe('getClientIdentifier', () => {
       headers: { 'x-forwarded-for': '1.2.3.4', 'user-agent': 'TestBot' },
     })
     const id = getClientIdentifier(req)
-    expect(id.startsWith('1.2.3.4:')).toBe(true)
+    expect(id).toBe('1.2.3.4')
   })
 
   it('uses first IP when x-forwarded-for contains multiple IPs', () => {
@@ -97,7 +97,7 @@ describe('getClientIdentifier', () => {
       headers: { 'x-forwarded-for': '10.0.0.1, 10.0.0.2', 'user-agent': 'TestBot' },
     })
     const id = getClientIdentifier(req)
-    expect(id.startsWith('10.0.0.1:')).toBe(true)
+    expect(id).toBe('10.0.0.1')
   })
 
   it('falls back to "unknown" when no IP header is present', () => {
@@ -105,7 +105,7 @@ describe('getClientIdentifier', () => {
       method: 'GET',
     })
     const id = getClientIdentifier(req)
-    expect(id.startsWith('unknown:')).toBe(true)
+    expect(id).toBe('unknown')
   })
 })
 

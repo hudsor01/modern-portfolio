@@ -47,9 +47,14 @@ describe('submitContactForm', () => {
     await submitContactForm(validBody)
 
     const expectedId = getClientIdentifierFromHeaders(headerObj)
-    expect(emailService.sendContactEmail).toHaveBeenCalledWith(validBody, expectedId)
-    // Format check — must be `IP:userAgentHash` to match getClientIdentifier output
-    expect(expectedId).toMatch(/^1\.2\.3\.4:/)
+    // The server action and the API route must key rate limits identically, or
+    // one entry point becomes a way around the other's budget.
+    expect(emailService.sendContactEmail).toHaveBeenCalledWith(validBody, expectedId, {
+      userAgent: 'vitest',
+    })
+    // Bare IP — the user-agent is passed as a suspicion signal in the options
+    // object above, never folded into the bucket key.
+    expect(expectedId).toBe('1.2.3.4')
   })
 
   it('surfaces validationErrors from emailService', async () => {

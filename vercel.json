@@ -2,7 +2,15 @@
   "framework": "nextjs",
   "buildCommand": "bun run build",
   "devCommand": "bun run dev",
-  "regions": ["iad1"],
+  "regions": [
+    "iad1"
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/publish-scheduled",
+      "schedule": "0 6 * * *"
+    }
+  ],
   "redirects": [
     {
       "source": "/github",

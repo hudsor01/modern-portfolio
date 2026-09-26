@@ -1,4 +1,5 @@
 import { sql } from 'drizzle-orm'
+import type { SQL } from 'drizzle-orm'
 import { relations } from 'drizzle-orm'
 import type { AnyPgColumn } from 'drizzle-orm/pg-core'
 import {
@@ -26,6 +27,13 @@ const citext = customType<{ data: string; driverData: string }>({
 // inet — Postgres native IP address type
 const inet = customType<{ data: string; driverData: string }>({
   dataType: () => 'inet',
+})
+
+// tsvector — Postgres full-text search type. Only ever written by the database
+// (blogPosts.searchVector is GENERATED ALWAYS), and never selected into app
+// code, so `data` is typed as string purely to satisfy the customType contract.
+const tsvector = customType<{ data: string; driverData: string }>({
+  dataType: () => 'tsvector',
 })
 
 // Enums
@@ -172,6 +180,26 @@ export const blogPosts = pgTable(
     likeCount: integer('likeCount').notNull().default(0),
     shareCount: integer('shareCount').notNull().default(0),
     commentCount: integer('commentCount').notNull().default(0),
+    // Full-text search index source, consumed by src/lib/search.ts.
+    //
+    // GENERATED ALWAYS ... STORED, so Postgres maintains it on every insert and
+    // update and it can never drift from the row it describes — the reason to
+    // prefer it over a trigger. Postgres requires the expression to be
+    // IMMUTABLE, which is why the text-search config is the literal 'english'
+    // rather than the session default: the one-argument to_tsvector(text) is
+    // only STABLE and is rejected in a generated column.
+    //
+    // Weighting: title A, excerpt B, content C. ts_rank then scores a title hit
+    // above a passing mention in the body. Searching `content` is the whole
+    // point — it is never shipped to the browser, so the client-side filter
+    // this replaced could not see it.
+    searchVector: tsvector('search_vector').generatedAlwaysAs(
+      (): SQL => sql`
+        setweight(to_tsvector('english', coalesce(${blogPosts.title}, '')), 'A') ||
+        setweight(to_tsvector('english', coalesce(${blogPosts.excerpt}, '')), 'B') ||
+        setweight(to_tsvector('english', coalesce(${blogPosts.content}, '')), 'C')
+      `
+    ),
   },
   (t) => [
     index('blog_posts_status_publishedAt_idx').on(t.status, t.publishedAt.desc()),
@@ -208,6 +236,37 @@ export const blogPosts = pgTable(
     uniqueIndex('blog_posts_featuredImage_published_unique_idx')
       .on(t.featuredImage)
       .where(sql`${t.status} = 'PUBLISHED' AND ${t.deletedAt} IS NULL`),
+    // GIN over the generated tsvector — the index the `@@` operator in
+    // src/lib/search.ts actually uses. Measured: the planner picks it.
+    index('blog_posts_search_vector_idx').using('gin', t.searchVector),
+    //
+    // There are deliberately NO trigram (gin_trgm_ops) indexes here.
+    //
+    // An earlier revision of this PR added them on title and excerpt to back
+    // the typo-tolerant fallback. They were dead weight, and EXPLAIN against
+    // the live database proved it three ways:
+    //
+    //  1. The fallback's predicate is `GREATEST(word_similarity(q, title),
+    //     word_similarity(q, COALESCE(excerpt,''))) >= 0.45`. gin_trgm_ops
+    //     indexes the pg_trgm OPERATORS (`%`, `<%`, LIKE/ILIKE), not a bare
+    //     function call, so no index was ever eligible — seq scan, always.
+    //  2. Switching to the operator form does not rescue it if the column is
+    //     wrapped: `q <% COALESCE(excerpt,'')` is an expression and stays
+    //     ineligible. Only bare columns (`q <% title OR q <% excerpt`) reach
+    //     the indexes.
+    //  3. Even then it is SLOWER at this size. Forcing the issue with
+    //     `enable_seqscan = off`: seq scan cost 8.58 vs bitmap-OR 109.73 over
+    //     29 rows. The planner was right to ignore them.
+    //
+    // `<%` also reads `pg_trgm.word_similarity_threshold`, which defaults to
+    // 0.6 while this search needs 0.45 (measured against the corpus — see
+    // src/lib/search.ts) — and neon-http is stateless, so a per-session `SET`
+    // never survives to the next query.
+    //
+    // Add them back only when ALL of: the corpus is large enough that the seq
+    // scan actually hurts, the query is rewritten to bare-column `<%`, and the
+    // threshold is set at database level (`ALTER DATABASE … SET
+    // pg_trgm.word_similarity_threshold = 0.45`) rather than per session.
   ]
 )
 

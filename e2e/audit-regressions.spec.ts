@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { databaseAvailable, NEEDS_DATABASE } from './_helpers/database'
 
 /**
  * Audit Regression Tests — Canonical Survival Check
@@ -64,7 +65,14 @@ test.describe('Audit regressions', () => {
     await page.goto('/')
     await page.waitForLoadState('networkidle')
 
-    await expect(page.getByRole('heading', { name: /proven results/i })).toBeVisible()
+    const provenResultsHeading = page.getByRole('heading', { name: /proven results/i })
+    await expect(provenResultsHeading).toBeVisible()
+
+    // See the matching note in e2e/homepage.spec.ts: NumberTicker counts up only
+    // once in view, and `waitForFunction` does not auto-scroll. Without this the
+    // counters stay at 0 on any viewport short enough to leave the section below
+    // the fold (e.g. Pixel 5).
+    await provenResultsHeading.scrollIntoViewIfNeeded()
 
     await page.waitForFunction(
       () => {
@@ -115,6 +123,7 @@ test.describe('Audit regressions', () => {
   // ──────────────────────────────────────────────────────────────────
 
   test('#6 unknown slug routes return HTTP 404 (no soft-404)', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     // ProjectPage / BlogPost / BlogCategory call notFound() when the slug
     // is unknown; force-dynamic on the route ensures HTTP 404 propagates
     // (the prior soft-404 returned 200 with the themed body, which Google
@@ -167,6 +176,7 @@ test.describe('Audit regressions', () => {
   })
 
   test('#9 each blog post page has exactly one <h1>', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     // The audit found a duplicate <h1> on a blog post because the body
     // content shipped a literal <h1> matching the page title. The render
     // path now demotes any in-body <h1> to <h2>.
@@ -186,6 +196,7 @@ test.describe('Audit regressions', () => {
   })
 
   test('#10 /blog and /blog/category cards render <h2> per card', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     // Audit found post titles rendered as styled <div>s instead of <h2>,
     // breaking screen-reader heading navigation. CardTitle is now
     // polymorphic; consumers pass `as="h2"` for the post-card title.
@@ -251,6 +262,7 @@ test.describe('Audit regressions', () => {
   test('#15 a real blog post returns HTTP 200 and initial HTML has no "Loading..." leak', async ({
     page,
   }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     // Two-pronged Googlebot-eye-view regression guard:
     //
     //   (a) HTTP 200 — guards against the server-side module-load failure
@@ -286,6 +298,7 @@ test.describe('Audit regressions', () => {
   })
 
   test('#16 segment 404 page titles start with "404" (no homepage-title leak)', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     // Each segment not-found.tsx (blog/[slug], blog/category/[slug],
     // projects/[slug]) exports metadata so the 404 <title> doesn't fall
     // through to the layout default ("Richard Hudson | Revenue Operations

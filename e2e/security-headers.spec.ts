@@ -11,6 +11,38 @@ import { test, expect } from '@playwright/test'
  * security headers in future deploys.
  */
 
+/**
+ * Give a request its own rate-limit bucket.
+ *
+ * The limiter keys on `${bucket}:${clientIp}` — the preset's namespace plus the
+ * bare client IP, with NO User-Agent component (src/lib/api-request.ts,
+ * src/lib/rate-limiter/store.ts). `x-forwarded-for` is the LAST header
+ * consulted, after the platform-set `x-vercel-forwarded-for`, `x-real-ip` and
+ * `cf-connecting-ip`; against a local standalone server none of those are
+ * present, so the header we send here is what forms the key — which is what
+ * lets each test claim a fresh bucket.
+ *
+ * Without this, the admin-gated blog POSTs below are order- and history-
+ * dependent: they hit `RateLimitPresets.sensitive` (10/hr, 30-minute block), so
+ * running the 4-browser suite a third time against one long-lived server turns
+ * the expected 401 into a 429. Restarting the server "fixed" it, which is
+ * exactly the kind of hidden coupling that makes a CI failure unreproducible.
+ *
+ * This is safe to rely on only because it is a *test-local* affordance: in
+ * production Vercel overwrites `x-forwarded-for` with the real client IP and
+ * does not forward external values, precisely to stop this being spoofable.
+ * See https://vercel.com/docs/headers/request-headers
+ */
+function ownRateLimitBucket(): Record<string, string> {
+  // Random, not a counter: Playwright gives each spec file its own worker
+  // process, so a module-level counter restarts at 1 in every worker and the
+  // four browser projects would all land on the same handful of addresses.
+  // 203.0.113.0/24 is TEST-NET-3 (RFC 5737), reserved for documentation and
+  // guaranteed never to be a real client address.
+  const octet = Math.floor(Math.random() * 256)
+  return { 'X-Forwarded-For': `203.0.113.${octet}` }
+}
+
 test.describe('Security Headers', () => {
 
   test.describe('Page Response Headers', () => {
@@ -143,7 +175,7 @@ test.describe('Security Headers', () => {
     test('POST /api/blog/tags without admin token returns 401 (auth precedes CSRF)', async ({ request }) => {
       const response = await request.post('/api/blog/tags', {
         data: { name: 'Test Tag' },
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...ownRateLimitBucket() },
       })
       expect(response.status()).toBe(401)
     })
@@ -151,7 +183,7 @@ test.describe('Security Headers', () => {
     test('POST /api/blog/categories without admin token returns 401 (auth precedes CSRF)', async ({ request }) => {
       const response = await request.post('/api/blog/categories', {
         data: { name: 'Test Category' },
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...ownRateLimitBucket() },
       })
       expect(response.status()).toBe(401)
     })

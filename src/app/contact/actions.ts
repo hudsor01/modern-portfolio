@@ -3,7 +3,7 @@
 import { headers } from 'next/headers'
 import * as Sentry from '@sentry/nextjs'
 import { emailService } from '@/lib/email-service'
-import { getClientIdentifierFromHeaders } from '@/lib/api-request'
+import { getClientIdentifierFromHeaders, getClientUserAgent } from '@/lib/api-request'
 import { createContextLogger } from '@/lib/logger'
 
 const logger = createContextLogger('ContactAction')
@@ -31,7 +31,9 @@ export async function submitContactForm(formData: unknown): Promise<SubmitContac
         const headersList = await headers()
         const clientId = getClientIdentifierFromHeaders(headersList)
 
-        const result = await emailService.sendContactEmail(formData, clientId)
+        const result = await emailService.sendContactEmail(formData, clientId, {
+          userAgent: getClientUserAgent(headersList),
+        })
 
         if (result.success) {
           return {

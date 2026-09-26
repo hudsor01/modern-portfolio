@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
+import { databaseAvailable, NEEDS_DATABASE } from './_helpers/database'
 
 /**
  * Blog Browsing and Reading E2E Tests
@@ -106,8 +107,99 @@ test.describe('Blog Listing Page', () => {
   })
 })
 
+test.describe('Blog search (server-side full text)', () => {
+  const cards = (page: import('@playwright/test').Page) =>
+    page.locator('a.group.block[href^="/blog/"]')
+  // The card heading is CardTitle, which is polymorphic — assert on its stable
+  // data-slot rather than a tag name, so a future `as=` change doesn't break this.
+  const cardTitles = (page: import('@playwright/test').Page) =>
+    cards(page).locator('[data-slot="card-title"]')
+
+  test('a body-only term returns posts the old client filter could not find', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+
+    // "onboarding" appears in several posts' body content but in no title and
+    // no excerpt. The substring filter this replaced only ever saw title and
+    // excerpt — the field it needs is never shipped to the browser — so it
+    // returned nothing for this query. Matching here proves the search is
+    // running in Postgres against blog_posts.search_vector.
+    await page.goto('/blog?q=onboarding')
+    await page.waitForLoadState('networkidle')
+    expect(await cards(page).count()).toBeGreaterThan(0)
+
+    const titles = await cardTitles(page).allTextContents()
+    const noneMentionItInTheTitle = titles.every((t) => !/onboarding/i.test(t))
+    expect(noneMentionItInTheTitle, `titles: ${JSON.stringify(titles)}`).toBe(true)
+  })
+
+  test('tolerates a misspelling via trigram fallback', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+
+    // 'atribution' is not a word in any post; it reaches
+    // "Multi-Touch Attribution Modeling" only through word_similarity (0.769,
+    // above the 0.45 threshold). The previous `%` operator compared the query
+    // to the whole title and scored ~0, so this returned nothing.
+    await page.goto('/blog?q=atribution')
+    await page.waitForLoadState('networkidle')
+
+    expect(await cards(page).count()).toBeGreaterThan(0)
+    await expect(cardTitles(page).first()).toContainText(/attribution/i)
+  })
+
+  test('an unrelated term matches nothing and shows the empty state', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+
+    // Guards the other direction: a 0.45 similarity threshold low enough to
+    // catch typos must still reject unrelated words (measured ~0.15).
+    await page.goto('/blog?q=photosynthesis')
+    await page.waitForLoadState('networkidle')
+
+    await expect(cards(page)).toHaveCount(0)
+    await expect(page.getByText(/no posts found/i)).toBeVisible()
+  })
+
+  test('a repeated ?q= does not 500', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+
+    // Next resolves a repeated key to string[], not string. The page typed the
+    // param as `{ q?: string }` and called q.trim(), so this URL — trivially
+    // hand-craftable, and crawlers do generate them — returned HTTP 500.
+    const response = await page.goto('/blog?q=attribution&q=revenue')
+    expect(response?.status()).toBe(200)
+    await page.waitForLoadState('networkidle')
+    // First value wins, so it behaves like ?q=attribution rather than erroring.
+    expect(await cards(page).count()).toBeGreaterThan(0)
+  })
+
+  test('an overlong query is bounded, not passed through', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+
+    const response = await page.goto(`/blog?q=${'a'.repeat(5000)}`)
+    expect(response?.status()).toBe(200)
+    await page.waitForLoadState('networkidle')
+    await expect(cards(page)).toHaveCount(0)
+  })
+
+  test('no query renders the full index', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+
+    await page.goto('/blog')
+    await page.waitForLoadState('networkidle')
+    const all = await cards(page).count()
+
+    await page.goto('/blog?q=attribution')
+    await page.waitForLoadState('networkidle')
+    const filtered = await cards(page).count()
+
+    expect(all).toBeGreaterThan(0)
+    expect(filtered).toBeGreaterThan(0)
+    expect(filtered).toBeLessThan(all)
+  })
+})
+
 test.describe('Blog Post Reading', () => {
   test('can navigate from listing to blog post', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     await page.goto('/blog')
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(1000) // Wait for dynamic content
@@ -136,6 +228,7 @@ test.describe('Blog Post Reading', () => {
   })
 
   test('blog post page has proper structure', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     // Go directly to blog to find a post
     await page.goto('/blog')
     await page.waitForLoadState('networkidle')
@@ -225,6 +318,7 @@ test.describe('Blog Post Reading', () => {
   })
 
   test('blog post page passes accessibility audit', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     await page.goto('/blog')
     await page.waitForLoadState('networkidle')
 

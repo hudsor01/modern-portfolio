@@ -7,9 +7,12 @@ import { timingSafeEqual } from 'node:crypto'
  * otherwise — guard the length first so callers can use this in security
  * boolean comparisons without a defensive try/catch.
  *
- * Length is NOT treated as secret here: in this codebase all compared strings
- * are server-generated fixed-length tokens (CSRF token, ADMIN_API_TOKEN,
- * METRICS_API_TOKEN) whose lengths are configuration constants, not secrets.
+ * Length is NOT treated as secret here: every compared string is a
+ * server-generated token whose length is a configuration constant rather than
+ * a secret — the CSRF token, ADMIN_API_TOKEN, METRICS_API_TOKEN, and
+ * CRON_SECRET (added when /api/cron/publish-scheduled landed; the list above
+ * used to omit it). An attacker who learns "the secret is 64 bytes" learns
+ * nothing that shortens a search over 64 bytes of entropy.
  */
 export function timingSafeEqualString(a: string, b: string): boolean {
   const aBuf = Buffer.from(a, 'utf8')

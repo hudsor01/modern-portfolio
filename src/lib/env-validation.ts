@@ -50,6 +50,11 @@ const envSchema = z.object({
     .string()
     .min(32, 'METRICS_API_TOKEN must be at least 32 characters')
     .optional(),
+  // Vercel Cron authentication. When set, Vercel sends
+  // `Authorization: Bearer <CRON_SECRET>` on every cron invocation
+  // (https://vercel.com/docs/cron-jobs/manage-cron-jobs). Consumed by
+  // /api/cron/publish-scheduled, which fails closed without it.
+  CRON_SECRET: z.string().min(32, 'CRON_SECRET must be at least 32 characters').optional(),
   // Site URL validation for CSP and CORS
   NEXT_PUBLIC_SITE_URL: z
     .url('NEXT_PUBLIC_SITE_URL must be a valid URL')
@@ -117,6 +122,14 @@ export function performSecurityChecks(env: EnvConfig): void {
 
     if (env.METRICS_API_TOKEN && env.METRICS_API_TOKEN.length < 64) {
       warnings.push('Production METRICS_API_TOKEN should be at least 64 characters')
+    }
+
+    if (!env.CRON_SECRET) {
+      warnings.push(
+        'CRON_SECRET unset in production — /api/cron/publish-scheduled returns 401 to every caller, so SCHEDULED posts will never publish'
+      )
+    } else if (env.CRON_SECRET.length < 64) {
+      warnings.push('Production CRON_SECRET should be at least 64 characters')
     }
 
     if (!env.NEXT_PUBLIC_SITE_URL?.startsWith('https://')) {

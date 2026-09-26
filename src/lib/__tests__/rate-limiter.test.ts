@@ -382,7 +382,7 @@ describe('getClientIdentifier', () => {
       headers: { 'x-forwarded-for': '1.2.3.4', 'user-agent': 'TestBrowser/1.0 (compatible)' },
     })
     const identifier = getClientIdentifier(req)
-    expect(identifier).toMatch(/^1\.2\.3\.4:/)
+    expect(identifier).toBe('1.2.3.4')
   })
 
   it('uses first IP from comma-separated x-forwarded-for', () => {
@@ -393,7 +393,7 @@ describe('getClientIdentifier', () => {
       },
     })
     const identifier = getClientIdentifier(req)
-    expect(identifier).toMatch(/^10\.0\.0\.1:/)
+    expect(identifier).toBe('10.0.0.1')
   })
 
   it('falls back to "unknown" when no IP headers are present', () => {
@@ -401,10 +401,13 @@ describe('getClientIdentifier', () => {
       headers: { 'user-agent': 'TestBrowser/1.0 (compatible)' },
     })
     const identifier = getClientIdentifier(req)
-    expect(identifier).toMatch(/^unknown:/)
+    expect(identifier).toBe('unknown')
   })
 
-  it('prefers x-forwarded-for over x-real-ip', () => {
+  it('prefers x-real-ip over the client-controlled x-forwarded-for', () => {
+    // Inverted deliberately. Precedence used to favour x-forwarded-for, which
+    // a client can set; x-real-ip and x-vercel-forwarded-for are platform-set.
+    // Off Vercel's happy path that ordering was the spoofable one.
     const req = new Request('http://test.example', {
       headers: {
         'x-forwarded-for': '5.5.5.5',
@@ -412,8 +415,114 @@ describe('getClientIdentifier', () => {
         'user-agent': 'TestBrowser/1.0 (compatible)',
       },
     })
-    const identifier = getClientIdentifier(req)
-    expect(identifier).toMatch(/^5\.5\.5\.5:/)
+    expect(getClientIdentifier(req)).toBe('6.6.6.6')
+  })
+})
+
+describe('rate-limit buckets are namespaced per config', () => {
+  let limiter: RateLimiter
+
+  beforeEach(() => {
+    vi.useFakeTimers()
+    limiter = new RateLimiter()
+  })
+  afterEach(() => {
+    limiter[Symbol.dispose]()
+    vi.useRealTimers()
+  })
+
+  const READ = { bucket: 'read', windowMs: 60_000, maxAttempts: 100 } satisfies RateLimitConfig
+  const SENSITIVE = {
+    bucket: 'sensitive',
+    windowMs: 3_600_000,
+    maxAttempts: 10,
+  } satisfies RateLimitConfig
+
+  it('cheap read traffic does not consume a stricter surface budget', () => {
+    const ip = '203.0.113.77'
+    // Well inside `read`'s own 100/min allowance...
+    for (let i = 0; i < 12; i++) {
+      expect(limiter.checkLimit(ip, READ, { path: '/api/projects' }).allowed).toBe(true)
+    }
+    // ...must not have touched `sensitive`'s 10/hr counter. The store was keyed
+    // on the client id alone, so this first request used to be REJECTED.
+    expect(limiter.checkLimit(ip, SENSITIVE, { path: '/api/blog/tags' }).allowed).toBe(true)
+  })
+
+  it('each bucket still enforces its own cap', () => {
+    const ip = '203.0.113.78'
+    for (let i = 0; i < 10; i++) limiter.checkLimit(ip, SENSITIVE, {})
+    expect(limiter.checkLimit(ip, SENSITIVE, {}).allowed).toBe(false)
+    // A different bucket for the same client is unaffected.
+    expect(limiter.checkLimit(ip, READ, {}).allowed).toBe(true)
+  })
+
+  it('different clients never share a bucket', () => {
+    for (let i = 0; i < 10; i++) limiter.checkLimit('203.0.113.1', SENSITIVE, {})
+    expect(limiter.checkLimit('203.0.113.1', SENSITIVE, {}).allowed).toBe(false)
+    expect(limiter.checkLimit('203.0.113.2', SENSITIVE, {}).allowed).toBe(true)
+  })
+})
+
+describe('rate-limit bypass via User-Agent rotation', () => {
+  let limiter: RateLimiter
+
+  beforeEach(() => {
+    vi.useFakeTimers()
+    limiter = new RateLimiter()
+  })
+
+  afterEach(() => {
+    limiter[Symbol.dispose]()
+    vi.useRealTimers()
+  })
+
+  const config = {
+    windowMs: 60_000,
+    maxAttempts: 3,
+    progressivePenalty: false,
+    blockDuration: 0,
+  } satisfies RateLimitConfig
+
+  it('an attacker rotating the User-Agent cannot mint fresh buckets', () => {
+    // The end-to-end proof, not just a string-shape assertion. Same IP, a new
+    // User-Agent on every request — exactly the bypass the old
+    // `${ip}:${base64(ua).slice(0,8)}` identifier allowed.
+    // These must differ in their FIRST SIX BYTES. The old hash was
+    // base64(ua).slice(0, 8), and only the first 6 raw bytes feed the first 8
+    // base64 characters — so `Rotating/1` and `Rotating/2` produced an
+    // identical suffix and would make this test pass against the vulnerable
+    // code too. Distinct leading bytes are what actually exercises the bypass.
+    const agents = ['Alpha/1.0', 'Bravo/1.0', 'Charlie/1.0', 'Delta/1.0', 'Echo/1.0']
+    const attempt = (n: number) => {
+      const req = new Request('http://test.example', {
+        headers: { 'x-real-ip': '203.0.113.9', 'user-agent': agents[n - 1]! },
+      })
+      const id = getClientIdentifier(req)
+      return limiter.checkLimit(id, config, { userAgent: req.headers.get('user-agent') ?? '' })
+    }
+
+    expect(attempt(1).allowed).toBe(true)
+    expect(attempt(2).allowed).toBe(true)
+    expect(attempt(3).allowed).toBe(true)
+    // Pre-fix every one of these landed in its own bucket and stayed allowed
+    // forever. They must now share the IP's budget.
+    expect(attempt(4).allowed).toBe(false)
+    expect(attempt(5).allowed).toBe(false)
+  })
+
+  it('still separates genuinely different IPs', () => {
+    const attemptFrom = (ip: string) =>
+      limiter.checkLimit(
+        getClientIdentifier(new Request('http://test.example', { headers: { 'x-real-ip': ip } })),
+        config,
+        {}
+      )
+
+    for (let i = 0; i < 3; i++) expect(attemptFrom('203.0.113.1').allowed).toBe(true)
+    expect(attemptFrom('203.0.113.1').allowed).toBe(false)
+    // A different client must not inherit the first one's exhausted budget.
+    expect(attemptFrom('203.0.113.2').allowed).toBe(true)
   })
 })
 

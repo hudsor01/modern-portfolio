@@ -95,7 +95,21 @@ export class RateLimiter implements Disposable {
       }
     }
 
-    let record = this.store.get(identifier)
+    // Counters are namespaced per config, NOT per client alone.
+    //
+    // The store used to be keyed on `identifier` by itself, so every rate-limited
+    // surface shared one RateLimitRecord per client — count, resetTime, penalties
+    // and requestHistory all pooled. Each call then evaluated that shared counter
+    // against whatever config it happened to pass, so the tightest limit on the
+    // site effectively governed all of them. Measured before the fix: 12 ordinary
+    // `read` requests (limit 100/min) to /api/projects caused the very first
+    // `sensitive` request (limit 10/hr) to /api/blog/tags to be rejected.
+    //
+    // Whitelist/blacklist above deliberately stay on the bare `identifier` —
+    // those are client allow/deny lists and are not per-surface.
+    const storeKey = config.bucket ? `${config.bucket}:${identifier}` : identifier
+
+    let record = this.store.get(storeKey)
 
     // Initialize new record
     if (!record) {
@@ -114,7 +128,7 @@ export class RateLimiter implements Disposable {
         suspicious: false,
         createdAt: now, // Track creation time for LRU eviction
       }
-      this.store.set(identifier, record)
+      this.store.set(storeKey, record)
       this.analytics.uniqueClients++
     }
 

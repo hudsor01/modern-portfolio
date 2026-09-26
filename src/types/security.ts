@@ -23,6 +23,16 @@ interface BurstProtectionConfig {
 export interface RateLimitConfig {
   windowMs: number
   maxAttempts: number
+  /**
+   * Namespace for this config's counters. Buckets are keyed
+   * `${bucket}:${clientId}`, so two surfaces with different limits never share
+   * a counter.
+   *
+   * Omitting it is legal (the key falls back to the bare client id) but only
+   * appropriate for a one-off config with no sibling — every shipped preset
+   * sets it. See the note on `store.ts`'s `storeKey`.
+   */
+  bucket?: string
   // Optional behavioral knobs — presets may omit them; checkRateLimitOrRespond
   // fills the defaults (`?? false` / `?? 0`, adaptiveThreshold/antiAbuse true)
   // before the config reaches the rate-limiter store.

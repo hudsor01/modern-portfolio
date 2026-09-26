@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useQueryState } from 'nuqs'
+import { useTransition } from 'react'
+import { debounce, useQueryState } from 'nuqs'
 import type { BlogPostData, BlogCategoryData } from '@/types/api'
 import { BlogTagFilter } from './blog-tag-filter'
 import { InlineMarkdown } from './inline-markdown'
@@ -18,14 +19,40 @@ interface BlogListProps {
 /**
  * Official Next.js 16 / React 19 Pattern: Client Component with Server-Provided Data
  *
- * Data is fetched on the server and passed as props.
- * This component only handles client-side filtering via URL state.
- * No client-side fetching - zero cost, instant load.
+ * Data is fetched on the server and passed as props. Still no client-side
+ * fetching: `category` filters in place, and `q` is handled by the server.
+ *
+ * `q` uses `shallow: false`, so nuqs re-runs the server component with the new
+ * search param instead of only rewriting the URL. That is a Next.js RSC
+ * navigation, not a fetch from this component — the "no client-side fetching"
+ * property above still holds. The work happens in Postgres (see applySearch in
+ * ../page.tsx), which is what lets a query match against a post's full body
+ * text; that content is never sent to the browser, so the substring filter this
+ * replaced could only ever see titles and excerpts.
  */
 export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
-  // URL state management with nuqs - shareable category links
+  // Category stays client-side: the data is already here, so filtering it in
+  // place is instant and a round-trip would buy nothing.
   const [selectedCategory, setSelectedCategory] = useQueryState('category', { defaultValue: 'All' })
-  const [searchQuery, setSearchQuery] = useQueryState('q', { defaultValue: '' })
+
+  // `isPending` drives the subtle busy state below. Without a transition the
+  // list would simply freeze on the old results while the server responds.
+  const [isPending, startTransition] = useTransition()
+  const [searchQuery, setSearchQuery] = useQueryState('q', {
+    defaultValue: '',
+    shallow: false,
+    // DEBOUNCE, not throttle. Both cap the update rate, but throttle fires
+    // every 300ms *during* typing — so a 20-character query issued a burst of
+    // mid-word server renders, each re-running the blog index queries for a
+    // prefix nobody wanted results for. Debounce waits until typing stops, so
+    // one query means one render. (`throttleMs` is also deprecated in nuqs
+    // 2.8.9 in favour of `limitUrlUpdates`.)
+    //
+    // nuqs still updates the returned value immediately either way, so the
+    // input itself stays responsive regardless.
+    limitUrlUpdates: debounce(300),
+    startTransition,
+  })
 
   // Build category list with "All" option
   const categoryTags = ['All', ...initialCategories.map((c) => c.name)]
@@ -42,15 +69,14 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
     { All: initialPosts.length }
   )
 
-  // Filter posts by selected category and search query
-  const filteredPosts = initialPosts.filter((post) => {
-    const matchesCategory = selectedCategory === 'All' || post.category?.name === selectedCategory
-    const matchesSearch =
-      !searchQuery ||
-      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.excerpt?.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesCategory && matchesSearch
-  })
+  // Category only — `initialPosts` has already been narrowed to the search hits
+  // by the server. Re-applying a substring filter here would undo that: a post
+  // matched on its body text has no guarantee of containing the term in its
+  // title or excerpt, so the client filter would discard the very results
+  // full-text search exists to find.
+  const filteredPosts = initialPosts.filter(
+    (post) => selectedCategory === 'All' || post.category?.name === selectedCategory
+  )
 
   function formatPublishedDate(dateString: string | undefined): string {
     if (!dateString) return ''
@@ -71,13 +97,41 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
 
       {/* Search Input */}
       <div className="mb-6">
-        <input
-          type="search"
-          placeholder="Search blog posts..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value || null)}
-          className="w-full max-w-md px-4 py-2 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-        />
+        <div className="relative w-full max-w-md">
+          <input
+            type="search"
+            placeholder="Search blog posts..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value || null)}
+            aria-label="Search blog posts"
+            aria-busy={isPending}
+            className="w-full px-4 py-2 pr-10 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          />
+          {/* Inside the field so the grid never shifts when it appears.
+              aria-hidden because aria-busy on the input already announces it. */}
+          {isPending && (
+            <span
+              aria-hidden="true"
+              className="absolute right-3 top-1/2 -translate-y-1/2 size-4 rounded-full border-2 border-muted-foreground/30 border-t-primary animate-spin motion-reduce:animate-none"
+            />
+          )}
+        </div>
+        {/* Screen readers get the result count once the server responds, since
+            the visual change (a different set of cards) is not announced.
+
+            When a category filter is also active, `filteredPosts` is the search
+            hits narrowed further by category — announcing that number alone as
+            "N posts found for <query>" blamed the search for an empty grid the
+            category caused. Name both filters in that case. */}
+        <p aria-live="polite" className="sr-only">
+          {isPending
+            ? 'Searching'
+            : searchQuery
+              ? selectedCategory === 'All'
+                ? `${filteredPosts.length} ${filteredPosts.length === 1 ? 'post' : 'posts'} found for ${searchQuery}`
+                : `${filteredPosts.length} of ${initialPosts.length} ${initialPosts.length === 1 ? 'post' : 'posts'} found for ${searchQuery}, filtered to ${selectedCategory}`
+              : ''}
+        </p>
       </div>
 
       {/* Category Filter */}

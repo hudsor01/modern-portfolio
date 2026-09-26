@@ -76,6 +76,19 @@ test.describe('/ homepage', () => {
     const provenResultsHeading = page.getByRole('heading', { name: /proven results/i })
     await expect(provenResultsHeading).toBeVisible()
 
+    // NumberTicker only starts counting once the counter enters the viewport:
+    // `useInView(ref, { once: true, margin: '0px' })` from motion/react
+    // (src/components/ui/number-ticker.tsx:35). That is already the loosest
+    // possible observer — rootMargin 0px, threshold 0 — so there is nothing to
+    // fix in the component; SSR legitimately renders 0 until the section is
+    // scrolled to. `waitForFunction` polls in-page and does NOT trigger
+    // Playwright's auto-scroll (that applies to actions only), so on the Pixel 5
+    // viewport the section sat below the fold and the counters stayed at 0
+    // forever. On desktop it passed only because the section happened to fall
+    // inside a 720px-tall viewport. Scroll it in explicitly so the assertion
+    // means the same thing on every project.
+    await provenResultsHeading.scrollIntoViewIfNeeded()
+
     // Grid container directly follows the section header; capture its
     // 4 large counter values via the `tabular-nums` class signature used
     // in HomePageContent.tsx.

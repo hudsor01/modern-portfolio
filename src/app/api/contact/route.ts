@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { emailService } from '@/lib/email-service'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
-import { getClientIdentifier } from '@/lib/api-request'
+import { getClientIdentifier, getClientUserAgent } from '@/lib/api-request'
 import { createContextLogger } from '@/lib/logger'
 
 const logger = createContextLogger('ContactAPI')
@@ -15,7 +15,9 @@ export async function POST(request: NextRequest) {
 
     // emailService validates internally; trust it as the single validation point
     // so we get one place that maps zod issues to a typed validationErrors payload.
-    const result = await emailService.sendContactEmail(body, getClientIdentifier(request))
+    const result = await emailService.sendContactEmail(body, getClientIdentifier(request), {
+      userAgent: getClientUserAgent(request.headers),
+    })
 
     if (result.success) {
       return NextResponse.json({ success: true, message: 'Form submitted successfully!' })
