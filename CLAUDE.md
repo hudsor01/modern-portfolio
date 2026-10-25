@@ -4,7 +4,7 @@ Public portfolio + blog system for Richard Hudson. Next.js App Router, Drizzle O
 
 ## Stack
 
-Runtime: Bun 1.3.14, Node `>=22 <25` (`package.json:7-9`). Next.js 16.3.5, React 19.2.7, TypeScript 6.0.3 (`strict`, `noUncheckedIndexedAccess`), Tailwind 4.3.1, Zod 4.4.3, Drizzle ORM 0.45.2 + `@neondatabase/serverless` 1.1.0 (HTTP driver), `@sentry/nextjs` 10.57.0, Resend 6.12.4, Vitest 4.1.11, Playwright 1.60.0, Biome 2.5.0 (linter + formatter), Lefthook 2.1.9.
+Runtime: Bun 1.3.14, Node `>=22 <25` (`package.json:7-9`). Next.js 16.4.3, React 19.3.1, TypeScript 6.0.3 (`strict`, `noUncheckedIndexedAccess`), Tailwind 4.3.3, Zod 4.6.7, Drizzle ORM 0.45.4 + `@neondatabase/serverless` 1.2.0 (HTTP driver), `@sentry/nextjs` 10.76.2, Resend 6.34.1, Vitest 4.1.12, Playwright 1.64.1, Biome 2.5.15 (linter + formatter; held below 2.6, whose `noComponentHookFactories` rule flags nested components still to be refactored), Lefthook 2.2.2.
 
 ## Commands
 
@@ -139,7 +139,7 @@ CSRF (`src/lib/csrf-protection.ts`): 32-byte hex token in HttpOnly + `SameSite=S
 
 `src/proxy.ts` (under `src/`, not the repo root) is the **Next.js 16 successor to `middleware.ts`** — exports a function named `proxy` (not `middleware`). It generates a per-request base64 nonce and sets **only the nonce** on the downstream request as `x-nonce` (so `layout.tsx:48` can read it for inline JSON-LD); the CSP built by `buildEnhancedCSP()` (`src/lib/csp-edge.ts`) is set **only on the response** (`src/proxy.ts:27`) — request headers never reach the browser, so setting it there would be a no-op. Matcher excludes `_next/static`, `_next/image`, `favicon.ico`, image extensions, and `.pdf` (the latter so the resume PDF can embed in `<object>` on `/resume` — paired with a route-specific `X-Frame-Options: SAMEORIGIN` rule for `.pdf` in `next.config.js`; both rules must move together).
 
-Static security headers in `next.config.js:49-148` (the `async headers()` block): HSTS (`max-age=31536000; includeSubDomains; preload`), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `X-DNS-Prefetch-Control: on`, `X-XSS-Protection: 0` (intentional — comment at L62-66 explains), `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` denies camera/mic/geolocation/topics. CSP itself is **only** set in `proxy.ts`, never in `headers()`.
+Static security headers in `next.config.js:55-180` (the `async headers()` block): HSTS (`max-age=31536000; includeSubDomains; preload`), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `X-DNS-Prefetch-Control: on`, `X-XSS-Protection: 0` (intentional — comment at L68-72 explains), `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` denies camera/mic/geolocation/topics. CSP itself is **only** set in `proxy.ts`, never in `headers()`.
 
 CORS on `/api/*`: only the prod origin (`https://richardwhudsonjr.com`) or `http://localhost:3000` in dev.
 
@@ -162,7 +162,7 @@ All declared in `src/lib/env-validation.ts` (Zod, no `@t3-oss/env-nextjs`). Vali
 | `CRON_SECRET` | optional | min 32 chars; production warning if unset or <64. Without it `SCHEDULED` posts never publish |
 | `ALLOW_SEED_IN_PRODUCTION` | optional | Enum `'true'`/`'false'` — enum (not string) so misspellings fail at boot |
 
-Sentry vars (`SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN`, `SENTRY_URL`, `SENTRY_ENVIRONMENT`, `SENTRY_SEND_DEFAULT_PII`, plus `*_TRACES_SAMPLE_RATE` / `*_PROFILES_SAMPLE_RATE` / `*_REPLAYS_*_SAMPLE_RATE`) are read directly in `sentry.server.config.ts`, `sentry.edge.config.ts`, `instrumentation-client.ts` and `sentry.shared.ts`, plus `next.config.js:200-205` (`sentryBuildOptions`) — they are **not** in the Zod schema. There is no `sentry.client.config.ts` (deliberately — see the Sentry section). `INDEXNOW_KEY` is read directly in `src/app/api/blog/route.ts:293`. `LOG_LEVEL` is read in `src/lib/logger.ts:18`. `SKIP_DB_VALIDATION` is set at `.github/workflows/ci.yml:124` but is **not read anywhere in `src/`** — `src/lib/db.ts` is a 7-line re-export of `@/db` with no env check. Dead variable; remove it or wire it up.
+Sentry vars (`SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN`, `SENTRY_URL`, `SENTRY_ENVIRONMENT`, `SENTRY_SEND_DEFAULT_PII`, plus `*_TRACES_SAMPLE_RATE` / `*_PROFILES_SAMPLE_RATE` / `*_REPLAYS_*_SAMPLE_RATE`) are read directly in `sentry.server.config.ts`, `sentry.edge.config.ts`, `instrumentation-client.ts` and `sentry.shared.ts`, plus `next.config.js:232-257` (`sentryBuildOptions`) — they are **not** in the Zod schema. There is no `sentry.client.config.ts` (deliberately — see the Sentry section). `INDEXNOW_KEY` is read directly in `src/app/api/blog/route.ts:293`. `LOG_LEVEL` is read in `src/lib/logger.ts:18`. `SKIP_DB_VALIDATION` is set at `.github/workflows/ci.yml:124` but is **not read anywhere in `src/`** — `src/lib/db.ts` is a 7-line re-export of `@/db` with no env check. Dead variable; remove it or wire it up.
 
 ## Sentry & logging
 
@@ -261,7 +261,7 @@ runtime* is Node. Ref: https://vercel.com/docs/functions/runtimes/bun
 
 **`bunfig.toml` sets `[install] peer = false`. Do not remove it.** Bun installs
 optional peer dependencies by default; npm and pnpm do not. `drizzle-orm` declares
-28 optional peers — one for every DB driver it supports — so the default behaviour
+30 optional peers (as of 0.45.4) — one for every DB driver it supports — so the default behaviour
 pulled `@prisma/client` + `prisma` (~215 MB) into a repo that had deliberately
 migrated *off* Prisma, plus unused `mysql2` / `pg` / `postgres`. Those phantom
 chains were the source of most transitive CVE findings. Turning peer auto-install
@@ -280,8 +280,8 @@ that a parent pins below the fix line:
 
 | Override | Why it exists |
 |---|---|
-| `postcss` | `next` internally pins `postcss@8.4.31`; collapses every copy onto one patched version |
-| `sharp` | Backstop against a *nested* pre-0.35.4 copy (libvips/libheif RCE, GHSA-rgj7-g3m4-5g8c). As of `next` 16.3.5 the parent itself pins `sharp ^0.35.4`, so this no longer changes resolution — verified: removing it still lands 0.35.4. Kept only as a floor; re-check it whenever `sharp` is bumped. |
+| `postcss` | `next` internally pins its own `postcss` (`8.5.23` as of 16.4.3); collapses every copy onto one patched version |
+| `sharp` | Backstop against a *nested* pre-0.35.5 copy (libvips/libheif RCE GHSA-rgj7-g3m4-5g8c fixed in 0.35.4; librsvg GHSA-wq5f-xc86-pv6w fixed in 0.35.5). As of `next` 16.4.3 the parent itself pins `sharp ^0.35.5`, so this no longer changes resolution. Kept only as a floor; re-check it whenever `sharp` is bumped. |
 | `esbuild` | `drizzle-kit`, `react-email`, and `vite` pin versions below the dev-server disclosure fix |
 
 Before adding a fourth, check whether the package resolves to a patched version on
@@ -305,7 +305,7 @@ is currently clean at *every* severity — keep it there.
 - **Binding an array into `sql` does not produce a Postgres array.** `sql\`ANY(${arr}::"PostStatus"[])\`` emits `ANY(($1)::"PostStatus"[])` with the whole array as one param, which Postgres rejects with `22P02`. Expand it instead: ``sql`ANY(ARRAY[${sql.join(arr.map((v) => sql`${v}`), sql`, `)}]::"PostStatus"[])` ``. Both `src/lib/search.ts` clauses use that form.
 - **All IDs are CUIDs.** New rows use cuid2 via `src/db/cuid.ts`; legacy rows from the Prisma era use cuid v1. Both are 24–25-char alphanumeric strings — use `cuidSchema` from `src/lib/schemas.ts` for ID validation, never `z.string().uuid()`.
 - **citext + inet are custom Drizzle types.** Defined in `src/db/schema.ts` via `customType<{ data: string; driverData: string }>`. Don't replace with plain `text()` — case-insensitive slug/email matching depends on it.
-- **CSP comes from `src/proxy.ts`, not `headers()`.** Adding it to `next.config.js` would emit a second, conflicting `Content-Security-Policy` header. Note the CSP itself carries **no** nonce — `script-src` is `'self' 'unsafe-inline' …` (`src/lib/csp-edge.ts:58`) because a nonce is incompatible with this site's static prerendering (explained at `next.config.js:80-82`). The per-request `x-nonce` header still exists and `layout.tsx:48` threads it into the JSON-LD components, but it is not enforced by the policy today.
+- **CSP comes from `src/proxy.ts`, not `headers()`.** Adding it to `next.config.js` would emit a second, conflicting `Content-Security-Policy` header. Note the CSP itself carries **no** nonce — `script-src` is `'self' 'unsafe-inline' …` (`src/lib/csp-edge.ts:58`) because a nonce is incompatible with this site's static prerendering (explained at `next.config.js:86-88`). The per-request `x-nonce` header still exists and `layout.tsx:48` threads it into the JSON-LD components, but it is not enforced by the policy today.
 - **PDF assets are an intentional carve-out.** `.pdf` paths are excluded from the `proxy.ts` matcher (no CSP) and override `X-Frame-Options` to `SAMEORIGIN` via a route-specific `next.config.js` rule, so the resume PDF can embed in `<object>` on `/resume` and `/resume/view`. Chrome PDFium has been progressively restricting `<iframe src=pdf>` since Chrome 116; use `<object data=pdf type="application/pdf">` for embedded PDFs. If a future PDF needs to stay non-framable (e.g. signed contract), narrow the `next.config.js` source from `/:path*\\.pdf` to the literal résumé filename and add an explicit deny rule for the new path. Regression-pinned in `e2e/security-headers.spec.ts`.
 - **One canonical email path: `src/lib/email-service.ts`.** Both the `submitContactForm` server action (`src/app/contact/actions.ts`) and the `POST /api/contact` route handler delegate to `emailService.sendContactEmail()`. Templates live in `src/emails/*.tsx` and use `react-email` components (passed via Resend's `react` prop). Don't reintroduce inline HTML strings or per-handler Resend clients.
 - **`api/contact/csrf-route.ts` is not auto-routed.** Next.js only treats `route.ts` as an endpoint; this filename was deliberate. Confirm wiring before relying on it.
@@ -318,9 +318,9 @@ is currently clean at *every* severity — keep it there.
 
 - Public site URL: `NEXT_PUBLIC_SITE_URL`, defaults `https://richardwhudsonjr.com`.
 - Vercel region: `iad1` (single region, `vercel.json:5`).
-- Image whitelist: `images.unsplash.com` only (`next.config.js:40-46`, inside the `images` block at `:33-47`).
-- Cache policy for `/projects/*`, `/blog/*` **and `/tools/*`**: `s-maxage=60, stale-while-revalidate=86400`, CDN 1 hour (`next.config.js:120-126`; source is `/(projects|blog|tools)/:path*`).
-- Permanent redirects (`next.config.js:150-197`): `/home` → `/`, plus five blog de-cannibalization 308s (two forecast-accuracy slugs, two dead-deal slugs, one renamed RevOps pillar) whose sources are also excluded from the sitemap via `RETIRED_BLOG_SLUGS`. Edge-level: `/github`, `/linkedin`, `/twitter` (`vercel.json:6-19`; `permanent` defaults to true → 308).
+- Image whitelist: `images.unsplash.com` only (`next.config.js:46-52`, inside the `images` block at `:39-53`).
+- Cache policy for `/projects/*`, `/blog/*` **and `/tools/*`**: `s-maxage=60, stale-while-revalidate=86400`, CDN 1 hour (`next.config.js:130-136`; source is `/(projects|blog|tools)/:path*`).
+- Permanent redirects (`next.config.js:182-229`): `/home` → `/`, plus five blog de-cannibalization 308s (two forecast-accuracy slugs, two dead-deal slugs, one renamed RevOps pillar) whose sources are also excluded from the sitemap via `RETIRED_BLOG_SLUGS`. Edge-level: `/github`, `/linkedin`, `/twitter` (`vercel.json:6-19`; `permanent` defaults to true → 308).
 - 88 Vitest files under `src/**/__tests__/` — `src/lib/` (45), `src/app/api/` (14), `src/components/` (18), `src/hooks/` (4), plus `src/app/contact/`, `src/data/`, `src/emails/`. Discovery pattern: `src/**/__tests__/**/*.test.ts{,x}` (`vitest.config.ts:28`). Regenerate: `find src -name '*.test.ts*' | wc -l`.
 - 11 Playwright specs under `e2e/`.
 - Security audit history: `SECURITY.md` (current controls). `SECURITY_AUDIT_REPORT.md` no longer exists — its findings (S-001, B-001, H-001, B-002, P-001) were closed and the file removed; check git history if you need the original text.
@@ -331,6 +331,6 @@ is currently clean at *every* severity — keep it there.
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+This block is **hand-maintained**. Next ≤16.3 `next dev` rewrote it here; since 16.4 it manages the block only in `AGENTS.md` (`node_modules/next/dist/server/lib/generate-agent-files.js`), and `agentRules: false` in `next.config.js` turns that off so no second, gitignored copy appears.
 
 <!-- END:nextjs-agent-rules -->

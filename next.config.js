@@ -1,10 +1,16 @@
-import { withSentryConfig } from '@sentry/nextjs'
+// `/config` subpath: the root `@sentry/nextjs` re-export of withSentryConfig is
+// deprecated since 10.76 (logs a warning per build) and removed in v11.
+import { withSentryConfig } from '@sentry/nextjs/config'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
   reactStrictMode: true,
   poweredByHeader: false,
+  // Next 16.4+ `next dev` manages its agent-rules block only in AGENTS.md (which
+  // .gitignore's `*.md` hides) and no longer reads the copy in CLAUDE.md. Off so
+  // CLAUDE.md stays the single, hand-maintained source.
+  agentRules: false,
   compress: true,
   basePath: '',
   trailingSlash: false,
