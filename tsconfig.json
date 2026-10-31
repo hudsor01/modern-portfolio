@@ -5,8 +5,7 @@
     "lib": [
       "DOM",
       "DOM.Iterable",
-      "ESNext",
-      "ESNext.Disposable"
+      "ESNext"
     ],
     "module": "ESNext",
     "moduleResolution": "bundler",
@@ -17,12 +16,9 @@
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "useUnknownInCatchVariables": true,
     "allowJs": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "noEmit": true,
     "isolatedModules": true,
