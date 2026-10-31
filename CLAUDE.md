@@ -309,7 +309,7 @@ that a parent pins below the fix line:
 | Override | Why it exists |
 |---|---|
 | `postcss` | `next` internally pins its own `postcss` (`8.5.23` as of 16.4.3); collapses every copy onto one patched version |
-| `sharp` | Backstop against a *nested* pre-0.35.5 copy (libvips/libheif RCE GHSA-rgj7-g3m4-5g8c fixed in 0.35.4; librsvg GHSA-wq5f-xc86-pv6w fixed in 0.35.5). As of `next` 16.4.3 the parent itself pins `sharp ^0.35.5`, so this no longer changes resolution. Kept only as a floor; re-check it whenever `sharp` is bumped. |
+| `sharp` | Backstop against a *nested* pre-0.35.5 copy (libvips/libheif RCE GHSA-rgj7-g3m4-5g8c fixed in 0.35.4; librsvg GHSA-wq5f-xc86-pv6w fixed in 0.35.5). As of `next` 16.4.3 the parent itself pins `sharp ^0.35.5`, so this no longer changes resolution. Kept only as a floor; re-check it whenever `next` is bumped. There is deliberately **no direct `sharp` dependency**: `next` installs it as an `optionalDependency` (not a peer, so `peer = false` does not drop it), which is what `next/image` optimization uses in the standalone server — verified by `/_next/image` returning AVIF. The old direct pin only existed to lift `next`'s former `^0.34.5`. |
 | `esbuild` | `^0.28.2`. Collapses the tree onto one esbuild; the only parent still below it is `drizzle-kit` (`^0.25.4`), which works on 0.28 (`drizzle-kit check` and `drizzle-kit export` verified). `react-email`, `tsx` and `vite` already ask for `^0.27`/`^0.28` — the old `^0.25.0` pin was forcing them *below* their own declared ranges |
 
 Before adding a fourth, check whether the package resolves to a patched version on
