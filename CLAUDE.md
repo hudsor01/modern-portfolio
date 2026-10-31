@@ -4,7 +4,7 @@ Public portfolio + blog system for Richard Hudson. Next.js App Router, Drizzle O
 
 ## Stack
 
-Runtime: Bun 1.3.14, Node `>=22 <25` (`package.json:7-9`). Next.js 16.4.3, React 19.3.1, TypeScript 6.0.3 (`strict`, `noUncheckedIndexedAccess`), Tailwind 4.3.3, Zod 4.6.7, Drizzle ORM 0.45.4 + `@neondatabase/serverless` 1.2.0 (HTTP driver), `@sentry/nextjs` 10.76.2, Resend 6.34.1, Vitest 4.1.12, Playwright 1.64.1, Biome 2.5.15 (linter + formatter; held below 2.6, whose `noComponentHookFactories` rule flags nested components still to be refactored), Lefthook 2.2.2.
+Runtime: Bun 1.4.4 (`packageManager`; CI's `setup-bun` installs exactly this, so `bun.lock` must be written by the same version or `--frozen-lockfile` fails), Node `>=22 <25` (`package.json:7-9`). Next.js 16.4.3, React 19.3.1, TypeScript 7.0.2 (the native Go port — ships no JS compiler API; `next build` type-checks through the `tsc` CLI, so never set `experimental.useTypeScriptCli: false`), Tailwind 4.3.3, Zod 4.6.7, Drizzle ORM 0.45.4 + `@neondatabase/serverless` 1.2.0 (HTTP driver), `@sentry/nextjs` 11.10.0, Resend 6.34.1, Vitest 5.0.5 + jsdom 30, Playwright 1.64.1, Biome 2.6.4 (linter + formatter), Lefthook 2.2.2.
 
 ## Commands
 
@@ -71,7 +71,7 @@ src/proxy.ts              Next.js 16 successor to middleware.ts (see Auth/CSP). 
 
 App Router conventions in use: dynamic segments (`[slug]`), private folders (`_components/`, ~20 of them), and a shared metadata helper at `src/app/shared-metadata.ts` (pages export `metadata` inline — there are **no** per-route `metadata.ts` files). **No** route groups (`(group)`), catch-alls, parallel routes, intercepting routes, or admin route.
 
-Path aliases (`tsconfig.json:42-73`): `@/*` → `src/*`, plus explicit wildcard entries `@/components/*`, `@/lib/*`, `@/hooks/*`, `@/types/*`, `@/app/*`, `@/content/*`, `@/data/*`, `@/db/*`, and one bare entry `@/db` → `src/db/index`. `@/content/*` is declared but no `src/content/` exists yet. `vitest.config.ts:16-23` mirrors only the three load-bearing ones (`@/db`, `@/db/`, `@/`) — order matters there.
+Path aliases (`tsconfig.json:42-73`): `@/*` → `src/*`, plus explicit wildcard entries `@/components/*`, `@/lib/*`, `@/hooks/*`, `@/types/*`, `@/app/*`, `@/content/*`, `@/data/*`, `@/db/*`, and one bare entry `@/db` → `src/db/index`. `@/content/*` is declared but no `src/content/` exists yet. `vitest.config.mts:16-23` mirrors only the three load-bearing ones (`@/db`, `@/db/`, `@/`) — order matters there.
 
 ## Database
 
@@ -162,7 +162,7 @@ All declared in `src/lib/env-validation.ts` (Zod, no `@t3-oss/env-nextjs`). Vali
 | `CRON_SECRET` | optional | min 32 chars; production warning if unset or <64. Without it `SCHEDULED` posts never publish |
 | `ALLOW_SEED_IN_PRODUCTION` | optional | Enum `'true'`/`'false'` — enum (not string) so misspellings fail at boot |
 
-Sentry vars (`SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN`, `SENTRY_URL`, `SENTRY_ENVIRONMENT`, `SENTRY_SEND_DEFAULT_PII`, plus `*_TRACES_SAMPLE_RATE` / `*_PROFILES_SAMPLE_RATE` / `*_REPLAYS_*_SAMPLE_RATE`) are read directly in `sentry.server.config.ts`, `sentry.edge.config.ts`, `instrumentation-client.ts` and `sentry.shared.ts`, plus `next.config.js:232-257` (`sentryBuildOptions`) — they are **not** in the Zod schema. There is no `sentry.client.config.ts` (deliberately — see the Sentry section). `INDEXNOW_KEY` is read directly in `src/app/api/blog/route.ts:293`. `LOG_LEVEL` is read in `src/lib/logger.ts:18`. `SKIP_DB_VALIDATION` is set at `.github/workflows/ci.yml:124` but is **not read anywhere in `src/`** — `src/lib/db.ts` is a 7-line re-export of `@/db` with no env check. Dead variable; remove it or wire it up.
+Sentry vars (`SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN`, `SENTRY_URL`, `SENTRY_ENVIRONMENT`, `SENTRY_SEND_DEFAULT_PII` (+ `NEXT_PUBLIC_` twin; drives `dataCollection`, see the Sentry section), plus `*_TRACES_SAMPLE_RATE` / `*_REPLAYS_*_SAMPLE_RATE`) are read directly in `sentry.server.config.ts`, `sentry.edge.config.ts`, `instrumentation-client.ts` and `sentry.shared.ts`, plus `next.config.js:232-261` (`sentryBuildOptions`) — they are **not** in the Zod schema. There is no `sentry.client.config.ts` (deliberately — see the Sentry section). `INDEXNOW_KEY` is read directly in `src/app/api/blog/route.ts:293`. `LOG_LEVEL` is read in `src/lib/logger.ts:18`. `SKIP_DB_VALIDATION` is set at `.github/workflows/ci.yml:124` but is **not read anywhere in `src/`** — `src/lib/db.ts` is a 7-line re-export of `@/db` with no env check. Dead variable; remove it or wire it up.
 
 ## Sentry & logging
 
@@ -184,15 +184,31 @@ after any change to Sentry wiring:
 bun run build && grep -rl "<your-dsn-id>" .next/static   # must match a chunk
 ```
 
-Shared helpers (`parseSampleRate`, the server/edge option builders) live in
-`sentry.shared.ts`. Wrapped via `withSentryConfig(nextConfig, …)` in `next.config.js`.
-Disabled when `NODE_ENV='test'` or DSN absent — `sentry.shared.ts:64` gates on
+Shared helpers (`parseSampleRate`, `resolveDataCollection`, the server/edge option
+builders) live in `sentry.shared.ts`. Wrapped via `withSentryConfig(nextConfig, …)`
+in `next.config.js`.
+Disabled when `NODE_ENV='test'` or DSN absent — `sentry.shared.ts:101` gates on
 `Boolean(dsn) && process.env.NODE_ENV !== 'test'`, so a missing
 `NEXT_PUBLIC_SENTRY_DSN` disables Sentry entirely rather than erroring. Sample
 rates are clamped to `[0,1]` by `parseSampleRate` and their defaults do **not**
-vary by environment: traces `1`, profiles `0`, `replaysSessionSampleRate` `0`,
-`replaysOnErrorSampleRate` `1` (`sentry.shared.ts:69,72`;
-`instrumentation-client.ts:15,17,27,32`). No tunnel route.
+vary by environment: traces `1`, `replaysSessionSampleRate` `0`,
+`replaysOnErrorSampleRate` `1` (`sentry.shared.ts:106`;
+`instrumentation-client.ts:15,22,27`). No tunnel route.
+
+**SDK v11 made data collection permissive by default — keep `dataCollection` set.**
+v11 removed `sendDefaultPii` and replaced it with `dataCollection`, whose *unset*
+default collects cookies, request/response bodies, user info and DB query data.
+`resolveDataCollection()` (`sentry.shared.ts`) therefore returns Sentry's
+documented v10-equivalent restrictive baseline unless `*_SEND_DEFAULT_PII='true'`,
+which yields `undefined` (the v11 default ≈ v10 `sendDefaultPii: true`). Deleting
+the option would silently widen what leaves the site.
+
+**`serverRuntimeSentryOptions()` ends in `satisfies NodeOptions & EdgeOptions`.**
+Its object is spread into `Sentry.init({...})`, and TypeScript does not
+excess-property-check spreads — so before that guard, options v11 removed
+(`profilesSampleRate`, `enableLogs`, `sendDefaultPii`) type-checked fine on
+server/edge and silently did nothing; only the inline browser config errored. The
+import is `import type`, erased at build, so the module still pulls in no SDK.
 
 Build-time source-map upload needs `SENTRY_AUTH_TOKEN` **plus** `SENTRY_ORG` and
 `SENTRY_PROJECT` (`next.config.js` passes all three into `withSentryConfig`).
@@ -215,21 +231,27 @@ request on every page load, which stalls every `waitForLoadState('networkidle')`
 ad blockers can drop some client events by hostname. Only revisit with a verified
 fix, and re-run the full e2e suite if you do.
 
-Three `withSentryConfig` options are deliberately **absent**:
-`reactComponentAnnotation`, `disableLogger`, `automaticVercelMonitors`. They are
-deprecated in favour of `webpack.*` equivalents and, per the SDK's own build
-warning, "Not supported with Turbopack" — this app builds with Turbopack, so they
-were no-ops that logged a deprecation warning per deploy. Re-add only under
-`webpack.*`, and only if the build ever moves off Turbopack.
+`disableLogger` and `automaticVercelMonitors` are deliberately **absent** from
+`withSentryConfig`: v11 removed them as top-level options, and their `webpack.*`
+replacements are no-ops on Turbopack, which this app builds with. Re-add only
+under `webpack.*`, and only if the build ever moves off Turbopack.
+`reactComponentAnnotation` is different: v11 reinstated it top-level and it *does*
+work on Turbopack + Next 16 — it is unset by choice, not because it is broken.
 
-Coverage currently enabled: errors (all runtimes), tracing at 100%, structured
-logs (`enableLogs`) with `console.log/warn/error` forwarded, and Session Replay
+Coverage currently enabled: errors (all runtimes), tracing at 100% (v11 streams
+spans by default — `beforeSendTransaction`/`ignoreTransactions` are no-ops now;
+use `ignoreSpans`), structured logs with `console.log/warn/error` forwarded (v11
+has no `enableLogs`; adding `consoleLoggingIntegration` in each runtime is what
+turns logs on), and Session Replay
 on **errors only**. Replay session sampling defaults to 0 on purpose — replay
 quota is consumed per replay and, once exhausted, Sentry drops *new* replays
 including the ones attached to errors, so sampling idle sessions trades away
 error coverage. Every rate is env-overridable (`NEXT_PUBLIC_SENTRY_*` for the
-browser, `SENTRY_*` for server/edge). Profiling stays at 0 — it needs the extra
-`@sentry/profiling-node` package.
+browser, `SENTRY_*` for server/edge). Profiling is off by omission: v11 removed
+`profilesSampleRate`, and session profiling (`profileSessionSampleRate`) needs the
+extra `@sentry/profiling-node` package. Browser sessions now default to the
+`'page'` lifecycle (one session per page load, not per navigation), so session
+counts in Release Health dropped at the v11 upgrade by design.
 
 Verify the browser side actually delivers (not just that it initialises) by
 loading a page and watching for `POST .../envelope/` returning 200 with no CSP
@@ -273,7 +295,13 @@ Consequence: **anything the build actually needs must be a declared dependency.*
 months while `next.config.js` claimed no Babel plugin was needed; `peer = false`
 exposed it as a hard build failure. It is now an explicit devDependency. If a build
 breaks with "failed to resolve <pkg>" after a dependency change, declare the package
-rather than re-enabling peer auto-install.
+rather than re-enabling peer auto-install. `vite` is the same story: Vitest 5
+dropped it from its dependencies and made it a *required peer*, so with
+`peer = false` a clean install has no `vite` and the test job cannot load
+`vitest.config.mts`. It is declared as a devDependency for that reason only. A
+stale `node_modules` hides this class of bug — Bun does not prune packages that
+`peer = false` stops installing — so verify dependency changes with
+`rm -rf node_modules && bun install --frozen-lockfile`.
 
 **Keep `overrides` minimal.** Only 3 are load-bearing, each pinning a *nested* copy
 that a parent pins below the fix line:
@@ -281,8 +309,8 @@ that a parent pins below the fix line:
 | Override | Why it exists |
 |---|---|
 | `postcss` | `next` internally pins its own `postcss` (`8.5.23` as of 16.4.3); collapses every copy onto one patched version |
-| `sharp` | Backstop against a *nested* pre-0.35.5 copy (libvips/libheif RCE GHSA-rgj7-g3m4-5g8c fixed in 0.35.4; librsvg GHSA-wq5f-xc86-pv6w fixed in 0.35.5). As of `next` 16.4.3 the parent itself pins `sharp ^0.35.5`, so this no longer changes resolution. Kept only as a floor; re-check it whenever `sharp` is bumped. |
-| `esbuild` | `drizzle-kit`, `react-email`, and `vite` pin versions below the dev-server disclosure fix |
+| `sharp` | Backstop against a *nested* pre-0.35.5 copy (libvips/libheif RCE GHSA-rgj7-g3m4-5g8c fixed in 0.35.4; librsvg GHSA-wq5f-xc86-pv6w fixed in 0.35.5). As of `next` 16.4.3 the parent itself pins `sharp ^0.35.5`, so this no longer changes resolution. Kept only as a floor; re-check it whenever `next` is bumped. There is deliberately **no direct `sharp` dependency**: `next` installs it as an `optionalDependency` (not a peer, so `peer = false` does not drop it), which is what `next/image` optimization uses in the standalone server — verified by `/_next/image` returning AVIF. The old direct pin only existed to lift `next`'s former `^0.34.5`. |
+| `esbuild` | `^0.28.2`. Collapses the tree onto one esbuild; the only parent still below it is `drizzle-kit` (`^0.25.4`), which works on 0.28 (`drizzle-kit check` and `drizzle-kit export` verified). `react-email`, `tsx` and `vite` already ask for `^0.27`/`^0.28` — the old `^0.25.0` pin was forcing them *below* their own declared ranges |
 
 Before adding a fourth, check whether the package resolves to a patched version on
 its own — an override that pins a caret range *stops* that package tracking upstream
@@ -293,8 +321,12 @@ Several other pins had drifted *behind* natural resolution. Neither Dependabot n
 Renovate updates `overrides` ([renovate#15278](https://github.com/renovatebot/renovate/issues/15278)
 is still unimplemented), so every entry is permanently hand-maintained.
 
-CI gate is `bun audit --audit-level=high` (`.github/workflows/ci.yml`), but the tree
-is currently clean at *every* severity — keep it there.
+CI gate is `bun audit --audit-level=high` (`.github/workflows/ci.yml`). Keep the
+tree clean at *every* severity. Open as of 2026-10-31: `glob` 13.0.6 /
+`minimatch` 10.2.6 (2 moderate, GHSA-3g3m-2fjr-6pw4 / GHSA-g3hv-75wg-m249) —
+`@sentry/bundler-plugin*` and `react-email` pin `glob ^13.0.6` with no 13.x
+backport, so the fix is a `glob ^14.0.2` override once it clears the local
+Safe-chain minimum package age.
 
 ## Gotchas
 
@@ -321,7 +353,7 @@ is currently clean at *every* severity — keep it there.
 - Image whitelist: `images.unsplash.com` only (`next.config.js:46-52`, inside the `images` block at `:39-53`).
 - Cache policy for `/projects/*`, `/blog/*` **and `/tools/*`**: `s-maxage=60, stale-while-revalidate=86400`, CDN 1 hour (`next.config.js:130-136`; source is `/(projects|blog|tools)/:path*`).
 - Permanent redirects (`next.config.js:182-229`): `/home` → `/`, plus five blog de-cannibalization 308s (two forecast-accuracy slugs, two dead-deal slugs, one renamed RevOps pillar) whose sources are also excluded from the sitemap via `RETIRED_BLOG_SLUGS`. Edge-level: `/github`, `/linkedin`, `/twitter` (`vercel.json:6-19`; `permanent` defaults to true → 308).
-- 88 Vitest files under `src/**/__tests__/` — `src/lib/` (45), `src/app/api/` (14), `src/components/` (18), `src/hooks/` (4), plus `src/app/contact/`, `src/data/`, `src/emails/`. Discovery pattern: `src/**/__tests__/**/*.test.ts{,x}` (`vitest.config.ts:28`). Regenerate: `find src -name '*.test.ts*' | wc -l`.
+- 89 Vitest files under `src/**/__tests__/` — `src/lib/` (44), `src/app/api/` (15), `src/components/` (23), `src/hooks/` (4), plus `src/app/contact/`, `src/data/`, `src/emails/`. Discovery pattern: `src/**/__tests__/**/*.test.ts{,x}` (`vitest.config.mts:35`). Regenerate: `find src -name '*.test.ts*' | wc -l`.
 - 11 Playwright specs under `e2e/`.
 - Security audit history: `SECURITY.md` (current controls). `SECURITY_AUDIT_REPORT.md` no longer exists — its findings (S-001, B-001, H-001, B-002, P-001) were closed and the file removed; check git history if you need the original text.
 

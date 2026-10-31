@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/nextjs'
-import { parseSampleRate, resolveEnvironment } from './sentry.shared'
+import { parseSampleRate, resolveDataCollection, resolveEnvironment } from './sentry.shared'
 
 // Browser-side Sentry init. This MUST live here, not in a `sentry.client.config.ts`
 // — @sentry/nextjs stopped auto-loading that file, so a config left there is dead
@@ -13,11 +13,6 @@ const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN
 // error quota — so sampling at 1 cannot cause errors to be dropped. Dial down via
 // env if span volume ever becomes a cost problem.
 const tracesSampleRate = parseSampleRate(process.env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE, 1)
-
-const profilesSampleRate = parseSampleRate(
-  process.env.NEXT_PUBLIC_SENTRY_PROFILES_SAMPLE_RATE,
-  0
-)
 
 // Session Replay quota is consumed per replay, and once it is exhausted Sentry
 // drops NEW replays — including the ones attached to errors. Sampling random
@@ -44,11 +39,10 @@ Sentry.init({
     process.env.NEXT_PUBLIC_VERCEL_ENV
   ),
   tracesSampleRate,
-  profilesSampleRate,
   replaysSessionSampleRate,
   replaysOnErrorSampleRate,
-  // Structured logs (Sentry SDK v10 top-level option, not `_experiments`).
-  enableLogs: true,
+  // Structured logs need no option since SDK v11 (`enableLogs` was removed):
+  // adding `consoleLoggingIntegration` below is what turns them on.
   integrations: (integrations) => [
     ...integrations,
     // Forward console output as structured, searchable logs. `debug`/`info` are
@@ -66,7 +60,7 @@ Sentry.init({
         ]
       : []),
   ],
-  sendDefaultPii: process.env.NEXT_PUBLIC_SENTRY_SEND_DEFAULT_PII === 'true',
+  dataCollection: resolveDataCollection(process.env.NEXT_PUBLIC_SENTRY_SEND_DEFAULT_PII),
   ignoreErrors: [
     // Browser benign noise
     /^ResizeObserver loop limit exceeded$/,

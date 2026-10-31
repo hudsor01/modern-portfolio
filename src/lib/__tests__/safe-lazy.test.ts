@@ -14,6 +14,7 @@ vi.mock('@/lib/logger', () => ({
 import { safeLazy } from '@/lib/safe-lazy'
 
 const Fallback = () => null
+const Real = () => null
 
 describe('safeLazy', () => {
   beforeEach(() => {
@@ -21,7 +22,6 @@ describe('safeLazy', () => {
   })
 
   it('returns the imported module on success (no warn)', async () => {
-    const Real = () => null
     const importer = () => Promise.resolve({ default: Real })
     const wrapped = safeLazy(importer, 'good', Fallback)
     const result = await wrapped()

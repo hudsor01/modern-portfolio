@@ -96,6 +96,52 @@ interface BlogContentProps {
   allowCopy?: boolean
 }
 
+// Custom code block component. Module-level so its identity is stable across
+// BlogPostArticle renders — defined inline, every copy-state change remounted
+// every code block on the page.
+function CodeBlock({
+  children,
+  className,
+  language = 'text',
+  allowCopy,
+  copiedCode,
+  isDark,
+  onCopy,
+}: {
+  children: string
+  className?: string
+  language?: string
+  allowCopy: boolean
+  copiedCode: string | null
+  isDark: boolean
+  onCopy: (code: string) => void
+}) {
+  const codeString = String(children).replace(/\n$/, '')
+
+  return (
+    <div className={cn('relative group my-6', className)}>
+      {allowCopy && (
+        <Button
+          size="sm"
+          variant="ghost"
+          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-black/50 hover:bg-black/70 text-white"
+          onClick={() => onCopy(codeString)}
+        >
+          {copiedCode === codeString ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+        </Button>
+      )}
+      <pre
+        className={cn(
+          'rounded-lg text-sm p-4 overflow-x-auto',
+          isDark ? 'bg-background text-foreground' : 'bg-muted text-foreground'
+        )}
+      >
+        <code className={`language-${language}`}>{codeString}</code>
+      </pre>
+    </div>
+  )
+}
+
 export function BlogPostArticle({
   content,
   contentType = 'MARKDOWN',
@@ -114,42 +160,6 @@ export function BlogPostArticle({
     } catch (err) {
       logger.error('Failed to copy code', err instanceof Error ? err : new Error(String(err)))
     }
-  }
-
-  // Custom code block component
-  const CodeBlock: React.FC<{
-    children: string
-    className?: string
-    language?: string
-  }> = ({ children, className, language = 'text' }) => {
-    const codeString = String(children).replace(/\n$/, '')
-
-    return (
-      <div className={cn('relative group my-6', className)}>
-        {allowCopy && (
-          <Button
-            size="sm"
-            variant="ghost"
-            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-black/50 hover:bg-black/70 text-white"
-            onClick={() => copyToClipboard(codeString)}
-          >
-            {copiedCode === codeString ? (
-              <Check className="w-4 h-4" />
-            ) : (
-              <Copy className="w-4 h-4" />
-            )}
-          </Button>
-        )}
-        <pre
-          className={cn(
-            'rounded-lg text-sm p-4 overflow-x-auto',
-            theme === 'dark' ? 'bg-background text-foreground' : 'bg-muted text-foreground'
-          )}
-        >
-          <code className={`language-${language}`}>{codeString}</code>
-        </pre>
-      </div>
-    )
   }
 
   // Helper to sanitize HTML content (no-op during SSR, sanitized on client)
@@ -176,7 +186,15 @@ export function BlogPostArticle({
       if (codeBlockMatch) {
         const [, language, code] = codeBlockMatch
         return (
-          <CodeBlock key={index} language={language || 'text'} className="my-6">
+          <CodeBlock
+            key={index}
+            language={language || 'text'}
+            className="my-6"
+            allowCopy={allowCopy}
+            copiedCode={copiedCode}
+            isDark={theme === 'dark'}
+            onCopy={copyToClipboard}
+          >
             {decodeHtmlEntities(code || '')}
           </CodeBlock>
         )

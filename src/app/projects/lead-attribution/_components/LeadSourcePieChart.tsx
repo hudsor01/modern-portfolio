@@ -35,6 +35,33 @@ const defaultColors = [
   chartColors.chart1,
 ]
 
+// Module-level so Recharts sees a stable component type; it clones the
+// `content` element and merges in active/payload, so `total` passes through.
+function CustomTooltip({ active, payload, total }: CustomTooltipProps & { total: number }) {
+  if (active && payload && payload.length > 0 && payload[0]?.payload) {
+    const data = payload[0].payload
+    const percentage = ((data.value / total) * 100).toFixed(1)
+
+    return (
+      <div className="p-3 rounded-xl bg-popover/95 backdrop-blur-xs border border-border">
+        <p className="font-medium text-foreground">{data.name}</p>
+        <p className="typography-small text-muted-foreground">
+          Leads: <span className="font-medium text-foreground">{data.value.toLocaleString()}</span>
+        </p>
+        <p className="typography-small text-muted-foreground">
+          Share: <span className="font-medium text-foreground">{percentage}%</span>
+        </p>
+        {data.growth ? (
+          <p className="typography-small text-muted-foreground">
+            Performance: <span className="font-medium text-success">{data.growth}</span>
+          </p>
+        ) : null}
+      </div>
+    )
+  }
+  return null
+}
+
 type LeadSourcePieChartProps = {
   data: LeadSourceDatum[]
 }
@@ -46,32 +73,6 @@ const LeadSourcePieChart = memo(function LeadSourcePieChart({ data }: LeadSource
   }))
 
   const total = leadSourceData.reduce((sum, item) => sum + item.value, 0)
-
-  const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
-    if (active && payload && payload.length > 0 && payload[0]?.payload) {
-      const data = payload[0].payload
-      const percentage = ((data.value / total) * 100).toFixed(1)
-
-      return (
-        <div className="p-3 rounded-xl bg-popover/95 backdrop-blur-xs border border-border">
-          <p className="font-medium text-foreground">{data.name}</p>
-          <p className="typography-small text-muted-foreground">
-            Leads:{' '}
-            <span className="font-medium text-foreground">{data.value.toLocaleString()}</span>
-          </p>
-          <p className="typography-small text-muted-foreground">
-            Share: <span className="font-medium text-foreground">{percentage}%</span>
-          </p>
-          {data.growth ? (
-            <p className="typography-small text-muted-foreground">
-              Performance: <span className="font-medium text-success">{data.growth}</span>
-            </p>
-          ) : null}
-        </div>
-      )
-    }
-    return null
-  }
 
   const renderCustomLabel = (entry: PieLabelRenderProps) => {
     if (typeof entry.value === 'number') {
@@ -102,7 +103,7 @@ const LeadSourcePieChart = memo(function LeadSourcePieChart({ data }: LeadSource
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<CustomTooltip total={total} />} />
           </PieChart>
         </ResponsiveContainer>
       </div>

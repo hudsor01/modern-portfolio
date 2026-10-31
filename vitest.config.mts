@@ -24,6 +24,13 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
+    // Both are Vitest 5's defaults, set explicitly: v5 prints end-of-run tuning
+    // hints ("jsdom was created N times", "faster with isolate: false") whenever
+    // pool/isolate are implicit. Per-file isolation is deliberate — suites rely
+    // on module-level vi.mock() not leaking between files — so neither the
+    // `vmThreads` pool nor `isolate: false` is a free speed-up here.
+    pool: 'forks',
+    isolate: true,
     globals: false,
     include: ['src/**/__tests__/**/*.test.ts', 'src/**/__tests__/**/*.test.tsx'],
     exclude: ['e2e/**', 'node_modules/**', '.next/**'],

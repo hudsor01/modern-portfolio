@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, cleanup } from '@testing-library/react'
+import { useState } from 'react'
 import { ErrorBoundary, withErrorBoundary } from '../error-boundary'
 
 // Silence the React noisy "uncaught error" output that the test triggers
@@ -16,6 +17,23 @@ function Boom({ msg = 'kaboom' }: { msg?: string }): React.ReactElement {
 
 function Fine() {
   return <div data-testid="fine">healthy</div>
+}
+
+function Toggleable({ throwIt }: { throwIt: boolean }) {
+  if (throwIt) throw new Error('toggleable')
+  return <div data-testid="recovered">recovered</div>
+}
+
+function Harness() {
+  const [throwIt, setThrowIt] = useState(true)
+  return (
+    <>
+      <button type="button" data-testid="fix" onClick={() => setThrowIt(false)} />
+      <ErrorBoundary>
+        <Toggleable throwIt={throwIt} />
+      </ErrorBoundary>
+    </>
+  )
 }
 
 describe('ErrorBoundary', () => {
@@ -97,23 +115,6 @@ describe('ErrorBoundary', () => {
   })
 
   it('reset button restores child rendering once cause is gone', () => {
-    function Toggleable({ throwIt }: { throwIt: boolean }) {
-      if (throwIt) throw new Error('toggleable')
-      return <div data-testid="recovered">recovered</div>
-    }
-
-    function Harness() {
-      const [throwIt, setThrowIt] = (require('react') as typeof import('react')).useState(true)
-      return (
-        <>
-          <button type="button" data-testid="fix" onClick={() => setThrowIt(false)} />
-          <ErrorBoundary>
-            <Toggleable throwIt={throwIt} />
-          </ErrorBoundary>
-        </>
-      )
-    }
-
     render(<Harness />)
     expect(screen.getByText('Something went wrong')).toBeTruthy()
     // First, fix the underlying cause (so the child won't throw on re-render)
