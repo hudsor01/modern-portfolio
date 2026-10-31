@@ -91,7 +91,7 @@ describe('ErrorBoundary', () => {
     )
     expect(onError).toHaveBeenCalled()
     expect(onError.mock.calls[0]?.[0]).toBeInstanceOf(Error)
-    expect((onError.mock.calls[0]?.[0] as Error).message).toBe('for-handler')
+    expect((onError.mock.calls[0]?.[0] as Error | undefined)?.message).toBe('for-handler')
     // Second arg is React's ErrorInfo with `componentStack`
     expect(onError.mock.calls[0]?.[1]).toHaveProperty('componentStack')
   })
