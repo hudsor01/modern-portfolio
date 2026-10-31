@@ -87,12 +87,13 @@ Optional / situational:
 - `ADMIN_API_TOKEN` — required for `POST /api/seed` (Bearer token, ≥32 chars)
 - `METRICS_API_TOKEN` — required for `GET /api/security/metrics` (`X-Metrics-Token` header, ≥32 chars)
 - `ALLOW_SEED_IN_PRODUCTION` — `'true'` to enable `/api/seed` in prod
-- `USE_LOCAL_DB` — `'true'` to point Drizzle at a local Postgres
+- `USE_LOCAL_DB` — legacy and ignored: the Drizzle client always uses Neon's HTTP
+  driver, so local development needs a Neon branch, not a plain local Postgres
 - Sentry: `SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN`, sample-rate vars
 - `INDEXNOW_KEY` — read directly by the blog POST handler when publishing
 
-Build-time tip: set `SKIP_DB_VALIDATION=true` when building in CI without a
-live DB. CI already does this in [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+Build-time tip: `next build` needs no database — `DATABASE_URL` is only required
+at runtime, and CI's `build` job in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) sets none.
 
 ---
 
@@ -197,8 +198,9 @@ vulnerabilities. Summary:
 - **Security headers**: HSTS (1 yr, preload), `X-Frame-Options: DENY`,
   `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`
   (camera/mic/geolocation denied) — [`next.config.js`](next.config.js)
-- **Dependency hygiene**: `bun audit --audit-level=high` blocks merges in
-  GitHub Actions; Renovate keeps dependencies current with security auto-merge
+- **Dependency hygiene**: `bun audit --audit-level=high` fails CI on every pull
+  request and re-runs daily against `main` — [`.github/workflows/audit.yml`](.github/workflows/audit.yml);
+  Renovate is configured for dependency-update PRs with security auto-merge — [`renovate.json`](renovate.json)
 - **Structured logging**: `console.*` is banned in application code;
   everything flows through [`src/lib/logger.ts`](src/lib/logger.ts) → Sentry in production
 - **Admin tokens** are compared with `crypto.timingSafeEqual` and fail

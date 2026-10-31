@@ -107,11 +107,14 @@ Defensive controls currently in place:
 
 ### Supply chain
 
-- `bun audit --audit-level=high` runs in CI and blocks merges on any
-  unresolved high/critical finding
+- `bun audit --audit-level=high` fails CI on any unresolved high/critical
+  finding, on every pull request and daily against `main`
+  (`.github/workflows/audit.yml`). `main` has no branch protection, so the
+  failing check flags a merge rather than blocking it.
 - Transitive vulnerabilities are pinned through npm-compatible `overrides`
   in `package.json`
-- Renovate submits automated dependency-update PRs with security auto-merge
+- Renovate is configured (`renovate.json`) for dependency-update PRs with
+  security auto-merge
 
 ### Data
 
