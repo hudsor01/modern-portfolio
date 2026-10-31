@@ -14,29 +14,31 @@ class ResizeObserverStub {
 ;(globalThis as unknown as { ResizeObserver: unknown }).ResizeObserver =
   (globalThis as unknown as { ResizeObserver?: unknown }).ResizeObserver ?? ResizeObserverStub
 
+function StubField({
+  name,
+  children,
+}: {
+  name: string
+  children: (field: {
+    name: string
+    state: { value: string; meta: { errors: string[] } }
+    handleChange: (v: string) => void
+    handleBlur: () => void
+  }) => React.ReactNode
+}) {
+  return children({
+    name,
+    state: { value: '', meta: { errors: [] } },
+    handleChange: () => {},
+    handleBlur: () => {},
+  })
+}
+
 // Minimal stand-in for TanStack Form's `form` object — only the surface the
 // component actually touches (handleSubmit + Field render-prop).
 function createFormStub() {
   const handleSubmit = vi.fn()
-  const Field = ({
-    name,
-    children,
-  }: {
-    name: string
-    children: (field: {
-      name: string
-      state: { value: string; meta: { errors: string[] } }
-      handleChange: (v: string) => void
-      handleBlur: () => void
-    }) => React.ReactNode
-  }) =>
-    children({
-      name,
-      state: { value: '', meta: { errors: [] } },
-      handleChange: () => {},
-      handleBlur: () => {},
-    })
-  return { handleSubmit, Field }
+  return { handleSubmit, Field: StubField }
 }
 
 function renderForm(overrides: Partial<UseContactFormReturn> = {}) {
