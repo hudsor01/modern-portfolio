@@ -106,10 +106,15 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Public callers see only PUBLISHED, non-soft-deleted posts. Admin-token
-    // holders can pass `?status=DRAFT` (etc.) to see other states; if they
-    // don't pass `status`, they see everything (legacy admin behavior).
-    if (!isAdmin && !filters.status && filters.published === undefined) {
+    // Public callers see only PUBLISHED, non-soft-deleted posts, whatever they
+    // send: `status` and `published` are admin-only filters, so they are
+    // overridden here, not just defaulted. Defaulting only when neither was
+    // sent let an anonymous `?status=DRAFT` or `?published=false` list
+    // unpublished posts, full content included. Admin-token holders can pass
+    // `?status=DRAFT` (etc.) to see other states; if they pass neither, they
+    // see everything (legacy admin behavior).
+    if (!isAdmin) {
+      filters.status = undefined
       filters.published = true
     }
 
@@ -152,7 +157,11 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(response, {
       headers: {
-        'Cache-Control': 'public, max-age=60, s-maxage=300',
+        // Same split as /api/blog/[slug]: an admin response can carry
+        // unpublished posts, so it must never enter a shared/CDN cache.
+        'Cache-Control': isAdmin
+          ? 'private, no-store, max-age=0, must-revalidate'
+          : 'public, max-age=60, s-maxage=300',
       },
     })
   } catch (error) {

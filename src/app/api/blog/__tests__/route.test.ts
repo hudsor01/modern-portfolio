@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest, NextResponse } from 'next/server'
+import { PgDialect } from 'drizzle-orm/pg-core'
 
 // Disable rate limiting and CSRF guards by default — exercise them via
 // explicit overrides per test.
@@ -194,6 +195,46 @@ describe('GET /api/blog', () => {
   it('accepts a valid PostStatus query param', async () => {
     const res = await GET(reqGet('?status=PUBLISHED'))
     expect(res.status).toBe(200)
+  })
+
+  // Regression: the gate used to apply only when a caller sent neither
+  // `status` nor `published`, so anonymous `?status=DRAFT` / `?published=false`
+  // listed unpublished posts with full content. These compile the WHERE clause
+  // that actually reached the query, not the intermediate filters object.
+  describe('public visibility gate', () => {
+    const whereSql = () => new PgDialect().sqlToQuery(dbMocks.findMany.mock.calls[0]?.[0]?.where)
+
+    it.each([
+      '',
+      '?status=DRAFT',
+      '?status=SCHEDULED,ARCHIVED',
+      '?status=PUBLISHED',
+      '?published=false',
+      '?status=DRAFT&published=false',
+    ])('anonymous "%s" sees only PUBLISHED, non-deleted posts', async (query) => {
+      const res = await GET(reqGet(query))
+      expect(res.status).toBe(200)
+      const { sql, params } = whereSql()
+      expect(params).toEqual(['PUBLISHED'])
+      expect(sql).toContain('"deletedAt" is null')
+      expect(res.headers.get('Cache-Control')).toBe('public, max-age=60, s-maxage=300')
+    })
+
+    it('admin ?status=DRAFT gets drafts, never shared-cacheable', async () => {
+      vi.mocked(isAdminRequest).mockReturnValueOnce(true)
+      const res = await GET(reqGet('?status=DRAFT'))
+      expect(res.status).toBe(200)
+      const { sql, params } = whereSql()
+      expect(params).toEqual(['DRAFT'])
+      expect(sql).not.toContain('"deletedAt" is null')
+      expect(res.headers.get('Cache-Control')).toBe('private, no-store, max-age=0, must-revalidate')
+    })
+
+    it('admin with no filters sees every status', async () => {
+      vi.mocked(isAdminRequest).mockReturnValueOnce(true)
+      await GET(reqGet())
+      expect(dbMocks.findMany.mock.calls[0]?.[0]?.where).toBeUndefined()
+    })
   })
 })
 
