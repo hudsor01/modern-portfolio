@@ -1,5 +1,5 @@
-// `/config` subpath: the root `@sentry/nextjs` re-export of withSentryConfig is
-// deprecated since 10.76 (logs a warning per build) and removed in v11.
+// `/config` subpath: SDK v11 removed the root `@sentry/nextjs` re-export of
+// withSentryConfig (deprecated since 10.76).
 import { withSentryConfig } from '@sentry/nextjs/config'
 
 /** @type {import('next').NextConfig} */
@@ -248,12 +248,16 @@ const sentryBuildOptions = {
   // framework frames instead of stopping at minified boundaries.
   widenClientFileUpload: true,
 
-  // NOT set: `reactComponentAnnotation`, `disableLogger`, `automaticVercelMonitors`.
-  // All three are deprecated in favour of `webpack.*` equivalents AND, per the
-  // SDK's own build warning, are "Not supported with Turbopack" — this app builds
-  // with Turbopack (`▲ Next.js 16.2.11 (Turbopack)`), so they were pure no-ops
-  // that logged three deprecation warnings on every deploy. Re-add only via the
-  // `webpack.*` namespace if this ever moves off Turbopack.
+  // NOT set: `disableLogger`, `automaticVercelMonitors`. SDK v11 removed both as
+  // top-level options; their replacements (`webpack.treeshake.removeDebugLogging`,
+  // `webpack.automaticVercelMonitors`) are webpack-only and no-ops on Turbopack,
+  // which this app builds with. Re-add only under `webpack.*` if it ever moves
+  // off Turbopack.
+  //
+  // Also NOT set: `reactComponentAnnotation`. v11 reinstated it as a top-level
+  // option that DOES work on Turbopack (Next 16+), so it is no longer a no-op —
+  // it is simply not enabled. It injects component names into the DOM for
+  // Replay/breadcrumbs; turn it on deliberately, not as a migration side effect.
 }
 
 export default withSentryConfig(nextConfig, sentryBuildOptions)

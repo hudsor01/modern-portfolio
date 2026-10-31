@@ -10,9 +10,12 @@
 // The browser one is NOT `sentry.client.config.ts` — @sentry/nextjs no longer
 // auto-loads that filename. See the Sentry section in CLAUDE.md.
 //
-// This module therefore holds NO `@sentry/*` import and no Node/browser/edge
-// API, so all three runtimes — including the client bundle — import it safely;
-// it only supplies pure helpers and a plain options object.
+// This module therefore holds NO runtime `@sentry/*` import and no Node/browser/
+// edge API, so all three runtimes — including the client bundle — import it
+// safely; it only supplies pure helpers and a plain options object. The one
+// `import type` below is erased at compile time and pulls in no SDK.
+
+import type { EdgeOptions, NodeOptions } from '@sentry/nextjs'
 
 /**
  * Parse a 0–1 sample-rate env var: clamp to [0,1], fall back when unset/NaN.
@@ -39,6 +42,40 @@ export const resolveEnvironment = (
   explicit: string | undefined,
   vercelEnv: string | undefined
 ): string => explicit || vercelEnv || process.env.NODE_ENV || 'development'
+
+// Headers whose values identify the client (IPs, proxies, auth'd user). Mirrors
+// the deny list Sentry documents for reproducing the v10 `sendDefaultPii: false`
+// behaviour under v11's `dataCollection`.
+const IDENTIFYING_KEYS = ['forwarded', '-ip', 'remote-', 'via', '-user']
+
+/**
+ * Resolve Sentry's `dataCollection` option from the `*_SEND_DEFAULT_PII` env flag.
+ *
+ * SDK v11 removed `sendDefaultPii` and made the replacement PERMISSIVE by default:
+ * leaving `dataCollection` unset now collects cookies, request/response bodies,
+ * user info and DB query data. So "off" must be spelled out — this is Sentry's
+ * documented v10-equivalent baseline. `'true'` returns `undefined`, i.e. the v11
+ * default, which Sentry documents as matching v10 `sendDefaultPii: true`.
+ * Ref: https://github.com/getsentry/sentry-javascript/blob/develop/MIGRATION.md
+ */
+export const resolveDataCollection = (sendDefaultPii: string | undefined) =>
+  sendDefaultPii === 'true'
+    ? undefined
+    : {
+        userInfo: false,
+        cookies: false,
+        httpHeaders: {
+          request: { deny: IDENTIFYING_KEYS },
+          response: { deny: IDENTIFYING_KEYS },
+        },
+        httpBodies: [],
+        urlQueryParams: { deny: IDENTIFYING_KEYS },
+        genAI: { inputs: false, outputs: false },
+        mcp: { inputs: false, outputs: false },
+        databaseQueryData: false,
+        queues: false,
+        graphQL: { document: false, variables: false },
+      }
 
 // Next.js throws sentinels for redirect()/notFound()/HTTP-error control flow.
 // These are not bugs and would otherwise drown real errors. Server + edge share
@@ -67,12 +104,16 @@ export const serverRuntimeSentryOptions = () => {
     // 1 cannot cause errors to be dropped. Dial down via env if span volume ever
     // becomes a cost problem.
     tracesSampleRate: parseSampleRate(process.env.SENTRY_TRACES_SAMPLE_RATE, 1),
-    // Profiling needs the extra `@sentry/profiling-node` package; left at 0
-    // rather than silently no-op'ing.
-    profilesSampleRate: parseSampleRate(process.env.SENTRY_PROFILES_SAMPLE_RATE, 0),
-    // Structured logs (SDK v10 top-level option, not `_experiments`).
-    enableLogs: true,
-    sendDefaultPii: process.env.SENTRY_SEND_DEFAULT_PII === 'true',
+    // No profiling option: SDK v11 removed per-transaction `profilesSampleRate`,
+    // and session profiling (`profileSessionSampleRate`) needs the extra
+    // `@sentry/profiling-node` package, so it stays off by omission.
+    // No `enableLogs` either: v11 removed it — logs are captured because each
+    // runtime adds `consoleLoggingIntegration`.
+    dataCollection: resolveDataCollection(process.env.SENTRY_SEND_DEFAULT_PII),
     ignoreErrors: [...NEXTJS_CONTROL_FLOW_ERRORS],
-  }
+    // `satisfies` restores the excess-property check that spreading this object
+    // into `Sentry.init({...})` loses — without it, options an SDK major removes
+    // (as v11 did with profilesSampleRate/enableLogs/sendDefaultPii) become
+    // silent no-ops instead of type errors.
+  } satisfies NodeOptions & EdgeOptions
 }
