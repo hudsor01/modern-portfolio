@@ -8,14 +8,15 @@ import * as schema from './schema'
 // - Production / preview: Neon serverless HTTP driver. Stateless, no connection
 //   pool, single round-trip per query. Sidesteps the connection-pool timeout
 //   class of bugs we hit with Prisma 7 + adapter-neon.
-// - Local dev (USE_LOCAL_DB=true): Same neon-http driver against a local
-//   Postgres via the @neondatabase/serverless `neon()` factory pointed at the
-//   local DATABASE_URL. neon-http works fine against any Postgres that
-//   speaks the standard wire protocol exposed via Neon's HTTP gateway.
+// - Local dev: the same driver, so DATABASE_URL must point at a Neon branch.
+//   neon-http sends each query as an HTTPS request to Neon's SQL-over-HTTP
+//   endpoint for the URL's host; a plain local Postgres doesn't serve one, and
+//   nothing here overrides `neonConfig.fetchEndpoint`. (USE_LOCAL_DB is a
+//   Prisma-era flag that is still validated but read nowhere.)
 //
-// If we ever need interactive transactions in dev, switch to drizzle-orm/pg
-// behind the same USE_LOCAL_DB flag — but the existing /api routes do not
-// require multi-statement transactions, so neon-http is sufficient everywhere.
+// If we ever need interactive transactions, switch to drizzle-orm/node-postgres
+// — but the existing /api routes do not require multi-statement transactions,
+// so neon-http is sufficient everywhere.
 
 declare global {
   // eslint-disable-next-line no-var

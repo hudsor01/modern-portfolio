@@ -5,11 +5,13 @@
 #
 # Scanned in two places, matching the layering documented in lefthook.yml:
 #   pre-commit  -> `gitleaks git --staged` (staged changes only, ~20ms)
-#   CI          -> full history (authoritative; runs whether or not the hook did)
+#   CI          -> the PR's own commits on pull_request; full history only on a
+#                  manual workflow_dispatch run (runs whether or not the hook did)
 #
 # Uses `[[allowlists]]` (array of tables), which replaced the singular
 # `[allowlist]` in v8.25.0. The old form still parses for backwards
-# compatibility but is deprecated — don't reintroduce it.
+# compatibility but is deprecated — don't reintroduce it. Older gitleaks
+# silently drops `[[allowlists]]`, so CI pins GITLEAKS_VERSION (ci.yml).
 
 title = "modern-portfolio"
 

@@ -180,12 +180,13 @@ export async function searchBlogPosts(
   // the `exclusion` clause below uses — rather than interpolating the JS array
   // directly.
   //
-  // `sql`ANY(${statusFilter}::"PostStatus"[])`` emits `ANY(($1)::"PostStatus"[])`
-  // and binds the array as one parameter, which Postgres rejects with 22P02
-  // (invalid input syntax). That throw lands in the outer catch and this
-  // function returns [] — a status-filtered search silently finding nothing
-  // rather than erroring. sql.join emits `ANY(ARRAY[$1, $2, …]::"PostStatus"[])`,
-  // which binds each value separately and works.
+  // `sql`ANY(${statusFilter}::"PostStatus"[])`` never binds an array: drizzle
+  // expands a JS array into a parenthesised list, one param per element —
+  // `ANY(($1)::"PostStatus"[])` for one value (a scalar, which Postgres rejects
+  // as a malformed array literal, 22P02) and `ANY(($1, $2)::"PostStatus"[])`
+  // for two (a row, which cannot be cast to an array) — so the query throws.
+  // sql.join emits `ANY(ARRAY[$1, $2, …]::"PostStatus"[])`, which binds each
+  // value separately and works.
   const statusCondition =
     statusFilter && statusFilter.length > 0
       ? sql`AND status = ANY(ARRAY[${sql.join(

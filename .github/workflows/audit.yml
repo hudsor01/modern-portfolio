@@ -1,0 +1,46 @@
+name: Audit
+
+on:
+  # The PR gate: ci.yml's `audit` job calls this file, so PRs and the daily run
+  # below share one definition. A local `./` reusable workflow is read from the
+  # caller's commit, so a PR that edits this file runs its own edited copy.
+  workflow_call:
+  # The same gate, re-run daily against main. CI has no push or schedule
+  # trigger (only pull_request and manual workflow_dispatch), so without this
+  # an advisory published between PRs goes unseen. Dependabot is
+  # no substitute: its alerts cover only package.json's direct dependencies
+  # (the dependency graph does not parse bun.lock), and between 2026-09-30 and
+  # 2026-10-31 it never alerted on 10 reviewed next/dompurify advisories in
+  # range, four of them critical, that `bun audit` reported.
+  #
+  # UTC, off the top of the hour: GitHub documents the start of every hour as
+  # its high-load window, when scheduled runs are delayed or dropped. Even so a
+  # run can start hours late. A failed scheduled run notifies the user who last
+  # edited this cron, and only if their GitHub Actions notifications are on.
+  schedule:
+    - cron: '37 11 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: bun audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      # No `bun-version` on purpose: setup-bun then reads `packageManager` from
+      # the checked-out package.json (so it must run after checkout), and this
+      # job uses the same Bun as every other one.
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+      # No install and no install cache (setup-bun still caches its own binary):
+      # `bun audit` takes its package list from bun.lock alone, ignores
+      # node_modules, and checks every locked package, transitive ones included,
+      # in one request. It still needs package.json and applies bunfig.toml,
+      # both present after checkout. It exits 1 on a high/critical advisory and
+      # also when the registry can't be reached, so a failed check never passes
+      # as clean.
+      - name: Audit dependencies
+        run: bun audit --audit-level=high
