@@ -3,9 +3,10 @@
  * Consolidates validation, state management, and submission logic
  */
 
-import type { ChangeEvent, FormEvent } from 'react'
+import type { ChangeEvent, SubmitEvent } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 import { useForm } from '@tanstack/react-form'
+import { z } from 'zod'
 import { contactFormSchema } from '@/lib/schemas'
 import { handleHookError } from '@/lib/error-handling'
 import { submitContactForm } from '@/app/contact/actions'
@@ -73,7 +74,7 @@ export function useContactForm(): UseContactFormReturn {
       return {}
     }
 
-    const fieldErrors = result.error.flatten().fieldErrors
+    const fieldErrors = z.flattenError(result.error).fieldErrors
     const mapped: ContactFormErrors = {}
 
     for (const key in fieldErrors) {
@@ -103,7 +104,7 @@ export function useContactForm(): UseContactFormReturn {
   )
 
   const handleSubmit = useCallback(
-    async (event?: FormEvent) => {
+    async (event?: SubmitEvent<HTMLFormElement>) => {
       event?.preventDefault()
       await form.handleSubmit()
     },

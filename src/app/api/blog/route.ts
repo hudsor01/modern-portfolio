@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { count, eq, inArray, sql } from 'drizzle-orm'
+import { z } from 'zod'
 import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
 import { authors, blogPosts, categories, postTags, tags } from '@/db/schema'
@@ -208,7 +209,7 @@ export async function POST(request: NextRequest) {
     const raw = await request.json()
     const parsed = createBlogPostSchema.safeParse(raw)
     if (!parsed.success) {
-      logger.warn('Blog POST validation failed', { issues: parsed.error.flatten() })
+      logger.warn('Blog POST validation failed', { issues: z.flattenError(parsed.error) })
       return NextResponse.json(createErrorResponse('Invalid request body'), { status: 400 })
     }
     const body = parsed.data

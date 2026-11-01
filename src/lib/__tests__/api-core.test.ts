@@ -63,7 +63,7 @@ import { parsePaginationParams, createPaginationMeta } from '@/lib/api-paginatio
 
 describe('validationErrorResponse', () => {
   it('returns status 400 and formats Zod errors into field-keyed errors', async () => {
-    const schema = z.object({ email: z.string().email() })
+    const schema = z.object({ email: z.email() })
     const result = schema.safeParse({ email: 'not-an-email' })
     expect(result.success).toBe(false)
     if (!result.success) {

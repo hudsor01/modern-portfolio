@@ -140,7 +140,7 @@ export class EmailService {
       )
 
       if (error instanceof z.ZodError) {
-        const rawFieldErrors = error.flatten().fieldErrors
+        const rawFieldErrors = z.flattenError(error).fieldErrors
         const validationErrors: Record<string, string[]> = {}
 
         for (const key in rawFieldErrors) {

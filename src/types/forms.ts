@@ -3,7 +3,7 @@
  * Consolidated from src/lib/forms/form-types.ts
  */
 
-import type { ChangeEvent, Dispatch, FormEvent, SetStateAction } from 'react'
+import type { ChangeEvent, Dispatch, SetStateAction, SubmitEvent } from 'react'
 import type { ContactFormData } from './api'
 
 // ============================================================================
@@ -60,7 +60,7 @@ export interface UseContactFormReturn {
   formData: ContactFormData
   errors: ContactFormErrors
   handleInputChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
-  handleSubmit: (event?: FormEvent) => Promise<void>
+  handleSubmit: (event?: SubmitEvent<HTMLFormElement>) => Promise<void>
   submitStatus: SubmitStatus
   showPrivacy: boolean
   agreedToTerms: boolean
