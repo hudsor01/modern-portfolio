@@ -147,9 +147,11 @@ export interface BlogPostSort {
 }
 
 export interface BlogAnalyticsData {
-  totalPosts: number
+  /** Admin-token holders only: reveals that unpublished posts exist. */
+  totalPosts?: number
   publishedPosts: number
-  draftPosts: number
+  /** Admin-token holders only. */
+  draftPosts?: number
   totalViews: number
   totalInteractions: number
   avgReadingTime: number

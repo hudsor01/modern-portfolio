@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { desc, eq } from 'drizzle-orm'
+import { and, desc, eq, isNull } from 'drizzle-orm'
 import type { ApiResponse, RSSFeedData } from '@/types/api'
 import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
@@ -31,7 +31,9 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 100)
 
     const posts = await db.query.blogPosts.findMany({
-      where: eq(blogPosts.status, 'PUBLISHED'),
+      // Same public gate as /blog, the sitemap and GET /api/blog: soft-deleted
+      // posts (retired duplicates whose URLs 308) must not stay in the feed.
+      where: and(eq(blogPosts.status, 'PUBLISHED'), isNull(blogPosts.deletedAt)),
       orderBy: desc(blogPosts.publishedAt),
       limit,
       with: {

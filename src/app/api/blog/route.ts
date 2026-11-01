@@ -98,18 +98,37 @@ export async function GET(request: NextRequest) {
       filters.published = searchParams.get('published') === 'true'
     }
 
-    // Date range filter
-    if (searchParams.get('dateFrom') && searchParams.get('dateTo')) {
-      filters.dateRange = {
-        from: searchParams.get('dateFrom')!,
-        to: searchParams.get('dateTo')!,
+    // Date range filter. Validated for the same reason as `status`: an
+    // unparseable date throws RangeError when Drizzle encodes the timestamp
+    // param, and a year outside 1-9999 (JS accepts year 0 and +/- expanded
+    // years) encodes to an ISO string Postgres rejects — either way a 500 for
+    // bad client input instead of a 400.
+    const dateFrom = searchParams.get('dateFrom')
+    const dateTo = searchParams.get('dateTo')
+    if (dateFrom && dateTo) {
+      const isQueryableDate = (value: string) => {
+        const date = new Date(value)
+        const year = date.getUTCFullYear()
+        return !Number.isNaN(date.getTime()) && year >= 1 && year <= 9999
       }
+      if (!isQueryableDate(dateFrom) || !isQueryableDate(dateTo)) {
+        return NextResponse.json(
+          createErrorResponse('Invalid dateFrom/dateTo; must be ISO 8601 dates in years 1-9999'),
+          { status: 400 }
+        )
+      }
+      filters.dateRange = { from: dateFrom, to: dateTo }
     }
 
-    // Public callers see only PUBLISHED, non-soft-deleted posts. Admin-token
-    // holders can pass `?status=DRAFT` (etc.) to see other states; if they
-    // don't pass `status`, they see everything (legacy admin behavior).
-    if (!isAdmin && !filters.status && filters.published === undefined) {
+    // Public callers see only PUBLISHED, non-soft-deleted posts, whatever they
+    // send: `status` and `published` are admin-only filters, so they are
+    // overridden here, not just defaulted. Defaulting only when neither was
+    // sent let an anonymous `?status=DRAFT` or `?published=false` list
+    // unpublished posts, full content included. Admin-token holders can pass
+    // `?status=DRAFT` (etc.) to see other states; if they pass neither, they
+    // see everything (legacy admin behavior).
+    if (!isAdmin) {
+      filters.status = undefined
       filters.published = true
     }
 
@@ -152,7 +171,11 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(response, {
       headers: {
-        'Cache-Control': 'public, max-age=60, s-maxage=300',
+        // Same split as /api/blog/[slug]: an admin response can carry
+        // unpublished posts, so it must never enter a shared/CDN cache.
+        'Cache-Control': isAdmin
+          ? 'private, no-store, max-age=0, must-revalidate'
+          : 'public, max-age=60, s-maxage=300',
       },
     })
   } catch (error) {
