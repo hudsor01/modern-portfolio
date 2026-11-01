@@ -18,20 +18,19 @@ const logger = createContextLogger('CronPublishScheduled')
  * nothing ever moved a post from SCHEDULED to PUBLISHED. Scheduling a post
  * meant it disappeared forever. This closes that.
  *
- * SCHEDULE: daily at 06:00 UTC, and that is a plan constraint, not a
- * preference. This project's Vercel team is on Hobby, where cron jobs are
- * "limited to cron jobs that run once per day" and "expressions like
- * `0 * * * *` (per-hour) ... will fail deployment"
- * (https://vercel.com/docs/cron-jobs/usage-and-pricing). An hourly schedule was
- * tried first and did exactly that — it broke two production deployments before
- * a single build was even created, because the rejection happens at config
- * validation.
+ * SCHEDULE: daily at 06:00 UTC. That was a plan constraint when this was
+ * written: the Vercel team was on Hobby, where cron jobs are "limited to cron
+ * jobs that run once per day" and "expressions like `0 * * * *` (per-hour) ...
+ * will fail deployment" (https://vercel.com/docs/cron-jobs/usage-and-pricing).
+ * An hourly schedule was tried first and did exactly that — it broke two
+ * production deployments before a single build was even created, because the
+ * rejection happens at config validation. The team is now on Pro (minimum
+ * interval once per minute, per-minute precision), so vercel.json could run
+ * this more often.
  *
- * Consequence to be aware of when scheduling a post: Hobby precision is
- * "Per-hour (±59 min)", so this runs somewhere in the 06:00–06:59 UTC window.
- * A post therefore goes live up to ~25 hours after its `scheduledAt`. Set
- * `scheduledAt` to the day you want it live, not a precise minute. Upgrading to
- * Pro would allow a per-minute schedule.
+ * Consequence to be aware of when scheduling a post: at daily, a post goes
+ * live up to ~24 hours after its `scheduledAt`. Set `scheduledAt` to the day
+ * you want it live, not a precise minute.
  *
  * Auth is the Vercel Cron contract: when a `CRON_SECRET` environment variable
  * is set, Vercel sends `Authorization: Bearer <CRON_SECRET>` on the invocation
