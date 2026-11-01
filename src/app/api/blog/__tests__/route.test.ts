@@ -25,6 +25,7 @@ const dbMocks = vi.hoisted(() => ({
   findMany: vi.fn(),
   findFirst: vi.fn(),
   selectCount: vi.fn(),
+  countWhere: vi.fn(),
   insertReturning: vi.fn(),
   insertVoid: vi.fn(),
   update: vi.fn(),
@@ -33,7 +34,10 @@ vi.mock('@/lib/db', () => {
   const fromBuilder = () => {
     const p = dbMocks.selectCount()
     return {
-      where: () => p,
+      where: (w: unknown) => {
+        dbMocks.countWhere(w)
+        return p
+      },
       then: (...a: Parameters<Promise<unknown>['then']>) => p.then(...a),
       catch: (...a: Parameters<Promise<unknown>['catch']>) => p.catch(...a),
     }
@@ -202,7 +206,8 @@ describe('GET /api/blog', () => {
   // listed unpublished posts with full content. These compile the WHERE clause
   // that actually reached the query, not the intermediate filters object.
   describe('public visibility gate', () => {
-    const whereSql = () => new PgDialect().sqlToQuery(dbMocks.findMany.mock.calls[0]?.[0]?.where)
+    const listWhere = () => dbMocks.findMany.mock.calls[0]?.[0]?.where
+    const whereSql = () => new PgDialect().sqlToQuery(listWhere())
 
     it.each([
       '',
@@ -214,9 +219,13 @@ describe('GET /api/blog', () => {
     ])('anonymous "%s" sees only PUBLISHED, non-deleted posts', async (query) => {
       const res = await GET(reqGet(query))
       expect(res.status).toBe(200)
+      // Exact SQL, so an and→or or eq→ne slip in buildBlogWhereClause fails here.
       const { sql, params } = whereSql()
+      expect(sql).toBe('("blog_posts"."status" = $1 and "blog_posts"."deletedAt" is null)')
       expect(params).toEqual(['PUBLISHED'])
-      expect(sql).toContain('"deletedAt" is null')
+      // The pagination total must count the same rows, or it leaks how many
+      // unpublished posts exist.
+      expect(dbMocks.countWhere).toHaveBeenCalledWith(listWhere())
       expect(res.headers.get('Cache-Control')).toBe('public, max-age=60, s-maxage=300')
     })
 
@@ -227,14 +236,33 @@ describe('GET /api/blog', () => {
       const { sql, params } = whereSql()
       expect(params).toEqual(['DRAFT'])
       expect(sql).not.toContain('"deletedAt" is null')
+      expect(dbMocks.countWhere).toHaveBeenCalledWith(listWhere())
       expect(res.headers.get('Cache-Control')).toBe('private, no-store, max-age=0, must-revalidate')
     })
 
-    it('admin with no filters sees every status', async () => {
+    it('admin with no filters sees every status, never shared-cacheable', async () => {
       vi.mocked(isAdminRequest).mockReturnValueOnce(true)
-      await GET(reqGet())
-      expect(dbMocks.findMany.mock.calls[0]?.[0]?.where).toBeUndefined()
+      const res = await GET(reqGet())
+      expect(listWhere()).toBeUndefined()
+      expect(dbMocks.countWhere).toHaveBeenCalledWith(undefined)
+      expect(res.headers.get('Cache-Control')).toBe('private, no-store, max-age=0, must-revalidate')
     })
+  })
+
+  it.each([
+    '?dateFrom=garbage&dateTo=2030-01-01',
+    '?dateFrom=2026-01-01&dateTo=not-a-date',
+    '?dateFrom=0000-01-01&dateTo=2030-01-01',
+    '?dateFrom=2026-01-01&dateTo=%2B010000-01-01',
+  ])('rejects an unqueryable date range "%s" with 400, not a 500', async (query) => {
+    const res = await GET(reqGet(query))
+    expect(res.status).toBe(400)
+    expect(dbMocks.findMany).not.toHaveBeenCalled()
+  })
+
+  it('accepts a valid ISO date range', async () => {
+    const res = await GET(reqGet('?dateFrom=2026-01-01&dateTo=2026-12-31'))
+    expect(res.status).toBe(200)
   })
 })
 

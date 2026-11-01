@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest } from 'next/server'
+import { PgDialect } from 'drizzle-orm/pg-core'
 
 const dbMocks = vi.hoisted(() => ({
   findMany: vi.fn(),
@@ -112,6 +113,15 @@ describe('GET /api/blog/rss', () => {
   it('uses default limit of 50 when ?limit not set', async () => {
     await GET(req())
     expect(dbMocks.findMany).toHaveBeenCalledWith(expect.objectContaining({ limit: 50 }))
+  })
+
+  // Regression: the feed filtered on status alone, so soft-deleted posts kept
+  // appearing in it after /blog and the sitemap dropped them.
+  it('lists only PUBLISHED, non-soft-deleted posts', async () => {
+    await GET(req())
+    const { sql, params } = new PgDialect().sqlToQuery(dbMocks.findMany.mock.calls[0]?.[0]?.where)
+    expect(sql).toBe('("blog_posts"."status" = $1 and "blog_posts"."deletedAt" is null)')
+    expect(params).toEqual(['PUBLISHED'])
   })
 
   it('returns 500 with sanitized error when db throws', async () => {

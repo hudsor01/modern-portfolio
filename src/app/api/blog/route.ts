@@ -98,12 +98,26 @@ export async function GET(request: NextRequest) {
       filters.published = searchParams.get('published') === 'true'
     }
 
-    // Date range filter
-    if (searchParams.get('dateFrom') && searchParams.get('dateTo')) {
-      filters.dateRange = {
-        from: searchParams.get('dateFrom')!,
-        to: searchParams.get('dateTo')!,
+    // Date range filter. Validated for the same reason as `status`: an
+    // unparseable date throws RangeError when Drizzle encodes the timestamp
+    // param, and a year outside 1-9999 (JS accepts year 0 and +/- expanded
+    // years) encodes to an ISO string Postgres rejects — either way a 500 for
+    // bad client input instead of a 400.
+    const dateFrom = searchParams.get('dateFrom')
+    const dateTo = searchParams.get('dateTo')
+    if (dateFrom && dateTo) {
+      const isQueryableDate = (value: string) => {
+        const date = new Date(value)
+        const year = date.getUTCFullYear()
+        return !Number.isNaN(date.getTime()) && year >= 1 && year <= 9999
       }
+      if (!isQueryableDate(dateFrom) || !isQueryableDate(dateTo)) {
+        return NextResponse.json(
+          createErrorResponse('Invalid dateFrom/dateTo; must be ISO 8601 dates in years 1-9999'),
+          { status: 400 }
+        )
+      }
+      filters.dateRange = { from: dateFrom, to: dateTo }
     }
 
     // Public callers see only PUBLISHED, non-soft-deleted posts, whatever they

@@ -1,9 +1,10 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { asc, avg, count, desc, eq, gte, sum } from 'drizzle-orm'
+import { and, asc, avg, count, desc, eq, gte, isNull, sum } from 'drizzle-orm'
 import type { ApiResponse, BlogAnalyticsData } from '@/types/api'
 import { createContextLogger } from '@/lib/logger'
 import { db } from '@/lib/db'
+import { isAdminRequest } from '@/lib/api-admin-auth'
 import { blogPosts, categories, postViews, tags } from '@/db/schema'
 import {
   transformToBlogPostData,
@@ -52,6 +53,11 @@ export async function GET(request: NextRequest) {
     const timeRange = timeRangeResult.data
     const includeDetails = searchParams.get('details') === 'true'
     const startDate = getStartDate(timeRange)
+    const isAdmin = isAdminRequest(request)
+    // The public gate every other blog surface applies. Without the deletedAt
+    // half, a soft-deleted post would count as published and, once it ranked
+    // in the top 5, `?details=true` would return its full content.
+    const isPublicPost = and(eq(blogPosts.status, 'PUBLISHED'), isNull(blogPosts.deletedAt))
 
     const [
       totalPostsRows,
@@ -65,7 +71,7 @@ export async function GET(request: NextRequest) {
       popularKeywordsRaw,
     ] = await Promise.all([
       db.select({ value: count() }).from(blogPosts),
-      db.select({ value: count() }).from(blogPosts).where(eq(blogPosts.status, 'PUBLISHED')),
+      db.select({ value: count() }).from(blogPosts).where(isPublicPost),
       db.select({ value: count() }).from(blogPosts).where(eq(blogPosts.status, 'DRAFT')),
       db
         .select({
@@ -77,7 +83,7 @@ export async function GET(request: NextRequest) {
         })
         .from(blogPosts),
       db.query.blogPosts.findMany({
-        where: eq(blogPosts.status, 'PUBLISHED'),
+        where: isPublicPost,
         orderBy: desc(blogPosts.viewCount),
         limit: 5,
         with: {
@@ -94,10 +100,7 @@ export async function GET(request: NextRequest) {
         .where(gte(postViews.viewedAt, startDate))
         .groupBy(postViews.viewedAt)
         .orderBy(asc(postViews.viewedAt)),
-      db
-        .select({ keywords: blogPosts.keywords })
-        .from(blogPosts)
-        .where(eq(blogPosts.status, 'PUBLISHED')),
+      db.select({ keywords: blogPosts.keywords }).from(blogPosts).where(isPublicPost),
     ])
 
     const totalPosts = totalPostsRows[0]?.value ?? 0
@@ -145,9 +148,11 @@ export async function GET(request: NextRequest) {
       (aggregates?.totalComments ?? 0)
 
     const analytics: BlogAnalyticsData = {
-      totalPosts,
+      // Total and draft counts reveal that unpublished posts exist (and how
+      // many), so only admin-token holders get them. Both queries still run,
+      // keeping the query set identical for every caller.
+      ...(isAdmin ? { totalPosts, draftPosts } : {}),
       publishedPosts,
-      draftPosts,
       totalViews,
       totalInteractions,
       avgReadingTime: aggregates?.avgReadingTime ?? 0,
@@ -165,7 +170,11 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(response, {
       headers: {
-        'Cache-Control': 'public, max-age=60, s-maxage=120',
+        // Admin responses carry the unpublished counts, so they must never
+        // enter a shared/CDN cache (same split as GET /api/blog).
+        'Cache-Control': isAdmin
+          ? 'private, no-store, max-age=0, must-revalidate'
+          : 'public, max-age=60, s-maxage=120',
       },
     })
   } catch (error) {

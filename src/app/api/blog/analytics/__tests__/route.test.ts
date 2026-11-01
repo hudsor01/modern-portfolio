@@ -1,6 +1,11 @@
 // @vitest-environment node
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest } from 'next/server'
+import { PgDialect } from 'drizzle-orm/pg-core'
+
+vi.mock('@/lib/api-admin-auth', () => ({
+  isAdminRequest: vi.fn(() => false),
+}))
 
 const dbMocks = vi.hoisted(() => ({
   selectCount: vi.fn(),
@@ -64,6 +69,7 @@ vi.mock('@/lib/logger', () => ({
 }))
 
 import { GET } from '@/app/api/blog/analytics/route'
+import { isAdminRequest } from '@/lib/api-admin-auth'
 
 function req(query = '') {
   return new NextRequest(`http://localhost:3000/api/blog/analytics${query}`)
@@ -90,9 +96,7 @@ describe('GET /api/blog/analytics', () => {
     const body = await res.json()
     expect(body).toMatchObject({ success: true })
     expect(body.data).toMatchObject({
-      totalPosts: expect.any(Number),
       publishedPosts: expect.any(Number),
-      draftPosts: expect.any(Number),
       totalViews: expect.any(Number),
       totalInteractions: expect.any(Number),
       avgReadingTime: expect.any(Number),
@@ -121,6 +125,31 @@ describe('GET /api/blog/analytics', () => {
     expect(body).toMatchObject({
       success: false,
       error: 'Invalid timeRange; must be one of 7d, 30d, 90d, 1y',
+    })
+  })
+
+  // Regression: anonymous callers were told how many unpublished posts exist,
+  // and top posts / published counts included soft-deleted rows.
+  describe('public visibility gate', () => {
+    it('hides total/draft counts from anonymous callers', async () => {
+      const body = await (await GET(req())).json()
+      expect(body.data).not.toHaveProperty('totalPosts')
+      expect(body.data).not.toHaveProperty('draftPosts')
+    })
+
+    it('gives admins the counts in a never-shared-cacheable response', async () => {
+      vi.mocked(isAdminRequest).mockReturnValueOnce(true)
+      const res = await GET(req())
+      const body = await res.json()
+      expect(body.data).toMatchObject({ totalPosts: 0, draftPosts: 0 })
+      expect(res.headers.get('Cache-Control')).toBe('private, no-store, max-age=0, must-revalidate')
+    })
+
+    it('ranks only PUBLISHED, non-soft-deleted posts', async () => {
+      await GET(req())
+      const { sql, params } = new PgDialect().sqlToQuery(dbMocks.topPosts.mock.calls[0]?.[0]?.where)
+      expect(sql).toBe('("blog_posts"."status" = $1 and "blog_posts"."deletedAt" is null)')
+      expect(params).toEqual(['PUBLISHED'])
     })
   })
 
