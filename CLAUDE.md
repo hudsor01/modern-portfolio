@@ -336,11 +336,21 @@ patches and goes stale silently. That is not hypothetical: the old block pinned
 `fast-uri ^4.0.0`, which forced the tree onto the 4.x line where the vulnerable range
 (`>=4.0.0 <4.1.2`) lives, when it would otherwise have resolved to a clean 3.1.5.
 Several other pins had drifted *behind* natural resolution. No bot keeps them
-current here: Renovate has handled `overrides` since 32.60.0
-([renovate#15278](https://github.com/renovatebot/renovate/issues/15278), closed as
-completed in 2022) but has never opened a PR on this repo despite `renovate.json`,
-and Dependabot security updates are disabled (no `dependabot.yml` either) — so every
-entry is hand-maintained.
+current (see below), so every entry is hand-maintained.
+
+**Dependency updates are manual by choice — there is no update bot.** No Renovate
+(the never-installed `renovate.json` was removed in Nov 2026), no Dependabot version
+updates (no `dependabot.yml`), and Dependabot security updates are disabled. The
+cost: a fix that ships before its advisory is only picked up when someone bumps.
+Next.js 16.3.6 fixed GHSA-vcvr-r3jv-pc5j (critical, `next/og`) on 2026-09-22, the
+advisory was published 2026-09-30, and `main` took the fix only on 2026-10-31. So
+bump direct dependencies regularly (`bun outdated`), and treat a failing daily
+audit as urgent. If a bot is ever re-added, don't restore the old config:
+`"postUpdateOptions": ["bunUpdate"]` is not a valid value (a hard config error
+since Renovate 44.175.1), its auto-merged weekly `lockFileMaintenance` regenerates
+`bun.lock` at `lockfileVersion: 2`, which Vercel's Bun 1.3.14 ignores (see the
+`bun.lock` gotcha), and it auto-merged security and dev-dependency updates into an
+unprotected `main` with no release-age gate.
 
 CI gate is `bun audit --audit-level=high`, defined once in
 `.github/workflows/audit.yml`: `ci.yml`'s `audit` job calls it on every PR, and it
