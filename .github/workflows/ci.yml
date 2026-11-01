@@ -3,7 +3,8 @@ name: CI
 on:
   pull_request:
     branches: [main]
-  # Manual re-runs only — `pull_request: main` already gates merges.
+  # Manual runs only. `pull_request: main` already runs CI on every PR (advisory:
+  # main is unprotected, so a red run flags a merge but doesn't block it).
   # Triggering on `push: main` would duplicate every merge's CI.
   workflow_dispatch:
 
@@ -24,12 +25,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
 
       - name: Cache bun install
         id: bun-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.bun/install/cache
           key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
@@ -42,8 +43,10 @@ jobs:
   # Defined in audit.yml, which also runs it daily on a schedule, so the PR
   # gate and the daily check can't drift apart. A job that calls a reusable
   # workflow can't set runs-on, timeout-minutes or steps; those live there.
-  # No `needs: setup`: `bun audit` reads only bun.lock, so it never uses the
-  # install cache that job primes.
+  # No `needs: setup`: `bun audit` takes its package list from bun.lock alone
+  # and ignores node_modules, so it gains nothing from the install cache that
+  # job primes. On a cold Bun cache it and setup both download Bun, and the
+  # later save logs a harmless "Unable to reserve cache" line.
   audit:
     permissions:
       contents: read
@@ -69,36 +72,42 @@ jobs:
       contents: read
       pull-requests: read
     steps:
-      # fetch-depth: 0 — the pre-commit hook only sees staged changes, so CI is
-      # the only place full history is scanned. A shallow clone would silently
-      # scan almost nothing and always pass.
-      - uses: actions/checkout@v4
+      # fetch-depth: 0 — on pull_request gitleaks-action scans only the PR's own
+      # commits (`<first>^..<last>`, --first-parent --no-merges), so the clone
+      # must hold those commits and the first one's parent; the default depth-1
+      # merge-ref checkout has neither. A manual workflow_dispatch run of CI
+      # passes no range and scans the full history.
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Scan for secrets
-        # v3 (not v2): v2 runs on Node 20, which GitHub stops supporting on
-        # hosted runners after 2026-09-16 — a v2 pin would break this job within
-        # weeks. v3 is a Node 20 -> 24 bump with no input or behaviour changes.
+        # v3 (not v2): v2 declares node20. Node 20 was removed from hosted
+        # runners on 2026-09-23, so node20 actions are force-run on Node 24 with
+        # a deprecation warning. v3 is a Node 20 -> 24 bump with no input or
+        # behaviour changes.
         #
         # No GITLEAKS_LICENSE needed: that is required only for repos owned by an
         # ORGANIZATION. hudsor01 is a User account, so the action runs free here.
         uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        # No `with:` — the action declares no inputs (the old `config-path` was
+        # ignored and only added a warning). gitleaks itself auto-loads
+        # ./.gitleaks.toml: the built-in rules plus allowlists for the two
+        # verified non-secrets (the public IndexNow protocol key, and a curl
+        # example with no credential in it). Those are global `[[allowlists]]`,
+        # which need gitleaks >= 8.25.0; the action installs 8.24.3 unless
+        # GITLEAKS_VERSION says otherwise.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          # Reads .gitleaks.toml, which extends the built-in rules and carries
-          # the allowlist for the two verified non-secrets (the public IndexNow
-          # protocol key, and a curl example with no credential in it).
-          config-path: .gitleaks.toml
+          GITLEAKS_VERSION: 8.30.1
 
   quality:
     runs-on: ubuntu-latest
     needs: setup
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.bun/install/cache
           key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
@@ -115,9 +124,9 @@ jobs:
     needs: setup
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.bun/install/cache
           key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
@@ -135,16 +144,16 @@ jobs:
       # Sentry plugin no-ops cleanly without the auth token; production
       # source-map upload happens from the Vercel build, not from CI.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.bun/install/cache
           key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
       - run: bun install --frozen-lockfile
 
       - name: Cache Next.js incremental build
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .next/cache
           # Bust the cache when source files or deps change, but reuse it
@@ -165,21 +174,22 @@ jobs:
   # spec that asserted a production-only CSP invariant sat permanently red
   # against the old `bun run dev` webServer without anyone noticing.
   #
-  # Database: optional, and 580 of 588 tests do not need one — the DB-backed
-  # routes degrade to empty states the specs tolerate. Exactly 8 tests do need
-  # seeded blog content (5 in audit-regressions, 3 in blog); they open a real
+  # Database: optional — the DB-backed routes degrade to empty states the specs
+  # tolerate. Exactly 14 tests need seeded blog content (5 in audit-regressions,
+  # 9 in blog); they open a real
   # post, or assert 404s for a slug that must be absent from a populated table.
   # Those self-skip via e2e/_helpers/database.ts, which asks `/api/health`
   # whether the running server actually has a database rather than guessing.
   #
   # Set an `E2E_DATABASE_URL` secret (a dedicated Neon branch, seeded with
-  # `bun run db:seed`) and those 8 start running with no code change. Without it
+  # `bun run db:seed`) and those 14 start running with no code change. Without it
   # they report as skipped, with the reason attached, rather than silently
   # vanishing from the run.
   #
   # Note this cannot be checked locally by unsetting the variable: `.env`,
-  # `.env.local` and `.env.development.local` all carry a DATABASE_URL and Next
-  # loads them itself, so `env -u DATABASE_URL` proves nothing.
+  # `.env.local` and `.env.development.local` all carry a DATABASE_URL, and Next
+  # loads `.env.local` + `.env` itself even for a production build, so
+  # `env -u DATABASE_URL` proves nothing.
   # Sharded because `workers: 1` is Playwright's own CI recommendation and we keep
   # it: 588 tests run serially overran a 20-minute job on the first real CI run
   # (the build was not the problem — it compiled in 17 s). Playwright's documented
@@ -188,7 +198,7 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     needs: setup
-    # Per shard: ~147 tests at 1 worker, plus browser download and one production
+    # Per shard: 153 tests (612 in all) at 1 worker, plus browser download and one production
     # build. The full serial run was ~20 min, so a quarter of it has ample room.
     timeout-minutes: 20
     strategy:
@@ -198,13 +208,12 @@ jobs:
       matrix:
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
-    # No job-level env on purpose. NODE_ENV is not set (unlike `build`) because
-    # this job needs devDependencies present and `next build` sets it for the
-    # build itself anyway.
+    # No job-level env on purpose: `next build` sets NODE_ENV=production for the
+    # build itself, so this job needs none.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.bun/install/cache
           key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
@@ -220,7 +229,7 @@ jobs:
         run: bunx playwright install --with-deps chromium firefox webkit
 
       - name: Cache Next.js incremental build
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .next/cache
           # NOT a brace pattern: @actions/glob compiles with `nobrace`, so
@@ -236,7 +245,7 @@ jobs:
       # it unconditionally would export DATABASE_URL="" when the secret is
       # absent, and env-validation.ts rejects an empty string outright
       # (`.min(1, 'DATABASE_URL is required')`) — that would break the build
-      # instead of letting the 8 DB-dependent tests skip.
+      # instead of letting the 14 DB-dependent tests skip.
       - name: Configure database (optional)
         env:
           E2E_DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
@@ -254,7 +263,7 @@ jobs:
             } >> "$GITHUB_ENV"
             echo "Database configured; DB-dependent specs will run."
           else
-            echo "No E2E_DATABASE_URL secret set; the 8 DB-dependent specs will skip."
+            echo "No E2E_DATABASE_URL secret set; the 14 DB-dependent tests will skip."
           fi
 
       # One step, no manual backgrounding: playwright.config.ts's `webServer`
@@ -266,7 +275,7 @@ jobs:
         run: bunx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - name: Upload blob report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: blob-report-${{ matrix.shardIndex }}
@@ -287,15 +296,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.bun/install/cache
           key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
       - run: bun install --frozen-lockfile
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: all-blob-reports
           pattern: blob-report-*
@@ -305,7 +314,7 @@ jobs:
         run: bunx playwright merge-reports --reporter html ./all-blob-reports
 
       - name: Upload Playwright report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: playwright-report

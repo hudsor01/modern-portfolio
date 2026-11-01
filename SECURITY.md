@@ -64,7 +64,7 @@ Defensive controls currently in place:
 - HTTPS enforced — `NEXT_PUBLIC_SITE_URL` must be HTTPS in production
   (validated at boot in `src/lib/env-validation.ts`)
 - **HSTS**: `max-age=31536000; includeSubDomains; preload`
-- **CSP** set per-request in `proxy.ts` (built by `src/lib/csp-edge.ts`):
+- **CSP** set per-request in `src/proxy.ts` (built by `src/lib/csp-edge.ts`):
   `default-src 'self'`, `object-src 'self' blob:`, `base-uri 'self'`,
   `form-action 'self'`, `frame-ancestors 'none'`, `upgrade-insecure-requests`.
   `script-src`/`style-src` use `'unsafe-inline'` (not a nonce) — see the note
@@ -113,8 +113,6 @@ Defensive controls currently in place:
   failing check flags a merge rather than blocking it.
 - Transitive vulnerabilities are pinned through npm-compatible `overrides`
   in `package.json`
-- Renovate is configured (`renovate.json`) for dependency-update PRs with
-  security auto-merge
 
 ### Data
 
@@ -132,10 +130,15 @@ Defensive controls currently in place:
 
 These are publicly documented so reporters don't waste cycles on them:
 
-- `ADMIN_API_TOKEN` is the only Bearer-token auth surface — consumed by
-  `/api/seed` and the blog mutation endpoints (POST/PUT/DELETE).
-  `METRICS_API_TOKEN` is consumed by `/api/security/metrics`. There is no
-  user-facing auth (no login, no sessions, no JWT).
+- Token auth is the only auth. `ADMIN_API_TOKEN` (Bearer) gates `/api/seed`,
+  the blog mutation endpoints (POST/PUT/DELETE) and admin reads of unpublished
+  posts and counts; `CRON_SECRET` (Bearer) gates `/api/cron/publish-scheduled`;
+  `METRICS_API_TOKEN` (`X-Metrics-Token` header) gates `/api/security/metrics`.
+  There is no user-facing auth (no login, no sessions, no JWT).
+- **No automated dependency updates.** `renovate.json` is committed, but
+  Renovate is not active on this repo (it has never opened a PR), and
+  Dependabot security updates are disabled, so updates are applied by hand.
+  The daily `bun audit` run is what surfaces new advisories between PRs.
 - **CSP `script-src` uses `'unsafe-inline'`** (accepted, bounded residual
   risk). A per-request nonce is incompatible with this site's static
   prerendering: Next.js 16 only injects a nonce when a route renders

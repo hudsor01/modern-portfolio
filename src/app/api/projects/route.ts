@@ -3,7 +3,10 @@ import { getProjects } from '@/lib/projects'
 import { logAndSanitizeError } from '@/lib/api-response'
 import { checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-rate-limit'
 
-// Enable ISR with 1 hour revalidation
+// Not ISR: this export only opts the GET into a build-time prerender, which
+// bails when the rate limiter reads request.headers, so the route renders per
+// request (ƒ in the build output). CDN caching comes from the Cache-Control
+// header below.
 export const revalidate = 3600
 
 export async function GET(request: NextRequest) {

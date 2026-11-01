@@ -13,16 +13,16 @@ App Router, deployed to Vercel.
 
 | Layer           | Choice                                                              |
 | --------------- | ------------------------------------------------------------------- |
-| Framework       | Next.js 16.2 (App Router, React Compiler enabled)                   |
-| UI              | React 19.2 · Tailwind CSS 4.2 · shadcn/ui · Radix primitives · Motion |
-| Language        | TypeScript 6.0 (strict, `noUncheckedIndexedAccess`)                 |
+| Framework       | Next.js 16.4 (App Router, React Compiler enabled)                   |
+| UI              | React 19.3 · Tailwind CSS 4.3 · shadcn/ui · Radix primitives · Motion |
+| Language        | TypeScript 7.0 (native compiler; strict, `noUncheckedIndexedAccess`) |
 | Database        | PostgreSQL on [Neon](https://neon.tech) via Drizzle ORM 0.45 (HTTP driver) |
-| Validation      | Zod 4.4                                                             |
-| Email           | [Resend](https://resend.com) 6.12                                   |
-| Observability   | Sentry (`@sentry/nextjs` 10.52) · Vercel Analytics · Speed Insights |
-| Runtime         | Bun 1.3.13 · Node.js `>=22 <25`                                     |
-| Testing         | Vitest 4.1 · Playwright 1.59 · `@axe-core/playwright`               |
-| Tooling         | Biome 2.4 (lint + format) · Lefthook 2 · Renovate                   |
+| Validation      | Zod 4.6                                                             |
+| Email           | [Resend](https://resend.com) 6.34                                   |
+| Observability   | Sentry (`@sentry/nextjs` 11.10) · Vercel Analytics · Speed Insights |
+| Runtime         | Bun 1.4.4 · Node.js `>=22 <25`                                      |
+| Testing         | Vitest 5.0 · Playwright 1.64 · `@axe-core/playwright`               |
+| Tooling         | Biome 2.6 (lint + format) · Lefthook 2 · Renovate (configured, not active) |
 | Hosting         | Vercel (region `iad1`)                                              |
 
 See [`package.json`](package.json) for exact pinned versions.
@@ -191,16 +191,18 @@ mutating `/api/blog*` and `/api/contact` routes.
 See [SECURITY.md](SECURITY.md) for the full posture and how to report
 vulnerabilities. Summary:
 
-- **Strict CSP** with per-request nonces — [`src/lib/csp-edge.ts`](src/lib/csp-edge.ts), wired in [`proxy.ts`](proxy.ts)
+- **CSP** built per request in [`src/proxy.ts`](src/proxy.ts) from [`src/lib/csp-edge.ts`](src/lib/csp-edge.ts) (`script-src 'self' 'unsafe-inline'`: a nonce is incompatible with static prerendering — see SECURITY.md)
 - **CSRF** on mutating API routes — [`src/lib/csrf-protection.ts`](src/lib/csrf-protection.ts) · [`src/lib/api-csrf.ts`](src/lib/api-csrf.ts)
 - **Rate limiting** — [`src/lib/rate-limiter/`](src/lib/rate-limiter/) (in-memory store with progressive backoff)
-- **Zod env validation** at startup, with production-only HTTPS enforcement — [`src/lib/env-validation.ts`](src/lib/env-validation.ts)
+- **Zod env validation** at startup, with HTTPS enforced outside development — [`src/lib/env-validation.ts`](src/lib/env-validation.ts)
 - **Security headers**: HSTS (1 yr, preload), `X-Frame-Options: DENY`,
   `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`
   (camera/mic/geolocation denied) — [`next.config.js`](next.config.js)
-- **Dependency hygiene**: `bun audit --audit-level=high` fails CI on every pull
-  request and re-runs daily against `main` — [`.github/workflows/audit.yml`](.github/workflows/audit.yml);
-  Renovate is configured for dependency-update PRs with security auto-merge — [`renovate.json`](renovate.json)
+- **Dependency hygiene**: `bun audit --audit-level=high` runs on every pull
+  request, failing CI on any high/critical advisory, and re-runs daily against
+  `main` — [`.github/workflows/audit.yml`](.github/workflows/audit.yml).
+  [`renovate.json`](renovate.json) exists, but Renovate is not active (it has
+  opened no PRs), so dependency updates are applied by hand
 - **Structured logging**: `console.*` is banned in application code;
   everything flows through [`src/lib/logger.ts`](src/lib/logger.ts) → Sentry in production
 - **Admin tokens** are compared with `crypto.timingSafeEqual` and fail

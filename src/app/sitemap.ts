@@ -15,13 +15,15 @@ const logger = createContextLogger('Sitemap')
 //
 // With force-dynamic, the sitemap renders at runtime on every request,
 // guaranteeing blog/category URLs are always fresh from the DB.
-// `revalidate = 3600` still applies as a CDN cache hint.
+// `revalidate = 3600` is inert under force-dynamic: the response carries Next's
+// fixed metadata-route header (public, max-age=0, must-revalidate) and Vercel
+// never caches it.
 export const dynamic = 'force-dynamic'
 export const revalidate = 3600
 
 // Static pages and project showcase pages change only when their source is
 // edited and redeployed — never on a sitemap regeneration. This route is
-// `force-dynamic` (renders per request, revalidating hourly), so lastmod must
+// `force-dynamic` (renders per request), so lastmod must
 // NOT come from a request-time clock: Google first downweights and eventually
 // IGNORES a sitemap whose lastmod changes while the content does not (Mueller,
 // 2024–2025), which silently breaks the "fix → request validation → recrawl"
@@ -132,7 +134,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  // During build, skip DB — blog posts are added on first ISR revalidation
+  // During build, skip DB — blog posts are added at request time
   if (process.env.NEXT_PHASE === 'phase-production-build') {
     return [...mainPages, ...projectPages]
   }
