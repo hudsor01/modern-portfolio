@@ -36,6 +36,19 @@ const tsvector = customType<{ data: string; driverData: string }>({
   dataType: () => 'tsvector',
 })
 
+// `updatedAt` on every table. The production tables were created by Prisma,
+// whose @updatedAt sets no database default: the columns are NOT NULL with no
+// DEFAULT. `.defaultNow()` alone only describes a fresh drizzle-kit schema — an
+// INSERT that omits updatedAt sends SQL DEFAULT, Postgres has none, and it fails
+// with 23502. `$defaultFn` makes Drizzle bind the timestamp itself and doesn't
+// change what drizzle-kit generates. Updates still set updatedAt explicitly; no
+// `$onUpdate`, which would also bump it on every viewCount increment.
+const updatedAtColumn = () =>
+  timestamp('updatedAt', { precision: 3, withTimezone: false })
+    .notNull()
+    .defaultNow()
+    .$defaultFn(() => new Date())
+
 // Enums
 export const postStatus = pgEnum('PostStatus', [
   'DRAFT',
@@ -98,7 +111,7 @@ export const authors = pgTable('authors', {
   totalViews: integer('totalViews').notNull().default(0),
   totalPosts: integer('totalPosts').notNull().default(0),
   createdAt: timestamp('createdAt', { precision: 3, withTimezone: false }).notNull().defaultNow(),
-  updatedAt: timestamp('updatedAt', { precision: 3, withTimezone: false }).notNull().defaultNow(),
+  updatedAt: updatedAtColumn(),
 })
 
 // Categories — self-referential parent/child
@@ -122,7 +135,7 @@ export const categories = pgTable(
     postCount: integer('postCount').notNull().default(0),
     totalViews: integer('totalViews').notNull().default(0),
     createdAt: timestamp('createdAt', { precision: 3, withTimezone: false }).notNull().defaultNow(),
-    updatedAt: timestamp('updatedAt', { precision: 3, withTimezone: false }).notNull().defaultNow(),
+    updatedAt: updatedAtColumn(),
   },
   (t) => [index('categories_parentId_idx').on(t.parentId)]
 )
@@ -138,7 +151,7 @@ export const tags = pgTable('tags', {
   postCount: integer('postCount').notNull().default(0),
   totalViews: integer('totalViews').notNull().default(0),
   createdAt: timestamp('createdAt', { precision: 3, withTimezone: false }).notNull().defaultNow(),
-  updatedAt: timestamp('updatedAt', { precision: 3, withTimezone: false }).notNull().defaultNow(),
+  updatedAt: updatedAtColumn(),
 })
 
 // Blog posts
@@ -171,7 +184,7 @@ export const blogPosts = pgTable(
     archivedAt: timestamp('archivedAt', { precision: 3, withTimezone: false }),
     deletedAt: timestamp('deletedAt', { precision: 3, withTimezone: false }),
     createdAt: timestamp('createdAt', { precision: 3, withTimezone: false }).notNull().defaultNow(),
-    updatedAt: timestamp('updatedAt', { precision: 3, withTimezone: false }).notNull().defaultNow(),
+    updatedAt: updatedAtColumn(),
     authorId: text('authorId')
       .notNull()
       .references(() => authors.id, { onDelete: 'restrict' }),
@@ -386,7 +399,7 @@ export const projects = pgTable(
     viewCount: integer('viewCount').notNull().default(0),
     clickCount: integer('clickCount').notNull().default(0),
     createdAt: timestamp('createdAt', { precision: 3, withTimezone: false }).notNull().defaultNow(),
-    updatedAt: timestamp('updatedAt', { precision: 3, withTimezone: false }).notNull().defaultNow(),
+    updatedAt: updatedAtColumn(),
   },
   (t) => [
     index('projects_category_idx').on(t.category),
@@ -420,7 +433,7 @@ export const contactSubmissions = pgTable(
     emailId: text('emailId'),
     emailError: text('emailError'),
     createdAt: timestamp('createdAt', { precision: 3, withTimezone: false }).notNull().defaultNow(),
-    updatedAt: timestamp('updatedAt', { precision: 3, withTimezone: false }).notNull().defaultNow(),
+    updatedAt: updatedAtColumn(),
   },
   (t) => [
     index('contact_submissions_status_createdAt_idx').on(t.status, t.createdAt.desc()),
