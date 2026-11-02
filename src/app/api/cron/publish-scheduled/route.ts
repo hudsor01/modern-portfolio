@@ -18,19 +18,13 @@ const logger = createContextLogger('CronPublishScheduled')
  * nothing ever moved a post from SCHEDULED to PUBLISHED. Scheduling a post
  * meant it disappeared forever. This closes that.
  *
- * SCHEDULE: daily at 06:00 UTC. That was a plan constraint when this was
- * written: the Vercel team was on Hobby, where cron jobs are "limited to cron
- * jobs that run once per day" and "expressions like `0 * * * *` (per-hour) ...
- * will fail deployment" (https://vercel.com/docs/cron-jobs/usage-and-pricing).
- * An hourly schedule was tried first and did exactly that — it broke two
- * production deployments before a single build was even created, because the
- * rejection happens at config validation. The team is now on Pro (minimum
- * interval once per minute, per-minute precision), so vercel.json could run
- * this more often.
- *
- * Consequence to be aware of when scheduling a post: at daily, a post goes
- * live up to ~24 hours after its `scheduledAt`. Set `scheduledAt` to the day
- * you want it live, not a precise minute.
+ * SCHEDULE: hourly, on the hour (UTC). A post goes live up to an hour after
+ * its `scheduledAt`. This needs Vercel Pro (minimum interval once per minute,
+ * per-minute precision). On Hobby, cron jobs are "limited to cron jobs that
+ * run once per day" and "expressions like `0 * * * *` (per-hour) ... will fail
+ * deployment" (https://vercel.com/docs/cron-jobs/usage-and-pricing): while
+ * the team was on Hobby this exact schedule broke two production deployments
+ * at config validation, before a build was created, and the job ran daily.
  *
  * Auth is the Vercel Cron contract: when a `CRON_SECRET` environment variable
  * is set, Vercel sends `Authorization: Bearer <CRON_SECRET>` on the invocation

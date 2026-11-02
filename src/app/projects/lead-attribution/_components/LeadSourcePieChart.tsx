@@ -6,7 +6,9 @@ import { Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { chartColors } from '@/lib/charts'
 import type { PieLabelRenderProps } from 'recharts'
 
-interface CustomTooltipProps {
+interface LeadSourceTooltipProps {
+  /** Sum of all slice values, supplied by the chart for the share percentage. */
+  total: number
   active?: boolean
   payload?: Array<{
     name: string
@@ -35,9 +37,13 @@ const defaultColors = [
   chartColors.chart1,
 ]
 
-// Module-level so Recharts sees a stable component type; it clones the
-// `content` element and merges in active/payload, so `total` passes through.
-function CustomTooltip({ active, payload, total }: CustomTooltipProps & { total: number }) {
+type LeadSourcePieChartProps = {
+  data: LeadSourceDatum[]
+}
+
+// Module-level so recharts gets a stable component type; it renders an element
+// `content` via cloneElement(content, props), which keeps the `total` prop.
+export function LeadSourceTooltip({ total, active, payload }: LeadSourceTooltipProps) {
   if (active && payload && payload.length > 0 && payload[0]?.payload) {
     const data = payload[0].payload
     const percentage = ((data.value / total) * 100).toFixed(1)
@@ -60,10 +66,6 @@ function CustomTooltip({ active, payload, total }: CustomTooltipProps & { total:
     )
   }
   return null
-}
-
-type LeadSourcePieChartProps = {
-  data: LeadSourceDatum[]
 }
 
 const LeadSourcePieChart = memo(function LeadSourcePieChart({ data }: LeadSourcePieChartProps) {
@@ -103,7 +105,7 @@ const LeadSourcePieChart = memo(function LeadSourcePieChart({ data }: LeadSource
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip content={<CustomTooltip total={total} />} />
+            <Tooltip content={<LeadSourceTooltip total={total} />} />
           </PieChart>
         </ResponsiveContainer>
       </div>

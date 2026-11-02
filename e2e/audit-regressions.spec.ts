@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { postCards } from './_helpers/blog'
 import { databaseAvailable, NEEDS_DATABASE } from './_helpers/database'
 
 /**
@@ -184,11 +185,10 @@ test.describe('Audit regressions', () => {
     await page.waitForLoadState('networkidle')
 
     // Visit the first published post link to verify the article template.
-    const firstPostLink = page.locator('a[href^="/blog/"]:not([href="/blog"])').first()
-    const href = await firstPostLink.getAttribute('href')
-    if (!href) test.skip(true, 'No blog posts present in this environment')
+    const href = (await postCards(page).first().getAttribute('href')) ?? ''
+    expect(href).toMatch(/^\/blog\/[^/]+$/)
 
-    await page.goto(href!)
+    await page.goto(href)
     await page.waitForLoadState('networkidle')
 
     const h1Count = await page.locator('h1').count()

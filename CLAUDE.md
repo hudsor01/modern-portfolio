@@ -4,7 +4,7 @@ Public portfolio + blog system for Richard Hudson. Next.js App Router, Drizzle O
 
 ## Stack
 
-Runtime: Bun 1.4.4 (`packageManager`; CI's SHA-pinned `setup-bun` v2.2.0 reads that field when given no version, so CI installs exactly this. Vercel's build does not — it installs with its own Bun, 1.3.14 as of 2026-10-31; see the `bun.lock` gotcha), Node `>=22 <25` (`package.json:7-9`). Next.js 16.4.3, React 19.3.1, TypeScript 7.0.2 (the native Go port — ships no `lib/typescript.js` compiler API, only the `typescript/unstable/*` IPC client; `next build` type-checks through the `tsc` CLI, so never set `experimental.useTypeScriptCli: false`), Tailwind 4.3.3, Zod 4.6.7, Drizzle ORM 0.45.4 + `@neondatabase/serverless` 1.2.0 (HTTP driver), `@sentry/nextjs` 11.10.0, Resend 6.34.1, Vitest 5.0.5 + jsdom 30, Playwright 1.64.1, Biome 2.6.4 (linter + formatter), Lefthook 2.2.2.
+Runtime: Bun 1.4.4 (`packageManager`; CI's SHA-pinned `setup-bun` v2 reads that field when given no version, so CI installs exactly this. Vercel's build does not — it installs with its own Bun, 1.3.14 as of 2026-10-31; see the `bun.lock` gotcha), Node `>=22 <25` (`package.json:7-9`). Major versions only — exact pins are in `package.json`, and Dependabot moves minors weekly: Next.js 16, React 19, TypeScript 7 (the native Go port — ships no `lib/typescript.js` compiler API, only the `typescript/unstable/*` IPC client; `next build` type-checks through the `tsc` CLI, so never set `experimental.useTypeScriptCli: false`), Tailwind 4, Zod 4, Drizzle ORM 0.45 (pre-1.0, so the minor is the breaking line) + `@neondatabase/serverless` 1 (HTTP driver), `@sentry/nextjs` 11, Resend 6, Vitest 5 + jsdom 30, Playwright 1, Biome 2 (linter + formatter), Lefthook 2.
 
 ## Commands
 
@@ -120,7 +120,7 @@ Seed (`drizzle/seed.ts`): **destructive outside production** — unless `NODE_EN
 | `/api/og` | GET | — | — | — | Dynamic OG image (`route.tsx`) |
 | `/api/seed` | POST | — | — | `ADMIN_API_TOKEN` | Returns 404 in production unless `ALLOW_SEED_IN_PRODUCTION='true'`; refuses if posts already exist |
 | `/api/security/metrics` | GET | — | — | `METRICS_API_TOKEN` (header `X-Metrics-Token`) | Exports rate-limiter metrics. Returns **403** (not 401) both when the token is unset (`route.ts:9`) and when it mismatches (`route.ts:15`) |
-| `/api/cron/publish-scheduled` | GET | — | — | `CRON_SECRET` (`Authorization: Bearer`) | Vercel Cron, **daily 06:00 UTC** (`vercel.json`). The schedule dates from when the team was on Hobby, where sub-daily expressions like `0 * * * *` **fail deployment outright** at config validation and precision is ±59 min. The team is now on **Pro** (once-per-minute minimum, per-minute precision — [docs](https://vercel.com/docs/cron-jobs/usage-and-pricing)), so a tighter schedule is allowed; at daily, a post publishes up to ~24 h after `scheduledAt`. Flips `SCHEDULED` → `PUBLISHED` once `scheduledAt` is due, skipping soft-deleted rows. **Fails closed**: 401 when `CRON_SECRET` is unset, and returns an identical 401 for unset vs. wrong token so the response can't confirm whether a secret exists. `Cache-Control: no-store` |
+| `/api/cron/publish-scheduled` | GET | — | — | `CRON_SECRET` (`Authorization: Bearer`) | Vercel Cron, **hourly on the hour** (`vercel.json`), so a post publishes up to an hour after `scheduledAt`. Hourly needs **Pro** (once-per-minute minimum, per-minute precision — [docs](https://vercel.com/docs/cron-jobs/usage-and-pricing)); on Hobby, sub-daily expressions like `0 * * * *` **fail deployment outright** at config validation, which is why it ran daily until the team moved to Pro. Flips `SCHEDULED` → `PUBLISHED` once `scheduledAt` is due, skipping soft-deleted rows. **Fails closed**: 401 when `CRON_SECRET` is unset, and returns an identical 401 for unset vs. wrong token so the response can't confirm whether a secret exists. `Cache-Control: no-store` |
 
 Rate limiter (`src/lib/rate-limiter/store.ts`): in-memory `Map` singleton; a 5-min cleanup sweep (expired/idle records, penalty decay), and LRU-style eviction (expired/unpenalised records first, oldest `createdAt` first) only once the store hits 10,000 entries; exponential progressive penalty with 2× multiplier. Two preset surfaces:
 - `RateLimitPresets` (`src/lib/api-rate-limit.ts`): `read` (100/min, burst 120/5s), `sensitive` (10/hr, 30-min block).
@@ -319,16 +319,17 @@ stale `node_modules` hides this class of bug — Bun does not prune packages tha
 `peer = false` stops installing — so verify dependency changes with
 `rm -rf node_modules && bun install --frozen-lockfile`.
 
-**Keep `overrides` minimal.** There are 3. Each was added to lift a *nested* copy
-that a parent pinned below a fix line; as of `next` 16.4.3 only `esbuild` still does
-(via `@esbuild-kit/core-utils`) — `postcss` now only dedupes (every copy forced to
-exactly `8.5.32`) and `sharp` is only a floor:
+**Keep `overrides` minimal.** There are 4. Each was added to lift a *nested* copy
+that a parent pinned below a fix line; as of `next` 16.4.3 only `esbuild` and `glob`
+still do — `postcss` now only dedupes (every copy forced to exactly `8.5.32`) and
+`sharp` is only a floor:
 
 | Override | Why it exists |
 |---|---|
 | `postcss` | `next` internally pins its own `postcss` (`8.5.23` as of 16.4.3); collapses every copy onto one patched version |
 | `sharp` | Backstop against a *nested* pre-0.35.5 copy (libvips/libheif RCE GHSA-rgj7-g3m4-5g8c fixed in 0.35.4; librsvg GHSA-wq5f-xc86-pv6w fixed in 0.35.5). As of `next` 16.4.3 the parent itself pins `sharp ^0.35.5`, so this no longer changes resolution. Kept only as a floor; re-check it whenever `next` is bumped. There is deliberately **no direct `sharp` dependency**: `next` installs it as an `optionalDependency` (not a peer, so `peer = false` does not drop it), which is what `next/image` optimization uses in the standalone server — verified by `/_next/image` returning AVIF. The old direct pin only existed to lift `next`'s former `^0.34.5`. |
 | `esbuild` | `^0.28.2`. Collapses the tree onto one esbuild; the parents still below it are `drizzle-kit` (`^0.25.4`), which works on 0.28 (`drizzle-kit check` and `drizzle-kit export` verified), and `@esbuild-kit/core-utils` (`~0.18.20`, pulled in by drizzle-kit's `@esbuild-kit/esm-loader`, which drizzle-kit's `bin.cjs` never loads) — that `~0.18.20` sits inside GHSA-67mh-4wv8-2f99 (`<=0.24.2`), so it is the copy this override actually lifts. `react-email`, `tsx` and `vite` already ask for `^0.27`/`^0.28` — the old `^0.25.0` pin was forcing them *below* their own declared ranges |
+| `glob` | `^14.0.2`. `react-email` and `@sentry/bundler-plugins` pin `glob ^13.0.6` even at their latest, and 13.x has no backport for GHSA-3g3m-2fjr-6pw4 or its `minimatch` 10 dependency's GHSA-g3hv-75wg-m249 (glob 14 moves to `minimatch` 11). Neither consumer uses an API glob 14 broke: `react-email` calls `glob()`/`globSync()` only in its CLI, which no script runs; Sentry's Next.js upload passes directories to sentry-cli (`prepareArtifacts: false`), and its `globFiles` results on this `.next` were identical under 13 and 14. Remove once both parents accept `^14` |
 
 Before adding a fourth, check whether the package resolves to a patched version on
 its own — an override that pins a caret range *stops* that package tracking upstream
@@ -340,8 +341,9 @@ edits `overrides` (see below), so every entry is hand-maintained.
 
 **Dependabot version updates, not security updates.** `.github/dependabot.yml`
 opens a weekly `bun` PR: minor and patch bumps grouped into one, majors
-separately, nothing published less than 3 days ago (`cooldown`). It bumps direct
-dependencies only and never edits `overrides`, so `postcss` (pinned in both) is
+separately, nothing published less than 3 days ago (`cooldown`). A second entry
+groups every GitHub Action into one monthly PR, SHA pins included. The `bun`
+entry bumps direct dependencies only and never edits `overrides`, so `postcss` (pinned in both) is
 ignored, and transitive fixes still come from the daily audit plus a hand-written
 override. Its updater bundles Bun 1.4.2, which keeps `bun.lock` at
 `lockfileVersion: 1` but drops the `libc`/`hasInstallScript` keys 1.4.4 writes —
@@ -368,12 +370,8 @@ its alerts see only package.json's direct deps (the dependency graph does not pa
 `bun.lock`), and between 2026-09-30 and 2026-10-31 it never alerted on 10 reviewed
 next/dompurify advisories in range, four of them critical. A failed scheduled run
 notifies only if GitHub Actions notifications are on for the user who last edited
-the cron. Keep the tree clean at *every* severity. Open as of 2026-10-31: `glob`
-13.0.6 / `minimatch` 10.2.6 (2 moderate, GHSA-3g3m-2fjr-6pw4 / GHSA-g3hv-75wg-m249) —
-`@sentry/bundler-plugin*` and `react-email` pin `glob ^13.0.6` with no 13.x
-backport, so the fix is a flat `"glob": "^14.0.2"` override (not a nested or
-version-scoped key — see the `bun.lock` gotcha) once it clears the local Safe-chain
-minimum package age.
+the cron. Keep the tree clean at *every* severity: `bun audit` (no level) reports
+nothing as of 2026-11-02.
 
 ## Gotchas
 
@@ -402,7 +400,7 @@ minimum package age.
 - Image whitelist: `images.unsplash.com` only (`next.config.js:46-52`, inside the `images` block at `:39-53`).
 - Cache policy for `/projects/*`, `/blog/*` **and `/tools/*`**: `s-maxage=60, stale-while-revalidate=86400`, CDN 1 hour (`next.config.js:130-136`; source is `/(projects|blog|tools)/:path*`). Search renders (`/blog?q=…`) override it to `s-maxage=60, stale-while-revalidate=300`, CDN 60 s (`next.config.js:151-158`; declared later, so it wins).
 - Permanent redirects (`next.config.js:182-229`): `/home` → `/`, plus five blog 308s — four de-cannibalization (two forecast-accuracy slugs, two dead-deal slugs), whose sources are also excluded from the sitemap via `RETIRED_BLOG_SLUGS` (`src/app/sitemap.ts:57-62`), and one renamed RevOps pillar, which is not in that set (the sitemap lists only published DB posts, and no post has the old slug — it 404'd until this 308 was added, per `next.config.js:218-222`). Edge-level: `/github`, `/linkedin`, `/twitter` (`vercel.json:14-27`; `permanent` defaults to true → 308).
-- 90 Vitest files under `src/**/__tests__/` — `src/lib/` (44), `src/app/api/` (15), `src/components/` (23), `src/hooks/` (4), plus `src/app/contact/`, `src/data/`, `src/db/`, `src/emails/`. Discovery pattern: `src/**/__tests__/**/*.test.ts{,x}` (`vitest.config.mts:35`). Regenerate: `find src -name '*.test.ts*' | wc -l`.
+- 93 Vitest files under `src/**/__tests__/` — `src/lib/` (44), `src/app/api/` (15), `src/components/` (23), `src/hooks/` (4), `src/app/projects/` (2), plus `src/app/blog/`, `src/app/contact/`, `src/data/`, `src/db/`, `src/emails/`. Discovery pattern: `src/**/__tests__/**/*.test.ts{,x}` (`vitest.config.mts:35`). Regenerate: `find src -name '*.test.ts*' | wc -l`.
 - 12 Playwright specs under `e2e/` (11 top-level + `e2e/_meta/keyboard-infra.spec.ts`).
 - Security audit history: `SECURITY.md` (current controls). `SECURITY_AUDIT_REPORT.md` no longer exists — its findings (S-001, B-001, H-001, B-002, P-001) were closed, but that report was never committed (`*.md` is gitignored, `.gitignore:79`; the 2025 `SECURITY_AUDIT_REPORT.md` in history, `0a7fdf37`, is an unrelated earlier audit with none of these IDs), so the findings and their fixes are recorded in commit `c7025546`'s message (2026-04-18).
 

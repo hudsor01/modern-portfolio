@@ -13,16 +13,16 @@ App Router, deployed to Vercel.
 
 | Layer           | Choice                                                              |
 | --------------- | ------------------------------------------------------------------- |
-| Framework       | Next.js 16.4 (App Router, React Compiler enabled)                   |
-| UI              | React 19.3 · Tailwind CSS 4.3 · shadcn/ui · Radix primitives · Motion |
-| Language        | TypeScript 7.0 (native compiler; strict, `noUncheckedIndexedAccess`) |
+| Framework       | Next.js 16 (App Router, React Compiler enabled)                     |
+| UI              | React 19 · Tailwind CSS 4 · shadcn/ui · Radix primitives · Motion   |
+| Language        | TypeScript 7 (native compiler; strict, `noUncheckedIndexedAccess`)  |
 | Database        | PostgreSQL on [Neon](https://neon.tech) via Drizzle ORM 0.45 (HTTP driver) |
-| Validation      | Zod 4.6                                                             |
-| Email           | [Resend](https://resend.com) 6.34                                   |
-| Observability   | Sentry (`@sentry/nextjs` 11.10) · Vercel Analytics · Speed Insights |
+| Validation      | Zod 4                                                               |
+| Email           | [Resend](https://resend.com) 6                                      |
+| Observability   | Sentry (`@sentry/nextjs` 11) · Vercel Analytics · Speed Insights    |
 | Runtime         | Bun 1.4.4 · Node.js `>=22 <25`                                      |
-| Testing         | Vitest 5.0 · Playwright 1.64 · `@axe-core/playwright`               |
-| Tooling         | Biome 2.6 (lint + format) · Lefthook 2 · Dependabot                 |
+| Testing         | Vitest 5 · Playwright · `@axe-core/playwright`                      |
+| Tooling         | Biome 2 (lint + format) · Lefthook 2 · Dependabot                   |
 | Hosting         | Vercel (region `iad1`)                                              |
 
 See [`package.json`](package.json) for exact pinned versions.
@@ -201,7 +201,8 @@ vulnerabilities. Summary:
 - **Dependency hygiene**: `bun audit --audit-level=high` runs on every pull
   request, failing CI on any high/critical advisory, and re-runs daily against
   `main` — [`.github/workflows/audit.yml`](.github/workflows/audit.yml).
-  [Dependabot](.github/dependabot.yml) opens weekly version-update PRs
+  [Dependabot](.github/dependabot.yml) opens weekly dependency and monthly
+  GitHub Actions update PRs
 - **Structured logging**: `console.*` is banned in application code;
   everything flows through [`src/lib/logger.ts`](src/lib/logger.ts) → Sentry in production
 - **Admin tokens** are compared with `crypto.timingSafeEqual` and fail
