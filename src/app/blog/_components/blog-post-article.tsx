@@ -1,7 +1,7 @@
 'use client'
 
 import type React from 'react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { Copy, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -96,27 +96,38 @@ interface BlogContentProps {
   allowCopy?: boolean
 }
 
-// Custom code block component. Module-level so its identity is stable across
-// BlogPostArticle renders — defined inline, every copy-state change remounted
-// every code block on the page.
-function CodeBlock({
-  children,
-  className,
-  language = 'text',
-  allowCopy,
-  copiedCode,
-  isDark,
-  onCopy,
-}: {
+interface CodeBlockProps {
   children: string
   className?: string
   language?: string
   allowCopy: boolean
-  copiedCode: string | null
-  isDark: boolean
-  onCopy: (code: string) => void
-}) {
+}
+
+// Module-level on purpose: declared inside BlogPostArticle, every copy click
+// re-rendered the article with a new component type and React remounted every
+// block (losing focus on the button). Copied state is per block for the same
+// reason — keyed by code string, identical blocks flipped together.
+function CodeBlock({ children, className, language = 'text', allowCopy }: CodeBlockProps) {
+  const { theme } = useTheme()
+  const [copied, setCopied] = useState(false)
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const codeString = String(children).replace(/\n$/, '')
+
+  useEffect(() => () => clearTimeout(resetTimer.current), [])
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(codeString)
+      setCopied(true)
+      clearTimeout(resetTimer.current)
+      resetTimer.current = setTimeout(
+        () => setCopied(false),
+        TIMING_CONSTANTS.CLIPBOARD_COPY_DISPLAY
+      )
+    } catch (err) {
+      logger.error('Failed to copy code', err instanceof Error ? err : new Error(String(err)))
+    }
+  }
 
   return (
     <div className={cn('relative group my-6', className)}>
@@ -124,16 +135,17 @@ function CodeBlock({
         <Button
           size="sm"
           variant="ghost"
-          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-black/50 hover:bg-black/70 text-white"
-          onClick={() => onCopy(codeString)}
+          aria-label={copied ? 'Copied' : 'Copy code'}
+          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity z-10 bg-black/50 hover:bg-black/70 text-white"
+          onClick={copyToClipboard}
         >
-          {copiedCode === codeString ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+          {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
         </Button>
       )}
       <pre
         className={cn(
           'rounded-lg text-sm p-4 overflow-x-auto',
-          isDark ? 'bg-background text-foreground' : 'bg-muted text-foreground'
+          theme === 'dark' ? 'bg-background text-foreground' : 'bg-muted text-foreground'
         )}
       >
         <code className={`language-${language}`}>{codeString}</code>
@@ -148,20 +160,6 @@ export function BlogPostArticle({
   className,
   allowCopy = true,
 }: BlogContentProps) {
-  const { theme } = useTheme()
-  const [copiedCode, setCopiedCode] = useState<string | null>(null)
-
-  // Copy code functionality
-  const copyToClipboard = async (code: string) => {
-    try {
-      await navigator.clipboard.writeText(code)
-      setCopiedCode(code)
-      setTimeout(() => setCopiedCode(null), TIMING_CONSTANTS.CLIPBOARD_COPY_DISPLAY)
-    } catch (err) {
-      logger.error('Failed to copy code', err instanceof Error ? err : new Error(String(err)))
-    }
-  }
-
   // Helper to sanitize HTML content (no-op during SSR, sanitized on client)
   function sanitizeHtml(
     html: string,
@@ -191,9 +189,6 @@ export function BlogPostArticle({
             language={language || 'text'}
             className="my-6"
             allowCopy={allowCopy}
-            copiedCode={copiedCode}
-            isDark={theme === 'dark'}
-            onCopy={copyToClipboard}
           >
             {decodeHtmlEntities(code || '')}
           </CodeBlock>
