@@ -12,3 +12,15 @@ updates:
     ignore:
       # Pinned in both dependencies and overrides; Dependabot doesn't edit overrides.
       - dependency-name: postcss
+
+  # The SHA-pinned actions (setup-bun, gitleaks-action, claude-code-action)
+  # get updated too: Dependabot rewrites the SHA and its version comment.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 3
+    groups:
+      actions:
+        patterns: ['*']

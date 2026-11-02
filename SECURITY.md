@@ -113,8 +113,8 @@ Defensive controls currently in place:
   failing check flags a merge rather than blocking it.
 - Transitive vulnerabilities are pinned through npm-compatible `overrides`
   in `package.json`
-- Dependabot version updates open a weekly PR, skipping releases under 3 days
-  old (`.github/dependabot.yml`)
+- Dependabot version updates open a weekly dependency PR and a monthly GitHub
+  Actions PR, skipping releases under 3 days old (`.github/dependabot.yml`)
 
 ### Data
 
