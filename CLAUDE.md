@@ -335,12 +335,26 @@ its own — an override that pins a caret range *stops* that package tracking up
 patches and goes stale silently. That is not hypothetical: the old block pinned
 `fast-uri ^4.0.0`, which forced the tree onto the 4.x line where the vulnerable range
 (`>=4.0.0 <4.1.2`) lives, when it would otherwise have resolved to a clean 3.1.5.
-Several other pins had drifted *behind* natural resolution. No bot keeps them
-current here: Renovate has handled `overrides` since 32.60.0
-([renovate#15278](https://github.com/renovatebot/renovate/issues/15278), closed as
-completed in 2022) but has never opened a PR on this repo despite `renovate.json`,
-and Dependabot security updates are disabled (no `dependabot.yml` either) — so every
-entry is hand-maintained.
+Several other pins had drifted *behind* natural resolution. Dependabot never
+edits `overrides` (see below), so every entry is hand-maintained.
+
+**Dependabot version updates, not security updates.** `.github/dependabot.yml`
+opens a weekly `bun` PR: minor and patch bumps grouped into one, majors
+separately, nothing published less than 3 days ago (`cooldown`). It bumps direct
+dependencies only and never edits `overrides`, so `postcss` (pinned in both) is
+ignored, and transitive fixes still come from the daily audit plus a hand-written
+override. Its updater bundles Bun 1.4.2, which keeps `bun.lock` at
+`lockfileVersion: 1` but drops the `libc`/`hasInstallScript` keys 1.4.4 writes —
+churn, not breakage (see the `bun.lock` gotcha). Dependabot *security* updates
+stay off: GitHub doesn't support them for Bun, and here they only ever bumped
+`package.json` (#53, #60, both red in CI) or, since dependabot-core #16220, error
+on the alert. Bot PRs run CI without Actions secrets, so the DB-dependent e2e
+specs skip. `vercel.json`'s `git.deploymentEnabled` skips Vercel previews on
+`dependabot/**` branches: previews carry the production `DATABASE_URL`, and the
+build would run an unreviewed dependency's code with it (`dependabot/*` doesn't
+match Dependabot's multi-slash branch names). Renovate was never installed and its
+config is gone; don't bring back its `lockFileMaintenance`, which regenerates
+`bun.lock` at `lockfileVersion: 2`.
 
 CI gate is `bun audit --audit-level=high`, defined once in
 `.github/workflows/audit.yml`: `ci.yml`'s `audit` job calls it on every PR, and it
@@ -371,7 +385,7 @@ minimum package age.
 - **All IDs are CUIDs** — except `projects` rows from `drizzle/seed.ts`, which use the slug-style ids from `src/data/projects.ts`. New rows use cuid2 via `src/db/cuid.ts`; legacy rows from the Prisma era use cuid v1. Both are 24–25-char alphanumeric strings — use `cuidSchema` from `src/lib/schemas.ts` for ID validation, never `z.string().uuid()`.
 - **citext + inet (and the `tsvector` behind `blogPosts.searchVector`) are custom Drizzle types.** Defined in `src/db/schema.ts` via `customType<{ data: string; driverData: string }>`. Don't replace with plain `text()` — case-insensitive slug and author-email matching depends on it.
 - **Prisma-created `updatedAt` columns have no DB default.** Prisma's `@updatedAt` never made one, so on every existing database `updatedAt` is `NOT NULL` with no `DEFAULT` — `.defaultNow()` in `schema.ts` only describes a freshly generated schema, and an INSERT that leaves the column to SQL `DEFAULT` fails with 23502 (that broke the seed and every admin POST until #244). Build every `updatedAt` with `updatedAtColumn()` (`src/db/schema.ts`), whose `$defaultFn` makes Drizzle bind the timestamp on insert; `src/db/__tests__/schema.test.ts` fails for any table that doesn't. Updates must still set `updatedAt` explicitly — there is deliberately no `$onUpdate`, which would also bump it on every `viewCount` increment. `createdAt` is fine: Prisma's `@default(now())` did create a DB default.
-- **CSP comes from `src/proxy.ts`, not `headers()`.** Adding it to `next.config.js` would emit a second, conflicting `Content-Security-Policy` header. Note the CSP itself carries **no** nonce — `script-src` is `'self' 'unsafe-inline' …` (`src/lib/csp-edge.ts:58`) because a nonce is incompatible with this site's static prerendering (explained in `SECURITY.md:142-149`; `next.config.js:86-88` only points there). The per-request `x-nonce` header still exists and `layout.tsx:48` threads it into the JSON-LD components, but it is not enforced by the policy today.
+- **CSP comes from `src/proxy.ts`, not `headers()`.** Adding it to `next.config.js` would emit a second, conflicting `Content-Security-Policy` header. Note the CSP itself carries **no** nonce — `script-src` is `'self' 'unsafe-inline' …` (`src/lib/csp-edge.ts:58`) because a nonce is incompatible with this site's static prerendering (explained in `SECURITY.md:140-147`; `next.config.js:86-88` only points there). The per-request `x-nonce` header still exists and `layout.tsx:48` threads it into the JSON-LD components, but it is not enforced by the policy today.
 - **PDF assets are an intentional carve-out.** `.pdf` paths are excluded from the `proxy.ts` matcher (no CSP) and override `X-Frame-Options` to `SAMEORIGIN` via a route-specific `next.config.js` rule, so the resume PDF can embed in `<object>` on `/resume` and `/resume/view`. Chrome PDFium has been progressively restricting `<iframe src=pdf>` since Chrome 116; use `<object data=pdf type="application/pdf">` for embedded PDFs. If a future PDF needs to stay non-framable (e.g. signed contract), narrow the `next.config.js` source from `/:path*\\.pdf` to the literal résumé filename and add an explicit deny rule for the new path. Regression-pinned in `e2e/security-headers.spec.ts`.
 - **One canonical email path: `src/lib/email-service.ts`.** Both the `submitContactForm` server action (`src/app/contact/actions.ts`) and the `POST /api/contact` route handler delegate to `emailService.sendContactEmail()`. Templates live in `src/emails/*.tsx` and use `react-email` components (passed via Resend's `react` prop). Don't reintroduce inline HTML strings or per-handler Resend clients.
 - **`api/contact/csrf-route.ts` is not auto-routed.** Next.js only treats `route.ts`/`route.tsx` as an endpoint; this filename was deliberate. Confirm wiring before relying on it.
