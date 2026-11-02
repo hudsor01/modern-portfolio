@@ -22,7 +22,7 @@ App Router, deployed to Vercel.
 | Observability   | Sentry (`@sentry/nextjs` 11.10) · Vercel Analytics · Speed Insights |
 | Runtime         | Bun 1.4.4 · Node.js `>=22 <25`                                      |
 | Testing         | Vitest 5.0 · Playwright 1.64 · `@axe-core/playwright`               |
-| Tooling         | Biome 2.6 (lint + format) · Lefthook 2                              |
+| Tooling         | Biome 2.6 (lint + format) · Lefthook 2 · Dependabot                 |
 | Hosting         | Vercel (region `iad1`)                                              |
 
 See [`package.json`](package.json) for exact pinned versions.
@@ -201,7 +201,7 @@ vulnerabilities. Summary:
 - **Dependency hygiene**: `bun audit --audit-level=high` runs on every pull
   request, failing CI on any high/critical advisory, and re-runs daily against
   `main` — [`.github/workflows/audit.yml`](.github/workflows/audit.yml).
-  Dependency updates are applied by hand; there is no update bot
+  [Dependabot](.github/dependabot.yml) opens weekly version-update PRs
 - **Structured logging**: `console.*` is banned in application code;
   everything flows through [`src/lib/logger.ts`](src/lib/logger.ts) → Sentry in production
 - **Admin tokens** are compared with `crypto.timingSafeEqual` and fail

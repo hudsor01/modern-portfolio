@@ -113,6 +113,8 @@ Defensive controls currently in place:
   failing check flags a merge rather than blocking it.
 - Transitive vulnerabilities are pinned through npm-compatible `overrides`
   in `package.json`
+- Dependabot version updates open a weekly PR, skipping releases under 3 days
+  old (`.github/dependabot.yml`)
 
 ### Data
 
@@ -135,10 +137,6 @@ These are publicly documented so reporters don't waste cycles on them:
   posts and counts; `CRON_SECRET` (Bearer) gates `/api/cron/publish-scheduled`;
   `METRICS_API_TOKEN` (`X-Metrics-Token` header) gates `/api/security/metrics`.
   There is no user-facing auth (no login, no sessions, no JWT).
-- **No automated dependency updates.** There is no update bot (no Renovate,
-  no Dependabot version updates) and Dependabot security updates are
-  disabled, so updates are applied by hand. The daily `bun audit` run is what
-  surfaces new advisories between PRs.
 - **CSP `script-src` uses `'unsafe-inline'`** (accepted, bounded residual
   risk). A per-request nonce is incompatible with this site's static
   prerendering: Next.js 16 only injects a nonce when a route renders
