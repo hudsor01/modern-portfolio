@@ -29,18 +29,18 @@ export function AboutSection() {
             </h3>
             <p className="text-primary font-medium">10+ Years Experience | Dallas-Fort Worth, TX</p>
             <p className="text-muted-foreground text-base leading-relaxed">
-              Experienced Revenue Operations Professional with a proven track record of driving
-              business growth through data-driven insights, process optimization, and strategic
-              operational improvements. Expert in building scalable systems that increase efficiency
-              and revenue performance.
+              Data and revenue operations professional with nearly a decade of experience across
+              digital marketing, business systems, partner operations and analytics, after six years
+              as an IT specialist in the Texas Army National Guard. Proven expertise in developing
+              SQL logic, optimizing sales funnels and building automated systems that scale.
             </p>
 
             <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
               <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/30">
-                Salesforce Certified
+                SalesLoft Certified Administrator
               </span>
               <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/30">
-                HubSpot Certified
+                HubSpot Revenue Operations Certified
               </span>
               <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-accent/10 text-accent border border-accent/30">
                 Revenue Operations
