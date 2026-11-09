@@ -167,17 +167,70 @@ test.describe('Blog search (server-side full text)', () => {
   test('no query renders the full index', async ({ page }) => {
     test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
 
+    // Compare totals, not visible cards: both renders are paged, so page 1 of
+    // a broad search can hold as many cards as page 1 of the index.
+    const resultCount = async () =>
+      Number.parseInt((await page.getByTestId('blog-result-count').textContent()) ?? '', 10)
+
     await page.goto('/blog')
     await page.waitForLoadState('networkidle')
-    const all = await cards(page).count()
+    const all = await resultCount()
 
     await page.goto('/blog?q=attribution')
     await page.waitForLoadState('networkidle')
-    const filtered = await cards(page).count()
+    const filtered = await resultCount()
 
+    expect(await cards(page).count()).toBeGreaterThan(0)
     expect(all).toBeGreaterThan(0)
     expect(filtered).toBeGreaterThan(0)
     expect(filtered).toBeLessThan(all)
+  })
+})
+
+test.describe('Blog pagination', () => {
+  test('every post in the sitemap is reachable from the /blog page links', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+
+    // The index used to stop at the newest 50 posts with no way to the rest,
+    // while the sitemap listed every published post.
+    const sitemap = await (await page.request.get('/sitemap.xml')).text()
+    const sitemapPosts = [...sitemap.matchAll(/<loc>[^<]*?(\/blog\/(?!category\/)[^<]+)<\/loc>/g)]
+      .map((m) => m[1])
+      .filter((path): path is string => Boolean(path))
+    expect(sitemapPosts.length).toBeGreaterThan(0)
+
+    const listed = new Set<string>()
+    let url: string | null = '/blog'
+    for (let guard = 0; url && guard < 50; guard++) {
+      await page.goto(url)
+      await page.waitForLoadState('networkidle')
+      for (const href of await postCards(page).evaluateAll((links) =>
+        links.map((a) => a.getAttribute('href') ?? '')
+      )) {
+        listed.add(href)
+      }
+      const next = page.getByRole('navigation', { name: 'Blog pages' }).getByRole('link', {
+        name: 'Next',
+      })
+      url = (await next.count()) > 0 ? await next.getAttribute('href') : null
+    }
+
+    const missing = sitemapPosts.filter((path) => !listed.has(path))
+    expect(missing, `in the sitemap but not reachable from /blog: ${missing.join(', ')}`).toEqual(
+      []
+    )
+  })
+
+  test('a page past the end is a 404', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+    const response = await page.request.get('/blog?page=9999')
+    expect(response.status()).toBe(404)
+  })
+
+  test('a junk page param renders the first page', async ({ page }) => {
+    const response = await page.goto('/blog?page=abc')
+    expect(response?.status()).toBe(200)
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
   })
 })
 
