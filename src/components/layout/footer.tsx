@@ -89,12 +89,12 @@ export function Footer() {
         </div>
 
         <div className="mt-10 pt-6 border-t border-border flex flex-col md:flex-row justify-between items-center gap-3 text-sm text-muted-foreground">
-          <p>
-            © {currentYear} Richard Hudson. All rights reserved.{' '}
-            <Link href="/privacy" className="underline-offset-4 hover:text-primary hover:underline">
-              Privacy
+          <div className="flex flex-wrap items-baseline justify-center gap-x-4 gap-y-1">
+            <p>© {currentYear} Richard Hudson. All rights reserved.</p>
+            <Link href="/privacy" className="hover:text-primary transition-colors">
+              Privacy Policy
             </Link>
-          </p>
+          </div>
           <a
             href="https://hudsondigitalsolutions.com"
             target="_blank"

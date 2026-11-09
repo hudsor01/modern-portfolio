@@ -30,6 +30,9 @@ const LAST_UPDATED_LABEL = new Intl.DateTimeFormat('en-US', {
   timeZone: 'UTC',
 }).format(new Date(`${PRIVACY_POLICY_LAST_UPDATED}T00:00:00Z`))
 
+// Global `p` styles set body copy to --font-size-base; list items match it.
+const LIST_CLASS = 'list-disc pl-6 space-y-2 text-(length:--font-size-base)'
+
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="mt-12">
@@ -93,7 +96,7 @@ export default function PrivacyPage() {
 
           <Section title="The contact form">
             <p>The form on the contact page asks for:</p>
-            <ul className="list-disc pl-6 space-y-2">
+            <ul className={LIST_CLASS}>
               <li>Your name, email address and message (required)</li>
               <li>A phone number (optional)</li>
               <li>
@@ -102,7 +105,7 @@ export default function PrivacyPage() {
               </li>
             </ul>
             <p>When you press Send, two emails go out through Resend, an email delivery service:</p>
-            <ul className="list-disc pl-6 space-y-2">
+            <ul className={LIST_CLASS}>
               <li>
                 One to me, containing your name, email address, phone number (if given), your
                 message and the time it was sent. Replying to it replies to you.
