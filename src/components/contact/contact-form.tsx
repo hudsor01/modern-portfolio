@@ -8,11 +8,10 @@ import {
   ArrowRight,
   User,
   MessageSquare,
-  Eye,
-  EyeOff,
   Building2,
   Phone,
 } from 'lucide-react'
+import Link from 'next/link'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Field, FieldError } from '@/components/ui/field'
@@ -24,16 +23,7 @@ interface ContactFormProps {
 }
 
 export function ContactForm({ form: formHook }: ContactFormProps) {
-  const {
-    form,
-    submitStatus,
-    showPrivacy,
-    agreedToTerms,
-    setShowPrivacy,
-    setAgreedToTerms,
-    isSubmitting,
-    error,
-  } = formHook
+  const { form, submitStatus, agreedToTerms, setAgreedToTerms, isSubmitting, error } = formHook
 
   return (
     <div className="bg-card rounded-2xl p-8 border border-border shadow-sm">
@@ -213,24 +203,18 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
           <div className="text-sm">
             <label htmlFor="privacy" className="text-muted-foreground cursor-pointer">
               I agree to the{' '}
-              <button
-                type="button"
-                onClick={() => setShowPrivacy(!showPrivacy)}
-                className="text-primary hover:text-primary/70 underline inline-flex items-center gap-1"
-                aria-label={showPrivacy ? 'Hide privacy policy' : 'Show privacy policy'}
-                aria-expanded={showPrivacy}
+              {/* New tab so reading the policy doesn't discard what's been typed. */}
+              <Link
+                href="/privacy"
+                target="_blank"
+                rel="noopener"
+                className="text-primary hover:text-primary/70 underline"
               >
                 privacy policy
-                {showPrivacy ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-              </button>{' '}
+                <span className="sr-only"> (opens in a new tab)</span>
+              </Link>{' '}
               and consent to processing my data for this inquiry. *
             </label>
-            {showPrivacy && (
-              <div className="mt-2 p-3 bg-card rounded-lg typography-small text-muted-foreground border border-border">
-                Your information will be used solely to respond to your inquiry. We don't share
-                personal data with third parties and you can request deletion at any time.
-              </div>
-            )}
             {error && <FieldError>{error.message}</FieldError>}
           </div>
         </div>

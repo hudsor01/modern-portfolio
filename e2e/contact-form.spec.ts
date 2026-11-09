@@ -88,19 +88,16 @@ test.describe('Contact Form', () => {
     await expect(submitButton).toBeEnabled()
   })
 
-  test('privacy policy can be expanded and collapsed', async ({ page }) => {
-    // Find and click the privacy policy button
-    const privacyButton = page.getByRole('button', { name: /privacy policy/i })
-    await privacyButton.click()
-
-    // Verify privacy text is visible
-    await expect(page.getByText(/your information will be used solely/i)).toBeVisible()
-
-    // Click again to collapse
-    await privacyButton.click()
-
-    // Verify privacy text is hidden
-    await expect(page.getByText(/your information will be used solely/i)).not.toBeVisible()
+  test('privacy policy link opens the /privacy page', async ({ page, context }) => {
+    const [policy] = await Promise.all([
+      context.waitForEvent('page'),
+      page.getByRole('link', { name: /privacy policy/i }).click(),
+    ])
+    await policy.waitForLoadState()
+    await expect(policy).toHaveURL(/\/privacy$/)
+    await expect(policy.getByRole('heading', { level: 1 })).toHaveText(/privacy policy/i)
+    // The form page stays put, so nothing typed is lost.
+    await expect(page).toHaveURL(/\/contact$/)
   })
 
   test('shows character count for message field', async ({ page }) => {

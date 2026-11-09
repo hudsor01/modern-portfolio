@@ -5,7 +5,7 @@ import { test, expect } from '@playwright/test'
  *
  * Distinct from `contact-form.spec.ts` (which exercises form mechanics).
  * This spec covers the page-level surface: social cards, privacy policy
- * disclosure, submit-button gating, and the noscript fallback when
+ * link, submit-button gating, and the noscript fallback when
  * JavaScript is disabled (regression #5).
  */
 
@@ -40,19 +40,14 @@ test.describe('/contact page', () => {
     expect(hasMailto).toBe(true)
   })
 
-  test('privacy policy disclosure expands and collapses', async ({ page }) => {
-    const privacyButton = page.getByRole('button', { name: /privacy policy/i })
-    await expect(privacyButton).toBeVisible()
-    await expect(privacyButton).toHaveAttribute('aria-expanded', 'false')
+  test('consent label links to the privacy policy page', async ({ page }) => {
+    const privacyLink = page.getByRole('link', { name: /privacy policy/i })
+    await expect(privacyLink).toBeVisible()
+    await expect(privacyLink).toHaveAttribute('href', '/privacy')
+    await expect(privacyLink).toHaveAttribute('target', '_blank')
 
-    await privacyButton.click()
-    await expect(privacyButton).toHaveAttribute('aria-expanded', 'true')
-    await expect(
-      page.getByText(/your information will be used solely/i)
-    ).toBeVisible()
-
-    await privacyButton.click()
-    await expect(privacyButton).toHaveAttribute('aria-expanded', 'false')
+    const response = await page.request.get('/privacy')
+    expect(response.status()).toBe(200)
   })
 
   test('privacy checkbox toggles agreement state', async ({ page }) => {
