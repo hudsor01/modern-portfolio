@@ -8,7 +8,7 @@ export const dynamic = 'force-static'
 
 export const metadata = generateMetadata(
   'Resume | Richard Hudson - Revenue Operations Professional',
-  'Richard Hudson resume: 10+ years Revenue Operations experience. Expert in Salesforce, HubSpot, Tableau, SQL. $4.8M+ revenue generated, 432% growth achieved. Download PDF.',
+  'Richard Hudson resume: Data Analyst at HomeVestors, over eight years in revenue operations and business systems at Thryv and six years as an Army IT specialist.',
   '/resume'
 )
 

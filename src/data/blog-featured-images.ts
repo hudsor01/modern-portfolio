@@ -46,7 +46,7 @@ export const BLOG_FEATURED_IMAGES: readonly BlogFeaturedImage[] = [
     alt: 'Sales development rep on an active prospect call',
   },
   {
-    slug: 'stop-guessing-how-we-slashed-forecast-variance-by-34-in-90-days',
+    slug: 'stop-guessing-how-to-cut-sales-forecast-variance',
     photoId: '1555421689-491a97ff2040',
     alt: 'Analyst tightening a sales forecast at her workstation',
   },
@@ -56,7 +56,7 @@ export const BLOG_FEATURED_IMAGES: readonly BlogFeaturedImage[] = [
     alt: 'Executive presenting the core revenue metrics that matter to a CEO',
   },
   {
-    slug: 'stop-chasing-one-contact-how-multi-threading-automation-doubles-your-pipeline',
+    slug: 'stop-chasing-one-contact-how-multi-threading-automation-protects-your-pipeline',
     photoId: '1517048676732-d65bc937f952',
     alt: 'Buying committee collaborating around a long table — multi-threading in action',
   },
@@ -76,12 +76,12 @@ export const BLOG_FEATURED_IMAGES: readonly BlogFeaturedImage[] = [
     alt: 'Sales team working through an objection-handling discussion',
   },
   {
-    slug: 'the-4-2m-leak-why-your-first-revops-hire-must-fix-data-before-headcount',
+    slug: 'the-data-leak-why-your-first-revops-hire-must-fix-data-before-headcount',
     photoId: '1686061593213-98dad7c599b9',
     alt: 'RevOps analyst inspecting a real-time revenue data dashboard',
   },
   {
-    slug: 'the-23-revenue-leak-you-re-ignoring-how-to-resurrect-dead-deals',
+    slug: 'the-revenue-leak-youre-ignoring-how-to-resurrect-dead-deals',
     photoId: '1600880292203-757bb62b4baf',
     alt: 'Sales pair celebrating a revived deal at their desk',
   },
@@ -96,12 +96,12 @@ export const BLOG_FEATURED_IMAGES: readonly BlogFeaturedImage[] = [
     alt: 'Sales leader presenting recovered-revenue charts to the team',
   },
   {
-    slug: 'stop-wasting-20-hours-a-week-the-real-way-to-connect-zoominfo-and-salesloft',
+    slug: 'stop-wasting-hours-every-week-the-real-way-to-connect-zoominfo-and-salesloft',
     photoId: '1766074903100-bc435aa4c60d',
     alt: 'Connected sales-tech tools running side-by-side on a laptop',
   },
   {
-    slug: 'stop-guessing-how-revenue-intelligence-platforms-slash-forecast-errors-by-40',
+    slug: 'stop-guessing-how-revenue-intelligence-platforms-reduce-forecast-errors',
     photoId: '1762330470070-249e7c23c8c0',
     alt: 'AI sales-assistant interface answering a revenue-intelligence query',
   },
@@ -116,7 +116,7 @@ export const BLOG_FEATURED_IMAGES: readonly BlogFeaturedImage[] = [
     alt: 'Reps in a working session redesigning their daily admin workflow',
   },
   {
-    slug: 'the-87-failure-rate-why-your-sdrs-lose-deals-before-you-even-pitch',
+    slug: 'why-your-sdrs-lose-deals-before-you-even-pitch',
     photoId: '1626863905121-3b0c0ed7b94c',
     alt: 'SDR on a discovery call wearing a sales headset',
   },
@@ -131,7 +131,7 @@ export const BLOG_FEATURED_IMAGES: readonly BlogFeaturedImage[] = [
     alt: 'Stopwatch — pipeline velocity is a race against the clock',
   },
   {
-    slug: 'stop-guessing-at-data-how-zoominfo-and-salesloft-automate-4-2m-in-lost-revenue',
+    slug: 'stop-guessing-at-data-how-zoominfo-and-salesloft-plug-revenue-leaks',
     photoId: '1580983559367-0dc2f8934365',
     alt: 'RevOps analyst automating sales-data workflows on a laptop',
   },

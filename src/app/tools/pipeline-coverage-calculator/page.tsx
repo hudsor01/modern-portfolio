@@ -132,7 +132,7 @@ export default function PipelineCoverageCalculatorPage() {
             <ul className="space-y-2 text-primary">
               <li>
                 <Link
-                  href="/blog/stop-guessing-how-we-slashed-forecast-variance-by-34-in-90-days"
+                  href="/blog/stop-guessing-how-to-cut-sales-forecast-variance"
                   className="hover:underline"
                 >
                   How we slashed forecast variance by 34% in 90 days
