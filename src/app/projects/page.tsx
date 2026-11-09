@@ -9,10 +9,13 @@ import { ItemListJsonLd } from '@/components/seo/json-ld/item-list-json-ld'
 import { ProjectsPageContent } from './_components/projects-page-content'
 import { getProjects } from '@/lib/projects'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { PROJECT_COUNT } from '@/data/projects'
 
+// The root title template appends " | Richard Hudson", so the name is not
+// repeated here.
 export const metadata = genMeta(
-  'Projects | Richard Hudson - Revenue Operations Portfolio',
-  'Explore 10+ revenue operations projects by Richard Hudson including pipeline analytics, partner performance dashboards, and CRM optimization case studies.',
+  'Projects - Revenue Operations Portfolio',
+  `Explore ${PROJECT_COUNT} revenue operations projects by Richard Hudson including pipeline analytics, partner performance dashboards, and CRM optimization case studies.`,
   '/projects'
 )
 

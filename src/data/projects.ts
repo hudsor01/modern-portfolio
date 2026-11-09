@@ -22,6 +22,12 @@ export interface ShowcaseProject {
   longDescription: string
   image: string
   category: string
+  /**
+   * Shown as the tech badges on /projects cards. List only what the case-study
+   * page itself uses or names (its charts are React + TypeScript + Recharts),
+   * not an unverified stack: the old tags (Vue.js, MongoDB, Chart.js on a
+   * Recharts page) contradicted the pages they linked to.
+   */
   technologies: string[]
   displayMetrics: Array<{
     label: string
@@ -54,7 +60,7 @@ export const showcaseProjects: ShowcaseProject[] = [
       'A comprehensive revenue operations dashboard that provides real-time insights into sales performance, pipeline health, and revenue forecasting.',
     image: unsplashUrl('1551288049-bebda4e38f71', 'project'),
     category: 'revenue-ops',
-    technologies: ['React', 'TypeScript', 'D3.js', 'PostgreSQL', 'Salesforce API'],
+    technologies: ['React', 'TypeScript', 'Recharts'],
     displayMetrics: [
       { label: 'Revenue Increase', value: '$3.7M', icon: DollarSign },
       { label: 'Time Saved', value: '40%', icon: Clock },
@@ -95,7 +101,7 @@ export const showcaseProjects: ShowcaseProject[] = [
       'Advanced analytics platform using machine learning to identify at-risk customers and recommend retention strategies.',
     image: unsplashUrl('1460925895917-afdab827c52f', 'project'),
     category: 'data-analytics',
-    technologies: ['Python', 'Scikit-learn', 'React', 'PostgreSQL', 'Docker'],
+    technologies: ['React', 'TypeScript', 'Recharts', 'Machine Learning'],
     displayMetrics: [
       { label: 'Churn Reduced', value: '25%', icon: TrendingUp },
       { label: 'Model Accuracy', value: '92%', icon: Target },
@@ -126,7 +132,7 @@ export const showcaseProjects: ShowcaseProject[] = [
       'Comprehensive sales funnel analysis platform providing deep insights into conversion rates, bottlenecks, and optimization opportunities.',
     image: unsplashUrl('1543286386-713bdd548da4', 'project'),
     category: 'business-intelligence',
-    technologies: ['Vue.js', 'Node.js', 'MongoDB', 'Chart.js', 'Stripe API'],
+    technologies: ['React', 'TypeScript', 'Recharts', 'Slack'],
     displayMetrics: [
       { label: 'Conversion Rate', value: '+35%', icon: TrendingUp },
       { label: 'Sales Velocity', value: '+60%', icon: Zap },
@@ -157,7 +163,7 @@ export const showcaseProjects: ShowcaseProject[] = [
       'Advanced marketing attribution platform that tracks customer journeys across multiple touchpoints and provides insights for campaign optimization.',
     image: unsplashUrl('1559136555-9303baea8ebd', 'project'),
     category: 'data-analytics',
-    technologies: ['React', 'Python', 'BigQuery', 'Looker', 'Google Analytics API'],
+    technologies: ['React', 'TypeScript', 'Recharts'],
     displayMetrics: [
       { label: 'Attribution Accuracy', value: '88%', icon: Target },
       { label: 'ROAS Improvement', value: '+45%', icon: TrendingUp },
@@ -193,7 +199,7 @@ export const showcaseProjects: ShowcaseProject[] = [
       'Comprehensive CAC analysis and LTV:CAC ratio optimization that achieved 32% cost reduction through strategic partner channel optimization. Industry-benchmark 3.6:1 efficiency ratio with 8.4-month payback period.',
     image: unsplashUrl('1554224155-8d04cb21cd6c', 'project'),
     category: 'revenue-ops',
-    technologies: ['React', 'TypeScript', 'SQL', 'Tableau', 'Salesforce'],
+    technologies: ['React', 'TypeScript', 'Recharts'],
     displayMetrics: [
       { label: 'CAC Reduction', value: '32%', icon: TrendingUp },
       { label: 'LTV:CAC Ratio', value: '3.6:1', icon: Calculator },
@@ -224,7 +230,7 @@ export const showcaseProjects: ShowcaseProject[] = [
       'Advanced commission management and partner incentive optimization platform managing $254K+ commission structures with 87.5% automation efficiency.',
     image: unsplashUrl('1454165804606-c3d57bc86b40', 'project'),
     category: 'revenue-ops',
-    technologies: ['React', 'Node.js', 'PostgreSQL', 'Python', 'REST APIs'],
+    technologies: ['React', 'TypeScript', 'Recharts'],
     displayMetrics: [
       { label: 'Commission Pool', value: '$254K', icon: DollarSign },
       { label: 'Performance', value: '+34%', icon: TrendingUp },
@@ -255,7 +261,7 @@ export const showcaseProjects: ShowcaseProject[] = [
       'Advanced CLV analytics platform leveraging BTYD predictive modeling framework. Achieving 94.3% prediction accuracy through machine learning algorithms and real-time customer behavior tracking.',
     image: unsplashUrl('1551434678-e076c223a692', 'project'),
     category: 'data-analytics',
-    technologies: ['Python', 'Machine Learning', 'React', 'PostgreSQL', 'BTYD Framework'],
+    technologies: ['React', 'TypeScript', 'Recharts', 'BTYD Framework', 'Machine Learning'],
     displayMetrics: [
       { label: 'ML Accuracy', value: '94.3%', icon: Target },
       { label: 'Average CLV', value: '$142K', icon: DollarSign },
@@ -286,7 +292,7 @@ export const showcaseProjects: ShowcaseProject[] = [
       'Enterprise forecasting and pipeline intelligence platform combining predictive analytics, deal health monitoring, and early warning systems.',
     image: unsplashUrl('1504868584819-f8e8b4b6d7e3', 'project'),
     category: 'revenue-ops',
-    technologies: ['React', 'TypeScript', 'Python', 'Salesforce API', 'ML Models'],
+    technologies: ['React', 'TypeScript', 'Salesforce', 'Machine Learning'],
     displayMetrics: [
       { label: 'Accuracy Gain', value: '+31%', icon: Target },
       { label: 'Slippage Reduced', value: '-26%', icon: TrendingUp },
@@ -317,7 +323,7 @@ export const showcaseProjects: ShowcaseProject[] = [
       'Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints. Delivering 92.4% attribution accuracy.',
     image: unsplashUrl('1563986768494-4dee2763ff3f', 'project'),
     category: 'data-analytics',
-    technologies: ['React', 'Python', 'Machine Learning', 'BigQuery', 'Google Analytics'],
+    technologies: ['React', 'TypeScript', 'Recharts', 'Machine Learning'],
     displayMetrics: [
       { label: 'Accuracy', value: '92.4%', icon: Target },
       { label: 'ROI Impact', value: '$2.3M', icon: DollarSign },
@@ -348,7 +354,7 @@ export const showcaseProjects: ShowcaseProject[] = [
       'Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem with real-time performance tracking.',
     image: unsplashUrl('1522071820081-009f0129c71c', 'project'),
     category: 'revenue-ops',
-    technologies: ['React', 'TypeScript', 'PostgreSQL', 'Recharts', 'Analytics APIs'],
+    technologies: ['React', 'TypeScript', 'Recharts'],
     displayMetrics: [
       { label: 'Win Rate', value: '83.2%', icon: Award },
       { label: 'Partner Revenue', value: '$904K', icon: DollarSign },
@@ -410,7 +416,7 @@ export const showcaseProjects: ShowcaseProject[] = [
       'Advanced quota setting and territory assignment system using predictive analytics and fairness algorithms. Optimized territory design increased forecast accuracy by 28%.',
     image: unsplashUrl('1581291518857-4e27b48ff24e', 'project'),
     category: 'revenue-ops',
-    technologies: ['Python', 'React', 'PostgreSQL', 'Optimization Algorithms', 'Salesforce'],
+    technologies: ['React', 'TypeScript', 'Machine Learning'],
     displayMetrics: [
       { label: 'Accuracy Gain', value: '+28%', icon: Target },
       { label: 'Variance Reduction', value: '-32%', icon: TrendingUp },
@@ -441,7 +447,7 @@ export const showcaseProjects: ShowcaseProject[] = [
       'Comprehensive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs with real-time insights.',
     image: unsplashUrl('1639762681485-074b7f938ba0', 'project'),
     category: 'revenue-ops',
-    technologies: ['React', 'TypeScript', 'PostgreSQL', 'Recharts', 'Multiple APIs'],
+    technologies: ['React', 'TypeScript', 'Recharts'],
     displayMetrics: [
       { label: 'Forecast Accuracy', value: '96.8%', icon: Target },
       { label: 'Pipeline Health', value: '92.4%', icon: Activity },
@@ -472,7 +478,7 @@ export const showcaseProjects: ShowcaseProject[] = [
       'Transformed sales team performance through structured training, real-time coaching, and continuous skill development. Increased win rates by 34% and reduced ramp time by 45%.',
     image: unsplashUrl('1552664730-d307ca884978', 'project'),
     category: 'revenue-ops',
-    technologies: ['React', 'Node.js', 'MongoDB', 'Video Platform', 'LMS Integration'],
+    technologies: ['React', 'TypeScript'],
     displayMetrics: [
       { label: 'Win Rate', value: '+34%', icon: Award },
       { label: 'Ramp Time', value: '-45%', icon: Clock },
@@ -495,3 +501,6 @@ export const showcaseProjects: ShowcaseProject[] = [
     caseStudyUrl: '/projects/sales-enablement',
   },
 ]
+
+/** Number of published case studies. Use this in copy instead of a hardcoded count. */
+export const PROJECT_COUNT = showcaseProjects.length

@@ -11,6 +11,7 @@ import { ArrowRight, Mail } from 'lucide-react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { PROJECT_COUNT } from '@/data/projects'
 import { REVENUE_IMPACT, TRANSACTION_GROWTH, NETWORK_GROWTH, YEARS_EXPERIENCE } from '@/lib/stats'
 
 const EXPERIENCE_STATS = [
@@ -67,7 +68,7 @@ SalesLoft Admin certified (Level 1 & 2), HubSpot Revenue Operations certified, a
 export const dynamic = 'force-static'
 export const metadata: Metadata = generateMetadata(
   'About — Revenue Operations Professional',
-  'Richard Hudson - Dallas, Texas Revenue Operations Professional serving Dallas-Fort Worth metroplex with 10+ years experience. SalesLoft Admin certified (Level 1 & 2) and HubSpot Revenue Operations certified. Partnership program implementation specialist with system integration experience. Expert in data analytics, process automation, and CRM optimization. $4.8M+ revenue generated across 10+ projects, 432% transaction growth achieved.',
+  `Richard Hudson - Dallas, Texas Revenue Operations Professional serving Dallas-Fort Worth metroplex with 10+ years experience. SalesLoft Admin certified (Level 1 & 2) and HubSpot Revenue Operations certified. Partnership program implementation specialist with system integration experience. Expert in data analytics, process automation, and CRM optimization. $4.8M+ revenue generated across ${PROJECT_COUNT} projects, 432% transaction growth achieved.`,
   '/about'
 )
 
