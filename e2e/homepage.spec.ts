@@ -9,6 +9,8 @@ import { test, expect } from '@playwright/test'
  *   - Final CTA section (Start a Conversation / View Resume)
  *   - Mailto link to the real contact address (TO_EMAIL default)
  *   - Proven Results metrics animate to non-zero values (regression #3)
+ *   - Proven Results metrics carry their final values in the server HTML
+ *   - A <main id="main-content"> landmark (skip-link target)
  */
 
 test.describe('/ homepage', () => {
@@ -76,17 +78,10 @@ test.describe('/ homepage', () => {
     const provenResultsHeading = page.getByRole('heading', { name: /proven results/i })
     await expect(provenResultsHeading).toBeVisible()
 
-    // NumberTicker only starts counting once the counter enters the viewport:
-    // `useInView(ref, { once: true, margin: '0px' })` from motion/react
-    // (src/components/ui/number-ticker.tsx:35). That is already the loosest
-    // possible observer — rootMargin 0px, threshold 0 — so there is nothing to
-    // fix in the component; SSR legitimately renders 0 until the section is
-    // scrolled to. `waitForFunction` polls in-page and does NOT trigger
-    // Playwright's auto-scroll (that applies to actions only), so on the Pixel 5
-    // viewport the section sat below the fold and the counters stayed at 0
-    // forever. On desktop it passed only because the section happened to fall
-    // inside a 720px-tall viewport. Scroll it in explicitly so the assertion
-    // means the same thing on every project.
+    // The counters render their final values in the server HTML (asserted
+    // below) and only re-count client-side once scrolled into view. Scroll
+    // them in so this checks the post-animation state on every viewport:
+    // `waitForFunction` polls in-page and does NOT auto-scroll.
     await provenResultsHeading.scrollIntoViewIfNeeded()
 
     // Grid container directly follows the section header; capture its
@@ -107,5 +102,24 @@ test.describe('/ homepage', () => {
       },
       { timeout: 5000 }
     )
+  })
+
+  test('server HTML carries the final Proven Results values, not zeros', async ({ page }) => {
+    // Crawlers, link previews and no-JS visitors only ever see the server
+    // HTML. NumberTicker used to emit its start value there ("$0M+ / 0% / 0%
+    // / 0+"); it now renders the final figure and animates client-side only.
+    const html = await (await page.request.get('/')).text()
+    const counters = [
+      ...html.matchAll(/<span class="inline-block tabular-nums tracking-tight">([^<]*)<\/span>/g),
+    ].map((m) => m[1] ?? '')
+    expect(counters).toHaveLength(4)
+    for (const value of counters) {
+      expect(value.replace(/\D/g, '')).not.toMatch(/^0*$/)
+    }
+  })
+
+  test('has a main landmark that the skip link targets', async ({ page }) => {
+    await expect(page.locator('main#main-content')).toHaveCount(1)
+    await expect(page.locator('a[href="#main-content"]')).toHaveCount(1)
   })
 })

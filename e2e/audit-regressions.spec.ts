@@ -69,10 +69,8 @@ test.describe('Audit regressions', () => {
     const provenResultsHeading = page.getByRole('heading', { name: /proven results/i })
     await expect(provenResultsHeading).toBeVisible()
 
-    // See the matching note in e2e/homepage.spec.ts: NumberTicker counts up only
-    // once in view, and `waitForFunction` does not auto-scroll. Without this the
-    // counters stay at 0 on any viewport short enough to leave the section below
-    // the fold (e.g. Pixel 5).
+    // See the matching note in e2e/homepage.spec.ts: NumberTicker re-counts
+    // client-side only once in view, and `waitForFunction` does not auto-scroll.
     await provenResultsHeading.scrollIntoViewIfNeeded()
 
     await page.waitForFunction(
