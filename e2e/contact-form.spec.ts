@@ -91,7 +91,7 @@ test.describe('Contact Form', () => {
   test('privacy policy link opens the /privacy page', async ({ page, context }) => {
     const [policy] = await Promise.all([
       context.waitForEvent('page'),
-      page.getByRole('link', { name: /privacy policy/i }).click(),
+      page.getByRole('link', { name: /^privacy policy \(opens in a new tab\)$/i }).click(),
     ])
     await policy.waitForLoadState()
     await expect(policy).toHaveURL(/\/privacy$/)

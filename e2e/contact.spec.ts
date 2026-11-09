@@ -41,7 +41,10 @@ test.describe('/contact page', () => {
   })
 
   test('consent label links to the privacy policy page', async ({ page }) => {
-    const privacyLink = page.getByRole('link', { name: /privacy policy/i })
+    // Exact name: the footer has its own "Privacy Policy" link.
+    const privacyLink = page.getByRole('link', {
+      name: /^privacy policy \(opens in a new tab\)$/i,
+    })
     await expect(privacyLink).toBeVisible()
     await expect(privacyLink).toHaveAttribute('href', '/privacy')
     await expect(privacyLink).toHaveAttribute('target', '_blank')
