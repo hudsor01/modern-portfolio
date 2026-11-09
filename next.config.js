@@ -1,6 +1,14 @@
 // `/config` subpath: SDK v11 removed the root `@sentry/nextjs` re-export of
 // withSentryConfig (deprecated since 10.76).
 import { withSentryConfig } from '@sentry/nextjs/config'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+
+// old slug -> new slug for renamed blog posts. Also read by
+// src/data/__tests__/blog-slug-renames.test.ts.
+const BLOG_SLUG_RENAMES = JSON.parse(
+  readFileSync(join(process.cwd(), 'src/data/blog-slug-renames.json'), 'utf8')
+)
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -194,25 +202,25 @@ const nextConfig = {
       // Forecast-accuracy cluster → keeper:
       {
         source: '/blog/stop-guessing-how-we-crushed-forecasting-errors-by-34-in-one-quarter',
-        destination: '/blog/stop-guessing-how-we-slashed-forecast-variance-by-34-in-90-days',
+        destination: '/blog/stop-guessing-how-to-cut-sales-forecast-variance',
         permanent: true,
       },
       {
         source: '/blog/stop-guessing-how-to-slash-forecast-variance-by-60-in-90-days',
-        destination: '/blog/stop-guessing-how-we-slashed-forecast-variance-by-34-in-90-days',
+        destination: '/blog/stop-guessing-how-to-cut-sales-forecast-variance',
         permanent: true,
       },
       // Closed-lost / dead-deal reactivation cluster → keeper:
       {
         source:
           '/blog/the-4-2m-you-left-on-the-table-why-your-closed-lost-deals-are-actually-sleeping-',
-        destination: '/blog/the-23-revenue-leak-you-re-ignoring-how-to-resurrect-dead-deals',
+        destination: '/blog/the-revenue-leak-youre-ignoring-how-to-resurrect-dead-deals',
         permanent: true,
       },
       {
         source:
           '/blog/stop-ignoring-your-dead-opportunities-how-we-revived-4-2m-in-lost-revenue-with-o',
-        destination: '/blog/the-23-revenue-leak-you-re-ignoring-how-to-resurrect-dead-deals',
+        destination: '/blog/the-revenue-leak-youre-ignoring-how-to-resurrect-dead-deals',
         permanent: true,
       },
       // Renamed RevOps pillar guide. Google indexed/ranked the OLD slug (~pos 40)
@@ -225,6 +233,15 @@ const nextConfig = {
         destination: '/blog/complete-guide-revenue-operations-strategy',
         permanent: true,
       },
+      // Posts renamed when invented claims were edited out of their titles
+      // ("how-i-fixed-a-4m-...", "12-years-in-the-trenches", "your-title-here")
+      // or whose slug was cut mid-word at 80 characters. The DB holds the new
+      // slugs; these 308s keep every old link and indexed URL working.
+      ...Object.entries(BLOG_SLUG_RENAMES).map(([from, to]) => ({
+        source: `/blog/${from}`,
+        destination: `/blog/${to}`,
+        permanent: true,
+      })),
     ]
   },
 }
