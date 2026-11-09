@@ -23,7 +23,6 @@ const initialFormData: ContactFormData = {
 
 export function useContactForm(): UseContactFormReturn {
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>('idle')
-  const [showPrivacy, setShowPrivacy] = useState(false)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [error, setError] = useState<Error | null>(null)
   const [termsError, setTermsError] = useState<string | null>(null)
@@ -125,12 +124,10 @@ export function useContactForm(): UseContactFormReturn {
     handleInputChange,
     handleSubmit,
     submitStatus,
-    showPrivacy,
     agreedToTerms,
     termsError,
     progress,
     isSubmitting,
-    setShowPrivacy,
     setAgreedToTerms,
     resetForm,
     error,

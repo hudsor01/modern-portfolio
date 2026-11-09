@@ -14,7 +14,7 @@ const FOOTER_SECTIONS: ReadonlyArray<{
     links: [
       { label: 'About', href: '/about' },
       { label: 'Projects', href: '/projects' },
-      { label: 'Résumé', href: '/resume' },
+      { label: 'Resume', href: '/resume' },
       { label: 'Contact', href: '/contact' },
     ],
   },
@@ -89,7 +89,12 @@ export function Footer() {
         </div>
 
         <div className="mt-10 pt-6 border-t border-border flex flex-col md:flex-row justify-between items-center gap-3 text-sm text-muted-foreground">
-          <p>© {currentYear} Richard Hudson. All rights reserved.</p>
+          <div className="flex flex-wrap items-baseline justify-center gap-x-4 gap-y-1">
+            <p>© {currentYear} Richard Hudson. All rights reserved.</p>
+            <Link href="/privacy" className="hover:text-primary transition-colors">
+              Privacy Policy
+            </Link>
+          </div>
           <a
             href="https://hudsondigitalsolutions.com"
             target="_blank"

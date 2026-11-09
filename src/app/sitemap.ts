@@ -3,6 +3,7 @@ import { createContextLogger } from '@/lib/logger'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 import { showcaseProjects } from '@/data/projects'
+import { PRIVACY_POLICY_LAST_UPDATED } from '@/app/privacy/policy-date'
 
 const logger = createContextLogger('Sitemap')
 
@@ -116,6 +117,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: staticLastModified,
       changeFrequency: 'monthly',
       priority: 0.8,
+    },
+    {
+      // Own date, not STATIC_LAST_MODIFIED: lastmod tracks the policy text.
+      url: `${baseUrl}/privacy`,
+      lastModified: `${PRIVACY_POLICY_LAST_UPDATED}T00:00:00.000Z`,
+      changeFrequency: 'yearly',
+      priority: 0.3,
     },
   ]
 

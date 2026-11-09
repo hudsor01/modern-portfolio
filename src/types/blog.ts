@@ -21,3 +21,20 @@ export type BlogPostWithRelations = BlogPost & {
   category: Category | null
   tags: Array<{ tag: Tag }>
 }
+
+/**
+ * What a /blog index card renders, and nothing more. The index used to ship
+ * full `BlogPostData` (post bodies and the author's email) in its RSC payload,
+ * about 1.1 MB of HTML for 50 posts.
+ */
+export interface BlogListPost {
+  id: string
+  slug: string
+  title: string
+  excerpt: string | null
+  featuredImage: string | null
+  /** ISO 8601. */
+  publishedAt: string | null
+  categoryName: string | null
+  tags: Array<{ id: string; name: string }>
+}

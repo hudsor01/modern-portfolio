@@ -1,20 +1,30 @@
 import type { Metadata } from 'next'
 import { cache } from 'react'
 import { headers } from 'next/headers'
+import { notFound } from 'next/navigation'
 import { Navbar } from '@/components/layout/navbar'
 import { BlogList } from './_components/blog-list'
 import { BlogJsonLd } from '@/components/seo/blog-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { ItemListJsonLd } from '@/components/seo/json-ld/item-list-json-ld'
-import { and, desc, eq, inArray, isNull } from 'drizzle-orm'
+import { and, count, desc, eq, inArray, isNull } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { withDbRetry } from '@/lib/db-retry'
 import { blogPosts, categories as categoriesTable } from '@/db/schema'
-import { transformToBlogPostData } from '@/lib/api-blog'
 import { searchBlogPosts } from '@/lib/search'
 import { createContextLogger } from '@/lib/logger'
-import type { BlogPostData, BlogCategoryData } from '@/types/api'
+import type { BlogCategoryData } from '@/types/api'
+import type { BlogListPost } from '@/types/blog'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import {
+  ALL_CATEGORIES,
+  BLOG_PAGE_SIZE,
+  blogIndexHref,
+  pageCount,
+  pageSlice,
+  parseCategoryParam,
+  parsePageParam,
+} from '@/lib/blog-pagination'
 
 const logger = createContextLogger('BlogIndex')
 
@@ -25,71 +35,188 @@ const BLOG_INDEX_OG_IMAGE_URL = canonicalUrl(
   }).toString()}`
 )
 
-export const metadata: Metadata = {
-  title: 'Blog - Revenue Operations Insights',
-  description: 'Insights on revenue operations, data analytics, and business growth strategies.',
-  keywords: ['revenue operations', 'data analytics', 'business intelligence', 'revops'],
-  openGraph: {
-    title: 'Blog | Richard Hudson',
-    description: 'Insights on revenue operations, data analytics, and business growth strategies.',
-    url: canonicalUrl('/blog'),
-    type: 'website',
-    images: [
-      {
-        url: BLOG_INDEX_OG_IMAGE_URL,
-        width: 1200,
-        height: 630,
-        alt: 'Richard Hudson Blog - Revenue Operations Insights',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    creator: '@hudsor01',
-    title: 'Blog | Richard Hudson',
-    description: 'Insights on revenue operations, data analytics, and business growth strategies.',
-    images: [BLOG_INDEX_OG_IMAGE_URL],
-  },
-  alternates: {
-    canonical: canonicalUrl('/blog'),
-  },
+const BLOG_DESCRIPTION =
+  'Insights on revenue operations, data analytics, and business growth strategies.'
+
+interface BlogIndexSearchParams {
+  q?: string | string[]
+  page?: string | string[]
+  category?: string | string[]
 }
 
-// Official Next.js 16 Pattern: React cache() for database queries
-// Gracefully handle missing database (CI builds)
-const getBlogPosts = cache(async (): Promise<BlogPostData[]> => {
-  // During build, skip DB — blog content populates on first ISR revalidation
-  if (process.env.NEXT_PHASE === 'phase-production-build') {
-    return []
+/**
+ * Pages 2..n of the unfiltered index are distinct documents, so each one is
+ * self-canonical (Google's guidance for paginated series). Search and category
+ * renders keep pointing at /blog, as before.
+ */
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<BlogIndexSearchParams>
+}): Promise<Metadata> {
+  const { q, page: rawPage, category } = await searchParams
+  const page = parsePageParam(rawPage)
+  const unfiltered = !normalizeQuery(q) && parseCategoryParam(category) === ALL_CATEGORIES
+  const canonical = canonicalUrl(unfiltered ? blogIndexHref({ page }) : '/blog')
+  const title =
+    unfiltered && page > 1
+      ? `Blog - Revenue Operations Insights (Page ${page})`
+      : 'Blog - Revenue Operations Insights'
+
+  return {
+    title,
+    description: BLOG_DESCRIPTION,
+    keywords: ['revenue operations', 'data analytics', 'business intelligence', 'revops'],
+    openGraph: {
+      title: 'Blog | Richard Hudson',
+      description: BLOG_DESCRIPTION,
+      url: canonical,
+      type: 'website',
+      images: [
+        {
+          url: BLOG_INDEX_OG_IMAGE_URL,
+          width: 1200,
+          height: 630,
+          alt: 'Richard Hudson Blog - Revenue Operations Insights',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      creator: '@hudsor01',
+      title: 'Blog | Richard Hudson',
+      description: BLOG_DESCRIPTION,
+      images: [BLOG_INDEX_OG_IMAGE_URL],
+    },
+    alternates: { canonical },
   }
+}
+
+/** Published and not soft-deleted: the only posts the public index may show. */
+const PUBLIC_POSTS = and(eq(blogPosts.status, 'PUBLISHED'), isNull(blogPosts.deletedAt))
+
+/**
+ * Only the columns a card renders. Never `content` (the post body) or the
+ * author relation (it carries the author's email): both used to be serialized
+ * into the page's RSC payload for every listed post.
+ */
+const CARD_COLUMNS = {
+  id: true,
+  slug: true,
+  title: true,
+  excerpt: true,
+  featuredImage: true,
+  publishedAt: true,
+} as const
+
+const CARD_RELATIONS = {
+  category: { columns: { name: true } },
+  tags: { columns: {}, with: { tag: { columns: { id: true, name: true } } } },
+} as const
+
+interface CardRow {
+  id: string
+  slug: string
+  title: string
+  excerpt: string | null
+  featuredImage: string | null
+  publishedAt: Date | null
+  category: { name: string } | null
+  tags: Array<{ tag: { id: string; name: string } }>
+}
+
+function toListPost(row: CardRow): BlogListPost {
+  return {
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    excerpt: row.excerpt,
+    featuredImage: row.featuredImage,
+    publishedAt: row.publishedAt?.toISOString() ?? null,
+    categoryName: row.category?.name ?? null,
+    tags: row.tags.map(({ tag }) => ({ id: tag.id, name: tag.name })),
+  }
+}
+
+/** One page of the index plus what the filter and pagination controls need. */
+interface Listing {
+  posts: BlogListPost[]
+  /** Posts matching the current search + category, across all pages. */
+  total: number
+  /** Posts per category name (plus `All`) for the current search, before the category filter. */
+  categoryCounts: Record<string, number>
+}
+
+const EMPTY_LISTING: Listing = { posts: [], total: 0, categoryCounts: { [ALL_CATEGORIES]: 0 } }
+
+/**
+ * One page of the unfiltered (or category-filtered) index, paged in Postgres.
+ *
+ * Until this existed the index fetched the newest 50 posts with no way to reach
+ * the rest, while the sitemap listed every published post. Errors degrade to an
+ * empty listing (logged), as before; during `next build` the DB is skipped.
+ */
+async function getIndexListing(
+  categories: BlogCategoryData[],
+  selectedCategory: string,
+  page: number
+): Promise<Listing> {
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return EMPTY_LISTING
+  }
+
+  const category =
+    selectedCategory === ALL_CATEGORIES ? null : categories.find((c) => c.name === selectedCategory)
 
   try {
-    const posts = await withDbRetry(() =>
-      db.query.blogPosts.findMany({
-        // Exclude soft-deleted posts so retired/consolidated dupes (which
-        // 308-redirect at the detail level) don't still render as index cards.
-        where: and(eq(blogPosts.status, 'PUBLISHED'), isNull(blogPosts.deletedAt)),
-        with: {
-          author: true,
-          category: true,
-          tags: { with: { tag: true } },
-        },
-        orderBy: desc(blogPosts.publishedAt),
-        limit: 50,
-      })
-    )
+    // Counts and the page of posts are independent: one round trip, not two.
+    // An unknown ?category= matches nothing (as the old client filter did), so
+    // its posts query is skipped.
+    const [countRows, rows] = await Promise.all([
+      withDbRetry(() =>
+        db
+          .select({ categoryId: blogPosts.categoryId, posts: count() })
+          .from(blogPosts)
+          .where(PUBLIC_POSTS)
+          .groupBy(blogPosts.categoryId)
+      ),
+      category === undefined
+        ? Promise.resolve([])
+        : withDbRetry(() =>
+            db.query.blogPosts.findMany({
+              where: category
+                ? and(PUBLIC_POSTS, eq(blogPosts.categoryId, category.id))
+                : PUBLIC_POSTS,
+              columns: CARD_COLUMNS,
+              with: CARD_RELATIONS,
+              // `id` breaks publishedAt ties so LIMIT/OFFSET pages never overlap.
+              orderBy: [desc(blogPosts.publishedAt), desc(blogPosts.id)],
+              limit: BLOG_PAGE_SIZE,
+              offset: (page - 1) * BLOG_PAGE_SIZE,
+            })
+          ),
+    ])
 
-    return posts.map(transformToBlogPostData)
-  } catch (error) {
-    if (process.env.NEXT_PHASE !== 'phase-production-build') {
-      logger.error(
-        'Blog index posts query failed',
-        error instanceof Error ? error : new Error(String(error))
-      )
+    const nameById = new Map(categories.map((c) => [c.id, c.name]))
+    const categoryCounts: Record<string, number> = { [ALL_CATEGORIES]: 0 }
+    for (const row of countRows) {
+      categoryCounts[ALL_CATEGORIES] = (categoryCounts[ALL_CATEGORIES] ?? 0) + row.posts
+      const name = row.categoryId ? nameById.get(row.categoryId) : undefined
+      if (name) categoryCounts[name] = row.posts
     }
-    return []
+
+    const total =
+      category === undefined ? 0 : (categoryCounts[category ? category.name : ALL_CATEGORIES] ?? 0)
+
+    return { posts: rows.map(toListPost), total, categoryCounts }
+  } catch (error) {
+    logger.error(
+      'Blog index posts query failed',
+      error instanceof Error ? error : new Error(String(error))
+    )
+    return EMPTY_LISTING
   }
-})
+}
 
 const getCategories = cache(async (): Promise<BlogCategoryData[]> => {
   // During build, skip DB — categories populate on first ISR revalidation
@@ -130,55 +257,71 @@ const getCategories = cache(async (): Promise<BlogCategoryData[]> => {
  * Apply the `?q=` full-text search on the server.
  *
  * The search runs in Postgres (src/lib/search.ts) against the generated
- * `search_vector` column, so it ranks by relevance, tolerates typos, and — the
- * part the old client-side filter structurally could not do — searches each
- * post's full `content`, which is never shipped to the browser.
+ * `search_vector` column, so it ranks by relevance, tolerates typos, and
+ * searches each post's full `content`, which is never shipped to the browser.
  *
- * Hits are re-fetched by id rather than intersected with the already-loaded
- * index. Intersecting is tempting (no second query) but silently wrong: the
- * index is the 50 most recent posts by `publishedAt`, while the search covers
- * every row. Once the blog passes 50 published posts, an older post matching
- * the query would rank correctly in Postgres and then be dropped on the way
- * out, with no error — the search would just quietly stop finding old work.
- * There are 23 published posts today, so this is latent rather than live, but
- * it is the kind of bug that only shows up long after the cause is forgotten.
+ * Hits are re-fetched by id (card columns only) rather than intersected with a
+ * page of the index: the index is paged by `publishedAt`, the search ranks
+ * every row, and intersecting would silently drop older matches.
  *
  * The re-fetch repeats the PUBLISHED + not-soft-deleted predicate rather than
  * trusting the search's `statusFilter`, so a search can still never surface a
  * draft or a soft-deleted post — `searchBlogPosts` has no `deletedAt` concept.
  */
-async function getPostsByIds(ids: string[]): Promise<BlogPostData[]> {
+async function getPostsByIds(ids: string[]): Promise<BlogListPost[]> {
   if (ids.length === 0) return []
-  const posts = await withDbRetry(() =>
+  const rows = await withDbRetry(() =>
     db.query.blogPosts.findMany({
-      where: and(
-        inArray(blogPosts.id, ids),
-        eq(blogPosts.status, 'PUBLISHED'),
-        isNull(blogPosts.deletedAt)
-      ),
-      with: { author: true, category: true, tags: { with: { tag: true } } },
+      where: and(inArray(blogPosts.id, ids), PUBLIC_POSTS),
+      columns: CARD_COLUMNS,
+      with: CARD_RELATIONS,
     })
   )
-  return posts.map(transformToBlogPostData)
+  return rows.map(toListPost)
 }
 
 /**
- * Returns the ranked matches, or `null` if the search itself failed.
+ * The search results as a `Listing`, or `null` if the search itself failed.
  *
- * `null` and `[]` mean different things and the caller must distinguish them:
- * `[]` is "searched, nothing matched" (show the empty state), `null` is
- * "search broke" (fall back to the full index rather than telling the reader
- * there are no posts).
+ * `null` and an empty listing mean different things and the caller must
+ * distinguish them: empty is "searched, nothing matched" (show the empty
+ * state), `null` is "search broke" (fall back to the index rather than telling
+ * the reader there are no posts).
+ *
+ * The search returns at most 50 ranked hits, so category counts, the category
+ * filter and paging are applied in memory.
  */
-async function applySearch(query: string): Promise<BlogPostData[] | null> {
+async function getSearchListing(
+  query: string,
+  selectedCategory: string,
+  page: number
+): Promise<Listing | null> {
   try {
     const hits = await searchBlogPosts(query, { limit: 50, statusFilter: ['PUBLISHED'] })
-    if (hits.length === 0) return []
+    if (hits.length === 0) return EMPTY_LISTING
 
     const rankById = new Map(hits.map((hit, position) => [hit.id, position]))
     const posts = await getPostsByIds(hits.map((hit) => hit.id))
     // Postgres returns the re-fetch in arbitrary order; restore relevance rank.
-    return posts.sort((a, b) => (rankById.get(a.id) ?? 0) - (rankById.get(b.id) ?? 0))
+    posts.sort((a, b) => (rankById.get(a.id) ?? 0) - (rankById.get(b.id) ?? 0))
+
+    const categoryCounts: Record<string, number> = { [ALL_CATEGORIES]: posts.length }
+    for (const post of posts) {
+      if (post.categoryName) {
+        categoryCounts[post.categoryName] = (categoryCounts[post.categoryName] ?? 0) + 1
+      }
+    }
+
+    const matching =
+      selectedCategory === ALL_CATEGORIES
+        ? posts
+        : posts.filter((post) => post.categoryName === selectedCategory)
+
+    return {
+      posts: pageSlice(matching, page),
+      total: matching.length,
+      categoryCounts,
+    }
   } catch (error) {
     logger.error(
       'Blog search failed; falling back to unfiltered index',
@@ -211,23 +354,33 @@ function normalizeQuery(q: string | string[] | undefined): string {
 export default async function BlogHomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string | string[] }>
+  searchParams: Promise<BlogIndexSearchParams>
 }) {
-  // Independent queries — parallelize so cold-CDN TTFB is a single Neon
-  // roundtrip, not two. Especially important now that the global
-  // loading.tsx is removed; the user sees the previous page until both
-  // resolve.
-  const [allPosts, categories, { q }, nonce] = await Promise.all([
-    getBlogPosts(),
+  const [categories, { q, page: rawPage, category: rawCategory }, nonce] = await Promise.all([
     getCategories(),
     searchParams,
     headers().then((h) => h.get('x-nonce')),
   ])
 
   const query = normalizeQuery(q)
-  // `?? allPosts` only fires when applySearch returns null (it threw). An empty
-  // array is a real "no matches" result and must be preserved.
-  const posts = query ? ((await applySearch(query)) ?? allPosts) : allPosts
+  const page = parsePageParam(rawPage)
+  const selectedCategory = parseCategoryParam(rawCategory)
+
+  // `??` only falls back when the search threw (null); an empty listing is a
+  // real "no matches" result and must be preserved.
+  const listing =
+    (query ? await getSearchListing(query, selectedCategory, page) : null) ??
+    (await getIndexListing(categories, selectedCategory, page))
+
+  const totalPages = pageCount(listing.total)
+  // A page past the end is a real 404, not an empty 200. Only when there are
+  // posts: an empty listing can mean the database is briefly unreachable, and
+  // a 404 for /blog?page=2 then would be cached by the CDN.
+  if (listing.total > 0 && page > totalPages) {
+    notFound()
+  }
+
+  const isUnfiltered = !query && selectedCategory === ALL_CATEGORIES
 
   return (
     <>
@@ -239,20 +392,17 @@ export default async function BlogHomePage({
           { name: 'Blog', url: canonicalUrl('/blog') },
         ]}
       />
-      {/* Emitted only on the unfiltered canonical render.
-          Structured data has to describe what the page actually shows. Emitting
-          the full index on a filtered render meant `/blog?q=photosynthesis`
-          shipped an ItemList naming every published post while the visible page
-          said "No posts found" — a mismatch Google treats as misrepresentative.
-          Restricting the list to the search hits instead would be just as
-          wrong the other way: it would hand crawlers a different "collection"
-          per query string. Neither is right, so the ItemList simply belongs to
-          the canonical /blog only. */}
-      {!query && (
+      {/* Emitted only on the unfiltered index, listing exactly the posts this
+          page shows. Structured data has to describe what the page actually
+          shows: emitting the full index on a search render meant
+          `/blog?q=photosynthesis` shipped an ItemList naming every post while
+          the visible page said "No posts found". Search and category renders
+          get no ItemList, rather than a different "collection" per query. */}
+      {isUnfiltered && listing.posts.length > 0 && (
         <ItemListJsonLd
           nonce={nonce}
           name="Blog posts by Richard Hudson"
-          items={allPosts.map((post) => ({
+          items={listing.posts.map((post) => ({
             name: post.title,
             url: canonicalUrl(`/blog/${post.slug}`),
           }))}
@@ -266,7 +416,16 @@ export default async function BlogHomePage({
           <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
 
           <div className="relative pt-24 pb-16 lg:pt-32 lg:pb-20">
-            <BlogList initialPosts={posts} initialCategories={categories} />
+            <BlogList
+              posts={listing.posts}
+              categoryNames={categories.map((c) => c.name)}
+              categoryCounts={listing.categoryCounts}
+              total={listing.total}
+              page={page}
+              totalPages={totalPages}
+              query={query}
+              selectedCategory={selectedCategory}
+            />
           </div>
         </main>
       </div>

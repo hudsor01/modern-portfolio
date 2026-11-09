@@ -43,7 +43,6 @@ function createFormStub() {
 
 function renderForm(overrides: Partial<UseContactFormReturn> = {}) {
   const form = createFormStub()
-  const setShowPrivacy = vi.fn()
   const setAgreedToTerms = vi.fn()
   const props: UseContactFormReturn = {
     form,
@@ -52,19 +51,17 @@ function renderForm(overrides: Partial<UseContactFormReturn> = {}) {
     handleInputChange: vi.fn(),
     handleSubmit: vi.fn(),
     submitStatus: 'idle',
-    showPrivacy: false,
     agreedToTerms: false,
     termsError: null,
     progress: 0,
     isSubmitting: false,
-    setShowPrivacy,
     setAgreedToTerms,
     resetForm: vi.fn(),
     error: null,
     ...overrides,
   } as UseContactFormReturn
   const utils = render(<ContactForm form={props} />)
-  return { ...utils, form, setShowPrivacy, setAgreedToTerms }
+  return { ...utils, form, setAgreedToTerms }
 }
 
 describe('ContactForm', () => {
@@ -84,12 +81,10 @@ describe('ContactForm', () => {
       handleInputChange: vi.fn(),
       handleSubmit: vi.fn(),
       submitStatus: 'idle',
-      showPrivacy: false,
       agreedToTerms: false,
       termsError: null,
       progress: 0,
       isSubmitting: false,
-      setShowPrivacy: vi.fn(),
       setAgreedToTerms: vi.fn(),
       resetForm: vi.fn(),
       error: null,
@@ -146,16 +141,12 @@ describe('ContactForm', () => {
     expect(form.handleSubmit).toHaveBeenCalledTimes(1)
   })
 
-  it('toggles privacy via the inline button', () => {
-    const { setShowPrivacy } = renderForm({ showPrivacy: false })
-    const toggle = screen.getByRole('button', { name: /show privacy policy/i })
-    fireEvent.click(toggle)
-    expect(setShowPrivacy).toHaveBeenCalled()
-  })
-
-  it('shows privacy policy text when showPrivacy is true', () => {
-    renderForm({ showPrivacy: true })
-    expect(screen.getByText(/used solely to respond to your inquiry/i)).toBeTruthy()
+  it('links the consent label to the /privacy page in a new tab', () => {
+    renderForm()
+    const link = screen.getByRole('link', { name: /privacy policy/i })
+    expect(link.getAttribute('href')).toBe('/privacy')
+    expect(link.getAttribute('target')).toBe('_blank')
+    expect(link.getAttribute('rel')).toContain('noopener')
   })
 
   it('renders success status banner when submitStatus === "success"', () => {

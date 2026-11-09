@@ -62,12 +62,10 @@ export interface UseContactFormReturn {
   handleInputChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
   handleSubmit: (event?: SubmitEvent<HTMLFormElement>) => Promise<void>
   submitStatus: SubmitStatus
-  showPrivacy: boolean
   agreedToTerms: boolean
   termsError: string | null
   progress: number
   isSubmitting: boolean
-  setShowPrivacy: Dispatch<SetStateAction<boolean>>
   setAgreedToTerms: Dispatch<SetStateAction<boolean>>
   resetForm: () => void
   error: Error | null

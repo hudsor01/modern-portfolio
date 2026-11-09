@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
 import { canonicalUrl, SITE_ORIGIN, OG_IMAGE_SIZE, ogImageUrl } from '@/lib/absolute-url'
+import { PROJECT_COUNT } from '@/data/projects'
+
+const SITE_DESCRIPTION = `Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. $4.8M+ revenue impact across ${PROJECT_COUNT} projects.`
 
 export const baseMetadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),
@@ -7,8 +10,7 @@ export const baseMetadata: Metadata = {
     default: 'Richard Hudson | Revenue Operations Professional',
     template: '%s | Richard Hudson',
   },
-  description:
-    'Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. $4.8M+ revenue impact across 10+ projects.',
+  description: SITE_DESCRIPTION,
   keywords: [
     'revenue operations professional',
     'revenue operations specialist',
@@ -45,8 +47,7 @@ export const baseMetadata: Metadata = {
     locale: 'en_US',
     siteName: 'Richard Hudson',
     title: 'Richard Hudson | Revenue Operations Professional',
-    description:
-      'Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. $4.8M+ revenue impact across 10+ projects.',
+    description: SITE_DESCRIPTION,
     url: SITE_ORIGIN,
     images: [
       {
@@ -61,8 +62,7 @@ export const baseMetadata: Metadata = {
     card: 'summary_large_image',
     creator: '@hudsor01',
     title: 'Richard Hudson | Revenue Operations Professional',
-    description:
-      'Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. $4.8M+ revenue impact across 10+ projects.',
+    description: SITE_DESCRIPTION,
     images: ['/images/richard.jpg'],
   },
   robots: {

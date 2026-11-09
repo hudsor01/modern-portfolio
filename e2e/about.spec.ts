@@ -59,12 +59,13 @@ test.describe('/about page', () => {
     await expect(page.locator('div.fixed.bottom-0.lg\\:hidden')).toHaveCount(0)
   })
 
-  test('emits FAQ and Breadcrumb structured data', async ({ page }) => {
+  test('emits Breadcrumb structured data and no invisible FAQ markup', async ({ page }) => {
     const ldScripts = await page
       .locator('script[type="application/ld+json"]')
       .allTextContents()
     const blob = ldScripts.join('\n')
-    expect(blob).toContain('"@type":"FAQPage"')
+    // FAQPage markup is only allowed for Q&As visible on the page; /about has none.
+    expect(blob).not.toContain('"@type":"FAQPage"')
     expect(blob).toContain('"@type":"BreadcrumbList"')
   })
 })

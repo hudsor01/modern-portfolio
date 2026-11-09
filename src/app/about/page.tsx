@@ -1,5 +1,4 @@
 import { generateMetadata } from '@/app/shared-metadata'
-import { FAQPageJsonLd } from '@/components/seo/json-ld/faq-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { Navbar } from '@/components/layout/navbar'
 import { PersonalInfo } from '@/components/about/personal-info'
@@ -12,6 +11,7 @@ import { ArrowRight, Mail } from 'lucide-react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { PROJECT_COUNT } from '@/data/projects'
 import { REVENUE_IMPACT, TRANSACTION_GROWTH, NETWORK_GROWTH, YEARS_EXPERIENCE } from '@/lib/stats'
 
 const EXPERIENCE_STATS = [
@@ -68,37 +68,16 @@ SalesLoft Admin certified (Level 1 & 2), HubSpot Revenue Operations certified, a
 export const dynamic = 'force-static'
 export const metadata: Metadata = generateMetadata(
   'About — Revenue Operations Professional',
-  'Richard Hudson - Dallas, Texas Revenue Operations Professional serving Dallas-Fort Worth metroplex with 10+ years experience. SalesLoft Admin certified (Level 1 & 2) and HubSpot Revenue Operations certified. Partnership program implementation specialist with system integration experience. Expert in data analytics, process automation, and CRM optimization. $4.8M+ revenue generated across 10+ projects, 432% transaction growth achieved.',
+  `Richard Hudson - Dallas, Texas Revenue Operations Professional serving Dallas-Fort Worth metroplex with 10+ years experience. SalesLoft Admin certified (Level 1 & 2) and HubSpot Revenue Operations certified. Partnership program implementation specialist with system integration experience. Expert in data analytics, process automation, and CRM optimization. $4.8M+ revenue generated across ${PROJECT_COUNT} projects, 432% transaction growth achieved.`,
   '/about'
 )
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
-      <FAQPageJsonLd
-        faqs={[
-          {
-            question: 'What does a Revenue Operations Specialist do?',
-            answer:
-              'A Revenue Operations Specialist aligns sales, marketing, and customer success teams through data-driven process optimization, CRM administration, and analytics to maximize revenue growth and operational efficiency.',
-          },
-          {
-            question: 'What certifications does Richard Hudson hold?',
-            answer:
-              'Richard holds SalesLoft Admin Certification (Level 1 and Level 2) and HubSpot Revenue Operations Certification, demonstrating expertise in sales engagement platforms and revenue operations methodology.',
-          },
-          {
-            question: 'What results has Richard Hudson achieved in Revenue Operations?',
-            answer:
-              'Richard has generated over $4.8M in revenue, achieved 432% transaction growth, and delivered 2,217% network expansion across partnership programs and revenue operations initiatives.',
-          },
-          {
-            question: 'Where is Richard Hudson located?',
-            answer:
-              'Richard is based in Dallas, Texas, serving the Dallas-Fort Worth metroplex area.',
-          },
-        ]}
-      />
+      {/* No FAQPage markup here. Google's structured-data policy requires every
+          marked-up Q&A to be visible on the page; the four that used to be
+          emitted never were, and one restated headline metrics. */}
       <BreadcrumbListJsonLd
         items={[
           { name: 'Home', url: SITE_ORIGIN },

@@ -2,8 +2,10 @@
 
 import Link from 'next/link'
 import { useTransition } from 'react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { debounce, useQueryState } from 'nuqs'
-import type { BlogPostData, BlogCategoryData } from '@/types/api'
+import type { BlogListPost } from '@/types/blog'
+import { ALL_CATEGORIES, blogIndexHref, paginationItems } from '@/lib/blog-pagination'
 import { BlogTagFilter } from './blog-tag-filter'
 import { InlineMarkdown } from './inline-markdown'
 import { BlogFeaturedImage } from '@/components/blog/blog-featured-image'
@@ -12,32 +14,53 @@ import { Badge } from '@/components/ui/badge'
 import { formatDate } from '@/lib/data-formatters'
 
 interface BlogListProps {
-  initialPosts: BlogPostData[]
-  initialCategories: BlogCategoryData[]
+  /** The posts on this page, already searched, filtered and paged by the server. */
+  posts: BlogListPost[]
+  categoryNames: string[]
+  categoryCounts: Record<string, number>
+  /** Posts matching the current search + category across all pages. */
+  total: number
+  page: number
+  totalPages: number
+  /** The `q` and `category` the server rendered with. */
+  query: string
+  selectedCategory: string
 }
 
 /**
- * Official Next.js 16 / React 19 Pattern: Client Component with Server-Provided Data
+ * Client Component with server-provided data. No client-side fetching.
  *
- * Data is fetched on the server and passed as props. Still no client-side
- * fetching: `category` filters in place, and `q` is handled by the server.
+ * Search (`q`), category and page are all applied on the server. `q` and
+ * `category` use `shallow: false`, so nuqs re-runs the server component with
+ * the new search params (a Next.js RSC navigation, not a fetch from here).
+ * Search runs in Postgres (see getSearchListing in ../page.tsx), which lets a
+ * query match a post's full body text without that text reaching the browser.
+ * Category moved server-side with pagination: filtering one page in place
+ * would hide every match on the other pages.
  *
- * `q` uses `shallow: false`, so nuqs re-runs the server component with the new
- * search param instead of only rewriting the URL. That is a Next.js RSC
- * navigation, not a fetch from this component — the "no client-side fetching"
- * property above still holds. The work happens in Postgres (see applySearch in
- * ../page.tsx), which is what lets a query match against a post's full body
- * text; that content is never sent to the browser, so the substring filter this
- * replaced could only ever see titles and excerpts.
+ * Pages are plain links (`/blog?page=2`) so crawlers can reach every post.
  */
-export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
-  // Category stays client-side: the data is already here, so filtering it in
-  // place is instant and a round-trip would buy nothing.
-  const [selectedCategory, setSelectedCategory] = useQueryState('category', { defaultValue: 'All' })
-
+export function BlogList({
+  posts,
+  categoryNames,
+  categoryCounts,
+  total,
+  page,
+  totalPages,
+  query,
+  selectedCategory,
+}: BlogListProps) {
   // `isPending` drives the subtle busy state below. Without a transition the
   // list would simply freeze on the old results while the server responds.
   const [isPending, startTransition] = useTransition()
+
+  // The chip highlight follows the URL immediately; the cards follow the server.
+  const [category, setCategory] = useQueryState('category', {
+    defaultValue: ALL_CATEGORIES,
+    shallow: false,
+    startTransition,
+  })
+  const [, setPage] = useQueryState('page', { shallow: false, startTransition })
   const [searchQuery, setSearchQuery] = useQueryState('q', {
     defaultValue: '',
     shallow: false,
@@ -54,29 +77,12 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
     startTransition,
   })
 
-  // Build category list with "All" option
-  const categoryTags = ['All', ...initialCategories.map((c) => c.name)]
+  // A new search or category starts again at page 1.
+  function resetPage() {
+    if (page > 1) void setPage(null)
+  }
 
-  // Count posts per category
-  const categoryCounts = initialPosts.reduce<Record<string, number>>(
-    (counts, post) => {
-      const categoryName = post.category?.name
-      if (categoryName) {
-        counts[categoryName] = (counts[categoryName] || 0) + 1
-      }
-      return counts
-    },
-    { All: initialPosts.length }
-  )
-
-  // Category only — `initialPosts` has already been narrowed to the search hits
-  // by the server. Re-applying a substring filter here would undo that: a post
-  // matched on its body text has no guarantee of containing the term in its
-  // title or excerpt, so the client filter would discard the very results
-  // full-text search exists to find.
-  const filteredPosts = initialPosts.filter(
-    (post) => selectedCategory === 'All' || post.category?.name === selectedCategory
-  )
+  const categoryTags = [ALL_CATEGORIES, ...categoryNames]
 
   function formatPublishedDate(dateString: string | undefined): string {
     if (!dateString) return ''
@@ -102,7 +108,10 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
             type="search"
             placeholder="Search blog posts..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value || null)}
+            onChange={(e) => {
+              resetPage()
+              void setSearchQuery(e.target.value || null)
+            }}
             aria-label="Search blog posts"
             aria-busy={isPending}
             className="w-full px-4 py-2 pr-10 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
@@ -117,19 +126,16 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
           )}
         </div>
         {/* Screen readers get the result count once the server responds, since
-            the visual change (a different set of cards) is not announced.
-
-            When a category filter is also active, `filteredPosts` is the search
-            hits narrowed further by category — announcing that number alone as
-            "N posts found for <query>" blamed the search for an empty grid the
-            category caused. Name both filters in that case. */}
+            the visual change (a different set of cards) is not announced. With a
+            category filter active, name it too, so an empty grid isn't blamed on
+            the search alone. */}
         <p aria-live="polite" className="sr-only">
           {isPending
             ? 'Searching'
-            : searchQuery
-              ? selectedCategory === 'All'
-                ? `${filteredPosts.length} ${filteredPosts.length === 1 ? 'post' : 'posts'} found for ${searchQuery}`
-                : `${filteredPosts.length} of ${initialPosts.length} ${initialPosts.length === 1 ? 'post' : 'posts'} found for ${searchQuery}, filtered to ${selectedCategory}`
+            : query
+              ? `${total} ${total === 1 ? 'post' : 'posts'} found for ${query}${
+                  selectedCategory === ALL_CATEGORIES ? '' : `, filtered to ${selectedCategory}`
+                }`
               : ''}
         </p>
       </div>
@@ -138,16 +144,24 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
       <div className="mb-10">
         <BlogTagFilter
           tags={categoryTags}
-          selectedTag={selectedCategory}
+          selectedTag={category}
           tagCounts={categoryCounts}
-          onTagChange={(tag) => setSelectedCategory(tag === 'All' ? null : tag)}
+          onTagChange={(tag) => {
+            resetPage()
+            void setCategory(tag === ALL_CATEGORIES ? null : tag)
+          }}
         />
       </div>
 
+      <p className="mb-6 text-sm text-muted-foreground" data-testid="blog-result-count">
+        {total} {total === 1 ? 'post' : 'posts'}
+        {totalPages > 1 ? `, page ${page} of ${totalPages}` : ''}
+      </p>
+
       {/* Posts Grid */}
-      {filteredPosts.length > 0 ? (
+      {posts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPosts.map((post) => (
+          {posts.map((post) => (
             <Link key={post.id} href={`/blog/${post.slug}`} className="group block h-full">
               <Card className="hover-lift hover:border-primary/50 transition-all h-full overflow-hidden">
                 {post.featuredImage && (
@@ -156,7 +170,7 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
                       src={post.featuredImage}
                       alt={post.title}
                       postTitle={post.title}
-                      postCategory={post.category?.name}
+                      postCategory={post.categoryName ?? undefined}
                       fill
                       className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -166,7 +180,7 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
                 <CardHeader>
                   {post.tags && post.tags.length > 0 && (
                     <div className="flex gap-2 mb-2 flex-wrap">
-                      {post.tags.slice(0, 3).map((tag: { id: string; name: string }) => (
+                      {post.tags.slice(0, 3).map((tag) => (
                         <Badge key={tag.id} variant="secondary" className="text-xs">
                           {tag.name}
                         </Badge>
@@ -185,7 +199,7 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
                 </CardHeader>
                 <CardContent>
                   <time className="typography-small text-muted-foreground">
-                    {formatPublishedDate(post.publishedAt)}
+                    {formatPublishedDate(post.publishedAt ?? undefined)}
                   </time>
                 </CardContent>
               </Card>
@@ -198,8 +212,9 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
           <button
             type="button"
             onClick={() => {
-              setSearchQuery(null)
-              setSelectedCategory(null)
+              void setPage(null)
+              void setSearchQuery(null)
+              void setCategory(null)
             }}
             className="mt-4 inline-flex items-center px-4 py-2 rounded-lg border border-border bg-background text-sm font-medium text-foreground transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
@@ -207,6 +222,79 @@ export function BlogList({ initialPosts, initialCategories }: BlogListProps) {
           </button>
         </div>
       )}
+
+      {totalPages > 1 && (
+        <BlogPagination
+          page={page}
+          totalPages={totalPages}
+          query={query}
+          selectedCategory={selectedCategory}
+        />
+      )}
     </div>
+  )
+}
+
+const PAGE_LINK =
+  'inline-flex items-center justify-center min-w-10 h-10 px-3 rounded-lg border text-sm font-medium transition-colors'
+
+function BlogPagination({
+  page,
+  totalPages,
+  query,
+  selectedCategory,
+}: {
+  page: number
+  totalPages: number
+  query: string
+  selectedCategory: string
+}) {
+  const href = (target: number) =>
+    blogIndexHref({ page: target, query, category: selectedCategory })
+
+  return (
+    <nav aria-label="Blog pages" className="mt-12 flex flex-wrap items-center justify-center gap-2">
+      {page > 1 && (
+        <Link
+          href={href(page - 1)}
+          rel="prev"
+          className={`${PAGE_LINK} gap-1 border-border text-foreground hover:border-primary/50 hover:text-primary`}
+        >
+          <ChevronLeft className="size-4" aria-hidden="true" />
+          Previous
+        </Link>
+      )}
+      {paginationItems(page, totalPages).map((item, index) =>
+        item === 'gap' ? (
+          <span key={`gap-${index}`} aria-hidden="true" className="px-1 text-muted-foreground">
+            …
+          </span>
+        ) : (
+          <Link
+            key={item}
+            href={href(item)}
+            aria-label={`Page ${item}`}
+            aria-current={item === page ? 'page' : undefined}
+            className={`${PAGE_LINK} ${
+              item === page
+                ? 'border-primary/30 bg-primary/20 text-primary'
+                : 'border-border text-muted-foreground hover:border-primary/50 hover:text-primary'
+            }`}
+          >
+            {item}
+          </Link>
+        )
+      )}
+      {page < totalPages && (
+        <Link
+          href={href(page + 1)}
+          rel="next"
+          className={`${PAGE_LINK} gap-1 border-border text-foreground hover:border-primary/50 hover:text-primary`}
+        >
+          Next
+          <ChevronRight className="size-4" aria-hidden="true" />
+        </Link>
+      )}
+    </nav>
   )
 }

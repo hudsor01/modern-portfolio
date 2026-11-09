@@ -30,11 +30,10 @@ beforeEach(() => {
 })
 
 describe('useContactForm', () => {
-  it('initial state: idle / not submitting / showPrivacy=false', () => {
+  it('initial state: idle / not submitting / terms not agreed', () => {
     const { result } = renderHook(() => useContactForm())
     expect(result.current.submitStatus).toBe('idle')
     expect(result.current.isSubmitting).toBe(false)
-    expect(result.current.showPrivacy).toBe(false)
     expect(result.current.agreedToTerms).toBe(false)
     expect(result.current.error).toBeNull()
     expect(result.current.termsError).toBeNull()
