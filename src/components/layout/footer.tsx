@@ -40,7 +40,7 @@ const FOOTER_SECTIONS: ReadonlyArray<{
       },
       {
         label: 'Revenue intelligence platforms',
-        href: '/blog/stop-guessing-how-revenue-intelligence-platforms-slash-forecast-errors-by-40',
+        href: '/blog/stop-guessing-how-revenue-intelligence-platforms-reduce-forecast-errors',
       },
       {
         label: 'Customer churn analysis (Python)',
