@@ -1,5 +1,4 @@
 import { generateMetadata } from '@/app/shared-metadata'
-import { FAQPageJsonLd } from '@/components/seo/json-ld/faq-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { Navbar } from '@/components/layout/navbar'
 import { PersonalInfo } from '@/components/about/personal-info'
@@ -75,30 +74,9 @@ export const metadata: Metadata = generateMetadata(
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
-      <FAQPageJsonLd
-        faqs={[
-          {
-            question: 'What does a Revenue Operations Specialist do?',
-            answer:
-              'A Revenue Operations Specialist aligns sales, marketing, and customer success teams through data-driven process optimization, CRM administration, and analytics to maximize revenue growth and operational efficiency.',
-          },
-          {
-            question: 'What certifications does Richard Hudson hold?',
-            answer:
-              'Richard holds SalesLoft Admin Certification (Level 1 and Level 2) and HubSpot Revenue Operations Certification, demonstrating expertise in sales engagement platforms and revenue operations methodology.',
-          },
-          {
-            question: 'What results has Richard Hudson achieved in Revenue Operations?',
-            answer:
-              'Richard has generated over $4.8M in revenue, achieved 432% transaction growth, and delivered 2,217% network expansion across partnership programs and revenue operations initiatives.',
-          },
-          {
-            question: 'Where is Richard Hudson located?',
-            answer:
-              'Richard is based in Dallas, Texas, serving the Dallas-Fort Worth metroplex area.',
-          },
-        ]}
-      />
+      {/* No FAQPage markup here. Google's structured-data policy requires every
+          marked-up Q&A to be visible on the page; the four that used to be
+          emitted never were, and one restated headline metrics. */}
       <BreadcrumbListJsonLd
         items={[
           { name: 'Home', url: SITE_ORIGIN },
