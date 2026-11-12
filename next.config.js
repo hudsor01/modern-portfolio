@@ -4,11 +4,13 @@ import { withSentryConfig } from '@sentry/nextjs/config'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-// old slug -> new slug for renamed blog posts. Also read by
+const readJson = (file) => JSON.parse(readFileSync(join(process.cwd(), file), 'utf8'))
+
+// old slug -> current slug for renamed blog posts, and retired slug -> the
+// post it was merged into. Also read by src/app/sitemap.ts and
 // src/data/__tests__/blog-slug-renames.test.ts.
-const BLOG_SLUG_RENAMES = JSON.parse(
-  readFileSync(join(process.cwd(), 'src/data/blog-slug-renames.json'), 'utf8')
-)
+const BLOG_SLUG_RENAMES = readJson('src/data/blog-slug-renames.json')
+const BLOG_RETIRED_SLUGS = readJson('src/data/blog-retired-slugs.json')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -238,6 +240,14 @@ const nextConfig = {
       // or whose slug was cut mid-word at 80 characters. The DB holds the new
       // slugs; these 308s keep every old link and indexed URL working.
       ...Object.entries(BLOG_SLUG_RENAMES).map(([from, to]) => ({
+        source: `/blog/${from}`,
+        destination: `/blog/${to}`,
+        permanent: true,
+      })),
+      // Near-duplicate posts (up to nine per topic, from the old n8n
+      // generator) were merged into one keeper per topic and soft-deleted.
+      // Each retired URL 308s to the keeper that now carries its content.
+      ...Object.entries(BLOG_RETIRED_SLUGS).map(([from, to]) => ({
         source: `/blog/${from}`,
         destination: `/blog/${to}`,
         permanent: true,

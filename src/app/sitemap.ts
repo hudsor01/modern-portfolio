@@ -4,6 +4,8 @@ import { SITE_ORIGIN } from '@/lib/absolute-url'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 import { showcaseProjects } from '@/data/projects'
 import { PRIVACY_POLICY_LAST_UPDATED } from '@/app/privacy/policy-date'
+import blogRetiredSlugs from '@/data/blog-retired-slugs.json'
+import blogSlugRenames from '@/data/blog-slug-renames.json'
 
 const logger = createContextLogger('Sitemap')
 
@@ -60,6 +62,10 @@ const RETIRED_BLOG_SLUGS = new Set<string>([
   'stop-guessing-how-to-slash-forecast-variance-by-60-in-90-days',
   'the-4-2m-you-left-on-the-table-why-your-closed-lost-deals-are-actually-sleeping-',
   'stop-ignoring-your-dead-opportunities-how-we-revived-4-2m-in-lost-revenue-with-o',
+  // Every slug next.config.js redirects from the JSON maps. Retired posts are
+  // also soft-deleted, so this is a guard, not the only filter.
+  ...Object.keys(blogSlugRenames),
+  ...Object.keys(blogRetiredSlugs),
 ])
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
