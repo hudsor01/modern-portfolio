@@ -2,6 +2,29 @@ import type { Metadata } from 'next'
 import { canonicalUrl, SITE_ORIGIN, OG_IMAGE_SIZE, ogImageUrl } from '@/lib/absolute-url'
 import { PROJECT_COUNT } from '@/data/projects'
 
+export const BRAND = 'Richard Hudson'
+
+/** Append the brand once; idempotent when the title already contains it. */
+export function brandTitle(title: string): string {
+  return title.includes(BRAND) ? title : `${title} | ${BRAND}`
+}
+
+/**
+ * Remove a trailing brand suffix ("| Richard Hudson", en/em dash, hyphen).
+ * Deliberately regex-free so it is linear-time on adversarial DB input.
+ */
+export function stripBrandSuffix(title: string): string {
+  let out = title.trimEnd()
+  const brand = BRAND.toLowerCase()
+  if (!out.toLowerCase().endsWith(brand)) return title.trim()
+  out = out.slice(0, out.length - brand.length).trimEnd()
+  const last = out.charAt(out.length - 1)
+  if (last === '|' || last === '–' || last === '—' || last === '-') {
+    out = out.slice(0, -1).trimEnd()
+  }
+  return out.trim()
+}
+
 const SITE_DESCRIPTION = `Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. $4.8M+ revenue impact across ${PROJECT_COUNT} projects.`
 
 export const baseMetadata: Metadata = {
@@ -112,6 +135,8 @@ export interface PageMetadataOptions {
   subtitle?: string
   /** alt text for the OG image. Defaults to the page `title`. */
   ogAlt?: string
+  /** Bypass the root '%s | Richard Hudson' template; use for the home page whose title already leads with the brand. */
+  absoluteTitle?: boolean
   /** OpenGraph type. Defaults to `'website'`; case studies pass `'article'`. */
   ogType?: 'website' | 'article'
   keywords?: string[]
@@ -145,7 +170,16 @@ export function generateMetadata(
         }
       : titleOrOptions
 
-  const { title, ogTitle, subtitle, ogAlt, ogType = 'website', keywords, additional } = opts
+  const {
+    title,
+    ogTitle,
+    subtitle,
+    ogAlt,
+    ogType = 'website',
+    keywords,
+    additional,
+    absoluteTitle,
+  } = opts
   // Root canonical is the bare origin (no trailing slash) — `canonicalUrl('/')`
   // would yield '…com/', which Search Console treats as a distinct URL.
   const pageUrl = opts.path === '/' ? SITE_ORIGIN : canonicalUrl(opts.path)
@@ -153,7 +187,7 @@ export function generateMetadata(
 
   return {
     ...baseMetadata,
-    title,
+    title: absoluteTitle ? { absolute: title } : title,
     description: opts.description,
     ...(keywords ? { keywords } : {}),
     alternates: {
@@ -162,7 +196,7 @@ export function generateMetadata(
     openGraph: {
       ...baseMetadata.openGraph,
       type: ogType,
-      title,
+      title: brandTitle(title),
       description: opts.description,
       url: pageUrl,
       images: [
@@ -175,7 +209,7 @@ export function generateMetadata(
     },
     twitter: {
       ...baseMetadata.twitter,
-      title,
+      title: brandTitle(title),
       description: opts.description,
       images: [cardUrl],
     },
