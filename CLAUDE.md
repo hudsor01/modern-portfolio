@@ -320,14 +320,14 @@ stale `node_modules` hides this class of bug — Bun does not prune packages tha
 `rm -rf node_modules && bun install --frozen-lockfile`.
 
 **Keep `overrides` minimal.** There are 4. Each was added to lift a *nested* copy
-that a parent pinned below a fix line; as of `next` 16.4.3 only `esbuild` and `glob`
+that a parent pinned below a fix line; as of `next` 16.4.6 only `esbuild` and `glob`
 still do — `postcss` now only dedupes (every copy forced to exactly `8.5.32`) and
 `sharp` is only a floor:
 
 | Override | Why it exists |
 |---|---|
-| `postcss` | `next` internally pins its own `postcss` (`8.5.23` as of 16.4.3); collapses every copy onto one patched version |
-| `sharp` | Backstop against a *nested* pre-0.35.5 copy (libvips/libheif RCE GHSA-rgj7-g3m4-5g8c fixed in 0.35.4; librsvg GHSA-wq5f-xc86-pv6w fixed in 0.35.5). As of `next` 16.4.3 the parent itself pins `sharp ^0.35.5`, so this no longer changes resolution. Kept only as a floor; re-check it whenever `next` is bumped. There is deliberately **no direct `sharp` dependency**: `next` installs it as an `optionalDependency` (not a peer, so `peer = false` does not drop it), which is what `next/image` optimization uses in the standalone server — verified by `/_next/image` returning AVIF. The old direct pin only existed to lift `next`'s former `^0.34.5`. |
+| `postcss` | `next` internally pins its own `postcss` (`8.5.23` as of 16.4.6); collapses every copy onto one patched version |
+| `sharp` | Backstop against a *nested* pre-0.35.5 copy (libvips/libheif RCE GHSA-rgj7-g3m4-5g8c fixed in 0.35.4; librsvg GHSA-wq5f-xc86-pv6w fixed in 0.35.5). As of `next` 16.4.6 the parent itself pins `sharp ^0.35.5`, so this no longer changes resolution. Kept only as a floor; re-check it whenever `next` is bumped. There is deliberately **no direct `sharp` dependency**: `next` installs it as an `optionalDependency` (not a peer, so `peer = false` does not drop it), which is what `next/image` optimization uses in the standalone server — verified by `/_next/image` returning AVIF. The old direct pin only existed to lift `next`'s former `^0.34.5`. |
 | `esbuild` | `^0.28.2`. Collapses the tree onto one esbuild; the parents still below it are `drizzle-kit` (`^0.25.4`), which works on 0.28 (`drizzle-kit check` and `drizzle-kit export` verified), and `@esbuild-kit/core-utils` (`~0.18.20`, pulled in by drizzle-kit's `@esbuild-kit/esm-loader`, which drizzle-kit's `bin.cjs` never loads) — that `~0.18.20` sits inside GHSA-67mh-4wv8-2f99 (`<=0.24.2`), so it is the copy this override actually lifts. `react-email`, `tsx` and `vite` already ask for `^0.27`/`^0.28` — the old `^0.25.0` pin was forcing them *below* their own declared ranges |
 | `glob` | `^14.0.2`. `react-email` and `@sentry/bundler-plugins` pin `glob ^13.0.6` even at their latest, and 13.x has no backport for GHSA-3g3m-2fjr-6pw4 or its `minimatch` 10 dependency's GHSA-g3hv-75wg-m249 (glob 14 moves to `minimatch` 11). Neither consumer uses an API glob 14 broke: `react-email` calls `glob()`/`globSync()` only in its CLI, which no script runs; Sentry's Next.js upload passes directories to sentry-cli (`prepareArtifacts: false`), and its `globFiles` results on this `.next` were identical under 13 and 14. Remove once both parents accept `^14` |
 
