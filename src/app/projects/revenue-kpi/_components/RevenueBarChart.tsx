@@ -10,6 +10,9 @@ import {
 import { LazyAreaChart as AreaChart } from '@/components/charts/lazy-charts'
 import { Area, XAxis, YAxis, CartesianGrid } from 'recharts'
 import { chartColors } from '@/lib/charts'
+import { CHART_BOX } from '@/components/charts/chart-skeleton'
+import { formatCompactCurrency } from '@/lib/data-formatters'
+import { deriveRevenueTrendTitle } from './chart-titles'
 
 const chartConfig = {
   revenue: {
@@ -27,16 +30,17 @@ export default function RevenueBarChart({ data }: RevenueBarChartProps) {
     if (!data || data.length === 0) return []
     return data.map((period) => ({
       name: period.label,
-      // Convert to thousands (e.g., 284K, 365K)
-      revenue: Math.round(period.revenue / 1000),
+      revenue: period.revenue,
     }))
   })()
+
+  const title = deriveRevenueTrendTitle(chartData.map((d) => d.name))
 
   if (!chartData.length) {
     return (
       <Card className="portfolio-card">
         <CardHeader className="pb-2">
-          <CardTitle className="text-xl">Monthly Revenue 2024</CardTitle>
+          <CardTitle className="text-xl">{title}</CardTitle>
           <CardDescription>No data available</CardDescription>
         </CardHeader>
       </Card>
@@ -46,13 +50,11 @@ export default function RevenueBarChart({ data }: RevenueBarChartProps) {
   return (
     <Card className="portfolio-card">
       <CardHeader className="pb-2">
-        <CardTitle className="text-xl">Monthly Revenue 2024</CardTitle>
-        <CardDescription>
-          Revenue trend showing consistent growth through the current year
-        </CardDescription>
+        <CardTitle className="text-xl">{title}</CardTitle>
+        <CardDescription>Revenue trend across the reported periods</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[var(--chart-height-sm)] w-full">
+        <ChartContainer config={chartConfig} className={CHART_BOX.sm}>
           <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
             <defs>
               <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
@@ -73,10 +75,18 @@ export default function RevenueBarChart({ data }: RevenueBarChartProps) {
               tick={{ fill: chartColors.axis, fontSize: 12 }}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `$${value}K`}
+              tickFormatter={(value) => formatCompactCurrency(Number(value))}
             />
             <ChartTooltip
-              content={<ChartTooltipContent />}
+              content={
+                <ChartTooltipContent
+                  formatter={(value, name) => (
+                    <span>
+                      {name}: {formatCompactCurrency(Number(value))}
+                    </span>
+                  )}
+                />
+              }
               cursor={{ stroke: chartColors.primary, strokeOpacity: 0.3 }}
             />
             <Area

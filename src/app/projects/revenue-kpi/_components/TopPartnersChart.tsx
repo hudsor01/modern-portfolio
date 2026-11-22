@@ -10,6 +10,8 @@ import {
 import { LazyBarChart as BarChart } from '@/components/charts/lazy-charts'
 import { Bar, XAxis, YAxis, CartesianGrid, Cell } from 'recharts'
 import { chartColors } from '@/lib/charts'
+import { CHART_BOX } from '@/components/charts/chart-skeleton'
+import { formatCompactCurrency } from '@/lib/data-formatters'
 
 const chartConfig = {
   revenue: {
@@ -40,7 +42,7 @@ export default function TopPartnersChart({ partners }: TopPartnersChartProps) {
       .map((partner) => ({
         name: partner.name.length > 15 ? `${partner.name.slice(0, 15)}...` : partner.name,
         fullName: partner.name,
-        revenue: Math.round(partner.revenue / 1000), // in thousands
+        revenue: partner.revenue,
       }))
   })()
 
@@ -62,7 +64,7 @@ export default function TopPartnersChart({ partners }: TopPartnersChartProps) {
         <CardDescription>Leading revenue contributors this period</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[var(--chart-height-sm)] w-full">
+        <ChartContainer config={chartConfig} className={CHART_BOX.sm}>
           <BarChart
             data={chartData}
             layout="vertical"
@@ -80,7 +82,7 @@ export default function TopPartnersChart({ partners }: TopPartnersChartProps) {
               tick={{ fill: chartColors.axis, fontSize: 12 }}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `$${value}K`}
+              tickFormatter={(value) => formatCompactCurrency(Number(value))}
             />
             <YAxis
               type="category"
@@ -92,7 +94,15 @@ export default function TopPartnersChart({ partners }: TopPartnersChartProps) {
               width={90}
             />
             <ChartTooltip
-              content={<ChartTooltipContent />}
+              content={
+                <ChartTooltipContent
+                  formatter={(value, name) => (
+                    <span>
+                      {name}: {formatCompactCurrency(Number(value))}
+                    </span>
+                  )}
+                />
+              }
               cursor={{ fill: chartColors.primary, fillOpacity: 0.1 }}
             />
             <Bar dataKey="revenue" radius={[0, 4, 4, 0]}>
