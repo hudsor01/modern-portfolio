@@ -9,6 +9,7 @@ import { NavigationBreadcrumbs } from '@/components/navigation/navigation-breadc
 import { Navbar } from '@/components/layout/navbar'
 import type { ProjectPageLayoutProps } from '@/types/design-system'
 import { designTokens } from '@/lib/tokens'
+import { DecorativeBlob } from '@/components/ui/decorative-blob'
 
 /**
  * Standardized Project Page Layout Component
@@ -39,11 +40,12 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
       <div
         ref={ref}
         // `relative` establishes the positioning context so the decorative
-        // -right-32/-left-32 blurs below are clipped by `overflow-hidden`.
+        // -right-32/-left-32 blurs below are clipped horizontally by `overflow-x-clip`
+        // (no scroll container, so sticky/vertical overflow behave normally).
         // Without it, absolute children escape to body coordinates and
         // produce horizontal page scroll on every project detail route
         // (browser audit 2026-05-10: scrollWidth>innerWidth at <=1024px).
-        className={cn('relative min-h-screen bg-background overflow-hidden', className)}
+        className={cn('relative min-h-screen bg-background overflow-x-clip', className)}
         {...props}
       >
         {/* Global site nav — these hardcoded project pages otherwise had only a
@@ -53,8 +55,8 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
         <Navbar />
 
         {/* Decorative background elements */}
-        <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
+        <DecorativeBlob position="top-right" />
+        <DecorativeBlob position="bottom-left" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16 lg:pt-32 lg:pb-20">
           {/* Header Navigation */}

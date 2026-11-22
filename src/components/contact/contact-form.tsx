@@ -50,7 +50,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
         </noscript>
 
         {/* Name & Email Row */}
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <form.Field
             name="name"
             children={(field: TanStackFieldApi<string>) => (
@@ -107,7 +107,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
         </div>
 
         {/* Company & Phone Row */}
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <form.Field
             name="company"
             children={(field: TanStackFieldApi<string>) => (

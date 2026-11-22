@@ -26,6 +26,7 @@ import {
   NETWORK_GROWTH_VALUE,
   YEARS_EXPERIENCE_VALUE,
 } from '@/lib/stats'
+import { DecorativeBlob } from '@/components/ui/decorative-blob'
 
 // Animated counter with visual impact
 function ImpactMetric({
@@ -74,7 +75,7 @@ export default function HomePageContent() {
       {/* Skip-link target (layout.tsx). The navbar stays outside the landmark. */}
       <main id="main-content">
         {/* Hero Section */}
-        <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
+        <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-clip">
           {/* Sophisticated Background */}
           <div className="absolute inset-0 -z-10">
             {/* Base surface — solid (palette: no gradients) */}
@@ -93,8 +94,8 @@ export default function HomePageContent() {
             />
 
             {/* Gradient orbs */}
-            <div className="absolute top-1/4 -right-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-            <div className="absolute bottom-1/4 -left-32 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+            <DecorativeBlob position="top-right" size="lg" />
+            <DecorativeBlob position="bottom-left" size="lg" className="bottom-1/4" />
 
             {/* Subtle grid */}
             <div
@@ -451,10 +452,10 @@ export default function HomePageContent() {
         </section>
 
         {/* Final CTA Section - Clean & Consistent */}
-        <section className="relative py-16 lg:py-20 overflow-hidden">
+        <section className="relative py-16 lg:py-20 overflow-clip">
           {/* Subtle decorative elements */}
-          <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
+          <DecorativeBlob position="top-right" />
+          <DecorativeBlob position="bottom-left" className="bottom-1/4" />
 
           <div className="relative max-w-4xl mx-auto px-6 lg:px-8 text-center">
             {/* Centered content flow */}

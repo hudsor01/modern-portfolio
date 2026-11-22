@@ -8,6 +8,7 @@ import { FeaturedProjects } from '@/components/contact/featured-projects'
 import { AvailabilityBadge } from '@/components/ui/availability-badge'
 import { REVENUE_IMPACT } from '@/lib/stats'
 import { useContactForm } from '@/hooks/use-contact-form'
+import { DecorativeBlob } from '@/components/ui/decorative-blob'
 
 // ============================================================================
 // Component
@@ -21,10 +22,10 @@ export default function ContactPageClient() {
       <Navbar />
       <main id="main-content" className="min-h-screen bg-background">
         {/* Hero Section */}
-        <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-20 overflow-hidden">
+        <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-20 overflow-clip">
           {/* Decorative background elements */}
-          <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
+          <DecorativeBlob position="top-right" />
+          <DecorativeBlob position="bottom-left" className="bottom-1/4" />
 
           <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
             {/* Header */}
@@ -64,12 +65,14 @@ export default function ContactPageClient() {
         {/* Form Section */}
         <section className="relative py-16 lg:py-20 bg-muted/30">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-12 items-stretch">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
               {/* Contact Form */}
-              <ContactForm form={form} />
+              <div className="min-w-0">
+                <ContactForm form={form} />
+              </div>
 
               {/* Contact Information & Featured Work */}
-              <div className="flex flex-col gap-8">
+              <div className="flex min-w-0 flex-col gap-8">
                 <ContactInfo />
                 <FeaturedProjects className="flex-1" />
               </div>

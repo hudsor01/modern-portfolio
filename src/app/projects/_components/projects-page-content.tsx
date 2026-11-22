@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/select'
 import { BarChart3, Search } from 'lucide-react'
 import type { Project } from '@/types/project'
+import { DecorativeBlob } from '@/components/ui/decorative-blob'
 
 interface ProjectsPageContentProps {
   initialProjects: Project[]
@@ -64,10 +65,10 @@ export function ProjectsPageContent({ initialProjects }: ProjectsPageContentProp
   })()
 
   return (
-    <main id="main-content" className="relative min-h-screen bg-background overflow-hidden">
+    <main id="main-content" className="relative min-h-screen bg-background overflow-x-clip">
       {/* Decorative background elements */}
-      <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
+      <DecorativeBlob position="top-right" />
+      <DecorativeBlob position="bottom-left" />
 
       <div className="w-full relative z-10 px-6 lg:px-8 mx-auto max-w-7xl">
         {/* Hero Section */}
