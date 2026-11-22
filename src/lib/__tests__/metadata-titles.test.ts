@@ -27,8 +27,7 @@ describe('title builder', () => {
     expect(brandTitle('Contact: Revenue Operations Consulting')).toBe(
       'Contact: Revenue Operations Consulting | Richard Hudson'
     )
-    const home = 'Richard Hudson | RevOps Professional in Dallas-Fort Worth'
-    expect(brandTitle(home)).toBe(home)
+    // Home's leading-brand shape is handled by absoluteTitle, not brandTitle.
     expect(brandTitle(brandTitle('X'))).toBe(brandTitle('X'))
   })
 
@@ -39,6 +38,24 @@ describe('title builder', () => {
     expect(stripBrandSuffix('Salesloft Basics - richard hudson  ')).toBe('Salesloft Basics')
     expect(stripBrandSuffix('  Plain Title ')).toBe('Plain Title')
     expect(stripBrandSuffix('Richard Hudson')).toBe('')
+  })
+
+  it('stripBrandSuffix keeps a title that merely ends with the name (no separator)', () => {
+    expect(stripBrandSuffix('Interview with Richard Hudson')).toBe('Interview with Richard Hudson')
+    expect(stripBrandSuffix('  Interview with Richard Hudson  ')).toBe(
+      'Interview with Richard Hudson'
+    )
+    expect(stripBrandSuffix('Interview with Richard Hudson | Richard Hudson')).toBe(
+      'Interview with Richard Hudson'
+    )
+  })
+
+  it('brandTitle only treats a trailing " | brand" as already branded', () => {
+    expect(brandTitle('Interview with Richard Hudson')).toBe(
+      'Interview with Richard Hudson | Richard Hudson'
+    )
+    expect(brandTitle('Richard Hudson on RevOps')).toBe('Richard Hudson on RevOps | Richard Hudson')
+    expect(brandTitle('Post | Richard Hudson')).toBe('Post | Richard Hudson')
   })
 
   it('stripBrandSuffix is linear on pathological input', () => {

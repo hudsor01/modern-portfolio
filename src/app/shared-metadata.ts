@@ -4,9 +4,9 @@ import { PROJECT_COUNT } from '@/data/projects'
 
 export const BRAND = 'Richard Hudson'
 
-/** Append the brand once; idempotent when the title already contains it. */
+/** Append the brand once; idempotent when the title already ends with " | brand". */
 export function brandTitle(title: string): string {
-  return title.includes(BRAND) ? title : `${title} | ${BRAND}`
+  return title.endsWith(` | ${BRAND}`) ? title : `${title} | ${BRAND}`
 }
 
 /**
@@ -14,15 +14,18 @@ export function brandTitle(title: string): string {
  * Deliberately regex-free so it is linear-time on adversarial DB input.
  */
 export function stripBrandSuffix(title: string): string {
-  let out = title.trimEnd()
+  const trimmed = title.trim()
   const brand = BRAND.toLowerCase()
-  if (!out.toLowerCase().endsWith(brand)) return title.trim()
-  out = out.slice(0, out.length - brand.length).trimEnd()
-  const last = out.charAt(out.length - 1)
+  if (!trimmed.toLowerCase().endsWith(brand)) return trimmed
+  const before = trimmed.slice(0, trimmed.length - brand.length).trimEnd()
+  if (before === '') return ''
+  const last = before.charAt(before.length - 1)
+  // Only a separator immediately before the brand marks it as a suffix; a title
+  // that merely ends with the name ("Interview with Richard Hudson") is kept.
   if (last === '|' || last === '–' || last === '—' || last === '-') {
-    out = out.slice(0, -1).trimEnd()
+    return before.slice(0, -1).trim()
   }
-  return out.trim()
+  return trimmed
 }
 
 const SITE_DESCRIPTION = `Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. $4.8M+ revenue impact across ${PROJECT_COUNT} projects.`
@@ -184,6 +187,8 @@ export function generateMetadata(
   // would yield '…com/', which Search Console treats as a distinct URL.
   const pageUrl = opts.path === '/' ? SITE_ORIGIN : canonicalUrl(opts.path)
   const cardUrl = ogImageUrl({ title: ogTitle ?? title, subtitle })
+  // Absolute titles (home) already carry the brand in their own shape.
+  const shareTitle = absoluteTitle ? title : brandTitle(title)
 
   return {
     ...baseMetadata,
@@ -196,7 +201,7 @@ export function generateMetadata(
     openGraph: {
       ...baseMetadata.openGraph,
       type: ogType,
-      title: brandTitle(title),
+      title: shareTitle,
       description: opts.description,
       url: pageUrl,
       images: [
@@ -209,7 +214,7 @@ export function generateMetadata(
     },
     twitter: {
       ...baseMetadata.twitter,
-      title: brandTitle(title),
+      title: shareTitle,
       description: opts.description,
       images: [cardUrl],
     },
