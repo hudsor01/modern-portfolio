@@ -145,10 +145,13 @@ test.describe('Project detail pages — regression assertions', () => {
     const titleText = (await trendTitle.textContent()) ?? ''
     const periodStart = titleText.split('·')[1]?.split('–')[0]?.trim() ?? ''
     expect(periodStart, `period start parsed from "${titleText}"`).not.toBe('')
-    const trendCard = page.locator('.portfolio-card').filter({ has: trendTitle }).first()
-    const trendTicks = await trendCard
-      .locator('.recharts-xAxis .recharts-cartesian-axis-tick-value')
-      .allTextContents()
+    const trendCard = page.locator('.portfolio-card').filter({ hasText: /^(Quarterly|Monthly) Revenue · / }).first()
+    await trendCard.scrollIntoViewIfNeeded()
+    const trendTickLocator = trendCard.locator(
+      '.recharts-cartesian-axis-tick-value'
+    )
+    await expect(trendTickLocator.first()).toBeVisible()
+    const trendTicks = await trendTickLocator.allTextContents()
     expect(trendTicks[0]?.trim(), `first trend tick, got: ${trendTicks.join(', ')}`).toBe(
       periodStart
     )
