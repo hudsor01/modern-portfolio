@@ -87,7 +87,7 @@ for (const tz of ['Pacific/Auckland', 'America/Chicago']) {
       page.on('console', (m) => {
         if (m.type() === 'error' && HYDRATION_ERROR.test(m.text())) errors.push(m.text())
       })
-      await checkParity(page, '/privacy', errors, false)
+      await checkParity(page, '/privacy', errors, true)
     })
   })
 }
