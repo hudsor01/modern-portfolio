@@ -3,6 +3,7 @@ import { memo } from 'react'
 
 import { LazyBarChart as BarChart } from '@/components/charts/lazy-charts'
 import { Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
+import { formatCompactCurrency } from '@/lib/data-formatters'
 import { chartColors as baseChartColors, chartCssVars } from '@/lib/charts'
 import { partnerProgramMetrics } from '@/data/partner-program-metrics'
 
@@ -31,7 +32,7 @@ const chartColors = {
 
 const PartnerTierChart = memo(function PartnerTierChart() {
   return (
-    <div className="h-[var(--chart-height-md)]">
+    <div className="h-full w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
@@ -51,7 +52,7 @@ const PartnerTierChart = memo(function PartnerTierChart() {
             fontSize={12}
             tickLine={false}
             axisLine={{ stroke: chartColors.axis, strokeOpacity: 0.5 }}
-            tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
+            tickFormatter={(value) => formatCompactCurrency(Number(value))}
           />
           <YAxis
             yAxisId="perPartner"
@@ -60,7 +61,7 @@ const PartnerTierChart = memo(function PartnerTierChart() {
             fontSize={12}
             tickLine={false}
             axisLine={{ stroke: chartColors.axis, strokeOpacity: 0.5 }}
-            tickFormatter={(value) => `$${(value / 1000).toFixed(1)}K`}
+            tickFormatter={(value) => formatCompactCurrency(Number(value))}
           />
           <Tooltip
             contentStyle={{
@@ -73,9 +74,9 @@ const PartnerTierChart = memo(function PartnerTierChart() {
             formatter={(value, name) => {
               const safeName = String(name ?? '')
               const safeValue = Number(value ?? 0)
-              if (safeName === 'revenue') return [`$${(safeValue / 1000).toFixed(0)}K`, 'Revenue']
+              if (safeName === 'revenue') return [formatCompactCurrency(safeValue), 'Revenue']
               if (safeName === 'perPartner')
-                return [`$${safeValue.toLocaleString()}`, 'Revenue / active partner']
+                return [formatCompactCurrency(safeValue), 'Revenue / active partner']
               return [safeValue, safeName]
             }}
           />

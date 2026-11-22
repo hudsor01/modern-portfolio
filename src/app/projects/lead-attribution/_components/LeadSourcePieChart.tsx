@@ -1,6 +1,7 @@
 'use client'
 import { memo } from 'react'
 
+import { CHART_BOX } from '@/components/charts/chart-skeleton'
 import { LazyPieChart as PieChart } from '@/components/charts/lazy-charts'
 import { Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { chartColors } from '@/lib/charts'
@@ -86,7 +87,7 @@ const LeadSourcePieChart = memo(function LeadSourcePieChart({ data }: LeadSource
 
   return (
     <div className="w-full">
-      <div className="h-[var(--chart-height-lg)]">
+      <div className={CHART_BOX.lg}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie

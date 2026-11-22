@@ -13,7 +13,7 @@ const LeadSourcePieChart = dynamic(
     () => <ChartLoadError height="md" />
   ),
   {
-    loading: () => <ChartSkeleton />,
+    loading: () => <ChartSkeleton height="lg" />,
     ssr: false,
   }
 )
