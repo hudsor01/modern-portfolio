@@ -7,7 +7,7 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 export const dynamic = 'force-static'
 
 export const metadata = genMeta({
-  title: 'Customer Churn & Retention Analysis - Predictive Analytics',
+  title: 'Customer Churn & Retention: Predictive Analytics',
   description:
     'Advanced churn prediction and retention analysis dashboard with customer lifecycle metrics, retention heatmaps, and predictive modeling for customer success optimization.',
   path: '/projects/churn-retention',

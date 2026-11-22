@@ -7,7 +7,7 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 export const dynamic = 'force-static'
 
 export const metadata = genMeta({
-  title: 'Lead Attribution & Marketing Analytics - Multi-Touch Attribution',
+  title: 'Lead Attribution: Multi-Touch Marketing Analytics',
   description:
     'Comprehensive lead attribution analysis with multi-touch attribution modeling. Tracks lead sources, conversion rates, and marketing channel performance to optimize spend and improve pipeline quality.',
   path: '/projects/lead-attribution',

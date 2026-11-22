@@ -11,7 +11,7 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 export const dynamic = 'force-static'
 
 export const metadata = genMeta({
-  title: 'Revenue KPI Dashboard - Partner Analytics & Business Intelligence',
+  title: 'Revenue KPI Dashboard: Partner Analytics & Business Intelligence',
   description:
     'Real-time revenue analytics dashboard featuring partner performance metrics, growth trends, and business intelligence for data-driven decision making. Built with React, TypeScript, and Recharts.',
   path: '/projects/revenue-kpi',

@@ -1,3 +1,4 @@
+import { brandTitle } from '@/app/shared-metadata'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getProjects, getProject } from '@/lib/projects'
@@ -59,7 +60,7 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
     title: project.title,
     description: project.description,
     openGraph: {
-      title: project.title,
+      title: brandTitle(project.title),
       description: project.description,
       url: projectUrl,
       images: [
@@ -73,7 +74,7 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
     },
     twitter: {
       card: 'summary_large_image',
-      title: project.title,
+      title: brandTitle(project.title),
       description: project.description,
       images: [ogImage.url],
     },

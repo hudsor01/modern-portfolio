@@ -7,7 +7,7 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 export const dynamic = 'force-static'
 
 export const metadata = genMeta({
-  title: 'Sales Pipeline Funnel Analysis - Deal Stage Optimization',
+  title: 'Sales Pipeline Funnel Analysis: Deal Stage Optimization',
   description:
     'Interactive sales funnel dashboard showing deal progression, conversion rates, and sales cycle optimization. Tracks pipeline opportunities through each stage with real-time metrics on deal velocity and revenue forecasting.',
   path: '/projects/deal-funnel',

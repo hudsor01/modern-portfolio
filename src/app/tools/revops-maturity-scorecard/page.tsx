@@ -7,7 +7,7 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 import { RevOpsMaturityScorecard } from './_components/revops-maturity-scorecard'
 
 const PATH = '/tools/revops-maturity-scorecard'
-const TITLE = 'RevOps Maturity Scorecard — Score Your Revenue Operations (Free, No Email)'
+const TITLE = 'RevOps Maturity Scorecard: Score Your Revenue Operations'
 const DESCRIPTION =
   'Free RevOps maturity assessment. Score your revenue operations across process, data, technology, and alignment in two minutes — get your maturity level, percentile, and the single highest-ROI next move. No email required.'
 

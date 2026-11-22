@@ -7,7 +7,7 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 import { PipelineCoverageCalculator } from './_components/pipeline-coverage-calculator'
 
 const PATH = '/tools/pipeline-coverage-calculator'
-const TITLE = 'Pipeline Coverage Calculator — Win-Rate-Driven (Not the 3× Rule)'
+const TITLE = 'Pipeline Coverage Calculator: Win-Rate-Driven, Not the 3× Rule'
 const DESCRIPTION =
   'Free pipeline coverage calculator. Enter your win rate and revenue target to get the exact coverage ratio and qualified pipeline you actually need — driven by win rate, not the generic 3× rule.'
 
