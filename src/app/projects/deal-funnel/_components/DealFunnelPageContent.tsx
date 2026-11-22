@@ -1,22 +1,14 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
 import { DollarSign, Clock, Target, BarChart3 } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
-import { LoadingState } from '@/components/projects/loading-state'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
-import { getProject } from '@/lib/projects'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
-import { createContextLogger } from '@/lib/logger'
-import { TIMING } from '@/lib/spacing'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/data-formatters'
 
 import {
-  type FunnelStage,
-  type PartnerConversion,
-  type ConversionRate,
   initialFunnelStages,
   initialPartnerConversion,
   initialConversionRates,
@@ -24,56 +16,24 @@ import {
 import { ChartsGrid } from './ChartsGrid'
 import { NarrativeSections } from './NarrativeSections'
 
-const logger = createContextLogger('DealFunnelPage')
-
 export default function DealFunnel() {
-  const [isLoading, setIsLoading] = useState(true)
-  const [localFunnelStages, setLocalFunnelStages] = useState<FunnelStage[]>([])
-  const [localPartnerConversion, setLocalPartnerConversion] = useState<PartnerConversion[]>([])
-  const [localConversionRates, setLocalConversionRates] = useState<ConversionRate[]>([])
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    }
-  }, [])
-
-  useEffect(() => {
-    async function loadProjectData() {
-      try {
-        await getProject('deal-funnel')
-        setLocalFunnelStages(initialFunnelStages)
-        setLocalPartnerConversion(initialPartnerConversion)
-        setLocalConversionRates(initialConversionRates)
-        timeoutRef.current = setTimeout(() => setIsLoading(false), TIMING.LOADING_STATE_RESET)
-      } catch (error) {
-        logger.error(
-          'Error loading project data',
-          error instanceof Error ? error : new Error(String(error))
-        )
-        setIsLoading(false)
-      }
-    }
-    loadProjectData()
-  }, [])
-
   // Derived calculations
-  const totalOpportunities = localFunnelStages?.[0]?.count ?? 0
+  const totalOpportunities = initialFunnelStages[0]?.count ?? 0
   const closedDeals =
-    localFunnelStages.length > 0 ? (localFunnelStages[localFunnelStages.length - 1]?.count ?? 0) : 0
+    initialFunnelStages.length > 0
+      ? (initialFunnelStages[initialFunnelStages.length - 1]?.count ?? 0)
+      : 0
   const avgDealSize =
-    localFunnelStages.length > 0
-      ? Math.round(localFunnelStages[localFunnelStages.length - 1]?.avg_deal_size ?? 0)
+    initialFunnelStages.length > 0
+      ? Math.round(initialFunnelStages[initialFunnelStages.length - 1]?.avg_deal_size ?? 0)
       : 0
   const totalRevenue = closedDeals * avgDealSize
 
   const avgSalesCycle =
-    localPartnerConversion.length > 0
+    initialPartnerConversion.length > 0
       ? Math.round(
-          localPartnerConversion.reduce((sum, group) => sum + group.avg_sales_cycle_days, 0) /
-            localPartnerConversion.length
+          initialPartnerConversion.reduce((sum, group) => sum + group.avg_sales_cycle_days, 0) /
+            initialPartnerConversion.length
         )
       : 0
 
@@ -81,30 +41,31 @@ export default function DealFunnel() {
     totalOpportunities > 0 ? ((closedDeals / totalOpportunities) * 100).toFixed(1) : '0.0'
 
   const stageConversions =
-    localConversionRates.length > 0
+    initialConversionRates.length > 0
       ? [
           {
             stage: 'Leads → Qualified',
             conversion:
-              localConversionRates[localConversionRates.length - 1]?.lead_to_qualified ?? 0,
+              initialConversionRates[initialConversionRates.length - 1]?.lead_to_qualified ?? 0,
             color: 'var(--color-primary)',
           },
           {
             stage: 'Qualified → Proposal',
             conversion:
-              localConversionRates[localConversionRates.length - 1]?.qualified_to_proposal ?? 0,
+              initialConversionRates[initialConversionRates.length - 1]?.qualified_to_proposal ?? 0,
             color: 'var(--color-secondary)',
           },
           {
             stage: 'Proposal → Negotiation',
             conversion:
-              localConversionRates[localConversionRates.length - 1]?.proposal_to_negotiation ?? 0,
+              initialConversionRates[initialConversionRates.length - 1]?.proposal_to_negotiation ??
+              0,
             color: 'var(--color-secondary)',
           },
           {
             stage: 'Negotiation → Closed',
             conversion:
-              localConversionRates[localConversionRates.length - 1]?.negotiation_to_closed ?? 0,
+              initialConversionRates[initialConversionRates.length - 1]?.negotiation_to_closed ?? 0,
             color: 'var(--color-chart-5)',
           },
         ]
@@ -176,31 +137,25 @@ export default function DealFunnel() {
           },
         ]}
       >
-        {isLoading ? (
-          <LoadingState />
-        ) : (
-          <>
-            {/* Key Metrics using standardized MetricsGrid */}
-            <MetricsGrid metrics={metrics} columns={4} loading={isLoading} className="mb-8" />
+        {/* Key Metrics using standardized MetricsGrid */}
+        <MetricsGrid metrics={metrics} columns={4} className="mb-8" />
 
-            {/* Charts Grid - Sales Funnel & Conversion Analytics */}
-            <ChartsGrid
-              funnelStages={localFunnelStages}
-              overallConversionRate={overallConversionRate}
-              stageConversions={stageConversions}
-              partnerConversion={localPartnerConversion}
-            />
+        {/* Charts Grid - Sales Funnel & Conversion Analytics */}
+        <ChartsGrid
+          funnelStages={initialFunnelStages}
+          overallConversionRate={overallConversionRate}
+          stageConversions={stageConversions}
+          partnerConversion={initialPartnerConversion}
+        />
 
-            {/* Professional Narrative Sections wrapped in SectionCard */}
-            <SectionCard
-              title="Project Narrative"
-              description="Comprehensive case study following the STAR methodology"
-              className="mb-8"
-            >
-              <NarrativeSections />
-            </SectionCard>
-          </>
-        )}
+        {/* Professional Narrative Sections wrapped in SectionCard */}
+        <SectionCard
+          title="Project Narrative"
+          description="Comprehensive case study following the STAR methodology"
+          className="mb-8"
+        >
+          <NarrativeSections />
+        </SectionCard>
       </ProjectPageLayout>
     </>
   )

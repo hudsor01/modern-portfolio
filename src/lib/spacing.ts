@@ -38,7 +38,6 @@ export const SPACING = {
  * Timing constants for animations and loading states
  */
 export const TIMING = {
-  LOADING_STATE_RESET: 1000, // 1 second - loading state duration
   ANIMATION_FAST: 200, // 200ms - quick transitions
   ANIMATION_DEFAULT: 300, // 300ms - default transitions
   ANIMATION_SLOW: 500, // 500ms - slow transitions

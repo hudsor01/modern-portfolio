@@ -24,7 +24,6 @@ describe('SPACING tokens', () => {
 
 describe('TIMING tokens', () => {
   it('exports numeric millisecond values', () => {
-    expect(typeof TIMING.LOADING_STATE_RESET).toBe('number')
     expect(typeof TIMING.ANIMATION_FAST).toBe('number')
     expect(TIMING.ANIMATION_FAST).toBeLessThan(TIMING.ANIMATION_DEFAULT)
     expect(TIMING.ANIMATION_DEFAULT).toBeLessThan(TIMING.ANIMATION_SLOW)
