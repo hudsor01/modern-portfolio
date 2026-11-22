@@ -1,6 +1,6 @@
 'use client'
 import { memo } from 'react'
-import { formatCurrency } from '@/lib/data-formatters'
+import { formatCompactCurrency } from '@/lib/data-formatters'
 
 import { LazyLineChart as LineChart } from '@/components/charts/lazy-charts'
 import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
@@ -57,7 +57,7 @@ const chartColors = {
 
 const ROIOptimizationChart = memo(function ROIOptimizationChart() {
   return (
-    <div className="h-[var(--chart-height-md)]">
+    <div className="h-full w-full">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
@@ -84,7 +84,7 @@ const ROIOptimizationChart = memo(function ROIOptimizationChart() {
             fontSize={12}
             tickLine={false}
             axisLine={{ stroke: chartColors.axis, strokeOpacity: 0.5 }}
-            tickFormatter={(value) => formatCurrency(value)}
+            tickFormatter={(value) => formatCompactCurrency(Number(value))}
           />
           <Tooltip
             contentStyle={{
@@ -98,9 +98,9 @@ const ROIOptimizationChart = memo(function ROIOptimizationChart() {
               const safeValue = Number(value ?? 0)
               const safeName = String(name ?? '')
               if (safeName === 'commissionInvestment')
-                return [formatCurrency(safeValue), 'Commission Investment']
+                return [formatCompactCurrency(safeValue), 'Commission Investment']
               if (safeName === 'revenueGenerated')
-                return [formatCurrency(safeValue), 'Revenue Generated']
+                return [formatCompactCurrency(safeValue), 'Revenue Generated']
               if (safeName === 'roi') return [`${safeValue}x`, 'Overall ROI']
               if (safeName === 'avgROI') return [`${safeValue}x`, 'Average ROI']
               if (safeName === 'topTierROI') return [`${safeValue}x`, 'Top Tier ROI']
