@@ -10,7 +10,7 @@ import {
   StandardTooltip,
 } from '@/components/charts/lazy-charts'
 import { Line, Legend } from 'recharts'
-import { formatCompactCurrency, formatCompactNumber, formatNumber } from '@/lib/data-formatters'
+import { formatCompactCurrency } from '@/lib/data-formatters'
 import { chartColors, chartConfig, chartTypeConfigs, formatters } from '@/lib/charts'
 import type { YearOverYearData } from '@/types/analytics'
 import type { ExtendedRevenueData, TypedTooltipProps } from '@/types/chart'
@@ -60,15 +60,6 @@ function CustomTooltip({ active, payload, label }: TypedTooltipProps<ExtendedRev
           value: formatCompactCurrency(dataPoint.revenue * 1_000_000),
           color: chartColors.revenue,
         },
-        ...(dataPoint.transactions
-          ? [
-              {
-                name: 'Transactions',
-                value: formatNumber(dataPoint.transactions * 1000),
-                color: chartColors.transactions,
-              },
-            ]
-          : []),
         ...(dataPoint.commissions
           ? [
               {
@@ -116,7 +107,6 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
         name: yearData.year.toString(),
         value: yearData.total_revenue / 1000000,
         revenue: yearData.total_revenue / 1000000,
-        transactions: yearData.total_transactions / 1000, // Convert to thousands
         commissions: yearData.total_commissions / 1000000, // Convert to millions
         period: new Date(Date.UTC(yearData.year, 0, 1)),
         growth,
@@ -144,7 +134,7 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
     <div className="portfolio-card">
       <ChartWrapper
         title="Revenue Growth Metrics"
-        caption="Year-over-year revenue, commissions and transaction volume"
+        caption="Year-over-year revenue and commissions"
         size="md"
       >
         <LineChart data={yearlyData} margin={chartConfig.margins.medium}>
@@ -154,7 +144,7 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
             yAxisId="left"
             tickFormatter={(value) => formatCompactCurrency(Number(value) * 1_000_000)}
             label={{
-              value: 'Revenue / Commissions',
+              value: 'Revenue',
               angle: -90,
               position: 'insideLeft',
               fill: chartColors.revenue,
@@ -165,12 +155,12 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
           <ChartYAxis
             yAxisId="right"
             orientation="right"
-            tickFormatter={(value) => formatCompactNumber(Number(value) * 1000)}
+            tickFormatter={(value) => formatCompactCurrency(Number(value) * 1_000_000)}
             label={{
-              value: 'Transactions',
+              value: 'Commissions',
               angle: 90,
               position: 'insideRight',
-              fill: chartColors.transactions,
+              fill: chartColors.commissions,
               fontSize: 12,
               fontWeight: 600,
             }}
@@ -193,23 +183,8 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
           />
           <Line
             {...chartTypeConfigs.line}
-            dataKey="transactions"
-            yAxisId="right"
-            stroke={chartColors.transactions}
-            dot={{ ...chartTypeConfigs.line.dot, stroke: chartColors.transactions }}
-            activeDot={{
-              ...chartTypeConfigs.line.activeDot,
-              stroke: chartColors.transactions,
-              fill: chartColors.transactions,
-            }}
-            animationDuration={chartConfig.animation.duration}
-            animationBegin={chartConfig.animation.delay}
-            name="Transactions"
-          />
-          <Line
-            {...chartTypeConfigs.line}
             dataKey="commissions"
-            yAxisId="left"
+            yAxisId="right"
             stroke={chartColors.commissions}
             dot={{ ...chartTypeConfigs.line.dot, stroke: chartColors.commissions }}
             activeDot={{

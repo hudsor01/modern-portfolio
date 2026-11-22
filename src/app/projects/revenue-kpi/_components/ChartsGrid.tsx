@@ -48,6 +48,10 @@ const RevenueLineChart = dynamic(() => import('./RevenueLineChart'), {
   ssr: false,
   loading: () => <ChartCardSkeleton size="md" variant="wrapper" />,
 })
+const TransactionVolumeChart = dynamic(() => import('./TransactionVolumeChart'), {
+  ssr: false,
+  loading: () => <ChartCardSkeleton size="sm" variant="wrapper" />,
+})
 const TopPartnersChart = dynamic(() => import('./TopPartnersChart'), {
   ssr: false,
   loading: () => <ChartCardSkeleton size="sm" />,
@@ -104,6 +108,11 @@ export function ChartsGrid({
 
       {/* Partner Distribution */}
       <PartnerGroupPieChart groups={partnerGroups} />
+
+      {/* Transaction Volume */}
+      <div className="lg:col-span-2">
+        <TransactionVolumeChart data={yearOverYearData} />
+      </div>
     </div>
   )
 }

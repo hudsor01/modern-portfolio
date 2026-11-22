@@ -59,10 +59,15 @@ describe('RevenueLineChart dual axis', () => {
     expect(right?.orientation).toBe('right')
   })
 
+  it('has no transactions series', () => {
+    render(<RevenueLineChart data={data} />)
+    expect(captured.lines.map((l) => l.dataKey)).not.toContain('transactions')
+  })
+
   it('binds every series to an axis', () => {
     render(<RevenueLineChart data={data} />)
     const byKey = Object.fromEntries(captured.lines.map((l) => [l.dataKey as string, l.yAxisId]))
-    expect(byKey).toEqual({ revenue: 'left', commissions: 'left', transactions: 'right' })
+    expect(byKey).toEqual({ revenue: 'left', commissions: 'right' })
   })
 
   it('formats ticks compactly and labels both axes', () => {
@@ -70,8 +75,8 @@ describe('RevenueLineChart dual axis', () => {
     const left = captured.axes.find((a) => a.yAxisId === 'left') as Props
     const right = captured.axes.find((a) => a.yAxisId === 'right') as Props
     expect((left.tickFormatter as AxisTickFormatter)(3.6)).toBe('$3.6M')
-    expect((right.tickFormatter as AxisTickFormatter)(12)).toBe('12K')
-    expect((left.label as { value: string }).value).toBe('Revenue / Commissions')
-    expect((right.label as { value: string }).value).toBe('Transactions')
+    expect((right.tickFormatter as AxisTickFormatter)(1.2)).toBe('$1.2M')
+    expect((left.label as { value: string }).value).toBe('Revenue')
+    expect((right.label as { value: string }).value).toBe('Commissions')
   })
 })
