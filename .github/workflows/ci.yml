@@ -178,14 +178,14 @@ jobs:
   # against the old `bun run dev` webServer without anyone noticing.
   #
   # Database: optional — the DB-backed routes degrade to empty states the specs
-  # tolerate. Exactly 23 tests need seeded blog content (5 in audit-regressions,
-  # 18 in blog); they read real post cards or posts, or assert 404s for a slug
+  # tolerate. Exactly 31 tests need seeded blog content (5 in audit-regressions,
+  # 20 in blog, 2 in timezone-hydration, 4 in layout-stability); they read real post cards or posts, or assert 404s for a slug
   # that must be absent from a populated table.
   # Those self-skip via e2e/_helpers/database.ts, which asks `/api/health`
   # whether the running server actually has a database rather than guessing.
   #
   # Set an `E2E_DATABASE_URL` secret (a dedicated Neon branch, seeded with
-  # `bun run db:seed`) and those 23 start running with no code change. Without it
+  # `bun run db:seed`) and those 31 start running with no code change. Without it
   # they report as skipped, with the reason attached, rather than silently
   # vanishing from the run.
   #
@@ -201,7 +201,7 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     needs: setup
-    # Per shard: 153 tests (612 in all) at 1 worker, plus browser download and one production
+    # Per shard: 221 tests (884 in all) at 1 worker, plus browser download and one production
     # build. The full serial run was ~20 min, so a quarter of it has ample room.
     timeout-minutes: 20
     strategy:
@@ -248,7 +248,7 @@ jobs:
       # it unconditionally would export DATABASE_URL="" when the secret is
       # absent, and env-validation.ts rejects an empty string outright
       # (`.min(1, 'DATABASE_URL is required')`) — that would break the build
-      # instead of letting the 23 DB-dependent tests skip.
+      # instead of letting the 31 DB-dependent tests skip.
       - name: Configure database (optional)
         env:
           E2E_DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
@@ -266,7 +266,7 @@ jobs:
             } >> "$GITHUB_ENV"
             echo "Database configured; DB-dependent specs will run."
           else
-            echo "No E2E_DATABASE_URL secret set; the 23 DB-dependent tests will skip."
+            echo "No E2E_DATABASE_URL secret set; the 31 DB-dependent tests will skip."
           fi
 
       # One step, no manual backgrounding: playwright.config.ts's `webServer`
