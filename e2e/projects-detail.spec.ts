@@ -139,8 +139,13 @@ test.describe('Project detail pages — regression assertions', () => {
 
     // (c) no non-compact currency ticks like $3600K
     const ticks = await page.locator('.recharts-cartesian-axis-tick-value').allTextContents()
+    expect(ticks.length, 'axis ticks rendered').toBeGreaterThan(0)
+    expect(
+      ticks.some((tick) => /^\$[\d.]+[KMB]$/.test(tick.trim())),
+      `expected at least one compact currency tick, got: ${ticks.join(', ')}`
+    ).toBe(true)
     for (const tick of ticks) {
-      expect(tick, `tick "${tick}" must be compact`).not.toMatch(/\$\d{4,}K/)
+      expect(tick, `tick "${tick}" must be compact`).not.toMatch(/\$\d{4,}[KMB]?|\b\d{4,}[KMB]\b/)
     }
 
     // (d) charts are not collapsed
