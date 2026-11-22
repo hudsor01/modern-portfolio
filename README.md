@@ -78,7 +78,8 @@ truth — validation runs at module load and throws on malformed input.
 
 Required at runtime:
 
-- `DATABASE_URL` — Postgres connection string (must start with `postgresql://` or `postgres://`)
+- `DATABASE_URL` — Neon Postgres connection string (must start with `postgresql://` or `postgres://`).
+  The Drizzle client uses Neon's HTTP driver, so local development needs a Neon branch, not a plain local Postgres
 - `RESEND_API_KEY` — Resend API key for the contact-form endpoint
 
 Optional / situational:
@@ -87,8 +88,6 @@ Optional / situational:
 - `ADMIN_API_TOKEN` — required for `POST /api/seed` (Bearer token, ≥32 chars)
 - `METRICS_API_TOKEN` — required for `GET /api/security/metrics` (`X-Metrics-Token` header, ≥32 chars)
 - `ALLOW_SEED_IN_PRODUCTION` — `'true'` to enable `/api/seed` in prod
-- `USE_LOCAL_DB` — legacy and ignored: the Drizzle client always uses Neon's HTTP
-  driver, so local development needs a Neon branch, not a plain local Postgres
 - Sentry: `SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN`, sample-rate vars
 - `INDEXNOW_KEY` — read directly by the blog POST handler when publishing
 
@@ -181,7 +180,7 @@ Token-gated:
 - `GET /api/security/metrics` — `X-Metrics-Token: $METRICS_API_TOKEN`;
   exports rate-limiter metrics
 
-CSRF (`x-csrf-token` header or `_csrf_token` form field) is enforced on
+CSRF (`x-csrf-token` header matching the `__csrf_token` cookie) is enforced on
 mutating `/api/blog*` and `/api/contact` routes.
 
 ---

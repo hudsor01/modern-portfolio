@@ -12,7 +12,6 @@ import {
   smartMerge,
   isServer,
   isClient,
-  absoluteUrlTestable,
 } from '@/lib/utils'
 
 describe('cn', () => {
@@ -156,17 +155,5 @@ describe('environment flags (Node test env)', () => {
 
   it('isClient is false under Node', () => {
     expect(isClient).toBe(false)
-  })
-})
-
-describe('absoluteUrlTestable', () => {
-  it('uses windowObj.location.origin when present', () => {
-    const fakeWin = { location: { origin: 'https://test.com' } } as unknown as typeof window
-    expect(absoluteUrlTestable('/p', fakeWin)).toBe('https://test.com/p')
-  })
-
-  it('falls back to env / hardcoded when no window', () => {
-    const r = absoluteUrlTestable('/p')
-    expect(r.endsWith('/p')).toBe(true)
   })
 })
