@@ -185,7 +185,7 @@ jobs:
   # whether the running server actually has a database rather than guessing.
   #
   # Set an `E2E_DATABASE_URL` secret (a dedicated Neon branch, seeded with
-  # `bun run db:seed`) and those 31 start running with no code change. Without it
+  # `bun run db:seed`) and those tests start running with no code change. Without it
   # they report as skipped, with the reason attached, rather than silently
   # vanishing from the run.
   #

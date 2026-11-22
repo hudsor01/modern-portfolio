@@ -118,7 +118,7 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
         revenue: yearData.total_revenue / 1000000,
         transactions: yearData.total_transactions / 1000, // Convert to thousands
         commissions: yearData.total_commissions / 1000000, // Convert to millions
-        period: new Date(yearData.year, 0, 1),
+        period: new Date(Date.UTC(yearData.year, 0, 1)),
         growth,
         metadata: {
           tooltip: `Revenue: ${formatCompactCurrency(yearData.total_revenue)}`,
