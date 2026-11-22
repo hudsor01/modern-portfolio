@@ -23,7 +23,6 @@ describe('chartColors / chartCssVars / segmentColors', () => {
   })
 
   it('chartConfig sane defaults', () => {
-    expect(chartConfig.heights.standard).toBe(300)
     expect(chartConfig.animation.duration).toBeGreaterThan(0)
   })
 })

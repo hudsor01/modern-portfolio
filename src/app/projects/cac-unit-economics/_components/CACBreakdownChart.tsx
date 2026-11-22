@@ -30,7 +30,7 @@ const CACBreakdownChart = memo(function CACBreakdownChart() {
   return (
     <ChartWrapper
       caption="Partner channel CAC optimization revealing 70% cost reduction through certified partner strategy vs direct sales acquisition"
-      height="large"
+      size="lg"
     >
       <BarChart data={data} margin={chartConfig.margins.medium}>
         <ChartGrid vertical={false} />
