@@ -40,7 +40,7 @@ export function ChartsGrid({
         <ChartContainer
           title="Deal Stage Funnel"
           description={`Overall conversion rate: ${overallConversionRate}%`}
-          size="lg"
+          size="auto"
         >
           <FunnelChart stages={funnelStages} overallConversionRate={overallConversionRate} />
         </ChartContainer>

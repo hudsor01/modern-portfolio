@@ -1,6 +1,7 @@
 'use client'
 
 import { chartColors } from '@/lib/charts'
+import { formatNumber } from '@/lib/data-formatters'
 
 // Define proper types for the data
 interface FunnelStage {
@@ -61,7 +62,12 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
         <>
           {/* True Funnel Shape */}
           <div className="relative w-full max-w-3xl mx-auto">
-            <svg width="100%" height="450" viewBox="0 0 400 450" className="overflow-visible">
+            <svg
+              width="100%"
+              viewBox="0 0 400 450"
+              preserveAspectRatio="xMidYMid meet"
+              className="h-auto w-full overflow-visible"
+            >
               <defs>
                 {funnelColors.map((color, index) => (
                   <linearGradient
@@ -128,7 +134,7 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
                       dominantBaseline="middle"
                       className="fill-white typography-h4"
                     >
-                      {stage.count.toLocaleString()}
+                      {formatNumber(stage.count)}
                     </text>
 
                     {/* "deals" text below count */}
@@ -160,7 +166,7 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
           </div>
 
           {/* Stage cards below funnel */}
-          <div className="mt-8 grid grid-cols-5 gap-4">
+          <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {data.map((stage, index) => (
               <div
                 key={index}
@@ -175,7 +181,7 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
                 </div>
                 <p className="typography-h4 text-white">{stage.conversionRate}</p>
                 <p className="typography-small text-muted-foreground">
-                  {stage.count.toLocaleString()} deals
+                  {formatNumber(stage.count)} deals
                 </p>
               </div>
             ))}

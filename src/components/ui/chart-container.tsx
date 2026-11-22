@@ -37,7 +37,11 @@ const chartContainerVariants = cva(
 type ChartContainerProps = DesignChartContainerProps &
   React.HTMLAttributes<HTMLDivElement> &
   VariantProps<typeof chartContainerVariants> & {
-    size?: ChartBoxSize
+    /**
+     * Chart box size. `'auto'` skips the CHART_BOX and uses natural height; only for
+     * server-rendered, non-lazy content whose height is known at first paint.
+     */
+    size?: ChartBoxSize | 'auto'
     loading?: boolean
     error?: string
     actions?: DesignChartAction[]
@@ -117,7 +121,12 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
             </div>
 
             {/* Chart skeleton */}
-            <div className={cn(CHART_BOX[size], 'rounded-lg bg-muted/20 animate-pulse')}>
+            <div
+              className={cn(
+                CHART_BOX[size === 'auto' ? 'lg' : size],
+                'rounded-lg bg-muted/20 animate-pulse'
+              )}
+            >
               <div className="flex items-center justify-center h-full">
                 <div className="text-muted-foreground text-sm">Loading chart...</div>
               </div>
@@ -140,7 +149,7 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
             {/* Error state */}
             <div
               className={cn(
-                CHART_BOX[size],
+                CHART_BOX[size === 'auto' ? 'lg' : size],
                 'flex flex-col items-center justify-center space-y-4 rounded-lg border border-destructive/20 bg-destructive/5 text-destructive'
               )}
             >
@@ -171,7 +180,9 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
           <ChartHeader title={title} description={description} actions={actions} />
 
           {/* Chart content */}
-          <div className={cn(CHART_BOX[size], 'overflow-hidden')}>{children}</div>
+          <div className={size === 'auto' ? undefined : cn(CHART_BOX[size], 'overflow-hidden')}>
+            {children}
+          </div>
         </div>
       </div>
     )

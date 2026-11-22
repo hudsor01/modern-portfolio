@@ -1,23 +1,7 @@
 'use client'
 
-import dynamic from 'next/dynamic'
-import { ChartSkeleton } from '@/components/charts/chart-skeleton'
-import { ChartLoadError } from '@/components/charts/chart-load-error'
-import { safeLazy } from '@/lib/safe-lazy'
-
+import DealStageFunnelChart from './DealStageFunnelChart'
 import type { FunnelStage } from '../data/constants'
-
-const DealStageFunnelChart = dynamic(
-  safeLazy(
-    () => import('./DealStageFunnelChart'),
-    'DealStageFunnelChart',
-    () => <ChartLoadError height="md" />
-  ),
-  {
-    loading: () => <ChartSkeleton />,
-    ssr: false,
-  }
-)
 
 interface FunnelChartProps {
   stages: FunnelStage[]

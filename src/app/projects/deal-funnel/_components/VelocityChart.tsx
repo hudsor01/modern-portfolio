@@ -11,7 +11,7 @@ export function VelocityChart({ partnerConversion }: VelocityChartProps) {
   const colors = ['bg-primary', 'bg-secondary', 'bg-accent']
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-8 hover:border-primary/50 transition-all duration-300 ease-out">
+    <div className="h-full bg-card border border-border rounded-2xl p-8 hover:border-primary/50 transition-all duration-300 ease-out">
       <h2 className="typography-h3 mb-6">Sales Velocity by Segment</h2>
       <div className="space-y-6">
         {partnerConversion.map((partner, index) => {
