@@ -26,8 +26,8 @@ const FORBIDDEN: Array<{ name: string; pattern: RegExp }> = [
     pattern: /\$\$\{[^}]*\.toFixed\(\d\)[^}]*\}\s*[KMB]\b/,
   },
   {
-    name: "'$' + expr.toFixed(n) + 'K|M|B'",
-    pattern: /'\$'\s*\+[^;\n]*\.toFixed\(\d\)[^;\n]*\+\s*'[KMB]'/,
+    name: "'$' + expr.toFixed(n) + 'K|M|B' (single or double quotes)",
+    pattern: /['"]\$['"]\s*\+[^;\n]*\.toFixed\(\d\)[^;\n]*\+\s*['"][KMB]['"]/,
   },
   {
     name: 'a "$" string divided by 1e3 / 1e6 / 1e9',

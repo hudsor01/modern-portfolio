@@ -13,7 +13,7 @@ import type { APIRequestContext } from '@playwright/test'
  * all carry a `DATABASE_URL`, and Next loads `.env.local` + `.env` itself even
  * for a production build, so the app always has a database no matter what the
  * shell environment says. In CI it has none unless an `E2E_DATABASE_URL` secret
- * is configured, and those 31 fail with
+ * is configured, and those tests fail with
  * `Error: DATABASE_URL is required` from src/lib/env-validation.ts.
  *
  * So the tests ask the running server rather than guessing from env vars — the

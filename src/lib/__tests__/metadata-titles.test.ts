@@ -58,6 +58,18 @@ describe('title builder', () => {
     expect(brandTitle('Post | Richard Hudson')).toBe('Post | Richard Hudson')
   })
 
+  it('brandTitle normalizes any separated brand suffix to " | brand" without doubling', () => {
+    expect(brandTitle('Post – Richard Hudson')).toBe('Post | Richard Hudson')
+    expect(brandTitle('Post — Richard Hudson')).toBe('Post | Richard Hudson')
+    expect(brandTitle('Post - Richard Hudson')).toBe('Post | Richard Hudson')
+    expect(brandTitle('Richard Hudson')).toBe('Richard Hudson')
+  })
+
+  it('stripBrandSuffix ignores a hyphen glued to the previous word', () => {
+    expect(stripBrandSuffix('Anti-Richard Hudson')).toBe('Anti-Richard Hudson')
+    expect(stripBrandSuffix('Post|Richard Hudson')).toBe('Post|Richard Hudson')
+  })
+
   it('stripBrandSuffix is linear on pathological input', () => {
     const start = performance.now()
     stripBrandSuffix(' '.repeat(10_000))
