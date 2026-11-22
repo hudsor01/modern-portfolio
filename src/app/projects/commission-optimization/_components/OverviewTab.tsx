@@ -5,12 +5,12 @@ import { ChartSkeleton } from '@/components/charts/chart-skeleton'
 import { ChartContainer } from '@/components/ui/chart-container'
 
 const CommissionStructureChart = dynamic(() => import('./CommissionStructureChart'), {
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="sm" />,
   ssr: false,
 })
 
 const ROIOptimizationChart = dynamic(() => import('./ROIOptimizationChart'), {
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="sm" />,
   ssr: false,
 })
 
@@ -21,7 +21,7 @@ export function OverviewTab() {
       <ChartContainer
         title="Commission Structure & Payout Analysis"
         description="Tier-based commission optimization with automated calculations and performance tracking"
-        height={280}
+        size="sm"
         variant="glass"
       >
         <CommissionStructureChart />
@@ -31,7 +31,7 @@ export function OverviewTab() {
       <ChartContainer
         title="ROI Optimization & Performance Impact"
         description="Commission ROI analysis showing investment efficiency across partner tiers"
-        height={280}
+        size="sm"
         variant="glass"
       >
         <ROIOptimizationChart />

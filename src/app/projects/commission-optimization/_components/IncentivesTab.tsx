@@ -9,7 +9,7 @@ import { incentivePrograms } from '../data/constants'
 import { formatCurrency, formatPercentage } from '@/lib/data-formatters'
 
 const PerformanceIncentiveChart = dynamic(() => import('./PerformanceIncentiveChart'), {
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="lg" />,
   ssr: false,
 })
 

@@ -6,6 +6,7 @@ import { RefreshCw, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from './button'
 import { Skeleton } from './skeleton'
+import { CHART_BOX, type ChartBoxSize } from '@/components/charts/chart-skeleton'
 import type {
   ChartAction as DesignChartAction,
   ChartContainerProps as DesignChartContainerProps,
@@ -36,7 +37,7 @@ const chartContainerVariants = cva(
 type ChartContainerProps = DesignChartContainerProps &
   React.HTMLAttributes<HTMLDivElement> &
   VariantProps<typeof chartContainerVariants> & {
-    height?: number
+    size?: ChartBoxSize
     loading?: boolean
     error?: string
     actions?: DesignChartAction[]
@@ -83,7 +84,7 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
       title,
       description,
       children,
-      height = 400,
+      size = 'lg',
       loading = false,
       error,
       actions,
@@ -116,10 +117,7 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
             </div>
 
             {/* Chart skeleton */}
-            <div
-              className="w-full rounded-lg bg-muted/20 animate-pulse"
-              style={{ height: `${height}px` }}
-            >
+            <div className={cn(CHART_BOX[size], 'rounded-lg bg-muted/20 animate-pulse')}>
               <div className="flex items-center justify-center h-full">
                 <div className="text-muted-foreground text-sm">Loading chart...</div>
               </div>
@@ -141,8 +139,10 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
 
             {/* Error state */}
             <div
-              className="flex flex-col items-center justify-center space-y-4 rounded-lg border border-destructive/20 bg-destructive/5 text-destructive"
-              style={{ height: `${height}px` }}
+              className={cn(
+                CHART_BOX[size],
+                'flex flex-col items-center justify-center space-y-4 rounded-lg border border-destructive/20 bg-destructive/5 text-destructive'
+              )}
             >
               <AlertCircle className="h-8 w-8" />
               <div className="text-center space-y-2">
@@ -171,9 +171,7 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
           <ChartHeader title={title} description={description} actions={actions} />
 
           {/* Chart content */}
-          <div className="w-full overflow-hidden" style={{ height: `${height}px` }}>
-            {children}
-          </div>
+          <div className={cn(CHART_BOX[size], 'overflow-hidden')}>{children}</div>
         </div>
       </div>
     )

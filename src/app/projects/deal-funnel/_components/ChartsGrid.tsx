@@ -40,7 +40,7 @@ export function ChartsGrid({
         <ChartContainer
           title="Deal Stage Funnel"
           description={`Overall conversion rate: ${overallConversionRate}%`}
-          height={400}
+          size="lg"
         >
           <FunnelChart stages={funnelStages} overallConversionRate={overallConversionRate} />
         </ChartContainer>
@@ -57,14 +57,14 @@ export function ChartsGrid({
           <ChartContainer
             title="Stage Conversion Rates"
             description="Conversion rates between each stage of the sales funnel"
-            height={350}
+            size="md"
           >
             <ConversionChart stageConversions={stageConversions} />
           </ChartContainer>
           <ChartContainer
             title="Sales Velocity by Partner"
             description="Average sales cycle duration across different partner channels"
-            height={350}
+            size="md"
           >
             <VelocityChart partnerConversion={partnerConversion} />
           </ChartContainer>

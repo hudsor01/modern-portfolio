@@ -5,11 +5,11 @@ import { ChartSkeleton } from '@/components/charts/chart-skeleton'
 import { ChartContainer } from '@/components/ui/chart-container'
 
 const ChurnLineChart = dynamicImport(() => import('./ChurnLineChart'), {
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="md" />,
   ssr: false,
 })
 const RetentionHeatmap = dynamicImport(() => import('./RetentionHeatmap'), {
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="md" />,
   ssr: false,
 })
 
@@ -32,7 +32,7 @@ export function ChartsGrid({ churnData, isLoading = false }: ChartsGridProps) {
       <ChartContainer
         title="Partner Retention Patterns"
         description="Monthly retention rates by partner cohort"
-        height={350}
+        size="md"
         loading={isLoading}
       >
         <RetentionHeatmap data={churnData} />
@@ -42,7 +42,7 @@ export function ChartsGrid({ churnData, isLoading = false }: ChartsGridProps) {
       <ChartContainer
         title="Churn Rate Trends"
         description="Historical churn rate analysis and projections"
-        height={350}
+        size="md"
         loading={isLoading}
       >
         <ChurnLineChart data={churnData} />

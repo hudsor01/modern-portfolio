@@ -8,7 +8,7 @@ import { commissionTiers } from '../data/constants'
 import { formatCurrency, formatPercentage } from '@/lib/data-formatters'
 
 const CommissionTierChart = dynamic(() => import('./CommissionTierChart'), {
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="lg" />,
   ssr: false,
 })
 

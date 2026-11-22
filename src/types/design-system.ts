@@ -117,7 +117,7 @@ export interface ChartContainerProps {
   title: string
   description?: string
   children: ReactNode
-  height?: number
+  size?: 'sm' | 'md' | 'lg' | 'xl'
   loading?: boolean
   error?: string
   actions?: ChartAction[]

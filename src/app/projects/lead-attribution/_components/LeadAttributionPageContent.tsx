@@ -212,7 +212,7 @@ export default function LeadAttribution() {
               <ChartContainer
                 title="Lead Generation Trends"
                 description="Monthly lead volume and growth patterns"
-                height={400}
+                size="lg"
               >
                 <TrendsChart data={trendData} />
               </ChartContainer>
