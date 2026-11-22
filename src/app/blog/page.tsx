@@ -16,6 +16,7 @@ import { createContextLogger } from '@/lib/logger'
 import type { BlogCategoryData } from '@/types/api'
 import type { BlogListPost } from '@/types/blog'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { brandTitle } from '@/app/shared-metadata'
 import {
   ALL_CATEGORIES,
   BLOG_PAGE_SIZE,
@@ -60,15 +61,15 @@ export async function generateMetadata({
   const canonical = canonicalUrl(unfiltered ? blogIndexHref({ page }) : '/blog')
   const title =
     unfiltered && page > 1
-      ? `Blog - Revenue Operations Insights (Page ${page})`
-      : 'Blog - Revenue Operations Insights'
+      ? `Blog: Revenue Operations Insights (Page ${page})`
+      : 'Blog: Revenue Operations Insights'
 
   return {
     title,
     description: BLOG_DESCRIPTION,
     keywords: ['revenue operations', 'data analytics', 'business intelligence', 'revops'],
     openGraph: {
-      title: 'Blog | Richard Hudson',
+      title: brandTitle(title),
       description: BLOG_DESCRIPTION,
       url: canonical,
       type: 'website',
@@ -84,7 +85,7 @@ export async function generateMetadata({
     twitter: {
       card: 'summary_large_image',
       creator: '@hudsor01',
-      title: 'Blog | Richard Hudson',
+      title: brandTitle(title),
       description: BLOG_DESCRIPTION,
       images: [BLOG_INDEX_OG_IMAGE_URL],
     },

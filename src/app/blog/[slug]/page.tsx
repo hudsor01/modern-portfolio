@@ -14,6 +14,7 @@ import { db } from '@/lib/db'
 import { withDbRetry } from '@/lib/db-retry'
 import { blogPosts } from '@/db/schema'
 import { canonicalUrl } from '@/lib/absolute-url'
+import { brandTitle, stripBrandSuffix } from '@/app/shared-metadata'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 
 // Force runtime rendering. notFound() inside Next.js 16's ISR-rendered
@@ -112,12 +113,16 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   const ogImageAlt = ogImage.isFallback ? post.title : post.featuredImageAlt || post.title
 
   const postUrl = canonicalUrl(`/blog/${post.slug}`)
+  // Root template appends the brand; DB titles may already carry it.
+  const baseTitle =
+    stripBrandSuffix(post.metaTitle || post.title) || stripBrandSuffix(post.title) || 'Blog'
+  const shareTitle = brandTitle(stripBrandSuffix(post.title) || baseTitle)
   return {
-    title: post.metaTitle || post.title,
+    title: baseTitle,
     description: post.metaDescription || post.excerpt,
     keywords: post.keywords,
     openGraph: {
-      title: post.title,
+      title: shareTitle,
       description: post.excerpt || post.metaDescription,
       url: postUrl,
       siteName: 'Richard Hudson - RevOps Professional',
@@ -139,7 +144,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     },
     twitter: {
       card: 'summary_large_image',
-      title: post.title,
+      title: shareTitle,
       description: post.excerpt || post.metaDescription,
       images: [ogImage.url],
     },

@@ -4,7 +4,8 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 export const dynamic = 'force-static'
 
 export const metadata = genMeta({
-  title: 'Richard Hudson — RevOps Professional in Dallas-Fort Worth',
+  title: 'Richard Hudson | RevOps Professional in Dallas-Fort Worth',
+  absoluteTitle: true,
   description:
     'Richard Hudson — Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. $4.8M+ revenue impact.',
   path: '/',

@@ -14,7 +14,7 @@ import { PROJECT_COUNT } from '@/data/projects'
 // The root title template appends " | Richard Hudson", so the name is not
 // repeated here.
 export const metadata = genMeta(
-  'Projects - Revenue Operations Portfolio',
+  'Projects: Revenue Operations Portfolio',
   `Explore ${PROJECT_COUNT} revenue operations projects by Richard Hudson including pipeline analytics, partner performance dashboards, and CRM optimization case studies.`,
   '/projects'
 )

@@ -14,6 +14,7 @@ import { db } from '@/lib/db'
 import { blogPosts, categories } from '@/db/schema'
 import { createContextLogger } from '@/lib/logger'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { brandTitle } from '@/app/shared-metadata'
 import { formatDate } from '@/lib/data-formatters'
 
 // Force runtime rendering — see /blog/[slug]/page.tsx for the rationale.
@@ -98,7 +99,7 @@ export async function generateMetadata({ params }: BlogCategoryPageProps): Promi
     notFound()
   }
 
-  const title = `${category.name} — Articles`
+  const title = `${category.name}: Articles`
   const description =
     category.description ||
     `Articles about ${category.name} from Richard Hudson's revenue operations blog.`
@@ -107,7 +108,7 @@ export async function generateMetadata({ params }: BlogCategoryPageProps): Promi
     title,
     description,
     openGraph: {
-      title,
+      title: brandTitle(title),
       description,
       url: canonicalUrl(`/blog/category/${category.slug}`),
       siteName: 'Richard Hudson',
@@ -115,7 +116,7 @@ export async function generateMetadata({ params }: BlogCategoryPageProps): Promi
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: brandTitle(title),
       description,
     },
     alternates: {
