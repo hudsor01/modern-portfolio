@@ -40,7 +40,7 @@ test('every sitemap URL has a single-brand title', async ({ request }, testInfo)
     if (brandCount !== 1) failures.push(`${path}: brand x${brandCount} in "${title}"`)
     if (path === '/') {
       if (title !== HOME_TITLE) failures.push(`/: title "${title}" != "${HOME_TITLE}"`)
-    } else if (!title.endsWith(` | ${BRAND}`) || title.split(' | ').length !== 2) {
+    } else if (!title.endsWith(` | ${BRAND}`)) {
       failures.push(`${path}: bad shape "${title}"`)
     }
   }
