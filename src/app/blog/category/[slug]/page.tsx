@@ -16,6 +16,7 @@ import { createContextLogger } from '@/lib/logger'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 import { brandTitle } from '@/app/shared-metadata'
 import { formatDate } from '@/lib/data-formatters'
+import { DecorativeBlob } from '@/components/ui/decorative-blob'
 
 // Force runtime rendering — see /blog/[slug]/page.tsx for the rationale.
 // notFound() inside ISR-rendered Server Components ships HTTP 200 with a
@@ -165,9 +166,9 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
 
       <div className="min-h-screen bg-background">
         <Navbar />
-        <main className="relative overflow-hidden">
-          <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
+        <main className="relative overflow-x-clip">
+          <DecorativeBlob position="top-right" />
+          <DecorativeBlob position="bottom-left" />
 
           <div className="relative pt-24 pb-16 lg:pt-32 lg:pb-20">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -230,7 +231,10 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                           )}
                         </CardHeader>
                         <CardContent>
-                          <time className="text-sm text-muted-foreground">
+                          <time
+                            className="text-sm text-muted-foreground"
+                            dateTime={post.publishedAt?.toISOString()}
+                          >
                             {formatPublishedDate(post.publishedAt)}
                           </time>
                         </CardContent>
