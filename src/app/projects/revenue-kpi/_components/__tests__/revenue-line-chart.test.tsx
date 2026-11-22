@@ -71,7 +71,7 @@ describe('RevenueLineChart dual axis', () => {
     const right = captured.axes.find((a) => a.yAxisId === 'right') as Props
     expect((left.tickFormatter as AxisTickFormatter)(3.6)).toBe('$3.6M')
     expect((right.tickFormatter as AxisTickFormatter)(12)).toBe('12K')
-    expect((left.label as { value: string }).value).toBe('Revenue / Commissions ($M)')
-    expect((right.label as { value: string }).value).toBe('Transactions (K)')
+    expect((left.label as { value: string }).value).toBe('Revenue / Commissions')
+    expect((right.label as { value: string }).value).toBe('Transactions')
   })
 })

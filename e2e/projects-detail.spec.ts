@@ -134,8 +134,8 @@ test.describe('Project detail pages — regression assertions', () => {
       .filter({ hasText: 'Revenue Growth Metrics' })
       .first()
     await expect(growthCard.locator('.recharts-yAxis'), 'two Y axes').toHaveCount(2)
-    await expect(growthCard.getByText('Revenue / Commissions ($M)')).toBeVisible()
-    await expect(growthCard.getByText('Transactions (K)').first()).toBeVisible()
+    await expect(growthCard.getByText('Revenue / Commissions', { exact: true })).toBeVisible()
+    await expect(growthCard.getByText('Transactions', { exact: true }).first()).toBeVisible()
 
     // (c) no non-compact currency ticks like $3600K
     const ticks = await page.locator('.recharts-cartesian-axis-tick-value').allTextContents()

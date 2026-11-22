@@ -1,7 +1,7 @@
 'use client'
 
 import { clvMetrics } from '../data/constants'
-import { formatCurrency } from '../utils'
+import { formatCompactCurrency } from '@/lib/data-formatters'
 
 export function StrategicImpact() {
   return (
@@ -18,7 +18,7 @@ export function StrategicImpact() {
         </div>
         <div className="bg-card border border-border rounded-2xl p-4 text-center">
           <div className="typography-h3 text-accent mb-1">
-            {formatCurrency(clvMetrics.revenueImpact / 1000)}K
+            {formatCompactCurrency(clvMetrics.revenueImpact)}
           </div>
           <div className="typography-small text-muted-foreground">
             Predicted Revenue Impact (24-month forecast)

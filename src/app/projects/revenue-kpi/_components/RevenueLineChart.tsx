@@ -10,7 +10,7 @@ import {
   StandardTooltip,
 } from '@/components/charts/lazy-charts'
 import { Line, Legend } from 'recharts'
-import { formatCompactCurrency } from '@/lib/data-formatters'
+import { formatCompactCurrency, formatCompactNumber, formatNumber } from '@/lib/data-formatters'
 import { chartColors, chartConfig, chartTypeConfigs, formatters } from '@/lib/charts'
 import type { YearOverYearData } from '@/types/analytics'
 import type { ExtendedRevenueData, TypedTooltipProps } from '@/types/chart'
@@ -64,7 +64,7 @@ function CustomTooltip({ active, payload, label }: TypedTooltipProps<ExtendedRev
           ? [
               {
                 name: 'Transactions',
-                value: `${Math.round(dataPoint.transactions)}K`,
+                value: formatNumber(dataPoint.transactions * 1000),
                 color: chartColors.transactions,
               },
             ]
@@ -121,7 +121,7 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
         period: new Date(yearData.year, 0, 1),
         growth,
         metadata: {
-          tooltip: `Revenue: $${(yearData.total_revenue / 1000000).toFixed(1)}M`,
+          tooltip: `Revenue: ${formatCompactCurrency(yearData.total_revenue)}`,
           source: 'Year-over-Year Analytics',
         },
       }
@@ -144,7 +144,7 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
     <div className="portfolio-card">
       <ChartWrapper
         title="Revenue Growth Metrics"
-        caption="Year-over-year tracking of key metrics (Revenue in $M, Transactions in K, Commissions in $M)"
+        caption="Year-over-year revenue, commissions and transaction volume"
         size="md"
       >
         <LineChart data={yearlyData} margin={chartConfig.margins.medium}>
@@ -154,7 +154,7 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
             yAxisId="left"
             tickFormatter={(value) => formatCompactCurrency(Number(value) * 1_000_000)}
             label={{
-              value: 'Revenue / Commissions ($M)',
+              value: 'Revenue / Commissions',
               angle: -90,
               position: 'insideLeft',
               fill: chartColors.revenue,
@@ -165,9 +165,9 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
           <ChartYAxis
             yAxisId="right"
             orientation="right"
-            tickFormatter={(value) => `${Number(value)}K`}
+            tickFormatter={(value) => formatCompactNumber(Number(value) * 1000)}
             label={{
-              value: 'Transactions (K)',
+              value: 'Transactions',
               angle: 90,
               position: 'insideRight',
               fill: chartColors.transactions,
@@ -189,7 +189,7 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
               fill: chartColors.revenue,
             }}
             animationDuration={chartConfig.animation.duration}
-            name="Revenue ($M)"
+            name="Revenue"
           />
           <Line
             {...chartTypeConfigs.line}
@@ -204,7 +204,7 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
             }}
             animationDuration={chartConfig.animation.duration}
             animationBegin={chartConfig.animation.delay}
-            name="Transactions (K)"
+            name="Transactions"
           />
           <Line
             {...chartTypeConfigs.line}
@@ -219,7 +219,7 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
             }}
             animationDuration={chartConfig.animation.duration}
             animationBegin={chartConfig.animation.stagger}
-            name="Commissions ($M)"
+            name="Commissions"
           />
         </LineChart>
       </ChartWrapper>

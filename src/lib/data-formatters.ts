@@ -196,14 +196,16 @@ export function formatNumber(value: number, options: NumberFormatOptions = {}): 
  * Format numbers with compact notation (K, M, B)
  */
 export function formatCompactNumber(value: number): string {
+  // Same trailing-".0" rule as formatCompactCurrency: 1000 -> "1K", 1200 -> "1.2K".
+  const trim = (n: number): string => n.toFixed(1).replace(/\.0$/, '')
   if (Math.abs(value) >= 1_000_000_000) {
-    return `${(value / 1_000_000_000).toFixed(1)}B`
+    return `${trim(value / 1_000_000_000)}B`
   }
   if (Math.abs(value) >= 1_000_000) {
-    return `${(value / 1_000_000).toFixed(1)}M`
+    return `${trim(value / 1_000_000)}M`
   }
   if (Math.abs(value) >= 1_000) {
-    return `${(value / 1_000).toFixed(1)}K`
+    return `${trim(value / 1_000)}K`
   }
   return value.toString()
 }

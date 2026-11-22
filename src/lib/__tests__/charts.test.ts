@@ -49,7 +49,7 @@ describe('formatValue + formatters registry', () => {
   })
 
   it('compact formatter compacts always', () => {
-    expect(formatValue(2_000_000, 'compact')).toBe('2.0M')
+    expect(formatValue(2_000_000, 'compact')).toBe('2M')
   })
 
   it('formatters object exposes all keys', () => {
