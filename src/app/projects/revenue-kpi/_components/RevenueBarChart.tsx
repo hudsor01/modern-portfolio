@@ -65,6 +65,8 @@ export default function RevenueBarChart({ data }: RevenueBarChartProps) {
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartColors.grid} />
             <XAxis
               dataKey="name"
+              interval="preserveStartEnd"
+              minTickGap={8}
               stroke={chartColors.axis}
               tick={{ fill: chartColors.axis, fontSize: 12 }}
               tickLine={false}

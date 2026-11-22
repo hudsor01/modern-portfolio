@@ -134,8 +134,24 @@ test.describe('Project detail pages — regression assertions', () => {
       .filter({ hasText: 'Revenue Growth Metrics' })
       .first()
     await expect(growthCard.locator('.recharts-yAxis'), 'two Y axes').toHaveCount(2)
-    await expect(growthCard.getByText('Revenue / Commissions', { exact: true })).toBeVisible()
-    await expect(growthCard.getByText('Transactions', { exact: true }).first()).toBeVisible()
+    await expect(growthCard.getByText('Revenue', { exact: true }).first()).toBeVisible()
+    await expect(growthCard.getByText('Commissions', { exact: true }).first()).toBeVisible()
+    await expect(
+      page.getByText('Transaction Volume', { exact: true }).first(),
+      'transactions live in their own chart'
+    ).toBeVisible()
+
+    // (b2) trend chart first x tick equals the period start in the derived title
+    const titleText = (await trendTitle.textContent()) ?? ''
+    const periodStart = titleText.split('·')[1]?.split('–')[0]?.trim() ?? ''
+    expect(periodStart, `period start parsed from "${titleText}"`).not.toBe('')
+    const trendCard = page.locator('.portfolio-card').filter({ has: trendTitle }).first()
+    const trendTicks = await trendCard
+      .locator('.recharts-xAxis .recharts-cartesian-axis-tick-value')
+      .allTextContents()
+    expect(trendTicks[0]?.trim(), `first trend tick, got: ${trendTicks.join(', ')}`).toBe(
+      periodStart
+    )
 
     // (c) no non-compact currency ticks like $3600K
     const ticks = await page.locator('.recharts-cartesian-axis-tick-value').allTextContents()
