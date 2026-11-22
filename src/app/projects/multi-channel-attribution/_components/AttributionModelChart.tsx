@@ -1,6 +1,6 @@
 'use client'
 import { memo } from 'react'
-import { formatCurrencyCompact0 } from '@/lib/data-formatters'
+import { formatCompactCurrency } from '@/lib/data-formatters'
 
 import { LazyBarChart as BarChart } from '@/components/charts/lazy-charts'
 import { Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
@@ -26,7 +26,7 @@ const chartColors = {
 
 const AttributionModelChart = memo(function AttributionModelChart() {
   return (
-    <div className="h-[var(--chart-height-md)]">
+    <div className="h-full w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
@@ -56,7 +56,7 @@ const AttributionModelChart = memo(function AttributionModelChart() {
             fontSize={12}
             tickLine={false}
             axisLine={{ stroke: chartColors.axis, strokeOpacity: 0.5 }}
-            tickFormatter={(value) => formatCurrencyCompact0(value)}
+            tickFormatter={(value) => formatCompactCurrency(Number(value))}
           />
           <Tooltip
             contentStyle={{
@@ -72,7 +72,7 @@ const AttributionModelChart = memo(function AttributionModelChart() {
               if (safeName === 'accuracy') return [`${safeValue}%`, 'Attribution Accuracy']
               if (safeName === 'conversions')
                 return [safeValue.toLocaleString(), 'Attributed Conversions']
-              if (safeName === 'roi') return [formatCurrencyCompact0(safeValue), 'Attributed ROI']
+              if (safeName === 'roi') return [formatCompactCurrency(safeValue), 'Attributed ROI']
               return [safeValue, safeName]
             }}
             labelFormatter={(label) => `Model: ${label}`}

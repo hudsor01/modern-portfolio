@@ -1,13 +1,13 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { ChartSkeleton } from '@/components/charts/chart-skeleton'
+import { CHART_BOX, ChartSkeleton } from '@/components/charts/chart-skeleton'
 
 import { channelPerformance } from '../data/constants'
 import { formatCurrency, formatPercent } from '../utils'
 
 const TouchpointAnalysisChart = dynamic(() => import('./TouchpointAnalysisChart'), {
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="md" />,
   ssr: false,
 })
 
@@ -23,7 +23,7 @@ export function ChannelsTab() {
             optimization
           </p>
         </div>
-        <div className="h-[var(--chart-height-sm)]">
+        <div className={CHART_BOX.md}>
           <TouchpointAnalysisChart />
         </div>
       </div>

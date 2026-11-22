@@ -1,15 +1,15 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { ChartSkeleton } from '@/components/charts/chart-skeleton'
+import { CHART_BOX, ChartSkeleton } from '@/components/charts/chart-skeleton'
 
 const AttributionModelChart = dynamic(() => import('./AttributionModelChart'), {
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="md" />,
   ssr: false,
 })
 
 const ChannelROIChart = dynamic(() => import('./ChannelROIChart'), {
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="md" />,
   ssr: false,
 })
 
@@ -24,7 +24,7 @@ export function OverviewTab() {
             ML-driven data attribution vs traditional models showing 92.4% accuracy improvement
           </p>
         </div>
-        <div className="h-[var(--chart-height-sm)]">
+        <div className={CHART_BOX.md}>
           <AttributionModelChart />
         </div>
       </div>
@@ -37,7 +37,7 @@ export function OverviewTab() {
             Multi-touch attribution revealing true channel performance and investment optimization
           </p>
         </div>
-        <div className="h-[var(--chart-height-sm)]">
+        <div className={CHART_BOX.md}>
           <ChannelROIChart />
         </div>
       </div>

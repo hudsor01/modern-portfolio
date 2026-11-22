@@ -1,13 +1,13 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { ChartSkeleton } from '@/components/charts/chart-skeleton'
+import { CHART_BOX, ChartSkeleton } from '@/components/charts/chart-skeleton'
 
 import { customerJourneyStages } from '../data/constants'
 import { formatPercent } from '../utils'
 
 const CustomerJourneyChart = dynamic(() => import('./CustomerJourneyChart'), {
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="md" />,
   ssr: false,
 })
 
@@ -22,7 +22,7 @@ export function JourneysTab() {
             Multi-touchpoint customer journey mapping with conversion optimization insights
           </p>
         </div>
-        <div className="h-[var(--chart-height-sm)]">
+        <div className={CHART_BOX.md}>
           <CustomerJourneyChart />
         </div>
       </div>
