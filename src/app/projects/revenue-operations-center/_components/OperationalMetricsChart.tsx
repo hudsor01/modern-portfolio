@@ -1,5 +1,6 @@
 'use client'
 import { memo } from 'react'
+import { CHART_BOX } from '@/components/charts/chart-skeleton'
 
 import { LazyRadarChart as RadarChart } from '@/components/charts/lazy-charts'
 import {
@@ -74,7 +75,7 @@ const chartColors = {
 
 const OperationalMetricsChart = memo(function OperationalMetricsChart() {
   return (
-    <div className="h-[var(--chart-height-md)]">
+    <div className={CHART_BOX.md}>
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <PolarGrid stroke={chartColors.grid} />
