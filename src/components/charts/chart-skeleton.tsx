@@ -1,18 +1,30 @@
+import { cn } from '@/lib/utils'
+
+export type ChartBoxSize = 'sm' | 'md' | 'lg' | 'xl'
+
 /**
- * Shared loading placeholder for lazily-loaded project charts.
- * Replaces the inline `h-[…] w-full animate-pulse bg-muted rounded-lg` block
- * that was copy-pasted into ~25 project chart `dynamic({ loading })` callbacks.
+ * Single source of truth for chart boxes: the lazy-chart skeleton, the load-error
+ * fallback, ChartContainer and ChartWrapper all use these strings, so a skeleton
+ * and its loaded chart occupy the same responsive box (no layout shift).
  *
- * `height` maps to an explicit Tailwind class (no dynamic interpolation, so the
- * class scanner keeps them): 'sm'/'md' use the --chart-height-* tokens the
- * project pages already use; 'lg' is the fixed 300px a couple of grids used.
+ * Each box is responsive (aspect-4/3 on mobile, 16:9 from sm up), bounded below by
+ * its --chart-height-* token (min-h) and above by the next token (max-h; xl is
+ * capped at xl) so full-width desktop charts do not balloon. Full static class
+ * strings so the Tailwind scanner keeps them.
  */
-const HEIGHT_CLASS = {
-  sm: 'h-[var(--chart-height-sm)]',
-  md: 'h-[var(--chart-height-md)]',
-  lg: 'h-[300px]',
+export const CHART_BOX: Record<ChartBoxSize, string> = {
+  sm: 'w-full aspect-4/3 sm:aspect-video min-h-[var(--chart-height-sm)] max-h-[var(--chart-height-md)]',
+  md: 'w-full aspect-4/3 sm:aspect-video min-h-[var(--chart-height-md)] max-h-[var(--chart-height-lg)]',
+  lg: 'w-full aspect-4/3 sm:aspect-video min-h-[var(--chart-height-lg)] max-h-[var(--chart-height-xl)]',
+  xl: 'w-full aspect-4/3 sm:aspect-video min-h-[var(--chart-height-xl)] max-h-[var(--chart-height-xl)]',
 } as const
 
-export function ChartSkeleton({ height = 'md' }: { height?: 'sm' | 'md' | 'lg' }) {
-  return <div className={`${HEIGHT_CLASS[height]} w-full animate-pulse bg-muted rounded-lg`} />
+/** Shared loading placeholder for lazily-loaded project charts. */
+export function ChartSkeleton({ height = 'md' }: { height?: ChartBoxSize }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={cn(CHART_BOX[height], 'animate-pulse bg-muted rounded-lg')}
+    />
+  )
 }
