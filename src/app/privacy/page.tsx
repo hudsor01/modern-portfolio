@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { Navbar } from '@/components/layout/navbar'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { formatDate } from '@/lib/data-formatters'
 import { generateMetadata as genMeta } from '@/app/shared-metadata'
 import { PRIVACY_POLICY_LAST_UPDATED } from './policy-date'
 
@@ -25,10 +26,7 @@ export const metadata = genMeta({
   subtitle: 'richardwhudsonjr.com',
 })
 
-const LAST_UPDATED_LABEL = new Intl.DateTimeFormat('en-US', {
-  dateStyle: 'long',
-  timeZone: 'UTC',
-}).format(new Date(`${PRIVACY_POLICY_LAST_UPDATED}T00:00:00Z`))
+const LAST_UPDATED_LABEL = formatDate(PRIVACY_POLICY_LAST_UPDATED, { month: 'long' })
 
 // Global `p` styles set body copy to --font-size-base; list items match it.
 const LIST_CLASS = 'list-disc pl-6 space-y-2 text-(length:--font-size-base)'

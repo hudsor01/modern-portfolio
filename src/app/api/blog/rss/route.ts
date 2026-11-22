@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 import { blogPosts } from '@/db/schema'
 import { createErrorResponse } from '@/lib/api-blog'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
+import { getDisplayYearMonth } from '@/lib/data-formatters'
 
 const logger = createContextLogger('RssAPI')
 
@@ -89,7 +90,7 @@ export async function GET(request: NextRequest) {
 }
 
 function generateXmlFeed(data: RSSFeedData): string {
-  const year = new Date().getFullYear()
+  const year = getDisplayYearMonth().year
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">

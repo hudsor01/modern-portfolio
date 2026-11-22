@@ -1,4 +1,5 @@
 import type { YearOverYearData } from '@/types/analytics'
+import { getDisplayYearMonth } from '@/lib/data-formatters'
 import { getBaseMetric } from './base'
 
 export function generateYearOverYearData(
@@ -9,7 +10,7 @@ export function generateYearOverYearData(
   const baseRevenue = getBaseMetric(baseMetrics, 'base_revenue')
   const growthTrend = getBaseMetric(baseMetrics, 'growth_trend')
   const basePartners = getBaseMetric(baseMetrics, 'base_partners')
-  const currentYear = new Date().getFullYear()
+  const { year: currentYear } = getDisplayYearMonth()
 
   for (let i = 0; i < yearsCount; i++) {
     const year = currentYear - i
@@ -35,7 +36,7 @@ export function generateYearOverYearData(
 
     data.unshift({
       id: `yoy-${year}`,
-      timestamp: new Date(year, 11, 31), // End of year
+      timestamp: new Date(Date.UTC(year, 11, 31)), // End of year
       source: 'generated',
       year,
       total_revenue: totalRevenue,

@@ -1,4 +1,5 @@
 import type { ChurnAnalyticsData } from '@/types/analytics'
+import { getDisplayYearMonth } from '@/lib/data-formatters'
 import { getBaseMetric } from './base'
 
 export function generateChurnData(
@@ -8,15 +9,18 @@ export function generateChurnData(
   const data: ChurnAnalyticsData[] = []
   const baseChurn = getBaseMetric(baseMetrics, 'churn_baseline')
   const basePartners = getBaseMetric(baseMetrics, 'base_partners')
-  const currentYear = new Date().getFullYear()
-  const currentMonth = new Date().getMonth()
+  const { year: currentYear, month: currentMonth } = getDisplayYearMonth()
 
   for (let i = 0; i < monthsCount; i++) {
-    const date = new Date(currentYear, currentMonth - i, 1)
-    const monthName = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+    const date = new Date(Date.UTC(currentYear, currentMonth - i, 1))
+    const monthName = date.toLocaleDateString('en-US', {
+      month: 'short',
+      year: 'numeric',
+      timeZone: 'UTC',
+    })
 
     // Add seasonal variation (higher churn in Q1, lower in Q4)
-    const seasonalFactor = 1 + Math.sin((date.getMonth() * Math.PI) / 6) * 0.3
+    const seasonalFactor = 1 + Math.sin((date.getUTCMonth() * Math.PI) / 6) * 0.3
     const churnRate = baseChurn * seasonalFactor + (Math.random() - 0.5) * 0.8
 
     const totalPartners = Math.floor(basePartners + (Math.random() - 0.5) * 20)

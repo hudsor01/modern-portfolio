@@ -1,4 +1,5 @@
 import type { GrowthData } from '@/types/analytics'
+import { getDisplayYearMonth } from '@/lib/data-formatters'
 import { getBaseMetric } from './base'
 
 export function generateGrowthData(
@@ -8,12 +9,11 @@ export function generateGrowthData(
   const data: GrowthData[] = []
   const baseRevenue = getBaseMetric(baseMetrics, 'base_revenue')
   const growthTrend = getBaseMetric(baseMetrics, 'growth_trend')
-  const currentYear = new Date().getFullYear()
-  const currentMonth = new Date().getMonth()
+  const { year: currentYear, month: currentMonth } = getDisplayYearMonth()
 
   for (let i = 0; i < quartersCount; i++) {
-    const date = new Date(currentYear, currentMonth - i * 3, 1)
-    const quarter = `Q${Math.floor(date.getMonth() / 3) + 1} ${date.getFullYear()}`
+    const date = new Date(Date.UTC(currentYear, currentMonth - i * 3, 1))
+    const quarter = `Q${Math.floor(date.getUTCMonth() / 3) + 1} ${date.getUTCFullYear()}`
 
     // Calculate realistic growth with some variance
     const quarterlyGrowthRate = growthTrend / 4 + (Math.random() - 0.5) * 0.05

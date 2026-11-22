@@ -198,7 +198,10 @@ export function BlogList({
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <time className="typography-small text-muted-foreground">
+                  <time
+                    className="typography-small text-muted-foreground"
+                    dateTime={post.publishedAt ?? undefined}
+                  >
                     {formatPublishedDate(post.publishedAt ?? undefined)}
                   </time>
                 </CardContent>

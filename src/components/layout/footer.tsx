@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { getDisplayYearMonth } from '@/lib/data-formatters'
 
 // Sitewide internal-link surface. Every page (including the handful Google has
 // actually indexed) renders this footer, so these links create crawl paths +
@@ -51,7 +52,7 @@ const FOOTER_SECTIONS: ReadonlyArray<{
 ]
 
 export function Footer() {
-  const currentYear = new Date().getFullYear()
+  const currentYear = getDisplayYearMonth().year
 
   return (
     <footer className="bg-card border-t border-border">
