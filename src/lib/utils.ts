@@ -3,19 +3,6 @@ import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import type { z } from 'zod'
 
-// Client-safe absolute-URL builder. Accepts an injectable window for testing;
-// production/server callers omit it and fall back to the validated site URL.
-export function absoluteUrlTestable(path: string, windowObj?: typeof window): string {
-  const siteUrl =
-    windowObj && typeof windowObj !== 'undefined'
-      ? windowObj.location.origin
-      : process.env.NEXT_PUBLIC_SITE_URL ||
-        process.env.NEXT_PUBLIC_VERCEL_URL ||
-        'https://richardwhudsonjr.com'
-
-  return `${siteUrl}${path}`
-}
-
 export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(...inputs))
 }

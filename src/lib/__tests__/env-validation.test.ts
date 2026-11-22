@@ -33,7 +33,6 @@ describe('env-validation', () => {
       expect(env.NODE_ENV).toBe('development')
       expect(env.FROM_EMAIL).toBe('noreply@richardwhudsonjr.com')
       expect(env.TO_EMAIL).toBe('hudsor01@icloud.com')
-      expect(env.USE_LOCAL_DB).toBe(false)
     })
 
     it('rejects DATABASE_URL that is not a postgres connection string', async () => {
@@ -61,15 +60,6 @@ describe('env-validation', () => {
       vi.stubEnv('FROM_EMAIL', 'not-an-email')
 
       await expect(importEnvModule()).rejects.toThrow(/FROM_EMAIL/)
-    })
-
-    it('transforms USE_LOCAL_DB="true" into boolean true', async () => {
-      vi.stubEnv('NODE_ENV', 'development')
-      vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'http://localhost:3000')
-      vi.stubEnv('USE_LOCAL_DB', 'true')
-
-      const mod = await importEnvModule()
-      expect(mod.env.USE_LOCAL_DB).toBe(true)
     })
 
     it('rejects non-URL NEXT_PUBLIC_SITE_URL', async () => {

@@ -67,11 +67,6 @@ const envSchema = z.object({
         ? 'https://richardwhudsonjr.com'
         : 'http://localhost:3000'
     ),
-  // Local database toggle
-  USE_LOCAL_DB: z
-    .string()
-    .optional()
-    .transform((val) => val === 'true'),
 })
 
 export type EnvConfig = z.infer<typeof envSchema>

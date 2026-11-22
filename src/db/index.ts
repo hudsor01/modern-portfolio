@@ -11,8 +11,7 @@ import * as schema from './schema'
 // - Local dev: the same driver, so DATABASE_URL must point at a Neon branch.
 //   neon-http sends each query as an HTTPS request to Neon's SQL-over-HTTP
 //   endpoint for the URL's host; a plain local Postgres doesn't serve one, and
-//   nothing here overrides `neonConfig.fetchEndpoint`. (USE_LOCAL_DB is a
-//   Prisma-era flag that is still validated but read nowhere.)
+//   nothing here overrides `neonConfig.fetchEndpoint`.
 //
 // If we ever need interactive transactions, switch to drizzle-orm/node-postgres
 // — but the existing /api routes do not require multi-statement transactions,
