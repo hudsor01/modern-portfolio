@@ -256,7 +256,7 @@ If this gets wired into `buildCommand` (e.g.
   rewrote (no `lint-staged` dependency).
 - **Lefthook pre-push** runs the Vitest suite.
 - Atomic commits preferred. Commit style: `type(scope): subject`.
-- Commit trailer required by [CLAUDE.md](CLAUDE.md): `[hudsor01]`.
+- Commit trailer required: `[hudsor01]`.
 
 ---
 
