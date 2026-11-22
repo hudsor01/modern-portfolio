@@ -95,6 +95,33 @@ export function formatCurrency(value: number, options: CurrencyFormatOptions = {
   return formatter.format(value)
 }
 
+const COMPACT_TIERS = [
+  { divisor: 1_000_000_000, suffix: 'B' },
+  { divisor: 1_000_000, suffix: 'M' },
+  { divisor: 1_000, suffix: 'K' },
+] as const
+
+/**
+ * Scale to the K/M/B tier with one trimmed decimal ("1.2K", "1M"), or null below 1,000.
+ * Rounds first and promotes when the rounded value reaches 1000 of the tier
+ * (999_950 -> "1M", not "1000K").
+ */
+function compactScale(value: number): string | null {
+  const abs = Math.abs(value)
+  const start = COMPACT_TIERS.findIndex((t) => abs >= t.divisor)
+  if (start === -1) return null
+  const round1 = (n: number, divisor: number): number => Math.round((n / divisor) * 10) / 10
+  let tier = COMPACT_TIERS[start]
+  let rounded = round1(abs, tier?.divisor ?? 1)
+  const higher = start > 0 ? COMPACT_TIERS[start - 1] : undefined
+  if (rounded >= 1000 && higher) {
+    tier = higher
+    rounded = round1(abs, higher.divisor)
+  }
+  const sign = value < 0 ? '-' : ''
+  return `${sign}${rounded.toFixed(1).replace(/\.0$/, '')}${tier?.suffix ?? ''}`
+}
+
 /**
  * Format currency with compact notation (K, M, B)
  */
@@ -104,17 +131,8 @@ export function formatCompactCurrency(
 ): string {
   const { showSymbol = true } = options
   const symbol = showSymbol ? '$' : ''
-  const trim = (n: number): string => n.toFixed(1).replace(/\.0$/, '')
-
-  if (Math.abs(value) >= 1_000_000_000) {
-    return `${symbol}${trim(value / 1_000_000_000)}B`
-  }
-  if (Math.abs(value) >= 1_000_000) {
-    return `${symbol}${trim(value / 1_000_000)}M`
-  }
-  if (Math.abs(value) >= 1_000) {
-    return `${symbol}${trim(value / 1_000)}K`
-  }
+  const compact = compactScale(value)
+  if (compact) return `${symbol}${compact}`
 
   return formatCurrency(value, { ...options, compact: false })
 }
@@ -197,16 +215,8 @@ export function formatNumber(value: number, options: NumberFormatOptions = {}): 
  */
 export function formatCompactNumber(value: number): string {
   // Same trailing-".0" rule as formatCompactCurrency: 1000 -> "1K", 1200 -> "1.2K".
-  const trim = (n: number): string => n.toFixed(1).replace(/\.0$/, '')
-  if (Math.abs(value) >= 1_000_000_000) {
-    return `${trim(value / 1_000_000_000)}B`
-  }
-  if (Math.abs(value) >= 1_000_000) {
-    return `${trim(value / 1_000_000)}M`
-  }
-  if (Math.abs(value) >= 1_000) {
-    return `${trim(value / 1_000)}K`
-  }
+  const compact = compactScale(value)
+  if (compact) return compact
   return value.toString()
 }
 
@@ -247,11 +257,15 @@ export function formatDate(date: Date | string | number, options: DateFormatOpti
 }
 
 /**
- * Year and month (0-11) of an instant on the America/Chicago calendar.
+ * Year and month (0-11) of an instant on the America/Chicago calendar
+ * (or another zone, for date-only inputs that must keep their calendar day).
  */
-export function getDisplayYearMonth(now: Date = new Date()): { year: number; month: number } {
+export function getDisplayYearMonth(
+  now: Date = new Date(),
+  timeZone: string = DISPLAY_TIME_ZONE
+): { year: number; month: number } {
   const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: DISPLAY_TIME_ZONE,
+    timeZone,
     year: 'numeric',
     month: 'numeric',
   }).formatToParts(now)
@@ -303,44 +317,38 @@ export function formatTimePeriod(
 
   const start = typeof startDate === 'string' ? new Date(startDate) : startDate
   const end = typeof endDate === 'string' ? new Date(endDate) : endDate
+  // Same rule as formatDate: date-only strings keep their calendar day (UTC).
+  const startZone =
+    typeof startDate === 'string' && DATE_ONLY.test(startDate) ? 'UTC' : DISPLAY_TIME_ZONE
+  const endZone = typeof endDate === 'string' && DATE_ONLY.test(endDate) ? 'UTC' : DISPLAY_TIME_ZONE
+  const fmt = (d: Date, timeZone: string, opts: Intl.DateTimeFormatOptions): string =>
+    d.toLocaleDateString('en-US', { ...opts, timeZone })
 
-  const startYear = getDisplayYearMonth(start).year
-  const endYear = getDisplayYearMonth(end).year
+  const startYear = getDisplayYearMonth(start, startZone).year
+  const endYear = getDisplayYearMonth(end, endZone).year
   const sameYear = startYear === endYear
 
   switch (format) {
     case 'short':
       if (sameYear) {
-        const startMonth = start.toLocaleDateString('en-US', {
-          month: 'short',
-          timeZone: DISPLAY_TIME_ZONE,
-        })
-        const endMonth = end.toLocaleDateString('en-US', {
-          month: 'short',
-          timeZone: DISPLAY_TIME_ZONE,
-        })
+        const startMonth = fmt(start, startZone, { month: 'short' })
+        const endMonth = fmt(end, endZone, { month: 'short' })
         return includeYear ? `${startMonth}-${endMonth} ${startYear}` : `${startMonth}-${endMonth}`
       }
-      return `${start.toLocaleDateString('en-US', { month: 'short', year: '2-digit', timeZone: DISPLAY_TIME_ZONE })}-${end.toLocaleDateString('en-US', { month: 'short', year: '2-digit', timeZone: DISPLAY_TIME_ZONE })}`
+      return `${fmt(start, startZone, { month: 'short', year: '2-digit' })}-${fmt(end, endZone, { month: 'short', year: '2-digit' })}`
 
     case 'long':
       if (sameYear) {
-        const startMonth = start.toLocaleDateString('en-US', {
-          month: 'long',
-          timeZone: DISPLAY_TIME_ZONE,
-        })
-        const endMonth = end.toLocaleDateString('en-US', {
-          month: 'long',
-          timeZone: DISPLAY_TIME_ZONE,
-        })
+        const startMonth = fmt(start, startZone, { month: 'long' })
+        const endMonth = fmt(end, endZone, { month: 'long' })
         return includeYear
           ? `${startMonth} - ${endMonth} ${startYear}`
           : `${startMonth} - ${endMonth}`
       }
-      return `${start.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: DISPLAY_TIME_ZONE })} - ${end.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: DISPLAY_TIME_ZONE })}`
+      return `${fmt(start, startZone, { month: 'long', year: 'numeric' })} - ${fmt(end, endZone, { month: 'long', year: 'numeric' })}`
 
     case 'abbreviated':
-      return `${start.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', timeZone: DISPLAY_TIME_ZONE })}-${end.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', timeZone: DISPLAY_TIME_ZONE })}${includeYear ? `/${startYear}` : ''}`
+      return `${fmt(start, startZone, { month: 'numeric', day: 'numeric' })}-${fmt(end, endZone, { month: 'numeric', day: 'numeric' })}${includeYear ? `/${startYear}` : ''}`
 
     default:
       return formatTimePeriod(startDate, endDate, { ...options, format: 'short' })

@@ -97,6 +97,25 @@ describe('formatNumber', () => {
   })
 })
 
+describe('compact tier boundaries', () => {
+  it('promotes to the next tier instead of emitting 1000K / 1000M', () => {
+    expect(formatCompactCurrency(999_949)).toBe('$999.9K')
+    expect(formatCompactCurrency(999_950)).toBe('$1M')
+    expect(formatCompactCurrency(999_999)).toBe('$1M')
+    expect(formatCompactCurrency(999_950_000)).toBe('$1B')
+    expect(formatCompactCurrency(-999_999)).toBe('$-1M')
+    expect(formatCompactCurrency(999_999, { showSymbol: false })).toBe('1M')
+    expect(formatCompactNumber(999_950)).toBe('1M')
+    expect(formatCompactNumber(999_999)).toBe('1M')
+    expect(formatCompactNumber(999_950_000)).toBe('1B')
+    expect(formatCompactNumber(999_949)).toBe('999.9K')
+  })
+
+  it('leaves B at the top tier', () => {
+    expect(formatCompactNumber(1_500_000_000_000)).toBe('1500B')
+  })
+})
+
 describe('formatCompactNumber', () => {
   it('formats large numbers with K/M/B suffix', () => {
     expect(formatCompactNumber(1_200)).toBe('1.2K')
@@ -166,6 +185,24 @@ describe('formatTimePeriod', () => {
 
   it('includeYear=false strips the year', () => {
     expect(formatTimePeriod(jan1, mar31, { includeYear: false })).toBe('Jan-Mar')
+  })
+
+  it('date-only strings keep their calendar day (not shifted into Chicago)', () => {
+    expect(formatTimePeriod('2025-01-01', '2025-03-31')).toBe('Jan-Mar 2025')
+    expect(formatTimePeriod('2025-01-01', '2025-03-31', { format: 'long' })).toBe(
+      'January - March 2025'
+    )
+    expect(formatTimePeriod('2025-01-01', '2026-02-01')).toMatch(/^Jan .?25-Feb .?26$/)
+    expect(formatTimePeriod('2025-01-01', '2025-03-31', { format: 'abbreviated' })).toBe(
+      '1/1-3/31/2025'
+    )
+  })
+
+  it('full ISO instants are still pinned to America/Chicago', () => {
+    // 2025-01-01T03:00Z is Dec 31 2024 21:00 in Chicago.
+    expect(formatTimePeriod('2025-01-01T03:00:00Z', '2025-03-31T12:00:00Z')).toMatch(
+      /^Dec .?24-Mar .?25$/
+    )
   })
 })
 
