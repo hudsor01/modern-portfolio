@@ -52,7 +52,16 @@ describe('formatCompactCurrency', () => {
   })
 
   it('omits symbol when showSymbol is false', () => {
-    expect(formatCompactCurrency(1_000_000, { showSymbol: false })).toBe('1.0M')
+    expect(formatCompactCurrency(1_000_000, { showSymbol: false })).toBe('1M')
+  })
+
+  it('trims trailing .0 and keeps meaningful decimals', () => {
+    expect(formatCompactCurrency(3_600_000)).toBe('$3.6M')
+    expect(formatCompactCurrency(3_000_000)).toBe('$3M')
+    expect(formatCompactCurrency(900_000)).toBe('$900K')
+    expect(formatCompactCurrency(0)).toBe('$0')
+    expect(formatCompactCurrency(1_200_000_000)).toBe('$1.2B')
+    expect(formatCurrency(3_600_000, { compact: true })).toBe('$3.6M')
   })
 })
 
