@@ -19,6 +19,7 @@
     "typecheck": "tsc --noEmit",
     "ci:quick": "bun run lint && bun run typecheck",
     "test": "vitest run --passWithNoTests",
+    "test:tz": "TZ=UTC vitest run .tz.test && TZ=America/Los_Angeles vitest run .tz.test && TZ=Asia/Tokyo vitest run .tz.test",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "e2e": "playwright test",

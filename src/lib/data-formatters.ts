@@ -32,7 +32,16 @@ export interface NumberFormatOptions extends Intl.NumberFormatOptions {
 /**
  * Date formatting options
  */
-export interface DateFormatOptions extends Intl.DateTimeFormatOptions {
+/**
+ * Every date the site renders is pinned to this zone so server and client
+ * output agree regardless of the runtime timezone.
+ */
+export const DISPLAY_TIME_ZONE = 'America/Chicago'
+
+/** Calendar-date-only strings (YYYY-MM-DD) keep their day: formatted in UTC. */
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/
+
+export interface DateFormatOptions extends Omit<Intl.DateTimeFormatOptions, 'timeZone'> {
   relative?: boolean
   includeTime?: boolean
 }
@@ -95,15 +104,16 @@ export function formatCompactCurrency(
 ): string {
   const { showSymbol = true } = options
   const symbol = showSymbol ? '$' : ''
+  const trim = (n: number): string => n.toFixed(1).replace(/\.0$/, '')
 
   if (Math.abs(value) >= 1_000_000_000) {
-    return `${symbol}${(value / 1_000_000_000).toFixed(1)}B`
+    return `${symbol}${trim(value / 1_000_000_000)}B`
   }
   if (Math.abs(value) >= 1_000_000) {
-    return `${symbol}${(value / 1_000_000).toFixed(1)}M`
+    return `${symbol}${trim(value / 1_000_000)}M`
   }
   if (Math.abs(value) >= 1_000) {
-    return `${symbol}${(value / 1_000).toFixed(1)}K`
+    return `${symbol}${trim(value / 1_000)}K`
   }
 
   return formatCurrency(value, { ...options, compact: false })
@@ -243,9 +253,24 @@ export function formatDate(date: Date | string | number, options: DateFormatOpti
       hour12: true,
     }),
     ...intlOptions,
+    timeZone: typeof date === 'string' && DATE_ONLY.test(date) ? 'UTC' : DISPLAY_TIME_ZONE,
   }
 
   return new Intl.DateTimeFormat('en-US', formatOptions).format(dateObj)
+}
+
+/**
+ * Year and month (0-11) of an instant on the America/Chicago calendar.
+ */
+export function getDisplayYearMonth(now: Date = new Date()): { year: number; month: number } {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: DISPLAY_TIME_ZONE,
+    year: 'numeric',
+    month: 'numeric',
+  }).formatToParts(now)
+  const year = Number(parts.find((p) => p.type === 'year')?.value)
+  const month = Number(parts.find((p) => p.type === 'month')?.value) - 1
+  return { year, month }
 }
 
 /**
@@ -292,31 +317,43 @@ export function formatTimePeriod(
   const start = typeof startDate === 'string' ? new Date(startDate) : startDate
   const end = typeof endDate === 'string' ? new Date(endDate) : endDate
 
-  const startYear = start.getFullYear()
-  const endYear = end.getFullYear()
+  const startYear = getDisplayYearMonth(start).year
+  const endYear = getDisplayYearMonth(end).year
   const sameYear = startYear === endYear
 
   switch (format) {
     case 'short':
       if (sameYear) {
-        const startMonth = start.toLocaleDateString('en-US', { month: 'short' })
-        const endMonth = end.toLocaleDateString('en-US', { month: 'short' })
+        const startMonth = start.toLocaleDateString('en-US', {
+          month: 'short',
+          timeZone: DISPLAY_TIME_ZONE,
+        })
+        const endMonth = end.toLocaleDateString('en-US', {
+          month: 'short',
+          timeZone: DISPLAY_TIME_ZONE,
+        })
         return includeYear ? `${startMonth}-${endMonth} ${startYear}` : `${startMonth}-${endMonth}`
       }
-      return `${start.toLocaleDateString('en-US', { month: 'short', year: '2-digit' })}-${end.toLocaleDateString('en-US', { month: 'short', year: '2-digit' })}`
+      return `${start.toLocaleDateString('en-US', { month: 'short', year: '2-digit', timeZone: DISPLAY_TIME_ZONE })}-${end.toLocaleDateString('en-US', { month: 'short', year: '2-digit', timeZone: DISPLAY_TIME_ZONE })}`
 
     case 'long':
       if (sameYear) {
-        const startMonth = start.toLocaleDateString('en-US', { month: 'long' })
-        const endMonth = end.toLocaleDateString('en-US', { month: 'long' })
+        const startMonth = start.toLocaleDateString('en-US', {
+          month: 'long',
+          timeZone: DISPLAY_TIME_ZONE,
+        })
+        const endMonth = end.toLocaleDateString('en-US', {
+          month: 'long',
+          timeZone: DISPLAY_TIME_ZONE,
+        })
         return includeYear
           ? `${startMonth} - ${endMonth} ${startYear}`
           : `${startMonth} - ${endMonth}`
       }
-      return `${start.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`
+      return `${start.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: DISPLAY_TIME_ZONE })} - ${end.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: DISPLAY_TIME_ZONE })}`
 
     case 'abbreviated':
-      return `${start.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })}-${end.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })}${includeYear ? `/${startYear}` : ''}`
+      return `${start.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', timeZone: DISPLAY_TIME_ZONE })}-${end.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', timeZone: DISPLAY_TIME_ZONE })}${includeYear ? `/${startYear}` : ''}`
 
     default:
       return formatTimePeriod(startDate, endDate, { ...options, format: 'short' })
