@@ -107,6 +107,49 @@ test.describe('Project detail pages — regression assertions', () => {
       ).toHaveCount(0)
     }
   })
+
+  test('/projects/revenue-kpi charts: derived title, dual axis, compact ticks (BUG-03)', async ({
+    page,
+  }) => {
+    await page.goto('/projects/revenue-kpi', { timeout: 60000 })
+    await page.waitForLoadState('networkidle')
+
+    const surfaces = page.locator('.recharts-surface')
+    await surfaces.first().scrollIntoViewIfNeeded()
+    await expect
+      .poll(() => surfaces.count(), { message: 'expected >= 4 recharts surfaces', timeout: 30000 })
+      .toBeGreaterThanOrEqual(4)
+
+    // (a) derived trend title, no hardcoded 2024
+    const trendTitle = page.getByText(/^(Quarterly|Monthly) Revenue · .+/).first()
+    await expect(trendTitle, 'trend title is derived from data').toBeVisible()
+    expect(await trendTitle.textContent(), 'trend title has no hardcoded 2024').not.toContain(
+      '2024'
+    )
+
+    // (b) dual axis on Revenue Growth Metrics
+    const growthCard = page
+      .locator('.portfolio-card')
+      .filter({ hasText: 'Revenue Growth Metrics' })
+      .first()
+    await expect(growthCard.locator('.recharts-yAxis'), 'two Y axes').toHaveCount(2)
+    await expect(growthCard.getByText('Revenue / Commissions ($M)')).toBeVisible()
+    await expect(growthCard.getByText('Transactions (K)').first()).toBeVisible()
+
+    // (c) no non-compact currency ticks like $3600K
+    const ticks = await page.locator('.recharts-cartesian-axis-tick-value').allTextContents()
+    for (const tick of ticks) {
+      expect(tick, `tick "${tick}" must be compact`).not.toMatch(/\$\d{4,}K/)
+    }
+
+    // (d) charts are not collapsed
+    const heights = await surfaces.evaluateAll((els) =>
+      els.map((el) => el.getBoundingClientRect().height)
+    )
+    for (const h of heights) {
+      expect(h, 'chart surface height >= 200').toBeGreaterThanOrEqual(200)
+    }
+  })
 })
 
 test.describe('Project detail pages — tab switcher updates URL', () => {
