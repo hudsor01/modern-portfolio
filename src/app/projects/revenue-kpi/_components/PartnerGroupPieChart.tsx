@@ -10,6 +10,7 @@ import {
 import { LazyPieChart as PieChart } from '@/components/charts/lazy-charts'
 import { Pie, Cell } from 'recharts'
 import { chartColors } from '@/lib/charts'
+import { CHART_BOX } from '@/components/charts/chart-skeleton'
 
 const COLORS = [chartColors.primary, chartColors.secondary, chartColors.chart3, chartColors.chart4]
 
@@ -56,7 +57,7 @@ export default function PartnerGroupPieChart({ groups }: PartnerGroupPieChartPro
         <CardDescription>Revenue distribution by partner tier</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[var(--chart-height-md)] w-full">
+        <ChartContainer config={chartConfig} className={CHART_BOX.md}>
           <PieChart>
             <Pie
               data={chartData}

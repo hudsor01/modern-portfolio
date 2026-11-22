@@ -10,6 +10,7 @@ import {
   StandardTooltip,
 } from '@/components/charts/lazy-charts'
 import { Line, Legend } from 'recharts'
+import { formatCompactCurrency } from '@/lib/data-formatters'
 import { chartColors, chartConfig, chartTypeConfigs, formatters } from '@/lib/charts'
 import type { YearOverYearData } from '@/types/analytics'
 import type { ExtendedRevenueData, TypedTooltipProps } from '@/types/chart'
@@ -56,14 +57,14 @@ function CustomTooltip({ active, payload, label }: TypedTooltipProps<ExtendedRev
       payload={[
         {
           name: 'Revenue',
-          value: formatters.currency(dataPoint.revenue),
+          value: formatCompactCurrency(dataPoint.revenue * 1_000_000),
           color: chartColors.revenue,
         },
         ...(dataPoint.transactions
           ? [
               {
                 name: 'Transactions',
-                value: formatters.thousands(dataPoint.transactions),
+                value: `${Math.round(dataPoint.transactions)}K`,
                 color: chartColors.transactions,
               },
             ]
@@ -72,7 +73,7 @@ function CustomTooltip({ active, payload, label }: TypedTooltipProps<ExtendedRev
           ? [
               {
                 name: 'Commissions',
-                value: formatters.currency(dataPoint.commissions),
+                value: formatCompactCurrency(dataPoint.commissions * 1_000_000),
                 color: chartColors.commissions,
               },
             ]
@@ -147,18 +148,39 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
         size="md"
       >
         <LineChart data={yearlyData} margin={chartConfig.margins.medium}>
-          <ChartGrid />
+          <ChartGrid yAxisId="left" />
           <ChartXAxis dataKey="name" />
           <ChartYAxis
-            tickFormatter={(value) =>
-              formatters.default(typeof value === 'string' ? parseFloat(value) : value)
-            }
+            yAxisId="left"
+            tickFormatter={(value) => formatCompactCurrency(Number(value) * 1_000_000)}
+            label={{
+              value: 'Revenue / Commissions ($M)',
+              angle: -90,
+              position: 'insideLeft',
+              fill: chartColors.revenue,
+              fontSize: 12,
+              fontWeight: 600,
+            }}
+          />
+          <ChartYAxis
+            yAxisId="right"
+            orientation="right"
+            tickFormatter={(value) => `${Number(value)}K`}
+            label={{
+              value: 'Transactions (K)',
+              angle: 90,
+              position: 'insideRight',
+              fill: chartColors.transactions,
+              fontSize: 12,
+              fontWeight: 600,
+            }}
           />
           <CustomTooltip />
           <Legend />
           <Line
             {...chartTypeConfigs.line}
             dataKey="revenue"
+            yAxisId="left"
             stroke={chartColors.revenue}
             dot={{ ...chartTypeConfigs.line.dot, stroke: chartColors.revenue }}
             activeDot={{
@@ -172,6 +194,7 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
           <Line
             {...chartTypeConfigs.line}
             dataKey="transactions"
+            yAxisId="right"
             stroke={chartColors.transactions}
             dot={{ ...chartTypeConfigs.line.dot, stroke: chartColors.transactions }}
             activeDot={{
@@ -186,6 +209,7 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
           <Line
             {...chartTypeConfigs.line}
             dataKey="commissions"
+            yAxisId="left"
             stroke={chartColors.commissions}
             dot={{ ...chartTypeConfigs.line.dot, stroke: chartColors.commissions }}
             activeDot={{

@@ -99,6 +99,7 @@ interface ChartContainerProps {
 interface ChartGridProps {
   vertical?: boolean
   horizontal?: boolean
+  yAxisId?: string | number
 }
 
 interface ChartAxisProps {
@@ -126,8 +127,15 @@ function ChartContainer({ children, size = 'md', className = '' }: ChartContaine
 }
 
 // Standardized grid component
-export function ChartGrid({ vertical = false, horizontal = true }: ChartGridProps) {
-  return <CartesianGrid {...gridStyles} vertical={vertical} horizontal={horizontal} />
+export function ChartGrid({ vertical = false, horizontal = true, yAxisId }: ChartGridProps) {
+  return (
+    <CartesianGrid
+      {...gridStyles}
+      vertical={vertical}
+      horizontal={horizontal}
+      {...(yAxisId !== undefined && { yAxisId })}
+    />
+  )
 }
 
 // Standardized X-axis component
