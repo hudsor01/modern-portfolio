@@ -114,7 +114,8 @@ test.describe('Project detail pages — regression assertions', () => {
     await page.goto('/projects/revenue-kpi', { timeout: 60000 })
     await page.waitForLoadState('networkidle')
 
-    const surfaces = page.locator('.recharts-surface')
+    // Chart surfaces only: Recharts legend icons are 14px svgs that also carry .recharts-surface
+    const surfaces = page.locator('.recharts-wrapper > .recharts-surface')
     await surfaces.first().scrollIntoViewIfNeeded()
     await expect
       .poll(() => surfaces.count(), { message: 'expected >= 4 recharts surfaces', timeout: 30000 })
