@@ -21,6 +21,18 @@ const FORBIDDEN: Array<{ name: string; pattern: RegExp }> = [
     name: '$${(x / 1000[000]).toFixed(n)}K|M',
     pattern: /\$\$\{\s*\(?[^}]*\/\s*1_?000(?:_?000)?\s*\)?\.toFixed\(\d\)\s*\}\s*[KM]/,
   },
+  {
+    name: '$${expr.toFixed(n)}K|M|B in any form',
+    pattern: /\$\$\{[^}]*\.toFixed\(\d\)[^}]*\}\s*[KMB]\b/,
+  },
+  {
+    name: "'$' + expr.toFixed(n) + 'K|M|B'",
+    pattern: /'\$'\s*\+[^;\n]*\.toFixed\(\d\)[^;\n]*\+\s*'[KMB]'/,
+  },
+  {
+    name: 'a "$" string divided by 1e3 / 1e6 / 1e9',
+    pattern: /\$[^\n]*\/\s*1e[369]\b|\/\s*1e[369]\b[^\n]*\$/,
+  },
 ]
 
 function sourceFiles(dir: string): string[] {
