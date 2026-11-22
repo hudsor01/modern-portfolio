@@ -1,7 +1,7 @@
 'use client'
 
 import { memo } from 'react'
-import { formatCurrency } from '@/lib/data-formatters'
+import { formatCompactCurrency } from '@/lib/data-formatters'
 import { LazyBarChart as BarChart } from '@/components/charts/lazy-charts'
 import { Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
 import { chartColors, chartCssVars } from '@/lib/charts'
@@ -9,7 +9,7 @@ import { customerSegmentChartData } from '../data/constants'
 
 const CustomerSegmentChart = memo(function CustomerSegmentChart() {
   return (
-    <div className="h-[var(--chart-height-md)]">
+    <div className="h-full w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={customerSegmentChartData}
@@ -41,7 +41,7 @@ const CustomerSegmentChart = memo(function CustomerSegmentChart() {
             fontSize={12}
             tickLine={false}
             axisLine={{ stroke: chartColors.axis, strokeOpacity: 0.5 }}
-            tickFormatter={(value) => formatCurrency(value)}
+            tickFormatter={(value) => formatCompactCurrency(Number(value))}
           />
           <Tooltip
             contentStyle={{
@@ -55,7 +55,7 @@ const CustomerSegmentChart = memo(function CustomerSegmentChart() {
               const safeValue = Number(value ?? 0)
               const safeName = String(name ?? '')
               if (safeName === 'count') return [safeValue.toLocaleString(), 'Customer Count']
-              if (safeName === 'clv') return [formatCurrency(safeValue), 'Average CLV']
+              if (safeName === 'clv') return [formatCompactCurrency(safeValue), 'Average CLV']
               if (safeName === 'probability') return [`${safeValue}%`, 'Engagement Probability']
               return [safeValue, safeName]
             }}

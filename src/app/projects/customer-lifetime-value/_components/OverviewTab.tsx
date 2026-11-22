@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { ChartSkeleton } from '@/components/charts/chart-skeleton'
+import { CHART_BOX, ChartSkeleton } from '@/components/charts/chart-skeleton'
 import { ChartLoadError } from '@/components/charts/chart-load-error'
 import { safeLazy } from '@/lib/safe-lazy'
 
@@ -33,7 +33,7 @@ export function OverviewTab() {
             segments
           </p>
         </div>
-        <div className="h-[var(--chart-height-sm)]">
+        <div className={CHART_BOX.sm}>
           <CLVPredictionChart />
         </div>
       </div>
@@ -46,7 +46,7 @@ export function OverviewTab() {
             24-month predictive CLV trending with confidence intervals and seasonal adjustments
           </p>
         </div>
-        <div className="h-[var(--chart-height-sm)]">
+        <div className={CHART_BOX.sm}>
           <CLVTrendChart />
         </div>
       </div>

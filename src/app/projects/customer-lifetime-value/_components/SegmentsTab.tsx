@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { ChartSkeleton } from '@/components/charts/chart-skeleton'
+import { CHART_BOX, ChartSkeleton } from '@/components/charts/chart-skeleton'
 import { ChartLoadError } from '@/components/charts/chart-load-error'
 import { safeLazy } from '@/lib/safe-lazy'
 
@@ -27,7 +27,7 @@ export function SegmentsTab() {
             RFM-based customer segmentation with predictive CLV modeling across behavioral clusters
           </p>
         </div>
-        <div className="h-[var(--chart-height-sm)]">
+        <div className={CHART_BOX.sm}>
           <CustomerSegmentChart />
         </div>
       </div>
