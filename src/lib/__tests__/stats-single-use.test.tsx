@@ -53,43 +53,51 @@ const aboutStats = (['revenue', 'transaction-growth', 'network-growth', 'years']
   (k) => ({ statKey: k, label: STAT_LABELS[k], value: STAT_VALUES[k], icon: 'star' })
 )
 
-function assertCanonical(container: HTMLElement) {
+/**
+ * Every stat in `expected` must render exactly once (value and label), every
+ * other stat zero times, and each label must be the canonical copy. A stat that
+ * disappears, or a label that loses its data-stat-label hook, fails here.
+ */
+function assertCanonical(container: HTMLElement, expected: StatKey[]) {
   for (const k of KEYS) {
+    const count = expected.includes(k) ? 1 : 0
     const values = container.querySelectorAll(`[data-stat="${k}"]`)
-    expect(values.length, `data-stat=${k}`).toBeLessThanOrEqual(1)
+    expect(values.length, `data-stat=${k}`).toBe(count)
     const labels = container.querySelectorAll(`[data-stat-label="${k}"]`)
-    expect(labels.length, `data-stat-label=${k}`).toBeLessThanOrEqual(1)
-    if (labels.length === 1) expect(labels[0]?.textContent?.trim()).toBe(STAT_LABELS[k])
+    expect(labels.length, `data-stat-label=${k}`).toBe(count)
+    if (count === 1) expect(labels[0]?.textContent?.trim()).toBe(STAT_LABELS[k])
   }
 }
+
+const HOME_STATS: StatKey[] = ['revenue', 'transaction-growth', 'network-growth', 'years']
+const PROJECTS_STATS: StatKey[] = ['revenue', 'transaction-growth', 'network-growth']
 
 afterEach(cleanup)
 
 describe('stat single-use guard', () => {
-  it('home renders each stat at most once with canonical labels', () => {
+  it('home renders each of its stats exactly once with canonical labels', () => {
     const { container } = render(<HomePageContent featuredProjects={featured} />)
-    assertCanonical(container)
+    assertCanonical(container, HOME_STATS)
   })
 
-  it('/projects composition renders each stat at most once; CTA adds none', () => {
+  it('/projects composition renders each of its stats exactly once; CTA adds none', () => {
     const { container } = render(
       <>
         <ProjectStats totalProjects={14} />
         <ProjectCTASection />
       </>
     )
-    assertCanonical(container)
+    assertCanonical(container, PROJECTS_STATS)
     const cta = render(<ProjectCTASection />)
     expect(cta.container.querySelectorAll('[data-stat]').length).toBe(0)
   })
 
   it('/about ExperienceStats renders each stat exactly once', () => {
     const { container } = render(<ExperienceStats stats={aboutStats} />)
-    assertCanonical(container)
-    for (const k of KEYS) expect(container.querySelectorAll(`[data-stat="${k}"]`).length).toBe(1)
+    assertCanonical(container, KEYS)
   })
 
-  it('contact client declares exactly one revenue stat and no other', () => {
+  it('source guard (not rendered): contact-client.tsx declares exactly one revenue stat', () => {
     const src = readFileSync(join(process.cwd(), 'src/app/contact/contact-client.tsx'), 'utf8')
     expect(src.match(/data-stat="/g)?.length).toBe(1)
     expect(src.match(/data-stat="revenue"/g)?.length).toBe(1)
