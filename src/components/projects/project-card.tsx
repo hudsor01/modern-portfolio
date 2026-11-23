@@ -34,7 +34,7 @@ export const ProjectCard = React.memo(function ProjectCard({
         <article className="relative h-full bg-card border border-border rounded-2xl overflow-hidden shadow-sm transition-all duration-500 ease-out hover:border-primary/40 hover:shadow-lg hover:-translate-y-1">
           {/* Featured Badge - Premium Design */}
           {project.featured && (
-            <div className="absolute top-4 left-4 z-10 flex items-center gap-1.5 px-3 py-1.5 bg-accent text-accent-foreground text-xs font-semibold rounded-full shadow-md">
+            <div className="absolute top-4 left-4 z-10 flex items-center gap-1.5 px-3 py-1.5 bg-accent text-white text-xs font-semibold rounded-full shadow-md">
               <Sparkles className="w-3 h-3" />
               Featured
             </div>

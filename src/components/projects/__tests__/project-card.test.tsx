@@ -49,6 +49,14 @@ describe('ProjectCard', () => {
     expect(screen.getByText('Featured')).toBeTruthy()
   })
 
+  it('Featured badge uses white text on the copper fill', () => {
+    render(<ProjectCard project={{ ...baseProject, featured: true }} />)
+    const badge = screen.getByText('Featured')
+    expect(badge.className).toContain('bg-accent')
+    expect(badge.className).toContain('text-white')
+    expect(badge.className).not.toContain('text-accent-foreground')
+  })
+
   it('does NOT render the Featured badge when project.featured=false', () => {
     render(<ProjectCard project={{ ...baseProject, featured: false }} />)
     expect(screen.queryByText('Featured')).toBeNull()
