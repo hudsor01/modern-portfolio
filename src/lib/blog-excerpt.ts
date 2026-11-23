@@ -73,13 +73,16 @@ function firstParagraph(content: string): string {
 }
 
 /**
- * Keep a real excerpt as-is; replace boilerplate or empty ones with the first
- * real paragraph of the body, or '' when none qualifies.
+ * Keep a real excerpt (normalised to plain text and truncated like a derived
+ * one, so metadata never carries raw markdown or entities); replace boilerplate
+ * or empty ones with the first real paragraph of the body, or '' when none
+ * qualifies.
  */
 export function resolveExcerpt(input: {
   excerpt: string | null | undefined
   content: string | null | undefined
 }): string {
-  if (!isBioBoilerplate(input.excerpt)) return input.excerpt as string
+  if (!isBioBoilerplate(input.excerpt))
+    return truncate(stripMarkdownToPlain(input.excerpt as string))
   return truncate(firstParagraph(input.content ?? ''))
 }

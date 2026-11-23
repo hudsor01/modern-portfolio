@@ -35,6 +35,12 @@ function coverKey(url: string): string {
 /**
  * Second and later posts sharing a cover image get a deterministic /api/og
  * cover. Returns a new array; replaced entries are new objects.
+ *
+ * Scope is deliberately the single listing passed in (one page of /blog, one
+ * category view, one related-posts rail): that is where two identical photos
+ * sit side by side. A post's cover can therefore differ between surfaces, and
+ * each listing's order decides which post keeps the photo. Detail pages always
+ * show the post's own stored cover.
  */
 export function resolveListCovers<T extends { title: string; featuredImage: string | null }>(
   posts: readonly T[],

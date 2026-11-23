@@ -99,3 +99,28 @@ describe('resolveExcerpt', () => {
     expect(resolveExcerpt({ excerpt: BIO, content })).toBe('')
   })
 })
+
+describe('resolveExcerpt keeps real excerpts as plain text', () => {
+  it('strips markdown and decodes entities in a kept excerpt', () => {
+    const out = resolveExcerpt({
+      excerpt: 'Why **pipeline** reviews fail &amp; what to do about [forecasts](https://x.test).',
+      content: '',
+    })
+    expect(out).toBe('Why pipeline reviews fail & what to do about forecasts.')
+  })
+
+  it('truncates a kept excerpt longer than 160 characters', () => {
+    const out = resolveExcerpt({
+      excerpt: `${'Forecast accuracy matters. '.repeat(20)}`,
+      content: '',
+    })
+    expect(out.length).toBeLessThanOrEqual(161)
+    expect(out.endsWith('…')).toBe(true)
+  })
+
+  it('leaves a clean short excerpt unchanged', () => {
+    expect(resolveExcerpt({ excerpt: 'A clean short excerpt.', content: '' })).toBe(
+      'A clean short excerpt.'
+    )
+  })
+})
