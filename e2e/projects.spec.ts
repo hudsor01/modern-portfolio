@@ -141,6 +141,15 @@ test.describe('Projects Listing Page', () => {
   })
 
   test('passes accessibility audit', async ({ page }) => {
+    // Entrance fades pass through low-contrast frames; audit the settled page.
+    await page.evaluate(async () => {
+      await document.fonts.ready
+      const finite = document.getAnimations().filter((a) => {
+        const timing = a.effect?.getComputedTiming()
+        return timing !== undefined && timing.iterations !== Infinity
+      })
+      await Promise.all(finite.map((a) => a.finished.catch(() => undefined)))
+    })
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
       .exclude('.blur-3xl')
