@@ -75,14 +75,19 @@ async function persistSubmission(data: ContactFormData, delivery: DeliveryStatus
   }
 }
 
+/**
+ * Non-PII summary of a send failure for contact_submissions.emailError. Resend
+ * messages can echo the submitted addresses, so only the error name, HTTP
+ * status and error code are kept, never the message text. Capped at 100 chars.
+ */
 function describeSendError(e: unknown): string {
-  const msg =
-    typeof e === 'string'
-      ? e
-      : typeof (e as { message?: unknown })?.message === 'string'
-        ? (e as { message: string }).message
-        : 'unknown'
-  return msg.slice(0, 500)
+  if (typeof e !== 'object' || e === null) return 'unknown'
+  const { name, statusCode, code } = e as { name?: unknown; statusCode?: unknown; code?: unknown }
+  const parts: string[] = []
+  if (typeof name === 'string' && name) parts.push(name)
+  if (typeof statusCode === 'number') parts.push(String(statusCode))
+  if (typeof code === 'string' && code) parts.push(code)
+  return (parts.join(' ') || 'unknown').slice(0, 100)
 }
 
 // Email service class

@@ -271,7 +271,7 @@ describe('EmailService.sendContactEmail — storage', () => {
     expect(valuesMock.mock.calls[0]![0]).toMatchObject({
       emailSent: false,
       emailId: null,
-      emailError: 'boom',
+      emailError: 'x',
     })
     expect(sendMock).toHaveBeenCalledTimes(1)
   })
@@ -289,13 +289,13 @@ describe('EmailService.sendContactEmail — storage', () => {
     expect(r.success).toBe(false)
     expect(r.error).toBe('Failed to send notification email')
     expect(insertMock).toHaveBeenCalledTimes(1)
-    expect(valuesMock.mock.calls[0]![0]).toMatchObject({ emailSent: false, emailError: 'ECONN' })
+    expect(valuesMock.mock.calls[0]![0]).toMatchObject({ emailSent: false, emailError: 'Error' })
   })
 
-  it('stores a string Resend error as emailError', async () => {
-    sendMock.mockResolvedValueOnce({ data: null, error: 'send failed' })
+  it('stores a string Resend error as an opaque "unknown"', async () => {
+    sendMock.mockResolvedValueOnce({ data: null, error: 'send failed to jane@example.com' })
     await (await load()).sendContactEmail(validData)
-    expect(valuesMock.mock.calls[0]![0]).toMatchObject({ emailError: 'send failed' })
+    expect(valuesMock.mock.calls[0]![0]).toMatchObject({ emailError: 'unknown' })
   })
 
   it('stores empty company and phone as null', async () => {
@@ -396,11 +396,27 @@ describe('contact submission storage privacy', () => {
     )
   })
 
-  it('truncates a long Resend error to 500 chars', async () => {
-    sendMock.mockResolvedValueOnce({ data: null, error: { message: 'a'.repeat(2000) } })
+  it('stores name, statusCode and code but never the Resend message', async () => {
+    sendMock.mockResolvedValueOnce({
+      data: null,
+      error: {
+        name: 'validation_error',
+        statusCode: 422,
+        message: 'Invalid `to` field: jane@example.com',
+      },
+    })
     const { EmailService } = await import('@/lib/email-service')
     await new EmailService().sendContactEmail(validData)
-    expect((valuesMock.mock.calls[0]![0] as { emailError: string }).emailError).toHaveLength(500)
+    const stored = (valuesMock.mock.calls[0]![0] as { emailError: string }).emailError
+    expect(stored).toBe('validation_error 422')
+    expect(stored).not.toContain('jane@example.com')
+  })
+
+  it('caps the stored error summary at 100 chars', async () => {
+    sendMock.mockResolvedValueOnce({ data: null, error: { name: 'a'.repeat(2000) } })
+    const { EmailService } = await import('@/lib/email-service')
+    await new EmailService().sendContactEmail(validData)
+    expect((valuesMock.mock.calls[0]![0] as { emailError: string }).emailError).toHaveLength(100)
   })
 })
 
