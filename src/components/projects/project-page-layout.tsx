@@ -127,7 +127,7 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
             {/* Project Title Section */}
             <div className="mb-8 animate-fade-in-up" data-testid="project-title-section">
               <h1
-                className="font-display text-4xl md:text-5xl font-semibold text-foreground mb-4 tracking-tight"
+                className="mb-4"
                 data-testid="project-title"
                 style={{
                   fontFamily: designTokens.typography.fontFamily.display,
@@ -140,7 +140,7 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
               </h1>
 
               <p
-                className="text-lg text-muted-foreground max-w-3xl mb-6 leading-relaxed"
+                className="max-w-3xl mb-6"
                 data-testid="project-description"
                 style={{
                   fontSize: designTokens.typography.fontSize.lg,
@@ -191,7 +191,7 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
                 style={{ marginBottom: designTokens.spacing['2xl'] }}
               >
                 <h2
-                  className="text-2xl font-semibold text-foreground mb-6"
+                  className="mb-6"
                   style={{
                     fontSize: designTokens.typography.fontSize['2xl'],
                     fontWeight: designTokens.typography.fontWeight.semibold,
@@ -224,14 +224,12 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
                         </span>
                       </div>
                       <div className="space-y-1">
-                        <p className="text-2xl font-semibold tracking-tight">
+                        <p className="tracking-tight">
                           {typeof metric.value === 'number'
                             ? metric.value.toLocaleString()
                             : metric.value}
                         </p>
-                        {metric.subtitle && (
-                          <p className="text-sm text-muted-foreground">{metric.subtitle}</p>
-                        )}
+                        {metric.subtitle && <p>{metric.subtitle}</p>}
                       </div>
                     </div>
                   ))}

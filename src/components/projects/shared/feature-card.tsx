@@ -14,7 +14,7 @@ export interface FeatureCardProps {
 export function FeatureCard({ title, children, className }: FeatureCardProps) {
   return (
     <div className={cn('bg-muted/50 rounded-xl p-6 border border-border', className)}>
-      <h3 className={'font-semibold mb-3'}>{title}</h3>
+      <h3 className={'mb-3'}>{title}</h3>
       {children}
     </div>
   )

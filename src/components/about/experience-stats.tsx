@@ -39,10 +39,8 @@ export function ExperienceStats({ stats, className = '' }: ExperienceStatsProps)
   return (
     <section className={className}>
       <div className="text-center mb-12">
-        <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-4">
-          Impact & Experience
-        </h2>
-        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+        <h2 className="mb-4">Impact & Experience</h2>
+        <p className="max-w-3xl mx-auto">
           Proven track record of driving revenue growth and operational excellence
         </p>
       </div>
@@ -74,7 +72,7 @@ function ExperienceStatCard({ stat }: ExperienceStatCardProps) {
         <div className="font-display text-xl @sm:text-2xl font-bold text-foreground mb-2">
           <AnimatedCounter value={stat.value} duration={2000} />
         </div>
-        <p className="text-xs @sm:text-sm font-medium text-muted-foreground">{stat.label}</p>
+        <p>{stat.label}</p>
       </CardContent>
     </Card>
   )

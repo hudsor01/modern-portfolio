@@ -61,11 +61,11 @@ export function FeatureListGrid({
               key={item.title}
               className="bg-card border border-border rounded-xl p-6 hover:border-primary/50 transition-all"
             >
-              <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <h3 className="mb-3 flex items-center gap-2">
                 {Icon && <Icon className="h-5 w-5 text-primary" />}
                 {item.title}
               </h3>
-              <p className="text-muted-foreground mb-4">{item.description}</p>
+              <p className="mb-4">{item.description}</p>
               <ul className="space-y-2">
                 {item.bullets.map((bullet) => (
                   <li key={bullet} className="flex items-start gap-2 text-sm">
@@ -95,7 +95,7 @@ export function FeatureListGrid({
               >
                 {stat.value}
               </div>
-              <p className="text-muted-foreground">{stat.label}</p>
+              <p>{stat.label}</p>
             </div>
           ))}
         </div>

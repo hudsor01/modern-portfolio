@@ -34,7 +34,7 @@ export function Navbar() {
                   <Link
                     key={getRouteKey(item.href, index)}
                     href={asRoute(item.href)}
-                    className={`relative text-base font-medium transition-all duration-300 ease-out px-4 py-2 rounded-lg ${
+                    className={`relative text-base transition-all duration-300 ease-out px-4 py-2 rounded-lg ${
                       pathname === item.href
                         ? 'text-primary bg-primary/5'
                         : 'text-muted-foreground hover:text-foreground hover:bg-muted'
@@ -71,7 +71,7 @@ export function Navbar() {
             {pathname !== '/contact' && (
               <Link
                 href="/contact"
-                className="bg-primary text-primary-foreground text-sm font-medium px-4 py-2 rounded-lg transition-all duration-300 ease-out shadow-sm hover:bg-primary/95 hover:shadow-md"
+                className="bg-primary text-primary-foreground text-sm px-4 py-2 rounded-lg transition-all duration-300 ease-out shadow-sm hover:bg-primary/95 hover:shadow-md"
               >
                 Let's Talk
               </Link>
@@ -95,7 +95,7 @@ export function Navbar() {
                 key={getRouteKey(item.href, index)}
                 href={asRoute(item.href)}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`block w-full text-left px-4 py-3 rounded-lg transition-all duration-300 ease-out text-base font-medium min-h-[44px] flex items-center ${
+                className={`block w-full text-left px-4 py-3 rounded-lg transition-all duration-300 ease-out text-base min-h-[44px] flex items-center ${
                   pathname === item.href
                     ? 'text-primary bg-primary/5'
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted'
@@ -108,7 +108,7 @@ export function Navbar() {
               <Link
                 href="/contact"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full bg-primary text-primary-foreground text-base font-medium px-4 py-3 rounded-lg transition-all duration-300 ease-out shadow-sm hover:bg-primary/95 min-h-[44px] flex items-center justify-center"
+                className="w-full bg-primary text-primary-foreground text-base px-4 py-3 rounded-lg transition-all duration-300 ease-out shadow-sm hover:bg-primary/95 min-h-[44px] flex items-center justify-center"
               >
                 Let's Talk
               </Link>

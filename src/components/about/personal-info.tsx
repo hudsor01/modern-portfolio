@@ -27,23 +27,16 @@ export function PersonalInfo({ personalInfo, className = '' }: PersonalInfoProps
         <div className="space-y-8">
           <div>
             <AvailabilityBadge className="mb-6" />
-            <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-foreground">
-              {personalInfo.name}
-            </h1>
+            <h1 className="mb-4">{personalInfo.name}</h1>
 
-            <h2 className="text-xl lg:text-2xl font-semibold text-primary mb-6">
-              {personalInfo.title}
-            </h2>
+            <h2 className="mb-6">{personalInfo.title}</h2>
 
             <ContactInfo personalInfo={personalInfo} />
           </div>
 
           <div className="prose prose-lg max-w-none">
             {personalInfo.bio.split('\n\n').map((paragraph, index) => (
-              <p
-                key={index}
-                className="text-lg leading-relaxed text-muted-foreground mb-4 last:mb-0"
-              >
+              <p key={index} className="mb-4 last:mb-0">
                 {paragraph}
               </p>
             ))}

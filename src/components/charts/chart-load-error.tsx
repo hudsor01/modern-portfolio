@@ -14,7 +14,7 @@ export function ChartLoadError({ height = 'sm' }: { height?: 'sm' | 'md' | 'lg' 
         'flex items-center justify-center bg-destructive/10 rounded-lg border border-destructive/20'
       )}
     >
-      <p className="text-destructive text-sm">Failed to load chart</p>
+      <p>Failed to load chart</p>
     </div>
   )
 }

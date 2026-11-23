@@ -144,11 +144,11 @@ const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
           </div>
 
           <div className="space-y-1">
-            <p className="text-2xl font-semibold tracking-tight">
+            <p className="tracking-tight">
               {typeof value === 'number' ? value.toLocaleString() : value}
             </p>
 
-            {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+            {subtitle && <p>{subtitle}</p>}
 
             {trend && (
               <div className={cn(trendVariants({ direction: trend.direction }))}>

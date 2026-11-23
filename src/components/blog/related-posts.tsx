@@ -76,7 +76,7 @@ export async function RelatedPosts({ currentSlug, currentTags, limit = 3 }: Rela
 
   return (
     <aside className="mt-16 pt-12 border-t border-border" aria-labelledby="related-posts-heading">
-      <h2 id="related-posts-heading" className="text-2xl font-semibold mb-6 text-foreground">
+      <h2 id="related-posts-heading" className="mb-6">
         Related reading
       </h2>
       <div className="grid md:grid-cols-3 gap-6">
@@ -86,12 +86,8 @@ export async function RelatedPosts({ currentSlug, currentTags, limit = 3 }: Rela
             href={`/blog/${post.slug}`}
             className="group rounded-xl border border-border bg-card p-5 hover:border-primary transition-colors"
           >
-            <h3 className="font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
-              {post.title}
-            </h3>
-            {post.excerpt && (
-              <p className="text-sm text-muted-foreground line-clamp-2">{post.excerpt}</p>
-            )}
+            <h3 className="mb-2 transition-colors">{post.title}</h3>
+            {post.excerpt && <p className="line-clamp-2">{post.excerpt}</p>}
           </Link>
         ))}
       </div>

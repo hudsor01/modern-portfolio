@@ -57,8 +57,8 @@ interface ChartHeaderProps {
 const ChartHeader: React.FC<ChartHeaderProps> = ({ title, description, actions }) => (
   <div className="flex items-center justify-between">
     <div className="space-y-1">
-      <h3 className="text-lg font-semibold leading-none tracking-tight">{title}</h3>
-      {description && <p className="text-sm text-muted-foreground">{description}</p>}
+      <h3>{title}</h3>
+      {description && <p>{description}</p>}
     </div>
     {actions && actions.length > 0 && (
       <div className="flex gap-2">
@@ -155,8 +155,8 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
             >
               <AlertCircle className="h-8 w-8" />
               <div className="text-center space-y-2">
-                <p className="font-medium">Failed to load chart</p>
-                <p className="text-sm text-muted-foreground">{error}</p>
+                <p>Failed to load chart</p>
+                <p>{error}</p>
                 {onRetry && (
                   <Button variant="outline" size="sm" onClick={onRetry} className="mt-2">
                     <RefreshCw className="h-4 w-4 mr-2" />

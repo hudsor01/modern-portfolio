@@ -60,19 +60,17 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Brand / intro column */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="font-display text-lg font-semibold text-foreground">
+            <Link href="/" className="font-display text-lg text-foreground">
               Richard Hudson
             </Link>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-2">
               Revenue Operations — forecasting, pipeline, and GTM analytics for B2B SaaS.
             </p>
           </div>
 
           {FOOTER_SECTIONS.map((section) => (
             <nav key={section.heading} aria-label={section.heading}>
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground">
-                {section.heading}
-              </h2>
+              <h2 className="uppercase">{section.heading}</h2>
               <ul className="mt-3 space-y-2">
                 {section.links.map((link) => (
                   <li key={link.href}>

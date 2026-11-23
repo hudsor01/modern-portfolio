@@ -200,9 +200,7 @@ export function ChartWrapper({
 
       <ChartContainer size={size}>{children}</ChartContainer>
 
-      {caption && (
-        <p className="text-center text-sm italic text-muted-foreground mt-4">{caption}</p>
-      )}
+      {caption && <p className="text-center italic mt-4">{caption}</p>}
     </div>
   )
 }

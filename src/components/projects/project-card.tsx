@@ -80,14 +80,10 @@ export const ProjectCard = React.memo(function ProjectCard({
             )}
 
             {/* Title - Better contrast */}
-            <h3 className="font-display text-xl lg:text-2xl font-semibold text-foreground mb-3 leading-tight transition-colors duration-300 ease-out group-hover:text-primary">
-              {project.title}
-            </h3>
+            <h3 className="mb-3 transition-colors duration-300 ease-out">{project.title}</h3>
 
             {/* Description - Improved contrast */}
-            <p className="text-foreground/70 text-sm lg:text-base leading-relaxed line-clamp-2 mb-5">
-              {project.description}
-            </p>
+            <p className="line-clamp-2 mb-5">{project.description}</p>
 
             {/* Metrics Row - Text only, no icons */}
             {Array.isArray(project.displayMetrics) && project.displayMetrics.length > 0 && (

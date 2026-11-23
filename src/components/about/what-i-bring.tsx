@@ -67,10 +67,8 @@ export function WhatIBring({ className = '' }: WhatIBringProps) {
   return (
     <section className={className}>
       <div className="text-center mb-12">
-        <h2 className="font-display text-3xl lg:text-4xl font-semibold text-foreground mb-4">
-          What I Bring to Your Team
-        </h2>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+        <h2 className="mb-4">What I Bring to Your Team</h2>
+        <p className="max-w-2xl mx-auto">
           Beyond technical skills and certifications—the mindset and approach that drives results
         </p>
       </div>
@@ -88,10 +86,8 @@ export function WhatIBring({ className = '' }: WhatIBringProps) {
                   <item.icon className={`h-6 w-6 ${item.color}`} />
                 </div>
               </div>
-              <h3 className="font-display text-xl font-semibold text-foreground mb-3">
-                {item.title}
-              </h3>
-              <p className="text-muted-foreground leading-relaxed">{item.description}</p>
+              <h3 className="mb-3">{item.title}</h3>
+              <p>{item.description}</p>
             </CardContent>
           </Card>
         ))}

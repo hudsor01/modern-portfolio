@@ -127,7 +127,7 @@ export default function HomePageContent() {
 
                 {/* Main Headline */}
                 <div className="space-y-4">
-                  <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-[1.1] tracking-tight">
+                  <h1>
                     Transforming{' '}
                     <span className="relative">
                       <span className="relative z-10 text-primary">Revenue</span>
@@ -136,7 +136,7 @@ export default function HomePageContent() {
                     <br />
                     Operations
                   </h1>
-                  <p className="text-xl md:text-2xl text-muted-foreground max-w-lg leading-relaxed">
+                  <p className="max-w-lg">
                     Data-driven strategies that deliver{' '}
                     <span className="text-accent font-semibold">measurable impact</span> and
                     scalable growth.
@@ -205,9 +205,9 @@ export default function HomePageContent() {
                         </div>
                       </div>
                       <div>
-                        <h2 className="text-2xl font-bold text-foreground">Richard Hudson</h2>
-                        <p className="text-muted-foreground font-medium">Revenue Operations</p>
-                        <p className="text-sm text-muted-foreground mt-1">Dallas, TX</p>
+                        <h2>Richard Hudson</h2>
+                        <p>Revenue Operations</p>
+                        <p className="mt-1">Dallas, TX</p>
                       </div>
                     </div>
 
@@ -256,10 +256,8 @@ export default function HomePageContent() {
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             {/* Section header */}
             <div className="text-center mb-10">
-              <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
-                Proven Results
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              <h2 className="mb-4">Proven Results</h2>
+              <p className="max-w-2xl mx-auto">
                 Delivering measurable business outcomes through strategic RevOps initiatives
               </p>
             </div>
@@ -306,12 +304,12 @@ export default function HomePageContent() {
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               {/* Left - Text content */}
               <div className="space-y-6">
-                <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground leading-tight">
+                <h2>
                   Strategic Revenue Operations
                   <br />
                   <span className="text-primary">That Scales</span>
                 </h2>
-                <p className="text-lg text-muted-foreground leading-relaxed">
+                <p>
                   I specialize in building and optimizing revenue operations systems that drive
                   predictable growth. From CRM implementation to sales automation, I create
                   data-driven solutions that align sales, marketing, and customer success teams.
@@ -347,10 +345,8 @@ export default function HomePageContent() {
                   <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
                     <div className="w-3 h-3 rounded-full bg-primary" />
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    Data-Driven Insights
-                  </h3>
-                  <p className="text-muted-foreground">
+                  <h3 className="mb-2">Data-Driven Insights</h3>
+                  <p>
                     Transform raw data into actionable intelligence that drives revenue decisions.
                   </p>
                 </div>
@@ -359,20 +355,16 @@ export default function HomePageContent() {
                   <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center mb-4">
                     <div className="w-3 h-3 rounded-full bg-secondary" />
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">Process Automation</h3>
-                  <p className="text-muted-foreground">
-                    Eliminate manual work and scale operations with intelligent automation.
-                  </p>
+                  <h3 className="mb-2">Process Automation</h3>
+                  <p>Eliminate manual work and scale operations with intelligent automation.</p>
                 </div>
 
                 <div className="group p-6 bg-card border border-border rounded-2xl hover:border-accent/30 hover:shadow-lg transition-all duration-300">
                   <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
                     <div className="w-3 h-3 rounded-full bg-accent" />
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">System Integration</h3>
-                  <p className="text-muted-foreground">
-                    Connect your tech stack for seamless data flow and unified reporting.
-                  </p>
+                  <h3 className="mb-2">System Integration</h3>
+                  <p>Connect your tech stack for seamless data flow and unified reporting.</p>
                 </div>
               </div>
             </div>
@@ -386,10 +378,8 @@ export default function HomePageContent() {
         <section className="relative py-16 lg:py-24">
           <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
             <div className="mb-12">
-              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                Featured Work
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl">
+              <h2 className="mb-4">Featured Work</h2>
+              <p className="max-w-2xl">
                 Selected revenue operations projects with measured business impact.
               </p>
             </div>
@@ -398,51 +388,35 @@ export default function HomePageContent() {
                 href="/projects/revenue-kpi"
                 className="group rounded-2xl border border-border bg-card p-6 hover:border-primary transition-colors"
               >
-                <h3 className="text-xl font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
-                  Revenue Operations Dashboard
-                </h3>
-                <p className="text-muted-foreground">
-                  Real-time revenue tracking and forecasting platform with advanced analytics.
-                </p>
+                <h3 className="mb-2 transition-colors">Revenue Operations Dashboard</h3>
+                <p>Real-time revenue tracking and forecasting platform with advanced analytics.</p>
               </Link>
               <Link
                 href="/projects/forecast-pipeline-intelligence"
                 className="group rounded-2xl border border-border bg-card p-6 hover:border-primary transition-colors"
               >
-                <h3 className="text-xl font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
-                  Forecast & Pipeline Intelligence
-                </h3>
-                <p className="text-muted-foreground">
-                  Predictive forecasting improving accuracy by 31% and reducing slippage 26%.
-                </p>
+                <h3 className="mb-2 transition-colors">Forecast & Pipeline Intelligence</h3>
+                <p>Predictive forecasting improving accuracy by 31% and reducing slippage 26%.</p>
               </Link>
               <Link
                 href="/projects/partnership-program-implementation"
                 className="group rounded-2xl border border-border bg-card p-6 hover:border-primary transition-colors"
               >
-                <h3 className="text-xl font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
-                  Partnership Program Implementation
-                </h3>
-                <p className="text-muted-foreground">
-                  Built first partnership program from scratch with 90%+ automation.
-                </p>
+                <h3 className="mb-2 transition-colors">Partnership Program Implementation</h3>
+                <p>Built first partnership program from scratch with 90%+ automation.</p>
               </Link>
               <Link
                 href="/projects/sales-enablement"
                 className="group rounded-2xl border border-border bg-card p-6 hover:border-primary transition-colors"
               >
-                <h3 className="text-xl font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
-                  Sales Enablement Platform
-                </h3>
-                <p className="text-muted-foreground">
-                  Training and coaching platform increasing win rates by 34%.
-                </p>
+                <h3 className="mb-2 transition-colors">Sales Enablement Platform</h3>
+                <p>Training and coaching platform increasing win rates by 34%.</p>
               </Link>
             </div>
             <div className="text-center">
               <Link
                 href="/projects"
-                className="group inline-flex items-center gap-2 text-primary hover:underline font-medium"
+                className="group inline-flex items-center gap-2 text-primary hover:underline"
               >
                 View all projects
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -462,12 +436,12 @@ export default function HomePageContent() {
             <div className="space-y-6">
               {/* Main headline */}
               <div>
-                <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight">
+                <h2>
                   Ready to transform your
                   <br />
                   <span className="text-primary">revenue operations?</span>
                 </h2>
-                <p className="text-lg text-muted-foreground mt-4 max-w-2xl mx-auto">
+                <p className="mt-4 max-w-2xl mx-auto">
                   Whether you're scaling a startup or optimizing enterprise operations, let's
                   discuss how I can help drive measurable growth.
                 </p>
@@ -496,11 +470,11 @@ export default function HomePageContent() {
               </div>
 
               {/* Email as subtle text link */}
-              <p className="text-muted-foreground text-sm">
+              <p>
                 Or email me directly at{' '}
                 <a
                   href="mailto:hudsor01@icloud.com"
-                  className="text-primary hover:text-primary/80 font-medium transition-colors"
+                  className="text-primary hover:text-primary/80 transition-colors"
                 >
                   hudsor01@icloud.com
                 </a>
@@ -522,13 +496,11 @@ export default function HomePageContent() {
                   />
                 </div>
                 <div>
-                  <p className="text-foreground font-semibold">Richard Hudson</p>
-                  <p className="text-muted-foreground text-sm">Revenue Operations Professional</p>
+                  <p>Richard Hudson</p>
+                  <p>Revenue Operations Professional</p>
                 </div>
               </div>
-              <p className="text-muted-foreground text-sm">
-                Based in Dallas, TX • Open to remote opportunities
-              </p>
+              <p>Based in Dallas, TX • Open to remote opportunities</p>
             </div>
           </div>
         </section>

@@ -40,7 +40,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
             <Mail className="w-5 h-5 flex-shrink-0 text-primary" />
             <span>
               This form requires JavaScript. Please email{' '}
-              <a href="mailto:hudsor01@icloud.com" className="underline font-medium">
+              <a href="mailto:hudsor01@icloud.com" className="underline">
                 hudsor01@icloud.com
               </a>{' '}
               directly.
@@ -197,7 +197,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-4 px-6 rounded-xl transition-all duration-300 ease-out flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group shadow-sm hover:shadow-md"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 px-6 rounded-xl transition-all duration-300 ease-out flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group shadow-sm hover:shadow-md"
           >
             {isSubmitting ? (
               <>
@@ -229,7 +229,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
             </div>
           )}
 
-          <p className="typography-small font-normal leading-relaxed text-muted-foreground text-center">
+          <p className="typography-small text-center">
             By sending, your name, email and message are used only to reply to you. See the{' '}
             {/* New tab so reading the policy doesn't discard what's been typed. */}
             <Link
