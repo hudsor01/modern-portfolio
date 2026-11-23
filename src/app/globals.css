@@ -75,10 +75,6 @@ label[for],
     color: var(--color-foreground);
   }
 
-  .dark .blog-content h1 {
-    color: white;
-  }
-
   .blog-content h2 {
     scroll-margin-top: 5rem;
     font-size: var(--font-size-2xl);
@@ -87,10 +83,6 @@ label[for],
     margin-top: 2rem;
     margin-bottom: 1rem;
     color: var(--color-foreground);
-  }
-
-  .dark .blog-content h2 {
-    color: white;
   }
 
   .blog-content h3 {
@@ -103,10 +95,6 @@ label[for],
     color: var(--color-foreground);
   }
 
-  .dark .blog-content h3 {
-    color: white;
-  }
-
   .blog-content h4 {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
@@ -115,17 +103,8 @@ label[for],
     color: var(--color-foreground);
   }
 
-  .dark .blog-content h4 {
-    color: white;
-  }
-
   .blog-content p {
     margin-bottom: 1rem;
-    color: var(--color-muted-foreground);
-  }
-
-  .dark .blog-content p {
-    font-size: var(--font-size-sm);
     color: var(--color-muted-foreground);
   }
 
@@ -136,18 +115,10 @@ label[for],
     color: var(--color-muted-foreground);
   }
 
-  .dark .blog-content ul {
-    color: var(--color-muted-foreground);
-  }
-
   .blog-content ol {
     list-style-type: decimal;
     list-style-position: inside;
     margin-bottom: 1rem;
-    color: var(--color-muted-foreground);
-  }
-
-  .dark .blog-content ol {
     color: var(--color-muted-foreground);
   }
 
@@ -165,10 +136,6 @@ label[for],
     color: var(--color-muted-foreground);
   }
 
-  .dark .blog-content blockquote {
-    background-color: var(--color-primary-bg);
-    color: var(--color-muted-foreground);
-  }
   .blog-content img {
     border-radius: 0.5rem;
     margin: 1.5rem 0;
@@ -186,10 +153,6 @@ label[for],
     overflow: hidden;
   }
 
-  .dark .blog-content table {
-    border-color: var(--color-border);
-  }
-
   .blog-content th,
   .blog-content td {
     border: 1px solid var(--color-border);
@@ -197,18 +160,9 @@ label[for],
     text-align: left;
   }
 
-  .dark .blog-content th,
-  .dark .blog-content td {
-    border-color: var(--color-border);
-  }
-
   .blog-content th {
     background-color: var(--color-muted);
     font-weight: 600;
-  }
-
-  .dark .blog-content th {
-    background-color: var(--color-card);
   }
 
   .blog-content hr {
@@ -216,9 +170,6 @@ label[for],
     border-color: var(--color-border);
   }
 
-  .dark .blog-content hr {
-    border-color: var(--color-border);
-  }
 }
 
 /* ============================================
@@ -265,8 +216,6 @@ label[for],
    explicit for use in project galleries. */
 .aspect-square { aspect-ratio: 1 / 1; }
 .aspect-video { aspect-ratio: 16 / 9; }
-
-@custom-variant dark (&:is(.dark *));
 
 @theme {
   --font-family-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;

@@ -41,7 +41,7 @@ type ChartEventHandler = (event: ChartClickEvent) => void
 type ChartMouseEventHandler = (event: ChartMouseEvent) => void
 
 // Format: { THEME_NAME: CSS_SELECTOR }
-const THEMES = { light: '', dark: '.dark' } as const
+const THEMES = { light: '' } as const
 
 export type ChartThemeConfig = {
   [k in string]: {

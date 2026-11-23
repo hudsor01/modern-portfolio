@@ -38,7 +38,7 @@ export function PersonalInfo({ personalInfo, className = '' }: PersonalInfoProps
             <ContactInfo personalInfo={personalInfo} />
           </div>
 
-          <div className="prose prose-lg dark:prose-invert max-w-none">
+          <div className="prose prose-lg max-w-none">
             {personalInfo.bio.split('\n\n').map((paragraph, index) => (
               <p
                 key={index}
@@ -82,7 +82,7 @@ interface ContactInfoProps {
 
 function ContactInfo({ personalInfo }: ContactInfoProps) {
   return (
-    <div className="flex flex-wrap items-center gap-6 text-muted-foreground dark:text-muted-foreground">
+    <div className="flex flex-wrap items-center gap-6 text-muted-foreground">
       <div className="flex items-center gap-2">
         <MapPin className="h-5 w-5 text-primary" />
         <span>{personalInfo.location}</span>

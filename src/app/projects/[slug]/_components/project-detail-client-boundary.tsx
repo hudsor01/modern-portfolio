@@ -151,7 +151,7 @@ export default function ProjectDetailClientBoundary({
             <div className="container mx-auto px-6 mb-16">
               <div className="max-w-4xl mx-auto">
                 <SectionCard title="Overview">
-                  <div className="prose prose-gray dark:prose-invert max-w-none">
+                  <div className="prose prose-gray max-w-none">
                     <p className="text-lg leading-relaxed">{project.longDescription}</p>
                   </div>
                 </SectionCard>
