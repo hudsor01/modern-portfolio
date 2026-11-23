@@ -372,3 +372,43 @@ test.describe('Blog SEO and Meta', () => {
     expect(types).toContain('BlogPosting')
   })
 })
+
+test.describe('Blog list cards (UI-07)', () => {
+  test.beforeEach(({ browserName }) => {
+    test.skip(browserName !== 'chromium', 'chromium-gated')
+  })
+
+  test('every card has one chip, a 3-line title clamp and a unique cover', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+
+    const checkPage = async (url: string) => {
+      await page.goto(url)
+      const cards = postCards(page)
+      await expect(cards.first()).toBeVisible()
+      const count = await cards.count()
+      for (let i = 0; i < count; i++) {
+        const card = cards.nth(i)
+        const chip = card.locator('span.uppercase.text-primary')
+        await expect(chip).toHaveCount(1)
+        expect(((await chip.textContent()) ?? '').trim().length).toBeGreaterThan(0)
+        await expect(card.locator('h2')).toHaveClass(/line-clamp-3/)
+      }
+      const srcs = await page
+        .locator('main a[href^="/blog/"] img')
+        .evaluateAll((imgs) => imgs.map((img) => img.getAttribute('src')))
+      expect(new Set(srcs).size).toBe(srcs.length)
+    }
+
+    await checkPage('/blog')
+    const next = page.locator('a[href*="page=2"]').first()
+    if ((await next.count()) > 0) await checkPage('/blog?page=2')
+  })
+
+  test('/api/og renders through the image optimizer', async ({ request }) => {
+    const res = await request.get(
+      `/_next/image?url=${encodeURIComponent('/api/og?title=Probe&category=Revenue Operations')}&w=640&q=75`
+    )
+    expect(res.status()).toBe(200)
+    expect(res.headers()['content-type']).toMatch(/^image\//)
+  })
+})
