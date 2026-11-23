@@ -18,6 +18,34 @@ describe('ImageWithFallback', () => {
     expect(src).toContain('/api/og?title=A')
   })
 
+  it('letterboxes /api/og cards instead of cropping their text', () => {
+    const { container } = render(
+      <ImageWithFallback
+        src="/api/og?title=A&category=B"
+        fallbackSrc="/api/og?title=A"
+        alt=""
+        fill
+        className="object-cover"
+      />
+    )
+    const img = container.querySelector('img') as HTMLImageElement
+    expect(img.style.objectFit).toBe('contain')
+    expect(img.style.backgroundColor).toBe('rgb(250, 250, 250)')
+  })
+
+  it('leaves ordinary photos to the caller (cropped by object-cover)', () => {
+    const { container } = render(
+      <ImageWithFallback
+        src="https://images.unsplash.com/photo-1"
+        fallbackSrc="/api/og?title=A"
+        alt=""
+        fill
+        className="object-cover"
+      />
+    )
+    expect((container.querySelector('img') as HTMLImageElement).style.objectFit).toBe('')
+  })
+
   it('still optimizes ordinary remote srcs', () => {
     const { container } = render(
       <ImageWithFallback

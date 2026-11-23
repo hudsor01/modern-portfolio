@@ -38,10 +38,18 @@ function FallbackImage({ src, fallbackSrc, ...rest }: ImageWithFallbackProps) {
   const current = errored ? fallbackSrc : src
   // `/_next/image` rejects local srcs carrying a query string (400) unless
   // `images.localPatterns` allows them, and `/api/og` is already a rendered image.
-  const unoptimized = rest.unoptimized || current.startsWith('/api/og')
+  const isOgCard = current.startsWith('/api/og')
+  const unoptimized = rest.unoptimized || isOgCard
+  // An /api/og card is a 1200x630 text layout: letterbox it on its own
+  // #fafafa ground so frames of another aspect never crop its title. Inline
+  // style so it beats a caller's object-cover class.
+  const style = isOgCard
+    ? { ...rest.style, objectFit: 'contain' as const, backgroundColor: '#fafafa' }
+    : rest.style
   return (
     <Image
       {...rest}
+      style={style}
       unoptimized={unoptimized}
       src={current}
       onError={() => {
