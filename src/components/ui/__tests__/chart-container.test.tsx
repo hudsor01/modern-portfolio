@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { render, cleanup } from '@testing-library/react'
-import { ChartContainer } from '../chart-container'
+import { ChartContainer, ChartHeader } from '../chart-container'
 
 describe('ChartContainer heading', () => {
   beforeEach(() => cleanup())
@@ -21,9 +21,11 @@ describe('ChartContainer heading', () => {
     const h = container.querySelector('h3')
     expect(h?.textContent).toBe('T')
     expect(h?.getAttribute('data-slot')).toBe('chart-title')
-    for (const c of ['text-lg', 'font-semibold', 'leading-none', 'tracking-tight']) {
+    for (const c of ['font-sans', 'text-lg', 'font-semibold', 'leading-snug', 'text-foreground']) {
       expect(h?.className).toContain(c)
     }
+    expect(h?.className).not.toContain('leading-none')
+    expect(h?.className).not.toContain('tracking-tight')
   })
 
   it('renders an h2 with headingLevel 2 and does not spread the prop onto the div', () => {
@@ -45,5 +47,49 @@ describe('ChartContainer heading', () => {
     )
     expect(container.querySelector('h2')?.textContent).toBe('T')
     expect(container.querySelector('h3')).toBeNull()
+  })
+
+  it('renders no heading or empty header without a title', () => {
+    const { container } = render(
+      <ChartContainer>
+        <div />
+      </ChartContainer>
+    )
+    expect(container.querySelector('h2, h3')).toBeNull()
+    expect(container.querySelector('[class*="justify-between"]')).toBeNull()
+  })
+
+  it('renders the caption as the card root last child', () => {
+    const { container } = render(
+      <ChartContainer title="T" caption="Foo">
+        <div />
+      </ChartContainer>
+    )
+    const root = container.firstElementChild as HTMLElement
+    const p = root.lastElementChild as HTMLElement
+    expect(p.tagName).toBe('P')
+    expect(p.textContent).toBe('Foo')
+    for (const c of ['text-base', 'text-muted-foreground', 'mt-4']) {
+      expect(p.className).toContain(c)
+    }
+    expect(root.hasAttribute('caption')).toBe(false)
+  })
+
+  it('renders description and merges className in a standalone ChartHeader', () => {
+    const { container } = render(<ChartHeader title="T" description="D" className="extra" />)
+    const root = container.firstElementChild as HTMLElement
+    expect(root.className).toContain('flex items-start justify-between gap-4')
+    expect(root.className).toContain('extra')
+    const p = root.querySelector('p') as HTMLElement
+    expect(p.className).toContain('mt-1')
+  })
+
+  it('uses h-5 w-40 for the loading header skeleton', () => {
+    const { container } = render(
+      <ChartContainer title="T" loading>
+        <div />
+      </ChartContainer>
+    )
+    expect(container.querySelector('.h-5.w-40')).not.toBeNull()
   })
 })

@@ -34,9 +34,12 @@ const chartContainerVariants = cva(
   }
 )
 
-type ChartContainerProps = DesignChartContainerProps &
-  React.HTMLAttributes<HTMLDivElement> &
+type ChartContainerProps = Omit<DesignChartContainerProps, 'title'> &
+  Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> &
   VariantProps<typeof chartContainerVariants> & {
+    title?: string
+    /** Left-aligned footer line under the chart. */
+    caption?: string
     /**
      * Chart box size. `'auto'` skips the CHART_BOX and uses natural height; only for
      * server-rendered, non-lazy content whose height is known at first paint.
@@ -51,11 +54,12 @@ type ChartContainerProps = DesignChartContainerProps &
   }
 
 interface ChartHeaderProps {
-  title: string
+  title?: string
   description?: string
   actions?: DesignChartAction[]
   /** Use 2 when the chart sits directly under the page h1; default 3 sits under an h2 section. */
   headingLevel?: 2 | 3
+  className?: string
 }
 
 const ChartHeader: React.FC<ChartHeaderProps> = ({
@@ -63,22 +67,27 @@ const ChartHeader: React.FC<ChartHeaderProps> = ({
   description,
   actions,
   headingLevel = 3,
+  className,
 }) => {
+  const hasActions = Boolean(actions && actions.length > 0)
+  if (!title && !description && !hasActions) return null
   const Heading = headingLevel === 2 ? 'h2' : 'h3'
   return (
-    <div className="flex items-center justify-between">
-      <div className="space-y-1">
-        <Heading
-          data-slot="chart-title"
-          className="text-lg font-semibold leading-none tracking-tight"
-        >
-          {title}
-        </Heading>
-        {description && <p>{description}</p>}
+    <div className={cn('flex items-start justify-between gap-4', className)}>
+      <div>
+        {title && (
+          <Heading
+            data-slot="chart-title"
+            className="font-sans text-lg font-semibold leading-snug text-foreground"
+          >
+            {title}
+          </Heading>
+        )}
+        {description && <p className="text-base text-muted-foreground mt-1">{description}</p>}
       </div>
-      {actions && actions.length > 0 && (
+      {hasActions && (
         <div className="flex gap-2">
-          {actions.map((action, index) => (
+          {actions?.map((action, index) => (
             <Button
               key={index}
               variant={action.variant === 'primary' ? 'default' : 'outline'}
@@ -104,6 +113,7 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
       padding,
       title,
       description,
+      caption,
       children,
       size = 'lg',
       loading = false,
@@ -126,7 +136,7 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
             {/* Header skeleton */}
             <div className="flex items-center justify-between">
               <div className="space-y-2">
-                <Skeleton className="h-6 w-48" />
+                <Skeleton className="h-5 w-40" />
                 {description && <Skeleton className="h-4 w-64" />}
               </div>
               {actions && actions.length > 0 && (
@@ -212,6 +222,7 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
             {children}
           </div>
         </div>
+        {caption && <p className="text-base text-muted-foreground mt-4">{caption}</p>}
       </div>
     )
   }
@@ -219,4 +230,4 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
 
 ChartContainer.displayName = 'ChartContainer'
 
-export { ChartContainer }
+export { ChartContainer, ChartHeader }
