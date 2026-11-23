@@ -2,6 +2,7 @@
 
 import Image, { type ImageProps } from 'next/image'
 import { useState } from 'react'
+import { OG_CARD_BACKGROUND } from '@/lib/og-card'
 
 interface ImageWithFallbackProps extends Omit<ImageProps, 'src' | 'onError'> {
   src: string
@@ -41,10 +42,10 @@ function FallbackImage({ src, fallbackSrc, ...rest }: ImageWithFallbackProps) {
   const isOgCard = current.startsWith('/api/og')
   const unoptimized = rest.unoptimized || isOgCard
   // An /api/og card is a 1200x630 text layout: letterbox it on its own
-  // #fafafa ground so frames of another aspect never crop its title. Inline
+  // OG_CARD_BACKGROUND ground so frames of another aspect never crop its title. Inline
   // style so it beats a caller's object-cover class.
   const style = isOgCard
-    ? { ...rest.style, objectFit: 'contain' as const, backgroundColor: '#fafafa' }
+    ? { ...rest.style, objectFit: 'contain' as const, backgroundColor: OG_CARD_BACKGROUND }
     : rest.style
   return (
     <Image

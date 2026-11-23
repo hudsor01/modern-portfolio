@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og'
 import type { NextRequest } from 'next/server'
+import { OG_CARD_BACKGROUND } from '@/lib/og-card'
 
 // No `runtime = 'edge'` declaration — Fluid Compute (Node.js) is the current
 // Vercel default and runs next/og ImageResponse natively. Edge runtime also
@@ -26,7 +27,7 @@ export async function GET(request: NextRequest) {
         flexDirection: 'column',
         width: '1200px',
         height: '630px',
-        backgroundColor: '#fafafa',
+        backgroundColor: OG_CARD_BACKGROUND,
         fontFamily: 'system-ui, -apple-system, sans-serif',
         position: 'relative',
       }}

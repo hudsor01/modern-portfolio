@@ -41,7 +41,7 @@ export default function PartnerGroupPieChart({ groups }: PartnerGroupPieChartPro
   if (!chartData.length) {
     return (
       <ChartCard
-        title={'Partner Revenue Contribution'}
+        title="Partner Revenue Contribution"
         description="No data available"
         size="auto"
         headingLevel={2}
