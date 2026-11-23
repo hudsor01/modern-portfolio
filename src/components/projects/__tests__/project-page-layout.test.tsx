@@ -115,7 +115,10 @@ describe('ProjectPageLayout', () => {
   it('has no second banner: project-header is a div and main is focusable', () => {
     const { container } = render(<ProjectPageLayout {...baseProps} />)
     expect(screen.getByTestId('project-header').tagName).toBe('DIV')
-    expect(container.querySelector('header')).toBeNull()
+    // The only banner is the Navbar's; the layout adds none of its own.
+    const headers = container.querySelectorAll('header')
+    expect(headers.length).toBe(1)
+    expect(headers[0]?.contains(screen.getByTestId('project-header'))).toBe(false)
     const mains = container.querySelectorAll('main#main-content')
     expect(mains.length).toBe(1)
     expect(mains[0]?.getAttribute('tabindex')).toBe('-1')
