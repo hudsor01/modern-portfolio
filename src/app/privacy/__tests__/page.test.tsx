@@ -41,6 +41,7 @@ describe('/privacy page', () => {
     'legitimate interest',
     '24 months',
     'within 30 days',
+    'I delete contact emails from my inbox within 24 months',
     'Resend',
     'Neon',
     'Vercel',
@@ -54,6 +55,7 @@ describe('/privacy page', () => {
     'not kept anywhere',
     'sets no automatic deletion period',
     'until I delete them',
+    'Contact emails are deleted from my inbox',
   ])('does not contain the false line "%s"', (line) => {
     expect(text).not.toContain(line)
   })

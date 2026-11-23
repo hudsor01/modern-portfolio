@@ -7,7 +7,10 @@ import { formatDate } from '@/lib/data-formatters'
 import { generateMetadata as genMeta } from '@/app/shared-metadata'
 import { PRIVACY_POLICY_LAST_UPDATED } from './policy-date'
 
-// Every statement on this page describes what the code does today. When the
+// Statements on this page describe what the code does today, except the ones
+// marked below as owner commitments: manual practices that no code enforces
+// (currently only deleting contact emails from the owner's inbox). Keep those
+// worded as commitments ("I delete ...") and never as automatic behaviour. When the
 // contact flow (src/lib/email-service.ts, including contact storage in
 // persistSubmission/buildContactSubmissionRow), the retention purge
 // (src/app/api/cron/purge-contact-submissions/route.ts and its vercel.json
@@ -221,7 +224,9 @@ export default function PrivacyPage() {
                 Contact submissions stored in the site&apos;s database are deleted automatically
                 once they are 24 months old. A deletion job runs daily.
               </li>
-              <li>Contact emails are deleted from my inbox within 24 months.</li>
+              <li>
+                I delete contact emails from my inbox within 24 months. This is a manual practice.
+              </li>
               <li>
                 Resend, Neon, Vercel and Sentry keep their own records, including backups, for the
                 periods set out in their own policies.
