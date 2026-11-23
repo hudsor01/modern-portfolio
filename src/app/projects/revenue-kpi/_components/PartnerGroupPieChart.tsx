@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { ChartContainer as ChartCard } from '@/components/ui/chart-container'
 import {
   ChartContainer,
   ChartTooltip,
@@ -10,7 +10,6 @@ import {
 import { LazyPieChart as PieChart } from '@/components/charts/lazy-charts'
 import { Pie, Cell } from 'recharts'
 import { chartColors } from '@/lib/charts'
-import { CHART_BOX } from '@/components/charts/chart-skeleton'
 
 const COLORS = [chartColors.primary, chartColors.secondary, chartColors.chart3, chartColors.chart4]
 
@@ -41,44 +40,45 @@ export default function PartnerGroupPieChart({ groups }: PartnerGroupPieChartPro
 
   if (!chartData.length) {
     return (
-      <Card className="portfolio-card">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-xl">Partner Revenue Contribution</CardTitle>
-          <CardDescription>No data available</CardDescription>
-        </CardHeader>
-      </Card>
+      <ChartCard
+        title={'Partner Revenue Contribution'}
+        description="No data available"
+        size="auto"
+        headingLevel={2}
+      >
+        {null}
+      </ChartCard>
     )
   }
 
   return (
-    <Card className="portfolio-card">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-xl">Partner Revenue Contribution</CardTitle>
-        <CardDescription>Revenue distribution by partner tier</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className={CHART_BOX.md}>
-          <PieChart>
-            <Pie
-              data={chartData}
-              cx="50%"
-              cy="50%"
-              innerRadius={60}
-              outerRadius={100}
-              paddingAngle={2}
-              dataKey="value"
-              nameKey="name"
-              label={({ name, value }) => `${name}: ${value}%`}
-              labelLine={{ stroke: chartColors.axis, strokeWidth: 1 }}
-            >
-              {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.fill} />
-              ))}
-            </Pie>
-            <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
-          </PieChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+    <ChartCard
+      title="Partner Revenue Contribution"
+      description="Revenue distribution by partner tier"
+      size="md"
+      headingLevel={2}
+    >
+      <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
+        <PieChart>
+          <Pie
+            data={chartData}
+            cx="50%"
+            cy="50%"
+            innerRadius={60}
+            outerRadius={100}
+            paddingAngle={2}
+            dataKey="value"
+            nameKey="name"
+            label={({ name, value }) => `${name}: ${value}%`}
+            labelLine={{ stroke: chartColors.axis, strokeWidth: 1 }}
+          >
+            {chartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.fill} />
+            ))}
+          </Pie>
+          <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
+        </PieChart>
+      </ChartContainer>
+    </ChartCard>
   )
 }

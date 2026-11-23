@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { ChartContainer as ChartCard } from '@/components/ui/chart-container'
 import {
   ChartContainer,
   ChartTooltip,
@@ -10,7 +10,6 @@ import {
 import { LazyBarChart as BarChart } from '@/components/charts/lazy-charts'
 import { Bar, XAxis, YAxis, CartesianGrid, Cell } from 'recharts'
 import { chartColors } from '@/lib/charts'
-import { CHART_BOX } from '@/components/charts/chart-skeleton'
 import { formatCompactCurrency } from '@/lib/data-formatters'
 
 const chartConfig = {
@@ -48,71 +47,72 @@ export default function TopPartnersChart({ partners }: TopPartnersChartProps) {
 
   if (!chartData.length) {
     return (
-      <Card className="portfolio-card">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-xl">Top Partners</CardTitle>
-          <CardDescription>No data available</CardDescription>
-        </CardHeader>
-      </Card>
+      <ChartCard
+        title={'Top Partners'}
+        description="No data available"
+        size="auto"
+        headingLevel={2}
+      >
+        {null}
+      </ChartCard>
     )
   }
 
   return (
-    <Card className="portfolio-card">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-xl">Top Partners by Revenue</CardTitle>
-        <CardDescription>Leading revenue contributors this period</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className={CHART_BOX.sm}>
-          <BarChart
-            data={chartData}
-            layout="vertical"
-            margin={{ top: 10, right: 30, left: 100, bottom: 10 }}
-          >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              horizontal={true}
-              vertical={false}
-              stroke={chartColors.grid}
-            />
-            <XAxis
-              type="number"
-              stroke={chartColors.axis}
-              tick={{ fill: chartColors.axis, fontSize: 12 }}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(value) => formatCompactCurrency(Number(value))}
-            />
-            <YAxis
-              type="category"
-              dataKey="name"
-              stroke={chartColors.axis}
-              tick={{ fill: chartColors.axis, fontSize: 12 }}
-              tickLine={false}
-              axisLine={false}
-              width={90}
-            />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  formatter={(value, name) => (
-                    <span>
-                      {name}: {formatCompactCurrency(Number(value))}
-                    </span>
-                  )}
-                />
-              }
-              cursor={{ fill: chartColors.primary, fillOpacity: 0.1 }}
-            />
-            <Bar dataKey="revenue" radius={[0, 4, 4, 0]}>
-              {chartData.map((_, index) => (
-                <Cell key={`cell-${index}`} fill={BAR_COLORS[index % BAR_COLORS.length]} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+    <ChartCard
+      title="Top Partners by Revenue"
+      description="Leading revenue contributors this period"
+      size="sm"
+      headingLevel={2}
+    >
+      <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
+        <BarChart
+          data={chartData}
+          layout="vertical"
+          margin={{ top: 10, right: 30, left: 100, bottom: 10 }}
+        >
+          <CartesianGrid
+            strokeDasharray="3 3"
+            horizontal={true}
+            vertical={false}
+            stroke={chartColors.grid}
+          />
+          <XAxis
+            type="number"
+            stroke={chartColors.axis}
+            tick={{ fill: chartColors.axis, fontSize: 12 }}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={(value) => formatCompactCurrency(Number(value))}
+          />
+          <YAxis
+            type="category"
+            dataKey="name"
+            stroke={chartColors.axis}
+            tick={{ fill: chartColors.axis, fontSize: 12 }}
+            tickLine={false}
+            axisLine={false}
+            width={90}
+          />
+          <ChartTooltip
+            content={
+              <ChartTooltipContent
+                formatter={(value, name) => (
+                  <span>
+                    {name}: {formatCompactCurrency(Number(value))}
+                  </span>
+                )}
+              />
+            }
+            cursor={{ fill: chartColors.primary, fillOpacity: 0.1 }}
+          />
+          <Bar dataKey="revenue" radius={[0, 4, 4, 0]}>
+            {chartData.map((_, index) => (
+              <Cell key={`cell-${index}`} fill={BAR_COLORS[index % BAR_COLORS.length]} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ChartContainer>
+    </ChartCard>
   )
 }
