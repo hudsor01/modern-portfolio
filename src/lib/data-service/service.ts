@@ -1,4 +1,5 @@
 import { logger } from '@/lib/logger'
+import { TRANSACTION_GROWTH_VALUE } from '@/lib/stats'
 import type {
   ChurnAnalyticsData,
   LeadAttributionData,
@@ -115,7 +116,9 @@ export class AnalyticsDataService {
     }
 
     logger.info('Generating year-over-year data', { years })
-    const data = generateYearOverYearData(BASE_METRICS, years)
+    const data = generateYearOverYearData(BASE_METRICS, years, undefined, {
+      latestTransactionGrowthPct: TRANSACTION_GROWTH_VALUE,
+    })
 
     if (useCache) {
       this.cache.set(cacheKey, data, 20 * 60 * 1000) // Cache for 20 minutes

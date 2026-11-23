@@ -6,7 +6,8 @@ import { getBaseMetric } from './base'
 export function generateYearOverYearData(
   baseMetrics: Map<string, number>,
   yearsCount: number = 5,
-  rng: () => number = createSeededRandom('year-over-year')
+  rng: () => number = createSeededRandom('year-over-year'),
+  options: { latestTransactionGrowthPct?: number } = {}
 ): YearOverYearData[] {
   const data: YearOverYearData[] = []
   const baseRevenue = getBaseMetric(baseMetrics, 'base_revenue')
@@ -52,6 +53,19 @@ export function generateYearOverYearData(
         cumulative_growth: Math.round(cumulativeGrowth * 1000) / 1000,
       },
     })
+  }
+
+  const pct = options.latestTransactionGrowthPct
+  if (pct !== undefined && data.length >= 2) {
+    const latest = data[data.length - 1]
+    const prev = data[data.length - 2]
+    if (latest && prev) {
+      latest.total_transactions = Math.round(prev.total_transactions * (1 + pct / 100))
+      latest.metadata = {
+        ...latest.metadata,
+        revenue_per_transaction: Math.floor(latest.total_revenue / latest.total_transactions),
+      }
+    }
   }
 
   return data
