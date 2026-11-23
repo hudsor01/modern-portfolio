@@ -19,7 +19,21 @@ export function buildOgCoverUrl(title: string, category: string): string {
 }
 
 /**
- * Second and later posts sharing a cover URL get a deterministic /api/og
+ * Identity of a cover image: host + path, ignoring the query string. The
+ * publishing pipeline reuses one Unsplash photo with different `sig`/size
+ * params, so full-URL equality would miss visible duplicates.
+ */
+function coverKey(url: string): string {
+  try {
+    const parsed = new URL(url, 'https://cover.invalid')
+    return `${parsed.host}${parsed.pathname}`
+  } catch {
+    return url
+  }
+}
+
+/**
+ * Second and later posts sharing a cover image get a deterministic /api/og
  * cover. Returns a new array; replaced entries are new objects.
  */
 export function resolveListCovers<T extends { title: string; featuredImage: string | null }>(
@@ -30,8 +44,9 @@ export function resolveListCovers<T extends { title: string; featuredImage: stri
   return posts.map((post) => {
     const url = post.featuredImage
     if (url === null) return post
-    if (!seen.has(url)) {
-      seen.add(url)
+    const key = coverKey(url)
+    if (!seen.has(key)) {
+      seen.add(key)
       return post
     }
     return { ...post, featuredImage: buildOgCoverUrl(post.title, categoryOf(post)) }

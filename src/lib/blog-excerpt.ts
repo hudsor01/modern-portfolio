@@ -65,7 +65,9 @@ function firstParagraph(content: string): string {
     const trimmed = block.trim()
     if (trimmed === '' || NON_PROSE_START.test(trimmed) || HORIZONTAL_RULE.test(trimmed)) continue
     const plain = stripMarkdownToPlain(trimmed)
-    if (plain.length >= MIN_PARAGRAPH_LENGTH) return plain
+    // Posts that carry the bio excerpt usually open their body with the same
+    // bio paragraph, so it can never be the replacement.
+    if (plain.length >= MIN_PARAGRAPH_LENGTH && !isBioBoilerplate(plain)) return plain
   }
   return ''
 }

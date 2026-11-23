@@ -82,4 +82,20 @@ describe('resolveListCovers', () => {
     expect(out[1]?.featuredImage).toBe(out[2]?.featuredImage)
     expect(out[1]?.featuredImage).toBe(buildOgCoverUrl('Same', 'Cat'))
   })
+  // Production covers reuse one Unsplash photo with a different &sig= value.
+  it('treats the same image with different query strings as a duplicate', () => {
+    const photo = 'https://images.unsplash.com/photo-1552664730-d307ca884978'
+    const posts: P[] = [
+      { title: 'A', featuredImage: `${photo}?w=1200&h=630&fit=crop&q=80&sig=ezlp5i` },
+      { title: 'B', featuredImage: `${photo}?w=1200&h=630&fit=crop&q=80&sig=14g10si` },
+      {
+        title: 'C',
+        featuredImage: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=1200',
+      },
+    ]
+    const out = resolveListCovers(posts, cat).map((p) => p.featuredImage)
+    expect(out[0]).toBe(posts[0]?.featuredImage)
+    expect(out[1]).toBe(buildOgCoverUrl('B', 'Cat'))
+    expect(out[2]).toBe(posts[2]?.featuredImage)
+  })
 })

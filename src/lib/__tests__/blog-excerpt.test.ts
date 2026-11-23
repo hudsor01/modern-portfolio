@@ -80,4 +80,22 @@ describe('resolveExcerpt', () => {
     expect(resolveExcerpt({ excerpt: BIO, content: '' })).toBe('')
     expect(resolveExcerpt({ excerpt: BIO, content: '# One\n\n## Two' })).toBe('')
   })
+  // Real shape from production posts: the body opens with the same bio
+  // paragraph as the excerpt, so the replacement must skip it.
+  it('skips a body paragraph that is itself the bio boilerplate', () => {
+    const content = [
+      '# Re-engagement Campaigns: Bringing Dead Opportunities Back to Life',
+      'I spent six years in the Texas Army National Guard as an Information Technology Specialist, including a deployment to Iraq. I learned quickly that when equipment fails in the field, you fix it.',
+      'Sales pipelines are no different.',
+      'I see too many sales organizations treat "closed-lost" deals as final. They archive them in Salesforce and move on.',
+    ].join('\n\n')
+    const out = resolveExcerpt({ excerpt: BIO, content })
+    expect(out).not.toMatch(/National Guard/)
+    expect(out.startsWith('I see too many sales organizations')).toBe(true)
+  })
+
+  it('returns empty when the only prose is bio boilerplate', () => {
+    const content = `# Title\n\n${BIO} That service included a deployment to Iraq.`
+    expect(resolveExcerpt({ excerpt: BIO, content })).toBe('')
+  })
 })
