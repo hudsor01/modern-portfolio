@@ -3,15 +3,10 @@
 import type React from 'react'
 import Link from 'next/link'
 import { ArrowRight, FileText, Lightbulb, MessageSquare } from 'lucide-react'
-import { REVENUE_IMPACT, TRANSACTION_GROWTH } from '@/lib/stats'
 
-interface ProjectCTASectionProps {
-  totalProjects: number
-}
-
-export const ProjectCTASection: React.FC<ProjectCTASectionProps> = ({ totalProjects }) => {
+export const ProjectCTASection: React.FC = () => {
   return (
-    <section className="mt-32 mb-16">
+    <section className="mt-16 mb-16">
       {/* Section Header */}
       <div className="text-center mb-12">
         <h2 className="mb-4">Let&apos;s Work Together</h2>
@@ -72,32 +67,6 @@ export const ProjectCTASection: React.FC<ProjectCTASectionProps> = ({ totalProje
             <ArrowRight className="w-4 h-4 transition-transform duration-300 ease-out group-hover:translate-x-1" />
           </span>
         </Link>
-      </div>
-
-      {/* Bottom Stats Bar */}
-      <div className="mt-16 pt-12 border-t border-border">
-        <div className="flex flex-wrap justify-center gap-8 lg:gap-16 text-center">
-          <div>
-            <div className="font-mono text-3xl lg:text-4xl font-bold text-foreground mb-1">
-              {REVENUE_IMPACT}
-            </div>
-            <div className="text-sm text-muted-foreground">Revenue Impact</div>
-          </div>
-          <div className="hidden sm:block w-px bg-border" />
-          <div>
-            <div className="font-mono text-3xl lg:text-4xl font-bold text-foreground mb-1">
-              {TRANSACTION_GROWTH}
-            </div>
-            <div className="text-sm text-muted-foreground">Average Growth</div>
-          </div>
-          <div className="hidden sm:block w-px bg-border" />
-          <div>
-            <div className="font-mono text-3xl lg:text-4xl font-bold text-foreground mb-1">
-              {totalProjects}+
-            </div>
-            <div className="text-sm text-muted-foreground">Case Studies</div>
-          </div>
-        </div>
       </div>
     </section>
   )

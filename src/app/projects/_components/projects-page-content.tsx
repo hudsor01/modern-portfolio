@@ -192,7 +192,7 @@ export function ProjectsPageContent({ initialProjects }: ProjectsPageContentProp
         </section>
 
         {/* CTA Section */}
-        <ProjectCTASection totalProjects={sortedProjects.length} />
+        <ProjectCTASection />
       </div>
     </main>
   )
