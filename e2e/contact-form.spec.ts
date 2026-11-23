@@ -64,7 +64,13 @@ test.describe('Contact Form', () => {
     // Click submit with nothing filled
     await page.getByRole('button', { name: /send message/i }).click()
 
-    // Verify validation - form should not submit, still on same page
+    // Wait for a positive validation signal first, so the zero-hits check below
+    // runs after the click was processed rather than vacuously before it. The
+    // fields are natively `required`, so a blocked submit focuses the first
+    // invalid control and flags it as missing a value.
+    const nameInput = page.getByLabel(/^name/i)
+    await expect(nameInput).toBeFocused()
+    expect(await nameInput.evaluate((el: HTMLInputElement) => el.validity.valueMissing)).toBe(true)
     await expect(page).toHaveURL(/\/contact/)
     expect(hits.count).toBe(0)
   })
