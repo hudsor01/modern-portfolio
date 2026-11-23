@@ -47,7 +47,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
               <Button
                 onClick={handleDownload}
                 size="lg"
-                className="h-14 px-8 text-base font-semibold"
+                className="h-14 px-8 text-base font-medium"
               >
                 <Download className="mr-2 h-5 w-5" />
                 Download PDF

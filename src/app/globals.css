@@ -89,7 +89,6 @@ label[for],
 
   .blog-content p {
     margin-bottom: 1rem;
-    color: var(--color-muted-foreground);
   }
 
   .blog-content ul {
@@ -413,41 +412,23 @@ label[for],
   outline-offset: 2px;
 }
 
-p {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-height-relaxed);
-  color: var(--color-muted-foreground);
+/* Skip-link target: programmatically focusable, not an interactive control, so no page-wide ring. */
+main[tabindex="-1"]:focus-visible {
+  outline: none;
 }
 
-small {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-regular);
-}
-
-strong, b {
-  font-weight: var(--font-weight-medium);
-}
-
+/* Transitions stay unlayered on purpose: moving them into @layer base would let the
+   `transition: all` rule at the top of this file win and change every link/button animation. */
 a {
   transition: color var(--motion-duration-fast) var(--motion-ease-out);
-  font-weight: var(--font-weight-regular);
 }
 
 button {
   transition: all var(--motion-duration-normal) var(--motion-ease-out);
-  font-weight: var(--font-weight-medium);
 }
 
 input, textarea, select {
   transition: all var(--motion-duration-normal) var(--motion-ease-out);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-regular);
-}
-
-label {
-  font-weight: var(--font-weight-medium);
-  font-size: var(--font-size-sm);
 }
 
 ::-webkit-scrollbar {
@@ -935,5 +916,39 @@ label {
     text-transform: uppercase;
     line-height: var(--line-height-snug);
     color: var(--color-muted-foreground);
+  }
+
+  p {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-muted-foreground);
+  }
+
+  small {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-regular);
+  }
+
+  strong, b {
+    font-weight: var(--font-weight-medium);
+  }
+
+  a {
+    font-weight: var(--font-weight-regular);
+  }
+
+  button {
+    font-weight: var(--font-weight-medium);
+  }
+
+  input, textarea, select {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-regular);
+  }
+
+  label {
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
   }
 }

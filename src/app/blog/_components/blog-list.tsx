@@ -234,7 +234,7 @@ export function BlogList({
 }
 
 const PAGE_LINK =
-  'inline-flex items-center justify-center min-w-10 h-10 px-3 rounded-lg border text-sm font-medium transition-colors'
+  'inline-flex items-center justify-center min-w-10 h-10 px-3 rounded-lg border text-sm font-normal transition-colors'
 
 function BlogPagination({
   page,
