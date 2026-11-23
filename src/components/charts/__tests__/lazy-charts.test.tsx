@@ -50,4 +50,35 @@ describe('ChartWrapper', () => {
     expect(box).toBeTruthy()
     expect(box.style.height).toBe('')
   })
+
+  it('renders the title as h3 by default and h2 with headingLevel 2', () => {
+    const { container, rerender } = render(
+      <ChartWrapper title="T">
+        <div />
+      </ChartWrapper>
+    )
+    const h3 = container.querySelector('h3')
+    expect(h3?.textContent).toBe('T')
+    expect(h3?.className).toContain('typography-h4')
+    expect(h3?.className).toContain('text-center')
+    expect(h3?.className).toContain('leading-snug')
+    rerender(
+      <ChartWrapper title="T" headingLevel={2}>
+        <div />
+      </ChartWrapper>
+    )
+    expect(container.querySelector('h3')).toBeNull()
+    const h2 = container.querySelector('h2')
+    expect(h2?.textContent).toBe('T')
+    expect(h2?.className).toContain('leading-snug')
+  })
+
+  it('renders no heading without a title', () => {
+    const { container } = render(
+      <ChartWrapper>
+        <div />
+      </ChartWrapper>
+    )
+    expect(container.querySelector('h2, h3')).toBeNull()
+  })
 })

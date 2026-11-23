@@ -185,6 +185,8 @@ interface ChartWrapperProps {
   caption?: string
   size?: ChartBoxSize
   className?: string
+  /** Use 2 when the chart sits directly under the page h1; default 3 sits under an h2 section. */
+  headingLevel?: 2 | 3
 }
 
 export function ChartWrapper({
@@ -193,10 +195,12 @@ export function ChartWrapper({
   caption,
   size = 'md',
   className = '',
+  headingLevel = 3,
 }: ChartWrapperProps) {
+  const Heading = headingLevel === 2 ? 'h2' : 'h3'
   return (
     <div className={`space-y-4 ${className}`}>
-      {title && <h3 className="typography-h4 text-center">{title}</h3>}
+      {title && <Heading className="typography-h4 text-center leading-snug">{title}</Heading>}
 
       <ChartContainer size={size}>{children}</ChartContainer>
 

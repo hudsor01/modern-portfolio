@@ -46,38 +46,55 @@ type ChartContainerProps = DesignChartContainerProps &
     error?: string
     actions?: DesignChartAction[]
     onRetry?: () => void
+    /** Use 2 when the chart sits directly under the page h1; default 3 sits under an h2 section. */
+    headingLevel?: 2 | 3
   }
 
 interface ChartHeaderProps {
   title: string
   description?: string
   actions?: DesignChartAction[]
+  /** Use 2 when the chart sits directly under the page h1; default 3 sits under an h2 section. */
+  headingLevel?: 2 | 3
 }
 
-const ChartHeader: React.FC<ChartHeaderProps> = ({ title, description, actions }) => (
-  <div className="flex items-center justify-between">
-    <div className="space-y-1">
-      <h3>{title}</h3>
-      {description && <p>{description}</p>}
-    </div>
-    {actions && actions.length > 0 && (
-      <div className="flex gap-2">
-        {actions.map((action, index) => (
-          <Button
-            key={index}
-            variant={action.variant === 'primary' ? 'default' : 'outline'}
-            size="sm"
-            onClick={action.onClick}
-            disabled={action.disabled}
-          >
-            {action.icon && <action.icon className="h-4 w-4 mr-2" />}
-            {action.label}
-          </Button>
-        ))}
+const ChartHeader: React.FC<ChartHeaderProps> = ({
+  title,
+  description,
+  actions,
+  headingLevel = 3,
+}) => {
+  const Heading = headingLevel === 2 ? 'h2' : 'h3'
+  return (
+    <div className="flex items-center justify-between">
+      <div className="space-y-1">
+        <Heading
+          data-slot="chart-title"
+          className="text-lg font-semibold leading-none tracking-tight"
+        >
+          {title}
+        </Heading>
+        {description && <p>{description}</p>}
       </div>
-    )}
-  </div>
-)
+      {actions && actions.length > 0 && (
+        <div className="flex gap-2">
+          {actions.map((action, index) => (
+            <Button
+              key={index}
+              variant={action.variant === 'primary' ? 'default' : 'outline'}
+              size="sm"
+              onClick={action.onClick}
+              disabled={action.disabled}
+            >
+              {action.icon && <action.icon className="h-4 w-4 mr-2" />}
+              {action.label}
+            </Button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
   (
@@ -93,6 +110,7 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
       error,
       actions,
       onRetry,
+      headingLevel,
       ...props
     },
     ref
@@ -144,7 +162,12 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
           {...props}
         >
           <div className="space-y-4">
-            <ChartHeader title={title} description={description} actions={actions} />
+            <ChartHeader
+              title={title}
+              description={description}
+              actions={actions}
+              headingLevel={headingLevel}
+            />
 
             {/* Error state */}
             <div
@@ -177,7 +200,12 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
         {...props}
       >
         <div className="space-y-4">
-          <ChartHeader title={title} description={description} actions={actions} />
+          <ChartHeader
+            title={title}
+            description={description}
+            actions={actions}
+            headingLevel={headingLevel}
+          />
 
           {/* Chart content */}
           <div className={size === 'auto' ? undefined : cn(CHART_BOX[size], 'overflow-hidden')}>
