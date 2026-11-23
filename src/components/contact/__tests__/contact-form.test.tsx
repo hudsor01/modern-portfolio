@@ -125,6 +125,10 @@ describe('ContactForm', () => {
     expect(link.getAttribute('href')).toBe('/privacy')
     expect(link.getAttribute('target')).toBe('_blank')
     expect(link.getAttribute('rel')).toContain('noopener')
+    // Visible link text has no trailing space (no gap before the period) and never wraps.
+    expect(link.textContent).toBe('Privacy Policy')
+    expect(link.className).toContain('whitespace-nowrap')
+    expect(link.parentElement?.textContent?.endsWith('See the Privacy Policy.')).toBe(true)
   })
 
   it('shows a form-level error between the Send button and the notice', () => {

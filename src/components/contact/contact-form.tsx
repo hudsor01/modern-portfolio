@@ -222,9 +222,10 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
               href="/privacy"
               target="_blank"
               rel="noopener"
-              className="text-primary hover:text-primary/70 underline underline-offset-4"
+              aria-label="Privacy Policy (opens in a new tab)"
+              className="whitespace-nowrap text-primary hover:text-primary/70 underline underline-offset-4"
             >
-              Privacy Policy <span className="sr-only">(opens in a new tab)</span>
+              Privacy Policy
             </Link>
             .
           </p>
