@@ -26,6 +26,9 @@ import {
   parseCategoryParam,
   parsePageParam,
 } from '@/lib/blog-pagination'
+import { resolveExcerpt } from '@/lib/blog-excerpt'
+import { getCategoryChipLabel, resolveListCovers } from '@/lib/blog-list'
+import { BLOG_CONTENT_HEAD_EXTRAS } from '@/lib/blog-content-head'
 import { DecorativeBlob } from '@/components/ui/decorative-blob'
 
 const logger = createContextLogger('BlogIndex')
@@ -123,6 +126,8 @@ interface CardRow {
   excerpt: string | null
   featuredImage: string | null
   publishedAt: Date | null
+  /** Bounded body prefix (server-only); never copied into the list post. */
+  contentHead?: string | null
   category: { name: string } | null
   tags: Array<{ tag: { id: string; name: string } }>
 }
@@ -132,7 +137,7 @@ function toListPost(row: CardRow): BlogListPost {
     id: row.id,
     slug: row.slug,
     title: row.title,
-    excerpt: row.excerpt,
+    excerpt: resolveExcerpt({ excerpt: row.excerpt, content: row.contentHead }) || null,
     featuredImage: row.featuredImage,
     publishedAt: row.publishedAt?.toISOString() ?? null,
     categoryName: row.category?.name ?? null,
@@ -190,6 +195,7 @@ async function getIndexListing(
                 ? and(PUBLIC_POSTS, eq(blogPosts.categoryId, category.id))
                 : PUBLIC_POSTS,
               columns: CARD_COLUMNS,
+              extras: BLOG_CONTENT_HEAD_EXTRAS,
               with: CARD_RELATIONS,
               // `id` breaks publishedAt ties so LIMIT/OFFSET pages never overlap.
               orderBy: [desc(blogPosts.publishedAt), desc(blogPosts.id)],
@@ -210,7 +216,11 @@ async function getIndexListing(
     const total =
       category === undefined ? 0 : (categoryCounts[category ? category.name : ALL_CATEGORIES] ?? 0)
 
-    return { posts: rows.map(toListPost), total, categoryCounts }
+    return {
+      posts: resolveListCovers(rows.map(toListPost), getCategoryChipLabel),
+      total,
+      categoryCounts,
+    }
   } catch (error) {
     logger.error(
       'Blog index posts query failed',
@@ -276,6 +286,7 @@ async function getPostsByIds(ids: string[]): Promise<BlogListPost[]> {
     db.query.blogPosts.findMany({
       where: and(inArray(blogPosts.id, ids), PUBLIC_POSTS),
       columns: CARD_COLUMNS,
+      extras: BLOG_CONTENT_HEAD_EXTRAS,
       with: CARD_RELATIONS,
     })
   )
@@ -320,7 +331,7 @@ async function getSearchListing(
         : posts.filter((post) => post.categoryName === selectedCategory)
 
     return {
-      posts: pageSlice(matching, page),
+      posts: resolveListCovers(pageSlice(matching, page), getCategoryChipLabel),
       total: matching.length,
       categoryCounts,
     }
