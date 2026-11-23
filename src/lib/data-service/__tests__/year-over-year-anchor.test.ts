@@ -41,9 +41,37 @@ describe('year-over-year latestTransactionGrowthPct anchor', () => {
     )
   })
 
-  it('is identical to 12-02 output without options', () => {
-    expect(generateYearOverYearData(BASE_METRICS, 5)).toEqual(
-      generateYearOverYearData(BASE_METRICS, 5, undefined, {})
+  it('keeps revenue_per_transaction coherent: only the anchored year breaks the trend', () => {
+    const pct = 432
+    const data = generateYearOverYearData(BASE_METRICS, 5, undefined, {
+      latestTransactionGrowthPct: pct,
+    })
+    const rpt = data.map((d) => d.metadata?.revenue_per_transaction as number)
+    // Pre-anchor years: revenue and transactions both compound at single-digit to
+    // low-double-digit rates, so the ratio moves by well under 25% a year.
+    for (let i = 1; i < data.length - 1; i++) {
+      expect(Math.abs(rpt[i]! / rpt[i - 1]! - 1)).toBeLessThan(0.25)
+    }
+    // Anchored year: the drop is exactly the revenue ratio over the 5.32x volume
+    // jump (within integer flooring), not an unexplained collapse.
+    const last = data.length - 1
+    const expected = data[last]!.total_revenue / data[last - 1]!.total_revenue / (1 + pct / 100)
+    expect(rpt[last]! / rpt[last - 1]!).toBeCloseTo(expected, 1)
+    expect(rpt[last]!).toBeGreaterThan(0)
+  })
+
+  it('without the option the seeded series is the frozen 12-02 output (no anchor applied)', () => {
+    const data = generateYearOverYearData(BASE_METRICS, 5)
+    expect(data.map((d) => [d.year, d.total_revenue, d.total_transactions])).toEqual([
+      [2022, 10000000, 800],
+      [2023, 11428294, 875],
+      [2024, 12597975, 960],
+      [2025, 14316905, 1021],
+      [2026, 15990660, 1096],
+    ])
+    // An empty options object must not anchor either.
+    expect(generateYearOverYearData(BASE_METRICS, 5, undefined, {})[4]!.total_transactions).toBe(
+      1096
     )
   })
 

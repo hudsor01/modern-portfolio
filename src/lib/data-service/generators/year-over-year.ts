@@ -71,6 +71,15 @@ export function generateYearOverYearData(
     })
   }
 
+  // Anchor: the owner-locked "Volume +432%" figure forces the latest year's
+  // transactions to prev * (1 + pct/100). Revenue (and the growth/commission
+  // figures shown beside it) must not move, so revenue_per_transaction falls by
+  // a factor of (1 + revenueGrowth) / (1 + pct/100) in that one year. That drop
+  // is the unavoidable arithmetic of the anchor, not drift in the generator:
+  // every earlier year's ratio moves only by the small revenue/transaction
+  // growth spread (pinned in year-over-year-anchor.test.ts). The metadata field
+  // is not rendered anywhere; it is recomputed here so it stays equal to
+  // revenue / transactions for the year it describes.
   const pct = options.latestTransactionGrowthPct
   if (pct !== undefined && data.length >= 2) {
     const latest = data[data.length - 1]
