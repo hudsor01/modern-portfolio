@@ -92,4 +92,46 @@ describe('ChartContainer heading', () => {
     )
     expect(container.querySelector('.h-5.w-40')).not.toBeNull()
   })
+
+  it('loading without title/description/actions reserves no header row', () => {
+    const { container } = render(
+      <ChartContainer loading>
+        <div />
+      </ChartContainer>
+    )
+    expect(container.querySelector('.h-5.w-40')).toBeNull()
+    expect(container.querySelector('[class*="justify-between"]')).toBeNull()
+  })
+
+  it('loading marks the card aria-busy', () => {
+    const { container } = render(
+      <ChartContainer title="T" loading>
+        <div />
+      </ChartContainer>
+    )
+    expect((container.firstElementChild as HTMLElement).getAttribute('aria-busy')).toBe('true')
+  })
+
+  it('loading reserves the caption row below the box', () => {
+    const { container } = render(
+      <ChartContainer title="T" caption="Foo" loading>
+        <div />
+      </ChartContainer>
+    )
+    const root = container.firstElementChild as HTMLElement
+    const last = root.lastElementChild as HTMLElement
+    expect(last.className).toContain('mt-4')
+    expect(last.className).toContain('h-6')
+  })
+
+  it('error state renders the caption as the root last child', () => {
+    const { container } = render(
+      <ChartContainer title="T" caption="Foo" error="boom">
+        <div />
+      </ChartContainer>
+    )
+    const p = (container.firstElementChild as HTMLElement).lastElementChild as HTMLElement
+    expect(p.tagName).toBe('P')
+    expect(p.textContent).toBe('Foo')
+  })
 })

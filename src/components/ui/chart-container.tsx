@@ -125,28 +125,36 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
     },
     ref
   ) => {
+    // Mirror ChartHeader: it renders nothing without a title, description or
+    // actions, so the skeleton must not reserve a header row either (no CLS).
+    const hasActions = Boolean(actions && actions.length > 0)
+    const hasHeader = Boolean(title || description || hasActions)
+
     if (loading) {
       return (
         <div
           ref={ref}
+          aria-busy="true"
           className={cn(chartContainerVariants({ variant, padding }), className)}
           {...props}
         >
           <div className="space-y-4">
             {/* Header skeleton */}
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <Skeleton className="h-5 w-40" />
-                {description && <Skeleton className="h-4 w-64" />}
-              </div>
-              {actions && actions.length > 0 && (
-                <div className="flex gap-2">
-                  {actions.map((_, index) => (
-                    <Skeleton key={index} className="h-9 w-20" />
-                  ))}
+            {hasHeader && (
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  {title && <Skeleton className="h-5 w-40" />}
+                  {description && <Skeleton className="h-4 w-64" />}
                 </div>
-              )}
-            </div>
+                {hasActions && (
+                  <div className="flex gap-2">
+                    {actions?.map((_, index) => (
+                      <Skeleton key={index} className="h-9 w-20" />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Chart skeleton */}
             <div
@@ -160,6 +168,8 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
               </div>
             </div>
           </div>
+          {/* Reserve the caption row the loaded card adds below the box. */}
+          {caption && <Skeleton className="mt-4 h-6 w-2/3" />}
         </div>
       )
     }
@@ -199,6 +209,7 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
               </div>
             </div>
           </div>
+          {caption && <p className="text-base text-muted-foreground mt-4">{caption}</p>}
         </div>
       )
     }
