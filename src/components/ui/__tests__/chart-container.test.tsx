@@ -1,10 +1,16 @@
 // @vitest-environment jsdom
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { render, cleanup } from '@testing-library/react'
 import { ChartContainer } from '../chart-container'
 
 describe('ChartContainer heading', () => {
   beforeEach(() => cleanup())
+
+  afterEach(async () => {
+    cleanup()
+    // Let queued React scheduler tasks drain before the environment is torn down.
+    await new Promise((resolve) => setTimeout(resolve, 0))
+  })
 
   it('renders an h3 chart-title by default', () => {
     const { container } = render(

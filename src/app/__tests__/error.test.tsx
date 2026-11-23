@@ -1,6 +1,6 @@
-import { render } from '@testing-library/react'
+import { cleanup, render } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const captureException = vi.hoisted(() => vi.fn())
 vi.mock('@sentry/nextjs', () => ({ captureException }))
@@ -9,6 +9,13 @@ import ErrorPage from '../error'
 import GlobalError from '../global-error'
 
 describe('error boundaries', () => {
+  afterEach(async () => {
+    cleanup()
+    captureException.mockClear()
+    // Let queued React scheduler tasks drain before the environment is torn down.
+    await new Promise((resolve) => setTimeout(resolve, 0))
+  })
+
   it('route error boundary renders one focusable main and one h1', () => {
     const reset = vi.fn()
     const error = new Error('x')

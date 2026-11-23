@@ -60,13 +60,22 @@ test.describe('header', () => {
   test('aria-current marks only the active desktop link', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto('/about')
-    const nav = page.getByRole('navigation', { name: 'Main' }).filter({ visible: true })
+    const nav = page.getByRole('navigation', { name: 'Main', exact: true })
     await expect(nav).toHaveCount(1)
     await expect(nav.getByRole('link', { name: 'About' })).toHaveAttribute('aria-current', 'page')
     await expect(nav.getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current', /.*/)
+    // The active-link underline indicator exists and is hidden from the a11y tree.
     await expect(
-      nav.getByRole('link', { name: 'About' }).locator('span[aria-hidden="true"]').first(),
-    ).toHaveAttribute('aria-hidden', 'true')
+      nav.getByRole('link', { name: 'About' }).locator('span[aria-hidden="true"]'),
+    ).toHaveCount(1)
+  })
+
+  test('aria-current marks the parent section on detail routes', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto('/projects/revenue-kpi')
+    const nav = page.getByRole('navigation', { name: 'Main', exact: true })
+    await expect(nav.getByRole('link', { name: 'Projects' })).toHaveAttribute('aria-current', 'true')
+    await expect(nav.getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current', /.*/)
   })
 
   test('aria-current marks the active mobile link', async ({ page }) => {

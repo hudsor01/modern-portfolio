@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { render, screen, fireEvent, cleanup } from '@testing-library/react'
 
 // Stub next/navigation before importing the component (transitive import).
@@ -10,13 +10,20 @@ vi.mock('next/navigation', () => ({
 import { Navbar } from '../navbar'
 import { navConfig } from '@/lib/site'
 
-describe('Navbar — CTA hidden on /contact', () => {
-  beforeEach(() => {
-    cleanup()
-    vi.resetModules()
-  })
+// globals:false means RTL registers no auto-cleanup. Unmount every render and let
+// queued React scheduler tasks drain before the jsdom environment is torn down;
+// otherwise a late task throws "window is not defined" (flaky "Errors 1 error").
+// doUnmock lives here so a failed assertion cannot leak a pathname mock.
+afterEach(async () => {
+  cleanup()
+  vi.doUnmock('next/navigation')
+  vi.resetModules()
+  await new Promise((resolve) => setTimeout(resolve, 0))
+})
 
+describe('Navbar — CTA hidden on /contact', () => {
   it('does not render the "Let\'s Talk" CTA on the /contact page', async () => {
+    vi.resetModules()
     vi.doMock('next/navigation', () => ({ usePathname: () => '/contact' }))
     const { Navbar: ContactNavbar } = await import('../navbar')
     const { container } = render(<ContactNavbar />)
@@ -24,16 +31,10 @@ describe('Navbar — CTA hidden on /contact', () => {
       container.querySelectorAll<HTMLAnchorElement>('a[href="/contact"]')
     ).filter((a) => a.textContent?.toLowerCase().includes("let's talk"))
     expect(ctas.length).toBe(0)
-    vi.doUnmock('next/navigation')
   })
 })
 
 describe('Navbar — header landmark and semantics', () => {
-  beforeEach(() => {
-    cleanup()
-    vi.resetModules()
-  })
-
   it('root element is a header', () => {
     const { container } = render(<Navbar />)
     expect(container.firstElementChild?.tagName).toBe('HEADER')
@@ -49,29 +50,49 @@ describe('Navbar — header landmark and semantics', () => {
     }
   })
 
-  it('has two Main navs; desktop one holds the link row', () => {
+  it('has distinctly named navs; desktop "Main" holds the link row, mobile is "Main menu"', () => {
     const { container } = render(<Navbar />)
-    const navs = container.querySelectorAll('nav[aria-label="Main"]')
-    expect(navs.length).toBe(2)
-    const list = navs[0]?.querySelector('[data-testid="main-nav-list"]')
+    const desktop = container.querySelectorAll('nav[aria-label="Main"]')
+    expect(desktop.length).toBe(1)
+    const list = desktop[0]?.querySelector('[data-testid="main-nav-list"]')
     expect(list).toBeTruthy()
     expect(list?.querySelectorAll('a').length).toBe(navConfig.mainNav.length)
-    expect(navs[1]?.id).toBe('mobile-menu')
+    const mobile = container.querySelectorAll('nav[aria-label="Main menu"]')
+    expect(mobile.length).toBe(1)
+    expect(mobile[0]?.id).toBe('mobile-menu')
   })
 
   it('marks only the current page with aria-current and hides the indicator', async () => {
+    vi.resetModules()
     vi.doMock('next/navigation', () => ({ usePathname: () => '/about' }))
     const { Navbar: AboutNavbar } = await import('../navbar')
     const { container } = render(<AboutNavbar />)
-    const aboutLinks = container.querySelectorAll('nav[aria-label="Main"] a[href="/about"]')
+    const aboutLinks = container.querySelectorAll('nav a[href="/about"]')
     expect(aboutLinks.length).toBe(2)
     for (const a of aboutLinks) expect(a.getAttribute('aria-current')).toBe('page')
-    const homeLinks = container.querySelectorAll('nav[aria-label="Main"] a[href="/"]')
+    const homeLinks = container.querySelectorAll('nav a[href="/"]')
     expect(homeLinks.length).toBeGreaterThan(0)
     for (const a of homeLinks) expect(a.hasAttribute('aria-current')).toBe(false)
     const indicator = container.querySelector('[data-testid="main-nav-list"] a[href="/about"] span')
     expect(indicator?.getAttribute('aria-hidden')).toBe('true')
-    vi.doUnmock('next/navigation')
+  })
+
+  it.each([
+    ['/blog/some-post', 'Blog'],
+    ['/projects/revenue-kpi', 'Projects'],
+  ])('marks the parent section with aria-current="true" on %s', async (route, title) => {
+    vi.resetModules()
+    vi.doMock('next/navigation', () => ({ usePathname: () => route }))
+    const { Navbar: DetailNavbar } = await import('../navbar')
+    const { container } = render(<DetailNavbar />)
+    const href = navConfig.mainNav.find((i) => i.title === title)?.href
+    expect(href).toBeTruthy()
+    const links = container.querySelectorAll(`a[href="${href}"]`)
+    expect(links.length).toBe(2)
+    for (const a of links) expect(a.getAttribute('aria-current')).toBe('true')
+    for (const a of container.querySelectorAll('a[href="/"]')) {
+      expect(a.hasAttribute('aria-current')).toBe(false)
+    }
   })
 
   it('desktop links use md/lg sizing and no weight class; no w-32 or absolute centring', () => {
@@ -91,10 +112,6 @@ describe('Navbar — header landmark and semantics', () => {
 })
 
 describe('Navbar', () => {
-  beforeEach(() => {
-    cleanup()
-  })
-
   it('renders all main desktop nav links', () => {
     render(<Navbar />)
     // Each nav item appears twice (desktop + mobile menu); use getAllByRole

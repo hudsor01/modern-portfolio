@@ -11,6 +11,14 @@ import { navConfig } from '@/lib/site'
 // navigation-json-ld.tsx (SEO) — keeping one list prevents the two drifting.
 const navItems = navConfig.mainNav
 
+// 'page' for the exact route, 'true' for a parent section of the current route
+// (/blog/<slug> -> Blog, /projects/<slug> -> Projects). Home only matches exactly.
+function currentState(pathname: string | null, href: string): 'page' | 'true' | undefined {
+  if (pathname === href) return 'page'
+  if (pathname && href !== '/' && pathname.startsWith(`${href}/`)) return 'true'
+  return undefined
+}
+
 export function Navbar() {
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -35,12 +43,13 @@ export function Navbar() {
             <div className="bg-card rounded-xl px-2 py-2 shadow-sm border border-border">
               <div data-testid="main-nav-list" className="flex items-center space-x-1">
                 {navItems.map((item, index) => {
-                  const isActive = pathname === item.href
+                  const current = currentState(pathname, item.href)
+                  const isActive = current !== undefined
                   return (
                     <Link
                       key={getRouteKey(item.href, index)}
                       href={asRoute(item.href)}
-                      aria-current={isActive ? 'page' : undefined}
+                      aria-current={current}
                       className={`relative text-sm px-2 lg:text-base lg:px-4 transition-all duration-300 ease-out py-2 rounded-lg ${
                         isActive
                           ? 'text-primary bg-primary/5'
@@ -94,26 +103,29 @@ export function Navbar() {
             order when collapsed. */}
         <nav
           id="mobile-menu"
-          aria-label="Main"
+          aria-label="Main menu"
           hidden={!isMobileMenuOpen}
           className="md:hidden absolute top-16 left-0 right-0 bg-card/98 backdrop-blur-sm border-b border-border shadow-md"
         >
           <div className="px-4 py-4 space-y-2">
-            {navItems.map((item, index) => (
-              <Link
-                key={getRouteKey(item.href, index)}
-                href={asRoute(item.href)}
-                onClick={() => setIsMobileMenuOpen(false)}
-                aria-current={pathname === item.href ? 'page' : undefined}
-                className={`block w-full text-left px-4 py-3 rounded-lg transition-all duration-300 ease-out text-base min-h-[44px] flex items-center ${
-                  pathname === item.href
-                    ? 'text-primary bg-primary/5'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                }`}
-              >
-                {item.title}
-              </Link>
-            ))}
+            {navItems.map((item, index) => {
+              const current = currentState(pathname, item.href)
+              return (
+                <Link
+                  key={getRouteKey(item.href, index)}
+                  href={asRoute(item.href)}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  aria-current={current}
+                  className={`block w-full text-left px-4 py-3 rounded-lg transition-all duration-300 ease-out text-base min-h-[44px] flex items-center ${
+                    current
+                      ? 'text-primary bg-primary/5'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  }`}
+                >
+                  {item.title}
+                </Link>
+              )
+            })}
             {pathname !== '/contact' && (
               <Link
                 href="/contact"
