@@ -49,80 +49,56 @@ test.describe('Projects Listing Page', () => {
   })
 
   test('displays project cards grid', async ({ page }) => {
-    // Wait for projects to load
-    await page.waitForTimeout(1000)
-
-    // Look for project cards or articles
-    const projectCards = page.locator('article, [class*="card"], [class*="project"]')
-    const count = await projectCards.count()
-
-    // Should have at least one project
-    expect(count).toBeGreaterThan(0)
+    const projectCards = page.locator('main article')
+    await expect(projectCards.first()).toBeVisible()
+    expect(await projectCards.count()).toBeGreaterThan(0)
   })
 
   test('search input filters projects', async ({ page }) => {
-    // Find search input
     const searchInput = page.getByPlaceholder(/search/i)
     await expect(searchInput).toBeVisible()
 
-    // Get initial project count
-    await page.waitForTimeout(500)
-    const initialCards = page.locator('article, [class*="card"]').filter({ hasText: /.+/ })
-    const initialCount = await initialCards.count()
+    const cards = page.locator('main article')
+    await expect(cards.first()).toBeVisible()
+    const initialCount = await cards.count()
+    expect(initialCount).toBeGreaterThan(1)
 
-    // Search for a specific term
     await searchInput.fill('revenue')
-    await page.waitForTimeout(500)
-
-    // Verify URL contains search param
     await expect(page).toHaveURL(/search=revenue/)
+
+    // Filtering must actually narrow the grid: some matches, but fewer than all.
+    await expect.poll(async () => cards.count()).toBeLessThan(initialCount)
+    expect(await cards.count()).toBeGreaterThan(0)
   })
 
   test('category filter works', async ({ page }) => {
-    // Wait for page to be interactive
-    await page.waitForTimeout(1000)
+    const cards = page.locator('main article')
+    await expect(cards.first()).toBeVisible()
+    const initialCount = await cards.count()
+    expect(initialCount).toBeGreaterThan(1)
 
-    const projectCards = page.locator('article, [class*="card"], [class*="project"]')
-    const initialCount = await projectCards.count()
-    // Baseline: the grid renders real projects (real assertion even if the
-    // category UI is absent in this environment).
-    expect(initialCount).toBeGreaterThan(0)
+    const categoryTrigger = page.getByRole('combobox', { name: 'Filter by category' })
+    await expect(categoryTrigger).toBeVisible()
+    await categoryTrigger.click()
 
-    // Find category select/dropdown trigger
-    const categoryTrigger = page.locator('button').filter({ hasText: /categories|all/i }).first()
+    const options = page.getByRole('option')
+    await expect(options.nth(1)).toBeVisible()
+    expect(await options.count()).toBeGreaterThan(1)
+    // Click the first non-"all" option
+    await options.nth(1).click()
 
-    if (await categoryTrigger.isVisible()) {
-      await categoryTrigger.click()
+    // nuqs makes the URL the source of truth: selecting a category writes ?category=…
+    await expect(page).toHaveURL(/[?&]category=/)
 
-      // Wait for dropdown
-      await page.waitForTimeout(500)
-
-      // Look for category options
-      const options = page.getByRole('option')
-      const optionCount = await options.count()
-
-      if (optionCount > 1) {
-        // Click first non-"all" option
-        await options.nth(1).click()
-        await page.waitForTimeout(500)
-
-        // nuqs makes the URL the source of truth — selecting a category writes
-        // ?category=… (same contract the search test relies on).
-        await expect(page).toHaveURL(/[?&]category=/)
-
-        // Filtering narrows (or keeps) the set, never errors it away.
-        const filteredCount = await projectCards.count()
-        expect(filteredCount).toBeGreaterThan(0)
-        expect(filteredCount).toBeLessThanOrEqual(initialCount)
-      }
-    }
+    // The category narrows the grid to a non-empty subset of the full set.
+    await expect.poll(async () => cards.count()).toBeLessThan(initialCount)
+    expect(await cards.count()).toBeGreaterThan(0)
   })
 
   test('shows "no projects" message when search has no results', async ({ page }) => {
     // Search for something that won't match
     const searchInput = page.getByPlaceholder(/search/i)
     await searchInput.fill('xyznonexistentproject123')
-    await page.waitForTimeout(500)
 
     // Should show no results message
     const noResults = page.getByText(/no projects match|no projects yet/i)
