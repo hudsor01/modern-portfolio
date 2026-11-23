@@ -423,10 +423,8 @@ test.describe('Blog list cards (UI-07)', () => {
     expect(new Set(srcs).size).toBe(srcs.length)
   })
 
-  test('/api/og renders through the image optimizer', async ({ request }) => {
-    const res = await request.get(
-      `/_next/image?url=${encodeURIComponent('/api/og?title=Probe&category=Revenue Operations')}&w=640&q=75`
-    )
+  test('/api/og card is served directly as an image', async ({ request }) => {
+    const res = await request.get('/api/og?title=Probe&category=Revenue%20Operations')
     expect(res.status()).toBe(200)
     expect(res.headers()['content-type']).toMatch(/^image\//)
   })

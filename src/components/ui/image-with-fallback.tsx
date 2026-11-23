@@ -35,10 +35,15 @@ export function ImageWithFallback({ src, fallbackSrc, ...rest }: ImageWithFallba
 
 function FallbackImage({ src, fallbackSrc, ...rest }: ImageWithFallbackProps) {
   const [errored, setErrored] = useState(false)
+  const current = errored ? fallbackSrc : src
+  // `/_next/image` rejects local srcs carrying a query string (400) unless
+  // `images.localPatterns` allows them, and `/api/og` is already a rendered image.
+  const unoptimized = rest.unoptimized || current.startsWith('/api/og')
   return (
     <Image
       {...rest}
-      src={errored ? fallbackSrc : src}
+      unoptimized={unoptimized}
+      src={current}
       onError={() => {
         // Stop swapping if the fallback itself failed to load.
         if (!errored) setErrored(true)
