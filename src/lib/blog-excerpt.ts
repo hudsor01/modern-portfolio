@@ -82,7 +82,11 @@ export function resolveExcerpt(input: {
   excerpt: string | null | undefined
   content: string | null | undefined
 }): string {
-  if (!isBioBoilerplate(input.excerpt))
-    return truncate(stripMarkdownToPlain(input.excerpt as string))
+  if (!isBioBoilerplate(input.excerpt)) {
+    const stored = stripMarkdownToPlain(input.excerpt as string)
+    // A stored excerpt that is only markup (e.g. a lone image) strips to
+    // nothing; fall through to the body like an empty one.
+    if (stored !== '') return truncate(stored)
+  }
   return truncate(firstParagraph(input.content ?? ''))
 }

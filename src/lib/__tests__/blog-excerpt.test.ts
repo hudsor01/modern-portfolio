@@ -123,4 +123,8 @@ describe('resolveExcerpt keeps real excerpts as plain text', () => {
       'A clean short excerpt.'
     )
   })
+  it('falls back to the body when a stored excerpt strips to nothing', () => {
+    const content = 'A real opening paragraph that is long enough to qualify as an excerpt.'
+    expect(resolveExcerpt({ excerpt: '![cover](https://x.test/a.png)', content })).toBe(content)
+  })
 })
