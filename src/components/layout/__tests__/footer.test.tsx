@@ -22,7 +22,6 @@ describe('Footer headings', () => {
       const h = headings[0]
       expect(h?.textContent).toBe(nav.getAttribute('aria-label'))
       for (const c of [
-        'font-sans',
         'text-xs',
         'font-semibold',
         'uppercase',
@@ -33,6 +32,8 @@ describe('Footer headings', () => {
         expect(h?.classList.contains(c)).toBe(true)
       }
       expect(h?.classList.contains('text-foreground')).toBe(false)
+      // font-sans resolves to the system stack here; headings inherit Spline Sans from body.
+      expect(h?.classList.contains('font-sans')).toBe(false)
     }
   })
 })
