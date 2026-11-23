@@ -1,6 +1,7 @@
 import { expect, type Page, test } from '@playwright/test'
 import { postCards } from './_helpers/blog'
 import { databaseAvailable, NEEDS_DATABASE } from './_helpers/database'
+import { getOnly, settlePage } from './_helpers/settle'
 
 /**
  * A11Y-02: no rendered text below 12px on the 14 audited pages; Featured badge
@@ -31,32 +32,12 @@ const PAGES = [
   '/this-page-does-not-exist',
 ]
 
-async function getOnly(page: Page): Promise<void> {
-  await page.route('**/*', (route) =>
-    route.request().method() === 'GET' || route.request().method() === 'HEAD'
-      ? route.continue()
-      : route.abort(),
-  )
-}
-
 async function firstPost(page: Page): Promise<string> {
   await page.goto('/blog')
-  await page.waitForLoadState('networkidle')
+  await page.waitForLoadState('load')
   const href = (await postCards(page).first().getAttribute('href')) ?? ''
   expect(href).toMatch(/^\/blog\/[^/]+$/)
   return href
-}
-
-async function settle(page: Page): Promise<void> {
-  await page.waitForLoadState('load')
-  await page.evaluate(() => document.fonts.ready)
-  const total = await page.evaluate(() => document.documentElement.scrollHeight)
-  for (let y = 0; y < total; y += 500) {
-    await page.mouse.wheel(0, 500)
-    await page.waitForTimeout(100)
-  }
-  await page.evaluate(() => window.scrollTo(0, 0))
-  await page.waitForTimeout(1500)
 }
 
 for (const path of PAGES) {
@@ -74,7 +55,7 @@ for (const path of PAGES) {
         target = await firstPost(page)
       }
       await page.goto(target)
-      await settle(page)
+      await settlePage(page)
 
       const small = await page.evaluate(() => {
         const out: { tag: string; cls: string; text: string; size: number }[] = []

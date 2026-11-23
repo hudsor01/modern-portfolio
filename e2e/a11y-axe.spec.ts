@@ -1,7 +1,8 @@
 import AxeBuilder from '@axe-core/playwright'
-import { expect, type Page, test } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { postCards } from './_helpers/blog'
 import { databaseAvailable, NEEDS_DATABASE } from './_helpers/database'
+import { getOnly, settlePage, settleTransitions } from './_helpers/settle'
 
 /**
  * Phase 11 axe gate (A11Y-01, A11Y-02, A11Y-06).
@@ -49,37 +50,10 @@ function violations(results: AxeResults) {
 }
 
 async function settle(page: Page, path: string) {
-  await page.evaluate(() => document.fonts.ready)
-  const total = await page.evaluate(() => document.documentElement.scrollHeight)
-  for (let y = 0; y < total; y += 500) {
-    await page.mouse.wheel(0, 500)
-    await page.waitForTimeout(100)
-  }
-  await page.evaluate(() => window.scrollTo(0, 0))
-  await page.waitForTimeout(1500)
-  await page.evaluate(async () => {
-    const finite = document.getAnimations().filter((a) => {
-      const timing = a.effect?.getComputedTiming()
-      return timing !== undefined && timing.iterations !== Infinity
-    })
-    await Promise.all(finite.map((a) => a.finished.catch(() => undefined)))
-  })
+  await settlePage(page)
   if (path === '/projects') {
     await page.locator('button[role="combobox"]').first().waitFor({ state: 'visible' })
   }
-}
-
-// Hover/focus colour changes run through the global colour transition; axe must
-// measure the settled state, not a frame mid-transition.
-async function settleTransitions(page: Page) {
-  await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))))
-  await page.evaluate(async () => {
-    const finite = document.getAnimations().filter((a) => {
-      const timing = a.effect?.getComputedTiming()
-      return timing !== undefined && timing.iterations !== Infinity
-    })
-    await Promise.all(finite.map((a) => a.finished.catch(() => undefined)))
-  })
 }
 
 async function resolve(page: Page, path: string): Promise<string> {
@@ -92,20 +66,6 @@ async function resolve(page: Page, path: string): Promise<string> {
   return href
 }
 
-async function abortWrites(page: Page) {
-  const counter = { count: 0 }
-  await page.route('**/*', async (route) => {
-    const request = route.request()
-    if (request.method() !== 'GET' && request.method() !== 'HEAD') {
-      if (request.headers()['next-action']) counter.count += 1
-      await route.abort()
-      return
-    }
-    await route.continue()
-  })
-  return counter
-}
-
 test.describe.configure({ mode: 'parallel' })
 
 test.describe('axe: 14 pages', () => {
@@ -115,7 +75,7 @@ test.describe('axe: 14 pages', () => {
       for (const path of PAGES) {
         test(`${path} @${viewport.width}`, async ({ page }, testInfo) => {
           test.skip(testInfo.project.name !== 'chromium', 'axe gate runs once, in Chromium')
-          await abortWrites(page)
+          await getOnly(page)
           const target = await resolve(page, path)
           await page.goto(target, { waitUntil: 'load' })
           await settle(page, target)
@@ -131,7 +91,7 @@ test.describe('axe: interactive states', () => {
   test('mobile menu open @390', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'chromium', 'axe gate runs once, in Chromium')
     await page.setViewportSize(MOBILE)
-    await abortWrites(page)
+    await getOnly(page)
     await page.goto('/', { waitUntil: 'load' })
     await settle(page, '/')
     await page.getByRole('button', { name: 'Open menu' }).click()
@@ -143,7 +103,7 @@ test.describe('axe: interactive states', () => {
   test('projects category listbox open @1440', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'chromium', 'axe gate runs once, in Chromium')
     await page.setViewportSize(DESKTOP)
-    await abortWrites(page)
+    await getOnly(page)
     await page.goto('/projects', { waitUntil: 'load' })
     await settle(page, '/projects')
     const combobox = page.getByRole('combobox', { name: 'Filter by category' })
@@ -163,16 +123,7 @@ test.describe('axe: interactive states', () => {
     test(`contact focus and error states @${viewport.width}`, async ({ page }, testInfo) => {
       test.skip(testInfo.project.name !== 'chromium', 'axe gate runs once, in Chromium')
       await page.setViewportSize(viewport)
-      const hits = await abortWrites(page)
-      await page.route('**/contact', async (route) => {
-        const request = route.request()
-        if (request.method() === 'POST' && request.headers()['next-action']) {
-          hits.count += 1
-          await route.abort()
-          return
-        }
-        await route.fallback()
-      })
+      const hits = await getOnly(page)
       await page.goto('/contact', { waitUntil: 'load' })
       await settle(page, '/contact')
 
@@ -187,7 +138,7 @@ test.describe('axe: interactive states', () => {
       results = await new AxeBuilder({ page }).withTags(TAGS).analyze()
       expect(violations(results), 'empty-submit error state').toEqual([])
 
-      expect(hits.count).toBe(0)
+      expect(hits.serverActions, 'no server action may reach the network').toBe(0)
     })
   }
 })
@@ -197,8 +148,8 @@ test.describe('axe: hover and focus contrast', () => {
   for (const path of PAGES) {
     test(`${path}`, async ({ page }, testInfo) => {
       test.skip(testInfo.project.name !== 'chromium', 'axe gate runs once, in Chromium')
-      test.setTimeout(180_000)
-      await abortWrites(page)
+      test.setTimeout(300_000)
+      await getOnly(page)
       const target = await resolve(page, path)
       await page.goto(target, { waitUntil: 'load' })
       await settle(page, target)
@@ -206,40 +157,68 @@ test.describe('axe: hover and focus contrast', () => {
       const probes = await page.evaluate(() => {
         const re = /(^|\s)(hover|focus|focus-visible|group-hover):(bg|text)-/
         const seen = new Set<string>()
-        const found: { n: number; className: string; group: boolean; focusable: boolean }[] = []
+        const found: {
+          n: number
+          className: string
+          group: boolean
+          focusable: boolean
+          hoverable: boolean
+        }[] = []
         for (const el of Array.from(document.querySelectorAll<HTMLElement>('body *'))) {
           const cls = typeof el.className === 'string' ? el.className : ''
           if (!cls || !(re.test(cls) || cls.includes('bg-accent'))) continue
           if (!el.checkVisibility()) continue
           if (seen.has(cls)) continue
           seen.add(cls)
-          if (found.length >= 20) break
           const n = found.length
           el.setAttribute('data-axe-probe', String(n))
           const tag = el.tagName.toLowerCase()
           const focusable =
             ['a', 'button', 'input', 'select', 'textarea'].includes(tag) || el.tabIndex >= 0
-          found.push({ n, className: cls, group: cls.includes('group-hover:'), focusable })
+          // Screen-reader-only elements (the skip link) have no hit area until focused,
+          // so they are measured in the focus state only.
+          const hoverable = !el.classList.contains('sr-only')
+          found.push({ n, className: cls, group: cls.includes('group-hover:'), focusable, hoverable })
         }
         return found
       })
+
+      expect(probes.length, `${target} has hover/focus probes`).toBeGreaterThan(0)
 
       const failures: { className: string; state: string; violations: unknown }[] = []
       for (const probe of probes) {
         const sel = `[data-axe-probe="${probe.n}"]`
         const el = page.locator(sel)
         const hoverTarget = probe.group ? el.locator('xpath=ancestor-or-self::*[contains(@class,"group")][1]') : el
-        await hoverTarget.first().hover({ timeout: 5000 }).catch(() => undefined)
-        await settleTransitions(page)
-        let results = await new AxeBuilder({ page })
-          .include(sel)
-          .withRules(['color-contrast'])
-          .analyze()
-        if (results.violations.length > 0) {
-          failures.push({ className: probe.className, state: 'hover', violations: violations(results) })
+        let results: AxeResults
+        if (probe.hoverable) {
+          try {
+            await hoverTarget.first().hover({ timeout: 5000 })
+          } catch (error) {
+            failures.push({
+              className: probe.className,
+              state: 'hover-not-applied',
+              violations: String(error).split('\n')[0],
+            })
+            continue
+          }
+          await settleTransitions(page)
+          results = await new AxeBuilder({ page }).include(sel).withRules(['color-contrast']).analyze()
+          if (results.violations.length > 0) {
+            failures.push({ className: probe.className, state: 'hover', violations: violations(results) })
+          }
         }
         if (probe.focusable) {
-          await el.focus({ timeout: 5000 }).catch(() => undefined)
+          try {
+            await el.focus({ timeout: 5000 })
+          } catch (error) {
+            failures.push({
+              className: probe.className,
+              state: 'focus-not-applied',
+              violations: String(error).split('\n')[0],
+            })
+            continue
+          }
           await settleTransitions(page)
           results = await new AxeBuilder({ page })
             .include(sel)
