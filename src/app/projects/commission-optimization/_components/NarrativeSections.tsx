@@ -12,14 +12,14 @@ export function NarrativeSections() {
       {/* Situation */}
       <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
-          <p className="text-lg leading-relaxed">
+          <p>
             When I took ownership of commission operations, the organization was managing{' '}
             {formatCurrency(commissionMetrics.totalCommissionPool)} in annual partner commissions
             through manual processes that were creating significant friction. Finance spent 8.5
             hours weekly on calculations, error rates were unacceptable, and partners were
             increasingly frustrated with payment delays and calculation disputes.
           </p>
-          <p className="leading-relaxed">
+          <p>
             The commission structure itself had become a strategic liability—static tiers weren't
             motivating top performers, dispute rates hit 3.8%, and we had zero visibility into which
             commission investments were actually driving revenue. Something had to change.
@@ -30,7 +30,7 @@ export function NarrativeSections() {
       {/* Task */}
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p>
             I was tasked with completely transforming our commission operations—not just fixing the
             immediate problems, but building a system that would scale. My mandate was clear:
           </p>
@@ -50,7 +50,7 @@ export function NarrativeSections() {
       {/* Action */}
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p>
             I designed and built a comprehensive commission optimization platform from scratch,
             architecting every component to address the specific pain points I'd identified:
           </p>
@@ -76,7 +76,7 @@ export function NarrativeSections() {
             </FeatureCard>
           </div>
 
-          <p className="leading-relaxed mt-4">
+          <p className="mt-4">
             I personally led the integration with our CRM and finance systems, designed the
             stakeholder-specific dashboards, and trained the team on leveraging the new
             capabilities. The rollout was phased to minimize disruption while maximizing adoption.
@@ -87,7 +87,7 @@ export function NarrativeSections() {
       {/* Result */}
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p>
             The commission optimization system I built delivered transformational results across
             every metric we tracked:
           </p>
@@ -111,9 +111,7 @@ export function NarrativeSections() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-primary">
-              Quantified Business Outcomes I Delivered:
-            </h3>
+            <h3>Quantified Business Outcomes I Delivered:</h3>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>
                 Reduced commission processing time from 8.5 to 2.3 hours weekly (73% improvement)
@@ -142,7 +140,7 @@ export function NarrativeSections() {
         <div className="space-y-4 text-muted-foreground">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
-              <h3 className="font-semibold text-accent-foreground">Business Strategy Insights</h3>
+              <h3>Business Strategy Insights</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>
                   Commission structures are behavioral levers—small, targeted adjustments yield
@@ -156,7 +154,7 @@ export function NarrativeSections() {
               </ul>
             </div>
             <div className="space-y-3">
-              <h3 className="font-semibold text-secondary">Technical Implementation Insights</h3>
+              <h3>Technical Implementation Insights</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>
                   Real-time calculation engines require robust error handling and atomic rollback
@@ -173,7 +171,7 @@ export function NarrativeSections() {
               </ul>
             </div>
           </div>
-          <p className="leading-relaxed mt-4">
+          <p className="mt-4">
             This project reinforced my belief that commission optimization is both art and science.
             The most successful strategies I've implemented combine rigorous data analysis with deep
             understanding of what actually motivates partner behavior.

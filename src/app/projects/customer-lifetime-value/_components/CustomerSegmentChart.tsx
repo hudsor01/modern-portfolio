@@ -78,7 +78,7 @@ const CustomerSegmentChart = memo(function CustomerSegmentChart() {
           />
         </BarChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         RFM-based customer segmentation showing distribution of customers and average CLV per
         segment
       </p>

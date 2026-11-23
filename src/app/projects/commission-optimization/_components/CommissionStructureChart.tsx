@@ -118,7 +118,7 @@ const CommissionStructureChart = memo(function CommissionStructureChart() {
           />
         </BarChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Commission tier structure showing earnings distribution and rate optimization across partner
         performance levels
       </p>

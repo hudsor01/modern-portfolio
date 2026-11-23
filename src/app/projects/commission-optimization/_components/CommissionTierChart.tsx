@@ -174,7 +174,7 @@ const CommissionTierChart = memo(function CommissionTierChart() {
           />
         </ComposedChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Commission tier analysis showing earnings distribution, partner retention rates,
         satisfaction scores, and commission rate optimization across performance tiers
       </p>

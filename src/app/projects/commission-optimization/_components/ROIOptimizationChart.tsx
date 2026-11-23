@@ -147,7 +147,7 @@ const ROIOptimizationChart = memo(function ROIOptimizationChart() {
           />
         </LineChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Commission ROI optimization trends showing investment efficiency, revenue impact, and
         tier-based performance analysis across quarterly performance cycles
       </p>

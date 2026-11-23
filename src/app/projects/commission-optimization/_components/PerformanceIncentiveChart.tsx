@@ -138,7 +138,7 @@ const PerformanceIncentiveChart = memo(function PerformanceIncentiveChart() {
           />
         </BarChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Performance incentive program analysis showing budget allocation, payout efficiency, and
         effectiveness metrics across targeted partner programs
       </p>

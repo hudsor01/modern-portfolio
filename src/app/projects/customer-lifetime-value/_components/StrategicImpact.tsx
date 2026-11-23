@@ -6,7 +6,7 @@ import { formatCompactCurrency } from '@/lib/data-formatters'
 export function StrategicImpact() {
   return (
     <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-6">
-      <h2 className="typography-h4 mb-4 text-secondary">
+      <h2 className="typography-h4 mb-4">
         Advanced CLV Analytics & Predictive Intelligence Impact
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

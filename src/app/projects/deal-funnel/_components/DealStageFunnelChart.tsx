@@ -177,12 +177,10 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
                     className="w-3 h-3 rounded-full"
                     style={{ backgroundColor: funnelColors[index % funnelColors.length] }}
                   />
-                  <p className="text-xs font-medium text-white">{stage.stage}</p>
+                  <p>{stage.stage}</p>
                 </div>
-                <p className="typography-h4 text-white">{stage.conversionRate}</p>
-                <p className="typography-small text-muted-foreground">
-                  {formatNumber(stage.count)} deals
-                </p>
+                <p className="typography-h4">{stage.conversionRate}</p>
+                <p className="typography-small">{formatNumber(stage.count)} deals</p>
               </div>
             ))}
           </div>

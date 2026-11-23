@@ -11,14 +11,14 @@ export function NarrativeSections() {
       {/* Situation */}
       <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
-          <p className="text-lg leading-relaxed">
+          <p>
             When I took over the customer analytics function, I discovered the organization had zero
             visibility into which customers would be valuable long-term versus which would churn.
             Marketing was treating all customers equally, sales couldn't prioritize leads, and
             customer success was spreading resources thin across 4,287 active accounts without any
             risk-based framework.
           </p>
-          <p className="leading-relaxed">
+          <p>
             The lack of predictive analytics was costing us real money—we were acquiring low-value
             customers at the same cost as high-value ones, and our retention efforts were entirely
             reactive. I knew we needed a scientific approach to understanding customer value that
@@ -30,7 +30,7 @@ export function NarrativeSections() {
       {/* Task */}
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p>
             I was tasked with building a customer lifetime value prediction model that would become
             the foundation for data-driven decision-making across the entire organization. My
             specific objectives included:
@@ -56,7 +56,7 @@ export function NarrativeSections() {
       {/* Action */}
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p>
             I designed and built a comprehensive CLV prediction system from scratch, combining
             machine learning algorithms with RFM analysis to segment customers and predict future
             value with unprecedented accuracy:
@@ -83,7 +83,7 @@ export function NarrativeSections() {
             </FeatureCard>
           </div>
 
-          <p className="leading-relaxed mt-4">
+          <p className="mt-4">
             I personally led the data science effort, designed the 5-tier segmentation methodology,
             and trained cross-functional teams on leveraging CLV insights for their specific use
             cases. The rollout was phased by team to ensure adoption before expanding capabilities.
@@ -94,7 +94,7 @@ export function NarrativeSections() {
       {/* Result */}
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p>
             The CLV prediction model I built transformed how the organization approaches customer
             relationships, enabling data-driven decisions that delivered measurable revenue impact:
           </p>
@@ -110,9 +110,7 @@ export function NarrativeSections() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-secondary">
-              Quantified Business Outcomes I Delivered:
-            </h3>
+            <h3>Quantified Business Outcomes I Delivered:</h3>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>
                 Increased customer retention rate by 18% through proactive intervention triggers
@@ -138,7 +136,7 @@ export function NarrativeSections() {
         <div className="space-y-4 text-muted-foreground">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
-              <h3 className="font-semibold text-accent-foreground">Strategic Insights</h3>
+              <h3>Strategic Insights</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>
                   Customer behavior patterns are far more predictable than I initially assumed when
@@ -159,7 +157,7 @@ export function NarrativeSections() {
               </ul>
             </div>
             <div className="space-y-3">
-              <h3 className="font-semibold text-primary">Technical Insights</h3>
+              <h3>Technical Insights</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>
                   RFM analysis combined with behavioral data significantly outperforms
@@ -180,7 +178,7 @@ export function NarrativeSections() {
               </ul>
             </div>
           </div>
-          <p className="leading-relaxed mt-4">
+          <p className="mt-4">
             This project taught me that sophisticated analytics can be made accessible and
             actionable for business teams. The key is translating complex predictions into simple,
             clear recommendations that drive immediate action—I now apply this principle to every

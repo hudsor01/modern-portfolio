@@ -23,7 +23,7 @@ export function SegmentsTab() {
       <div className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out">
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">Customer Segment Distribution & CLV Analysis</h2>
-          <p className="typography-small text-muted-foreground">
+          <p className="typography-small">
             RFM-based customer segmentation with predictive CLV modeling across behavioral clusters
           </p>
         </div>
@@ -38,7 +38,7 @@ export function SegmentsTab() {
           <h2 className="typography-h4 mb-1">
             Customer Segment Intelligence & Behavioral Insights
           </h2>
-          <p className="typography-small text-muted-foreground">
+          <p className="typography-small">
             Detailed segment analysis with CLV predictions and engagement probability scores
           </p>
         </div>

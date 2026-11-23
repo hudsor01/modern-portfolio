@@ -46,7 +46,7 @@ const CACBreakdownChart = memo(function CACBreakdownChart() {
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Partner channel CAC optimization revealing 70% cost reduction through certified partner
         strategy vs direct sales acquisition
       </p>

@@ -10,7 +10,7 @@ export function NarrativeSections() {
       {/* Situation */}
       <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
-          <p className="text-lg leading-relaxed">
+          <p>
             When I took ownership of growth analytics, I discovered the organization was flying
             blind on customer acquisition economics. CAC calculations were inconsistent across
             teams—marketing, sales, and finance each had different methodologies, leading to
@@ -18,7 +18,7 @@ export function NarrativeSections() {
             or lifetime value relationships, and pricing strategies weren't aligned with acquisition
             cost realities.
           </p>
-          <p className="leading-relaxed">
+          <p>
             Rising competition was driving up acquisition costs across all channels, and there was
             increasing pressure to achieve profitability. Without visibility into true unit
             economics, we were essentially guessing which channels were sustainable and which were
@@ -31,7 +31,7 @@ export function NarrativeSections() {
       {/* Task */}
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p>
             I was tasked with building a comprehensive unit economics analytics platform that would
             become the foundation for sustainable growth strategy. My specific objectives included:
           </p>
@@ -52,7 +52,7 @@ export function NarrativeSections() {
       {/* Action */}
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p>
             I designed and built a comprehensive unit economics analytics platform from scratch,
             providing real-time visibility into CAC, LTV, and payback metrics with sophisticated
             segmentation and optimization capabilities:
@@ -79,7 +79,7 @@ export function NarrativeSections() {
             </FeatureCard>
           </div>
 
-          <p className="leading-relaxed mt-4">
+          <p className="mt-4">
             I personally led the data standardization effort across marketing, sales, and finance
             teams, designed the calculation methodologies, and trained stakeholders on using unit
             economics to guide their decisions. The platform was deployed in phases to validate
@@ -91,7 +91,7 @@ export function NarrativeSections() {
       {/* Result */}
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p>
             The unit economics optimization system I built enabled data-driven growth strategies
             that significantly improved acquisition efficiency and long-term profitability:
           </p>
@@ -103,9 +103,7 @@ export function NarrativeSections() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-secondary">
-              Quantified Business Outcomes I Delivered:
-            </h3>
+            <h3>Quantified Business Outcomes I Delivered:</h3>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>Reduced blended CAC from $247 to $168 through channel optimization I directed</li>
               <li>
@@ -139,7 +137,7 @@ export function NarrativeSections() {
         <div className="space-y-4 text-muted-foreground">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
-              <h3 className="font-semibold text-foreground">Unit Economics Strategy</h3>
+              <h3>Unit Economics Strategy</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>
                   Sustainable growth requires maintaining LTV:CAC ratios above 3:1 with payback
@@ -160,7 +158,7 @@ export function NarrativeSections() {
               </ul>
             </div>
             <div className="space-y-3">
-              <h3 className="font-semibold text-primary">Implementation Success Factors</h3>
+              <h3>Implementation Success Factors</h3>
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>
                   Standardized calculation methodologies are essential—I now document and enforce
@@ -181,7 +179,7 @@ export function NarrativeSections() {
               </ul>
             </div>
           </div>
-          <p className="leading-relaxed mt-4">
+          <p className="mt-4">
             This project reinforced my belief that sustainable growth is not about maximizing
             acquisition volume, but optimizing the efficiency and profitability of each customer
             acquired. I now make unit economics the north star for all growth initiatives I lead.

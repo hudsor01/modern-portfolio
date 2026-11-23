@@ -96,7 +96,7 @@ const UnitEconomicsChart = memo(function UnitEconomicsChart() {
           </LineChart>
         </ResponsiveContainer>
       </div>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         LTV:CAC ratio optimization achieving industry-benchmark 3.6:1+ efficiency through strategic
         partner channel management
       </p>

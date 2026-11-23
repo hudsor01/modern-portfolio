@@ -98,7 +98,7 @@ const CLVPredictionChart = memo(function CLVPredictionChart() {
           ))}
         </ScatterChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Scatter plot showing BTYD model predictions vs actual CLV performance with 94.3% average
         accuracy
       </p>

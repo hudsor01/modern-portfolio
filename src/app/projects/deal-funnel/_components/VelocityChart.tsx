@@ -33,9 +33,9 @@ export function VelocityChart({ partnerConversion }: VelocityChartProps) {
       <div className="mt-6 p-4 bg-primary/10 border border-primary/20 rounded-xl">
         <div className="flex items-center gap-2 mb-2">
           <Zap className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold text-primary">Quick Win</h3>
+          <h3>Quick Win</h3>
         </div>
-        <p className="typography-small text-muted-foreground">
+        <p className="typography-small">
           SMB deals close 47% faster than Enterprise. Consider segment-specific sales strategies.
         </p>
       </div>

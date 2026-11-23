@@ -17,8 +17,8 @@ export function FunnelChart({ stages, overallConversionRate }: FunnelChartProps)
           <p className="typography-muted">Deal progression through stages</p>
         </div>
         <div className="text-right">
-          <p className="typography-small text-muted-foreground">Overall Conversion</p>
-          <p className="typography-h3 text-success">{overallConversionRate}%</p>
+          <p className="typography-small">Overall Conversion</p>
+          <p className="typography-h3">{overallConversionRate}%</p>
         </div>
       </div>
       <DealStageFunnelChart stages={stages} />

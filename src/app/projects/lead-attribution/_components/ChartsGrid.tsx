@@ -63,10 +63,8 @@ export function ChartsGrid({ bestSource, leadSources, conversionSources }: Chart
                     <Icon className="h-5 w-5 text-foreground" />
                   </div>
                   <div>
-                    <p className="font-medium">{source.source}</p>
-                    <p className="typography-small text-muted-foreground">
-                      {source.conversions} conversions
-                    </p>
+                    <p>{source.source}</p>
+                    <p className="typography-small">{source.conversions} conversions</p>
                   </div>
                 </div>
                 <div className="text-right">

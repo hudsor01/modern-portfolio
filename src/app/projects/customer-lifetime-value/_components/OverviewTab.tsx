@@ -28,7 +28,7 @@ export function OverviewTab() {
       <div className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out">
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">CLV Prediction vs Actual Performance</h2>
-          <p className="typography-small text-muted-foreground">
+          <p className="typography-small">
             BTYD model accuracy analysis showing 94.3% prediction success rate across customer
             segments
           </p>
@@ -42,7 +42,7 @@ export function OverviewTab() {
       <div className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out">
         <div className="mb-4">
           <h2 className="typography-h4 mb-1">CLV Trend Analysis & Forecasting</h2>
-          <p className="typography-small text-muted-foreground">
+          <p className="typography-small">
             24-month predictive CLV trending with confidence intervals and seasonal adjustments
           </p>
         </div>

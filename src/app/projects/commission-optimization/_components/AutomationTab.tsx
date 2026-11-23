@@ -14,7 +14,7 @@ export function AutomationTab() {
     >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-muted/50 rounded-xl p-6 border border-border">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <h3 className="mb-4 flex items-center gap-2">
             <Clock className="w-5 h-5 text-secondary" />
             Processing Automation
           </h3>
@@ -35,7 +35,7 @@ export function AutomationTab() {
         </div>
 
         <div className="bg-muted/50 rounded-xl p-6 border border-border">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <h3 className="mb-4 flex items-center gap-2">
             <Target className="w-5 h-5 text-secondary" />
             Accuracy Metrics
           </h3>
@@ -56,7 +56,7 @@ export function AutomationTab() {
         </div>
 
         <div className="bg-muted/50 rounded-xl p-6 border border-border">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <h3 className="mb-4 flex items-center gap-2">
             <Award className="w-5 h-5 text-accent" />
             Partner Satisfaction
           </h3>

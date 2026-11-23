@@ -47,8 +47,8 @@ export function IntelligenceModulesGrid({ modules }: IntelligenceModulesGridProp
               key={index}
               className="bg-card border border-border rounded-xl p-6 hover:border-primary/50 transition-all"
             >
-              <h3 className="text-lg font-semibold mb-3">{module.title}</h3>
-              <p className="text-muted-foreground mb-4">{module.description}</p>
+              <h3 className="mb-3">{module.title}</h3>
+              <p className="mb-4">{module.description}</p>
               <ul className="space-y-2">
                 {module.capabilities.map((capability, idx) => (
                   <li key={idx} className="flex items-start gap-2 text-sm">
@@ -74,21 +74,19 @@ export function IntelligenceModulesGrid({ modules }: IntelligenceModulesGridProp
             <div className="text-3xl font-bold text-secondary mb-2">
               {formatCurrency(12500000, { compact: true })}
             </div>
-            <p className="text-muted-foreground">
-              Revenue protected through proactive pipeline management
-            </p>
+            <p>Revenue protected through proactive pipeline management</p>
           </div>
           <div className="text-center p-4">
             <div className="text-3xl font-bold text-primary mb-2">{formatPercentage(0.94)}</div>
-            <p className="text-muted-foreground">Overall forecasting accuracy achieved</p>
+            <p>Overall forecasting accuracy achieved</p>
           </div>
           <div className="text-center p-4">
             <div className="text-3xl font-bold text-secondary mb-2">{formatPercentage(0.31)}</div>
-            <p className="text-muted-foreground">Improvement in revenue forecast accuracy</p>
+            <p>Improvement in revenue forecast accuracy</p>
           </div>
           <div className="text-center p-4">
             <div className="text-3xl font-bold text-primary mb-2">{formatPercentage(0.26)}</div>
-            <p className="text-muted-foreground">Reduction in deal slippage</p>
+            <p>Reduction in deal slippage</p>
           </div>
         </div>
       </SectionCard>
@@ -101,7 +99,7 @@ export function IntelligenceModulesGrid({ modules }: IntelligenceModulesGridProp
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-card border border-border rounded-xl p-6">
-            <h3 className="text-lg font-semibold mb-4">Deal Health Signals (50+)</h3>
+            <h3 className="mb-4">Deal Health Signals (50+)</h3>
             <ul className="space-y-2 text-muted-foreground text-sm">
               {dealHealthSignals.map((signal, idx) => (
                 <li key={idx}>• {signal}</li>
@@ -109,7 +107,7 @@ export function IntelligenceModulesGrid({ modules }: IntelligenceModulesGridProp
             </ul>
           </div>
           <div className="bg-card border border-border rounded-xl p-6">
-            <h3 className="text-lg font-semibold mb-4">Forecasting Signals</h3>
+            <h3 className="mb-4">Forecasting Signals</h3>
             <ul className="space-y-2 text-muted-foreground text-sm">
               {forecastingSignals.map((signal, idx) => (
                 <li key={idx}>• {signal}</li>
