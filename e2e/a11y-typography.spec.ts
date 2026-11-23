@@ -254,3 +254,49 @@ for (const width of [320, 390, 768, 1440]) {
     }
   })
 }
+
+// UI-09: every chart title on the project pages shares one header style.
+// Pages converted in 12-06/12-07 pass only after those plans land.
+test.describe('chart titles share one header style (UI-09)', () => {
+  const routes = [
+    '/projects/revenue-kpi',
+    '/projects/deal-funnel',
+    '/projects/lead-attribution',
+    '/projects/customer-lifetime-value',
+    '/projects/multi-channel-attribution',
+    '/projects/revenue-operations-center',
+  ]
+
+  for (const route of routes) {
+    test(`${route} chart titles`, async ({ page }, testInfo) => {
+      test.skip(testInfo.project.name !== 'chromium', SKIP)
+      await getOnly(page)
+      await page.setViewportSize({ width: 1440, height: 900 })
+      await page.goto(route)
+      await settlePage(page)
+
+      const titles = await page.locator('[data-slot="chart-title"]').evaluateAll((els) =>
+        els
+          .filter((el) => (el as HTMLElement).getClientRects().length > 0)
+          .map((el) => {
+            const cs = getComputedStyle(el)
+            return {
+              text: el.textContent ?? '',
+              size: cs.fontSize,
+              weight: cs.fontWeight,
+              family: cs.fontFamily,
+              align: cs.textAlign,
+            }
+          })
+      )
+
+      expect(titles.length, `${route} has chart titles`).toBeGreaterThan(0)
+      for (const t of titles) {
+        expect(t.size, t.text).toBe('15.75px')
+        expect(t.weight, t.text).toBe('600')
+        expect(t.family, t.text).toMatch(/spline/i)
+        expect(['start', 'left'], t.text).toContain(t.align)
+      }
+    })
+  }
+})
