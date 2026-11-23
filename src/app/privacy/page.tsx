@@ -8,9 +8,12 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 import { PRIVACY_POLICY_LAST_UPDATED } from './policy-date'
 
 // Every statement on this page describes what the code does today. When the
-// contact flow (src/lib/email-service.ts), analytics (src/app/layout.tsx) or
-// Sentry config (instrumentation-client.ts, sentry.shared.ts) changes, update
-// this page and PRIVACY_POLICY_LAST_UPDATED in the same change.
+// contact flow (src/lib/email-service.ts, including contact storage in
+// persistSubmission/buildContactSubmissionRow), the retention purge
+// (src/app/api/cron/purge-contact-submissions/route.ts and its vercel.json
+// schedule), analytics (src/app/layout.tsx) or Sentry config
+// (instrumentation-client.ts, sentry.shared.ts) changes, update this page and
+// PRIVACY_POLICY_LAST_UPDATED in the same change.
 
 const PATH = '/privacy'
 const CONTACT_EMAIL = 'hudsor01@icloud.com'
@@ -20,7 +23,7 @@ export const dynamic = 'force-static'
 export const metadata = genMeta({
   title: 'Privacy Policy',
   description:
-    'What richardwhudsonjr.com collects: contact form messages sent by email, cookie-free Vercel analytics, and Sentry error reports. No cookies, ads or data sales.',
+    'What richardwhudsonjr.com collects: contact messages (emailed, stored 24 months), cookie-free Vercel analytics and Sentry error reports. No cookies or ads.',
   path: PATH,
   ogTitle: 'Privacy Policy',
   subtitle: 'richardwhudsonjr.com',
@@ -98,8 +101,8 @@ export default function PrivacyPage() {
               <li>Your name, email address and message (required)</li>
               <li>A phone number (optional)</li>
               <li>
-                A company name (optional). It is checked on the server but is not currently included
-                in the email or kept anywhere.
+                A company name (optional). It is stored with your message but is not included in the
+                emails.
               </li>
             </ul>
             <p>When you press Send, two emails go out through Resend, an email delivery service:</p>
@@ -114,15 +117,23 @@ export default function PrivacyPage() {
               </li>
             </ul>
             <p>
-              The site does not save submissions to a database. They exist as emails in my inbox and
-              in Resend&apos;s sending records. I use them only to reply to you, and I do not add
-              you to any mailing list.
+              Each message you send is also stored in the site&apos;s database, hosted by Neon: your
+              name, email address, company, phone number and message, plus whether the email to me
+              was delivered. Your IP address and browser user agent are not stored with it. I use
+              submissions only to reply to you, and I do not add you to any mailing list.
             </p>
             <p>
               To stop abuse, the server uses your IP address (and checks your browser&apos;s user
               agent for signs of automation) to limit the form to three messages an hour. That count
               is kept only in the server&apos;s memory, for a short time, and is never written to a
               database.
+            </p>
+          </Section>
+
+          <Section title="Legal basis">
+            <p>
+              I handle what you send through the contact form on the basis of my legitimate interest
+              in replying to messages you choose to send me (GDPR Article 6(1)(f)).
             </p>
           </Section>
 
@@ -181,19 +192,50 @@ export default function PrivacyPage() {
             </p>
           </Section>
 
+          <Section title="Processors">
+            <p>These services process data on my behalf:</p>
+            <ul className={LIST_CLASS}>
+              <li>
+                <ExternalLink href="https://resend.com/legal/privacy-policy">Resend</ExternalLink>:
+                email delivery
+              </li>
+              <li>
+                <ExternalLink href="https://www.databricks.com/legal/privacynotice">
+                  Neon
+                </ExternalLink>
+                : database storage of contact submissions
+              </li>
+              <li>
+                <ExternalLink href="https://vercel.com/legal/privacy-notice">Vercel</ExternalLink>:
+                hosting and cookie-free analytics
+              </li>
+              <li>
+                <ExternalLink href="https://sentry.io/privacy/">Sentry</ExternalLink>: error reports
+              </li>
+            </ul>
+          </Section>
+
           <Section title="How long data is kept">
-            <p>
-              The site sets no automatic deletion period. Contact emails stay in my inbox until I
-              delete them, and Resend, Vercel and Sentry keep their records for the periods set out
-              in their own policies. Rate-limit counts disappear from server memory on their own.
-            </p>
+            <ul className={LIST_CLASS}>
+              <li>
+                Contact submissions stored in the site&apos;s database are deleted automatically
+                once they are 24 months old. A deletion job runs daily.
+              </li>
+              <li>Contact emails are deleted from my inbox within 24 months.</li>
+              <li>
+                Resend, Neon, Vercel and Sentry keep their own records, including backups, for the
+                periods set out in their own policies.
+              </li>
+              <li>Rate-limit counts exist only in server memory and disappear on their own.</li>
+            </ul>
           </Section>
 
           <Section title="Your choices">
             <p>
-              You can ask me to delete the emails from your contact form submission, or ask what I
-              have, by writing to <Email />. If you prefer, you can skip the form and email me
-              directly.
+              You can ask me to delete your contact form submission (the copy stored in the
+              site&apos;s database and the emails in my inbox), or ask what I have, by writing to{' '}
+              <Email />. I will respond within 30 days. If you prefer, you can skip the form and
+              email me directly.
             </p>
           </Section>
 
