@@ -217,3 +217,52 @@ test.describe('Project detail pages — tab switcher updates URL', () => {
     })
   }
 })
+
+test.describe('Project detail pages — KPI cards (UI-09, UI-11)', () => {
+  test.use({ viewport: { width: 1440, height: 900 } })
+  test.beforeEach(({}, testInfo) => {
+    test.skip(testInfo.project.name !== 'chromium', 'geometry checked once, on chromium')
+  })
+
+  for (const slug of ['revenue-kpi', 'churn-retention']) {
+    test(`/projects/${slug}: KPI value is the most prominent text`, async ({ page }) => {
+      await page.goto(`/projects/${slug}`, { timeout: 60000 })
+      const values = page.locator('[data-testid="metrics-grid"] [data-slot="metric-value"]')
+      await expect(values.first()).toBeVisible()
+      const ratios = await page
+        .locator('[data-testid="metrics-grid"] [data-slot="metric-value"]')
+        .evaluateAll((nodes) =>
+          nodes.map((value) => {
+            const card = value.closest('[data-testid="metrics-grid"] > *') as HTMLElement
+            const label = card.querySelector('[data-slot="metric-label"]') as HTMLElement
+            return (
+              parseFloat(getComputedStyle(value).fontSize) /
+              parseFloat(getComputedStyle(label).fontSize)
+            )
+          })
+        )
+      expect(ratios.length).toBeGreaterThan(0)
+      for (const ratio of ratios) expect(ratio).toBeGreaterThanOrEqual(1.5)
+    })
+  }
+
+  test('/projects/revenue-kpi figures are identical across loads and match the narrative', async ({
+    page,
+    request,
+  }) => {
+    const grid = page.locator('[data-testid="metrics-grid"]')
+    await page.goto('/projects/revenue-kpi', { timeout: 60000 })
+    await expect(grid).toBeVisible()
+    const first = await grid.innerText()
+    await page.reload()
+    await expect(grid).toBeVisible()
+    const second = await grid.innerText()
+    expect(second).toBe(first)
+    expect(first).toContain('432%')
+
+    const html = await (await request.get('/projects/revenue-kpi')).text()
+    const start = html.indexOf('data-testid="metrics-grid"')
+    expect(start).toBeGreaterThan(-1)
+    expect(html.slice(start, start + 8000)).toContain('432%')
+  })
+})
