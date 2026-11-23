@@ -1,0 +1,135 @@
+import { expect, type Page, test } from '@playwright/test'
+import { databaseAvailable, NEEDS_DATABASE } from './_helpers/database'
+
+/**
+ * A11Y-04: the skip link is the first tab stop and moves focus to #main-content
+ * on every route, including 404s.
+ * A11Y-05: exactly one <main>, one h1, and no heading-level skips on every route
+ * (covers revenue-kpi and the NarrativeSections h3s per RESEARCH Open Question 3;
+ * no NarrativeSections edit, this test proves it). Lazy charts are mounted by
+ * scrolling through the page first. GET-only: non-GET requests are aborted.
+ */
+
+const PROJECT_SLUGS = [
+  'cac-unit-economics',
+  'churn-retention',
+  'commission-optimization',
+  'customer-lifetime-value',
+  'deal-funnel',
+  'forecast-pipeline-intelligence',
+  'lead-attribution',
+  'multi-channel-attribution',
+  'partner-performance',
+  'partnership-program-implementation',
+  'quota-territory-management',
+  'revenue-kpi',
+  'revenue-operations-center',
+  'sales-enablement',
+]
+
+const STATIC_ROUTES = [
+  '/',
+  '/about',
+  '/projects',
+  ...PROJECT_SLUGS.map((slug) => `/projects/${slug}`),
+  '/blog',
+  '/contact',
+  '/resume',
+  '/resume/view',
+  '/tools',
+  '/tools/pipeline-coverage-calculator',
+  '/tools/revops-maturity-scorecard',
+  '/privacy',
+  '/this-page-does-not-exist',
+  '/projects/nope',
+]
+
+const DB_ROUTES = ['/blog/nope', '/blog/category/nope']
+
+async function checkRoute(page: Page, path: string): Promise<void> {
+  await page.route('**/*', (route) =>
+    route.request().method() === 'GET' || route.request().method() === 'HEAD'
+      ? route.continue()
+      : route.abort(),
+  )
+  await page.goto(path, { waitUntil: 'load' })
+
+  await expect(page.locator('main'), `${path} <main> count`).toHaveCount(1)
+  await expect(page.locator('#main-content'), `${path} #main-content count`).toHaveCount(1)
+  await expect(page.locator('#main-content')).toHaveAttribute('tabindex', '-1')
+  await expect(page.locator('a[href="#main-content"]')).toHaveCount(1)
+
+  await page.keyboard.press('Tab')
+  await expect(page.locator('a[href="#main-content"]'), `${path} skip link focus`).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(page.locator('#main-content'), `${path} main focus after Enter`).toBeFocused()
+
+  const total = await page.evaluate(() => document.documentElement.scrollHeight)
+  for (let y = 0; y < total; y += 500) {
+    await page.mouse.wheel(0, 500)
+    await page.waitForTimeout(100)
+  }
+  await page.evaluate(() => window.scrollTo(0, 0))
+  await page.waitForTimeout(1500)
+
+  const headings = await page.evaluate(() =>
+    Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6'))
+      .filter((el) => (el as HTMLElement).checkVisibility())
+      .map((el) => ({
+        level: Number(el.tagName.slice(1)),
+        text: (el.textContent ?? '').trim().slice(0, 60),
+      })),
+  )
+
+  expect(headings.length, `${path} has headings`).toBeGreaterThan(0)
+  expect(headings[0]?.level, `${path} first heading is h1`).toBe(1)
+  expect(
+    headings.filter((h) => h.level === 1).length,
+    `${path} h1 count`,
+  ).toBe(1)
+
+  const skips: string[] = []
+  for (let i = 1; i < headings.length; i++) {
+    const prev = headings[i - 1]
+    const cur = headings[i]
+    if (prev && cur && cur.level > prev.level + 1) {
+      skips.push(`h${prev.level} "${prev.text}" -> h${cur.level} "${cur.text}"`)
+    }
+  }
+  expect(skips, `${path} heading skips`).toEqual([])
+}
+
+for (const path of STATIC_ROUTES) {
+  test(`${path} skip link, single main, heading outline`, async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'chromium', 'route loop runs once, in Chromium')
+    await checkRoute(page, path)
+  })
+}
+
+for (const path of DB_ROUTES) {
+  test(`${path} skip link, single main, heading outline`, async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'chromium', 'route loop runs once, in Chromium')
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+    await checkRoute(page, path)
+  })
+}
+
+test('every other sitemap route passes the skip link and outline gate', async ({
+  page,
+  request,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'route loop runs once, in Chromium')
+  test.skip(!(await databaseAvailable(request)), NEEDS_DATABASE)
+  test.setTimeout(240_000)
+
+  const xml = await (await request.get('/sitemap.xml')).text()
+  const paths = [...xml.matchAll(/<loc>(.*?)<\/loc>/g)]
+    .map((m) => new URL(m[1] ?? '').pathname)
+    .filter((p) => !STATIC_ROUTES.includes(p))
+
+  for (const path of paths) {
+    await test.step(path, async () => {
+      await checkRoute(page, path)
+    })
+  }
+})
