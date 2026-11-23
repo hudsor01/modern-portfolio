@@ -296,3 +296,15 @@ test.describe('Projects Keyboard Navigation', () => {
     await expect(searchInput).toHaveValue('revenue')
   })
 })
+
+test('projects shows canonical data-stat tiles once each', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'checked once, on chromium')
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto('/projects')
+  await page.waitForLoadState('networkidle')
+  for (const key of ['revenue', 'transaction-growth', 'network-growth']) {
+    await expect(page.locator(`[data-stat="${key}"]`)).toHaveCount(1)
+  }
+  await expect(page.locator('[data-stat="years"]')).toHaveCount(0)
+  await expect(page.getByText('Average Growth')).toHaveCount(0)
+})

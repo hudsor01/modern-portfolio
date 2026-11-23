@@ -68,4 +68,22 @@ test.describe('/about page', () => {
     expect(blob).not.toContain('"@type":"FAQPage"')
     expect(blob).toContain('"@type":"BreadcrumbList"')
   })
+
+  test('each headline stat renders once with its canonical label (data-stat)', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'chromium', 'checked once, on chromium')
+    await page.setViewportSize({ width: 1440, height: 900 })
+    const labels: Record<string, string> = {
+      revenue: 'Revenue Impact',
+      'transaction-growth': 'Transaction Growth',
+      'network-growth': 'Network Growth',
+      years: 'Years Experience',
+    }
+    for (const [key, label] of Object.entries(labels)) {
+      await expect(page.locator(`[data-stat="${key}"]`)).toHaveCount(1)
+      await expect(page.locator(`[data-stat-label="${key}"]`)).toHaveText(label)
+    }
+    await expect(page.getByText('Projects Delivered')).toHaveCount(0)
+  })
 })

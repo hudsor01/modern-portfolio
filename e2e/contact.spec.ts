@@ -82,3 +82,13 @@ test.describe('/contact page (no JavaScript)', () => {
     }
   })
 })
+
+test('contact shows one canonical revenue data-stat and no other', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'checked once, on chromium')
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto('/contact')
+  await page.waitForLoadState('networkidle')
+  await expect(page.locator('[data-stat="revenue"]')).toHaveCount(1)
+  await expect(page.locator('[data-stat-label="revenue"]')).toHaveText('Revenue Impact')
+  await expect(page.locator('[data-stat]')).toHaveCount(1)
+})
