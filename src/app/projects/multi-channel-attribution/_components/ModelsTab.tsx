@@ -2,17 +2,17 @@
 
 import { attributionModels } from '../data/constants'
 import { formatCurrency, formatPercent } from '../utils'
+import { ChartHeader } from '@/components/ui/chart-container'
 
 export function ModelsTab() {
   return (
     <div className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out mb-8">
-      <div className="mb-4">
-        <h2 className="typography-h4 mb-1">Attribution Model Performance & ROI Comparison</h2>
-        <p className="typography-small">
-          Comprehensive analysis of attribution methodologies from traditional to machine learning
-          approaches
-        </p>
-      </div>
+      <ChartHeader
+        title="Attribution Model Performance & ROI Comparison"
+        description="Comprehensive analysis of attribution methodologies from traditional to machine learning approaches"
+        headingLevel={2}
+        className="mb-4"
+      />
 
       <div className="overflow-x-auto">
         <table className="w-full">

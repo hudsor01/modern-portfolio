@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { CHART_BOX, ChartSkeleton } from '@/components/charts/chart-skeleton'
+import { ChartHeader } from '@/components/ui/chart-container'
 
 const AttributionModelChart = dynamic(() => import('./AttributionModelChart'), {
   loading: () => <ChartSkeleton height="md" />,
@@ -18,12 +19,12 @@ export function OverviewTab() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       {/* Attribution Model Comparison */}
       <div className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out">
-        <div className="mb-4">
-          <h2 className="typography-h4 mb-1">Attribution Model Performance Comparison</h2>
-          <p className="typography-small">
-            ML-driven data attribution vs traditional models showing 92.4% accuracy improvement
-          </p>
-        </div>
+        <ChartHeader
+          title="Attribution Model Performance Comparison"
+          description="ML-driven data attribution vs traditional models showing 92.4% accuracy improvement"
+          headingLevel={2}
+          className="mb-4"
+        />
         <div className={CHART_BOX.md}>
           <AttributionModelChart />
         </div>
@@ -31,12 +32,12 @@ export function OverviewTab() {
 
       {/* Channel ROI Analysis */}
       <div className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out">
-        <div className="mb-4">
-          <h2 className="typography-h4 mb-1">Cross-Channel ROI & Attribution Analysis</h2>
-          <p className="typography-small">
-            Multi-touch attribution revealing true channel performance and investment optimization
-          </p>
-        </div>
+        <ChartHeader
+          title="Cross-Channel ROI & Attribution Analysis"
+          description="Multi-touch attribution revealing true channel performance and investment optimization"
+          headingLevel={2}
+          className="mb-4"
+        />
         <div className={CHART_BOX.md}>
           <ChannelROIChart />
         </div>

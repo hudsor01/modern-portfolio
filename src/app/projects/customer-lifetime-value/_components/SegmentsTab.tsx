@@ -7,6 +7,7 @@ import { safeLazy } from '@/lib/safe-lazy'
 
 import { customerSegments } from '../data/constants'
 import { formatCurrency, formatPercent } from '../utils'
+import { ChartHeader } from '@/components/ui/chart-container'
 
 const CustomerSegmentChart = dynamic(
   safeLazy(() => import('./CustomerSegmentChart'), 'CustomerSegmentChart', ChartLoadError),
@@ -21,12 +22,12 @@ export function SegmentsTab() {
     <div className="space-y-6 mb-8">
       {/* Customer Segment Chart */}
       <div className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out">
-        <div className="mb-4">
-          <h2 className="typography-h4 mb-1">Customer Segment Distribution & CLV Analysis</h2>
-          <p className="typography-small">
-            RFM-based customer segmentation with predictive CLV modeling across behavioral clusters
-          </p>
-        </div>
+        <ChartHeader
+          title="Customer Segment Distribution & CLV Analysis"
+          description="RFM-based customer segmentation with predictive CLV modeling across behavioral clusters"
+          headingLevel={2}
+          className="mb-4"
+        />
         <div className={CHART_BOX.sm}>
           <CustomerSegmentChart />
         </div>
@@ -34,14 +35,12 @@ export function SegmentsTab() {
 
       {/* Segment Details Table */}
       <div className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out">
-        <div className="mb-4">
-          <h2 className="typography-h4 mb-1">
-            Customer Segment Intelligence & Behavioral Insights
-          </h2>
-          <p className="typography-small">
-            Detailed segment analysis with CLV predictions and engagement probability scores
-          </p>
-        </div>
+        <ChartHeader
+          title="Customer Segment Intelligence & Behavioral Insights"
+          description="Detailed segment analysis with CLV predictions and engagement probability scores"
+          headingLevel={2}
+          className="mb-4"
+        />
 
         <div className="overflow-x-auto">
           <table className="w-full">

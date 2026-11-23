@@ -2,16 +2,17 @@
 
 import { TrendingUp } from 'lucide-react'
 import { predictiveMetrics } from '../data/constants'
+import { ChartHeader } from '@/components/ui/chart-container'
 
 export function PredictionsTab() {
   return (
     <div className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out mb-8">
-      <div className="mb-4">
-        <h2 className="typography-h4 mb-1">Real-Time Predictive Analytics Dashboard</h2>
-        <p className="typography-small">
-          Advanced machine learning predictions for customer behavior and purchase patterns
-        </p>
-      </div>
+      <ChartHeader
+        title="Real-Time Predictive Analytics Dashboard"
+        description="Advanced machine learning predictions for customer behavior and purchase patterns"
+        headingLevel={2}
+        className="mb-4"
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {predictiveMetrics.map((metric, index) => (
