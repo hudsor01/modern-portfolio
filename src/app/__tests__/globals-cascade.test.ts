@@ -95,4 +95,59 @@ describe('globals.css cascade', () => {
     expect(rule?.parents).toEqual([])
     expect(rule?.body).toContain('outline: none')
   })
+  describe('shared text-link style (A11Y-03)', () => {
+    const decls = (body: string) =>
+      body
+        .split(';')
+        .map((d) => d.replace(/\s+/g, ' ').trim())
+        .filter(Boolean)
+        .sort()
+    const find = (selector: string, parent?: string) =>
+      rules.find(
+        (r) => r.selector === selector && (parent === undefined || r.parents.includes(parent))
+      )
+    // the utility's own declarations are the body minus its nested rules
+    const own = (body: string) => body.replace(/&[^{]*\{[^}]*\}/g, '')
+
+    it('declares the text-link utility', () => {
+      const raw = css.slice(css.indexOf('@utility text-link'))
+      const block = raw.slice(0, raw.indexOf('\n}') + 2)
+      const d = decls(own(block.slice(block.indexOf('{') + 1, -2)))
+      expect(d).toEqual(
+        decls(`color: var(--color-primary);
+          text-decoration-line: underline;
+          text-decoration-thickness: 1px;
+          text-underline-offset: 0.25rem;
+          text-decoration-color: currentColor`)
+      )
+      expect(find('&:hover', '@utility text-link')?.body).toMatch(
+        /color:\s*var\(--color-primary-hover\)[\s\S]*text-decoration-thickness:\s*2px/
+      )
+      expect(find('&:focus-visible', '@utility text-link')?.body).toContain(
+        'border-radius: var(--radius-sm)'
+      )
+    })
+
+    it('styles .blog-content a identically in @layer utilities', () => {
+      const a = find('.blog-content a', '@layer utilities')
+      expect(decls(a?.body ?? '')).toEqual(
+        decls(`color: var(--color-primary);
+          text-decoration-line: underline;
+          text-decoration-thickness: 1px;
+          text-underline-offset: 0.25rem;
+          text-decoration-color: currentColor`)
+      )
+      expect(find('.blog-content a:hover', '@layer utilities')?.body).toMatch(
+        /color:\s*var\(--color-primary-hover\)[\s\S]*text-decoration-thickness:\s*2px/
+      )
+      expect(find('.blog-content a:focus-visible', '@layer utilities')?.body).toContain(
+        'border-radius: var(--radius-sm)'
+      )
+    })
+
+    it('has no global a rule that sets text-decoration', () => {
+      const offenders = rules.filter((r) => r.selector === 'a' && /text-decoration/.test(r.body))
+      expect(offenders).toEqual([])
+    })
+  })
 })

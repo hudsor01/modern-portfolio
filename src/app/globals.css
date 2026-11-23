@@ -91,6 +91,23 @@ label[for],
     margin-bottom: 1rem;
   }
 
+  .blog-content a {
+    color: var(--color-primary);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25rem;
+    text-decoration-color: currentColor;
+  }
+
+  .blog-content a:hover {
+    color: var(--color-primary-hover);
+    text-decoration-thickness: 2px;
+  }
+
+  .blog-content a:focus-visible {
+    border-radius: var(--radius-sm);
+  }
+
   .blog-content ul {
     list-style-type: disc;
     list-style-position: inside;
@@ -851,6 +868,26 @@ input, textarea, select {
 @utility tracking-wider { letter-spacing: var(--letter-spacing-wider); }
 
 /* Font family utilities - using Next.js loaded fonts */
+/* Running-text links only (A11Y-03). Never on nav, footer lists, cards, buttons,
+   breadcrumbs or badges; no global a rule. Do not combine with another
+   text-<colour> class in cn() — tailwind-merge treats text-link as a text colour. */
+@utility text-link {
+  color: var(--color-primary);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25rem;
+  text-decoration-color: currentColor;
+
+  &:hover {
+    color: var(--color-primary-hover);
+    text-decoration-thickness: 2px;
+  }
+
+  &:focus-visible {
+    border-radius: var(--radius-sm);
+  }
+}
+
 @utility font-sans { font-family: var(--font-spline), system-ui, -apple-system, 'Segoe UI', sans-serif; }
 @utility font-display { font-family: var(--font-playfair), Georgia, 'Times New Roman', serif; }
 @utility font-mono { font-family: var(--font-roboto-mono), 'Fira Code', Consolas, monospace; }
