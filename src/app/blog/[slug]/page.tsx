@@ -15,6 +15,7 @@ import { withDbRetry } from '@/lib/db-retry'
 import { blogPosts } from '@/db/schema'
 import { canonicalUrl } from '@/lib/absolute-url'
 import { brandTitle, stripBrandSuffix } from '@/app/shared-metadata'
+import { resolveExcerpt } from '@/lib/blog-excerpt'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 
 // Force runtime rendering. notFound() inside Next.js 16's ISR-rendered
@@ -59,7 +60,9 @@ const getBlogPost = cache(async (slug: string): Promise<BlogPostData | null> => 
     if (!post) return null
     if (post.deletedAt) return null
 
-    return transformToBlogPostData(post)
+    const data = transformToBlogPostData(post)
+    const excerpt = resolveExcerpt({ excerpt: data.excerpt, content: data.content })
+    return { ...data, excerpt: excerpt || undefined }
   } catch (error) {
     // Distinguish "not found" (null) from "query failed" (re-throw).
     // Without this, a transient Neon outage would return null → trigger
@@ -175,7 +178,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <div className="min-h-screen bg-background">
         <Navbar />
         <main id="main-content" tabIndex={-1}>
-          <div className="pt-24 pb-16 lg:pt-32 lg:pb-20">
+          <div className="pt-24 pb-12 lg:pb-16">
             <BlogPostLayout post={post} />
             <div className="max-w-4xl mx-auto px-6 lg:px-8">
               <RelatedPosts

@@ -33,13 +33,11 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
 
   // Build detail items, filtering out nulls
   const detailItems: Array<{ label: string; value: string }> = []
-  if (publishedDate) detailItems.push({ label: 'Published', value: publishedDate })
-  if (readingTime) detailItems.push({ label: 'Reading time', value: `${readingTime} min` })
   if (wordCount) detailItems.push({ label: 'Word count', value: wordCount.toLocaleString() })
   if (post.category?.name) detailItems.push({ label: 'Category', value: post.category.name })
 
   return (
-    <article className="portfolio-container py-10 lg:py-14">
+    <article className="portfolio-container pb-10 lg:pb-14">
       {/* Back Link */}
       <Link
         href="/blog"
@@ -168,17 +166,19 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
         </div>
 
         <aside className="space-y-6 lg:sticky lg:top-24 self-start">
-          <Card variant="outline" className="p-6">
-            <p className="uppercase tracking-wide">Post details</p>
-            <div className="mt-4 space-y-3 text-sm">
-              {detailItems.map((detail) => (
-                <div key={detail.label} className="flex items-center justify-between gap-4">
-                  <span className="text-muted-foreground">{detail.label}</span>
-                  <span className="font-medium text-foreground">{detail.value}</span>
-                </div>
-              ))}
-            </div>
-          </Card>
+          {detailItems.length > 0 && (
+            <Card variant="outline" className="p-6">
+              <p className="uppercase tracking-wide">Post details</p>
+              <div className="mt-4 space-y-3 text-base">
+                {detailItems.map((detail) => (
+                  <div key={detail.label} className="flex items-center justify-between gap-4">
+                    <span className="text-muted-foreground">{detail.label}</span>
+                    <span className="font-semibold text-foreground">{detail.value}</span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
 
           {post.author?.bio && (
             <Card variant="outline" className="p-6">
