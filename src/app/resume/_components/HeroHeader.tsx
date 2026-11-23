@@ -9,6 +9,13 @@ import { FileDown, Mail, Globe, Eye } from 'lucide-react'
 import { Github, Linkedin } from '@/components/ui/brand-icons'
 import { AvailabilityBadge } from '@/components/ui/availability-badge'
 
+const socials = [
+  { label: 'Email', href: 'mailto:hudsor01@icloud.com', external: false, Icon: Mail },
+  { label: 'LinkedIn', href: 'https://linkedin.com/in/hudsor01', external: true, Icon: Linkedin },
+  { label: 'GitHub', href: 'https://github.com/hudsor01', external: true, Icon: Github },
+  { label: 'Website', href: 'https://richardwhudsonjr.com', external: true, Icon: Globe },
+]
+
 interface HeroHeaderProps {
   showPdf: boolean
   isDownloading: boolean
@@ -46,117 +53,48 @@ export function HeroHeader({
         </p>
       </div>
 
-      {/* Interactive Action Buttons */}
-      <div className="relative max-w-4xl mx-auto pt-8">
-        {/* Action Buttons Container */}
-        <div className="bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:border-primary/30">
-          <div className="bg-muted/50 rounded-xl p-6">
-            {/* Action Buttons Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {/* Download Resume - Primary Action */}
-              <div className="group relative overflow-hidden rounded-xl bg-primary/10 border border-primary/30 hover:border-primary/50 transition-all duration-300 hover:scale-105">
-                <Button
-                  size="lg"
-                  className="relative w-full h-20 bg-transparent hover:bg-primary/5 text-foreground border-0 shadow-none p-6"
-                  onClick={onDownloadResume}
-                  disabled={isDownloading}
-                >
-                  <div className="flex flex-col items-center justify-center space-y-1">
-                    <FileDown
-                      size={20}
-                      className="text-primary group-hover:scale-110 transition-all duration-300 ease-out"
-                    />
-                    <span className="text-sm font-medium">
-                      {isDownloading ? 'Downloading...' : 'Download PDF'}
-                    </span>
-                  </div>
-                </Button>
-              </div>
-
-              {/* View Toggle - Interactive (ghost/outline so it reads as a
-                  secondary control, visually distinct from the primary
-                  Download PDF action) */}
-              <div className="group relative overflow-hidden rounded-xl bg-transparent border border-dashed border-border hover:border-secondary/50 hover:bg-secondary/5 transition-all duration-300">
-                <Button
-                  size="lg"
-                  className="relative w-full h-20 bg-transparent hover:bg-transparent text-muted-foreground border-0 shadow-none p-6"
-                  onClick={onToggleView}
-                  aria-pressed={showPdf}
-                >
-                  <div className="flex flex-col items-center justify-center space-y-1">
-                    <Eye
-                      size={20}
-                      className="text-secondary group-hover:scale-110 transition-all duration-300 ease-out"
-                    />
-                    <span className="text-sm font-medium">
-                      {showPdf ? 'Hide preview' : 'Preview PDF'}
-                    </span>
-                  </div>
-                </Button>
-              </div>
-
-              {/* Contact - Call to Action */}
-              <div className="group relative overflow-hidden rounded-xl bg-accent/10 border border-accent/30 hover:border-accent/50 transition-all duration-300 hover:scale-105">
-                <Link
-                  href="/contact"
-                  className="relative block w-full h-20 bg-transparent hover:bg-accent/5 text-foreground p-6 rounded-lg transition-all duration-150 ease-out"
-                >
-                  <div className="flex flex-col items-center justify-center space-y-1 h-full">
-                    <Mail
-                      size={20}
-                      className="text-accent group-hover:scale-110 transition-all duration-300 ease-out"
-                    />
-                    <span className="text-sm font-medium">Let's Connect</span>
-                  </div>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Actions: Download is primary, Preview secondary, Connect tertiary */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 pt-8">
+        <Button
+          size="lg"
+          className="min-h-[44px] px-6 w-full sm:w-auto"
+          onClick={onDownloadResume}
+          disabled={isDownloading}
+        >
+          <FileDown className="w-5 h-5" aria-hidden="true" />
+          {isDownloading ? 'Downloading...' : 'Download PDF'}
+        </Button>
+        <Button
+          variant="outline"
+          size="lg"
+          className="min-h-[44px] px-6 w-full sm:w-auto"
+          aria-pressed={showPdf}
+          onClick={onToggleView}
+        >
+          <Eye className="w-5 h-5" aria-hidden="true" />
+          {showPdf ? 'Hide preview' : 'Preview PDF'}
+        </Button>
+        <Button asChild variant="ghost" size="lg" className="min-h-[44px] px-6 w-full sm:w-auto">
+          <Link href="/contact">
+            <Mail className="w-5 h-5" aria-hidden="true" />
+            Let's Connect
+          </Link>
+        </Button>
       </div>
 
-      {/* Social Icons Container */}
-      <div className="max-w-2xl mx-auto pt-8">
-        <div className="bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:border-primary/30">
-          <div className="bg-muted/50 rounded-xl p-6">
-            <div className="flex justify-center gap-6">
-              <a
-                href="mailto:hudsor01@icloud.com"
-                className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                aria-label="Email"
-              >
-                <Mail className="h-7 w-7" />
-              </a>
-              <a
-                href="https://linkedin.com/in/hudsor01"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="h-7 w-7" />
-              </a>
-              <a
-                href="https://github.com/hudsor01"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                aria-label="GitHub"
-              >
-                <Github className="h-7 w-7" />
-              </a>
-              <a
-                href="https://richardwhudsonjr.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                aria-label="Website"
-              >
-                <Globe className="h-7 w-7" />
-              </a>
-            </div>
-          </div>
-        </div>
+      {/* Social links */}
+      <div className="flex justify-center gap-2 pt-6">
+        {socials.map(({ label, href, external, Icon }) => (
+          <a
+            key={label}
+            href={href}
+            {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-lg text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
+            aria-label={label}
+          >
+            <Icon className="h-6 w-6" aria-hidden="true" />
+          </a>
+        ))}
       </div>
     </div>
   )
