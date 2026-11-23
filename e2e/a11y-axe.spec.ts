@@ -166,7 +166,15 @@ test.describe('axe: hover and focus contrast', () => {
         }[] = []
         for (const el of Array.from(document.querySelectorAll<HTMLElement>('body *'))) {
           const cls = typeof el.className === 'string' ? el.className : ''
-          if (!cls || !(re.test(cls) || cls.includes('bg-accent'))) continue
+          if (
+            !cls ||
+            !(
+              re.test(cls) ||
+              cls.includes('bg-accent') ||
+              /(^|\s)bg-(primary\/8|secondary\/10)(\s|$)/.test(cls)
+            )
+          )
+            continue
           if (!el.checkVisibility()) continue
           if (seen.has(cls)) continue
           seen.add(cls)

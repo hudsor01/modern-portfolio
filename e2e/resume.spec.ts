@@ -38,7 +38,7 @@ test.describe('Resume Page', () => {
       main.getByRole('heading', { name: /revenue operations professional/i }).first()
     ).toBeVisible()
     await expect(main.getByRole('heading', { name: /education/i }).first()).toBeVisible()
-    await expect(main.getByRole('heading', { name: /skills & expertise/i })).toBeVisible()
+    await expect(main.getByRole('heading', { name: /skills by area/i })).toBeVisible()
   })
 
   test('has download resume button', async ({ page }) => {
@@ -96,7 +96,7 @@ test.describe('Resume Page', () => {
         // section heading rather than any text match (mobile navbar
         // contains hidden links matching the same regex).
         await expect(
-          page.locator('main').getByRole('heading', { name: /skills & expertise/i })
+          page.locator('main').getByRole('heading', { name: /skills by area/i })
         ).toBeVisible()
       }
     }
@@ -139,24 +139,41 @@ test.describe('Resume Page', () => {
     expect(newScroll).toBeGreaterThan(initialScroll)
   })
 
-  test('experience section displays job entries', async ({ page }) => {
-    // Look for experience-related content
-    const experienceContent = page.locator('section').filter({ hasText: /experience/i })
-
-    if (await experienceContent.isVisible()) {
-      // Should contain role/title information
-      await expect(experienceContent).toBeVisible()
+  test('every role renders as one card with its header inside', async ({ page }) => {
+    const main = page.locator('main')
+    const cards = main.locator('div.rounded-2xl').filter({ has: page.locator('h3 + p.font-semibold') })
+    const count = await cards.count()
+    expect(count).toBeGreaterThan(0)
+    for (let i = 0; i < count; i++) {
+      const card = cards.nth(i)
+      await expect(card.locator('h3')).toHaveCount(1)
+      await expect(card.getByText(/, [A-Z]{2}$/).first()).toBeVisible()
+      await expect(card.getByText(/\d{4}/).first()).toBeVisible()
     }
   })
 
-  test('skills section displays skill categories', async ({ page }) => {
-    // Look for skills section
-    const skillsSection = page.locator('section').filter({ hasText: /skills/i })
+  test('current role is a compact card with a Current pill', async ({ page }) => {
+    const card = page
+      .locator('main div.rounded-2xl')
+      .filter({ hasText: 'HomeVestors of America, Inc.' })
+      .first()
+    await expect(card.getByText('Current', { exact: true })).toBeVisible()
+    await expect(card.locator('ul')).toHaveCount(0)
+  })
 
-    if (await skillsSection.isVisible()) {
-      // Should contain various skill categories or tags
-      await expect(skillsSection).toBeVisible()
-    }
+  test('skills copy no longer promises an interactive matrix', async ({ page }) => {
+    await expect(page.getByText(/interactive skill matrix/i)).toHaveCount(0)
+    await expect(
+      page.locator('main').getByRole('heading', { name: /skills by area/i })
+    ).toBeVisible()
+  })
+
+  test('Download PDF is primary and Preview PDF is secondary', async ({ page }) => {
+    const main = page.locator('main')
+    const download = main.getByRole('button', { name: 'Download PDF' })
+    const preview = main.getByRole('button', { name: 'Preview PDF' })
+    expect(await download.getAttribute('class')).toContain('bg-primary')
+    expect(await preview.getAttribute('class')).toContain('bg-background')
   })
 
   test('passes accessibility audit', async ({ page }) => {
