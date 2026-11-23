@@ -61,7 +61,12 @@ const TransactionVolumeChart = memo(({ data }: TransactionVolumeChartProps): Rea
   if (!series.length) {
     return (
       <div className="portfolio-card">
-        <ChartWrapper title="Transaction Volume" caption="No data available" size="sm">
+        <ChartWrapper
+          headingLevel={2}
+          title="Transaction Volume"
+          caption="No data available"
+          size="sm"
+        >
           <div className="flex items-center justify-center h-full text-muted-foreground">
             No data available
           </div>
@@ -72,7 +77,12 @@ const TransactionVolumeChart = memo(({ data }: TransactionVolumeChartProps): Rea
 
   return (
     <div className="portfolio-card">
-      <ChartWrapper title="Transaction Volume" caption="Transactions per year" size="sm">
+      <ChartWrapper
+        headingLevel={2}
+        title="Transaction Volume"
+        caption="Transactions per year"
+        size="sm"
+      >
         <LineChart data={series} margin={chartConfig.margins.medium}>
           <ChartGrid />
           <ChartXAxis dataKey="name" />

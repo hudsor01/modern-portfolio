@@ -121,7 +121,12 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
   if (!yearlyData.length) {
     return (
       <div className="portfolio-card">
-        <ChartWrapper title="Revenue Growth Metrics" caption="No data available" size="md">
+        <ChartWrapper
+          headingLevel={2}
+          title="Revenue Growth Metrics"
+          caption="No data available"
+          size="md"
+        >
           <div className="flex items-center justify-center h-full text-muted-foreground">
             No data available
           </div>
@@ -133,6 +138,7 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
   return (
     <div className="portfolio-card">
       <ChartWrapper
+        headingLevel={2}
         title="Revenue Growth Metrics"
         caption="Year-over-year revenue and commissions"
         size="md"

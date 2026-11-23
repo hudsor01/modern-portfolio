@@ -30,6 +30,7 @@ export function ChartsGrid({ churnData, isLoading = false }: ChartsGridProps) {
     <div className="space-y-8 mb-8">
       {/* Retention Heatmap */}
       <ChartContainer
+        headingLevel={2}
         title="Partner Retention Patterns"
         description="Monthly retention rates by partner cohort"
         size="md"
@@ -40,6 +41,7 @@ export function ChartsGrid({ churnData, isLoading = false }: ChartsGridProps) {
 
       {/* Churn Trends */}
       <ChartContainer
+        headingLevel={2}
         title="Churn Rate Trends"
         description="Historical churn rate analysis and projections"
         size="md"
