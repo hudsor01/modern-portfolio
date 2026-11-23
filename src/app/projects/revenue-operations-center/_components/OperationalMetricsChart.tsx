@@ -87,7 +87,7 @@ const OperationalMetricsChart = memo(function OperationalMetricsChart() {
           <PolarRadiusAxis
             angle={90}
             domain={[60, 100]}
-            tick={{ fontSize: 10, fill: chartColors.axis }}
+            tick={{ fontSize: 12, fill: chartColors.axis }}
             tickFormatter={(value) => `${value}%`}
           />
           <Radar

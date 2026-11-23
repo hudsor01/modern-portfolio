@@ -61,7 +61,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
                     href={`/blog/category/${post.category.slug}`}
                     className="hover:opacity-80 transition-opacity"
                   >
-                    <Badge variant="secondary" className="uppercase tracking-wide text-[0.7rem]">
+                    <Badge variant="secondary" className="uppercase tracking-wide">
                       {post.category.name}
                     </Badge>
                   </Link>

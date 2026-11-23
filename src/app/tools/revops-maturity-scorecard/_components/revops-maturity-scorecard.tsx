@@ -86,7 +86,7 @@ export function RevOpsMaturityScorecard() {
                             className="sr-only"
                           />
                           <span className="text-base font-semibold leading-none">{opt.value}</span>
-                          <span className="mt-1 text-[10px] leading-tight">{opt.label}</span>
+                          <span className="mt-1 text-xs leading-tight">{opt.label}</span>
                         </label>
                       )
                     })}
@@ -136,7 +136,7 @@ export function RevOpsMaturityScorecard() {
                     >
                       {pillar.label}
                       {isWeakest && (
-                        <span className="ml-2 text-[10px] uppercase tracking-wide text-destructive">
+                        <span className="ml-2 text-xs uppercase tracking-wide text-destructive">
                           weakest
                         </span>
                       )}
