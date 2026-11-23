@@ -73,7 +73,7 @@ export default function HomePageContent() {
       <Navbar />
 
       {/* Skip-link target (layout.tsx). The navbar stays outside the landmark. */}
-      <main id="main-content">
+      <main id="main-content" tabIndex={-1}>
         {/* Hero Section */}
         <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-clip">
           {/* Sophisticated Background */}
