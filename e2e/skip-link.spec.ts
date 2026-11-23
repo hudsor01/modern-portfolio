@@ -1,5 +1,6 @@
 import { expect, type Page, test } from '@playwright/test'
 import { databaseAvailable, NEEDS_DATABASE } from './_helpers/database'
+import { getOnly, settlePage } from './_helpers/settle'
 
 /**
  * A11Y-04: the skip link is the first tab stop and moves focus to #main-content
@@ -47,11 +48,6 @@ const STATIC_ROUTES = [
 const DB_ROUTES = ['/blog/nope', '/blog/category/nope']
 
 async function checkRoute(page: Page, path: string): Promise<void> {
-  await page.route('**/*', (route) =>
-    route.request().method() === 'GET' || route.request().method() === 'HEAD'
-      ? route.continue()
-      : route.abort(),
-  )
   await page.goto(path, { waitUntil: 'load' })
 
   await expect(page.locator('main'), `${path} <main> count`).toHaveCount(1)
@@ -60,17 +56,22 @@ async function checkRoute(page: Page, path: string): Promise<void> {
   await expect(page.locator('a[href="#main-content"]')).toHaveCount(1)
 
   await page.keyboard.press('Tab')
-  await expect(page.locator('a[href="#main-content"]'), `${path} skip link focus`).toBeFocused()
+  const skip = page.locator('a[href="#main-content"]')
+  await expect(skip, `${path} skip link focus`).toBeFocused()
+  // Focused is not enough: the link must be the topmost element at its own centre,
+  // i.e. not painted underneath the fixed header (WCAG 2.4.11).
+  await expect(skip, `${path} skip link visible`).toBeVisible()
+  const box = await skip.boundingBox()
+  expect(box, `${path} skip link has a box`).not.toBeNull()
+  const topHref = await page.evaluate(
+    ([x, y]) => document.elementFromPoint(x ?? 0, y ?? 0)?.closest('a')?.getAttribute('href') ?? null,
+    [(box?.x ?? 0) + (box?.width ?? 0) / 2, (box?.y ?? 0) + (box?.height ?? 0) / 2],
+  )
+  expect(topHref, `${path} skip link is not obscured by the header`).toBe('#main-content')
   await page.keyboard.press('Enter')
   await expect(page.locator('#main-content'), `${path} main focus after Enter`).toBeFocused()
 
-  const total = await page.evaluate(() => document.documentElement.scrollHeight)
-  for (let y = 0; y < total; y += 500) {
-    await page.mouse.wheel(0, 500)
-    await page.waitForTimeout(100)
-  }
-  await page.evaluate(() => window.scrollTo(0, 0))
-  await page.waitForTimeout(1500)
+  await settlePage(page)
 
   const headings = await page.evaluate(() =>
     Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6'))
@@ -102,6 +103,7 @@ async function checkRoute(page: Page, path: string): Promise<void> {
 for (const path of STATIC_ROUTES) {
   test(`${path} skip link, single main, heading outline`, async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'chromium', 'route loop runs once, in Chromium')
+    await getOnly(page)
     await checkRoute(page, path)
   })
 }
@@ -110,6 +112,7 @@ for (const path of DB_ROUTES) {
   test(`${path} skip link, single main, heading outline`, async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'chromium', 'route loop runs once, in Chromium')
     test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+    await getOnly(page)
     await checkRoute(page, path)
   })
 }
@@ -127,6 +130,7 @@ test('every other sitemap route passes the skip link and outline gate', async ({
     .map((m) => new URL(m[1] ?? '').pathname)
     .filter((p) => !STATIC_ROUTES.includes(p))
 
+  await getOnly(page)
   for (const path of paths) {
     await test.step(path, async () => {
       await checkRoute(page, path)
