@@ -62,7 +62,7 @@ export function IncentivesTab() {
                         program.effectiveness >= 85
                           ? 'bg-success/10 text-success'
                           : program.effectiveness >= 75
-                            ? 'bg-warning/10 text-warning'
+                            ? 'bg-warning/10 text-warning-text'
                             : 'bg-destructive/10 text-destructive'
                       }`}
                     >

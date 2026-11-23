@@ -77,7 +77,7 @@ export function SegmentsTab() {
                         segment.probability >= 0.8
                           ? 'bg-success/20 text-success'
                           : segment.probability >= 0.6
-                            ? 'bg-warning/20 text-warning'
+                            ? 'bg-warning/20 text-warning-text'
                             : 'bg-destructive/20 text-destructive'
                       }`}
                     >

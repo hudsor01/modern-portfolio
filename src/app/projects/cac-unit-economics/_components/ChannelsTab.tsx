@@ -37,7 +37,7 @@ export function ChannelsTab() {
                       channel.efficiency >= 5
                         ? 'bg-success/10 text-success'
                         : channel.efficiency >= 3
-                          ? 'bg-warning/10 text-warning'
+                          ? 'bg-warning/10 text-warning-text'
                           : 'bg-destructive/10 text-destructive'
                     }`}
                   >

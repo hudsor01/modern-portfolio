@@ -68,7 +68,7 @@ export function ChannelsTab() {
                         channel.roi >= 20
                           ? 'bg-success/20 text-success'
                           : channel.roi >= 10
-                            ? 'bg-warning/20 text-warning'
+                            ? 'bg-warning/20 text-warning-text'
                             : 'bg-destructive/20 text-destructive'
                       }`}
                     >

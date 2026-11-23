@@ -62,7 +62,7 @@ export function TiersTab() {
                         tier.roi >= 4
                           ? 'bg-success/10 text-success'
                           : tier.roi >= 3
-                            ? 'bg-warning/10 text-warning'
+                            ? 'bg-warning/10 text-warning-text'
                             : 'bg-destructive/10 text-destructive'
                       }`}
                     >

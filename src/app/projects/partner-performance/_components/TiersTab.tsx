@@ -59,7 +59,7 @@ export function TiersTab() {
                       tier.winRate >= 85
                         ? 'bg-success/20 text-success'
                         : tier.winRate >= 70
-                          ? 'bg-warning/20 text-warning'
+                          ? 'bg-warning/20 text-warning-text'
                           : 'bg-destructive/20 text-destructive'
                     }`}
                   >

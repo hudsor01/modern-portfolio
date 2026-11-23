@@ -37,7 +37,7 @@ export function ModelsTab() {
                       model.accuracy >= 90
                         ? 'bg-success/20 text-success'
                         : model.accuracy >= 80
-                          ? 'bg-warning/20 text-warning'
+                          ? 'bg-warning/20 text-warning-text'
                           : 'bg-destructive/20 text-destructive'
                     }`}
                   >

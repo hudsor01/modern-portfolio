@@ -37,7 +37,7 @@ const iconVariants = cva('rounded-xl p-3 transition-colors duration-150 ease-out
       primary: 'bg-primary/10 text-primary',
       secondary: 'bg-secondary/10 text-secondary',
       success: 'bg-success/10 text-success',
-      warning: 'bg-warning/10 text-warning',
+      warning: 'bg-warning/10 text-warning-text',
       info: 'bg-primary/10 text-primary',
     },
   },
