@@ -27,6 +27,15 @@ describe('year-over-year revenue compounds year on year', () => {
       }
     })
 
+    it(`transactions, partners and commissions rise every year (${name})`, () => {
+      const data = generateYearOverYearData(BASE_METRICS, 5, rng)
+      for (let i = 1; i < data.length; i++) {
+        expect(data[i]!.total_transactions).toBeGreaterThan(data[i - 1]!.total_transactions)
+        expect(data[i]!.partner_count).toBeGreaterThan(data[i - 1]!.partner_count)
+        expect(data[i]!.total_commissions).toBeGreaterThan(data[i - 1]!.total_commissions)
+      }
+    })
+
     it(`growth_percentage is the change from the previous year (${name})`, () => {
       const data = generateYearOverYearData(BASE_METRICS, 5, rng)
       expect(data[0]!.growth_percentage).toBe(0)

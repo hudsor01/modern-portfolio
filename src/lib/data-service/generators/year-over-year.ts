@@ -15,24 +15,34 @@ export function generateYearOverYearData(
   const basePartners = getBaseMetric(baseMetrics, 'base_partners')
   const { year: currentYear } = getDisplayYearMonth()
 
-  // Oldest year first: each year's revenue compounds the previous year's by
-  // that year's own growth rate (growthTrend ± 3%, always positive), so the
-  // series rises every year and growth_percentage is the true year-on-year change.
+  // Oldest year first: every series compounds the previous year's value by a
+  // positive per-year rate (trend ± a small spread), so revenue, transactions,
+  // partners and commissions all rise every year and growth_percentage is the
+  // true year-on-year change. The commission rate drifts by at most ±0.2pt, far
+  // less than revenue growth, so commissions rise with revenue.
   const firstYearRevenue = baseRevenue * 4 // Annual total
   let revenue = firstYearRevenue
+  let transactions = 800
+  let partners = basePartners
   let previousRevenue = 0
 
   for (let k = 0; k < yearsCount; k++) {
     const year = currentYear - (yearsCount - 1 - k)
     const annualGrowth = growthTrend + (rng() - 0.5) * 0.06
-    if (k > 0) revenue *= 1 + annualGrowth
+    const transactionGrowth = 0.08 + (rng() - 0.5) * 0.04
+    const commissionRate = 0.08 + (rng() - 0.5) * 0.004
+    const partnerGrowth = 0.06 + (rng() - 0.5) * 0.04
+    if (k > 0) {
+      revenue *= 1 + annualGrowth
+      transactions *= 1 + transactionGrowth
+      partners *= 1 + partnerGrowth
+    }
     const cumulativeGrowth = revenue / firstYearRevenue
 
     const totalRevenue = Math.floor(revenue)
-    const totalTransactions = Math.floor(800 * 1.08 ** k * (0.9 + rng() * 0.2))
-    const commissionRate = 0.08 + (rng() - 0.5) * 0.02
+    const totalTransactions = Math.floor(transactions)
     const totalCommissions = Math.floor(totalRevenue * commissionRate)
-    const partnerCount = Math.floor(basePartners * 1.06 ** k * (0.9 + rng() * 0.2))
+    const partnerCount = Math.floor(partners)
 
     const growthPercentage = k === 0 ? 0 : (totalRevenue / previousRevenue - 1) * 100
     previousRevenue = totalRevenue
