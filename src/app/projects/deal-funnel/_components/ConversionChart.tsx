@@ -3,6 +3,7 @@
 import { LazyBarChart as RechartsBarChart } from '@/components/charts/lazy-charts'
 import { ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip, Bar, Cell } from 'recharts'
 import { chartColors, chartCssVars } from '@/lib/charts'
+import { ChartHeader } from '@/components/ui/chart-container'
 
 interface StageConversion {
   stage: string
@@ -17,7 +18,7 @@ interface ConversionChartProps {
 export function ConversionChart({ stageConversions }: ConversionChartProps) {
   return (
     <div className="glass flex h-full flex-col rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out">
-      <h2 className="typography-h3 mb-6">Stage Conversion Rates</h2>
+      <ChartHeader title="Stage Conversion Rates" headingLevel={2} className="mb-6" />
       <div className="h-full min-h-0 w-full flex-1">
         <ResponsiveContainer width="100%" height="100%">
           <RechartsBarChart data={stageConversions} layout="horizontal">

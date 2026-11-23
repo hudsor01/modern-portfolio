@@ -2,6 +2,7 @@
 
 import { Zap } from 'lucide-react'
 import type { PartnerConversion } from '../data/constants'
+import { ChartHeader } from '@/components/ui/chart-container'
 
 interface VelocityChartProps {
   partnerConversion: PartnerConversion[]
@@ -12,7 +13,7 @@ export function VelocityChart({ partnerConversion }: VelocityChartProps) {
 
   return (
     <div className="h-full bg-card border border-border rounded-2xl p-8 hover:border-primary/50 transition-all duration-300 ease-out">
-      <h2 className="typography-h3 mb-6">Sales Velocity by Segment</h2>
+      <ChartHeader title="Sales Velocity by Segment" headingLevel={2} className="mb-6" />
       <div className="space-y-6">
         {partnerConversion.map((partner, index) => {
           return (

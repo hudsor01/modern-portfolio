@@ -12,6 +12,7 @@ import {
   Area,
 } from 'recharts'
 import { chartColors, chartCssVars } from '@/lib/charts'
+import { ChartHeader } from '@/components/ui/chart-container'
 
 type TrendDatum = {
   month: string
@@ -26,10 +27,12 @@ type TrendsChartProps = {
 export function TrendsChart({ data }: TrendsChartProps) {
   return (
     <div className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out">
-      <div className="mb-6">
-        <h2 className="typography-h3 mb-2">Lead Generation Trends</h2>
-        <p className="typography-muted">Monthly lead volume and conversion tracking</p>
-      </div>
+      <ChartHeader
+        title="Lead Generation Trends"
+        description="Monthly lead volume and conversion tracking"
+        headingLevel={2}
+        className="mb-6"
+      />
       <div className="h-full w-full">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
