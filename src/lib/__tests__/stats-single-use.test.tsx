@@ -59,7 +59,7 @@ function assertCanonical(container: HTMLElement) {
     expect(values.length, `data-stat=${k}`).toBeLessThanOrEqual(1)
     const labels = container.querySelectorAll(`[data-stat-label="${k}"]`)
     expect(labels.length, `data-stat-label=${k}`).toBeLessThanOrEqual(1)
-    if (labels.length === 1) expect(labels[0].textContent?.trim()).toBe(STAT_LABELS[k])
+    if (labels.length === 1) expect(labels[0]?.textContent?.trim()).toBe(STAT_LABELS[k])
   }
 }
 
