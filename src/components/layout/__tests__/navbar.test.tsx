@@ -53,10 +53,10 @@ describe('Navbar — header landmark and semantics', () => {
     const { container } = render(<Navbar />)
     const navs = container.querySelectorAll('nav[aria-label="Main"]')
     expect(navs.length).toBe(2)
-    const list = navs[0].querySelector('[data-testid="main-nav-list"]')
+    const list = navs[0]?.querySelector('[data-testid="main-nav-list"]')
     expect(list).toBeTruthy()
     expect(list?.querySelectorAll('a').length).toBe(navConfig.mainNav.length)
-    expect(navs[1].id).toBe('mobile-menu')
+    expect(navs[1]?.id).toBe('mobile-menu')
   })
 
   it('marks only the current page with aria-current and hides the indicator', async () => {
