@@ -46,7 +46,7 @@ const iconVariants = cva('rounded-xl p-3 transition-colors duration-150 ease-out
   },
 })
 
-const trendVariants = cva('inline-flex items-center gap-1 text-xs font-medium', {
+const trendVariants = cva('inline-flex items-center gap-1.5 text-base font-semibold', {
   variants: {
     direction: {
       up: 'text-success',
@@ -92,6 +92,19 @@ const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
     ref
   ) => {
     const TrendIcon = getTrendIcon(trend?.direction)
+    const trendDirection: 'up' | 'down' | 'neutral' = trend?.invert
+      ? trend.direction === 'up'
+        ? 'down'
+        : trend.direction === 'down'
+          ? 'up'
+          : 'neutral'
+      : (trend?.direction ?? 'neutral')
+    const trendText =
+      trend?.direction === 'up'
+        ? 'Increase'
+        : trend?.direction === 'down'
+          ? 'Decrease'
+          : 'No change'
 
     if (loading) {
       return (
@@ -105,7 +118,7 @@ const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
             <Skeleton className="h-12 w-12 rounded-xl" />
             <Skeleton className="h-4 w-16" />
           </div>
-          <Skeleton className="h-8 w-24 mb-2" />
+          <Skeleton className="h-9 w-28 mb-2" />
           {subtitle && <Skeleton className="h-4 w-20" />}
           {trend && <Skeleton className="h-4 w-16 mt-2" />}
         </div>
@@ -136,25 +149,35 @@ const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
         <div className="relative">
           <div className="flex items-center justify-between mb-4">
             <div className={cn(iconVariants({ variant }))}>
-              <Icon className="h-6 w-6" />
+              <Icon className="h-6 w-6" aria-hidden="true" />
             </div>
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            <span
+              data-slot="metric-label"
+              className="text-xs font-semibold text-muted-foreground uppercase tracking-wider"
+            >
               {label}
             </span>
           </div>
 
           <div className="space-y-1">
-            <p className="tracking-tight">
+            <p
+              data-slot="metric-value"
+              className="text-3xl font-semibold leading-tight tracking-tight tabular-nums text-foreground"
+            >
               {typeof value === 'number' ? value.toLocaleString() : value}
             </p>
 
-            {subtitle && <p>{subtitle}</p>}
+            {subtitle && <p className="text-base text-muted-foreground">{subtitle}</p>}
 
             {trend && (
-              <div className={cn(trendVariants({ direction: trend.direction }))}>
-                <TrendIcon className="h-3 w-3" />
+              <div
+                data-slot="metric-trend"
+                className={cn(trendVariants({ direction: trendDirection }))}
+              >
+                <TrendIcon className="h-4 w-4" aria-hidden="true" />
+                <span className="sr-only">{trendText}</span>
                 <span>{trend.value}</span>
-                <span className="text-muted-foreground">{trend.label}</span>
+                <span className="text-muted-foreground font-normal">{trend.label}</span>
               </div>
             )}
           </div>

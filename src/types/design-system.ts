@@ -72,6 +72,8 @@ interface MetricTrend {
   direction: 'up' | 'down' | 'neutral'
   value: string
   label: string
+  /** A rise is bad, e.g. churn: colours swap, icon and direction text do not. */
+  invert?: boolean
 }
 
 // Chart Action Interface
