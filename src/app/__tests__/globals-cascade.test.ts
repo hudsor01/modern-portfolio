@@ -71,6 +71,15 @@ const ELEMENTS = new Set([
   'select',
   'label',
 ])
+/** Type selector of a selector's subject (last compound): `a:hover` -> a, `h1 a` -> a. */
+function subjectType(selector: string): string | undefined {
+  const compound =
+    selector
+      .trim()
+      .split(/[\s>+~]+/)
+      .pop() ?? ''
+  return /^([a-z][a-z0-9]*)(?![\w-])/.exec(compound)?.[1]
+}
 const TYPOGRAPHIC =
   /(^|;|\s)(font-family|font-size|font-weight|line-height|letter-spacing|color|text-transform)\s*:/
 
@@ -79,10 +88,20 @@ describe('globals.css cascade', () => {
     const offenders = rules.filter(
       (r) =>
         r.parents.length === 0 &&
-        r.selector.split(',').every((s) => ELEMENTS.has(s.trim())) &&
+        r.selector.split(',').some((s) => ELEMENTS.has(subjectType(s) ?? '')) &&
         TYPOGRAPHIC.test(r.body)
     )
     expect(offenders.map((r) => r.selector)).toEqual([])
+  })
+
+  it('flags unlayered pseudo-class and descendant element rules too', () => {
+    const probe = parse('a:hover { color: red } h1 a { font-size: 1px } .x a { color: red }')
+    const flagged = probe.filter(
+      (r) =>
+        r.selector.split(',').some((s) => ELEMENTS.has(subjectType(s) ?? '')) &&
+        TYPOGRAPHIC.test(r.body)
+    )
+    expect(flagged.map((r) => r.selector)).toEqual(['a:hover', 'h1 a', '.x a'])
   })
 
   it('keeps element typography inside @layer base', () => {

@@ -220,6 +220,7 @@ label[for],
 @theme {
   /* Tailwind's own `font-sans` token: Spline first, so the utility matches body text. */
   --font-sans: var(--font-spline), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* System-only stack, read by src/lib/tokens.ts. Not the Tailwind font-sans token above. */
   --font-family-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-family-mono: 'Fira Code', Consolas, monospace;
   --font-family-display: Georgia, 'Times New Roman', serif;

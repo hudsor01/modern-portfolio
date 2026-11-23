@@ -20,18 +20,42 @@ function stripComments(source: string): string {
     .replace(/(^|[^:])(\/\/[^\n]*)/g, (_m, pre: string, c: string) => pre + blank(c))
 }
 
+/**
+ * End of the opening tag that starts at `start`: the first `>` outside quotes and
+ * outside `{...}` attribute expressions, so `onClick={() => x}` or
+ * `className={a > b ? 'x' : 'y'}` no longer truncate the tag.
+ */
+function openingTagEnd(source: string, start: number): number {
+  let depth = 0
+  let quote = ''
+  for (let i = start; i < source.length; i++) {
+    const ch = source[i]
+    if (quote) {
+      if (ch === '\\') i++
+      else if (ch === quote) quote = ''
+    } else if (ch === '"' || ch === "'" || ch === '`') quote = ch
+    else if (ch === '{') depth++
+    else if (ch === '}') depth--
+    else if (ch === '>' && depth === 0) return i + 1
+  }
+  return source.length
+}
+
+// `<main`, `<motion.main`, `<m.main`, `<Slot`-style wrappers are not detectable
+// statically; the Playwright single-<main> check covers the rendered DOM.
 function findMainTags(source: string): Array<{ line: number; tag: string }> {
   const clean = stripComments(source)
   const tags: Array<{ line: number; tag: string }> = []
-  for (const m of clean.matchAll(/<main(?=[\s>])[^>]*>/g)) {
-    const line = clean.slice(0, m.index).split('\n').length
-    tags.push({ line, tag: m[0] })
+  for (const m of clean.matchAll(/<(?:[A-Za-z_$][\w$]*\.)?main(?=[\s>/])/g)) {
+    const start = m.index ?? 0
+    const line = clean.slice(0, start).split('\n').length
+    tags.push({ line, tag: clean.slice(start, openingTagEnd(clean, start)) })
   }
   return tags
 }
 
 function isCompliant(tag: string): boolean {
-  return tag.includes('id="main-content"') && tag.includes('tabIndex={-1}')
+  return /\sid="main-content"/.test(tag) && /\stabIndex=\{-1\}/.test(tag)
 }
 
 function tsxFiles(dir: string): string[] {
@@ -58,6 +82,16 @@ describe('main landmarks', () => {
     const found = findMainTags(real)
     expect(found).toHaveLength(1)
     expect(found[0]?.line).toBe(2)
+  })
+
+  it('does not truncate tags at a > inside an attribute expression and sees motion.main', () => {
+    const src =
+      'const x = <main onClick={() => go()} className={a > b ? "x" : "y"} id="main-content" tabIndex={-1}>hi</main>\n' +
+      'const y = <motion.main id="other">hi</motion.main>'
+    const found = findMainTags(src)
+    expect(found).toHaveLength(2)
+    expect(isCompliant(found[0]?.tag ?? '')).toBe(true)
+    expect(isCompliant(found[1]?.tag ?? '')).toBe(false)
   })
 
   it('every <main> in src has id="main-content" and tabIndex={-1}', () => {
