@@ -101,7 +101,7 @@ test.describe('header', () => {
           const nav = document.querySelector('header nav[aria-label="Main"]')
           const wordmark = document.querySelector('header a[href="/"]')
           const cta = Array.from(document.querySelectorAll('header a[href="/contact"]')).find(
-            (el) => (el as HTMLElement).checkVisibility(),
+            (el) => !el.closest('nav') && (el as HTMLElement).checkVisibility(),
           )
           const row = nav?.parentElement
           const container = header?.firstElementChild ?? header
