@@ -274,6 +274,8 @@ test.describe('chart titles share one header style (UI-09)', () => {
       await page.setViewportSize({ width: 1440, height: 900 })
       await page.goto(route)
       await settlePage(page)
+      // Charts are lazy chunks behind skeletons; read titles only once one has mounted.
+      await expect(page.locator('[data-slot="chart-title"]').first()).toBeVisible()
 
       const titles = await page.locator('[data-slot="chart-title"]').evaluateAll((els) =>
         els
