@@ -15,27 +15,33 @@ export function generateYearOverYearData(
   const basePartners = getBaseMetric(baseMetrics, 'base_partners')
   const { year: currentYear } = getDisplayYearMonth()
 
-  for (let i = 0; i < yearsCount; i++) {
-    const year = currentYear - i
-    const annualGrowth = growthTrend + (rng() - 0.5) * 0.06
-    const cumulativeGrowth = (1 + annualGrowth) ** (yearsCount - i - 1)
+  // Oldest year first: each year's revenue compounds the previous year's by
+  // that year's own growth rate (growthTrend ± 3%, always positive), so the
+  // series rises every year and growth_percentage is the true year-on-year change.
+  const firstYearRevenue = baseRevenue * 4 // Annual total
+  let revenue = firstYearRevenue
+  let previousRevenue = 0
 
-    const totalRevenue = Math.floor(baseRevenue * cumulativeGrowth * 4) // Annual total
-    const totalTransactions = Math.floor(800 * 1.08 ** (yearsCount - i - 1) * (0.9 + rng() * 0.2))
+  for (let k = 0; k < yearsCount; k++) {
+    const year = currentYear - (yearsCount - 1 - k)
+    const annualGrowth = growthTrend + (rng() - 0.5) * 0.06
+    if (k > 0) revenue *= 1 + annualGrowth
+    const cumulativeGrowth = revenue / firstYearRevenue
+
+    const totalRevenue = Math.floor(revenue)
+    const totalTransactions = Math.floor(800 * 1.08 ** k * (0.9 + rng() * 0.2))
     const commissionRate = 0.08 + (rng() - 0.5) * 0.02
     const totalCommissions = Math.floor(totalRevenue * commissionRate)
-    const partnerCount = Math.floor(
-      basePartners * 1.06 ** (yearsCount - i - 1) * (0.9 + rng() * 0.2)
-    )
+    const partnerCount = Math.floor(basePartners * 1.06 ** k * (0.9 + rng() * 0.2))
 
-    const growthPercentage =
-      i === 0 ? 0 : (totalRevenue / (data[i - 1]?.total_revenue || totalRevenue * 0.9) - 1) * 100
+    const growthPercentage = k === 0 ? 0 : (totalRevenue / previousRevenue - 1) * 100
+    previousRevenue = totalRevenue
     const commissionGrowth = annualGrowth * 100 + (rng() - 0.5) * 5
 
     // Market share (simulated - growing over time)
-    const marketShare = 2.5 + (yearsCount - i) * 0.3 + (rng() - 0.5) * 0.5
+    const marketShare = 2.5 + (k + 1) * 0.3 + (rng() - 0.5) * 0.5
 
-    data.unshift({
+    data.push({
       id: `yoy-${year}`,
       timestamp: new Date(Date.UTC(year, 11, 31)), // End of year
       source: 'generated',
