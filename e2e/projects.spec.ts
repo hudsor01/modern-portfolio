@@ -144,10 +144,6 @@ test.describe('Projects Listing Page', () => {
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
       .exclude('.blur-3xl')
-      .exclude('.bg-accent') // Known contrast issue with accent badges - tracked for fix
-      .exclude('[data-radix-select-viewport]') // Radix select has known a11y issues - tracked
-      .exclude('[role="combobox"]') // Category filter combobox - tracked for fix
-      .disableRules(['color-contrast']) // Multiple contrast issues tracked for design fix
       .analyze()
 
     if (results.violations.length > 0) {

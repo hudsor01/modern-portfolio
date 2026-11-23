@@ -164,7 +164,6 @@ test.describe('Resume Page', () => {
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
       .exclude('.blur-3xl') // Exclude decorative elements
       .exclude('object[type="application/pdf"]') // PDF viewer object may have issues
-      .exclude('.bg-accent\\/10') // Known contrast issue with accent badges - tracked for fix
       .analyze()
 
     // Log violations for debugging
