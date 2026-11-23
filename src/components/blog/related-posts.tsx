@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { and, desc, eq, isNull, ne } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { blogPosts } from '@/db/schema'
+import { BLOG_CONTENT_HEAD_EXTRAS } from '@/lib/blog-content-head'
+import { resolveExcerpt } from '@/lib/blog-excerpt'
 import { createContextLogger } from '@/lib/logger'
 import { selectRelatedPosts, type RelatedPostInput } from './related-posts-utils'
 
@@ -21,6 +23,7 @@ export async function RelatedPosts({ currentSlug, currentTags, limit = 3 }: Rela
     title: string
     excerpt: string | null
     publishedAt: Date | null
+    contentHead?: string | null
     tags: { tag: { name: string } }[]
   }
   let posts: PostRow[]
@@ -31,6 +34,7 @@ export async function RelatedPosts({ currentSlug, currentTags, limit = 3 }: Rela
         isNull(blogPosts.deletedAt),
         ne(blogPosts.slug, currentSlug)
       ),
+      extras: BLOG_CONTENT_HEAD_EXTRAS,
       columns: {
         slug: true,
         title: true,
@@ -60,7 +64,7 @@ export async function RelatedPosts({ currentSlug, currentTags, limit = 3 }: Rela
     title: p.title,
     tags: (p.tags ?? []).map((t) => t?.tag?.name).filter((n): n is string => !!n),
     publishedAt: p.publishedAt?.toISOString() ?? '1970-01-01',
-    excerpt: p.excerpt,
+    excerpt: resolveExcerpt({ excerpt: p.excerpt, content: p.contentHead }) || null,
   }))
 
   const current: RelatedPostInput & { excerpt: string | null } = {

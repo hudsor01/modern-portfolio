@@ -8,13 +8,15 @@ import { BlogFeaturedImage } from '@/components/blog/blog-featured-image'
 import { BlogCategoryJsonLd } from '@/components/seo/blog-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { and, desc, eq, isNull } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { blogPosts, categories } from '@/db/schema'
 import { createContextLogger } from '@/lib/logger'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 import { brandTitle } from '@/app/shared-metadata'
+import { BLOG_CONTENT_HEAD_EXTRAS } from '@/lib/blog-content-head'
+import { resolveExcerpt } from '@/lib/blog-excerpt'
+import { resolveListCovers } from '@/lib/blog-list'
 import { formatDate } from '@/lib/data-formatters'
 import { DecorativeBlob } from '@/components/ui/decorative-blob'
 
@@ -43,6 +45,7 @@ interface CategoryWithPosts {
     excerpt: string | null
     featuredImage: string | null
     publishedAt: Date | null
+    contentHead?: string | null
     tags: Array<{ tag: { id: string; name: string } }>
   }>
 }
@@ -55,6 +58,7 @@ const getCategoryWithPosts = cache(async (slug: string): Promise<CategoryWithPos
         posts: {
           where: and(eq(blogPosts.status, 'PUBLISHED'), isNull(blogPosts.deletedAt)),
           orderBy: desc(blogPosts.publishedAt),
+          extras: BLOG_CONTENT_HEAD_EXTRAS,
           columns: {
             id: true,
             slug: true,
@@ -139,6 +143,18 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
     notFound()
   }
 
+  const cards = resolveListCovers(
+    category.posts.map((p) => ({
+      id: p.id,
+      slug: p.slug,
+      title: p.title,
+      featuredImage: p.featuredImage,
+      publishedAt: p.publishedAt,
+      excerpt: resolveExcerpt({ excerpt: p.excerpt, content: p.contentHead }) || null,
+    })),
+    () => category.name
+  )
+
   const nonce = (await headers()).get('x-nonce')
 
   return (
@@ -188,7 +204,7 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
 
               {category.posts.length > 0 ? (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {category.posts.map((post) => (
+                  {cards.map((post) => (
                     <Link key={post.id} href={`/blog/${post.slug}`} className="group block h-full">
                       <Card className="hover-lift hover:border-primary/50 transition-all h-full overflow-hidden">
                         {post.featuredImage && (
@@ -205,16 +221,10 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                           </div>
                         )}
                         <CardHeader>
-                          {post.tags.length > 0 && (
-                            <div className="flex gap-2 mb-2 flex-wrap">
-                              {post.tags.slice(0, 3).map((pt) => (
-                                <Badge key={pt.tag.id} variant="secondary" className="text-xs">
-                                  {pt.tag.name}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-                          <CardTitle as="h2" className="line-clamp-2 transition-colors">
+                          <span className="inline-flex items-center px-2.5 py-1 mb-2 text-xs font-semibold tracking-wide uppercase text-primary bg-primary/8 border border-primary/15 rounded-md">
+                            {category.name}
+                          </span>
+                          <CardTitle as="h2" className="line-clamp-3 transition-colors">
                             {post.title}
                           </CardTitle>
                           {post.excerpt && (
