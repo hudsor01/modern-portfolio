@@ -404,11 +404,52 @@ test.describe('Blog list cards (UI-07)', () => {
     if ((await next.count()) > 0) await checkPage('/blog?page=2')
   })
 
+  test('category page cards have a chip and unique covers', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+    await page.goto('/blog')
+    const link = page.locator('main a[href^="/blog/category/"]').first()
+    if ((await link.count()) === 0) test.skip(true, 'no category link on /blog')
+    const href = (await link.getAttribute('href')) ?? ''
+    await page.goto(href)
+    const cards = page.locator('main a.group[href^="/blog/"]')
+    await expect(cards.first()).toBeVisible()
+    const count = await cards.count()
+    for (let i = 0; i < count; i++) {
+      await expect(cards.nth(i).locator('span.uppercase.text-primary')).toHaveCount(1)
+    }
+    const srcs = await cards.locator('img').evaluateAll((imgs) =>
+      imgs.map((img) => img.getAttribute('src'))
+    )
+    expect(new Set(srcs).size).toBe(srcs.length)
+  })
+
   test('/api/og renders through the image optimizer', async ({ request }) => {
     const res = await request.get(
       `/_next/image?url=${encodeURIComponent('/api/og?title=Probe&category=Revenue Operations')}&w=640&q=75`
     )
     expect(res.status()).toBe(200)
     expect(res.headers()['content-type']).toMatch(/^image\//)
+  })
+})
+
+test.describe('Blog post layout (UI-10)', () => {
+  test.beforeEach(({ browserName }) => {
+    test.skip(browserName !== 'chromium', 'chromium-gated')
+  })
+
+  test('back link sits under the header; date and reading time appear once', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await openFirstPost(page)
+
+    const box = await page.getByRole('link', { name: 'Back to Blog' }).boundingBox()
+    expect(box).not.toBeNull()
+    expect(box?.y ?? Infinity).toBeLessThanOrEqual(86)
+
+    const aside = page.locator('article aside')
+    await expect(aside.getByText('Published')).toHaveCount(0)
+    await expect(aside.getByText('Reading time')).toHaveCount(0)
+    await expect(page.locator('article header time')).toHaveCount(1)
+    await expect(page.locator('article header').getByText(/\d+ min read/)).toHaveCount(1)
   })
 })
