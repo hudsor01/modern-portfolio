@@ -90,6 +90,11 @@ describe('globals.css cascade', () => {
     expect(h1?.body).toContain('font-size: var(--font-size-6xl)')
   })
 
+  it('makes Tailwind font-sans resolve to Spline via the theme token (no shadowed custom utility)', () => {
+    expect(css).toMatch(/@theme\s*\{[^}]*--font-sans:\s*var\(--font-spline\)/)
+    expect(css).not.toMatch(/@utility\s+font-sans\b/)
+  })
+
   it('keeps the skip-link target focus rule unlayered', () => {
     const rule = rules.find((r) => r.selector === 'main[tabindex="-1"]:focus-visible')
     expect(rule?.parents).toEqual([])

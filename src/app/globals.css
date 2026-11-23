@@ -218,6 +218,8 @@ label[for],
 .aspect-video { aspect-ratio: 16 / 9; }
 
 @theme {
+  /* Tailwind's own `font-sans` token: Spline first, so the utility matches body text. */
+  --font-sans: var(--font-spline), system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-family-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-family-mono: 'Fira Code', Consolas, monospace;
   --font-family-display: Georgia, 'Times New Roman', serif;
@@ -888,7 +890,6 @@ input, textarea, select {
   }
 }
 
-@utility font-sans { font-family: var(--font-spline), system-ui, -apple-system, 'Segoe UI', sans-serif; }
 @utility font-display { font-family: var(--font-playfair), Georgia, 'Times New Roman', serif; }
 @utility font-mono { font-family: var(--font-roboto-mono), 'Fira Code', Consolas, monospace; }
 

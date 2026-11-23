@@ -32,8 +32,8 @@ describe('Footer headings', () => {
         expect(h?.classList.contains(c)).toBe(true)
       }
       expect(h?.classList.contains('text-foreground')).toBe(false)
-      // font-sans resolves to the system stack here; headings inherit Spline Sans from body.
-      expect(h?.classList.contains('font-sans')).toBe(false)
+      // font-sans = theme token --font-sans (Spline first); without it the base heading rule applies Playfair.
+      expect(h?.classList.contains('font-sans')).toBe(true)
     }
   })
 })
