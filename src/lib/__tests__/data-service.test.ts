@@ -1,6 +1,11 @@
 // @vitest-environment node
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { AnalyticsDataService } from '@/lib/data-service/service'
+import { BASE_METRICS } from '@/lib/data-service/generators/base'
+import { generateChurnData } from '@/lib/data-service/generators/churn'
+import { generateGrowthData } from '@/lib/data-service/generators/growth'
+import { generateTopPartnersData } from '@/lib/data-service/generators/top-partners'
+import { generateYearOverYearData } from '@/lib/data-service/generators/year-over-year'
 
 vi.mock('@/lib/logger', () => ({
   logger: {
@@ -305,46 +310,33 @@ describe('AnalyticsDataService — caching', () => {
 })
 
 // ============================================================================
-// Boundary condition tests (Math.random mocked)
+// Boundary condition tests (injected rng)
 // ============================================================================
 
-describe('AnalyticsDataService — Math.random boundary conditions', () => {
-  let service: AnalyticsDataService
-
-  beforeEach(() => {
-    service = new AnalyticsDataService()
-  })
-
-  afterEach(() => {
-    service.destroy()
-    vi.restoreAllMocks()
-  })
-
-  it('produces valid data when Math.random returns 0 (no NaN, no negative revenue)', async () => {
-    vi.spyOn(Math, 'random').mockReturnValue(0)
-    const data = await service.getChurnData(6, false)
-    expect(data).toHaveLength(6)
-    for (const item of data) {
+describe('generators — rng boundary conditions', () => {
+  it('produces valid data when rng returns 0 (no NaN, no negative revenue)', () => {
+    const churn = generateChurnData(BASE_METRICS, 6, () => 0)
+    expect(churn).toHaveLength(6)
+    for (const item of churn) {
       expect(Number.isFinite(item.churn_rate)).toBe(true)
-      expect(Number.isNaN(item.churn_rate)).toBe(false)
     }
-    const growth = await service.getGrowthData(4, false)
-    for (const item of growth) {
+    for (const item of generateGrowthData(BASE_METRICS, 4, () => 0)) {
       expect(Number.isFinite(item.revenue)).toBe(true)
       expect(item.revenue).toBeGreaterThan(0)
     }
+    for (const item of generateYearOverYearData(BASE_METRICS, 5, () => 0)) {
+      expect(item.total_revenue).toBeGreaterThan(0)
+      expect(item.total_transactions).toBeGreaterThan(0)
+    }
   })
 
-  it('produces valid data when Math.random returns 1 (no NaN, no negative revenue)', async () => {
-    vi.spyOn(Math, 'random').mockReturnValue(0.9999)
-    const data = await service.getChurnData(6, false)
-    expect(data).toHaveLength(6)
-    for (const item of data) {
+  it('produces valid data when rng returns 0.9999 (no NaN, no negative revenue)', () => {
+    const churn = generateChurnData(BASE_METRICS, 6, () => 0.9999)
+    expect(churn).toHaveLength(6)
+    for (const item of churn) {
       expect(Number.isFinite(item.churn_rate)).toBe(true)
-      expect(Number.isNaN(item.churn_rate)).toBe(false)
     }
-    const partners = await service.getTopPartnersData(5, false)
-    for (const item of partners) {
+    for (const item of generateTopPartnersData(5, () => 0.9999)) {
       expect(Number.isFinite(item.revenue)).toBe(true)
       expect(item.revenue).toBeGreaterThan(0)
     }

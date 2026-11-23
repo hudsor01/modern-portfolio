@@ -1,10 +1,12 @@
+import { createSeededRandom } from '@/lib/seeded-random'
 import type { ChurnAnalyticsData } from '@/types/analytics'
 import { getDisplayYearMonth } from '@/lib/data-formatters'
 import { getBaseMetric } from './base'
 
 export function generateChurnData(
   baseMetrics: Map<string, number>,
-  monthsCount: number = 12
+  monthsCount: number = 12,
+  rng: () => number = createSeededRandom('churn')
 ): ChurnAnalyticsData[] {
   const data: ChurnAnalyticsData[] = []
   const baseChurn = getBaseMetric(baseMetrics, 'churn_baseline')
@@ -21,13 +23,13 @@ export function generateChurnData(
 
     // Add seasonal variation (higher churn in Q1, lower in Q4)
     const seasonalFactor = 1 + Math.sin((date.getUTCMonth() * Math.PI) / 6) * 0.3
-    const churnRate = baseChurn * seasonalFactor + (Math.random() - 0.5) * 0.8
+    const churnRate = baseChurn * seasonalFactor + (rng() - 0.5) * 0.8
 
-    const totalPartners = Math.floor(basePartners + (Math.random() - 0.5) * 20)
+    const totalPartners = Math.floor(basePartners + (rng() - 0.5) * 20)
     const churnedPartners = Math.floor((churnRate / 100) * totalPartners)
-    const newPartners = Math.floor(2 + Math.random() * 8)
+    const newPartners = Math.floor(2 + rng() * 8)
     const retainedPartners = totalPartners - churnedPartners
-    const recoveryRate = Math.max(0, Math.min(100, 85 + (Math.random() - 0.5) * 20))
+    const recoveryRate = Math.max(0, Math.min(100, 85 + (rng() - 0.5) * 20))
 
     data.unshift({
       id: `churn-${date.getTime()}`,

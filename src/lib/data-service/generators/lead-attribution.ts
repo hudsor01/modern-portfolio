@@ -1,6 +1,9 @@
+import { createSeededRandom } from '@/lib/seeded-random'
 import type { LeadAttributionData } from '@/types/analytics'
 
-export function generateLeadAttributionData(): LeadAttributionData[] {
+export function generateLeadAttributionData(
+  rng: () => number = createSeededRandom('lead-attribution')
+): LeadAttributionData[] {
   const sources = [
     { name: 'Website', traffic_quality: 0.8, cost_factor: 0.3 },
     { name: 'Referrals', traffic_quality: 0.95, cost_factor: 0.1 },
@@ -12,16 +15,16 @@ export function generateLeadAttributionData(): LeadAttributionData[] {
   ]
 
   return sources.map((source) => {
-    const baseLeads = 100 + Math.floor(Math.random() * 400)
-    const qualificationRate = source.traffic_quality * (0.4 + Math.random() * 0.4)
-    const closingRate = qualificationRate * (0.15 + Math.random() * 0.25)
+    const baseLeads = 100 + Math.floor(rng() * 400)
+    const qualificationRate = source.traffic_quality * (0.4 + rng() * 0.4)
+    const closingRate = qualificationRate * (0.15 + rng() * 0.25)
 
-    const leads = Math.floor(baseLeads * (0.8 + Math.random() * 0.4))
+    const leads = Math.floor(baseLeads * (0.8 + rng() * 0.4))
     const qualified = Math.floor(leads * qualificationRate)
     const closed = Math.floor(qualified * (closingRate / qualificationRate))
-    const avgDealSize = 20000 + Math.random() * 30000
+    const avgDealSize = 20000 + rng() * 30000
     const revenue = closed * avgDealSize
-    const costPerLead = 50 + source.cost_factor * 150 + Math.random() * 100
+    const costPerLead = 50 + source.cost_factor * 150 + rng() * 100
     const conversionRate = (closed / leads) * 100
     const totalCost = leads * costPerLead
     const roi = ((revenue - totalCost) / totalCost) * 100

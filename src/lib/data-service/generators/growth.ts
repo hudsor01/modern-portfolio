@@ -1,10 +1,12 @@
+import { createSeededRandom } from '@/lib/seeded-random'
 import type { GrowthData } from '@/types/analytics'
 import { getDisplayYearMonth } from '@/lib/data-formatters'
 import { getBaseMetric } from './base'
 
 export function generateGrowthData(
   baseMetrics: Map<string, number>,
-  quartersCount: number = 8
+  quartersCount: number = 8,
+  rng: () => number = createSeededRandom('growth')
 ): GrowthData[] {
   const data: GrowthData[] = []
   const baseRevenue = getBaseMetric(baseMetrics, 'base_revenue')
@@ -16,12 +18,12 @@ export function generateGrowthData(
     const quarter = `Q${Math.floor(date.getUTCMonth() / 3) + 1} ${date.getUTCFullYear()}`
 
     // Calculate realistic growth with some variance
-    const quarterlyGrowthRate = growthTrend / 4 + (Math.random() - 0.5) * 0.05
+    const quarterlyGrowthRate = growthTrend / 4 + (rng() - 0.5) * 0.05
     const cumulativeGrowth = (1 + quarterlyGrowthRate) ** (quartersCount - i)
 
-    const revenue = Math.floor(baseRevenue * cumulativeGrowth * (0.9 + Math.random() * 0.2))
-    const partners = Math.floor(150 * 1.03 ** (quartersCount - i) * (0.95 + Math.random() * 0.1))
-    const deals = Math.floor(200 * 1.05 ** (quartersCount - i) * (0.9 + Math.random() * 0.2))
+    const revenue = Math.floor(baseRevenue * cumulativeGrowth * (0.9 + rng() * 0.2))
+    const partners = Math.floor(150 * 1.03 ** (quartersCount - i) * (0.95 + rng() * 0.1))
+    const deals = Math.floor(200 * 1.05 ** (quartersCount - i) * (0.9 + rng() * 0.2))
 
     // Calculate growth rate compared to same quarter previous year
     const yoyGrowthRate =
