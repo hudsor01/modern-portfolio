@@ -5,7 +5,7 @@ import { test, expect } from '@playwright/test'
  *
  * Distinct from `contact-form.spec.ts` (which exercises form mechanics).
  * This spec covers the page-level surface: social cards, privacy policy
- * link, submit-button gating, and the noscript fallback when
+ * link and the noscript fallback when
  * JavaScript is disabled (regression #5).
  */
 
@@ -40,7 +40,7 @@ test.describe('/contact page', () => {
     expect(hasMailto).toBe(true)
   })
 
-  test('consent label links to the privacy policy page', async ({ page }) => {
+  test('privacy notice links to the privacy policy page', async ({ page }) => {
     // Exact name: the footer has its own "Privacy Policy" link.
     const privacyLink = page.getByRole('link', {
       name: /^privacy policy \(opens in a new tab\)$/i,
@@ -51,28 +51,6 @@ test.describe('/contact page', () => {
 
     const response = await page.request.get('/privacy')
     expect(response.status()).toBe(200)
-  })
-
-  test('privacy checkbox toggles agreement state', async ({ page }) => {
-    const checkbox = page.getByRole('checkbox', { name: /agree/i })
-    await expect(checkbox).not.toBeChecked()
-
-    await checkbox.check()
-    await expect(checkbox).toBeChecked()
-
-    await checkbox.uncheck()
-    await expect(checkbox).not.toBeChecked()
-  })
-
-  test('submit button stays disabled until privacy checkbox is checked', async ({ page }) => {
-    const submitButton = page.getByRole('button', { name: /send message/i })
-    await expect(submitButton).toBeDisabled()
-
-    await page.getByRole('checkbox', { name: /agree/i }).check()
-    await expect(submitButton).toBeEnabled()
-
-    await page.getByRole('checkbox', { name: /agree/i }).uncheck()
-    await expect(submitButton).toBeDisabled()
   })
 })
 
