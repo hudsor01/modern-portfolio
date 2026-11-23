@@ -38,7 +38,9 @@ describe('HeroHeader', () => {
     expect(btn.className).toContain('bg-background')
     expect(btn.getAttribute('aria-pressed')).toBe('false')
     rerender(<HeroHeader {...base} showPdf />)
-    expect(screen.getByRole('button', { name: 'Hide preview' }).getAttribute('aria-pressed')).toBe(
+    // Toggle pattern: the accessible name stays constant, only aria-pressed flips.
+    expect(screen.queryByRole('button', { name: 'Hide preview' })).toBeNull()
+    expect(screen.getByRole('button', { name: 'Preview PDF' }).getAttribute('aria-pressed')).toBe(
       'true'
     )
   })

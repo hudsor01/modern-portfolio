@@ -67,12 +67,12 @@ export function HeroHeader({
         <Button
           variant="outline"
           size="lg"
-          className="min-h-[44px] px-6 w-full sm:w-auto"
+          className="min-h-[44px] px-6 w-full sm:w-auto aria-pressed:bg-muted"
           aria-pressed={showPdf}
           onClick={onToggleView}
         >
           <Eye className="w-5 h-5" aria-hidden="true" />
-          {showPdf ? 'Hide preview' : 'Preview PDF'}
+          Preview PDF
         </Button>
         <Button asChild variant="ghost" size="lg" className="min-h-[44px] px-6 w-full sm:w-auto">
           <Link href="/contact">
