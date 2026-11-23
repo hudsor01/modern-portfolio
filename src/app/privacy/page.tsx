@@ -244,7 +244,7 @@ export default function PrivacyPage() {
           </Section>
 
           <p className="mt-12">
-            <Link href="/contact" className="text-primary hover:underline">
+            <Link href="/contact" className="text-link">
               Back to contact
             </Link>
           </p>

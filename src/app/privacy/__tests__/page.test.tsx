@@ -77,7 +77,9 @@ describe('/privacy page', () => {
     const mailto = anchors.filter((a) => a.includes('href="mailto:'))
     expect(external.length).toBeGreaterThan(0)
     expect(mailto.length).toBeGreaterThan(0)
-    for (const a of [...external, ...mailto]) {
+    const back = anchors.filter((a) => a.includes('href="/contact"'))
+    expect(back).toHaveLength(1)
+    for (const a of [...external, ...mailto, ...back]) {
       expect(a).toMatch(/class="text-link"/)
       expect(a).not.toContain('underline-offset-4')
       expect(a).not.toContain('hover:text-primary/80')
