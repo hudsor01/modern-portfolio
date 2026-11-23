@@ -1,12 +1,13 @@
 // @vitest-environment node
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
-const { valuesMock, insertMock, loggerErrorMock } = vi.hoisted(() => {
+const { valuesMock, insertMock, loggerErrorMock, loggerWarnMock } = vi.hoisted(() => {
   const valuesMock = vi.fn()
   return {
     valuesMock,
     insertMock: vi.fn(() => ({ values: valuesMock })),
     loggerErrorMock: vi.fn(),
+    loggerWarnMock: vi.fn(),
   }
 })
 vi.mock('@/lib/db', () => ({ db: { insert: insertMock } }))
@@ -22,7 +23,7 @@ vi.mock('@/lib/logger', () => ({
   createContextLogger: () => ({
     debug: vi.fn(),
     info: vi.fn(),
-    warn: vi.fn(),
+    warn: loggerWarnMock,
     error: loggerErrorMock,
   }),
 }))
@@ -71,6 +72,7 @@ beforeEach(() => {
   valuesMock.mockReset().mockResolvedValue(undefined)
   insertMock.mockClear()
   loggerErrorMock.mockClear()
+  loggerWarnMock.mockClear()
   // Reset env between tests
   envMock.RESEND_API_KEY = 're_real_key'
   envMock.NODE_ENV = 'production'
@@ -244,6 +246,20 @@ describe('EmailService.sendContactEmail — storage', () => {
     expect(loggerErrorMock).toHaveBeenCalledTimes(1)
     expect(loggerErrorMock.mock.calls[0]![0]).toBe('Failed to store contact submission')
     expect(sendMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('still succeeds and stores one row when the auto-reply send rejects', async () => {
+    sendMock
+      .mockResolvedValueOnce({ data: { id: 'contact-1' }, error: null })
+      .mockRejectedValueOnce(new Error('ECONNRESET for jane@example.com'))
+    const r = await (await load()).sendContactEmail(validData)
+    expect(r.success).toBe(true)
+    expect(r.data?.contactEmailId).toBe('contact-1')
+    expect(r.data?.autoReplyEmailId).toBeUndefined()
+    expect(insertMock).toHaveBeenCalledTimes(1)
+    expect(valuesMock.mock.calls[0]![0]).toMatchObject({ emailSent: true, emailId: 'contact-1' })
+    expect(sendMock).toHaveBeenCalledTimes(2)
+    expect(JSON.stringify(loggerWarnMock.mock.calls)).not.toContain('jane@example.com')
   })
 
   it('stores emailSent=false on a Resend error object and skips auto-reply', async () => {

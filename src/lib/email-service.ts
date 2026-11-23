@@ -193,21 +193,31 @@ export class EmailService {
       })
 
       let autoReplyEmailId: string | undefined
+      // The owner email is already delivered and the row is being stored, so an
+      // auto-reply failure (a returned `{ error }` or a thrown network error)
+      // must never fail the submission: the visitor would resubmit and create
+      // duplicate emails and rows.
       const sendAutoReply = async () => {
         if (!autoReply) return
-        const autoReplyResult = await resend.emails.send({
-          from: `Richard Hudson <${FROM_EMAIL}>`,
-          to: [validatedData.email],
-          subject: 'Thank you for contacting Richard Hudson',
-          react: AutoReplyEmail({ data: validatedData }),
-          headers: { 'X-Auto-Reply': 'true' },
-        })
+        try {
+          const autoReplyResult = await resend.emails.send({
+            from: `Richard Hudson <${FROM_EMAIL}>`,
+            to: [validatedData.email],
+            subject: 'Thank you for contacting Richard Hudson',
+            react: AutoReplyEmail({ data: validatedData }),
+            headers: { 'X-Auto-Reply': 'true' },
+          })
 
-        // Auto-reply failure is not critical
-        if (autoReplyResult.error) {
-          emailLogger.warn('Failed to send auto-reply', { resendError: autoReplyResult.error })
-        } else {
-          autoReplyEmailId = autoReplyResult.data?.id
+          if (autoReplyResult.error) {
+            emailLogger.warn('Failed to send auto-reply', { resendError: autoReplyResult.error })
+          } else {
+            autoReplyEmailId = autoReplyResult.data?.id
+          }
+        } catch (thrown) {
+          // Summary only: a thrown message could echo the visitor's address.
+          emailLogger.warn('Failed to send auto-reply', {
+            error: thrown instanceof Error ? thrown.name : 'unknown',
+          })
         }
       }
       await Promise.all([persisted, sendAutoReply()])
