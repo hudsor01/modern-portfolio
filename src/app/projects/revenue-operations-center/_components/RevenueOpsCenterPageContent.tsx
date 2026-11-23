@@ -68,8 +68,12 @@ export default function RevenueOperationsCenter() {
         icon: DollarSign,
         label: 'Total Revenue',
         value: formatCurrency(revenueMetrics.totalRevenue),
-        subtitle: `+${formatPercent(revenueMetrics.revenueGrowth)} YoY`,
         variant: 'primary' as const,
+        trend: {
+          direction: 'up' as const,
+          value: formatPercent(revenueMetrics.revenueGrowth),
+          label: 'YoY',
+        },
       },
       {
         id: 'forecast-accuracy',

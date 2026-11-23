@@ -29,7 +29,6 @@ export default function MultiChannelAttribution() {
       icon: Target,
       label: 'Conversions',
       value: formatNumber(attributionMetrics.totalConversions),
-      subtitle: `+${formatPercent(attributionMetrics.conversionLift)} lift`,
       variant: 'primary' as const,
       trend: {
         direction: 'up' as const,

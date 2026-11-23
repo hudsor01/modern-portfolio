@@ -49,6 +49,17 @@ export default function ChurnAnalysis() {
       value: currentMonth ? formatPercentage(currentMonth.churnRate / 100) : 'N/A',
       subtitle: 'Churn Rate',
       variant: 'warning' as const,
+      trend: {
+        direction:
+          churnDifference > 0
+            ? ('up' as const)
+            : churnDifference < 0
+              ? ('down' as const)
+              : ('neutral' as const),
+        value: formatPercentage(Math.abs(churnDifference) / 100),
+        label: 'vs last month',
+        invert: true,
+      },
     },
     {
       id: 'retention-rate',
@@ -59,25 +70,12 @@ export default function ChurnAnalysis() {
       variant: 'success' as const,
     },
     {
-      id: 'churn-trend',
+      id: 'previous-churn-rate',
       icon: Activity,
-      label: 'vs Last Month',
-      value:
-        churnDifference > 0
-          ? `+${formatPercentage(Math.abs(churnDifference) / 100)}`
-          : formatPercentage(Math.abs(churnDifference) / 100),
-      subtitle: 'Churn Change',
+      label: 'Last Month',
+      value: previousMonth ? formatPercentage(previousMonth.churnRate / 100) : 'N/A',
+      subtitle: 'Churn Rate',
       variant: 'info' as const,
-      trend: {
-        direction:
-          churnDifference > 0
-            ? ('up' as const)
-            : churnDifference < 0
-              ? ('down' as const)
-              : ('neutral' as const),
-        value: formatPercentage(Math.abs(churnDifference) / 100),
-        label: 'vs last month',
-      },
     },
     {
       id: 'churned-partners',

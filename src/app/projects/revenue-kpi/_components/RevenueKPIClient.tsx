@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, Suspense } from 'react'
-import { TrendingUp, DollarSign, Users, Activity } from 'lucide-react'
+import { DollarSign, Users, Activity, Wallet } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
@@ -118,9 +118,9 @@ export function RevenueKPIClient({
   }, [topPartners, partnerGroupsData])
 
   // Memoize growth calculations (handle undefined currentYearData)
-  const { revenueGrowth, partnerGrowth, transactionGrowth } = useMemo(() => {
+  const { revenueGrowth, partnerGrowth, transactionGrowth, commissionGrowth } = useMemo(() => {
     if (!currentYearData) {
-      return { revenueGrowth: 0, partnerGrowth: 0, transactionGrowth: 0 }
+      return { revenueGrowth: 0, partnerGrowth: 0, transactionGrowth: 0, commissionGrowth: 0 }
     }
     return {
       revenueGrowth: calculateGrowth(currentYearData.total_revenue, prevYearData?.total_revenue),
@@ -128,6 +128,10 @@ export function RevenueKPIClient({
       transactionGrowth: calculateGrowth(
         currentYearData.total_transactions,
         prevYearData?.total_transactions
+      ),
+      commissionGrowth: calculateGrowth(
+        currentYearData.total_commissions,
+        prevYearData?.total_commissions
       ),
     }
   }, [currentYearData, prevYearData])
@@ -141,7 +145,6 @@ export function RevenueKPIClient({
         icon: DollarSign,
         label: 'Revenue',
         value: formatCurrency(currentYearData.total_revenue),
-        subtitle: `${revenueGrowth > 0 ? '+' : ''}${formatPercentage(revenueGrowth / 100)} vs last year`,
         variant: 'primary' as const,
         trend: {
           direction:
@@ -159,7 +162,6 @@ export function RevenueKPIClient({
         icon: Users,
         label: 'Partners',
         value: formatNumber(currentYearData.partner_count),
-        subtitle: `${partnerGrowth > 0 ? '+' : ''}${formatPercentage(partnerGrowth / 100)} growth`,
         variant: 'secondary' as const,
         trend: {
           direction:
@@ -169,7 +171,7 @@ export function RevenueKPIClient({
                 ? ('down' as const)
                 : ('neutral' as const),
           value: formatPercentage(Math.abs(partnerGrowth) / 100),
-          label: 'growth',
+          label: 'vs last year',
         },
       },
       {
@@ -177,7 +179,6 @@ export function RevenueKPIClient({
         icon: Activity,
         label: 'Volume',
         value: formatNumber(currentYearData.total_transactions),
-        subtitle: `${transactionGrowth > 0 ? '+' : ''}${formatPercentage(transactionGrowth / 100)} transactions`,
         variant: 'primary' as const,
         trend: {
           direction:
@@ -186,25 +187,29 @@ export function RevenueKPIClient({
               : transactionGrowth < 0
                 ? ('down' as const)
                 : ('neutral' as const),
-          value: formatPercentage(Math.abs(transactionGrowth) / 100),
-          label: 'transactions',
+          value: formatPercentage(Math.abs(transactionGrowth) / 100, { decimals: 0 }),
+          label: 'vs last year',
         },
       },
       {
-        id: 'growth',
-        icon: TrendingUp,
-        label: 'Growth',
-        value: `+${formatPercentage(currentYearData.commission_growth_percentage / 100)}`,
-        subtitle: 'Commission Growth',
+        id: 'commissions',
+        icon: Wallet,
+        label: 'Commissions',
+        value: formatCurrency(currentYearData.total_commissions),
         variant: 'secondary' as const,
         trend: {
-          direction: 'up' as const,
-          value: formatPercentage(currentYearData.commission_growth_percentage / 100),
-          label: 'Commission Growth',
+          direction:
+            commissionGrowth > 0
+              ? ('up' as const)
+              : commissionGrowth < 0
+                ? ('down' as const)
+                : ('neutral' as const),
+          value: formatPercentage(Math.abs(commissionGrowth) / 100),
+          label: 'vs last year',
         },
       },
     ]
-  }, [currentYearData, revenueGrowth, partnerGrowth, transactionGrowth])
+  }, [currentYearData, revenueGrowth, partnerGrowth, transactionGrowth, commissionGrowth])
 
   // Early return after all hooks
   if (!currentYearData) {
@@ -215,15 +220,7 @@ export function RevenueKPIClient({
     <ProjectPageLayout
       title="Revenue KPI Dashboard"
       description="Real-time revenue analytics, partner performance metrics, and business intelligence for data-driven growth strategies."
-      tags={[
-        { label: `Revenue: ${formatCurrency(currentYearData.total_revenue)}`, variant: 'primary' },
-        { label: `Partners: ${formatNumber(currentYearData.partner_count)}`, variant: 'secondary' },
-        {
-          label: `Growth: +${formatPercentage(currentYearData.commission_growth_percentage / 100)}`,
-          variant: 'primary',
-        },
-        { label: 'Accuracy: 94%', variant: 'secondary' },
-      ]}
+      tags={[{ label: 'Accuracy: 94%', variant: 'secondary' }]}
     >
       {/* KPI Cards using standardized MetricsGrid */}
       <div className="mb-8">
