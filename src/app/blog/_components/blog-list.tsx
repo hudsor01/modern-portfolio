@@ -10,7 +10,7 @@ import { BlogTagFilter } from './blog-tag-filter'
 import { InlineMarkdown } from './inline-markdown'
 import { BlogFeaturedImage } from '@/components/blog/blog-featured-image'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { getCategoryChipLabel } from '@/lib/blog-list'
 import { formatDate } from '@/lib/data-formatters'
 
 interface BlogListProps {
@@ -176,16 +176,10 @@ export function BlogList({
                   </div>
                 )}
                 <CardHeader>
-                  {post.tags && post.tags.length > 0 && (
-                    <div className="flex gap-2 mb-2 flex-wrap">
-                      {post.tags.slice(0, 3).map((tag) => (
-                        <Badge key={tag.id} variant="secondary" className="text-xs">
-                          {tag.name}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                  <CardTitle as="h2" className="line-clamp-2 transition-colors">
+                  <span className="inline-flex items-center px-2.5 py-1 mb-2 text-xs font-semibold tracking-wide uppercase text-primary bg-primary/8 border border-primary/15 rounded-md">
+                    {getCategoryChipLabel(post)}
+                  </span>
+                  <CardTitle as="h2" className="line-clamp-3 transition-colors">
                     <InlineMarkdown value={post.title} />
                   </CardTitle>
                   <CardDescription className="line-clamp-3">
