@@ -374,6 +374,20 @@ test.describe('Blog SEO and Meta', () => {
 })
 
 test.describe('Blog list cards (UI-07)', () => {
+  /**
+   * Image identity for a rendered cover: unwrap /_next/image?url=…, then use
+   * host + path (the pipeline reuses one photo with different query params).
+   * Generated /api/og covers keep their query, which is what makes them unique.
+   */
+  const coverKeys = (imgs: Element[]) =>
+    imgs.map((img) => {
+      const src = img.getAttribute('src') ?? ''
+      const outer = new URL(src, location.origin)
+      const inner = outer.pathname === '/_next/image' ? (outer.searchParams.get('url') ?? '') : src
+      const u = new URL(inner, location.origin)
+      return u.pathname === '/api/og' ? `${u.pathname}${u.search}` : `${u.host}${u.pathname}`
+    })
+
   test.beforeEach(({ browserName }) => {
     test.skip(browserName !== 'chromium', 'chromium-gated')
   })
@@ -393,10 +407,11 @@ test.describe('Blog list cards (UI-07)', () => {
         expect(((await chip.textContent()) ?? '').trim().length).toBeGreaterThan(0)
         await expect(card.locator('h2')).toHaveClass(/line-clamp-3/)
       }
-      const srcs = await page
-        .locator('main a[href^="/blog/"] img')
-        .evaluateAll((imgs) => imgs.map((img) => img.getAttribute('src')))
-      expect(new Set(srcs).size).toBe(srcs.length)
+      const keys = await page.locator('main a[href^="/blog/"] img').evaluateAll(coverKeys)
+      expect(keys.length).toBeGreaterThan(0)
+      expect(new Set(keys).size, keys.join('\n')).toBe(keys.length)
+      // No card excerpt may open with the author-bio boilerplate.
+      await expect(cards.filter({ hasText: /Texas Army National Guard/ })).toHaveCount(0)
     }
 
     await checkPage('/blog')
@@ -418,10 +433,10 @@ test.describe('Blog list cards (UI-07)', () => {
     for (let i = 0; i < count; i++) {
       await expect(cards.nth(i).locator('span.uppercase.text-primary')).toHaveCount(1)
     }
-    const srcs = await cards.locator('img').evaluateAll((imgs) =>
-      imgs.map((img) => img.getAttribute('src'))
-    )
-    expect(new Set(srcs).size).toBe(srcs.length)
+    const keys = await cards.locator('img').evaluateAll(coverKeys)
+    expect(keys.length).toBeGreaterThan(0)
+    expect(new Set(keys).size, keys.join('\n')).toBe(keys.length)
+    await expect(cards.filter({ hasText: /Texas Army National Guard/ })).toHaveCount(0)
   })
 
   test('/api/og card is served directly as an image', async ({ request }) => {
