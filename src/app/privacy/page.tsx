@@ -189,7 +189,7 @@ export default function PrivacyPage() {
           <Section title="Hosting">
             <p>
               The site is hosted on{' '}
-              <ExternalLink href="https://vercel.com/legal/privacy-policy">Vercel</ExternalLink>.
+              <ExternalLink href="https://vercel.com/legal/privacy-notice">Vercel</ExternalLink>.
               Like any web host, Vercel processes your IP address and browser details in order to
               deliver pages to you.
             </p>

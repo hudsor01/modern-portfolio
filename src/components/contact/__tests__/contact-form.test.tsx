@@ -131,22 +131,36 @@ describe('ContactForm', () => {
     expect(link.parentElement?.textContent?.endsWith('See the Privacy Policy.')).toBe(true)
   })
 
-  it('shows a form-level error between the Send button and the notice', () => {
-    renderForm({ error: new Error('Rate limit exceeded') })
-    const msg = screen.getByText('Rate limit exceeded')
+  it('shows one error alert, with the specific reason, between the Send button and the notice', () => {
+    renderForm({ submitStatus: 'error', error: new Error('Rate limit exceeded') })
+    const alerts = screen.getAllByRole('alert')
+    expect(alerts).toHaveLength(1)
+    const msg = alerts[0]!
+    expect(msg.textContent).toMatch(/failed to send message\. rate limit exceeded/i)
     const btn = screen.getByRole('button', { name: /send message/i })
     const notice = screen.getByRole('link', { name: /privacy policy/i }).closest('p')!
     expect(btn.compareDocumentPosition(msg) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     expect(msg.compareDocumentPosition(notice) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
 
-  it('renders success status banner when submitStatus === "success"', () => {
+  it('renders the success banner as a polite status, not an alert', () => {
     renderForm({ submitStatus: 'success' })
-    expect(screen.getByRole('alert').textContent).toMatch(/sent successfully/i)
+    expect(screen.getByRole('status').textContent).toMatch(/sent successfully/i)
+    expect(screen.queryByRole('alert')).toBeNull()
   })
 
-  it('renders error status banner when submitStatus === "error"', () => {
+  it('falls back to a generic retry message when no specific reason exists', () => {
     renderForm({ submitStatus: 'error' })
-    expect(screen.getByRole('alert').textContent).toMatch(/failed to send/i)
+    expect(screen.getAllByRole('alert')).toHaveLength(1)
+    expect(screen.getByRole('alert').textContent).toMatch(
+      /failed to send message\. please try again/i
+    )
+  })
+
+  it('keeps the notice readable (normal weight, relaxed leading)', () => {
+    renderForm()
+    const notice = screen.getByRole('link', { name: /privacy policy/i }).closest('p')!
+    expect(notice.className).toContain('leading-relaxed')
+    expect(notice.className).toContain('font-normal')
   })
 })

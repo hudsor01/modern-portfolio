@@ -213,9 +213,23 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
             )}
           </button>
 
-          {error && <FieldError>{error.message}</FieldError>}
+          {/* One error surface: the generic lead plus the specific reason, if any. */}
+          {(submitStatus === 'error' || error) && (
+            <div
+              role="alert"
+              className="flex items-start gap-2 text-destructive bg-destructive/10 p-4 rounded-xl"
+            >
+              <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />
+              <span>
+                Failed to send message.{' '}
+                {error?.message && error.message !== 'Submission failed'
+                  ? error.message
+                  : 'Please try again.'}
+              </span>
+            </div>
+          )}
 
-          <p className="typography-small text-muted-foreground text-center">
+          <p className="typography-small font-normal leading-relaxed text-muted-foreground text-center">
             By sending, your name, email and message are used only to reply to you. See the{' '}
             {/* New tab so reading the policy doesn't discard what's been typed. */}
             <Link
@@ -234,22 +248,12 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
         {/* Status Messages */}
         {submitStatus === 'success' && (
           <div
-            role="alert"
+            role="status"
             aria-live="polite"
             className="flex items-center gap-2 text-success bg-success/10 p-4 rounded-xl"
           >
-            <CheckCircle className="w-5 h-5" />
+            <CheckCircle className="w-5 h-5" aria-hidden="true" />
             Message sent successfully! I'll get back to you soon.
-          </div>
-        )}
-        {submitStatus === 'error' && (
-          <div
-            role="alert"
-            aria-live="polite"
-            className="flex items-center gap-2 text-destructive bg-destructive/10 p-4 rounded-xl"
-          >
-            <AlertCircle className="w-5 h-5" />
-            Failed to send message. Please try again.
           </div>
         )}
       </form>
