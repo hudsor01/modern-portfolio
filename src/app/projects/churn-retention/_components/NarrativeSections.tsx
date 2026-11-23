@@ -61,7 +61,7 @@ export function NarrativeSections({ revenueSaved }: NarrativeSectionsProps) {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <FeatureCard title="Predictive Analytics I Built" titleVariant="primary">
+            <FeatureCard title="Predictive Analytics I Built">
               <ul className="list-disc list-inside space-y-1 text-sm">
                 <li>Machine learning models for churn probability scoring</li>
                 <li>Real-time partner engagement tracking and anomaly detection</li>
@@ -70,7 +70,7 @@ export function NarrativeSections({ revenueSaved }: NarrativeSectionsProps) {
                 <li>Predictive lifecycle modeling with 60-90 day advance warnings</li>
               </ul>
             </FeatureCard>
-            <FeatureCard title="Retention Operations" titleVariant="secondary">
+            <FeatureCard title="Retention Operations">
               <ul className="list-disc list-inside space-y-1 text-sm">
                 <li>Automated alert system for at-risk partners I configured</li>
                 <li>Segmented retention campaign workflows based on risk tier</li>

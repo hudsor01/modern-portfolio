@@ -56,7 +56,7 @@ export function NarrativeSections() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <FeatureCard title="Program Architecture I Designed" titleVariant="secondary">
+            <FeatureCard title="Program Architecture I Designed">
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>Multi-tier partner classification with clear advancement criteria</li>
                 <li>Automated onboarding with document verification and compliance checks</li>
@@ -65,7 +65,7 @@ export function NarrativeSections() {
                 <li>Partner portal I built with self-service deal registration</li>
               </ul>
             </FeatureCard>
-            <FeatureCard title="Technical Systems I Built" titleVariant="primary">
+            <FeatureCard title="Technical Systems I Built">
               <ul className="list-disc list-inside space-y-2 text-sm">
                 <li>Salesforce CRM integration for lead management and attribution</li>
                 <li>Real-time commission calculation engine I designed from scratch</li>

@@ -157,10 +157,11 @@ describe('ContactForm', () => {
     )
   })
 
-  it('keeps the notice readable (normal weight, relaxed leading)', () => {
+  it('keeps the notice readable (privacy link present, no bold weight)', () => {
     renderForm()
-    const notice = screen.getByRole('link', { name: /privacy policy/i }).closest('p')!
-    expect(notice.className).toContain('leading-relaxed')
-    expect(notice.className).toContain('font-normal')
+    const link = screen.getByRole('link', { name: /privacy policy/i })
+    const notice = link.closest('p')!
+    expect(notice.contains(link)).toBe(true)
+    expect(notice.className).not.toMatch(/font-(medium|semibold|bold)/)
   })
 })

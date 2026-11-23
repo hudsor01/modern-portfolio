@@ -41,32 +41,6 @@ const sectionCardHeaderVariants = cva('flex flex-col space-y-2', {
   },
 })
 
-const sectionCardTitleVariants = cva('font-display font-semibold leading-tight text-foreground', {
-  variants: {
-    padding: {
-      sm: 'text-lg',
-      md: 'text-xl',
-      lg: 'text-2xl',
-    },
-  },
-  defaultVariants: {
-    padding: 'md',
-  },
-})
-
-const sectionCardDescriptionVariants = cva('text-muted-foreground leading-relaxed', {
-  variants: {
-    padding: {
-      sm: 'text-sm',
-      md: 'text-base',
-      lg: 'text-lg',
-    },
-  },
-  defaultVariants: {
-    padding: 'md',
-  },
-})
-
 type HeadingLevel = 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 
 interface SectionCardProps
@@ -96,10 +70,8 @@ const SectionCard = React.forwardRef<HTMLDivElement, SectionCardProps>(
         {...props}
       >
         <div className={cn(sectionCardHeaderVariants({ padding }))}>
-          <Heading className={cn(sectionCardTitleVariants({ padding }))}>{title}</Heading>
-          {description && (
-            <p className={cn(sectionCardDescriptionVariants({ padding }))}>{description}</p>
-          )}
+          <Heading>{title}</Heading>
+          {description && <p>{description}</p>}
         </div>
         <div className="flex-1">{children}</div>
       </div>

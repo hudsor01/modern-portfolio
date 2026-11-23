@@ -69,10 +69,13 @@ function CardTitle<T extends React.ElementType = 'div'>({
   ...props
 }: CardTitleProps<T>) {
   const Component = (as ?? 'div') as React.ElementType
+  // Headings take size/weight/leading from the global h1-h6 rules; the
+  // `leading-none font-semibold` utilities only apply to the non-heading div.
+  const isHeading = typeof Component === 'string' && /^h[1-6]$/.test(Component)
   return (
     <Component
       data-slot="card-title"
-      className={cn('leading-none font-semibold', className)}
+      className={cn(!isHeading && 'leading-none font-semibold', className)}
       {...props}
     />
   )
