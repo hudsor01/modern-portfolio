@@ -75,7 +75,11 @@ export default function RevOpsMaturityScorecardPage() {
 
       <div className="min-h-screen bg-background">
         <Navbar />
-        <main id="main-content" className="max-w-6xl mx-auto px-6 lg:px-8 pt-24 pb-20 lg:pt-32">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="max-w-6xl mx-auto px-6 lg:px-8 pt-24 pb-20 lg:pt-32"
+        >
           <header className="mb-10 max-w-3xl">
             <p className="mb-3">
               <Link href="/" className="hover:text-primary">

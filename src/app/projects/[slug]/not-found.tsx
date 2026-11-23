@@ -16,7 +16,11 @@ export default function ProjectNotFound() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main id="main-content" className="min-h-[70vh] grid place-items-center px-6 pt-24">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="min-h-[70vh] grid place-items-center px-6 pt-24"
+      >
         <div className="text-center max-w-md">
           <p aria-hidden="true" className="uppercase tracking-wide">
             404

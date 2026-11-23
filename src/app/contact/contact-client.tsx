@@ -20,7 +20,7 @@ export default function ContactPageClient() {
   return (
     <>
       <Navbar />
-      <main id="main-content" className="min-h-screen bg-background">
+      <main id="main-content" tabIndex={-1} className="min-h-screen bg-background">
         {/* Hero Section */}
         <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-20 overflow-clip">
           {/* Decorative background elements */}
