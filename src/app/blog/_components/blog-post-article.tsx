@@ -219,7 +219,7 @@ export function BlogPostArticle({
         'prose-p:text-muted-foreground prose-p:leading-relaxed',
         'prose-a:text-primary prose-a:no-underline hover:prose-a:underline',
         'prose-strong:text-foreground prose-strong:font-semibold',
-        'prose-code:text-accent prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded',
+        'prose-code:text-accent-text prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded',
         'prose-blockquote:border-l-primary prose-blockquote:bg-primary/5 prose-blockquote:text-muted-foreground',
         'prose-ul:text-muted-foreground prose-ol:text-muted-foreground',
         'prose-li:text-muted-foreground',

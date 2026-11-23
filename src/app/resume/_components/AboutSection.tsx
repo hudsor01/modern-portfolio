@@ -40,7 +40,7 @@ export function AboutSection() {
               <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/30">
                 HubSpot Revenue Operations Certified
               </span>
-              <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-accent/10 text-accent border border-accent/30">
+              <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-accent/10 text-accent-text border border-accent/30">
                 Revenue Operations
               </span>
             </div>
