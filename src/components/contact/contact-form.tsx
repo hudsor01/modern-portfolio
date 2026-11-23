@@ -40,7 +40,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
             <Mail className="w-5 h-5 flex-shrink-0 text-primary" />
             <span>
               This form requires JavaScript. Please email{' '}
-              <a href="mailto:hudsor01@icloud.com" className="underline">
+              <a href="mailto:hudsor01@icloud.com" className="text-link">
                 hudsor01@icloud.com
               </a>{' '}
               directly.
@@ -229,7 +229,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
             </div>
           )}
 
-          <p className="typography-small text-center">
+          <p className="text-xs font-normal leading-relaxed text-muted-foreground text-center">
             By sending, your name, email and message are used only to reply to you. See the{' '}
             {/* New tab so reading the policy doesn't discard what's been typed. */}
             <Link
@@ -237,7 +237,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
               target="_blank"
               rel="noopener"
               aria-label="Privacy Policy (opens in a new tab)"
-              className="whitespace-nowrap text-primary hover:text-primary/70 underline underline-offset-4"
+              className="text-link whitespace-nowrap"
             >
               Privacy Policy
             </Link>

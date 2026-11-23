@@ -125,7 +125,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
                       href="/Richard_Hudson_Revenue_Operations.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-primary underline"
+                      className="text-link"
                     >
                       Open PDF in new tab
                     </a>

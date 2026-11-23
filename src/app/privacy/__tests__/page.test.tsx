@@ -70,4 +70,17 @@ describe('/privacy page', () => {
     expect(description.length).toBeLessThanOrEqual(160)
     expect(description).toContain('stored')
   })
+
+  it('puts every running-text link on the shared text-link utility', () => {
+    const anchors = [...html.matchAll(/<a\b[^>]*>/g)].map((m) => m[0])
+    const external = anchors.filter((a) => a.includes('target="_blank"'))
+    const mailto = anchors.filter((a) => a.includes('href="mailto:'))
+    expect(external.length).toBeGreaterThan(0)
+    expect(mailto.length).toBeGreaterThan(0)
+    for (const a of [...external, ...mailto]) {
+      expect(a).toMatch(/class="text-link"/)
+      expect(a).not.toContain('underline-offset-4')
+      expect(a).not.toContain('hover:text-primary/80')
+    }
+  })
 })

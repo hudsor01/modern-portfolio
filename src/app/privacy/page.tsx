@@ -48,12 +48,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 
 function ExternalLink({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-primary underline underline-offset-4 hover:text-primary/80"
-    >
+    <a href={href} target="_blank" rel="noopener noreferrer" className="text-link">
       {children}
     </a>
   )
@@ -61,10 +56,7 @@ function ExternalLink({ href, children }: { href: string; children: ReactNode })
 
 function Email() {
   return (
-    <a
-      href={`mailto:${CONTACT_EMAIL}`}
-      className="text-primary underline underline-offset-4 hover:text-primary/80"
-    >
+    <a href={`mailto:${CONTACT_EMAIL}`} className="text-link">
       {CONTACT_EMAIL}
     </a>
   )

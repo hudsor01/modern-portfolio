@@ -82,4 +82,11 @@ describe('HomePageContent — ImpactMetric (regression #3)', () => {
     const dataValues = tickers.map((t) => t.getAttribute('data-value'))
     expect(dataValues.every((v) => v !== '0' && v !== null)).toBe(true)
   })
+
+  it('styles the running-text mailto link with the shared text-link utility', () => {
+    const { container } = render(<HomePageContent />)
+    const link = container.querySelector('p a[href="mailto:hudsor01@icloud.com"]')
+    expect(link).not.toBeNull()
+    expect(link!.className).toBe('text-link')
+  })
 })

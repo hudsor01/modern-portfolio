@@ -472,10 +472,7 @@ export default function HomePageContent() {
               {/* Email as subtle text link */}
               <p>
                 Or email me directly at{' '}
-                <a
-                  href="mailto:hudsor01@icloud.com"
-                  className="text-primary hover:text-primary/80 transition-colors"
-                >
+                <a href="mailto:hudsor01@icloud.com" className="text-link">
                   hudsor01@icloud.com
                 </a>
               </p>

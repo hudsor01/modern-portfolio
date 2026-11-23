@@ -77,6 +77,7 @@ describe('ContactForm', () => {
     expect(html).toContain('<noscript>')
     expect(html).toContain('mailto:hudsor01@icloud.com')
     expect(html).toContain('hudsor01@icloud.com')
+    expect(html).toMatch(/<a href="mailto:hudsor01@icloud.com" class="text-link">/)
   })
 
   it('renders all required field labels', () => {
@@ -163,5 +164,23 @@ describe('ContactForm', () => {
     const notice = link.closest('p')!
     expect(notice.contains(link)).toBe(true)
     expect(notice.className).not.toMatch(/font-(medium|semibold|bold)/)
+  })
+
+  it('puts the notice privacy link on text-link and keeps target/rel/aria-label', () => {
+    renderForm()
+    const link = screen.getByRole('link', { name: /privacy policy/i })
+    expect(link.classList.contains('text-link')).toBe(true)
+    expect(link.classList.contains('whitespace-nowrap')).toBe(true)
+    expect(link.className).not.toContain('underline-offset-4')
+    expect(link.getAttribute('target')).toBe('_blank')
+    expect(link.getAttribute('rel')).toBe('noopener')
+    expect(link.getAttribute('aria-label')).toBe('Privacy Policy (opens in a new tab)')
+  })
+
+  it('notice paragraph uses working utilities, not the unlayered typography-small', () => {
+    renderForm()
+    const notice = screen.getByRole('link', { name: /privacy policy/i }).closest('p')!
+    expect(notice.className).not.toContain('typography-small')
+    expect(notice.className).toContain('leading-relaxed')
   })
 })
