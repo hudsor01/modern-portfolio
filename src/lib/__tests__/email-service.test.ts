@@ -311,6 +311,31 @@ describe('EmailService.sendContactEmail — storage', () => {
     await (await load()).sendContactEmail(validData, undefined, { autoReply: false })
     expect(insertMock).toHaveBeenCalledTimes(1)
   })
+
+  it('never logs Resend error text that echoes the visitor address (WR-04)', async () => {
+    const echo = { name: 'validation_error', statusCode: 422, message: `bad ${validData.email}` }
+    const service = await load()
+    // Owner notification returns an echoing error object.
+    sendMock.mockResolvedValueOnce({ data: null, error: echo })
+    await service.sendContactEmail(validData)
+    // Owner notification throws an echoing error.
+    sendMock.mockRejectedValueOnce(new Error(`network ${validData.email}`))
+    await service.sendContactEmail(validData)
+    // Auto-reply returns an echoing error object.
+    sendMock
+      .mockResolvedValueOnce({ data: { id: 'contact-1' }, error: null })
+      .mockResolvedValueOnce({ data: null, error: echo })
+    await service.sendContactEmail(validData)
+
+    const logged = JSON.stringify(
+      [...loggerErrorMock.mock.calls, ...loggerWarnMock.mock.calls].map((args) =>
+        args.map((a: unknown) => (a instanceof Error ? a.message : a))
+      )
+    )
+    expect(loggerErrorMock).toHaveBeenCalled()
+    expect(loggerWarnMock).toHaveBeenCalled()
+    expect(logged).not.toContain(validData.email)
+  })
 })
 
 describe('contact submission storage privacy', () => {

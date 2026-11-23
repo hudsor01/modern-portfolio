@@ -156,25 +156,21 @@ export class EmailService {
           },
         })
       } catch (thrown) {
+        sendError = describeSendError(thrown)
+        // Summary only (name/statusCode/code): a Resend or network message can
+        // echo the visitor's address, which must never reach Sentry.
         emailLogger.error(
           'Failed to send contact notification',
-          thrown instanceof Error ? thrown : new Error(String(thrown))
+          new Error(`contact notification failed (${sendError})`)
         )
-        sendError = describeSendError(thrown)
       }
 
       if (contactResult?.error) {
-        // Resend's error is an object ({ message, name, statusCode }); String()
-        // would stringify it to "[object Object]" and lose the reason. Keep the
-        // human-readable message on the Error and the full object as context.
+        sendError = describeSendError(contactResult.error)
         logger.error(
           'Failed to send contact notification',
-          new Error(contactResult.error.message),
-          {
-            resendError: contactResult.error,
-          }
+          new Error(`contact notification failed (${sendError})`)
         )
-        sendError = describeSendError(contactResult.error)
       }
 
       if (sendError !== undefined || !contactResult) {
@@ -214,7 +210,9 @@ export class EmailService {
           })
 
           if (autoReplyResult.error) {
-            emailLogger.warn('Failed to send auto-reply', { resendError: autoReplyResult.error })
+            emailLogger.warn('Failed to send auto-reply', {
+              error: describeSendError(autoReplyResult.error),
+            })
           } else {
             autoReplyEmailId = autoReplyResult.data?.id
           }
