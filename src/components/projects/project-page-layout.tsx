@@ -60,7 +60,7 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16 lg:pt-32 lg:pb-20">
           {/* Header Navigation */}
-          <header className="flex items-center justify-between mb-12" data-testid="project-header">
+          <div className="flex items-center justify-between mb-12" data-testid="project-header">
             {/* Back Navigation and Breadcrumbs */}
             <div className="flex flex-col gap-3">
               {/* Back Button */}
@@ -120,10 +120,10 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
                 </div>
               )}
             </div>
-          </header>
+          </div>
 
           {/* Main Content */}
-          <main id="main-content">
+          <main id="main-content" tabIndex={-1}>
             {/* Project Title Section */}
             <div className="mb-8 animate-fade-in-up" data-testid="project-title-section">
               <h1

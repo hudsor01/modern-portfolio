@@ -111,4 +111,13 @@ describe('ProjectPageLayout', () => {
     )
     expect(screen.getByText(/1,234,567/)).toBeTruthy()
   })
+
+  it('has no second banner: project-header is a div and main is focusable', () => {
+    const { container } = render(<ProjectPageLayout {...baseProps} />)
+    expect(screen.getByTestId('project-header').tagName).toBe('DIV')
+    expect(container.querySelector('header')).toBeNull()
+    const mains = container.querySelectorAll('main#main-content')
+    expect(mains.length).toBe(1)
+    expect(mains[0]?.getAttribute('tabindex')).toBe('-1')
+  })
 })

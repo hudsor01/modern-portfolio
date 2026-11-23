@@ -70,7 +70,9 @@ export function Footer() {
 
           {FOOTER_SECTIONS.map((section) => (
             <nav key={section.heading} aria-label={section.heading}>
-              <h2 className="uppercase">{section.heading}</h2>
+              <h2 className="font-sans text-xs font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
+                {section.heading}
+              </h2>
               <ul className="mt-3 space-y-2">
                 {section.links.map((link) => (
                   <li key={link.href}>
