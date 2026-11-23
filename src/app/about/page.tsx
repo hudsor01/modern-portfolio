@@ -86,7 +86,7 @@ export default function AboutPage() {
       />
       <Navbar />
 
-      <main>
+      <main id="main-content" tabIndex={-1}>
         {/* 1. Hero - Personal Information */}
         <section aria-label="Introduction" className="pt-24 pb-16 lg:pt-32 lg:pb-20">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">

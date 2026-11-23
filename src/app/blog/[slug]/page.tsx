@@ -174,7 +174,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       />
       <div className="min-h-screen bg-background">
         <Navbar />
-        <main>
+        <main id="main-content" tabIndex={-1}>
           <div className="pt-24 pb-16 lg:pt-32 lg:pb-20">
             <BlogPostLayout post={post} />
             <div className="max-w-4xl mx-auto px-6 lg:px-8">

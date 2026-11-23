@@ -412,7 +412,7 @@ export default async function BlogHomePage({
       )}
       <div className="min-h-screen bg-background">
         <Navbar />
-        <main className="relative overflow-x-clip">
+        <main id="main-content" tabIndex={-1} className="relative overflow-x-clip">
           {/* Decorative background elements */}
           <DecorativeBlob position="top-right" />
           <DecorativeBlob position="bottom-left" />
