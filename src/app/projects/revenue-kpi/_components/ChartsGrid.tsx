@@ -16,12 +16,15 @@ function ChartCardSkeleton({
 }) {
   if (variant === 'wrapper') {
     return (
-      <div className="portfolio-card" aria-hidden="true">
+      <div
+        className="relative rounded-xl border border-border bg-card p-6 shadow-sm"
+        aria-hidden="true"
+      >
         <div className="space-y-4">
-          <Skeleton className="mx-auto h-7 w-48" />
+          <Skeleton className="h-5 w-40" />
           <ChartSkeleton height={size} />
-          <Skeleton className="mx-auto h-4 w-3/4" />
         </div>
+        <Skeleton className="mt-4 h-4 w-3/4" />
       </div>
     )
   }

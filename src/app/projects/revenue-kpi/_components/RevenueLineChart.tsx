@@ -120,91 +120,87 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
 
   if (!yearlyData.length) {
     return (
-      <div className="portfolio-card">
-        <ChartWrapper
-          headingLevel={2}
-          title="Revenue Growth Metrics"
-          caption="No data available"
-          size="md"
-        >
-          <div className="flex items-center justify-center h-full text-muted-foreground">
-            No data available
-          </div>
-        </ChartWrapper>
-      </div>
+      <ChartWrapper
+        headingLevel={2}
+        title="Revenue Growth Metrics"
+        caption="No data available"
+        size="md"
+      >
+        <div className="flex items-center justify-center h-full text-muted-foreground">
+          No data available
+        </div>
+      </ChartWrapper>
     )
   }
 
   return (
-    <div className="portfolio-card">
-      <ChartWrapper
-        headingLevel={2}
-        title="Revenue Growth Metrics"
-        caption="Year-over-year revenue and commissions"
-        size="md"
-      >
-        <LineChart data={yearlyData} margin={chartConfig.margins.medium}>
-          <ChartGrid yAxisId="left" />
-          <ChartXAxis dataKey="name" />
-          <ChartYAxis
-            yAxisId="left"
-            tickFormatter={(value) => formatCompactCurrency(Number(value) * 1_000_000)}
-            label={{
-              value: 'Revenue',
-              angle: -90,
-              position: 'insideLeft',
-              fill: chartColors.revenue,
-              fontSize: 12,
-              fontWeight: 600,
-            }}
-          />
-          <ChartYAxis
-            yAxisId="right"
-            orientation="right"
-            tickFormatter={(value) => formatCompactCurrency(Number(value) * 1_000_000)}
-            label={{
-              value: 'Commissions',
-              angle: 90,
-              position: 'insideRight',
-              fill: chartColors.commissions,
-              fontSize: 12,
-              fontWeight: 600,
-            }}
-          />
-          <CustomTooltip />
-          <Legend />
-          <Line
-            {...chartTypeConfigs.line}
-            dataKey="revenue"
-            yAxisId="left"
-            stroke={chartColors.revenue}
-            dot={{ ...chartTypeConfigs.line.dot, stroke: chartColors.revenue }}
-            activeDot={{
-              ...chartTypeConfigs.line.activeDot,
-              stroke: chartColors.revenue,
-              fill: chartColors.revenue,
-            }}
-            animationDuration={chartConfig.animation.duration}
-            name="Revenue"
-          />
-          <Line
-            {...chartTypeConfigs.line}
-            dataKey="commissions"
-            yAxisId="right"
-            stroke={chartColors.commissions}
-            dot={{ ...chartTypeConfigs.line.dot, stroke: chartColors.commissions }}
-            activeDot={{
-              ...chartTypeConfigs.line.activeDot,
-              stroke: chartColors.commissions,
-              fill: chartColors.commissions,
-            }}
-            animationDuration={chartConfig.animation.duration}
-            animationBegin={chartConfig.animation.stagger}
-            name="Commissions"
-          />
-        </LineChart>
-      </ChartWrapper>
-    </div>
+    <ChartWrapper
+      headingLevel={2}
+      title="Revenue Growth Metrics"
+      caption="Year-over-year revenue and commissions"
+      size="md"
+    >
+      <LineChart data={yearlyData} margin={chartConfig.margins.medium}>
+        <ChartGrid yAxisId="left" />
+        <ChartXAxis dataKey="name" />
+        <ChartYAxis
+          yAxisId="left"
+          tickFormatter={(value) => formatCompactCurrency(Number(value) * 1_000_000)}
+          label={{
+            value: 'Revenue',
+            angle: -90,
+            position: 'insideLeft',
+            fill: chartColors.revenue,
+            fontSize: 12,
+            fontWeight: 600,
+          }}
+        />
+        <ChartYAxis
+          yAxisId="right"
+          orientation="right"
+          tickFormatter={(value) => formatCompactCurrency(Number(value) * 1_000_000)}
+          label={{
+            value: 'Commissions',
+            angle: 90,
+            position: 'insideRight',
+            fill: chartColors.commissions,
+            fontSize: 12,
+            fontWeight: 600,
+          }}
+        />
+        <CustomTooltip />
+        <Legend />
+        <Line
+          {...chartTypeConfigs.line}
+          dataKey="revenue"
+          yAxisId="left"
+          stroke={chartColors.revenue}
+          dot={{ ...chartTypeConfigs.line.dot, stroke: chartColors.revenue }}
+          activeDot={{
+            ...chartTypeConfigs.line.activeDot,
+            stroke: chartColors.revenue,
+            fill: chartColors.revenue,
+          }}
+          animationDuration={chartConfig.animation.duration}
+          name="Revenue"
+        />
+        <Line
+          {...chartTypeConfigs.line}
+          dataKey="commissions"
+          yAxisId="right"
+          stroke={chartColors.commissions}
+          dot={{ ...chartTypeConfigs.line.dot, stroke: chartColors.commissions }}
+          activeDot={{
+            ...chartTypeConfigs.line.activeDot,
+            stroke: chartColors.commissions,
+            fill: chartColors.commissions,
+          }}
+          animationDuration={chartConfig.animation.duration}
+          animationBegin={chartConfig.animation.stagger}
+          name="Commissions"
+        />
+      </LineChart>
+    </ChartWrapper>
   )
 })
 

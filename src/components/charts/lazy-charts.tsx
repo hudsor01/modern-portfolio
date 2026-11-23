@@ -9,7 +9,8 @@
 import type React from 'react'
 import dynamic from 'next/dynamic'
 import { cn } from '@/lib/utils'
-import { CHART_BOX, ChartSkeleton, type ChartBoxSize } from './chart-skeleton'
+import { ChartSkeleton, type ChartBoxSize } from './chart-skeleton'
+import { ChartContainer as ChartCard } from '@/components/ui/chart-container'
 import {
   Tooltip,
   CartesianGrid,
@@ -90,9 +91,8 @@ export const LazyScatterChart = dynamic(() => import('recharts').then((mod) => m
 // ============================================================================
 
 // Props interfaces
-interface ChartContainerProps {
+interface ChartViewportProps {
   children: React.ReactNode
-  size?: ChartBoxSize
   className?: string
 }
 
@@ -115,10 +115,10 @@ interface ChartAxisProps {
   label?: YAxisProps['label']
 }
 
-// Standardized chart container
-function ChartContainer({ children, size = 'md', className = '' }: ChartContainerProps) {
+// Fills the CHART_BOX owned by the card (ChartCard) it is rendered inside
+function ChartViewport({ children, className }: ChartViewportProps) {
   return (
-    <div className={cn(CHART_BOX[size], className)}>
+    <div className={cn('h-full w-full', className)}>
       <ResponsiveContainer width="100%" height="100%" minWidth={0}>
         {children as React.ReactElement}
       </ResponsiveContainer>
@@ -197,14 +197,15 @@ export function ChartWrapper({
   className = '',
   headingLevel = 3,
 }: ChartWrapperProps) {
-  const Heading = headingLevel === 2 ? 'h2' : 'h3'
   return (
-    <div className={`space-y-4 ${className}`}>
-      {title && <Heading className="typography-h4 text-center leading-snug">{title}</Heading>}
-
-      <ChartContainer size={size}>{children}</ChartContainer>
-
-      {caption && <p className="text-center italic mt-4">{caption}</p>}
-    </div>
+    <ChartCard
+      title={title}
+      caption={caption}
+      size={size}
+      headingLevel={headingLevel}
+      className={className}
+    >
+      <ChartViewport>{children}</ChartViewport>
+    </ChartCard>
   )
 }

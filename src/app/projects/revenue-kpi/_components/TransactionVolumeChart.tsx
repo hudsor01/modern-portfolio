@@ -60,60 +60,56 @@ const TransactionVolumeChart = memo(({ data }: TransactionVolumeChartProps): Rea
 
   if (!series.length) {
     return (
-      <div className="portfolio-card">
-        <ChartWrapper
-          headingLevel={2}
-          title="Transaction Volume"
-          caption="No data available"
-          size="sm"
-        >
-          <div className="flex items-center justify-center h-full text-muted-foreground">
-            No data available
-          </div>
-        </ChartWrapper>
-      </div>
+      <ChartWrapper
+        headingLevel={2}
+        title="Transaction Volume"
+        caption="No data available"
+        size="sm"
+      >
+        <div className="flex items-center justify-center h-full text-muted-foreground">
+          No data available
+        </div>
+      </ChartWrapper>
     )
   }
 
   return (
-    <div className="portfolio-card">
-      <ChartWrapper
-        headingLevel={2}
-        title="Transaction Volume"
-        caption="Transactions per year"
-        size="sm"
-      >
-        <LineChart data={series} margin={chartConfig.margins.medium}>
-          <ChartGrid />
-          <ChartXAxis dataKey="name" />
-          <ChartYAxis
-            tickFormatter={(value) => formatCompactNumber(Number(value))}
-            label={{
-              value: 'Transactions',
-              angle: -90,
-              position: 'insideLeft',
-              fill: chartColors.transactions,
-              fontSize: 12,
-              fontWeight: 600,
-            }}
-          />
-          <CustomTooltip />
-          <Line
-            {...chartTypeConfigs.line}
-            dataKey="transactions"
-            stroke={chartColors.transactions}
-            dot={{ ...chartTypeConfigs.line.dot, stroke: chartColors.transactions }}
-            activeDot={{
-              ...chartTypeConfigs.line.activeDot,
-              stroke: chartColors.transactions,
-              fill: chartColors.transactions,
-            }}
-            animationDuration={chartConfig.animation.duration}
-            name="Transactions"
-          />
-        </LineChart>
-      </ChartWrapper>
-    </div>
+    <ChartWrapper
+      headingLevel={2}
+      title="Transaction Volume"
+      caption="Transactions per year"
+      size="sm"
+    >
+      <LineChart data={series} margin={chartConfig.margins.medium}>
+        <ChartGrid />
+        <ChartXAxis dataKey="name" />
+        <ChartYAxis
+          tickFormatter={(value) => formatCompactNumber(Number(value))}
+          label={{
+            value: 'Transactions',
+            angle: -90,
+            position: 'insideLeft',
+            fill: chartColors.transactions,
+            fontSize: 12,
+            fontWeight: 600,
+          }}
+        />
+        <CustomTooltip />
+        <Line
+          {...chartTypeConfigs.line}
+          dataKey="transactions"
+          stroke={chartColors.transactions}
+          dot={{ ...chartTypeConfigs.line.dot, stroke: chartColors.transactions }}
+          activeDot={{
+            ...chartTypeConfigs.line.activeDot,
+            stroke: chartColors.transactions,
+            fill: chartColors.transactions,
+          }}
+          animationDuration={chartConfig.animation.duration}
+          name="Transactions"
+        />
+      </LineChart>
+    </ChartWrapper>
   )
 })
 
