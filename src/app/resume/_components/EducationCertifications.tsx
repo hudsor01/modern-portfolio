@@ -15,7 +15,7 @@ export function EducationCertifications() {
             {/* Inner Container for Content */}
             <div className="bg-muted/50 rounded-xl p-6 flex-1 flex flex-col h-[320px]">
               <div className="text-center mb-6">
-                <h3 className="text-xl sm:typography-h2 border-none pb-0 text-2xl md:text-2xl text-foreground flex items-center justify-center gap-3">
+                <h3 className="border-none pb-0 flex items-center justify-center gap-3">
                   <GraduationCap className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                   Education
                 </h3>
@@ -24,13 +24,13 @@ export function EducationCertifications() {
               <div className="flex-1 flex flex-col justify-center">
                 {education.map((edu, index) => (
                   <div key={index} className="space-y-3">
-                    <h4 className="typography-large text-foreground leading-tight">{edu.degree}</h4>
-                    <p className="text-primary font-medium">{edu.institution}</p>
+                    <h4 className="typography-large">{edu.degree}</h4>
+                    <p>{edu.institution}</p>
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <Calendar className="w-4 h-4" />
                       <span className="text-sm">{edu.period}</span>
                     </div>
-                    <p className="text-muted-foreground text-sm">{edu.focus}</p>
+                    <p>{edu.focus}</p>
                   </div>
                 ))}
               </div>
@@ -45,7 +45,7 @@ export function EducationCertifications() {
             {/* Inner Container for Content */}
             <div className="bg-muted/50 rounded-xl p-6 flex-1 flex flex-col h-[320px]">
               <div className="text-center mb-6">
-                <h3 className="text-xl sm:typography-h2 border-none pb-0 text-2xl md:text-2xl text-foreground flex items-center justify-center gap-3">
+                <h3 className="border-none pb-0 flex items-center justify-center gap-3">
                   <BadgeCheck className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                   Certifications
                 </h3>
@@ -55,7 +55,7 @@ export function EducationCertifications() {
                 {certifications.map((cert, index) => (
                   <div key={index} className="flex items-center">
                     <div className="w-2 h-2 bg-primary rounded-full mr-3 flex-shrink-0"></div>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{cert}</p>
+                    <p>{cert}</p>
                   </div>
                 ))}
               </div>

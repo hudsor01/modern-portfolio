@@ -9,10 +9,8 @@ export function SkillsSection() {
   return (
     <section>
       <div className="text-center mb-12">
-        <h3 className="typography-h2 border-none pb-0 text-2xl md:text-2xl mb-4 text-foreground">
-          Skills & Expertise
-        </h3>
-        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+        <h3 className="typography-h2 border-none pb-0 mb-4">Skills & Expertise</h3>
+        <p className="max-w-2xl mx-auto">
           Interactive skill matrix with expertise levels and proficiency indicators
         </p>
       </div>
@@ -30,12 +28,8 @@ export function SkillsSection() {
                     {/* Category Header */}
                     <div className="flex items-center justify-between mb-6">
                       <h4
-                        className={`typography-h4 tracking-tight text-center w-full ${
-                          index === 0
-                            ? 'text-primary'
-                            : index === 1
-                              ? 'text-secondary'
-                              : 'text-accent'
+                        className={`typography-h4 text-center w-full ${
+                          index === 0 ? '' : index === 1 ? '' : ''
                         }`}
                       >
                         {skillGroup.category}

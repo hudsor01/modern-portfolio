@@ -24,11 +24,9 @@ export function AboutSection() {
 
           {/* About Content */}
           <div className="flex-1 text-center lg:text-left space-y-4">
-            <h3 className="text-xl md:typography-h2 border-none pb-0 text-2xl text-foreground mb-4">
-              Revenue Operations Professional
-            </h3>
-            <p className="text-primary font-medium">10+ Years Experience | Dallas-Fort Worth, TX</p>
-            <p className="text-muted-foreground text-base leading-relaxed">
+            <h3 className="border-none pb-0 mb-4">Revenue Operations Professional</h3>
+            <p>10+ Years Experience | Dallas-Fort Worth, TX</p>
+            <p>
               Data and revenue operations professional with nearly a decade of experience across
               digital marketing, business systems, partner operations and analytics, after six years
               as an IT specialist in the Texas Army National Guard. Proven expertise in developing

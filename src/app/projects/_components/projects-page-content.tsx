@@ -74,22 +74,17 @@ export function ProjectsPageContent({ initialProjects }: ProjectsPageContentProp
         {/* Hero Section */}
         <section className="pt-24 pb-16 lg:pt-32 lg:pb-20">
           {/* Eyebrow */}
-          <p className="text-center text-sm font-medium tracking-widest uppercase text-primary mb-6 animate-fade-in-up">
-            Portfolio
-          </p>
+          <p className="text-center tracking-widest uppercase mb-6 animate-fade-in-up">Portfolio</p>
 
           {/* Main Heading */}
-          <h1
-            className="font-display text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground text-center mb-6 animate-fade-in-up"
-            style={{ animationDelay: '80ms' }}
-          >
+          <h1 className="text-center mb-6 animate-fade-in-up" style={{ animationDelay: '80ms' }}>
             Revenue Operations
             <br className="hidden sm:block" /> Excellence
           </h1>
 
           {/* Subheading */}
           <p
-            className="text-lg lg:text-xl text-muted-foreground text-center max-w-2xl mx-auto mb-16 animate-fade-in-up"
+            className="text-center max-w-2xl mx-auto mb-16 animate-fade-in-up"
             style={{ animationDelay: '160ms' }}
           >
             Transforming data into actionable insights and driving measurable business results
@@ -110,14 +105,10 @@ export function ProjectsPageContent({ initialProjects }: ProjectsPageContentProp
           {/* Section Header */}
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
             <div>
-              <h2 className="font-display text-2xl lg:text-3xl font-semibold text-foreground mb-2">
-                All Case Studies
-              </h2>
-              <p className="text-muted-foreground">
-                Explore case studies in revenue operations and data analytics
-              </p>
+              <h2 className="mb-2">All Case Studies</h2>
+              <p>Explore case studies in revenue operations and data analytics</p>
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p>
               {filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'}
             </p>
           </div>
@@ -161,10 +152,10 @@ export function ProjectsPageContent({ initialProjects }: ProjectsPageContentProp
               <div className="flex justify-center mb-4">
                 <BarChart3 className="h-10 w-10 text-muted-foreground" />
               </div>
-              <h3 className="font-display text-xl font-semibold text-foreground mb-2">
+              <h3 className="mb-2">
                 {initialProjects.length === 0 ? 'No projects yet' : 'No projects match your search'}
               </h3>
-              <p className="text-muted-foreground">
+              <p>
                 {initialProjects.length === 0
                   ? 'Projects are currently being updated'
                   : 'Try adjusting your search or filters'}

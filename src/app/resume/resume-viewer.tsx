@@ -55,8 +55,8 @@ export function ResumeViewer({ pdfUrl }: ResumeViewerProps) {
               />
             </svg>
           </div>
-          <h3 className="typography-h3 text-foreground">PDF Viewer Unavailable</h3>
-          <p className="text-muted-foreground">
+          <h3 className="typography-h3">PDF Viewer Unavailable</h3>
+          <p>
             Your browser doesn't support inline PDF viewing. Please use one of the options below:
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
@@ -64,7 +64,7 @@ export function ResumeViewer({ pdfUrl }: ResumeViewerProps) {
               href={pdfUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-medium"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -79,7 +79,7 @@ export function ResumeViewer({ pdfUrl }: ResumeViewerProps) {
             <a
               href={pdfUrl}
               download="Richard_Hudson_Resume.pdf"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-secondary/10 text-foreground border border-border rounded-xl hover:bg-secondary/20 transition-colors font-medium"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-secondary/10 text-foreground border border-border rounded-xl hover:bg-secondary/20 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -103,7 +103,7 @@ export function ResumeViewer({ pdfUrl }: ResumeViewerProps) {
         <div className="absolute inset-0 flex items-center justify-center bg-card z-10">
           <div className="text-center space-y-4">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" />
-            <p className="text-sm text-muted-foreground">Loading PDF...</p>
+            <p>Loading PDF...</p>
           </div>
         </div>
       )}
@@ -117,7 +117,7 @@ export function ResumeViewer({ pdfUrl }: ResumeViewerProps) {
         onLoad={handleLoad}
         onError={handleError}
       >
-        <p className="text-center text-foreground p-8">
+        <p className="text-center p-8">
           Your browser doesn't support PDF viewing.{' '}
           <a
             href={pdfUrl}

@@ -27,18 +27,18 @@ export function HeroHeader({
   return (
     <div className="text-center space-y-8 max-w-4xl mx-auto animate-fade-in-up">
       <AvailabilityBadge className="mx-auto" />
-      <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-8">
+      <h1 className="mb-8">
         <span className="block hero-name-gradient">Richard Hudson</span>
       </h1>
 
-      <h2 className="text-xl sm:text-xl md:text-2xl font-light max-w-4xl mx-auto mb-6">
+      <h2 className="max-w-4xl mx-auto mb-6">
         <span className="inline-flex items-center rounded-full bg-primary/10 border border-primary/40 px-6 py-3 text-primary font-medium">
           Revenue Operations Professional
         </span>
       </h2>
 
       <div className="flex flex-col items-center mb-8">
-        <p className="text-lg md:typography-lead max-w-3xl mx-auto leading-relaxed text-center">
+        <p className="max-w-3xl mx-auto text-center">
           Experienced Revenue Operations Professional with a proven track record of driving business
           growth through data-driven insights, process optimization, and strategic operational
           improvements. Expert in building scalable systems that increase efficiency and revenue

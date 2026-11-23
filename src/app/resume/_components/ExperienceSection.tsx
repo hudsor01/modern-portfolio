@@ -14,9 +14,7 @@ export function ExperienceSection() {
           <div key={job.title} className="space-y-6">
             {/* Job Title Outside Container */}
             <div className="text-center">
-              <h3 className="text-xl sm:typography-h2 border-none pb-0 text-2xl md:text-2xl text-foreground text-2xl md:text-3xl mb-2 tracking-tight">
-                {job.title}
-              </h3>
+              <h3 className="border-none pb-0 mb-2">{job.title}</h3>
             </div>
 
             {/* Job Content Container */}
@@ -24,8 +22,8 @@ export function ExperienceSection() {
               {/* Company and Details Header */}
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
                 <div>
-                  <h4 className="typography-h4 text-foreground">{job.company}</h4>
-                  <p className="text-primary flex items-center gap-2 mt-1">
+                  <h4 className="typography-h4">{job.company}</h4>
+                  <p className="flex items-center gap-2 mt-1">
                     <MapPin className="w-4 h-4" />
                     {job.location} • {job.period}
                   </p>
@@ -45,9 +43,7 @@ export function ExperienceSection() {
               {/* Job Description */}
               <div className="space-y-4">
                 {job.description.map((item, i) => (
-                  <p key={i} className="text-muted-foreground text-base leading-relaxed">
-                    • {item}
-                  </p>
+                  <p key={i}>• {item}</p>
                 ))}
               </div>
             </div>

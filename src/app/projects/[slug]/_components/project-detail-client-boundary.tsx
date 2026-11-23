@@ -57,9 +57,9 @@ export default function ProjectDetailClientBoundary({
                   {project.featured && <Badge variant="default">Featured</Badge>}
                 </div>
 
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight">{project.title}</h1>
+                <h1>{project.title}</h1>
 
-                <p className="text-xl text-muted-foreground">{project.description}</p>
+                <p>{project.description}</p>
 
                 {/* Project meta */}
                 <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
@@ -152,7 +152,7 @@ export default function ProjectDetailClientBoundary({
               <div className="max-w-4xl mx-auto">
                 <SectionCard title="Overview">
                   <div className="prose prose-gray max-w-none">
-                    <p className="text-lg leading-relaxed">{project.longDescription}</p>
+                    <p>{project.longDescription}</p>
                   </div>
                 </SectionCard>
               </div>
