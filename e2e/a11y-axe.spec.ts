@@ -69,6 +69,19 @@ async function settle(page: Page, path: string) {
   }
 }
 
+// Hover/focus colour changes run through the global colour transition; axe must
+// measure the settled state, not a frame mid-transition.
+async function settleTransitions(page: Page) {
+  await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))))
+  await page.evaluate(async () => {
+    const finite = document.getAnimations().filter((a) => {
+      const timing = a.effect?.getComputedTiming()
+      return timing !== undefined && timing.iterations !== Infinity
+    })
+    await Promise.all(finite.map((a) => a.finished.catch(() => undefined)))
+  })
+}
+
 async function resolve(page: Page, path: string): Promise<string> {
   if (path !== BLOG_POST) return path
   test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
@@ -217,6 +230,7 @@ test.describe('axe: hover and focus contrast', () => {
         const el = page.locator(sel)
         const hoverTarget = probe.group ? el.locator('xpath=ancestor-or-self::*[contains(@class,"group")][1]') : el
         await hoverTarget.first().hover({ timeout: 5000 }).catch(() => undefined)
+        await settleTransitions(page)
         let results = await new AxeBuilder({ page })
           .include(sel)
           .withRules(['color-contrast'])
@@ -226,6 +240,7 @@ test.describe('axe: hover and focus contrast', () => {
         }
         if (probe.focusable) {
           await el.focus({ timeout: 5000 }).catch(() => undefined)
+          await settleTransitions(page)
           results = await new AxeBuilder({ page })
             .include(sel)
             .withRules(['color-contrast'])
