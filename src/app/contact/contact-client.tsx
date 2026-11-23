@@ -6,7 +6,7 @@ import { ContactForm } from '@/components/contact/contact-form'
 import { ContactInfo } from '@/components/contact/contact-info'
 import { FeaturedProjects } from '@/components/contact/featured-projects'
 import { AvailabilityBadge } from '@/components/ui/availability-badge'
-import { REVENUE_IMPACT } from '@/lib/stats'
+import { REVENUE_IMPACT, REVENUE_IMPACT_LABEL } from '@/lib/stats'
 import { useContactForm } from '@/hooks/use-contact-form'
 import { DecorativeBlob } from '@/components/ui/decorative-blob'
 
@@ -55,7 +55,10 @@ export default function ContactPageClient() {
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-primary" />
-                  <span>{REVENUE_IMPACT} Revenue Impact</span>
+                  <span>
+                    <span data-stat="revenue">{REVENUE_IMPACT}</span>{' '}
+                    <span data-stat-label="revenue">{REVENUE_IMPACT_LABEL}</span>
+                  </span>
                 </div>
               </div>
             </div>
