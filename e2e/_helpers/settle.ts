@@ -24,7 +24,11 @@ export async function settleTransitions(page: Page): Promise<void> {
       const timing = a.effect?.getComputedTiming()
       return timing !== undefined && timing.iterations !== Infinity
     })
-    await Promise.all(finite.map((a) => a.finished.catch(() => undefined)))
+    // Bounded: a finite animation that never resolves must not hang the test.
+    await Promise.race([
+      Promise.all(finite.map((a) => a.finished.catch(() => undefined))),
+      new Promise((resolve) => setTimeout(resolve, 5000)),
+    ])
   })
 }
 
@@ -38,12 +42,18 @@ export async function settlePage(page: Page): Promise<void> {
   await page.waitForLoadState('load')
   await page.evaluate(() => document.fonts.ready)
   let y = 0
-  for (;;) {
+  // Hard cap so a page whose height keeps growing fails loudly instead of
+  // hanging until the test timeout (the tallest audited page is ~20 viewports).
+  const MAX_STEPS = 60
+  for (let steps = 0; ; steps += 1) {
     const { total, step } = await page.evaluate(() => ({
       total: document.documentElement.scrollHeight,
       step: window.innerHeight,
     }))
     if (y >= total) break
+    if (steps >= MAX_STEPS) {
+      throw new Error(`settlePage: page height still growing after ${MAX_STEPS} viewports (${total}px)`)
+    }
     y += step
     await page.evaluate((top) => window.scrollTo({ top, behavior: 'instant' }), y)
     await nextFrames(page)
