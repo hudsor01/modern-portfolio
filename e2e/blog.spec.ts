@@ -407,8 +407,9 @@ test.describe('Blog list cards (UI-07)', () => {
   test('category page cards have a chip and unique covers', async ({ page }) => {
     test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     await page.goto('/blog')
-    const link = page.locator('main a[href^="/blog/category/"]').first()
-    if ((await link.count()) === 0) test.skip(true, 'no category link on /blog')
+    // /blog has no category links inside <main>; the footer's RevOps link is the stable entry.
+    const link = page.locator('a[href^="/blog/category/"]').first()
+    await expect(link).toBeAttached()
     const href = (await link.getAttribute('href')) ?? ''
     await page.goto(href)
     const cards = page.locator('main a.group[href^="/blog/"]')
