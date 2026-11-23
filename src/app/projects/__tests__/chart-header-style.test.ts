@@ -29,7 +29,26 @@ function walk(dir: string): string[] {
   return out
 }
 
-const HEADING_TYPOGRAPHY = /<h[2-4][^>]*className="[^"]*typography-h[1-6]/
+/**
+ * An h2-h4 opening tag whose attributes mention `typography-h*` anywhere: plain
+ * strings, `cn(...)`, template literals, and tags spread over several lines
+ * (`[^>]` matches newlines).
+ */
+const HEADING_TYPOGRAPHY = /<h[2-4]\b[^>]*typography-h[1-6]/
+
+describe('HEADING_TYPOGRAPHY detector', () => {
+  const bad = [
+    '<h3 className="typography-h4 mb-2">',
+    '<h3\n  className="mb-2 typography-h4"\n>',
+    '<h2 className={cn(\'mb-2\', "typography-h3")}>',
+    '<h4 className={`mb-2 typography-h5`}>',
+  ]
+  const good = ['<h3 className="text-lg font-semibold">', '<p className="typography-h3">']
+  for (const src of bad)
+    it(`flags ${JSON.stringify(src)}`, () => expect(HEADING_TYPOGRAPHY.test(src)).toBe(true))
+  for (const src of good)
+    it(`allows ${JSON.stringify(src)}`, () => expect(HEADING_TYPOGRAPHY.test(src)).toBe(false))
+})
 
 describe('project chart header style', () => {
   const rels = walk(PROJECTS).map((f) => relative(ROOT, f))
