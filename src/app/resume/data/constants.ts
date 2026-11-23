@@ -8,6 +8,7 @@ export const experience = [
     title: 'Data Analyst',
     company: 'HomeVestors of America, Inc.',
     period: 'July 2026 - Present',
+    current: true,
     location: 'Dallas-Fort Worth, TX',
     type: 'Full-time',
     description: [],
@@ -17,6 +18,7 @@ export const experience = [
     title: 'Revenue Operations Consultant',
     company: 'Thryv',
     period: 'December 2022 - November 2024',
+    current: false,
     location: 'Grapevine, TX',
     type: 'Full-time',
     description: [
@@ -31,6 +33,7 @@ export const experience = [
     title: 'Channel Operations Lead & Sales Operations Analyst',
     company: 'Thryv',
     period: 'March 2020 - December 2022',
+    current: false,
     location: 'Grapevine, TX',
     type: 'Full-time',
     description: [
@@ -45,6 +48,7 @@ export const experience = [
     title: 'Business Systems Specialist',
     company: 'Thryv',
     period: 'December 2017 - March 2020',
+    current: false,
     location: 'Grapevine, TX',
     type: 'Full-time',
     description: [
@@ -61,6 +65,7 @@ export const experience = [
     title: 'Digital Marketing Associate',
     company: 'Thryv',
     period: 'April 2016 - December 2017',
+    current: false,
     location: 'Grapevine, TX',
     type: 'Full-time',
     description: [
@@ -74,6 +79,7 @@ export const experience = [
     title: 'Information Technology Specialist (25B)',
     company: 'Texas Army National Guard',
     period: 'March 2005 - March 2011',
+    current: false,
     location: 'Fort Worth, TX',
     type: 'Military',
     description: [

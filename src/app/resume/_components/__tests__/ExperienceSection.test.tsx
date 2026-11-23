@@ -47,6 +47,23 @@ describe('ExperienceSection', () => {
     expect(card.querySelector('span.rounded-md')).toBeNull()
   })
 
+  it('shows the Current pill exactly for roles flagged current, not for bullet-less ones', () => {
+    const { container } = render(<ExperienceSection />)
+    const pills = (card: HTMLElement) =>
+      Array.from(card.querySelectorAll('span')).filter((s) => s.textContent?.trim() === 'Current')
+    cards(container).forEach((card, i) => {
+      expect(pills(card), experience[i]!.company).toHaveLength(experience[i]!.current ? 1 : 0)
+    })
+    expect(experience.filter((j) => j.current)).toHaveLength(1)
+    // Every finished role carries a closing date, so none can be mistaken for current.
+    for (const job of experience.filter((j) => !j.current)) {
+      expect(job.period).not.toMatch(/present/i)
+    }
+    for (const job of experience.filter((j) => j.current)) {
+      expect(job.period).toMatch(/present/i)
+    }
+  })
+
   it('renders full roles with a bullet list and semibold tags', () => {
     const { container } = render(<ExperienceSection />)
     const card = cards(container).find((c) => c.textContent?.includes('Thryv'))!

@@ -152,6 +152,19 @@ test.describe('Resume Page', () => {
     }
   })
 
+  test('only the role flagged current carries the Current pill (Present end date)', async ({
+    page,
+  }) => {
+    const cards = page.locator('main div.rounded-2xl').filter({ has: page.locator('h3 + p.font-semibold') })
+    await expect(cards.getByText('Current', { exact: true })).toHaveCount(1)
+    const current = cards.filter({ hasText: /Present/ })
+    await expect(current).toHaveCount(1)
+    await expect(current.getByText('Current', { exact: true })).toBeVisible()
+    await expect(
+      cards.filter({ hasText: 'Thryv' }).first().getByText('Current', { exact: true })
+    ).toHaveCount(0)
+  })
+
   test('current role is a compact card with a Current pill', async ({ page }) => {
     const card = page
       .locator('main div.rounded-2xl')
