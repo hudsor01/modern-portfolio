@@ -129,10 +129,14 @@ test.describe('Project detail pages — regression assertions', () => {
     )
 
     // (b) dual axis on Revenue Growth Metrics
-    const growthCard = page
-      .locator('.portfolio-card')
-      .filter({ hasText: 'Revenue Growth Metrics' })
-      .first()
+    // Chart cards are ChartContainer roots (rounded-xl), found via their chart-title heading.
+    const chartCard = (title: string | RegExp) =>
+      page
+        .locator('[data-slot="chart-title"]')
+        .filter({ hasText: title })
+        .first()
+        .locator('xpath=ancestor::div[contains(@class,"rounded-xl")][1]')
+    const growthCard = chartCard('Revenue Growth Metrics')
     await expect(growthCard.locator('.recharts-yAxis'), 'two Y axes').toHaveCount(2)
     await expect(growthCard.getByText('Revenue', { exact: true }).first()).toBeVisible()
     await expect(growthCard.getByText('Commissions', { exact: true }).first()).toBeVisible()
@@ -145,7 +149,7 @@ test.describe('Project detail pages — regression assertions', () => {
     const titleText = (await trendTitle.textContent()) ?? ''
     const periodStart = titleText.split('·')[1]?.split('–')[0]?.trim() ?? ''
     expect(periodStart, `period start parsed from "${titleText}"`).not.toBe('')
-    const trendCard = page.locator('.portfolio-card').filter({ hasText: /^(Quarterly|Monthly) Revenue · / }).first()
+    const trendCard = chartCard(/^(Quarterly|Monthly) Revenue · /)
     await trendCard.scrollIntoViewIfNeeded()
     const trendTickLocator = trendCard.locator(
       '.recharts-cartesian-axis-tick-value'
