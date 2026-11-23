@@ -8,6 +8,7 @@ vi.mock('next/navigation', () => ({
 }))
 
 import { Navbar } from '../navbar'
+import { navConfig } from '@/lib/site'
 
 describe('Navbar — CTA hidden on /contact', () => {
   beforeEach(() => {
@@ -24,6 +25,68 @@ describe('Navbar — CTA hidden on /contact', () => {
     ).filter((a) => a.textContent?.toLowerCase().includes("let's talk"))
     expect(ctas.length).toBe(0)
     vi.doUnmock('next/navigation')
+  })
+})
+
+describe('Navbar — header landmark and semantics', () => {
+  beforeEach(() => {
+    cleanup()
+    vi.resetModules()
+  })
+
+  it('root element is a header', () => {
+    const { container } = render(<Navbar />)
+    expect(container.firstElementChild?.tagName).toBe('HEADER')
+  })
+
+  it('renders the Richard Hudson wordmark linking to /', () => {
+    render(<Navbar />)
+    const link = screen.getByRole('link', { name: 'Richard Hudson' })
+    expect(link.getAttribute('href')).toBe('/')
+    expect(link.hasAttribute('aria-current')).toBe(false)
+    for (const c of ['font-display', 'text-xl', 'font-semibold', 'whitespace-nowrap']) {
+      expect(link.classList.contains(c)).toBe(true)
+    }
+  })
+
+  it('has two Main navs; desktop one holds the link row', () => {
+    const { container } = render(<Navbar />)
+    const navs = container.querySelectorAll('nav[aria-label="Main"]')
+    expect(navs.length).toBe(2)
+    const list = navs[0].querySelector('[data-testid="main-nav-list"]')
+    expect(list).toBeTruthy()
+    expect(list?.querySelectorAll('a').length).toBe(navConfig.mainNav.length)
+    expect(navs[1].id).toBe('mobile-menu')
+  })
+
+  it('marks only the current page with aria-current and hides the indicator', async () => {
+    vi.doMock('next/navigation', () => ({ usePathname: () => '/about' }))
+    const { Navbar: AboutNavbar } = await import('../navbar')
+    const { container } = render(<AboutNavbar />)
+    const aboutLinks = container.querySelectorAll('nav[aria-label="Main"] a[href="/about"]')
+    expect(aboutLinks.length).toBe(2)
+    for (const a of aboutLinks) expect(a.getAttribute('aria-current')).toBe('page')
+    const homeLinks = container.querySelectorAll('nav[aria-label="Main"] a[href="/"]')
+    expect(homeLinks.length).toBeGreaterThan(0)
+    for (const a of homeLinks) expect(a.hasAttribute('aria-current')).toBe(false)
+    const indicator = container.querySelector('[data-testid="main-nav-list"] a[href="/about"] span')
+    expect(indicator?.getAttribute('aria-hidden')).toBe('true')
+    vi.doUnmock('next/navigation')
+  })
+
+  it('desktop links use md/lg sizing and no weight class; no w-32 or absolute centring', () => {
+    const { container } = render(<Navbar />)
+    const links = container.querySelectorAll('[data-testid="main-nav-list"] a')
+    for (const a of links) {
+      for (const c of ['text-sm', 'px-2', 'lg:text-base', 'lg:px-4']) {
+        expect(a.classList.contains(c)).toBe(true)
+      }
+      expect(a.className).not.toMatch(/font-(medium|semibold|bold|normal)/)
+    }
+    expect(container.querySelector('.w-32')).toBeNull()
+    const desktopNav = container.querySelector('nav[aria-label="Main"]')
+    expect(desktopNav?.classList.contains('absolute')).toBe(false)
+    expect(desktopNav?.classList.contains('left-1/2')).toBe(false)
   })
 })
 
