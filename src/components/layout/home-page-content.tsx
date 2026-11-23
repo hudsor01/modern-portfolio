@@ -4,27 +4,30 @@ import Image from 'next/image'
 import Link from 'next/link'
 import {
   ArrowRight,
+  BarChart3,
   Briefcase,
+  Check,
   FileText,
   MessageCircle,
   TrendingUp,
   Users,
   DollarSign,
   Clock,
+  Plug,
+  Workflow,
 } from 'lucide-react'
 import { Navbar } from '@/components/layout/navbar'
 import { NumberTicker } from '@/components/ui/number-ticker'
 import { Button } from '@/components/ui/button'
 import { AvailabilityBadge } from '@/components/ui/availability-badge'
 import {
-  REVENUE_IMPACT,
-  TRANSACTION_GROWTH,
-  NETWORK_GROWTH,
-  YEARS_EXPERIENCE,
   REVENUE_IMPACT_VALUE,
   TRANSACTION_GROWTH_VALUE,
   NETWORK_GROWTH_VALUE,
   YEARS_EXPERIENCE_VALUE,
+  STAT_LABELS,
+  TRANSACTION_GROWTH_CONTEXT,
+  type StatKey,
 } from '@/lib/stats'
 import { DecorativeBlob } from '@/components/ui/decorative-blob'
 import { ProjectCard } from '@/components/projects/project-card'
@@ -35,7 +38,8 @@ function ImpactMetric({
   value,
   prefix = '',
   suffix = '',
-  label,
+  statKey,
+  context,
   icon: Icon,
   delay = 0,
   decimalPlaces = 0,
@@ -43,7 +47,8 @@ function ImpactMetric({
   value: number
   prefix?: string
   suffix?: string
-  label: string
+  statKey: StatKey
+  context?: string
   icon: React.ElementType
   delay?: number
   decimalPlaces?: number
@@ -52,17 +57,26 @@ function ImpactMetric({
     <div className="group relative">
       <div className="flex items-start gap-4">
         <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-          <Icon className="w-6 h-6 text-primary" />
+          <Icon className="w-6 h-6 text-primary" aria-hidden="true" />
         </div>
         <div>
-          <div className="text-4xl md:text-5xl font-bold text-foreground tabular-nums tracking-tight">
+          <div
+            className="text-4xl md:text-5xl font-semibold text-foreground tabular-nums tracking-tight"
+            data-stat={statKey}
+          >
             {prefix}
             <NumberTicker value={value} delay={delay} decimalPlaces={decimalPlaces} />
             {suffix}
           </div>
-          <div className="text-sm text-muted-foreground font-medium mt-1 uppercase tracking-wider">
-            {label}
+          <div
+            className="text-xs font-semibold text-muted-foreground mt-1 uppercase tracking-wider"
+            data-stat-label={statKey}
+          >
+            {STAT_LABELS[statKey]}
           </div>
+          {context && (
+            <p className="text-xs font-normal text-muted-foreground mt-1 max-w-[24ch]">{context}</p>
+          )}
         </div>
       </div>
     </div>
@@ -77,7 +91,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
       {/* Skip-link target (layout.tsx). The navbar stays outside the landmark. */}
       <main id="main-content" tabIndex={-1}>
         {/* Hero Section */}
-        <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-clip">
+        <section className="relative pt-24 pb-12 lg:pt-32 lg:pb-16 overflow-clip">
           {/* Sophisticated Background */}
           <div className="absolute inset-0 -z-10">
             {/* Base surface — solid (palette: no gradients) */}
@@ -146,8 +160,12 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="flex flex-wrap gap-4">
-                  <Button asChild size="lg" className="group h-14 px-8 text-base font-semibold">
+                <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4">
+                  <Button
+                    asChild
+                    size="lg"
+                    className="group h-14 px-8 text-base font-semibold w-full sm:w-auto"
+                  >
                     <Link href="/projects">
                       <Briefcase className="w-5 h-5" />
                       View My Work
@@ -158,7 +176,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                     asChild
                     variant="outline"
                     size="lg"
-                    className="h-14 px-8 text-base font-semibold"
+                    className="h-14 px-8 text-base font-semibold w-full sm:w-auto"
                   >
                     <Link href="/resume">
                       <FileText className="w-5 h-5" />
@@ -169,7 +187,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                     asChild
                     variant="ghost"
                     size="lg"
-                    className="h-14 px-8 text-base font-semibold"
+                    className="h-14 px-8 text-base font-semibold w-full sm:w-auto"
                   >
                     <Link href="/contact">
                       <MessageCircle className="w-5 h-5" />
@@ -187,9 +205,9 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                   <div className="absolute inset-0 bg-foreground/5 rounded-3xl transform translate-x-4 translate-y-4" />
 
                   {/* Main card */}
-                  <div className="relative bg-card border border-border rounded-3xl p-8 md:p-10">
+                  <div className="relative bg-card border border-border rounded-3xl p-8">
                     {/* Profile header */}
-                    <div className="flex items-center gap-6 mb-8">
+                    <div className="flex items-center gap-6">
                       <div className="relative">
                         <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-border shadow-lg">
                           <Image
@@ -212,36 +230,6 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                         <p className="mt-1">Dallas, TX</p>
                       </div>
                     </div>
-
-                    {/* Quick stats */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-muted/50 rounded-xl p-4 text-center">
-                        <div className="text-2xl font-bold text-primary">{REVENUE_IMPACT}</div>
-                        <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
-                          Revenue Impact
-                        </div>
-                      </div>
-                      <div className="bg-muted/50 rounded-xl p-4 text-center">
-                        <div className="text-2xl font-bold text-secondary">
-                          {TRANSACTION_GROWTH}
-                        </div>
-                        <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
-                          Growth Delivered
-                        </div>
-                      </div>
-                      <div className="bg-muted/50 rounded-xl p-4 text-center">
-                        <div className="text-2xl font-bold text-accent">{NETWORK_GROWTH}</div>
-                        <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
-                          Network Growth
-                        </div>
-                      </div>
-                      <div className="bg-muted/50 rounded-xl p-4 text-center">
-                        <div className="text-2xl font-bold text-foreground">{YEARS_EXPERIENCE}</div>
-                        <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
-                          Years Experience
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -250,14 +238,14 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
         </section>
 
         {/* Impact Section */}
-        <section className="py-16 lg:py-20 bg-muted/30 relative overflow-hidden">
+        <section className="py-12 lg:py-16 bg-muted/30 relative overflow-hidden">
           {/* Decorative elements */}
           <div className="absolute top-0 left-0 w-full h-px bg-border/60" />
           <div className="absolute bottom-0 left-0 w-full h-px bg-border/60" />
 
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             {/* Section header */}
-            <div className="text-center mb-10">
+            <div className="text-center mb-8 lg:mb-10">
               <h2 className="mb-4">Proven Results</h2>
               <p className="max-w-2xl mx-auto">
                 Delivering measurable business outcomes through strategic RevOps initiatives
@@ -270,7 +258,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                 value={REVENUE_IMPACT_VALUE}
                 prefix="$"
                 suffix="M+"
-                label="Revenue Generated"
+                statKey="revenue"
                 icon={DollarSign}
                 delay={0}
                 decimalPlaces={1}
@@ -278,21 +266,22 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
               <ImpactMetric
                 value={TRANSACTION_GROWTH_VALUE}
                 suffix="%"
-                label="Growth Achieved"
+                statKey="transaction-growth"
+                context={TRANSACTION_GROWTH_CONTEXT}
                 icon={TrendingUp}
                 delay={0.1}
               />
               <ImpactMetric
                 value={NETWORK_GROWTH_VALUE}
                 suffix="%"
-                label="Network Expansion"
+                statKey="network-growth"
                 icon={Users}
                 delay={0.2}
               />
               <ImpactMetric
                 value={YEARS_EXPERIENCE_VALUE}
                 suffix="+"
-                label="Years Experience"
+                statKey="years"
                 icon={Clock}
                 delay={0.3}
               />
@@ -301,7 +290,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
         </section>
 
         {/* Value Proposition Section */}
-        <section className="py-16 lg:py-20">
+        <section className="py-12 lg:py-16">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               {/* Left - Text content */}
@@ -325,7 +314,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                   ].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-foreground">
                       <span className="flex-shrink-0 w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center">
-                        <span className="w-2 h-2 rounded-full bg-secondary" />
+                        <Check className="w-3.5 h-3.5 text-secondary" aria-hidden="true" />
                       </span>
                       {item}
                     </li>
@@ -345,7 +334,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
               <div className="grid gap-4">
                 <div className="group p-6 bg-card border border-border rounded-2xl hover:border-primary/30 hover:shadow-lg transition-all duration-300">
                   <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                    <div className="w-3 h-3 rounded-full bg-primary" />
+                    <BarChart3 className="w-5 h-5 text-primary" aria-hidden="true" />
                   </div>
                   <h3 className="mb-2">Data-Driven Insights</h3>
                   <p>
@@ -355,7 +344,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
 
                 <div className="group p-6 bg-card border border-border rounded-2xl hover:border-secondary/30 hover:shadow-lg transition-all duration-300">
                   <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center mb-4">
-                    <div className="w-3 h-3 rounded-full bg-secondary" />
+                    <Workflow className="w-5 h-5 text-secondary" aria-hidden="true" />
                   </div>
                   <h3 className="mb-2">Process Automation</h3>
                   <p>Eliminate manual work and scale operations with intelligent automation.</p>
@@ -363,7 +352,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
 
                 <div className="group p-6 bg-card border border-border rounded-2xl hover:border-accent/30 hover:shadow-lg transition-all duration-300">
                   <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
-                    <div className="w-3 h-3 rounded-full bg-accent" />
+                    <Plug className="w-5 h-5 text-accent" aria-hidden="true" />
                   </div>
                   <h3 className="mb-2">System Integration</h3>
                   <p>Connect your tech stack for seamless data flow and unified reporting.</p>
@@ -378,9 +367,9 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
           content closer to home is crawled faster. Selecting 4 flagship
           projects (not all 8) preserves clear hierarchy. */}
         {featuredProjects.length > 0 && (
-          <section className="relative py-16 lg:py-24">
+          <section className="relative py-12 lg:py-16">
             <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
-              <div className="mb-12">
+              <div className="mb-8 lg:mb-10">
                 <h2 className="mb-4">Featured Work</h2>
                 <p className="max-w-2xl">
                   Selected revenue operations projects with measured business impact.
@@ -405,7 +394,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
         )}
 
         {/* Final CTA Section - Clean & Consistent */}
-        <section className="relative py-16 lg:py-20 overflow-clip">
+        <section className="relative py-12 lg:py-16 overflow-clip">
           {/* Subtle decorative elements */}
           <DecorativeBlob position="top-right" />
           <DecorativeBlob position="bottom-left" className="bottom-1/4" />
@@ -459,7 +448,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
           </div>
 
           {/* Bottom signature */}
-          <div className="relative max-w-4xl mx-auto px-6 lg:px-8 mt-10 pt-6 border-t border-border">
+          <div className="relative max-w-4xl mx-auto px-6 lg:px-8 mt-8 pt-6 border-t border-border">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-border shadow-sm">

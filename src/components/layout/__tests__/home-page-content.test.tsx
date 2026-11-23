@@ -35,6 +35,7 @@ vi.mock('@/components/ui/number-ticker', () => ({
 
 import HomePageContent from '../home-page-content'
 import type { Project } from '@/types/project'
+import { STAT_LABELS, TRANSACTION_GROWTH_CONTEXT, type StatKey } from '@/lib/stats'
 
 const featured = ['a', 'b', 'c', 'd'].map(
   (k) =>
@@ -127,5 +128,78 @@ describe('HomePageContent — ImpactMetric (regression #3)', () => {
   it('drops the old hardcoded featured copy', () => {
     const { container } = render(<HomePageContent featuredProjects={featured} />)
     expect(container.textContent).not.toContain('improving accuracy by 31%')
+  })
+
+  const keys: StatKey[] = ['revenue', 'transaction-growth', 'network-growth', 'years']
+
+  it('shows each stat once with its canonical label, in order', () => {
+    const { container } = render(<HomePageContent featuredProjects={featured} />)
+    for (const k of keys) {
+      expect(container.querySelectorAll(`[data-stat="${k}"]`).length).toBe(1)
+      expect(container.querySelector(`[data-stat-label="${k}"]`)?.textContent).toBe(STAT_LABELS[k])
+    }
+    const order = Array.from(container.querySelectorAll('[data-stat-label]')).map((e) =>
+      e.getAttribute('data-stat-label')
+    )
+    expect(order).toEqual(keys)
+  })
+
+  it('renders the 432% context line exactly once, inside the transaction metric', () => {
+    const { container } = render(<HomePageContent featuredProjects={featured} />)
+    const matches = screen.getAllByText(TRANSACTION_GROWTH_CONTEXT)
+    expect(matches.length).toBe(1)
+    const p = matches[0]!
+    expect(p.tagName).toBe('P')
+    expect(p.className).toBe('text-xs font-normal text-muted-foreground mt-1 max-w-[24ch]')
+    const label = container.querySelector('[data-stat-label="transaction-growth"]')
+    expect(label?.parentElement?.contains(p)).toBe(true)
+  })
+
+  it('hero profile card has no stat tiles', () => {
+    render(<HomePageContent featuredProjects={featured} />)
+    const card = screen
+      .getByRole('heading', { level: 2, name: 'Richard Hudson' })
+      .closest('.rounded-3xl')
+    expect(card).not.toBeNull()
+    expect(card!.textContent).not.toContain('Revenue Impact')
+    expect(card!.textContent).not.toMatch(/\$4\.8M|432%|2,217%/)
+    expect(screen.getAllByTestId('number-ticker').length).toBe(4)
+  })
+
+  it('capability cards and checklist use icons, not dots', () => {
+    const { container } = render(<HomePageContent featuredProjects={featured} />)
+    for (const title of ['Data-Driven Insights', 'Process Automation', 'System Integration']) {
+      const card = screen.getByRole('heading', { level: 3, name: title }).parentElement!
+      const svgs = card.querySelectorAll('svg')
+      expect(svgs.length).toBe(1)
+      expect(svgs[0]?.getAttribute('aria-hidden')).toBe('true')
+    }
+    const items = Array.from(container.querySelectorAll('ul li'))
+    expect(items.length).toBe(4)
+    for (const li of items) expect(li.querySelectorAll('svg').length).toBe(1)
+    for (const li of items) expect(li.querySelector('span.w-2.h-2.rounded-full')).toBeNull()
+  })
+
+  it('stacks hero CTAs full width on mobile', () => {
+    const { container } = render(<HomePageContent featuredProjects={featured} />)
+    const hero = container.querySelector('main section')!
+    const wrapper = hero.querySelector('div.flex.flex-col.sm\\:flex-row')!
+    expect(wrapper.className).toContain('sm:flex-wrap')
+    expect(wrapper.className).toContain('gap-4')
+    const links = wrapper.querySelectorAll('a')
+    expect(links.length).toBe(3)
+    for (const a of Array.from(links)) expect(a.className).toContain('w-full sm:w-auto')
+  })
+
+  it('every non-hero section uses one vertical rhythm', () => {
+    const { container } = render(<HomePageContent featuredProjects={featured} />)
+    const sections = Array.from(container.querySelectorAll('main > section')).slice(1)
+    expect(sections.length).toBeGreaterThan(0)
+    for (const sec of sections) {
+      const c = sec.className.split(/\s+/)
+      expect(c).toContain('py-12')
+      expect(c).toContain('lg:py-16')
+      for (const bad of ['py-16', 'py-20', 'lg:py-20', 'lg:py-24']) expect(c).not.toContain(bad)
+    }
   })
 })
