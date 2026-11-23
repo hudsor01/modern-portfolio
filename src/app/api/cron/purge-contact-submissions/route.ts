@@ -1,5 +1,6 @@
 import 'server-only'
 import { NextResponse } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 import { lt, sql } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { contactSubmissions } from '@/db/schema'
@@ -8,6 +9,15 @@ import { timingSafeEqualString } from '@/lib/timing-safe-equal'
 import { createContextLogger } from '@/lib/logger'
 
 const logger = createContextLogger('CronPurgeContactSubmissions')
+
+/** Sentry cron monitor; schedule must match this route's entry in vercel.json. */
+const MONITOR_SLUG = 'purge-contact-submissions'
+const MONITOR_CONFIG = {
+  schedule: { type: 'crontab' as const, value: '17 4 * * *' },
+  checkinMargin: 60,
+  maxRuntime: 5,
+  timezone: 'UTC',
+}
 
 /**
  * Delete contact submissions older than 24 months — the retention period
@@ -24,6 +34,13 @@ const logger = createContextLogger('CronPurgeContactSubmissions')
  * Fails closed: with no CRON_SECRET configured the route 401s rather than
  * running unauthenticated. The endpoint is a public URL — an open version would
  * let anyone trigger deletes.
+ *
+ * Observability: after auth only (so unauthenticated calls never create Sentry
+ * check-ins), the work runs inside `Sentry.withMonitor`, which reports an
+ * in_progress then ok/error check-in. A failed or missed run therefore alerts
+ * instead of silently breaking the 24-month retention. withMonitor is a no-op
+ * when no Sentry client is initialised (NODE_ENV=test, no DSN). It marks a run
+ * as errored only if the callback throws, hence the throw-and-catch below.
  */
 export async function GET(request: Request): Promise<NextResponse> {
   const cronSecret = env.CRON_SECRET
@@ -37,20 +54,27 @@ export async function GET(request: Request): Promise<NextResponse> {
   }
 
   try {
-    // Cutoff is fixed in SQL with no request input. `.returning().length`, not
-    // `db.execute` rowCount (neon-http returns a result object, see CLAUDE.md).
-    const deleted = await db
-      .delete(contactSubmissions)
-      .where(lt(contactSubmissions.createdAt, sql`now() - interval '24 months'`))
-      .returning({ id: contactSubmissions.id })
+    const deletedCount = await Sentry.withMonitor(
+      MONITOR_SLUG,
+      async () => {
+        // Cutoff is fixed in SQL with no request input. `.returning().length`, not
+        // `db.execute` rowCount (neon-http returns a result object, see CLAUDE.md).
+        const deleted = await db
+          .delete(contactSubmissions)
+          .where(lt(contactSubmissions.createdAt, sql`now() - interval '24 months'`))
+          .returning({ id: contactSubmissions.id })
+        return deleted.length
+      },
+      MONITOR_CONFIG
+    )
 
-    if (deleted.length > 0) {
+    if (deletedCount > 0) {
       // Count only — never ids or emails.
-      logger.info('Purged contact submissions', { count: deleted.length })
+      logger.info('Purged contact submissions', { count: deletedCount })
     }
 
     return NextResponse.json(
-      { deleted: deleted.length },
+      { deleted: deletedCount },
       { headers: { 'Cache-Control': 'no-store' } }
     )
   } catch (error) {
