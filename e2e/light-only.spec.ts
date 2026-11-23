@@ -49,7 +49,7 @@ for (const path of PAGES) {
   })
 }
 
-test('resume download toast is light under OS dark', async ({ page, browser }, testInfo) => {
+test('resume download toast is light under OS dark', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium', SKIP_REASON)
 
   await page.goto('/resume')
@@ -61,20 +61,17 @@ test('resume download toast is light under OS dark', async ({ page, browser }, t
   await expect(page.locator('[data-sonner-toaster]')).toHaveAttribute('data-sonner-theme', 'light')
   const toast = page.locator('[data-sonner-toast]').first()
   await expect(toast).toBeVisible()
-  const toastBackground = await toast.evaluate((el) => getComputedStyle(el).backgroundColor)
-  await downloadPromise
-
-  const context = await browser.newContext({
-    colorScheme: 'light',
-    baseURL: testInfo.project.use.baseURL,
+  // Toast variants (loading/success) tint the background, so assert it is light
+  // by luminance rather than equality with the page. A 1x1 canvas normalises
+  // any CSS colour syntax (lab(), oklch(), rgb()) to sRGB bytes.
+  const luminance = await toast.evaluate((el) => {
+    const ctx = document.createElement('canvas').getContext('2d')
+    if (!ctx) throw new Error('2d canvas unavailable')
+    ctx.fillStyle = getComputedStyle(el).backgroundColor
+    ctx.fillRect(0, 0, 1, 1)
+    const [r = 0, g = 0, b = 0] = ctx.getImageData(0, 0, 1, 1).data
+    return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255
   })
-  try {
-    const lightPage = await context.newPage()
-    await lightPage.goto('/resume')
-    await lightPage.waitForLoadState('networkidle')
-    const light = await lightPage.evaluate(() => getComputedStyle(document.body).backgroundColor)
-    expect(toastBackground).toBe(light)
-  } finally {
-    await context.close()
-  }
+  await downloadPromise
+  expect(luminance).toBeGreaterThan(0.85)
 })
