@@ -206,8 +206,11 @@ label[for],
   --font-family-display: Georgia, 'Times New Roman', serif;
 
   --font-size-base: 0.875rem;
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.8125rem;
+  /* 12px floor at the 14px root; 0.857rem rounds to 11.998px */
+  --text-xs: calc(12rem / 14);
+  --text-xs--line-height: calc(16 / 12);
+  --font-size-xs: calc(12rem / 14);
+  --font-size-sm: calc(12rem / 14);
   --font-size-md: 0.875rem;
   --font-size-lg: 1rem;
   --font-size-xl: 1.125rem;
@@ -284,6 +287,9 @@ label[for],
   --color-secondary-hover: oklch(0.40 0.12 145);
   --color-secondary-foreground: oklch(0.98 0.005 250);
   --color-accent: oklch(0.55 0.12 55);
+  /* small copper text on tints only; fills use text-white */
+  --color-accent-text: oklch(0.48 0.12 55);
+  --color-warning-text: oklch(0.48 0.12 55);
   --color-accent-foreground: oklch(0.15 0.02 250);
   --color-muted: oklch(0.96 0.005 250);
   --color-muted-foreground: oklch(0.45 0.02 250);
