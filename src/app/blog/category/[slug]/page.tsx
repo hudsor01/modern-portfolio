@@ -179,13 +179,9 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                 >
                   ← All articles
                 </Link>
-                <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mt-4 mb-4">
-                  {category.name}
-                </h1>
-                {category.description && (
-                  <p className="text-lg text-muted-foreground max-w-3xl">{category.description}</p>
-                )}
-                <p className="mt-4 text-sm text-muted-foreground">
+                <h1 className="mt-4 mb-4">{category.name}</h1>
+                {category.description && <p className="max-w-3xl">{category.description}</p>}
+                <p className="mt-4">
                   {category.posts.length} {category.posts.length === 1 ? 'article' : 'articles'}
                 </p>
               </div>
@@ -218,10 +214,7 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                               ))}
                             </div>
                           )}
-                          <CardTitle
-                            as="h2"
-                            className="text-xl line-clamp-2 group-hover:text-primary transition-colors"
-                          >
+                          <CardTitle as="h2" className="line-clamp-2 transition-colors">
                             {post.title}
                           </CardTitle>
                           {post.excerpt && (
@@ -244,9 +237,7 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                 </div>
               ) : (
                 <div className="py-16 text-center">
-                  <p className="text-muted-foreground">
-                    No articles published in this category yet.
-                  </p>
+                  <p>No articles published in this category yet.</p>
                 </div>
               )}
             </div>

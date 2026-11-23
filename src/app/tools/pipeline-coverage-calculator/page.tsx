@@ -71,16 +71,14 @@ export default function PipelineCoverageCalculatorPage() {
         <Navbar />
         <main id="main-content" className="max-w-5xl mx-auto px-6 lg:px-8 pt-24 pb-20 lg:pt-32">
           <header className="mb-10">
-            <p className="text-sm text-muted-foreground mb-3">
+            <p className="mb-3">
               <Link href="/" className="hover:text-primary">
                 Home
               </Link>{' '}
               / Pipeline Coverage Calculator
             </p>
-            <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-4">
-              Pipeline Coverage Calculator
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-3xl leading-relaxed">
+            <h1 className="mb-4">Pipeline Coverage Calculator</h1>
+            <p className="max-w-3xl">
               How much pipeline do you actually need to hit your number? Not 3× — that’s a guess.
               The honest answer is driven by your <strong>win rate</strong>. Enter yours below to
               get the coverage ratio and qualified pipeline you really need.
@@ -90,9 +88,7 @@ export default function PipelineCoverageCalculatorPage() {
           <PipelineCoverageCalculator />
 
           <section className="mt-16 max-w-3xl">
-            <h2 className="text-2xl font-semibold text-foreground mb-4">
-              Why the “3× pipeline” rule is wrong for most teams
-            </h2>
+            <h2 className="mb-4">Why the “3× pipeline” rule is wrong for most teams</h2>
             <div className="space-y-4 text-muted-foreground leading-relaxed">
               <p>
                 The 3× rule is everywhere because it’s easy to remember — but it’s only correct for
@@ -114,9 +110,7 @@ export default function PipelineCoverageCalculatorPage() {
           </section>
 
           <section className="mt-12 max-w-3xl">
-            <h2 className="text-2xl font-semibold text-foreground mb-6">
-              Frequently asked questions
-            </h2>
+            <h2 className="mb-6">Frequently asked questions</h2>
             <dl className="space-y-6">
               {FAQS.map((faq) => (
                 <div key={faq.question}>
@@ -128,7 +122,7 @@ export default function PipelineCoverageCalculatorPage() {
           </section>
 
           <section className="mt-12 pt-8 border-t border-border max-w-3xl">
-            <h2 className="text-xl font-semibold text-foreground mb-4">Related reading</h2>
+            <h2 className="mb-4">Related reading</h2>
             <ul className="space-y-2 text-primary">
               <li>
                 <Link

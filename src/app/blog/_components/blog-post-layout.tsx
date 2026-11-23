@@ -93,7 +93,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
 
               {/* Excerpt */}
               {post.excerpt && (
-                <p className="text-body-lg text-muted-foreground">
+                <p className="text-body-lg">
                   <InlineMarkdown value={post.excerpt} />
                 </p>
               )}
@@ -107,7 +107,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm font-semibold text-foreground">{authorName}</p>
+                    <p>{authorName}</p>
                   </div>
                 </div>
               </div>
@@ -169,7 +169,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
 
         <aside className="space-y-6 lg:sticky lg:top-24 self-start">
           <Card variant="outline" className="p-6">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Post details</p>
+            <p className="uppercase tracking-wide">Post details</p>
             <div className="mt-4 space-y-3 text-sm">
               {detailItems.map((detail) => (
                 <div key={detail.label} className="flex items-center justify-between gap-4">
@@ -182,9 +182,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
 
           {post.author?.bio && (
             <Card variant="outline" className="p-6">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                About the author
-              </p>
+              <p className="uppercase tracking-wide">About the author</p>
               <div className="mt-4 flex items-center gap-3">
                 <Avatar className="h-10 w-10 ring-2 ring-border/60">
                   <AvatarImage src={authorImage} alt={authorName} />
@@ -193,10 +191,10 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-sm font-semibold text-foreground">{authorName}</p>
+                  <p>{authorName}</p>
                 </div>
               </div>
-              <p className="mt-4 text-sm text-muted-foreground">{post.author.bio}</p>
+              <p className="mt-4">{post.author.bio}</p>
             </Card>
           )}
         </aside>

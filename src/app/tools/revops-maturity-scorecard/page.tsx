@@ -77,16 +77,14 @@ export default function RevOpsMaturityScorecardPage() {
         <Navbar />
         <main id="main-content" className="max-w-6xl mx-auto px-6 lg:px-8 pt-24 pb-20 lg:pt-32">
           <header className="mb-10 max-w-3xl">
-            <p className="text-sm text-muted-foreground mb-3">
+            <p className="mb-3">
               <Link href="/" className="hover:text-primary">
                 Home
               </Link>{' '}
               / RevOps Maturity Scorecard
             </p>
-            <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-4">
-              RevOps Maturity Scorecard
-            </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed">
+            <h1 className="mb-4">RevOps Maturity Scorecard</h1>
+            <p>
               Where does your revenue engine actually stand? Rate your team across the four pillars
               that drive RevOps maturity — <strong>process, data, technology, and alignment</strong>{' '}
               — and get your maturity level, your percentile, and the single highest-ROI move to
@@ -97,9 +95,7 @@ export default function RevOpsMaturityScorecardPage() {
           <RevOpsMaturityScorecard />
 
           <section className="mt-16 max-w-3xl">
-            <h2 className="text-2xl font-semibold text-foreground mb-4">
-              Why your weakest pillar is your ceiling
-            </h2>
+            <h2 className="mb-4">Why your weakest pillar is your ceiling</h2>
             <div className="space-y-4 text-muted-foreground leading-relaxed">
               <p>
                 RevOps maturity isn’t an average you can buy your way out of — it’s gated by your
@@ -123,9 +119,7 @@ export default function RevOpsMaturityScorecardPage() {
           </section>
 
           <section className="mt-12 max-w-3xl">
-            <h2 className="text-2xl font-semibold text-foreground mb-6">
-              Frequently asked questions
-            </h2>
+            <h2 className="mb-6">Frequently asked questions</h2>
             <dl className="space-y-6">
               {FAQS.map((faq) => (
                 <div key={faq.question}>
@@ -137,9 +131,7 @@ export default function RevOpsMaturityScorecardPage() {
           </section>
 
           <section className="mt-12 pt-8 border-t border-border max-w-3xl">
-            <h2 className="text-xl font-semibold text-foreground mb-4">
-              Related reading &amp; tools
-            </h2>
+            <h2 className="mb-4">Related reading &amp; tools</h2>
             <ul className="space-y-2 text-primary">
               <li>
                 <Link href="/tools/pipeline-coverage-calculator" className="hover:underline">

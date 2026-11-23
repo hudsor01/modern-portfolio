@@ -24,9 +24,9 @@ export default function ErrorPage({
             <AlertTriangle className="w-8 h-8 text-destructive" />
           </div>
 
-          <h2 className="typography-h3 text-foreground mb-4">Something went wrong</h2>
+          <h2 className="typography-h3 mb-4">Something went wrong</h2>
 
-          <p className="text-muted-foreground mb-8">
+          <p className="mb-8">
             We're sorry, but something unexpected happened. Please try again or contact support if
             the problem persists.
           </p>

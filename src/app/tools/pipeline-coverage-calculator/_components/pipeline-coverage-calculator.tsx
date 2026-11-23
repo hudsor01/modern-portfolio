@@ -63,7 +63,7 @@ export function PipelineCoverageCalculator() {
     <div className="grid gap-8 lg:grid-cols-2">
       {/* Inputs */}
       <div className="bg-card rounded-2xl p-6 sm:p-8 border border-border shadow-sm">
-        <h2 className="text-lg font-semibold text-foreground mb-6">Your numbers</h2>
+        <h2 className="mb-6">Your numbers</h2>
 
         <div className="space-y-5">
           <Field id={ids.target} label="Revenue target (this period)" prefix="$">
@@ -158,7 +158,7 @@ export function PipelineCoverageCalculator() {
               />
             </Field>
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p>
             “% truly qualified” strips stalled/zombie deals from your current pipeline so the gap
             reflects what can actually close.
           </p>
@@ -172,25 +172,21 @@ export function PipelineCoverageCalculator() {
       >
         {!result.valid ? (
           <div className="h-full flex items-center justify-center text-center">
-            <p className="text-muted-foreground">{result.error}</p>
+            <p>{result.error}</p>
           </div>
         ) : (
           <div className="space-y-6">
             <div>
-              <p className="text-sm uppercase tracking-wider text-muted-foreground">
-                Required coverage
-              </p>
-              <p className="text-5xl font-bold text-primary tracking-tight">
-                {mult(result.requiredCoverage)}
-              </p>
-              <p className="mt-1 text-foreground">
+              <p className="uppercase tracking-wider">Required coverage</p>
+              <p className="tracking-tight">{mult(result.requiredCoverage)}</p>
+              <p className="mt-1">
                 ≈ <strong>{money(result.requiredPipeline)}</strong> in qualified pipeline to hit{' '}
                 {money(parse(target) ?? 0)}.
               </p>
             </div>
 
             <div className="rounded-xl bg-muted/50 p-4 text-sm">
-              <p className="text-foreground">
+              <p>
                 The generic <strong>3× rule</strong> would tell you to build{' '}
                 {money(result.lazyThreeXPipeline)} —{' '}
                 {result.vsLazyThreeX > 0 ? (
@@ -218,13 +214,13 @@ export function PipelineCoverageCalculator() {
 
             {result.pipelineGap !== undefined && result.currentCoverage !== undefined && (
               <div className="rounded-xl border border-border p-4">
-                <p className="text-sm text-muted-foreground">
+                <p>
                   You have {mult(result.currentCoverage)} coverage today
                   {result.effectiveCurrentPipeline !== undefined &&
                     ` (${money(result.effectiveCurrentPipeline)} qualified)`}
                   .
                 </p>
-                <p className="mt-1 font-semibold">
+                <p className="mt-1">
                   {result.pipelineGap > 0.5 ? (
                     <span className="text-destructive">
                       Shortfall: build {money(result.pipelineGap)} more pipeline.
@@ -259,7 +255,7 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={id} className="block text-sm font-medium text-foreground mb-1.5">
+      <label htmlFor={id} className="block leading-[calc(1.25/0.875)] text-foreground mb-1.5">
         {label}
       </label>
       <div className="relative">

@@ -58,7 +58,7 @@ export function RevOpsMaturityScorecard() {
             <div className="mt-6 space-y-6">
               {QUESTIONS.filter((q) => q.pillar === pillar.id).map((q) => (
                 <div key={q.id}>
-                  <p id={`${groupName}-${q.id}-label`} className="text-sm text-foreground mb-2.5">
+                  <p id={`${groupName}-${q.id}-label`} className="mb-2.5">
                     {q.text}
                   </p>
                   <div
@@ -112,18 +112,16 @@ export function RevOpsMaturityScorecard() {
           className="lg:sticky lg:top-28 bg-card rounded-2xl p-6 sm:p-8 border border-border shadow-sm"
           aria-live="polite"
         >
-          <p className="text-sm uppercase tracking-wider text-muted-foreground">
-            Your maturity level
-          </p>
+          <p className="uppercase tracking-wider">Your maturity level</p>
           <p className="mt-1 flex items-baseline gap-2">
             <span className="text-5xl font-bold text-primary tracking-tight">{result.level}</span>
             <span className="text-2xl font-semibold text-foreground">{result.tier}</span>
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1">
             Overall score {result.overallScore.toFixed(1)} / 5 · ~{result.percentile}th percentile
             of B2B teams
           </p>
-          {tier && <p className="mt-3 text-sm text-foreground leading-relaxed">{tier.blurb}</p>}
+          {tier && <p className="mt-3">{tier.blurb}</p>}
 
           {/* Per-pillar bars */}
           <div className="mt-6 space-y-3">
@@ -159,17 +157,15 @@ export function RevOpsMaturityScorecard() {
           {/* Highest-ROI next move */}
           {result.nextMove && (
             <div className="mt-6 rounded-xl bg-muted/50 p-4">
-              <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
-                Highest-ROI next move
-              </p>
-              <p className="text-sm text-foreground leading-relaxed">{result.nextMove}</p>
+              <p className="uppercase tracking-wider mb-1">Highest-ROI next move</p>
+              <p>{result.nextMove}</p>
             </div>
           )}
 
           {/* Tech-overbuy anti-pattern */}
           {result.techOverbuy && (
             <div className="mt-4 rounded-xl border border-destructive/40 bg-destructive/5 p-4">
-              <p className="text-sm text-foreground leading-relaxed">
+              <p>
                 <strong className="text-destructive">Watch out:</strong> your tooling maturity is
                 running ahead of your data and process maturity — the classic{' '}
                 <em>buying tools you can’t feed</em> trap. Fix the foundation before adding more

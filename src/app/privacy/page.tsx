@@ -40,9 +40,7 @@ const LIST_CLASS = 'list-disc pl-6 space-y-2 text-(length:--font-size-base)'
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="mt-12">
-      <h2 className="font-display text-2xl font-semibold text-foreground tracking-tight mb-4">
-        {title}
-      </h2>
+      <h2 className="mb-4">{title}</h2>
       <div className="space-y-4 text-muted-foreground leading-relaxed">{children}</div>
     </section>
   )
@@ -85,13 +83,11 @@ export default function PrivacyPage() {
         <Navbar />
         <main id="main-content" className="max-w-3xl mx-auto px-6 lg:px-8 pt-24 pb-20 lg:pt-32">
           <header>
-            <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-4">
-              Privacy Policy
-            </h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="mb-4">Privacy Policy</h1>
+            <p>
               Last updated <time dateTime={PRIVACY_POLICY_LAST_UPDATED}>{LAST_UPDATED_LABEL}</time>
             </p>
-            <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
+            <p className="mt-6">
               This is my personal portfolio site. It collects very little: what you choose to send
               through the contact form, cookie-free visit statistics, and error reports when
               something breaks. Nothing is sold, and there is no advertising or cross-site tracking.

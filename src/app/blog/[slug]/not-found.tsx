@@ -21,11 +21,11 @@ export default function BlogPostNotFound() {
       <Navbar />
       <main id="main-content" className="min-h-[70vh] grid place-items-center px-6 pt-24">
         <div className="text-center max-w-md">
-          <p aria-hidden="true" className="text-sm uppercase tracking-wide text-muted-foreground">
+          <p aria-hidden="true" className="uppercase tracking-wide">
             404
           </p>
-          <h1 className="text-3xl font-bold mt-2 mb-4 text-foreground">Post not found</h1>
-          <p className="text-muted-foreground mb-6">
+          <h1 className="mt-2 mb-4">Post not found</h1>
+          <p className="mb-6">
             The post you&apos;re looking for doesn&apos;t exist or may have been moved.
           </p>
           <Link href="/blog" className="inline-block text-primary hover:underline">

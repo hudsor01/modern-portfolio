@@ -121,10 +121,8 @@ export default function AboutPage() {
         {/* 5. Final CTA */}
         <section aria-label="Contact" className="py-20 lg:py-28">
           <div className="max-w-3xl mx-auto px-6 lg:px-8 text-center">
-            <h2 className="font-display text-3xl lg:text-5xl font-bold text-foreground mb-6">
-              Let's talk about your goals
-            </h2>
-            <p className="text-xl text-muted-foreground mb-10">
+            <h2 className="mb-6">Let's talk about your goals</h2>
+            <p className="mb-10">
               Ready to turn revenue operations into a competitive advantage? See the work, or get in
               touch directly.
             </p>
