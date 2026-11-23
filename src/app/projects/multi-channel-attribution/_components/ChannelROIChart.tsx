@@ -136,7 +136,7 @@ const ChannelROIChart = memo(function ChannelROIChart() {
           </Scatter>
         </ScatterChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Channel attribution vs ROI scatter analysis revealing optimal investment allocation and
         performance optimization opportunities
       </p>

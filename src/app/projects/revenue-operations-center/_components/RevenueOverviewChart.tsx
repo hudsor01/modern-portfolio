@@ -170,7 +170,7 @@ const RevenueOverviewChart = memo(function RevenueOverviewChart() {
           />
         </LineChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Multi-channel revenue performance tracking showing 34.2% YoY growth with consistent target
         outperformance
       </p>

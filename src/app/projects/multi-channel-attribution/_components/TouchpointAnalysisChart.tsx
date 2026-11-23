@@ -157,7 +157,7 @@ const TouchpointAnalysisChart = memo(function TouchpointAnalysisChart() {
           />
         </LineChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Touchpoint sequence analysis showing channel contribution evolution across customer journey
         positions
       </p>

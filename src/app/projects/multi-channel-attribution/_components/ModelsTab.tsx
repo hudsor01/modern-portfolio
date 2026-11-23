@@ -8,7 +8,7 @@ export function ModelsTab() {
     <div className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out mb-8">
       <div className="mb-4">
         <h2 className="typography-h4 mb-1">Attribution Model Performance & ROI Comparison</h2>
-        <p className="typography-small text-muted-foreground">
+        <p className="typography-small">
           Comprehensive analysis of attribution methodologies from traditional to machine learning
           approaches
         </p>

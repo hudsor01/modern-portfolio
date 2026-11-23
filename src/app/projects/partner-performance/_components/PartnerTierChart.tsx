@@ -96,7 +96,7 @@ const PartnerTierChart = memo(function PartnerTierChart() {
           />
         </BarChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Certified partners drove $
         {(
           partnerProgramMetrics.partnerTiers.find((t) => t.tier === 'Certified')?.revenueUsd ?? 0

@@ -136,7 +136,7 @@ const PipelineHealthChart = memo(function PipelineHealthChart() {
           />
         </BarChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Pipeline stage analysis showing 92.4% overall health score with optimized velocity and
         conversion tracking
       </p>

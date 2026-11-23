@@ -242,7 +242,7 @@ const ForecastAccuracyChart = memo(function ForecastAccuracyChart() {
           />
         </ComposedChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Revenue forecasting accuracy analysis showing 96.8% average accuracy with predictive
         confidence intervals
       </p>

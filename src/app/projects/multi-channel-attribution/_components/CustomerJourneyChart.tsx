@@ -122,7 +122,7 @@ const CustomerJourneyChart = memo(function CustomerJourneyChart() {
           />
         </AreaChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Customer journey funnel analysis showing touchpoint density and conversion optimization
         across 6 key stages
       </p>

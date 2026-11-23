@@ -80,7 +80,7 @@ const RevenueContributionChart = memo(function RevenueContributionChart() {
           />
         </PieChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Channel revenue distribution following Pareto Principle: top 20% of partners generate 80.2%
         of revenue
       </p>

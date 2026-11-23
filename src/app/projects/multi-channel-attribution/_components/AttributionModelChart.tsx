@@ -93,7 +93,7 @@ const AttributionModelChart = memo(function AttributionModelChart() {
           />
         </BarChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Attribution model performance comparison showing ML-driven model achieving 92.4% accuracy vs
         traditional approaches
       </p>

@@ -6,7 +6,7 @@ import { formatCurrency } from '../utils'
 export function StrategicImpact() {
   return (
     <div className="bg-accent/10 border border-accent/20 rounded-xl p-6">
-      <h2 className="typography-h4 mb-4 text-accent">
+      <h2 className="typography-h4 mb-4">
         Multi-Channel Attribution Intelligence & Marketing ROI Impact
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -26,8 +26,8 @@ const partnerTierPerformance = partnerProgramMetrics.partnerTiers
 export function TiersTab() {
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">Partner Tier Intelligence & ROI Metrics</h3>
-      <p className="text-sm text-muted-foreground mb-6">
+      <h3 className="mb-4">Partner Tier Intelligence & ROI Metrics</h3>
+      <p className="mb-6">
         Comprehensive partner performance analysis across certification levels and engagement tiers
       </p>
 

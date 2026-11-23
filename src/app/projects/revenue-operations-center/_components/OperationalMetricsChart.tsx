@@ -119,7 +119,7 @@ const OperationalMetricsChart = memo(function OperationalMetricsChart() {
           <Legend wrapperStyle={{ color: chartCssVars.mutedForeground }} />
         </RadarChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Operational efficiency radar showing 89.7% average performance vs 85% target and 78%
         industry benchmark
       </p>
