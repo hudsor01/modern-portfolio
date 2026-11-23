@@ -12,14 +12,19 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 import { PROJECT_COUNT } from '@/data/projects'
-import { REVENUE_IMPACT, TRANSACTION_GROWTH, NETWORK_GROWTH, YEARS_EXPERIENCE } from '@/lib/stats'
+import { STAT_LABELS, STAT_VALUES, type StatKey } from '@/lib/stats'
 
-const EXPERIENCE_STATS = [
-  { label: 'Projects Delivered', value: YEARS_EXPERIENCE, icon: 'check-circle' },
-  { label: 'Revenue Generated', value: REVENUE_IMPACT, icon: 'dollar-sign' },
-  { label: 'Transaction Growth', value: TRANSACTION_GROWTH, icon: 'bar-chart' },
-  { label: 'Network Expansion', value: NETWORK_GROWTH, icon: 'rocket' },
-]
+const EXPERIENCE_STATS: { statKey: StatKey; label: string; value: string; icon: string }[] = [
+  { statKey: 'revenue', icon: 'dollar-sign' },
+  { statKey: 'transaction-growth', icon: 'bar-chart' },
+  { statKey: 'network-growth', icon: 'rocket' },
+  { statKey: 'years', icon: 'clock' },
+].map(({ statKey, icon }) => ({
+  statKey: statKey as StatKey,
+  label: STAT_LABELS[statKey as StatKey],
+  value: STAT_VALUES[statKey as StatKey],
+  icon,
+}))
 
 const CERTIFICATIONS = [
   {
@@ -58,7 +63,7 @@ const PERSONAL_INFO = {
   title: 'Revenue Operations Professional',
   location: 'Dallas, TX • Dallas-Fort Worth Metroplex • Remote & On-Site',
   email: 'hudsor01@icloud.com',
-  bio: `Started my career untangling spreadsheet chaos at a 50-person startup. Built my first automated pipeline with zero engineering support—just Excel, determination, and 3 YouTube tutorials. That pipeline now processes $4.8M+ annually.
+  bio: `Started my career untangling spreadsheet chaos at a 50-person startup. Built my first automated pipeline with zero engineering support—just Excel, determination, and 3 YouTube tutorials.
 
 Today, I architect revenue operations systems that transform data overwhelm into competitive advantage. Ten years working the messy middle—where sales meets marketing meets customer success—turning manual reporting nightmares into automated workflows that scale.
 

@@ -20,9 +20,7 @@ const SUBSECTIONS: Subsection[] = [
     body: "Most revenue operations problems aren't strategy problems—they're data quality problems. I spend more time in SQL and Python than PowerPoint because if the foundation is wrong, everything built on top collapses.",
     proof: (
       <>
-        Built the pipeline that now processes{' '}
-        <span className="text-foreground font-medium">$4.8M+ annually</span>. Started with Excel
-        macros. Graduated to Python automation. Now it runs without me.
+        Started with Excel macros. Graduated to Python automation. Now the pipeline runs without me.
       </>
     ),
     tags: ['SQL', 'Python', 'Excel', 'PowerBI', 'Tableau'],
