@@ -5,15 +5,6 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { ContactForm } from '../contact-form'
 import type { UseContactFormReturn } from '@/types/forms'
 
-// jsdom doesn't ship ResizeObserver — Radix's Checkbox uses it.
-class ResizeObserverStub {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-}
-;(globalThis as unknown as { ResizeObserver: unknown }).ResizeObserver =
-  (globalThis as unknown as { ResizeObserver?: unknown }).ResizeObserver ?? ResizeObserverStub
-
 function StubField({
   name,
   children,
@@ -43,7 +34,6 @@ function createFormStub() {
 
 function renderForm(overrides: Partial<UseContactFormReturn> = {}) {
   const form = createFormStub()
-  const setAgreedToTerms = vi.fn()
   const props: UseContactFormReturn = {
     form,
     formData: { name: '', email: '', message: '' },
@@ -51,17 +41,14 @@ function renderForm(overrides: Partial<UseContactFormReturn> = {}) {
     handleInputChange: vi.fn(),
     handleSubmit: vi.fn(),
     submitStatus: 'idle',
-    agreedToTerms: false,
-    termsError: null,
     progress: 0,
     isSubmitting: false,
-    setAgreedToTerms,
     resetForm: vi.fn(),
     error: null,
     ...overrides,
   } as UseContactFormReturn
   const utils = render(<ContactForm form={props} />)
-  return { ...utils, form, setAgreedToTerms }
+  return { ...utils, form }
 }
 
 describe('ContactForm', () => {
@@ -81,11 +68,8 @@ describe('ContactForm', () => {
       handleInputChange: vi.fn(),
       handleSubmit: vi.fn(),
       submitStatus: 'idle',
-      agreedToTerms: false,
-      termsError: null,
       progress: 0,
       isSubmitting: false,
-      setAgreedToTerms: vi.fn(),
       resetForm: vi.fn(),
       error: null,
     } as unknown as UseContactFormReturn
@@ -104,49 +88,52 @@ describe('ContactForm', () => {
     expect(screen.getByText('Phone number')).toBeTruthy()
   })
 
-  it('disables submit button when terms not agreed', () => {
-    renderForm({ agreedToTerms: false })
-    const btn = screen.getByRole('button', { name: /send message/i })
-    expect((btn as HTMLButtonElement).disabled).toBe(true)
-  })
-
-  it('enables submit button when terms are agreed and not submitting', () => {
-    renderForm({ agreedToTerms: true, isSubmitting: false })
+  it('enables submit button when not submitting', () => {
+    renderForm({ isSubmitting: false })
     const btn = screen.getByRole('button', { name: /send message/i })
     expect((btn as HTMLButtonElement).disabled).toBe(false)
   })
 
-  it('shows helper text explaining the disabled submit when terms not agreed', () => {
-    renderForm({ agreedToTerms: false })
-    expect(screen.getByText(/accept the privacy policy to send your message/i)).toBeTruthy()
-  })
-
-  it('hides the disabled-submit helper text once terms are agreed', () => {
-    renderForm({ agreedToTerms: true })
-    expect(screen.queryByText(/accept the privacy policy to send your message/i)).toBeNull()
-  })
-
-  it('disables submit button while submitting even with terms agreed', () => {
-    renderForm({ agreedToTerms: true, isSubmitting: true })
-    // The accessible name changes to the loading state
+  it('disables submit button while submitting', () => {
+    renderForm({ isSubmitting: true })
     const btn = screen.getByRole('button', { name: /sending message/i })
     expect((btn as HTMLButtonElement).disabled).toBe(true)
   })
 
+  it('has no checkbox and no accept-privacy hint', () => {
+    renderForm()
+    expect(screen.queryByRole('checkbox')).toBeNull()
+    expect(screen.queryByText(/please accept/i)).toBeNull()
+  })
+
   it('invokes form.handleSubmit on form submit', () => {
-    const { form, container } = renderForm({ agreedToTerms: true })
+    const { form, container } = renderForm()
     const formEl = container.querySelector('form')
     expect(formEl).toBeTruthy()
     fireEvent.submit(formEl!)
     expect(form.handleSubmit).toHaveBeenCalledTimes(1)
   })
 
-  it('links the consent label to the /privacy page in a new tab', () => {
+  it('renders the privacy notice with a new-tab link to /privacy', () => {
     renderForm()
-    const link = screen.getByRole('link', { name: /privacy policy/i })
+    expect(
+      screen.getByText(
+        /By sending, your name, email and message are used only to reply to you\. See the/
+      )
+    ).toBeTruthy()
+    const link = screen.getByRole('link', { name: /^privacy policy \(opens in a new tab\)$/i })
     expect(link.getAttribute('href')).toBe('/privacy')
     expect(link.getAttribute('target')).toBe('_blank')
     expect(link.getAttribute('rel')).toContain('noopener')
+  })
+
+  it('shows a form-level error between the Send button and the notice', () => {
+    renderForm({ error: new Error('Rate limit exceeded') })
+    const msg = screen.getByText('Rate limit exceeded')
+    const btn = screen.getByRole('button', { name: /send message/i })
+    const notice = screen.getByRole('link', { name: /privacy policy/i }).closest('p')!
+    expect(btn.compareDocumentPosition(msg) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(msg.compareDocumentPosition(notice) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
 
   it('renders success status banner when submitStatus === "success"', () => {
@@ -157,12 +144,5 @@ describe('ContactForm', () => {
   it('renders error status banner when submitStatus === "error"', () => {
     renderForm({ submitStatus: 'error' })
     expect(screen.getByRole('alert').textContent).toMatch(/failed to send/i)
-  })
-
-  it('checkbox click invokes setAgreedToTerms', () => {
-    const { setAgreedToTerms } = renderForm()
-    const checkbox = screen.getByRole('checkbox')
-    fireEvent.click(checkbox)
-    expect(setAgreedToTerms).toHaveBeenCalled()
   })
 })

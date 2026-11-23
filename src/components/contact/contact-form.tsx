@@ -13,7 +13,6 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Field, FieldError } from '@/components/ui/field'
 import { Label } from '@/components/ui/label'
 import type { TanStackFieldApi, UseContactFormReturn } from '@/types/forms'
@@ -23,7 +22,7 @@ interface ContactFormProps {
 }
 
 export function ContactForm({ form: formHook }: ContactFormProps) {
-  const { form, submitStatus, agreedToTerms, setAgreedToTerms, isSubmitting, error } = formHook
+  const { form, submitStatus, isSubmitting, error } = formHook
 
   return (
     <div className="bg-card rounded-2xl p-8 border border-border shadow-sm">
@@ -193,61 +192,43 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
           )}
         />
 
-        {/* Privacy Agreement */}
-        <div className="flex items-start gap-3 p-4 bg-muted/30 rounded-xl border border-border">
-          <Checkbox
-            id="privacy"
-            checked={agreedToTerms}
-            onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
-          />
-          <div className="text-sm">
-            <label htmlFor="privacy" className="text-muted-foreground cursor-pointer">
-              I agree to the{' '}
-              {/* New tab so reading the policy doesn't discard what's been typed. */}
-              <Link
-                href="/privacy"
-                target="_blank"
-                rel="noopener"
-                className="text-primary hover:text-primary/70 underline"
-              >
-                privacy policy
-                <span className="sr-only"> (opens in a new tab)</span>
-              </Link>{' '}
-              and consent to processing my data for this inquiry. *
-            </label>
-            {error && <FieldError>{error.message}</FieldError>}
-          </div>
-        </div>
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={isSubmitting || !agreedToTerms}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-4 px-6 rounded-xl transition-all duration-300 ease-out flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group shadow-sm hover:shadow-md"
-        >
-          {isSubmitting ? (
-            <>
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-              Sending Message...
-            </>
-          ) : (
-            <>
-              <Send className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
-              Send Message
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </>
-          )}
-        </button>
-
-        {/* Explain why the submit button is disabled until terms are accepted */}
-        {!agreedToTerms && (
-          <p
-            aria-live="polite"
-            className="typography-small text-muted-foreground text-center -mt-2"
+        {/* Submit Button + privacy notice */}
+        <div className="space-y-2">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-4 px-6 rounded-xl transition-all duration-300 ease-out flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group shadow-sm hover:shadow-md"
           >
-            Please accept the privacy policy to send your message.
+            {isSubmitting ? (
+              <>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                Sending Message...
+              </>
+            ) : (
+              <>
+                <Send className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+                Send Message
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </>
+            )}
+          </button>
+
+          {error && <FieldError>{error.message}</FieldError>}
+
+          <p className="typography-small text-muted-foreground text-center">
+            By sending, your name, email and message are used only to reply to you. See the{' '}
+            {/* New tab so reading the policy doesn't discard what's been typed. */}
+            <Link
+              href="/privacy"
+              target="_blank"
+              rel="noopener"
+              className="text-primary hover:text-primary/70 underline underline-offset-4"
+            >
+              Privacy Policy <span className="sr-only">(opens in a new tab)</span>
+            </Link>
+            .
           </p>
-        )}
+        </div>
 
         {/* Status Messages */}
         {submitStatus === 'success' && (

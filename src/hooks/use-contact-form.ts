@@ -23,9 +23,7 @@ const initialFormData: ContactFormData = {
 
 export function useContactForm(): UseContactFormReturn {
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>('idle')
-  const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [error, setError] = useState<Error | null>(null)
-  const [termsError, setTermsError] = useState<string | null>(null)
 
   const form = useForm({
     defaultValues: initialFormData,
@@ -35,14 +33,6 @@ export function useContactForm(): UseContactFormReturn {
     onSubmit: async ({ value }) => {
       setSubmitStatus('submitting')
       setError(null)
-      setTermsError(null) // Clear any previous terms error
-
-      // Check terms agreement before submitting
-      if (!agreedToTerms) {
-        setTermsError('Please agree to the privacy policy')
-        setSubmitStatus('error')
-        return
-      }
 
       try {
         const result = await submitContactForm(value)
@@ -50,7 +40,6 @@ export function useContactForm(): UseContactFormReturn {
         if (result.success) {
           setSubmitStatus('success')
           form.reset()
-          setAgreedToTerms(false)
         } else {
           setSubmitStatus('error')
           setError(new Error(result.error || 'Submission failed'))
@@ -87,7 +76,7 @@ export function useContactForm(): UseContactFormReturn {
   }, [formData])
 
   // Calculate form progress
-  const progress = calculateProgress(formData, agreedToTerms)
+  const progress = calculateProgress(formData)
   const isSubmitting = submitStatus === 'submitting'
 
   const handleInputChange = useCallback(
@@ -112,7 +101,6 @@ export function useContactForm(): UseContactFormReturn {
 
   function resetForm(): void {
     form.reset()
-    setAgreedToTerms(false)
     setSubmitStatus('idle')
     setError(null)
   }
@@ -124,24 +112,20 @@ export function useContactForm(): UseContactFormReturn {
     handleInputChange,
     handleSubmit,
     submitStatus,
-    agreedToTerms,
-    termsError,
     progress,
     isSubmitting,
-    setAgreedToTerms,
     resetForm,
     error,
   }
 }
 
-function calculateProgress(values: ContactFormData, termsAccepted: boolean): number {
+function calculateProgress(values: ContactFormData): number {
   let filled = 0
-  const total = 4
+  const total = 3
 
   if (values.name.length >= 2) filled += 1
   if (values.email.includes('@')) filled += 1
   if (values.message.length >= 10) filled += 1
-  if (termsAccepted) filled += 1
 
   // Bonus points for optional fields
   if (values.company) filled += 0.2

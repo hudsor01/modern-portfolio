@@ -30,13 +30,11 @@ beforeEach(() => {
 })
 
 describe('useContactForm', () => {
-  it('initial state: idle / not submitting / terms not agreed', () => {
+  it('initial state: idle / not submitting', () => {
     const { result } = renderHook(() => useContactForm())
     expect(result.current.submitStatus).toBe('idle')
     expect(result.current.isSubmitting).toBe(false)
-    expect(result.current.agreedToTerms).toBe(false)
     expect(result.current.error).toBeNull()
-    expect(result.current.termsError).toBeNull()
   })
 
   it('exposes errors map mapped from contactFormSchema', () => {
@@ -53,29 +51,27 @@ describe('useContactForm', () => {
     expect(result.current.progress).toBe(0)
   })
 
-  it('handleSubmit blocks when terms are not accepted', async () => {
-    const { result } = renderHook(() => useContactForm())
-    // Populate form
-    act(() => {
-      for (const [key, value] of Object.entries(validData)) {
-        result.current.form.setFieldValue(key as keyof typeof validData, value)
-      }
-    })
-    await act(async () => {
-      await result.current.handleSubmit()
-    })
-    expect(result.current.termsError).toMatch(/privacy/i)
-    expect(submitMock).not.toHaveBeenCalled()
+  it('progress is 33/67/100 for one/two/three required fields', () => {
+    const { result, rerender } = renderHook(() => useContactForm())
+    // The hook reads form.state.values at render time; rerender picks up each write.
+    for (const [key, expected] of [
+      ['name', 33],
+      ['email', 67],
+      ['message', 100],
+    ] as const) {
+      act(() => result.current.form.setFieldValue(key, validData[key]))
+      rerender()
+      expect(result.current.progress).toBe(expected)
+    }
   })
 
-  it('handleSubmit calls action when terms accepted + valid data', async () => {
+  it('handleSubmit calls action with valid data and no consent step', async () => {
     submitMock.mockResolvedValue({ success: true })
     const { result } = renderHook(() => useContactForm())
     act(() => {
       for (const [key, value] of Object.entries(validData)) {
         result.current.form.setFieldValue(key as keyof typeof validData, value)
       }
-      result.current.setAgreedToTerms(true)
     })
     await act(async () => {
       await result.current.handleSubmit()
@@ -91,7 +87,6 @@ describe('useContactForm', () => {
       for (const [key, value] of Object.entries(validData)) {
         result.current.form.setFieldValue(key as keyof typeof validData, value)
       }
-      result.current.setAgreedToTerms(true)
     })
     await act(async () => {
       await result.current.handleSubmit()
@@ -107,7 +102,6 @@ describe('useContactForm', () => {
       for (const [key, value] of Object.entries(validData)) {
         result.current.form.setFieldValue(key as keyof typeof validData, value)
       }
-      result.current.setAgreedToTerms(true)
     })
     await act(async () => {
       await result.current.handleSubmit()
@@ -133,13 +127,11 @@ describe('useContactForm', () => {
     const { result } = renderHook(() => useContactForm())
     act(() => {
       result.current.form.setFieldValue('name', 'Jane')
-      result.current.setAgreedToTerms(true)
     })
     act(() => {
       result.current.resetForm()
     })
     expect(result.current.formData.name).toBe('')
-    expect(result.current.agreedToTerms).toBe(false)
     expect(result.current.submitStatus).toBe('idle')
     expect(result.current.error).toBeNull()
   })
