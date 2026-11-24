@@ -29,7 +29,7 @@ export function FeaturedProjects({ className = '', projects }: FeaturedProjectsP
           <Link
             key={project.slug}
             href={`/projects/${project.slug}`}
-            className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl hover:bg-primary/10 hover:border-primary/30 border border-transparent transition-all duration-300 ease-out group"
+            className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl hover:bg-primary/10 hover:border-primary/30 border border-border transition-all duration-300 ease-out group"
           >
             <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-muted">
               <ProjectPreview size="thumb" project={project} />

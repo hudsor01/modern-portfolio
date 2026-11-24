@@ -15,17 +15,17 @@ export interface ResultCardProps {
 const variantStyles = {
   primary: {
     bg: 'bg-primary/5',
-    border: 'border-primary/20',
+    border: 'border-border',
     valueColor: 'text-primary',
   },
   secondary: {
     bg: 'bg-secondary/5',
-    border: 'border-secondary/20',
+    border: 'border-border',
     valueColor: 'text-secondary',
   },
   accent: {
     bg: 'bg-accent/10',
-    border: 'border-accent/20',
+    border: 'border-border',
     valueColor: 'text-accent-foreground',
   },
 }

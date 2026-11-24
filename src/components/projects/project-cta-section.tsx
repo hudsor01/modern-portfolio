@@ -23,7 +23,7 @@ export const ProjectCTASection: React.FC = () => {
           href="/about"
           className="group relative p-8 bg-card border border-border rounded-2xl transition-all duration-300 ease-out hover:border-primary/30 hover:shadow-lg hover:-translate-y-1"
         >
-          <div className="w-12 h-12 flex items-center justify-center bg-primary/5 border border-primary/10 rounded-xl mb-5 transition-colors duration-300 ease-out group-hover:bg-primary/10 group-hover:border-primary/20">
+          <div className="w-12 h-12 flex items-center justify-center bg-primary/5 border border-border rounded-xl mb-5 transition-colors duration-300 ease-out group-hover:bg-primary/10 group-hover:border-primary/20">
             <FileText className="w-6 h-6 text-primary" />
           </div>
           <h3 className="mb-2 transition-colors duration-300 ease-out">About My Work</h3>
@@ -41,7 +41,7 @@ export const ProjectCTASection: React.FC = () => {
           href="/blog"
           className="group relative p-8 bg-card border border-border rounded-2xl transition-all duration-300 ease-out hover:border-primary/30 hover:shadow-lg hover:-translate-y-1"
         >
-          <div className="w-12 h-12 flex items-center justify-center bg-primary/5 border border-primary/10 rounded-xl mb-5 transition-colors duration-300 ease-out group-hover:bg-primary/10 group-hover:border-primary/20">
+          <div className="w-12 h-12 flex items-center justify-center bg-primary/5 border border-border rounded-xl mb-5 transition-colors duration-300 ease-out group-hover:bg-primary/10 group-hover:border-primary/20">
             <Lightbulb className="w-6 h-6 text-primary" />
           </div>
           <h3 className="mb-2 transition-colors duration-300 ease-out">Technical Insights</h3>
@@ -55,9 +55,9 @@ export const ProjectCTASection: React.FC = () => {
         {/* Contact Card */}
         <Link
           href="/contact"
-          className="group relative p-8 bg-primary/5 border-2 border-primary/20 rounded-2xl transition-all duration-300 ease-out hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1"
+          className="group relative p-8 bg-primary/5 border-2 border-border rounded-2xl transition-all duration-300 ease-out hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1"
         >
-          <div className="w-12 h-12 flex items-center justify-center bg-primary/10 border border-primary/20 rounded-xl mb-5 transition-colors duration-300 ease-out group-hover:bg-primary/20 group-hover:border-primary/30">
+          <div className="w-12 h-12 flex items-center justify-center bg-primary/10 border border-border rounded-xl mb-5 transition-colors duration-300 ease-out group-hover:bg-primary/20 group-hover:border-primary/30">
             <MessageSquare className="w-6 h-6 text-primary" />
           </div>
           <h3 className="mb-2 transition-colors duration-300 ease-out">Get in Touch</h3>

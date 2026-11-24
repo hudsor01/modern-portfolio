@@ -220,7 +220,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                           />
                         </div>
                         {/* Status indicator */}
-                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-secondary rounded-full border-4 border-card flex items-center justify-center">
+                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-secondary rounded-full border-4 border-border flex items-center justify-center">
                           <div className="w-2 h-2 bg-white rounded-full" />
                         </div>
                       </div>

@@ -52,7 +52,7 @@ describe('ResultCard', () => {
     const { container } = render(<ResultCard value="v" label="l" />)
     const root = container.firstChild as HTMLElement
     expect(root.className).toContain('bg-primary/5')
-    expect(root.className).toContain('border-primary/20')
+    expect(root.className).toContain('border-border')
   })
 
   it('applies secondary variant styles', () => {

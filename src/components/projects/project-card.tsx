@@ -78,7 +78,7 @@ export const ProjectCard = React.memo(function ProjectCard({
               <div className="mb-3">
                 <span
                   data-slot="client-chip"
-                  className="inline-flex max-w-full items-center px-2.5 py-1 text-xs font-semibold tracking-wide uppercase text-primary bg-primary/8 border border-primary/15 rounded-md"
+                  className="inline-flex max-w-full items-center px-2.5 py-1 text-xs font-semibold tracking-wide uppercase text-primary bg-primary/8 border border-border rounded-md"
                 >
                   {categoryLabel}
                 </span>

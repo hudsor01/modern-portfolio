@@ -95,7 +95,7 @@ export function ExpertiseNarrative({ className = '' }: ExpertiseNarrativeProps) 
                   <Badge
                     key={tag}
                     variant="outline"
-                    className="text-xs border-border/70 text-muted-foreground"
+                    className="text-xs border-border text-muted-foreground"
                   >
                     {tag}
                   </Badge>

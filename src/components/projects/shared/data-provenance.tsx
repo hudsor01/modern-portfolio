@@ -44,8 +44,8 @@ export function DataProvenance({
       className={cn(
         'flex items-start gap-2 rounded-lg border px-3 py-2 text-xs',
         variant === 'derived'
-          ? 'border-success/30 bg-success/5 text-muted-foreground'
-          : 'border-warning/30 bg-warning/5 text-muted-foreground',
+          ? 'border-border bg-success/5 text-muted-foreground'
+          : 'border-border bg-warning/5 text-muted-foreground',
         className
       )}
     >
