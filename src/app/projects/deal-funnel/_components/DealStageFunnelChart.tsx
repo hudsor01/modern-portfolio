@@ -15,9 +15,9 @@ interface DealStageFunnelChartProps {
 
 // Fills are dark enough for white text (>= 4.5:1).
 const FUNNEL_COLORS = [
-  chartColors.primary,
-  chartColors.secondary,
-  chartColors.chart3,
+  chartColors.primary, // Working
+  chartColors.secondary, // Closed Won
+  chartColors.destructive, // Closed Lost
   chartColors.chart4,
   chartColors.chart5,
 ]
