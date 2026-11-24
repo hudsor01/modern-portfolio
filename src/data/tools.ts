@@ -9,7 +9,13 @@ export const TOOLS_HUB_PATH = '/tools' as const
 
 /**
  * Date the /tools hub content last changed (YYYY-MM-DD). Used as the hub's
- * sitemap lastmod, so bump it only when the hub itself changes.
+ * sitemap lastmod (src/app/sitemap.ts).
+ *
+ * Update rule: change this to the current date in the same commit that changes
+ * the `tools` entries below, the /tools page metadata, or the hub's visible text.
+ * src/data/__tests__/tools-hub-lastmod.test.tsx hashes exactly that content and
+ * fails until the date and the pin there are updated together, so it cannot drift
+ * silently. Tool pages' own lastmod is STATIC_LAST_MODIFIED, not this.
  */
 export const TOOLS_HUB_LAST_UPDATED = '2026-11-24'
 

@@ -82,7 +82,6 @@ describe('tool catalog', () => {
   it('has a hub path and an ISO hub date', () => {
     expect(TOOLS_HUB_PATH).toBe('/tools')
     expect(TOOLS_HUB_LAST_UPDATED).toMatch(/^\d{4}-\d{2}-\d{2}$/)
-    expect(TOOLS_HUB_LAST_UPDATED >= '2026-11-24').toBe(true)
   })
 
   it('looks tools up by slug and throws on unknown', () => {
