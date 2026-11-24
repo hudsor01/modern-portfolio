@@ -15,14 +15,14 @@ export function NarrativeSections({ revenueSaved }: NarrativeSectionsProps) {
       {/* Situation */}
       <SectionCard title="Situation" variant="glass" padding="lg">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             When I took ownership of partner success operations, I discovered we had a critical
             blind spot: partner churn was completely reactive. We were losing valuable partners
             without any advance warning, and by the time the retention team engaged, it was usually
             too late. With a growing partner base and significant revenue at stake, the reactive
             approach was costing us real money.
           </p>
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             High-value partners were leaving due to unaddressed concerns, retention efforts were
             costly and unfocused—targeting the wrong segments—and there was no understanding of
             churn patterns or leading indicators. Manual tracking was impossible at scale.
@@ -33,7 +33,7 @@ export function NarrativeSections({ revenueSaved }: NarrativeSectionsProps) {
       {/* Task */}
       <SectionCard title="Task" variant="glass" padding="lg">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I was tasked with building a predictive churn analysis system that would transform
             partner retention from reactive firefighting to proactive relationship management. My
             specific objectives included:
@@ -55,7 +55,7 @@ export function NarrativeSections({ revenueSaved }: NarrativeSectionsProps) {
       {/* Action */}
       <SectionCard title="Action" variant="glass" padding="lg">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I designed and built a comprehensive churn prediction and retention analytics platform
             from scratch, using machine learning algorithms and real-time data analysis:
           </p>
@@ -81,7 +81,7 @@ export function NarrativeSections({ revenueSaved }: NarrativeSectionsProps) {
             </FeatureCard>
           </div>
 
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             I personally led the integration with CRM systems, partner portals, and communication
             platforms to provide a 360-degree view of partner health and automated intervention
             triggers. The rollout was phased by partner tier to validate accuracy before scaling.
@@ -92,7 +92,7 @@ export function NarrativeSections({ revenueSaved }: NarrativeSectionsProps) {
       {/* Result */}
       <SectionCard title="Result" variant="glass" padding="lg">
         <div className="space-y-6 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             The churn prediction system I built transformed partner retention from reactive
             firefighting to proactive relationship management, delivering measurable revenue impact:
           </p>
@@ -164,7 +164,7 @@ export function NarrativeSections({ revenueSaved }: NarrativeSectionsProps) {
               </ul>
             </div>
           </div>
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             This project taught me that retention is fundamentally about relationship health, not
             just transactional metrics. The most successful interventions I've designed address
             underlying business challenges rather than just engagement gaps.
@@ -207,7 +207,7 @@ export function NarrativeSections({ revenueSaved }: NarrativeSectionsProps) {
           padding="md"
           className="bg-primary/5 border-border"
         >
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             Partners with less than 3 months tenure show 2x higher churn risk. Focus onboarding
             efforts here.
           </p>
@@ -218,7 +218,7 @@ export function NarrativeSections({ revenueSaved }: NarrativeSectionsProps) {
           padding="md"
           className="bg-secondary/5 border-border"
         >
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             Implementing proactive engagement for at-risk segments could reduce churn by up to 15%.
           </p>
         </SectionCard>
@@ -228,7 +228,7 @@ export function NarrativeSections({ revenueSaved }: NarrativeSectionsProps) {
           padding="md"
           className="bg-accent/5 border-border"
         >
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             Schedule quarterly business reviews with top 20% of partners to maintain retention
             rates.
           </p>

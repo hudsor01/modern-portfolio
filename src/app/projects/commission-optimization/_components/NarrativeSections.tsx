@@ -12,14 +12,14 @@ export function NarrativeSections() {
       {/* Situation */}
       <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             When I took ownership of commission operations, the organization was managing{' '}
             {formatCurrency(commissionMetrics.totalCommissionPool)} in annual partner commissions
             through manual processes that were creating significant friction. Finance spent 8.5
             hours weekly on calculations, error rates were unacceptable, and partners were
             increasingly frustrated with payment delays and calculation disputes.
           </p>
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             The commission structure itself had become a strategic liability—static tiers weren't
             motivating top performers, dispute rates hit 3.8%, and we had zero visibility into which
             commission investments were actually driving revenue. Something had to change.
@@ -30,7 +30,7 @@ export function NarrativeSections() {
       {/* Task */}
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I was tasked with completely transforming our commission operations—not just fixing the
             immediate problems, but building a system that would scale. My mandate was clear:
           </p>
@@ -50,7 +50,7 @@ export function NarrativeSections() {
       {/* Action */}
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I designed and built a comprehensive commission optimization platform from scratch,
             architecting every component to address the specific pain points I'd identified:
           </p>
@@ -76,7 +76,7 @@ export function NarrativeSections() {
             </FeatureCard>
           </div>
 
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             I personally led the integration with our CRM and finance systems, designed the
             stakeholder-specific dashboards, and trained the team on leveraging the new
             capabilities. The rollout was phased to minimize disruption while maximizing adoption.
@@ -87,7 +87,7 @@ export function NarrativeSections() {
       {/* Result */}
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             The commission optimization system I built delivered transformational results across
             every metric we tracked:
           </p>
@@ -171,7 +171,7 @@ export function NarrativeSections() {
               </ul>
             </div>
           </div>
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             This project reinforced my belief that commission optimization is both art and science.
             The most successful strategies I've implemented combine rigorous data analysis with deep
             understanding of what actually motivates partner behavior.

@@ -12,14 +12,14 @@ export function NarrativeSections() {
       {/* Situation */}
       <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             When I was brought in to optimize the marketing analytics stack, I inherited attribution
             models that were fundamentally broken. Traditional linear and time-decay models were
             underestimating channel synergy effects, cross-device journeys were creating attribution
             gaps, and the team was making campaign optimization decisions based on incomplete
             channel interaction data.
           </p>
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             With 12 active marketing channels, complex B2B customer journeys, and a $3.2M annual
             marketing budget at stake, the organization needed a sophisticated attribution solution
             that could handle multi-channel complexity. Budget allocation models couldn't account
@@ -32,7 +32,7 @@ export function NarrativeSections() {
       {/* Task */}
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I was charged with building an advanced multi-channel attribution system that would move
             beyond rule-based models to machine learning-powered insights. My specific mandate
             included:
@@ -54,7 +54,7 @@ export function NarrativeSections() {
       {/* Action */}
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I designed and built a machine learning-powered multi-channel attribution platform from
             scratch, using advanced algorithms to understand channel interactions and predict
             optimal marketing strategies:
@@ -81,7 +81,7 @@ export function NarrativeSections() {
             </FeatureCard>
           </div>
 
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             I personally architected the ML pipeline, designed the model interpretability layer for
             marketing team adoption, and led the change management process to shift from
             intuition-based to data-driven budget decisions. The system was deployed in phases to
@@ -93,7 +93,7 @@ export function NarrativeSections() {
       {/* Result */}
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             The ML-powered attribution system I built delivered unprecedented insights into channel
             performance and enabled data-driven optimizations that significantly improved marketing
             efficiency:
@@ -184,7 +184,7 @@ export function NarrativeSections() {
               </ul>
             </div>
           </div>
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             This project established that advanced attribution modeling is not just about
             measurement—it's about enabling predictive marketing intelligence that can guide
             strategic decisions before campaigns even launch. I now approach every attribution

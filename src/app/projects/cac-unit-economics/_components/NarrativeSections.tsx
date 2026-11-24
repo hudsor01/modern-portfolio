@@ -10,7 +10,7 @@ export function NarrativeSections() {
       {/* Situation */}
       <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             When I took ownership of growth analytics, I discovered the organization was flying
             blind on customer acquisition economics. CAC calculations were inconsistent across
             teams—marketing, sales, and finance each had different methodologies, leading to
@@ -18,7 +18,7 @@ export function NarrativeSections() {
             or lifetime value relationships, and pricing strategies weren't aligned with acquisition
             cost realities.
           </p>
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             Rising competition was driving up acquisition costs across all channels, and there was
             increasing pressure to achieve profitability. Without visibility into true unit
             economics, we were essentially guessing which channels were sustainable and which were
@@ -31,7 +31,7 @@ export function NarrativeSections() {
       {/* Task */}
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I was tasked with building a comprehensive unit economics analytics platform that would
             become the foundation for sustainable growth strategy. My specific objectives included:
           </p>
@@ -52,7 +52,7 @@ export function NarrativeSections() {
       {/* Action */}
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I designed and built a comprehensive unit economics analytics platform from scratch,
             providing real-time visibility into CAC, LTV, and payback metrics with sophisticated
             segmentation and optimization capabilities:
@@ -79,7 +79,7 @@ export function NarrativeSections() {
             </FeatureCard>
           </div>
 
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             I personally led the data standardization effort across marketing, sales, and finance
             teams, designed the calculation methodologies, and trained stakeholders on using unit
             economics to guide their decisions. The platform was deployed in phases to validate
@@ -91,7 +91,7 @@ export function NarrativeSections() {
       {/* Result */}
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             The unit economics optimization system I built enabled data-driven growth strategies
             that significantly improved acquisition efficiency and long-term profitability:
           </p>
@@ -179,7 +179,7 @@ export function NarrativeSections() {
               </ul>
             </div>
           </div>
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             This project reinforced my belief that sustainable growth is not about maximizing
             acquisition volume, but optimizing the efficiency and profitability of each customer
             acquired. I now make unit economics the north star for all growth initiatives I lead.

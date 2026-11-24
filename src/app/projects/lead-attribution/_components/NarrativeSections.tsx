@@ -10,7 +10,7 @@ export function NarrativeSections() {
       {/* Situation */}
       <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             When I inherited the marketing analytics function, I discovered the team was operating
             with a fundamentally broken attribution model. Last-click attribution was giving all
             credit to the final touchpoint, completely undervaluing the awareness channels that were
@@ -18,7 +18,7 @@ export function NarrativeSections() {
             primary channels and complex B2B buying journeys averaging 7.3 touchpoints, we were
             making million-dollar budget decisions based on incomplete data.
           </p>
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             The marketing team was essentially flying blind—budget decisions were based on
             intuition, cross-channel customer journeys were invisible, and there was no systematic
             way to measure the assisted conversion value of different initiatives. A $2.4M annual
@@ -30,7 +30,7 @@ export function NarrativeSections() {
       {/* Task */}
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I was charged with building a multi-touch attribution system that would give marketing
             leadership complete visibility into which channels and touchpoints were actually driving
             qualified leads. My specific objectives were:
@@ -56,7 +56,7 @@ export function NarrativeSections() {
       {/* Action */}
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I designed and built a comprehensive multi-touch attribution system from scratch,
             tracking the complete customer journey and assigning weighted credit to each marketing
             touchpoint based on its actual influence on conversion:
@@ -83,7 +83,7 @@ export function NarrativeSections() {
             </FeatureCard>
           </div>
 
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             I personally led the integration with our marketing tech stack, designed the attribution
             weighting methodology, and trained the marketing team on leveraging the new insights for
             budget optimization. The rollout was phased to validate accuracy before scaling
@@ -95,7 +95,7 @@ export function NarrativeSections() {
       {/* Result */}
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             The multi-touch attribution model I built revolutionized marketing decision-making and
             enabled data-driven optimization that significantly improved both lead quality and
             conversion rates:
@@ -185,7 +185,7 @@ export function NarrativeSections() {
               </ul>
             </div>
           </div>
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             This project taught me that attribution modeling is as much about organizational change
             management as it is about technical implementation. The key is building confidence in
             the data through transparent methodology and clear business impact— I now lead with

@@ -11,7 +11,7 @@ export function NarrativeSections() {
       {/* Situation */}
       <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             When I assessed the sales organization's enablement capabilities, I found a team
             struggling to keep up with growth. We had {formatNumber(125)} sales professionals across
             multiple segments, but new hire ramp time averaged 9 months—far too long in a
@@ -19,7 +19,7 @@ export function NarrativeSections() {
             firefighting than coaching. The root cause was clear: there was no systematic approach
             to skill development, content management, or performance coaching.
           </p>
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             Training was ad-hoc and inconsistent. New hires received a week of classroom training
             and were then left to figure things out on their own. Sales content was scattered across
             12 different systems with no governance or version control—reps often used outdated
@@ -32,7 +32,7 @@ export function NarrativeSections() {
       {/* Task */}
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I was tasked with building a comprehensive sales enablement platform that would
             accelerate new hire productivity, improve win rates, and enable systematic skill
             development across the entire sales organization. My specific objectives included:
@@ -51,7 +51,7 @@ export function NarrativeSections() {
       {/* Action */}
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I designed and built a comprehensive sales enablement platform that transformed how the
             organization develops, enables, and coaches its sales team. The system combined learning
             management, content governance, and coaching analytics:
@@ -78,7 +78,7 @@ export function NarrativeSections() {
             </FeatureCard>
           </div>
 
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             I personally led the content strategy, designed the learning path architecture, and
             built the coaching analytics framework. I worked closely with top performers to document
             their winning approaches, transforming tribal knowledge into scalable training. The
@@ -91,7 +91,7 @@ export function NarrativeSections() {
       {/* Result */}
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             The sales enablement platform I built transformed how the organization develops its
             salesforce, delivering measurable improvements in productivity, win rates, and team
             retention:
@@ -173,7 +173,7 @@ export function NarrativeSections() {
               </ul>
             </div>
           </div>
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             This project taught me that sales enablement is fundamentally about behavior change, not
             content delivery. The best content in the world fails if it doesn't change how reps
             sell. I now measure every enablement initiative by behavior change metrics, not just

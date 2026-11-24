@@ -11,7 +11,7 @@ export function NarrativeSections() {
       {/* Situation */}
       <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             When I inherited the partner operations function, I discovered a dangerous blind spot:
             we had 47 partners driving {formatPercentage(0.832)} of total revenue, but we had no
             systematic way to measure, compare, or optimize their performance. Partner investments
@@ -19,7 +19,7 @@ export function NarrativeSections() {
             significant resources while delivering minimal returns, while high-performers were
             under-supported.
           </p>
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             The lack of visibility was causing real business problems. We couldn't identify which
             partners deserved tier upgrades, which needed intervention, or where to focus enablement
             resources. Partner satisfaction was declining because top performers felt undervalued,
@@ -32,7 +32,7 @@ export function NarrativeSections() {
       {/* Task */}
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I was tasked with building a comprehensive partner intelligence platform that would
             provide complete visibility into partner performance, enable data-driven investment
             decisions, and optimize the partner program for maximum ROI. My specific objectives
@@ -55,7 +55,7 @@ export function NarrativeSections() {
       {/* Action */}
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I designed and built a partner performance intelligence platform that transformed how we
             manage, measure, and optimize partner relationships. The system combined real-time
             analytics with strategic planning capabilities:
@@ -82,7 +82,7 @@ export function NarrativeSections() {
             </FeatureCard>
           </div>
 
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             I personally led the data integration effort, connecting CRM, billing, and partner
             portal data into a unified analytics layer. I designed the tier scoring methodology,
             built the ROI calculation engine, and created the executive reporting framework. The
@@ -94,7 +94,7 @@ export function NarrativeSections() {
       {/* Result */}
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             The partner intelligence platform I built transformed channel management from
             relationship-driven to data-driven, delivering measurable improvements across every
             dimension of partner performance:
@@ -176,7 +176,7 @@ export function NarrativeSections() {
               </ul>
             </div>
           </div>
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             This project taught me that partner programs succeed or fail based on measurement rigor.
             You can't optimize what you don't measure, and most organizations under-invest in
             partner analytics. I now treat partner intelligence as a core competency, not a

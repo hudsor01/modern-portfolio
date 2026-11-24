@@ -10,13 +10,13 @@ export function NarrativeSections() {
       {/* Situation */}
       <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             When I inherited the sales operations function, I discovered we were flying blind. The
             team was managing 847 active opportunities worth $14.2M in pipeline, but had no
             standardized way to track deal progression across our 4 distinct market segments. Sales
             velocity metrics were being calculated manually using inconsistent methodologies.
           </p>
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             Pipeline bottlenecks were only identified reactively—after deals had already stalled.
             Conversion rate analysis was limited to overall averages that hid critical
             segment-specific insights. Revenue forecasting was essentially guesswork, hovering
@@ -28,7 +28,7 @@ export function NarrativeSections() {
       {/* Task */}
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I was charged with building a pipeline analytics system that would give our sales
             leadership real-time visibility into deal flow. My specific objectives were:
           </p>
@@ -51,7 +51,7 @@ export function NarrativeSections() {
       {/* Action */}
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I designed and built a comprehensive deal funnel analytics system from scratch,
             integrating data from our CRM and building custom calculation engines for each key
             metric:
@@ -80,7 +80,7 @@ export function NarrativeSections() {
             </FeatureCard>
           </div>
 
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             I personally led the data integration effort, designed the visual funnel representations
             for faster pattern recognition, and trained sales managers on leveraging the new
             coaching insights. The rollout was phased by segment to validate accuracy before
@@ -92,7 +92,7 @@ export function NarrativeSections() {
       {/* Result */}
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             The deal funnel analytics system I built transformed how we manage our pipeline and
             delivered measurable improvements:
           </p>
@@ -174,7 +174,7 @@ export function NarrativeSections() {
               </ul>
             </div>
           </div>
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             This project taught me that the most valuable analytics features aren't the most
             sophisticated—they're the ones that enable quick decision-making in daily sales
             operations. Actionable beats impressive every time.

@@ -15,14 +15,14 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
       {/* Situation */}
       <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             When I joined the revenue operations team, I inherited a data chaos problem. The
             organization was experiencing explosive growth—we were on track for 432%
             year-over-year—but our revenue data was scattered across 5 different systems with no
             single source of truth. Leadership was making million-dollar decisions based on
             spreadsheets that were already outdated by the time they hit their inbox.
           </p>
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             Manual reporting was consuming 15+ hours weekly from my team, and the reports often
             contained discrepancies that eroded trust. We couldn't track real-time partner
             performance, couldn't identify growth opportunities until it was too late, and revenue
@@ -35,7 +35,7 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
       {/* Task */}
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I was given the mandate to build a unified revenue intelligence platform that would
             become the single source of truth for the entire organization. My specific objectives
             included:
@@ -57,7 +57,7 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
       {/* Action */}
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I designed and built a comprehensive revenue KPI dashboard using React, TypeScript, and
             Recharts, architecting the entire data pipeline from source systems to executive-facing
             visualizations:
@@ -84,7 +84,7 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
             </FeatureCard>
           </div>
 
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             I personally led the stakeholder interviews to understand each role's needs, designed
             the data architecture, built the core components, and managed the change management
             process. The platform went live in phases, starting with the executive team and rolling
@@ -96,7 +96,7 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
       {/* Result */}
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             The revenue KPI dashboard I built transformed how the organization manages and optimizes
             partner relationships, delivering measurable improvements across every metric we
             tracked:
@@ -167,7 +167,7 @@ export function NarrativeSections({ totalRevenue }: NarrativeSectionsProps) {
               </ul>
             </div>
           </div>
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             This project reinforced my belief that the most impactful features aren't the most
             technically complex—they're the ones that directly address specific business pain points
             and enable immediate action. I now apply this principle to every system I build.

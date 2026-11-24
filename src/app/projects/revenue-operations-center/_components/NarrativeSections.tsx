@@ -10,14 +10,14 @@ export function NarrativeSections() {
       {/* Situation */}
       <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             When I was brought in to lead revenue operations transformation, I inherited a chaotic
             environment where revenue data was scattered across 12 different systems with no single
             source of truth. Sales, marketing, and customer success operated in complete silos with
             misaligned metrics. Manual reporting consumed 25+ hours weekly across departments, and
             revenue forecasting accuracy was hovering below 75%.
           </p>
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             The organization couldn't see the complete customer journey from lead to retention,
             strategic decisions were delayed by weeks due to data accessibility issues, and process
             automation was essentially non-existent—creating massive scalability constraints as the
@@ -29,7 +29,7 @@ export function NarrativeSections() {
       {/* Task */}
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I was charged with architecting and implementing a comprehensive Revenue Operations
             Center that would serve as the central hub for all revenue-related data, processes, and
             strategic decision-making. My mandate was clear:
@@ -55,7 +55,7 @@ export function NarrativeSections() {
       {/* Action */}
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             I designed and built a comprehensive Revenue Operations Center from scratch, unifying
             all revenue-related functions into a single intelligent platform with advanced analytics
             and automation capabilities:
@@ -84,7 +84,7 @@ export function NarrativeSections() {
             </FeatureCard>
           </div>
 
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             I personally led the integration architecture, designed the cross-functional workflows,
             and managed the change management process to shift from siloed operations to unified
             revenue intelligence. The rollout was phased by department to build confidence before
@@ -96,7 +96,7 @@ export function NarrativeSections() {
       {/* Result */}
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
-          <p className="max-w-prose">
+          <p className="max-w-prose text-base">
             The Revenue Operations Center I built transformed how the organization manages and
             optimizes revenue, delivering unprecedented visibility and efficiency across all revenue
             functions:
@@ -185,7 +185,7 @@ export function NarrativeSections() {
               </ul>
             </div>
           </div>
-          <p className="max-w-prose mt-4">
+          <p className="max-w-prose text-base mt-4">
             This project taught me that revenue operations is not just about technology—it's about
             creating a culture of data-driven decision making that permeates every aspect of the
             revenue organization. I now focus on people and processes as much as platforms in every
