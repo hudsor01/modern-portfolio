@@ -1,5 +1,6 @@
 'use client'
 
+import { ogImageUrl } from '@/lib/absolute-url'
 import { TrendingUp, DollarSign, Target, Calculator } from 'lucide-react'
 import { useTabQueryState } from '@/components/projects/use-tab-query-state'
 
@@ -63,6 +64,11 @@ export default function CACUnitEconomics() {
         title="Customer Acquisition Cost Optimization & Unit Economics Dashboard"
         description="Comprehensive CAC analysis and LTV:CAC ratio optimization that achieved 32% cost reduction through strategic partner channel optimization."
         slug="cac-unit-economics"
+        image={ogImageUrl({
+          title: 'Customer Acquisition Cost Optimization & Unit Economics Dashboard',
+          subtitle: 'Revenue Operations Project',
+          project: 'cac-unit-economics',
+        })}
         category="Revenue Operations"
         datePublished="2025-11-19T00:00:00-06:00"
         dateModified="2026-05-06T00:00:00-06:00"

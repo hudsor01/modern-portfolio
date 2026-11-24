@@ -13,6 +13,7 @@ export const metadata = genMeta({
   path: '/projects/churn-retention',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
+  ogProject: 'churn-retention',
 })
 
 export default async function ChurnRetentionPage() {

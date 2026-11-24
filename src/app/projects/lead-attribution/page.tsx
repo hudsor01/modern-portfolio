@@ -13,6 +13,7 @@ export const metadata = genMeta({
   path: '/projects/lead-attribution',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
+  ogProject: 'lead-attribution',
 })
 
 export default async function LeadAttributionPage() {

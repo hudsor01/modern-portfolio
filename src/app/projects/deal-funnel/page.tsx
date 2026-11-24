@@ -13,6 +13,7 @@ export const metadata = genMeta({
   path: '/projects/deal-funnel',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
+  ogProject: 'deal-funnel',
 })
 
 export default async function DealFunnelPage() {

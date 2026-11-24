@@ -1,5 +1,6 @@
 'use client'
 
+import { ogImageUrl } from '@/lib/absolute-url'
 import { DollarSign, Clock, Target, BarChart3 } from 'lucide-react'
 
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
@@ -113,6 +114,11 @@ export default function DealFunnel() {
         title="Sales Pipeline Funnel Analysis - Deal Stage Optimization"
         description="Interactive sales funnel dashboard showing deal progression, conversion rates, and sales cycle optimization."
         slug="deal-funnel"
+        image={ogImageUrl({
+          title: 'Sales Pipeline Funnel Analysis: Deal Stage Optimization',
+          subtitle: 'Revenue Operations Project',
+          project: 'deal-funnel',
+        })}
         category="Sales Operations"
         datePublished="2025-03-04T00:00:00-06:00"
         dateModified="2026-04-10T00:00:00-06:00"

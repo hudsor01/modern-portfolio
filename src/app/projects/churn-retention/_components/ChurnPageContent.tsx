@@ -1,5 +1,6 @@
 'use client'
 
+import { ogImageUrl } from '@/lib/absolute-url'
 import { useAnalyticsData } from '@/hooks/use-analytics-data'
 import { TrendingDown, Users, Activity, AlertCircle } from 'lucide-react'
 
@@ -93,6 +94,11 @@ export default function ChurnAnalysis() {
         title="Customer Churn & Retention Analysis - Predictive Analytics"
         description="Advanced churn prediction and retention analysis dashboard with customer lifecycle metrics, retention heatmaps, and predictive modeling for customer success optimization."
         slug="churn-retention"
+        image={ogImageUrl({
+          title: 'Customer Churn & Retention: Predictive Analytics',
+          subtitle: 'Revenue Operations Project',
+          project: 'churn-retention',
+        })}
         category="Customer Analytics"
         datePublished="2025-03-04T00:00:00-06:00"
         dateModified="2026-04-10T00:00:00-06:00"
