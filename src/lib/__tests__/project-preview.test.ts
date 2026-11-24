@@ -170,3 +170,46 @@ describe('previewAriaLabel', () => {
     expect(previewAriaLabel({ kind: 'empty' })).toBe('')
   })
 })
+
+describe('unit alignment between PAIR_RE, METRIC_RE and parseMeasure', () => {
+  const units = [
+    ['8.5 hours', 'hours'],
+    ['8.5 hour', 'hours'],
+    ['8.5hours', 'hours'],
+    ['14.2 mo', 'mo'],
+    ['8.4mo', 'mo'],
+    ['31 days', 'days'],
+    ['28 pts', 'pts'],
+    ['94%', '%'],
+    ['4.7x', 'x'],
+    ['7:1', ':1'],
+    ['$8.7M', '$'],
+    ['47', 'count'],
+  ] as const
+
+  it.each(units)('%s is a pair value, a metric value and parses as %s', (value, unit) => {
+    expect(PAIR_RE.test(value)).toBe(true)
+    expect(METRIC_RE.test(value)).toBe(true)
+    expect(parseMeasure(value)?.unit).toBe(unit)
+  })
+
+  it('metric tiles accept a signed value that pairs cannot', () => {
+    expect(METRIC_RE.test('+28 pts')).toBe(true)
+    expect(parseMeasure('+28 pts')).toEqual({ value: 28, unit: 'pts' })
+    expect(PAIR_RE.test('+28 pts')).toBe(false)
+  })
+
+  it('keeps a results-less project with an unspaced month metric as a tile', () => {
+    const model = buildProjectPreview({
+      displayMetrics: [{ label: 'CAC Payback', value: '8.4mo' }],
+    })
+    expect(model).toEqual({ kind: 'metrics', items: [{ label: 'CAC Payback', value: '8.4mo' }] })
+  })
+
+  it('rejects prose and unknown units', () => {
+    for (const bad of ['n/a', '8.4 parsecs', 'about 5', '12 mos']) {
+      expect(PAIR_RE.test(bad)).toBe(false)
+      expect(METRIC_RE.test(bad)).toBe(false)
+    }
+  })
+})

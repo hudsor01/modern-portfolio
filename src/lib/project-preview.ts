@@ -8,11 +8,20 @@
  * rather than drawn, so no number is ever fabricated.
  */
 
-export const PAIR_RE = /^\$?\d[\d,]*(\.\d+)?(K|M)?(%|x|:1| mo| days| hours?)?\+?$/
-export const IMPROVEMENT_RE = /^\d+(\.\d+)?%$/
-export const METRIC_RE = /^[+-]?\$?\d[\d,]*(\.\d+)?(K|M|%|x|:1| mo| days)?\+?$/
+/**
+ * One unit alternation feeds every pattern below, so a value either parses as a
+ * measure everywhere or nowhere. Word units tolerate one optional space ("8.4mo",
+ * "14.2 mo", "8.5 hours", "+28 pts").
+ */
+const UNIT = '%|x|:1|\\s?mo|\\s?days|\\s?hours?|\\s?pts'
+const NUMBER = '\\d[\\d,]*(?:\\.\\d+)?'
 
-export type UnitKey = '%' | 'x' | ':1' | '$' | 'mo' | 'days' | 'hours' | 'count'
+export const PAIR_RE = new RegExp(`^\\$?${NUMBER}(?:K|M)?(?:${UNIT})?\\+?$`)
+export const IMPROVEMENT_RE = /^\d+(\.\d+)?%$/
+export const METRIC_RE = new RegExp(`^[+-]?\\$?${NUMBER}(?:K|M)?(?:${UNIT})?\\+?$`)
+const MEASURE_RE = new RegExp(`^\\$?(${NUMBER})(K|M)?(${UNIT})?\\+?$`)
+
+export type UnitKey = '%' | 'x' | ':1' | '$' | 'mo' | 'days' | 'hours' | 'pts' | 'count'
 
 export interface PreviewResultRow {
   metric: string
@@ -63,20 +72,17 @@ export function parseMeasure(value: string): { value: number; unit: UnitKey } | 
     return null
   }
   const dollar = s.startsWith('$')
-  const m = /^\$?(\d[\d,]*(?:\.\d+)?)(K|M)?(%|x|:1| mo| days| hours?)?\+?$/.exec(s)
+  const m = MEASURE_RE.exec(s)
   if (!m) return null
   const num = Number((m[1] as string).replace(/,/g, ''))
   if (!Number.isFinite(num)) return null
   const mult = m[2] === 'K' ? 1e3 : m[2] === 'M' ? 1e6 : 1
-  const suffix = m[3]
+  const suffix = m[3]?.trim()
   let unit: UnitKey
   if (dollar) unit = '$'
   else if (suffix === undefined) unit = 'count'
-  else if (suffix === '%') unit = '%'
-  else if (suffix === 'x') unit = 'x'
-  else if (suffix === ':1') unit = ':1'
-  else if (suffix === ' mo') unit = 'mo'
-  else if (suffix === ' days') unit = 'days'
+  else if (suffix === 'mo' || suffix === 'days' || suffix === 'pts') unit = suffix
+  else if (suffix === '%' || suffix === 'x' || suffix === ':1') unit = suffix
   else unit = 'hours'
   return { value: num * mult, unit }
 }
