@@ -1,4 +1,3 @@
-import { BarChart3 } from 'lucide-react'
 import {
   buildProjectPreview,
   type PreviewRow,
@@ -119,8 +118,12 @@ function Thumb({ model }: { model: ProjectPreviewModel }) {
         data-kind="metrics"
         className="absolute inset-0 p-2"
       >
-        <div className="flex h-full items-center justify-center">
-          <BarChart3 aria-hidden="true" className="size-6 text-muted-foreground" />
+        {/* Headline figure straight from the source: bars would need a comparison
+            this model does not have, and drawing one would invent a number. */}
+        <div className="flex h-full items-center justify-center text-center">
+          <span className="text-base font-semibold leading-tight tabular-nums text-foreground break-words">
+            {model.items[0]?.value}
+          </span>
         </div>
       </div>
     )

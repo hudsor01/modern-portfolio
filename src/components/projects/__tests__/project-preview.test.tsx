@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { cleanup, render } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
+import { buildProjectPreview } from '@/lib/project-preview'
 import { ProjectPreview, ProjectPreviewHero, ProjectPreviewLegend } from '../project-preview'
 
 const paired = {
@@ -158,10 +159,14 @@ describe('ProjectPreview', () => {
     expect(container.querySelectorAll('rect').length).toBe(4)
   })
 
-  it('thumb metrics model renders the icon instead of bars', () => {
+  it('thumb metrics model shows the first headline figure instead of a generic icon (B-11)', () => {
     const { container } = render(<ProjectPreview project={metrics} size="thumb" />)
     expect(container.querySelectorAll('rect').length).toBe(0)
-    expect(container.querySelector('svg')?.getAttribute('class')).toContain('size-6')
+    expect(container.querySelector('svg')).toBeNull()
+    const model = buildProjectPreview(metrics)
+    if (model.kind !== 'metrics') throw new Error('fixture must be a metrics model')
+    const root = container.querySelector('[data-slot="project-preview"]') as HTMLElement
+    expect(root.textContent).toBe(model.items[0]?.value)
   })
 
   it('is deterministic', () => {
