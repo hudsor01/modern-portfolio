@@ -10,7 +10,7 @@ export function NarrativeSections() {
       {/* Situation */}
       <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
-          <p>
+          <p className="max-w-prose">
             When I inherited the marketing analytics function, I discovered the team was operating
             with a fundamentally broken attribution model. Last-click attribution was giving all
             credit to the final touchpoint, completely undervaluing the awareness channels that were
@@ -18,7 +18,7 @@ export function NarrativeSections() {
             primary channels and complex B2B buying journeys averaging 7.3 touchpoints, we were
             making million-dollar budget decisions based on incomplete data.
           </p>
-          <p>
+          <p className="max-w-prose">
             The marketing team was essentially flying blind—budget decisions were based on
             intuition, cross-channel customer journeys were invisible, and there was no systematic
             way to measure the assisted conversion value of different initiatives. A $2.4M annual
@@ -30,12 +30,12 @@ export function NarrativeSections() {
       {/* Task */}
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
-          <p>
+          <p className="max-w-prose">
             I was charged with building a multi-touch attribution system that would give marketing
             leadership complete visibility into which channels and touchpoints were actually driving
             qualified leads. My specific objectives were:
           </p>
-          <ul className="list-disc list-inside space-y-2 ml-4">
+          <ul className="max-w-prose list-disc list-inside space-y-2 ml-4">
             <li>
               Replace last-click attribution with a weighted multi-touch model that credits the full
               journey
@@ -56,7 +56,7 @@ export function NarrativeSections() {
       {/* Action */}
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
-          <p>
+          <p className="max-w-prose">
             I designed and built a comprehensive multi-touch attribution system from scratch,
             tracking the complete customer journey and assigning weighted credit to each marketing
             touchpoint based on its actual influence on conversion:
@@ -64,7 +64,7 @@ export function NarrativeSections() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <FeatureCard title="Attribution Methodology I Developed">
-              <ul className="list-disc list-inside space-y-1 text-sm">
+              <ul className="max-w-prose list-disc list-inside space-y-1">
                 <li>Time-decay attribution model weighing recent touchpoints appropriately</li>
                 <li>Cross-device and cross-channel journey tracking with identity resolution</li>
                 <li>First-touch, last-touch, and linear attribution comparison framework</li>
@@ -73,7 +73,7 @@ export function NarrativeSections() {
               </ul>
             </FeatureCard>
             <FeatureCard title="Analytics Platform Features">
-              <ul className="list-disc list-inside space-y-1 text-sm">
+              <ul className="max-w-prose list-disc list-inside space-y-1">
                 <li>Real-time conversion path visualization and journey analysis</li>
                 <li>Channel performance benchmarking with ROI calculation engine</li>
                 <li>Lead quality scoring based on journey patterns and engagement</li>
@@ -83,7 +83,7 @@ export function NarrativeSections() {
             </FeatureCard>
           </div>
 
-          <p className="mt-4">
+          <p className="max-w-prose mt-4">
             I personally led the integration with our marketing tech stack, designed the attribution
             weighting methodology, and trained the marketing team on leveraging the new insights for
             budget optimization. The rollout was phased to validate accuracy before scaling
@@ -95,7 +95,7 @@ export function NarrativeSections() {
       {/* Result */}
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
-          <p>
+          <p className="max-w-prose">
             The multi-touch attribution model I built revolutionized marketing decision-making and
             enabled data-driven optimization that significantly improved both lead quality and
             conversion rates:
@@ -113,7 +113,7 @@ export function NarrativeSections() {
 
           <div className="space-y-3">
             <h3>Quantified Business Outcomes I Delivered:</h3>
-            <ul className="list-disc list-inside space-y-2 ml-4">
+            <ul className="max-w-prose list-disc list-inside space-y-2 ml-4">
               <li>
                 Discovered that organic search assists 67% of paid search conversions—preventing a
                 planned budget cut that would have cost us leads
@@ -144,7 +144,7 @@ export function NarrativeSections() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
               <h3>Marketing Attribution Insights</h3>
-              <ul className="list-disc list-inside space-y-2 text-sm">
+              <ul className="max-w-prose list-disc list-inside space-y-2">
                 <li>
                   B2B customer journeys are significantly more complex than traditional models
                   account for—I now assume at least 7 touchpoints
@@ -165,7 +165,7 @@ export function NarrativeSections() {
             </div>
             <div className="space-y-3">
               <h3>Implementation Insights</h3>
-              <ul className="list-disc list-inside space-y-2 text-sm">
+              <ul className="max-w-prose list-disc list-inside space-y-2">
                 <li>
                   Cross-device tracking requires careful privacy compliance—I built consent
                   management into the foundation
@@ -185,7 +185,7 @@ export function NarrativeSections() {
               </ul>
             </div>
           </div>
-          <p className="mt-4">
+          <p className="max-w-prose mt-4">
             This project taught me that attribution modeling is as much about organizational change
             management as it is about technical implementation. The key is building confidence in
             the data through transparent methodology and clear business impact— I now lead with
