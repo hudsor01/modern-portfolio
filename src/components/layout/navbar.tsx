@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
@@ -22,6 +22,19 @@ function currentState(pathname: string | null, href: string): 'page' | 'true' | 
 export function Navbar() {
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const toggleRef = useRef<HTMLButtonElement>(null)
+
+  // Escape closes the open menu and hands focus back to the toggle that opened it.
+  useEffect(() => {
+    if (!isMobileMenuOpen) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      setIsMobileMenuOpen(false)
+      toggleRef.current?.focus()
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [isMobileMenuOpen])
 
   const navbarClasses =
     'fixed top-0 left-0 right-0 z-50 w-full bg-card/95 backdrop-blur-sm border-b border-border shadow-sm'
@@ -84,6 +97,7 @@ export function Navbar() {
             )}
             {/* Mobile menu button */}
             <button
+              ref={toggleRef}
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}

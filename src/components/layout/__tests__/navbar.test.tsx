@@ -217,3 +217,54 @@ describe('Navbar', () => {
     expect(cls).not.toContain('backdrop-blur')
   })
 })
+
+describe('Navbar — mobile menu dismissal', () => {
+  const open = () => {
+    const { container } = render(<Navbar />)
+    const toggle = screen.getByRole('button', { name: 'Open menu' })
+    fireEvent.click(toggle)
+    return { container, toggle }
+  }
+
+  it('keeps the disclosure semantics while opening and closing', () => {
+    const { container, toggle } = open()
+    expect(toggle.getAttribute('aria-expanded')).toBe('true')
+    expect(toggle.getAttribute('aria-controls')).toBe('mobile-menu')
+    expect(container.querySelector('#mobile-menu')?.hasAttribute('hidden')).toBe(false)
+    fireEvent.click(screen.getByRole('button', { name: 'Close menu' }))
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    expect(container.querySelector('#mobile-menu')?.hasAttribute('hidden')).toBe(true)
+  })
+
+  it('closes on Escape and returns focus to the toggle', () => {
+    const { container, toggle } = open()
+    const firstLink = container.querySelector<HTMLAnchorElement>('#mobile-menu a')
+    firstLink?.focus()
+    expect(document.activeElement).toBe(firstLink)
+    fireEvent.keyDown(document.activeElement ?? document, { key: 'Escape' })
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    expect(container.querySelector('#mobile-menu')?.hasAttribute('hidden')).toBe(true)
+    expect(document.activeElement).toBe(toggle)
+  })
+
+  it('ignores other keys and Escape while the menu is closed', () => {
+    const { container, toggle } = open()
+    fireEvent.keyDown(document, { key: 'Enter' })
+    expect(toggle.getAttribute('aria-expanded')).toBe('true')
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    toggle.blur()
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(document.activeElement).not.toBe(toggle)
+    expect(container.querySelector('[data-testid="mobile-menu-scrim"]')).toBeNull()
+  })
+
+  it('closes when the scrim is clicked and removes it', () => {
+    const { container, toggle } = open()
+    const scrim = screen.getByTestId('mobile-menu-scrim')
+    expect(scrim.getAttribute('aria-hidden')).toBe('true')
+    fireEvent.click(scrim)
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    expect(container.querySelector('[data-testid="mobile-menu-scrim"]')).toBeNull()
+  })
+})
