@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest'
 import {
   computeCoverage,
   COVERAGE_PRESETS,
+  amountInputError,
+  caretAfterFormat,
   formatGrouped,
   sanitizeAmount,
   type CoverageInput,
@@ -159,5 +161,37 @@ describe('amount input formatting', () => {
     expect(sanitizeAmount('1,000,000')).toBe('1000000')
     expect(sanitizeAmount('-12abc')).toBe('12')
     expect(sanitizeAmount('1.2.3')).toBe('1.23')
+  })
+})
+
+describe('amountInputError', () => {
+  it('accepts plain, grouped, $-prefixed and decimal amounts', () => {
+    for (const ok of ['', '1000000', '1,000,000', '$2,000', ' 1 000 ', '1234.5', '1234.']) {
+      expect(amountInputError(ok)).toBeNull()
+    }
+  })
+
+  it('rejects negatives, exponent notation, letters and extra dots with a message', () => {
+    expect(amountInputError('-5')).toMatch(/negative/i)
+    expect(amountInputError('1e6')).toMatch(/exponent/i)
+    expect(amountInputError('1E6')).toMatch(/exponent/i)
+    expect(amountInputError('1.5M')).toMatch(/digits only/i)
+    expect(amountInputError('12abc')).toMatch(/digits only/i)
+    expect(amountInputError('1.2.3')).toMatch(/decimal point/i)
+  })
+})
+
+describe('caretAfterFormat', () => {
+  it('keeps the caret after the same digit when a grouping comma appears', () => {
+    // "1,000" with a 0 typed after the first digit: "1,0000" -> "10,000", caret after "10".
+    expect(caretAfterFormat('1,0000', 3, '10,000')).toBe(2)
+    // Typed at the end: stays at the end.
+    expect(caretAfterFormat('1,0000', 6, '10,000')).toBe(6)
+  })
+
+  it('handles the start, decimals and an empty result', () => {
+    expect(caretAfterFormat('1234', 0, '1,234')).toBe(0)
+    expect(caretAfterFormat('1234.5', 6, '1,234.5')).toBe(7)
+    expect(caretAfterFormat('', 0, '')).toBe(0)
   })
 })
