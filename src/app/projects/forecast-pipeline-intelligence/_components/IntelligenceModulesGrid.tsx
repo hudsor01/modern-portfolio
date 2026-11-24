@@ -81,7 +81,7 @@ export function IntelligenceModulesGrid({ modules }: IntelligenceModulesGridProp
             <p>Overall forecasting accuracy achieved</p>
           </div>
           <div className="text-center p-4">
-            <div className="text-3xl font-bold text-secondary mb-2">{formatPercentage(0.31)}</div>
+            <div className="text-3xl font-bold text-secondary mb-2">+31 pts</div>
             <p>Improvement in revenue forecast accuracy</p>
           </div>
           <div className="text-center p-4">

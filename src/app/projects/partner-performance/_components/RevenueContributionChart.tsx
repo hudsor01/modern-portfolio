@@ -9,21 +9,21 @@ import { chartColors as baseChartColors, chartCssVars } from '@/lib/charts'
 // Partner revenue distribution demonstrating 80/20 rule
 const data = [
   {
-    name: 'Top 20% Partners',
+    name: 'Top Partners',
     value: 80.2,
     revenue: 725840,
     count: 7,
     color: baseChartColors.primary,
   },
   {
-    name: 'Middle 60% Partners',
+    name: 'Middle Partners',
     value: 17.1,
     revenue: 154689,
     count: 20,
     color: baseChartColors.secondary,
   },
   {
-    name: 'Bottom 20% Partners',
+    name: 'Bottom Partners',
     value: 2.7,
     revenue: 23858,
     count: 7,
@@ -81,8 +81,8 @@ const RevenueContributionChart = memo(function RevenueContributionChart() {
         </PieChart>
       </ResponsiveContainer>
       <p className="mt-4 text-center italic">
-        Channel revenue distribution following Pareto Principle: top 20% of partners generate 80% of
-        revenue
+        Channel revenue distribution following the Pareto principle (80/20): the top partners
+        generate 80% of revenue
       </p>
     </div>
   )

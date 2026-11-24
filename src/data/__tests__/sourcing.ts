@@ -268,27 +268,58 @@ export function extractFigures(
   return figs
 }
 
-interface CorpusInfo {
+export interface CorpusInfo {
   raw: string
   numbers: Set<number>
   rendered: Rendered
   baselines: Set<number>
+  /** Every figure the corpus states, with its unit. */
+  typedFigures: Figure[]
+  /**
+   * Values of structured data fields (`cac: 98`, `ratio={4.0}`). A field is unit-less
+   * by construction, so it may vouch for a typed figure; prose and JSX text may not.
+   */
+  fieldNumbers: Set<number>
 }
+
+const FIELD_NUMBER_RE =
+  /\b[A-Za-z_]\w*(?:\s*:\s*|=\{)(-?\d+(?:,\d{3})*(?:\.\d+)?)(?![\d.]*\s*[A-Za-z%])/g
+const RANGE_UNIT_RE =
+  /(\d+(?:,\d{3})*(?:\.\d+)?) to \d+(?:,\d{3})*(?:\.\d+)? (months?|mo|days?|hours?|pts?)\b/g
 
 const cache = new Map<string, CorpusInfo>()
 
 function corpusInfo(slug: string): CorpusInfo {
   const hit = cache.get(slug)
   if (hit) return hit
-  const raw = narrativeCorpus(slug)
+  const info = buildCorpusInfo(narrativeCorpus(slug))
+  cache.set(slug, info)
+  return info
+}
+
+/** Builds the lookup structures for a narrative corpus (exported so detector self-tests can use fixture text). */
+export function buildCorpusInfo(raw: string): CorpusInfo {
   const rendered = renderWithSpans(raw)
   const baselines = new Set<number>()
   for (const m of rendered.text.matchAll(/\bfrom\s+\$?(\d+(?:,\d{3})*(?:\.\d+)?)/gi)) {
     baselines.add(round6(Number((m[1] as string).replace(/,/g, ''))))
   }
-  const info = { raw, numbers: corpusNumbers(raw), rendered, baselines }
-  cache.set(slug, info)
-  return info
+  // Line wraps must not separate a number from its unit, and "from 8.5 to 2.3 hours"
+  // states the unit for both ends.
+  const flat = rendered.text.replace(/\s+/g, ' ')
+  const rangeUnits = [...flat.matchAll(RANGE_UNIT_RE)].map((m) => `${m[1]} ${m[2]}`)
+  const fieldNumbers = new Set<number>()
+  for (const m of rendered.text.matchAll(FIELD_NUMBER_RE)) {
+    fieldNumbers.add(round6(Number((m[1] as string).replace(/,/g, ''))))
+  }
+  return {
+    raw,
+    numbers: corpusNumbers(raw),
+    rendered,
+    baselines,
+    typedFigures: extractFigures(`${flat}\n${rangeUnits.join('\n')}`),
+    fieldNumbers,
+  }
 }
 
 function numberTokens(text: string, value: number): Array<[number, number]> {
@@ -335,20 +366,58 @@ function bareSourced(fig: Figure, info: CorpusInfo): boolean {
   return false
 }
 
+const escapeRe = (t: string): string => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+/** The figure's exact text standing alone: `4.7x` is not inside `14.7x`, `94%` is not `194%`. */
+function hasBoundedToken(text: string, raw: string): boolean {
+  return new RegExp(`(?<![\\w.,$])${escapeRe(raw)}(?![\\w.])`).test(text)
+}
+
+/** A currency figure and a unit-less large number are the same claim; every other unit must agree. */
+function unitsAgree(fig: Figure, other: Figure): boolean {
+  if (fig.unit === other.unit) return true
+  const bigPlain = (f: Figure) => f.unit === 'plain' && f.value * f.scale >= 1000
+  if (fig.unit === '$' && bigPlain(other)) return true
+  if (fig.unit === 'plain' && other.unit === '$') return true
+  return false
+}
+
+/**
+ * A typed figure is sourced only by the same number WITH its unit: `94%` needs a
+ * `94%` (or `formatPercentage(0.94)`) in the write-up, never a bare `94 deals`.
+ */
+function typedSourced(fig: Figure, info: CorpusInfo): boolean {
+  if (hasBoundedToken(info.raw, fig.raw) || hasBoundedToken(info.rendered.text, fig.raw))
+    return true
+  const abs = round6(fig.value * fig.scale)
+  if (fig.scale === 1 && ['%', 'x', ':1', '$'].includes(fig.unit) && info.fieldNumbers.has(abs)) {
+    return true
+  }
+  for (const other of info.typedFigures) {
+    if (!unitsAgree(fig, other)) continue
+    if (fig.scale === 1) {
+      if (other.scale === 1 && round6(other.value) === abs) return true
+    } else {
+      const n = other.value * other.scale
+      if (Number((n / fig.scale).toFixed(fig.decimals)) === fig.value) return true
+    }
+  }
+  return false
+}
+
+export function isSourcedIn(fig: Figure, info: CorpusInfo): boolean {
+  if (fig.change) return changeSourced(fig, info)
+  if (!fig.typed) return bareSourced(fig, info)
+  return typedSourced(fig, info)
+}
+
 export function isSourced(fig: Figure, slug: string): boolean {
   const info = corpusInfo(slug)
   const exception = CONTEXT_EXCEPTIONS.find((x) => x.slug === slug && x.figure === fig.raw)
   if (exception && info.raw.includes(exception.snippet) && exception.snippet.includes(fig.raw)) {
     return true
   }
-  if (fig.change) return changeSourced(fig, info)
-  if (!fig.typed) return bareSourced(fig, info)
-  if (info.raw.includes(fig.raw)) return true
-  if (fig.scale === 1) return info.numbers.has(round6(fig.value))
-  for (const n of info.numbers) {
-    if (Number((n / fig.scale).toFixed(fig.decimals)) === fig.value) return true
-  }
-  return false
+  return isSourcedIn(fig, info)
 }
 
 /** Failure messages (empty when every figure in `text` is sourced). */
