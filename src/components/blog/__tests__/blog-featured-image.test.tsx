@@ -9,7 +9,7 @@ vi.mock('next/image', () => ({
   ),
 }))
 
-import { BlogFeaturedImage } from '../blog-featured-image'
+import { BlogFeaturedImage, withCoverVariant } from '../blog-featured-image'
 
 describe('BlogFeaturedImage fallback', () => {
   afterEach(() => cleanup())
@@ -37,5 +37,31 @@ describe('BlogFeaturedImage fallback', () => {
     fireEvent.error(container.querySelector('img') as HTMLImageElement)
     const swapped = (container.querySelector('img') as HTMLImageElement).getAttribute('src') ?? ''
     expect(swapped).not.toContain('variant')
+  })
+})
+
+describe('withCoverVariant', () => {
+  it('adds the variant to a stored /api/og cover and keeps its other params', () => {
+    const out = withCoverVariant('/api/og?title=Hi+there&category=Sales', 'card')
+    const params = new URL(out, 'http://x').searchParams
+    expect(params.get('title')).toBe('Hi there')
+    expect(params.get('category')).toBe('Sales')
+    expect(params.get('variant')).toBe('card')
+  })
+
+  it('leaves photos and the default (no variant) untouched', () => {
+    expect(withCoverVariant('https://images.unsplash.com/x.jpg', 'card')).toBe(
+      'https://images.unsplash.com/x.jpg'
+    )
+    expect(withCoverVariant('/api/og?title=A', undefined)).toBe('/api/og?title=A')
+  })
+
+  it('renders the card-variant src for a stored generated cover', () => {
+    const { container } = render(
+      <BlogFeaturedImage src="/api/og?title=A" alt="a" postTitle="A" fallbackVariant="card" fill />
+    )
+    expect((container.querySelector('img') as HTMLImageElement).getAttribute('src')).toContain(
+      'variant=card'
+    )
   })
 })

@@ -124,11 +124,11 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
                 postTitle={post.title}
                 postCategory={post.category?.name}
                 fill
-                className="object-cover"
+                className="object-cover object-left"
                 priority
                 sizes="(max-width: 768px) 100vw, 960px"
               />
-              <div className="absolute inset-0 bg-black/20" />
+              {showCaption && <div className="absolute inset-0 bg-black/20" />}
               {showCaption && (
                 <figcaption className="absolute bottom-4 left-4 rounded-md bg-background/80 px-3 py-1 text-xs text-foreground shadow-sm">
                   {post.featuredImageAlt}

@@ -75,6 +75,13 @@ describe('BlogPostLayout', () => {
     expect(container.querySelector('figcaption')?.textContent).toBe('Dashboard screenshot')
   })
 
+  it('does not dim the cover when there is no caption to carry (B-8)', () => {
+    const { container } = render(
+      <BlogPostLayout post={makePost({ featuredImage: '/x.jpg', featuredImageAlt: 'A post' })} />
+    )
+    expect(container.querySelector('figure .bg-black\\/20')).toBeNull()
+  })
+
   it('uses the same category chip as the /blog cards', () => {
     const { container } = render(<BlogPostLayout post={makePost()} />)
     const chip = container.querySelector('a[href^="/blog/category/"] span')
