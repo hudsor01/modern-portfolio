@@ -53,9 +53,13 @@ export interface MaturityResult {
   level: number
   /** Human label for `level` ('Ad-hoc' … 'Optimized'); '' if nothing answered. */
   tier: string
-  /** Lowest-scoring answered pillar — the highest-ROI place to invest next. */
+  /**
+   * Lowest-scoring answered pillar — the highest-ROI place to invest next.
+   * Null when nothing is answered or when the lowest score is shared by more
+   * than one pillar: a tie is not a finding, so no pillar is singled out.
+   */
   weakestPillar: PillarId | null
-  /** The recommended next move, derived from `weakestPillar`. */
+  /** The recommended next move: from `weakestPillar`, or the order of operations on a tie. */
   nextMove: string
   /**
    * True when tooling maturity runs ≥1 full level ahead of the weaker of
@@ -85,7 +89,7 @@ export const PILLARS: readonly Pillar[] = [
   {
     id: 'alignment',
     label: 'Alignment',
-    blurb: 'Sales, Marketing, and CS sharing goals, metrics, and a single revenue number.',
+    blurb: 'Goals, metrics, and ownership shared across the teams that touch revenue.',
   },
 ] as const
 
@@ -225,8 +229,15 @@ const NEXT_MOVE: Record<PillarId, string> = {
     'Get Sales, Marketing, and CS onto one shared revenue number with a single owner for cross-team process. Misalignment quietly caps the return on every other improvement you make.',
 }
 
+/** Next move when the lowest pillar score is shared: the page's order of operations. */
+const TIED_NEXT_MOVE =
+  'Your lowest pillars are tied, so work in the order that holds up: document the process, clean the data, then let technology automate what is now repeatable — with alignment making sure every team optimizes the same revenue number.'
+
 /** Gap (in pillar levels) at which tech maturity outrunning data/process is flagged. */
 const TECH_OVERBUY_GAP = 1.0
+
+/** Pillar means are sums of integers over 4; this only absorbs float noise. */
+const TIE_EPSILON = 1e-9
 
 /**
  * Directional percentile anchors. Grounded in published B2B RevOps maturity
@@ -314,16 +325,24 @@ export function scoreMaturity(answers: Partial<Record<string, number>>): Maturit
   const scored = PILLARS.map((p) => pillarScores[p.id]).filter((s) => s > 0)
   const overallScore = scored.length === 0 ? 0 : scored.reduce((a, b) => a + b, 0) / scored.length
 
-  // Weakest answered pillar (ties resolve to canonical pillar order).
+  // Weakest answered pillar. A shared lowest score is a tie, not a finding:
+  // no pillar is singled out (weakestPillar stays null).
   let weakestPillar: PillarId | null = null
   let weakestScore = Number.POSITIVE_INFINITY
+  let tiedAtLowest = false
   for (const p of PILLARS) {
+    if (byPillar[p.id].length === 0) continue
     const s = pillarScores[p.id]
-    if (byPillar[p.id].length > 0 && s < weakestScore) {
+    if (s < weakestScore - TIE_EPSILON) {
       weakestScore = s
       weakestPillar = p.id
+      tiedAtLowest = false
+    } else if (Math.abs(s - weakestScore) <= TIE_EPSILON) {
+      tiedAtLowest = true
     }
   }
+  if (tiedAtLowest) weakestPillar = null
+  const answeredPillars = PILLARS.filter((p) => byPillar[p.id].length > 0).length
 
   // Anti-pattern: tech running ahead of the weaker of data/process. Only
   // meaningful when all three pillars have been answered.
@@ -347,7 +366,7 @@ export function scoreMaturity(answers: Partial<Record<string, number>>): Maturit
     level: levelForScore(overallScore),
     tier,
     weakestPillar,
-    nextMove: weakestPillar ? NEXT_MOVE[weakestPillar] : '',
+    nextMove: weakestPillar ? NEXT_MOVE[weakestPillar] : answeredPillars > 0 ? TIED_NEXT_MOVE : '',
     techOverbuy,
     percentile: percentileForScore(overallScore),
   }

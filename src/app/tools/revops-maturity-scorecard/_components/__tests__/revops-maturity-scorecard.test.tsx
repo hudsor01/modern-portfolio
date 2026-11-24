@@ -79,3 +79,22 @@ describe('RevOpsMaturityScorecard keyboard focus', () => {
     expect(label?.className).toContain('has-[:focus-visible]:ring-offset-2')
   })
 })
+
+describe('RevOpsMaturityScorecard weakest badge', () => {
+  it('shows no "weakest" badge when every pillar ties (the neutral default)', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    expect(container.textContent?.toLowerCase()).not.toContain('weakest')
+    expect(screen.getByText('Highest-ROI next move')).toBeTruthy()
+  })
+
+  it('badges exactly one pillar once a single pillar is uniquely lowest', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    const firstProcess = screen.getAllByRole('radio', { name: '1 Not at all' })[0]
+    if (!firstProcess) throw new Error('missing radio')
+    fireEvent.click(firstProcess)
+    const badges = Array.from(container.querySelectorAll('span')).filter(
+      (s) => s.textContent === 'weakest'
+    )
+    expect(badges).toHaveLength(1)
+  })
+})
