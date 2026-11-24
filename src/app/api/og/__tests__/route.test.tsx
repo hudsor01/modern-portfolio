@@ -102,9 +102,30 @@ describe('GET /api/og', () => {
       expect(Math.min(...sizes)).toBeGreaterThanOrEqual(48)
     })
 
-    it('leaves the default card at 1200x630 for any other variant value', async () => {
-      await GET(req('?title=Hello&variant=other'))
-      expect(imageResponseCtor.mock.calls[0]![1]).toMatchObject({ width: 1200, height: 630 })
+    it('caches the cover at the CDN for a day, with a week of stale-while-revalidate', async () => {
+      const res = await GET(req('?title=Hello&category=Sales&variant=card'))
+      const cacheControl = res.headers.get('Cache-Control') ?? ''
+      expect(cacheControl).toBe('public, s-maxage=86400, stale-while-revalidate=604800')
+      expect(Number(/s-maxage=(\d+)/.exec(cacheControl)?.[1])).toBeGreaterThanOrEqual(86_400)
+    })
+
+    it.each(['other', 'CARD', 'card,card', ' card', ''])(
+      'falls back to the default 1200x630 card, with default caching, for variant=%j',
+      async (variant) => {
+        imageResponseCtor.mockClear()
+        const res = await GET(req(`?title=Hello&variant=${encodeURIComponent(variant)}`))
+        expect(imageResponseCtor.mock.calls[0]![1]).toMatchObject({ width: 1200, height: 630 })
+        expect(res.headers.get('Cache-Control')).toBe(
+          'public, s-maxage=60, stale-while-revalidate=86400'
+        )
+      }
+    )
+
+    it('still truncates an oversized title on the cover', async () => {
+      await GET(req(`?title=${'A'.repeat(500)}&variant=card`))
+      const json = JSON.stringify(imageResponseCtor.mock.calls[0]![0])
+      expect(json).toContain('A'.repeat(120))
+      expect(json).not.toContain('A'.repeat(121))
     })
   })
 

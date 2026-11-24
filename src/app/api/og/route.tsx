@@ -9,6 +9,12 @@ import { buildProjectPreview } from '@/lib/project-preview'
 // triggered a "disables static generation" build warning on this dynamic
 // route, which was load-bearing (query params mean it can't be static anyway).
 
+// Blog covers are a pure function of (title, category) and /blog draws up to 24 of them per
+// page view, so a per-IP rate limit would break the listing. The variant is allow-listed and
+// inputs are truncated; the real bound on render cost is a long CDN lifetime, so each distinct
+// cover renders about once a day and is served stale while it refreshes.
+const COVER_CACHE_CONTROL = 'public, s-maxage=86400, stale-while-revalidate=604800'
+
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
 
@@ -54,7 +60,7 @@ export async function GET(request: NextRequest) {
       width: COVER_WIDTH_PX,
       height: COVER_HEIGHT_PX,
       headers: {
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=86400',
+        'Cache-Control': COVER_CACHE_CONTROL,
       },
     })
   }
