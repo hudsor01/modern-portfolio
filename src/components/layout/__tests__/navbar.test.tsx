@@ -197,4 +197,12 @@ describe('Navbar', () => {
     const menu = container.querySelector('#mobile-menu')
     expect(menu?.hasAttribute('hidden')).toBe(false)
   })
+
+  it('mobile menu panel is opaque: bg-card, no alpha, no backdrop blur', () => {
+    const { container } = render(<Navbar />)
+    const cls = container.querySelector('#mobile-menu')?.className ?? ''
+    expect(cls).toMatch(/(^|\s)bg-card(\s|$)/)
+    expect(cls).not.toContain('bg-card/')
+    expect(cls).not.toContain('backdrop-blur')
+  })
 })

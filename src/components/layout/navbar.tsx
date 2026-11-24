@@ -105,7 +105,7 @@ export function Navbar() {
           id="mobile-menu"
           aria-label="Main menu"
           hidden={!isMobileMenuOpen}
-          className="md:hidden absolute top-16 left-0 right-0 bg-card/98 backdrop-blur-sm border-b border-border shadow-md"
+          className="md:hidden absolute top-16 left-0 right-0 bg-card border-b border-border shadow-md"
         >
           <div className="px-4 py-4 space-y-2">
             {navItems.map((item, index) => {
