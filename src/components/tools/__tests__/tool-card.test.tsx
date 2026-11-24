@@ -23,13 +23,15 @@ function classOf(tag: string): string {
 describe.each(tools.map((t) => [t.name, t] as const))('ToolCard %s', (_n, tool) => {
   const html = renderToStaticMarkup(<ToolCard tool={tool} />)
 
-  it('has one article and one link covering the card', () => {
+  it('has one article and one named link covering the card (plus the hidden icon link)', () => {
     expect(html.match(/<article[\s>]/g)).toHaveLength(1)
-    const anchors = html.match(/<a[\s>]/g) ?? []
-    expect(anchors).toHaveLength(1)
-    const a = /<a\b[^>]*>(.*?)<\/a>/s.exec(html)
+    const anchors = html.match(/<a\b[^>]*>/g) ?? []
+    expect(anchors).toHaveLength(2)
+    const named = anchors.filter((t) => !t.includes('aria-hidden="true"'))
+    expect(named).toHaveLength(1)
+    const a = /<a\b(?![^>]*aria-hidden)[^>]*>(.*?)<\/a>/s.exec(html)
     expect(a).not.toBeNull()
-    const tag = /<a\b[^>]*>/.exec(html)![0]
+    const tag = named[0]!
     expect(tag).toContain(`href="${tool.href}"`)
     expect(decode(a![1]!)).toBe('Open tool')
     expect(decode(/aria-label="([^"]*)"/.exec(tag)![1]!)).toBe(`Open tool: ${tool.name}`)
@@ -54,9 +56,12 @@ describe.each(tools.map((t) => [t.name, t] as const))('ToolCard %s', (_n, tool) 
     expect(classOf(h2[1]!)).toContain('font-semibold')
   })
 
-  it('keeps the icon tile above the link overlay and hides decorative svgs', () => {
-    const tile = /<div([^>]*data-slot="tool-icon"[^>]*)>/.exec(html)
+  it('keeps the icon tile above the link overlay, navigating and hidden from AT', () => {
+    const tile = /<a([^>]*data-slot="tool-icon"[^>]*)>/.exec(html)
     expect(tile).not.toBeNull()
+    expect(tile![1]).toContain(`href="${tool.href}"`)
+    expect(tile![1]).toContain('aria-hidden="true"')
+    expect(tile![1]).toContain('tabindex="-1"')
     const classes = classOf(tile![1]!).split(/\s+/)
     for (const c of ['relative', 'z-10', 'bg-primary/8', 'size-10', 'rounded-xl', 'text-primary']) {
       expect(classes).toContain(c)

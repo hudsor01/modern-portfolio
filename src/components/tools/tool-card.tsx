@@ -8,12 +8,18 @@ export function ToolCard({ tool }: { tool: ToolEntry }) {
   const Icon = ICONS[tool.icon]
   return (
     <article className="group relative flex h-full flex-col bg-card border border-border rounded-2xl p-6 lg:p-7 shadow-sm transition-all duration-500 ease-out motion-reduce:transition-none hover:border-primary/40 hover:shadow-lg hover:-translate-y-1 motion-reduce:hover:translate-y-0 focus-within:border-primary/40">
-      <div
+      {/* Decorative duplicate of the card link: it sits above the stretched overlay (z-10) so the
+          tile stays a real hover target, and navigates so a click or tap on the icon opens the tool.
+          Hidden from assistive tech and the tab order; the named "Open tool" link below is the one. */}
+      <Link
+        href={tool.href}
         data-slot="tool-icon"
+        aria-hidden="true"
+        tabIndex={-1}
         className="relative z-10 mb-4 flex size-10 items-center justify-center rounded-xl bg-primary/8 text-primary"
       >
         <Icon className="size-5" aria-hidden="true" />
-      </div>
+      </Link>
       <h2 className="mb-3 text-lg font-semibold">{tool.name}</h2>
       <p className="text-base mb-5">{tool.summary}</p>
       <dl className="mb-6 space-y-4 border-t border-border pt-4">

@@ -44,7 +44,7 @@ describe('/tools hub render', () => {
 
   it('has an Open tool link per tool', () => {
     for (const tool of tools) {
-      const re = new RegExp(`<a[^>]*href="${tool.href}"[^>]*>(.*?)</a>`)
+      const re = new RegExp(`<a(?![^>]*aria-hidden)[^>]*href="${tool.href}"[^>]*>(.*?)</a>`)
       const m = html.match(re)
       expect(m).toBeTruthy()
       expect(m?.[0] ?? '').toContain(`aria-label="Open tool: ${tool.name}"`)

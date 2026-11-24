@@ -122,6 +122,16 @@ test.describe('tools hub', () => {
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(TOOLS[0].name)
   })
 
+  test('clicking the icon tile opens the tool', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    for (const tool of TOOLS) {
+      await page.goto('/tools')
+      await page.locator(`[data-slot="tool-icon"][href="/tools/${tool.slug}"]`).click()
+      await page.waitForURL(`**/tools/${tool.slug}`)
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(tool.name)
+    }
+  })
+
   for (const tool of TOOLS) {
     test(`${tool.slug} breadcrumb at 1440px`, async ({ page }) => {
       await page.setViewportSize({ width: 1440, height: 900 })
