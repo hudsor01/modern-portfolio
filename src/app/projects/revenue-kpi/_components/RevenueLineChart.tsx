@@ -123,7 +123,7 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
       <ChartWrapper
         headingLevel={2}
         title="Revenue Growth Metrics"
-        caption="No data available"
+        description="No data available"
         size="md"
       >
         <div className="flex items-center justify-center h-full text-muted-foreground">
@@ -137,7 +137,7 @@ const RevenueLineChart = memo(({ data }: RevenueLineChartProps): React.JSX.Eleme
     <ChartWrapper
       headingLevel={2}
       title="Revenue Growth Metrics"
-      caption="Year-over-year revenue and commissions"
+      description="Year-over-year revenue and commissions"
       size="md"
     >
       <LineChart data={yearlyData} margin={chartConfig.margins.medium}>

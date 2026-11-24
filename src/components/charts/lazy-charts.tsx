@@ -183,6 +183,8 @@ interface ChartWrapperProps {
   children: React.ReactNode
   title?: string
   caption?: string
+  /** Subtitle under the title: the header style every project chart card shares. */
+  description?: string
   size?: ChartBoxSize
   className?: string
   /** Use 2 when the chart sits directly under the page h1; default 3 sits under an h2 section. */
@@ -193,6 +195,7 @@ export function ChartWrapper({
   children,
   title,
   caption,
+  description,
   size = 'md',
   className = '',
   headingLevel = 3,
@@ -200,6 +203,7 @@ export function ChartWrapper({
   return (
     <ChartCard
       title={title}
+      description={description}
       caption={caption}
       size={size}
       headingLevel={headingLevel}

@@ -63,7 +63,7 @@ const TransactionVolumeChart = memo(({ data }: TransactionVolumeChartProps): Rea
       <ChartWrapper
         headingLevel={2}
         title="Transaction Volume"
-        caption="No data available"
+        description="No data available"
         size="sm"
       >
         <div className="flex items-center justify-center h-full text-muted-foreground">
@@ -77,7 +77,7 @@ const TransactionVolumeChart = memo(({ data }: TransactionVolumeChartProps): Rea
     <ChartWrapper
       headingLevel={2}
       title="Transaction Volume"
-      caption="Transactions per year"
+      description="Transactions per year"
       size="sm"
     >
       <LineChart data={series} margin={chartConfig.margins.medium}>

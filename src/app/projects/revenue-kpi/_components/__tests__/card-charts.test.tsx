@@ -21,6 +21,7 @@ vi.mock('recharts', () => ({
   XAxis: () => null,
   YAxis: () => null,
   CartesianGrid: () => null,
+  Legend: () => null,
 }))
 
 vi.mock('@/components/ui/chart', () => ({
@@ -36,13 +37,13 @@ import PartnerGroupPieChart from '../PartnerGroupPieChart'
 const cases = [
   {
     name: 'RevenueBarChart',
-    size: 'sm' as const,
+    size: 'md' as const,
     full: <RevenueBarChart data={[{ label: '2025', revenue: 100 }]} />,
     empty: <RevenueBarChart data={[]} />,
   },
   {
     name: 'TopPartnersChart',
-    size: 'sm' as const,
+    size: 'md' as const,
     full: <TopPartnersChart partners={[{ name: 'A', revenue: 10 }]} />,
     empty: <TopPartnersChart partners={[]} />,
   },

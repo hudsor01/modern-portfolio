@@ -21,10 +21,12 @@ function ChartCardSkeleton({
         aria-hidden="true"
       >
         <div className="space-y-4">
-          <Skeleton className="h-5 w-40" />
+          <div>
+            <Skeleton className="h-7 w-40" />
+            <Skeleton className="mt-1 h-6 w-3/4" />
+          </div>
           <ChartSkeleton height={size} />
         </div>
-        <Skeleton className="mt-4 h-4 w-3/4" />
       </div>
     )
   }
@@ -45,7 +47,7 @@ function ChartCardSkeleton({
 // and produce width(-1)/height(-1) warnings during static generation
 const RevenueBarChart = dynamic(() => import('./RevenueBarChart'), {
   ssr: false,
-  loading: () => <ChartCardSkeleton size="sm" />,
+  loading: () => <ChartCardSkeleton size="md" />,
 })
 const RevenueLineChart = dynamic(() => import('./RevenueLineChart'), {
   ssr: false,
@@ -57,7 +59,7 @@ const TransactionVolumeChart = dynamic(() => import('./TransactionVolumeChart'),
 })
 const TopPartnersChart = dynamic(() => import('./TopPartnersChart'), {
   ssr: false,
-  loading: () => <ChartCardSkeleton size="sm" />,
+  loading: () => <ChartCardSkeleton size="md" />,
 })
 const PartnerGroupPieChart = dynamic(() => import('./PartnerGroupPieChart'), {
   ssr: false,

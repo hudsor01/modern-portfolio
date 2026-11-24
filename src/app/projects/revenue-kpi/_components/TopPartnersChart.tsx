@@ -28,6 +28,39 @@ const BAR_COLORS = [
   chartColors.chart4,
 ]
 
+/** Splits a name into at most two lines of roughly `max` characters, breaking on spaces. */
+export function wrapLabel(name: string, max = 16): string[] {
+  const words = name.split(' ')
+  const lines: string[] = []
+  let line = ''
+  for (const word of words) {
+    if (line && `${line} ${word}`.length > max && lines.length < 1) {
+      lines.push(line)
+      line = word
+    } else {
+      line = line ? `${line} ${word}` : word
+    }
+  }
+  lines.push(line)
+  return lines
+}
+
+type TickProps = { x?: number; y?: number; payload?: { value: string } }
+
+/** Full partner name on up to two lines, never truncated. */
+function PartnerTick({ x = 0, y = 0, payload }: TickProps) {
+  const lines = wrapLabel(payload?.value ?? '')
+  return (
+    <text x={x} y={y} textAnchor="end" fill={chartColors.axis} fontSize={12}>
+      {lines.map((line, i) => (
+        <tspan key={line} x={x} dy={i === 0 ? (lines.length > 1 ? '-0.2em' : '0.35em') : '1.2em'}>
+          {line}
+        </tspan>
+      ))}
+    </text>
+  )
+}
+
 type TopPartnersChartProps = {
   partners: Array<{ name: string; revenue: number }>
 }
@@ -39,8 +72,7 @@ export default function TopPartnersChart({ partners }: TopPartnersChartProps) {
       .slice(0, 5)
       .sort((a, b) => b.revenue - a.revenue)
       .map((partner) => ({
-        name: partner.name.length > 15 ? `${partner.name.slice(0, 15)}...` : partner.name,
-        fullName: partner.name,
+        name: partner.name,
         revenue: partner.revenue,
       }))
   })()
@@ -62,14 +94,14 @@ export default function TopPartnersChart({ partners }: TopPartnersChartProps) {
     <ChartCard
       title="Top Partners by Revenue"
       description="Leading revenue contributors this period"
-      size="sm"
+      size="md"
       headingLevel={2}
     >
       <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
         <BarChart
           data={chartData}
           layout="vertical"
-          margin={{ top: 10, right: 30, left: 100, bottom: 10 }}
+          margin={{ top: 10, right: 24, left: 0, bottom: 10 }}
         >
           <CartesianGrid
             strokeDasharray="3 3"
@@ -89,10 +121,11 @@ export default function TopPartnersChart({ partners }: TopPartnersChartProps) {
             type="category"
             dataKey="name"
             stroke={chartColors.axis}
-            tick={{ fill: chartColors.axis, fontSize: 12 }}
+            tick={<PartnerTick />}
             tickLine={false}
             axisLine={false}
-            width={90}
+            interval={0}
+            width={112}
           />
           <ChartTooltip
             content={

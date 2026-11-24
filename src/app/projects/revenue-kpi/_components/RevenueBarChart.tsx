@@ -47,7 +47,7 @@ export default function RevenueBarChart({ data }: RevenueBarChartProps) {
     <ChartCard
       title={title}
       description="Revenue trend across the reported periods"
-      size="sm"
+      size="md"
       headingLevel={2}
     >
       <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
@@ -61,8 +61,8 @@ export default function RevenueBarChart({ data }: RevenueBarChartProps) {
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartColors.grid} />
           <XAxis
             dataKey="name"
-            interval="preserveStartEnd"
-            minTickGap={8}
+            interval="equidistantPreserveStart"
+            minTickGap={16}
             stroke={chartColors.axis}
             tick={{ fill: chartColors.axis, fontSize: 12 }}
             tickLine={false}

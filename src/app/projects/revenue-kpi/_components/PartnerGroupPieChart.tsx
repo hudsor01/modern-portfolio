@@ -8,10 +8,22 @@ import {
   type ChartThemeConfig,
 } from '@/components/ui/chart'
 import { LazyPieChart as PieChart } from '@/components/charts/lazy-charts'
-import { Pie, Cell } from 'recharts'
+import { Pie, Cell, Legend } from 'recharts'
 import { chartColors } from '@/lib/charts'
 
 const COLORS = [chartColors.primary, chartColors.secondary, chartColors.chart3, chartColors.chart4]
+
+/** Tier names carry colour meaning: gold reads copper, silver slate, bronze terracotta. */
+const TIER_COLORS: Record<string, string> = {
+  platinum: chartColors.primary,
+  gold: chartColors.chart3,
+  silver: chartColors.chart4,
+  bronze: chartColors.destructive,
+}
+
+export function tierColor(name: string, index: number): string {
+  return TIER_COLORS[name.toLowerCase()] ?? COLORS[index % COLORS.length] ?? chartColors.primary
+}
 
 type PartnerGroupPieChartProps = {
   groups: Array<{ name: string; value: number }>
@@ -23,7 +35,7 @@ export default function PartnerGroupPieChart({ groups }: PartnerGroupPieChartPro
     return groups.map((group, index) => ({
       name: group.name,
       value: group.value,
-      fill: COLORS[index % COLORS.length],
+      fill: tierColor(group.name, index),
     }))
   })()
 
@@ -63,19 +75,27 @@ export default function PartnerGroupPieChart({ groups }: PartnerGroupPieChartPro
           <Pie
             data={chartData}
             cx="50%"
-            cy="50%"
-            innerRadius={60}
-            outerRadius={100}
+            cy="45%"
+            innerRadius="45%"
+            outerRadius="75%"
             paddingAngle={2}
             dataKey="value"
             nameKey="name"
-            label={({ name, value }) => `${name}: ${value}%`}
-            labelLine={{ stroke: chartColors.axis, strokeWidth: 1 }}
           >
             {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.fill} />
             ))}
           </Pie>
+          <Legend
+            verticalAlign="bottom"
+            iconType="circle"
+            wrapperStyle={{ fontSize: 12 }}
+            formatter={(name, entry) => (
+              <span className="text-muted-foreground">
+                {name}: {String((entry.payload as { value?: number } | undefined)?.value ?? '')}%
+              </span>
+            )}
+          />
           <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
         </PieChart>
       </ChartContainer>
