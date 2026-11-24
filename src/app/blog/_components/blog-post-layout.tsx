@@ -124,7 +124,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
                 postTitle={post.title}
                 postCategory={post.category?.name}
                 fill
-                className="object-cover object-left"
+                className="object-cover"
                 priority
                 sizes="(max-width: 768px) 100vw, 960px"
               />

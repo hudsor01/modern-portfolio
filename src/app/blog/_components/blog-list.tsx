@@ -175,7 +175,7 @@ export function BlogList({
                       postCategory={post.categoryName ?? undefined}
                       fallbackVariant="card"
                       fill
-                      className="object-cover object-left transition-transform duration-300 ease-out group-hover:scale-105"
+                      className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   </div>

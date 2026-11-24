@@ -43,9 +43,15 @@ function FallbackImage({ src, fallbackSrc, ...rest }: ImageWithFallbackProps) {
   const unoptimized = rest.unoptimized || isOgCard
   // An /api/og card is a 1200x630 text layout: letterbox it on its own
   // OG_CARD_BACKGROUND ground so frames of another aspect never crop its title. Inline
-  // style so it beats a caller's object-cover class.
+  // style so it beats a caller's object-cover class. The cover's text sits on the left, so
+  // the card is anchored there; real photos keep the caller's own object-position.
   const style = isOgCard
-    ? { ...rest.style, objectFit: 'contain' as const, backgroundColor: OG_CARD_BACKGROUND }
+    ? {
+        ...rest.style,
+        objectFit: 'contain' as const,
+        objectPosition: 'left center',
+        backgroundColor: OG_CARD_BACKGROUND,
+      }
     : rest.style
   return (
     <Image
