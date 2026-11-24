@@ -3,6 +3,7 @@ import { generateMetadata } from '@/app/shared-metadata'
 import { ProfessionalServiceJsonLd } from '@/components/seo/json-ld/professional-service-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import ContactPageClient from './contact-client'
+import { getFeaturedProjects } from '@/lib/projects'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 
 export const dynamic = 'force-static'
@@ -14,6 +15,15 @@ export const metadata = generateMetadata(
 
 export default async function ContactPage() {
   const nonce = (await headers()).get('x-nonce')
+  const featuredProjects = (await getFeaturedProjects())
+    .slice(0, 3)
+    .map(({ slug, title, description, results, displayMetrics }) => ({
+      slug,
+      title,
+      description,
+      results,
+      displayMetrics,
+    }))
   return (
     <>
       <ProfessionalServiceJsonLd nonce={nonce} />
@@ -24,7 +34,7 @@ export default async function ContactPage() {
           { name: 'Contact', url: canonicalUrl('/contact') },
         ]}
       />
-      <ContactPageClient />
+      <ContactPageClient featuredProjects={featuredProjects} />
     </>
   )
 }

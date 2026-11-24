@@ -4,7 +4,7 @@ import { Zap, Shield, CheckCircle } from 'lucide-react'
 import { Navbar } from '@/components/layout/navbar'
 import { ContactForm } from '@/components/contact/contact-form'
 import { ContactInfo } from '@/components/contact/contact-info'
-import { FeaturedProjects } from '@/components/contact/featured-projects'
+import { FeaturedProjects, type FeaturedProject } from '@/components/contact/featured-projects'
 import { AvailabilityBadge } from '@/components/ui/availability-badge'
 import { REVENUE_IMPACT, REVENUE_IMPACT_LABEL } from '@/lib/stats'
 import { useContactForm } from '@/hooks/use-contact-form'
@@ -14,7 +14,11 @@ import { DecorativeBlob } from '@/components/ui/decorative-blob'
 // Component
 // ============================================================================
 
-export default function ContactPageClient() {
+export default function ContactPageClient({
+  featuredProjects,
+}: {
+  featuredProjects: FeaturedProject[]
+}) {
   const form = useContactForm()
 
   return (
@@ -77,7 +81,7 @@ export default function ContactPageClient() {
               {/* Contact Information & Featured Work */}
               <div className="flex min-w-0 flex-col gap-8">
                 <ContactInfo />
-                <FeaturedProjects className="flex-1" />
+                <FeaturedProjects className="flex-1" projects={featuredProjects} />
               </div>
             </div>
           </div>
