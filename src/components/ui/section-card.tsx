@@ -10,7 +10,7 @@ const sectionCardVariants = cva(
     variants: {
       variant: {
         default: 'bg-card border-border shadow-sm',
-        glass: 'glass border-border/50 shadow-sm backdrop-blur-sm',
+        glass: 'glass border-border shadow-sm backdrop-blur-sm',
         // Formerly a gradient card/card/muted; palette forbids gradients.
         // Solid card surface with a stronger shadow retains the elevated feel.
         gradient: 'bg-card border-border shadow-md',

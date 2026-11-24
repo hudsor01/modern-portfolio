@@ -14,7 +14,7 @@ const cardVariants = cva(
         luxury:
           'bg-card border-border shadow-sm hover:border-border-hover hover:shadow-md hover:-translate-y-1',
         elevated: 'bg-card border-border shadow-md hover:shadow-lg hover:-translate-y-1',
-        primary: 'bg-primary/5 border-primary/20 shadow-sm hover:border-primary/40 hover:shadow-md',
+        primary: 'bg-primary/5 border-border shadow-sm hover:border-primary/40 hover:shadow-md',
         stat: 'bg-card border-border p-6 text-center shadow-sm hover:shadow-md hover:-translate-y-1',
         outline: 'bg-transparent border-border hover:bg-card/50 hover:border-border-hover',
       },

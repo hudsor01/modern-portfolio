@@ -53,7 +53,7 @@ function Skeleton({
       data-slot="skeleton"
       data-variant={variant}
       className={cn(
-        'bg-card/50 backdrop-blur-xs border border-border/50 rounded-lg',
+        'bg-card/50 backdrop-blur-xs border border-border rounded-lg',
         animationClasses,
         variantClasses[variant],
         // Shimmer effect: solid muted highlight with an opacity mask for the
