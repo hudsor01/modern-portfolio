@@ -11,7 +11,7 @@ export function AboutSection() {
       <div className="bg-card border border-border rounded-2xl p-8 hover:border-primary/30 transition-all duration-300">
         <div className="flex flex-col lg:flex-row items-center gap-8">
           {/* Profile Image */}
-          <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-xl overflow-hidden border-4 border-primary/40 shadow-xl shadow-primary/20 flex-shrink-0">
+          <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-xl overflow-hidden border-4 border-border shadow-xl shadow-primary/20 flex-shrink-0">
             <Image
               src="/images/richard.jpg"
               alt="Richard Hudson - Revenue Operations Consultant specializing in Salesforce automation, data analytics, and business growth strategies in Dallas, TX"
@@ -34,13 +34,13 @@ export function AboutSection() {
             </p>
 
             <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-              <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/30">
+              <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-border">
                 SalesLoft Certified Administrator
               </span>
-              <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-primary/30">
+              <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-border">
                 HubSpot Revenue Operations Certified
               </span>
-              <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-accent/10 text-accent-text border border-accent/30">
+              <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-accent/10 text-accent-text border border-border">
                 Revenue Operations
               </span>
             </div>

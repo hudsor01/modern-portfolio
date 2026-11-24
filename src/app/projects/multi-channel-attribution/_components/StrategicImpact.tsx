@@ -5,7 +5,7 @@ import { formatCurrency } from '../utils'
 
 export function StrategicImpact() {
   return (
-    <div className="bg-accent/10 border border-accent/20 rounded-xl p-6">
+    <div className="bg-accent/10 border border-border rounded-xl p-6">
       <h2 className="typography-h4 mb-4">
         Multi-Channel Attribution Intelligence & Marketing ROI Impact
       </h2>

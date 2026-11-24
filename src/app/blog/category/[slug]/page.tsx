@@ -221,7 +221,7 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                           </div>
                         )}
                         <CardHeader>
-                          <span className="inline-flex items-center px-2.5 py-1 mb-2 text-xs font-semibold tracking-wide uppercase text-primary bg-primary/8 border border-primary/15 rounded-md">
+                          <span className="inline-flex items-center px-2.5 py-1 mb-2 text-xs font-semibold tracking-wide uppercase text-primary bg-primary/8 border border-border rounded-md">
                             {category.name}
                           </span>
                           <CardTitle as="h2" className="line-clamp-3 transition-colors">

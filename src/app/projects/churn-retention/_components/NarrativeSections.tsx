@@ -205,7 +205,7 @@ export function NarrativeSections({ revenueSaved }: NarrativeSectionsProps) {
           title="Key Insight"
           variant="glass"
           padding="md"
-          className="bg-primary/5 border-primary/20"
+          className="bg-primary/5 border-border"
         >
           <p>
             Partners with less than 3 months tenure show 2x higher churn risk. Focus onboarding
@@ -216,7 +216,7 @@ export function NarrativeSections({ revenueSaved }: NarrativeSectionsProps) {
           title="Opportunity"
           variant="glass"
           padding="md"
-          className="bg-secondary/5 border-secondary/20"
+          className="bg-secondary/5 border-border"
         >
           <p>
             Implementing proactive engagement for at-risk segments could reduce churn by up to 15%.
@@ -226,7 +226,7 @@ export function NarrativeSections({ revenueSaved }: NarrativeSectionsProps) {
           title="Action Required"
           variant="glass"
           padding="md"
-          className="bg-accent/5 border-accent/20"
+          className="bg-accent/5 border-border"
         >
           <p>
             Schedule quarterly business reviews with top 20% of partners to maintain retention

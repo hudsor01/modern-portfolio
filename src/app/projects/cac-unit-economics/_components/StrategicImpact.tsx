@@ -32,7 +32,7 @@ export function StrategicImpact() {
   ]
 
   return (
-    <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-6">
+    <div className="bg-secondary/10 border border-border rounded-xl p-6">
       <h2 className="mb-4">Proven Revenue Operations Impact & ROI Results</h2>
       <MetricsGrid metrics={impactMetrics} columns={3} className="gap-4" />
     </div>

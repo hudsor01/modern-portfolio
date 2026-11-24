@@ -17,7 +17,7 @@ vi.mock('@/components/blog/blog-featured-image', () => ({ BlogFeaturedImage: () 
 import { BlogList } from '../blog-list'
 
 const CHIP_CLASSES =
-  'inline-flex items-center px-2.5 py-1 mb-2 text-xs font-semibold tracking-wide uppercase text-primary bg-primary/8 border border-primary/15 rounded-md'
+  'inline-flex items-center px-2.5 py-1 mb-2 text-xs font-semibold tracking-wide uppercase text-primary bg-primary/8 border border-border rounded-md'
 
 function post(over: Partial<BlogListPost>): BlogListPost {
   return {

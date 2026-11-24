@@ -50,7 +50,7 @@ export function IncentivesTab() {
               {incentivePrograms.map((program, index) => (
                 <tr
                   key={index}
-                  className="border-b border-border/50 hover:bg-muted/50 transition-colors"
+                  className="border-b border-border hover:bg-muted/50 transition-colors"
                 >
                   <td className="py-4 px-4 font-medium">{program.program}</td>
                   <td className="py-4 px-4">{program.participants}</td>

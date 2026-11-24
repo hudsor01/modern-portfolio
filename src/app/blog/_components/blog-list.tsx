@@ -176,7 +176,7 @@ export function BlogList({
                   </div>
                 )}
                 <CardHeader>
-                  <span className="inline-flex items-center px-2.5 py-1 mb-2 text-xs font-semibold tracking-wide uppercase text-primary bg-primary/8 border border-primary/15 rounded-md">
+                  <span className="inline-flex items-center px-2.5 py-1 mb-2 text-xs font-semibold tracking-wide uppercase text-primary bg-primary/8 border border-border rounded-md">
                     {getCategoryChipLabel(post)}
                   </span>
                   <CardTitle as="h2" className="line-clamp-3 transition-colors">
@@ -269,7 +269,7 @@ function BlogPagination({
             aria-current={item === page ? 'page' : undefined}
             className={`${PAGE_LINK} ${
               item === page
-                ? 'border-primary/30 bg-primary/20 text-primary'
+                ? 'border-border bg-primary/20 text-primary'
                 : 'border-border text-muted-foreground hover:border-primary/50 hover:text-primary'
             }`}
           >

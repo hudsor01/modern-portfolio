@@ -25,7 +25,7 @@ export function ChannelsTab() {
             {channelPerformance.map((channel, index) => (
               <tr
                 key={index}
-                className="border-b border-border/50 hover:bg-muted/50 transition-colors"
+                className="border-b border-border hover:bg-muted/50 transition-colors"
               >
                 <td className="py-4 px-4 font-medium">{channel.channel}</td>
                 <td className="py-4 px-4">{formatCurrency(channel.cac)}</td>

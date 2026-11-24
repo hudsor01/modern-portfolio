@@ -31,7 +31,7 @@ export function VelocityChart({ partnerConversion }: VelocityChartProps) {
           )
         })}
       </div>
-      <div className="mt-6 p-4 bg-primary/10 border border-primary/20 rounded-xl">
+      <div className="mt-6 p-4 bg-primary/10 border border-border rounded-xl">
         <div className="flex items-center gap-2 mb-2">
           <Zap className="h-5 w-5 text-primary" />
           <h3>Quick Win</h3>

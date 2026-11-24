@@ -44,7 +44,7 @@ export function TechnicalDetails() {
               {detail.technologies.map((tech, i) => (
                 <span
                   key={i}
-                  className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm border border-primary/20"
+                  className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm border border-border"
                 >
                   {tech}
                 </span>

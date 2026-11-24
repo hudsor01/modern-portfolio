@@ -73,7 +73,7 @@ export function RevOpsMaturityScorecard() {
                           key={opt.value}
                           className={`flex flex-col items-center justify-center rounded-lg border px-1 py-2 cursor-pointer text-center transition-colors ${
                             selected
-                              ? 'border-primary bg-primary/10 text-primary'
+                              ? 'border-border bg-primary/10 text-primary'
                               : 'border-border bg-background text-muted-foreground hover:border-primary/50'
                           }`}
                         >
@@ -164,7 +164,7 @@ export function RevOpsMaturityScorecard() {
 
           {/* Tech-overbuy anti-pattern */}
           {result.techOverbuy && (
-            <div className="mt-4 rounded-xl border border-destructive/40 bg-destructive/5 p-4">
+            <div className="mt-4 rounded-xl border border-border bg-destructive/5 p-4">
               <p>
                 <strong className="text-destructive">Watch out:</strong> your tooling maturity is
                 running ahead of your data and process maturity — the classic{' '}

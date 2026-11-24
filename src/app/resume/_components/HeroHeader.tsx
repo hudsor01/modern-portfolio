@@ -39,7 +39,7 @@ export function HeroHeader({
       </h1>
 
       <h2 className="max-w-4xl mx-auto mb-6">
-        <span className="inline-flex items-center rounded-full bg-primary/10 border border-primary/40 px-6 py-3 text-primary font-medium">
+        <span className="inline-flex items-center rounded-full bg-primary/10 border border-border px-6 py-3 text-primary font-medium">
           Revenue Operations Professional
         </span>
       </h2>

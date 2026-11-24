@@ -2,7 +2,7 @@
 
 export function StrategicImpact() {
   return (
-    <div className="bg-primary/10 border border-primary/20 rounded-xl p-8">
+    <div className="bg-primary/10 border border-border rounded-xl p-8">
       <h2 className="typography-h3 mb-6">Revenue Operations Excellence & Strategic Impact</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-card border border-border rounded-2xl p-6 text-center">

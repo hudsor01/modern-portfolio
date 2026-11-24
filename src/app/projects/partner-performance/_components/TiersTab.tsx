@@ -47,7 +47,7 @@ export function TiersTab() {
             {partnerTierPerformance.map((tier, index) => (
               <tr
                 key={index}
-                className="border-b border-border/50 hover:bg-muted/50 transition-colors"
+                className="border-b border-border hover:bg-muted/50 transition-colors"
               >
                 <td className="py-4 px-4 font-medium">{tier.tier}</td>
                 <td className="py-4 px-4">{formatNumber(tier.count)}</td>

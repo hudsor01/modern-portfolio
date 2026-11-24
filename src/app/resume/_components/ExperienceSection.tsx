@@ -39,7 +39,7 @@ export function ExperienceSection() {
                 {(job.current || job.technologies.length > 0) && (
                   <div className="flex flex-wrap gap-2">
                     {job.current && (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide rounded-full text-secondary bg-secondary/10 border border-secondary/20">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide rounded-full text-secondary bg-secondary/10 border border-border">
                         <span aria-hidden="true" className="size-1.5 rounded-full bg-secondary" />
                         Current
                       </span>
