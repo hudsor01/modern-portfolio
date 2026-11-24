@@ -867,8 +867,9 @@ input, textarea, select {
 @utility tracking-wider { letter-spacing: var(--letter-spacing-wider); }
 
 /* Font family utilities - using Next.js loaded fonts */
-/* Running-text links only (A11Y-03). Never on nav, footer lists, cards, buttons,
-   breadcrumbs or badges; no global a rule. Do not combine with another
+/* Running-text links only (A11Y-03). Never on nav, footer lists, cards, buttons
+   or badges (the /tools breadcrumb trail is the one exception: its links must read as links
+   without hover); no global a rule. Do not combine with another
    text-<colour> class in cn() — tailwind-merge treats text-link as a text colour. */
 @utility text-link {
   color: var(--color-primary);

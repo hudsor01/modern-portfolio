@@ -141,7 +141,19 @@ test.describe('tools hub', () => {
       await expect(crumbs).toContainText('Home')
       await expect(crumbs).toContainText('Tools')
       await expect(crumbs.locator('[aria-current="page"]')).toHaveText(tool.name)
-      await expect(crumbs.locator('li')).toHaveText(['Home', '›', 'Tools', '›', tool.name])
+      await expect(crumbs.locator('li')).toHaveText(['Home', 'Tools', tool.name])
+      // Separators are CSS: every item but the first has a '›' ::before, and links are underlined.
+      const seps = await crumbs
+        .locator('li')
+        .evaluateAll((els) => els.map((el) => getComputedStyle(el, '::before').content))
+      expect(seps[0]).toBe('none')
+      for (const c of seps.slice(1)) expect(c).toContain('›')
+      for (const name of ['Home', 'Tools']) {
+        const deco = await crumbs
+          .getByRole('link', { name })
+          .evaluate((el) => getComputedStyle(el).textDecorationLine)
+        expect(deco).toContain('underline')
+      }
 
       const lds = (await jsonLd(page)) as {
         '@type'?: string

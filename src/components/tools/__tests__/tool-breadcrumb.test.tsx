@@ -19,9 +19,7 @@ function parse(html: string) {
     attrs: m[1] ?? '',
     inner: m[2] ?? '',
   }))
-  const sep = items.filter((i) => i.attrs.includes('aria-hidden="true"'))
-  const visible = items.filter((i) => !i.attrs.includes('aria-hidden="true"'))
-  return { items, sep, visible }
+  return { items, visible: items }
 }
 
 describe('ToolBreadcrumb', () => {
@@ -31,23 +29,29 @@ describe('ToolBreadcrumb', () => {
     expect(html).toContain('aria-label="Breadcrumb"')
     expect(html.match(/<nav[^>]*class="[^"]*\bmb-3\b/g)).toHaveLength(1)
     expect(html.match(/<ol[\s>]/g)).toHaveLength(1)
-    const { sep, visible } = parse(html)
+    const { items, visible } = parse(html)
+    expect(items).toHaveLength(3)
+    expect(html).not.toContain('aria-hidden')
+    expect(html).not.toContain('›</')
     expect(visible.map((v) => decode(v.inner))).toEqual(['Home', 'Tools', tool.name])
     expect([...html.matchAll(/<a[^>]*href="([^"]*)"/g)].map((m) => m[1])).toEqual(['/', '/tools'])
     const last = visible[2]
     expect(last?.attrs).toContain('aria-current="page"')
     expect(last?.inner).not.toContain('<a')
-    expect(sep).toHaveLength(2)
-    for (const s of sep) expect(decode(s.inner)).toBe('›')
+    // Separators come from CSS on every item but the first, with empty alt text.
+    expect(visible[0]?.attrs).toContain('not-first:before:')
+    for (const v of visible) expect(v.attrs.replace(/&#x27;/g, "'")).toContain("[content:'›'_/_'']")
+    // Links are underlined via the text-link utility.
+    for (const m of html.matchAll(/<a[^>]*>/g)) expect(m[0]).toContain('text-link')
   })
 
   it('renders the hub trail with Tools as the current page', () => {
     const html = renderToStaticMarkup(<ToolBreadcrumb trail={toolTrail()} />)
-    const { sep, visible } = parse(html)
+    const { items, visible } = parse(html)
+    expect(items).toHaveLength(2)
     expect(visible.map((v) => decode(v.inner))).toEqual(['Home', 'Tools'])
     expect([...html.matchAll(/<a[^>]*href="([^"]*)"/g)].map((m) => m[1])).toEqual(['/'])
     expect(visible[1]?.attrs).toContain('aria-current="page"')
-    expect(sep).toHaveLength(1)
   })
 
   it('keeps JSON-LD items in step with the visible trail', () => {

@@ -36,7 +36,7 @@ describe('/tools hub render', () => {
     const lists = html.match(/<ul[\s>]/g) ?? []
     expect(lists).toHaveLength(1)
     expect(html.match(/<li[\s>]/g)?.length).toBe(
-      tools.length + /* breadcrumb items: Home, sep, Tools */ 3
+      tools.length + /* breadcrumb items: Home, Tools */ 2
     )
   })
 
@@ -62,8 +62,8 @@ describe('/tools hub render', () => {
 describe('/tools breadcrumb', () => {
   it('shows Home > Tools with Tools as current page, not a link', () => {
     const nav = html.match(/<nav aria-label="Breadcrumb".*?<\/nav>/)?.[0] ?? ''
-    expect(decode(nav.replace(/<\/li>/g, '|'))).toBe('Home|›|Tools|')
-    expect(nav).toContain('<li aria-current="page">Tools</li>')
+    expect(decode(nav.replace(/<\/li>/g, '|'))).toBe('Home|Tools|')
+    expect(nav).toMatch(/<li aria-current="page"[^>]*>Tools<\/li>/)
     expect(nav.match(/<a[\s>]/g)).toHaveLength(1)
   })
 

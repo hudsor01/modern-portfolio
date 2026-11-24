@@ -24,15 +24,17 @@ describe.each([
   const tool = getTool(slug)
   const html = renderToStaticMarkup(<Page />)
   const nav = html.match(/<nav aria-label="Breadcrumb".*?<\/nav>/)?.[0] ?? ''
-  const visible = [...nav.matchAll(/<li>(.*?)<\/li>|<li aria-current="page">(.*?)<\/li>/g)].map(
-    (m) => decode(m[1] ?? m[2] ?? '')
-  )
+  const visible = [...nav.matchAll(/<li\b[^>]*>(.*?)<\/li>/g)].map((m) => decode(m[1] ?? ''))
 
   it('shows Home > Tools > tool with links to / and /tools', () => {
     expect(visible).toEqual(['Home', 'Tools', tool.name])
     const hrefs = [...nav.matchAll(/<a[^>]*href="([^"]+)"/g)].map((m) => m[1])
     expect(hrefs).toEqual(['/', '/tools'])
-    expect(nav).toContain(`<li aria-current="page">${decode(tool.name)}</li>`)
+    expect(nav).toMatch(
+      new RegExp(
+        `<li aria-current="page"[^>]*>${decode(tool.name).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</li>`
+      )
+    )
   })
 
   it('JSON-LD equals the visible trail', () => {
