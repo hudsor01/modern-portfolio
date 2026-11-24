@@ -21,7 +21,7 @@ export function OverviewTab() {
       <div className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out">
         <ChartHeader
           title="Attribution Model Performance Comparison"
-          description="ML-driven data attribution vs traditional models showing 92.4% accuracy improvement"
+          description="ML-driven data attribution vs traditional models, reaching 92.4% accuracy"
           headingLevel={2}
           className="mb-4"
         />

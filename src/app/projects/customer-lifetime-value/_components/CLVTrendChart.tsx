@@ -114,8 +114,8 @@ const CLVTrendChart = memo(function CLVTrendChart() {
         </ComposedChart>
       </ResponsiveContainer>
       <p className="mt-4 text-center italic">
-        CLV trend analysis with 24-month forecasting and 95% confidence intervals using BTYD
-        predictive modeling
+        CLV trend analysis with 24-month forecasting and confidence intervals using BTYD predictive
+        modeling
       </p>
     </div>
   )

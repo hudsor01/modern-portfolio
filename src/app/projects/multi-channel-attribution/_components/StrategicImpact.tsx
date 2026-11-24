@@ -12,9 +12,7 @@ export function StrategicImpact() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-card border border-border rounded-2xl p-4 text-center">
           <div className="typography-h3 text-accent mb-1">92.4%</div>
-          <div className="typography-small text-muted-foreground">
-            ML Attribution Accuracy (Traditional: 65-75%)
-          </div>
+          <div className="typography-small text-muted-foreground">ML Attribution Accuracy</div>
         </div>
         <div className="bg-card border border-border rounded-2xl p-4 text-center">
           <div className="typography-h3 text-primary mb-1">

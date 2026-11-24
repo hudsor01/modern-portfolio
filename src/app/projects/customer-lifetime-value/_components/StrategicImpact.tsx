@@ -13,7 +13,7 @@ export function StrategicImpact() {
         <div className="bg-card border border-border rounded-2xl p-4 text-center">
           <div className="typography-h3 text-secondary mb-1">94.3%</div>
           <div className="typography-small text-muted-foreground">
-            Machine Learning Prediction Accuracy (Industry: 75-85%)
+            Machine Learning Prediction Accuracy
           </div>
         </div>
         <div className="bg-card border border-border rounded-2xl p-4 text-center">
