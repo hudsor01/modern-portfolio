@@ -40,6 +40,27 @@ describe('navConfig', () => {
     )
   })
 
+  it('mainNav order is Home, About, Projects, Blog, Tools, Resume, Contact', () => {
+    expect(navConfig.mainNav.map((n) => n.title)).toEqual([
+      'Home',
+      'About',
+      'Projects',
+      'Blog',
+      'Tools',
+      'Resume',
+      'Contact',
+    ])
+    expect(navConfig.mainNav.map((n) => n.href)).toEqual([
+      '/',
+      '/about',
+      '/projects',
+      '/blog',
+      '/tools',
+      '/resume',
+      '/contact',
+    ])
+  })
+
   it('every mainNav entry has title and href', () => {
     for (const n of navConfig.mainNav) {
       expect(n.title).toBeTruthy()

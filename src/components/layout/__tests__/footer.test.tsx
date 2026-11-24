@@ -42,4 +42,23 @@ describe('Footer headings', () => {
       expect(h?.classList.contains('font-sans')).toBe(true)
     }
   })
+
+  it('Explore lists About, Projects, Tools, Resume, Contact; Revenue Operations keeps both tools', () => {
+    const { container } = render(<Footer />)
+    const pairs = (label: string) =>
+      Array.from(container.querySelectorAll(`nav[aria-label="${label}"] a`)).map((a) => [
+        a.textContent,
+        a.getAttribute('href'),
+      ])
+    expect(pairs('Explore')).toEqual([
+      ['About', '/about'],
+      ['Projects', '/projects'],
+      ['Tools', '/tools'],
+      ['Resume', '/resume'],
+      ['Contact', '/contact'],
+    ])
+    const revops = pairs('Revenue Operations').map(([, href]) => href)
+    expect(revops).toContain('/tools/pipeline-coverage-calculator')
+    expect(revops).toContain('/tools/revops-maturity-scorecard')
+  })
 })

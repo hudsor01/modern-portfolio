@@ -3,6 +3,7 @@ import { createContextLogger } from '@/lib/logger'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 import { showcaseProjects } from '@/data/projects'
+import { tools, TOOLS_HUB_PATH, TOOLS_HUB_LAST_UPDATED } from '@/data/tools'
 import { PRIVACY_POLICY_LAST_UPDATED } from '@/app/privacy/policy-date'
 import blogRetiredSlugs from '@/data/blog-retired-slugs.json'
 import blogSlugRenames from '@/data/blog-slug-renames.json'
@@ -113,17 +114,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/tools/pipeline-coverage-calculator`,
-      lastModified: staticLastModified,
+      // Own date, not STATIC_LAST_MODIFIED: lastmod tracks the hub content.
+      url: `${baseUrl}${TOOLS_HUB_PATH}`,
+      lastModified: `${TOOLS_HUB_LAST_UPDATED}T00:00:00.000Z`,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
-    {
-      url: `${baseUrl}/tools/revops-maturity-scorecard`,
+    ...tools.map((tool) => ({
+      url: `${baseUrl}${tool.href}`,
       lastModified: staticLastModified,
-      changeFrequency: 'monthly',
+      changeFrequency: 'monthly' as const,
       priority: 0.8,
-    },
+    })),
     {
       // Own date, not STATIC_LAST_MODIFIED: lastmod tracks the policy text.
       url: `${baseUrl}/privacy`,

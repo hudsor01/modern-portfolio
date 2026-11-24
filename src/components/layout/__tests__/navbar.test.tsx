@@ -80,6 +80,8 @@ describe('Navbar — header landmark and semantics', () => {
   it.each([
     ['/blog/some-post', 'Blog'],
     ['/projects/revenue-kpi', 'Projects'],
+    ['/tools/pipeline-coverage-calculator', 'Tools'],
+    ['/tools/revops-maturity-scorecard', 'Tools'],
   ])('marks the parent section with aria-current="true" on %s', async (route, title) => {
     vi.resetModules()
     vi.doMock('next/navigation', () => ({ usePathname: () => route }))
@@ -93,6 +95,29 @@ describe('Navbar — header landmark and semantics', () => {
     for (const a of container.querySelectorAll('a[href="/"]')) {
       expect(a.hasAttribute('aria-current')).toBe(false)
     }
+  })
+
+  it('marks Tools aria-current="page" on /tools', async () => {
+    vi.resetModules()
+    vi.doMock('next/navigation', () => ({ usePathname: () => '/tools' }))
+    const { Navbar: ToolsNavbar } = await import('../navbar')
+    const { container } = render(<ToolsNavbar />)
+    const links = container.querySelectorAll('a[href="/tools"]')
+    expect(links.length).toBe(2)
+    for (const a of links) expect(a.getAttribute('aria-current')).toBe('page')
+    for (const a of container.querySelectorAll('a[href="/"]')) {
+      expect(a.hasAttribute('aria-current')).toBe(false)
+    }
+  })
+
+  it('does not mark Tools current on /toolsx', async () => {
+    vi.resetModules()
+    vi.doMock('next/navigation', () => ({ usePathname: () => '/toolsx' }))
+    const { Navbar: OtherNavbar } = await import('../navbar')
+    const { container } = render(<OtherNavbar />)
+    const links = container.querySelectorAll('a[href="/tools"]')
+    expect(links.length).toBe(2)
+    for (const a of links) expect(a.hasAttribute('aria-current')).toBe(false)
   })
 
   it('desktop links use md/lg sizing and no weight class; no w-32 or absolute centring', () => {
@@ -120,6 +145,7 @@ describe('Navbar', () => {
     expect(screen.getAllByRole('link', { name: 'About' }).length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByRole('link', { name: 'Projects' }).length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByRole('link', { name: 'Blog' }).length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByRole('link', { name: 'Tools' }).length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByRole('link', { name: 'Resume' }).length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByRole('link', { name: 'Contact' }).length).toBeGreaterThanOrEqual(1)
   })

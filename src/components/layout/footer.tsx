@@ -15,6 +15,7 @@ const FOOTER_SECTIONS: ReadonlyArray<{
     links: [
       { label: 'About', href: '/about' },
       { label: 'Projects', href: '/projects' },
+      { label: 'Tools', href: '/tools' },
       { label: 'Resume', href: '/resume' },
       { label: 'Contact', href: '/contact' },
     ],
