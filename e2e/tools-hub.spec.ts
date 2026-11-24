@@ -2,7 +2,7 @@ import { existsSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { backgroundAlpha, borderContrast } from './_helpers/contrast'
-import { getOnly } from './_helpers/settle'
+import { getOnly, settleTransitions } from './_helpers/settle'
 
 /**
  * UX-01 hub contract: /tools layout at 390/768/1440, card click-through, icon
@@ -283,6 +283,7 @@ test.describe('scorecard geometry', () => {
     const labels = group.locator('label')
     const selected = labels.nth(4)
     await expect(selected.getByRole('radio')).toBeChecked()
+    await settleTransitions(page)
     const sel = await borderContrast(selected)
     const unsel = await borderContrast(labels.nth(0))
     expect(sel.border).not.toBe(unsel.border)
