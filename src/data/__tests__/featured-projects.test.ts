@@ -5,6 +5,9 @@ import { describe, expect, it } from 'vitest'
 import { showcaseProjects } from '../projects'
 import { getFeaturedProjects } from '@/lib/projects'
 
+/** Case studies that have no metadata.json. */
+const SLUGS_WITHOUT_METADATA = ['partnership-program-implementation']
+
 const EXPECTED_FEATURED = [
   'revenue-kpi',
   'forecast-pipeline-intelligence',
@@ -63,7 +66,8 @@ describe('featured projects (single source: the flag)', () => {
       .filter((d) => d.isDirectory())
       .map((d) => join(root, d.name, 'metadata.json'))
       .filter((f) => existsSync(f))
-    expect(files.length).toBeGreaterThanOrEqual(13)
+    // Every project carries one except the listed exceptions, so the scan cannot go vacuous.
+    expect(files.length).toBe(showcaseProjects.length - SLUGS_WITHOUT_METADATA.length)
     const offenders = files.filter((f) =>
       Object.hasOwn(JSON.parse(readFileSync(f, 'utf8')), 'featured')
     )

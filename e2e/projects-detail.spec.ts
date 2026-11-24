@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test'
+import { PROJECT_SLUGS_ON_DISK } from './_helpers/project-slugs'
 
 /**
  * Project Detail Pages E2E Tests
  *
- * Parametric coverage across all 14 project subroutes (note: the original
+ * Parametric coverage across every project subroute (note: the original
  * task brief said "13 slugs" but partnership-program-implementation is a
  * separate top-level route in addition to the other 13 — list both).
  * For each slug:
@@ -20,22 +21,7 @@ import { test, expect } from '@playwright/test'
  *   Click a non-default timeframe and assert the URL `?tab=` updates.
  */
 
-const PROJECT_SLUGS = [
-  'cac-unit-economics',
-  'churn-retention',
-  'commission-optimization',
-  'customer-lifetime-value',
-  'deal-funnel',
-  'forecast-pipeline-intelligence',
-  'lead-attribution',
-  'multi-channel-attribution',
-  'partner-performance',
-  'partnership-program-implementation',
-  'quota-territory-management',
-  'revenue-kpi',
-  'revenue-operations-center',
-  'sales-enablement',
-] as const
+const PROJECT_SLUGS = PROJECT_SLUGS_ON_DISK
 
 const TAB_SWITCHER_SLUGS = [
   'cac-unit-economics',
@@ -277,7 +263,7 @@ test.describe('Project social cards in page metadata (UI-06)', () => {
     testInfo,
   ) => {
     test.skip(testInfo.project.name !== 'chromium', 'checked once, on chromium')
-    expect(PROJECT_SLUGS).toHaveLength(14)
+    expect(PROJECT_SLUGS.length).toBeGreaterThan(0)
     const unescape = (s: string) => s.replace(/&amp;/g, '&')
     for (const slug of PROJECT_SLUGS) {
       const html = await (await request.get(`/projects/${slug}`)).text()

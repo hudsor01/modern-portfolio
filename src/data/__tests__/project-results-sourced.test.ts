@@ -96,7 +96,7 @@ describe('sourcing detector', () => {
 })
 
 describe('sourcing non-vacuity', () => {
-  it('discovers exactly the 14 showcase slugs', () => {
+  it('discovers exactly the showcase slugs', () => {
     expect(projectSlugDirs()).toEqual(showcaseProjects.map((p) => p.slug).sort())
   })
   it('NARRATIVE_CONSTANTS holds exactly the churn entry, found verbatim', () => {

@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
+import { PROJECT_COUNT, PROJECT_SLUGS_ON_DISK } from './_helpers/project-slugs'
 
 /**
  * Projects Browsing E2E Tests
@@ -316,22 +317,7 @@ const FEATURED_ORDER = [
   '/projects/sales-enablement',
 ]
 
-const ALL_PROJECT_SLUGS = [
-  'revenue-kpi',
-  'churn-retention',
-  'deal-funnel',
-  'lead-attribution',
-  'cac-unit-economics',
-  'commission-optimization',
-  'customer-lifetime-value',
-  'forecast-pipeline-intelligence',
-  'multi-channel-attribution',
-  'partner-performance',
-  'partnership-program-implementation',
-  'quota-territory-management',
-  'revenue-operations-center',
-  'sales-enablement',
-]
+const ALL_PROJECT_SLUGS = PROJECT_SLUGS_ON_DISK
 
 const PREVIEW_LABEL = /^(Results chart|Key metrics)\. .+\.$/
 
@@ -340,14 +326,14 @@ test.describe('Projects showcase (UI-05, UI-06)', () => {
     test.skip(testInfo.project.name !== 'chromium', 'checked once, on chromium')
   })
 
-  test('/projects renders 14 photo-free cards with previews, chips and 4 featured badges', async ({
+  test('/projects renders one photo-free card per project with previews, chips and 4 featured badges', async ({
     page,
   }) => {
     await page.goto('/projects')
     await page.waitForLoadState('networkidle')
 
     const cards = page.locator('main article')
-    await expect(cards).toHaveCount(14)
+    await expect(cards).toHaveCount(PROJECT_COUNT)
     await expect(page.locator('main article img')).toHaveCount(0)
 
     const badges = page.locator('main [data-slot="featured-badge"]')
@@ -357,7 +343,7 @@ test.describe('Projects showcase (UI-05, UI-06)', () => {
       .locator('main a[href^="/projects/"]')
       .filter({ has: page.locator('article') })
       .evaluateAll((els) => els.map((el) => el.getAttribute('href')))
-    expect(cardHrefs).toHaveLength(14)
+    expect(cardHrefs).toHaveLength(PROJECT_COUNT)
     expect(cardHrefs.slice(0, 4)).toEqual(FEATURED_ORDER)
 
     const labels = await cards.evaluateAll((els) =>
@@ -366,16 +352,16 @@ test.describe('Projects showcase (UI-05, UI-06)', () => {
         return { count: previews.length, label: previews[0]?.getAttribute('aria-label') ?? '' }
       }),
     )
-    expect(labels).toHaveLength(14)
+    expect(labels).toHaveLength(PROJECT_COUNT)
     for (const { count, label } of labels) {
       expect(count).toBe(1)
       expect(label).toMatch(PREVIEW_LABEL)
     }
 
     const chips = page.locator('main [data-slot="client-chip"]')
-    await expect(chips).toHaveCount(14)
+    await expect(chips).toHaveCount(PROJECT_COUNT)
     const chipTexts = (await chips.allInnerTexts()).map((t) => t.trim())
-    expect(chipTexts).toHaveLength(14)
+    expect(chipTexts).toHaveLength(PROJECT_COUNT)
     for (const text of chipTexts) {
       expect(text.length, `chip "${text}" length`).toBeGreaterThanOrEqual(8)
       expect(text.length, `chip "${text}" length`).toBeLessThanOrEqual(36)
@@ -411,8 +397,8 @@ test.describe('Project OG cards (UI-06)', () => {
     test.skip(testInfo.project.name !== 'chromium', 'checked once, on chromium')
   })
 
-  test('all 14 project cards render as 1200x630 PNG', async ({ request }) => {
-    expect(ALL_PROJECT_SLUGS).toHaveLength(14)
+  test('all project cards render as 1200x630 PNG', async ({ request }) => {
+    expect(ALL_PROJECT_SLUGS.length).toBeGreaterThan(0)
     for (const slug of ALL_PROJECT_SLUGS) {
       const res = await request.get(`/api/og?project=${slug}&title=Fixture`)
       expect(res.status(), slug).toBe(200)

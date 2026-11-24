@@ -283,9 +283,8 @@ describe('catalog detector', () => {
 })
 
 describe('preview catalog (top level)', () => {
-  it('the table covers exactly the 14 showcase slugs', () => {
+  it('the table covers exactly the showcase slugs', () => {
     expect(Object.keys(EXPECTED).sort()).toEqual(showcaseProjects.map((s) => s.slug).sort())
-    expect(showcaseProjects).toHaveLength(14)
   })
   it('partnership-program-implementation is the only metrics-fallback project and none is empty', () => {
     const kinds = showcaseProjects.map((s) => [s.slug, buildProjectPreview(s).kind] as const)

@@ -3,6 +3,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { bodyCopy } from './body-copy'
+import { showcaseProjects } from '../projects'
 import { projectSlugDirs, unsourced, words } from './sourcing'
 
 const PROJECTS_DIR = join(process.cwd(), 'src/app/projects')
@@ -108,8 +109,8 @@ const MIN_FILES = 79
 const MIN_FIGURES = 190
 
 describe('body copy non-vacuity', () => {
-  it('covers the 14 project slugs', () => {
-    expect(SLUGS).toHaveLength(14)
+  it('covers every catalog project slug', () => {
+    expect(SLUGS).toEqual(showcaseProjects.map((p) => p.slug).sort())
   })
 
   // Measured 84 files / 201 figures; the floors sit ~5% below so a silent drop fails.

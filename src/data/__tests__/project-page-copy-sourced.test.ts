@@ -2,6 +2,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { showcaseProjects } from '../projects'
 import { projectSlugDirs, renderFormatters, unsourced, words } from './sourcing'
 
 const PROJECTS_DIR = join(process.cwd(), 'src/app/projects')
@@ -282,8 +283,8 @@ const SLUGS = projectSlugDirs()
 const COPY = SLUGS.map(loadPageCopy)
 
 describe('page copy non-vacuity', () => {
-  it('covers the 14 project slugs', () => {
-    expect(SLUGS).toHaveLength(14)
+  it('covers every catalog project slug', () => {
+    expect(SLUGS).toEqual(showcaseProjects.map((p) => p.slug).sort())
     expect(existsSync(PROJECTS_DIR)).toBe(true)
   })
 
@@ -296,7 +297,7 @@ describe('page copy non-vacuity', () => {
     }
   })
 
-  it('at least 40 figures are checked across the 14 slugs', () => {
+  it('at least 40 figures are checked across every slug', () => {
     let n = 0
     for (const c of COPY) {
       for (const [where, text] of regions(c))

@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
 import { showcaseProjects } from '../projects'
+import { projectSlugDirs } from './sourcing'
 
 const OLD_VALUES = [
   'TechCorp Inc.',
@@ -26,7 +27,6 @@ function clientLabelErrors(value: string): string[] {
   const dots = value.split('·').length - 1
   if (dots > 1) errors.push('more than one separator')
   if (dots === 1 && !/^[^·]+ · [^·]+$/.test(value)) errors.push('separator must be " · "')
-  if (value.length > 0 && value[0] !== value[0]?.toUpperCase()) errors.push('not capitalised')
   if (value.length > 0 && !/^[A-Z]/.test(value)) errors.push('must start with an uppercase letter')
   if (/\b(Inc|Co|LLC|Corp|Ltd)\b\.?/i.test(value)) errors.push('looks like a company name')
   if (OLD_VALUES.includes(value)) errors.push('old client value')
@@ -51,17 +51,17 @@ describe('client label detector', () => {
 })
 
 describe('client labels', () => {
-  it('checks exactly 14 projects', () => {
-    expect(showcaseProjects).toHaveLength(14)
+  it('checks every project on disk', () => {
+    expect(showcaseProjects.map((p) => p.slug).sort()).toEqual(projectSlugDirs())
   })
   for (const p of showcaseProjects) {
     it(`client label: ${p.slug}`, () => {
       expect(clientLabelErrors(p.client).join(', '), `client "${p.client}"`).toBe('')
     })
   }
-  it('all 14 labels are distinct', () => {
+  it('all labels are distinct', () => {
     const labels = showcaseProjects.map((p) => p.client)
-    expect(new Set(labels).size).toBe(14)
+    expect(new Set(labels).size).toBe(labels.length)
   })
   it('no old value remains', () => {
     const left = showcaseProjects.filter((p) => OLD_VALUES.includes(p.client)).map((p) => p.client)
