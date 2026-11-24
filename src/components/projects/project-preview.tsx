@@ -3,6 +3,7 @@ import {
   buildProjectPreview,
   type PreviewRow,
   type PreviewSource,
+  type ProjectPreviewModel,
   previewAriaLabel,
 } from '@/lib/project-preview'
 
@@ -18,6 +19,10 @@ type Size = 'card' | 'hero' | 'thumb'
 interface ProjectPreviewProps {
   project: PreviewSource & { title: string }
   size: Size
+  /** Pre-built model; pass it when the caller already needs it so it is built once. */
+  model?: ProjectPreviewModel
+  /** Id for the `role="img"` element, so a parent can reference its label with `aria-describedby`. */
+  id?: string
 }
 
 /**
@@ -93,7 +98,7 @@ function RowBars({ row, className }: { row: PreviewRow; className: string }) {
   )
 }
 
-function Thumb({ model }: { model: ReturnType<typeof buildProjectPreview> }) {
+function Thumb({ model }: { model: ProjectPreviewModel }) {
   if (model.kind === 'empty') {
     return (
       <div
@@ -178,8 +183,8 @@ function Thumb({ model }: { model: ReturnType<typeof buildProjectPreview> }) {
   )
 }
 
-export function ProjectPreview({ project, size }: ProjectPreviewProps) {
-  const model = buildProjectPreview(project)
+export function ProjectPreview({ project, size, model: given, id }: ProjectPreviewProps) {
+  const model = given ?? buildProjectPreview(project)
 
   if (size === 'thumb') return <Thumb model={model} />
 
@@ -213,6 +218,7 @@ export function ProjectPreview({ project, size }: ProjectPreviewProps) {
     )
     return (
       <div
+        id={id}
         role="img"
         aria-label={label}
         data-slot="project-preview"
@@ -261,6 +267,7 @@ export function ProjectPreview({ project, size }: ProjectPreviewProps) {
     <>
       {!hero && model.hasPaired ? <ProjectPreviewLegend variant="card" /> : null}
       <div
+        id={id}
         role="img"
         aria-label={label}
         data-slot="project-preview"

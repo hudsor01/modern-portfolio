@@ -29,11 +29,23 @@ export const ProjectCard = React.memo(function ProjectCard({
   // metrics row would then repeat the same figures, so show it only beside a
   // results chart (each fact once per card).
   const hasMetrics = Array.isArray(project.displayMetrics) && project.displayMetrics.length > 0
-  const showMetricsRow = hasMetrics && buildProjectPreview(project).kind !== 'metrics'
+  const model = buildProjectPreview(project)
+  const showMetricsRow = hasMetrics && model.kind !== 'metrics'
+
+  // The link is named by the title alone; the chart's figures are its description.
+  // Referencing the preview's own label (not a copy) keeps one source for the text.
+  const uid = React.useId()
+  const titleId = `${uid}-title`
+  const previewId = `${uid}-preview`
 
   return (
     <div className="animate-fade-in-up" style={{ animationDelay: `${index * 80}ms` }}>
-      <Link href={`/projects/${project.slug || project.id}`} className="group block h-full">
+      <Link
+        href={`/projects/${project.slug || project.id}`}
+        aria-labelledby={titleId}
+        aria-describedby={model.kind === 'empty' ? undefined : previewId}
+        className="group block h-full"
+      >
         <article className="relative h-full bg-card border border-border rounded-2xl overflow-hidden shadow-sm transition-all duration-500 ease-out hover:border-primary/40 hover:shadow-lg hover:-translate-y-1">
           {/* Featured Badge - Premium Design */}
           {project.featured && (
@@ -48,7 +60,7 @@ export const ProjectCard = React.memo(function ProjectCard({
 
           {/* Image Section */}
           <div data-slot="project-media" className="relative aspect-16/10 overflow-hidden bg-muted">
-            <ProjectPreview size="card" project={project} />
+            <ProjectPreview size="card" project={project} model={model} id={previewId} />
 
             {/* Arrow indicator */}
             <div className="absolute top-3 right-3 size-8 flex items-center justify-center bg-card/95 backdrop-blur-sm border border-border rounded-full shadow-sm opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-0 transition-all duration-500">
@@ -74,7 +86,9 @@ export const ProjectCard = React.memo(function ProjectCard({
             )}
 
             {/* Title - Better contrast */}
-            <h3 className="mb-3 transition-colors duration-300 ease-out">{project.title}</h3>
+            <h3 id={titleId} className="mb-3 transition-colors duration-300 ease-out">
+              {project.title}
+            </h3>
 
             {/* Description - Improved contrast */}
             <p className="line-clamp-2 mb-5">{project.description}</p>

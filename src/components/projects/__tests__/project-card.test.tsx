@@ -106,6 +106,38 @@ describe('ProjectCard', () => {
     expect(container.querySelector('img')).toBeNull()
   })
 
+  it('names the link by the title and describes it with the preview label', () => {
+    const { container } = render(<ProjectCard project={baseProject} />)
+    const link = screen.getByRole('link', { name: baseProject.title })
+    const title = container.querySelector('h3') as HTMLElement
+    const preview = container.querySelector('[role="img"]') as HTMLElement
+    expect(link.getAttribute('aria-labelledby')).toBe(title.id)
+    expect(title.id).not.toBe('')
+    expect(link.getAttribute('aria-describedby')).toBe(preview.id)
+    expect(preview.id).not.toBe('')
+    // The accessible name stays the title: no chart label, chip, description or tags in it.
+    expect(link.getAttribute('aria-label')).toBeNull()
+  })
+
+  it('gives every card its own label and description ids', () => {
+    const { container } = render(
+      <>
+        <ProjectCard project={baseProject} />
+        <ProjectCard project={{ ...baseProject, slug: 'other', id: 'other' }} />
+      </>
+    )
+    const ids = [...container.querySelectorAll('h3, [role="img"]')].map((e) => e.id)
+    expect(new Set(ids).size).toBe(4)
+  })
+
+  it('does not describe the link when the preview is empty', () => {
+    const p = { ...baseProject, results: null, displayMetrics: null } as unknown as Project
+    render(<ProjectCard project={p} />)
+    expect(
+      screen.getByRole('link', { name: baseProject.title }).getAttribute('aria-describedby')
+    ).toBeNull()
+  })
+
   it('falls back to key metrics when only numeric displayMetrics exist', () => {
     const p = { ...baseProject, results: null } as unknown as Project
     const { container } = render(<ProjectCard project={p} />)
