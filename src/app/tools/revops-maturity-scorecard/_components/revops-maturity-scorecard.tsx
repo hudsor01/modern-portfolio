@@ -17,6 +17,8 @@ const SCALE = [
   { value: 5, label: 'Fully' },
 ] as const
 
+const SCALE_KEY = SCALE.map((o) => `${o.value} ${o.label}`).join(' · ')
+
 const DEFAULT = 3
 
 /** Pillar score (1–5) → bar fill class. Weakest pillars read warmer. */
@@ -48,14 +50,15 @@ export function RevOpsMaturityScorecard() {
             key={pillar.id}
             className="bg-card rounded-2xl p-6 sm:p-8 border border-border shadow-sm"
           >
-            <legend className="px-1">
+            <legend className="float-left w-full p-0">
               <span className="block font-display text-xl font-semibold text-foreground">
                 {pillar.label}
               </span>
               <span className="block text-sm text-muted-foreground mt-0.5">{pillar.blurb}</span>
             </legend>
 
-            <div className="mt-6 space-y-6">
+            <div className="clear-both pt-6 space-y-6">
+              <p className="text-xs text-muted-foreground sm:hidden">{SCALE_KEY}</p>
               {QUESTIONS.filter((q) => q.pillar === pillar.id).map((q) => (
                 <div key={q.id}>
                   <p id={`${groupName}-${q.id}-label`} className="mb-2.5">
@@ -81,12 +84,15 @@ export function RevOpsMaturityScorecard() {
                             type="radio"
                             name={`${groupName}-${q.id}`}
                             value={opt.value}
+                            aria-label={`${opt.value} ${opt.label}`}
                             checked={selected}
                             onChange={() => setAnswer(q.id, opt.value)}
                             className="sr-only"
                           />
                           <span className="text-base font-semibold leading-none">{opt.value}</span>
-                          <span className="mt-1 text-xs leading-tight">{opt.label}</span>
+                          <span className="mt-1 hidden text-xs leading-tight sm:block">
+                            {opt.label}
+                          </span>
                         </label>
                       )
                     })}
