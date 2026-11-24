@@ -41,7 +41,12 @@ test.describe('/projects/deal-funnel charts', () => {
     const [working = 0, won = 0, lost = 0] = widths
     expect(working).toBeGreaterThan(won)
     expect(won).toBeGreaterThan(lost)
-    expect(lost).toBeGreaterThan(working * 0.25)
+    // True proportions: Closed Won is 470/1,140 of Working. Closed Lost (90) would be
+    // under 8% wide, so it sits at the CSS minimum width instead, and the caption says so.
+    expect(won / working).toBeCloseTo(470 / 1140, 2)
+    expect(lost).toBeGreaterThan(working * 0.0789)
+    await expect(page.getByTestId('funnel-caption')).toBeVisible()
+    await expect(page.getByTestId('funnel-caption')).toContainText('proportional to deal counts')
   })
 
   test('each chart card has exactly one header', async ({ page }) => {
