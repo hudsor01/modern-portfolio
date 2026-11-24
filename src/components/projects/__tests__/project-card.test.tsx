@@ -115,6 +115,20 @@ describe('ProjectCard', () => {
     expect(container.querySelector('img')).toBeNull()
   })
 
+  it('does not repeat the key metrics below a key-metrics preview', () => {
+    const p = { ...baseProject, results: [] } as unknown as Project
+    const { container } = render(<ProjectCard project={p} />)
+    // Each figure appears once: in the preview tiles, not again in a metrics row.
+    expect(screen.getAllByText('$4.8M')).toHaveLength(1)
+    expect(screen.getAllByText('432%')).toHaveLength(1)
+    expect(container.querySelector('[data-slot="metrics-row"]')).toBeNull()
+  })
+
+  it('keeps the metrics row beside a results-chart preview', () => {
+    const { container } = render(<ProjectCard project={baseProject} />)
+    expect(container.querySelector('[data-slot="metrics-row"]')).not.toBeNull()
+  })
+
   it('keeps stable geometry hooks', () => {
     const { container } = render(<ProjectCard project={{ ...baseProject, featured: true }} />)
     const media = container.querySelector('[data-slot="project-media"]')

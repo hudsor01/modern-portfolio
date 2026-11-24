@@ -3,6 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { ProjectPreview } from '@/components/projects/project-preview'
+import { buildProjectPreview } from '@/lib/project-preview'
 import type { Project } from '@/types/project'
 import { ArrowUpRight, Sparkles } from 'lucide-react'
 
@@ -23,6 +24,12 @@ export const ProjectCard = React.memo(function ProjectCard({
 
   // Get technologies from tags (normalized field name)
   const technologies = project.tags || []
+
+  // A project with no plottable result rows previews its key metrics; the
+  // metrics row would then repeat the same figures, so show it only beside a
+  // results chart (each fact once per card).
+  const hasMetrics = Array.isArray(project.displayMetrics) && project.displayMetrics.length > 0
+  const showMetricsRow = hasMetrics && buildProjectPreview(project).kind !== 'metrics'
 
   return (
     <div className="animate-fade-in-up" style={{ animationDelay: `${index * 80}ms` }}>
@@ -73,8 +80,11 @@ export const ProjectCard = React.memo(function ProjectCard({
             <p className="line-clamp-2 mb-5">{project.description}</p>
 
             {/* Metrics Row - Text only, no icons */}
-            {Array.isArray(project.displayMetrics) && project.displayMetrics.length > 0 && (
-              <div className="flex flex-wrap gap-x-4 gap-y-2 py-4 border-t border-border mt-auto">
+            {showMetricsRow && (
+              <div
+                data-slot="metrics-row"
+                className="flex flex-wrap gap-x-4 gap-y-2 py-4 border-t border-border mt-auto"
+              >
                 {(
                   project.displayMetrics as Array<{
                     label: string
@@ -97,7 +107,7 @@ export const ProjectCard = React.memo(function ProjectCard({
             {/* Technologies - Works for all projects */}
             {technologies.length > 0 && (
               <div
-                className={`flex flex-wrap gap-2 ${Array.isArray(project.displayMetrics) && project.displayMetrics.length > 0 ? 'mt-4 pt-4 border-t border-border' : 'mt-auto pt-4 border-t border-border'}`}
+                className={`flex flex-wrap gap-2 ${showMetricsRow ? 'mt-4 pt-4 border-t border-border' : 'mt-auto pt-4 border-t border-border'}`}
               >
                 {technologies.slice(0, 4).map((tech, i) => (
                   <span
