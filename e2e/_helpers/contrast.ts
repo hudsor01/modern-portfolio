@@ -56,3 +56,17 @@ export async function borderContrast(
     }
   })
 }
+
+/** Alpha (0..1) of an element's computed background colour, whatever colour space it is written in. */
+export async function backgroundAlpha(el: Locator): Promise<number> {
+  return el.evaluate((node) => {
+    const canvas = document.createElement('canvas')
+    canvas.width = canvas.height = 1
+    const ctx = canvas.getContext('2d', { willReadFrequently: true })
+    if (!ctx) throw new Error('2d canvas unavailable')
+    ctx.clearRect(0, 0, 1, 1)
+    ctx.fillStyle = getComputedStyle(node).backgroundColor
+    ctx.fillRect(0, 0, 1, 1)
+    return (ctx.getImageData(0, 0, 1, 1).data[3] ?? 0) / 255
+  })
+}

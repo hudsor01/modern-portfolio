@@ -1,7 +1,7 @@
 import { existsSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { expect, test } from '@playwright/test'
-import { borderContrast } from './_helpers/contrast'
+import { backgroundAlpha, borderContrast } from './_helpers/contrast'
 import { getOnly } from './_helpers/settle'
 
 /**
@@ -69,15 +69,23 @@ test.describe('tools hub', () => {
     await page.goto('/tools')
     const articles = page.locator('main article')
     await expect(articles).toHaveCount(TOOLS.length)
-    const boxes = await articles.evaluateAll((els) =>
-      els.map((el) => {
-        const r = el.getBoundingClientRect()
-        return { left: r.left, width: r.width }
-      }),
-    )
+    // One column: every card fills the list's content box and shares the same left edge.
+    const { boxes, contentWidth } = await articles.evaluateAll((els) => {
+      const list = els[0]?.closest('ul') as HTMLElement
+      const cs = getComputedStyle(list)
+      const content =
+        list.clientWidth - Number.parseFloat(cs.paddingLeft) - Number.parseFloat(cs.paddingRight)
+      return {
+        contentWidth: content,
+        boxes: els.map((el) => {
+          const r = el.getBoundingClientRect()
+          return { left: r.left, width: r.width }
+        }),
+      }
+    })
     for (const b of boxes) {
-      expect(Math.abs(b.width - 348)).toBeLessThanOrEqual(1)
-      expect(Math.abs(b.left - boxes[0].left)).toBeLessThanOrEqual(1)
+      expect(Math.abs(b.width - contentWidth)).toBeLessThanOrEqual(1)
+      expect(Math.abs(b.left - (boxes[0]?.left ?? 0))).toBeLessThanOrEqual(1)
     }
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -94,16 +102,29 @@ test.describe('tools hub', () => {
     await page.goto('/tools')
     const articles = page.locator('main article')
     await expect(articles).toHaveCount(TOOLS.length)
-    const boxes = await articles.evaluateAll((els) =>
-      els.map((el) => {
-        const r = el.getBoundingClientRect()
-        return { top: r.top, left: r.left, width: r.width, height: r.height }
-      }),
-    )
-    expect(Math.abs(boxes[0].top - boxes[1].top)).toBeLessThanOrEqual(1)
-    expect(boxes[1].left).toBeGreaterThan(boxes[0].left)
-    for (const b of boxes) expect(Math.abs(b.width - 352.5)).toBeLessThanOrEqual(1)
-    expect(Math.abs(boxes[0].height - boxes[1].height)).toBeLessThanOrEqual(1)
+    const { boxes, contentWidth } = await articles.evaluateAll((els) => {
+      const list = els[0]?.closest('ul') as HTMLElement
+      const cs = getComputedStyle(list)
+      const content =
+        list.clientWidth - Number.parseFloat(cs.paddingLeft) - Number.parseFloat(cs.paddingRight)
+      return {
+        contentWidth: content,
+        boxes: els.map((el) => {
+          const r = el.getBoundingClientRect()
+          return { top: r.top, left: r.left, right: r.right, width: r.width, height: r.height }
+        }),
+      }
+    })
+    const [a, b] = boxes
+    if (!a || !b) throw new Error('expected two cards')
+    expect(Math.abs(a.top - b.top)).toBeLessThanOrEqual(1)
+    expect(b.left).toBeGreaterThan(a.left)
+    // Two equal columns that together with the gutter fill the list's content box.
+    expect(Math.abs(a.width - b.width)).toBeLessThanOrEqual(1)
+    const gutter = b.left - a.right
+    expect(gutter).toBeGreaterThanOrEqual(0)
+    expect(Math.abs(a.width + gutter + b.width - contentWidth)).toBeLessThanOrEqual(1)
+    expect(Math.abs(a.height - b.height)).toBeLessThanOrEqual(1)
   })
 
   test('icon tile is hoverable and the whole card is the link', async ({ page }) => {
@@ -224,14 +245,20 @@ test.describe('scorecard geometry', () => {
     await expect(page.locator('fieldset').first()).toBeVisible()
     const opts = await page.locator('fieldset label').evaluateAll((els) =>
       els.map((el) => {
-        const lh = Number.parseFloat(getComputedStyle(el).lineHeight) || 16
+        // Count rendered text lines from the rects of the text itself (distinct line tops),
+        // not height / line-height, so font swaps and padding changes cannot skew it.
+        const lineTops = new Set<number>()
+        for (const child of Array.from(el.children)) {
+          if ((child as HTMLElement).offsetParent === null) continue
+          const range = document.createRange()
+          range.selectNodeContents(child)
+          for (const rect of Array.from(range.getClientRects())) {
+            if (rect.width > 0) lineTops.add(Math.round(rect.top / 4))
+          }
+        }
         return {
           overflow: el.scrollWidth - el.clientWidth,
-          lines: Math.max(
-            ...Array.from(el.children).map(
-              (c) => (c as HTMLElement).getBoundingClientRect().height / lh,
-            ),
-          ),
+          lines: lineTops.size,
           word: Array.from(el.children).some(
             (c) => (c as HTMLElement).offsetParent !== null && /[a-z]/i.test(c.textContent ?? ''),
           ),
@@ -307,8 +334,7 @@ test.describe('scorecard geometry', () => {
     await page.getByRole('button', { name: 'Open menu' }).click()
     const menu = page.locator('#mobile-menu')
     await expect(menu).toBeVisible()
-    const bg = await menu.evaluate((el) => getComputedStyle(el).backgroundColor)
-    expect(bg).not.toMatch(/\/\s*0?\.\d+\)|rgba\(.*,\s*0?\.\d+\)/)
+    expect(await backgroundAlpha(menu)).toBe(1)
     const filter = await menu.evaluate((el) => getComputedStyle(el).backdropFilter)
     expect(filter === 'none' || filter === '').toBe(true)
   })
