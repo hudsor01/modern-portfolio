@@ -32,13 +32,30 @@ export function stageShares(stages: FunnelStage[]) {
   }))
 }
 
+/** Narrowest a bar may be (percent of the chart width) so its count and label stay legible. */
+export const MIN_BAR_WIDTH_PERCENT = 28
+
+/**
+ * Bar width as a percent of the chart width, proportional to each stage's
+ * count (largest stage = 100%) and never narrower than MIN_BAR_WIDTH_PERCENT.
+ * The stages are outcomes, not sequential steps, so width encodes size only.
+ */
+export function barWidths(stages: FunnelStage[]): number[] {
+  const max = Math.max(1, ...stages.map((stage) => stage.count))
+  return stages.map((stage) => {
+    const ratio = Math.min(1, Math.max(0, stage.count) / max)
+    return MIN_BAR_WIDTH_PERCENT + (100 - MIN_BAR_WIDTH_PERCENT) * ratio
+  })
+}
+
 /**
  * Funnel drawn in HTML, not an SVG viewBox, so its text keeps real pixel sizes
- * at every width (a scaled SVG shrank the labels to ~8px at 390). The bars
- * narrow stage by stage and size to their content, with no reserved empty box.
+ * at every width (a scaled SVG shrank the labels to ~8px at 390). Each bar's
+ * width is proportional to its stage count, with a floor for legibility.
  */
 export default function DealStageFunnelChart({ stages }: DealStageFunnelChartProps) {
   const data = stageShares(stages)
+  const widths = barWidths(stages)
   if (data.length === 0) {
     return (
       <div className="h-40 flex items-center justify-center">
@@ -54,7 +71,7 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
         data-testid="funnel"
       >
         {data.map((stage, index) => {
-          const width = 100 - index * (60 / Math.max(data.length, 2))
+          const width = widths[index] ?? MIN_BAR_WIDTH_PERCENT
           return (
             <li key={stage.stage} className="flex w-full justify-center" data-testid="funnel-stage">
               <div
