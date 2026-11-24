@@ -45,7 +45,7 @@ export function ConversionChart({ stageConversions }: ConversionChartProps) {
         headingLevel={2}
         className="mb-6"
       />
-      <div className="h-72 w-full flex-1" data-testid="conversion-chart">
+      <div className="h-72 w-full shrink-0" data-testid="conversion-chart">
         <ResponsiveContainer width="100%" height="100%">
           <RechartsBarChart
             data={stageConversions}

@@ -32,6 +32,18 @@ test.describe('/about page', () => {
     await expect(page.getByRole('link', { name: /view resume/i }).first()).toBeVisible()
   })
 
+  test('count-up stats settle on the canonical figures after scrolling into view', async ({
+    page,
+  }) => {
+    // Mid-count values ($2.8M+, 252%, ...) are an animation frame, not a defect: the
+    // counters must end on the canonical stats.ts values.
+    await page.getByRole('region', { name: /impact metrics/i }).scrollIntoViewIfNeeded()
+    const region = page.getByRole('region', { name: /impact metrics/i })
+    for (const figure of ['$4.8M+', '432%', '2,217%', '10+']) {
+      await expect(region.getByText(figure, { exact: true })).toBeVisible({ timeout: 15_000 })
+    }
+  })
+
   test('shows core stats once each on the page', async ({ page }) => {
     // Stats grid is the canonical location for these numbers; expertise narrative
     // should not restate them. Asserting once-and-only-once locks in the dedupe.
