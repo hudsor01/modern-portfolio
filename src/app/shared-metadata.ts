@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { canonicalUrl, SITE_ORIGIN, OG_IMAGE_SIZE, ogImageUrl } from '@/lib/absolute-url'
 import { PROJECT_COUNT } from '@/data/projects'
+import { REVENUE_IMPACT } from '@/lib/stats'
 
 export const BRAND = 'Richard Hudson'
 
@@ -37,7 +38,7 @@ export function stripBrandSuffix(title: string): string {
   return trimmed
 }
 
-const SITE_DESCRIPTION = `Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. $4.8M+ revenue impact across ${PROJECT_COUNT} projects.`
+const SITE_DESCRIPTION = `Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. ${REVENUE_IMPACT} revenue impact across ${PROJECT_COUNT} projects.`
 
 export const baseMetadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),

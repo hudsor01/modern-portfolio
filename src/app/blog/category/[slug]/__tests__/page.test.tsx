@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReactElement, ReactNode } from 'react'
-import { buildOgCoverUrl } from '@/lib/blog-list'
+import { buildOgCoverUrl, CATEGORY_CHIP_CLASSES } from '@/lib/blog-list'
 
 const mocks = vi.hoisted(() => ({ findFirst: vi.fn() }))
 
@@ -77,14 +77,22 @@ describe('category page cards', () => {
     expect(withPosts.extras).toHaveProperty('contentHead')
 
     const images: string[] = []
+    const variants: unknown[] = []
+    const chipClasses: string[] = []
     const chips: string[] = []
     const descriptions: string[] = []
     const titleClasses: string[] = []
     let hasBadge = false
     walk(tree, (el) => {
-      if (el.type === BlogFeaturedImage) images.push(String(el.props.src))
+      if (el.type === BlogFeaturedImage) {
+        images.push(String(el.props.src))
+        variants.push(el.props.fallbackVariant)
+      }
       const cls = String(el.props.className ?? '')
-      if (el.type === 'span' && cls.includes('bg-primary/8')) chips.push(String(el.props.children))
+      if (el.type === 'span' && cls.includes('bg-primary/8')) {
+        chips.push(String(el.props.children))
+        chipClasses.push(cls)
+      }
       if (typeof el.type === 'function' && el.type.name === 'CardTitle') titleClasses.push(cls)
       if (typeof el.type === 'function' && el.type.name === 'CardDescription')
         descriptions.push(String(el.props.children))
@@ -92,6 +100,9 @@ describe('category page cards', () => {
     })
     expect(images).toEqual([COVER, buildOgCoverUrl('Post 2', 'Revenue Operations')])
     expect(chips).toEqual(['Revenue Operations', 'Revenue Operations'])
+    // Same 16:10 card cover and chip look as the /blog cards.
+    expect(variants).toEqual(['card', 'card'])
+    expect(chipClasses.every((c) => c.startsWith(CATEGORY_CHIP_CLASSES))).toBe(true)
     expect(descriptions[0]).toBe('A normal excerpt.')
     expect(descriptions[1]).toContain('Forecast accuracy collapses')
     expect(descriptions[1]).not.toContain('National Guard')

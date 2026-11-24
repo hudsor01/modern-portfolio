@@ -16,7 +16,7 @@ import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 import { brandTitle } from '@/app/shared-metadata'
 import { BLOG_CONTENT_HEAD_EXTRAS } from '@/lib/blog-content-head'
 import { resolveExcerpt } from '@/lib/blog-excerpt'
-import { resolveListCovers } from '@/lib/blog-list'
+import { CATEGORY_CHIP_CLASSES, resolveListCovers } from '@/lib/blog-list'
 import { formatDate } from '@/lib/data-formatters'
 import { DecorativeBlob } from '@/components/ui/decorative-blob'
 
@@ -214,6 +214,7 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                               alt={post.title}
                               postTitle={post.title}
                               postCategory={category.name}
+                              fallbackVariant="card"
                               fill
                               className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -221,9 +222,7 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                           </div>
                         )}
                         <CardHeader>
-                          <span className="inline-flex items-center px-2.5 py-1 mb-2 text-xs font-semibold tracking-wide uppercase text-primary bg-primary/8 border border-border rounded-md">
-                            {category.name}
-                          </span>
+                          <span className={`${CATEGORY_CHIP_CLASSES} mb-2`}>{category.name}</span>
                           <CardTitle as="h2" className="line-clamp-3 transition-colors">
                             {post.title}
                           </CardTitle>

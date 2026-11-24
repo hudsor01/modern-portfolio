@@ -4,6 +4,7 @@
  */
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
+import { STAT_LABELS, STAT_VALUES } from '@/lib/stats'
 
 export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
   const jsonLd = {
@@ -12,8 +13,7 @@ export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
     name: 'Richard Hudson',
     alternateName: 'Richard W. Hudson Jr.',
     jobTitle: 'Senior Revenue Operations Specialist',
-    description:
-      'Senior Revenue Operations Specialist in Dallas-Fort Worth with proven expertise in sales automation, partnership program development, and data-driven growth strategies. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. $4.8M+ revenue generated, 432% transaction growth achieved.',
+    description: `Senior Revenue Operations Specialist in Dallas-Fort Worth with proven expertise in sales automation, partnership program development, and data-driven growth strategies. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. ${STAT_VALUES.revenue} revenue impact, ${STAT_VALUES['transaction-growth']} transaction growth.`,
     url: SITE_ORIGIN,
     image: `${SITE_ORIGIN}/images/richard.jpg`,
     sameAs: [
@@ -95,11 +95,9 @@ export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
       'Sales Analytics',
       'Marketing Attribution',
     ],
-    award: [
-      '$4.8M+ Revenue Generated',
-      '432% Transaction Growth Achieved',
-      '2,217% Network Expansion',
-    ],
+    award: (['revenue', 'transaction-growth', 'network-growth'] as const).map(
+      (key) => `${STAT_VALUES[key]} ${STAT_LABELS[key]}`
+    ),
     alumniOf: [
       {
         '@type': 'CollegeOrUniversity',

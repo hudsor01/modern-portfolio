@@ -64,6 +64,41 @@ describe('project chart header style', () => {
     expect(offenders).toEqual([])
   })
 
+  it('every recharts file in a project page is headed by ChartHeader', () => {
+    // A chart file passes if it renders a wrapper itself, or if every file that
+    // imports it (static or `dynamic(() => import(...))`) does. ChartWrapper is
+    // ChartContainer under another name (lazy-charts.tsx), and ChartContainer
+    // renders ChartHeader.
+    const lazyCharts = readFileSync(join(ROOT, 'src/components/charts/lazy-charts.tsx'), 'utf8')
+    expect(lazyCharts).toContain(
+      "import { ChartContainer as ChartCard } from '@/components/ui/chart-container'"
+    )
+    expect(lazyCharts).toMatch(/export function ChartWrapper[\s\S]*<ChartCard\b/)
+    const container = readFileSync(join(ROOT, 'src/components/ui/chart-container.tsx'), 'utf8')
+    expect(container).toMatch(/<ChartHeader\b/)
+
+    const WRAPS = /<(ChartHeader|ChartContainer|ChartWrapper)\b/
+    const sources = new Map(rels.map((rel) => [rel, readFileSync(join(ROOT, rel), 'utf8')]))
+    const importersOf = (rel: string) => {
+      const base = rel.replace(/^.*\//, '').replace(/\.tsx$/, '')
+      const dir = rel.replace(/\/[^/]+$/, '')
+      return rels.filter((other) => {
+        if (other === rel || !other.startsWith(`${dir}/`)) return false
+        return new RegExp(`(from\\s+|import\\(\\s*)['"]\\./${base}['"]`).test(
+          sources.get(other) ?? ''
+        )
+      })
+    }
+    const charts = rels.filter((rel) => /from ['"]recharts['"]/.test(sources.get(rel) ?? ''))
+    expect(charts.length).toBeGreaterThan(20)
+    const unheaded = charts.filter((rel) => {
+      if (WRAPS.test(sources.get(rel) ?? '')) return false
+      const importers = importersOf(rel)
+      return importers.length === 0 || !importers.every((i) => WRAPS.test(sources.get(i) ?? ''))
+    })
+    expect(unheaded).toEqual([])
+  })
+
   it('revenue-kpi charts do not use CardTitle', () => {
     const offenders = rels
       .filter((rel) => rel.includes('revenue-kpi/_components/'))

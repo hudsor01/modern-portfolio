@@ -3,130 +3,22 @@ import { describe, it, expect } from 'vitest'
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 import { navConfig } from '@/lib/site'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
+import type { ReactElement } from 'react'
+import { PersonJsonLd } from '@/components/seo/json-ld/person-json-ld'
+import { STAT_LABELS, STAT_VALUES } from '@/lib/stats'
 
 /**
- * Build the Person JSON-LD object matching person-json-ld.tsx.
- * Extracted here so we can test the schema data directly without
- * rendering React server components.
+ * The Person JSON-LD the real component emits, parsed back from its script
+ * body, so this suite cannot drift from person-json-ld.tsx.
  */
-function buildPersonJsonLd() {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    name: 'Richard Hudson',
-    alternateName: 'Richard W. Hudson Jr.',
-    jobTitle: 'Senior Revenue Operations Specialist',
-    description:
-      'Senior Revenue Operations Specialist in Dallas-Fort Worth with proven expertise in sales automation, partnership program development, and data-driven growth strategies. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. $4.8M+ revenue generated, 432% transaction growth achieved.',
-    url: 'https://richardwhudsonjr.com',
-    image: 'https://richardwhudsonjr.com/images/richard.jpg',
-    sameAs: [
-      'https://www.linkedin.com/in/hudsor01',
-      'https://github.com/hudsor01',
-      'https://twitter.com/hudsor01',
-    ],
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: 'Dallas',
-      addressRegion: 'TX',
-      addressCountry: 'US',
-    },
-    email: 'hudsor01@icloud.com',
-    telephone: '+1-214-566-0279',
-    workLocation: {
-      '@type': 'Place',
-      name: 'Dallas-Fort Worth Metroplex',
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: 'Dallas-Fort Worth',
-        addressRegion: 'TX',
-        addressCountry: 'US',
-      },
-    },
-    worksFor: {
-      '@type': 'Organization',
-      name: 'Hudson Digital Solutions',
-      url: 'https://richardwhudsonjr.com',
-    },
-    hasCredential: [
-      {
-        '@type': 'EducationalOccupationalCredential',
-        name: 'SalesLoft Admin Certification Level 1',
-        credentialCategory: 'Professional Certification',
-        recognizedBy: {
-          '@type': 'Organization',
-          name: 'SalesLoft',
-        },
-      },
-      {
-        '@type': 'EducationalOccupationalCredential',
-        name: 'SalesLoft Admin Certification Level 2',
-        credentialCategory: 'Professional Certification',
-        recognizedBy: {
-          '@type': 'Organization',
-          name: 'SalesLoft',
-        },
-      },
-      {
-        '@type': 'EducationalOccupationalCredential',
-        name: 'HubSpot Revenue Operations Certification',
-        credentialCategory: 'Professional Certification',
-        recognizedBy: {
-          '@type': 'Organization',
-          name: 'HubSpot Academy',
-        },
-      },
-    ],
-    knowsAbout: [
-      'Revenue Operations',
-      'Sales Operations',
-      'Marketing Automation',
-      'Business Intelligence',
-      'Data Analytics',
-      'CRM Optimization',
-      'Partnership Program Development',
-      'Sales Process Automation',
-      'Commission Management',
-      'Lead Attribution Analysis',
-      'Customer Lifecycle Management',
-      'Revenue Forecasting',
-      'Salesforce Administration',
-      'HubSpot Implementation',
-      'SalesLoft Configuration',
-      'Process Automation',
-      'Business Intelligence Dashboards',
-      'Data Visualization',
-      'Sales Analytics',
-      'Marketing Attribution',
-    ],
-    award: [
-      '$4.8M+ Revenue Generated',
-      '432% Transaction Growth Achieved',
-      '2,217% Network Expansion',
-    ],
-    alumniOf: [
-      {
-        '@type': 'CollegeOrUniversity',
-        name: 'The University of Texas at Dallas',
-        url: 'https://www.utdallas.edu',
-      },
-    ],
-    memberOf: [
-      {
-        '@type': 'ProfessionalService',
-        name: 'Revenue Operations Community',
-      },
-      {
-        '@type': 'ProfessionalService',
-        name: 'Sales Operations Society',
-      },
-    ],
-  }
+function personJsonLd(): { html: string; data: Record<string, unknown> } {
+  const el = PersonJsonLd({}) as ReactElement<{ dangerouslySetInnerHTML: { __html: string } }>
+  const html = el.props.dangerouslySetInnerHTML.__html
+  return { html, data: JSON.parse(html) }
 }
 
 describe('PersonJsonLd schema', () => {
-  const personData = buildPersonJsonLd()
-  const stringified = safeJsonLdStringify(personData)
+  const { html: stringified, data: personData } = personJsonLd()
 
   it('contains the real phone number +1-214-566-0279', () => {
     expect(stringified).toContain('"telephone":"+1-214-566-0279"')
@@ -137,10 +29,19 @@ describe('PersonJsonLd schema', () => {
     expect(stringified).toContain('"@context":"https://schema.org"')
   })
 
-  it('contains all three awards', () => {
-    expect(stringified).toContain('$4.8M+ Revenue Generated')
-    expect(stringified).toContain('432% Transaction Growth Achieved')
-    expect(stringified).toContain('2,217% Network Expansion')
+  it('lists the three headline stats with their canonical labels', () => {
+    expect(personData.award).toEqual(
+      (['revenue', 'transaction-growth', 'network-growth'] as const).map(
+        (key) => `${STAT_VALUES[key]} ${STAT_LABELS[key]}`
+      )
+    )
+  })
+
+  it('states the headline stats from stats.ts in its description', () => {
+    expect(personData.description).toContain(`${STAT_VALUES.revenue} revenue impact`)
+    expect(personData.description).toContain(
+      `${STAT_VALUES['transaction-growth']} transaction growth`
+    )
   })
 
   it('contains all three credentials', () => {
@@ -165,8 +66,9 @@ describe('PersonJsonLd schema', () => {
 
   it('contains alumniOf with University of Texas at Dallas', () => {
     expect(personData).toHaveProperty('alumniOf')
-    expect(Array.isArray(personData.alumniOf)).toBe(true)
-    expect(personData.alumniOf[0]).toMatchObject({
+    const alumniOf = personData.alumniOf as unknown[]
+    expect(Array.isArray(alumniOf)).toBe(true)
+    expect(alumniOf[0]).toMatchObject({
       '@type': 'CollegeOrUniversity',
       name: 'The University of Texas at Dallas',
       url: 'https://www.utdallas.edu',

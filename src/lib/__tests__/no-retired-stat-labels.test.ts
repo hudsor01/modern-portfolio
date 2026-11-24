@@ -9,6 +9,10 @@ const FILES = [
   'src/components/projects/project-stats.tsx',
   'src/components/projects/project-cta-section.tsx',
   'src/components/about/experience-stats.tsx',
+  // Invisible copy counts too: meta descriptions and structured data.
+  'src/app/shared-metadata.ts',
+  'src/app/page.tsx',
+  'src/components/seo/json-ld/person-json-ld.tsx',
 ]
 
 const RETIRED = [
