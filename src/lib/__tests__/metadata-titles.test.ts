@@ -85,6 +85,35 @@ describe('title builder', () => {
     expect(images[0]?.alt).toBe('X')
   })
 
+  it('ogProject switches the card to the generated project preview', () => {
+    const m = generateMetadata({
+      title: 'X',
+      description: 'd',
+      path: '/projects/x',
+      ogProject: 'revenue-kpi',
+    })
+    const images = m.openGraph?.images as { url: string; alt?: string }[]
+    expect(images[0]?.url).toContain('project=revenue-kpi')
+    expect(images[0]?.alt).toBe('X results preview')
+    const tw = (m.twitter?.images ?? []) as string[]
+    expect(tw[0]).toContain('project=revenue-kpi')
+    const custom = generateMetadata({
+      title: 'X',
+      description: 'd',
+      path: '/projects/x',
+      ogProject: 'revenue-kpi',
+      ogAlt: 'Y',
+    })
+    const ci = (custom.openGraph?.images ?? []) as { alt?: string }[]
+    expect(ci[0]?.alt).toBe('Y')
+  })
+
+  it('ogImageUrl omits project unless given', async () => {
+    const { ogImageUrl } = await import('@/lib/absolute-url')
+    expect(ogImageUrl({ title: 't' })).not.toContain('project=')
+    expect(ogImageUrl({ title: 't', project: 'revenue-kpi' })).toContain('project=revenue-kpi')
+  })
+
   it('absoluteTitle bypasses the template', () => {
     const t = 'Richard Hudson | RevOps Professional in Dallas-Fort Worth'
     const m = generateMetadata({ title: t, description: 'd', path: '/', absoluteTitle: true })

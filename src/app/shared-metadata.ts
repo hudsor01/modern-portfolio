@@ -149,6 +149,8 @@ export interface PageMetadataOptions {
   ogAlt?: string
   /** Bypass the root '%s | Richard Hudson' template; use for the home page whose title already leads with the brand. */
   absoluteTitle?: boolean
+  /** Catalog project slug; switches the card to the generated results preview. */
+  ogProject?: string
   /** OpenGraph type. Defaults to `'website'`; case studies pass `'article'`. */
   ogType?: 'website' | 'article'
   keywords?: string[]
@@ -187,6 +189,7 @@ export function generateMetadata(
     ogTitle,
     subtitle,
     ogAlt,
+    ogProject,
     ogType = 'website',
     keywords,
     additional,
@@ -195,7 +198,7 @@ export function generateMetadata(
   // Root canonical is the bare origin (no trailing slash) — `canonicalUrl('/')`
   // would yield '…com/', which Search Console treats as a distinct URL.
   const pageUrl = opts.path === '/' ? SITE_ORIGIN : canonicalUrl(opts.path)
-  const cardUrl = ogImageUrl({ title: ogTitle ?? title, subtitle })
+  const cardUrl = ogImageUrl({ title: ogTitle ?? title, subtitle, project: ogProject })
   // Absolute titles (home) already carry the brand in their own shape.
   const shareTitle = absoluteTitle ? title : brandTitle(title)
 
@@ -217,7 +220,7 @@ export function generateMetadata(
         {
           url: cardUrl,
           ...OG_IMAGE_SIZE,
-          alt: ogAlt ?? title,
+          alt: ogAlt ?? (ogProject ? `${title} results preview` : title),
         },
       ],
     },
