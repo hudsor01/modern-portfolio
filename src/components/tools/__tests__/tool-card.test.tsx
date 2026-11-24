@@ -31,7 +31,8 @@ describe.each(tools.map((t) => [t.name, t] as const))('ToolCard %s', (_n, tool) 
     expect(a).not.toBeNull()
     const tag = /<a\b[^>]*>/.exec(html)![0]
     expect(tag).toContain(`href="${tool.href}"`)
-    expect(decode(a![1]!)).toBe(`Open tool: ${tool.name}`)
+    expect(decode(a![1]!)).toBe('Open tool')
+    expect(decode(/aria-label="([^"]*)"/.exec(tag)![1]!)).toBe(`Open tool: ${tool.name}`)
     const cls = classOf(tag)
     for (const c of [
       'after:absolute',

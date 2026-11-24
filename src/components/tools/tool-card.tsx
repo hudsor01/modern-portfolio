@@ -32,9 +32,10 @@ export function ToolCard({ tool }: { tool: ToolEntry }) {
       </dl>
       <Link
         href={tool.href}
+        aria-label={`Open tool: ${tool.name}`}
         className="mt-auto inline-flex min-h-[44px] items-center justify-center gap-1.5 self-start rounded-lg bg-primary px-4 py-2 text-base font-semibold text-primary-foreground shadow-sm transition-all duration-300 ease-out hover:bg-primary/95 hover:shadow-md after:absolute after:inset-0 after:content-['']"
       >
-        Open tool<span className="sr-only">: {tool.name}</span>
+        Open tool
         <ArrowRight
           className="size-4 transition-transform duration-300 group-hover:translate-x-0.5"
           aria-hidden="true"

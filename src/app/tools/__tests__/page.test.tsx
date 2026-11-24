@@ -47,7 +47,7 @@ describe('/tools hub render', () => {
       const re = new RegExp(`<a[^>]*href="${tool.href}"[^>]*>(.*?)</a>`)
       const m = html.match(re)
       expect(m).toBeTruthy()
-      expect(decode(m?.[1] ?? '')).toBe(`Open tool: ${tool.name}`)
+      expect(m?.[0] ?? '').toContain(`aria-label="Open tool: ${tool.name}"`)
     }
   })
 
