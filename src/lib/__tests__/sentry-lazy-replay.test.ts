@@ -21,33 +21,120 @@ vi.mock('@sentry/nextjs', () => sentry)
 const root = process.cwd()
 const read = (rel: string) => readFileSync(join(root, rel), 'utf8')
 /**
- * Source with comments removed (block, whole-line and trailing `//`), leaving string
- * and template literals intact, so a guard cannot be satisfied or tripped by prose in a
- * comment such as "// never call replayIntegration here".
+ * Source with comments removed (block, whole-line and trailing `//`), leaving string,
+ * template and regex literals intact, so a guard cannot be satisfied or tripped by prose
+ * in a comment such as "// never call replayIntegration here".
+ *
+ * Deliberately conservative rather than a full tokenizer. A quote is a string opener
+ * only in code context: an apostrophe glued to a word, `)` or `}` ("don't", `{n}'s`) is
+ * JSX or prose text, and an unterminated quoted string ends at the line break. A `/` is
+ * a regex literal only after an operator, an opening bracket or a keyword, never after
+ * a word, `)`, `}` or `<` (so `a / b`, `</p>` and `<A b={c} />` are not regexes). `//`
+ * right after `:` is a URL, not a comment. Strings and regexes are kept verbatim, so a
+ * misjudged boundary can only affect comment detection, never delete code.
  */
 const strip = (src: string): string => {
-  let out = ''
   let i = 0
-  while (i < src.length) {
-    const ch = src.charAt(i)
-    const next = src.charAt(i + 1)
-    if (ch === '"' || ch === "'" || ch === '`') {
-      let j = i + 1
-      while (j < src.length && src.charAt(j) !== ch) j += src.charAt(j) === '\\' ? 2 : 1
-      out += src.slice(i, j + 1)
-      i = j + 1
-    } else if (ch === '/' && next === '*') {
-      const end = src.indexOf('*/', i + 2)
-      i = end === -1 ? src.length : end + 2
-    } else if (ch === '/' && next === '/') {
-      const end = src.indexOf('\n', i)
-      i = end === -1 ? src.length : end
-    } else {
-      out += ch
-      i += 1
+  const scanQuoted = (quote: string): string => {
+    let j = i + 1
+    while (j < src.length && src.charAt(j) !== quote && src.charAt(j) !== '\n') {
+      j += src.charAt(j) === '\\' ? 2 : 1
     }
+    const end = src.charAt(j) === quote ? j + 1 : j
+    const text = src.slice(i, end)
+    i = end
+    return text
   }
-  return out
+  const scanRegex = (): string | null => {
+    let j = i + 1
+    let inClass = false
+    while (j < src.length && src.charAt(j) !== '\n') {
+      const c = src.charAt(j)
+      if (c === '\\') j += 2
+      else if (c === '[') {
+        inClass = true
+        j += 1
+      } else if (c === ']') {
+        inClass = false
+        j += 1
+      } else if (c === '/' && !inClass) {
+        j += 1
+        while (/[a-z]/i.test(src.charAt(j))) j += 1
+        const text = src.slice(i, j)
+        i = j
+        return text
+      } else j += 1
+    }
+    return null
+  }
+  const canStartRegex = (out: string): boolean => {
+    const before = out.trimEnd()
+    if (before === '') return true
+    return (
+      /[(,=:[!&|?{;+\-*%~^]$/.test(before) || /\b(return|typeof|case|void|delete)$/.test(before)
+    )
+  }
+  const scanTemplate = (): string => {
+    let out = '`'
+    i += 1
+    while (i < src.length) {
+      const c = src.charAt(i)
+      if (c === '\\') {
+        out += src.slice(i, i + 2)
+        i += 2
+      } else if (c === '`') {
+        i += 1
+        return `${out}\``
+      } else if (c === '$' && src.charAt(i + 1) === '{') {
+        i += 2
+        out += `\${${scanCode(true)}`
+      } else {
+        out += c
+        i += 1
+      }
+    }
+    return out
+  }
+  // inBrace: stop after the `}` that closes a template `${`, returning it as part of the text.
+  const scanCode = (inBrace: boolean): string => {
+    let out = ''
+    let depth = 0
+    while (i < src.length) {
+      const ch = src.charAt(i)
+      const next = src.charAt(i + 1)
+      const prev = src.charAt(i - 1)
+      if ((ch === '"' || ch === "'") && !/[\w$)}]/.test(prev)) {
+        out += scanQuoted(ch)
+      } else if (ch === '`') {
+        out += scanTemplate()
+      } else if (ch === '/' && next === '*') {
+        const end = src.indexOf('*/', i + 2)
+        i = end === -1 ? src.length : end + 2
+      } else if (ch === '/' && next === '/' && prev !== ':') {
+        const end = src.indexOf('\n', i)
+        i = end === -1 ? src.length : end
+      } else if (ch === '/' && canStartRegex(out)) {
+        const regex = scanRegex()
+        if (regex === null) {
+          out += ch
+          i += 1
+        } else out += regex
+      } else {
+        if (inBrace && ch === '{') depth += 1
+        if (inBrace && ch === '}') {
+          if (depth === 0) {
+            i += 1
+            return `${out}}`
+          }
+          depth -= 1
+        }
+        out += ch
+        i += 1
+      }
+    }
+    return out
+  }
+  return scanCode(false)
 }
 
 function fakeWin(opts: {
@@ -192,6 +279,63 @@ describe('strip (comment remover used by the source guards)', () => {
     expect(out).toContain("'https://x.test/a'")
     expect(out).toContain('"// not a comment"')
     expect(out).toContain('`/* nor this */`')
+  })
+
+  it('treats an apostrophe in JSX text as text, so a later require is still seen', () => {
+    const src = "const a = <p>don't stop</p>\nconst m = require('@sentry/x')\n"
+    expect(strip(src)).toBe(src)
+    expect(strip(src)).toMatch(/require\(\s*['"]@sentry\//)
+  })
+
+  it('does not let a JSX apostrophe turn a later comment into code (or code into a string)', () => {
+    const src = "<p>don't</p>\n// require('@sentry/x')\nconst ok = 1\nrequire('@sentry/y')\n"
+    const out = strip(src)
+    expect(out).not.toContain("'@sentry/x'")
+    expect(out).toContain("require('@sentry/y')")
+    const plural = strip("<p>the dogs' bowls</p> /* require('@sentry/x') */ const k = 2")
+    expect(plural).not.toContain('@sentry/x')
+    expect(plural).toContain('const k = 2')
+  })
+
+  it('still opens a string after a keyword or operator, and strips a comment after it', () => {
+    const out = strip("import a from 'x' // require('@sentry/x')\nconst s = cond ? 'a' : \"b\"")
+    expect(out).toContain("from 'x'")
+    expect(out).not.toContain('@sentry/x')
+    expect(out).toContain('cond ? \'a\' : "b"')
+  })
+
+  it('ends an unterminated quote at the line break', () => {
+    expect(strip("const a = 'oops\nconst b = 1 // gone")).toBe("const a = 'oops\nconst b = 1 ")
+  })
+
+  it('keeps regex literals whole, including quotes, // and classes inside them', () => {
+    const quote = strip("const r = /'/g\n// require('@sentry/x')\nreal()")
+    expect(quote).toContain("/'/g")
+    expect(quote).not.toContain('@sentry/x')
+    expect(quote).toContain('real()')
+    expect(strip('const u = /https?:\\/\\/x/i // require("@sentry/x")')).toBe(
+      'const u = /https?:\\/\\/x/i '
+    )
+    expect(strip("const c = /[/]'/ /* x */ + 1")).toBe("const c = /[/]'/  + 1")
+  })
+
+  it('does not mistake division, JSX closing tags or URLs for regex or comments', () => {
+    expect(strip('const q = a / b // c\nconst z = x / y')).toBe('const q = a / b \nconst z = x / y')
+    expect(strip('<A b={c} /> // d\n<p>x</p>')).toBe('<A b={c} /> \n<p>x</p>')
+    expect(strip('See http://x.test // trailing')).toBe('See http://x.test ')
+  })
+
+  it('follows nested template literals and substitutions', () => {
+    // `@{` stands for the substitution opener, which lint flags inside plain strings.
+    const sub = (text: string) => text.replaceAll('@{', `${'$'}{`)
+    const cases = [
+      [
+        "const t = `a @{ '`' + `b @{c}` } // kept` // dropped require('@sentry/x')",
+        "const t = `a @{ '`' + `b @{c}` } // kept` ",
+      ],
+      ['const t = `@{ { a: 1 }.a }` /* x */ + 1', 'const t = `@{ { a: 1 }.a }`  + 1'],
+    ] as const
+    for (const [input, expected] of cases) expect(strip(sub(input))).toBe(sub(expected))
   })
 
   it('does not let a comment mentioning replayIntegration satisfy or trip a guard', () => {
