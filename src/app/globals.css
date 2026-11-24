@@ -325,7 +325,7 @@ label[for],
   --color-popover-foreground: oklch(0.18 0.02 250);
   --color-border: oklch(0.88 0.005 250);
   --color-border-hover: oklch(0.35 0.12 250 / 0.4);
-  --color-input: oklch(0.995 0.002 250);
+  --color-input: oklch(0.88 0.005 250);
   --color-ring: oklch(0.35 0.12 250);
 
   --color-chart-1: oklch(0.35 0.12 250);
