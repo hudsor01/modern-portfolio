@@ -101,11 +101,21 @@ export function Navbar() {
             valid IDREF (WAI-ARIA disclosure pattern). The native `hidden`
             attribute removes it from layout, the a11y tree, and tab
             order when collapsed. */}
+        {isMobileMenuOpen && (
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-hidden="true"
+            data-testid="mobile-menu-scrim"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden absolute inset-x-0 top-16 h-dvh -z-10 cursor-default bg-foreground/40"
+          />
+        )}
         <nav
           id="mobile-menu"
           aria-label="Main menu"
           hidden={!isMobileMenuOpen}
-          className="md:hidden absolute top-16 left-0 right-0 bg-card border-b border-border shadow-md"
+          className="md:hidden absolute top-16 left-0 right-0 bg-card border-b border-border shadow-lg"
         >
           <div className="px-4 py-4 space-y-2">
             {navItems.map((item, index) => {

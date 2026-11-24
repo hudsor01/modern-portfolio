@@ -31,6 +31,13 @@ const empty = { title: 'P', results: null, displayMetrics: null }
 describe('ProjectPreview', () => {
   beforeEach(() => cleanup())
 
+  it('card row labels wrap instead of truncating mid-word (A-14)', () => {
+    const { container } = render(<ProjectPreview project={paired} size="card" />)
+    const label = container.querySelector('[data-slot="preview-row"] span') as HTMLElement
+    expect(label.className).not.toContain('truncate')
+    expect(label.className).toContain('break-words')
+  })
+
   it('card rows: role, label, shapes only', () => {
     const { container } = render(<ProjectPreview project={paired} size="card" />)
     const root = container.querySelector('[data-slot="project-preview"]') as HTMLElement

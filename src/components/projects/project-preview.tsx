@@ -246,7 +246,9 @@ export function ProjectPreview({ project, size, model: given, id }: ProjectPrevi
                 : 'flex items-baseline justify-between gap-2 text-xs'
             }
           >
-            <span className="min-w-0 truncate font-normal text-muted-foreground">{row.metric}</span>
+            <span className="min-w-0 break-words font-normal text-muted-foreground">
+              {row.metric}
+            </span>
             <span
               className={
                 hero

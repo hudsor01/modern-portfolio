@@ -46,7 +46,7 @@ export const ProjectCard = React.memo(function ProjectCard({
         aria-describedby={model.kind === 'empty' ? undefined : previewId}
         className="group block h-full"
       >
-        <article className="relative h-full bg-card border border-border rounded-2xl overflow-hidden shadow-sm transition-all duration-500 ease-out hover:border-primary/40 hover:shadow-lg hover:-translate-y-1">
+        <article className="relative flex h-full flex-col bg-card border border-border rounded-2xl overflow-hidden shadow-sm transition-all duration-500 ease-out hover:border-primary/40 hover:shadow-lg hover:-translate-y-1">
           {/* Featured Badge - Premium Design */}
           {project.featured && (
             <div
@@ -72,7 +72,7 @@ export const ProjectCard = React.memo(function ProjectCard({
           </div>
 
           {/* Content Section */}
-          <div className="p-6 lg:p-7 flex flex-col">
+          <div className="p-6 lg:p-7 flex flex-1 flex-col">
             {/* Category Badge - Works for all projects */}
             {categoryLabel && (
               <div className="mb-3">

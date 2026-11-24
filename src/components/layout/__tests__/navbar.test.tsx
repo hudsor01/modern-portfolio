@@ -190,6 +190,17 @@ describe('Navbar', () => {
     expect(menu?.hasAttribute('hidden')).toBe(true)
   })
 
+  it('shows a scrim behind the open mobile menu that closes it (A-13)', () => {
+    const { container } = render(<Navbar />)
+    expect(container.querySelector('[data-testid="mobile-menu-scrim"]')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Open menu' }))
+    const scrim = container.querySelector('[data-testid="mobile-menu-scrim"]')
+    expect(scrim).toBeTruthy()
+    fireEvent.click(scrim as Element)
+    expect(container.querySelector('#mobile-menu')?.hasAttribute('hidden')).toBe(true)
+    expect(container.querySelector('[data-testid="mobile-menu-scrim"]')).toBeNull()
+  })
+
   it('mobile menu becomes visible when toggle is clicked', () => {
     const { container } = render(<Navbar />)
     const btn = screen.getByRole('button', { name: 'Open menu' })

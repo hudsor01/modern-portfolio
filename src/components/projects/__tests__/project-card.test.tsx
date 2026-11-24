@@ -161,6 +161,13 @@ describe('ProjectCard', () => {
     expect(container.querySelector('[data-slot="metrics-row"]')).not.toBeNull()
   })
 
+  it('pins the tags to the card bottom whether or not a metrics row is shown (A-2)', () => {
+    const { container } = render(<ProjectCard project={baseProject} />)
+    expect(container.querySelector('article')?.className).toContain('flex-col')
+    const content = container.querySelector('article > div:last-child')
+    expect(content?.className).toContain('flex-1')
+  })
+
   it('keeps stable geometry hooks', () => {
     const { container } = render(<ProjectCard project={{ ...baseProject, featured: true }} />)
     const media = container.querySelector('[data-slot="project-media"]')
