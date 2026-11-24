@@ -9,7 +9,7 @@ export const dynamic = 'force-static'
 export const metadata = genMeta({
   title: 'Forecast Accuracy & Pipeline Intelligence System',
   description:
-    'Enterprise forecasting and pipeline intelligence platform combining predictive analytics, deal health monitoring, and early warning systems. Improved forecast accuracy by 31% and reduced slippage by 26%.',
+    'Enterprise forecasting and pipeline intelligence platform combining predictive analytics, deal health monitoring, and early warning systems. Improved forecast accuracy from 63% to 94% and reduced deal slippage from 26% to 19%.',
   path: '/projects/forecast-pipeline-intelligence',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',

@@ -61,7 +61,7 @@ export default function CommissionOptimization() {
     <>
       <ProjectJsonLd
         title="Commission & Incentive Optimization System"
-        description="Advanced commission management and partner incentive optimization platform managing $254K+ commission structures with 34% performance improvement and 87.5% automation efficiency."
+        description="Advanced commission management and partner incentive optimization platform managing $254K+ commission structures with 34.2% performance improvement and 87.5% automation efficiency."
         slug="commission-optimization"
         category="Revenue Operations"
         datePublished="2025-11-19T00:00:00-06:00"
@@ -70,7 +70,7 @@ export default function CommissionOptimization() {
       />
       <ProjectPageLayout
         title="Commission & Incentive Optimization System"
-        description="Advanced commission management and partner incentive optimization platform managing $254K+ commission structures. Automated tier adjustments with 23% average commission rate optimization and ROI-driven compensation strategy delivering 34% performance improvement and 87.5% automation efficiency."
+        description="Advanced commission management and partner incentive optimization platform managing $254K+ commission structures. Automated tier adjustments with 23% average commission rate optimization and ROI-driven compensation strategy delivering 34.2% performance improvement and 87.5% automation efficiency."
         tags={[
           {
             label: `Commission Pool: ${formatCurrency(commissionMetrics.totalCommissionPool)}`,
