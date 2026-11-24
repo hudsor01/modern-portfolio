@@ -46,7 +46,12 @@ test.describe('pipeline coverage amount validation', () => {
   test('typing a digit mid-string keeps the caret next to it', async ({ page }) => {
     const target = page.getByLabel('Revenue target (this period)')
     await target.fill('999')
-    await target.press('Home')
+    // Place the caret with the selection API: the Home key is a page scroll in
+    // macOS Firefox/WebKit, so it would leave the caret at the end there.
+    await target.evaluate((e: HTMLInputElement) => {
+      e.focus()
+      e.setSelectionRange(0, 0)
+    })
     await target.press('1')
     await expect(target).toHaveValue('1,999')
     await target.press('2')
