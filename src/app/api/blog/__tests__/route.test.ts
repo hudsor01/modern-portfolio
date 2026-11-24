@@ -147,10 +147,23 @@ function reqPost(body: unknown, headers: Record<string, string> = {}) {
   })
 }
 
+/**
+ * Reset every shared mock to its default before each test. `vi.clearAllMocks`
+ * clears call history but keeps implementations and unconsumed `…Once` values,
+ * so the POST block's `isAdminRequest → true` leaked into GET tests whenever
+ * test order changed (exposed by `--sequence.shuffle`).
+ */
+function resetSharedMocks() {
+  vi.clearAllMocks()
+  vi.mocked(checkRateLimitOrRespond).mockReset().mockReturnValue(null)
+  vi.mocked(validateCSRFOrRespond).mockReset().mockResolvedValue(null)
+  vi.mocked(isAdminRequest).mockReset().mockReturnValue(false)
+  for (const mock of Object.values(dbMocks)) mock.mockReset()
+}
+
 describe('GET /api/blog', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-    vi.mocked(checkRateLimitOrRespond).mockReturnValue(null)
+    resetSharedMocks()
     dbMocks.findMany.mockResolvedValue([samplePost])
     dbMocks.selectCount.mockResolvedValue([{ value: 1 }])
   })
@@ -268,9 +281,7 @@ describe('GET /api/blog', () => {
 
 describe('POST /api/blog', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-    vi.mocked(checkRateLimitOrRespond).mockReturnValue(null)
-    vi.mocked(validateCSRFOrRespond).mockResolvedValue(null)
+    resetSharedMocks()
     vi.mocked(isAdminRequest).mockReturnValue(true)
     // findFirst by slug → no existing post; then second findFirst for read-back returns the new post.
     dbMocks.findFirst.mockResolvedValueOnce(undefined).mockResolvedValueOnce(samplePost)
