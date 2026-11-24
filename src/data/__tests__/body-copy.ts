@@ -62,13 +62,22 @@ const LAYOUT_KEYS = new Set([
   'role',
 ])
 
+/**
+ * A `'` glued to the end of a word or expression ("Don't", "{name}'s") is JSX text
+ * or an apostrophe, never the opening quote of a string literal: JS cannot start a
+ * string directly after an identifier, digit, `)` or `}`.
+ */
+function isApostrophe(src: string, i: number): boolean {
+  return src[i] === "'" && i > 0 && /[A-Za-z0-9})]/.test(src[i - 1] as string)
+}
+
 function stripComments(code: string): string {
   // Strings are scanned first so `//` inside "https://…" survives.
   let out = ''
   let i = 0
   while (i < code.length) {
     const ch = code[i] as string
-    if (ch === "'" || ch === '"' || ch === '`') {
+    if ((ch === "'" || ch === '"' || ch === '`') && !isApostrophe(code, i)) {
       let j = i + 1
       while (j < code.length && code[j] !== ch) {
         if (code[j] === '\\') j++
@@ -100,7 +109,7 @@ function balanced(src: string, open: number, o: string, c: string): string {
       else if (ch === quote) quote = null
       continue
     }
-    if (ch === "'" || ch === '"' || ch === '`') quote = ch
+    if ((ch === "'" || ch === '"' || ch === '`') && !isApostrophe(src, i)) quote = ch
     else if (ch === o) depth++
     else if (ch === c && --depth === 0) return src.slice(open, i + 1)
   }
@@ -155,7 +164,7 @@ export function bodyCopy(code: string): string {
       const rendered = renderFormatters(full)
       if (rendered !== full) pieces.push(rendered)
       i += full.length
-    } else if (ch === "'" || ch === '"' || ch === '`') {
+    } else if ((ch === "'" || ch === '"' || ch === '`') && !isApostrophe(src, i)) {
       const key = keyBefore(src, i)
       let j = i + 1
       let lit = ''

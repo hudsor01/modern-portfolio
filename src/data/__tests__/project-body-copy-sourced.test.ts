@@ -74,6 +74,19 @@ describe('body copy detector', () => {
     expect(bodyCopy('{formatPercentage(0.968)}')).toContain('96.8%')
   })
 
+  // JSX text apostrophes must not be paired with the next real quote.
+  it('does not let a JSX apostrophe swallow a later string-literal claim', () => {
+    for (const lead of ["<p>Don't</p>", "<p>We're here</p>", "<p>{name}'s plan</p>"]) {
+      expect(bodyCopy(`${lead}\nconst o = ['99% cut']`)).toContain('99%')
+    }
+    const { errors } = check(
+      'quota-territory-management',
+      'fixture',
+      bodyCopy("<p>Don't</p>\nconst o = ['Reduced planning cycle by 60%']")
+    )
+    expect(errors.join('\n')).toContain('"60%"')
+  })
+
   // The pre-13-12 quota outcome bullet, checked against the real quota write-up.
   it('rejects the pre-fix quota bullets against the real write-up', () => {
     const { errors } = check(
@@ -91,13 +104,16 @@ describe('body copy detector', () => {
 // ---------------------------------------------------------------- non-vacuity
 
 const SLUGS = projectSlugDirs()
+const MIN_FILES = 79
+const MIN_FIGURES = 190
 
 describe('body copy non-vacuity', () => {
   it('covers the 14 project slugs', () => {
     expect(SLUGS).toHaveLength(14)
   })
 
-  it('scans at least 40 files and checks at least 60 figures', () => {
+  // Measured 84 files / 201 figures; the floors sit ~5% below so a silent drop fails.
+  it(`scans at least ${MIN_FILES} files and checks at least ${MIN_FIGURES} figures`, () => {
     let files = 0
     let figures = 0
     for (const slug of SLUGS) {
@@ -107,8 +123,8 @@ describe('body copy non-vacuity', () => {
       }
     }
     console.info(`body copy guard: ${SLUGS.length} slugs, ${files} files, ${figures} figures`)
-    expect(files).toBeGreaterThanOrEqual(40)
-    expect(figures).toBeGreaterThanOrEqual(60)
+    expect(files).toBeGreaterThanOrEqual(MIN_FILES)
+    expect(figures).toBeGreaterThanOrEqual(MIN_FIGURES)
   })
 })
 
