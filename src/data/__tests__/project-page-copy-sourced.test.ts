@@ -253,10 +253,26 @@ describe('page copy detector', () => {
     ).toBeGreaterThan(0)
   })
 
-  it('the real forecast page description fails on its stale change claim', () => {
+  // The pre-13-11 forecast description, checked against the real forecast
+  // write-up: its 26% is the "from 26%" baseline, not a stated change, so the
+  // change-claim rule must reject it. A fixture (not the live page) keeps this
+  // detector check meaningful after the page copy was corrected.
+  const STALE_FORECAST_COPY =
+    'Forecast and pipeline intelligence that improved forecast accuracy by 31% and reduced slippage by 26%.'
+
+  it('rejects a change claim that is really the write-up baseline (forecast 26%)', () => {
+    const { errors } = checkRegion(
+      'forecast-pipeline-intelligence',
+      'page description',
+      STALE_FORECAST_COPY
+    )
+    expect(errors.join('\n')).toContain('"26%" (change claim)')
+  })
+
+  it('accepts the corrected forecast page description', () => {
     const copy = loadPageCopy('forecast-pipeline-intelligence')
     const { errors } = checkRegion('forecast-pipeline-intelligence', 'page description', copy.page)
-    expect(errors.join('\n')).toContain('"26%" (change claim)')
+    expect(errors).toEqual([])
   })
 })
 
