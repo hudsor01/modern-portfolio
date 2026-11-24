@@ -97,16 +97,22 @@ export function stripLeadingTitleHeading(html: string, title: string): string {
 }
 
 /**
- * Shift headings up so the shallowest becomes an `<h2>`. With the repeated title
- * gone, a body whose sections were `<h3>` under it would jump from the page `<h1>`
- * straight to `<h3>` (axe heading-order). Relative levels are preserved.
+ * Re-level the headings left after the repeated title is gone, so the page `<h1>`
+ * is followed by an `<h2>` and heading order never skips (axe heading-order).
+ *
+ * - Any `<h1>` still in the body becomes an `<h2>` first: the page header owns the only h1.
+ * - The shift is taken from the FIRST remaining heading, not the shallowest. A later,
+ *   shallower heading (a stray h1 or h2) used to pin the minimum at 2, so an opening `<h3>`
+ *   stayed an `<h3>` straight under the page `<h1>`.
+ * - Later headings shift by the same amount and bottom out at `<h2>`, so relative levels are
+ *   kept wherever they can be and nothing is promoted above h2.
  */
 function promoteHeadings(html: string): string {
-  let min = 7
-  for (const m of html.matchAll(/<h([1-6])[\s>]/gi)) min = Math.min(min, Number(m[1]))
-  const shift = min - 2
-  if (min > 6 || shift <= 0) return html
-  return html.replace(/<(\/?)h([1-6])(?=[\s>])/gi, (_, slash: string, level: string) => {
-    return `<${slash}h${Number(level) - shift}`
+  const demoted = html.replace(/<h1(?=[\s>])/gi, '<h2').replace(/<\/h1>/gi, '</h2>')
+  const first = /<h([2-6])[\s>]/i.exec(demoted)
+  const shift = first ? Number(first[1]) - 2 : 0
+  if (shift <= 0) return demoted
+  return demoted.replace(/<(\/?)h([1-6])(?=[\s>])/gi, (_, slash: string, level: string) => {
+    return `<${slash}h${Math.max(2, Number(level) - shift)}`
   })
 }

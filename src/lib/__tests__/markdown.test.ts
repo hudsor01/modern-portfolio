@@ -86,6 +86,27 @@ describe('stripLeadingTitleHeading (B-3)', () => {
     expect(out).toContain('<h3>B</h3>')
   })
 
+  it('demotes a later h1 and still promotes an opening h3 so order never skips', () => {
+    const html = `<h1>${title}</h1><p>Intro</p><h3>First</h3><p>x</p><h4>Sub</h4><h1>Later</h1><p>y</p>`
+    const out = stripLeadingTitleHeading(html, title)
+    expect(out).not.toMatch(/<h1/i)
+    expect(out).not.toMatch(/<\/h1/i)
+    const levels = [...out.matchAll(/<h([1-6])[\s>]/g)].map((m) => Number(m[1]))
+    expect(levels).toEqual([2, 3, 2])
+    // After the page h1, no heading may jump more than one level deeper than the one before.
+    let prev = 1
+    for (const level of levels) {
+      expect(level - prev).toBeLessThanOrEqual(1)
+      prev = level
+    }
+  })
+
+  it('never promotes a heading above h2, even when a later heading is shallower', () => {
+    const html = `<h2>${title}</h2><h4>A</h4><h3>B</h3><h2>C</h2>`
+    const out = stripLeadingTitleHeading(html, title)
+    expect([...out.matchAll(/<h([1-6])[\s>]/g)].map((m) => Number(m[1]))).toEqual([2, 2, 2])
+  })
+
   it('matches through emphasis, curly quotes and case', () => {
     const html = markdownToHtml('## **It\u2019s Here**\n\nBody')
     expect(stripLeadingTitleHeading(html, "it's here")).not.toContain('Here')
