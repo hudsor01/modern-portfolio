@@ -1,6 +1,6 @@
 import HomePageContent from '@/components/layout/home-page-content'
 import { generateMetadata as genMeta } from '@/app/shared-metadata'
-import { getProjects } from '@/lib/projects'
+import { getFeaturedProjects } from '@/lib/projects'
 
 export const dynamic = 'force-static'
 
@@ -37,19 +37,8 @@ export const metadata = genMeta({
   ],
 })
 
-const FEATURED_SLUGS = [
-  'revenue-kpi',
-  'forecast-pipeline-intelligence',
-  'partnership-program-implementation',
-  'sales-enablement',
-]
-
 export default async function HomePage() {
-  const all = await getProjects()
-  const featuredProjects = FEATURED_SLUGS.flatMap((slug) => {
-    const match = all.find((p) => p.slug === slug)
-    return match ? [match] : []
-  })
+  const featuredProjects = await getFeaturedProjects()
 
   return (
     <div className="animate-fade-in-up">

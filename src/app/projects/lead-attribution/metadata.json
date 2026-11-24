@@ -1,7 +1,6 @@
 {
   "title": "Lead Source Attribution Dashboard",
   "description": "An interactive dashboard for tracking and analyzing lead sources to optimize marketing spend and improve ROI. Visualizes lead attribution data with interactive charts.",
-  "image": "/images/projects/lead-attribution.jpg",
   "liveUrl": "https://richardwhudsonjr.com/projects/lead-attribution",
   "githubUrl": "https://github.com/hudsonr01/modern-portfolio",
   "technologies": [
@@ -12,7 +11,6 @@
     "Next.js",
     "Redux, Power BI, Data Visualization, Process Optimization"
   ],
-  "featured": true,
   "features": [
     "Interactive pie charts for visualizing lead sources",
     "Real-time data updates and filtering capabilities",

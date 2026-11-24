@@ -1,7 +1,6 @@
 {
   "title": "Customer Churn & Retention Analytics",
   "description": "A sophisticated analytics platform that helps businesses understand and reduce customer churn while improving retention rates through predictive modeling and actionable insights.",
-  "image": "/images/projects/churn-retention.jpg",
   "liveUrl": "https://richardwhudsonjr.com/projects/churn-retention",
   "githubUrl": "https://github.com/hudsonr01/modern-portfolio",
   "technologies": [
@@ -17,7 +16,6 @@
     "Customer Retention",
     "CRM Integration"
   ],
-  "featured": true,
   "features": [
     "Churn prediction algorithms to identify at-risk customers",
     "Cohort analysis for retention tracking over time",
