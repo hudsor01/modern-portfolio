@@ -1,14 +1,22 @@
 // @vitest-environment node
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
-// SENTRY_TRANSPORT NOTE
-// ─────────────────────
-// `SentryTransport.log()` calls `require('@sentry/nextjs')` directly. Under
-// Vitest's ESM runner, vi.mock intercepts ESM imports cleanly, but CJS-style
-// `require()` calls inside transitive modules can bypass the mock depending on
-// how Vite resolves them. The production-routing tests below verify that
-// transports fire (or don't) at the observable layer; deeper assertions about
-// which Sentry method was invoked are covered by the integration / e2e suite.
+// The Sentry transport uses a static ESM import of `@sentry/nextjs`, so
+// `vi.mock('@sentry/nextjs')` intercepts it and routing is asserted directly.
+const sentry = vi.hoisted(() => ({
+  captureException: vi.fn(),
+  captureMessage: vi.fn(),
+  addBreadcrumb: vi.fn(),
+}))
+vi.mock('@sentry/nextjs', () => sentry)
+
+beforeEach(() => {
+  sentry.captureException.mockReset()
+  sentry.captureMessage.mockReset()
+  sentry.addBreadcrumb.mockReset()
+})
 
 afterEach(() => {
   vi.unstubAllEnvs()
@@ -196,5 +204,80 @@ describe('LoggerImpl public API surface (smoke)', () => {
   it('request helper logs without throwing', async () => {
     const { logger } = await import('@/lib/logger')
     expect(() => logger.request({ id: '1', method: 'GET', url: '/x' })).not.toThrow()
+  })
+})
+
+describe('SentryTransport routing (production)', () => {
+  beforeEach(() => {
+    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('NEXT_PHASE', '')
+    vi.resetModules()
+  })
+
+  it('error with Error -> captureException with level error and extra', async () => {
+    const { logger } = await import('@/lib/logger')
+    logger.error('boom', new Error('detail'), { a: 1 })
+    expect(sentry.captureException).toHaveBeenCalledTimes(1)
+    const [err, opts] = sentry.captureException.mock.calls[0] as [Error, Record<string, unknown>]
+    expect(err).toBeInstanceOf(Error)
+    expect(err.message).toBe('detail')
+    expect(err.name).toBe('Error')
+    expect(opts.level).toBe('error')
+    expect(opts.extra).toMatchObject({ a: 1 })
+  })
+
+  it('fatal with Error -> captureException level fatal', async () => {
+    const { logger } = await import('@/lib/logger')
+    logger.fatal('dead', new Error('x'))
+    expect(sentry.captureException).toHaveBeenCalledTimes(1)
+    expect(sentry.captureException.mock.calls[0]?.[1]).toMatchObject({ level: 'fatal' })
+  })
+
+  it('error without Error -> captureMessage level error', async () => {
+    const { logger } = await import('@/lib/logger')
+    logger.error('no error object')
+    expect(sentry.captureException).not.toHaveBeenCalled()
+    expect(sentry.captureMessage).toHaveBeenCalledTimes(1)
+    expect(sentry.captureMessage.mock.calls[0]?.[0]).toBe('no error object')
+    expect(sentry.captureMessage.mock.calls[0]?.[1]).toMatchObject({ level: 'error' })
+  })
+
+  it('warn -> captureMessage level warning', async () => {
+    const { logger } = await import('@/lib/logger')
+    logger.warn('careful')
+    expect(sentry.captureMessage).toHaveBeenCalledTimes(1)
+    expect(sentry.captureMessage.mock.calls[0]?.[0]).toBe('careful')
+    expect(sentry.captureMessage.mock.calls[0]?.[1]).toMatchObject({ level: 'warning' })
+  })
+
+  it('info and debug -> addBreadcrumb only', async () => {
+    vi.stubEnv('LOG_LEVEL', 'debug')
+    vi.resetModules()
+    const { logger } = await import('@/lib/logger')
+    logger.info('i')
+    logger.debug('d')
+    expect(sentry.addBreadcrumb).toHaveBeenCalledTimes(2)
+    expect(sentry.addBreadcrumb.mock.calls[0]?.[0]).toMatchObject({ level: 'info' })
+    expect(sentry.addBreadcrumb.mock.calls[1]?.[0]).toMatchObject({ level: 'debug' })
+    expect(sentry.captureException).not.toHaveBeenCalled()
+    expect(sentry.captureMessage).not.toHaveBeenCalled()
+  })
+
+  it('build phase calls no Sentry function', async () => {
+    vi.stubEnv('NEXT_PHASE', 'phase-production-build')
+    vi.resetModules()
+    const { logger } = await import('@/lib/logger')
+    logger.error('x', new Error('x'))
+    logger.warn('w')
+    logger.info('i')
+    expect(sentry.captureException).not.toHaveBeenCalled()
+    expect(sentry.captureMessage).not.toHaveBeenCalled()
+    expect(sentry.addBreadcrumb).not.toHaveBeenCalled()
+  })
+
+  it('source imports Sentry statically and never require()s it', () => {
+    const src = readFileSync(join(process.cwd(), 'src/lib/logger.ts'), 'utf8')
+    expect(src).not.toMatch(/require\(\s*['"]@sentry\//)
+    expect(src).toMatch(/^import \* as Sentry from '@sentry\/nextjs'$/m)
   })
 })
