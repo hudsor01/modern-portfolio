@@ -89,6 +89,38 @@ describe('ContactForm', () => {
     expect(screen.getByText('Phone number')).toBeTruthy()
   })
 
+  it('placeholders never repeat their label (B-9)', () => {
+    const { container } = renderForm()
+    for (const field of Array.from(container.querySelectorAll('input, textarea'))) {
+      const label = container.querySelector(`label[for="${field.id}"]`)?.textContent ?? ''
+      const placeholder = field.getAttribute('placeholder') ?? ''
+      const strip = (t: string) => t.replace(/[*\s]/g, '').toLowerCase()
+      expect(placeholder).not.toBe('')
+      expect(strip(placeholder)).not.toBe(strip(label))
+      expect(placeholder).not.toContain('*')
+    }
+  })
+
+  it('centres each single-line field icon on the input height (B-9)', () => {
+    const { container } = renderForm()
+    const inputs = Array.from(container.querySelectorAll('input'))
+    expect(inputs.length).toBe(4)
+    for (const input of inputs) {
+      // Input is h-9; the icon box must be the same h-9 and centre its content.
+      const box = input.previousElementSibling as HTMLElement
+      expect(box.className).toContain('h-9')
+      expect(box.className).toContain('items-center')
+      expect(box.className).not.toContain('top-3.5')
+    }
+  })
+
+  it('stretches to the column and lets the message field absorb the slack (B-10)', () => {
+    const { container } = renderForm()
+    const card = container.firstElementChild as HTMLElement
+    expect(card.className).toContain('h-full')
+    expect(container.querySelector('textarea')?.className).toContain('flex-1')
+  })
+
   it('enables submit button when not submitting', () => {
     renderForm({ isSubmitting: false })
     const btn = screen.getByRole('button', { name: /send message/i })

@@ -25,7 +25,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
   const { form, submitStatus, isSubmitting, error } = formHook
 
   return (
-    <div className="bg-card rounded-2xl p-8 border border-border shadow-sm">
+    <div className="flex h-full flex-col bg-card rounded-2xl p-8 border border-border shadow-sm">
       <h2 className="typography-h3 mb-6">Send a Message</h2>
 
       <form
@@ -33,7 +33,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
           e.preventDefault()
           form.handleSubmit()
         }}
-        className="space-y-6"
+        className="flex flex-1 flex-col gap-6"
       >
         <noscript>
           <div className="flex items-center gap-2 text-foreground bg-muted p-4 rounded-xl mb-2 border border-border">
@@ -56,7 +56,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
               <Field data-invalid={(field.state.meta.errors?.length ?? 0) > 0}>
                 <Label htmlFor={field.name}>Name *</Label>
                 <div className="relative">
-                  <div className="absolute left-3 top-3.5 text-muted-foreground">
+                  <div className="pointer-events-none absolute left-3 top-0 flex h-9 items-center text-muted-foreground">
                     <User className="w-5 h-5" />
                   </div>
                   <Input
@@ -66,7 +66,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                     value={field.state.value as string}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
-                    placeholder="Your name *"
+                    placeholder="Jane Smith"
                     required
                     aria-invalid={(field.state.meta.errors?.length ?? 0) > 0}
                     className="pl-12"
@@ -83,7 +83,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
               <Field data-invalid={(field.state.meta.errors?.length ?? 0) > 0}>
                 <Label htmlFor={field.name}>Email *</Label>
                 <div className="relative">
-                  <div className="absolute left-3 top-3.5 text-muted-foreground">
+                  <div className="pointer-events-none absolute left-3 top-0 flex h-9 items-center text-muted-foreground">
                     <Mail className="w-5 h-5" />
                   </div>
                   <Input
@@ -93,7 +93,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                     value={field.state.value as string}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
-                    placeholder="Your email *"
+                    placeholder="jane@company.com"
                     required
                     aria-invalid={(field.state.meta.errors?.length ?? 0) > 0}
                     className="pl-12"
@@ -113,7 +113,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
               <Field data-invalid={(field.state.meta.errors?.length ?? 0) > 0}>
                 <Label htmlFor={field.name}>Company / Organization</Label>
                 <div className="relative">
-                  <div className="absolute left-3 top-3.5 text-muted-foreground">
+                  <div className="pointer-events-none absolute left-3 top-0 flex h-9 items-center text-muted-foreground">
                     <Building2 className="w-5 h-5" />
                   </div>
                   <Input
@@ -123,7 +123,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                     value={field.state.value as string}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
-                    placeholder="Company / Organization"
+                    placeholder="Acme Inc."
                     aria-invalid={(field.state.meta.errors?.length ?? 0) > 0}
                     className="pl-12"
                   />
@@ -139,7 +139,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
               <Field data-invalid={(field.state.meta.errors?.length ?? 0) > 0}>
                 <Label htmlFor={field.name}>Phone number</Label>
                 <div className="relative">
-                  <div className="absolute left-3 top-3.5 text-muted-foreground">
+                  <div className="pointer-events-none absolute left-3 top-0 flex h-9 items-center text-muted-foreground">
                     <Phone className="w-5 h-5" />
                   </div>
                   <Input
@@ -149,7 +149,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                     value={field.state.value as string}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
-                    placeholder="Phone number"
+                    placeholder="(555) 123-4567"
                     aria-invalid={(field.state.meta.errors?.length ?? 0) > 0}
                     className="pl-12"
                   />
@@ -164,10 +164,10 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
         <form.Field
           name="message"
           children={(field: TanStackFieldApi<string>) => (
-            <Field data-invalid={(field.state.meta.errors?.length ?? 0) > 0}>
+            <Field className="flex-1" data-invalid={(field.state.meta.errors?.length ?? 0) > 0}>
               <Label htmlFor={field.name}>Message *</Label>
-              <div className="relative">
-                <MessageSquare className="absolute left-3 top-3.5 w-5 h-5 text-muted-foreground" />
+              <div className="relative flex flex-1 flex-col">
+                <MessageSquare className="pointer-events-none absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
                 <textarea
                   id={field.name}
                   name={field.name}
@@ -176,12 +176,12 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                   onBlur={field.handleBlur}
                   required
                   rows={6}
-                  className={`w-full pl-12 pr-4 py-3 bg-background border rounded-xl focus:outline-hidden focus:ring-[3px] text-foreground placeholder-muted-foreground resize-none transition-all duration-300 ease-out ${
+                  className={`min-h-40 w-full flex-1 pl-12 pr-4 py-3 bg-background border rounded-xl focus:outline-hidden focus:ring-[3px] text-foreground placeholder-muted-foreground resize-none transition-all duration-300 ease-out ${
                     (field.state.meta.errors?.length ?? 0) > 0
                       ? 'border-destructive focus:ring-destructive/50'
                       : 'border-border focus:ring-primary/50'
                   }`}
-                  placeholder="What would you like to discuss? *"
+                  placeholder="What would you like to discuss?"
                 />
                 <div className="absolute bottom-3 right-3 typography-small text-muted-foreground">
                   {(field.state.value as string).length}/500
