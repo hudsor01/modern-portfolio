@@ -158,3 +158,91 @@ test.describe('tools hub', () => {
     for (const tool of TOOLS) expect(body).toContain(`<loc>${SITE}/tools/${tool.slug}</loc>`)
   })
 })
+
+test.describe('scorecard geometry', () => {
+  const URL = '/tools/revops-maturity-scorecard'
+
+  test.beforeEach(async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'chromium', 'layout geometry checked once, in Chromium')
+    await getOnly(page)
+  })
+
+  for (const width of [390, 1440]) {
+    test(`legends sit inside their card borders at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 })
+      await page.goto(URL)
+      await expect(page.locator('fieldset').first()).toBeVisible()
+      const rows = await page.locator('fieldset').evaluateAll((els) =>
+        els.map((fs) => {
+          const f = fs.getBoundingClientRect()
+          const l = (fs.querySelector(':scope > legend') as HTMLElement).getBoundingClientRect()
+          const bw = Number.parseFloat(getComputedStyle(fs).borderTopWidth)
+          return {
+            gap: l.top - (f.top + bw),
+            left: l.left - f.left,
+            right: f.right - l.right,
+            bottom: f.bottom - l.bottom,
+          }
+        }),
+      )
+      expect(rows.length).toBeGreaterThan(0)
+      for (const r of rows) {
+        expect(r.gap).toBeGreaterThanOrEqual(0)
+        expect(r.left).toBeGreaterThanOrEqual(0)
+        expect(r.right).toBeGreaterThanOrEqual(0)
+        expect(r.bottom).toBeGreaterThan(0)
+      }
+    })
+  }
+
+  test('rating options fit at 390px with full accessible names', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto(URL)
+    await expect(page.locator('fieldset').first()).toBeVisible()
+    const opts = await page.locator('fieldset label').evaluateAll((els) =>
+      els.map((el) => {
+        const lh = Number.parseFloat(getComputedStyle(el).lineHeight) || 16
+        return {
+          overflow: el.scrollWidth - el.clientWidth,
+          lines: Math.max(
+            ...Array.from(el.children).map(
+              (c) => (c as HTMLElement).getBoundingClientRect().height / lh,
+            ),
+          ),
+          word: Array.from(el.children).some(
+            (c) => (c as HTMLElement).offsetParent !== null && /[a-z]/i.test(c.textContent ?? ''),
+          ),
+        }
+      }),
+    )
+    expect(opts.length).toBeGreaterThan(0)
+    for (const o of opts) {
+      expect(o.overflow).toBeLessThanOrEqual(0)
+      expect(o.lines).toBeLessThanOrEqual(2)
+      expect(o.word).toBe(false)
+    }
+    await expect(page.getByRole('radio', { name: '1 Not at all' }).first()).toBeAttached()
+    await expect(page.getByRole('radio', { name: '3 Somewhat' }).first()).toBeAttached()
+  })
+
+  test('rating options show the word label at 640px and up', async ({ page }) => {
+    for (const width of [640, 1440]) {
+      await page.setViewportSize({ width, height: 900 })
+      await page.goto(URL)
+      const first = page.locator('fieldset label').first()
+      await expect(first.getByText('Not at all')).toBeVisible()
+    }
+  })
+
+  test('open mobile menu panel is fully opaque at 390px', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto(URL)
+    await page.getByRole('button', { name: 'Open menu' }).click()
+    const menu = page.locator('#mobile-menu')
+    await expect(menu).toBeVisible()
+    const bg = await menu.evaluate((el) => getComputedStyle(el).backgroundColor)
+    expect(bg).not.toMatch(/\/\s*0?\.\d+\)|rgba\(.*,\s*0?\.\d+\)/)
+    const filter = await menu.evaluate((el) => getComputedStyle(el).backdropFilter)
+    expect(filter === 'none' || filter === '').toBe(true)
+  })
+})
