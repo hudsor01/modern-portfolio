@@ -45,8 +45,8 @@ export function AutomationTab() {
               <span className="font-medium">99.8%</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Error Reduction:</span>
-              <span className="font-medium text-secondary">95% fewer errors</span>
+              <span className="text-muted-foreground">Previous Accuracy:</span>
+              <span className="font-medium text-muted-foreground">87.8%</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Dispute Rate:</span>

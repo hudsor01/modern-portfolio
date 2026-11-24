@@ -47,8 +47,8 @@ const CACBreakdownChart = memo(function CACBreakdownChart() {
         </ResponsiveContainer>
       </div>
       <p className="mt-4 text-center italic">
-        Partner channel CAC optimization revealing 70% cost reduction through certified partner
-        strategy vs direct sales acquisition
+        Partner channel CAC optimization: certified partners at $98 vs $289 for direct sales
+        acquisition
       </p>
     </div>
   )

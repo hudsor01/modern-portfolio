@@ -28,7 +28,7 @@ export function OverviewTab() {
       {/* CAC Breakdown using standardized ChartContainer */}
       <ChartContainer
         title="Customer Acquisition Cost Breakdown by Channel"
-        description="Strategic CAC analysis revealing certified partners deliver 70% lower acquisition costs ($98 vs $289) compared to direct sales channels"
+        description="Strategic CAC analysis revealing certified partners acquire customers at $98 vs $289 for direct sales channels"
         size="sm"
       >
         <CACBreakdownChart />
