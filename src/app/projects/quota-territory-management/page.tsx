@@ -13,6 +13,7 @@ export const metadata = genMeta({
   path: '/projects/quota-territory-management',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
+  ogProject: 'quota-territory-management',
 })
 
 export default async function QuotaTerritoryManagementPage() {

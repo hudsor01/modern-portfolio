@@ -10,6 +10,7 @@ import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { revenueMetrics } from '../data/constants'
 import { formatCurrency, formatPercent } from '../utils'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
+import { ogImageUrl } from '@/lib/absolute-url'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { KPIAlerts } from './KPIAlerts'
 import { StrategicImpact } from './StrategicImpact'
@@ -114,6 +115,11 @@ export default function RevenueOperationsCenter() {
   return (
     <>
       <ProjectJsonLd
+        image={ogImageUrl({
+          title: 'Revenue Operations Command Center',
+          subtitle: 'Revenue Operations Project',
+          project: 'revenue-operations-center',
+        })}
         title="Revenue Operations Command Center"
         description="Comprehensive revenue operations dashboard consolidating pipeline health, forecasting, partner performance, and operational KPIs with 96.8% forecast accuracy and 89.7% operational efficiency."
         slug="revenue-operations-center"

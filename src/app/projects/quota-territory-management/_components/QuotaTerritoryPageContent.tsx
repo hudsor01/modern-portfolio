@@ -6,6 +6,7 @@ import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { formatNumber } from '@/lib/data-formatters'
+import { ogImageUrl } from '@/lib/absolute-url'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { NarrativeSections } from './NarrativeSections'
 import { AlgorithmicApproachesGrid } from './AlgorithmicApproachesGrid'
@@ -93,6 +94,11 @@ export default function QuotaTerritoryManagementProject() {
   return (
     <>
       <ProjectJsonLd
+        image={ogImageUrl({
+          title: 'Intelligent Quota Management & Territory Planning',
+          subtitle: 'Revenue Operations Project',
+          project: 'quota-territory-management',
+        })}
         title="Intelligent Quota Management & Territory Planning"
         description="Territory management system that raised forecast accuracy from 64% to 92% and reduced quota variance from 32% to 11%"
         slug="quota-territory-management"
