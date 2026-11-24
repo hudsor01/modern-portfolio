@@ -198,6 +198,7 @@ test.describe('/ homepage', () => {
       const section = page.locator('main section', {
         has: page.getByRole('heading', { level: 2, name: 'Featured Work' }),
       })
+      await expect(section.locator('a[href^="/projects/"]')).toHaveCount(4)
       for (const slug of [
         'revenue-kpi',
         'forecast-pipeline-intelligence',
@@ -206,7 +207,11 @@ test.describe('/ homepage', () => {
       ]) {
         const card = section.locator(`a[href="/projects/${slug}"]`).first()
         await expect(card).toBeVisible()
-        await expect(card.locator('img').first()).toHaveCount(1)
+        await expect(card.locator('img')).toHaveCount(0)
+        const preview = card.locator('[data-slot="project-preview"][role="img"]')
+        await expect(preview).toHaveCount(1)
+        await expect(preview).toHaveAttribute('aria-label', /^(Results chart|Key metrics)\. .+\.$/)
+        await expect(card.locator('[data-slot="featured-badge"]')).toHaveCount(1)
         await expect(card.getByRole('heading', { level: 3 })).toHaveCount(1)
       }
     })

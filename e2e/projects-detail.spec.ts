@@ -270,3 +270,35 @@ test.describe('Project detail pages — KPI cards (UI-09, UI-11)', () => {
     expect(html.slice(start, start + 8000)).toContain('432%')
   })
 })
+
+test.describe('Project social cards in page metadata (UI-06)', () => {
+  test('every project page points og:image and JSON-LD image at its own card', async (
+    { request },
+    testInfo,
+  ) => {
+    test.skip(testInfo.project.name !== 'chromium', 'checked once, on chromium')
+    expect(PROJECT_SLUGS).toHaveLength(14)
+    const unescape = (s: string) => s.replace(/&amp;/g, '&')
+    for (const slug of PROJECT_SLUGS) {
+      const html = await (await request.get(`/projects/${slug}`)).text()
+
+      const ogImages = [...html.matchAll(/<meta property="og:image" content="([^"]*)"/g)]
+      expect(ogImages, `${slug} og:image count`).toHaveLength(1)
+      expect(unescape(ogImages[0]![1]!), `${slug} og:image`).toContain(`project=${slug}`)
+
+      const alt = html.match(/<meta property="og:image:alt" content="([^"]*)"/)
+      expect(alt, `${slug} og:image:alt present`).not.toBeNull()
+      expect(unescape(alt![1]!), `${slug} og:image:alt`).toMatch(/ results preview$/)
+
+      const blocks = [...html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)].map(
+        (m) => JSON.parse(m[1]!) as unknown,
+      )
+      const flat = blocks.flatMap((b) => (Array.isArray(b) ? b : [b])) as Array<Record<string, unknown>>
+      const article = flat.find((b) => b['@type'] === 'Article')
+      expect(article, `${slug} Article JSON-LD`).toBeDefined()
+      const images = ([] as unknown[]).concat(article!['image'] as unknown)
+      const urls = images.map((i) => (typeof i === 'string' ? i : String((i as { url?: string }).url)))
+      expect(urls.some((u) => u.includes(`project=${slug}`)), `${slug} JSON-LD image ${urls}`).toBe(true)
+    }
+  })
+})

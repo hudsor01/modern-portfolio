@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { getOnly } from './_helpers/settle'
 
 /**
  * Contact Page E2E Tests
@@ -91,4 +92,28 @@ test('contact shows one canonical revenue data-stat and no other', async ({ page
   await expect(page.locator('[data-stat="revenue"]')).toHaveCount(1)
   await expect(page.locator('[data-stat-label="revenue"]')).toHaveText('Revenue Impact')
   await expect(page.locator('[data-stat]')).toHaveCount(1)
+})
+
+test('contact Featured Work lists three previews as aria-hidden thumbnails', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'checked once, on chromium')
+  const hits = await getOnly(page)
+  await page.goto('/contact')
+  await page.waitForLoadState('networkidle')
+
+  const heading = page.getByRole('heading', { name: 'Featured Work' })
+  await expect(heading).toBeVisible()
+  const container = heading.locator('xpath=..')
+  const links = container.locator('a[href^="/projects/"]')
+  await expect(links).toHaveCount(3)
+  expect(await links.evaluateAll((els) => els.map((el) => el.getAttribute('href')))).toEqual([
+    '/projects/revenue-kpi',
+    '/projects/forecast-pipeline-intelligence',
+    '/projects/partnership-program-implementation',
+  ])
+  await expect(container.locator('img')).toHaveCount(0)
+  const previews = container.locator('[data-slot="project-preview"]')
+  await expect(previews).toHaveCount(3)
+  for (let i = 0; i < 3; i += 1) await expect(previews.nth(i)).toHaveAttribute('aria-hidden', 'true')
+  await expect(page.getByText('$240K')).toHaveCount(0)
+  expect(hits.serverActions, 'no server action may reach the network').toBe(0)
 })
