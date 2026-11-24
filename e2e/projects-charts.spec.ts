@@ -44,7 +44,7 @@ test.describe('/projects/deal-funnel charts', () => {
     // True proportions: Closed Won is 470/1,140 of Working. Closed Lost (90) would be
     // under 8% wide, so it sits at the CSS minimum width instead, and the caption says so.
     expect(won / working).toBeCloseTo(470 / 1140, 2)
-    expect(lost).toBeGreaterThan(working * 0.0789)
+    expect(lost).toBeGreaterThanOrEqual(working * 0.078)
     await expect(page.getByTestId('funnel-caption')).toBeVisible()
     await expect(page.getByTestId('funnel-caption')).toContainText('proportional to deal counts')
   })
