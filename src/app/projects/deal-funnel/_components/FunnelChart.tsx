@@ -11,15 +11,15 @@ interface FunnelChartProps {
 
 export function FunnelChart({ stages, overallConversionRate }: FunnelChartProps) {
   return (
-    <div className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out mb-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <ChartHeader
           title="Sales Pipeline Funnel"
-          description="Deal progression through stages"
+          description="Share of all opportunities in each stage"
           headingLevel={2}
         />
         <div className="text-right">
-          <p className="typography-small">Overall Conversion</p>
+          <p className="typography-small">Win Rate (of closed deals)</p>
           <p className="typography-h3">{overallConversionRate}%</p>
         </div>
       </div>

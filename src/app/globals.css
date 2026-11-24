@@ -504,6 +504,10 @@ input, textarea, select {
   box-shadow: var(--shadow-md);
 }
 
+.funnel-stage {
+  clip-path: polygon(0 0, 100% 0, calc(100% - 1rem) 100%, 1rem 100%);
+}
+
 .hero-name-gradient {
   color: var(--color-foreground);
 }

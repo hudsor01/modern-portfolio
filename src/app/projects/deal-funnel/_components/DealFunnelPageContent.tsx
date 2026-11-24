@@ -7,7 +7,7 @@ import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
-import { formatCurrency, formatNumber, formatPercentage } from '@/lib/data-formatters'
+import { formatCurrency, formatNumber } from '@/lib/data-formatters'
 
 import {
   initialFunnelStages,
@@ -18,17 +18,16 @@ import { ChartsGrid } from './ChartsGrid'
 import { NarrativeSections } from './NarrativeSections'
 
 export default function DealFunnel() {
-  // Derived calculations
-  const totalOpportunities = initialFunnelStages[0]?.count ?? 0
-  const closedDeals =
-    initialFunnelStages.length > 0
-      ? (initialFunnelStages[initialFunnelStages.length - 1]?.count ?? 0)
-      : 0
-  const avgDealSize =
-    initialFunnelStages.length > 0
-      ? Math.round(initialFunnelStages[initialFunnelStages.length - 1]?.avg_deal_size ?? 0)
-      : 0
+  // Derived calculations. The export carries three stages (Working, Closed Won,
+  // Closed Lost); "closed deals" and deal size are the Closed Won stage, not the
+  // last array entry (that is Closed Lost).
+  const totalOpportunities = initialFunnelStages.reduce((sum, stage) => sum + stage.count, 0)
+  const wonStage = initialFunnelStages.find((stage) => stage.name === 'Closed Won')
+  const lostStage = initialFunnelStages.find((stage) => stage.name === 'Closed Lost')
+  const closedDeals = wonStage?.count ?? 0
+  const avgDealSize = Math.round(wonStage?.avg_deal_size ?? 0)
   const totalRevenue = closedDeals * avgDealSize
+  const closedTotal = closedDeals + (lostStage?.count ?? 0)
 
   const avgSalesCycle =
     initialPartnerConversion.length > 0
@@ -38,8 +37,9 @@ export default function DealFunnel() {
         )
       : 0
 
+  // Win rate of deals that have closed (won / (won + lost)).
   const overallConversionRate =
-    totalOpportunities > 0 ? ((closedDeals / totalOpportunities) * 100).toFixed(1) : '0.0'
+    closedTotal > 0 ? ((closedDeals / closedTotal) * 100).toFixed(1) : '0.0'
 
   const stageConversions =
     initialConversionRates.length > 0
@@ -87,7 +87,7 @@ export default function DealFunnel() {
       icon: Target,
       label: 'Won',
       value: formatNumber(closedDeals),
-      subtitle: 'Closed Deals',
+      subtitle: 'Closed Won Deals',
       variant: 'secondary' as const,
     },
     {
@@ -101,9 +101,9 @@ export default function DealFunnel() {
     {
       id: 'sales-cycle',
       icon: Clock,
-      label: 'Average',
+      label: 'Median',
       value: `${avgSalesCycle}d`,
-      subtitle: 'Days to Close',
+      subtitle: 'Median Days to Close',
       variant: 'secondary' as const,
     },
   ]
@@ -128,17 +128,14 @@ export default function DealFunnel() {
         title="Deal Pipeline Analytics"
         description="Track deal progression through your sales funnel, identify bottlenecks, and optimize conversion rates at each stage."
         tags={[
-          {
-            label: `Conversion: ${formatPercentage(parseFloat(overallConversionRate) / 100)}`,
-            variant: 'primary',
-          },
+          { label: `Won: ${formatNumber(closedDeals)} deals`, variant: 'primary' },
           {
             label: `Avg Deal: ${formatCurrency(avgDealSize, { compact: true })}`,
             variant: 'secondary',
           },
-          { label: `Sales Cycle: ${avgSalesCycle}d`, variant: 'primary' },
+          { label: `Median Cycle: ${avgSalesCycle}d`, variant: 'primary' },
           {
-            label: `Revenue: ${formatCurrency(totalRevenue, { compact: true })}`,
+            label: `Won Revenue: ${formatCurrency(totalRevenue, { compact: true })}`,
             variant: 'secondary',
           },
         ]}

@@ -1,7 +1,6 @@
 'use client'
 
 import { SectionCard } from '@/components/ui/section-card'
-import { ChartContainer } from '@/components/ui/chart-container'
 import { FunnelChart } from './FunnelChart'
 import { ConversionChart } from './ConversionChart'
 import { VelocityChart } from './VelocityChart'
@@ -33,41 +32,23 @@ export function ChartsGrid({
       {/* Main Funnel Chart wrapped in SectionCard */}
       <SectionCard
         title="Sales Funnel Analysis"
-        description="Visual representation of deal progression through each stage of the sales pipeline"
+        description="Opportunities by stage from a 2024 partner-program export. These are not the pipeline figures in the case study below."
         className="mb-8"
       >
         <DataProvenance variant="derived" className="mb-4" />
-        <ChartContainer
-          title="Deal Stage Funnel"
-          description={`Overall conversion rate: ${overallConversionRate}%`}
-          size="auto"
-        >
-          <FunnelChart stages={funnelStages} overallConversionRate={overallConversionRate} />
-        </ChartContainer>
+        <FunnelChart stages={funnelStages} overallConversionRate={overallConversionRate} />
       </SectionCard>
 
       {/* Conversion Analytics wrapped in SectionCard */}
       <SectionCard
         title="Conversion Analytics"
-        description="Detailed analysis of stage-to-stage conversion rates and sales velocity"
+        description="Stage conversion rates are illustrative; sales velocity is derived from the 2024 partner-program export."
         className="mb-8"
       >
         <DataProvenance variant="illustrative" className="mb-4" />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <ChartContainer
-            title="Stage Conversion Rates"
-            description="Conversion rates between each stage of the sales funnel"
-            size="md"
-          >
-            <ConversionChart stageConversions={stageConversions} />
-          </ChartContainer>
-          <ChartContainer
-            title="Sales Velocity by Partner"
-            description="Average sales cycle duration across different partner channels"
-            size="md"
-          >
-            <VelocityChart partnerConversion={partnerConversion} />
-          </ChartContainer>
+          <ConversionChart stageConversions={stageConversions} />
+          <VelocityChart partnerConversion={partnerConversion} />
         </div>
       </SectionCard>
     </>
