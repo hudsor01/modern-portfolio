@@ -7,6 +7,7 @@ import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { formatNumber, formatPercentage } from '@/lib/data-formatters'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { ogImageUrl } from '@/lib/absolute-url'
 import { NarrativeSections } from './NarrativeSections'
 import { IntelligenceModulesGrid } from './IntelligenceModulesGrid'
 
@@ -96,6 +97,11 @@ export default function ForecastPipelineIntelligenceProject() {
   return (
     <>
       <ProjectJsonLd
+        image={ogImageUrl({
+          title: 'Forecast Accuracy & Pipeline Intelligence System',
+          subtitle: 'Revenue Operations Project',
+          project: 'forecast-pipeline-intelligence',
+        })}
         title="Forecast Accuracy & Pipeline Intelligence System"
         description="Forecasting system that improved accuracy from 63% to 94% and reduced slippage from 26% to 19%"
         slug="forecast-pipeline-intelligence"

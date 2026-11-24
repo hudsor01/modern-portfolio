@@ -6,6 +6,7 @@ import { useTabQueryState } from '@/components/projects/use-tab-query-state'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { ogImageUrl } from '@/lib/absolute-url'
 import { commissionMetrics } from '../data/constants'
 import { formatCurrency, formatPercentage } from '@/lib/data-formatters'
 import { ProcessingMetrics } from './ProcessingMetrics'
@@ -60,6 +61,11 @@ export default function CommissionOptimization() {
   return (
     <>
       <ProjectJsonLd
+        image={ogImageUrl({
+          title: 'Commission & Incentive Optimization System',
+          subtitle: 'Revenue Operations Project',
+          project: 'commission-optimization',
+        })}
         title="Commission & Incentive Optimization System"
         description="Advanced commission management and partner incentive optimization platform managing $254K+ commission structures with 34.2% performance improvement and 87.5% automation efficiency."
         slug="commission-optimization"

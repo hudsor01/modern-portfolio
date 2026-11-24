@@ -13,6 +13,7 @@ export const metadata = genMeta({
   path: '/projects/forecast-pipeline-intelligence',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
+  ogProject: 'forecast-pipeline-intelligence',
 })
 
 export default async function ForecastPipelineIntelligencePage() {

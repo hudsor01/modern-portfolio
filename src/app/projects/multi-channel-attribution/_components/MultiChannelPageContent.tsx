@@ -7,6 +7,7 @@ import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { ogImageUrl } from '@/lib/absolute-url'
 import { formatCurrency, formatNumber } from '@/lib/data-formatters'
 import { attributionMetrics } from '../data/constants'
 import { formatPercent } from '../utils'
@@ -65,6 +66,11 @@ export default function MultiChannelAttribution() {
   return (
     <>
       <ProjectJsonLd
+        image={ogImageUrl({
+          title: 'Multi-Channel Attribution Analytics Dashboard',
+          subtitle: 'Revenue Operations Project',
+          project: 'multi-channel-attribution',
+        })}
         title="Multi-Channel Attribution Analytics Dashboard"
         description="ML-powered marketing attribution analytics tracking customer journeys across 12+ touchpoints with 92.4% attribution accuracy and $2.3M ROI optimization."
         slug="multi-channel-attribution"

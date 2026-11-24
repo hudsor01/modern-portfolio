@@ -13,6 +13,7 @@ export const metadata = genMeta({
   path: '/projects/commission-optimization',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
+  ogProject: 'commission-optimization',
 })
 
 export default async function CommissionOptimizationPage() {
