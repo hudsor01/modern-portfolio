@@ -87,18 +87,18 @@ export default function PipelineCoverageCalculatorPage() {
           <section className="mt-16 max-w-3xl">
             <h2 className="mb-4">Why the “3× pipeline” rule is wrong for most teams</h2>
             <div className="space-y-4 text-muted-foreground leading-relaxed">
-              <p>
+              <p className="text-base">
                 The 3× rule is everywhere because it’s easy to remember — but it’s only correct for
                 a team winning roughly one in three qualified opportunities. The real relationship
                 is simple: <strong>required coverage ≈ 1 ÷ win rate.</strong>
               </p>
-              <p>
+              <p className="text-base">
                 If you win <strong>15%</strong> of opps, 3× coverage leaves you ~55% short of the
                 pipeline you need — you’ll miss quota while believing you’re covered. If you win{' '}
                 <strong>40%</strong>, 3× has your reps chasing 17% more pipeline than necessary,
                 burning capacity that should go into working live deals.
               </p>
-              <p>
+              <p className="text-base">
                 Coverage also only counts pipeline that can actually close. Stalled deals, no
                 compelling event, close dates three quarters in the past — strip them out with the
                 “% truly qualified” control, because covered-on-paper isn’t covered.

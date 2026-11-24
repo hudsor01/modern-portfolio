@@ -33,7 +33,7 @@ const FAQS: Array<{ question: string; answer: string }> = [
   {
     question: 'What is the most common RevOps maturity mistake?',
     answer:
-      'Buying technology that is more mature than your data and process can support — automating a broken process just produces broken outputs faster, and AI or attribution tools inherit whatever quality your CRM data already has. The scorecard flags this "tools you can\'t feed" gap when your technology score outruns your data or process score.',
+      'Buying technology that is more mature than your data and process can support — automating a broken process just produces broken outputs faster, and AI or attribution tools inherit whatever quality your CRM data already has. The scorecard flags this “tools you can’t feed” gap when your technology score outruns your data or process score.',
   },
   {
     question: 'What is the average RevOps maturity level?',
@@ -76,7 +76,7 @@ export default function RevOpsMaturityScorecardPage() {
         <main
           id="main-content"
           tabIndex={-1}
-          className="max-w-6xl mx-auto px-6 lg:px-8 pt-24 pb-20 lg:pt-32"
+          className="max-w-5xl mx-auto px-6 lg:px-8 pt-24 pb-20 lg:pt-32"
         >
           <header className="mb-10 max-w-3xl">
             <ToolBreadcrumb trail={TRAIL} />
@@ -94,20 +94,20 @@ export default function RevOpsMaturityScorecardPage() {
           <section className="mt-16 max-w-3xl">
             <h2 className="mb-4">Why your weakest pillar is your ceiling</h2>
             <div className="space-y-4 text-muted-foreground leading-relaxed">
-              <p>
+              <p className="text-base">
                 RevOps maturity isn’t an average you can buy your way out of — it’s gated by your
                 weakest pillar. A best-in-class tech stack sitting on dirty CRM data produces
                 confident, automated, wrong answers. That’s why the scorecard points you at the
                 lowest-scoring pillar instead of the one that’s most fun to improve.
               </p>
-              <p>
+              <p className="text-base">
                 The most expensive mistake is buying <strong>technology</strong> more mature than
                 your <strong>data</strong> and <strong>process</strong> can support. Automating a
                 broken process just makes broken outputs faster; AI and attribution tools inherit
                 whatever quality your data already has. The scorecard flags this “tools you can’t
                 feed” gap when it sees it.
               </p>
-              <p>
+              <p className="text-base">
                 The honest order of operations is almost always the same: document the process,
                 clean the data, then let technology automate what’s now repeatable — with alignment
                 making sure every team is optimizing the same revenue number.
