@@ -54,8 +54,7 @@ export default function QuotaTerritoryManagementProject() {
       description:
         'Multi-factor model incorporating territory potential, historical performance, experience level, and market conditions',
       outcomes: [
-        '18% reduction in sales rep churn',
-        'Improved rep satisfaction scores by 24%',
+        'Sales rep turnover reduced from 28% to 10%',
         'Reduced turnover-related revenue impact',
       ],
     },
@@ -64,7 +63,7 @@ export default function QuotaTerritoryManagementProject() {
       description:
         'Machine learning models predicting territory revenue potential and optimal rep placement',
       outcomes: [
-        '28% improvement in forecast accuracy',
+        'Forecast accuracy improved from 64% to 92%',
         'Better territory-to-rep matching',
         'Optimized sales coverage',
       ],
@@ -84,7 +83,7 @@ export default function QuotaTerritoryManagementProject() {
       description:
         'Advanced simulation tools for evaluating different territory assignments and quota structures',
       outcomes: [
-        'Reduced planning cycle by 60%',
+        'Planning cycle reduced from 8 weeks to 3 weeks',
         'Better executive visibility into trade-offs',
         'Faster implementation of changes',
       ],
