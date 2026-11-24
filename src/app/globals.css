@@ -87,8 +87,40 @@ label[for],
     margin-bottom: 0.75rem;
   }
 
+  /* Reading column: ~70 characters per line at 18px, body larger than UI text,
+     and a three-step heading scale (h2 > h3 > h4) in the serif, none of it caps. */
+  .blog-content {
+    max-width: 42rem;
+  }
+
+  .blog-content p,
+  .blog-content li {
+    font-size: var(--font-size-xl);
+    line-height: 1.75;
+  }
+
   .blog-content p {
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .blog-content h2 {
+    font-size: var(--font-size-4xl);
+  }
+
+  .blog-content h3 {
+    font-size: var(--font-size-3xl);
+  }
+
+  .blog-content h4,
+  .blog-content h5,
+  .blog-content h6 {
+    font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-tight);
+    text-transform: none;
+    line-height: var(--line-height-snug);
+    color: var(--color-foreground);
   }
 
   .blog-content a {
