@@ -6,10 +6,10 @@ import { ChartHeader } from '@/components/ui/chart-container'
 
 interface FunnelChartProps {
   stages: FunnelStage[]
-  overallConversionRate: string
+  winRate: string
 }
 
-export function FunnelChart({ stages, overallConversionRate }: FunnelChartProps) {
+export function FunnelChart({ stages, winRate }: FunnelChartProps) {
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
@@ -20,7 +20,7 @@ export function FunnelChart({ stages, overallConversionRate }: FunnelChartProps)
         />
         <div className="text-right">
           <p className="typography-small">Win Rate (of closed deals)</p>
-          <p className="typography-h3">{overallConversionRate}%</p>
+          <p className="typography-h3">{winRate}%</p>
         </div>
       </div>
       <DealStageFunnelChart stages={stages} />

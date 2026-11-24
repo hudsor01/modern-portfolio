@@ -40,8 +40,7 @@ export default function DealFunnel() {
       : 0
 
   // Win rate of deals that have closed (won / (won + lost)).
-  const overallConversionRate =
-    closedTotal > 0 ? ((closedDeals / closedTotal) * 100).toFixed(1) : '0.0'
+  const winRate = closedTotal > 0 ? ((closedDeals / closedTotal) * 100).toFixed(1) : '0.0'
 
   const stageConversions =
     initialConversionRates.length > 0
@@ -148,7 +147,7 @@ export default function DealFunnel() {
         {/* Charts Grid - Sales Funnel & Conversion Analytics */}
         <ChartsGrid
           funnelStages={initialFunnelStages}
-          overallConversionRate={overallConversionRate}
+          winRate={winRate}
           stageConversions={stageConversions}
           partnerConversion={initialPartnerConversion}
         />

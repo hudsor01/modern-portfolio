@@ -16,14 +16,14 @@ interface StageConversion {
 
 interface ChartsGridProps {
   funnelStages: FunnelStage[]
-  overallConversionRate: string
+  winRate: string
   stageConversions: StageConversion[]
   partnerConversion: PartnerConversion[]
 }
 
 export function ChartsGrid({
   funnelStages,
-  overallConversionRate,
+  winRate,
   stageConversions,
   partnerConversion,
 }: ChartsGridProps) {
@@ -36,7 +36,7 @@ export function ChartsGrid({
         className="mb-8"
       >
         <DataProvenance variant="derived" className="mb-4" />
-        <FunnelChart stages={funnelStages} overallConversionRate={overallConversionRate} />
+        <FunnelChart stages={funnelStages} winRate={winRate} />
       </SectionCard>
 
       {/* Conversion Analytics wrapped in SectionCard */}
