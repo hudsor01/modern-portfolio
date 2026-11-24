@@ -4,12 +4,11 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 /**
- * Field-boundary contrast rule (WCAG 1.4.11). Form controls draw their edge with
- * `border-input`, so `--color-input` must stay visible against the page and card
- * surfaces: either the same value as `--color-border` (the resting look) or at
- * least 3:1 against `--color-background` and `--color-card`. A near-white
- * `--color-input` made every field boundary vanish once the unlayered universal
- * border-color rule was removed.
+ * Field-boundary contrast rule (WCAG 1.4.11 non-text contrast). Form controls draw
+ * their edge with `border-input`, and that edge is the only cue that a field exists,
+ * so `--color-input` must be at least 3:1 against both `--color-background` and
+ * `--color-card`. It is deliberately darker than `--color-border` (about 1.4:1),
+ * which decorates cards and dividers and is not required to meet 3:1.
  */
 const css = readFileSync(join(process.cwd(), 'src/app/globals.css'), 'utf8')
 
@@ -44,15 +43,33 @@ function contrast(a: string, b: string): number {
   return (hi + 0.05) / (lo + 0.05)
 }
 
+const MIN_CONTRAST = 3
+
 describe('field boundary tokens', () => {
-  it('--color-input keeps the resting border colour or 3:1 against its surfaces', () => {
-    const input = token('--color-input')
-    if (input === token('--color-border')) return
-    expect(contrast(input, token('--color-background'))).toBeGreaterThanOrEqual(3)
-    expect(contrast(input, token('--color-card'))).toBeGreaterThanOrEqual(3)
+  it('computes contrast correctly (known pairs)', () => {
+    expect(contrast('oklch(1 0 0)', 'oklch(0 0 0)')).toBeCloseTo(21, 0)
+    expect(contrast('oklch(0.5 0 0)', 'oklch(0.5 0 0)')).toBeCloseTo(1, 5)
   })
 
-  it('--color-input is never the near-white card surface', () => {
-    expect(token('--color-input')).not.toBe(token('--color-card'))
+  it('the former value (equal to --color-border) fails 3:1, so the guard can fail', () => {
+    const old = 'oklch(0.88 0.005 250)'
+    expect(contrast(old, token('--color-background'))).toBeLessThan(MIN_CONTRAST)
+    expect(contrast(old, token('--color-card'))).toBeLessThan(MIN_CONTRAST)
+  })
+
+  it('--color-input is at least 3:1 against --color-background', () => {
+    expect(contrast(token('--color-input'), token('--color-background'))).toBeGreaterThanOrEqual(
+      MIN_CONTRAST
+    )
+  })
+
+  it('--color-input is at least 3:1 against --color-card', () => {
+    expect(contrast(token('--color-input'), token('--color-card'))).toBeGreaterThanOrEqual(
+      MIN_CONTRAST
+    )
+  })
+
+  it('--color-input is its own value, not an alias of --color-border', () => {
+    expect(token('--color-input')).not.toBe(token('--color-border'))
   })
 })
