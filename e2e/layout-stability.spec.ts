@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 import { postCards } from './_helpers/blog'
 import { databaseAvailable, NEEDS_DATABASE } from './_helpers/database'
 import { settlePage } from './_helpers/settle'
+import { PROJECT_COUNT } from './_helpers/project-slugs'
 
 /**
  * BUG-02 + BUG-05 guard: no horizontal overflow and CLS < 0.1 on every audited
@@ -32,6 +33,9 @@ const PAGES = [
   '/this-page-does-not-exist',
 ]
 const WIDTHS = [360, 390, 768, 1440]
+
+/** Card preview padding that the rows must fit inside: `pt-12` (48px, clears the legend and arrow) + `pb-3` (12px). */
+const CARD_PREVIEW_PADDING_Y = 48 + 12
 
 test.describe.configure({ mode: 'parallel' })
 
@@ -108,7 +112,7 @@ test.describe('Project preview geometry (UI-06)', () => {
   ]
   for (const viewport of VIEWPORTS) {
     for (const [path, expected] of [
-      ['/projects', 14],
+      ['/projects', PROJECT_COUNT],
       ['/', 4],
     ] as const) {
       test(`preview boxes keep 16:10 on ${path} @${viewport.width}px`, async ({ browser }, testInfo) => {
@@ -151,7 +155,7 @@ test.describe('Project preview geometry (UI-06)', () => {
       await page.goto('/projects')
       await settlePage(page)
       const cards = page.locator('main article')
-      await expect(cards).toHaveCount(14)
+      await expect(cards).toHaveCount(PROJECT_COUNT)
 
       const report = await cards.evaluateAll((els) => {
         const box = (el: Element | null) => {
@@ -168,7 +172,7 @@ test.describe('Project preview geometry (UI-06)', () => {
           metrics: box(el.querySelector('[data-slot="preview-metrics"]')),
         }))
       })
-      expect(report).toHaveLength(14)
+      expect(report).toHaveLength(PROJECT_COUNT)
 
       let rowCards = 0
       let metricCards = 0
@@ -177,7 +181,7 @@ test.describe('Project preview geometry (UI-06)', () => {
         const media = card.media as Box
         if (card.rows) {
           rowCards += 1
-          expect(card.rows.height).toBeLessThan(media.height - 52.5)
+          expect(card.rows.height).toBeLessThanOrEqual(media.height - CARD_PREVIEW_PADDING_Y)
           for (const row of card.rowBoxes as Box[]) {
             if (card.legend) expect(intersects(row, card.legend)).toBe(false)
             if (card.badge) expect(intersects(row, card.badge)).toBe(false)

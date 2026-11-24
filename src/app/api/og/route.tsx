@@ -170,7 +170,12 @@ export async function GET(request: NextRequest) {
   )
 }
 
-const PANEL_BAR_SCALE = 3.76
+// Results panel box (border-box): the bar track is what is left of the width after
+// padding and border, and a bar at 100% fills it exactly.
+const PANEL_WIDTH_PX = 440
+const PANEL_PADDING_PX = 32
+const PANEL_BORDER_PX = 1
+const PANEL_BAR_SCALE = (PANEL_WIDTH_PX - 2 * PANEL_PADDING_PX - 2 * PANEL_BORDER_PX) / 100
 
 function projectOgCard({
   project,
@@ -252,11 +257,11 @@ function projectOgCard({
               display: 'flex',
               flexDirection: 'column',
               alignSelf: 'center',
-              width: '440px',
+              width: `${PANEL_WIDTH_PX}px`,
               backgroundColor: '#fcfdff',
-              border: '1px solid #d5d8db',
+              border: `${PANEL_BORDER_PX}px solid #d5d8db`,
               borderRadius: '16px',
-              padding: '32px',
+              padding: `${PANEL_PADDING_PX}px`,
               gap: '24px',
             }}
           >
