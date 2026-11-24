@@ -395,8 +395,9 @@ test.describe('Projects showcase (UI-05, UI-06)', () => {
       })
       await page.goto(path)
       await page.waitForLoadState('networkidle')
-      // The request listener must be able to observe images at all (header logo etc.).
-      expect(urls.length, `${path} issued image requests`).toBeGreaterThan(0)
+      // Home legitimately loads /images/richard.jpg, which proves the listener sees
+      // image requests; /projects and /contact are photo-free, so zero is the pass state.
+      if (path === '/') expect(urls.length, 'home issued image requests').toBeGreaterThan(0)
       for (const url of urls) expect(url).not.toMatch(/images\/projects\//)
       if (path !== '/') {
         for (const url of urls) expect(new URL(url, 'http://x').host).not.toBe('images.unsplash.com')
