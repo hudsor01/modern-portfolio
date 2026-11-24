@@ -4,6 +4,7 @@
  */
 
 import Image from 'next/image'
+import { YEARS_EXPERIENCE, YEARS_EXPERIENCE_LABEL } from '@/lib/stats'
 
 export function AboutSection() {
   return (
@@ -24,26 +25,16 @@ export function AboutSection() {
 
           {/* About Content */}
           <div className="flex-1 text-center lg:text-left space-y-4">
-            <h3 className="border-none pb-0 mb-4">Revenue Operations Professional</h3>
-            <p>10+ Years Experience | Dallas-Fort Worth, TX</p>
+            <h3 className="border-none pb-0 mb-4">About</h3>
             <p>
-              Data and revenue operations professional with nearly a decade of experience across
-              digital marketing, business systems, partner operations and analytics, after six years
-              as an IT specialist in the Texas Army National Guard. Proven expertise in developing
-              SQL logic, optimizing sales funnels and building automated systems that scale.
+              {YEARS_EXPERIENCE} {YEARS_EXPERIENCE_LABEL} | Dallas-Fort Worth, TX
             </p>
-
-            <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
-              <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-border">
-                SalesLoft Certified Administrator
-              </span>
-              <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary border border-border">
-                HubSpot Revenue Operations Certified
-              </span>
-              <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-accent/10 text-accent-text border border-border">
-                Revenue Operations
-              </span>
-            </div>
+            <p>
+              Data and revenue operations professional with experience across digital marketing,
+              business systems, partner operations and analytics, after six years as an IT
+              specialist in the Texas Army National Guard. Proven expertise in developing SQL logic,
+              optimizing sales funnels and building automated systems that scale.
+            </p>
           </div>
         </div>
       </div>

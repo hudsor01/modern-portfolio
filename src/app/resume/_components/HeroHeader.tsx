@@ -38,20 +38,11 @@ export function HeroHeader({
         <span className="block hero-name-gradient">Richard Hudson</span>
       </h1>
 
-      <h2 className="max-w-4xl mx-auto mb-6">
-        <span className="inline-flex items-center rounded-full bg-primary/10 border border-border px-6 py-3 text-primary font-medium">
+      <h2 className="mx-auto mb-6 text-lg">
+        <span className="inline-flex items-center rounded-full bg-primary/10 border border-border px-5 py-2 text-primary font-medium">
           Revenue Operations Professional
         </span>
       </h2>
-
-      <div className="flex flex-col items-center mb-8">
-        <p className="max-w-3xl mx-auto text-center">
-          Experienced Revenue Operations Professional with a proven track record of driving business
-          growth through data-driven insights, process optimization, and strategic operational
-          improvements. Expert in building scalable systems that increase efficiency and revenue
-          performance.
-        </p>
-      </div>
 
       {/* Actions: Download is primary, Preview secondary, Connect tertiary */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 pt-8">

@@ -30,7 +30,7 @@ test.describe('Resume Page', () => {
   test('displays all resume sections when not in PDF view', async ({ page }) => {
     // Target each section by an unambiguous heading actually rendered on
     // the page. The page does not have a top-level "About" or "Experience"
-    // heading (About uses sub-heading "Revenue Operations Professional",
+    // heading (the hero pill is the "Revenue Operations Professional" heading,
     // Experience renders one h3 per job). Assert headings inside <main>
     // so we don't pick up the hidden mobile navbar links.
     const main = page.locator('main')
@@ -56,7 +56,7 @@ test.describe('Resume Page', () => {
 
   test('toggles between resume content and PDF view', async ({ page }) => {
     // Initially should show resume content (not PDF). The About section's
-    // actual heading is "Revenue Operations Professional"; assert that's
+    // hero heading is "Revenue Operations Professional"; assert that's
     // visible in main rather than searching the whole DOM (which picks up
     // the hidden mobile navbar link "About").
     const aboutSection = page
