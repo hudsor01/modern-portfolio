@@ -20,12 +20,35 @@ vi.mock('@sentry/nextjs', () => sentry)
 
 const root = process.cwd()
 const read = (rel: string) => readFileSync(join(root, rel), 'utf8')
-const strip = (s: string) =>
-  s
-    .replace(/\/\*[\s\S]*?\*\//g, '')
-    .split('\n')
-    .filter((l) => !l.trim().startsWith('//'))
-    .join('\n')
+/**
+ * Source with comments removed (block, whole-line and trailing `//`), leaving string
+ * and template literals intact, so a guard cannot be satisfied or tripped by prose in a
+ * comment such as "// never call replayIntegration here".
+ */
+const strip = (src: string): string => {
+  let out = ''
+  let i = 0
+  while (i < src.length) {
+    const ch = src.charAt(i)
+    const next = src.charAt(i + 1)
+    if (ch === '"' || ch === "'" || ch === '`') {
+      let j = i + 1
+      while (j < src.length && src.charAt(j) !== ch) j += src.charAt(j) === '\\' ? 2 : 1
+      out += src.slice(i, j + 1)
+      i = j + 1
+    } else if (ch === '/' && next === '*') {
+      const end = src.indexOf('*/', i + 2)
+      i = end === -1 ? src.length : end + 2
+    } else if (ch === '/' && next === '/') {
+      const end = src.indexOf('\n', i)
+      i = end === -1 ? src.length : end
+    } else {
+      out += ch
+      i += 1
+    }
+  }
+  return out
+}
 
 function fakeWin(opts: {
   readyState: string
@@ -154,6 +177,33 @@ describe('scheduleReplayLoad', () => {
   })
 })
 
+describe('strip (comment remover used by the source guards)', () => {
+  it('removes block, whole-line and trailing comments', () => {
+    const out = strip('a /* replayIntegration */ b\n// replayIntegration\nc // replayIntegration\n')
+    expect(out).not.toContain('replayIntegration')
+    expect(out).toContain('a')
+    expect(out).toContain('c')
+  })
+
+  it('keeps code and string literals that merely contain comment markers', () => {
+    const out = strip(
+      'const u = \'https://x.test/a\'; const v = "// not a comment"; const w = `/* nor this */`'
+    )
+    expect(out).toContain("'https://x.test/a'")
+    expect(out).toContain('"// not a comment"')
+    expect(out).toContain('`/* nor this */`')
+  })
+
+  it('does not let a comment mentioning replayIntegration satisfy or trip a guard', () => {
+    expect(
+      strip("// import { replayIntegration } from '@sentry/nextjs'\nconst a = 1")
+    ).not.toContain('replayIntegration')
+    expect(strip("import { replayIntegration } from '@sentry/nextjs' // lazy")).toContain(
+      'replayIntegration'
+    )
+  })
+})
+
 describe('source guards', () => {
   const client = strip(read('instrumentation-client.ts'))
   const loader = strip(read('src/lib/sentry-lazy-replay.ts'))
@@ -203,7 +253,7 @@ describe('source guards', () => {
     }
     walk('src')
     for (const f of files) {
-      expect(read(f), f).not.toMatch(/require\(\s*['"]@sentry\//)
+      expect(strip(read(f)), f).not.toMatch(/require\(\s*['"]@sentry\//)
     }
   })
 
