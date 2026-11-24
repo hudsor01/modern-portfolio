@@ -69,3 +69,28 @@ export function decodeHtmlEntities(text: string): string {
     .replace(/&#39;/g, "'")
     .replace(/&amp;/g, '&')
 }
+
+/** Lower-cased plain text of a title/heading: markup, entities, emphasis marks and spacing removed. */
+export function normalizeTitle(value: string): string {
+  return decodeHtmlEntities(value.replace(/<[^>]*>/g, ''))
+    .replace(/[*_`]/g, '')
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase()
+}
+
+/**
+ * Drop a leading `<h1>` to `<h3>` whose text repeats the post title. The page header
+ * already renders the title as the H1, and stored bodies often open with the same
+ * line again. Render-time only: the stored post is never touched. Any other
+ * opening heading is kept.
+ */
+export function stripLeadingTitleHeading(html: string, title: string): string {
+  const m = /^\s*<h([1-3])(?:\s[^>]*)?>([\s\S]*?)<\/h\1>/i.exec(html)
+  if (!m) return html
+  const target = normalizeTitle(title)
+  if (target && normalizeTitle(m[2] ?? '') === target) return html.slice(m[0].length)
+  return html
+}

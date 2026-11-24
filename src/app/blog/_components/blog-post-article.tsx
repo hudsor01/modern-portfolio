@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Copy, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { markdownToHtml, decodeHtmlEntities } from '@/lib/markdown'
+import { markdownToHtml, decodeHtmlEntities, stripLeadingTitleHeading } from '@/lib/markdown'
 import type { ContentType } from '@/types/blog'
 // Plain `dompurify` (browser-only). Module-load is side-effect-free —
 // the factory only touches `window` when `.sanitize()` is called. We
@@ -91,6 +91,8 @@ const DOMPURIFY_INLINE_CONFIG = {
 interface BlogContentProps {
   content: string
   contentType: ContentType
+  /** Post title: a body that opens by repeating it has that heading dropped at render. */
+  title?: string
   className?: string
   allowCopy?: boolean
 }
@@ -150,6 +152,7 @@ function CodeBlock({ children, className, language = 'text', allowCopy }: CodeBl
 export function BlogPostArticle({
   content,
   contentType = 'MARKDOWN',
+  title,
   className,
   allowCopy = true,
 }: BlogContentProps) {
@@ -207,7 +210,10 @@ export function BlogPostArticle({
   // shipped with a literal <h1> matching the page title.
   const demoteH1 = (html: string): string =>
     html.replace(/<h1(\s[^>]*)?>/gi, '<h2$1>').replace(/<\/h1>/gi, '</h2>')
-  const processedContent = contentType === 'MARKDOWN' ? markdownToHtml(content) : demoteH1(content)
+  const renderedContent = contentType === 'MARKDOWN' ? markdownToHtml(content) : demoteH1(content)
+  const processedContent = title
+    ? stripLeadingTitleHeading(renderedContent, title)
+    : renderedContent
   const sanitizedContent = sanitizeHtml(processedContent, DOMPURIFY_CONFIG)
 
   return (

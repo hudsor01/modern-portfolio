@@ -178,3 +178,25 @@ describe('BlogPostArticle code blocks', () => {
     expect(screen.queryByRole('button')).toBeNull()
   })
 })
+
+describe('BlogPostArticle leading title (B-3)', () => {
+  it('drops a body heading that repeats the post title and keeps the rest', () => {
+    const { container } = render(
+      <BlogPostArticle
+        content={'# My Post\n\nIntro text.\n\n## Real section'}
+        contentType="MARKDOWN"
+        title="My Post"
+      />
+    )
+    const headings = Array.from(container.querySelectorAll('h2,h3')).map((h) => h.textContent)
+    expect(headings).toEqual(['Real section'])
+    expect(container.textContent).toContain('Intro text.')
+  })
+
+  it('renders every heading when no title is supplied', () => {
+    const { container } = render(
+      <BlogPostArticle content={'# My Post\n\nText'} contentType="MARKDOWN" />
+    )
+    expect(container.querySelector('h2')?.textContent).toBe('My Post')
+  })
+})

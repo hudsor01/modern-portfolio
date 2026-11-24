@@ -7,6 +7,8 @@ import { InlineMarkdown } from './inline-markdown'
 import { formatDate } from '@/lib/data-formatters'
 import type { ContentType } from '@/types/blog'
 import { Badge } from '@/components/ui/badge'
+import { CATEGORY_CHIP_CLASSES } from '@/lib/blog-list'
+import { normalizeTitle } from '@/lib/markdown'
 import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
@@ -30,11 +32,14 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
   const authorName = post.author?.name ?? 'Richard Hudson'
   const authorImage = post.author?.avatar ?? '/images/richard.jpg'
   const authorInitials = getAuthorInitials(authorName)
+  // A caption that only repeats the title is a third copy of it above the fold.
+  const showCaption =
+    Boolean(post.featuredImageAlt) &&
+    normalizeTitle(post.featuredImageAlt ?? '') !== normalizeTitle(post.title)
 
   // Build detail items, filtering out nulls
   const detailItems: Array<{ label: string; value: string }> = []
   if (wordCount) detailItems.push({ label: 'Word count', value: wordCount.toLocaleString() })
-  if (post.category?.name) detailItems.push({ label: 'Category', value: post.category.name })
 
   return (
     <article className="portfolio-container pb-10 lg:pb-14">
@@ -59,9 +64,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
                     href={`/blog/category/${post.category.slug}`}
                     className="hover:opacity-80 transition-opacity"
                   >
-                    <Badge variant="secondary" className="uppercase tracking-wide">
-                      {post.category.name}
-                    </Badge>
+                    <span className={CATEGORY_CHIP_CLASSES}>{post.category.name}</span>
                   </Link>
                 )}
                 {publishedDate && (
@@ -126,7 +129,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
                 sizes="(max-width: 768px) 100vw, 960px"
               />
               <div className="absolute inset-0 bg-black/20" />
-              {post.featuredImageAlt && (
+              {showCaption && (
                 <figcaption className="absolute bottom-4 left-4 rounded-md bg-background/80 px-3 py-1 text-xs text-foreground shadow-sm">
                   {post.featuredImageAlt}
                 </figcaption>
@@ -137,7 +140,11 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
 
           {/* Content */}
           <div className="mt-10">
-            <BlogPostArticle content={post.content} contentType={post.contentType as ContentType} />
+            <BlogPostArticle
+              content={post.content}
+              contentType={post.contentType as ContentType}
+              title={post.title}
+            />
           </div>
 
           {/* Tags */}
@@ -169,7 +176,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
           {detailItems.length > 0 && (
             <Card variant="outline" className="p-6">
               <p className="uppercase tracking-wide">Post details</p>
-              <div className="mt-4 space-y-3 text-base">
+              <div className="mt-3 space-y-3 text-base">
                 {detailItems.map((detail) => (
                   <div key={detail.label} className="flex items-center justify-between gap-4">
                     <span className="text-muted-foreground">{detail.label}</span>
@@ -182,19 +189,8 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
 
           {post.author?.bio && (
             <Card variant="outline" className="p-6">
-              <p className="uppercase tracking-wide">About the author</p>
-              <div className="mt-4 flex items-center gap-3">
-                <Avatar className="h-10 w-10 ring-2 ring-border/60">
-                  <AvatarImage src={authorImage} alt={authorName} />
-                  <AvatarFallback className="text-sm font-semibold">
-                    {authorInitials}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p>{authorName}</p>
-                </div>
-              </div>
-              <p className="mt-4">{post.author.bio}</p>
+              <p className="uppercase tracking-wide">About {authorName}</p>
+              <p className="mt-3">{post.author.bio}</p>
             </Card>
           )}
         </aside>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { markdownToHtml, decodeHtmlEntities } from '@/lib/markdown'
+import { markdownToHtml, decodeHtmlEntities, stripLeadingTitleHeading } from '@/lib/markdown'
 
 describe('markdownToHtml', () => {
   it('demotes headings one level so body markdown never emits an <h1>', () => {
@@ -63,5 +63,29 @@ describe('decodeHtmlEntities', () => {
   it('decodes &amp; last so it does not re-introduce other entities', () => {
     // "&amp;lt;" must decode to the literal "&lt;", not to "<"
     expect(decodeHtmlEntities('&amp;lt;')).toBe('&lt;')
+  })
+})
+
+describe('stripLeadingTitleHeading (B-3)', () => {
+  const title = 'Salesloft Admin Basics: Settings and Data Hygiene'
+
+  it('drops an opening heading that repeats the title', () => {
+    const html = markdownToHtml(`# ${title}\n\nFirst paragraph.\n\n## Next`)
+    const out = stripLeadingTitleHeading(html, title)
+    expect(out).not.toContain(title)
+    expect(out).toContain('First paragraph.')
+    expect(out).toContain('<h3>Next</h3>')
+  })
+
+  it('matches through emphasis, curly quotes and case', () => {
+    const html = markdownToHtml('## **It\u2019s Here**\n\nBody')
+    expect(stripLeadingTitleHeading(html, "it's here")).not.toContain('Here')
+  })
+
+  it('keeps an opening heading that is not the title, and a repeated title further down', () => {
+    const other = markdownToHtml('## The Foundation\n\nBody')
+    expect(stripLeadingTitleHeading(other, title)).toBe(other)
+    const later = markdownToHtml(`Intro\n\n## ${title}`)
+    expect(stripLeadingTitleHeading(later, title)).toBe(later)
   })
 })

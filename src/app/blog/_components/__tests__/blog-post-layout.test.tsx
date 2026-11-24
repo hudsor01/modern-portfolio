@@ -10,6 +10,7 @@ vi.mock('next/image', () => ({
 vi.mock('@/components/blog/blog-featured-image', () => ({ BlogFeaturedImage: () => null }))
 vi.mock('../blog-post-article', () => ({ BlogPostArticle: () => null }))
 
+import { CATEGORY_CHIP_CLASSES } from '@/lib/blog-list'
 import { BlogPostLayout } from '../blog-post-layout'
 
 function makePost(overrides: Partial<BlogPostData> = {}): BlogPostData {
@@ -40,7 +41,44 @@ describe('BlogPostLayout', () => {
     expect(text).not.toContain('Published')
     expect(text).not.toContain('Reading time')
     expect(text).toContain('Word count')
-    expect(text).toContain('Category')
+  })
+
+  it('says each fact once: title, category and author (B-3, B-4, B-5)', () => {
+    const { container } = render(
+      <BlogPostLayout
+        post={makePost({
+          title: 'A Post',
+          featuredImage: '/x.jpg',
+          featuredImageAlt: 'A post',
+          author: { name: 'Richard Hudson', bio: 'Bio text', avatar: '/a.jpg' },
+        } as Partial<BlogPostData>)}
+      />
+    )
+    const text = container.textContent ?? ''
+    // Title: H1 only. The image caption would be a second copy.
+    expect(container.querySelectorAll('figcaption')).toHaveLength(0)
+    expect(container.querySelectorAll('h1')).toHaveLength(1)
+    // Category: the header chip only, no "Category" row in the details card.
+    expect(text.split('Revenue Operations').length - 1).toBe(1)
+    // Author: the byline names him once; the About card carries only the bio.
+    expect(text.split('Richard Hudson').length - 1).toBeLessThanOrEqual(2)
+    expect(text).toContain('Bio text')
+    expect(container.querySelectorAll('aside img, aside [data-slot="avatar"]')).toHaveLength(0)
+  })
+
+  it('keeps a caption that adds information beyond the title', () => {
+    const { container } = render(
+      <BlogPostLayout
+        post={makePost({ featuredImage: '/x.jpg', featuredImageAlt: 'Dashboard screenshot' })}
+      />
+    )
+    expect(container.querySelector('figcaption')?.textContent).toBe('Dashboard screenshot')
+  })
+
+  it('uses the same category chip as the /blog cards', () => {
+    const { container } = render(<BlogPostLayout post={makePost()} />)
+    const chip = container.querySelector('a[href^="/blog/category/"] span')
+    expect(chip?.className).toBe(CATEGORY_CHIP_CLASSES)
   })
 
   it('has no top padding on the article', () => {
