@@ -180,12 +180,7 @@ export function ProjectsPageContent({ initialProjects }: ProjectsPageContentProp
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {filteredProjects.map((project: Project, index: number) => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  index={index}
-                  priority={index < 2}
-                />
+                <ProjectCard key={project.id} project={project} index={index} />
               ))}
             </div>
           )}
