@@ -269,7 +269,7 @@ function BlogPagination({
             aria-current={item === page ? 'page' : undefined}
             className={`${PAGE_LINK} ${
               item === page
-                ? 'border-border bg-primary/20 text-primary'
+                ? 'border-primary/30 bg-primary/20 text-primary'
                 : 'border-border text-muted-foreground hover:border-primary/50 hover:text-primary'
             }`}
           >

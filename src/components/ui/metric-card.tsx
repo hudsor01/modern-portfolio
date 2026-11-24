@@ -12,11 +12,11 @@ const metricCardVariants = cva(
   {
     variants: {
       variant: {
-        primary: 'border-border hover:border-primary/40 hover:shadow-primary/10',
-        secondary: 'border-border hover:border-secondary/40 hover:shadow-secondary/10',
-        success: 'border-border hover:border-success/30 hover:shadow-success/10',
-        warning: 'border-border hover:border-warning/30 hover:shadow-warning/10',
-        info: 'border-border hover:border-primary/30 hover:shadow-primary/10',
+        primary: 'border-primary/20 hover:border-primary/40 hover:shadow-primary/10',
+        secondary: 'border-secondary/20 hover:border-secondary/40 hover:shadow-secondary/10',
+        success: 'border-success/20 hover:border-success/30 hover:shadow-success/10',
+        warning: 'border-warning/20 hover:border-warning/30 hover:shadow-warning/10',
+        info: 'border-primary/20 hover:border-primary/30 hover:shadow-primary/10',
       },
       size: {
         sm: 'p-4',

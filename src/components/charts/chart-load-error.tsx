@@ -11,7 +11,7 @@ export function ChartLoadError({ height = 'sm' }: { height?: 'sm' | 'md' | 'lg' 
     <div
       className={cn(
         CHART_BOX[height],
-        'flex items-center justify-center bg-destructive/10 rounded-lg border border-border'
+        'flex items-center justify-center bg-destructive/10 rounded-lg border border-destructive/20'
       )}
     >
       <p>Failed to load chart</p>

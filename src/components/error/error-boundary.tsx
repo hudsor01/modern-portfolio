@@ -94,7 +94,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               {this.props.showErrorDetails &&
                 this.state.error &&
                 process.env.NODE_ENV === 'development' && (
-                  <div className="mb-6 p-4 bg-destructive/5 border border-border rounded-lg text-left">
+                  <div className="mb-6 p-4 bg-destructive/5 border border-destructive/20 rounded-lg text-left">
                     <p className="mb-2 font-mono">{this.state.error.message}</p>
                     {this.state.errorInfo?.componentStack && (
                       <pre className="text-xs text-destructive overflow-auto max-h-32">

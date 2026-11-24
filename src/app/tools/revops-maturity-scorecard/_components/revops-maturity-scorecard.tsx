@@ -170,7 +170,7 @@ export function RevOpsMaturityScorecard() {
 
           {/* Tech-overbuy anti-pattern */}
           {result.techOverbuy && (
-            <div className="mt-4 rounded-xl border border-border bg-destructive/5 p-4">
+            <div className="mt-4 rounded-xl border border-destructive/40 bg-destructive/5 p-4">
               <p>
                 <strong className="text-destructive">Watch out:</strong> your tooling maturity is
                 running ahead of your data and process maturity — the classic{' '}

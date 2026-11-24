@@ -193,7 +193,7 @@ const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
             <div
               className={cn(
                 CHART_BOX[size === 'auto' ? 'lg' : size],
-                'flex flex-col items-center justify-center space-y-4 rounded-lg border border-border bg-destructive/5 text-destructive'
+                'flex flex-col items-center justify-center space-y-4 rounded-lg border border-destructive/20 bg-destructive/5 text-destructive'
               )}
             >
               <AlertCircle className="h-8 w-8" />
