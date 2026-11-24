@@ -24,7 +24,7 @@ const DEFAULT = 3
 /** Pillar score (1–5) → bar fill class. Weakest pillars read warmer. */
 function barColor(score: number): string {
   if (score < 2.6) return 'bg-destructive'
-  if (score < 3.4) return 'bg-amber-500'
+  if (score < 3.4) return 'bg-warning'
   return 'bg-success'
 }
 
