@@ -26,10 +26,25 @@ const ENTRY_PAGES = [
 
 // ---------------------------------------------------------------- scanning
 
-/** Remove comments and the contents of string/template literals (keeps the quotes). */
+/**
+ * Remove comments and the contents of string/template literals (keeps the quotes).
+ * Template-literal `${...}` interpolations are code, so they are scanned (recursively,
+ * including nested templates) rather than stripped.
+ */
 function stripCommentsAndStrings(src: string, keepStrings = false): string {
+  return scanCode(src, 0, keepStrings, false)[0]
+}
+
+/** Scan code from `start`; inside an interpolation, stop at its closing `}` (returned index). */
+function scanCode(
+  src: string,
+  start: number,
+  keepStrings: boolean,
+  inInterpolation: boolean
+): [string, number] {
   let out = ''
-  let i = 0
+  let i = start
+  let depth = 0
   while (i < src.length) {
     const c = src[i] as string
     const n = src[i + 1]
@@ -46,6 +61,12 @@ function stripCommentsAndStrings(src: string, keepStrings = false): string {
       // ' and " literals cannot span lines; stopping at the newline keeps a stray
       // apostrophe in JSX text from swallowing the code that follows.
       while (i < src.length && src[i] !== quote && (quote === '`' || src[i] !== '\n')) {
+        if (quote === '`' && src[i] === '$' && src[i + 1] === '{') {
+          const [inner, end] = scanCode(src, i + 2, keepStrings, true)
+          out += `\${${inner}}`
+          i = end + 1
+          continue
+        }
         if (src[i] === '\\') {
           if (keepStrings) out += src[i] as string
           i++
@@ -56,11 +77,18 @@ function stripCommentsAndStrings(src: string, keepStrings = false): string {
       out += quote
       i++
     } else {
+      if (inInterpolation) {
+        if (c === '{') depth++
+        else if (c === '}') {
+          if (depth === 0) return [out, i]
+          depth--
+        }
+      }
       out += c
       i++
     }
   }
-  return out
+  return [out, i]
 }
 
 interface Pattern {
@@ -89,6 +117,8 @@ const BANNED: Pattern[] = [
   { name: 'new Image()', code: /\bnew\s+Image\s*\(/ },
   { name: '.src assignment', code: /\.\s*src\s*=(?!=)/ },
   { name: 'email input', withStrings: /type\s*=\s*['"`]email['"`]/ },
+  { name: '<iframe> element', code: /<iframe\b/ },
+  { name: '<script src> element', withStrings: /<script\b[^>]*\bsrc\s*=/ },
 ]
 
 function findBanned(src: string): string[] {
@@ -231,6 +261,15 @@ describe('guard self-test: every pattern is caught', () => {
     ['new Image()', 'new Image()'],
     ['.src assignment', "img.src = 'https://t.example/p.gif'"],
     ['email input', '<input type="email" />'],
+    // Code inside template-literal interpolations is code, not string content.
+    // biome-ignore lint/suspicious/noTemplateCurlyInString: fixture is template-literal source text
+    ['fetch call', 'const t = `${await fetch(u)}`'],
+    // biome-ignore lint/suspicious/noTemplateCurlyInString: fixture is template-literal source text
+    ['fetch call', 'const t = `a ${b ? `x ${fetch(u)}` : 0} c`'],
+    // biome-ignore lint/suspicious/noTemplateCurlyInString: fixture is template-literal source text
+    ['new Image()', 'const t = `${new Image()}`'],
+    ['<iframe> element', '<iframe src="https://x.example" />'],
+    ['<script src> element', '<script src="https://x.example/a.js" />'],
   ]
   it.each(cases)('%s is caught in: %s', (name, snippet) => {
     expect(findBanned(snippet)).toContain(name)
@@ -243,6 +282,8 @@ describe('guard self-test: every pattern is caught', () => {
       "const copy = 'Fetch your numbers, then reaction= time'",
       'const a = props.src === other.src',
       "const label = 'Open tool'",
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: fixture is template-literal source text
+      'const t = `fetch(${n}) and new WebSocket text`',
     ].join('\n')
     expect(findBanned(clean)).toEqual([])
   })
