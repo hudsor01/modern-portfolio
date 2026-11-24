@@ -88,6 +88,14 @@ describe('body copy detector', () => {
     expect(errors.join('\n')).toContain('"60%"')
   })
 
+  // The other direction: real string openers after `?`, `:`, `=`, `(` and `{` still open.
+  it('still opens string literals after operators and punctuation', () => {
+    expect(bodyCopy("const x = c ? '99% cut' : 'b'")).toContain('99%')
+    expect(bodyCopy("const o = { label: '98% cut' }")).toContain('98%')
+    expect(bodyCopy("const s = '97% cut'")).toContain('97%')
+    expect(bodyCopy("fn('96% cut')")).toContain('96%')
+  })
+
   // The pre-13-12 quota outcome bullet, checked against the real quota write-up.
   it('rejects the pre-fix quota bullets against the real write-up', () => {
     const { errors } = check(

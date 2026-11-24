@@ -283,7 +283,14 @@ export interface CorpusInfo {
 }
 
 const FIELD_NUMBER_RE =
-  /\b[A-Za-z_]\w*(?:\s*:\s*|=\{)(-?\d+(?:,\d{3})*(?:\.\d+)?)(?![\d.]*\s*[A-Za-z%])/g
+  /\b([A-Za-z_]\w*)(?:\s*:\s*|=\{)(-?\d+(?:,\d{3})*(?:\.\d+)?)(?![\d.]*\s*[A-Za-z%])/g
+/**
+ * Only fields that carry a metric value may vouch for a typed figure. Layout,
+ * timing and count fields (`count: 7`, `columns={3}`, `delay: 30`,
+ * `strokeWidth: 2`, `Step: 7`) never do, however the number lines up.
+ */
+const METRIC_KEY_RE =
+  /accura|rate|revenue|roi|ltv|cac|clv|conversion|payback|ratio|margin|probab|confidence|cost|budget|efficien|effective|lift|growth|earning|payout|bonu|commission|target|attain|health|impact|improve|predict|actual|attribution|cycle|savings|value|before|after/i
 const RANGE_UNIT_RE =
   /(\d+(?:,\d{3})*(?:\.\d+)?) to \d+(?:,\d{3})*(?:\.\d+)? (months?|mo|days?|hours?|pts?)\b/g
 
@@ -310,7 +317,8 @@ export function buildCorpusInfo(raw: string): CorpusInfo {
   const rangeUnits = [...flat.matchAll(RANGE_UNIT_RE)].map((m) => `${m[1]} ${m[2]}`)
   const fieldNumbers = new Set<number>()
   for (const m of rendered.text.matchAll(FIELD_NUMBER_RE)) {
-    fieldNumbers.add(round6(Number((m[1] as string).replace(/,/g, ''))))
+    if (!METRIC_KEY_RE.test(m[1] as string)) continue
+    fieldNumbers.add(round6(Number((m[2] as string).replace(/,/g, ''))))
   }
   return {
     raw,

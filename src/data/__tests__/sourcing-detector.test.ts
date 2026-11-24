@@ -43,6 +43,15 @@ describe('typed-figure sourcing detector', () => {
     expect(allSourced('Margin was 83.2 across the board', '83.2%')).toBe(false)
   })
 
+  it('does not let a layout, timing or count field vouch for a typed figure', () => {
+    expect(allSourced('{ count: 7, columns: 3 }', '7%')).toBe(false)
+    expect(allSourced('<Grid columns={3} />', '3x')).toBe(false)
+    expect(allSourced('{ delay: 30, strokeWidth: 2 }', '$30')).toBe(false)
+    expect(allSourced('Step: 7', '7%')).toBe(false)
+    // A metric field still vouches.
+    expect(allSourced('{ conversionRate: 7 }', '7%')).toBe(true)
+  })
+
   it('does not let a $ figure be vouched for by a different unit', () => {
     expect(allSourced('It took 247 days', '$247')).toBe(false)
   })
