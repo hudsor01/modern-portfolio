@@ -21,12 +21,21 @@ describe('DealFunnel first render', () => {
       'Total Opportunities',
       'Closed Won Deals',
       'Deal Size',
-      'Median Days to Close',
+      'Avg. of Tier Median Days to Close',
     ]) {
       expect(screen.getAllByText(label).length).toBeGreaterThan(0)
     }
     expect(screen.queryByRole('status')).toBeNull()
     expect(screen.queryByLabelText('Loading')).toBeNull()
+  })
+
+  it('labels the cycle figure as an average of tier medians, never a bare median', () => {
+    const { container } = render(<DealFunnel />)
+    const text = container.textContent ?? ''
+    expect(text).toContain('Avg. of Tier Median Days to Close')
+    expect(text).toContain('Avg. Tier Median Cycle:')
+    expect(text).not.toMatch(/(?<!Tier )Median Cycle/)
+    expect(text).not.toMatch(/(?<!Tier )Median Days to Close/)
   })
 
   it('reports Closed Won (not Closed Lost) as the won figure, with one win rate', () => {

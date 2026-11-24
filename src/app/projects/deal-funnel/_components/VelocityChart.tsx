@@ -9,7 +9,7 @@ interface VelocityChartProps {
 
 export function VelocityChart({ partnerConversion }: VelocityChartProps) {
   const colors = ['bg-primary', 'bg-secondary', 'bg-accent']
-  const longest = Math.max(1, ...partnerConversion.map((p) => p.avg_sales_cycle_days))
+  const longest = Math.max(1, ...partnerConversion.map((p) => p.median_days_to_close))
 
   return (
     <div className="h-full">
@@ -26,13 +26,13 @@ export function VelocityChart({ partnerConversion }: VelocityChartProps) {
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium">{partner.group}</span>
                 <span className="typography-small text-muted-foreground">
-                  {partner.avg_sales_cycle_days} days
+                  {partner.median_days_to_close} days
                 </span>
               </div>
               <div className="w-full bg-muted rounded-full h-3">
                 <div
                   className={`${colors[index % colors.length]} h-3 rounded-full`}
-                  style={{ width: `${(partner.avg_sales_cycle_days / longest) * 100}%` }}
+                  style={{ width: `${(partner.median_days_to_close / longest) * 100}%` }}
                 />
               </div>
             </div>

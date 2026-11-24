@@ -29,10 +29,12 @@ export default function DealFunnel() {
   const totalRevenue = closedDeals * avgDealSize
   const closedTotal = closedDeals + (lostStage?.count ?? 0)
 
-  const avgSalesCycle =
+  // Unweighted mean of the per-tier medians. The export gives a median per
+  // partner tier but no overall median, so this is labelled as what it is.
+  const avgTierMedianDays =
     initialPartnerConversion.length > 0
       ? Math.round(
-          initialPartnerConversion.reduce((sum, group) => sum + group.avg_sales_cycle_days, 0) /
+          initialPartnerConversion.reduce((sum, group) => sum + group.median_days_to_close, 0) /
             initialPartnerConversion.length
         )
       : 0
@@ -101,9 +103,9 @@ export default function DealFunnel() {
     {
       id: 'sales-cycle',
       icon: Clock,
-      label: 'Median',
-      value: `${avgSalesCycle}d`,
-      subtitle: 'Median Days to Close',
+      label: 'Avg. of tier medians',
+      value: `${avgTierMedianDays}d`,
+      subtitle: 'Avg. of Tier Median Days to Close',
       variant: 'secondary' as const,
     },
   ]
@@ -133,7 +135,7 @@ export default function DealFunnel() {
             label: `Avg Deal: ${formatCurrency(avgDealSize, { compact: true })}`,
             variant: 'secondary',
           },
-          { label: `Median Cycle: ${avgSalesCycle}d`, variant: 'primary' },
+          { label: `Avg. Tier Median Cycle: ${avgTierMedianDays}d`, variant: 'primary' },
           {
             label: `Won Revenue: ${formatCurrency(totalRevenue, { compact: true })}`,
             variant: 'secondary',
