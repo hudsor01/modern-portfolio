@@ -163,6 +163,7 @@ test.describe('axe: hover and focus contrast', () => {
           group: boolean
           focusable: boolean
           hoverable: boolean
+          inCard: boolean
         }[] = []
         for (const el of Array.from(document.querySelectorAll<HTMLElement>('body *'))) {
           const cls = typeof el.className === 'string' ? el.className : ''
@@ -186,12 +187,25 @@ test.describe('axe: hover and focus contrast', () => {
           // Screen-reader-only elements (the skip link) have no hit area until focused,
           // so they are measured in the focus state only.
           const hoverable = !el.classList.contains('sr-only')
-          found.push({ n, className: cls, group: cls.includes('group-hover:'), focusable, hoverable })
+          found.push({
+            n,
+            className: cls,
+            group: cls.includes('group-hover:'),
+            focusable,
+            hoverable,
+            inCard: Boolean(el.closest('article')),
+          })
         }
         return found
       })
 
       expect(probes.length, `${target} has hover/focus probes`).toBeGreaterThan(0)
+      if (path === '/projects' || path === '/') {
+        expect(
+          probes.some((p) => p.inCard),
+          'a ProjectCard preview is in the hover sweep',
+        ).toBe(true)
+      }
 
       const failures: { className: string; state: string; violations: unknown }[] = []
       for (const probe of probes) {

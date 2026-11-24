@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { postCards } from './_helpers/blog'
 import { databaseAvailable, NEEDS_DATABASE } from './_helpers/database'
+import { settlePage } from './_helpers/settle'
 
 /**
  * BUG-02 + BUG-05 guard: no horizontal overflow and CLS < 0.1 on every audited
@@ -92,4 +93,110 @@ test('deal-funnel first paint has content, no spinner (BUG-05)', async ({ reques
   const html = await (await request.get('/projects/deal-funnel')).text()
   expect(html).toContain('Total Opportunities')
   expect(html).not.toContain('aria-label="Loading"')
+})
+
+type Box = { x: number; y: number; width: number; height: number }
+
+function intersects(a: Box, b: Box): boolean {
+  return a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height
+}
+
+test.describe('Project preview geometry (UI-06)', () => {
+  const VIEWPORTS = [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]
+  for (const viewport of VIEWPORTS) {
+    for (const [path, expected] of [
+      ['/projects', 14],
+      ['/', 4],
+    ] as const) {
+      test(`preview boxes keep 16:10 on ${path} @${viewport.width}px`, async ({ browser }, testInfo) => {
+        test.skip(testInfo.project.name !== 'chromium', 'checked once, on chromium')
+        const context = await browser.newContext({ viewport, reducedMotion: 'reduce' })
+        try {
+          const page = await context.newPage()
+          await page.goto(path)
+          await settlePage(page)
+          const media = page.locator('[data-slot="project-media"]')
+          await expect(media).toHaveCount(expected)
+          const boxes = await media.evaluateAll((els) =>
+            els.map((el) => {
+              const r = el.getBoundingClientRect()
+              return { width: r.width, height: r.height }
+            }),
+          )
+          expect(boxes).toHaveLength(expected)
+          for (const b of boxes) {
+            expect(b.width).toBeGreaterThan(0)
+            expect(Math.abs(b.height - b.width / 1.6)).toBeLessThanOrEqual(1)
+          }
+        } finally {
+          await context.close()
+        }
+      })
+    }
+  }
+
+  test('preview content fits under the badge band and clears legend and badge @390px', async ({
+    browser,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'chromium', 'checked once, on chromium')
+    const context = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      reducedMotion: 'reduce',
+    })
+    try {
+      const page = await context.newPage()
+      await page.goto('/projects')
+      await settlePage(page)
+      const cards = page.locator('main article')
+      await expect(cards).toHaveCount(14)
+
+      const report = await cards.evaluateAll((els) => {
+        const box = (el: Element | null) => {
+          if (!el) return null
+          const r = el.getBoundingClientRect()
+          return { x: r.x, y: r.y, width: r.width, height: r.height }
+        }
+        return els.map((el) => ({
+          media: box(el.querySelector('[data-slot="project-media"]')),
+          rows: box(el.querySelector('[data-slot="preview-rows"]')),
+          rowBoxes: Array.from(el.querySelectorAll('[data-slot="preview-row"]')).map((r) => box(r)),
+          legend: box(el.querySelector('[data-slot="preview-legend"]')),
+          badge: box(el.querySelector('[data-slot="featured-badge"]')),
+          metrics: box(el.querySelector('[data-slot="preview-metrics"]')),
+        }))
+      })
+      expect(report).toHaveLength(14)
+
+      let rowCards = 0
+      let metricCards = 0
+      for (const card of report) {
+        expect(card.media).not.toBeNull()
+        const media = card.media as Box
+        if (card.rows) {
+          rowCards += 1
+          expect(card.rows.height).toBeLessThan(media.height - 52.5)
+          for (const row of card.rowBoxes as Box[]) {
+            if (card.legend) expect(intersects(row, card.legend)).toBe(false)
+            if (card.badge) expect(intersects(row, card.badge)).toBe(false)
+          }
+        }
+        if (card.metrics) {
+          metricCards += 1
+          const m = card.metrics
+          expect(m.x).toBeGreaterThanOrEqual(media.x)
+          expect(m.y).toBeGreaterThanOrEqual(media.y)
+          expect(m.x + m.width).toBeLessThanOrEqual(media.x + media.width)
+          expect(m.y + m.height).toBeLessThanOrEqual(media.y + media.height)
+        }
+      }
+      // Both preview kinds must be exercised or the loop above proves nothing.
+      expect(rowCards).toBeGreaterThan(0)
+      expect(metricCards).toBeGreaterThan(0)
+    } finally {
+      await context.close()
+    }
+  })
 })
