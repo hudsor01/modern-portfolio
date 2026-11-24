@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
+import { settleTransitions } from './_helpers/settle'
 import { PROJECT_COUNT, PROJECT_SLUGS_ON_DISK } from './_helpers/project-slugs'
 
 /**
@@ -213,6 +214,9 @@ test.describe('Project Detail Pages', () => {
   test('project detail page passes accessibility audit', async ({ page }) => {
     await page.goto('/projects/revenue-kpi', { timeout: 60000 })
     await page.waitForLoadState('networkidle')
+    // The metric cards fade in (staggered up to 300ms delay + 500ms). Axe reads
+    // computed colors, so sampling mid-fade reports text at ~1:1 contrast.
+    await settleTransitions(page)
 
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
