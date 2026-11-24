@@ -1,5 +1,4 @@
 import type React from 'react'
-import { unsplashUrl } from '@/lib/unsplash'
 import {
   DollarSign,
   Clock,
@@ -20,7 +19,6 @@ export interface ShowcaseProject {
   title: string
   description: string
   longDescription: string
-  image: string
   category: string
   /**
    * Shown as the tech badges on /projects cards. List only what the case-study
@@ -58,7 +56,6 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Real-time revenue tracking and forecasting platform with advanced analytics',
     longDescription:
       'A comprehensive revenue operations dashboard that provides real-time insights into sales performance, pipeline health, and revenue forecasting.',
-    image: unsplashUrl('1551288049-bebda4e38f71', 'project'),
     category: 'revenue-ops',
     technologies: ['React', 'TypeScript', 'Recharts'],
     displayMetrics: [
@@ -94,7 +91,6 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Machine learning model to predict and prevent customer churn',
     longDescription:
       'Advanced analytics platform using machine learning to identify at-risk customers and recommend retention strategies.',
-    image: unsplashUrl('1460925895917-afdab827c52f', 'project'),
     category: 'data-analytics',
     technologies: ['React', 'TypeScript', 'Recharts', 'Machine Learning'],
     displayMetrics: [
@@ -130,7 +126,6 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Interactive sales funnel analysis with conversion optimization insights',
     longDescription:
       'Comprehensive sales funnel analysis platform providing deep insights into conversion rates, bottlenecks, and optimization opportunities.',
-    image: unsplashUrl('1543286386-713bdd548da4', 'project'),
     category: 'business-intelligence',
     technologies: ['React', 'TypeScript', 'Recharts', 'Slack'],
     displayMetrics: [
@@ -161,7 +156,6 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Multi-touch attribution model for marketing campaign optimization',
     longDescription:
       'Advanced marketing attribution platform that tracks customer journeys across multiple touchpoints and provides insights for campaign optimization.',
-    image: unsplashUrl('1559136555-9303baea8ebd', 'project'),
     category: 'data-analytics',
     technologies: ['React', 'TypeScript', 'Recharts'],
     displayMetrics: [
@@ -192,7 +186,6 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'CAC analysis and LTV:CAC ratio optimization achieving 32% cost reduction',
     longDescription:
       'Comprehensive CAC analysis and LTV:CAC ratio optimization that achieved 32% cost reduction through strategic partner channel optimization. Industry-benchmark 3.6:1 efficiency ratio with 8.4-month payback period.',
-    image: unsplashUrl('1554224155-8d04cb21cd6c', 'project'),
     category: 'revenue-ops',
     technologies: ['React', 'TypeScript', 'Recharts'],
     displayMetrics: [
@@ -223,7 +216,6 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Automated commission management delivering 34.2% performance improvement',
     longDescription:
       'Advanced commission management and partner incentive optimization platform managing $254K+ commission structures with 87.5% automation efficiency.',
-    image: unsplashUrl('1454165804606-c3d57bc86b40', 'project'),
     category: 'revenue-ops',
     technologies: ['React', 'TypeScript', 'Recharts'],
     displayMetrics: [
@@ -259,7 +251,6 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Predictive CLV analytics with 94.3% ML accuracy across customer segments',
     longDescription:
       'Advanced CLV analytics platform leveraging BTYD predictive modeling framework. Achieving 94.3% prediction accuracy through machine learning algorithms and real-time customer behavior tracking.',
-    image: unsplashUrl('1551434678-e076c223a692', 'project'),
     category: 'data-analytics',
     technologies: ['React', 'TypeScript', 'Recharts', 'BTYD Framework', 'Machine Learning'],
     displayMetrics: [
@@ -296,7 +287,6 @@ export const showcaseProjects: ShowcaseProject[] = [
       'Predictive forecasting lifting accuracy from 63% to 94% and cutting slippage from 26% to 19%',
     longDescription:
       'Enterprise forecasting and pipeline intelligence platform combining predictive analytics, deal health monitoring, and early warning systems.',
-    image: unsplashUrl('1504868584819-f8e8b4b6d7e3', 'project'),
     category: 'revenue-ops',
     technologies: ['React', 'TypeScript', 'Salesforce', 'Machine Learning'],
     displayMetrics: [
@@ -327,7 +317,6 @@ export const showcaseProjects: ShowcaseProject[] = [
       'ML-powered attribution across 12 active marketing channels with $2.3M ROI optimization',
     longDescription:
       'Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12 active marketing channels. Improved campaign ROI prediction accuracy to 92.4%.',
-    image: unsplashUrl('1563986768494-4dee2763ff3f', 'project'),
     category: 'data-analytics',
     technologies: ['React', 'TypeScript', 'Recharts', 'Machine Learning'],
     displayMetrics: [
@@ -363,7 +352,6 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Channel analytics with 83.2% win rate and 4.7x quick ratio',
     longDescription:
       'Channel analytics across 47 partners: an 83.2% win rate, $904K in partner revenue and a 4.7x quick ratio, with Pareto analysis showing 5 partners drive 80% of channel revenue.',
-    image: unsplashUrl('1522071820081-009f0129c71c', 'project'),
     category: 'revenue-ops',
     technologies: ['React', 'TypeScript', 'Recharts'],
     displayMetrics: [
@@ -398,7 +386,6 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Built first partnership program from scratch with 90%+ automation',
     longDescription:
       "Designed and built the company's first partnership program: 47 active partners, 90%+ process automation, and a new revenue stream now 35% of total company revenue.",
-    image: unsplashUrl('1551836022-d5d88e9218df', 'project'),
     category: 'revenue-ops',
     technologies: ['Salesforce', 'DocuSign API', 'React', 'TypeScript', 'REST APIs'],
     displayMetrics: [
@@ -426,7 +413,6 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Quota and territory optimization lifting forecast accuracy from 64% to 92%',
     longDescription:
       'Quota setting and territory assignment across 47 territories. Forecast accuracy rose from 64% to 92%, quota attainment variance fell from 32% to 11%, and the work generated $8.7M in incremental revenue.',
-    image: unsplashUrl('1581291518857-4e27b48ff24e', 'project'),
     category: 'revenue-ops',
     technologies: ['React', 'TypeScript', 'Machine Learning'],
     displayMetrics: [
@@ -457,7 +443,6 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Unified RevOps dashboard with 96.8% forecast accuracy',
     longDescription:
       'Revenue operations dashboard consolidating 12 source systems. Forecast accuracy rose from 74% to 96.8%, manual reporting time fell 78%, and revenue grew 34.2% year over year.',
-    image: unsplashUrl('1639762681485-074b7f938ba0', 'project'),
     category: 'revenue-ops',
     technologies: ['React', 'TypeScript', 'Recharts'],
     displayMetrics: [
@@ -488,7 +473,6 @@ export const showcaseProjects: ShowcaseProject[] = [
     description: 'Training and coaching platform increasing win rates by 34%',
     longDescription:
       'Transformed sales team performance through structured training, real-time coaching, and continuous skill development. Increased win rates by 34% and reduced ramp time by 45%.',
-    image: unsplashUrl('1552664730-d307ca884978', 'project'),
     category: 'revenue-ops',
     technologies: ['React', 'TypeScript'],
     displayMetrics: [

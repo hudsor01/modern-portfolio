@@ -325,7 +325,8 @@ async function seedProjects(): Promise<number> {
     description: p.description,
     longDescription: p.longDescription,
     content: null,
-    image: p.image,
+    // Projects no longer carry a photo; the column is NOT NULL and no migration is run.
+    image: '',
     link: null,
     github: null,
     category: p.category,

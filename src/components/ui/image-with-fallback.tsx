@@ -17,7 +17,7 @@ interface ImageWithFallbackProps extends Omit<ImageProps, 'src' | 'onError'> {
 /**
  * `next/image` wrapper that swaps to `fallbackSrc` on load error.
  * Centralises the pattern so every external-image surface (blog
- * featured images, project cards, anything pulling from Unsplash or
+ * featured images, anything pulling from Unsplash or
  * other rotating CDNs) handles upstream removals gracefully — the user
  * sees a branded card instead of a broken-image icon or the CDN's
  * placeholder.
