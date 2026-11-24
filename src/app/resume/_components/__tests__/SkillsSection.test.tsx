@@ -13,6 +13,13 @@ describe('SkillsSection', () => {
     expect(container.textContent).not.toMatch(/interactive skill matrix/i)
   })
 
+  it('sits on the page grid with content-height cards (B-16)', () => {
+    const { container } = render(<SkillsSection />)
+    const grid = container.querySelector('h4')?.closest('.grid') as HTMLElement
+    expect(grid.className).toContain('items-start')
+    expect(grid.className).not.toContain('max-w-')
+  })
+
   it('renders each group as a card with an h4 and pill list', () => {
     const { container } = render(<SkillsSection />)
     expect(container.querySelectorAll('h4')).toHaveLength(skills.length)
