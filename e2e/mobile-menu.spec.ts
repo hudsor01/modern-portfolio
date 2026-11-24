@@ -43,9 +43,12 @@ test.describe('mobile menu', () => {
     await page.keyboard.press('Enter')
     const menu = page.locator('#mobile-menu')
     await expect(menu).toBeVisible()
-    // Tab into the menu, then dismiss from inside it.
-    await page.keyboard.press('Tab')
-    await expect(menu.getByRole('link').first()).toBeFocused()
+    // Move focus into the menu, then dismiss from inside it. Focus is placed
+    // directly: macOS WebKit's default Tab order skips links (Safari's "Tab
+    // highlights each item" is off), so a Tab press would not land on one there.
+    const firstLink = menu.getByRole('link').first()
+    await firstLink.focus()
+    await expect(firstLink).toBeFocused()
     await page.keyboard.press('Escape')
     await expect(menu).toBeHidden()
     const reopened = page.getByRole('button', { name: 'Open menu' })
