@@ -1,6 +1,4 @@
 // @vitest-environment node
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 import { describe, it, expect, vi } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
 
@@ -59,38 +57,7 @@ describe('/tools hub render', () => {
   })
 })
 
-describe('no-email / in-browser claim grounding', () => {
-  const files = [
-    'src/app/tools/pipeline-coverage-calculator/_components/pipeline-coverage-calculator.tsx',
-    'src/app/tools/revops-maturity-scorecard/_components/revops-maturity-scorecard.tsx',
-    'src/lib/pipeline-coverage.ts',
-    'src/lib/revops-maturity.ts',
-  ]
-
-  it('components import only react and their own lib', () => {
-    for (const f of files.slice(0, 2)) {
-      const src = readFileSync(join(process.cwd(), f), 'utf8')
-      const specs = [...src.matchAll(/from\s+'([^']+)'/g)].map((m) => m[1])
-      for (const spec of specs) {
-        expect(['react', '@/lib/pipeline-coverage', '@/lib/revops-maturity']).toContain(spec)
-      }
-    }
-  })
-
-  it.each(files)('%s has no network, form, server action or email field', (f) => {
-    const src = readFileSync(join(process.cwd(), f), 'utf8')
-    for (const banned of [
-      'fetch(',
-      'sendBeacon',
-      'XMLHttpRequest',
-      "'use server'",
-      '<form',
-      'type="email"',
-    ]) {
-      expect(src).not.toContain(banned)
-    }
-  })
-})
+// The no-email / in-browser claim is grounded in no-network-guard.test.ts (full import closure).
 
 describe('/tools breadcrumb', () => {
   it('shows Home > Tools with Tools as current page, not a link', () => {
