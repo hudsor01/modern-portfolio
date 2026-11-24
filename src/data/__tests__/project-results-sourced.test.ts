@@ -68,6 +68,16 @@ describe('sourcing detector', () => {
     expect(checkText(slug, 'Reduced deal slippage from 26% to 19%').errors).toEqual([])
   })
 
+  it('the left side of an "X → Y" card is a baseline, not a change', () => {
+    // forecast's write-up card reads "26% → 19%" (Deal Slippage); 26% there is
+    // the starting value, so it cannot source "reduced by 26%".
+    const corpus = narrativeCorpus('forecast-pipeline-intelligence')
+    expect(corpus).toContain('26% → 19%')
+    expect(
+      checkText('forecast-pipeline-intelligence', 'Slippage reduced by 26%').errors.length
+    ).toBeGreaterThan(0)
+  })
+
   it('a genuine change claim passes', () => {
     expect(checkText('sales-enablement', 'a 34% improvement').errors).toEqual([])
   })

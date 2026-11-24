@@ -307,6 +307,8 @@ function changeSourced(fig: Figure, info: CorpusInfo): boolean {
   for (const [s, e] of numberTokens(text, mantissa)) {
     if (/\b(?:from|to) \$?$/i.test(text.slice(Math.max(0, s - 8), s))) continue
     const tail = text.slice(e, e + 20)
+    // The left side of "26% → 19%" is a baseline, never a stated change.
+    if (/^%?\s*(?:→|->)/.test(tail)) continue
     if (fig.unit === '%' && /^\s?(?:percentage )?points?\b/i.test(tail)) continue
     // "34.2" in a data constant (no % sign) still counts; "31 days" or "31 partners" does not.
     if (fig.unit === '%' && !tail.startsWith('%') && /^\s?[A-Za-z]/.test(tail)) continue

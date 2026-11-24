@@ -102,16 +102,8 @@ export function NarrativeSections() {
               label="Forecast Accuracy Achieved"
               variant="primary"
             />
-            <ResultCard
-              value={formatPercentage(0.31)}
-              label="Accuracy Improvement"
-              variant="secondary"
-            />
-            <ResultCard
-              value={formatPercentage(0.26)}
-              label="Slippage Reduction"
-              variant="primary"
-            />
+            <ResultCard value="+31 pts" label="Accuracy Improvement" variant="secondary" />
+            <ResultCard value="26% → 19%" label="Deal Slippage" variant="primary" />
             <ResultCard
               value={formatCurrency(12500000, { compact: true })}
               label="Revenue Protected"

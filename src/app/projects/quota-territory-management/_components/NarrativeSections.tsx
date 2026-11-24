@@ -3,7 +3,7 @@
 import { SectionCard } from '@/components/ui/section-card'
 import { FeatureCard } from '@/components/projects/shared/feature-card'
 import { ResultCard } from '@/components/projects/shared/result-card'
-import { formatCurrency, formatPercentage, formatNumber } from '@/lib/data-formatters'
+import { formatCurrency, formatNumber } from '@/lib/data-formatters'
 
 export function NarrativeSections() {
   return (
@@ -100,26 +100,14 @@ export function NarrativeSections() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <ResultCard
-              value={formatPercentage(0.28)}
-              label="Forecast Accuracy Improvement"
-              variant="primary"
-            />
-            <ResultCard
-              value={formatPercentage(0.32)}
-              label="Quota Variance Reduction"
-              variant="secondary"
-            />
+            <ResultCard value="+28 pts" label="Forecast Accuracy Improvement" variant="primary" />
+            <ResultCard value="32% → 11%" label="Quota Attainment Variance" variant="secondary" />
             <ResultCard
               value={formatCurrency(8700000, { compact: true })}
               label="Incremental Revenue"
               variant="primary"
             />
-            <ResultCard
-              value={formatPercentage(0.18)}
-              label="Rep Churn Reduction"
-              variant="secondary"
-            />
+            <ResultCard value="28% → 10%" label="Sales Rep Turnover" variant="secondary" />
           </div>
 
           <div className="space-y-3">
