@@ -2,11 +2,14 @@ import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
 import { FAQPageJsonLd } from '@/components/seo/json-ld/faq-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
-import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { ToolBreadcrumb } from '@/components/tools/tool-breadcrumb'
+import { getTool, toolTrail, trailJsonLdItems } from '@/data/tools'
 import { generateMetadata as genMeta } from '@/app/shared-metadata'
 import { RevOpsMaturityScorecard } from './_components/revops-maturity-scorecard'
 
-const PATH = '/tools/revops-maturity-scorecard'
+const TOOL = getTool('revops-maturity-scorecard')
+const TRAIL = toolTrail(TOOL)
+const PATH = TOOL.href
 const TITLE = 'RevOps Maturity Scorecard: Score Your Revenue Operations'
 const DESCRIPTION =
   'Free RevOps maturity assessment. Score your revenue operations across process, data, technology, and alignment in two minutes — get your maturity level, percentile, and the single highest-ROI next move. No email required.'
@@ -65,12 +68,7 @@ export const metadata = genMeta({
 export default function RevOpsMaturityScorecardPage() {
   return (
     <>
-      <BreadcrumbListJsonLd
-        items={[
-          { name: 'Home', url: SITE_ORIGIN },
-          { name: 'RevOps Maturity Scorecard', url: canonicalUrl(PATH) },
-        ]}
-      />
+      <BreadcrumbListJsonLd items={trailJsonLdItems(TRAIL)} />
       <FAQPageJsonLd faqs={FAQS} />
 
       <div className="min-h-screen bg-background">
@@ -81,12 +79,7 @@ export default function RevOpsMaturityScorecardPage() {
           className="max-w-6xl mx-auto px-6 lg:px-8 pt-24 pb-20 lg:pt-32"
         >
           <header className="mb-10 max-w-3xl">
-            <p className="mb-3">
-              <Link href="/" className="hover:text-primary">
-                Home
-              </Link>{' '}
-              / RevOps Maturity Scorecard
-            </p>
+            <ToolBreadcrumb trail={TRAIL} />
             <h1 className="mb-4">RevOps Maturity Scorecard</h1>
             <p>
               Where does your revenue engine actually stand? Rate your team across the four pillars
