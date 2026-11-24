@@ -16,16 +16,11 @@ export function InsightsSection({ bestConversionRate }: InsightsSectionProps) {
       </div>
       <div className="bg-secondary/10 border border-secondary/20 rounded-xl p-6">
         <h3 className="typography-large mb-2">Growth Opportunity</h3>
-        <p>
-          Social media traffic has room for improvement with only 9.4% conversion. Consider A/B
-          testing landing pages.
-        </p>
+        <p>Social media traffic has room for improvement. Consider A/B testing landing pages.</p>
       </div>
       <div className="bg-accent/10 border border-accent/20 rounded-xl p-6">
         <h3 className="typography-large mb-2">Seasonal Trend</h3>
-        <p>
-          Q4 shows strongest performance with 20% higher lead volume. Plan campaigns accordingly.
-        </p>
+        <p>Q4 shows strongest performance. Plan campaigns accordingly.</p>
       </div>
     </div>
   )
