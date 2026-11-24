@@ -122,6 +122,28 @@ describe('GET /api/og', () => {
       expect(t).toContain('richardwhudsonjr.com')
     })
 
+    it('stacks the paired before/after bars (no Fragment: satori lays one out as a row)', async () => {
+      const el = await tree('?project=revenue-kpi&title=T')
+      const fragment = Symbol.for('react.fragment')
+      let fragments = 0
+      let stacked = 0
+      walk(el, (n) => {
+        if (n.type === fragment) fragments++
+        const style = n.props?.style
+        const kids = n.props?.children
+        if (
+          style?.flexDirection === 'column' &&
+          style?.marginTop === '8px' &&
+          Array.isArray(kids) &&
+          kids.length === 2
+        ) {
+          stacked++
+        }
+      })
+      expect(fragments).toBe(0)
+      expect(stacked).toBeGreaterThanOrEqual(2)
+    })
+
     it('renders improvement-only rows without legend, catalog title by default', async () => {
       const el = await tree('?project=partner-performance')
       const t = JSON.stringify(el)

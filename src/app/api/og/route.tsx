@@ -295,16 +295,18 @@ function projectOgCard({
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', marginTop: '8px' }}>
                     {row.kind === 'paired' ? (
-                      <>
+                      [
                         <div
+                          key="before"
                           style={{
                             height: '12px',
                             borderRadius: '6px',
                             backgroundColor: '#5b646f',
                             width: `${Math.round(row.beforeWidth * PANEL_BAR_SCALE)}px`,
                           }}
-                        />
+                        />,
                         <div
+                          key="after"
                           style={{
                             height: '12px',
                             borderRadius: '6px',
@@ -312,8 +314,8 @@ function projectOgCard({
                             backgroundColor: '#003b75',
                             width: `${Math.round(row.afterWidth * PANEL_BAR_SCALE)}px`,
                           }}
-                        />
-                      </>
+                        />,
+                      ]
                     ) : (
                       <div
                         style={{
