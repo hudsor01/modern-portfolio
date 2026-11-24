@@ -32,26 +32,29 @@ export function stageShares(stages: FunnelStage[]) {
   }))
 }
 
-/** Narrowest a bar may be (percent of the chart width) so its count and label stay legible. */
-export const MIN_BAR_WIDTH_PERCENT = 28
+/** Narrowest a bar may be, so its count and "deals" label stay legible. A CSS length, not a percent. */
+export const MIN_BAR_WIDTH = '5.5rem'
+
+/** Visible note under the chart: the minimum width is the only departure from true proportion. */
+export const FUNNEL_WIDTH_CAPTION =
+  'Bar widths are proportional to deal counts. Stages too small to label are drawn at a minimum width.'
 
 /**
- * Bar width as a percent of the chart width, proportional to each stage's
- * count (largest stage = 100%) and never narrower than MIN_BAR_WIDTH_PERCENT.
+ * Bar width as a percent of the chart width, exactly proportional to each
+ * stage's count (largest stage = 100%). The legibility floor is applied in CSS
+ * (MIN_BAR_WIDTH), so it never distorts the ratio between bars that clear it.
  * The stages are outcomes, not sequential steps, so width encodes size only.
  */
 export function barWidths(stages: FunnelStage[]): number[] {
   const max = Math.max(1, ...stages.map((stage) => stage.count))
-  return stages.map((stage) => {
-    const ratio = Math.min(1, Math.max(0, stage.count) / max)
-    return MIN_BAR_WIDTH_PERCENT + (100 - MIN_BAR_WIDTH_PERCENT) * ratio
-  })
+  return stages.map((stage) => (Math.min(max, Math.max(0, stage.count)) / max) * 100)
 }
 
 /**
  * Funnel drawn in HTML, not an SVG viewBox, so its text keeps real pixel sizes
  * at every width (a scaled SVG shrank the labels to ~8px at 390). Each bar's
- * width is proportional to its stage count, with a floor for legibility.
+ * width is proportional to its stage count, with a CSS minimum width for legibility
+ * (disclosed in the caption).
  */
 export default function DealStageFunnelChart({ stages }: DealStageFunnelChartProps) {
   const data = stageShares(stages)
@@ -71,13 +74,14 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
         data-testid="funnel"
       >
         {data.map((stage, index) => {
-          const width = widths[index] ?? MIN_BAR_WIDTH_PERCENT
+          const width = widths[index] ?? 0
           return (
             <li key={stage.stage} className="flex w-full justify-center" data-testid="funnel-stage">
               <div
                 className="funnel-stage flex min-h-16 flex-col items-center justify-center py-2 text-white"
                 style={{
                   width: `${width}%`,
+                  minWidth: MIN_BAR_WIDTH,
                   backgroundColor: FUNNEL_COLORS[index % FUNNEL_COLORS.length],
                 }}
               >
@@ -88,6 +92,12 @@ export default function DealStageFunnelChart({ stages }: DealStageFunnelChartPro
           )
         })}
       </ol>
+      <p
+        className="typography-small mt-3 text-center text-muted-foreground"
+        data-testid="funnel-caption"
+      >
+        {FUNNEL_WIDTH_CAPTION}
+      </p>
 
       {/* Stage legend */}
       <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
