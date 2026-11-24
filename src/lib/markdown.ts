@@ -91,6 +91,22 @@ export function stripLeadingTitleHeading(html: string, title: string): string {
   const m = /^\s*<h([1-3])(?:\s[^>]*)?>([\s\S]*?)<\/h\1>/i.exec(html)
   if (!m) return html
   const target = normalizeTitle(title)
-  if (target && normalizeTitle(m[2] ?? '') === target) return html.slice(m[0].length)
+  if (target && normalizeTitle(m[2] ?? '') === target)
+    return promoteHeadings(html.slice(m[0].length))
   return html
+}
+
+/**
+ * Shift headings up so the shallowest becomes an `<h2>`. With the repeated title
+ * gone, a body whose sections were `<h3>` under it would jump from the page `<h1>`
+ * straight to `<h3>` (axe heading-order). Relative levels are preserved.
+ */
+function promoteHeadings(html: string): string {
+  let min = 7
+  for (const m of html.matchAll(/<h([1-6])[\s>]/gi)) min = Math.min(min, Number(m[1]))
+  const shift = min - 2
+  if (min > 6 || shift <= 0) return html
+  return html.replace(/<(\/?)h([1-6])(?=[\s>])/gi, (_, slash: string, level: string) => {
+    return `<${slash}h${Number(level) - shift}`
+  })
 }

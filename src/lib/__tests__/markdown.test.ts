@@ -74,7 +74,16 @@ describe('stripLeadingTitleHeading (B-3)', () => {
     const out = stripLeadingTitleHeading(html, title)
     expect(out).not.toContain(title)
     expect(out).toContain('First paragraph.')
-    expect(out).toContain('<h3>Next</h3>')
+    // Sections were h3 under the dropped title; they now sit directly under the page h1.
+    expect(out).toContain('<h2>Next</h2>')
+    expect(out).not.toMatch(/<h3/)
+  })
+
+  it('keeps relative heading levels when promoting', () => {
+    const html = markdownToHtml(`# ${title}\n\n## A\n\n### B`)
+    const out = stripLeadingTitleHeading(html, title)
+    expect(out).toContain('<h2>A</h2>')
+    expect(out).toContain('<h3>B</h3>')
   })
 
   it('matches through emphasis, curly quotes and case', () => {
