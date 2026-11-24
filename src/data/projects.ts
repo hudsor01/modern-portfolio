@@ -362,7 +362,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     title: 'Partner Performance Intelligence',
     description: 'Channel analytics with 83.2% win rate and 4.7x quick ratio',
     longDescription:
-      'Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem with real-time performance tracking.',
+      'Channel analytics across 47 partners: an 83.2% win rate, $904K in partner revenue and a 4.7x quick ratio, with Pareto analysis showing 5 partners drive 80% of channel revenue.',
     image: unsplashUrl('1522071820081-009f0129c71c', 'project'),
     category: 'revenue-ops',
     technologies: ['React', 'TypeScript', 'Recharts'],
@@ -381,9 +381,13 @@ export const showcaseProjects: ShowcaseProject[] = [
       'Maintained 4.7x SaaS quick ratio',
     ],
     results: [
-      { metric: 'Partner Win Rate', before: '68%', after: '83.2%', improvement: '22%' },
-      { metric: 'Active Partners', before: '28', after: '34', improvement: '21%' },
-      { metric: 'Revenue Contribution', before: '71%', after: '83.2%', improvement: '17%' },
+      {
+        metric: 'Certified Partner Revenue Contribution',
+        before: '',
+        after: '',
+        improvement: '63%',
+      },
+      { metric: 'Partner Churn', before: '', after: '', improvement: '22%' },
     ],
     caseStudyUrl: '/projects/partner-performance',
   },
@@ -393,14 +397,15 @@ export const showcaseProjects: ShowcaseProject[] = [
     title: 'Partnership Program Implementation',
     description: 'Built first partnership program from scratch with 90%+ automation',
     longDescription:
-      "Led comprehensive design and implementation of company's first partnership program, creating automated partner onboarding, commission tracking, and performance analytics.",
+      "Designed and built the company's first partnership program: 47 active partners, 90%+ process automation, and a new revenue stream now 35% of total company revenue.",
     image: unsplashUrl('1551836022-d5d88e9218df', 'project'),
     category: 'revenue-ops',
     technologies: ['Salesforce', 'DocuSign API', 'React', 'TypeScript', 'REST APIs'],
     displayMetrics: [
+      { label: 'Active Partners', value: '47', icon: Users },
       { label: 'Automation', value: '90%+', icon: Zap },
-      { label: 'Program Launch', value: '6 mo', icon: Clock },
-      { label: 'Integrations', value: 'Full Stack', icon: Activity },
+      { label: 'Revenue from Partners', value: '35%', icon: DollarSign },
+      { label: 'Onboarding', value: '15 days', icon: Clock },
     ],
     featured: true,
     year: 2023,
@@ -409,13 +414,9 @@ export const showcaseProjects: ShowcaseProject[] = [
     impact: [
       "Launched company's first partnership program",
       'Achieved 90%+ process automation',
-      'Built production-ready integrations',
+      'Cut partner onboarding from 6+ weeks to 15 days',
     ],
-    results: [
-      { metric: 'Partner Onboarding', before: 'Manual', after: 'Automated', improvement: '90%' },
-      { metric: 'Program Launch Time', before: 'N/A', after: '6 months', improvement: '100%' },
-      { metric: 'System Integration', before: 'None', after: 'Full Stack', improvement: '100%' },
-    ],
+    results: [],
     caseStudyUrl: '/projects/partnership-program-implementation',
   },
   {
