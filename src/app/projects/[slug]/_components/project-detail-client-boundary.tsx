@@ -7,7 +7,7 @@ import { SectionCard } from '@/components/ui/section-card'
 import { ExternalLink, ArrowRight } from 'lucide-react'
 import { Github } from '@/components/ui/brand-icons'
 import Link from 'next/link'
-import { ProjectPreview, ProjectPreviewLegend } from '@/components/projects/project-preview'
+import { ProjectPreviewHero, ProjectPreviewLegend } from '@/components/projects/project-preview'
 import { buildProjectPreview } from '@/lib/project-preview'
 import type { Project } from '@/types/project'
 import { normalizeProjectForDisplay } from '@/types/project'
@@ -107,9 +107,7 @@ export default function ProjectDetailClientBoundary({
           {/* Generated preview */}
           <div className="container mx-auto px-6 mb-16">
             <div className="max-w-5xl mx-auto">
-              <div className="relative aspect-video rounded-lg overflow-hidden border bg-muted">
-                <ProjectPreview size="hero" project={project} />
-              </div>
+              <ProjectPreviewHero project={project} />
               {preview.kind === 'rows' && preview.hasPaired && (
                 <ProjectPreviewLegend variant="caption" />
               )}

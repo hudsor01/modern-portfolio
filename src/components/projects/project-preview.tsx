@@ -20,6 +20,27 @@ interface ProjectPreviewProps {
   size: Size
 }
 
+/**
+ * Hero fit budget. At 390px the frame is ~342px wide, so a 16:9 box is only
+ * ~192px tall, but three paired rows need ~199px (3 x 45px rows + 2 x 16px gaps +
+ * 32px padding). Below `md` the content therefore sizes the frame (in flow, with a
+ * floor); from `md` (>= 672px wide, >= 378px tall, ample for the same content) it
+ * fills a 16:9 box. Nothing can clip at any width.
+ */
+const HERO_CONTENT_CLASS =
+  'relative flex flex-col justify-center gap-4 p-4 md:absolute md:inset-0 md:p-8'
+const HERO_FRAME_CLASS =
+  'relative min-h-40 overflow-hidden rounded-lg border bg-muted md:aspect-video md:min-h-0'
+
+/** The generated-preview frame on the project detail hero. */
+export function ProjectPreviewHero({ project }: { project: PreviewSource & { title: string } }) {
+  return (
+    <div data-slot="project-hero-frame" className={HERO_FRAME_CLASS}>
+      <ProjectPreview size="hero" project={project} />
+    </div>
+  )
+}
+
 function LegendItems() {
   return (
     <>
@@ -199,7 +220,7 @@ export function ProjectPreview({ project, size }: ProjectPreviewProps) {
         data-kind="metrics"
         className={
           hero
-            ? 'absolute inset-0 flex flex-col justify-center gap-4 p-4 md:p-8'
+            ? HERO_CONTENT_CLASS
             : 'absolute inset-0 flex flex-col justify-center px-4 pt-12 pb-3'
         }
       >
@@ -247,7 +268,7 @@ export function ProjectPreview({ project, size }: ProjectPreviewProps) {
         data-kind="rows"
         className={
           hero
-            ? 'absolute inset-0 flex flex-col justify-center gap-4 p-4 md:p-8'
+            ? HERO_CONTENT_CLASS
             : 'absolute inset-0 flex flex-col justify-center px-4 pt-12 pb-3'
         }
       >

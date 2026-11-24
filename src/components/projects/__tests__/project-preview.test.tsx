@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { cleanup, render } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { ProjectPreview, ProjectPreviewLegend } from '../project-preview'
+import { ProjectPreview, ProjectPreviewHero, ProjectPreviewLegend } from '../project-preview'
 
 const paired = {
   title: 'P',
@@ -111,6 +111,33 @@ describe('ProjectPreview', () => {
     expect(container.querySelector('.text-lg.font-semibold.tabular-nums')).not.toBeNull()
     expect(container.querySelector('svg')?.getAttribute('class')).toContain('h-4 md:h-5')
     expect(container.querySelector('[data-slot="preview-legend"]')).toBeNull()
+  })
+
+  // At 390px a 16:9 frame is ~192px tall but three paired hero rows need ~199px, so
+  // below md the content must size the frame (in flow) instead of an absolute fill.
+  it('hero frame is content-sized below md and a 16:9 fill from md up', () => {
+    const three = {
+      title: 'P',
+      results: [
+        { metric: 'A', before: '1%', after: '2%', improvement: '' },
+        { metric: 'B', before: '3%', after: '4%', improvement: '' },
+        { metric: 'C', before: '5%', after: '6%', improvement: '' },
+      ],
+    }
+    const { container } = render(<ProjectPreviewHero project={three} />)
+    const frame = container.querySelector('[data-slot="project-hero-frame"]') as HTMLElement
+    const frameClasses = frame.className.split(/\s+/)
+    expect(frameClasses).not.toContain('aspect-video')
+    expect(frameClasses).toContain('md:aspect-video')
+    expect(frameClasses).toContain('min-h-40')
+    const root = container.querySelector('[data-slot="project-preview"]') as HTMLElement
+    const classes = root.className.split(/\s+/)
+    expect(classes).toContain('relative')
+    expect(classes).not.toContain('absolute')
+    expect(classes).not.toContain('inset-0')
+    expect(classes).toContain('md:absolute')
+    expect(classes).toContain('md:inset-0')
+    expect(container.querySelectorAll('[data-slot="preview-row"]').length).toBe(3)
   })
 
   it('thumb is decorative with a 50x50 viewBox', () => {
