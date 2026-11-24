@@ -87,10 +87,10 @@ export const showcaseProjects: ShowcaseProject[] = [
   {
     id: 'churn-retention',
     slug: 'churn-retention',
-    title: 'Customer Churn Prediction Model',
-    description: 'Machine learning model to predict and prevent customer churn',
+    title: 'Partner Churn Prediction Model',
+    description: 'Machine learning model to predict and prevent partner churn',
     longDescription:
-      'Advanced analytics platform using machine learning to identify at-risk customers and recommend retention strategies.',
+      'Advanced analytics platform using machine learning to identify at-risk partners and recommend retention strategies.',
     category: 'data-analytics',
     technologies: ['React', 'TypeScript', 'Recharts', 'Machine Learning'],
     displayMetrics: [

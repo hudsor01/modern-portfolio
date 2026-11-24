@@ -91,24 +91,24 @@ export default function ChurnAnalysis() {
   return (
     <>
       <ProjectJsonLd
-        title="Customer Churn & Retention Analysis - Predictive Analytics"
-        description="Advanced churn prediction and retention analysis dashboard with customer lifecycle metrics, retention heatmaps, and predictive modeling for customer success optimization."
+        title="Partner Churn & Retention Analysis - Predictive Analytics"
+        description="Advanced churn prediction and retention analysis dashboard with partner lifecycle metrics, retention heatmaps, and predictive modeling for partner success optimization."
         slug="churn-retention"
         image={ogImageUrl({
-          title: 'Customer Churn & Retention: Predictive Analytics',
+          title: 'Partner Churn & Retention: Predictive Analytics',
           subtitle: 'Revenue Operations Project',
           project: 'churn-retention',
         })}
-        category="Customer Analytics"
+        category="Partner Analytics"
         datePublished="2025-03-04T00:00:00-06:00"
         dateModified="2026-04-10T00:00:00-06:00"
         tags={[
           'Churn Analysis',
-          'Customer Retention',
+          'Partner Retention',
           'Predictive Analytics',
-          'Customer Success',
+          'Partner Success',
           'Lifecycle Management',
-          'Customer Analytics',
+          'Partner Analytics',
           'Data Science',
           'Machine Learning',
         ]}
