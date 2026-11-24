@@ -28,32 +28,65 @@ const BAR_COLORS = [
   chartColors.chart4,
 ]
 
-/** Splits a name into at most two lines of roughly `max` characters, breaking on spaces. */
-export function wrapLabel(name: string, max = 16): string[] {
-  const words = name.split(' ')
+const LABEL_MAX_CHARS = 15
+const LABEL_MAX_LINES = 3
+
+function ellipsize(text: string, max: number): string {
+  return text.length > max ? `${text.slice(0, max - 1)}…` : text
+}
+
+/**
+ * Wraps a name into at most `maxLines` lines of at most `max` characters, breaking on
+ * spaces, so no line can overflow the axis gutter. Anything that still does not fit
+ * (one very long word, or more text than `maxLines` allows) is ellipsized on its line;
+ * the full name stays available through the tick's <title> and the chart tooltip.
+ */
+export function wrapLabel(
+  name: string,
+  max = LABEL_MAX_CHARS,
+  maxLines = LABEL_MAX_LINES
+): string[] {
+  // Each word is capped first, so a single long word can never overflow a line by itself.
+  const words = name
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((word) => ellipsize(word, max))
   const lines: string[] = []
   let line = ''
-  for (const word of words) {
-    if (line && `${line} ${word}`.length > max && lines.length < 1) {
+  let index = 0
+  for (; index < words.length; index += 1) {
+    const word = words[index] as string
+    const candidate = line ? `${line} ${word}` : word
+    if (candidate.length <= max) {
+      line = candidate
+    } else if (lines.length < maxLines - 1) {
       lines.push(line)
       line = word
     } else {
-      line = line ? `${line} ${word}` : word
+      break
     }
   }
-  lines.push(line)
-  return lines
+  // Out of lines: the last line absorbs what is left and is ellipsized.
+  if (index < words.length) {
+    line = ellipsize(`${line} ${words.slice(index).join(' ')}`, max)
+  }
+  if (line) lines.push(line)
+  return lines.length > 0 ? lines : ['']
 }
 
 type TickProps = { x?: number; y?: number; payload?: { value: string } }
 
-/** Full partner name on up to two lines, never truncated. */
-function PartnerTick({ x = 0, y = 0, payload }: TickProps) {
-  const lines = wrapLabel(payload?.value ?? '')
+/** Partner name wrapped to fit the gutter; the full name is the element's <title>. */
+export function PartnerTick({ x = 0, y = 0, payload }: TickProps) {
+  const name = payload?.value ?? ''
+  const lines = wrapLabel(name)
+  const firstDy = `${(0.35 - (lines.length - 1) * 0.6).toFixed(2)}em`
   return (
     <text x={x} y={y} textAnchor="end" fill={chartColors.axis} fontSize={12}>
+      <title>{name}</title>
       {lines.map((line, i) => (
-        <tspan key={line} x={x} dy={i === 0 ? (lines.length > 1 ? '-0.2em' : '0.35em') : '1.2em'}>
+        // Index key: lines are positional and can repeat.
+        <tspan key={i} x={x} dy={i === 0 ? firstDy : '1.2em'}>
           {line}
         </tspan>
       ))}

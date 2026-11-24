@@ -34,6 +34,16 @@ test.describe('/projects/deal-funnel charts', () => {
     await expect(page.getByText('Closed Won').first()).toBeVisible()
   })
 
+  test('funnel bar widths follow the stage counts (1,140 > 470 > 90)', async ({ page }) => {
+    const bars = page.locator('[data-testid="funnel-stage"] > div')
+    await expect(bars).toHaveCount(3)
+    const widths = await bars.evaluateAll((els) => els.map((e) => e.getBoundingClientRect().width))
+    const [working = 0, won = 0, lost = 0] = widths
+    expect(working).toBeGreaterThan(won)
+    expect(won).toBeGreaterThan(lost)
+    expect(lost).toBeGreaterThan(working * 0.25)
+  })
+
   test('each chart card has exactly one header', async ({ page }) => {
     for (const name of [
       'Sales Pipeline Funnel',
@@ -65,7 +75,27 @@ test.describe('/projects/revenue-kpi charts', () => {
     await card.scrollIntoViewIfNeeded()
     const ticks = card.locator('.recharts-cartesian-axis-tick-labels text')
     await expect(ticks.first()).toBeVisible()
-    for (const text of await ticks.allTextContents()) expect(text).not.toContain('...')
+    for (const text of await ticks.allTextContents()) expect(text).not.toMatch(/\.\.\.|…/)
+  })
+
+  test('top partner labels stay inside the chart and carry the full name as a title', async ({
+    page,
+  }) => {
+    const card = page.getByRole('heading', { name: 'Top Partners by Revenue' }).locator('xpath=../../..')
+    await card.scrollIntoViewIfNeeded()
+    const svg = card.locator('svg.recharts-surface').first()
+    const ticks = card.locator('.recharts-cartesian-axis-tick-labels text:has(title)')
+    await expect(ticks.first()).toBeVisible()
+    const box = await svg.boundingBox()
+    expect(box, 'chart svg box').not.toBeNull()
+    for (const tick of await ticks.all()) {
+      const t = await tick.boundingBox()
+      expect(t, 'tick box').not.toBeNull()
+      if (!t || !box) continue
+      expect(t.x).toBeGreaterThanOrEqual(box.x - 1)
+      expect(t.x + t.width).toBeLessThanOrEqual(box.x + box.width + 1)
+      expect((await tick.locator('title').textContent())?.length ?? 0).toBeGreaterThan(0)
+    }
   })
 
   test('quarterly axis ticks are evenly strided', async ({ page }) => {
