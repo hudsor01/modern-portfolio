@@ -26,7 +26,7 @@ export default function ContactPageClient({
       <Navbar />
       <main id="main-content" tabIndex={-1} className="min-h-screen bg-background">
         {/* Hero Section */}
-        <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-20 overflow-clip">
+        <section className="relative pt-24 pb-8 lg:pt-32 lg:pb-20 overflow-clip">
           {/* Decorative background elements */}
           <DecorativeBlob position="top-right" />
           <DecorativeBlob position="bottom-left" className="bottom-1/4" />
@@ -48,7 +48,7 @@ export default function ContactPageClient({
               </p>
 
               {/* Quick Stats */}
-              <div className="flex flex-wrap justify-center gap-8 text-sm text-muted-foreground">
+              <div className="mx-auto flex max-w-xs flex-col items-center gap-3 text-sm text-muted-foreground sm:max-w-none sm:flex-row sm:flex-wrap sm:justify-center sm:gap-8">
                 <div className="flex items-center gap-2">
                   <Zap className="w-4 h-4 text-secondary" />
                   <span>24hr Response Time</span>
@@ -70,11 +70,11 @@ export default function ContactPageClient({
         </section>
 
         {/* Form Section */}
-        <section className="relative py-16 lg:py-20 bg-muted/30">
+        <section className="relative py-10 lg:py-20 bg-muted/30">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
               {/* Contact Form */}
-              <div className="min-w-0">
+              <div className="min-w-0 h-full">
                 <ContactForm form={form} />
               </div>
 
