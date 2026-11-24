@@ -69,3 +69,13 @@ describe('RevOpsMaturityScorecard selected option', () => {
     expect(sibling?.className).not.toMatch(/(^|\s)border-primary(\s|$)/)
   })
 })
+
+describe('RevOpsMaturityScorecard keyboard focus', () => {
+  it('shows a ring on the label when its sr-only radio has focus-visible', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    const label = container.querySelector('fieldset label')
+    expect(label?.className).toContain('has-[:focus-visible]:ring-2')
+    expect(label?.className).toContain('has-[:focus-visible]:ring-ring')
+    expect(label?.className).toContain('has-[:focus-visible]:ring-offset-2')
+  })
+})

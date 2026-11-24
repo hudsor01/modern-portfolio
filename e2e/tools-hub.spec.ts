@@ -240,6 +240,36 @@ test.describe('scorecard geometry', () => {
     expect(sel.ratio).toBeGreaterThanOrEqual(3)
   })
 
+  test('keyboard focus on a rating option is visible and arrow keys move it', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto(URL)
+    await expect(page.locator('fieldset').first()).toBeVisible()
+    const onRadio = () =>
+      page.evaluate(() => {
+        const el = document.activeElement
+        return el instanceof HTMLInputElement && el.type === 'radio'
+      })
+    for (let i = 0; i < 60 && !(await onRadio()); i++) await page.keyboard.press('Tab')
+    expect(await onRadio()).toBe(true)
+
+    const focusedLabel = page.locator('fieldset label:has(input:focus-visible)')
+    await expect(focusedLabel).toHaveCount(1)
+    const ring = async () =>
+      focusedLabel.evaluate((el) => {
+        const s = getComputedStyle(el)
+        return { shadow: s.boxShadow, outline: s.outlineStyle }
+      })
+    const before = await ring()
+    expect(before.shadow).not.toBe('none')
+    expect(before.shadow).toMatch(/\b2px\b/)
+
+    const first = await focusedLabel.textContent()
+    await page.keyboard.press('ArrowRight')
+    await expect(focusedLabel).toHaveCount(1)
+    expect(await focusedLabel.textContent()).not.toBe(first)
+    expect((await ring()).shadow).not.toBe('none')
+  })
+
   test('rating options show the word label at 640px and up', async ({ page }) => {
     for (const width of [640, 1440]) {
       await page.setViewportSize({ width, height: 900 })
