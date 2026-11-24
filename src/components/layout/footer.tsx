@@ -69,8 +69,18 @@ export function Footer() {
             </p>
           </div>
 
-          {FOOTER_SECTIONS.map((section) => (
-            <nav key={section.heading} aria-label={section.heading}>
+          {FOOTER_SECTIONS.map((section, i) => (
+            <nav
+              key={section.heading}
+              aria-label={section.heading}
+              // Two columns on mobile: an odd last section spans the full row so no grid cell is
+              // left empty and its long titles do not wrap. Four columns from md up.
+              className={
+                i === FOOTER_SECTIONS.length - 1 && FOOTER_SECTIONS.length % 2 === 1
+                  ? 'col-span-2 md:col-span-1'
+                  : undefined
+              }
+            >
               <h2 className="font-sans text-xs font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
                 {section.heading}
               </h2>

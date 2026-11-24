@@ -61,4 +61,15 @@ describe('Footer headings', () => {
     expect(revops).toContain('/tools/pipeline-coverage-calculator')
     expect(revops).toContain('/tools/revops-maturity-scorecard')
   })
+
+  it('fills the mobile two-column grid: the odd last section spans the row, from md it is one column', () => {
+    const { container } = render(<Footer />)
+    const navs = Array.from(container.querySelectorAll('nav[aria-label]'))
+    const spans = navs.map((n) => n.classList.contains('col-span-2'))
+    // brand cell spans 2; sections: [Explore, Revenue Operations] pair up, Popular guides spans the row
+    expect(spans).toEqual([false, false, true])
+    expect(navs[2]?.classList.contains('md:col-span-1')).toBe(true)
+    const brand = container.querySelector('.col-span-2.md\\:col-span-1')
+    expect(brand).not.toBeNull()
+  })
 })
