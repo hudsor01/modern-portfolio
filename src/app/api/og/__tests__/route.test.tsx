@@ -25,6 +25,7 @@ vi.mock('next/og', () => ({
 }))
 
 import { GET } from '@/app/api/og/route'
+import { showcaseProjects } from '@/data/projects'
 
 function req(query = '') {
   return new NextRequest(`http://localhost:3000/api/og${query}`)
@@ -84,5 +85,83 @@ describe('GET /api/og', () => {
     const firstCall = imageResponseCtor.mock.calls[0]
     expect(firstCall).toBeDefined()
     expect(firstCall![1]).toMatchObject({ width: 1200, height: 630 })
+  })
+
+  describe('project branch', () => {
+    const tree = async (q: string) => {
+      imageResponseCtor.mockClear()
+      const res = await GET(req(q))
+      expect(res.status).toBe(200)
+      expect(res.headers.get('Cache-Control')).toBe(
+        'public, s-maxage=60, stale-while-revalidate=86400'
+      )
+      return imageResponseCtor.mock.calls[0]![0]
+    }
+    const bySlug = (slug: string) => showcaseProjects.find((p) => p.slug === slug)!
+
+    function walk(node: unknown, visit: (n: any) => void) {
+      if (Array.isArray(node)) {
+        for (const c of node) walk(c, visit)
+        return
+      }
+      if (node && typeof node === 'object') {
+        visit(node)
+        walk((node as any).props?.children, visit)
+      }
+    }
+
+    it('draws client, title, legend, paired values and improvement', async () => {
+      const el = await tree('?project=revenue-kpi&title=T')
+      const t = JSON.stringify(el)
+      expect(t).toContain(bySlug('revenue-kpi').client)
+      expect(t).toContain('"T"')
+      expect(t).toContain('Before')
+      expect(t).toContain('After')
+      expect(t).toContain('82% → 94%')
+      expect(t).toContain('Richard Hudson')
+      expect(t).toContain('richardwhudsonjr.com')
+    })
+
+    it('renders improvement-only rows without legend, catalog title by default', async () => {
+      const el = await tree('?project=partner-performance')
+      const t = JSON.stringify(el)
+      expect(t).toContain('63% improvement')
+      expect(t).toContain('22% improvement')
+      expect(t).not.toContain('Before')
+      expect(t).toContain(bySlug('partner-performance').title)
+    })
+
+    it('renders metric tiles', async () => {
+      const t = JSON.stringify(await tree('?project=partnership-program-implementation'))
+      expect(t).toContain('90%+')
+      expect(t).toContain('35%')
+      expect(t).not.toContain('→')
+    })
+
+    it.each(['nope', '../x', 'REVENUE-KPI', 'a'.repeat(101), ''])(
+      'falls through silently for %s',
+      async (slug) => {
+        const base = JSON.stringify(await tree(''))
+        const t = JSON.stringify(await tree(`?project=${slug}`))
+        expect(t).toBe(base)
+        if (slug) expect(t).not.toContain(slug)
+      }
+    )
+
+    it.each(showcaseProjects.map((p) => p.slug))('satori-safe tree for %s', async (slug) => {
+      const el = await tree(`?project=${slug}`)
+      const bad: string[] = []
+      walk(el, (n) => {
+        const kids = ([] as unknown[])
+          .concat(n.props?.children ?? [])
+          .flat(Infinity)
+          .filter((c) => c !== null && c !== false && c !== undefined)
+        if (n.type === 'div' && kids.length > 1 && n.props.style?.display !== 'flex')
+          bad.push('multi')
+        const st = JSON.stringify(n.props?.style ?? {})
+        if (/-webkit-box|WebkitLineClamp|grid|calc\(|var\(/.test(st)) bad.push(st)
+      })
+      expect(bad).toEqual([])
+    })
   })
 })
