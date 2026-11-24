@@ -51,7 +51,7 @@ export const tools: readonly ToolEntry[] = [
 
 export function getTool(slug: string): ToolEntry {
   const tool = tools.find((t) => t.slug === slug)
-  if (!tool) throw new Error('Unknown tool: ' + slug)
+  if (!tool) throw new Error(`Unknown tool: ${slug}`)
   return tool
 }
 
