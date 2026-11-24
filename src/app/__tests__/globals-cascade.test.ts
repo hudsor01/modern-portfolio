@@ -94,6 +94,18 @@ describe('globals.css cascade', () => {
     expect(offenders.map((r) => r.selector)).toEqual([])
   })
 
+  it('has no unlayered universal rule that sets border-color (it would beat every border-* utility)', () => {
+    const offenders = rules.filter(
+      (r) =>
+        r.parents.length === 0 &&
+        r.selector.split(',').some((s) => s.trim() === '*') &&
+        /(^|;|\s)border-color\s*:/.test(r.body)
+    )
+    expect(offenders.map((r) => r.selector)).toEqual([])
+    const base = rules.find((r) => r.selector === '*' && r.parents.includes('@layer base'))
+    expect(base?.body).toContain('border-color: var(--color-border)')
+  })
+
   it('flags unlayered pseudo-class and descendant element rules too', () => {
     const probe = parse('a:hover { color: red } h1 a { font-size: 1px } .x a { color: red }')
     const flagged = probe.filter(
