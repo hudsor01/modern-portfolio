@@ -24,17 +24,16 @@ export async function GET(request: NextRequest) {
 
   // Project result card. The slug is allow-listed, then matched exactly against
   // the catalog; anything else falls through to the standard card below. The
-  // raw `project` value is never drawn.
+  // raw `project` value, `title` and `subtitle` are never drawn on this card.
   const projectParam = searchParams.get('project') ?? ''
   if (/^[a-z0-9-]{1,100}$/.test(projectParam)) {
     const project = showcaseProjects.find((p) => p.slug === projectParam)
     if (project) {
       return new ImageResponse(
-        projectOgCard({
-          project,
-          title: searchParams.get('title') ? title : project.title,
-          subtitle: searchParams.get('subtitle') ? subtitle : project.description,
-        }),
+        // The catalog is the only source of copy on a project card: a crafted
+        // `title`/`subtitle` must not put attacker text next to a genuine
+        // results panel and footer.
+        projectOgCard({ project, title: project.title, subtitle: project.description }),
         {
           width: 1200,
           height: 630,

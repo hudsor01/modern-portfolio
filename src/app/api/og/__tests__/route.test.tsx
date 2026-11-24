@@ -110,11 +110,11 @@ describe('GET /api/og', () => {
       }
     }
 
-    it('draws client, title, legend, paired values and improvement', async () => {
-      const el = await tree('?project=revenue-kpi&title=T')
+    it('draws client, catalog title, legend, paired values and improvement', async () => {
+      const el = await tree('?project=revenue-kpi')
       const t = JSON.stringify(el)
       expect(t).toContain(bySlug('revenue-kpi').client)
-      expect(t).toContain('"T"')
+      expect(t).toContain(bySlug('revenue-kpi').title)
       expect(t).toContain('Before')
       expect(t).toContain('After')
       expect(t).toContain('82% → 94%')
@@ -122,8 +122,29 @@ describe('GET /api/og', () => {
       expect(t).toContain('richardwhudsonjr.com')
     })
 
+    it('ignores query title and subtitle when the project resolves to a catalog slug', async () => {
+      const p = bySlug('revenue-kpi')
+      const t = JSON.stringify(
+        await tree(
+          `?project=revenue-kpi&title=${encodeURIComponent('Fake Headline')}&subtitle=${encodeURIComponent('Forged subtitle')}`
+        )
+      )
+      expect(t).not.toContain('Fake Headline')
+      expect(t).not.toContain('Forged subtitle')
+      expect(t).toContain(p.title)
+      expect(t).toContain(p.description)
+      // Same element tree as the plain project card, so the query cannot vary the render.
+      expect(t).toBe(JSON.stringify(await tree('?project=revenue-kpi')))
+    })
+
+    it('leaves the default card honouring title and subtitle for an unknown project', async () => {
+      const t = JSON.stringify(await tree('?project=nope&title=Blog%20Post&subtitle=Sub'))
+      expect(t).toContain('Blog Post')
+      expect(t).toContain('Sub')
+    })
+
     it('stacks the paired before/after bars (no Fragment: satori lays one out as a row)', async () => {
-      const el = await tree('?project=revenue-kpi&title=T')
+      const el = await tree('?project=revenue-kpi')
       const fragment = Symbol.for('react.fragment')
       let fragments = 0
       let stacked = 0
