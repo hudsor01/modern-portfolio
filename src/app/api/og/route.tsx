@@ -11,8 +11,9 @@ import { buildProjectPreview } from '@/lib/project-preview'
 
 // Blog covers are a pure function of (title, category) and /blog draws up to 24 of them per
 // page view, so a per-IP rate limit would break the listing. The variant is allow-listed and
-// inputs are truncated; the real bound on render cost is a long CDN lifetime, so each distinct
-// cover renders about once a day and is served stale while it refreshes.
+// inputs are truncated; a long CDN lifetime means each distinct cover renders about once a day
+// and is served stale while it refreshes. That bounds renders per distinct URL only: distinct
+// `title` values each force one render, so total render cost is not bounded.
 const COVER_CACHE_CONTROL = 'public, s-maxage=86400, stale-while-revalidate=604800'
 
 export async function GET(request: NextRequest) {
