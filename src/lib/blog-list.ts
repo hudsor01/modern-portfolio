@@ -5,6 +5,10 @@
 
 export const DEFAULT_CHIP_LABEL = 'Revenue Operations'
 
+/** The one category-chip look, shared by the /blog cards and the post header. */
+export const CATEGORY_CHIP_CLASSES =
+  'inline-flex items-center px-2.5 py-1 text-xs font-semibold tracking-wide uppercase text-primary bg-primary/8 border border-border rounded-md'
+
 /** Chip text: category, else first tag, else the default label. */
 export function getCategoryChipLabel(post: {
   categoryName: string | null

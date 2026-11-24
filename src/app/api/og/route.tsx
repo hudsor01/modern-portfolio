@@ -45,6 +45,20 @@ export async function GET(request: NextRequest) {
     }
   }
 
+  // Blog-card cover (`variant=card`): drawn at the 16:10 frame of a /blog card, in
+  // type sized for a ~340px-wide thumbnail. The default card below is built for
+  // 1200px social shares and shrinks to ~8px text in a card, so it stays as it is
+  // and this is a separate layout. Social-share URLs never carry `variant`.
+  if (searchParams.get('variant') === 'card') {
+    return new ImageResponse(blogCoverCard({ title, category }), {
+      width: COVER_WIDTH_PX,
+      height: COVER_HEIGHT_PX,
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=86400',
+      },
+    })
+  }
+
   return new ImageResponse(
     <div
       style={{
@@ -342,6 +356,84 @@ function projectOgCard({
               ))}
           </div>
         )}
+      </div>
+    </div>
+  )
+}
+
+// 16:10, the aspect of the /blog card cover frame, so object-contain leaves no bars.
+const COVER_WIDTH_PX = 1200
+const COVER_HEIGHT_PX = 750
+
+function blogCoverCard({ title, category }: { title: string; category: string }) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: `${COVER_WIDTH_PX}px`,
+        height: `${COVER_HEIGHT_PX}px`,
+        backgroundColor: OG_CARD_BACKGROUND,
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+      }}
+    >
+      <div
+        style={{
+          width: `${COVER_WIDTH_PX}px`,
+          height: '16px',
+          backgroundColor: '#1a1a2e',
+          flexShrink: 0,
+        }}
+      />
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          flex: 1,
+          padding: '64px',
+          justifyContent: 'center',
+        }}
+      >
+        {category && (
+          <div
+            style={{
+              display: 'block',
+              fontSize: '48px',
+              fontWeight: 700,
+              color: '#8f4700',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              marginBottom: '32px',
+            }}
+          >
+            {category}
+          </div>
+        )}
+        <div
+          style={{
+            display: '-webkit-box',
+            fontSize: '96px',
+            fontWeight: 700,
+            color: '#1a1a2e',
+            lineHeight: 1.12,
+            WebkitLineClamp: 4,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}
+        >
+          {title}
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            fontSize: '48px',
+            fontWeight: 600,
+            color: '#374151',
+            marginTop: 'auto',
+          }}
+        >
+          Richard Hudson
+        </div>
       </div>
     </div>
   )

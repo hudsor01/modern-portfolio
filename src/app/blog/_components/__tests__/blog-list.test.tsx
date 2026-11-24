@@ -14,10 +14,10 @@ vi.mock('next/image', () => ({
 vi.mock('../blog-tag-filter', () => ({ BlogTagFilter: () => null }))
 vi.mock('@/components/blog/blog-featured-image', () => ({ BlogFeaturedImage: () => null }))
 
+import { CATEGORY_CHIP_CLASSES } from '@/lib/blog-list'
 import { BlogList } from '../blog-list'
 
-const CHIP_CLASSES =
-  'inline-flex items-center px-2.5 py-1 mb-2 text-xs font-semibold tracking-wide uppercase text-primary bg-primary/8 border border-border rounded-md'
+const CHIP_CLASSES = `${CATEGORY_CHIP_CLASSES} mb-2`
 
 function post(over: Partial<BlogListPost>): BlogListPost {
   return {
@@ -73,6 +73,24 @@ describe('BlogList cards', () => {
     expect(card?.querySelectorAll('a')).toHaveLength(0)
     expect(card?.querySelectorAll('h2')).toHaveLength(1)
     expect(card?.querySelector('h2')?.querySelector('span[class*="uppercase"]')).toBeNull()
+  })
+
+  it('keeps the cover flush and pins the date to the card bottom (B-1, B-2)', () => {
+    const { container } = renderList([
+      post({ id: 'a', slug: 'a', featuredImage: '/x.jpg' }),
+      post({ id: 'b', slug: 'b' }),
+    ])
+    const [withImage, withoutImage] = Array.from(
+      container.querySelectorAll('[data-slot="card"]')
+    ) as HTMLElement[]
+    // The default card padding (py-6) put a band above the cover: only the image card drops it.
+    expect(withImage?.className).toContain('pt-0')
+    expect(withoutImage?.className).not.toContain('pt-0')
+    for (const card of [withImage, withoutImage]) {
+      const content = card?.querySelector('[data-slot="card-content"]')
+      expect(content?.className).toContain('mt-auto')
+      expect(content?.querySelector('time')).not.toBeNull()
+    }
   })
 
   it('clamps titles at 3 lines', () => {

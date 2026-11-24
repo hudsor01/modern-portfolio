@@ -87,6 +87,27 @@ describe('GET /api/og', () => {
     expect(firstCall![1]).toMatchObject({ width: 1200, height: 630 })
   })
 
+  describe('blog cover variant (B-18)', () => {
+    it('renders a 1200x750 (16:10) card with card-sized type', async () => {
+      await GET(req('?title=Hello&category=Sales&variant=card'))
+      const [element, opts] = imageResponseCtor.mock.calls[0] as [
+        unknown,
+        { width: number; height: number },
+      ]
+      expect(opts).toMatchObject({ width: 1200, height: 750 })
+      const json = JSON.stringify(element)
+      expect(json).toContain('Hello')
+      expect(json).toContain('Sales')
+      const sizes = [...json.matchAll(/"fontSize":"(\d+)px"/g)].map((m) => Number(m[1]))
+      expect(Math.min(...sizes)).toBeGreaterThanOrEqual(48)
+    })
+
+    it('leaves the default card at 1200x630 for any other variant value', async () => {
+      await GET(req('?title=Hello&variant=other'))
+      expect(imageResponseCtor.mock.calls[0]![1]).toMatchObject({ width: 1200, height: 630 })
+    })
+  })
+
   describe('project branch', () => {
     const tree = async (q: string) => {
       imageResponseCtor.mockClear()

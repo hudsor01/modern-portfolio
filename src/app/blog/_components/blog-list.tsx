@@ -10,7 +10,7 @@ import { BlogTagFilter } from './blog-tag-filter'
 import { InlineMarkdown } from './inline-markdown'
 import { BlogFeaturedImage } from '@/components/blog/blog-featured-image'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
-import { getCategoryChipLabel } from '@/lib/blog-list'
+import { CATEGORY_CHIP_CLASSES, getCategoryChipLabel } from '@/lib/blog-list'
 import { formatDate } from '@/lib/data-formatters'
 
 interface BlogListProps {
@@ -161,7 +161,11 @@ export function BlogList({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts.map((post) => (
             <Link key={post.id} href={`/blog/${post.slug}`} className="group block h-full">
-              <Card className="hover-lift hover:border-primary/50 transition-all h-full overflow-hidden">
+              <Card
+                className={`hover-lift hover:border-primary/50 transition-all h-full overflow-hidden ${
+                  post.featuredImage ? 'pt-0' : ''
+                }`}
+              >
                 {post.featuredImage && (
                   <div className="relative aspect-[16/10] overflow-hidden">
                     <BlogFeaturedImage
@@ -169,14 +173,15 @@ export function BlogList({
                       alt={post.title}
                       postTitle={post.title}
                       postCategory={post.categoryName ?? undefined}
+                      fallbackVariant="card"
                       fill
-                      className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+                      className="object-cover object-[25%_center] transition-transform duration-300 ease-out group-hover:scale-105"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   </div>
                 )}
                 <CardHeader>
-                  <span className="inline-flex items-center px-2.5 py-1 mb-2 text-xs font-semibold tracking-wide uppercase text-primary bg-primary/8 border border-border rounded-md">
+                  <span className={`${CATEGORY_CHIP_CLASSES} mb-2`}>
                     {getCategoryChipLabel(post)}
                   </span>
                   <CardTitle as="h2" className="line-clamp-3 transition-colors">
@@ -186,7 +191,7 @@ export function BlogList({
                     {post.excerpt ? <InlineMarkdown value={post.excerpt} /> : ''}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="mt-auto">
                   <time
                     className="typography-small text-muted-foreground"
                     dateTime={post.publishedAt ?? undefined}
