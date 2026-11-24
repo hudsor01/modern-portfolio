@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { computeCoverage, COVERAGE_PRESETS, type CoverageInput } from '@/lib/pipeline-coverage'
+import {
+  computeCoverage,
+  COVERAGE_PRESETS,
+  formatGrouped,
+  sanitizeAmount,
+  type CoverageInput,
+} from '@/lib/pipeline-coverage'
 
 const base: CoverageInput = { revenueTarget: 1_000_000, winRatePct: 25 }
 
@@ -137,5 +143,21 @@ describe('COVERAGE_PRESETS', () => {
       expect(r.requiredCoverage).toBeGreaterThan(1)
       expect(r.requiredCoverage).toBeLessThan(10)
     }
+  })
+})
+
+describe('amount input formatting', () => {
+  it('groups integer digits and keeps a typed decimal part', () => {
+    expect(formatGrouped('1000000')).toBe('1,000,000')
+    expect(formatGrouped('999')).toBe('999')
+    expect(formatGrouped('')).toBe('')
+    expect(formatGrouped('1234.5')).toBe('1,234.5')
+    expect(formatGrouped('1234.')).toBe('1,234.')
+  })
+
+  it('sanitizeAmount drops commas, signs, letters and extra dots', () => {
+    expect(sanitizeAmount('1,000,000')).toBe('1000000')
+    expect(sanitizeAmount('-12abc')).toBe('12')
+    expect(sanitizeAmount('1.2.3')).toBe('1.23')
   })
 })

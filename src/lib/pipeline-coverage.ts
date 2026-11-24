@@ -130,3 +130,20 @@ export const COVERAGE_PRESETS = [
   { id: 'midmarket', label: 'Mid-market', winRatePct: 25 },
   { id: 'enterprise', label: 'Enterprise', winRatePct: 18 },
 ] as const
+
+/** Keep digits and at most one decimal point; drops grouping commas, signs and letters. */
+export function sanitizeAmount(v: string): string {
+  const cleaned = v.replace(/[^\d.]/g, '')
+  const dot = cleaned.indexOf('.')
+  if (dot === -1) return cleaned
+  return `${cleaned.slice(0, dot + 1)}${cleaned.slice(dot + 1).replace(/\./g, '')}`
+}
+
+/** Display form of a raw amount: grouped integer digits, any decimal part kept as typed. */
+export function formatGrouped(raw: string): string {
+  const clean = sanitizeAmount(raw)
+  if (clean === '') return ''
+  const [int = '', frac] = clean.split('.')
+  const grouped = int.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return frac === undefined ? grouped : `${grouped}.${frac}`
+}

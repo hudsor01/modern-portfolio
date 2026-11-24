@@ -1,7 +1,12 @@
 'use client'
 
 import { useId, useMemo, useState } from 'react'
-import { computeCoverage, COVERAGE_PRESETS } from '@/lib/pipeline-coverage'
+import {
+  computeCoverage,
+  COVERAGE_PRESETS,
+  formatGrouped,
+  sanitizeAmount,
+} from '@/lib/pipeline-coverage'
 
 const usd0 = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -23,7 +28,7 @@ function mult(n: number): string {
 /** Empty string → undefined; otherwise the parsed number (NaN-safe via the lib). */
 function parse(v: string): number | undefined {
   if (v.trim() === '') return undefined
-  const n = Number(v)
+  const n = Number(sanitizeAmount(v))
   return Number.isFinite(n) ? n : Number.NaN
 }
 
@@ -69,11 +74,11 @@ export function PipelineCoverageCalculator() {
           <Field id={ids.target} label="Revenue target (this period)" prefix="$">
             <input
               id={ids.target}
-              type="number"
-              min="0"
+              type="text"
               inputMode="numeric"
-              value={target}
-              onChange={(e) => setTarget(e.target.value)}
+              autoComplete="off"
+              value={formatGrouped(target)}
+              onChange={(e) => setTarget(sanitizeAmount(e.target.value))}
               className={`${inputClass} pl-8`}
               placeholder="1,000,000"
             />
@@ -110,11 +115,11 @@ export function PipelineCoverageCalculator() {
           <Field id={ids.deal} label="Average deal size (optional)" prefix="$">
             <input
               id={ids.deal}
-              type="number"
-              min="0"
+              type="text"
               inputMode="numeric"
-              value={avgDeal}
-              onChange={(e) => setAvgDeal(e.target.value)}
+              autoComplete="off"
+              value={formatGrouped(avgDeal)}
+              onChange={(e) => setAvgDeal(sanitizeAmount(e.target.value))}
               className={`${inputClass} pl-8`}
               placeholder="50,000"
             />
@@ -123,11 +128,11 @@ export function PipelineCoverageCalculator() {
           <Field id={ids.pipe} label="Open pipeline today (optional)" prefix="$">
             <input
               id={ids.pipe}
-              type="number"
-              min="0"
+              type="text"
               inputMode="numeric"
-              value={currentPipe}
-              onChange={(e) => setCurrentPipe(e.target.value)}
+              autoComplete="off"
+              value={formatGrouped(currentPipe)}
+              onChange={(e) => setCurrentPipe(sanitizeAmount(e.target.value))}
               className={`${inputClass} pl-8`}
               placeholder="3,000,000"
             />
@@ -167,7 +172,7 @@ export function PipelineCoverageCalculator() {
 
       {/* Results */}
       <div
-        className="bg-card rounded-2xl p-6 sm:p-8 border border-border shadow-sm"
+        className="bg-card rounded-2xl p-6 sm:p-8 border border-border shadow-sm lg:self-start"
         aria-live="polite"
       >
         {!result.valid ? (
@@ -178,7 +183,9 @@ export function PipelineCoverageCalculator() {
           <div className="space-y-6">
             <div>
               <p className="uppercase tracking-wider">Required coverage</p>
-              <p className="tracking-tight">{mult(result.requiredCoverage)}</p>
+              <p className="mt-1 text-5xl font-bold text-primary tracking-tight">
+                {mult(result.requiredCoverage)}
+              </p>
               <p className="mt-1">
                 ≈ <strong>{money(result.requiredPipeline)}</strong> in qualified pipeline to hit{' '}
                 {money(parse(target) ?? 0)}.
