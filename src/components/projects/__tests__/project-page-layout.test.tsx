@@ -31,6 +31,13 @@ describe('ProjectPageLayout', () => {
     expect(screen.getByTestId('page-children')).toBeTruthy()
   })
 
+  it('lets the h1 inherit the site display font and weight (no inline override)', () => {
+    render(<ProjectPageLayout {...baseProps} />)
+    const style = screen.getByRole('heading', { level: 1 }).style
+    expect(style.fontFamily).toBe('')
+    expect(style.fontWeight).toBe('')
+  })
+
   it('renders all provided tags', () => {
     render(<ProjectPageLayout {...baseProps} />)
     const tagsContainer = screen.getByTestId('project-tags')

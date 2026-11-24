@@ -130,9 +130,7 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
                 className="mb-4"
                 data-testid="project-title"
                 style={{
-                  fontFamily: designTokens.typography.fontFamily.display,
                   fontSize: designTokens.typography.fontSize['4xl'],
-                  fontWeight: designTokens.typography.fontWeight.semibold,
                   lineHeight: designTokens.typography.lineHeight.tight,
                 }}
               >
