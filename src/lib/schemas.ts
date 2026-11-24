@@ -9,6 +9,15 @@ import { z } from 'zod'
 import { postStatus, contentType } from '@/db/schema'
 import { FEATURED_IMAGE_ALLOWED_HOSTS } from './featured-image-hosts'
 
+// Zod 4 probes `new Function('')` at schema construction to decide whether to
+// JIT-compile validators. In the browser the CSP forbids 'unsafe-eval' (and must
+// stay that way), so the probe is a reported script-src violation on every page
+// that loads these schemas (/contact). Turn the JIT off client-side so the probe
+// never runs; the server keeps the JIT.
+if (typeof window !== 'undefined') {
+  z.config({ jitless: true })
+}
+
 // =======================
 // BASE PRIMITIVE SCHEMAS
 // =======================
