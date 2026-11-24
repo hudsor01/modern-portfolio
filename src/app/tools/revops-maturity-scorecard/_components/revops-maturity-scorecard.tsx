@@ -76,7 +76,7 @@ export function RevOpsMaturityScorecard() {
                           key={opt.value}
                           className={`flex flex-col items-center justify-center rounded-lg border px-1 py-2 cursor-pointer text-center transition-colors ${
                             selected
-                              ? 'border-border bg-primary/10 text-primary'
+                              ? 'border-primary bg-primary/10 text-primary'
                               : 'border-border bg-background text-muted-foreground hover:border-primary/50'
                           }`}
                         >

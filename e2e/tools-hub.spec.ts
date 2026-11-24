@@ -1,6 +1,7 @@
 import { existsSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { expect, test } from '@playwright/test'
+import { borderContrast } from './_helpers/contrast'
 import { getOnly } from './_helpers/settle'
 
 /**
@@ -223,6 +224,20 @@ test.describe('scorecard geometry', () => {
     }
     await expect(page.getByRole('radio', { name: '1 Not at all' }).first()).toBeAttached()
     await expect(page.getByRole('radio', { name: '3 Somewhat' }).first()).toBeAttached()
+  })
+
+  test('selected rating option has a primary border at 3:1 against its fill', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto(URL)
+    const group = page.getByRole('radiogroup').first()
+    await group.getByText('Fully', { exact: true }).click()
+    const labels = group.locator('label')
+    const selected = labels.nth(4)
+    await expect(selected.getByRole('radio')).toBeChecked()
+    const sel = await borderContrast(selected)
+    const unsel = await borderContrast(labels.nth(0))
+    expect(sel.border).not.toBe(unsel.border)
+    expect(sel.ratio).toBeGreaterThanOrEqual(3)
   })
 
   test('rating options show the word label at 640px and up', async ({ page }) => {

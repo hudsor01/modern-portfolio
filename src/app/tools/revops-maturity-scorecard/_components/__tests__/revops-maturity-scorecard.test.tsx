@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, afterEach } from 'vitest'
-import { render, screen, cleanup, within } from '@testing-library/react'
+import { render, screen, cleanup, within, fireEvent } from '@testing-library/react'
 import { PILLARS } from '@/lib/revops-maturity'
 import { RevOpsMaturityScorecard } from '../revops-maturity-scorecard'
 
@@ -53,5 +53,19 @@ describe('RevOpsMaturityScorecard layout', () => {
       expect(k[0]?.className).toContain('text-xs')
     }
     expect(keys.length).toBe(PILLARS.length)
+  })
+})
+
+describe('RevOpsMaturityScorecard selected option', () => {
+  it('marks the selected option with a primary border; unselected options keep border-border', () => {
+    render(<RevOpsMaturityScorecard />)
+    const first = screen.getAllByRole('radio', { name: '5 Fully' })[0] as HTMLInputElement
+    fireEvent.click(first)
+    const selected = first.closest('label')
+    expect(selected?.className).toContain('border-primary')
+    expect(selected?.className).not.toContain('border-border')
+    const sibling = screen.getAllByRole('radio', { name: '4 Mostly' })[0]?.closest('label')
+    expect(sibling?.className).toContain('border-border')
+    expect(sibling?.className).not.toMatch(/(^|\s)border-primary(\s|$)/)
   })
 })
