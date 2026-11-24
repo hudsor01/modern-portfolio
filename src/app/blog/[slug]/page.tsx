@@ -180,7 +180,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <main id="main-content" tabIndex={-1}>
           <div className="pt-24 pb-12 lg:pb-16">
             <BlogPostLayout post={post} />
-            <div className="max-w-4xl mx-auto px-6 lg:px-8">
+            <div className="portfolio-container">
               <RelatedPosts
                 currentSlug={post.slug}
                 currentTags={post.tags?.map((t) => t.name) ?? []}
