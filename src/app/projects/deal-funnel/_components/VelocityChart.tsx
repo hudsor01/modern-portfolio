@@ -12,7 +12,7 @@ export function VelocityChart({ partnerConversion }: VelocityChartProps) {
   const longest = Math.max(1, ...partnerConversion.map((p) => p.avg_sales_cycle_days))
 
   return (
-    <div className="h-full bg-card border border-border rounded-2xl p-8 hover:border-primary/50 transition-all duration-300 ease-out">
+    <div className="h-full">
       <ChartHeader
         title="Sales Velocity by Partner Tier"
         description="Median days from deal creation to close, per partner tier"

@@ -11,7 +11,7 @@ interface FunnelChartProps {
 
 export function FunnelChart({ stages, overallConversionRate }: FunnelChartProps) {
   return (
-    <div className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out">
+    <div>
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <ChartHeader
           title="Sales Pipeline Funnel"

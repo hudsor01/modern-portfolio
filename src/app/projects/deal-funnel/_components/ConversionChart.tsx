@@ -38,7 +38,7 @@ function StageTick({ x = 0, y = 0, payload }: TickProps) {
 
 export function ConversionChart({ stageConversions }: ConversionChartProps) {
   return (
-    <div className="glass flex h-full flex-col rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out">
+    <div className="flex h-full flex-col">
       <ChartHeader
         title="Stage Conversion Rates"
         description="Conversion between each stage of the sales funnel"
@@ -50,7 +50,7 @@ export function ConversionChart({ stageConversions }: ConversionChartProps) {
           <RechartsBarChart
             data={stageConversions}
             layout="vertical"
-            margin={{ top: 4, right: 16, bottom: 4, left: 0 }}
+            margin={{ top: 4, right: 24, bottom: 4, left: 0 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
             <XAxis
