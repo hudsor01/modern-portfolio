@@ -120,8 +120,7 @@ const OperationalMetricsChart = memo(function OperationalMetricsChart() {
         </RadarChart>
       </ResponsiveContainer>
       <p className="mt-4 text-center italic">
-        Operational efficiency radar showing 89.7% average performance vs 85% target and 78%
-        industry benchmark
+        Operational efficiency radar showing 89.7% average performance
       </p>
     </div>
   )

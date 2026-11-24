@@ -50,13 +50,13 @@ export function AlgorithmicApproachesGrid({ approaches }: AlgorithmicApproachesG
             variant: 'secondary',
           },
           {
-            value: formatPercentage(0.28),
-            label: 'Improvement in forecast accuracy',
+            value: formatPercentage(0.92),
+            label: 'Forecast accuracy (from 64%)',
             variant: 'primary',
           },
           {
-            value: formatPercentage(0.32),
-            label: 'Reduction in quota attainment variance',
+            value: formatPercentage(0.11),
+            label: 'Quota attainment variance (from 32%)',
             variant: 'secondary',
           },
           {

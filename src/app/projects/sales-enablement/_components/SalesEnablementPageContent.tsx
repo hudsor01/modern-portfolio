@@ -55,7 +55,6 @@ export default function SalesEnablementProject() {
         'Comprehensive assessment of sales skills across all stages and industries, with personalized development plans',
       achievements: [
         '45% faster ramp time for new hires',
-        'Identified 8 core competencies requiring focus',
         'Created role-specific development tracks',
       ],
     },
@@ -83,11 +82,7 @@ export default function SalesEnablementProject() {
       title: 'Peer Learning Community',
       description:
         'Created communities where sales professionals share wins, learn from peers, and celebrate successes',
-      achievements: [
-        '5,000+ peer interactions monthly',
-        'Top performers recognized and featured',
-        'Knowledge retention improved by 40%',
-      ],
+      achievements: ['Top performers recognized and featured'],
     },
   ]
 
