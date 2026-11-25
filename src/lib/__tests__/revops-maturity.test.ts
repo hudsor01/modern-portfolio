@@ -7,6 +7,7 @@ import {
   PILLARS,
   TIERS,
   STRONG_PILLAR_SCORE,
+  MANAGED_PILLAR_SCORE,
   type PillarId,
 } from '@/lib/revops-maturity'
 
@@ -190,21 +191,12 @@ describe('scoreMaturity — a high profile has no weakest pillar', () => {
     expect(r.nextMove).not.toMatch(REMEDIAL)
   })
 
-  it('a lowest pillar just below the bound is still the weakest, with its remedial advice', () => {
+  it('a lowest pillar just below the bound is still the weakest, with refine advice', () => {
     const r = scoreMaturity(
       byPillar({ process: STRONG_PILLAR_SCORE - 0.01, data: 5, technology: 5, alignment: 5 })
     )
     expect(r.weakestPillar).toBe('process')
-    expect(r.nextMove).toMatch(/Document your sales stages/)
-  })
-
-  it('the highest reachable pillar score below the bound (4.0) keeps remedial advice', () => {
-    const r = scoreMaturity(byPillar({ process: 4, data: 5, technology: 5, alignment: 5 }))
-    expect(r.weakestPillar).toBe('process')
-    expect(r.nextMove).toMatch(/Document your sales stages/)
-    const tie = scoreMaturity(byPillar({ process: 4, data: 4, technology: 5, alignment: 5 }))
-    expect(tie.weakestPillar).toBeNull()
-    expect(tie.nextMove).toContain('(Process and Data)')
+    expect(r.nextMove).toBe(REFINE.process)
   })
 
   it('an even profile inside the Optimized band gets the maintenance advice, not "raise them together"', () => {
@@ -215,6 +207,100 @@ describe('scoreMaturity — a high profile has no weakest pillar', () => {
     expect(r.weakestPillar).toBeNull()
     expect(r.nextMove).toContain(MAINTAIN)
     expect(r.nextMove).not.toMatch(REMEDIAL)
+  })
+})
+
+const REFINE: Record<PillarId, string> = {
+  process:
+    'Tighten stage exit criteria and audit them quarterly against won and lost deals, so the documented process stays the one reps actually follow.',
+  data: 'Give your core definitions a named owner and audit duplicates and field drift on a regular schedule, so the source of truth stays trusted as the team and stack grow.',
+  technology:
+    'Review tool usage and integration errors on a regular schedule, retire what reps no longer use, and automate the handoffs that still need someone to re-key data.',
+  alignment:
+    'Review the shared revenue metrics in one recurring cross-team meeting, and check each comp cycle that incentives still reward the behaviors leadership wants.',
+}
+
+/** Foundational (below-Managed) advice markers, one per pillar. */
+const FOUNDATIONAL =
+  /Document your sales stages|Clean up CRM hygiene|Consolidate overlapping tools|one shared revenue number|before you buy/
+
+describe('scoreMaturity — refine advice for a weakest pillar in the Managed band', () => {
+  it('the refine band is the Managed tier: from its lower bound up to the Optimized bound', () => {
+    const managed = TIERS[TIERS.length - 2]!
+    expect(managed.label).toBe('Managed')
+    expect(MANAGED_PILLAR_SCORE).toBe(TIERS[TIERS.length - 3]!.max)
+    expect(levelForScore(MANAGED_PILLAR_SCORE)).toBe(managed.level)
+  })
+
+  it('Process 4.0 and the rest 5: Process refine advice, not "Document your sales stages"', () => {
+    const r = scoreMaturity(byPillar({ process: 4, data: 5, technology: 5, alignment: 5 }))
+    expect(r.tier).toBe('Optimized')
+    expect(r.weakestPillar).toBe('process')
+    expect(r.nextMove).toBe(REFINE.process)
+    expect(r.nextMove).not.toMatch(FOUNDATIONAL)
+  })
+
+  it.each(PILLARS.map((p) => [p.id] as const))(
+    '%s at 4.0 with the rest 5 gets its own refine advice',
+    (id) => {
+      const values = { process: 5, data: 5, technology: 5, alignment: 5, [id]: 4 } as Record<
+        PillarId,
+        number
+      >
+      const r = scoreMaturity(byPillar(values))
+      expect(r.weakestPillar).toBe(id)
+      expect(r.nextMove).toBe(REFINE[id])
+      expect(r.nextMove).not.toMatch(FOUNDATIONAL)
+    }
+  )
+
+  it('refine advice applies whether or not the overall profile is Optimized', () => {
+    const r = scoreMaturity(byPillar({ process: 4.5, data: 3.5, technology: 4, alignment: 4 }))
+    expect(r.tier).toBe('Managed')
+    expect(r.weakestPillar).toBe('data')
+    expect(r.nextMove).toBe(REFINE.data)
+  })
+
+  it('exactly at the Managed lower bound is refine; just below it is foundational', () => {
+    const at = scoreMaturity(
+      byPillar({ process: 5, data: 5, technology: MANAGED_PILLAR_SCORE, alignment: 5 })
+    )
+    expect(at.weakestPillar).toBe('technology')
+    expect(at.nextMove).toBe(REFINE.technology)
+    const below = scoreMaturity(
+      byPillar({ process: 5, data: 5, technology: MANAGED_PILLAR_SCORE - 0.01, alignment: 5 })
+    )
+    expect(below.weakestPillar).toBe('technology')
+    expect(below.nextMove).toMatch(/Consolidate overlapping tools/)
+  })
+
+  it('just below the Optimized bound is refine; at it there is no weakest pillar', () => {
+    const below = scoreMaturity(
+      byPillar({ process: 5, data: 5, technology: 5, alignment: STRONG_PILLAR_SCORE - 0.01 })
+    )
+    expect(below.nextMove).toBe(REFINE.alignment)
+    const at = scoreMaturity(
+      byPillar({ process: 5, data: 5, technology: 5, alignment: STRONG_PILLAR_SCORE })
+    )
+    expect(at.weakestPillar).toBeNull()
+    expect(at.nextMove).toMatch(/no weak pillar to fix/)
+  })
+
+  it('a partial tie in the Managed band composes refine steps for the tied pillars only', () => {
+    const r = scoreMaturity(byPillar({ process: 4, data: 4, technology: 5, alignment: 5 }))
+    expect(r.weakestPillar).toBeNull()
+    expect(r.nextMove).toBe(
+      'Your lowest pillars are tied (Process and Data) and already in the Managed band, so refine them in this order: first tighten stage exit criteria and audit them quarterly, then give your core definitions a named owner and audit them on a schedule.'
+    )
+    expect(r.nextMove).not.toMatch(/Technology|Alignment|document the process|clean the data/)
+  })
+
+  it('below the Managed band the foundational copy stays', () => {
+    const r = scoreMaturity(byPillar({ process: 3, data: 5, technology: 5, alignment: 5 }))
+    expect(r.weakestPillar).toBe('process')
+    expect(r.nextMove).toMatch(/Document your sales stages/)
+    const tie = scoreMaturity(byPillar({ process: 3, data: 3, technology: 5, alignment: 5 }))
+    expect(tie.nextMove).toContain('so work in this order: first document the process')
   })
 })
 
@@ -271,6 +357,13 @@ describe('scoreMaturity — partial / adversarial input', () => {
     expect(r.weakestPillars).toEqual(['process']) // the only answered pillar
     expect(r.weakestPillar).toBeNull() // 5.0 is in the Optimized band: not a weakness
     expect(r.techOverbuy).toBe(false) // needs tech+data+process all answered
+    expect(r.nextMove).toBe('') // no advice until every pillar has an answer
+  })
+
+  it('gives no next move until every pillar has an answer, then gives one', () => {
+    expect(scoreMaturity({ p1: 5, d1: 5, t1: 5 }).nextMove).toBe('')
+    expect(scoreMaturity({ p1: 1, d1: 5, t1: 5 }).nextMove).toBe('')
+    expect(scoreMaturity({ p1: 5, d1: 5, t1: 5, a1: 5 }).nextMove).toMatch(/top of the scale/)
   })
 
   it('clamps out-of-range numeric answers into [1,5]', () => {

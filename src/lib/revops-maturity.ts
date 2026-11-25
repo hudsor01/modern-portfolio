@@ -8,10 +8,11 @@
  * unit-tested to the edges independent of the UI.
  *
  * Two opinions are baked in, both grounded in how RevOps maturity actually fails:
- *  1. Your weakest pillar is your ceiling — the highest-ROI next move is always
- *     the lowest-scoring pillar, not the one you most enjoy improving. Once
- *     even the lowest pillar scores in the Optimized band, it is no longer a
- *     weakness, so no pillar is singled out for remedial work.
+ *  1. Your weakest pillar is your ceiling — the next move targets the
+ *     lowest-scoring pillar, not the one you most enjoy improving. Below the
+ *     Managed band that move is foundational; in the Managed band it is a
+ *     refinement; once even the lowest pillar scores in the Optimized band it
+ *     is no longer a weakness, so no pillar is singled out.
  *  2. Tooling maturity that runs ahead of data/process maturity is an
  *     anti-pattern ("buying tools you can't feed"), so we flag it explicitly.
  *
@@ -56,18 +57,20 @@ export interface MaturityResult {
   /** Human label for `level` ('Ad-hoc' … 'Optimized'); '' if nothing answered. */
   tier: string
   /**
-   * Lowest-scoring answered pillar — the highest-ROI place to invest next.
+   * Lowest-scoring answered pillar — the place to invest next.
    * Null when nothing is answered, when the lowest score is shared by more
    * than one pillar (a tie is not a finding), or when the lowest score is at or
    * above STRONG_PILLAR_SCORE (a pillar in the Optimized band is not a weakness).
    */
   weakestPillar: PillarId | null
   /**
-   * The recommended next move: when every answered pillar scores at or above
+   * The recommended next move, or '' until every pillar has an answer (a level
+   * and its advice need all four pillars). When every pillar scores at or above
    * STRONG_PILLAR_SCORE, maintenance advice that singles out no pillar;
-   * otherwise from `weakestPillar`; on a partial tie, advice composed only from
-   * the tied pillars, in order of operations; when every pillar ties, advice
-   * for an even profile that singles out no pillar.
+   * otherwise from `weakestPillar` (refine advice when it scores in the Managed
+   * band, foundational advice below it); on a partial tie, advice composed only
+   * from the tied pillars, in order of operations; when every pillar ties,
+   * advice for an even profile that singles out no pillar.
    */
   nextMove: string
   /**
@@ -231,7 +234,7 @@ export const TIERS: readonly Tier[] = [
   },
 ] as const
 
-/** The highest-ROI next move for each pillar when it is the weakest link. */
+/** The next move for each pillar when it is the weakest link and scores below the Managed band. */
 const NEXT_MOVE: Record<PillarId, string> = {
   process:
     'Document your sales stages with explicit entry/exit criteria and lock in one forecast methodology — process gaps compound into every report and tool downstream. Fix this before you buy anything.',
@@ -242,6 +245,20 @@ const NEXT_MOVE: Record<PillarId, string> = {
     'Get Sales, Marketing, and CS onto one shared revenue number with a single owner for cross-team process. Misalignment quietly caps the return on every other improvement you make.',
 }
 
+/**
+ * The next move for each pillar when it is the weakest link but already scores in
+ * the Managed band: the foundation is in place, so the advice refines it.
+ */
+const REFINE_MOVE: Record<PillarId, string> = {
+  process:
+    'Tighten stage exit criteria and audit them quarterly against won and lost deals, so the documented process stays the one reps actually follow.',
+  data: 'Give your core definitions a named owner and audit duplicates and field drift on a regular schedule, so the source of truth stays trusted as the team and stack grow.',
+  technology:
+    'Review tool usage and integration errors on a regular schedule, retire what reps no longer use, and automate the handoffs that still need someone to re-key data.',
+  alignment:
+    'Review the shared revenue metrics in one recurring cross-team meeting, and check each comp cycle that incentives still reward the behaviors leadership wants.',
+}
+
 /** One clause per pillar, used to compose the next move when the lowest score is shared. */
 const TIED_STEP: Record<PillarId, string> = {
   process:
@@ -249,6 +266,14 @@ const TIED_STEP: Record<PillarId, string> = {
   data: 'clean the data and standardize your core definitions (MQL, SQL, pipeline, ARR)',
   technology: 'consolidate overlapping tools and automate the manual handoffs',
   alignment: 'get Sales, Marketing and CS onto one shared revenue number with a single owner',
+}
+
+/** One refine clause per pillar, for a shared lowest score in the Managed band. */
+const TIED_REFINE_STEP: Record<PillarId, string> = {
+  process: 'tighten stage exit criteria and audit them quarterly',
+  data: 'give your core definitions a named owner and audit them on a schedule',
+  technology: 'review tool usage and retire what reps no longer use',
+  alignment: 'review the shared revenue metrics in one recurring cross-team meeting',
 }
 
 /** 'A', 'A and B', 'A, B and C'. */
@@ -267,11 +292,20 @@ const TIE_EPSILON = 1e-9
 /** The top tier (Optimized); its band starts where the tier below it ends. */
 const TOP_TIER = TIERS[TIERS.length - 1]!
 
+/** The Managed tier, one below the top. */
+const MANAGED_TIER = TIERS[TIERS.length - 2]!
+
 /**
  * Lower bound of the top (Optimized) tier. A pillar scoring at or above
  * it is not a weakness: it gets no remedial advice and no "weakest" badge.
  */
-export const STRONG_PILLAR_SCORE = TIERS[TIERS.length - 2]!.max
+export const STRONG_PILLAR_SCORE = MANAGED_TIER.max
+
+/**
+ * Lower bound of the Managed tier. A weakest pillar scoring at or above it (and
+ * below STRONG_PILLAR_SCORE) gets refine advice instead of foundational advice.
+ */
+export const MANAGED_PILLAR_SCORE = TIERS[TIERS.length - 3]!.max
 
 /**
  * Next move when even the lowest pillar scores at or above STRONG_PILLAR_SCORE:
@@ -294,9 +328,17 @@ function tiedNextMove(ids: PillarId[], score: number): string {
     return `All four pillars score ${score.toFixed(1)}, so no single pillar is holding the others back. Raise them together rather than pushing one ahead of the rest.`
   }
   const labels = ids.map((id) => PILLARS.find((p) => p.id === id)!.label)
-  const steps = ids.map((id) => TIED_STEP[id])
+  const refine = isManagedBand(score)
+  const steps = ids.map((id) => (refine ? TIED_REFINE_STEP[id] : TIED_STEP[id]))
   const sequence = steps.map((step, i) => (i === 0 ? `first ${step}` : `then ${step}`)).join(', ')
-  return `Your lowest pillars are tied (${joinLabels(labels)}), so work in this order: ${sequence}.`
+  return refine
+    ? `Your lowest pillars are tied (${joinLabels(labels)}) and already in the ${MANAGED_TIER.label} band, so refine them in this order: ${sequence}.`
+    : `Your lowest pillars are tied (${joinLabels(labels)}), so work in this order: ${sequence}.`
+}
+
+/** True for a pillar score in the Managed band: at or above its lower bound, below the Optimized band. */
+function isManagedBand(score: number): boolean {
+  return score >= MANAGED_PILLAR_SCORE - TIE_EPSILON && score < STRONG_PILLAR_SCORE - TIE_EPSILON
 }
 
 /** Gap (in pillar levels) at which tech maturity outrunning data/process is flagged. */
@@ -397,12 +439,14 @@ export function scoreMaturity(answers: Partial<Record<string, number>>): Maturit
     tier,
     weakestPillar,
     nextMove:
-      weakestPillars.length === 0
+      answeredPillars !== PILLARS.length
         ? ''
         : allStrong
           ? strongNextMove(weakestScore)
           : weakestPillar
-            ? NEXT_MOVE[weakestPillar]
+            ? isManagedBand(weakestScore)
+              ? REFINE_MOVE[weakestPillar]
+              : NEXT_MOVE[weakestPillar]
             : tiedNextMove(weakestPillars, weakestScore),
     techOverbuy,
     answeredByPillar: {
