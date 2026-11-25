@@ -12,20 +12,34 @@ import AxeBuilder from '@axe-core/playwright'
  */
 
 /**
- * Abort every contact server-action POST at the network layer so e2e can
- * never send email or write contact_submissions. Returns a live hit counter.
+ * Abort every non-GET request to /contact at the network layer so e2e can
+ * never send email or write contact_submissions: neither the hydrated
+ * server-action fetch nor a regression to a native document POST gets through.
+ * The predicate matches on pathname (a glob would miss '/contact?name=...').
+ * Returns a live hit counter plus the aborted requests' shape.
  */
 async function guardServerAction(page: Page) {
-  const counter = { count: 0 }
-  await page.route('**/contact', async (route) => {
-    const request = route.request()
-    if (request.method() === 'POST' && request.headers()['next-action']) {
-      counter.count += 1
-      await route.abort()
-      return
+  const counter = {
+    count: 0,
+    requests: [] as { method: string; resourceType: string; nextAction: boolean }[],
+  }
+  await page.route(
+    (url) => url.pathname === '/contact',
+    async (route) => {
+      const request = route.request()
+      if (request.method() !== 'GET') {
+        counter.count += 1
+        counter.requests.push({
+          method: request.method(),
+          resourceType: request.resourceType(),
+          nextAction: Boolean(request.headers()['next-action']),
+        })
+        await route.abort()
+        return
+      }
+      await route.continue()
     }
-    await route.continue()
-  })
+  )
   return counter
 }
 
@@ -117,13 +131,30 @@ test.describe('Contact Form', () => {
 
   test('shows character count for message field', async ({ page }) => {
     // Verify character counter is present
-    await expect(page.getByText(/\/500/)).toBeVisible()
+    await expect(page.getByText(/\/1000/)).toBeVisible()
 
     // Type a message
     await page.getByLabel(/message/i).fill('Hello')
 
     // Verify character count updates
-    await expect(page.getByText(/5\/500/)).toBeVisible()
+    await expect(page.getByText(/5\/1000/)).toBeVisible()
+  })
+
+  test('message field stops at 1000 characters (typing and paste)', async ({ page }) => {
+    const message = page.getByLabel(/message/i)
+    await message.fill('a'.repeat(1001))
+    expect((await message.inputValue()).length).toBe(1000)
+    await expect(page.getByText(/1000\/1000/)).toBeVisible()
+
+    await message.focus()
+    await page.keyboard.press('End')
+    await page.keyboard.insertText('bbb')
+    expect((await message.inputValue()).length).toBe(1000)
+  })
+
+  test('a newline counts as one character', async ({ page }) => {
+    await page.getByLabel(/message/i).fill('line one\nline two')
+    await expect(page.getByText(/17\/1000/)).toBeVisible()
   })
 
   // Success-path coverage lives in unit tests. Interception is what keeps e2e
@@ -147,6 +178,8 @@ test.describe('Contact Form', () => {
     const errorAlert = page.getByRole('alert').filter({ hasText: /failed to send message/i })
     await expect(errorAlert).toBeVisible({ timeout: 15000 })
     expect(hits.count).toBe(1)
+    // The hydrated path is a server-action fetch, never a native document POST.
+    expect(hits.requests[0]).toMatchObject({ resourceType: 'fetch', nextAction: true })
   })
 
   test('keyboard navigation works correctly', async ({ page }) => {
