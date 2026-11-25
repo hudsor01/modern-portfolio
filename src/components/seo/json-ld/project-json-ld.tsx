@@ -2,6 +2,7 @@
 // project's OWASP-compliant serializer. See src/lib/json-ld-utils.ts.
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { PERSON_ID, PERSON_SAME_AS } from './person-json-ld'
 
 /**
  * Article JSON-LD for project case-study pages.
@@ -46,18 +47,17 @@ export function ProjectJsonLd({
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     ...(datePublished && { datePublished }),
     ...(dateModified && { dateModified }),
+    // The sitewide Person by @id; the author URL is the /about ProfilePage.
     author: {
       '@type': 'Person',
+      '@id': PERSON_ID,
       name: 'Richard Hudson',
-      url: SITE_ORIGIN,
-      sameAs: [
-        'https://www.linkedin.com/in/hudsor01',
-        'https://github.com/hudsor01',
-        'https://twitter.com/hudsor01',
-      ],
+      url: `${SITE_ORIGIN}/about`,
+      sameAs: [...PERSON_SAME_AS],
     },
     publisher: {
       '@type': 'Person',
+      '@id': PERSON_ID,
       name: 'Richard Hudson',
       url: SITE_ORIGIN,
     },
