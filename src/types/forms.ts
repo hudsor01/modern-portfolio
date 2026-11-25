@@ -53,6 +53,32 @@ export interface ContactFormErrors {
 
 export type SubmitStatus = 'idle' | 'submitting' | 'success' | 'error'
 
+/** Result of the hydrated `submitContactForm` server action. */
+export interface SubmitContactFormResult {
+  success: boolean
+  message?: string
+  error?: string
+  validationErrors?: Record<string, string[]>
+  retryAfter?: number
+}
+
+export type ContactActionStatus = 'idle' | 'success' | 'error'
+
+/**
+ * `useActionState` state of the progressive contact form. It is serialised into
+ * the page, so it must stay plain JSON. `values` is only set on error and never
+ * contains the honeypot.
+ */
+export interface ContactActionState {
+  status: ContactActionStatus
+  success?: boolean
+  message?: string
+  error?: string
+  validationErrors?: Record<string, string[]>
+  retryAfter?: number
+  values?: Partial<Record<'name' | 'email' | 'company' | 'phone' | 'message', string>>
+}
+
 export interface UseContactFormReturn {
   // biome-ignore lint/suspicious/noExplicitAny: TanStack Form generic field shape requires any for cross-form typing
   form: any

@@ -1,28 +1,23 @@
 'use server'
 
+// Every export of a 'use server' file is a public endpoint, so helpers stay unexported.
+
 import { headers } from 'next/headers'
 import * as Sentry from '@sentry/nextjs'
 import { emailService } from '@/lib/email-service'
 import { getClientIdentifierFromHeaders, getClientUserAgent } from '@/lib/api-request'
 import { createContextLogger } from '@/lib/logger'
+import type { SubmitContactFormResult } from '@/types/forms'
 
 const logger = createContextLogger('ContactAction')
 
-interface SubmitContactFormResult {
-  success: boolean
-  message?: string
-  error?: string
-  validationErrors?: Record<string, string[]>
-  retryAfter?: number
-}
-
 /**
- * Server Action for contact form submission.
+ * Shared submission path for the hydrated and progressive entry points.
  * Delegates rate limiting, validation, and email rendering to emailService.
  * Uses the same identifier helper as the API route so rate-limit buckets
  * stay aligned across both entry points.
  */
-export async function submitContactForm(formData: unknown): Promise<SubmitContactFormResult> {
+async function runSubmission(formData: unknown): Promise<SubmitContactFormResult> {
   return Sentry.withServerActionInstrumentation(
     'submitContactForm',
     { recordResponse: true },
@@ -71,4 +66,12 @@ export async function submitContactForm(formData: unknown): Promise<SubmitContac
       }
     }
   )
+}
+
+/**
+ * Server Action for contact form submission (hydrated path).
+ * Delegates to the shared runSubmission.
+ */
+export async function submitContactForm(data: unknown): Promise<SubmitContactFormResult> {
+  return runSubmission(data)
 }
