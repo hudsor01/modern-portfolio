@@ -4,11 +4,18 @@ import { expect, type Page, test } from '@playwright/test'
  * F-20 / WR-01: locking page scroll must not shift the layout. Playwright
  * launches headless Chromium with --hide-scrollbars, which makes the gutter 0px
  * and every width comparison vacuous, so this file (and only this file) drops
- * that flag. launchOptions is worker-scoped, and Playwright rejects worker
- * options in a describe group, hence a file of its own. Every test first
- * asserts that the scrollbar occupies space. GET-only.
+ * that flag and turns off overlay scrollbars (macOS hosts default to them; Linux
+ * CI already uses classic ones), so scrollbars take space on every host.
+ * launchOptions is worker-scoped, and Playwright rejects worker options in a
+ * describe group, hence a file of its own. Every test first asserts that the
+ * scrollbar occupies space. GET-only.
  */
-test.use({ launchOptions: { ignoreDefaultArgs: ['--hide-scrollbars'] } })
+test.use({
+  launchOptions: {
+    ignoreDefaultArgs: ['--hide-scrollbars'],
+    args: ['--disable-features=OverlayScrollbar'],
+  },
+})
 
 test.beforeEach(async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium', 'layout geometry checked once, in Chromium')
@@ -19,11 +26,15 @@ test.beforeEach(async ({ page }, testInfo) => {
   )
 })
 
+/**
+ * Layout edges, not documentElement.clientWidth: under overflow: hidden Chromium
+ * reports the root clientWidth without the reserved gutter (it grows by the
+ * gutter width) even though nothing moves.
+ */
 interface Edges {
   body: { left: number; right: number }
   main: { left: number; right: number }
   header: { left: number; right: number }
-  clientWidth: number
 }
 
 function edges(page: Page): Promise<Edges> {
@@ -38,7 +49,6 @@ function edges(page: Page): Promise<Edges> {
       body: box('body'),
       main: box('main#main-content'),
       header: box('header'),
-      clientWidth: document.documentElement.clientWidth,
     }
   })
 }
