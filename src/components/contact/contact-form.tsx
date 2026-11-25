@@ -74,6 +74,13 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
         action={formAction}
         onSubmit={(e) => {
           e.preventDefault()
+          // A bot that sets the trap's `.value` directly never fires onChange, so
+          // TanStack would submit an empty honeypot. Read it from the DOM, as the
+          // no-JS path does, so both paths judge the same filled form.
+          const trap = e.currentTarget.elements.namedItem('honeypot')
+          if (trap instanceof HTMLInputElement && trap.value !== '') {
+            form.setFieldValue('honeypot', trap.value)
+          }
           form.handleSubmit()
         }}
         className="flex flex-1 flex-col gap-6"

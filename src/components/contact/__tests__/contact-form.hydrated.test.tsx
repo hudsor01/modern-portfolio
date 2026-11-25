@@ -5,7 +5,7 @@
  * server actions are mocked: nothing is sent or stored.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, fireEvent, act } from '@testing-library/react'
+import { render, fireEvent, act, waitFor } from '@testing-library/react'
 
 vi.mock('@/lib/logger', () => ({
   logger: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn(), fatal: vi.fn() },
@@ -60,6 +60,22 @@ function field(container: HTMLElement, id: string) {
   return container.querySelector(`#${id}`) as HTMLInputElement
 }
 
+async function fillValid(container: HTMLElement) {
+  await act(async () => {
+    fireEvent.change(field(container, 'name'), { target: { value: 'Jane Doe' } })
+    fireEvent.change(field(container, 'email'), { target: { value: 'jane@example.com' } })
+    fireEvent.change(field(container, 'message'), {
+      target: { value: 'Hello, I would like to discuss a project.' },
+    })
+  })
+}
+
+async function submit(container: HTMLElement) {
+  await act(async () => {
+    fireEvent.submit(container.querySelector('form')!)
+  })
+}
+
 beforeEach(() => {
   submitMock.mockReset()
   useActionStateMock.mockReset()
@@ -95,5 +111,26 @@ describe('ContactForm with the real hook', () => {
 
     expect(field(container, 'phone').getAttribute('aria-invalid')).toBe('true')
     expect(container.textContent).toContain('Please enter a valid phone number')
+  })
+
+  it('submits a honeypot set straight on the DOM, without input events (WR-02)', async () => {
+    submitMock.mockResolvedValue({ success: true })
+    const { container } = render(<Harness />)
+    await fillValid(container)
+    const trap = container.querySelector('input[name="honeypot"]') as HTMLInputElement
+    // The puppeteer/$eval pattern: no React onChange fires.
+    trap.value = 'http://spam.example'
+    await submit(container)
+    await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(1))
+    expect(submitMock.mock.calls[0]?.[0]).toMatchObject({ honeypot: 'http://spam.example' })
+  })
+
+  it('submits an empty honeypot for a human', async () => {
+    submitMock.mockResolvedValue({ success: true })
+    const { container } = render(<Harness />)
+    await fillValid(container)
+    await submit(container)
+    await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(1))
+    expect(submitMock.mock.calls[0]?.[0]).toMatchObject({ honeypot: '', name: 'Jane Doe' })
   })
 })

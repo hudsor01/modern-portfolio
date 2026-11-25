@@ -43,7 +43,8 @@ function createFormStub(
   stubErrors = errors
   stubDirty = {}
   const handleSubmit = vi.fn()
-  return { handleSubmit, Field: StubField }
+  const setFieldValue = vi.fn()
+  return { handleSubmit, setFieldValue, Field: StubField }
 }
 
 function renderForm(
@@ -324,6 +325,24 @@ describe('ContactForm', () => {
     fireEvent.submit(container.querySelector('form')!)
     expect(form.handleSubmit).toHaveBeenCalledTimes(1)
     expect(formAction).not.toHaveBeenCalled()
+  })
+
+  it('copies a DOM-filled honeypot into the form before submitting', () => {
+    const { form, container } = renderForm()
+    const trap = container.querySelector('input[name="honeypot"]') as HTMLInputElement
+    trap.value = 'bot'
+    fireEvent.submit(container.querySelector('form')!)
+    expect(form.setFieldValue).toHaveBeenCalledWith('honeypot', 'bot')
+    expect(form.setFieldValue.mock.invocationCallOrder[0]).toBeLessThan(
+      form.handleSubmit.mock.invocationCallOrder[0]!
+    )
+  })
+
+  it('leaves an empty honeypot alone', () => {
+    const { form, container } = renderForm()
+    fireEvent.submit(container.querySelector('form')!)
+    expect(form.setFieldValue).not.toHaveBeenCalled()
+    expect(form.handleSubmit).toHaveBeenCalledTimes(1)
   })
 
   it('shows a server field error when TanStack has none', () => {
