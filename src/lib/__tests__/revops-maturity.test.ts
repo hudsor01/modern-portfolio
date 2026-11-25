@@ -6,6 +6,7 @@ import {
   QUESTIONS,
   PILLARS,
   TIERS,
+  STRONG_PILLAR_SCORE,
   type PillarId,
 } from '@/lib/revops-maturity'
 
@@ -134,6 +135,89 @@ describe('scoreMaturity — weakest pillar (highest-ROI next move)', () => {
   })
 })
 
+describe('scoreMaturity — a high profile has no weakest pillar', () => {
+  const REMEDIAL =
+    /lowest|tied|raise|before you buy|document (your sales stages|the process)|clean (up|the data)|consolidate|shared revenue number/i
+  const MAINTAIN =
+    'so there is no weak pillar to fix. Keep them there: retake the scorecard when your team, stack or go-to-market motion changes.'
+
+  it('the strong-pillar threshold is the lower bound of the Optimized tier', () => {
+    const optimized = TIERS[TIERS.length - 1]!
+    expect(optimized.label).toBe('Optimized')
+    expect(STRONG_PILLAR_SCORE).toBe(TIERS[TIERS.length - 2]!.max)
+    expect(levelForScore(STRONG_PILLAR_SCORE)).toBe(optimized.level)
+  })
+
+  it('15 Fully + 1 Process Mostly: Optimized, no weakest pillar, no remedial advice', () => {
+    const answers = allAt(5)
+    answers.p1 = 4
+    const r = scoreMaturity(answers)
+    expect(r.pillarScores.process).toBeCloseTo(4.75, 6)
+    expect(r.tier).toBe('Optimized')
+    expect(r.weakestPillars).toEqual(['process'])
+    expect(r.weakestPillar).toBeNull()
+    expect(r.nextMove).toBe(
+      `Every pillar scores ${STRONG_PILLAR_SCORE.toFixed(1)} or higher, inside the Optimized band, ${MAINTAIN}`
+    )
+    expect(r.nextMove).not.toMatch(REMEDIAL)
+  })
+
+  it('Process, Data and Technology at 4.75 with Alignment 5: no tied-pillar work order', () => {
+    const answers = allAt(5)
+    answers.p1 = 4
+    answers.d1 = 4
+    answers.t1 = 4
+    const r = scoreMaturity(answers)
+    expect(r.tier).toBe('Optimized')
+    expect(r.weakestPillars).toEqual(['process', 'data', 'technology'])
+    expect(r.weakestPillar).toBeNull()
+    expect(r.nextMove).toContain(MAINTAIN)
+    expect(r.nextMove).not.toMatch(REMEDIAL)
+  })
+
+  it('all 5s keeps the top-of-the-scale wording', () => {
+    const r = scoreMaturity(allAt(5))
+    expect(r.nextMove).toBe(`Every pillar scores 5.0, the top of the scale, ${MAINTAIN}`)
+  })
+
+  it('a lowest pillar exactly at the bound is not a weakness', () => {
+    const r = scoreMaturity(
+      byPillar({ process: STRONG_PILLAR_SCORE, data: 5, technology: 5, alignment: 5 })
+    )
+    expect(r.weakestPillars).toEqual(['process'])
+    expect(r.weakestPillar).toBeNull()
+    expect(r.nextMove).toContain(MAINTAIN)
+    expect(r.nextMove).not.toMatch(REMEDIAL)
+  })
+
+  it('a lowest pillar just below the bound is still the weakest, with its remedial advice', () => {
+    const r = scoreMaturity(
+      byPillar({ process: STRONG_PILLAR_SCORE - 0.01, data: 5, technology: 5, alignment: 5 })
+    )
+    expect(r.weakestPillar).toBe('process')
+    expect(r.nextMove).toMatch(/Document your sales stages/)
+  })
+
+  it('the highest reachable pillar score below the bound (4.0) keeps remedial advice', () => {
+    const r = scoreMaturity(byPillar({ process: 4, data: 5, technology: 5, alignment: 5 }))
+    expect(r.weakestPillar).toBe('process')
+    expect(r.nextMove).toMatch(/Document your sales stages/)
+    const tie = scoreMaturity(byPillar({ process: 4, data: 4, technology: 5, alignment: 5 }))
+    expect(tie.weakestPillar).toBeNull()
+    expect(tie.nextMove).toContain('(Process and Data)')
+  })
+
+  it('an even profile inside the Optimized band gets the maintenance advice, not "raise them together"', () => {
+    const answers = allAt(5)
+    for (const id of ['p1', 'd1', 't1', 'a1']) answers[id] = 4 // every pillar 4.75
+    const r = scoreMaturity(answers)
+    expect(r.weakestPillars).toEqual(PILLARS.map((p) => p.id))
+    expect(r.weakestPillar).toBeNull()
+    expect(r.nextMove).toContain(MAINTAIN)
+    expect(r.nextMove).not.toMatch(REMEDIAL)
+  })
+})
+
 describe('scoreMaturity — tech-overbuy anti-pattern', () => {
   it('flags tech running a full level ahead of data/process', () => {
     const r = scoreMaturity(byPillar({ process: 2, data: 2, technology: 4, alignment: 3 }))
@@ -184,7 +268,8 @@ describe('scoreMaturity — partial / adversarial input', () => {
     expect(r.pillarScores.process).toBeCloseTo(5, 6)
     expect(r.pillarScores.data).toBe(0)
     expect(r.overallScore).toBeCloseTo(5, 6) // empty pillars excluded, not averaged as 0
-    expect(r.weakestPillar).toBe('process')
+    expect(r.weakestPillars).toEqual(['process']) // the only answered pillar
+    expect(r.weakestPillar).toBeNull() // 5.0 is in the Optimized band: not a weakness
     expect(r.techOverbuy).toBe(false) // needs tech+data+process all answered
   })
 

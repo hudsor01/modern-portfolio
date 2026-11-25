@@ -6,8 +6,9 @@ import { getOnly } from './_helpers/settle'
  * RevOps maturity scorecard (TOOL-02 / TOOL-03, QA F-18): it opens unanswered
  * with an "N of 16 answered" count, shows no level until every pillar has an
  * answer, names only the tied pillars in tie advice (and no lowest pillar when
- * all four tie), resets to unanswered, and makes no percentile or B2B-benchmark
- * claim.
+ * all four tie), badges no pillar and prescribes no basics once even the lowest
+ * pillar is in the Optimized band, resets to unanswered, and makes no percentile
+ * or B2B-benchmark claim.
  */
 
 const URL = '/tools/revops-maturity-scorecard'
@@ -82,6 +83,24 @@ test.describe('revops maturity scorecard', () => {
     const move = result.getByText('Highest-ROI next move').locator('xpath=..')
     await expect(move).toContainText('top of the scale')
     await expect(move).not.toContainText(/lowest|tied|document the process|clean the data/i)
+    await expect(result.getByText('weakest', { exact: true })).toHaveCount(0)
+  })
+
+  test('one "Mostly" in an all-"Fully" profile badges no pillar and prescribes no basics', async ({
+    page,
+  }) => {
+    const result = page.locator('main [aria-live="polite"]')
+    for (let q = 0; q < 4; q++) {
+      for (const pillar of [0, 1, 2, 3]) await answer(page, pillar, q, 5)
+    }
+    await answer(page, 0, 0, 4)
+    await expect(result).toContainText('16 of 16 answered')
+    await expect(result).toContainText('Optimized')
+    const move = result.getByText('Highest-ROI next move').locator('xpath=..')
+    await expect(move).toContainText('no weak pillar to fix')
+    await expect(move).not.toContainText(
+      /lowest|tied|before you buy|document your sales stages|document the process/i
+    )
     await expect(result.getByText('weakest', { exact: true })).toHaveCount(0)
   })
 

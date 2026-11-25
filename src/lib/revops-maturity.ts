@@ -9,7 +9,9 @@
  *
  * Two opinions are baked in, both grounded in how RevOps maturity actually fails:
  *  1. Your weakest pillar is your ceiling — the highest-ROI next move is always
- *     the lowest-scoring pillar, not the one you most enjoy improving.
+ *     the lowest-scoring pillar, not the one you most enjoy improving. Once
+ *     even the lowest pillar scores in the Optimized band, it is no longer a
+ *     weakness, so no pillar is singled out for remedial work.
  *  2. Tooling maturity that runs ahead of data/process maturity is an
  *     anti-pattern ("buying tools you can't feed"), so we flag it explicitly.
  *
@@ -55,14 +57,17 @@ export interface MaturityResult {
   tier: string
   /**
    * Lowest-scoring answered pillar — the highest-ROI place to invest next.
-   * Null when nothing is answered or when the lowest score is shared by more
-   * than one pillar: a tie is not a finding, so no pillar is singled out.
+   * Null when nothing is answered, when the lowest score is shared by more
+   * than one pillar (a tie is not a finding), or when the lowest score is at or
+   * above STRONG_PILLAR_SCORE (a pillar in the Optimized band is not a weakness).
    */
   weakestPillar: PillarId | null
   /**
-   * The recommended next move: from `weakestPillar`; on a partial tie, advice
-   * composed only from the tied pillars, in order of operations; when every
-   * pillar ties, advice for an even profile that singles out no pillar.
+   * The recommended next move: when every answered pillar scores at or above
+   * STRONG_PILLAR_SCORE, maintenance advice that singles out no pillar;
+   * otherwise from `weakestPillar`; on a partial tie, advice composed only from
+   * the tied pillars, in order of operations; when every pillar ties, advice
+   * for an even profile that singles out no pillar.
    */
   nextMove: string
   /**
@@ -252,8 +257,33 @@ function joinLabels(labels: string[]): string {
   return `${labels.slice(0, -1).join(', ')} and ${labels[labels.length - 1]}`
 }
 
-/** Top of the 1–5 answer scale. */
+/** Bottom and top of the 1–5 answer scale. */
+const MIN_SCORE = 1
 const MAX_SCORE = 5
+
+/** Pillar means are sums of integers over 4; this only absorbs float noise. */
+const TIE_EPSILON = 1e-9
+
+/** The top tier (Optimized); its band starts where the tier below it ends. */
+const TOP_TIER = TIERS[TIERS.length - 1]!
+
+/**
+ * Lower bound of the top (Optimized) tier. A pillar scoring at or above
+ * it is not a weakness: it gets no remedial advice and no "weakest" badge.
+ */
+export const STRONG_PILLAR_SCORE = TIERS[TIERS.length - 2]!.max
+
+/**
+ * Next move when even the lowest pillar scores at or above STRONG_PILLAR_SCORE:
+ * nothing is holding the others back, so the advice is to hold the line.
+ */
+function strongNextMove(weakestScore: number): string {
+  const standing =
+    weakestScore >= MAX_SCORE - TIE_EPSILON
+      ? `Every pillar scores ${MAX_SCORE.toFixed(1)}, the top of the scale`
+      : `Every pillar scores ${STRONG_PILLAR_SCORE.toFixed(1)} or higher, inside the ${TOP_TIER.label} band`
+  return `${standing}, so there is no weak pillar to fix. Keep them there: retake the scorecard when your team, stack or go-to-market motion changes.`
+}
 
 /**
  * Next move when the lowest score is shared. If every pillar ties, none is
@@ -261,9 +291,6 @@ const MAX_SCORE = 5
  */
 function tiedNextMove(ids: PillarId[], score: number): string {
   if (ids.length === PILLARS.length) {
-    if (score >= MAX_SCORE - TIE_EPSILON) {
-      return 'Every pillar scores 5.0, the top of the scale, so there is no weak pillar to fix. Keep them there: retake the scorecard when your team, stack or go-to-market motion changes.'
-    }
     return `All four pillars score ${score.toFixed(1)}, so no single pillar is holding the others back. Raise them together rather than pushing one ahead of the rest.`
   }
   const labels = ids.map((id) => PILLARS.find((p) => p.id === id)!.label)
@@ -275,12 +302,9 @@ function tiedNextMove(ids: PillarId[], score: number): string {
 /** Gap (in pillar levels) at which tech maturity outrunning data/process is flagged. */
 const TECH_OVERBUY_GAP = 1.0
 
-/** Pillar means are sums of integers over 4; this only absorbs float noise. */
-const TIE_EPSILON = 1e-9
-
 function clampAnswer(v: number | undefined): number | undefined {
   if (typeof v !== 'number' || !Number.isFinite(v)) return undefined
-  return Math.min(5, Math.max(1, v))
+  return Math.min(MAX_SCORE, Math.max(MIN_SCORE, v))
 }
 
 export function levelForScore(score: number): number {
@@ -330,7 +354,8 @@ export function scoreMaturity(answers: Partial<Record<string, number>>): Maturit
   const scored = PILLARS.map((p) => pillarScores[p.id]).filter((s) => s > 0)
   const overallScore = scored.length === 0 ? 0 : scored.reduce((a, b) => a + b, 0) / scored.length
 
-  // Weakest answered pillar. A shared lowest score is a tie, not a finding:
+  // Weakest answered pillar. A shared lowest score is a tie, not a finding,
+  // and a lowest score in the Optimized band is not a weakness: in either case
   // no pillar is singled out (weakestPillar stays null).
   let weakestPillars: PillarId[] = []
   let weakestScore = Number.POSITIVE_INFINITY
@@ -344,7 +369,9 @@ export function scoreMaturity(answers: Partial<Record<string, number>>): Maturit
       weakestPillars.push(p.id)
     }
   }
-  const weakestPillar: PillarId | null = weakestPillars.length === 1 ? weakestPillars[0]! : null
+  const allStrong = weakestPillars.length > 0 && weakestScore >= STRONG_PILLAR_SCORE - TIE_EPSILON
+  const weakestPillar: PillarId | null =
+    !allStrong && weakestPillars.length === 1 ? weakestPillars[0]! : null
   const answeredPillars = PILLARS.filter((p) => byPillar[p.id].length > 0).length
 
   // Anti-pattern: tech running ahead of the weaker of data/process. Only
@@ -372,9 +399,11 @@ export function scoreMaturity(answers: Partial<Record<string, number>>): Maturit
     nextMove:
       weakestPillars.length === 0
         ? ''
-        : weakestPillar
-          ? NEXT_MOVE[weakestPillar]
-          : tiedNextMove(weakestPillars, weakestScore),
+        : allStrong
+          ? strongNextMove(weakestScore)
+          : weakestPillar
+            ? NEXT_MOVE[weakestPillar]
+            : tiedNextMove(weakestPillars, weakestScore),
     techOverbuy,
     answeredByPillar: {
       process: byPillar.process.length,

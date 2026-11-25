@@ -145,6 +145,20 @@ describe('RevOpsMaturityScorecard answering', () => {
     expect(move.textContent).not.toMatch(/lowest|tied|document the process|clean the data/i)
   })
 
+  it('gives no weakest badge or remedial advice when the lowest pillar is in the Optimized band', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    answerAll('5 Fully')
+    fireEvent.click(screen.getAllByRole('radio', { name: '4 Mostly' })[0] as HTMLElement)
+    expect(container.textContent).toContain('Optimized')
+    expect(container.textContent).toContain('4.8') // Process 4.75
+    expect(container.textContent?.toLowerCase()).not.toContain('weakest')
+    const move = screen.getByText('Highest-ROI next move').parentElement as HTMLElement
+    expect(move.textContent).toContain('no weak pillar to fix')
+    expect(move.textContent).not.toMatch(
+      /lowest|tied|before you buy|document your sales stages|document the process/i
+    )
+  })
+
   it('badges exactly one pillar once a single pillar is uniquely lowest', () => {
     const { container } = render(<RevOpsMaturityScorecard />)
     answerAll('3 Somewhat')
