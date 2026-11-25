@@ -9,14 +9,24 @@ vi.mock('@/lib/email-service', () => ({
     sendContactEmail: vi.fn(),
   },
 }))
+const sentryRecorded = vi.hoisted(() => [] as unknown[])
 vi.mock('@sentry/nextjs', () => ({
-  withServerActionInstrumentation: <T>(_name: string, _opts: unknown, fn: () => Promise<T>) => fn(),
+  withServerActionInstrumentation: async <T>(
+    _name: string,
+    _opts: unknown,
+    fn: () => Promise<T>
+  ) => {
+    const result = await fn()
+    sentryRecorded.push(result)
+    return result
+  },
 }))
 
-import { submitContactForm } from '@/app/contact/actions'
+import { submitContactForm, submitContactFormAction } from '@/app/contact/actions'
 import { headers } from 'next/headers'
 import { emailService } from '@/lib/email-service'
 import { getClientIdentifierFromHeaders } from '@/lib/api-request'
+import type { ContactActionState } from '@/types/forms'
 
 const validBody = {
   name: 'Test User',
@@ -101,5 +111,108 @@ describe('submitContactForm', () => {
       success: false,
       error: 'An unexpected error occurred. Please try again later.',
     })
+  })
+})
+
+describe('submitContactFormAction', () => {
+  const idle: ContactActionState = { status: 'idle' }
+
+  function buildForm(extra: Record<string, string> = {}) {
+    const fd = new FormData()
+    fd.append('name', 'Test User')
+    fd.append('email', 'user@example.com')
+    fd.append('company', 'Acme')
+    fd.append('phone', '+1 555 123 4567')
+    fd.append('message', validBody.message)
+    fd.append('honeypot', '')
+    for (const [k, v] of Object.entries(extra)) fd.append(k, v)
+    return fd
+  }
+
+  beforeEach(() => {
+    sentryRecorded.length = 0
+    vi.mocked(emailService.sendContactEmail).mockReset()
+    mockHeaders({ 'x-forwarded-for': '1.2.3.4', 'user-agent': 'vitest' })
+    vi.mocked(emailService.sendContactEmail).mockResolvedValue({ success: true })
+  })
+
+  it('passes only the known field keys to sendContactEmail', async () => {
+    const fd = buildForm({ $ACTION_KEY: 'k', evil: 'x' })
+    await submitContactFormAction(idle, fd)
+
+    expect(emailService.sendContactEmail).toHaveBeenCalledOnce()
+    const [data, clientId, opts] = vi.mocked(emailService.sendContactEmail).mock.calls[0] ?? []
+    expect(Object.keys(data as object).sort()).toEqual(
+      ['company', 'email', 'honeypot', 'message', 'name', 'phone'].sort()
+    )
+    expect(clientId).toBe('1.2.3.4')
+    expect(opts).toEqual({ userAgent: 'vitest' })
+  })
+
+  it('drops File values under a field name', async () => {
+    const fd = new FormData()
+    fd.append('name', new Blob(['x']))
+    fd.append('email', 'user@example.com')
+    await submitContactFormAction(idle, fd)
+    const [data] = vi.mocked(emailService.sendContactEmail).mock.calls[0] ?? []
+    expect(data).toEqual({ email: 'user@example.com' })
+  })
+
+  it('maps success without a values echo', async () => {
+    const state = await submitContactFormAction(idle, buildForm())
+    expect(state).toEqual({
+      status: 'success',
+      success: true,
+      message: 'Form submitted successfully! I will get back to you soon.',
+    })
+    expect('values' in state).toBe(false)
+  })
+
+  it('maps validation errors and echoes typed values without the honeypot', async () => {
+    vi.mocked(emailService.sendContactEmail).mockResolvedValue({
+      success: false,
+      error: 'Validation error',
+      validationErrors: { phone: ['Please enter a valid phone number'] },
+    })
+    const state = await submitContactFormAction(idle, buildForm({ phone2: 'ignored' }))
+    expect(state.status).toBe('error')
+    expect(state.validationErrors?.phone?.[0]).toBe('Please enter a valid phone number')
+    expect(state.error).toBe('Please check your form and try again.')
+    expect(state.values).toEqual({
+      name: 'Test User',
+      email: 'user@example.com',
+      company: 'Acme',
+      phone: '+1 555 123 4567',
+      message: validBody.message,
+    })
+    expect(state.values && 'honeypot' in state.values).toBe(false)
+  })
+
+  it('maps retryAfter to an error state with values echoed', async () => {
+    vi.mocked(emailService.sendContactEmail).mockResolvedValue({
+      success: false,
+      error: 'Rate limit exceeded',
+      retryAfter: 90,
+    })
+    const state = await submitContactFormAction(idle, buildForm())
+    expect(state).toMatchObject({ status: 'error', retryAfter: 90 })
+    expect(state.values?.name).toBe('Test User')
+  })
+
+  it('rejects a non-FormData second argument without sending', async () => {
+    const state = await submitContactFormAction(idle, {} as unknown as FormData)
+    expect(state).toEqual({ status: 'error', success: false, error: 'Submission failed' })
+    expect(emailService.sendContactEmail).not.toHaveBeenCalled()
+  })
+
+  it('never lets echoed values reach the Sentry-recorded result', async () => {
+    vi.mocked(emailService.sendContactEmail).mockResolvedValue({
+      success: false,
+      error: 'Validation error',
+      validationErrors: { email: ['bad'] },
+    })
+    await submitContactFormAction(idle, buildForm())
+    expect(sentryRecorded).toHaveLength(1)
+    expect(sentryRecorded[0]).not.toHaveProperty('values')
   })
 })

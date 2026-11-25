@@ -7,9 +7,11 @@ import * as Sentry from '@sentry/nextjs'
 import { emailService } from '@/lib/email-service'
 import { getClientIdentifierFromHeaders, getClientUserAgent } from '@/lib/api-request'
 import { createContextLogger } from '@/lib/logger'
-import type { SubmitContactFormResult } from '@/types/forms'
+import type { ContactActionState, SubmitContactFormResult } from '@/types/forms'
 
 const logger = createContextLogger('ContactAction')
+
+const CONTACT_FIELDS = ['name', 'email', 'company', 'phone', 'message', 'honeypot'] as const
 
 /**
  * Shared submission path for the hydrated and progressive entry points.
@@ -74,4 +76,35 @@ async function runSubmission(formData: unknown): Promise<SubmitContactFormResult
  */
 export async function submitContactForm(data: unknown): Promise<SubmitContactFormResult> {
   return runSubmission(data)
+}
+
+/**
+ * Server Action for the progressive (no-JS / pre-hydration) contact form.
+ * Bound via useActionState so React SSR renders a POST multipart form; the
+ * hydrated path still calls submitContactForm.
+ */
+export async function submitContactFormAction(
+  _prevState: ContactActionState,
+  formData: FormData
+): Promise<ContactActionState> {
+  if (!(formData instanceof FormData)) {
+    return { status: 'error', success: false, error: 'Submission failed' }
+  }
+
+  // Pick known keys only: React adds $ACTION_* keys and the schema is strict.
+  const data: Record<string, string> = {}
+  for (const key of CONTACT_FIELDS) {
+    const value = formData.get(key)
+    if (typeof value === 'string') data[key] = value
+  }
+
+  const result = await runSubmission(data)
+  if (result.success) {
+    return { status: 'success', ...result }
+  }
+
+  // Echoed after runSubmission returns, outside withServerActionInstrumentation:
+  // recordResponse:true would otherwise attach the typed values to Sentry events.
+  const { honeypot: _honeypot, ...values } = data
+  return { status: 'error', ...result, values }
 }
