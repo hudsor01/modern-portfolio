@@ -3,9 +3,9 @@ import type { APIRequestContext } from '@playwright/test'
 /**
  * Whether the server under test has a working database.
  *
- * Most of this suite needs no database — every test but 47 passes against an
+ * Most of this suite needs no database — every test but 48 passes against an
  * app built and served with no `DATABASE_URL`, because the DB-backed routes
- * degrade to empty states. Those 47 (5 in audit-regressions, 24 in blog, 1 in
+ * degrade to empty states. Those 48 (5 in audit-regressions, 25 in blog, 1 in
  * rss-feed, 2 in review-b-geometry, 2 in timezone-hydration, 4 in
  * layout-stability, 3 in a11y-axe, 3 in a11y-typography, 3 in skip-link)
  * genuinely need seeded blog content: they read real post cards or posts, or

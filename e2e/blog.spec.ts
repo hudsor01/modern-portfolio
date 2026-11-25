@@ -70,6 +70,18 @@ test.describe('Blog Listing Page', () => {
     await expect(page.getByRole('button', { name: /^All\b/ })).toBeVisible()
   })
 
+  test('category filter buttons expose aria-pressed and flip on click', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+    const allButton = page.getByRole('button', { name: /^All\b/ })
+    await expect(allButton).toHaveAttribute('aria-pressed', 'true')
+
+    const second = allButton.locator('xpath=..').getByRole('button').nth(1)
+    await expect(second).toHaveAttribute('aria-pressed', 'false')
+    await second.click()
+    await expect(second).toHaveAttribute('aria-pressed', 'true')
+    await expect(allButton).toHaveAttribute('aria-pressed', 'false')
+  })
+
   test('post cards show a title and publish date', async ({ page }) => {
     test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     const card = postCards(page).first()
