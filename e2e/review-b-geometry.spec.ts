@@ -87,7 +87,7 @@ test.describe('review B geometry', () => {
     await page.setViewportSize({ width: 390, height: 844 })
     await page.goto('/resume')
     await page.waitForLoadState('networkidle')
-    const pill = await page.locator('main h2 span').first().boundingBox()
+    const pill = await page.locator('main p.look-h2 span').first().boundingBox()
     expect(pill!.height).toBeLessThan(48)
   })
 })

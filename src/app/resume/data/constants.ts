@@ -129,7 +129,9 @@ export const skills = [
 
 export const certifications = [
   'HubSpot Revenue Operations Certification',
-  'Salesloft Certified Administrator',
+  // Same credential names as /about and the Person JSON-LD (owner-confirmed).
+  'Salesloft Admin Certification Level 1',
+  'Salesloft Admin Certification Level 2',
   'Microsoft Career Essentials in Data Analysis',
   'Microsoft Career Essentials in Business Analysis',
   'Atlassian Agile Project Management',

@@ -8,7 +8,12 @@ import { experience } from '../data/constants'
 
 export function ExperienceSection() {
   return (
-    <section>
+    <section aria-labelledby="resume-experience">
+      {/* Visually hidden: the role cards are the visible structure, but the outline
+          needs an Experience H2 over the job-title H3s. */}
+      <h2 id="resume-experience" className="sr-only">
+        Experience
+      </h2>
       <div className="space-y-8">
         {experience.map((job) => {
           // Layout only: a role with no bullets renders compact. Whether a role

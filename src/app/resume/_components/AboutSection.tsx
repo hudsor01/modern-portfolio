@@ -25,7 +25,7 @@ export function AboutSection() {
 
           {/* About Content */}
           <div className="flex-1 text-center lg:text-left space-y-4">
-            <h3 className="border-none pb-0 mb-4">About</h3>
+            <h2 className="look-h3 border-none pb-0 mb-4">About</h2>
             <p>
               {YEARS_EXPERIENCE} {YEARS_EXPERIENCE_LABEL} | Dallas-Fort Worth, TX
             </p>

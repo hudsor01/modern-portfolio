@@ -43,11 +43,13 @@ export function HeroHeader({
         <span className="block hero-name-gradient">Richard Hudson</span>
       </h1>
 
-      <h2 className="mx-auto mb-6 text-lg">
+      {/* A tagline, not a section heading: a <p> with the h2 look, so the page's
+          sections (About, Experience, Education, ...) are its H2s. */}
+      <p className="look-h2 mx-auto mb-6 text-lg">
         <span className="inline-flex items-center rounded-full bg-primary/10 border border-border px-5 py-2 text-primary font-medium">
           Revenue Operations Professional
         </span>
-      </h2>
+      </p>
 
       {/* Actions: Download is primary, Preview secondary, Connect tertiary */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 pt-8">

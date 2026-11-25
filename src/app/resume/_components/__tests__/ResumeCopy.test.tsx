@@ -40,6 +40,12 @@ describe('resume copy says each thing once (B-14)', () => {
     expect(container.textContent).not.toContain('Salesloft Certified Administrator')
   })
 
+  it('names the Salesloft credentials exactly as /about and the JSON-LD do', () => {
+    expect(certifications).toContain('Salesloft Admin Certification Level 1')
+    expect(certifications).toContain('Salesloft Admin Certification Level 2')
+    expect(certifications).not.toContain('Salesloft Certified Administrator')
+  })
+
   it('states the canonical years once and never "nearly a decade"', () => {
     const { container } = render(<AboutSection />)
     const text = container.textContent ?? ''
@@ -53,10 +59,12 @@ describe('resume hero pill (B-15)', () => {
 
   it('is a compact pill, not a heading-sized capsule', () => {
     const { container } = render(<HeroHeader {...hero} />)
-    const h2 = container.querySelector('h2') as HTMLElement
-    expect(h2.className).toContain('text-lg')
-    expect(h2.querySelector('span')?.className).toContain('inline-flex')
-    expect(h2.querySelector('span')?.className).not.toContain('px-6')
+    // A tagline paragraph with the h2 look; the page's sections are its H2s.
+    expect(container.querySelector('h2')).toBeNull()
+    const pill = container.querySelector('p.look-h2') as HTMLElement
+    expect(pill.className).toContain('text-lg')
+    expect(pill.querySelector('span')?.className).toContain('inline-flex')
+    expect(pill.querySelector('span')?.className).not.toContain('px-6')
   })
 })
 

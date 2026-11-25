@@ -10,14 +10,14 @@ export function EducationCertifications() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
       <section className="bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:border-primary/30">
-        <h3 className="border-none pb-0 mb-6 flex items-center gap-3">
+        <h2 className="look-h3 border-none pb-0 mb-6 flex items-center gap-3">
           <GraduationCap className="w-6 h-6 text-primary" aria-hidden="true" />
           Education
-        </h3>
+        </h2>
         <div className="space-y-6">
           {education.map((edu) => (
             <div key={`${edu.degree}-${edu.institution}`} className="space-y-3">
-              <h4 className="typography-large">{edu.degree}</h4>
+              <h3 className="look-h4 typography-large">{edu.degree}</h3>
               <p>{edu.institution}</p>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Calendar className="w-4 h-4" aria-hidden="true" />
@@ -30,10 +30,10 @@ export function EducationCertifications() {
       </section>
 
       <section className="bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:border-primary/30">
-        <h3 className="border-none pb-0 mb-6 flex items-center gap-3">
+        <h2 className="look-h3 border-none pb-0 mb-6 flex items-center gap-3">
           <BadgeCheck className="w-6 h-6 text-primary" aria-hidden="true" />
           Certifications
-        </h3>
+        </h2>
         <ul className="space-y-4">
           {certifications.map((cert) => (
             <li key={cert} className="flex items-center">

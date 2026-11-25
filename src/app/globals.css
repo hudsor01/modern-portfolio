@@ -986,6 +986,39 @@ input, textarea, select {
     color: var(--color-muted-foreground);
   }
 
+  /* Heading looks for an element at a different level: the same declarations as
+     the h2/h3/h4 rules above, as classes, so markup can carry the correct heading
+     level (or a non-heading tag) without changing how it looks. In this base layer
+     they beat the element rules (class over element) and every utility still
+     beats them, exactly as utilities beat the element rules. */
+  .look-h2 {
+    font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-tight);
+    line-height: var(--line-height-tight);
+    color: var(--color-foreground);
+  }
+
+  .look-h3 {
+    font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-tight);
+    line-height: var(--line-height-snug);
+    color: var(--color-foreground);
+  }
+
+  .look-h4 {
+    font-family: var(--font-spline), system-ui, sans-serif;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-wider);
+    text-transform: uppercase;
+    line-height: var(--line-height-snug);
+    color: var(--color-muted-foreground);
+  }
+
   h5, h6 {
     font-family: var(--font-spline), system-ui, sans-serif;
     font-size: var(--font-size-sm);
