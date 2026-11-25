@@ -6,6 +6,7 @@
 import type { ChangeEvent, SubmitEvent } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 import { useForm } from '@tanstack/react-form'
+import { track } from '@vercel/analytics'
 import { z } from 'zod'
 import { contactFormSchema } from '@/lib/schemas'
 import { handleHookError } from '@/lib/error-handling'
@@ -39,6 +40,9 @@ export function useContactForm(): UseContactFormReturn {
 
         if (result.success) {
           setSubmitStatus('success')
+          // Conversion event for Vercel Web Analytics: fires only after the server
+          // action reports success, and carries no form content.
+          track('Contact Submitted', { location: 'contact-form' })
           form.reset()
         } else {
           setSubmitStatus('error')

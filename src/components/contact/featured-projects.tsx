@@ -28,6 +28,8 @@ export function FeaturedProjects({ className = '', projects }: FeaturedProjectsP
         {projects.map((project) => (
           <Link
             key={project.slug}
+            data-track="Project Click"
+            data-track-location="contact-featured"
             href={`/projects/${project.slug}`}
             className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl hover:bg-primary/10 hover:border-primary/30 border border-border transition-all duration-300 ease-out group"
           >

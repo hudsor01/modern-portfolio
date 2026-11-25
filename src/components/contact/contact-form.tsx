@@ -29,6 +29,10 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
       <h2 className="typography-h3 mb-6">Send a Message</h2>
 
       <form
+        // First interaction sends one 'Contact Started' event via the layout
+        // listener (no field values); success sends 'Contact Submitted'.
+        data-track-input="Contact Started"
+        data-track-location="contact-form"
         onSubmit={(e) => {
           e.preventDefault()
           form.handleSubmit()
