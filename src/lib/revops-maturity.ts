@@ -75,7 +75,9 @@ export interface MaturityResult {
   nextMove: string
   /**
    * True when tooling maturity runs ≥1 full level ahead of the weaker of
-   * data/process maturity — the "buying tools you can't feed" anti-pattern.
+   * data/process maturity — the "buying tools you can't feed" anti-pattern —
+   * and that weaker foundation is still below the Managed band. A Managed
+   * foundation can feed a stronger stack, so it is not flagged.
    */
   techOverbuy: boolean
   /** Valid answers per pillar. */
@@ -416,16 +418,19 @@ export function scoreMaturity(answers: Partial<Record<string, number>>): Maturit
     !allStrong && weakestPillars.length === 1 ? weakestPillars[0]! : null
   const answeredPillars = PILLARS.filter((p) => byPillar[p.id].length > 0).length
 
-  // Anti-pattern: tech running ahead of the weaker of data/process. Only
-  // meaningful when all three pillars have been answered.
+  // Anti-pattern: tech running ahead of the weaker of data/process while that
+  // foundation is below the Managed band. Only meaningful when all three
+  // pillars have been answered.
   const techAnswered = byPillar.technology.length > 0
   const dataAnswered = byPillar.data.length > 0
   const processAnswered = byPillar.process.length > 0
+  const foundation = Math.min(pillarScores.data, pillarScores.process)
   const techOverbuy =
     techAnswered &&
     dataAnswered &&
     processAnswered &&
-    pillarScores.technology - Math.min(pillarScores.data, pillarScores.process) >= TECH_OVERBUY_GAP
+    foundation < MANAGED_PILLAR_SCORE - TIE_EPSILON &&
+    pillarScores.technology - foundation >= TECH_OVERBUY_GAP
 
   const tier = overallScore > 0 ? (tierForScore(overallScore)?.label ?? '') : ''
 

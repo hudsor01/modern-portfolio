@@ -121,6 +121,7 @@ test.describe('revops maturity scorecard', () => {
     const move = result.getByText('Your next move').locator('xpath=..')
     await expect(move).toContainText('Tighten stage exit criteria and audit them quarterly')
     await expect(move).not.toContainText(/Document your sales stages|before you buy/)
+    await expect(result).not.toContainText('Watch out:')
   })
 
   test('only the level is announced: the answered count is outside the live region', async ({

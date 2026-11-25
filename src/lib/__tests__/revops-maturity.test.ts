@@ -320,6 +320,24 @@ describe('scoreMaturity — tech-overbuy anti-pattern', () => {
     expect(r.techOverbuy).toBe(false)
   })
 
+  it('does not flag a stronger stack on a Managed-band foundation', () => {
+    expect(
+      scoreMaturity(byPillar({ process: 4, data: 5, technology: 5, alignment: 5 })).techOverbuy
+    ).toBe(false)
+    expect(
+      scoreMaturity(
+        byPillar({ process: MANAGED_PILLAR_SCORE, data: 5, technology: 5, alignment: 5 })
+      ).techOverbuy
+    ).toBe(false)
+  })
+
+  it('flags it once the foundation drops below the Managed band', () => {
+    const r = scoreMaturity(
+      byPillar({ process: MANAGED_PILLAR_SCORE - 0.01, data: 5, technology: 5, alignment: 5 })
+    )
+    expect(r.techOverbuy).toBe(true)
+  })
+
   it('uses the WEAKER of data/process as the foundation', () => {
     // data high, process low → still overbuying relative to process
     const r = scoreMaturity(byPillar({ process: 2, data: 5, technology: 4, alignment: 3 }))

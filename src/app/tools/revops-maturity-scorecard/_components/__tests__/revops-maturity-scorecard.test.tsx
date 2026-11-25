@@ -198,6 +198,22 @@ describe('RevOpsMaturityScorecard answering', () => {
     expect(move.textContent).not.toMatch(/Document your sales stages|before you buy/)
   })
 
+  it('tones the weakest badge like its bar and drops the overbuy warning on a Managed foundation', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    const badge = () =>
+      Array.from(container.querySelectorAll('span')).find((s) => s.textContent === 'weakest')
+    answerAll('5 Fully')
+    answerPillar(container, 0, '4 Mostly')
+    expect(badge()?.className).toContain('text-muted-foreground')
+    expect(badge()?.className).not.toContain('text-destructive')
+    expect(container.textContent).not.toContain('Watch out:')
+    answerPillar(container, 0, '3 Somewhat')
+    expect(badge()?.className).toContain('text-warning-text')
+    answerPillar(container, 0, '1 Not at all')
+    expect(badge()?.className).toContain('text-destructive')
+    expect(container.textContent).toContain('Watch out:')
+  })
+
   it('announces only the level: the answered count and scores sit outside the live region', () => {
     const { container } = render(<RevOpsMaturityScorecard />)
     const region = screen.getByRole('region', { name: 'Your result' })

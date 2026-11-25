@@ -5,6 +5,7 @@ import {
   PILLARS,
   QUESTIONS,
   scoreMaturity,
+  TIERS,
   tierForScore,
   type PillarId,
 } from '@/lib/revops-maturity'
@@ -19,11 +20,22 @@ const SCALE = [
 
 const SCALE_KEY = SCALE.map((o) => `${o.value} ${o.label}`).join(' · ')
 
+/** Upper bounds of the Emerging and Defined tiers: below them a pillar reads red, then amber. */
+const LOW_BAND = TIERS[1]!.max
+const MID_BAND = TIERS[2]!.max
+
 /** Pillar score (1–5) → bar fill class. Weakest pillars read warmer. */
 function barColor(score: number): string {
-  if (score < 2.6) return 'bg-destructive'
-  if (score < 3.4) return 'bg-warning'
+  if (score < LOW_BAND) return 'bg-destructive'
+  if (score < MID_BAND) return 'bg-warning'
   return 'bg-success'
+}
+
+/** "weakest" badge text class, in the same band as its bar; neutral from the Managed band up. */
+function badgeColor(score: number): string {
+  if (score < LOW_BAND) return 'text-destructive'
+  if (score < MID_BAND) return 'text-warning-text'
+  return 'text-muted-foreground'
 }
 
 export function RevOpsMaturityScorecard() {
@@ -154,7 +166,9 @@ export function RevOpsMaturityScorecard() {
                     >
                       {pillar.label}
                       {isWeakest && (
-                        <span className="ml-2 text-xs uppercase tracking-wide text-destructive">
+                        <span
+                          className={`ml-2 text-xs uppercase tracking-wide ${badgeColor(score)}`}
+                        >
                           weakest
                         </span>
                       )}
