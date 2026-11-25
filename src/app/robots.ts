@@ -24,14 +24,18 @@ import { SITE_ORIGIN } from '@/lib/absolute-url'
  *
  *  5. SEO scrapers — block (no value, just bandwidth cost).
  *
- * Groups 1-3 share one allow/disallow source. A crawler obeys only its most
- * specific matching group (RFC 9309), so the `*` disallows never reach
- * Googlebot or Bingbot; every named group must repeat them. `/api/og` and
- * `/api/blog/rss` stay crawlable because the longest matching rule wins and
- * both are longer than `/api/`.
+ * A crawler obeys only its most specific matching group (RFC 9309), so the
+ * `*` disallows never reach Googlebot or Bingbot; every named group must
+ * repeat the private paths itself. Named search and social crawlers may still
+ * fetch `/_next/` (JS, CSS, fonts, optimized images): Google needs those to
+ * render pages and index images, and advises against blocking them. Every
+ * other crawler (`*`) is kept out of `/_next/`. `/api/og` and `/api/blog/rss`
+ * stay crawlable because the longest matching rule wins and both are longer
+ * than `/api/`.
  */
 const PUBLIC_ALLOW = ['/', '/api/og', '/api/blog/rss']
-const PRIVATE_DISALLOW = ['/api/', '/_next/', '/admin/']
+const PRIVATE_DISALLOW = ['/api/', '/admin/']
+const DEFAULT_DISALLOW = ['/api/', '/_next/', '/admin/']
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -60,11 +64,11 @@ export default function robots(): MetadataRoute.Robots {
         disallow: PRIVATE_DISALLOW,
       },
 
-      // 3. Default: same rules as the named groups above.
+      // 3. Default: the named groups' rules, plus no /_next/ assets.
       {
         userAgent: '*',
         allow: PUBLIC_ALLOW,
-        disallow: PRIVATE_DISALLOW,
+        disallow: DEFAULT_DISALLOW,
       },
 
       // 4. AI training crawlers: opt out. These don't drive traffic; blocking

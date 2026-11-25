@@ -45,9 +45,13 @@ test.describe('robots.txt', () => {
     ]) {
       const group = groupFor(ua)
       expect(group, `group for ${ua}`).toBeDefined()
-      for (const path of ['/api/', '/_next/', '/admin/']) {
+      for (const path of ['/api/', '/admin/']) {
         expect(group?.disallow, `${ua} disallow`).toContain(path)
       }
+      // Named search/social crawlers may fetch /_next/ (rendering, Google
+      // Images); only the default group is kept out of it.
+      if (ua === '*') expect(group?.disallow, '* disallow').toContain('/_next/')
+      else expect(group?.disallow, `${ua} disallow`).not.toContain('/_next/')
       for (const path of ['/', '/api/og', '/api/blog/rss']) {
         expect(group?.allow, `${ua} allow`).toContain(path)
       }

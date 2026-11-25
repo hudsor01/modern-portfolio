@@ -14,7 +14,8 @@ function ruleFor(ua: string) {
 }
 
 const PUBLIC_ALLOW = ['/', '/api/og', '/api/blog/rss']
-const PRIVATE_DISALLOW = ['/api/', '/_next/', '/admin/']
+const PRIVATE_DISALLOW = ['/api/', '/admin/']
+const DEFAULT_DISALLOW = ['/api/', '/_next/', '/admin/']
 
 const SEARCH_UAS = [
   'Googlebot',
@@ -60,21 +61,28 @@ const AI_TRAINING_UAS = [
 const SEO_SCRAPER_UAS = ['AhrefsBot', 'SemrushBot', 'DotBot', 'MJ12bot']
 
 describe('robots rules for crawlable groups', () => {
-  for (const ua of [...SEARCH_UAS, ...SOCIAL_UAS, '*']) {
-    it(`${ua} carries the private disallows and public allows`, () => {
+  for (const ua of [...SEARCH_UAS, ...SOCIAL_UAS]) {
+    it(`${ua} carries the private disallows and public allows, and may fetch /_next/`, () => {
       const rule = ruleFor(ua)
       expect(rule).toBeDefined()
       expect(list(rule?.disallow)).toEqual(PRIVATE_DISALLOW)
+      expect(list(rule?.disallow)).not.toContain('/_next/')
       expect(list(rule?.allow)).toEqual(PUBLIC_ALLOW)
     })
   }
 
-  it('groups 1, 2 and 3 share identical allow and disallow arrays', () => {
+  it('* carries the private disallows plus /_next/, and the public allows', () => {
+    const rule = ruleFor('*')
+    expect(list(rule?.disallow)).toEqual(DEFAULT_DISALLOW)
+    expect(list(rule?.allow)).toEqual(PUBLIC_ALLOW)
+  })
+
+  it('groups 1, 2 and 3 share identical allow arrays and the same private disallows', () => {
     const [g1, g2, g3] = [ruleFor('Googlebot'), ruleFor('Twitterbot'), ruleFor('*')]
     expect(g1?.allow).toEqual(g2?.allow)
     expect(g2?.allow).toEqual(g3?.allow)
     expect(g1?.disallow).toEqual(g2?.disallow)
-    expect(g2?.disallow).toEqual(g3?.disallow)
+    for (const path of PRIVATE_DISALLOW) expect(list(g3?.disallow)).toContain(path)
   })
 })
 
