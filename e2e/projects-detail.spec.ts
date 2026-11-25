@@ -1,6 +1,10 @@
 import { test, expect } from '@playwright/test'
 import { PROJECT_SLUGS_ON_DISK } from './_helpers/project-slugs'
-import { expectedRevenueTrendTitle, inProgressQuarterLabel } from './_helpers/quarters'
+import {
+  acceptableRevenueTrendTitles,
+  inProgressQuarterLabel,
+  REVENUE_TREND_QUARTERS,
+} from './_helpers/quarters'
 
 /**
  * Project Detail Pages E2E Tests
@@ -98,6 +102,32 @@ test.describe('Project detail pages — regression assertions', () => {
   test('/projects/revenue-kpi charts: derived title, dual axis, compact ticks (BUG-03)', async ({
     page,
   }) => {
+    // (a) trend title ends at the last completed quarter (F-21b). The page is ISR
+    // (revalidate hourly), so it may trail a quarter rollover by up to
+    // REVENUE_TREND_MAX_LAG_MS, and a render older than its window is served stale
+    // once while it regenerates. Re-request until the server's render carries a
+    // window valid for now, so a build from an earlier quarter (or one left idle
+    // past a rollover) must actually regenerate for this to pass. The charts are
+    // client-only, so the served window is read from the growth rows in the RSC
+    // payload rather than from rendered HTML.
+    const now = new Date()
+    const acceptable = acceptableRevenueTrendTitles(now)
+    const escape = (t: string) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const acceptableTitle = new RegExp(`^(?:${acceptable.map(escape).join('|')})$`)
+    await expect
+      .poll(
+        async () => {
+          const html = await (await page.request.get('/projects/revenue-kpi')).text()
+          const served = Array.from(
+            html.matchAll(/\\?"quarter\\?":\\?"(Q[1-4] \d{4})\\?"/g),
+            (m) => m[1]
+          )
+          if (served.length !== REVENUE_TREND_QUARTERS) return `${served.length} growth rows`
+          return `Quarterly Revenue · ${served[0]}–${served[served.length - 1]}`
+        },
+        { message: 'served revenue window converges on the current one', timeout: 30000 }
+      )
+      .toMatch(acceptableTitle)
     await page.goto('/projects/revenue-kpi', { timeout: 60000 })
     await page.waitForLoadState('networkidle')
 
@@ -108,13 +138,11 @@ test.describe('Project detail pages — regression assertions', () => {
       .poll(() => surfaces.count(), { message: 'expected >= 4 recharts surfaces', timeout: 30000 })
       .toBeGreaterThanOrEqual(4)
 
-    // (a) trend title ends at the last completed quarter (F-21b). The page is built at
-    // deploy (force-static); the test runs against a same-day build.
-    const now = new Date()
+    // (a, continued) the rendered title is one valid for now.
     const trendTitle = page.getByText(/^(Quarterly|Monthly) Revenue · .+/).first()
     await expect(trendTitle, 'trend title is derived from data').toBeVisible()
     await expect(trendTitle, 'trend title ends at the last completed quarter (F-21b)').toHaveText(
-      expectedRevenueTrendTitle(now)
+      acceptableTitle
     )
     expect(await trendTitle.textContent(), 'no in-progress quarter').not.toContain(
       inProgressQuarterLabel(now)

@@ -1,5 +1,12 @@
 // @vitest-environment node
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
+import {
+  acceptableRevenueTrendTitles,
+  expectedRevenueTrendTitle,
+  REVENUE_KPI_REVALIDATE_SECONDS,
+} from '../../../../e2e/_helpers/quarters'
 import { getDisplayYearMonth } from '@/lib/data-formatters'
 import { BASE_METRICS } from '../generators/base'
 import { generateGrowthData, REVENUE_TREND_QUARTERS } from '../generators/growth'
@@ -79,5 +86,39 @@ describe('generateGrowthData: last completed quarter', () => {
     expect(a).toEqual(b)
     expect(spy).not.toHaveBeenCalled()
     spy.mockRestore()
+  })
+})
+
+describe('revenue-kpi regeneration (WR-04)', () => {
+  const page = readFileSync(join(process.cwd(), 'src/app/projects/revenue-kpi/page.tsx'), 'utf8')
+
+  it('prerenders the page and revalidates it on the window the e2e oracle allows for', () => {
+    expect(page).toMatch(/^export const dynamic = 'force-static'$/m)
+    expect(page).toMatch(
+      new RegExp(`^export const revalidate = ${REVENUE_KPI_REVALIDATE_SECONDS}$`, 'm')
+    )
+  })
+
+  it('the independent e2e oracle agrees with the generator', () => {
+    for (const now of ['2026-11-25T18:00:00Z', '2027-01-01T03:00:00Z', '2027-01-01T07:00:00Z']) {
+      const got = labels(now)
+      expect(expectedRevenueTrendTitle(new Date(now))).toBe(
+        `Quarterly Revenue · ${got[0]}–${got[got.length - 1]}`
+      )
+    }
+  })
+
+  it('accepts the previous window only while within the regeneration lag of a rollover', () => {
+    // 2027-01-01 00:00 America/Chicago is 06:00Z
+    expect(acceptableRevenueTrendTitles(new Date('2027-01-01T07:00:00Z'))).toEqual([
+      'Quarterly Revenue · Q2 2025–Q4 2026',
+      'Quarterly Revenue · Q1 2025–Q3 2026',
+    ])
+    expect(acceptableRevenueTrendTitles(new Date('2027-01-01T12:00:00Z'))).toEqual([
+      'Quarterly Revenue · Q2 2025–Q4 2026',
+    ])
+    expect(acceptableRevenueTrendTitles(new Date('2026-11-25T18:00:00Z'))).toEqual([
+      'Quarterly Revenue · Q1 2025–Q3 2026',
+    ])
   })
 })

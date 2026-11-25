@@ -9,6 +9,12 @@ import { canonicalUrl, SITE_ORIGIN, ogImageUrl } from '@/lib/absolute-url'
 import { generateMetadata as genMeta } from '@/app/shared-metadata'
 
 export const dynamic = 'force-static'
+// ISR (Node runtime): the revenue trend ends at the last completed quarter as of
+// render time (A11Y-07), so the page re-renders at most hourly to roll the window
+// over within an hour of a quarter boundary instead of at the next deploy. Matches
+// the 1-hour CDN-Cache-Control TTL next.config.js sets on /projects/*. Mirrored by
+// REVENUE_KPI_REVALIDATE_SECONDS in e2e/_helpers/quarters.ts.
+export const revalidate = 3600
 
 // Title ≤60 chars with the brand, description ≤160, so search results show them
 // whole. Figures come from the write-up (NarrativeSections Result section) and are

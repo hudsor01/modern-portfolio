@@ -41,3 +41,26 @@ export function expectedRevenueTrendTitle(now: Date = new Date()): string {
   const labels = lastCompletedQuarterLabels(now)
   return `Quarterly Revenue · ${labels[0]}–${labels[labels.length - 1]}`
 }
+
+/** Mirrors `revalidate` in src/app/projects/revenue-kpi/page.tsx (guarded by growth.test.ts). */
+export const REVENUE_KPI_REVALIDATE_SECONDS = 3600
+
+/**
+ * Longest a served revenue-kpi page can trail the clock (WR-04): its ISR window,
+ * plus the 8-minute in-memory analytics bundle a regeneration may reuse
+ * (src/lib/data-service/service.ts), plus the 1-hour CDN-Cache-Control edge TTL
+ * on /projects/* (next.config.js; a local standalone server has none, so this
+ * only over-allows there).
+ */
+export const REVENUE_TREND_MAX_LAG_MS = (REVENUE_KPI_REVALIDATE_SECONDS + 8 * 60 + 3600) * 1000
+
+/**
+ * Titles a page regenerated on that schedule may correctly show at `now`: the
+ * current window, plus the previous one while `now` is within the maximum lag
+ * of a quarter rollover.
+ */
+export function acceptableRevenueTrendTitles(now: Date = new Date()): string[] {
+  const current = expectedRevenueTrendTitle(now)
+  const lagged = expectedRevenueTrendTitle(new Date(now.getTime() - REVENUE_TREND_MAX_LAG_MS))
+  return lagged === current ? [current] : [current, lagged]
+}

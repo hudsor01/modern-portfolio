@@ -12,8 +12,9 @@ export const REVENUE_TREND_QUARTERS = 7
 /**
  * Quarterly series ending at the last completed quarter on the America/Chicago
  * calendar, computed from the injected `now`. The revenue-kpi page is
- * force-static, so the window is computed at build and can only lag (it never
- * shows an unfinished quarter) until the next deploy.
+ * prerendered and revalidated hourly (ISR), so the served window can trail a
+ * quarter rollover by at most the regeneration lag, never shows an unfinished
+ * quarter, and does not wait for a deploy to advance.
  */
 export function generateGrowthData(
   baseMetrics: Map<string, number>,
