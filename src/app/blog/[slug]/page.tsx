@@ -17,6 +17,7 @@ import { canonicalUrl } from '@/lib/absolute-url'
 import { brandTitle, stripBrandSuffix } from '@/app/shared-metadata'
 import { resolveExcerpt } from '@/lib/blog-excerpt'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
+import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
 
 // Force runtime rendering. notFound() inside Next.js 16's ISR-rendered
 // Server Components doesn't propagate HTTP 404 status to Vercel — the
@@ -49,6 +50,7 @@ const getBlogPost = cache(async (slug: string): Promise<BlogPostData | null> => 
     const post = await withDbRetry(() =>
       db.query.blogPosts.findFirst({
         where: and(eq(blogPosts.slug, slug), eq(blogPosts.status, 'PUBLISHED')),
+        columns: BLOG_POST_COLUMNS,
         with: {
           author: true,
           category: true,

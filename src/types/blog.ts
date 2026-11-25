@@ -15,8 +15,10 @@ export type { ContentType }
 // ============================================================================
 
 // Shape returned by the canonical Drizzle blog query (relational
-// findFirst/findMany with `with: { author, category, tags: { with: { tag } } }`).
-export type BlogPostWithRelations = BlogPost & {
+// findFirst/findMany with `columns: BLOG_POST_COLUMNS` and
+// `with: { author, category, tags: { with: { tag } } }`). `searchVector` is
+// excluded: it is never selected (src/lib/blog-columns.ts).
+export type BlogPostWithRelations = Omit<BlogPost, 'searchVector'> & {
   author: Author | null
   category: Category | null
   tags: Array<{ tag: Tag }>

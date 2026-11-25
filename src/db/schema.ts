@@ -30,8 +30,10 @@ const inet = customType<{ data: string; driverData: string }>({
 })
 
 // tsvector — Postgres full-text search type. Only ever written by the database
-// (blogPosts.searchVector is GENERATED ALWAYS), and never selected into app
-// code, so `data` is typed as string purely to satisfy the customType contract.
+// (blogPosts.searchVector is GENERATED ALWAYS). App code must never select it:
+// a relational query without `columns` would, so every blogPosts query passes
+// BLOG_POST_COLUMNS or an explicit list (src/lib/blog-columns.ts, guarded).
+// `data` is typed as string purely to satisfy the customType contract.
 const tsvector = customType<{ data: string; driverData: string }>({
   dataType: () => 'tsvector',
 })

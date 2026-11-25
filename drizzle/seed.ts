@@ -694,11 +694,14 @@ Success with sales technology requires strategic planning, careful implementatio
   return { content, excerpt }
 }
 
+/** The two columns the analytics seed reads; never a whole row (see src/lib/blog-columns.ts). */
+type SeededPost = Pick<BlogPost, 'id' | 'status'>
+
 async function seedBlogPosts(
   authorList: Author[],
   categoryList: Category[],
   tagList: Tag[]
-): Promise<BlogPost[]> {
+): Promise<SeededPost[]> {
   console.log('Seeding blog posts...')
 
   const blogPostsData = [
@@ -802,7 +805,7 @@ async function seedBlogPosts(
     },
   ]
 
-  const createdPosts: BlogPost[] = []
+  const createdPosts: SeededPost[] = []
   for (let i = 0; i < blogPostsData.length; i++) {
     const postData = blogPostsData[i]
     if (!postData) continue
@@ -838,7 +841,7 @@ async function seedBlogPosts(
         commentCount: postData.status === 'PUBLISHED' ? Math.floor(Math.random() * 15) + 1 : 0,
         contentType: 'MARKDOWN' as ContentType,
       })
-      .returning()
+      .returning({ id: blogPosts.id, status: blogPosts.status })
 
     if (!post) continue
 
@@ -862,7 +865,7 @@ async function seedBlogPosts(
   return createdPosts
 }
 
-async function seedAnalyticsData(posts: BlogPost[]): Promise<void> {
+async function seedAnalyticsData(posts: SeededPost[]): Promise<void> {
   console.log('Seeding analytics data...')
 
   let totalViews = 0

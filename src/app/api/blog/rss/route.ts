@@ -37,9 +37,20 @@ export async function GET(request: NextRequest) {
       where: and(eq(blogPosts.status, 'PUBLISHED'), isNull(blogPosts.deletedAt)),
       orderBy: desc(blogPosts.publishedAt),
       limit,
+      // Only what the feed renders. Never the body or the search index: a full
+      // row is ~37 KB per post, so 25 posts made each feed fetch ~0.9 MB of
+      // database transfer.
+      columns: {
+        title: true,
+        slug: true,
+        excerpt: true,
+        metaDescription: true,
+        publishedAt: true,
+        createdAt: true,
+      },
       with: {
-        author: true,
-        category: true,
+        author: { columns: { name: true } },
+        category: { columns: { name: true } },
       },
     })
 
