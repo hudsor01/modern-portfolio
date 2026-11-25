@@ -33,15 +33,25 @@ export const parseSampleRate = (value: string | undefined, fallback: number): nu
  * Resolve the Sentry `environment` tag.
  *
  * Prefers an explicit override, then Vercel's own `VERCEL_ENV`
- * (`production` | `preview` | `development`), then `NODE_ENV`. Using `VERCEL_ENV`
- * is what keeps preview-deploy noise separable from real production traffic in
- * the Sentry UI — both build with `NODE_ENV=production`, so `NODE_ENV` alone
- * would label them identically.
+ * (`production` | `preview` | `development`). Using `VERCEL_ENV` is what keeps
+ * preview-deploy noise separable from real production traffic in the Sentry UI —
+ * both build with `NODE_ENV=production`, so `NODE_ENV` alone would label them
+ * identically.
+ *
+ * Without either, the process is not a Vercel deployment: a production build
+ * served locally (`bun start`, the e2e standalone server) reports as `local`,
+ * never `production`, so its errors (a local DB outage, say) cannot pose as
+ * production incidents. `next dev` keeps `development`.
  */
 export const resolveEnvironment = (
   explicit: string | undefined,
-  vercelEnv: string | undefined
-): string => explicit || vercelEnv || process.env.NODE_ENV || 'development'
+  vercelEnv: string | undefined,
+  nodeEnv: string | undefined = process.env.NODE_ENV
+): string => {
+  if (explicit) return explicit
+  if (vercelEnv) return vercelEnv
+  return nodeEnv === 'production' ? 'local' : nodeEnv || 'development'
+}
 
 // Headers whose values identify the client (IPs, proxies, auth'd user). Mirrors
 // the deny list Sentry documents for reproducing the v10 `sendDefaultPii: false`
