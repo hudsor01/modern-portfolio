@@ -38,14 +38,28 @@ test.describe('header', () => {
     await openToggle.click()
     await expect.poll(rootOverflow).toBe('hidden')
 
+    // "Stays at 0" needs a watch over a window, not a poll (a poll passes on its
+    // first 0 sample, before a late scroll lands). The listener starts before the
+    // wheel is dispatched and records the furthest scroll position for 500ms.
+    const maxScrollYOver500ms = () =>
+      page.evaluate(
+        () =>
+          new Promise<number>((resolve) => {
+            let max = window.scrollY
+            const onScroll = () => {
+              max = Math.max(max, window.scrollY)
+            }
+            window.addEventListener('scroll', onScroll, { passive: true })
+            setTimeout(() => {
+              window.removeEventListener('scroll', onScroll)
+              resolve(Math.max(max, window.scrollY))
+            }, 500)
+          }),
+      )
     await page.mouse.move(195, 700)
+    const lockedWatch = maxScrollYOver500ms()
     await page.mouse.wheel(0, 600)
-    await expect
-      .poll(async () => {
-        await page.waitForTimeout(100)
-        return page.evaluate(() => window.scrollY)
-      })
-      .toBe(0)
+    expect(await lockedWatch, 'locked page does not scroll').toBe(0)
 
     const fits = await menu.evaluate((el) => {
       const rect = el.getBoundingClientRect()
@@ -55,6 +69,14 @@ test.describe('header', () => {
 
     await page.getByRole('button', { name: 'Close menu' }).click()
     await expect.poll(rootOverflow).not.toBe('hidden')
+
+    // Positive control: the same wheel at the same point scrolls the unlocked page,
+    // so the locked check above cannot pass because the event was swallowed.
+    await page.mouse.move(195, 700)
+    await page.mouse.wheel(0, 600)
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0)
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
 
     // Navigation by link
     await openToggle.click()
