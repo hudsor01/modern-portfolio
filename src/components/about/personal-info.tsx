@@ -44,7 +44,7 @@ export function PersonalInfo({ personalInfo, className = '' }: PersonalInfoProps
 
           <div className="flex flex-wrap gap-4 pt-6">
             <Button asChild size="lg" className="h-12 px-8 text-base font-semibold">
-              <Link href="/projects">
+              <Link data-track="CTA Click" data-track-location="about-hero" href="/projects">
                 <Briefcase className="mr-2 h-5 w-5" />
                 View Case Studies
               </Link>
@@ -55,7 +55,7 @@ export function PersonalInfo({ personalInfo, className = '' }: PersonalInfoProps
               size="lg"
               className="h-12 px-8 text-base font-semibold"
             >
-              <Link href="/resume">
+              <Link data-track="CTA Click" data-track-location="about-hero" href="/resume">
                 <Eye className="mr-2 h-5 w-5" />
                 View Resume
               </Link>
@@ -82,7 +82,12 @@ function ContactInfo({ personalInfo }: ContactInfoProps) {
       </div>
       <div className="flex items-center gap-2">
         <Mail className="h-5 w-5 text-primary" />
-        <a href={`mailto:${personalInfo.email}`} className="hover:text-primary transition-colors">
+        <a
+          data-track="Email Click"
+          data-track-location="about-hero"
+          href={`mailto:${personalInfo.email}`}
+          className="hover:text-primary transition-colors"
+        >
           {personalInfo.email}
         </a>
       </div>
@@ -101,7 +106,7 @@ function ProfileImage() {
               alt="Richard Hudson - Revenue Operations Professional"
               fill
               className="object-cover"
-              priority
+              preload
               sizes="(max-width: 768px) 256px, 320px"
             />
           </div>

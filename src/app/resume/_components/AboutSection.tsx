@@ -15,7 +15,7 @@ export function AboutSection() {
           <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-xl overflow-hidden border-4 border-border shadow-xl shadow-primary/20 flex-shrink-0">
             <Image
               src="/images/richard.jpg"
-              alt="Richard Hudson - Revenue Operations Consultant specializing in Salesforce automation, data analytics, and business growth strategies in Dallas, TX"
+              alt="Richard Hudson"
               fill
               sizes="(max-width: 768px) 128px, 160px"
               className="object-cover"
@@ -25,7 +25,7 @@ export function AboutSection() {
 
           {/* About Content */}
           <div className="flex-1 text-center lg:text-left space-y-4">
-            <h3 className="border-none pb-0 mb-4">About</h3>
+            <h2 className="look-h3 border-none pb-0 mb-4">About</h2>
             <p>
               {YEARS_EXPERIENCE} {YEARS_EXPERIENCE_LABEL} | Dallas-Fort Worth, TX
             </p>

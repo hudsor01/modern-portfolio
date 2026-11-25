@@ -10,6 +10,7 @@ import { Navbar } from '@/components/layout/navbar'
 import type { ProjectPageLayoutProps } from '@/types/design-system'
 import { designTokens } from '@/lib/tokens'
 import { DecorativeBlob } from '@/components/ui/decorative-blob'
+import { CaseStudyFooter } from './case-study-footer'
 
 /**
  * Standardized Project Page Layout Component
@@ -239,6 +240,8 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
             <div className="space-y-8" style={{ gap: designTokens.spacing['2xl'] }}>
               {children}
             </div>
+
+            <CaseStudyFooter />
           </main>
         </div>
       </div>

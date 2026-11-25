@@ -87,6 +87,8 @@ export async function RelatedPosts({ currentSlug, currentTags, limit = 3 }: Rela
         {related.map((post) => (
           <Link
             key={post.slug}
+            data-track="Post Click"
+            data-track-location="blog-related"
             href={`/blog/${post.slug}`}
             className="group flex h-full flex-col rounded-xl border border-border bg-card p-5 hover:border-primary transition-colors"
           >

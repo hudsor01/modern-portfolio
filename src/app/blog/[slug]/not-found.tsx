@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
+import { NotFoundEvent } from '@/components/analytics/not-found-event'
 
 // Segment-level not-found for /blog/[slug]. Rendered when getBlogPost returns
 // null and the page calls notFound(). HTTP 404 status comes from the
@@ -32,10 +33,16 @@ export default function BlogPostNotFound() {
           <p className="mb-6">
             The post you&apos;re looking for doesn&apos;t exist or may have been moved.
           </p>
-          <Link href="/blog" className="inline-block text-primary hover:underline">
+          <Link
+            data-track="CTA Click"
+            data-track-location="not-found"
+            href="/blog"
+            className="inline-block text-primary hover:underline"
+          >
             ← Browse all posts
           </Link>
         </div>
+        <NotFoundEvent kind="post" />
       </main>
     </div>
   )

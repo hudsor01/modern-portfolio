@@ -33,8 +33,14 @@ describe.each(tools.map((t) => [t.name, t] as const))('ToolCard %s', (_n, tool) 
     expect(a).not.toBeNull()
     const tag = named[0]!
     expect(tag).toContain(`href="${tool.href}"`)
-    expect(decode(a![1]!)).toBe('Open tool')
-    expect(decode(/aria-label="([^"]*)"/.exec(tag)![1]!)).toBe(`Open tool: ${tool.name}`)
+    // Visible text names the tool (search link text and accessible name).
+    expect(
+      decode(a![1]!)
+        .replace(/<[^>]*>/g, '')
+        .trim()
+    ).toBe(`Open ${tool.name}`)
+    expect(tag).not.toContain('aria-label')
+    expect(tag).toContain('data-track="Tool Click"')
     const cls = classOf(tag)
     for (const c of [
       'after:absolute',

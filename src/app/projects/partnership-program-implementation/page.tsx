@@ -6,10 +6,13 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 
 export const dynamic = 'force-static'
 
+// Title ≤60 chars with the brand, description ≤160; one project name (the
+// catalog's) across title, H1, breadcrumb and JSON-LD. Figures come from the
+// write-up and are checked by project-page-copy-sourced.test.ts.
 export const metadata = genMeta({
-  title: 'Enterprise Partnership Program Implementation',
+  title: 'Partnership Program Implementation',
   description:
-    "Led comprehensive design and implementation of a company's first partnership program, creating automated partner onboarding, commission tracking, and performance analytics. Built production-ready integrations with CRM, billing systems, and partner portals.",
+    'Partnership program case study: a first partner program built from scratch, onboarding 47 partners with 90%+ automation and 35% of revenue from partners.',
   path: '/projects/partnership-program-implementation',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
@@ -26,7 +29,7 @@ export default async function PartnershipProgramImplementationPage() {
           { name: 'Home', url: SITE_ORIGIN },
           { name: 'Projects', url: canonicalUrl('/projects') },
           {
-            name: 'Enterprise Partnership Program Implementation',
+            name: 'Partnership Program Implementation',
             url: canonicalUrl('/projects/partnership-program-implementation'),
           },
         ]}

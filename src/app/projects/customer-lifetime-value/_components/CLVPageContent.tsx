@@ -61,12 +61,12 @@ export default function CustomerLifetimeValueAnalytics() {
     <>
       <ProjectJsonLd
         image={ogImageUrl({
-          title: 'Customer Lifetime Value Predictive Analytics Dashboard',
+          title: 'Customer Lifetime Value Analytics',
           subtitle: 'Revenue Operations Project',
           project: 'customer-lifetime-value',
         })}
-        title="Customer Lifetime Value Predictive Analytics Dashboard"
-        description="Advanced CLV analytics platform leveraging BTYD (Buy Till You Die) predictive modeling, achieving 94.3% prediction accuracy through machine learning across 5 customer segments."
+        title="Customer Lifetime Value Analytics"
+        description="Customer lifetime value case study: CLV models with 94.3% prediction accuracy; at-risk churn fell from 21% to 12.8% and marketing ROI rose 42%."
         slug="customer-lifetime-value"
         category="Predictive Analytics"
         datePublished="2025-11-19T00:00:00-06:00"
@@ -74,7 +74,7 @@ export default function CustomerLifetimeValueAnalytics() {
         tags={['CLV', 'Predictive Analytics', 'BTYD', 'Machine Learning', 'Customer Segments']}
       />
       <ProjectPageLayout
-        title="Customer Lifetime Value Predictive Analytics Dashboard"
+        title="Customer Lifetime Value Analytics"
         description="Advanced CLV analytics platform leveraging BTYD (Buy Till You Die) predictive modeling framework. Achieving 94.3% prediction accuracy through machine learning algorithms and real-time customer behavior tracking across 5 distinct customer segments."
         tags={[
           {

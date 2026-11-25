@@ -6,10 +6,13 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 
 export const dynamic = 'force-static'
 
+// Title ≤60 chars with the brand, description ≤160; one project name (the
+// catalog's) across title, H1, breadcrumb and JSON-LD. Figures come from the
+// write-up and are checked by project-page-copy-sourced.test.ts.
 export const metadata = genMeta({
-  title: 'Sales Enablement & Coaching Platform',
+  title: 'Sales Enablement Platform Case Study',
   description:
-    'Transformed sales team performance through structured training, real-time coaching, and continuous skill development. Increased win rates by 34% and reduced ramp time by 45% across a 125-person sales organization.',
+    'Sales enablement case study: structured training and real-time coaching that lifted win rates from 52% to 70% and cut new-hire ramp from 9 to 5 months.',
   path: '/projects/sales-enablement',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
@@ -26,7 +29,7 @@ export default async function SalesEnablementPage() {
           { name: 'Home', url: SITE_ORIGIN },
           { name: 'Projects', url: canonicalUrl('/projects') },
           {
-            name: 'Sales Enablement & Coaching Platform',
+            name: 'Sales Enablement Platform',
             url: canonicalUrl('/projects/sales-enablement'),
           },
         ]}

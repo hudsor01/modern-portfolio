@@ -94,12 +94,12 @@ export default function QuotaTerritoryManagementProject() {
     <>
       <ProjectJsonLd
         image={ogImageUrl({
-          title: 'Intelligent Quota Management & Territory Planning',
+          title: 'Quota & Territory Management Case Study',
           subtitle: 'Revenue Operations Project',
           project: 'quota-territory-management',
         })}
-        title="Intelligent Quota Management & Territory Planning"
-        description="Territory management system that raised forecast accuracy from 64% to 92% and reduced quota variance from 32% to 11%"
+        title="Quota & Territory Management"
+        description="Quota and territory case study: data-driven territory design raised forecast accuracy from 64% to 92% and cut quota attainment variance from 32% to 11%."
         slug="quota-territory-management"
         category="Revenue Operations"
         datePublished="2025-11-19T00:00:00-06:00"
@@ -113,7 +113,7 @@ export default function QuotaTerritoryManagementProject() {
       />
 
       <ProjectPageLayout
-        title="Intelligent Quota Management & Territory Planning"
+        title="Quota & Territory Management"
         description="Advanced quota setting and territory assignment system using predictive analytics and fairness algorithms. Optimized territory design raised forecast accuracy from 64% to 92% and reduced quota attainment variance from 32% to 11%."
         tags={[
           {

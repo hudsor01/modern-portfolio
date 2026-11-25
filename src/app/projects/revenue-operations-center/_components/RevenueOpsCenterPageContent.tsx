@@ -116,12 +116,12 @@ export default function RevenueOperationsCenter() {
     <>
       <ProjectJsonLd
         image={ogImageUrl({
-          title: 'Revenue Operations Command Center',
+          title: 'Revenue Operations Center Case Study',
           subtitle: 'Revenue Operations Project',
           project: 'revenue-operations-center',
         })}
-        title="Revenue Operations Command Center"
-        description="Comprehensive revenue operations dashboard consolidating pipeline health, forecasting, partner performance, and operational KPIs with 96.8% forecast accuracy and 89.7% operational efficiency."
+        title="Revenue Operations Center"
+        description="Revenue operations center case study: unified pipeline and partner KPIs that raised forecast accuracy from 74% to 96.8% and cut manual reporting 78%."
         slug="revenue-operations-center"
         category="Revenue Operations"
         datePublished="2025-11-19T00:00:00-06:00"
@@ -129,7 +129,7 @@ export default function RevenueOperationsCenter() {
         tags={['RevOps', 'Pipeline Health', 'Forecasting', 'Operations Dashboard']}
       />
       <ProjectPageLayout
-        title="Revenue Operations Command Center"
+        title="Revenue Operations Center"
         description="Comprehensive revenue operations dashboard consolidating pipeline health, forecasting accuracy, partner performance, and operational KPIs. Real-time insights with 96.8% forecast accuracy and 89.7% operational efficiency across sales, marketing, and partner channels."
         tags={[
           { label: 'Forecast Accuracy: 96.8%', variant: 'primary' },

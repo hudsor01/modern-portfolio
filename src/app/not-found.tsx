@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
+import { NotFoundEvent } from '@/components/analytics/not-found-event'
 
 // Override the root layout's homepage default title so 404 pages render
 // "404 — Page Not Found" instead of "Richard Hudson | Revenue Operations
@@ -37,10 +38,16 @@ export default function NotFound() {
           <p className="mb-6">
             The page you&apos;re looking for doesn&apos;t exist or has been moved.
           </p>
-          <Link href="/" className="inline-block text-primary hover:underline">
+          <Link
+            data-track="CTA Click"
+            data-track-location="not-found"
+            href="/"
+            className="inline-block text-primary hover:underline"
+          >
             ← Back to home
           </Link>
         </div>
+        <NotFoundEvent kind="page" />
       </main>
     </div>
   )

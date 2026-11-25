@@ -78,13 +78,7 @@ function CertificationBadge({ badge, name }: CertificationBadgeProps) {
   return (
     <div className="shrink-0 w-16 h-16 relative rounded-xl overflow-hidden bg-primary/10 flex items-center justify-center">
       {badge.startsWith('/') ? (
-        <Image
-          src={badge}
-          alt={`${name} certification badge`}
-          fill
-          className="object-contain p-2"
-          sizes="64px"
-        />
+        <Image src={badge} alt={`${name} badge`} fill className="object-contain p-2" sizes="64px" />
       ) : (
         <span className="text-xl">{badge}</span>
       )}

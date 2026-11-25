@@ -40,10 +40,10 @@ test.describe('tools hub', () => {
   test('hub content, nav state, breadcrumb, footer and JSON-LD at 1440px', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.goto('/tools')
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Tools')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Free RevOps Tools')
     await expect(page.locator('main ul > li')).toHaveCount(TOOLS.length)
     for (const tool of TOOLS) {
-      await expect(page.getByRole('link', { name: `Open tool: ${tool.name}` })).toHaveAttribute(
+      await expect(page.getByRole('link', { name: `Open ${tool.name}` })).toHaveAttribute(
         'href',
         `/tools/${tool.slug}`,
       )
@@ -92,7 +92,7 @@ test.describe('tools hub', () => {
     )
     expect(overflow).toBeLessThanOrEqual(0)
     for (const tool of TOOLS) {
-      const box = await page.getByRole('link', { name: `Open tool: ${tool.name}` }).boundingBox()
+      const box = await page.getByRole('link', { name: `Open ${tool.name}` }).boundingBox()
       expect(box?.height ?? 0).toBeGreaterThanOrEqual(44)
     }
   })
@@ -190,7 +190,7 @@ test.describe('tools hub', () => {
 
       await crumbs.getByRole('link', { name: 'Tools' }).click()
       await page.waitForURL('**/tools')
-      await expect(page.getByRole('heading', { level: 1 })).toHaveText('Tools')
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText('Free RevOps Tools')
     })
   }
 

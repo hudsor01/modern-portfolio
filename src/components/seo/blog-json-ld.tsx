@@ -9,6 +9,11 @@ import { JsonLdScript } from '@/components/seo/json-ld-script'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
 import { getDisplayYearMonth } from '@/lib/data-formatters'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
+import {
+  PERSON_EMPLOYER,
+  PERSON_ID,
+  PERSON_JOB_TITLE,
+} from '@/components/seo/json-ld/person-json-ld'
 
 /**
  * Blog Website JSON-LD Schema
@@ -20,21 +25,20 @@ export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
     '@type': 'Blog',
     name: 'Richard Hudson - Revenue Operations Blog',
     description:
-      'Expert insights on revenue operations, data analytics, and business process optimization from Richard Hudson, a seasoned RevOps professional.',
+      'Practical revenue operations guides on forecasting, pipeline health, Salesloft and CRM automation, attribution and SDR performance, by Richard Hudson.',
     url: `${SITE_ORIGIN}/blog`,
     publisher: {
       '@type': 'Person',
+      '@id': PERSON_ID,
       name: 'Richard Hudson',
       url: SITE_ORIGIN,
       sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
-      jobTitle: 'Revenue Operations Professional',
-      worksFor: {
-        '@type': 'Organization',
-        name: 'Hudson Digital Solutions',
-      },
+      jobTitle: PERSON_JOB_TITLE,
+      worksFor: { ...PERSON_EMPLOYER },
     },
     author: {
       '@type': 'Person',
+      '@id': PERSON_ID,
       name: 'Richard Hudson',
       url: SITE_ORIGIN,
       sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
@@ -119,26 +123,23 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
     dateCreated: post.createdAt,
     author: {
       '@type': 'Person',
+      '@id': PERSON_ID,
       name: post.author?.name || 'Richard Hudson',
-      url: SITE_ORIGIN,
+      // Google recommends an author URL that identifies the author: /about is
+      // the ProfilePage for this Person.
+      url: `${SITE_ORIGIN}/about`,
       sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
-      jobTitle: 'Revenue Operations Professional',
+      jobTitle: PERSON_JOB_TITLE,
       description: post.author?.bio,
-      worksFor: {
-        '@type': 'Organization',
-        name: 'Hudson Digital Solutions',
-      },
+      worksFor: { ...PERSON_EMPLOYER },
     },
+    // `logo` is an Organization property; a Person publisher takes `image`.
     publisher: {
       '@type': 'Person',
+      '@id': PERSON_ID,
       name: 'Richard Hudson',
       url: SITE_ORIGIN,
-      logo: {
-        '@type': 'ImageObject',
-        url: `${SITE_ORIGIN}/images/richard.jpg`,
-        width: 739,
-        height: 739,
-      },
+      image: `${SITE_ORIGIN}/images/richard.jpg`,
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
@@ -164,29 +165,9 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
           description: tag.description,
         })),
       }),
-    // Add interaction statistics
-    interactionStatistic: [
-      {
-        '@type': 'InteractionCounter',
-        interactionType: 'https://schema.org/ReadAction',
-        userInteractionCount: post.viewCount,
-      },
-      {
-        '@type': 'InteractionCounter',
-        interactionType: 'https://schema.org/LikeAction',
-        userInteractionCount: post.likeCount,
-      },
-      {
-        '@type': 'InteractionCounter',
-        interactionType: 'https://schema.org/ShareAction',
-        userInteractionCount: post.shareCount,
-      },
-      {
-        '@type': 'InteractionCounter',
-        interactionType: 'https://schema.org/CommentAction',
-        userInteractionCount: post.commentCount,
-      },
-    ],
+    // No interactionStatistic: the site has no likes, shares or comments, and the
+    // view counter is not a reliable read count, so publishing those numbers as
+    // engagement would misstate the page to search engines.
     // Add breadcrumb navigation
     breadcrumb: {
       '@type': 'BreadcrumbList',
@@ -225,12 +206,15 @@ interface BlogCategoryJsonLdProps {
     name: string
     slug: string
     description?: string
-    postCount: number
   }
+  /** The posts the page lists, in order. The count comes from here, not from the
+   * categories.postCount counter, which can drift from the published list. */
+  posts: ReadonlyArray<{ title: string; slug: string }>
 }
 
 export function BlogCategoryJsonLd({
   category,
+  posts,
   nonce,
 }: BlogCategoryJsonLdProps & { nonce?: string | null }) {
   const categorySchema = {
@@ -245,7 +229,13 @@ export function BlogCategoryJsonLd({
       '@type': 'ItemList',
       name: `${category.name} Articles`,
       description: category.description,
-      numberOfItems: category.postCount,
+      numberOfItems: posts.length,
+      itemListElement: posts.map((post, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: post.title,
+        url: `${SITE_ORIGIN}/blog/${post.slug}`,
+      })),
     },
     breadcrumb: {
       '@type': 'BreadcrumbList',

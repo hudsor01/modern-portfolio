@@ -25,6 +25,8 @@ export function ContactInfo() {
       </h3>
       <div className="space-y-4">
         <a
+          data-track="Outbound Click"
+          data-track-location="contact-social"
           href={socialLinks.linkedin}
           target="_blank"
           rel="noopener noreferrer"
@@ -38,6 +40,8 @@ export function ContactInfo() {
           <ArrowRight className="w-4 h-4 ml-auto text-muted-foreground group-hover:translate-x-1 transition-transform" />
         </a>
         <a
+          data-track="Outbound Click"
+          data-track-location="contact-social"
           href={socialLinks.github}
           target="_blank"
           rel="noopener noreferrer"

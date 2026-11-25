@@ -11,7 +11,12 @@ import { AvailabilityBadge } from '@/components/ui/availability-badge'
 
 const socials = [
   { label: 'Email', href: 'mailto:hudsor01@icloud.com', external: false, Icon: Mail },
-  { label: 'LinkedIn', href: 'https://linkedin.com/in/hudsor01', external: true, Icon: Linkedin },
+  {
+    label: 'LinkedIn',
+    href: 'https://www.linkedin.com/in/hudsor01',
+    external: true,
+    Icon: Linkedin,
+  },
   { label: 'GitHub', href: 'https://github.com/hudsor01', external: true, Icon: Github },
   { label: 'Website', href: 'https://richardwhudsonjr.com', external: true, Icon: Globe },
 ]
@@ -38,17 +43,22 @@ export function HeroHeader({
         <span className="block hero-name-gradient">Richard Hudson</span>
       </h1>
 
-      <h2 className="mx-auto mb-6 text-lg">
+      {/* A tagline, not a section heading: a <p> with the h2 look, so the page's
+          sections (About, Experience, Education, ...) are its H2s. */}
+      <p className="look-h2 mx-auto mb-6 text-lg">
         <span className="inline-flex items-center rounded-full bg-primary/10 border border-border px-5 py-2 text-primary font-medium">
           Revenue Operations Professional
         </span>
-      </h2>
+      </p>
 
       {/* Actions: Download is primary, Preview secondary, Connect tertiary */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 pt-8">
         <Button
           size="lg"
           className="min-h-[44px] px-6 w-full sm:w-auto"
+          data-track="Resume Download"
+          data-track-location="resume-hero"
+          data-track-target="/Richard_Hudson_Revenue_Operations.pdf"
           onClick={onDownloadResume}
           disabled={isDownloading}
         >
@@ -60,13 +70,16 @@ export function HeroHeader({
           size="lg"
           className="min-h-[44px] px-6 w-full sm:w-auto aria-pressed:bg-muted"
           aria-pressed={showPdf}
+          data-track="Resume Preview"
+          data-track-location="resume-hero"
+          data-track-target={showPdf ? 'close' : 'open'}
           onClick={onToggleView}
         >
           <Eye className="w-5 h-5" aria-hidden="true" />
           Preview PDF
         </Button>
         <Button asChild variant="ghost" size="lg" className="min-h-[44px] px-6 w-full sm:w-auto">
-          <Link href="/contact">
+          <Link data-track="CTA Click" data-track-location="resume-hero" href="/contact">
             <Mail className="w-5 h-5" aria-hidden="true" />
             Let's Connect
           </Link>
@@ -78,6 +91,8 @@ export function HeroHeader({
         {socials.map(({ label, href, external, Icon }) => (
           <a
             key={label}
+            data-track={href.startsWith('mailto:') ? 'Email Click' : 'Outbound Click'}
+            data-track-location="resume-hero"
             href={href}
             {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
             className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-lg text-muted-foreground hover:text-primary hover:bg-muted transition-colors"

@@ -1,5 +1,6 @@
 import { generateMetadata } from '@/app/shared-metadata'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
+import { ProfilePageJsonLd } from '@/components/seo/json-ld/profile-page-json-ld'
 import { Navbar } from '@/components/layout/navbar'
 import { PersonalInfo } from '@/components/about/personal-info'
 import { ExpertiseNarrative } from '@/components/about/expertise-narrative'
@@ -28,16 +29,16 @@ const EXPERIENCE_STATS: { statKey: StatKey; label: string; value: string; icon: 
 
 const CERTIFICATIONS = [
   {
-    name: 'SalesLoft Admin Certification Level 1',
-    issuer: 'SalesLoft',
+    name: 'Salesloft Admin Certification Level 1',
+    issuer: 'Salesloft',
     badge: '/images/certifications/salesloft-admin-badge-1.png',
     description:
-      'Foundational administration and configuration of SalesLoft sales engagement platform',
+      'Foundational administration and configuration of Salesloft sales engagement platform',
     skills: ['Platform Setup', 'User Management', 'Basic Cadences', 'Email Templates'],
   },
   {
-    name: 'SalesLoft Admin Certification Level 2',
-    issuer: 'SalesLoft',
+    name: 'Salesloft Admin Certification Level 2',
+    issuer: 'Salesloft',
     badge: '/images/certifications/salesloft-admin-badge-2.png',
     description:
       'Advanced administration including complex automation, integrations, and advanced analytics',
@@ -67,13 +68,15 @@ const PERSONAL_INFO = {
 
 Today, I architect revenue operations systems that transform data overwhelm into competitive advantage. Ten years working the messy middle—where sales meets marketing meets customer success—turning manual reporting nightmares into automated workflows that scale.
 
-SalesLoft Admin certified (Level 1 & 2), HubSpot Revenue Operations certified, and obsessed with making complex systems feel simple.`,
+Salesloft Admin certified (Level 1 & 2), HubSpot Revenue Operations certified, and obsessed with making complex systems feel simple.`,
 }
 
 export const dynamic = 'force-static'
 export const metadata: Metadata = generateMetadata(
   'About: Revenue Operations Professional',
-  `Richard Hudson - Dallas, Texas Revenue Operations Professional serving Dallas-Fort Worth metroplex with ${STAT_VALUES.years} years experience. SalesLoft Admin certified (Level 1 & 2) and HubSpot Revenue Operations certified. Partnership program implementation specialist with system integration experience. Expert in data analytics, process automation, and CRM optimization. ${STAT_VALUES.revenue} revenue impact across ${PROJECT_COUNT} projects, ${STAT_VALUES['transaction-growth']} transaction growth.`,
+  // ~155 characters: Google truncates snippets beyond that, so the old 424-character
+  // description lost everything after the first sentence.
+  `Revenue operations professional in Dallas-Fort Worth with ${STAT_VALUES.years} years of experience. Salesloft and HubSpot certified; ${STAT_VALUES.revenue} revenue impact across ${PROJECT_COUNT} projects.`,
   '/about'
 )
 
@@ -83,6 +86,7 @@ export default function AboutPage() {
       {/* No FAQPage markup here. Google's structured-data policy requires every
           marked-up Q&A to be visible on the page; the four that used to be
           emitted never were, and one restated headline metrics. */}
+      <ProfilePageJsonLd />
       <BreadcrumbListJsonLd
         items={[
           { name: 'Home', url: SITE_ORIGIN },
@@ -133,7 +137,7 @@ export default function AboutPage() {
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button asChild size="lg" className="h-12 px-8 text-base font-semibold">
-                <Link href="/projects">
+                <Link data-track="CTA Click" data-track-location="about-cta" href="/projects">
                   View Case Studies
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
@@ -144,7 +148,7 @@ export default function AboutPage() {
                 size="lg"
                 className="h-12 px-8 text-base font-semibold"
               >
-                <Link href="/contact">
+                <Link data-track="CTA Click" data-track-location="about-cta" href="/contact">
                   <Mail className="mr-2 h-5 w-5" />
                   Get in Touch
                 </Link>

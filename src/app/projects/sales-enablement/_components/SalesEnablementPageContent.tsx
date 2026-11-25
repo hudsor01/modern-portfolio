@@ -90,12 +90,12 @@ export default function SalesEnablementProject() {
     <>
       <ProjectJsonLd
         image={ogImageUrl({
-          title: 'Sales Enablement & Coaching Platform',
+          title: 'Sales Enablement Platform Case Study',
           subtitle: 'Revenue Operations Project',
           project: 'sales-enablement',
         })}
-        title="Sales Enablement & Coaching Platform"
-        description="Sales enablement platform that improved win rates by 34% and reduced ramp time by 45%"
+        title="Sales Enablement Platform"
+        description="Sales enablement case study: structured training and real-time coaching that lifted win rates from 52% to 70% and cut new-hire ramp from 9 to 5 months."
         slug="sales-enablement"
         category="Sales Operations"
         datePublished="2025-11-19T00:00:00-06:00"
@@ -104,7 +104,7 @@ export default function SalesEnablementProject() {
       />
 
       <ProjectPageLayout
-        title="Sales Enablement & Coaching Platform"
+        title="Sales Enablement Platform"
         description="Transformed sales team performance through structured training, real-time coaching, and continuous skill development. Increased win rates by 34% and reduced ramp time by 45%."
         tags={[
           {

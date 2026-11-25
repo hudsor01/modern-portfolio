@@ -15,14 +15,17 @@ describe('SkillsSection', () => {
 
   it('sits on the page grid with content-height cards (B-16)', () => {
     const { container } = render(<SkillsSection />)
-    const grid = container.querySelector('h4')?.closest('.grid') as HTMLElement
+    const grid = container.querySelector('h3')?.closest('.grid') as HTMLElement
     expect(grid.className).toContain('items-start')
     expect(grid.className).not.toContain('max-w-')
   })
 
-  it('renders each group as a card with an h4 and pill list', () => {
+  it('renders each group as a card with an h3 (h4 look) and pill list', () => {
     const { container } = render(<SkillsSection />)
-    expect(container.querySelectorAll('h4')).toHaveLength(skills.length)
+    expect(container.querySelector('h2')?.textContent).toBe('Skills by area')
+    const groups = container.querySelectorAll('h3')
+    expect(groups).toHaveLength(skills.length)
+    for (const h of groups) expect(h.className).toContain('look-h4')
     const lis = container.querySelectorAll('ul > li')
     expect(lis.length).toBe(skills.reduce((n, g) => n + g.items.length, 0))
     for (const li of lis) {

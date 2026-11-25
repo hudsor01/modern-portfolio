@@ -6,10 +6,13 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 
 export const dynamic = 'force-static'
 
+// Title ≤60 chars with the brand, description ≤160; one project name (the
+// catalog's) across title, H1, breadcrumb and JSON-LD. Figures come from the
+// write-up and are checked by project-page-copy-sourced.test.ts.
 export const metadata = genMeta({
-  title: 'Customer Lifetime Value Predictive Analytics Dashboard',
+  title: 'Customer Lifetime Value Analytics',
   description:
-    'Advanced CLV analytics platform leveraging BTYD (Buy Till You Die) predictive modeling framework. Achieving 94.3% prediction accuracy through machine learning algorithms and real-time customer behavior tracking across 5 distinct customer segments.',
+    'Customer lifetime value case study: CLV models with 94.3% prediction accuracy; at-risk churn fell from 21% to 12.8% and marketing ROI rose 42%.',
   path: '/projects/customer-lifetime-value',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',

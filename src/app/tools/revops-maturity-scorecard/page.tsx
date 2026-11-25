@@ -10,9 +10,11 @@ import { RevOpsMaturityScorecard } from './_components/revops-maturity-scorecard
 const TOOL = getTool('revops-maturity-scorecard')
 const TRAIL = toolTrail(TOOL)
 const PATH = TOOL.href
-const TITLE = 'RevOps Maturity Scorecard: Score Your Revenue Operations'
+// ≤60 chars with the brand and ≤160 for the description, so search results
+// show them whole.
+const TITLE = 'RevOps Maturity Scorecard: Free Assessment'
 const DESCRIPTION =
-  'Free RevOps maturity assessment. Score your revenue operations across process, data, technology, and alignment in two minutes — get your maturity level, percentile, and the single highest-ROI next move. No email required.'
+  'Free RevOps maturity assessment: score process, data, technology and alignment in two minutes and get your maturity level and next move. No email required.'
 
 const FAQS: Array<{ question: string; answer: string }> = [
   {
@@ -54,16 +56,11 @@ export const metadata = genMeta({
   ogTitle: 'RevOps Maturity Scorecard',
   subtitle: 'Score your revenue operations in 2 minutes',
   ogAlt: 'RevOps Maturity Scorecard',
-  keywords: [
-    'revops maturity',
-    'revops maturity model',
-    'revops maturity assessment',
-    'revenue operations maturity model',
-    'revenue operations maturity assessment',
-    'revops maturity scorecard',
-    'how mature is my revops',
-  ],
 })
+
+// The root layout reads request headers (CSP nonce), which makes every route
+// dynamic unless it opts out; nothing here varies per request.
+export const dynamic = 'force-static'
 
 export default function RevOpsMaturityScorecardPage() {
   return (
@@ -89,7 +86,11 @@ export default function RevOpsMaturityScorecardPage() {
             </p>
           </header>
 
-          <RevOpsMaturityScorecard />
+          {/* First use sends one 'Tool Used' event via the layout listener; no
+              answers are sent and the tool itself imports no analytics. */}
+          <div data-track-input="Tool Used" data-track-location="revops-maturity-scorecard">
+            <RevOpsMaturityScorecard />
+          </div>
 
           <section className="mt-16 max-w-3xl">
             <h2 className="mb-4">Why your weakest pillar is your ceiling</h2>
@@ -131,12 +132,19 @@ export default function RevOpsMaturityScorecardPage() {
             <h2 className="mb-4">Related reading &amp; tools</h2>
             <ul className="space-y-2 text-primary">
               <li>
-                <Link href="/tools/pipeline-coverage-calculator" className="hover:underline">
+                <Link
+                  data-track="Tool Click"
+                  data-track-location="tool-related"
+                  href="/tools/pipeline-coverage-calculator"
+                  className="hover:underline"
+                >
                   Pipeline Coverage Calculator — how much pipeline you really need
                 </Link>
               </li>
               <li>
                 <Link
+                  data-track="Post Click"
+                  data-track-location="tool-related"
                   href="/blog/complete-guide-revenue-operations-strategy"
                   className="hover:underline"
                 >
@@ -145,15 +153,22 @@ export default function RevOpsMaturityScorecardPage() {
               </li>
               <li>
                 <Link
+                  data-track="Post Click"
+                  data-track-location="tool-related"
                   href="/blog/stop-guessing-how-to-cut-sales-forecast-variance"
                   className="hover:underline"
                 >
-                  How we slashed forecast variance by 34% in 90 days
+                  How to cut sales forecast variance
                 </Link>
               </li>
               <li>
-                <Link href="/projects/revenue-operations-center" className="hover:underline">
-                  Case study: Revenue Operations Command Center
+                <Link
+                  data-track="Project Click"
+                  data-track-location="tool-related"
+                  href="/projects/revenue-operations-center"
+                  className="hover:underline"
+                >
+                  Case study: Revenue Operations Center
                 </Link>
               </li>
             </ul>

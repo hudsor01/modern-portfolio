@@ -6,10 +6,13 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 
 export const dynamic = 'force-static'
 
+// Title ≤60 chars with the brand, description ≤160; one project name (the
+// catalog's) across title, H1, breadcrumb and JSON-LD. Figures come from the
+// write-up and are checked by project-page-copy-sourced.test.ts.
 export const metadata = genMeta({
-  title: 'Intelligent Quota Management & Territory Planning',
+  title: 'Quota & Territory Management Case Study',
   description:
-    'Advanced quota setting and territory assignment system using predictive analytics and fairness algorithms. Optimized territory design raised forecast accuracy from 64% to 92% and reduced quota attainment variance from 32% to 11%.',
+    'Quota and territory case study: data-driven territory design raised forecast accuracy from 64% to 92% and cut quota attainment variance from 32% to 11%.',
   path: '/projects/quota-territory-management',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
@@ -26,7 +29,7 @@ export default async function QuotaTerritoryManagementPage() {
           { name: 'Home', url: SITE_ORIGIN },
           { name: 'Projects', url: canonicalUrl('/projects') },
           {
-            name: 'Intelligent Quota Management & Territory Planning',
+            name: 'Quota & Territory Management',
             url: canonicalUrl('/projects/quota-territory-management'),
           },
         ]}

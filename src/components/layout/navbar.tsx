@@ -89,6 +89,8 @@ export function Navbar() {
             {/* Desktop CTA button — hidden on /contact (already there) */}
             {pathname !== '/contact' && (
               <Link
+                data-track="CTA Click"
+                data-track-location="nav"
                 href="/contact"
                 className="hidden md:inline-flex items-center bg-primary text-primary-foreground text-sm px-4 py-2 rounded-lg transition-all duration-300 ease-out shadow-sm hover:bg-primary/95 hover:shadow-md"
               >
@@ -152,6 +154,8 @@ export function Navbar() {
             })}
             {pathname !== '/contact' && (
               <Link
+                data-track="CTA Click"
+                data-track-location="nav-mobile"
                 href="/contact"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="w-full bg-primary text-primary-foreground text-base px-4 py-3 rounded-lg transition-all duration-300 ease-out shadow-sm hover:bg-primary/95 min-h-[44px] flex items-center justify-center"

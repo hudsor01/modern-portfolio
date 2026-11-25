@@ -6,10 +6,13 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 
 export const dynamic = 'force-static'
 
+// Title ≤60 chars with the brand, description ≤160; one project name (the
+// catalog's) across title, H1, breadcrumb and JSON-LD. Figures come from the
+// write-up and are checked by project-page-copy-sourced.test.ts.
 export const metadata = genMeta({
-  title: 'Customer Acquisition Cost Optimization & Unit Economics Dashboard',
+  title: 'Customer Acquisition Cost Optimization',
   description:
-    'Comprehensive CAC analysis and LTV:CAC ratio optimization that achieved 32% cost reduction through strategic partner channel optimization. Industry-benchmark 3.6:1 efficiency ratio with 8.4-month payback period across multi-tier SaaS products.',
+    'CAC optimization case study: acquisition cost cut 32% through partner-channel and unit-economics work, with a 3.6:1 LTV:CAC ratio and 8.4-month payback.',
   path: '/projects/cac-unit-economics',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
@@ -26,7 +29,7 @@ export default async function CACUnitEconomicsPage() {
           { name: 'Home', url: SITE_ORIGIN },
           { name: 'Projects', url: canonicalUrl('/projects') },
           {
-            name: 'CAC Optimization & Unit Economics',
+            name: 'Customer Acquisition Cost Optimization',
             url: canonicalUrl('/projects/cac-unit-economics'),
           },
         ]}

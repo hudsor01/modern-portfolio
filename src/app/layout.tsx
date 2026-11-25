@@ -6,6 +6,7 @@ import { Playfair_Display, Spline_Sans, Roboto_Mono } from 'next/font/google'
 import { ClientComponentsProvider } from '@/components/providers/client-components-provider'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { TrackClicks } from '@/components/analytics/track-clicks'
 import { Toaster } from '@/components/ui/toaster'
 import { ScrollToTop } from '@/components/layout/scroll-to-top'
 import { Footer } from '@/components/layout/footer'
@@ -70,13 +71,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="me" href="https://github.com/hudsor01" />
         <link rel="me" href="https://twitter.com/hudsor01" />
 
-        {/* Preconnect hints for performance */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://images.unsplash.com" />
-        <link rel="preconnect" href="https://api.vercel.com" />
-        <link rel="dns-prefetch" href="https://vitals.vercel-analytics.com" />
-        <link rel="dns-prefetch" href="https://va.vercel-scripts.com" />
+        {/* No third-party preconnects: next/font self-hosts the fonts, next/image
+            proxies remote images through /_next/image, and Vercel Analytics and
+            Speed Insights load from /_vercel/* on this origin in production. A
+            preconnect to an origin the page never uses only costs a connection. */}
 
         {/* Structured Data */}
         <PersonJsonLd nonce={nonce} />
@@ -100,6 +98,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Toaster position="bottom-right" closeButton richColors />
             <Analytics />
             <SpeedInsights />
+            <TrackClicks />
           </ClientComponentsProvider>
         </NuqsAdapter>
       </body>

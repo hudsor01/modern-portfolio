@@ -112,11 +112,11 @@ export default function DealFunnel() {
   return (
     <>
       <ProjectJsonLd
-        title="Sales Pipeline Funnel Analysis - Deal Stage Optimization"
-        description="Interactive sales funnel dashboard showing deal progression, conversion rates, and sales cycle optimization."
+        title="Sales Funnel Optimization"
+        description="Sales funnel case study: stage-level pipeline analytics that improved conversion 27%, cut the sales cycle by 31 days and raised forecast accuracy to 89%."
         slug="deal-funnel"
         image={ogImageUrl({
-          title: 'Sales Pipeline Funnel Analysis: Deal Stage Optimization',
+          title: 'Sales Funnel Optimization Case Study',
           subtitle: 'Revenue Operations Project',
           project: 'deal-funnel',
         })}
@@ -126,7 +126,7 @@ export default function DealFunnel() {
         tags={['Sales Funnel', 'Deal Pipeline', 'Conversion Analysis', 'Sales Operations']}
       />
       <ProjectPageLayout
-        title="Deal Pipeline Analytics"
+        title="Sales Funnel Optimization"
         description="Track deal progression through your sales funnel, identify bottlenecks, and optimize conversion rates at each stage."
         tags={[
           { label: `Won: ${formatNumber(closedDeals)} deals`, variant: 'primary' },

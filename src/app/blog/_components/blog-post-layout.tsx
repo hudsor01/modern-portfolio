@@ -11,6 +11,8 @@ import { CATEGORY_CHIP_CLASSES } from '@/lib/blog-list'
 import { normalizeTitle } from '@/lib/markdown'
 import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { ReadComplete } from '@/components/analytics/read-complete'
+import { ViewBeacon } from '@/components/blog/view-beacon'
 
 interface PostLayoutProps {
   post: BlogPostData
@@ -145,6 +147,8 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
               contentType={post.contentType as ContentType}
               title={post.title}
             />
+            <ReadComplete />
+            <ViewBeacon slug={post.slug} />
           </div>
 
           {/* Tags */}

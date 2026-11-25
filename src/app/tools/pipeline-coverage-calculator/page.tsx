@@ -10,9 +10,11 @@ import { PipelineCoverageCalculator } from './_components/pipeline-coverage-calc
 const TOOL = getTool('pipeline-coverage-calculator')
 const TRAIL = toolTrail(TOOL)
 const PATH = TOOL.href
-const TITLE = 'Pipeline Coverage Calculator: Win-Rate-Driven, Not the 3× Rule'
+// ≤60 chars with the brand and ≤160 for the description, so search results show
+// them whole; the 3× contrast stays in the description and the OG subtitle.
+const TITLE = 'Pipeline Coverage Calculator by Win Rate'
 const DESCRIPTION =
-  'Free pipeline coverage calculator. Enter your win rate and revenue target to get the exact coverage ratio and qualified pipeline you actually need — driven by win rate, not the generic 3× rule.'
+  'Free pipeline coverage calculator: enter your win rate and revenue target to get the coverage ratio and qualified pipeline you need, not the generic 3× rule.'
 
 const FAQS: Array<{ question: string; answer: string }> = [
   {
@@ -49,15 +51,11 @@ export const metadata = genMeta({
   ogTitle: 'Pipeline Coverage Calculator',
   subtitle: 'Win-rate-driven, not the 3× rule',
   ogAlt: 'Pipeline Coverage Calculator',
-  keywords: [
-    'pipeline coverage calculator',
-    'pipeline coverage ratio',
-    'how much pipeline do I need',
-    'sales pipeline coverage',
-    'required pipeline coverage',
-    'win rate coverage ratio',
-  ],
 })
+
+// The root layout reads request headers (CSP nonce), which makes every route
+// dynamic unless it opts out; nothing here varies per request.
+export const dynamic = 'force-static'
 
 export default function PipelineCoverageCalculatorPage() {
   return (
@@ -82,7 +80,11 @@ export default function PipelineCoverageCalculatorPage() {
             </p>
           </header>
 
-          <PipelineCoverageCalculator />
+          {/* First use sends one 'Tool Used' event via the layout listener; no
+              values are sent and the tool itself imports no analytics. */}
+          <div data-track-input="Tool Used" data-track-location="pipeline-coverage-calculator">
+            <PipelineCoverageCalculator />
+          </div>
 
           <section className="mt-16 max-w-3xl">
             <h2 className="mb-4">Why the “3× pipeline” rule is wrong for most teams</h2>
@@ -123,14 +125,18 @@ export default function PipelineCoverageCalculatorPage() {
             <ul className="space-y-2 text-primary">
               <li>
                 <Link
+                  data-track="Post Click"
+                  data-track-location="tool-related"
                   href="/blog/stop-guessing-how-to-cut-sales-forecast-variance"
                   className="hover:underline"
                 >
-                  How we slashed forecast variance by 34% in 90 days
+                  How to cut sales forecast variance
                 </Link>
               </li>
               <li>
                 <Link
+                  data-track="Post Click"
+                  data-track-location="tool-related"
                   href="/blog/lead-scoring-models-that-actually-work"
                   className="hover:underline"
                 >
@@ -138,13 +144,23 @@ export default function PipelineCoverageCalculatorPage() {
                 </Link>
               </li>
               <li>
-                <Link href="/projects/forecast-pipeline-intelligence" className="hover:underline">
+                <Link
+                  data-track="Project Click"
+                  data-track-location="tool-related"
+                  href="/projects/forecast-pipeline-intelligence"
+                  className="hover:underline"
+                >
                   Case study: Forecast &amp; Pipeline Intelligence
                 </Link>
               </li>
               <li>
-                <Link href="/projects/deal-funnel" className="hover:underline">
-                  Case study: Deal Funnel optimization
+                <Link
+                  data-track="Project Click"
+                  data-track-location="tool-related"
+                  href="/projects/deal-funnel"
+                  className="hover:underline"
+                >
+                  Case study: Sales Funnel Optimization
                 </Link>
               </li>
             </ul>

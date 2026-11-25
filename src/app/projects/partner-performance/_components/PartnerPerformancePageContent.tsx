@@ -71,12 +71,12 @@ export default function PartnerPerformanceIntelligence() {
     <>
       <ProjectJsonLd
         image={ogImageUrl({
-          title: 'Partner Performance Intelligence Dashboard',
+          title: 'Partner Performance Intelligence Case Study',
           subtitle: 'Revenue Operations Project',
           project: 'partner-performance',
         })}
-        title="Partner Performance Intelligence Dashboard"
-        description="Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem with 4.7x quick ratio."
+        title="Partner Performance Intelligence"
+        description="Partner performance case study: ROI-based tiering behind an 83.2% partner win rate, 63% more certified-partner revenue and a 4.7x quick ratio."
         slug="partner-performance"
         category="Revenue Operations"
         datePublished="2025-11-19T00:00:00-06:00"
@@ -84,7 +84,7 @@ export default function PartnerPerformanceIntelligence() {
         tags={['Partner Analytics', 'Channel Strategy', 'Revenue Operations', 'SaaS Metrics']}
       />
       <ProjectPageLayout
-        title="Partner Performance Intelligence Dashboard"
+        title="Partner Performance Intelligence"
         description="Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem. Real-time performance tracking following industry-standard 80/20 partner revenue distribution."
         tags={[
           { label: `Channel ROI: ${partnerMetrics.quickRatio}x`, variant: 'primary' },

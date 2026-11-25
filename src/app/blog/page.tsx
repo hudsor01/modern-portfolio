@@ -41,7 +41,7 @@ const BLOG_INDEX_OG_IMAGE_URL = canonicalUrl(
 )
 
 const BLOG_DESCRIPTION =
-  'Insights on revenue operations, data analytics, and business growth strategies.'
+  'Practical revenue operations guides on forecasting, pipeline health, Salesloft and CRM automation, attribution and SDR performance, by Richard Hudson.'
 
 interface BlogIndexSearchParams {
   q?: string | string[]
@@ -51,8 +51,10 @@ interface BlogIndexSearchParams {
 
 /**
  * Pages 2..n of the unfiltered index are distinct documents, so each one is
- * self-canonical (Google's guidance for paginated series). Search and category
- * renders keep pointing at /blog, as before.
+ * self-canonical (Google's guidance for paginated series). A category filter
+ * (`?category=<name>`, no search) lists the same posts as that category's own
+ * page, so it canonicalizes there rather than to /blog, whose content differs.
+ * Search renders (and unknown categories) point at /blog.
  */
 export async function generateMetadata({
   searchParams,
@@ -61,8 +63,17 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { q, page: rawPage, category } = await searchParams
   const page = parsePageParam(rawPage)
-  const unfiltered = !normalizeQuery(q) && parseCategoryParam(category) === ALL_CATEGORIES
-  const canonical = canonicalUrl(unfiltered ? blogIndexHref({ page }) : '/blog')
+  const selectedCategory = parseCategoryParam(category)
+  const searching = Boolean(normalizeQuery(q))
+  const unfiltered = !searching && selectedCategory === ALL_CATEGORIES
+  // Request-deduplicated with the page render (getCategories is React cache()).
+  const categorySlug =
+    !searching && !unfiltered
+      ? (await getCategories()).find((c) => c.name === selectedCategory)?.slug
+      : undefined
+  const canonical = canonicalUrl(
+    unfiltered ? blogIndexHref({ page }) : categorySlug ? `/blog/category/${categorySlug}` : '/blog'
+  )
   const title =
     unfiltered && page > 1
       ? `Blog: Revenue Operations Insights (Page ${page})`
@@ -71,7 +82,6 @@ export async function generateMetadata({
   return {
     title,
     description: BLOG_DESCRIPTION,
-    keywords: ['revenue operations', 'data analytics', 'business intelligence', 'revops'],
     openGraph: {
       title: brandTitle(title),
       description: BLOG_DESCRIPTION,

@@ -10,10 +10,13 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 
 export const dynamic = 'force-static'
 
+// Title ≤60 chars with the brand, description ≤160, so search results show them
+// whole. Figures come from the write-up (NarrativeSections Result section) and are
+// checked by project-page-copy-sourced.test.ts, which reads these literals.
 export const metadata = genMeta({
-  title: 'Revenue KPI Dashboard: Partner Analytics & Business Intelligence',
+  title: 'Revenue KPI Dashboard Case Study',
   description:
-    'Real-time revenue analytics dashboard featuring partner performance metrics, growth trends, and business intelligence for data-driven decision making. Built with React, TypeScript, and Recharts.',
+    'Revenue KPI dashboard case study: CRM, billing and partner data unified into real-time dashboards, with $4.2M in added revenue and 94% forecast accuracy.',
   path: '/projects/revenue-kpi',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
@@ -36,10 +39,10 @@ export default async function RevenueKPI() {
       <ProjectJsonLd
         nonce={nonce}
         title="Revenue KPI Dashboard - Partner Analytics & Business Intelligence"
-        description="Real-time revenue analytics dashboard featuring partner performance metrics, growth trends, and business intelligence for data-driven decision making. Built with React, TypeScript, and Recharts."
+        description="Revenue KPI dashboard case study: CRM, billing and partner data unified into real-time dashboards, with $4.2M in added revenue and 94% forecast accuracy."
         slug="revenue-kpi"
         image={ogImageUrl({
-          title: 'Revenue KPI Dashboard: Partner Analytics & Business Intelligence',
+          title: 'Revenue KPI Dashboard Case Study',
           subtitle: 'Revenue Operations Project',
           project: 'revenue-kpi',
         })}

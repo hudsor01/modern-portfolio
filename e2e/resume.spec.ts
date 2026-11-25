@@ -28,17 +28,16 @@ test.describe('Resume Page', () => {
   })
 
   test('displays all resume sections when not in PDF view', async ({ page }) => {
-    // Target each section by an unambiguous heading actually rendered on
-    // the page. The page does not have a top-level "About" or "Experience"
-    // heading (the hero pill is the "Revenue Operations Professional" heading,
-    // Experience renders one h3 per job). Assert headings inside <main>
-    // so we don't pick up the hidden mobile navbar links.
+    // Sections are the page's H2s (About, Experience, Education, Certifications,
+    // Skills by area); job titles are H3s. "Experience" is visually hidden, so
+    // it is asserted attached rather than visible. The role pill is a tagline
+    // paragraph, not a heading. Scoped to <main> to skip the mobile nav links.
     const main = page.locator('main')
-    await expect(
-      main.getByRole('heading', { name: /revenue operations professional/i }).first()
-    ).toBeVisible()
-    await expect(main.getByRole('heading', { name: /education/i }).first()).toBeVisible()
-    await expect(main.getByRole('heading', { name: /skills by area/i })).toBeVisible()
+    await expect(main.getByText('Revenue Operations Professional', { exact: true })).toBeVisible()
+    for (const name of ['About', 'Education', 'Certifications', 'Skills by area']) {
+      await expect(main.getByRole('heading', { level: 2, name })).toBeVisible()
+    }
+    await expect(main.getByRole('heading', { level: 2, name: 'Experience' })).toBeAttached()
   })
 
   test('has download resume button', async ({ page }) => {
@@ -55,14 +54,9 @@ test.describe('Resume Page', () => {
   })
 
   test('toggles between resume content and PDF view', async ({ page }) => {
-    // Initially should show resume content (not PDF). The About section's
-    // hero heading is "Revenue Operations Professional"; assert that's
-    // visible in main rather than searching the whole DOM (which picks up
-    // the hidden mobile navbar link "About").
-    const aboutSection = page
-      .locator('main')
-      .getByRole('heading', { name: /revenue operations professional/i })
-      .first()
+    // Initially should show resume content (not PDF): the About section's H2,
+    // scoped to <main> so the hidden mobile navbar "About" link is not matched.
+    const aboutSection = page.locator('main').getByRole('heading', { level: 2, name: 'About' })
     await expect(aboutSection).toBeVisible()
 
     // Find and click the PDF View toggle

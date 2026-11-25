@@ -110,3 +110,24 @@ describe('category page cards', () => {
     expect(hasBadge).toBe(false)
   })
 })
+
+describe('category page metadata', () => {
+  beforeEach(() => mocks.findFirst.mockReset())
+
+  it('adds the article count to the description and ships a share image', async () => {
+    mocks.findFirst.mockResolvedValue({
+      id: 'c1',
+      name: 'Revenue Operations',
+      slug: 'revenue-operations',
+      description: 'Strategies for revenue processes.',
+      postCount: 99,
+      posts: [post(1, 'a'), post(2, 'b')],
+    })
+    const { generateMetadata } = await import('../page')
+    const meta = await generateMetadata({ params: Promise.resolve({ slug: 'revenue-operations' }) })
+    expect(meta.description).toBe('Strategies for revenue processes. 2 articles by Richard Hudson.')
+    const og = meta.openGraph?.images as Array<{ url: string }>
+    expect(og[0]?.url).toContain('/api/og?title=Revenue+Operations+Articles')
+    expect(meta.twitter?.images).toEqual([og[0]?.url])
+  })
+})

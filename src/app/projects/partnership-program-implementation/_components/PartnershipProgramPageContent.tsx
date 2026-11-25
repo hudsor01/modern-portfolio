@@ -52,12 +52,12 @@ export default function PartnershipProgramPage() {
     <>
       <ProjectJsonLd
         image={ogImageUrl({
-          title: 'Enterprise Partnership Program Implementation',
+          title: 'Partnership Program Implementation',
           subtitle: 'Revenue Operations Project',
           project: 'partnership-program-implementation',
         })}
-        title="Enterprise Partnership Program Implementation"
-        description="Led comprehensive design and implementation of a company's first partnership program, creating automated partner onboarding, commission tracking, and performance analytics."
+        title="Partnership Program Implementation"
+        description="Partnership program case study: a first partner program built from scratch, onboarding 47 partners with 90%+ automation and 35% of revenue from partners."
         slug="partnership-program-implementation"
         category="Revenue Operations"
         datePublished="2025-06-22T00:00:00-06:00"
@@ -71,7 +71,7 @@ export default function PartnershipProgramPage() {
       />
 
       <ProjectPageLayout
-        title="Enterprise Partnership Program Implementation"
+        title="Partnership Program Implementation"
         description="Led comprehensive design and implementation of a company's first partnership program, creating automated partner onboarding, commission tracking, and performance analytics. Built production-ready integrations with CRM, billing systems, and partner portals."
         tags={[
           { label: 'First Partner Program', variant: 'primary' },

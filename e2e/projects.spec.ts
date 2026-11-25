@@ -38,10 +38,10 @@ test.describe('Projects Listing Page', () => {
 
   test('displays projects page with hero section', async ({ page }) => {
     // Verify page title
-    await expect(page.getByRole('heading', { level: 1 })).toContainText(/revenue operations/i)
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(/revenue operations\s*case studies/i)
 
-    // Verify subheading
-    await expect(page.getByText(/transforming data/i)).toBeVisible()
+    // Verify subheading (names the case-study count and structure)
+    await expect(page.getByText(/case studies in forecasting/i)).toBeVisible()
   })
 
   test('displays project stats section', async ({ page }) => {

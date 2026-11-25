@@ -93,9 +93,10 @@ export function BlogList({
     <div className="max-w-7xl mx-auto px-6 lg:px-8">
       {/* Header */}
       <header className="text-center mb-12">
-        <h1 className="mb-4">Blog</h1>
+        <h1 className="mb-4">Revenue Operations Blog</h1>
         <p className="max-w-2xl mx-auto">
-          Insights on revenue operations, data analytics, and business growth strategies.
+          Practical guides on forecasting, pipeline health, Salesloft and CRM automation,
+          attribution and SDR performance.
         </p>
       </header>
 
@@ -159,8 +160,14 @@ export function BlogList({
       {/* Posts Grid */}
       {posts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts.map((post) => (
-            <Link key={post.id} href={`/blog/${post.slug}`} className="group block h-full">
+          {posts.map((post, index) => (
+            <Link
+              key={post.id}
+              data-track="Post Click"
+              data-track-location="blog-index"
+              href={`/blog/${post.slug}`}
+              className="group block h-full"
+            >
               <Card
                 className={`hover-lift hover:border-primary/50 transition-all h-full overflow-hidden ${
                   post.featuredImage ? 'pt-0' : ''
@@ -175,6 +182,10 @@ export function BlogList({
                       postCategory={post.categoryName ?? undefined}
                       fallbackVariant="card"
                       fill
+                      // The first row is above the fold on desktop (3 columns); one of
+                      // these covers is the LCP element, so don't lazy-load it.
+                      loading={index < 3 ? 'eager' : 'lazy'}
+                      fetchPriority={index === 0 ? 'high' : undefined}
                       className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />

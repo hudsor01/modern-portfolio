@@ -12,7 +12,7 @@ import { and, desc, eq, isNull } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { blogPosts, categories } from '@/db/schema'
 import { createContextLogger } from '@/lib/logger'
-import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { canonicalUrl, ogImageUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 import { brandTitle } from '@/app/shared-metadata'
 import { BLOG_CONTENT_HEAD_EXTRAS } from '@/lib/blog-content-head'
 import { resolveExcerpt } from '@/lib/blog-excerpt'
@@ -105,9 +105,18 @@ export async function generateMetadata({ params }: BlogCategoryPageProps): Promi
   }
 
   const title = `${category.name}: Articles`
-  const description =
+  const base =
     category.description ||
     `Articles about ${category.name} from Richard Hudson's revenue operations blog.`
+  // The stored descriptions run ~100 chars; the count and author make the
+  // snippet specific without passing Google's ~160-char truncation.
+  const n = category.posts.length
+  const withCount = `${base} ${n} ${n === 1 ? 'article' : 'articles'} by Richard Hudson.`
+  const description = withCount.length <= 160 ? withCount : base
+  const ogImage = ogImageUrl({
+    title: `${category.name} Articles`,
+    subtitle: 'Richard Hudson Blog',
+  })
 
   return {
     title,
@@ -118,11 +127,13 @@ export async function generateMetadata({ params }: BlogCategoryPageProps): Promi
       url: canonicalUrl(`/blog/category/${category.slug}`),
       siteName: 'Richard Hudson',
       type: 'website',
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `${category.name} Articles` }],
     },
     twitter: {
       card: 'summary_large_image',
       title: brandTitle(title),
       description,
+      images: [ogImage],
     },
     alternates: {
       canonical: canonicalUrl(`/blog/category/${category.slug}`),
@@ -165,8 +176,8 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
           name: category.name,
           slug: category.slug,
           description: category.description ?? undefined,
-          postCount: category.postCount,
         }}
+        posts={category.posts}
       />
       <BreadcrumbListJsonLd
         nonce={nonce}
@@ -195,7 +206,7 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                 >
                   ← All articles
                 </Link>
-                <h1 className="mt-4 mb-4">{category.name}</h1>
+                <h1 className="mt-4 mb-4">{category.name} Articles</h1>
                 {category.description && <p className="max-w-3xl">{category.description}</p>}
                 <p className="mt-4">
                   {category.posts.length} {category.posts.length === 1 ? 'article' : 'articles'}
@@ -204,8 +215,14 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
 
               {category.posts.length > 0 ? (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {cards.map((post) => (
-                    <Link key={post.id} href={`/blog/${post.slug}`} className="group block h-full">
+                  {cards.map((post, index) => (
+                    <Link
+                      key={post.id}
+                      data-track="Post Click"
+                      data-track-location="blog-category"
+                      href={`/blog/${post.slug}`}
+                      className="group block h-full"
+                    >
                       <Card className="hover-lift hover:border-primary/50 transition-all h-full overflow-hidden">
                         {post.featuredImage && (
                           <div className="relative aspect-[16/10] overflow-hidden">
@@ -216,6 +233,9 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                               postCategory={category.name}
                               fallbackVariant="card"
                               fill
+                              // First row (3 columns on desktop) holds the LCP candidate.
+                              loading={index < 3 ? 'eager' : 'lazy'}
+                              fetchPriority={index === 0 ? 'high' : undefined}
                               className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             />

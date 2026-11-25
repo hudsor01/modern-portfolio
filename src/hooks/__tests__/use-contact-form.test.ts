@@ -12,10 +12,11 @@ vi.mock('@/lib/logger', () => ({
   },
 }))
 
-const { submitMock } = vi.hoisted(() => ({ submitMock: vi.fn() }))
+const { submitMock, trackMock } = vi.hoisted(() => ({ submitMock: vi.fn(), trackMock: vi.fn() }))
 vi.mock('@/app/contact/actions', () => ({
   submitContactForm: submitMock,
 }))
+vi.mock('@vercel/analytics', () => ({ track: trackMock }))
 
 import { useContactForm } from '@/hooks/use-contact-form'
 
@@ -27,6 +28,7 @@ const validData = {
 
 beforeEach(() => {
   submitMock.mockReset()
+  trackMock.mockReset()
 })
 
 describe('useContactForm', () => {
@@ -78,6 +80,9 @@ describe('useContactForm', () => {
     })
     expect(submitMock).toHaveBeenCalledTimes(1)
     expect(result.current.submitStatus).toBe('success')
+    // Conversion event, with no form content.
+    expect(trackMock).toHaveBeenCalledTimes(1)
+    expect(trackMock).toHaveBeenCalledWith('Contact Submitted', { location: 'contact-form' })
   })
 
   it('handleSubmit sets error state on action failure', async () => {
@@ -93,6 +98,7 @@ describe('useContactForm', () => {
     })
     expect(result.current.submitStatus).toBe('error')
     expect(result.current.error?.message).toBe('rate limited')
+    expect(trackMock).not.toHaveBeenCalled()
   })
 
   it('handleSubmit catches thrown errors', async () => {

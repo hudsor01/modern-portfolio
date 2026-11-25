@@ -2,6 +2,7 @@
 // project's OWASP-compliant serializer. See src/lib/json-ld-utils.ts.
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
+import { PERSON_ID } from './person-json-ld'
 
 /**
  * ProfessionalService JSON-LD — Dallas-targeted local SEO signal.
@@ -18,6 +19,7 @@ export function ProfessionalServiceJsonLd({ nonce }: { nonce?: string | null }) 
   // but the source-side dedupe keeps the JSON-LD definition readable.
   const serviceProvider = {
     '@type': 'Person',
+    '@id': PERSON_ID,
     name: 'Richard Hudson',
     url: SITE_ORIGIN,
   } as const

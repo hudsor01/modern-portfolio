@@ -98,12 +98,12 @@ export default function ForecastPipelineIntelligenceProject() {
     <>
       <ProjectJsonLd
         image={ogImageUrl({
-          title: 'Forecast Accuracy & Pipeline Intelligence System',
+          title: 'Forecast & Pipeline Intelligence Case Study',
           subtitle: 'Revenue Operations Project',
           project: 'forecast-pipeline-intelligence',
         })}
-        title="Forecast Accuracy & Pipeline Intelligence System"
-        description="Forecasting system that improved accuracy from 63% to 94% and reduced slippage from 26% to 19%"
+        title="Forecast & Pipeline Intelligence"
+        description="Forecast and pipeline case study: predictive deal-health monitoring that raised forecast accuracy from 63% to 94% and cut deal slippage from 26% to 19%."
         slug="forecast-pipeline-intelligence"
         category="Revenue Operations"
         datePublished="2025-11-19T00:00:00-06:00"
@@ -117,7 +117,7 @@ export default function ForecastPipelineIntelligenceProject() {
       />
 
       <ProjectPageLayout
-        title="Forecast Accuracy & Pipeline Intelligence System"
+        title="Forecast & Pipeline Intelligence"
         description="Enterprise forecasting and pipeline intelligence platform combining predictive analytics, deal health monitoring, and early warning systems. Improved forecast accuracy from 63% to 94% and reduced deal slippage from 26% to 19%."
         tags={[
           {

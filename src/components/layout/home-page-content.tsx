@@ -148,7 +148,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                     <span className="relative">
                       <span className="relative z-10 text-primary">Revenue</span>
                       <span className="absolute bottom-2 left-0 w-full h-3 bg-primary/20 -z-0" />
-                    </span>
+                    </span>{' '}
                     <br />
                     Operations
                   </h1>
@@ -166,7 +166,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                     size="lg"
                     className="group h-14 px-8 text-base font-semibold w-full sm:w-auto"
                   >
-                    <Link href="/projects">
+                    <Link data-track="CTA Click" data-track-location="home-hero" href="/projects">
                       <Briefcase className="w-5 h-5" />
                       View My Work
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -178,7 +178,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                     size="lg"
                     className="h-14 px-8 text-base font-semibold w-full sm:w-auto"
                   >
-                    <Link href="/resume">
+                    <Link data-track="CTA Click" data-track-location="home-hero" href="/resume">
                       <FileText className="w-5 h-5" />
                       Resume
                     </Link>
@@ -189,7 +189,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                     size="lg"
                     className="h-14 px-8 text-base font-semibold w-full sm:w-auto"
                   >
-                    <Link href="/contact">
+                    <Link data-track="CTA Click" data-track-location="home-hero" href="/contact">
                       <MessageCircle className="w-5 h-5" />
                       Let's Talk
                     </Link>
@@ -216,7 +216,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                             width={96}
                             height={96}
                             className="object-cover w-full h-full"
-                            priority
+                            preload
                           />
                         </div>
                         {/* Status indicator */}
@@ -296,8 +296,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
               {/* Left - Text content */}
               <div className="space-y-6">
                 <h2>
-                  Strategic Revenue Operations
-                  <br />
+                  Strategic Revenue Operations <br />
                   <span className="text-primary">That Scales</span>
                 </h2>
                 <p>
@@ -322,7 +321,11 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                 </ul>
                 <div className="pt-4">
                   <Button asChild size="lg" className="group">
-                    <Link href="/projects">
+                    <Link
+                      data-track="CTA Click"
+                      data-track-location="home-capabilities"
+                      href="/projects"
+                    >
                       Explore Projects
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
@@ -382,6 +385,8 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
               </div>
               <div className="text-center">
                 <Link
+                  data-track="CTA Click"
+                  data-track-location="home-featured"
                   href="/projects"
                   className="group inline-flex items-center gap-2 text-primary hover:underline"
                 >
@@ -405,8 +410,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
               {/* Main headline */}
               <div>
                 <h2>
-                  Ready to transform your
-                  <br />
+                  Ready to transform your <br />
                   <span className="text-primary">revenue operations?</span>
                 </h2>
                 <p className="mt-4 max-w-2xl mx-auto">
@@ -418,7 +422,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
               {/* CTA buttons - inline, not in a card */}
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                 <Button asChild size="lg" className="h-14 px-8 text-base font-semibold">
-                  <Link href="/contact">
+                  <Link data-track="CTA Click" data-track-location="home-cta" href="/contact">
                     <MessageCircle className="w-5 h-5" />
                     Start a Conversation
                     <ArrowRight className="w-4 h-4" />
@@ -430,7 +434,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                   size="lg"
                   className="h-14 px-8 text-base font-semibold"
                 >
-                  <Link href="/resume">
+                  <Link data-track="CTA Click" data-track-location="home-cta" href="/resume">
                     <FileText className="w-5 h-5" />
                     View Resume
                   </Link>
@@ -440,7 +444,12 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
               {/* Email as subtle text link */}
               <p>
                 Or email me directly at{' '}
-                <a href="mailto:hudsor01@icloud.com" className="text-link">
+                <a
+                  data-track="Email Click"
+                  data-track-location="home-cta"
+                  href="mailto:hudsor01@icloud.com"
+                  className="text-link"
+                >
                   hudsor01@icloud.com
                 </a>
               </p>

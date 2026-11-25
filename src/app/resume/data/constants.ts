@@ -112,7 +112,7 @@ export const skills = [
   },
   {
     category: 'Tools & Platforms',
-    items: ['Salesforce', 'HubSpot', 'SalesLoft', 'PartnerStack', 'Power BI', 'Tableau'],
+    items: ['Salesforce', 'HubSpot', 'Salesloft', 'PartnerStack', 'Power BI', 'Tableau'],
   },
   {
     category: 'Technical Skills',
@@ -129,7 +129,9 @@ export const skills = [
 
 export const certifications = [
   'HubSpot Revenue Operations Certification',
-  'SalesLoft Certified Administrator',
+  // Same credential names as /about and the Person JSON-LD (owner-confirmed).
+  'Salesloft Admin Certification Level 1',
+  'Salesloft Admin Certification Level 2',
   'Microsoft Career Essentials in Data Analysis',
   'Microsoft Career Essentials in Business Analysis',
   'Atlassian Agile Project Management',

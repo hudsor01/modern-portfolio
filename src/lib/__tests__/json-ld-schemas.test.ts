@@ -5,6 +5,7 @@ import { navConfig } from '@/lib/site'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
 import type { ReactElement } from 'react'
 import { PersonJsonLd } from '@/components/seo/json-ld/person-json-ld'
+import { WebsiteJsonLd } from '@/components/seo/json-ld/website-json-ld'
 import { STAT_LABELS, STAT_VALUES } from '@/lib/stats'
 
 /**
@@ -29,6 +30,15 @@ describe('PersonJsonLd schema', () => {
     expect(stringified).toContain('"@context":"https://schema.org"')
   })
 
+  it('states the current role and employer from the résumé', () => {
+    expect(personData.jobTitle).toBe('Data Analyst')
+    expect(personData.worksFor).toEqual({
+      '@type': 'Organization',
+      name: 'HomeVestors of America, Inc.',
+      url: 'https://www.homevestors.com',
+    })
+  })
+
   it('lists the three headline stats with their canonical labels', () => {
     expect(personData.award).toEqual(
       (['revenue', 'transaction-growth', 'network-growth'] as const).map(
@@ -45,8 +55,8 @@ describe('PersonJsonLd schema', () => {
   })
 
   it('contains all three credentials', () => {
-    expect(stringified).toContain('SalesLoft Admin Certification Level 1')
-    expect(stringified).toContain('SalesLoft Admin Certification Level 2')
+    expect(stringified).toContain('Salesloft Admin Certification Level 1')
+    expect(stringified).toContain('Salesloft Admin Certification Level 2')
     expect(stringified).toContain('HubSpot Revenue Operations Certification')
   })
 
@@ -170,7 +180,7 @@ describe('FAQPageJsonLd schema', () => {
     {
       question: 'What certifications does Richard Hudson hold?',
       answer:
-        'Richard holds SalesLoft Admin Certification and HubSpot Revenue Operations Certification.',
+        'Richard holds Salesloft Admin Certification and HubSpot Revenue Operations Certification.',
     },
   ]
 
@@ -206,35 +216,10 @@ describe('FAQPageJsonLd schema', () => {
   })
 })
 
-/**
- * Build a WebSite JSON-LD object matching website-json-ld.tsx.
- */
-function buildWebsiteJsonLd() {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    name: 'Richard Hudson - Senior Revenue Operations Specialist',
-    description:
-      'Portfolio and experience of Richard Hudson, Senior Revenue Operations Specialist with proven track record in business growth strategies.',
-    url: 'https://richardwhudsonjr.com',
-    author: {
-      '@type': 'Person',
-      name: 'Richard Hudson',
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: 'Hudson Digital Solutions',
-      url: 'https://richardwhudsonjr.com',
-    },
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: {
-        '@type': 'EntryPoint',
-        urlTemplate: 'https://richardwhudsonjr.com/blog?q={search_term_string}',
-      },
-      'query-input': 'required name=search_term_string',
-    },
-  }
+/** The WebSite JSON-LD the real component emits (no hand-kept copy to drift). */
+function buildWebsiteJsonLd(): Record<string, unknown> {
+  const el = WebsiteJsonLd({}) as ReactElement<{ dangerouslySetInnerHTML: { __html: string } }>
+  return JSON.parse(el.props.dangerouslySetInnerHTML.__html)
 }
 
 describe('WebsiteJsonLd schema', () => {
@@ -256,6 +241,11 @@ describe('WebsiteJsonLd schema', () => {
 
   it('publisher url is the site root', () => {
     expect(stringified).toContain('"url":"https://richardwhudsonjr.com"')
+  })
+
+  it('names the site "Richard Hudson" and describes the current role', () => {
+    expect(websiteData.name).toBe('Richard Hudson')
+    expect(String(websiteData.description)).toContain('Data Analyst at HomeVestors of America')
   })
 })
 

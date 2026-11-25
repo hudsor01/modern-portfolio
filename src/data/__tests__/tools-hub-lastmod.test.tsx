@@ -24,7 +24,7 @@ import { tools, TOOLS_HUB_LAST_UPDATED } from '../tools'
  */
 const PIN = {
   date: '2026-11-24',
-  hash: '8a13f3df85d0ab53',
+  hash: 'b1dcc290602b547e',
 } as const
 
 function hubCopyHash(): string {

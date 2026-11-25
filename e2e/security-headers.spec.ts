@@ -148,6 +148,8 @@ test.describe('Security Headers', () => {
       // Carve-out: SAMEORIGIN (not the global DENY) and CSP fully absent.
       expect(response.headers()['x-frame-options']).toBe('SAMEORIGIN')
       expect(response.headers()['content-security-policy']).toBeUndefined()
+      // Kept out of search results; /resume is the page searchers should land on.
+      expect(response.headers()['x-robots-tag']).toBe('noindex')
       // Global headers from next.config.js /(.*) rule still merged in.
       expect(response.headers()['x-content-type-options']).toBe('nosniff')
       expect(response.headers()['referrer-policy']).toBe('strict-origin-when-cross-origin')
