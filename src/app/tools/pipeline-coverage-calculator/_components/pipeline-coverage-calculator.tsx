@@ -275,7 +275,7 @@ export function PipelineCoverageCalculator() {
                   ) : (
                     <span className="font-medium">exactly right (rare)</span>
                   )}{' '}
-                  at a {formatPercent(result.winRate * 100)} win rate.
+                  at a win rate of {formatPercent(Number(winRate.value))}.
                 </p>
               </div>
 

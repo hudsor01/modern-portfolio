@@ -430,7 +430,7 @@ export function scoreMaturity(answers: Partial<Record<string, number>>): Maturit
     dataAnswered &&
     processAnswered &&
     foundation < MANAGED_PILLAR_SCORE - TIE_EPSILON &&
-    pillarScores.technology - foundation >= TECH_OVERBUY_GAP
+    pillarScores.technology - foundation >= TECH_OVERBUY_GAP - TIE_EPSILON
 
   const tier = overallScore > 0 ? (tierForScore(overallScore)?.label ?? '') : ''
 

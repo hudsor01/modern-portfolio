@@ -288,10 +288,10 @@ describe('PipelineCoverageCalculator', () => {
     render(<PipelineCoverageCalculator />)
     const win = screen.getByLabelText('Win rate') as HTMLInputElement
     fireEvent.input(win, { target: { value: '1e1' } })
-    expect(liveText()).toContain('at a 10% win rate')
+    expect(liveText()).toContain('at a win rate of 10%')
     expect(liveText()).not.toContain('1e1')
     fireEvent.input(win, { target: { value: '025' } })
-    expect(liveText()).toContain('at a 25% win rate')
+    expect(liveText()).toContain('at a win rate of 25%')
   })
 
   it('a hyphen inside an amount is an invalid character; a leading minus is negative', () => {

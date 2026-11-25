@@ -31,6 +31,12 @@ function barColor(score: number): string {
   return 'bg-success'
 }
 
+/** The weaker of data and process (the overbuy foundation), or both when they tie. */
+function foundationLabel(scores: Record<PillarId, number>): string {
+  if (Math.abs(scores.data - scores.process) < 1e-9) return 'data and process'
+  return scores.data < scores.process ? 'data' : 'process'
+}
+
 /** "weakest" badge text class, in the same band as its bar; neutral from the Managed band up. */
 function badgeColor(score: number): string {
   if (score < LOW_BAND) return 'text-destructive'
@@ -132,13 +138,13 @@ export function RevOpsMaturityScorecard() {
           <p className="text-sm text-muted-foreground">
             {result.answered} of {result.total} answered
           </p>
-          <p className="mt-3 uppercase tracking-wider">Your maturity level</p>
           <div aria-live="polite" aria-atomic="true">
+            <p className="mt-3 uppercase tracking-wider">Your maturity level</p>
             {result.everyPillarAnswered ? (
               <p className="mt-1 flex items-baseline gap-2">
                 <span className="text-5xl font-bold text-primary tracking-tight">
                   {result.level}
-                </span>
+                </span>{' '}
                 <span className="text-2xl font-semibold text-foreground">{result.tier}</span>
               </p>
             ) : (
@@ -190,25 +196,27 @@ export function RevOpsMaturityScorecard() {
             })}
           </div>
 
-          {/* Next move */}
-          {result.everyPillarAnswered && result.nextMove && (
-            <div className="mt-6 rounded-xl bg-muted/50 p-4">
-              <p className="uppercase tracking-wider mb-1">Your next move</p>
-              <p>{result.nextMove}</p>
-            </div>
-          )}
+          {/* Advice: its own live region, announced when the next move or the warning changes. */}
+          <div aria-live="polite" aria-atomic="true">
+            {result.everyPillarAnswered && result.nextMove && (
+              <div className="mt-6 rounded-xl bg-muted/50 p-4">
+                <p className="uppercase tracking-wider mb-1">Your next move</p>
+                <p>{result.nextMove}</p>
+              </div>
+            )}
 
-          {/* Tech-overbuy anti-pattern */}
-          {result.everyPillarAnswered && result.techOverbuy && (
-            <div className="mt-4 rounded-xl border border-destructive/40 bg-destructive/5 p-4">
-              <p>
-                <strong className="text-destructive">Watch out:</strong> your tooling maturity is
-                running ahead of your data and process maturity — the classic{' '}
-                <em>buying tools you can’t feed</em> trap. Fix the foundation before adding more
-                stack, or the new tools inherit the same messy inputs.
-              </p>
-            </div>
-          )}
+            {/* Tech-overbuy anti-pattern */}
+            {result.everyPillarAnswered && result.techOverbuy && (
+              <div className="mt-4 rounded-xl border border-destructive/40 bg-destructive/5 p-4">
+                <p>
+                  <strong className="text-destructive">Watch out:</strong> your tooling maturity is
+                  running a full level ahead of your {foundationLabel(result.pillarScores)} maturity
+                  — the classic <em>buying tools you can’t feed</em> trap. Fix the foundation before
+                  adding more stack, or the new tools inherit the same messy inputs.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

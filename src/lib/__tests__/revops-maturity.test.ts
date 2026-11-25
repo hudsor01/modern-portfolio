@@ -338,6 +338,26 @@ describe('scoreMaturity — tech-overbuy anti-pattern', () => {
     expect(r.techOverbuy).toBe(true)
   })
 
+  it('a gap of exactly one level counts despite float noise (thirds)', () => {
+    // Three answers per pillar: Technology 13/3 (4.33) over Process 10/3 (3.33) is one level.
+    const r = scoreMaturity({
+      p1: 3,
+      p2: 3,
+      p3: 4,
+      d1: 5,
+      d2: 5,
+      d3: 5,
+      t1: 4,
+      t2: 4,
+      t3: 5,
+      a1: 5,
+      a2: 5,
+      a3: 5,
+    })
+    expect(r.pillarScores.technology - r.pillarScores.process).toBeCloseTo(1, 9)
+    expect(r.techOverbuy).toBe(true)
+  })
+
   it('uses the WEAKER of data/process as the foundation', () => {
     // data high, process low → still overbuying relative to process
     const r = scoreMaturity(byPillar({ process: 2, data: 5, technology: 4, alignment: 3 }))

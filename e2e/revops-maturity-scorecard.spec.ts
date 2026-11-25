@@ -124,15 +124,13 @@ test.describe('revops maturity scorecard', () => {
     await expect(result).not.toContainText('Watch out:')
   })
 
-  test('only the level is announced: the answered count is outside the live region', async ({
-    page,
-  }) => {
+  test('announces the level and advice, not the answered count', async ({ page }) => {
     const live = page.getByRole('region', { name: 'Your result' }).locator('[aria-live]')
-    await expect(live).toHaveCount(1)
-    await expect(live).toHaveText(PROMPT)
+    await expect(live).toHaveCount(2)
+    await expect(live.first()).toHaveText(`Your maturity level${PROMPT}`)
     await answer(page, 0, 0, 3)
-    await expect(live).toHaveText(PROMPT)
-    await expect(live).not.toContainText('answered')
+    await expect(live.first()).toHaveText(`Your maturity level${PROMPT}`)
+    for (const i of [0, 1]) await expect(live.nth(i)).not.toContainText('answered')
   })
 
   test('Reset answers returns to unanswered', async ({ page }) => {

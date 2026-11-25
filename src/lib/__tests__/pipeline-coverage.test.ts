@@ -364,6 +364,18 @@ describe('formatPercent', () => {
     expect(formatPercent(Number('025'))).toBe('25%')
   })
 
+  it('stays short for tiny rates and never rounds up across 1% or 100%', () => {
+    expect(formatPercent(1e-30)).toBe('under 0.0001%')
+    expect(formatPercent(Number('1e-320'))).toBe('under 0.0001%')
+    expect(formatPercent(0.00009)).toBe('under 0.0001%')
+    expect(formatPercent(99.999)).toBe('99.99%')
+    expect(formatPercent(0.999)).toBe('0.99%')
+    expect(formatPercent(100)).toBe('100%')
+    for (const n of [1e-30, 1e-12, 0.00011, 0.5, 1, 33.3333, 99.999, 100]) {
+      expect(formatPercent(n).length).toBeLessThanOrEqual('under 0.0001%'.length)
+    }
+  })
+
   it('keeps a sub-1% rate visible instead of rounding it to 0%', () => {
     expect(formatPercent(0.5)).toBe('0.5%')
     expect(formatPercent(0.0001)).toBe('0.0001%')

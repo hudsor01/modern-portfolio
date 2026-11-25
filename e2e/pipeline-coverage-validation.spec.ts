@@ -175,7 +175,7 @@ test.describe('pipeline coverage amount validation', () => {
     await expect(live).toHaveText('')
     await win.fill('1e1')
     await expect(page.locator('main').getByRole('alert')).toHaveCount(0)
-    await expect(live).toContainText('at a 10% win rate')
+    await expect(live).toContainText('at a win rate of 10%')
     await expect(live).not.toContainText('1e1')
   })
 

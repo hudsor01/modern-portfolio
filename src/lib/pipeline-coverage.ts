@@ -248,14 +248,23 @@ export function formatMultiple(n: number): string {
   return `${n.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}×`
 }
 
+/** Smallest percentage formatPercent prints as a number; anything smaller reads "under 0.0001%". */
+export const MIN_DISPLAY_PERCENT = 0.0001
+
 /**
  * A percentage as a person would write it, never as typed: "1e1" -> "10%",
  * "33.3333" -> "33.33%", and a rate below 1% keeps two significant digits
- * ("0.0001%") instead of rounding to "0%".
+ * ("0.0001%") instead of rounding to "0%". Output stays short: a positive rate
+ * below MIN_DISPLAY_PERCENT reads "under 0.0001%", and rounding never carries a
+ * rate below 1% or 100% up to "1%" or "100%".
  */
 export function formatPercent(n: number): string {
+  if (n > 0 && n < MIN_DISPLAY_PERCENT) return 'under 0.0001%'
   const digits = n < 1 ? { maximumSignificantDigits: 2 } : { maximumFractionDigits: 2 }
-  return `${n.toLocaleString('en-US', digits)}%`
+  const s = n.toLocaleString('en-US', digits)
+  if (n < 1 && s === '1') return '0.99%'
+  if (n < 100 && s === '100') return '99.99%'
+  return `${s}%`
 }
 
 export function formatCount(n: number): string {

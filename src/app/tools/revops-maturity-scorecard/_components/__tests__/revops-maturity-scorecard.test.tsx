@@ -214,19 +214,33 @@ describe('RevOpsMaturityScorecard answering', () => {
     expect(container.textContent).toContain('Watch out:')
   })
 
-  it('announces only the level: the answered count and scores sit outside the live region', () => {
+  it('announces the level and the advice, never the answered count or scores', () => {
     const { container } = render(<RevOpsMaturityScorecard />)
     const region = screen.getByRole('region', { name: 'Your result' })
     const live = region.querySelectorAll('[aria-live]')
-    expect(live).toHaveLength(1)
-    expect(container.querySelectorAll('[aria-live]')).toHaveLength(1)
-    expect(live[0]?.textContent).toBe(PROMPT)
+    expect(live).toHaveLength(2)
+    expect(container.querySelectorAll('[aria-live]')).toHaveLength(2)
+    const [level, advice] = Array.from(live)
+    expect(level?.textContent).toBe(`Your maturity level${PROMPT}`)
+    expect(advice?.textContent).toBe('')
     fireEvent.click(screen.getAllByRole('radio', { name: '3 Somewhat' })[0] as HTMLElement)
-    expect(live[0]?.textContent).toBe(PROMPT)
-    expect(live[0]?.textContent).not.toMatch(/answered/)
+    expect(level?.textContent).toBe(`Your maturity level${PROMPT}`)
+    for (const el of [level, advice]) expect(el?.textContent).not.toMatch(/answered|Overall score/)
     answerAll('4 Mostly')
-    expect(live[0]?.textContent).toBe('4Managed')
-    expect(live[0]?.textContent).not.toMatch(/answered|Overall score/)
+    expect(level?.textContent).toBe('Your maturity level4 Managed')
+    expect(advice?.textContent).toContain('Your next move')
+    for (const el of [level, advice]) expect(el?.textContent).not.toMatch(/answered|Overall score/)
+  })
+
+  it('announces the overbuy warning and names the weaker foundation pillar', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    answerAll('5 Fully')
+    answerPillar(container, 0, '2 Rarely')
+    const advice = screen
+      .getByRole('region', { name: 'Your result' })
+      .querySelectorAll('[aria-live]')[1]
+    expect(advice?.textContent).toContain('Watch out:')
+    expect(advice?.textContent).toContain('a full level ahead of your process maturity')
   })
 
   it('makes no percentile or B2B-teams claim', () => {
