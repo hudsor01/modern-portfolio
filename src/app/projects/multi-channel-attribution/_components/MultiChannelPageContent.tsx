@@ -67,12 +67,12 @@ export default function MultiChannelAttribution() {
     <>
       <ProjectJsonLd
         image={ogImageUrl({
-          title: 'Multi-Channel Attribution Analytics Dashboard',
+          title: 'Multi-Channel Attribution Analytics',
           subtitle: 'Revenue Operations Project',
           project: 'multi-channel-attribution',
         })}
-        title="Multi-Channel Attribution Analytics Dashboard"
-        description="ML-powered marketing attribution analytics tracking customer journeys across 12+ touchpoints with 92.4% attribution accuracy and $2.3M ROI optimization."
+        title="Multi-Channel Attribution Analytics"
+        description="Multi-channel attribution case study: ML models across 12 channels raised ROI prediction accuracy from 67% to 92.4%, cut CAC 31% and saved $640K a year."
         slug="multi-channel-attribution"
         category="Marketing Analytics"
         datePublished="2025-11-19T00:00:00-06:00"
@@ -80,7 +80,7 @@ export default function MultiChannelAttribution() {
         tags={['Multi-Touch Attribution', 'Marketing Analytics', 'ML Models', 'Customer Journey']}
       />
       <ProjectPageLayout
-        title="Multi-Channel Attribution Analytics Dashboard"
+        title="Multi-Channel Attribution Analytics"
         description="Advanced marketing attribution analytics platform using machine learning models to track customer journeys across 12+ touchpoints. Delivering 92.4% attribution accuracy and $2.3M ROI optimization through data-driven attribution modeling and cross-channel insights."
         tags={[
           {
