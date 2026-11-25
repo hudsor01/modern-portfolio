@@ -62,7 +62,14 @@ describe('/privacy page', () => {
 
   it('has a bumped ISO policy date', () => {
     expect(PRIVACY_POLICY_LAST_UPDATED).toMatch(/^\d{4}-\d{2}-\d{2}$/)
-    expect(PRIVACY_POLICY_LAST_UPDATED > '2026-11-09').toBe(true)
+    // 2026-11-24: anonymous action events (src/components/analytics/*) disclosed.
+    expect(PRIVACY_POLICY_LAST_UPDATED >= '2026-11-24').toBe(true)
+  })
+
+  it('discloses the anonymous action events and that typed input is never recorded', () => {
+    expect(text).toContain('It also records a few anonymous actions')
+    expect(text).toContain('Nothing you type into a tool or the form is recorded.')
+    expect(text).toContain('never the address')
   })
 
   it('has a short description that mentions storage', () => {

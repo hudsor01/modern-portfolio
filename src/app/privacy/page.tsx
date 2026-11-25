@@ -145,6 +145,14 @@ export default function PrivacyPage() {
               hours, so visits cannot be tied to you over time.
             </p>
             <p>
+              It also records a few anonymous actions: clicks on buttons and on project, article,
+              tool and profile links (the email link is recorded as &ldquo;email&rdquo;, never the
+              address); résumé downloads and previews; the first time you use a tool or start the
+              contact form; a contact message that was sent successfully; and reaching the end of an
+              article. Each action records only what was done, where on the page, and the page or
+              link it led to. Nothing you type into a tool or the form is recorded.
+            </p>
+            <p>
               <ExternalLink href="https://vercel.com/docs/speed-insights/privacy-policy">
                 Vercel Speed Insights
               </ExternalLink>{' '}
