@@ -6,7 +6,7 @@ import { PROJECT_COUNT } from './_helpers/project-slugs'
 
 /**
  * BUG-02 + BUG-05 guard: no horizontal overflow and CLS < 0.1 on every audited
- * page at four widths. Layout-shift entries are Chromium-only.
+ * page at five widths (320 added for I-1). Layout-shift entries are Chromium-only.
  */
 
 declare global {
@@ -33,7 +33,7 @@ const PAGES = [
   '/contact/sent',
   '/this-page-does-not-exist',
 ]
-const WIDTHS = [360, 390, 768, 1440]
+const WIDTHS = [320, 360, 390, 768, 1440]
 
 /** Card preview padding that the rows must fit inside: `pt-12` (48px, clears the legend and arrow) + `pb-3` (12px). */
 const CARD_PREVIEW_PADDING_Y = 48 + 12
@@ -87,6 +87,39 @@ for (const path of PAGES) {
         expect(scrollWidth, `${target} @${width}px horizontal overflow`).toBeLessThanOrEqual(
           clientWidth
         )
+
+        if (path === '/') {
+          const hero = await page.evaluate(() => {
+            const h1 = document.querySelector('main h1') as HTMLElement
+            const rect = h1.getBoundingClientRect()
+            const first = Array.from(h1.childNodes).find(
+              (n) => n.nodeType === Node.TEXT_NODE && (n.textContent ?? '').includes('Transforming')
+            ) as Text
+            const range = document.createRange()
+            const idx = (first.textContent ?? '').indexOf('Transforming')
+            range.setStart(first, idx)
+            range.setEnd(first, idx + 'Transforming'.length)
+            const word = range.getBoundingClientRect()
+            return {
+              h1Right: rect.right,
+              h1Scroll: h1.scrollWidth,
+              h1Client: h1.clientWidth,
+              wordLeft: word.left,
+              wordRight: word.right,
+              viewport: document.documentElement.clientWidth,
+            }
+          })
+          expect(hero.h1Right, `hero H1 right @${width}px ${JSON.stringify(hero)}`).toBeLessThanOrEqual(
+            hero.viewport
+          )
+          expect(hero.h1Scroll, `hero H1 scrollWidth @${width}px ${JSON.stringify(hero)}`).toBeLessThanOrEqual(
+            hero.h1Client
+          )
+          expect(hero.wordLeft, `Transforming left @${width}px ${JSON.stringify(hero)}`).toBeGreaterThanOrEqual(0)
+          expect(hero.wordRight, `Transforming right @${width}px ${JSON.stringify(hero)}`).toBeLessThanOrEqual(
+            hero.h1Right + 0.5
+          )
+        }
       } finally {
         await context.close()
       }
