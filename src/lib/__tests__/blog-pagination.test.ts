@@ -3,7 +3,9 @@ import { describe, it, expect } from 'vitest'
 import {
   BLOG_PAGE_SIZE,
   blogIndexHref,
+  isCanonicalPageParam,
   pageCount,
+  pageParamRedirect,
   pageSlice,
   paginationItems,
   parseCategoryParam,
@@ -26,6 +28,55 @@ describe('parsePageParam', () => {
       expect(parsePageParam(raw)).toBe(1)
     }
   )
+})
+
+describe('isCanonicalPageParam', () => {
+  it.each(['2', '24', '999999'])('accepts %p', (raw) => {
+    expect(isCanonicalPageParam(raw)).toBe(true)
+  })
+
+  it.each(['1', '0', '-1', 'abc', '', ' 2 ', '01', '+2', '1.5', '2e3', '9999999', undefined])(
+    'rejects %p',
+    (raw) => {
+      expect(isCanonicalPageParam(raw)).toBe(false)
+    }
+  )
+
+  it('rejects a repeated key', () => {
+    expect(isCanonicalPageParam(['2', '3'])).toBe(false)
+  })
+})
+
+describe('pageParamRedirect', () => {
+  it.each([{}, { page: '2' }, { page: '2', q: 'x' }, { q: 'x' }, { page: undefined }])(
+    'does not redirect %j',
+    (params) => {
+      expect(pageParamRedirect(params)).toBeNull()
+    }
+  )
+
+  it.each(['abc', '0', '-1', '1', '', ' 2 ', '9999999'])('drops page=%p to /blog', (page) => {
+    expect(pageParamRedirect({ page })).toBe('/blog')
+  })
+
+  it('drops a repeated page key', () => {
+    expect(pageParamRedirect({ page: ['2', '3'] })).toBe('/blog')
+  })
+
+  it('keeps every other param', () => {
+    expect(pageParamRedirect({ page: 'abc', q: 'x', category: 'Revenue Operations' })).toBe(
+      '/blog?q=x&category=Revenue+Operations'
+    )
+    expect(pageParamRedirect({ page: '1', utm_source: 'X' })).toBe('/blog?utm_source=X')
+  })
+
+  it('preserves repeated keys', () => {
+    expect(pageParamRedirect({ q: ['a', 'b'], page: '0' })).toBe('/blog?q=a&q=b')
+  })
+
+  it('skips undefined values', () => {
+    expect(pageParamRedirect({ page: '0', q: undefined })).toBe('/blog')
+  })
 })
 
 describe('parseCategoryParam', () => {
