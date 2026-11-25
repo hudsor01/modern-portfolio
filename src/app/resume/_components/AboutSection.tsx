@@ -15,7 +15,7 @@ export function AboutSection() {
           <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-xl overflow-hidden border-4 border-border shadow-xl shadow-primary/20 flex-shrink-0">
             <Image
               src="/images/richard.jpg"
-              alt="Richard Hudson - Revenue Operations Consultant specializing in Salesforce automation, data analytics, and business growth strategies in Dallas, TX"
+              alt="Richard Hudson"
               fill
               sizes="(max-width: 768px) 128px, 160px"
               className="object-cover"

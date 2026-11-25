@@ -58,7 +58,7 @@ const SAMPLE_AUTHORS = [
     avatar: '/images/richard.jpg',
     website: 'https://richardwhudsonjr.com',
     twitter: 'hudsor01',
-    linkedin: 'https://linkedin.com/in/hudsor01',
+    linkedin: 'https://www.linkedin.com/in/hudsor01',
     github: 'hudsor01',
     metaDescription:
       'Revenue Operations expert specializing in data analytics and business intelligence for sustainable growth.',

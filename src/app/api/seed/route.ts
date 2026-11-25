@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
         avatar:
           'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face&q=80',
         website: 'https://richardwhudsonjr.com',
-        linkedin: 'https://linkedin.com/in/hudsor01',
+        linkedin: 'https://www.linkedin.com/in/hudsor01',
       })
       .returning()
     const author = authorRows[0]
