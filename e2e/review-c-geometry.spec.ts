@@ -56,12 +56,17 @@ test.describe('review C geometry', () => {
     }
   })
 
-  test('scorecard: the default all-neutral state flags no weakest pillar (C-5)', async ({
+  test('scorecard: rating every statement the same flags no weakest pillar (C-5)', async ({
     page,
   }) => {
     await page.goto('/tools/revops-maturity-scorecard')
     await page.waitForLoadState('networkidle')
     const result = page.locator('main [aria-live="polite"]')
+    await expect(result).toContainText('0 of 16 answered')
+    const groups = page.getByRole('radiogroup')
+    await expect(groups).toHaveCount(16)
+    for (let i = 0; i < 16; i++) await groups.nth(i).locator('label').nth(2).click()
+    await expect(result).toContainText('16 of 16 answered')
     await expect(result.getByText('weakest', { exact: true })).toHaveCount(0)
     await expect(result.getByText(/lowest pillars are tied/)).toBeVisible()
   })
