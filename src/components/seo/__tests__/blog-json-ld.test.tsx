@@ -118,13 +118,32 @@ describe('BlogCategoryJsonLd', () => {
   it('renders a CollectionPage schema with category-derived fields', () => {
     const { container } = render(
       <BlogCategoryJsonLd
-        category={{ name: 'RevOps', slug: 'revops', postCount: 5, description: 'desc' }}
+        category={{ name: 'RevOps', slug: 'revops', description: 'desc' }}
+        posts={[
+          { title: 'First', slug: 'first' },
+          { title: 'Second', slug: 'second' },
+        ]}
       />
     )
     const script = container.querySelector('script')
     const parsed = JSON.parse(script!.innerHTML)
     expect(parsed['@type']).toBe('CollectionPage')
     expect(parsed.url).toBe('https://richardwhudsonjr.com/blog/category/revops')
-    expect(parsed.mainEntity.numberOfItems).toBe(5)
+    // Count and items come from the listed posts, never the stored counter.
+    expect(parsed.mainEntity.numberOfItems).toBe(2)
+    expect(parsed.mainEntity.itemListElement).toEqual([
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'First',
+        url: 'https://richardwhudsonjr.com/blog/first',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Second',
+        url: 'https://richardwhudsonjr.com/blog/second',
+      },
+    ])
   })
 })

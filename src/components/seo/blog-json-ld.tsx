@@ -208,12 +208,15 @@ interface BlogCategoryJsonLdProps {
     name: string
     slug: string
     description?: string
-    postCount: number
   }
+  /** The posts the page lists, in order. The count comes from here, not from the
+   * categories.postCount counter, which can drift from the published list. */
+  posts: ReadonlyArray<{ title: string; slug: string }>
 }
 
 export function BlogCategoryJsonLd({
   category,
+  posts,
   nonce,
 }: BlogCategoryJsonLdProps & { nonce?: string | null }) {
   const categorySchema = {
@@ -228,7 +231,13 @@ export function BlogCategoryJsonLd({
       '@type': 'ItemList',
       name: `${category.name} Articles`,
       description: category.description,
-      numberOfItems: category.postCount,
+      numberOfItems: posts.length,
+      itemListElement: posts.map((post, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: post.title,
+        url: `${SITE_ORIGIN}/blog/${post.slug}`,
+      })),
     },
     breadcrumb: {
       '@type': 'BreadcrumbList',
