@@ -166,7 +166,7 @@ Public:
 - `GET /api/health` · `GET /api/health-check` — DB ping / probe text
 - `GET, POST /api/blog` — list / create posts
 - `GET, PUT, DELETE /api/blog/[slug]`
-- `GET /api/blog/rss` — XML or JSON via `?format=`
+- `GET /api/blog/rss` — RSS 2.0 XML by default (the autodiscovery target); JSON via `?format=json`
 - `GET, POST /api/blog/tags` · `GET, POST /api/blog/categories`
 - `GET /api/blog/analytics`
 - `POST /api/contact` — Resend email; rate-limited (3/hr, burst 2/10s)
