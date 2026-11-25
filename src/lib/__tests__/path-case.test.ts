@@ -8,7 +8,6 @@ describe('lowercasePathRedirect', () => {
     ['/Blog/Some-Post', '/blog/some-post'],
     ['/About/', '/about/'],
     ['/Tools/Pipeline-Coverage', '/tools/pipeline-coverage'],
-    ['//Evil.com/Path', '//evil.com/path'],
   ])('lowercases %s to %s', (input, expected) => {
     expect(lowercasePathRedirect(input)).toBe(expected)
   })
@@ -37,7 +36,14 @@ describe('lowercasePathRedirect', () => {
     expect(lowercasePathRedirect(input)).toBeNull()
   })
 
-  it.each(['/About', '/Blog/Some-Post', '/About/', '/Tools/Pipeline-Coverage', '//Evil.com/Path'])(
+  it.each(['//Evil.com/Path', '//Evil.com', '/\\Evil.com/Path', '/About\\Team'])(
+    'never emits a protocol-relative target: %s',
+    (input) => {
+      expect(lowercasePathRedirect(input)).toBeNull()
+    }
+  )
+
+  it.each(['/About', '/Blog/Some-Post', '/About/', '/Tools/Pipeline-Coverage'])(
     'is idempotent (no loop): %s',
     (input) => {
       const once = lowercasePathRedirect(input)

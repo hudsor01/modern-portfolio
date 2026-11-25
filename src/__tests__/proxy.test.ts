@@ -1,4 +1,5 @@
 // @vitest-environment node
+import { getRelativeURL } from 'next/dist/shared/lib/router/utils/relativize-url'
 import { NextRequest } from 'next/server'
 import { describe, expect, it } from 'vitest'
 import { config, proxy } from '@/proxy'
@@ -20,11 +21,25 @@ describe('proxy lowercase redirect', () => {
     expect(res.headers.get('location')).toBe(`${ORIGIN}/blog/some-post`)
   })
 
-  it('never redirects off-site for a protocol-relative path', () => {
-    const res = run('//Evil.com/Path?q=A')
-    expect(res.status).toBe(308)
-    expect(new URL(res.headers.get('location') as string).origin).toBe(ORIGIN)
-  })
+  it.each(['//Evil.com/Path?q=A', '/\\Evil.com/Path'])(
+    'does not redirect a protocol-relative path: %s',
+    (path) => {
+      expect(run(path).headers.get('location')).toBeNull()
+    }
+  )
+
+  // Next's router relativizes same-origin middleware redirects before sending
+  // them (resolve-routes.js), so check the Location the browser actually gets.
+  it.each(['/About?x=Y', '/Blog/Some-Post', '/About/'])(
+    'stays on-site after Next relativizes the Location: %s',
+    (path) => {
+      const location = run(path).headers.get('location')
+      expect(location).not.toBeNull()
+      const sent = getRelativeURL(location as string, `${ORIGIN}${path}`)
+      expect(sent.startsWith('//')).toBe(false)
+      expect(new URL(sent, `${ORIGIN}/`).origin).toBe(ORIGIN)
+    }
+  )
 
   it('passes lowercase paths through with a CSP', () => {
     const res = run('/about')

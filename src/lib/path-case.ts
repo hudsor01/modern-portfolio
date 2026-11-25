@@ -7,6 +7,10 @@
  * - no ASCII uppercase: nothing to redirect (also what ends a redirect chain);
  * - `%` present: percent-encoded bytes, where lowercasing would change the
  *   escape (`%C3` vs `%c3` is fine, but a decoded non-ASCII segment is not);
+ * - a leading `//` or any `\`: Next's router strips the origin from a
+ *   same-origin middleware redirect (`getRelativeURL` in resolve-routes.js), so
+ *   `https://site//evil.com/x` would leave as `//evil.com/x`, a
+ *   protocol-relative URL the browser resolves off-site;
  * - `/api` and `/_next` (any case): case-sensitive machine URLs that must never
  *   be rewritten, and an uppercase `/API/...` is never redirected into the API;
  * - a dot in the last segment: a file (the résumé PDF, `llms.txt`, the IndexNow
@@ -15,6 +19,7 @@
 export function lowercasePathRedirect(pathname: string): string | null {
   if (!/[A-Z]/.test(pathname)) return null
   if (pathname.includes('%')) return null
+  if (pathname.startsWith('//') || pathname.includes('\\')) return null
 
   const lower = pathname.toLowerCase()
   if (
