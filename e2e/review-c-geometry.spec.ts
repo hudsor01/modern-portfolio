@@ -68,7 +68,8 @@ test.describe('review C geometry', () => {
     for (let i = 0; i < 16; i++) await groups.nth(i).locator('label').nth(2).click()
     await expect(result).toContainText('16 of 16 answered')
     await expect(result.getByText('weakest', { exact: true })).toHaveCount(0)
-    await expect(result.getByText(/lowest pillars are tied/)).toBeVisible()
+    await expect(result.getByText(/All four pillars score 3\.0/)).toBeVisible()
+    await expect(result).not.toContainText(/lowest pillars/)
   })
 
   test('footer: no empty grid cell beside the last link column at 390 (C-9)', async ({

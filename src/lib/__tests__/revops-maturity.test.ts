@@ -83,12 +83,26 @@ describe('scoreMaturity — weakest pillar (highest-ROI next move)', () => {
     expect(r.nextMove).not.toMatch(/process/i)
   })
 
-  it('all four pillars at 3 is a four-way tie', () => {
-    const r = scoreMaturity(allAt(3))
+  it('an even profile below the top names no pillar as lowest and advises raising them together', () => {
+    for (const v of [1, 3, 4]) {
+      const r = scoreMaturity(allAt(v))
+      expect(r.weakestPillar).toBeNull()
+      expect(r.weakestPillars).toEqual(PILLARS.map((p) => p.id))
+      expect(r.nextMove).toBe(
+        `All four pillars score ${v.toFixed(1)}, so no single pillar is holding the others back. Raise them together rather than pushing one ahead of the rest.`
+      )
+      expect(r.nextMove).not.toMatch(/lowest|tied|first|document the process|clean the data/i)
+    }
+  })
+
+  it('all 5s gives no remedial advice: every pillar is at the top of the scale', () => {
+    const r = scoreMaturity(allAt(5))
     expect(r.weakestPillar).toBeNull()
     expect(r.weakestPillars).toEqual(PILLARS.map((p) => p.id))
-    expect(r.nextMove).toMatch(/lowest pillars are tied/)
-    expect(r.nextMove).toContain('(Process, Data, Technology and Alignment)')
+    expect(r.nextMove).toMatch(/top of the scale/)
+    expect(r.nextMove).not.toMatch(
+      /lowest|tied|raise|document the process|clean the data|consolidate|shared revenue number/i
+    )
   })
 
   it('a single weakest pillar is reported in weakestPillars', () => {

@@ -60,8 +60,9 @@ export interface MaturityResult {
    */
   weakestPillar: PillarId | null
   /**
-   * The recommended next move: from `weakestPillar`, or on a tie advice
-   * composed only from the tied pillars, in order of operations.
+   * The recommended next move: from `weakestPillar`; on a partial tie, advice
+   * composed only from the tied pillars, in order of operations; when every
+   * pillar ties, advice for an even profile that singles out no pillar.
    */
   nextMove: string
   /**
@@ -251,7 +252,20 @@ function joinLabels(labels: string[]): string {
   return `${labels.slice(0, -1).join(', ')} and ${labels[labels.length - 1]}`
 }
 
-function tiedNextMove(ids: PillarId[]): string {
+/** Top of the 1–5 answer scale. */
+const MAX_SCORE = 5
+
+/**
+ * Next move when the lowest score is shared. If every pillar ties, none is
+ * weaker than another, so the advice names no pillar as lowest.
+ */
+function tiedNextMove(ids: PillarId[], score: number): string {
+  if (ids.length === PILLARS.length) {
+    if (score >= MAX_SCORE - TIE_EPSILON) {
+      return 'Every pillar scores 5.0, the top of the scale, so there is no weak pillar to fix. Keep them there: retake the scorecard when your team, stack or go-to-market motion changes.'
+    }
+    return `All four pillars score ${score.toFixed(1)}, so no single pillar is holding the others back. Raise them together rather than pushing one ahead of the rest.`
+  }
   const labels = ids.map((id) => PILLARS.find((p) => p.id === id)!.label)
   const steps = ids.map((id) => TIED_STEP[id])
   const sequence = steps.map((step, i) => (i === 0 ? `first ${step}` : `then ${step}`)).join(', ')
@@ -360,7 +374,7 @@ export function scoreMaturity(answers: Partial<Record<string, number>>): Maturit
         ? ''
         : weakestPillar
           ? NEXT_MOVE[weakestPillar]
-          : tiedNextMove(weakestPillars),
+          : tiedNextMove(weakestPillars, weakestScore),
     techOverbuy,
     answeredByPillar: {
       process: byPillar.process.length,

@@ -129,7 +129,20 @@ describe('RevOpsMaturityScorecard answering', () => {
     answerAll('3 Somewhat')
     expect(screen.getByText(`${QUESTIONS.length} of ${QUESTIONS.length} answered`)).toBeTruthy()
     expect(container.textContent?.toLowerCase()).not.toContain('weakest')
-    expect(container.textContent).toContain('lowest pillars are tied')
+    const move = screen.getByText('Highest-ROI next move').parentElement as HTMLElement
+    expect(move.textContent).toContain('All four pillars score 3.0')
+    expect(move.textContent).toContain('Raise them together')
+    expect(move.textContent).not.toMatch(/lowest|tied/i)
+  })
+
+  it('gives no remedial advice when every pillar is at the top of the scale', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    answerAll('5 Fully')
+    expect(container.textContent).toContain('Optimized')
+    expect(container.textContent?.toLowerCase()).not.toContain('weakest')
+    const move = screen.getByText('Highest-ROI next move').parentElement as HTMLElement
+    expect(move.textContent).toContain('top of the scale')
+    expect(move.textContent).not.toMatch(/lowest|tied|document the process|clean the data/i)
   })
 
   it('badges exactly one pillar once a single pillar is uniquely lowest', () => {
