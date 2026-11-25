@@ -106,7 +106,7 @@ test.describe('Audit regressions', () => {
       await page.waitForLoadState('domcontentloaded')
 
       await expect(
-        page.getByText(/this form requires javascript/i)
+        page.getByText(/prefer email\? write to/i)
       ).toBeVisible()
 
       await expect(

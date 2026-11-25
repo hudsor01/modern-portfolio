@@ -7,6 +7,7 @@ import type { UseContactFormReturn } from '@/types/forms'
 import { CONTACT_LIMITS, CONTACT_MINIMUMS } from '@/lib/schemas'
 
 let stubValues: Record<string, string> = {}
+let stubErrors: Record<string, unknown[]> = {}
 
 function StubField({
   name,
@@ -15,14 +16,14 @@ function StubField({
   name: string
   children: (field: {
     name: string
-    state: { value: string; meta: { errors: string[] } }
+    state: { value: string; meta: { errors: unknown[] } }
     handleChange: (v: string) => void
     handleBlur: () => void
   }) => React.ReactNode
 }) {
   return children({
     name,
-    state: { value: stubValues[name] ?? '', meta: { errors: [] } },
+    state: { value: stubValues[name] ?? '', meta: { errors: stubErrors[name] ?? [] } },
     handleChange: () => {},
     handleBlur: () => {},
   })
@@ -30,17 +31,22 @@ function StubField({
 
 // Minimal stand-in for TanStack Form's `form` object — only the surface the
 // component actually touches (handleSubmit + Field render-prop).
-function createFormStub(values: Record<string, string> = {}) {
+function createFormStub(
+  values: Record<string, string> = {},
+  errors: Record<string, unknown[]> = {}
+) {
   stubValues = values
+  stubErrors = errors
   const handleSubmit = vi.fn()
   return { handleSubmit, Field: StubField }
 }
 
 function renderForm(
   overrides: Partial<UseContactFormReturn> = {},
-  values: Record<string, string> = {}
+  values: Record<string, string> = {},
+  errors: Record<string, unknown[]> = {}
 ) {
-  const form = createFormStub(values)
+  const form = createFormStub(values, errors)
   const props: UseContactFormReturn = {
     form,
     formData: { name: '', email: '', message: '' },
@@ -89,6 +95,8 @@ describe('ContactForm', () => {
     expect(html).toContain('mailto:hudsor01@icloud.com')
     expect(html).toContain('hudsor01@icloud.com')
     expect(html).toMatch(/<a href="mailto:hudsor01@icloud.com" class="text-link">/)
+    expect(html).toContain('Prefer email? Write to')
+    expect(html).not.toMatch(/requires javascript/i)
   })
 
   it('renders all required field labels', () => {
@@ -276,5 +284,69 @@ describe('ContactForm', () => {
     expect(trap.type).toBe('text')
     expect(trap.hasAttribute('hidden')).toBe(false)
     expect(trap.closest('[aria-hidden="true"]')).not.toBeNull()
+  })
+
+  it('SSR with a server reference renders a multipart POST form with the action id', () => {
+    const formAction = Object.assign(vi.fn(), {
+      $$FORM_ACTION: () => ({
+        name: '$ACTION_ID_test',
+        method: 'POST',
+        encType: 'multipart/form-data',
+        data: null,
+      }),
+    })
+    const props = {
+      form: createFormStub(),
+      formData: {},
+      errors: {},
+      submitStatus: 'idle',
+      isSubmitting: false,
+      error: null,
+      formAction,
+      serverFieldErrors: {},
+    } as unknown as UseContactFormReturn
+    const html = renderToStaticMarkup(<ContactForm form={props} />)
+    expect(html).toMatch(/<form[^>]*method="POST"/)
+    expect(html).toMatch(/encType="multipart\/form-data"/)
+    expect(html).toContain('name="$ACTION_ID_test"')
+    expect(html).not.toMatch(/method="get"/i)
+    expect(html).not.toContain('javascript:')
+  })
+
+  it('hydrated submit goes to TanStack once and never to formAction', () => {
+    const formAction = vi.fn()
+    const { form, container } = renderForm({ formAction })
+    fireEvent.submit(container.querySelector('form')!)
+    expect(form.handleSubmit).toHaveBeenCalledTimes(1)
+    expect(formAction).not.toHaveBeenCalled()
+  })
+
+  it('shows a server field error when TanStack has none', () => {
+    const { container } = renderForm({
+      serverFieldErrors: { phone: 'Please enter a valid phone number' },
+    })
+    expect(container.textContent).toContain('Please enter a valid phone number')
+    expect(container.querySelector('#phone')!.getAttribute('aria-invalid')).toBe('true')
+  })
+
+  it('client error wins over the server error and never renders [object Object]', () => {
+    const { container } = renderForm(
+      { serverFieldErrors: { phone: 'Server message' } },
+      {},
+      { phone: [{ message: 'Client message' }] }
+    )
+    expect(container.textContent).toContain('Client message')
+    expect(container.textContent).not.toContain('Server message')
+    expect(container.textContent).not.toContain('[object Object]')
+  })
+
+  it('shows a server validation message in the single alert', () => {
+    renderForm({
+      submitStatus: 'error',
+      error: new Error('Please check your form and try again.'),
+    })
+    const alerts = screen.getAllByRole('alert')
+    expect(alerts).toHaveLength(1)
+    expect(alerts[0]!.textContent).toContain('Please check your form and try again.')
   })
 })
