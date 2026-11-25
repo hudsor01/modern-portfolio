@@ -6,10 +6,13 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 
 export const dynamic = 'force-static'
 
+// Title ≤60 chars with the brand, description ≤160; one project name (the
+// catalog's) across title, H1, breadcrumb and JSON-LD. Figures come from the
+// write-up and are checked by project-page-copy-sourced.test.ts.
 export const metadata = genMeta({
-  title: 'Partner Performance Intelligence Dashboard',
+  title: 'Partner Performance Intelligence Case Study',
   description:
-    'Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem. Real-time performance tracking following industry-standard 80/20 partner revenue distribution.',
+    'Partner performance case study: ROI-based tiering behind an 83.2% partner win rate, 63% more certified-partner revenue and a 4.7x quick ratio.',
   path: '/projects/partner-performance',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
