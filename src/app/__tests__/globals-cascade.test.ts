@@ -131,6 +131,12 @@ describe('globals.css cascade', () => {
     expect(rule?.parents).toEqual([])
     expect(rule?.body).toContain('outline: none')
   })
+
+  it('keeps the on-load focus-target rule unlayered, so it beats *:focus-visible', () => {
+    const rule = rules.find((r) => r.selector === '[data-focus-target]:focus-visible')
+    expect(rule?.parents).toEqual([])
+    expect(rule?.body).toContain('outline: none')
+  })
   describe('shared text-link style (A11Y-03)', () => {
     const decls = (body: string) =>
       body

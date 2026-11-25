@@ -191,6 +191,42 @@ describe('useContactForm', () => {
       expect(result.current.submitStatus).toBe('idle')
       expect(result.current.error).toBeNull()
       expect(result.current.serverFieldErrors).toEqual({})
+      expect(result.current.fromAction).toBe(false)
+    })
+
+    it.each([
+      ['success', { status: 'success', success: true }],
+      ['error', errorState],
+    ] as const)('progressive %s is flagged fromAction', (_label, state) => {
+      driveActionState(state)
+      const { result } = renderHook(() => useContactForm())
+      expect(result.current.fromAction).toBe(true)
+    })
+
+    it('a hydrated submit after a progressive result clears fromAction', async () => {
+      driveActionState(errorState)
+      submitMock.mockResolvedValue({ success: false, error: 'rate limited' })
+      const { result } = renderHook(() => useContactForm())
+      act(() => {
+        for (const [key, value] of Object.entries(validData)) {
+          result.current.form.setFieldValue(key as keyof typeof validData, value)
+        }
+        result.current.form.setFieldValue('phone', '')
+      })
+      await act(async () => {
+        await result.current.handleSubmit()
+      })
+      expect(result.current.submitStatus).toBe('error')
+      expect(result.current.fromAction).toBe(false)
+    })
+
+    it('resetForm clears fromAction', () => {
+      driveActionState({ status: 'success', success: true })
+      const { result } = renderHook(() => useContactForm())
+      act(() => {
+        result.current.resetForm()
+      })
+      expect(result.current.fromAction).toBe(false)
     })
 
     it('progressive success: status success and track fires once', () => {

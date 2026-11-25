@@ -103,4 +103,10 @@ export interface UseContactFormReturn {
    * only when TanStack has none.
    */
   serverFieldErrors: ContactFormErrors
+  /**
+   * True while the shown status came from a progressive (no-JS / pre-hydration)
+   * submit, i.e. the page was just loaded with the result. The banner then takes
+   * focus so the outcome is seen and announced.
+   */
+  fromAction: boolean
 }

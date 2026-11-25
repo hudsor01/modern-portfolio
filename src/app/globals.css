@@ -471,6 +471,11 @@ main[tabindex="-1"]:focus-visible {
   outline: none;
 }
 
+/* Status banners focused on load (the contact form's no-JS result): same reasoning. */
+[data-focus-target]:focus-visible {
+  outline: none;
+}
+
 /* Transitions stay unlayered on purpose: moving them into @layer base would let the
    `transition: all` rule at the top of this file win and change every link/button animation. */
 a {

@@ -106,8 +106,8 @@ export function useContactForm(): UseContactFormReturn {
   }, [formData])
 
   const showActionState = !actionStateDismissed
-  const submitStatus: SubmitStatus =
-    localStatus !== 'idle' || !showActionState ? localStatus : actionState.status
+  const fromAction = showActionState && localStatus === 'idle' && actionState.status !== 'idle'
+  const submitStatus: SubmitStatus = fromAction ? actionState.status : localStatus
 
   const error = useMemo<Error | null>(() => {
     if (localError) return localError
@@ -182,6 +182,7 @@ export function useContactForm(): UseContactFormReturn {
     error,
     formAction,
     serverFieldErrors,
+    fromAction,
   }
 }
 
