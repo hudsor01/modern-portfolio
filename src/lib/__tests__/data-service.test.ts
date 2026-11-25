@@ -151,6 +151,19 @@ describe('AnalyticsDataService — getGrowthData', () => {
     expect(data).toHaveLength(8)
   })
 
+  it('defaults to 7 completed quarters ending at the last completed Chicago quarter', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    try {
+      vi.setSystemTime(new Date('2026-11-25T18:00:00Z'))
+      const data = await service.getGrowthData()
+      expect(data).toHaveLength(7)
+      expect(data[0]?.quarter).toBe('Q1 2025')
+      expect(data[data.length - 1]?.quarter).toBe('Q3 2026')
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('returns items with required keys: quarter, revenue, growth_rate', async () => {
     const data = await service.getGrowthData(4)
     for (const item of data) {
@@ -260,6 +273,18 @@ describe('AnalyticsDataService — getAllAnalyticsData', () => {
     expect(bundle).toHaveProperty('growth')
     expect(bundle).toHaveProperty('yearOverYear')
     expect(bundle).toHaveProperty('topPartners')
+  })
+
+  it('bundle growth holds 7 completed quarters', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    try {
+      vi.setSystemTime(new Date('2026-11-25T18:00:00Z'))
+      const bundle = await service.getAllAnalyticsData()
+      expect(bundle.growth).toHaveLength(7)
+      expect(bundle.growth[6]?.quarter).toBe('Q3 2026')
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('all bundle arrays are non-empty', async () => {
