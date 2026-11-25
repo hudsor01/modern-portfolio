@@ -83,7 +83,7 @@ export function ProjectsPageContent({ initialProjects }: ProjectsPageContentProp
           {/* Main Heading */}
           <h1 className="text-center mb-6 animate-fade-in-up" style={{ animationDelay: '80ms' }}>
             Revenue Operations
-            <br className="hidden sm:block" /> Excellence
+            <br className="hidden sm:block" /> Case Studies
           </h1>
 
           {/* Subheading */}
@@ -91,8 +91,8 @@ export function ProjectsPageContent({ initialProjects }: ProjectsPageContentProp
             className="text-center max-w-2xl mx-auto mb-16 animate-fade-in-up"
             style={{ animationDelay: '160ms' }}
           >
-            Transforming data into actionable insights and driving measurable business results
-            through innovative solutions.
+            {sortedProjects.length} case studies in forecasting, attribution, partner programs,
+            commissions and retention, each with the problem, the approach and the measured result.
           </p>
 
           {/* Stats Grid */}

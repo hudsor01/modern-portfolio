@@ -20,6 +20,8 @@ export const ProjectCTASection: React.FC = () => {
       <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
         {/* About Card */}
         <Link
+          data-track="CTA Click"
+          data-track-location="projects-cta"
           href="/about"
           className="group relative p-8 bg-card border border-border rounded-2xl transition-all duration-300 ease-out hover:border-primary/30 hover:shadow-lg hover:-translate-y-1"
         >
@@ -38,6 +40,8 @@ export const ProjectCTASection: React.FC = () => {
 
         {/* Blog Card */}
         <Link
+          data-track="CTA Click"
+          data-track-location="projects-cta"
           href="/blog"
           className="group relative p-8 bg-card border border-border rounded-2xl transition-all duration-300 ease-out hover:border-primary/30 hover:shadow-lg hover:-translate-y-1"
         >
@@ -54,6 +58,8 @@ export const ProjectCTASection: React.FC = () => {
 
         {/* Contact Card */}
         <Link
+          data-track="CTA Click"
+          data-track-location="projects-cta"
           href="/contact"
           className="group relative p-8 bg-primary/5 border-2 border-border rounded-2xl transition-all duration-300 ease-out hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1"
         >
