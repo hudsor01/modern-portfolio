@@ -13,6 +13,9 @@ const mocks = vi.hoisted(() => ({
   notFound: vi.fn(() => {
     throw new Error('NEXT_NOT_FOUND')
   }),
+  permanentRedirect: vi.fn((url: string) => {
+    throw new Error(`NEXT_REDIRECT;${url}`)
+  }),
 }))
 
 vi.mock('@/lib/db', () => ({
@@ -26,7 +29,10 @@ vi.mock('@/lib/db', () => ({
 }))
 vi.mock('@/lib/search', () => ({ searchBlogPosts: mocks.search }))
 vi.mock('next/headers', () => ({ headers: async () => new Headers() }))
-vi.mock('next/navigation', () => ({ notFound: mocks.notFound }))
+vi.mock('next/navigation', () => ({
+  notFound: mocks.notFound,
+  permanentRedirect: mocks.permanentRedirect,
+}))
 vi.mock('@/lib/logger', () => ({
   createContextLogger: () => ({ info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() }),
 }))
@@ -83,7 +89,7 @@ function blogListProps(node: ReactNode): BlogListProps {
   throw new Error('BlogList not rendered')
 }
 
-async function renderPage(params: Record<string, string> = {}) {
+async function renderPage(params: Record<string, string | string[]> = {}) {
   return blogListProps(await BlogHomePage({ searchParams: Promise.resolve(params) }))
 }
 
@@ -150,10 +156,23 @@ describe('/blog index', () => {
     expect(mocks.notFound).not.toHaveBeenCalled()
   })
 
-  it('treats a junk page param as page 1', async () => {
-    const props = await renderPage({ page: 'abc' })
-    expect(props.page).toBe(1)
-    expect(mocks.postsFindMany.mock.calls[0]?.[0]).toMatchObject({ offset: 0 })
+  it.each(['abc', '0', '-1', '1'])('308s page=%s to /blog before any data read', async (page) => {
+    await expect(renderPage({ page })).rejects.toThrow('NEXT_REDIRECT;/blog')
+    expect(mocks.postsFindMany).not.toHaveBeenCalled()
+    expect(mocks.categoriesFindMany).not.toHaveBeenCalled()
+    expect(mocks.search).not.toHaveBeenCalled()
+  })
+
+  it('keeps every other param when redirecting', async () => {
+    await expect(
+      renderPage({ page: 'abc', q: 'x', category: 'Revenue Operations' })
+    ).rejects.toThrow('NEXT_REDIRECT;/blog?q=x&category=Revenue+Operations')
+  })
+
+  it('does not redirect a canonical page', async () => {
+    const props = await renderPage({ page: '2' })
+    expect(props.page).toBe(2)
+    expect(mocks.permanentRedirect).not.toHaveBeenCalled()
   })
 
   it('filters by category in the query', async () => {
@@ -242,6 +261,17 @@ describe('blog index canonical', () => {
   beforeEach(() => {
     mocks.categoriesFindMany.mockReset()
     mocks.categoriesFindMany.mockResolvedValue(CATEGORIES)
+  })
+
+  async function titleFor(params: Record<string, string>) {
+    const { generateMetadata } = await import('../page')
+    const meta = await generateMetadata({ searchParams: Promise.resolve(params) })
+    return String(meta.title)
+  }
+
+  it('titles pages 2+ with (Page N) and leaves page 1 bare', async () => {
+    expect(await titleFor({ page: '2' })).toContain('(Page 2)')
+    expect(await titleFor({})).not.toContain('(Page')
   })
 
   async function canonicalFor(params: Record<string, string>) {

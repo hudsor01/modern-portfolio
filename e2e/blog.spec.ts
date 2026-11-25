@@ -227,9 +227,29 @@ test.describe('Blog pagination', () => {
     expect(response.status()).toBe(404)
   })
 
-  test('a junk page param renders the first page', async ({ page }) => {
+  test('non-canonical page params 308 to /blog', async ({ page }) => {
+    for (const value of ['abc', '0', '-1', '1']) {
+      const response = await page.request.get(`/blog?page=${value}`, { maxRedirects: 0 })
+      expect(response.status(), `?page=${value}`).toBe(308)
+      const target = new URL(response.headers().location ?? '', response.url())
+      expect(target.pathname).toBe('/blog')
+      expect(target.search).toBe('')
+    }
+
+    const kept = await page.request.get('/blog?q=pipeline&page=0', { maxRedirects: 0 })
+    expect(kept.status()).toBe(308)
+    const keptTarget = new URL(kept.headers().location ?? '', kept.url())
+    expect(keptTarget.pathname).toBe('/blog')
+    expect(keptTarget.search).toBe('?q=pipeline')
+  })
+
+  test('a junk page param lands on the rendered first page', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     const response = await page.goto('/blog?page=abc')
     expect(response?.status()).toBe(200)
+    const url = new URL(page.url())
+    expect(url.pathname).toBe('/blog')
+    expect(url.search).toBe('')
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
   })
 })

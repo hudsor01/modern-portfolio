@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { cache } from 'react'
 import { headers } from 'next/headers'
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import { Navbar } from '@/components/layout/navbar'
 import { BlogList } from './_components/blog-list'
 import { BlogJsonLd } from '@/components/seo/blog-json-ld'
@@ -22,6 +22,7 @@ import {
   BLOG_PAGE_SIZE,
   blogIndexHref,
   pageCount,
+  pageParamRedirect,
   pageSlice,
   parseCategoryParam,
   parsePageParam,
@@ -47,6 +48,7 @@ interface BlogIndexSearchParams {
   q?: string | string[]
   page?: string | string[]
   category?: string | string[]
+  [key: string]: string | string[] | undefined
 }
 
 /**
@@ -379,9 +381,15 @@ export default async function BlogHomePage({
 }: {
   searchParams: Promise<BlogIndexSearchParams>
 }) {
-  const [categories, { q, page: rawPage, category: rawCategory }, nonce] = await Promise.all([
+  const params = await searchParams
+  // Redirect before any await on data so the response is a real 308 rather than
+  // a streamed meta-refresh (see permanentRedirect.md in the Next docs).
+  const redirectTo = pageParamRedirect(params)
+  if (redirectTo) permanentRedirect(redirectTo)
+
+  const { q, page: rawPage, category: rawCategory } = params
+  const [categories, nonce] = await Promise.all([
     getCategories(),
-    searchParams,
     headers().then((h) => h.get('x-nonce')),
   ])
 
