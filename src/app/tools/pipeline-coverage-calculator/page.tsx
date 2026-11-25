@@ -130,7 +130,7 @@ export default function PipelineCoverageCalculatorPage() {
                   href="/blog/stop-guessing-how-to-cut-sales-forecast-variance"
                   className="hover:underline"
                 >
-                  How we slashed forecast variance by 34% in 90 days
+                  How to cut sales forecast variance
                 </Link>
               </li>
               <li>
@@ -160,7 +160,7 @@ export default function PipelineCoverageCalculatorPage() {
                   href="/projects/deal-funnel"
                   className="hover:underline"
                 >
-                  Case study: Deal Funnel optimization
+                  Case study: Sales Funnel Optimization
                 </Link>
               </li>
             </ul>
