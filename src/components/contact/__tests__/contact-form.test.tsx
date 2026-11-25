@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, cleanup } from '@testing-library/react'
+import { render, screen, fireEvent, createEvent, cleanup } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { ContactForm } from '../contact-form'
 import type { UseContactFormReturn } from '@/types/forms'
@@ -37,14 +37,15 @@ function StubField({
 // component actually touches (handleSubmit + Field render-prop).
 function createFormStub(
   values: Record<string, string> = {},
-  errors: Record<string, unknown[]> = {}
+  errors: Record<string, unknown[]> = {},
+  formState: { isSubmitting: boolean } = { isSubmitting: false }
 ) {
   stubValues = values
   stubErrors = errors
   stubDirty = {}
   const handleSubmit = vi.fn()
   const setFieldValue = vi.fn()
-  return { handleSubmit, setFieldValue, Field: StubField }
+  return { handleSubmit, setFieldValue, state: formState, Field: StubField }
 }
 
 function renderForm(
@@ -372,6 +373,34 @@ describe('ContactForm', () => {
     fireEvent.submit(container.querySelector('form')!)
     expect(form.handleSubmit).toHaveBeenCalledTimes(1)
     expect(formAction).not.toHaveBeenCalled()
+  })
+
+  it('ignores a submit while the hook reports one in flight, still preventing the native POST', () => {
+    const formAction = vi.fn()
+    const { form, container } = renderForm({ isSubmitting: true, formAction })
+    const event = createEvent.submit(container.querySelector('form')!)
+    fireEvent(container.querySelector('form')!, event)
+    expect(event.defaultPrevented).toBe(true)
+    expect(form.handleSubmit).not.toHaveBeenCalled()
+    expect(formAction).not.toHaveBeenCalled()
+  })
+
+  it('ignores a submit while TanStack is already submitting (before the re-render)', () => {
+    const form = createFormStub({}, {}, { isSubmitting: true })
+    const props = {
+      form,
+      formData: {},
+      errors: {},
+      submitStatus: 'idle',
+      isSubmitting: false,
+      error: null,
+      formAction: vi.fn(),
+      serverFieldErrors: {},
+      fromAction: false,
+    } as unknown as UseContactFormReturn
+    const { container } = render(<ContactForm form={props} />)
+    fireEvent.submit(container.querySelector('form')!)
+    expect(form.handleSubmit).not.toHaveBeenCalled()
   })
 
   it('copies a DOM-filled honeypot into the form before submitting', () => {

@@ -150,4 +150,43 @@ describe('ContactForm with the real hook', () => {
     expect(field(container, 'name').getAttribute('aria-invalid')).toBe('true')
     expect(container.textContent).toContain('Name must be at least')
   })
+
+  it('a second submit while one is in flight sends nothing (WR-07)', async () => {
+    let resolveSubmit: (value: { success: boolean }) => void = () => {}
+    submitMock.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveSubmit = resolve
+        })
+    )
+    const { container } = render(<Harness />)
+    await fillValid(container)
+    const formEl = container.querySelector('form')!
+    // Double click / programmatic requestSubmit: both events land before React
+    // re-renders the button as disabled.
+    await act(async () => {
+      fireEvent.submit(formEl)
+      fireEvent.submit(formEl)
+    })
+    await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(1))
+    // Still in flight, now with the button disabled: a further submit is ignored too.
+    await submit(container)
+    expect(submitMock).toHaveBeenCalledTimes(1)
+    await act(async () => {
+      resolveSubmit({ success: true })
+    })
+    expect(container.textContent).toContain('Message sent successfully')
+    expect(submitMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('submits again once the previous submission has settled', async () => {
+    submitMock.mockResolvedValue({ success: false, error: 'rate limited' })
+    const { container } = render(<Harness />)
+    await fillValid(container)
+    await submit(container)
+    await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(container.textContent).toContain('rate limited'))
+    await submit(container)
+    await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(2))
+  })
 })

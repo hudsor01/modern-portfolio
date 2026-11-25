@@ -87,6 +87,13 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
         action={formAction}
         onSubmit={(e) => {
           e.preventDefault()
+          // Re-entry guard. TanStack's handleSubmit has none, and `isSubmitting`
+          // only disables the button after validation and a re-render, so a double
+          // click or a programmatic requestSubmit would start a second send.
+          // form.state.isSubmitting is set synchronously when handleSubmit starts
+          // and stays true until onSubmit settles. preventDefault stays first so a
+          // guarded submit never falls through to React's native form action.
+          if (isSubmitting || form.state.isSubmitting) return
           // A bot that sets the trap's `.value` directly never fires onChange, so
           // TanStack would submit an empty honeypot. Read it from the DOM, as the
           // no-JS path does, so both paths judge the same filled form.
