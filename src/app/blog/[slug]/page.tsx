@@ -14,7 +14,10 @@ import { db } from '@/lib/db'
 import { withDbRetry } from '@/lib/db-retry'
 import { blogPosts } from '@/db/schema'
 import { canonicalUrl } from '@/lib/absolute-url'
+import { brandTitle, stripBrandSuffix } from '@/app/shared-metadata'
+import { resolveExcerpt } from '@/lib/blog-excerpt'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
+import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
 
 // Force runtime rendering. notFound() inside Next.js 16's ISR-rendered
 // Server Components doesn't propagate HTTP 404 status to Vercel — the
@@ -47,6 +50,7 @@ const getBlogPost = cache(async (slug: string): Promise<BlogPostData | null> => 
     const post = await withDbRetry(() =>
       db.query.blogPosts.findFirst({
         where: and(eq(blogPosts.slug, slug), eq(blogPosts.status, 'PUBLISHED')),
+        columns: BLOG_POST_COLUMNS,
         with: {
           author: true,
           category: true,
@@ -58,7 +62,9 @@ const getBlogPost = cache(async (slug: string): Promise<BlogPostData | null> => 
     if (!post) return null
     if (post.deletedAt) return null
 
-    return transformToBlogPostData(post)
+    const data = transformToBlogPostData(post)
+    const excerpt = resolveExcerpt({ excerpt: data.excerpt, content: data.content })
+    return { ...data, excerpt: excerpt || undefined }
   } catch (error) {
     // Distinguish "not found" (null) from "query failed" (re-throw).
     // Without this, a transient Neon outage would return null → trigger
@@ -112,12 +118,16 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   const ogImageAlt = ogImage.isFallback ? post.title : post.featuredImageAlt || post.title
 
   const postUrl = canonicalUrl(`/blog/${post.slug}`)
+  // Root template appends the brand; DB titles may already carry it.
+  const baseTitle =
+    stripBrandSuffix(post.metaTitle || post.title) || stripBrandSuffix(post.title) || 'Blog'
+  const shareTitle = brandTitle(stripBrandSuffix(post.title) || baseTitle)
   return {
-    title: post.metaTitle || post.title,
+    title: baseTitle,
     description: post.metaDescription || post.excerpt,
     keywords: post.keywords,
     openGraph: {
-      title: post.title,
+      title: shareTitle,
       description: post.excerpt || post.metaDescription,
       url: postUrl,
       siteName: 'Richard Hudson - RevOps Professional',
@@ -139,7 +149,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     },
     twitter: {
       card: 'summary_large_image',
-      title: post.title,
+      title: shareTitle,
       description: post.excerpt || post.metaDescription,
       images: [ogImage.url],
     },
@@ -169,10 +179,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       />
       <div className="min-h-screen bg-background">
         <Navbar />
-        <main>
-          <div className="pt-24 pb-16 lg:pt-32 lg:pb-20">
+        <main id="main-content" tabIndex={-1}>
+          <div className="pt-24 pb-12 lg:pb-16">
             <BlogPostLayout post={post} />
-            <div className="max-w-4xl mx-auto px-6 lg:px-8">
+            <div className="portfolio-container">
               <RelatedPosts
                 currentSlug={post.slug}
                 currentTags={post.tags?.map((t) => t.name) ?? []}

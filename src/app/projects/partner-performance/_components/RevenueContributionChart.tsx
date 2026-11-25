@@ -1,6 +1,6 @@
 'use client'
 import { memo } from 'react'
-import { formatCurrency } from '@/lib/data-formatters'
+import { formatCompactCurrency } from '@/lib/data-formatters'
 
 import { LazyPieChart as PieChart } from '@/components/charts/lazy-charts'
 import { Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
@@ -9,21 +9,21 @@ import { chartColors as baseChartColors, chartCssVars } from '@/lib/charts'
 // Partner revenue distribution demonstrating 80/20 rule
 const data = [
   {
-    name: 'Top 20% Partners',
+    name: 'Top Partners',
     value: 80.2,
     revenue: 725840,
     count: 7,
     color: baseChartColors.primary,
   },
   {
-    name: 'Middle 60% Partners',
+    name: 'Middle Partners',
     value: 17.1,
     revenue: 154689,
     count: 20,
     color: baseChartColors.secondary,
   },
   {
-    name: 'Bottom 20% Partners',
+    name: 'Bottom Partners',
     value: 2.7,
     revenue: 23858,
     count: 7,
@@ -35,7 +35,7 @@ const COLORS = data.map((item) => item.color)
 
 const RevenueContributionChart = memo(function RevenueContributionChart() {
   return (
-    <div className="h-[var(--chart-height-md)]">
+    <div className="h-full w-full">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
@@ -65,7 +65,10 @@ const RevenueContributionChart = memo(function RevenueContributionChart() {
               const payload = (props as { payload?: (typeof data)[0] })?.payload
               if (!payload) return [String(value), String(name ?? '')]
               return [
-                [`${value}% (${formatCurrency(payload.revenue)})`, `${payload.count} partners`],
+                [
+                  `${value}% (${formatCompactCurrency(payload.revenue)})`,
+                  `${payload.count} partners`,
+                ],
                 String(name ?? ''),
               ]
             }}
@@ -77,9 +80,9 @@ const RevenueContributionChart = memo(function RevenueContributionChart() {
           />
         </PieChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
-        Channel revenue distribution following Pareto Principle: top 20% of partners generate 80.2%
-        of revenue
+      <p className="mt-4 text-center italic">
+        Channel revenue distribution following the Pareto principle (80/20): the top partners
+        generate 80% of revenue
       </p>
     </div>
   )

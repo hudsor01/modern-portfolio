@@ -13,7 +13,7 @@ export function ProductsTab() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {productTierEconomics.map((product, index) => (
           <div key={index} className="bg-muted/20 rounded-xl p-4 border border-border">
-            <h3 className="text-base font-semibold mb-3">{product.tier}</h3>
+            <h3 className="mb-3">{product.tier}</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">CAC:</span>

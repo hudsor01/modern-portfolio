@@ -26,8 +26,8 @@ const partnerTierPerformance = partnerProgramMetrics.partnerTiers
 export function TiersTab() {
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">Partner Tier Intelligence & ROI Metrics</h3>
-      <p className="text-sm text-muted-foreground mb-6">
+      <h3 className="mb-4">Partner Tier Intelligence & ROI Metrics</h3>
+      <p className="mb-6">
         Comprehensive partner performance analysis across certification levels and engagement tiers
       </p>
 
@@ -47,7 +47,7 @@ export function TiersTab() {
             {partnerTierPerformance.map((tier, index) => (
               <tr
                 key={index}
-                className="border-b border-border/50 hover:bg-muted/50 transition-colors"
+                className="border-b border-border hover:bg-muted/50 transition-colors"
               >
                 <td className="py-4 px-4 font-medium">{tier.tier}</td>
                 <td className="py-4 px-4">{formatNumber(tier.count)}</td>
@@ -59,7 +59,7 @@ export function TiersTab() {
                       tier.winRate >= 85
                         ? 'bg-success/20 text-success'
                         : tier.winRate >= 70
-                          ? 'bg-warning/20 text-warning'
+                          ? 'bg-warning/20 text-warning-text'
                           : 'bg-destructive/20 text-destructive'
                     }`}
                   >

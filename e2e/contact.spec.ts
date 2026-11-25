@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test'
+import { getOnly } from './_helpers/settle'
 
 /**
  * Contact Page E2E Tests
  *
  * Distinct from `contact-form.spec.ts` (which exercises form mechanics).
  * This spec covers the page-level surface: social cards, privacy policy
- * link, submit-button gating, and the noscript fallback when
+ * link and the noscript fallback when
  * JavaScript is disabled (regression #5).
  */
 
@@ -40,7 +41,7 @@ test.describe('/contact page', () => {
     expect(hasMailto).toBe(true)
   })
 
-  test('consent label links to the privacy policy page', async ({ page }) => {
+  test('privacy notice links to the privacy policy page', async ({ page }) => {
     // Exact name: the footer has its own "Privacy Policy" link.
     const privacyLink = page.getByRole('link', {
       name: /^privacy policy \(opens in a new tab\)$/i,
@@ -51,28 +52,6 @@ test.describe('/contact page', () => {
 
     const response = await page.request.get('/privacy')
     expect(response.status()).toBe(200)
-  })
-
-  test('privacy checkbox toggles agreement state', async ({ page }) => {
-    const checkbox = page.getByRole('checkbox', { name: /agree/i })
-    await expect(checkbox).not.toBeChecked()
-
-    await checkbox.check()
-    await expect(checkbox).toBeChecked()
-
-    await checkbox.uncheck()
-    await expect(checkbox).not.toBeChecked()
-  })
-
-  test('submit button stays disabled until privacy checkbox is checked', async ({ page }) => {
-    const submitButton = page.getByRole('button', { name: /send message/i })
-    await expect(submitButton).toBeDisabled()
-
-    await page.getByRole('checkbox', { name: /agree/i }).check()
-    await expect(submitButton).toBeEnabled()
-
-    await page.getByRole('checkbox', { name: /agree/i }).uncheck()
-    await expect(submitButton).toBeDisabled()
   })
 })
 
@@ -103,4 +82,38 @@ test.describe('/contact page (no JavaScript)', () => {
       await context.close()
     }
   })
+})
+
+test('contact shows one canonical revenue data-stat and no other', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'checked once, on chromium')
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto('/contact')
+  await page.waitForLoadState('networkidle')
+  await expect(page.locator('[data-stat="revenue"]')).toHaveCount(1)
+  await expect(page.locator('[data-stat-label="revenue"]')).toHaveText('Revenue Impact')
+  await expect(page.locator('[data-stat]')).toHaveCount(1)
+})
+
+test('contact Featured Work lists three previews as aria-hidden thumbnails', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'checked once, on chromium')
+  const hits = await getOnly(page)
+  await page.goto('/contact')
+  await page.waitForLoadState('networkidle')
+
+  const heading = page.getByRole('heading', { name: 'Featured Work' })
+  await expect(heading).toBeVisible()
+  const container = heading.locator('xpath=..')
+  const links = container.locator('a[href^="/projects/"]')
+  await expect(links).toHaveCount(3)
+  expect(await links.evaluateAll((els) => els.map((el) => el.getAttribute('href')))).toEqual([
+    '/projects/revenue-kpi',
+    '/projects/forecast-pipeline-intelligence',
+    '/projects/partnership-program-implementation',
+  ])
+  await expect(container.locator('img')).toHaveCount(0)
+  const previews = container.locator('[data-slot="project-preview"]')
+  await expect(previews).toHaveCount(3)
+  for (let i = 0; i < 3; i += 1) await expect(previews.nth(i)).toHaveAttribute('aria-hidden', 'true')
+  await expect(page.getByText('$240K')).toHaveCount(0)
+  expect(hits.serverActions, 'no server action may reach the network').toBe(0)
 })

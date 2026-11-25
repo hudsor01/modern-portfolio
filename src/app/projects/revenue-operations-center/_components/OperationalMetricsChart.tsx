@@ -1,5 +1,6 @@
 'use client'
 import { memo } from 'react'
+import { CHART_BOX } from '@/components/charts/chart-skeleton'
 
 import { LazyRadarChart as RadarChart } from '@/components/charts/lazy-charts'
 import {
@@ -74,7 +75,7 @@ const chartColors = {
 
 const OperationalMetricsChart = memo(function OperationalMetricsChart() {
   return (
-    <div className="h-[var(--chart-height-md)]">
+    <div className={CHART_BOX.md}>
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <PolarGrid stroke={chartColors.grid} />
@@ -86,7 +87,7 @@ const OperationalMetricsChart = memo(function OperationalMetricsChart() {
           <PolarRadiusAxis
             angle={90}
             domain={[60, 100]}
-            tick={{ fontSize: 10, fill: chartColors.axis }}
+            tick={{ fontSize: 12, fill: chartColors.axis }}
             tickFormatter={(value) => `${value}%`}
           />
           <Radar
@@ -118,9 +119,8 @@ const OperationalMetricsChart = memo(function OperationalMetricsChart() {
           <Legend wrapperStyle={{ color: chartCssVars.mutedForeground }} />
         </RadarChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
-        Operational efficiency radar showing 89.7% average performance vs 85% target and 78%
-        industry benchmark
+      <p className="mt-4 text-center italic">
+        Operational efficiency radar showing 89.7% average performance
       </p>
     </div>
   )

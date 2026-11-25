@@ -4,35 +4,42 @@ import Image from 'next/image'
 import Link from 'next/link'
 import {
   ArrowRight,
+  BarChart3,
   Briefcase,
+  Check,
   FileText,
   MessageCircle,
   TrendingUp,
   Users,
   DollarSign,
   Clock,
+  Plug,
+  Workflow,
 } from 'lucide-react'
 import { Navbar } from '@/components/layout/navbar'
 import { NumberTicker } from '@/components/ui/number-ticker'
 import { Button } from '@/components/ui/button'
 import { AvailabilityBadge } from '@/components/ui/availability-badge'
 import {
-  REVENUE_IMPACT,
-  TRANSACTION_GROWTH,
-  NETWORK_GROWTH,
-  YEARS_EXPERIENCE,
   REVENUE_IMPACT_VALUE,
   TRANSACTION_GROWTH_VALUE,
   NETWORK_GROWTH_VALUE,
   YEARS_EXPERIENCE_VALUE,
+  STAT_LABELS,
+  TRANSACTION_GROWTH_CONTEXT,
+  type StatKey,
 } from '@/lib/stats'
+import { DecorativeBlob } from '@/components/ui/decorative-blob'
+import { ProjectCard } from '@/components/projects/project-card'
+import type { Project } from '@/types/project'
 
 // Animated counter with visual impact
 function ImpactMetric({
   value,
   prefix = '',
   suffix = '',
-  label,
+  statKey,
+  context,
   icon: Icon,
   delay = 0,
   decimalPlaces = 0,
@@ -40,7 +47,8 @@ function ImpactMetric({
   value: number
   prefix?: string
   suffix?: string
-  label: string
+  statKey: StatKey
+  context?: string
   icon: React.ElementType
   delay?: number
   decimalPlaces?: number
@@ -49,32 +57,41 @@ function ImpactMetric({
     <div className="group relative">
       <div className="flex items-start gap-4">
         <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-          <Icon className="w-6 h-6 text-primary" />
+          <Icon className="w-6 h-6 text-primary" aria-hidden="true" />
         </div>
         <div>
-          <div className="text-4xl md:text-5xl font-bold text-foreground tabular-nums tracking-tight">
+          <div
+            className="text-4xl md:text-5xl font-semibold text-foreground tabular-nums tracking-tight"
+            data-stat={statKey}
+          >
             {prefix}
             <NumberTicker value={value} delay={delay} decimalPlaces={decimalPlaces} />
             {suffix}
           </div>
-          <div className="text-sm text-muted-foreground font-medium mt-1 uppercase tracking-wider">
-            {label}
+          <div
+            className="text-xs font-semibold text-muted-foreground mt-1 uppercase tracking-wider"
+            data-stat-label={statKey}
+          >
+            {STAT_LABELS[statKey]}
           </div>
+          {context && (
+            <p className="text-xs font-normal text-muted-foreground mt-1 max-w-[24ch]">{context}</p>
+          )}
         </div>
       </div>
     </div>
   )
 }
 
-export default function HomePageContent() {
+export default function HomePageContent({ featuredProjects }: { featuredProjects: Project[] }) {
   return (
     <>
       <Navbar />
 
       {/* Skip-link target (layout.tsx). The navbar stays outside the landmark. */}
-      <main id="main-content">
+      <main id="main-content" tabIndex={-1}>
         {/* Hero Section */}
-        <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
+        <section className="relative pt-24 pb-12 lg:pt-32 lg:pb-16 overflow-clip">
           {/* Sophisticated Background */}
           <div className="absolute inset-0 -z-10">
             {/* Base surface — solid (palette: no gradients) */}
@@ -93,8 +110,8 @@ export default function HomePageContent() {
             />
 
             {/* Gradient orbs */}
-            <div className="absolute top-1/4 -right-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-            <div className="absolute bottom-1/4 -left-32 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+            <DecorativeBlob position="top-right" size="lg" />
+            <DecorativeBlob position="bottom-left" size="lg" className="bottom-1/4" />
 
             {/* Subtle grid */}
             <div
@@ -126,7 +143,7 @@ export default function HomePageContent() {
 
                 {/* Main Headline */}
                 <div className="space-y-4">
-                  <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-[1.1] tracking-tight">
+                  <h1>
                     Transforming{' '}
                     <span className="relative">
                       <span className="relative z-10 text-primary">Revenue</span>
@@ -135,7 +152,7 @@ export default function HomePageContent() {
                     <br />
                     Operations
                   </h1>
-                  <p className="text-xl md:text-2xl text-muted-foreground max-w-lg leading-relaxed">
+                  <p className="max-w-lg">
                     Data-driven strategies that deliver{' '}
                     <span className="text-accent font-semibold">measurable impact</span> and
                     scalable growth.
@@ -143,8 +160,12 @@ export default function HomePageContent() {
                 </div>
 
                 {/* CTA Buttons */}
-                <div className="flex flex-wrap gap-4">
-                  <Button asChild size="lg" className="group h-14 px-8 text-base font-semibold">
+                <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4">
+                  <Button
+                    asChild
+                    size="lg"
+                    className="group h-14 px-8 text-base font-semibold w-full sm:w-auto"
+                  >
                     <Link href="/projects">
                       <Briefcase className="w-5 h-5" />
                       View My Work
@@ -155,7 +176,7 @@ export default function HomePageContent() {
                     asChild
                     variant="outline"
                     size="lg"
-                    className="h-14 px-8 text-base font-semibold"
+                    className="h-14 px-8 text-base font-semibold w-full sm:w-auto"
                   >
                     <Link href="/resume">
                       <FileText className="w-5 h-5" />
@@ -166,7 +187,7 @@ export default function HomePageContent() {
                     asChild
                     variant="ghost"
                     size="lg"
-                    className="h-14 px-8 text-base font-semibold"
+                    className="h-14 px-8 text-base font-semibold w-full sm:w-auto"
                   >
                     <Link href="/contact">
                       <MessageCircle className="w-5 h-5" />
@@ -184,9 +205,9 @@ export default function HomePageContent() {
                   <div className="absolute inset-0 bg-foreground/5 rounded-3xl transform translate-x-4 translate-y-4" />
 
                   {/* Main card */}
-                  <div className="relative bg-card border border-border rounded-3xl p-8 md:p-10">
+                  <div className="relative bg-card border border-border rounded-3xl p-8">
                     {/* Profile header */}
-                    <div className="flex items-center gap-6 mb-8">
+                    <div className="flex items-center gap-6">
                       <div className="relative">
                         <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-border shadow-lg">
                           <Image
@@ -199,44 +220,14 @@ export default function HomePageContent() {
                           />
                         </div>
                         {/* Status indicator */}
-                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-secondary rounded-full border-4 border-card flex items-center justify-center">
+                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-secondary rounded-full border-4 border-border flex items-center justify-center">
                           <div className="w-2 h-2 bg-white rounded-full" />
                         </div>
                       </div>
                       <div>
-                        <h2 className="text-2xl font-bold text-foreground">Richard Hudson</h2>
-                        <p className="text-muted-foreground font-medium">Revenue Operations</p>
-                        <p className="text-sm text-muted-foreground mt-1">Dallas, TX</p>
-                      </div>
-                    </div>
-
-                    {/* Quick stats */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-muted/50 rounded-xl p-4 text-center">
-                        <div className="text-2xl font-bold text-primary">{REVENUE_IMPACT}</div>
-                        <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
-                          Revenue Impact
-                        </div>
-                      </div>
-                      <div className="bg-muted/50 rounded-xl p-4 text-center">
-                        <div className="text-2xl font-bold text-secondary">
-                          {TRANSACTION_GROWTH}
-                        </div>
-                        <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
-                          Growth Delivered
-                        </div>
-                      </div>
-                      <div className="bg-muted/50 rounded-xl p-4 text-center">
-                        <div className="text-2xl font-bold text-accent">{NETWORK_GROWTH}</div>
-                        <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
-                          Network Growth
-                        </div>
-                      </div>
-                      <div className="bg-muted/50 rounded-xl p-4 text-center">
-                        <div className="text-2xl font-bold text-foreground">{YEARS_EXPERIENCE}</div>
-                        <div className="text-xs text-muted-foreground uppercase tracking-wide mt-1">
-                          Years Experience
-                        </div>
+                        <h2>Richard Hudson</h2>
+                        <p>Revenue Operations</p>
+                        <p className="mt-1">Dallas, TX</p>
                       </div>
                     </div>
                   </div>
@@ -247,18 +238,16 @@ export default function HomePageContent() {
         </section>
 
         {/* Impact Section */}
-        <section className="py-16 lg:py-20 bg-muted/30 relative overflow-hidden">
+        <section className="py-12 lg:py-16 bg-muted/30 relative overflow-hidden">
           {/* Decorative elements */}
           <div className="absolute top-0 left-0 w-full h-px bg-border/60" />
           <div className="absolute bottom-0 left-0 w-full h-px bg-border/60" />
 
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             {/* Section header */}
-            <div className="text-center mb-10">
-              <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
-                Proven Results
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <div className="text-center mb-8 lg:mb-10">
+              <h2 className="mb-4">Proven Results</h2>
+              <p className="max-w-2xl mx-auto">
                 Delivering measurable business outcomes through strategic RevOps initiatives
               </p>
             </div>
@@ -269,7 +258,7 @@ export default function HomePageContent() {
                 value={REVENUE_IMPACT_VALUE}
                 prefix="$"
                 suffix="M+"
-                label="Revenue Generated"
+                statKey="revenue"
                 icon={DollarSign}
                 delay={0}
                 decimalPlaces={1}
@@ -277,21 +266,22 @@ export default function HomePageContent() {
               <ImpactMetric
                 value={TRANSACTION_GROWTH_VALUE}
                 suffix="%"
-                label="Growth Achieved"
+                statKey="transaction-growth"
+                context={TRANSACTION_GROWTH_CONTEXT}
                 icon={TrendingUp}
                 delay={0.1}
               />
               <ImpactMetric
                 value={NETWORK_GROWTH_VALUE}
                 suffix="%"
-                label="Network Expansion"
+                statKey="network-growth"
                 icon={Users}
                 delay={0.2}
               />
               <ImpactMetric
                 value={YEARS_EXPERIENCE_VALUE}
                 suffix="+"
-                label="Years Experience"
+                statKey="years"
                 icon={Clock}
                 delay={0.3}
               />
@@ -300,17 +290,17 @@ export default function HomePageContent() {
         </section>
 
         {/* Value Proposition Section */}
-        <section className="py-16 lg:py-20">
+        <section className="py-12 lg:py-16">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               {/* Left - Text content */}
               <div className="space-y-6">
-                <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground leading-tight">
+                <h2>
                   Strategic Revenue Operations
                   <br />
                   <span className="text-primary">That Scales</span>
                 </h2>
-                <p className="text-lg text-muted-foreground leading-relaxed">
+                <p>
                   I specialize in building and optimizing revenue operations systems that drive
                   predictable growth. From CRM implementation to sales automation, I create
                   data-driven solutions that align sales, marketing, and customer success teams.
@@ -324,7 +314,7 @@ export default function HomePageContent() {
                   ].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-foreground">
                       <span className="flex-shrink-0 w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center">
-                        <span className="w-2 h-2 rounded-full bg-secondary" />
+                        <Check className="w-3.5 h-3.5 text-secondary" aria-hidden="true" />
                       </span>
                       {item}
                     </li>
@@ -344,34 +334,28 @@ export default function HomePageContent() {
               <div className="grid gap-4">
                 <div className="group p-6 bg-card border border-border rounded-2xl hover:border-primary/30 hover:shadow-lg transition-all duration-300">
                   <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                    <div className="w-3 h-3 rounded-full bg-primary" />
+                    <BarChart3 className="w-5 h-5 text-primary" aria-hidden="true" />
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    Data-Driven Insights
-                  </h3>
-                  <p className="text-muted-foreground">
+                  <h3 className="mb-2">Data-Driven Insights</h3>
+                  <p>
                     Transform raw data into actionable intelligence that drives revenue decisions.
                   </p>
                 </div>
 
                 <div className="group p-6 bg-card border border-border rounded-2xl hover:border-secondary/30 hover:shadow-lg transition-all duration-300">
                   <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center mb-4">
-                    <div className="w-3 h-3 rounded-full bg-secondary" />
+                    <Workflow className="w-5 h-5 text-secondary" aria-hidden="true" />
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">Process Automation</h3>
-                  <p className="text-muted-foreground">
-                    Eliminate manual work and scale operations with intelligent automation.
-                  </p>
+                  <h3 className="mb-2">Process Automation</h3>
+                  <p>Eliminate manual work and scale operations with intelligent automation.</p>
                 </div>
 
                 <div className="group p-6 bg-card border border-border rounded-2xl hover:border-accent/30 hover:shadow-lg transition-all duration-300">
                   <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
-                    <div className="w-3 h-3 rounded-full bg-accent" />
+                    <Plug className="w-5 h-5 text-accent" aria-hidden="true" />
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">System Integration</h3>
-                  <p className="text-muted-foreground">
-                    Connect your tech stack for seamless data flow and unified reporting.
-                  </p>
+                  <h3 className="mb-2">System Integration</h3>
+                  <p>Connect your tech stack for seamless data flow and unified reporting.</p>
                 </div>
               </div>
             </div>
@@ -382,91 +366,50 @@ export default function HomePageContent() {
           Per Mueller SEO Office Hours: home pages forward PageRank;
           content closer to home is crawled faster. Selecting 4 flagship
           projects (not all 8) preserves clear hierarchy. */}
-        <section className="relative py-16 lg:py-24">
-          <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="mb-12">
-              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                Featured Work
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl">
-                Selected revenue operations projects with measured business impact.
-              </p>
+        {featuredProjects.length > 0 && (
+          <section className="relative py-12 lg:py-16">
+            <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
+              <div className="mb-8 lg:mb-10">
+                <h2 className="mb-4">Featured Work</h2>
+                <p className="max-w-2xl">
+                  Selected revenue operations projects with measured business impact.
+                </p>
+              </div>
+              <div className="grid md:grid-cols-2 gap-6 mb-8">
+                {featuredProjects.map((project, i) => (
+                  <ProjectCard key={project.id} project={project} index={i} />
+                ))}
+              </div>
+              <div className="text-center">
+                <Link
+                  href="/projects"
+                  className="group inline-flex items-center gap-2 text-primary hover:underline"
+                >
+                  View all projects
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </div>
             </div>
-            <div className="grid md:grid-cols-2 gap-6 mb-8">
-              <Link
-                href="/projects/revenue-kpi"
-                className="group rounded-2xl border border-border bg-card p-6 hover:border-primary transition-colors"
-              >
-                <h3 className="text-xl font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
-                  Revenue Operations Dashboard
-                </h3>
-                <p className="text-muted-foreground">
-                  Real-time revenue tracking and forecasting platform with advanced analytics.
-                </p>
-              </Link>
-              <Link
-                href="/projects/forecast-pipeline-intelligence"
-                className="group rounded-2xl border border-border bg-card p-6 hover:border-primary transition-colors"
-              >
-                <h3 className="text-xl font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
-                  Forecast & Pipeline Intelligence
-                </h3>
-                <p className="text-muted-foreground">
-                  Predictive forecasting improving accuracy by 31% and reducing slippage 26%.
-                </p>
-              </Link>
-              <Link
-                href="/projects/partnership-program-implementation"
-                className="group rounded-2xl border border-border bg-card p-6 hover:border-primary transition-colors"
-              >
-                <h3 className="text-xl font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
-                  Partnership Program Implementation
-                </h3>
-                <p className="text-muted-foreground">
-                  Built first partnership program from scratch with 90%+ automation.
-                </p>
-              </Link>
-              <Link
-                href="/projects/sales-enablement"
-                className="group rounded-2xl border border-border bg-card p-6 hover:border-primary transition-colors"
-              >
-                <h3 className="text-xl font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
-                  Sales Enablement Platform
-                </h3>
-                <p className="text-muted-foreground">
-                  Training and coaching platform increasing win rates by 34%.
-                </p>
-              </Link>
-            </div>
-            <div className="text-center">
-              <Link
-                href="/projects"
-                className="group inline-flex items-center gap-2 text-primary hover:underline font-medium"
-              >
-                View all projects
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* Final CTA Section - Clean & Consistent */}
-        <section className="relative py-16 lg:py-20 overflow-hidden">
+        <section className="relative py-12 lg:py-16 overflow-clip">
           {/* Subtle decorative elements */}
-          <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
+          <DecorativeBlob position="top-right" />
+          <DecorativeBlob position="bottom-left" className="bottom-1/4" />
 
           <div className="relative max-w-4xl mx-auto px-6 lg:px-8 text-center">
             {/* Centered content flow */}
             <div className="space-y-6">
               {/* Main headline */}
               <div>
-                <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-tight">
+                <h2>
                   Ready to transform your
                   <br />
                   <span className="text-primary">revenue operations?</span>
                 </h2>
-                <p className="text-lg text-muted-foreground mt-4 max-w-2xl mx-auto">
+                <p className="mt-4 max-w-2xl mx-auto">
                   Whether you're scaling a startup or optimizing enterprise operations, let's
                   discuss how I can help drive measurable growth.
                 </p>
@@ -495,12 +438,9 @@ export default function HomePageContent() {
               </div>
 
               {/* Email as subtle text link */}
-              <p className="text-muted-foreground text-sm">
+              <p>
                 Or email me directly at{' '}
-                <a
-                  href="mailto:hudsor01@icloud.com"
-                  className="text-primary hover:text-primary/80 font-medium transition-colors"
-                >
+                <a href="mailto:hudsor01@icloud.com" className="text-link">
                   hudsor01@icloud.com
                 </a>
               </p>
@@ -508,7 +448,7 @@ export default function HomePageContent() {
           </div>
 
           {/* Bottom signature */}
-          <div className="relative max-w-4xl mx-auto px-6 lg:px-8 mt-10 pt-6 border-t border-border">
+          <div className="relative max-w-4xl mx-auto px-6 lg:px-8 mt-8 pt-6 border-t border-border">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-border shadow-sm">
@@ -521,13 +461,11 @@ export default function HomePageContent() {
                   />
                 </div>
                 <div>
-                  <p className="text-foreground font-semibold">Richard Hudson</p>
-                  <p className="text-muted-foreground text-sm">Revenue Operations Professional</p>
+                  <p>Richard Hudson</p>
+                  <p>Revenue Operations Professional</p>
                 </div>
               </div>
-              <p className="text-muted-foreground text-sm">
-                Based in Dallas, TX • Open to remote opportunities
-              </p>
+              <p>Based in Dallas, TX • Open to remote opportunities</p>
             </div>
           </div>
         </section>

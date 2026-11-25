@@ -9,7 +9,7 @@ import { incentivePrograms } from '../data/constants'
 import { formatCurrency, formatPercentage } from '@/lib/data-formatters'
 
 const PerformanceIncentiveChart = dynamic(() => import('./PerformanceIncentiveChart'), {
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="lg" />,
   ssr: false,
 })
 
@@ -50,7 +50,7 @@ export function IncentivesTab() {
               {incentivePrograms.map((program, index) => (
                 <tr
                   key={index}
-                  className="border-b border-border/50 hover:bg-muted/50 transition-colors"
+                  className="border-b border-border hover:bg-muted/50 transition-colors"
                 >
                   <td className="py-4 px-4 font-medium">{program.program}</td>
                   <td className="py-4 px-4">{program.participants}</td>
@@ -62,7 +62,7 @@ export function IncentivesTab() {
                         program.effectiveness >= 85
                           ? 'bg-success/10 text-success'
                           : program.effectiveness >= 75
-                            ? 'bg-warning/10 text-warning'
+                            ? 'bg-warning/10 text-warning-text'
                             : 'bg-destructive/10 text-destructive'
                       }`}
                     >

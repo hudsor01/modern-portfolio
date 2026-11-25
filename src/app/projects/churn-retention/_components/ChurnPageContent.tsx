@@ -1,5 +1,6 @@
 'use client'
 
+import { ogImageUrl } from '@/lib/absolute-url'
 import { useAnalyticsData } from '@/hooks/use-analytics-data'
 import { TrendingDown, Users, Activity, AlertCircle } from 'lucide-react'
 
@@ -49,6 +50,17 @@ export default function ChurnAnalysis() {
       value: currentMonth ? formatPercentage(currentMonth.churnRate / 100) : 'N/A',
       subtitle: 'Churn Rate',
       variant: 'warning' as const,
+      trend: {
+        direction:
+          churnDifference > 0
+            ? ('up' as const)
+            : churnDifference < 0
+              ? ('down' as const)
+              : ('neutral' as const),
+        value: formatPercentage(Math.abs(churnDifference) / 100),
+        label: 'vs last month',
+        invert: true,
+      },
     },
     {
       id: 'retention-rate',
@@ -59,25 +71,12 @@ export default function ChurnAnalysis() {
       variant: 'success' as const,
     },
     {
-      id: 'churn-trend',
+      id: 'previous-churn-rate',
       icon: Activity,
-      label: 'vs Last Month',
-      value:
-        churnDifference > 0
-          ? `+${formatPercentage(Math.abs(churnDifference) / 100)}`
-          : formatPercentage(Math.abs(churnDifference) / 100),
-      subtitle: 'Churn Change',
+      label: 'Last Month',
+      value: previousMonth ? formatPercentage(previousMonth.churnRate / 100) : 'N/A',
+      subtitle: 'Churn Rate',
       variant: 'info' as const,
-      trend: {
-        direction:
-          churnDifference > 0
-            ? ('up' as const)
-            : churnDifference < 0
-              ? ('down' as const)
-              : ('neutral' as const),
-        value: formatPercentage(Math.abs(churnDifference) / 100),
-        label: 'vs last month',
-      },
     },
     {
       id: 'churned-partners',
@@ -92,19 +91,24 @@ export default function ChurnAnalysis() {
   return (
     <>
       <ProjectJsonLd
-        title="Customer Churn & Retention Analysis - Predictive Analytics"
-        description="Advanced churn prediction and retention analysis dashboard with customer lifecycle metrics, retention heatmaps, and predictive modeling for customer success optimization."
+        title="Partner Churn & Retention Analysis - Predictive Analytics"
+        description="Advanced churn prediction and retention analysis dashboard with partner lifecycle metrics, retention heatmaps, and predictive modeling for partner success optimization."
         slug="churn-retention"
-        category="Customer Analytics"
+        image={ogImageUrl({
+          title: 'Partner Churn & Retention: Predictive Analytics',
+          subtitle: 'Revenue Operations Project',
+          project: 'churn-retention',
+        })}
+        category="Partner Analytics"
         datePublished="2025-03-04T00:00:00-06:00"
         dateModified="2026-04-10T00:00:00-06:00"
         tags={[
           'Churn Analysis',
-          'Customer Retention',
+          'Partner Retention',
           'Predictive Analytics',
-          'Customer Success',
+          'Partner Success',
           'Lifecycle Management',
-          'Customer Analytics',
+          'Partner Analytics',
           'Data Science',
           'Machine Learning',
         ]}

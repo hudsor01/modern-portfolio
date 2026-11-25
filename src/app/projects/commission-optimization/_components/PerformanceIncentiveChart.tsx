@@ -4,7 +4,7 @@ import { memo } from 'react'
 import { LazyBarChart as BarChart } from '@/components/charts/lazy-charts'
 import { Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
 import { chartColors as baseChartColors, chartCssVars } from '@/lib/charts'
-import { formatCurrency } from '@/lib/data-formatters'
+import { formatCompactCurrency } from '@/lib/data-formatters'
 
 // Performance incentive program data
 const data = [
@@ -56,13 +56,8 @@ const chartColors = {
 }
 
 const PerformanceIncentiveChart = memo(function PerformanceIncentiveChart() {
-  // Thin undefined-guard over the canonical formatter (recharts may pass
-  // undefined for empty data points).
-  const formatCurrencyValue = (value: number | undefined) =>
-    value === undefined ? '' : formatCurrency(value)
-
   return (
-    <div className="h-[var(--chart-height-md)]">
+    <div className="h-full w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
@@ -82,7 +77,7 @@ const PerformanceIncentiveChart = memo(function PerformanceIncentiveChart() {
             fontSize={12}
             tickLine={false}
             axisLine={{ stroke: chartColors.axis, strokeOpacity: 0.5 }}
-            tickFormatter={(value) => formatCurrencyValue(value)}
+            tickFormatter={(value) => formatCompactCurrency(Number(value))}
           />
           <YAxis
             yAxisId="effectiveness"
@@ -104,10 +99,10 @@ const PerformanceIncentiveChart = memo(function PerformanceIncentiveChart() {
             formatter={(value, name) => {
               const safeName = String(name ?? '')
               const safeValue = Number(value ?? 0)
-              if (safeName === 'budget') return [formatCurrency(safeValue), 'Budget']
-              if (safeName === 'payout') return [formatCurrency(safeValue), 'Payout']
+              if (safeName === 'budget') return [formatCompactCurrency(safeValue), 'Budget']
+              if (safeName === 'payout') return [formatCompactCurrency(safeValue), 'Payout']
               if (safeName === 'effectiveness') return [`${safeValue}%`, 'Effectiveness']
-              if (safeName === 'avgBonus') return [formatCurrency(safeValue), 'Avg Bonus']
+              if (safeName === 'avgBonus') return [formatCompactCurrency(safeValue), 'Avg Bonus']
               if (safeName === 'performanceLift') return [`${safeValue}%`, 'Performance Lift']
               if (safeName === 'participants') return [safeValue, 'Participants']
               return [safeValue, safeName]
@@ -143,7 +138,7 @@ const PerformanceIncentiveChart = memo(function PerformanceIncentiveChart() {
           />
         </BarChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Performance incentive program analysis showing budget allocation, payout efficiency, and
         effectiveness metrics across targeted partner programs
       </p>

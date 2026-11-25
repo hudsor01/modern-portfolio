@@ -1,6 +1,6 @@
 'use client'
 import { memo } from 'react'
-import { formatCurrency } from '@/lib/data-formatters'
+import { formatCompactCurrency } from '@/lib/data-formatters'
 
 import { LazyScatterChart as ScatterChart } from '@/components/charts/lazy-charts'
 import {
@@ -25,7 +25,7 @@ const scatterSegmentColors = {
 
 const CLVPredictionChart = memo(function CLVPredictionChart() {
   return (
-    <div className="h-[var(--chart-height-md)]">
+    <div className="h-full w-full">
       <ResponsiveContainer width="100%" height="100%">
         <ScatterChart
           data={clvPredictionData}
@@ -39,7 +39,7 @@ const CLVPredictionChart = memo(function CLVPredictionChart() {
             fontSize={12}
             tickLine={false}
             axisLine={{ stroke: chartColors.axis, strokeOpacity: 0.5 }}
-            tickFormatter={(value) => formatCurrency(value)}
+            tickFormatter={(value) => formatCompactCurrency(Number(value))}
             domain={['dataMin - 100', 'dataMax + 100']}
           />
           <YAxis
@@ -49,7 +49,7 @@ const CLVPredictionChart = memo(function CLVPredictionChart() {
             fontSize={12}
             tickLine={false}
             axisLine={{ stroke: chartColors.axis, strokeOpacity: 0.5 }}
-            tickFormatter={(value) => formatCurrency(value)}
+            tickFormatter={(value) => formatCompactCurrency(Number(value))}
             domain={['dataMin - 100', 'dataMax + 100']}
           />
           {/* Perfect prediction reference line */}
@@ -72,7 +72,7 @@ const CLVPredictionChart = memo(function CLVPredictionChart() {
             formatter={(value, name) => {
               const safeValue = Number(value ?? 0)
               const safeName = String(name ?? '')
-              if (safeName === 'actual') return [formatCurrency(safeValue), 'Actual CLV']
+              if (safeName === 'actual') return [formatCompactCurrency(safeValue), 'Actual CLV']
               return [safeValue, safeName]
             }}
             labelFormatter={(label, payload) => {
@@ -80,7 +80,7 @@ const CLVPredictionChart = memo(function CLVPredictionChart() {
                 const point = payload[0].payload
                 return [
                   `Segment: ${point.segment}`,
-                  `Predicted: ${formatCurrency(point.predicted)}`,
+                  `Predicted: ${formatCompactCurrency(point.predicted)}`,
                   `Accuracy: ${point.accuracy}%`,
                 ]
               }
@@ -98,7 +98,7 @@ const CLVPredictionChart = memo(function CLVPredictionChart() {
           ))}
         </ScatterChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Scatter plot showing BTYD model predictions vs actual CLV performance with 94.3% average
         accuracy
       </p>

@@ -5,11 +5,11 @@ import { ChartSkeleton } from '@/components/charts/chart-skeleton'
 import { ChartContainer } from '@/components/ui/chart-container'
 
 const PartnerTierChart = dynamicImport(() => import('./PartnerTierChart'), {
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="sm" />,
   ssr: false,
 })
 const RevenueContributionChart = dynamicImport(() => import('./RevenueContributionChart'), {
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="sm" />,
   ssr: false,
 })
 
@@ -19,7 +19,7 @@ export function OverviewTab() {
       <ChartContainer
         title="Partner Tier Performance Analysis"
         description="Revenue and ROI analysis across certified, legacy, and new partner tiers"
-        height={250}
+        size="sm"
       >
         <PartnerTierChart />
       </ChartContainer>
@@ -27,7 +27,7 @@ export function OverviewTab() {
       <ChartContainer
         title="Channel Revenue Contribution"
         description="Partner revenue distribution following industry 80/20 performance rule"
-        height={250}
+        size="sm"
       >
         <RevenueContributionChart />
       </ChartContainer>

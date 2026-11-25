@@ -5,7 +5,8 @@ import { TrendingUp, Map as MapIcon, Database, Zap } from 'lucide-react'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
-import { formatNumber, formatTrend } from '@/lib/data-formatters'
+import { formatNumber } from '@/lib/data-formatters'
+import { ogImageUrl } from '@/lib/absolute-url'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { NarrativeSections } from './NarrativeSections'
 import { AlgorithmicApproachesGrid } from './AlgorithmicApproachesGrid'
@@ -17,16 +18,16 @@ export default function QuotaTerritoryManagementProject() {
       id: 'forecast-accuracy',
       icon: TrendingUp,
       label: 'Forecast Accuracy',
-      value: formatTrend(0.28, { format: 'percentage', showArrow: false }),
-      subtitle: 'Improvement',
+      value: '92%',
+      subtitle: 'From 64%',
       variant: 'success' as const,
     },
     {
       id: 'quota-variance',
       icon: Zap,
       label: 'Quota Variance',
-      value: formatTrend(-0.32, { format: 'percentage', showArrow: false }),
-      subtitle: 'Reduction',
+      value: '11%',
+      subtitle: 'From 32%',
       variant: 'primary' as const,
     },
     {
@@ -53,8 +54,7 @@ export default function QuotaTerritoryManagementProject() {
       description:
         'Multi-factor model incorporating territory potential, historical performance, experience level, and market conditions',
       outcomes: [
-        '18% reduction in sales rep churn',
-        'Improved rep satisfaction scores by 24%',
+        'Sales rep turnover reduced from 28% to 10%',
         'Reduced turnover-related revenue impact',
       ],
     },
@@ -63,7 +63,7 @@ export default function QuotaTerritoryManagementProject() {
       description:
         'Machine learning models predicting territory revenue potential and optimal rep placement',
       outcomes: [
-        '28% improvement in forecast accuracy',
+        'Forecast accuracy improved from 64% to 92%',
         'Better territory-to-rep matching',
         'Optimized sales coverage',
       ],
@@ -83,7 +83,7 @@ export default function QuotaTerritoryManagementProject() {
       description:
         'Advanced simulation tools for evaluating different territory assignments and quota structures',
       outcomes: [
-        'Reduced planning cycle by 60%',
+        'Planning cycle reduced from 8 weeks to 3 weeks',
         'Better executive visibility into trade-offs',
         'Faster implementation of changes',
       ],
@@ -93,8 +93,13 @@ export default function QuotaTerritoryManagementProject() {
   return (
     <>
       <ProjectJsonLd
+        image={ogImageUrl({
+          title: 'Intelligent Quota Management & Territory Planning',
+          subtitle: 'Revenue Operations Project',
+          project: 'quota-territory-management',
+        })}
         title="Intelligent Quota Management & Territory Planning"
-        description="Territory management system that improved forecast accuracy by 28% and reduced quota variance by 32%"
+        description="Territory management system that raised forecast accuracy from 64% to 92% and reduced quota variance from 32% to 11%"
         slug="quota-territory-management"
         category="Revenue Operations"
         datePublished="2025-11-19T00:00:00-06:00"
@@ -109,14 +114,14 @@ export default function QuotaTerritoryManagementProject() {
 
       <ProjectPageLayout
         title="Intelligent Quota Management & Territory Planning"
-        description="Advanced quota setting and territory assignment system using predictive analytics and fairness algorithms. Optimized territory design increased forecast accuracy by 28% and reduced quota attainment variance by 32%."
+        description="Advanced quota setting and territory assignment system using predictive analytics and fairness algorithms. Optimized territory design raised forecast accuracy from 64% to 92% and reduced quota attainment variance from 32% to 11%."
         tags={[
           {
-            label: `Forecast Accuracy: ${formatTrend(0.28, { format: 'percentage', showArrow: false })}`,
+            label: 'Forecast Accuracy: 92% (from 64%)',
             variant: 'primary',
           },
           {
-            label: `Quota Variance: ${formatTrend(-0.32, { format: 'percentage', showArrow: false })}`,
+            label: 'Quota Variance: 11% (from 32%)',
             variant: 'secondary',
           },
           { label: `${formatNumber(47)} Territories Optimized`, variant: 'primary' },

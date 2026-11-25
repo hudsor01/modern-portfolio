@@ -9,10 +9,11 @@ export const dynamic = 'force-static'
 export const metadata = genMeta({
   title: 'Intelligent Quota Management & Territory Planning',
   description:
-    'Advanced quota setting and territory assignment system using predictive analytics and fairness algorithms. Optimized territory design increased forecast accuracy by 28% and reduced quota attainment variance by 32%.',
+    'Advanced quota setting and territory assignment system using predictive analytics and fairness algorithms. Optimized territory design raised forecast accuracy from 64% to 92% and reduced quota attainment variance from 32% to 11%.',
   path: '/projects/quota-territory-management',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
+  ogProject: 'quota-territory-management',
 })
 
 export default async function QuotaTerritoryManagementPage() {

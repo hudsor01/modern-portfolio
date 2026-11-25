@@ -31,6 +31,13 @@ describe('ProjectPageLayout', () => {
     expect(screen.getByTestId('page-children')).toBeTruthy()
   })
 
+  it('lets the h1 inherit the site display font and weight (no inline override)', () => {
+    render(<ProjectPageLayout {...baseProps} />)
+    const style = screen.getByRole('heading', { level: 1 }).style
+    expect(style.fontFamily).toBe('')
+    expect(style.fontWeight).toBe('')
+  })
+
   it('renders all provided tags', () => {
     render(<ProjectPageLayout {...baseProps} />)
     const tagsContainer = screen.getByTestId('project-tags')
@@ -110,5 +117,17 @@ describe('ProjectPageLayout', () => {
       />
     )
     expect(screen.getByText(/1,234,567/)).toBeTruthy()
+  })
+
+  it('has no second banner: project-header is a div and main is focusable', () => {
+    const { container } = render(<ProjectPageLayout {...baseProps} />)
+    expect(screen.getByTestId('project-header').tagName).toBe('DIV')
+    // The only banner is the Navbar's; the layout adds none of its own.
+    const headers = container.querySelectorAll('header')
+    expect(headers.length).toBe(1)
+    expect(headers[0]?.contains(screen.getByTestId('project-header'))).toBe(false)
+    const mains = container.querySelectorAll('main#main-content')
+    expect(mains.length).toBe(1)
+    expect(mains[0]?.getAttribute('tabindex')).toBe('-1')
   })
 })

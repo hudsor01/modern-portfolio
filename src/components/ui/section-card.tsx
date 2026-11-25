@@ -10,7 +10,7 @@ const sectionCardVariants = cva(
     variants: {
       variant: {
         default: 'bg-card border-border shadow-sm',
-        glass: 'glass border-border/50 shadow-sm backdrop-blur-sm',
+        glass: 'glass border-border shadow-sm backdrop-blur-sm',
         // Formerly a gradient card/card/muted; palette forbids gradients.
         // Solid card surface with a stronger shadow retains the elevated feel.
         gradient: 'bg-card border-border shadow-md',
@@ -34,32 +34,6 @@ const sectionCardHeaderVariants = cva('flex flex-col space-y-2', {
       sm: 'mb-3',
       md: 'mb-4',
       lg: 'mb-6',
-    },
-  },
-  defaultVariants: {
-    padding: 'md',
-  },
-})
-
-const sectionCardTitleVariants = cva('font-display font-semibold leading-tight text-foreground', {
-  variants: {
-    padding: {
-      sm: 'text-lg',
-      md: 'text-xl',
-      lg: 'text-2xl',
-    },
-  },
-  defaultVariants: {
-    padding: 'md',
-  },
-})
-
-const sectionCardDescriptionVariants = cva('text-muted-foreground leading-relaxed', {
-  variants: {
-    padding: {
-      sm: 'text-sm',
-      md: 'text-base',
-      lg: 'text-lg',
     },
   },
   defaultVariants: {
@@ -96,10 +70,8 @@ const SectionCard = React.forwardRef<HTMLDivElement, SectionCardProps>(
         {...props}
       >
         <div className={cn(sectionCardHeaderVariants({ padding }))}>
-          <Heading className={cn(sectionCardTitleVariants({ padding }))}>{title}</Heading>
-          {description && (
-            <p className={cn(sectionCardDescriptionVariants({ padding }))}>{description}</p>
-          )}
+          <Heading>{title}</Heading>
+          {description && <p>{description}</p>}
         </div>
         <div className="flex-1">{children}</div>
       </div>

@@ -7,6 +7,7 @@ import { useTabQueryState } from '@/components/projects/use-tab-query-state'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { ogImageUrl } from '@/lib/absolute-url'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/data-formatters'
 import { NarrativeSections } from './NarrativeSections'
 import { OverviewTab } from './OverviewTab'
@@ -69,6 +70,11 @@ export default function PartnerPerformanceIntelligence() {
   return (
     <>
       <ProjectJsonLd
+        image={ogImageUrl({
+          title: 'Partner Performance Intelligence Dashboard',
+          subtitle: 'Revenue Operations Project',
+          project: 'partner-performance',
+        })}
         title="Partner Performance Intelligence Dashboard"
         description="Strategic channel analytics and partner ROI intelligence demonstrating 83.2% win rate across multi-tier partner ecosystem with 4.7x quick ratio."
         slug="partner-performance"

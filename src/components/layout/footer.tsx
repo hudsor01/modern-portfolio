@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { getDisplayYearMonth } from '@/lib/data-formatters'
 
 // Sitewide internal-link surface. Every page (including the handful Google has
 // actually indexed) renders this footer, so these links create crawl paths +
@@ -14,6 +15,7 @@ const FOOTER_SECTIONS: ReadonlyArray<{
     links: [
       { label: 'About', href: '/about' },
       { label: 'Projects', href: '/projects' },
+      { label: 'Tools', href: '/tools' },
       { label: 'Resume', href: '/resume' },
       { label: 'Contact', href: '/contact' },
     ],
@@ -51,7 +53,7 @@ const FOOTER_SECTIONS: ReadonlyArray<{
 ]
 
 export function Footer() {
-  const currentYear = new Date().getFullYear()
+  const currentYear = getDisplayYearMonth().year
 
   return (
     <footer className="bg-card border-t border-border">
@@ -59,17 +61,27 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Brand / intro column */}
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="font-display text-lg font-semibold text-foreground">
+            <Link href="/" className="font-display text-lg text-foreground">
               Richard Hudson
             </Link>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-2">
               Revenue Operations — forecasting, pipeline, and GTM analytics for B2B SaaS.
             </p>
           </div>
 
-          {FOOTER_SECTIONS.map((section) => (
-            <nav key={section.heading} aria-label={section.heading}>
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground">
+          {FOOTER_SECTIONS.map((section, i) => (
+            <nav
+              key={section.heading}
+              aria-label={section.heading}
+              // Two columns on mobile: an odd last section spans the full row so no grid cell is
+              // left empty and its long titles do not wrap. Four columns from md up.
+              className={
+                i === FOOTER_SECTIONS.length - 1 && FOOTER_SECTIONS.length % 2 === 1
+                  ? 'col-span-2 md:col-span-1'
+                  : undefined
+              }
+            >
+              <h2 className="font-sans text-xs font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
                 {section.heading}
               </h2>
               <ul className="mt-3 space-y-2">

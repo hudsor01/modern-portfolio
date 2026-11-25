@@ -1,5 +1,6 @@
 'use client'
 
+import { ogImageUrl } from '@/lib/absolute-url'
 import {
   TrendingUp,
   Users,
@@ -157,6 +158,11 @@ export default function LeadAttribution() {
         title="Lead Attribution & Marketing Analytics - Multi-Touch Attribution"
         description="Comprehensive lead attribution analysis with multi-touch attribution modeling."
         slug="lead-attribution"
+        image={ogImageUrl({
+          title: 'Lead Attribution: Multi-Touch Marketing Analytics',
+          subtitle: 'Revenue Operations Project',
+          project: 'lead-attribution',
+        })}
         category="Marketing Analytics"
         datePublished="2025-03-04T00:00:00-06:00"
         dateModified="2026-04-10T00:00:00-06:00"
@@ -212,7 +218,7 @@ export default function LeadAttribution() {
               <ChartContainer
                 title="Lead Generation Trends"
                 description="Monthly lead volume and growth patterns"
-                height={400}
+                size="lg"
               >
                 <TrendsChart data={trendData} />
               </ChartContainer>

@@ -106,14 +106,6 @@ export const chartConfig = {
     large: { top: 30, right: 40, left: 30, bottom: 30 },
   },
 
-  // Standard heights for different chart types
-  heights: {
-    compact: 200,
-    standard: 300,
-    large: 400,
-    full: 500,
-  },
-
   // Animation settings
   animation: {
     duration: 1500,

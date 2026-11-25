@@ -8,29 +8,18 @@
 
 import type React from 'react'
 import dynamic from 'next/dynamic'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Tooltip, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts'
-import { tooltipStyles, gridStyles, axisStyles, chartConfig } from '@/lib/charts'
-
-// ============================================================================
-// Loading Skeleton for Charts
-// ============================================================================
-
-function ChartSkeleton({ height = 300 }: { height?: number }) {
-  return (
-    <div className="w-full animate-pulse" style={{ height }}>
-      <Skeleton className="w-full h-full rounded-xl bg-white/5" />
-    </div>
-  )
-}
-
-function ChartSkeletonSmall() {
-  return <ChartSkeleton height={200} />
-}
-
-function ChartSkeletonLarge() {
-  return <ChartSkeleton height={400} />
-}
+import { cn } from '@/lib/utils'
+import { ChartSkeleton, type ChartBoxSize } from './chart-skeleton'
+import { ChartContainer as ChartCard } from '@/components/ui/chart-container'
+import {
+  Tooltip,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+  type YAxisProps,
+} from 'recharts'
+import { tooltipStyles, gridStyles, axisStyles } from '@/lib/charts'
 
 // ============================================================================
 // Lazy-loaded Chart Components
@@ -66,7 +55,7 @@ export const LazyBarChart = dynamic(() => import('recharts').then((mod) => mod.B
  */
 export const LazyPieChart = dynamic(() => import('recharts').then((mod) => mod.PieChart), {
   ssr: false,
-  loading: () => <ChartSkeletonSmall />,
+  loading: () => <ChartSkeleton height="sm" />,
 })
 
 /**
@@ -77,7 +66,7 @@ export const LazyComposedChart = dynamic(
   () => import('recharts').then((mod) => mod.ComposedChart),
   {
     ssr: false,
-    loading: () => <ChartSkeletonLarge />,
+    loading: () => <ChartSkeleton height="lg" />,
   }
 )
 
@@ -86,7 +75,7 @@ export const LazyComposedChart = dynamic(
  */
 export const LazyRadarChart = dynamic(() => import('recharts').then((mod) => mod.RadarChart), {
   ssr: false,
-  loading: () => <ChartSkeletonSmall />,
+  loading: () => <ChartSkeleton height="sm" />,
 })
 
 /**
@@ -102,15 +91,15 @@ export const LazyScatterChart = dynamic(() => import('recharts').then((mod) => m
 // ============================================================================
 
 // Props interfaces
-interface ChartContainerProps {
+interface ChartViewportProps {
   children: React.ReactNode
-  height?: keyof typeof chartConfig.heights | number
   className?: string
 }
 
 interface ChartGridProps {
   vertical?: boolean
   horizontal?: boolean
+  yAxisId?: string | number
 }
 
 interface ChartAxisProps {
@@ -121,14 +110,15 @@ interface ChartAxisProps {
   textAnchor?: 'start' | 'middle' | 'end'
   height?: number
   width?: number
+  yAxisId?: string | number
+  orientation?: 'left' | 'right'
+  label?: YAxisProps['label']
 }
 
-// Standardized chart container
-function ChartContainer({ children, height = 'standard', className = '' }: ChartContainerProps) {
-  const containerHeight = typeof height === 'number' ? height : chartConfig.heights[height]
-
+// Fills the CHART_BOX owned by the card (ChartCard) it is rendered inside
+function ChartViewport({ children, className }: ChartViewportProps) {
   return (
-    <div className={`w-full ${className}`} style={{ height: containerHeight }}>
+    <div className={cn('h-full w-full', className)}>
       <ResponsiveContainer width="100%" height="100%" minWidth={0}>
         {children as React.ReactElement}
       </ResponsiveContainer>
@@ -137,8 +127,15 @@ function ChartContainer({ children, height = 'standard', className = '' }: Chart
 }
 
 // Standardized grid component
-export function ChartGrid({ vertical = false, horizontal = true }: ChartGridProps) {
-  return <CartesianGrid {...gridStyles} vertical={vertical} horizontal={horizontal} />
+export function ChartGrid({ vertical = false, horizontal = true, yAxisId }: ChartGridProps) {
+  return (
+    <CartesianGrid
+      {...gridStyles}
+      vertical={vertical}
+      horizontal={horizontal}
+      {...(yAxisId !== undefined && { yAxisId })}
+    />
+  )
 }
 
 // Standardized X-axis component
@@ -149,7 +146,7 @@ export function ChartXAxis({
   textAnchor,
   height,
   ...props
-}: ChartAxisProps) {
+}: Omit<ChartAxisProps, 'orientation' | 'label' | 'yAxisId'>) {
   return (
     <XAxis
       dataKey={dataKey}
@@ -186,26 +183,33 @@ interface ChartWrapperProps {
   children: React.ReactNode
   title?: string
   caption?: string
-  height?: keyof typeof chartConfig.heights | number
+  /** Subtitle under the title: the header style every project chart card shares. */
+  description?: string
+  size?: ChartBoxSize
   className?: string
+  /** Use 2 when the chart sits directly under the page h1; default 3 sits under an h2 section. */
+  headingLevel?: 2 | 3
 }
 
 export function ChartWrapper({
   children,
   title,
   caption,
-  height = 'standard',
+  description,
+  size = 'md',
   className = '',
+  headingLevel = 3,
 }: ChartWrapperProps) {
   return (
-    <div className={`space-y-4 ${className}`}>
-      {title && <h3 className="typography-h4 text-center">{title}</h3>}
-
-      <ChartContainer height={height}>{children}</ChartContainer>
-
-      {caption && (
-        <p className="text-center text-sm italic text-muted-foreground mt-4">{caption}</p>
-      )}
-    </div>
+    <ChartCard
+      title={title}
+      description={description}
+      caption={caption}
+      size={size}
+      headingLevel={headingLevel}
+      className={className}
+    >
+      <ChartViewport>{children}</ChartViewport>
+    </ChartCard>
   )
 }

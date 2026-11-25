@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
+import { settleTransitions } from './_helpers/settle'
+import { PROJECT_COUNT, PROJECT_SLUGS_ON_DISK } from './_helpers/project-slugs'
 
 /**
  * Projects Browsing E2E Tests
@@ -49,80 +51,56 @@ test.describe('Projects Listing Page', () => {
   })
 
   test('displays project cards grid', async ({ page }) => {
-    // Wait for projects to load
-    await page.waitForTimeout(1000)
-
-    // Look for project cards or articles
-    const projectCards = page.locator('article, [class*="card"], [class*="project"]')
-    const count = await projectCards.count()
-
-    // Should have at least one project
-    expect(count).toBeGreaterThan(0)
+    const projectCards = page.locator('main article')
+    await expect(projectCards.first()).toBeVisible()
+    expect(await projectCards.count()).toBeGreaterThan(0)
   })
 
   test('search input filters projects', async ({ page }) => {
-    // Find search input
     const searchInput = page.getByPlaceholder(/search/i)
     await expect(searchInput).toBeVisible()
 
-    // Get initial project count
-    await page.waitForTimeout(500)
-    const initialCards = page.locator('article, [class*="card"]').filter({ hasText: /.+/ })
-    const initialCount = await initialCards.count()
+    const cards = page.locator('main article')
+    await expect(cards.first()).toBeVisible()
+    const initialCount = await cards.count()
+    expect(initialCount).toBeGreaterThan(1)
 
-    // Search for a specific term
     await searchInput.fill('revenue')
-    await page.waitForTimeout(500)
-
-    // Verify URL contains search param
     await expect(page).toHaveURL(/search=revenue/)
+
+    // Filtering must actually narrow the grid: some matches, but fewer than all.
+    await expect.poll(async () => cards.count()).toBeLessThan(initialCount)
+    expect(await cards.count()).toBeGreaterThan(0)
   })
 
   test('category filter works', async ({ page }) => {
-    // Wait for page to be interactive
-    await page.waitForTimeout(1000)
+    const cards = page.locator('main article')
+    await expect(cards.first()).toBeVisible()
+    const initialCount = await cards.count()
+    expect(initialCount).toBeGreaterThan(1)
 
-    const projectCards = page.locator('article, [class*="card"], [class*="project"]')
-    const initialCount = await projectCards.count()
-    // Baseline: the grid renders real projects (real assertion even if the
-    // category UI is absent in this environment).
-    expect(initialCount).toBeGreaterThan(0)
+    const categoryTrigger = page.getByRole('combobox', { name: 'Filter by category' })
+    await expect(categoryTrigger).toBeVisible()
+    await categoryTrigger.click()
 
-    // Find category select/dropdown trigger
-    const categoryTrigger = page.locator('button').filter({ hasText: /categories|all/i }).first()
+    const options = page.getByRole('option')
+    await expect(options.nth(1)).toBeVisible()
+    expect(await options.count()).toBeGreaterThan(1)
+    // Click the first non-"all" option
+    await options.nth(1).click()
 
-    if (await categoryTrigger.isVisible()) {
-      await categoryTrigger.click()
+    // nuqs makes the URL the source of truth: selecting a category writes ?category=…
+    await expect(page).toHaveURL(/[?&]category=/)
 
-      // Wait for dropdown
-      await page.waitForTimeout(500)
-
-      // Look for category options
-      const options = page.getByRole('option')
-      const optionCount = await options.count()
-
-      if (optionCount > 1) {
-        // Click first non-"all" option
-        await options.nth(1).click()
-        await page.waitForTimeout(500)
-
-        // nuqs makes the URL the source of truth — selecting a category writes
-        // ?category=… (same contract the search test relies on).
-        await expect(page).toHaveURL(/[?&]category=/)
-
-        // Filtering narrows (or keeps) the set, never errors it away.
-        const filteredCount = await projectCards.count()
-        expect(filteredCount).toBeGreaterThan(0)
-        expect(filteredCount).toBeLessThanOrEqual(initialCount)
-      }
-    }
+    // The category narrows the grid to a non-empty subset of the full set.
+    await expect.poll(async () => cards.count()).toBeLessThan(initialCount)
+    expect(await cards.count()).toBeGreaterThan(0)
   })
 
   test('shows "no projects" message when search has no results', async ({ page }) => {
     // Search for something that won't match
     const searchInput = page.getByPlaceholder(/search/i)
     await searchInput.fill('xyznonexistentproject123')
-    await page.waitForTimeout(500)
 
     // Should show no results message
     const noResults = page.getByText(/no projects match|no projects yet/i)
@@ -141,13 +119,18 @@ test.describe('Projects Listing Page', () => {
   })
 
   test('passes accessibility audit', async ({ page }) => {
+    // Entrance fades pass through low-contrast frames; audit the settled page.
+    await page.evaluate(async () => {
+      await document.fonts.ready
+      const finite = document.getAnimations().filter((a) => {
+        const timing = a.effect?.getComputedTiming()
+        return timing !== undefined && timing.iterations !== Infinity
+      })
+      await Promise.all(finite.map((a) => a.finished.catch(() => undefined)))
+    })
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
       .exclude('.blur-3xl')
-      .exclude('.bg-accent') // Known contrast issue with accent badges - tracked for fix
-      .exclude('[data-radix-select-viewport]') // Radix select has known a11y issues - tracked
-      .exclude('[role="combobox"]') // Category filter combobox - tracked for fix
-      .disableRules(['color-contrast']) // Multiple contrast issues tracked for design fix
       .analyze()
 
     if (results.violations.length > 0) {
@@ -231,6 +214,9 @@ test.describe('Project Detail Pages', () => {
   test('project detail page passes accessibility audit', async ({ page }) => {
     await page.goto('/projects/revenue-kpi', { timeout: 60000 })
     await page.waitForLoadState('networkidle')
+    // The metric cards fade in (staggered up to 300ms delay + 500ms). Axe reads
+    // computed colors, so sampling mid-fade reports text at ~1:1 contrast.
+    await settleTransitions(page)
 
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
@@ -313,5 +299,123 @@ test.describe('Projects Keyboard Navigation', () => {
 
     // Verify search value
     await expect(searchInput).toHaveValue('revenue')
+  })
+})
+
+test('projects shows canonical data-stat tiles once each', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'checked once, on chromium')
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto('/projects')
+  await page.waitForLoadState('networkidle')
+  for (const key of ['revenue', 'transaction-growth', 'network-growth']) {
+    await expect(page.locator(`[data-stat="${key}"]`)).toHaveCount(1)
+  }
+  await expect(page.locator('[data-stat="years"]')).toHaveCount(0)
+  await expect(page.getByText('Average Growth')).toHaveCount(0)
+})
+
+const FEATURED_ORDER = [
+  '/projects/revenue-kpi',
+  '/projects/forecast-pipeline-intelligence',
+  '/projects/partnership-program-implementation',
+  '/projects/sales-enablement',
+]
+
+const ALL_PROJECT_SLUGS = PROJECT_SLUGS_ON_DISK
+
+const PREVIEW_LABEL = /^(Results chart|Key metrics)\. .+\.$/
+
+test.describe('Projects showcase (UI-05, UI-06)', () => {
+  test.beforeEach(async ({}, testInfo) => {
+    test.skip(testInfo.project.name !== 'chromium', 'checked once, on chromium')
+  })
+
+  test('/projects renders one photo-free card per project with previews, chips and 4 featured badges', async ({
+    page,
+  }) => {
+    await page.goto('/projects')
+    await page.waitForLoadState('networkidle')
+
+    const cards = page.locator('main article')
+    await expect(cards).toHaveCount(PROJECT_COUNT)
+    await expect(page.locator('main article img')).toHaveCount(0)
+
+    const badges = page.locator('main [data-slot="featured-badge"]')
+    await expect(badges).toHaveCount(4)
+
+    const cardHrefs = await page
+      .locator('main a[href^="/projects/"]')
+      .filter({ has: page.locator('article') })
+      .evaluateAll((els) => els.map((el) => el.getAttribute('href')))
+    expect(cardHrefs).toHaveLength(PROJECT_COUNT)
+    expect(cardHrefs.slice(0, 4)).toEqual(FEATURED_ORDER)
+
+    const labels = await cards.evaluateAll((els) =>
+      els.map((el) => {
+        const previews = el.querySelectorAll('[data-slot="project-preview"][role="img"]')
+        return { count: previews.length, label: previews[0]?.getAttribute('aria-label') ?? '' }
+      }),
+    )
+    expect(labels).toHaveLength(PROJECT_COUNT)
+    for (const { count, label } of labels) {
+      expect(count).toBe(1)
+      expect(label).toMatch(PREVIEW_LABEL)
+    }
+
+    const chips = page.locator('main [data-slot="client-chip"]')
+    await expect(chips).toHaveCount(PROJECT_COUNT)
+    const chipTexts = (await chips.allInnerTexts()).map((t) => t.trim())
+    expect(chipTexts).toHaveLength(PROJECT_COUNT)
+    for (const text of chipTexts) {
+      expect(text.length, `chip "${text}" length`).toBeGreaterThanOrEqual(8)
+      expect(text.length, `chip "${text}" length`).toBeLessThanOrEqual(36)
+      expect(text, `chip "${text}" has no legal suffix`).not.toMatch(/\b(Inc|Co|LLC|Corp|Ltd)\b\.?/i)
+    }
+  })
+
+  for (const path of ['/projects', '/', '/contact']) {
+    test(`${path} requests no project photos or stock images`, async ({ page }) => {
+      const urls: string[] = []
+      page.on('request', (req) => {
+        if (req.resourceType() !== 'image') return
+        const raw = req.url()
+        urls.push(decodeURIComponent(raw))
+        const inner = new URL(raw).searchParams.get('url')
+        if (inner) urls.push(decodeURIComponent(inner))
+      })
+      await page.goto(path)
+      await page.waitForLoadState('networkidle')
+      // Home legitimately loads /images/richard.jpg, which proves the listener sees
+      // image requests; /projects and /contact are photo-free, so zero is the pass state.
+      if (path === '/') expect(urls.length, 'home issued image requests').toBeGreaterThan(0)
+      for (const url of urls) expect(url).not.toMatch(/images\/projects\//)
+      if (path !== '/') {
+        for (const url of urls) expect(new URL(url, 'http://x').host).not.toBe('images.unsplash.com')
+      }
+    })
+  }
+})
+
+test.describe('Project OG cards (UI-06)', () => {
+  test.beforeEach(async ({}, testInfo) => {
+    test.skip(testInfo.project.name !== 'chromium', 'checked once, on chromium')
+  })
+
+  test('all project cards render as 1200x630 PNG', async ({ request }) => {
+    expect(ALL_PROJECT_SLUGS.length).toBeGreaterThan(0)
+    for (const slug of ALL_PROJECT_SLUGS) {
+      const res = await request.get(`/api/og?project=${slug}&title=Fixture`)
+      expect(res.status(), slug).toBe(200)
+      expect(res.headers()['content-type'], slug).toMatch(/^image\/png/)
+      const body = await res.body()
+      expect(body.readUInt32BE(16), `${slug} width`).toBe(1200)
+      expect(body.readUInt32BE(20), `${slug} height`).toBe(630)
+    }
+  })
+
+  test('unknown project slug falls through to a generic PNG', async ({ request }) => {
+    const res = await request.get('/api/og?project=nope')
+    expect(res.status()).toBe(200)
+    expect(res.headers()['content-type']).toMatch(/^image\/png/)
   })
 })

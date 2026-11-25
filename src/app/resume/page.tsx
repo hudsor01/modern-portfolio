@@ -7,7 +7,7 @@ import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 export const dynamic = 'force-static'
 
 export const metadata = generateMetadata(
-  'Resume | Richard Hudson - Revenue Operations Professional',
+  'Resume: Revenue Operations Professional',
   'Richard Hudson resume: Data Analyst at HomeVestors, over eight years in revenue operations and business systems at Thryv and six years as an Army IT specialist.',
   '/resume'
 )

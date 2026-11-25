@@ -1,40 +1,26 @@
 'use client'
 
-import dynamic from 'next/dynamic'
-import { ChartSkeleton } from '@/components/charts/chart-skeleton'
-import { ChartLoadError } from '@/components/charts/chart-load-error'
-import { safeLazy } from '@/lib/safe-lazy'
-
+import DealStageFunnelChart from './DealStageFunnelChart'
 import type { FunnelStage } from '../data/constants'
-
-const DealStageFunnelChart = dynamic(
-  safeLazy(
-    () => import('./DealStageFunnelChart'),
-    'DealStageFunnelChart',
-    () => <ChartLoadError height="md" />
-  ),
-  {
-    loading: () => <ChartSkeleton />,
-    ssr: false,
-  }
-)
+import { ChartHeader } from '@/components/ui/chart-container'
 
 interface FunnelChartProps {
   stages: FunnelStage[]
-  overallConversionRate: string
+  winRate: string
 }
 
-export function FunnelChart({ stages, overallConversionRate }: FunnelChartProps) {
+export function FunnelChart({ stages, winRate }: FunnelChartProps) {
   return (
-    <div className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out mb-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="typography-h3 mb-2">Sales Pipeline Funnel</h2>
-          <p className="typography-muted">Deal progression through stages</p>
-        </div>
+    <div>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <ChartHeader
+          title="Sales Pipeline Funnel"
+          description="Share of all opportunities in each stage"
+          headingLevel={2}
+        />
         <div className="text-right">
-          <p className="typography-small text-muted-foreground">Overall Conversion</p>
-          <p className="typography-h3 text-success">{overallConversionRate}%</p>
+          <p className="typography-small">Win Rate (of closed deals)</p>
+          <p className="typography-h3">{winRate}%</p>
         </div>
       </div>
       <DealStageFunnelChart stages={stages} />

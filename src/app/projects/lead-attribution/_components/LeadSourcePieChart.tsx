@@ -1,6 +1,7 @@
 'use client'
 import { memo } from 'react'
 
+import { CHART_BOX } from '@/components/charts/chart-skeleton'
 import { LazyPieChart as PieChart } from '@/components/charts/lazy-charts'
 import { Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { chartColors } from '@/lib/charts'
@@ -50,15 +51,15 @@ export function LeadSourceTooltip({ total, active, payload }: LeadSourceTooltipP
 
     return (
       <div className="p-3 rounded-xl bg-popover/95 backdrop-blur-xs border border-border">
-        <p className="font-medium text-foreground">{data.name}</p>
-        <p className="typography-small text-muted-foreground">
+        <p>{data.name}</p>
+        <p className="typography-small">
           Leads: <span className="font-medium text-foreground">{data.value.toLocaleString()}</span>
         </p>
-        <p className="typography-small text-muted-foreground">
+        <p className="typography-small">
           Share: <span className="font-medium text-foreground">{percentage}%</span>
         </p>
         {data.growth ? (
-          <p className="typography-small text-muted-foreground">
+          <p className="typography-small">
             Performance: <span className="font-medium text-success">{data.growth}</span>
           </p>
         ) : null}
@@ -86,7 +87,7 @@ const LeadSourcePieChart = memo(function LeadSourcePieChart({ data }: LeadSource
 
   return (
     <div className="w-full">
-      <div className="h-[var(--chart-height-lg)]">
+      <div className={CHART_BOX.lg}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -125,8 +126,8 @@ const LeadSourcePieChart = memo(function LeadSourcePieChart({ data }: LeadSource
                 style={{ backgroundColor: source.color }}
               />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">{source.name}</p>
-                <p className="typography-small text-muted-foreground">
+                <p className="truncate">{source.name}</p>
+                <p className="typography-small">
                   {percentage}% • {source.growth}
                 </p>
               </div>

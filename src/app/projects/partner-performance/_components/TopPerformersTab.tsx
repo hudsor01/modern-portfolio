@@ -19,8 +19,8 @@ const top80PercentPartners = [
 export function TopPerformersTab() {
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4">Top 80% Revenue Partners (Pareto Principle)</h3>
-      <p className="text-sm text-muted-foreground mb-6">
+      <h3 className="mb-4">Top 80% Revenue Partners (Pareto Principle)</h3>
+      <p className="mb-6">
         Elite partner performance driving majority of channel revenue following the proven 80/20
         distribution rule
       </p>
@@ -29,7 +29,7 @@ export function TopPerformersTab() {
         {top80PercentPartners.map((partner, index) => (
           <div key={index} className="bg-card border border-border rounded-xl p-4">
             <div className="flex items-center justify-between mb-3">
-              <h4 className="text-base font-semibold">{partner.partner}</h4>
+              <h4>{partner.partner}</h4>
               <span
                 className={`px-2 py-1 rounded-full text-xs font-medium ${
                   partner.tier === 'Certified'

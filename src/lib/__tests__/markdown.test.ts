@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { markdownToHtml, decodeHtmlEntities } from '@/lib/markdown'
+import { markdownToHtml, decodeHtmlEntities, stripLeadingTitleHeading } from '@/lib/markdown'
 
 describe('markdownToHtml', () => {
   it('demotes headings one level so body markdown never emits an <h1>', () => {
@@ -63,5 +63,59 @@ describe('decodeHtmlEntities', () => {
   it('decodes &amp; last so it does not re-introduce other entities', () => {
     // "&amp;lt;" must decode to the literal "&lt;", not to "<"
     expect(decodeHtmlEntities('&amp;lt;')).toBe('&lt;')
+  })
+})
+
+describe('stripLeadingTitleHeading (B-3)', () => {
+  const title = 'Salesloft Admin Basics: Settings and Data Hygiene'
+
+  it('drops an opening heading that repeats the title', () => {
+    const html = markdownToHtml(`# ${title}\n\nFirst paragraph.\n\n## Next`)
+    const out = stripLeadingTitleHeading(html, title)
+    expect(out).not.toContain(title)
+    expect(out).toContain('First paragraph.')
+    // Sections were h3 under the dropped title; they now sit directly under the page h1.
+    expect(out).toContain('<h2>Next</h2>')
+    expect(out).not.toMatch(/<h3/)
+  })
+
+  it('keeps relative heading levels when promoting', () => {
+    const html = markdownToHtml(`# ${title}\n\n## A\n\n### B`)
+    const out = stripLeadingTitleHeading(html, title)
+    expect(out).toContain('<h2>A</h2>')
+    expect(out).toContain('<h3>B</h3>')
+  })
+
+  it('demotes a later h1 and still promotes an opening h3 so order never skips', () => {
+    const html = `<h1>${title}</h1><p>Intro</p><h3>First</h3><p>x</p><h4>Sub</h4><h1>Later</h1><p>y</p>`
+    const out = stripLeadingTitleHeading(html, title)
+    expect(out).not.toMatch(/<h1/i)
+    expect(out).not.toMatch(/<\/h1/i)
+    const levels = [...out.matchAll(/<h([1-6])[\s>]/g)].map((m) => Number(m[1]))
+    expect(levels).toEqual([2, 3, 2])
+    // After the page h1, no heading may jump more than one level deeper than the one before.
+    let prev = 1
+    for (const level of levels) {
+      expect(level - prev).toBeLessThanOrEqual(1)
+      prev = level
+    }
+  })
+
+  it('never promotes a heading above h2, even when a later heading is shallower', () => {
+    const html = `<h2>${title}</h2><h4>A</h4><h3>B</h3><h2>C</h2>`
+    const out = stripLeadingTitleHeading(html, title)
+    expect([...out.matchAll(/<h([1-6])[\s>]/g)].map((m) => Number(m[1]))).toEqual([2, 2, 2])
+  })
+
+  it('matches through emphasis, curly quotes and case', () => {
+    const html = markdownToHtml('## **It\u2019s Here**\n\nBody')
+    expect(stripLeadingTitleHeading(html, "it's here")).not.toContain('Here')
+  })
+
+  it('keeps an opening heading that is not the title, and a repeated title further down', () => {
+    const other = markdownToHtml('## The Foundation\n\nBody')
+    expect(stripLeadingTitleHeading(other, title)).toBe(other)
+    const later = markdownToHtml(`Intro\n\n## ${title}`)
+    expect(stripLeadingTitleHeading(later, title)).toBe(later)
   })
 })

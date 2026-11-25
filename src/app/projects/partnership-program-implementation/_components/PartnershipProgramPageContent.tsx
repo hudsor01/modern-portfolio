@@ -5,6 +5,7 @@ import { Zap, Clock, Settings, Users } from 'lucide-react'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
+import { ogImageUrl } from '@/lib/absolute-url'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { AchievementsGrid } from './AchievementsGrid'
 import { TechnicalDetails } from './TechnicalDetails'
@@ -50,6 +51,11 @@ export default function PartnershipProgramPage() {
   return (
     <>
       <ProjectJsonLd
+        image={ogImageUrl({
+          title: 'Enterprise Partnership Program Implementation',
+          subtitle: 'Revenue Operations Project',
+          project: 'partnership-program-implementation',
+        })}
         title="Enterprise Partnership Program Implementation"
         description="Led comprehensive design and implementation of a company's first partnership program, creating automated partner onboarding, commission tracking, and performance analytics."
         slug="partnership-program-implementation"

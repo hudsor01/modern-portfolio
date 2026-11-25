@@ -1,9 +1,9 @@
+import { brandTitle } from '@/app/shared-metadata'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getProjects, getProject } from '@/lib/projects'
 import { showcaseProjects } from '@/data/projects'
-import { canonicalUrl } from '@/lib/absolute-url'
-import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
+import { canonicalUrl, ogImageUrl } from '@/lib/absolute-url'
 import ProjectDetailClientBoundary from './_components/project-detail-client-boundary'
 
 // Force runtime rendering. notFound() inside Next.js 16's ISR-rendered
@@ -45,13 +45,12 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
     notFound()
   }
 
-  // Use the real project image when available, branded /api/og card
-  // when not — same contract as blog/[slug] generateMetadata and the
-  // sitemap. Subtitle reflects the project domain so the OG card
-  // copy matches the page context.
-  const ogImage = safeFeaturedImageUrl(project.image, {
+  // Projects no longer carry photos: the social card is generated from the
+  // project's results by /api/og (project branch).
+  const ogImageHref = ogImageUrl({
     title: project.title,
     subtitle: 'Revenue Operations Project',
+    project: slug,
   })
   const projectUrl = canonicalUrl(`/projects/${slug}`)
 
@@ -59,23 +58,23 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
     title: project.title,
     description: project.description,
     openGraph: {
-      title: project.title,
+      title: brandTitle(project.title),
       description: project.description,
       url: projectUrl,
       images: [
         {
-          url: ogImage.url,
+          url: ogImageHref,
           width: 1200,
           height: 630,
-          alt: project.title,
+          alt: `${project.title} results preview`,
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: project.title,
+      title: brandTitle(project.title),
       description: project.description,
-      images: [ogImage.url],
+      images: [ogImageHref],
     },
     alternates: {
       canonical: projectUrl,

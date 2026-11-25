@@ -24,6 +24,7 @@ import {
 } from '@/lib/api-blog'
 import { createBlogPostSchema, PostStatusSchema } from '@/lib/schemas'
 import { SITE_ORIGIN, canonicalUrl } from '@/lib/absolute-url'
+import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
 
 // POST/PUT contract asymmetry (kept here so a future admin client knows
 // what to send):
@@ -151,6 +152,7 @@ export async function GET(request: NextRequest) {
         orderBy,
         offset: skip,
         limit,
+        columns: BLOG_POST_COLUMNS,
         with: {
           author: true,
           category: true,
@@ -267,7 +269,7 @@ export async function POST(request: NextRequest) {
         authorId: body.authorId,
         categoryId: body.categoryId ?? null,
       })
-      .returning()
+      .returning({ id: blogPosts.id })
 
     const insertedRow = insertedRows[0]
     if (!insertedRow) {
@@ -281,6 +283,7 @@ export async function POST(request: NextRequest) {
 
     const newPost = await db.query.blogPosts.findFirst({
       where: eq(blogPosts.id, insertedId),
+      columns: BLOG_POST_COLUMNS,
       with: {
         author: true,
         category: true,

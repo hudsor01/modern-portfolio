@@ -13,6 +13,7 @@ export const metadata = genMeta({
   path: '/projects/multi-channel-attribution',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
+  ogProject: 'multi-channel-attribution',
 })
 
 export default async function MultiChannelAttributionPage() {

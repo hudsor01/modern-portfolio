@@ -24,7 +24,7 @@ const RetentionHeatmap = memo(function RetentionHeatmap({ data }: RetentionHeatm
 
   if (!isMounted) {
     return (
-      <div className="h-[var(--chart-height-md)] flex items-center justify-center">
+      <div className="flex h-full w-full items-center justify-center">
         <div className="relative">
           <div className="w-12 h-12 border-4 border-primary/20 rounded-full" />
           <div className="absolute top-0 left-0 w-12 h-12 border-4 border-primary rounded-full animate-spin border-t-transparent" />
@@ -40,7 +40,7 @@ const RetentionHeatmap = memo(function RetentionHeatmap({ data }: RetentionHeatm
   }))
 
   return (
-    <div className="h-[var(--chart-height-md)]">
+    <div className="h-full w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
           <defs>

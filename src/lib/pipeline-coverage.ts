@@ -130,3 +130,56 @@ export const COVERAGE_PRESETS = [
   { id: 'midmarket', label: 'Mid-market', winRatePct: 25 },
   { id: 'enterprise', label: 'Enterprise', winRatePct: 18 },
 ] as const
+
+/** Keep digits and at most one decimal point; drops grouping commas, signs and letters. */
+export function sanitizeAmount(v: string): string {
+  const cleaned = v.replace(/[^\d.]/g, '')
+  const dot = cleaned.indexOf('.')
+  if (dot === -1) return cleaned
+  return `${cleaned.slice(0, dot + 1)}${cleaned.slice(dot + 1).replace(/\./g, '')}`
+}
+
+/**
+ * Why a typed or pasted money amount cannot be used, or null when it can.
+ * Grouping commas, spaces and a leading "$" are formatting and allowed; a sign,
+ * exponent notation, letters (such as the "M" in "1.5M") and repeated decimal
+ * points are rejected so the value is never silently reinterpreted.
+ */
+export function amountInputError(raw: string): string | null {
+  if (raw.includes('-')) return 'Negative amounts are not allowed. Enter a positive number.'
+  if (/[eE]/.test(raw)) {
+    return 'Exponent notation (like 1e6) is not supported. Type the full number.'
+  }
+  if (/[^\d.,\s$]/.test(raw)) {
+    return 'Use digits only. Remove letters and symbols (for example the M in 1.5M).'
+  }
+  if ((raw.match(/\./g) ?? []).length > 1) return 'Use a single decimal point.'
+  return null
+}
+
+/** Display form of a raw amount: grouped integer digits, any decimal part kept as typed. */
+export function formatGrouped(raw: string): string {
+  const clean = sanitizeAmount(raw)
+  if (clean === '') return ''
+  const [int = '', frac] = clean.split('.')
+  const grouped = int.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return frac === undefined ? grouped : `${grouped}.${frac}`
+}
+
+/**
+ * Caret position in `next` (a re-grouped copy of `prev`) that sits after the same
+ * number of digits and decimal points as `caret` did in `prev`, so inserting a
+ * grouping comma never throws the caret to the end.
+ */
+export function caretAfterFormat(prev: string, caret: number, next: string): number {
+  const significant = (ch: string) => /[\d.]/.test(ch)
+  let before = 0
+  for (const ch of prev.slice(0, caret)) if (significant(ch)) before += 1
+  if (before === 0) return 0
+  let seen = 0
+  for (let i = 0; i < next.length; i += 1) {
+    if (significant(next.charAt(i))) seen += 1
+    if (seen === before) return i + 1
+  }
+  return next.length
+}

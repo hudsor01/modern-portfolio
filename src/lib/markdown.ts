@@ -69,3 +69,50 @@ export function decodeHtmlEntities(text: string): string {
     .replace(/&#39;/g, "'")
     .replace(/&amp;/g, '&')
 }
+
+/** Lower-cased plain text of a title/heading: markup, entities, emphasis marks and spacing removed. */
+export function normalizeTitle(value: string): string {
+  return decodeHtmlEntities(value.replace(/<[^>]*>/g, ''))
+    .replace(/[*_`]/g, '')
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase()
+}
+
+/**
+ * Drop a leading `<h1>` to `<h3>` whose text repeats the post title. The page header
+ * already renders the title as the H1, and stored bodies often open with the same
+ * line again. Render-time only: the stored post is never touched. Any other
+ * opening heading is kept.
+ */
+export function stripLeadingTitleHeading(html: string, title: string): string {
+  const m = /^\s*<h([1-3])(?:\s[^>]*)?>([\s\S]*?)<\/h\1>/i.exec(html)
+  if (!m) return html
+  const target = normalizeTitle(title)
+  if (target && normalizeTitle(m[2] ?? '') === target)
+    return promoteHeadings(html.slice(m[0].length))
+  return html
+}
+
+/**
+ * Re-level the headings left after the repeated title is gone, so the page `<h1>`
+ * is followed by an `<h2>` and heading order never skips (axe heading-order).
+ *
+ * - Any `<h1>` still in the body becomes an `<h2>` first: the page header owns the only h1.
+ * - The shift is taken from the FIRST remaining heading, not the shallowest. A later,
+ *   shallower heading (a stray h1 or h2) used to pin the minimum at 2, so an opening `<h3>`
+ *   stayed an `<h3>` straight under the page `<h1>`.
+ * - Later headings shift by the same amount and bottom out at `<h2>`, so relative levels are
+ *   kept wherever they can be and nothing is promoted above h2.
+ */
+function promoteHeadings(html: string): string {
+  const demoted = html.replace(/<h1(?=[\s>])/gi, '<h2').replace(/<\/h1>/gi, '</h2>')
+  const first = /<h([2-6])[\s>]/i.exec(demoted)
+  const shift = first ? Number(first[1]) - 2 : 0
+  if (shift <= 0) return demoted
+  return demoted.replace(/<(\/?)h([1-6])(?=[\s>])/gi, (_, slash: string, level: string) => {
+    return `<${slash}h${Math.max(2, Number(level) - shift)}`
+  })
+}

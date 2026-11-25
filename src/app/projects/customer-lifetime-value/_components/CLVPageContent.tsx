@@ -7,6 +7,7 @@ import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { ogImageUrl } from '@/lib/absolute-url'
 import { formatCurrency, formatNumber, formatPercentage } from '@/lib/data-formatters'
 import { clvMetrics } from '../data/constants'
 import { OverviewTab } from './OverviewTab'
@@ -59,6 +60,11 @@ export default function CustomerLifetimeValueAnalytics() {
   return (
     <>
       <ProjectJsonLd
+        image={ogImageUrl({
+          title: 'Customer Lifetime Value Predictive Analytics Dashboard',
+          subtitle: 'Revenue Operations Project',
+          project: 'customer-lifetime-value',
+        })}
         title="Customer Lifetime Value Predictive Analytics Dashboard"
         description="Advanced CLV analytics platform leveraging BTYD (Buy Till You Die) predictive modeling, achieving 94.3% prediction accuracy through machine learning across 5 customer segments."
         slug="customer-lifetime-value"

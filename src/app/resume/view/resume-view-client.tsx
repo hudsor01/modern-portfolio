@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { Navbar } from '@/components/layout/navbar'
 import { Download, FileText, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { DecorativeBlob } from '@/components/ui/decorative-blob'
 
 const ResumeViewClient = React.memo(function ResumeViewClient() {
   const [isLoading, setIsLoading] = useState(true)
@@ -30,27 +31,23 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="relative overflow-hidden">
+      <main id="main-content" tabIndex={-1} className="relative overflow-x-clip">
         {/* Decorative background elements */}
-        <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
+        <DecorativeBlob position="top-right" />
+        <DecorativeBlob position="bottom-left" />
 
         <div className="relative max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16 lg:pt-32 lg:pb-20">
           {/* Header */}
           <div className="mb-12 text-center">
-            <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-              Richard Hudson - Resume
-            </h1>
-            <p className="text-lg text-muted-foreground mb-8">
-              Revenue Operations Professional | Dallas, TX
-            </p>
+            <h1 className="mb-4">Richard Hudson - Resume</h1>
+            <p className="mb-8">Revenue Operations Professional | Dallas, TX</p>
 
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-4 justify-center">
               <Button
                 onClick={handleDownload}
                 size="lg"
-                className="h-14 px-8 text-base font-semibold"
+                className="h-14 px-8 text-base font-medium"
               >
                 <Download className="mr-2 h-5 w-5" />
                 Download PDF
@@ -94,7 +91,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
                 <div className="flex items-center justify-center h-96">
                   <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                    <p className="text-muted-foreground">Loading PDF...</p>
+                    <p>Loading PDF...</p>
                   </div>
                 </div>
               )}
@@ -103,7 +100,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
                 <div className="flex items-center justify-center h-96">
                   <div className="text-center">
                     <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground mb-4">Unable to display PDF in browser</p>
+                    <p className="mb-4">Unable to display PDF in browser</p>
                     <Button onClick={handleDownload}>
                       <Download className="mr-2 h-4 w-4" />
                       Download Instead
@@ -122,13 +119,13 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
                   onError={handlePdfError}
                   style={{ display: isLoading ? 'none' : 'block' }}
                 >
-                  <p className="text-center text-muted-foreground p-8">
+                  <p className="text-center p-8">
                     Your browser can't display PDFs inline.{' '}
                     <a
                       href="/Richard_Hudson_Revenue_Operations.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-primary underline"
+                      className="text-link"
                     >
                       Open PDF in new tab
                     </a>
@@ -139,7 +136,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
 
             {/* Mobile Fallback Message */}
             <div className="md:hidden mt-6 p-4 bg-muted/50 border border-border rounded-xl">
-              <p className="text-sm text-muted-foreground text-center">
+              <p className="text-center">
                 For the best mobile experience, tap "Download PDF" or "Open in New Tab" above
               </p>
             </div>

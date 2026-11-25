@@ -7,12 +7,13 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 export const dynamic = 'force-static'
 
 export const metadata = genMeta({
-  title: 'Customer Churn & Retention Analysis - Predictive Analytics',
+  title: 'Partner Churn & Retention: Predictive Analytics',
   description:
-    'Advanced churn prediction and retention analysis dashboard with customer lifecycle metrics, retention heatmaps, and predictive modeling for customer success optimization.',
+    'Advanced churn prediction and retention analysis dashboard with partner lifecycle metrics, retention heatmaps, and predictive modeling for partner success optimization.',
   path: '/projects/churn-retention',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
+  ogProject: 'churn-retention',
 })
 
 export default async function ChurnRetentionPage() {
@@ -25,7 +26,7 @@ export default async function ChurnRetentionPage() {
           { name: 'Home', url: SITE_ORIGIN },
           { name: 'Projects', url: canonicalUrl('/projects') },
           {
-            name: 'Customer Churn & Retention Analysis',
+            name: 'Partner Churn & Retention Analysis',
             url: canonicalUrl('/projects/churn-retention'),
           },
         ]}

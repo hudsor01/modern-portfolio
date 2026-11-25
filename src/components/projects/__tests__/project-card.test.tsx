@@ -10,10 +10,14 @@ const baseProject: Project = {
   title: 'Foo Project',
   description: 'A short description.',
   image: '/images/foo.jpg',
-  client: 'Acme Co',
+  client: 'Partner channel · 47 partners',
   category: 'RevOps',
   tags: ['Salesforce', 'HubSpot', 'Python', 'SQL'],
   featured: false,
+  results: [
+    { metric: 'Forecast Accuracy', before: '82%', after: '94%', improvement: '15%' },
+    { metric: 'Partner Satisfaction', before: '', after: '', improvement: '18%' },
+  ],
   displayMetrics: [
     { label: 'Revenue', value: '$4.8M', iconName: 'trending-up' },
     { label: 'Growth', value: '432%', iconName: 'bar-chart' },
@@ -49,6 +53,14 @@ describe('ProjectCard', () => {
     expect(screen.getByText('Featured')).toBeTruthy()
   })
 
+  it('Featured badge uses white text on the copper fill', () => {
+    render(<ProjectCard project={{ ...baseProject, featured: true }} />)
+    const badge = screen.getByText('Featured')
+    expect(badge.className).toContain('bg-accent')
+    expect(badge.className).toContain('text-white')
+    expect(badge.className).not.toContain('text-accent-foreground')
+  })
+
   it('does NOT render the Featured badge when project.featured=false', () => {
     render(<ProjectCard project={{ ...baseProject, featured: false }} />)
     expect(screen.queryByText('Featured')).toBeNull()
@@ -56,7 +68,7 @@ describe('ProjectCard', () => {
 
   it('renders the category label using project.client', () => {
     render(<ProjectCard project={baseProject} />)
-    expect(screen.getByText('Acme Co')).toBeTruthy()
+    expect(screen.getByText('Partner channel · 47 partners')).toBeTruthy()
   })
 
   it('renders metric value/label pairs', () => {
@@ -84,5 +96,93 @@ describe('ProjectCard', () => {
   it('does not render the +N indicator when there are 4 or fewer tags', () => {
     render(<ProjectCard project={baseProject} />)
     expect(screen.queryByText(/^\+\d+$/)).toBeNull()
+  })
+
+  it('renders a results chart preview and no img', () => {
+    const { container } = render(<ProjectCard project={baseProject} />)
+    const imgs = container.querySelectorAll('[role="img"]')
+    expect(imgs.length).toBe(1)
+    expect(imgs[0]?.getAttribute('aria-label')).toMatch(/^Results chart\./)
+    expect(container.querySelector('img')).toBeNull()
+  })
+
+  it('names the link by the title and describes it with the preview label', () => {
+    const { container } = render(<ProjectCard project={baseProject} />)
+    const link = screen.getByRole('link', { name: baseProject.title })
+    const title = container.querySelector('h3') as HTMLElement
+    const preview = container.querySelector('[role="img"]') as HTMLElement
+    expect(link.getAttribute('aria-labelledby')).toBe(title.id)
+    expect(title.id).not.toBe('')
+    expect(link.getAttribute('aria-describedby')).toBe(preview.id)
+    expect(preview.id).not.toBe('')
+    // The accessible name stays the title: no chart label, chip, description or tags in it.
+    expect(link.getAttribute('aria-label')).toBeNull()
+  })
+
+  it('gives every card its own label and description ids', () => {
+    const { container } = render(
+      <>
+        <ProjectCard project={baseProject} />
+        <ProjectCard project={{ ...baseProject, slug: 'other', id: 'other' }} />
+      </>
+    )
+    const ids = [...container.querySelectorAll('h3, [role="img"]')].map((e) => e.id)
+    expect(new Set(ids).size).toBe(4)
+  })
+
+  it('does not describe the link when the preview is empty', () => {
+    const p = { ...baseProject, results: null, displayMetrics: null } as unknown as Project
+    render(<ProjectCard project={p} />)
+    expect(
+      screen.getByRole('link', { name: baseProject.title }).getAttribute('aria-describedby')
+    ).toBeNull()
+  })
+
+  it('falls back to key metrics when only numeric displayMetrics exist', () => {
+    const p = { ...baseProject, results: null } as unknown as Project
+    const { container } = render(<ProjectCard project={p} />)
+    const imgs = container.querySelectorAll('[role="img"]')
+    expect(imgs.length).toBe(1)
+    expect(imgs[0]?.getAttribute('aria-label')).toMatch(/^Key metrics\./)
+    expect(container.querySelector('img')).toBeNull()
+  })
+
+  it('does not repeat the key metrics below a key-metrics preview', () => {
+    const p = { ...baseProject, results: [] } as unknown as Project
+    const { container } = render(<ProjectCard project={p} />)
+    // Each figure appears once: in the preview tiles, not again in a metrics row.
+    expect(screen.getAllByText('$4.8M')).toHaveLength(1)
+    expect(screen.getAllByText('432%')).toHaveLength(1)
+    expect(container.querySelector('[data-slot="metrics-row"]')).toBeNull()
+  })
+
+  it('keeps the metrics row beside a results-chart preview', () => {
+    const { container } = render(<ProjectCard project={baseProject} />)
+    expect(container.querySelector('[data-slot="metrics-row"]')).not.toBeNull()
+  })
+
+  it('pins the tags to the card bottom whether or not a metrics row is shown (A-2)', () => {
+    const { container } = render(<ProjectCard project={baseProject} />)
+    expect(container.querySelector('article')?.className).toContain('flex-col')
+    const content = container.querySelector('article > div:last-child')
+    expect(content?.className).toContain('flex-1')
+  })
+
+  it('keeps stable geometry hooks', () => {
+    const { container } = render(<ProjectCard project={{ ...baseProject, featured: true }} />)
+    const media = container.querySelector('[data-slot="project-media"]')
+    expect(media?.className).toContain('relative aspect-16/10 overflow-hidden bg-muted')
+    const badge = container.querySelector('[data-slot="featured-badge"]')
+    expect(badge?.className).toContain('top-3 left-3')
+    expect(badge?.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true')
+    const chip = container.querySelector('[data-slot="client-chip"]')
+    expect(chip?.className).toContain('max-w-full')
+  })
+
+  it('metric values use sans tabular type', () => {
+    render(<ProjectCard project={baseProject} />)
+    const cls = screen.getByText('$4.8M').className
+    expect(cls).toContain('font-sans text-base font-semibold tabular-nums')
+    expect(cls).not.toContain('font-mono')
   })
 })

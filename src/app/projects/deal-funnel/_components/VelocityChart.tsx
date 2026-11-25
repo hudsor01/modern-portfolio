@@ -1,7 +1,7 @@
 'use client'
 
-import { Zap } from 'lucide-react'
 import type { PartnerConversion } from '../data/constants'
+import { ChartHeader } from '@/components/ui/chart-container'
 
 interface VelocityChartProps {
   partnerConversion: PartnerConversion[]
@@ -9,10 +9,16 @@ interface VelocityChartProps {
 
 export function VelocityChart({ partnerConversion }: VelocityChartProps) {
   const colors = ['bg-primary', 'bg-secondary', 'bg-accent']
+  const longest = Math.max(1, ...partnerConversion.map((p) => p.median_days_to_close))
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-8 hover:border-primary/50 transition-all duration-300 ease-out">
-      <h2 className="typography-h3 mb-6">Sales Velocity by Segment</h2>
+    <div className="h-full">
+      <ChartHeader
+        title="Sales Velocity by Partner Tier"
+        description="Median days from deal creation to close, per partner tier"
+        headingLevel={2}
+        className="mb-6"
+      />
       <div className="space-y-6">
         {partnerConversion.map((partner, index) => {
           return (
@@ -20,24 +26,18 @@ export function VelocityChart({ partnerConversion }: VelocityChartProps) {
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium">{partner.group}</span>
                 <span className="typography-small text-muted-foreground">
-                  {partner.avg_sales_cycle_days} days
+                  {partner.median_days_to_close} days
                 </span>
               </div>
               <div className="w-full bg-muted rounded-full h-3">
-                <div className={`${colors[index % colors.length]} h-3 rounded-full`} />
+                <div
+                  className={`${colors[index % colors.length]} h-3 rounded-full`}
+                  style={{ width: `${(partner.median_days_to_close / longest) * 100}%` }}
+                />
               </div>
             </div>
           )
         })}
-      </div>
-      <div className="mt-6 p-4 bg-primary/10 border border-primary/20 rounded-xl">
-        <div className="flex items-center gap-2 mb-2">
-          <Zap className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold text-primary">Quick Win</h3>
-        </div>
-        <p className="typography-small text-muted-foreground">
-          SMB deals close 47% faster than Enterprise. Consider segment-specific sales strategies.
-        </p>
       </div>
     </div>
   )

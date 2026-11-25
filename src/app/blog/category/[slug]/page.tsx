@@ -8,13 +8,17 @@ import { BlogFeaturedImage } from '@/components/blog/blog-featured-image'
 import { BlogCategoryJsonLd } from '@/components/seo/blog-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { and, desc, eq, isNull } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { blogPosts, categories } from '@/db/schema'
 import { createContextLogger } from '@/lib/logger'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { brandTitle } from '@/app/shared-metadata'
+import { BLOG_CONTENT_HEAD_EXTRAS } from '@/lib/blog-content-head'
+import { resolveExcerpt } from '@/lib/blog-excerpt'
+import { CATEGORY_CHIP_CLASSES, resolveListCovers } from '@/lib/blog-list'
 import { formatDate } from '@/lib/data-formatters'
+import { DecorativeBlob } from '@/components/ui/decorative-blob'
 
 // Force runtime rendering — see /blog/[slug]/page.tsx for the rationale.
 // notFound() inside ISR-rendered Server Components ships HTTP 200 with a
@@ -41,6 +45,7 @@ interface CategoryWithPosts {
     excerpt: string | null
     featuredImage: string | null
     publishedAt: Date | null
+    contentHead?: string | null
     tags: Array<{ tag: { id: string; name: string } }>
   }>
 }
@@ -53,6 +58,7 @@ const getCategoryWithPosts = cache(async (slug: string): Promise<CategoryWithPos
         posts: {
           where: and(eq(blogPosts.status, 'PUBLISHED'), isNull(blogPosts.deletedAt)),
           orderBy: desc(blogPosts.publishedAt),
+          extras: BLOG_CONTENT_HEAD_EXTRAS,
           columns: {
             id: true,
             slug: true,
@@ -98,7 +104,7 @@ export async function generateMetadata({ params }: BlogCategoryPageProps): Promi
     notFound()
   }
 
-  const title = `${category.name} — Articles`
+  const title = `${category.name}: Articles`
   const description =
     category.description ||
     `Articles about ${category.name} from Richard Hudson's revenue operations blog.`
@@ -107,7 +113,7 @@ export async function generateMetadata({ params }: BlogCategoryPageProps): Promi
     title,
     description,
     openGraph: {
-      title,
+      title: brandTitle(title),
       description,
       url: canonicalUrl(`/blog/category/${category.slug}`),
       siteName: 'Richard Hudson',
@@ -115,7 +121,7 @@ export async function generateMetadata({ params }: BlogCategoryPageProps): Promi
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: brandTitle(title),
       description,
     },
     alternates: {
@@ -136,6 +142,18 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
   if (!category) {
     notFound()
   }
+
+  const cards = resolveListCovers(
+    category.posts.map((p) => ({
+      id: p.id,
+      slug: p.slug,
+      title: p.title,
+      featuredImage: p.featuredImage,
+      publishedAt: p.publishedAt,
+      excerpt: resolveExcerpt({ excerpt: p.excerpt, content: p.contentHead }) || null,
+    })),
+    () => category.name
+  )
 
   const nonce = (await headers()).get('x-nonce')
 
@@ -164,9 +182,9 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
 
       <div className="min-h-screen bg-background">
         <Navbar />
-        <main className="relative overflow-hidden">
-          <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
+        <main id="main-content" tabIndex={-1} className="relative overflow-x-clip">
+          <DecorativeBlob position="top-right" />
+          <DecorativeBlob position="bottom-left" />
 
           <div className="relative pt-24 pb-16 lg:pt-32 lg:pb-20">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -177,20 +195,16 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                 >
                   ← All articles
                 </Link>
-                <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mt-4 mb-4">
-                  {category.name}
-                </h1>
-                {category.description && (
-                  <p className="text-lg text-muted-foreground max-w-3xl">{category.description}</p>
-                )}
-                <p className="mt-4 text-sm text-muted-foreground">
+                <h1 className="mt-4 mb-4">{category.name}</h1>
+                {category.description && <p className="max-w-3xl">{category.description}</p>}
+                <p className="mt-4">
                   {category.posts.length} {category.posts.length === 1 ? 'article' : 'articles'}
                 </p>
               </div>
 
               {category.posts.length > 0 ? (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {category.posts.map((post) => (
+                  {cards.map((post) => (
                     <Link key={post.id} href={`/blog/${post.slug}`} className="group block h-full">
                       <Card className="hover-lift hover:border-primary/50 transition-all h-full overflow-hidden">
                         {post.featuredImage && (
@@ -200,6 +214,7 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                               alt={post.title}
                               postTitle={post.title}
                               postCategory={category.name}
+                              fallbackVariant="card"
                               fill
                               className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -207,19 +222,8 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                           </div>
                         )}
                         <CardHeader>
-                          {post.tags.length > 0 && (
-                            <div className="flex gap-2 mb-2 flex-wrap">
-                              {post.tags.slice(0, 3).map((pt) => (
-                                <Badge key={pt.tag.id} variant="secondary" className="text-xs">
-                                  {pt.tag.name}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-                          <CardTitle
-                            as="h2"
-                            className="text-xl line-clamp-2 group-hover:text-primary transition-colors"
-                          >
+                          <span className={`${CATEGORY_CHIP_CLASSES} mb-2`}>{category.name}</span>
+                          <CardTitle as="h2" className="line-clamp-3 transition-colors">
                             {post.title}
                           </CardTitle>
                           {post.excerpt && (
@@ -229,7 +233,10 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                           )}
                         </CardHeader>
                         <CardContent>
-                          <time className="text-sm text-muted-foreground">
+                          <time
+                            className="text-sm text-muted-foreground"
+                            dateTime={post.publishedAt?.toISOString()}
+                          >
                             {formatPublishedDate(post.publishedAt)}
                           </time>
                         </CardContent>
@@ -239,9 +246,7 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                 </div>
               ) : (
                 <div className="py-16 text-center">
-                  <p className="text-muted-foreground">
-                    No articles published in this category yet.
-                  </p>
+                  <p>No articles published in this category yet.</p>
                 </div>
               )}
             </div>

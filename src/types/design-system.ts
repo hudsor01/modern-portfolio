@@ -72,6 +72,8 @@ interface MetricTrend {
   direction: 'up' | 'down' | 'neutral'
   value: string
   label: string
+  /** A rise is bad, e.g. churn: colours swap, icon and direction text do not. */
+  invert?: boolean
 }
 
 // Chart Action Interface
@@ -117,7 +119,7 @@ export interface ChartContainerProps {
   title: string
   description?: string
   children: ReactNode
-  height?: number
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'auto'
   loading?: boolean
   error?: string
   actions?: ChartAction[]

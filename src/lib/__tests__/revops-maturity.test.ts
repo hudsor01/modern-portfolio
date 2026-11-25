@@ -62,9 +62,32 @@ describe('scoreMaturity — weakest pillar (highest-ROI next move)', () => {
     expect(r.nextMove).toMatch(/CRM hygiene|definitions/i)
   })
 
-  it('ties resolve to canonical pillar order (process first)', () => {
+  it('a shared lowest score is a tie: no weakest pillar, order-of-operations next move', () => {
     const r = scoreMaturity(byPillar({ process: 2, data: 2, technology: 5, alignment: 5 }))
-    expect(r.weakestPillar).toBe('process')
+    expect(r.weakestPillar).toBeNull()
+    expect(r.nextMove).toMatch(/tied/i)
+    expect(r.nextMove).toMatch(/document the process/i)
+  })
+
+  it('all four pillars neutral (the default state) names no weakest pillar', () => {
+    const r = scoreMaturity(allAt(3))
+    expect(r.weakestPillar).toBeNull()
+    expect(r.nextMove).not.toBe('')
+  })
+
+  it('a tie above the minimum does not matter: the single lowest still wins', () => {
+    const r = scoreMaturity(byPillar({ process: 4, data: 4, technology: 4, alignment: 2 }))
+    expect(r.weakestPillar).toBe('alignment')
+  })
+
+  it('pillars that differ by any real margin are not a tie', () => {
+    const answers = allAt(3)
+    answers.p1 = 4 // process mean 3.25, the rest 3.0 -> three-way tie at the lowest
+    expect(scoreMaturity(answers).weakestPillar).toBeNull()
+    answers.d1 = 4
+    answers.t1 = 4
+    answers.a1 = 2 // alignment 2.75 is now the unique lowest
+    expect(scoreMaturity(answers).weakestPillar).toBe('alignment')
   })
 
   it('alignment can be the weakest link', () => {
@@ -209,4 +232,26 @@ describe('data integrity', () => {
     expect(TIERS.map((t) => t.level)).toEqual([1, 2, 3, 4, 5])
     expect(TIERS[TIERS.length - 1]!.max).toBe(Number.POSITIVE_INFINITY)
   })
+})
+
+describe('alignment blurb does not repeat its own statements (C-6)', () => {
+  const grams = (t: string, n: number) => {
+    const w = t
+      .toLowerCase()
+      .replace(/[^a-z0-9 ]/g, ' ')
+      .split(/\s+/)
+      .filter(Boolean)
+    return new Set(
+      Array.from({ length: Math.max(0, w.length - n + 1) }, (_, i) => w.slice(i, i + n).join(' '))
+    )
+  }
+  it.each(PILLARS.filter((p) => p.id === 'alignment').map((p) => [p.id, p] as const))(
+    '%s blurb shares no 3-word run with its statements',
+    (_id, pillar) => {
+      const blurb = grams(pillar.blurb, 3)
+      for (const q of QUESTIONS.filter((x) => x.pillar === pillar.id)) {
+        for (const g of grams(q.text, 3)) expect(blurb.has(g), `"${g}" in ${q.id}`).toBe(false)
+      }
+    }
+  )
 })

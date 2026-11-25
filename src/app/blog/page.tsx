@@ -16,6 +16,7 @@ import { createContextLogger } from '@/lib/logger'
 import type { BlogCategoryData } from '@/types/api'
 import type { BlogListPost } from '@/types/blog'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { brandTitle } from '@/app/shared-metadata'
 import {
   ALL_CATEGORIES,
   BLOG_PAGE_SIZE,
@@ -25,6 +26,10 @@ import {
   parseCategoryParam,
   parsePageParam,
 } from '@/lib/blog-pagination'
+import { resolveExcerpt } from '@/lib/blog-excerpt'
+import { getCategoryChipLabel, resolveListCovers } from '@/lib/blog-list'
+import { BLOG_CONTENT_HEAD_EXTRAS } from '@/lib/blog-content-head'
+import { DecorativeBlob } from '@/components/ui/decorative-blob'
 
 const logger = createContextLogger('BlogIndex')
 
@@ -60,15 +65,15 @@ export async function generateMetadata({
   const canonical = canonicalUrl(unfiltered ? blogIndexHref({ page }) : '/blog')
   const title =
     unfiltered && page > 1
-      ? `Blog - Revenue Operations Insights (Page ${page})`
-      : 'Blog - Revenue Operations Insights'
+      ? `Blog: Revenue Operations Insights (Page ${page})`
+      : 'Blog: Revenue Operations Insights'
 
   return {
     title,
     description: BLOG_DESCRIPTION,
     keywords: ['revenue operations', 'data analytics', 'business intelligence', 'revops'],
     openGraph: {
-      title: 'Blog | Richard Hudson',
+      title: brandTitle(title),
       description: BLOG_DESCRIPTION,
       url: canonical,
       type: 'website',
@@ -84,7 +89,7 @@ export async function generateMetadata({
     twitter: {
       card: 'summary_large_image',
       creator: '@hudsor01',
-      title: 'Blog | Richard Hudson',
+      title: brandTitle(title),
       description: BLOG_DESCRIPTION,
       images: [BLOG_INDEX_OG_IMAGE_URL],
     },
@@ -121,6 +126,8 @@ interface CardRow {
   excerpt: string | null
   featuredImage: string | null
   publishedAt: Date | null
+  /** Bounded body prefix (server-only); never copied into the list post. */
+  contentHead?: string | null
   category: { name: string } | null
   tags: Array<{ tag: { id: string; name: string } }>
 }
@@ -130,7 +137,7 @@ function toListPost(row: CardRow): BlogListPost {
     id: row.id,
     slug: row.slug,
     title: row.title,
-    excerpt: row.excerpt,
+    excerpt: resolveExcerpt({ excerpt: row.excerpt, content: row.contentHead }) || null,
     featuredImage: row.featuredImage,
     publishedAt: row.publishedAt?.toISOString() ?? null,
     categoryName: row.category?.name ?? null,
@@ -188,6 +195,7 @@ async function getIndexListing(
                 ? and(PUBLIC_POSTS, eq(blogPosts.categoryId, category.id))
                 : PUBLIC_POSTS,
               columns: CARD_COLUMNS,
+              extras: BLOG_CONTENT_HEAD_EXTRAS,
               with: CARD_RELATIONS,
               // `id` breaks publishedAt ties so LIMIT/OFFSET pages never overlap.
               orderBy: [desc(blogPosts.publishedAt), desc(blogPosts.id)],
@@ -208,7 +216,11 @@ async function getIndexListing(
     const total =
       category === undefined ? 0 : (categoryCounts[category ? category.name : ALL_CATEGORIES] ?? 0)
 
-    return { posts: rows.map(toListPost), total, categoryCounts }
+    return {
+      posts: resolveListCovers(rows.map(toListPost), getCategoryChipLabel),
+      total,
+      categoryCounts,
+    }
   } catch (error) {
     logger.error(
       'Blog index posts query failed',
@@ -274,6 +286,7 @@ async function getPostsByIds(ids: string[]): Promise<BlogListPost[]> {
     db.query.blogPosts.findMany({
       where: and(inArray(blogPosts.id, ids), PUBLIC_POSTS),
       columns: CARD_COLUMNS,
+      extras: BLOG_CONTENT_HEAD_EXTRAS,
       with: CARD_RELATIONS,
     })
   )
@@ -318,7 +331,7 @@ async function getSearchListing(
         : posts.filter((post) => post.categoryName === selectedCategory)
 
     return {
-      posts: pageSlice(matching, page),
+      posts: resolveListCovers(pageSlice(matching, page), getCategoryChipLabel),
       total: matching.length,
       categoryCounts,
     }
@@ -410,10 +423,10 @@ export default async function BlogHomePage({
       )}
       <div className="min-h-screen bg-background">
         <Navbar />
-        <main className="relative overflow-hidden">
+        <main id="main-content" tabIndex={-1} className="relative overflow-x-clip">
           {/* Decorative background elements */}
-          <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
+          <DecorativeBlob position="top-right" />
+          <DecorativeBlob position="bottom-left" />
 
           <div className="relative pt-24 pb-16 lg:pt-32 lg:pb-20">
             <BlogList

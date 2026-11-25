@@ -1,7 +1,6 @@
 {
-  "title": "Customer Churn & Retention Analytics",
-  "description": "A sophisticated analytics platform that helps businesses understand and reduce customer churn while improving retention rates through predictive modeling and actionable insights.",
-  "image": "/images/projects/churn-retention.jpg",
+  "title": "Partner Churn & Retention Analytics",
+  "description": "A sophisticated analytics platform that helps businesses understand and reduce partner churn while improving retention rates through predictive modeling and actionable insights.",
   "liveUrl": "https://richardwhudsonjr.com/projects/churn-retention",
   "githubUrl": "https://github.com/hudsonr01/modern-portfolio",
   "technologies": [
@@ -14,17 +13,16 @@
     "Python",
     "Data Visualization",
     "Predictive Analytics",
-    "Customer Retention",
+    "Partner Retention",
     "CRM Integration"
   ],
-  "featured": true,
   "features": [
-    "Churn prediction algorithms to identify at-risk customers",
+    "Churn prediction algorithms to identify at-risk partners",
     "Cohort analysis for retention tracking over time",
-    "Customer segmentation based on behavior patterns",
-    "Heatmap visualization of retention by customer segment",
+    "Partner segmentation based on behavior patterns",
+    "Heatmap visualization of retention by partner segment",
     "Automated alert system for high-risk accounts",
     "A/B testing framework for retention strategy optimization",
-    "Integration with CRM platforms for unified customer data"
+    "Integration with CRM platforms for unified partner data"
   ]
 }

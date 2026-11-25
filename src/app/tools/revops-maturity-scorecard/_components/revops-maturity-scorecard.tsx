@@ -17,12 +17,14 @@ const SCALE = [
   { value: 5, label: 'Fully' },
 ] as const
 
+const SCALE_KEY = SCALE.map((o) => `${o.value} ${o.label}`).join(' · ')
+
 const DEFAULT = 3
 
 /** Pillar score (1–5) → bar fill class. Weakest pillars read warmer. */
 function barColor(score: number): string {
   if (score < 2.6) return 'bg-destructive'
-  if (score < 3.4) return 'bg-amber-500'
+  if (score < 3.4) return 'bg-warning'
   return 'bg-success'
 }
 
@@ -48,17 +50,18 @@ export function RevOpsMaturityScorecard() {
             key={pillar.id}
             className="bg-card rounded-2xl p-6 sm:p-8 border border-border shadow-sm"
           >
-            <legend className="px-1">
+            <legend className="float-left w-full p-0">
               <span className="block font-display text-xl font-semibold text-foreground">
                 {pillar.label}
               </span>
               <span className="block text-sm text-muted-foreground mt-0.5">{pillar.blurb}</span>
             </legend>
 
-            <div className="mt-6 space-y-6">
+            <div className="clear-both pt-6 space-y-6">
+              <p className="text-xs text-muted-foreground sm:hidden">{SCALE_KEY}</p>
               {QUESTIONS.filter((q) => q.pillar === pillar.id).map((q) => (
                 <div key={q.id}>
-                  <p id={`${groupName}-${q.id}-label`} className="text-sm text-foreground mb-2.5">
+                  <p id={`${groupName}-${q.id}-label`} className="mb-2.5">
                     {q.text}
                   </p>
                   <div
@@ -71,7 +74,7 @@ export function RevOpsMaturityScorecard() {
                       return (
                         <label
                           key={opt.value}
-                          className={`flex flex-col items-center justify-center rounded-lg border px-1 py-2 cursor-pointer text-center transition-colors ${
+                          className={`flex flex-col items-center justify-center rounded-lg border px-1 py-2 cursor-pointer text-center transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-background ${
                             selected
                               ? 'border-primary bg-primary/10 text-primary'
                               : 'border-border bg-background text-muted-foreground hover:border-primary/50'
@@ -81,12 +84,15 @@ export function RevOpsMaturityScorecard() {
                             type="radio"
                             name={`${groupName}-${q.id}`}
                             value={opt.value}
+                            aria-label={`${opt.value} ${opt.label}`}
                             checked={selected}
                             onChange={() => setAnswer(q.id, opt.value)}
                             className="sr-only"
                           />
                           <span className="text-base font-semibold leading-none">{opt.value}</span>
-                          <span className="mt-1 text-[10px] leading-tight">{opt.label}</span>
+                          <span className="mt-1 hidden text-xs leading-tight sm:block">
+                            {opt.label}
+                          </span>
                         </label>
                       )
                     })}
@@ -112,18 +118,16 @@ export function RevOpsMaturityScorecard() {
           className="lg:sticky lg:top-28 bg-card rounded-2xl p-6 sm:p-8 border border-border shadow-sm"
           aria-live="polite"
         >
-          <p className="text-sm uppercase tracking-wider text-muted-foreground">
-            Your maturity level
-          </p>
+          <p className="uppercase tracking-wider">Your maturity level</p>
           <p className="mt-1 flex items-baseline gap-2">
             <span className="text-5xl font-bold text-primary tracking-tight">{result.level}</span>
             <span className="text-2xl font-semibold text-foreground">{result.tier}</span>
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1">
             Overall score {result.overallScore.toFixed(1)} / 5 · ~{result.percentile}th percentile
             of B2B teams
           </p>
-          {tier && <p className="mt-3 text-sm text-foreground leading-relaxed">{tier.blurb}</p>}
+          {tier && <p className="mt-3">{tier.blurb}</p>}
 
           {/* Per-pillar bars */}
           <div className="mt-6 space-y-3">
@@ -138,7 +142,7 @@ export function RevOpsMaturityScorecard() {
                     >
                       {pillar.label}
                       {isWeakest && (
-                        <span className="ml-2 text-[10px] uppercase tracking-wide text-destructive">
+                        <span className="ml-2 text-xs uppercase tracking-wide text-destructive">
                           weakest
                         </span>
                       )}
@@ -159,17 +163,15 @@ export function RevOpsMaturityScorecard() {
           {/* Highest-ROI next move */}
           {result.nextMove && (
             <div className="mt-6 rounded-xl bg-muted/50 p-4">
-              <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
-                Highest-ROI next move
-              </p>
-              <p className="text-sm text-foreground leading-relaxed">{result.nextMove}</p>
+              <p className="uppercase tracking-wider mb-1">Highest-ROI next move</p>
+              <p>{result.nextMove}</p>
             </div>
           )}
 
           {/* Tech-overbuy anti-pattern */}
           {result.techOverbuy && (
             <div className="mt-4 rounded-xl border border-destructive/40 bg-destructive/5 p-4">
-              <p className="text-sm text-foreground leading-relaxed">
+              <p>
                 <strong className="text-destructive">Watch out:</strong> your tooling maturity is
                 running ahead of your data and process maturity — the classic{' '}
                 <em>buying tools you can’t feed</em> trap. Fix the foundation before adding more

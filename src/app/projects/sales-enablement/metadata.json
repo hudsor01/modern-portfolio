@@ -3,10 +3,8 @@
   "title": "Sales Enablement & Coaching Platform",
   "slug": "sales-enablement",
   "description": "Comprehensive sales enablement and coaching platform that transformed sales team performance through structured training, real-time coaching, and continuous skill development. Increased win rates by 34% and reduced ramp time by 45%.",
-  "image": "/images/projects/sales-enablement.jpg",
   "liveUrl": "https://richardwhudsonjr.com/projects/sales-enablement",
   "category": "Sales Operations",
-  "featured": true,
   "metrics": {
     "winRateImprovement": "34%",
     "rampTimeReduction": "45%",

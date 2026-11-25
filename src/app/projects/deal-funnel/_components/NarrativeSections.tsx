@@ -10,13 +10,13 @@ export function NarrativeSections() {
       {/* Situation */}
       <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
-          <p className="text-lg leading-relaxed">
+          <p className="max-w-prose text-base">
             When I inherited the sales operations function, I discovered we were flying blind. The
             team was managing 847 active opportunities worth $14.2M in pipeline, but had no
             standardized way to track deal progression across our 4 distinct market segments. Sales
             velocity metrics were being calculated manually using inconsistent methodologies.
           </p>
-          <p className="leading-relaxed">
+          <p className="max-w-prose text-base">
             Pipeline bottlenecks were only identified reactively—after deals had already stalled.
             Conversion rate analysis was limited to overall averages that hid critical
             segment-specific insights. Revenue forecasting was essentially guesswork, hovering
@@ -28,11 +28,11 @@ export function NarrativeSections() {
       {/* Task */}
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p className="max-w-prose text-base">
             I was charged with building a pipeline analytics system that would give our sales
             leadership real-time visibility into deal flow. My specific objectives were:
           </p>
-          <ul className="list-disc list-inside space-y-2 ml-4">
+          <ul className="max-w-prose list-disc list-inside space-y-2 ml-4">
             <li>
               Create multi-stage funnel tracking with segment-specific conversion rate analysis
             </li>
@@ -51,7 +51,7 @@ export function NarrativeSections() {
       {/* Action */}
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p className="max-w-prose text-base">
             I designed and built a comprehensive deal funnel analytics system from scratch,
             integrating data from our CRM and building custom calculation engines for each key
             metric:
@@ -59,7 +59,7 @@ export function NarrativeSections() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <FeatureCard title="Analytics Framework I Built">
-              <ul className="list-disc list-inside space-y-1 text-sm">
+              <ul className="max-w-prose list-disc list-inside space-y-1">
                 <li>Multi-stage funnel tracking with conversion rate analysis at each gate</li>
                 <li>
                   Segment-based performance comparisons (Enterprise, Mid-Market, SMB, Partner)
@@ -70,7 +70,7 @@ export function NarrativeSections() {
               </ul>
             </FeatureCard>
             <FeatureCard title="Interactive Features">
-              <ul className="list-disc list-inside space-y-1 text-sm">
+              <ul className="max-w-prose list-disc list-inside space-y-1">
                 <li>Dynamic filtering by segment, stage, and deal size</li>
                 <li>Drill-down capabilities from overview to individual deal</li>
                 <li>Manager coaching tools with rep-level performance views</li>
@@ -80,7 +80,7 @@ export function NarrativeSections() {
             </FeatureCard>
           </div>
 
-          <p className="leading-relaxed mt-4">
+          <p className="max-w-prose text-base mt-4">
             I personally led the data integration effort, designed the visual funnel representations
             for faster pattern recognition, and trained sales managers on leveraging the new
             coaching insights. The rollout was phased by segment to validate accuracy before
@@ -92,7 +92,7 @@ export function NarrativeSections() {
       {/* Result */}
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p className="max-w-prose text-base">
             The deal funnel analytics system I built transformed how we manage our pipeline and
             delivered measurable improvements:
           </p>
@@ -107,10 +107,8 @@ export function NarrativeSections() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-secondary">
-              Quantified Business Outcomes I Delivered:
-            </h3>
-            <ul className="list-disc list-inside space-y-2 ml-4">
+            <h3>Quantified Business Outcomes I Delivered:</h3>
+            <ul className="max-w-prose list-disc list-inside space-y-2 ml-4">
               <li>
                 Improved forecast accuracy from 73% to 89% through granular pipeline visibility
               </li>
@@ -137,8 +135,8 @@ export function NarrativeSections() {
         <div className="space-y-4 text-muted-foreground">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
-              <h3 className="font-semibold text-accent-foreground">Sales Process Insights</h3>
-              <ul className="list-disc list-inside space-y-2 text-sm">
+              <h3>Sales Process Insights</h3>
+              <ul className="max-w-prose list-disc list-inside space-y-2">
                 <li>
                   Different market segments require fundamentally different sales approaches and
                   timelines—one size never fits all
@@ -155,8 +153,8 @@ export function NarrativeSections() {
               </ul>
             </div>
             <div className="space-y-3">
-              <h3 className="font-semibold text-primary">Technical Implementation Insights</h3>
-              <ul className="list-disc list-inside space-y-2 text-sm">
+              <h3>Technical Implementation Insights</h3>
+              <ul className="max-w-prose list-disc list-inside space-y-2">
                 <li>
                   Real-time data updates are crucial for actionable sales coaching—batch updates are
                   too slow
@@ -176,7 +174,7 @@ export function NarrativeSections() {
               </ul>
             </div>
           </div>
-          <p className="leading-relaxed mt-4">
+          <p className="max-w-prose text-base mt-4">
             This project taught me that the most valuable analytics features aren't the most
             sophisticated—they're the ones that enable quick decision-making in daily sales
             operations. Actionable beats impressive every time.

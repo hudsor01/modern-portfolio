@@ -1,0 +1,342 @@
+import { existsSync, readdirSync } from 'node:fs'
+import { join } from 'node:path'
+import { expect, test } from '@playwright/test'
+import { backgroundAlpha, borderContrast } from './_helpers/contrast'
+import { getOnly, settleTransitions } from './_helpers/settle'
+
+/**
+ * UX-01 hub contract: /tools layout at 390/768/1440, card click-through, icon
+ * hover target, tool-page breadcrumbs and sitemap entries. Chromium-gated
+ * (layout geometry is checked once) and GET-only.
+ */
+
+const SITE = 'https://richardwhudsonjr.com'
+
+const TOOLS = [
+  { slug: 'pipeline-coverage-calculator', name: 'Pipeline Coverage Calculator' },
+  { slug: 'revops-maturity-scorecard', name: 'RevOps Maturity Scorecard' },
+] as const
+
+const toolDirs = readdirSync(join(process.cwd(), 'src/app/tools'), { withFileTypes: true })
+  .filter((d) => d.isDirectory() && !d.name.startsWith('_'))
+  .filter((d) => existsSync(join(process.cwd(), 'src/app/tools', d.name, 'page.tsx')))
+  .map((d) => d.name)
+
+async function jsonLd(page: import('@playwright/test').Page): Promise<unknown[]> {
+  const raw = await page.locator('script[type="application/ld+json"]').allTextContents()
+  return raw.map((t) => JSON.parse(t) as unknown)
+}
+
+test.describe('tools hub', () => {
+  test.beforeEach(async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'chromium', 'layout geometry checked once, in Chromium')
+    await getOnly(page)
+  })
+
+  test('every tool page on disk is in the TOOLS list', () => {
+    expect([...toolDirs].sort()).toEqual(TOOLS.map((t) => t.slug).sort())
+  })
+
+  test('hub content, nav state, breadcrumb, footer and JSON-LD at 1440px', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto('/tools')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Tools')
+    await expect(page.locator('main ul > li')).toHaveCount(TOOLS.length)
+    for (const tool of TOOLS) {
+      await expect(page.getByRole('link', { name: `Open tool: ${tool.name}` })).toHaveAttribute(
+        'href',
+        `/tools/${tool.slug}`,
+      )
+    }
+    const main = page.getByRole('navigation', { name: 'Main', exact: true })
+    await expect(main.getByRole('link', { name: 'Tools' })).toHaveAttribute('aria-current', 'page')
+
+    const crumbs = page.getByRole('navigation', { name: 'Breadcrumb' })
+    await expect(crumbs.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/')
+    await expect(crumbs.locator('[aria-current="page"]')).toHaveText('Tools')
+
+    await expect(
+      page.getByRole('navigation', { name: 'Explore' }).getByRole('link', { name: 'Tools' }),
+    ).toHaveAttribute('href', '/tools')
+
+    const lds = (await jsonLd(page)) as { '@type'?: string; itemListElement?: { name: string }[] }[]
+    const bc = lds.find((d) => d['@type'] === 'BreadcrumbList')
+    expect(bc?.itemListElement?.map((i) => i.name)).toEqual(['Home', 'Tools'])
+  })
+
+  test('one column at 390px, no horizontal scroll, tall buttons', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/tools')
+    const articles = page.locator('main article')
+    await expect(articles).toHaveCount(TOOLS.length)
+    // One column: every card fills the list's content box and shares the same left edge.
+    const { boxes, contentWidth } = await articles.evaluateAll((els) => {
+      const list = els[0]?.closest('ul') as HTMLElement
+      const cs = getComputedStyle(list)
+      const content =
+        list.clientWidth - Number.parseFloat(cs.paddingLeft) - Number.parseFloat(cs.paddingRight)
+      return {
+        contentWidth: content,
+        boxes: els.map((el) => {
+          const r = el.getBoundingClientRect()
+          return { left: r.left, width: r.width }
+        }),
+      }
+    })
+    for (const b of boxes) {
+      expect(Math.abs(b.width - contentWidth)).toBeLessThanOrEqual(1)
+      expect(Math.abs(b.left - (boxes[0]?.left ?? 0))).toBeLessThanOrEqual(1)
+    }
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    )
+    expect(overflow).toBeLessThanOrEqual(0)
+    for (const tool of TOOLS) {
+      const box = await page.getByRole('link', { name: `Open tool: ${tool.name}` }).boundingBox()
+      expect(box?.height ?? 0).toBeGreaterThanOrEqual(44)
+    }
+  })
+
+  test('two equal-height columns at 768px', async ({ page }) => {
+    await page.setViewportSize({ width: 768, height: 900 })
+    await page.goto('/tools')
+    const articles = page.locator('main article')
+    await expect(articles).toHaveCount(TOOLS.length)
+    const { boxes, contentWidth } = await articles.evaluateAll((els) => {
+      const list = els[0]?.closest('ul') as HTMLElement
+      const cs = getComputedStyle(list)
+      const content =
+        list.clientWidth - Number.parseFloat(cs.paddingLeft) - Number.parseFloat(cs.paddingRight)
+      return {
+        contentWidth: content,
+        boxes: els.map((el) => {
+          const r = el.getBoundingClientRect()
+          return { top: r.top, left: r.left, right: r.right, width: r.width, height: r.height }
+        }),
+      }
+    })
+    const [a, b] = boxes
+    if (!a || !b) throw new Error('expected two cards')
+    expect(Math.abs(a.top - b.top)).toBeLessThanOrEqual(1)
+    expect(b.left).toBeGreaterThan(a.left)
+    // Two equal columns that together with the gutter fill the list's content box.
+    expect(Math.abs(a.width - b.width)).toBeLessThanOrEqual(1)
+    const gutter = b.left - a.right
+    expect(gutter).toBeGreaterThanOrEqual(0)
+    expect(Math.abs(a.width + gutter + b.width - contentWidth)).toBeLessThanOrEqual(1)
+    expect(Math.abs(a.height - b.height)).toBeLessThanOrEqual(1)
+  })
+
+  test('icon tile is hoverable and the whole card is the link', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto('/tools')
+    // Fails if the stretched link overlay intercepts the tile.
+    await page.locator('[data-slot="tool-icon"]').first().hover({ trial: true })
+
+    const summary = page.locator('main article p').first()
+    await expect(summary).toBeVisible()
+    const box = await summary.boundingBox()
+    if (!box) throw new Error('summary box missing')
+    // A locator click would be refused because the overlay covers the paragraph.
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
+    await page.waitForURL(`**/tools/${TOOLS[0].slug}`)
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(TOOLS[0].name)
+  })
+
+  test('clicking the icon tile opens the tool', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    for (const tool of TOOLS) {
+      await page.goto('/tools')
+      await page.locator(`[data-slot="tool-icon"][href="/tools/${tool.slug}"]`).click()
+      await page.waitForURL(`**/tools/${tool.slug}`)
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(tool.name)
+    }
+  })
+
+  for (const tool of TOOLS) {
+    test(`${tool.slug} breadcrumb at 1440px`, async ({ page }) => {
+      await page.setViewportSize({ width: 1440, height: 900 })
+      await page.goto(`/tools/${tool.slug}`)
+      const crumbs = page.getByRole('navigation', { name: 'Breadcrumb' })
+      await expect(crumbs).toBeVisible()
+      await expect(crumbs).toContainText('Home')
+      await expect(crumbs).toContainText('Tools')
+      await expect(crumbs.locator('[aria-current="page"]')).toHaveText(tool.name)
+      await expect(crumbs.locator('li')).toHaveText(['Home', 'Tools', tool.name])
+      // Separators are CSS: every item but the first has a '›' ::before, and links are underlined.
+      const seps = await crumbs
+        .locator('li')
+        .evaluateAll((els) => els.map((el) => getComputedStyle(el, '::before').content))
+      expect(seps[0]).toBe('none')
+      for (const c of seps.slice(1)) expect(c).toContain('›')
+      for (const name of ['Home', 'Tools']) {
+        const deco = await crumbs
+          .getByRole('link', { name })
+          .evaluate((el) => getComputedStyle(el).textDecorationLine)
+        expect(deco).toContain('underline')
+      }
+
+      const lds = (await jsonLd(page)) as {
+        '@type'?: string
+        itemListElement?: Record<string, unknown>[]
+      }[]
+      const bc = lds.find((d) => d['@type'] === 'BreadcrumbList')
+      expect(bc?.itemListElement?.[1]).toEqual({
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Tools',
+        item: `${SITE}/tools`,
+      })
+
+      await crumbs.getByRole('link', { name: 'Tools' }).click()
+      await page.waitForURL('**/tools')
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText('Tools')
+    })
+  }
+
+  test('sitemap lists the hub and every tool', async ({ page }) => {
+    const res = await page.request.get('/sitemap.xml')
+    expect(res.status()).toBe(200)
+    const body = await res.text()
+    expect(body).toContain(`<loc>${SITE}/tools</loc>`)
+    for (const tool of TOOLS) expect(body).toContain(`<loc>${SITE}/tools/${tool.slug}</loc>`)
+  })
+})
+
+test.describe('scorecard geometry', () => {
+  const URL = '/tools/revops-maturity-scorecard'
+
+  test.beforeEach(async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'chromium', 'layout geometry checked once, in Chromium')
+    await getOnly(page)
+  })
+
+  for (const width of [390, 1440]) {
+    test(`legends sit inside their card borders at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 })
+      await page.goto(URL)
+      await expect(page.locator('fieldset').first()).toBeVisible()
+      const rows = await page.locator('fieldset').evaluateAll((els) =>
+        els.map((fs) => {
+          const f = fs.getBoundingClientRect()
+          const l = (fs.querySelector(':scope > legend') as HTMLElement).getBoundingClientRect()
+          const bw = Number.parseFloat(getComputedStyle(fs).borderTopWidth)
+          return {
+            gap: l.top - (f.top + bw),
+            left: l.left - f.left,
+            right: f.right - l.right,
+            bottom: f.bottom - l.bottom,
+          }
+        }),
+      )
+      expect(rows.length).toBeGreaterThan(0)
+      for (const r of rows) {
+        expect(r.gap).toBeGreaterThanOrEqual(0)
+        expect(r.left).toBeGreaterThanOrEqual(0)
+        expect(r.right).toBeGreaterThanOrEqual(0)
+        expect(r.bottom).toBeGreaterThan(0)
+      }
+    })
+  }
+
+  test('rating options fit at 390px with full accessible names', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto(URL)
+    await expect(page.locator('fieldset').first()).toBeVisible()
+    const opts = await page.locator('fieldset label').evaluateAll((els) =>
+      els.map((el) => {
+        // Count rendered text lines from the rects of the text itself (distinct line tops),
+        // not height / line-height, so font swaps and padding changes cannot skew it.
+        const lineTops = new Set<number>()
+        for (const child of Array.from(el.children)) {
+          if ((child as HTMLElement).offsetParent === null) continue
+          const range = document.createRange()
+          range.selectNodeContents(child)
+          for (const rect of Array.from(range.getClientRects())) {
+            if (rect.width > 0) lineTops.add(Math.round(rect.top / 4))
+          }
+        }
+        return {
+          overflow: el.scrollWidth - el.clientWidth,
+          lines: lineTops.size,
+          word: Array.from(el.children).some(
+            (c) => (c as HTMLElement).offsetParent !== null && /[a-z]/i.test(c.textContent ?? ''),
+          ),
+        }
+      }),
+    )
+    expect(opts.length).toBeGreaterThan(0)
+    for (const o of opts) {
+      expect(o.overflow).toBeLessThanOrEqual(0)
+      expect(o.lines).toBeLessThanOrEqual(2)
+      expect(o.word).toBe(false)
+    }
+    await expect(page.getByRole('radio', { name: '1 Not at all' }).first()).toBeAttached()
+    await expect(page.getByRole('radio', { name: '3 Somewhat' }).first()).toBeAttached()
+  })
+
+  test('selected rating option has a primary border at 3:1 against its fill', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto(URL)
+    const group = page.getByRole('radiogroup').first()
+    await group.getByText('Fully', { exact: true }).click()
+    const labels = group.locator('label')
+    const selected = labels.nth(4)
+    await expect(selected.getByRole('radio')).toBeChecked()
+    await settleTransitions(page)
+    const sel = await borderContrast(selected)
+    const unsel = await borderContrast(labels.nth(0))
+    expect(sel.border).not.toBe(unsel.border)
+    expect(sel.ratio).toBeGreaterThanOrEqual(3)
+  })
+
+  test('keyboard focus on a rating option is visible and arrow keys move it', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.goto(URL)
+    await expect(page.locator('fieldset').first()).toBeVisible()
+    const onRadio = () =>
+      page.evaluate(() => {
+        const el = document.activeElement
+        return el instanceof HTMLInputElement && el.type === 'radio'
+      })
+    for (let i = 0; i < 60 && !(await onRadio()); i++) await page.keyboard.press('Tab')
+    expect(await onRadio()).toBe(true)
+
+    const focusedLabel = page.locator('fieldset label:has(input:focus-visible)')
+    await expect(focusedLabel).toHaveCount(1)
+    const ring = async () =>
+      focusedLabel.evaluate((el) => {
+        const s = getComputedStyle(el)
+        return { shadow: s.boxShadow, outline: s.outlineStyle }
+      })
+    const before = await ring()
+    expect(before.shadow).not.toBe('none')
+    expect(before.shadow).toMatch(/\b2px\b/)
+
+    const first = await focusedLabel.textContent()
+    await page.keyboard.press('ArrowRight')
+    await expect(focusedLabel).toHaveCount(1)
+    expect(await focusedLabel.textContent()).not.toBe(first)
+    expect((await ring()).shadow).not.toBe('none')
+  })
+
+  test('rating options show the word label at 640px and up', async ({ page }) => {
+    for (const width of [640, 1440]) {
+      await page.setViewportSize({ width, height: 900 })
+      await page.goto(URL)
+      const first = page.locator('fieldset label').first()
+      await expect(first.getByText('Not at all')).toBeVisible()
+    }
+  })
+
+  test('open mobile menu panel is fully opaque at 390px', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto(URL)
+    await page.getByRole('button', { name: 'Open menu' }).click()
+    const menu = page.locator('#mobile-menu')
+    await expect(menu).toBeVisible()
+    expect(await backgroundAlpha(menu)).toBe(1)
+    const filter = await menu.evaluate((el) => getComputedStyle(el).backdropFilter)
+    expect(filter === 'none' || filter === '').toBe(true)
+  })
+})

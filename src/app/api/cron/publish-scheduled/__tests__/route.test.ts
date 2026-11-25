@@ -1,8 +1,15 @@
 // @vitest-environment node
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 
 // The route imports `server-only`, which throws under Vitest's client context.
 vi.mock('server-only', () => ({}))
+
+const { withMonitorMock } = vi.hoisted(() => ({
+  withMonitorMock: vi.fn(<T>(_slug: string, cb: () => T, _cfg?: unknown): T => cb()),
+}))
+vi.mock('@sentry/nextjs', () => ({ withMonitor: withMonitorMock }))
 
 vi.mock('@/lib/logger', () => ({
   createContextLogger: () => ({
@@ -30,6 +37,13 @@ vi.mock('@/lib/db', () => ({
 
 import { GET } from '../route'
 
+const vercelSchedule = (path: string) =>
+  (
+    JSON.parse(readFileSync(join(process.cwd(), 'vercel.json'), 'utf8')) as {
+      crons: { path: string; schedule: string }[]
+    }
+  ).crons.find((c) => c.path === path)?.schedule
+
 const SECRET = 'x'.repeat(48)
 const req = (auth?: string) =>
   new Request('http://test/api/cron/publish-scheduled', {
@@ -39,6 +53,7 @@ const req = (auth?: string) =>
 beforeEach(() => {
   envMock.CRON_SECRET = SECRET
   returningMock.mockReset().mockResolvedValue([])
+  withMonitorMock.mockClear()
 })
 
 describe('GET /api/cron/publish-scheduled', () => {
@@ -102,5 +117,26 @@ describe('GET /api/cron/publish-scheduled', () => {
     const response = await GET(req(`Bearer ${SECRET}`))
     expect(response.status).toBe(500)
     await expect(response.json()).resolves.toEqual({ error: 'Internal Server Error' })
+  })
+
+  it('runs inside a Sentry cron monitor whose schedule matches vercel.json', async () => {
+    await GET(req(`Bearer ${SECRET}`))
+
+    expect(withMonitorMock).toHaveBeenCalledTimes(1)
+    const [slug, , config] = withMonitorMock.mock.calls[0] as unknown as [
+      string,
+      unknown,
+      { schedule: { type: string; value: string } },
+    ]
+    expect(slug).toBe('publish-scheduled')
+    expect(config.schedule).toEqual({
+      type: 'crontab',
+      value: vercelSchedule('/api/cron/publish-scheduled'),
+    })
+  })
+
+  it('does not create a check-in for an unauthenticated call', async () => {
+    await GET(req())
+    expect(withMonitorMock).not.toHaveBeenCalled()
   })
 })

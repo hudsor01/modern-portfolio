@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 
 /**
@@ -7,9 +7,27 @@ import AxeBuilder from '@axe-core/playwright'
  * Tests the complete contact form user journey:
  * - Form display and accessibility
  * - Field validation
- * - Successful submission
+ * - Intercepted submission (never reaches the server action)
  * - Error handling
  */
+
+/**
+ * Abort every contact server-action POST at the network layer so e2e can
+ * never send email or write contact_submissions. Returns a live hit counter.
+ */
+async function guardServerAction(page: Page) {
+  const counter = { count: 0 }
+  await page.route('**/contact', async (route) => {
+    const request = route.request()
+    if (request.method() === 'POST' && request.headers()['next-action']) {
+      counter.count += 1
+      await route.abort()
+      return
+    }
+    await route.continue()
+  })
+  return counter
+}
 
 test.describe('Contact Form', () => {
   test.beforeEach(async ({ page }) => {
@@ -30,23 +48,31 @@ test.describe('Contact Form', () => {
     await expect(page.getByLabel(/company/i)).toBeVisible()
     await expect(page.getByLabel(/phone/i)).toBeVisible()
 
-    // Verify privacy checkbox
-    await expect(page.getByRole('checkbox', { name: /agree/i })).toBeVisible()
+    // Verify privacy notice and link
+    await expect(page.getByText(/used only to reply to you/i)).toBeVisible()
+    await expect(
+      page.getByRole('link', { name: /^privacy policy \(opens in a new tab\)$/i })
+    ).toBeVisible()
 
     // Verify submit button
     await expect(page.getByRole('button', { name: /send message/i })).toBeVisible()
   })
 
   test('shows validation errors for empty required fields', async ({ page }) => {
-    // Try to submit without filling required fields
-    // First check the privacy checkbox to enable submit
-    await page.getByRole('checkbox', { name: /agree/i }).check()
+    const hits = await guardServerAction(page)
 
-    // Click submit
+    // Click submit with nothing filled
     await page.getByRole('button', { name: /send message/i }).click()
 
-    // Verify validation - form should not submit, still on same page
+    // Wait for a positive validation signal first, so the zero-hits check below
+    // runs after the click was processed rather than vacuously before it. The
+    // fields are natively `required`, so a blocked submit focuses the first
+    // invalid control and flags it as missing a value.
+    const nameInput = page.getByLabel(/^name/i)
+    await expect(nameInput).toBeFocused()
+    expect(await nameInput.evaluate((el: HTMLInputElement) => el.validity.valueMissing)).toBe(true)
     await expect(page).toHaveURL(/\/contact/)
+    expect(hits.count).toBe(0)
   })
 
   test('validates email format', async ({ page }) => {
@@ -59,9 +85,6 @@ test.describe('Contact Form', () => {
     // Fill in message
     await page.getByLabel(/message/i).fill('This is a test message for validation.')
 
-    // Check privacy
-    await page.getByRole('checkbox', { name: /agree/i }).check()
-
     // Click outside to trigger blur validation
     await page.getByLabel(/message/i).click()
 
@@ -71,21 +94,13 @@ test.describe('Contact Form', () => {
     await expect(emailInput).toBeVisible()
   })
 
-  test('submit button is disabled until privacy is agreed', async ({ page }) => {
-    // Fill in all required fields
+  test('send button is enabled with a valid form and no checkbox', async ({ page }) => {
     await page.getByLabel(/^name/i).fill('Test User')
     await page.getByLabel(/email/i).fill('test@example.com')
     await page.getByLabel(/message/i).fill('This is a test message for the contact form.')
 
-    // Verify submit button is disabled
-    const submitButton = page.getByRole('button', { name: /send message/i })
-    await expect(submitButton).toBeDisabled()
-
-    // Check privacy checkbox
-    await page.getByRole('checkbox', { name: /agree/i }).check()
-
-    // Verify submit button is now enabled
-    await expect(submitButton).toBeEnabled()
+    await expect(page.getByRole('button', { name: /send message/i })).toBeEnabled()
+    await expect(page.getByRole('checkbox')).toHaveCount(0)
   })
 
   test('privacy policy link opens the /privacy page', async ({ page, context }) => {
@@ -111,30 +126,27 @@ test.describe('Contact Form', () => {
     await expect(page.getByText(/5\/500/)).toBeVisible()
   })
 
-  test('form submits successfully with valid data', async ({ page }) => {
-    // Fill in all required fields
+  // Success-path coverage lives in unit tests. Interception is what keeps e2e
+  // from emailing or writing contact_submissions against the real database.
+  test('submit reaches the server action and is intercepted (never sends or stores)', async ({
+    page,
+  }) => {
+    const hits = await guardServerAction(page)
+
     await page.getByLabel(/^name/i).fill('E2E Test User')
     await page.getByLabel(/email/i).fill('e2e-test@example.com')
     await page.getByLabel(/message/i).fill('This is an automated E2E test message. Please ignore.')
-
-    // Fill optional fields
     await page.getByLabel(/company/i).fill('Test Company')
     await page.getByLabel(/phone/i).fill('555-123-4567')
 
-    // Check privacy checkbox
-    await page.getByRole('checkbox', { name: /agree/i }).check()
+    const submitButton = page.getByRole('button', { name: /send message/i })
+    await expect(submitButton).toBeEnabled()
+    await submitButton.click()
 
-    // Submit form
-    await page.getByRole('button', { name: /send message/i }).click()
-
-    // Wait for the form's submission-status alert (the live region beneath
-    // the submit button). Per-field errors also use role="alert" but contain
-    // different copy — scope to the bottom-of-form status messages only.
-    const successAlert = page.getByRole('alert').filter({ hasText: /message sent successfully/i })
+    // Aborted request surfaces as the form-level failure alert.
     const errorAlert = page.getByRole('alert').filter({ hasText: /failed to send message/i })
-
-    // Either success or handled error is acceptable in test environment
-    await expect(successAlert.or(errorAlert)).toBeVisible({ timeout: 15000 })
+    await expect(errorAlert).toBeVisible({ timeout: 15000 })
+    expect(hits.count).toBe(1)
   })
 
   test('keyboard navigation works correctly', async ({ page }) => {

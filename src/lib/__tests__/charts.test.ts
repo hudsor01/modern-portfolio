@@ -23,7 +23,6 @@ describe('chartColors / chartCssVars / segmentColors', () => {
   })
 
   it('chartConfig sane defaults', () => {
-    expect(chartConfig.heights.standard).toBe(300)
     expect(chartConfig.animation.duration).toBeGreaterThan(0)
   })
 })
@@ -50,7 +49,7 @@ describe('formatValue + formatters registry', () => {
   })
 
   it('compact formatter compacts always', () => {
-    expect(formatValue(2_000_000, 'compact')).toBe('2.0M')
+    expect(formatValue(2_000_000, 'compact')).toBe('2M')
   })
 
   it('formatters object exposes all keys', () => {

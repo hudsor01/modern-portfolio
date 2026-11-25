@@ -1,6 +1,10 @@
+import { createSeededRandom } from '@/lib/seeded-random'
 import type { TopPartnerData } from '@/types/analytics'
 
-export function generateTopPartnersData(count: number = 15): TopPartnerData[] {
+export function generateTopPartnersData(
+  count: number = 15,
+  rng: () => number = createSeededRandom('top-partners')
+): TopPartnerData[] {
   const partnerNames = [
     'Enterprise Solutions Inc',
     'Tech Innovations LLC',
@@ -31,7 +35,7 @@ export function generateTopPartnersData(count: number = 15): TopPartnerData[] {
     .map((name, index): TopPartnerData => {
       // Explicit return type for map callback
       // Higher tier partners are more likely to be at the top
-      const tierRandom = Math.random() * (1 + index * 0.1)
+      const tierRandom = rng() * (1 + index * 0.1)
       // tiers array is guaranteed non-empty, so selectedTier will be initialized.
       let selectedTier: {
         name: TopPartnerData['tier']
@@ -48,18 +52,16 @@ export function generateTopPartnersData(count: number = 15): TopPartnerData[] {
         }
       }
 
-      const baseRevenue = 300000 + Math.random() * 400000
-      const revenue = Math.floor(
-        baseRevenue * selectedTier!.multiplier * (0.8 + Math.random() * 0.4)
-      )
-      const dealsPerMonth = 2 + Math.floor(Math.random() * 8)
+      const baseRevenue = 300000 + rng() * 400000
+      const revenue = Math.floor(baseRevenue * selectedTier!.multiplier * (0.8 + rng() * 0.4))
+      const dealsPerMonth = 2 + Math.floor(rng() * 8)
       const deals = dealsPerMonth * 12
-      const commission = Math.floor(revenue * (0.08 + Math.random() * 0.04))
+      const commission = Math.floor(revenue * (0.08 + rng() * 0.04))
 
       // Higher tier partners tend to have better satisfaction and retention
       const tierBonus = tiers.indexOf(selectedTier) * 5
-      const satisfactionScore = Math.min(100, 75 + tierBonus + Math.random() * 15)
-      const retentionProbability = Math.min(100, 80 + tierBonus + Math.random() * 10)
+      const satisfactionScore = Math.min(100, 75 + tierBonus + rng() * 15)
+      const retentionProbability = Math.min(100, 80 + tierBonus + rng() * 10)
 
       const partnerEntry: TopPartnerData = {
         // Explicitly type the object literal

@@ -12,6 +12,7 @@ import { AboutSection } from './AboutSection'
 import { ExperienceSection } from './ExperienceSection'
 import { EducationCertifications } from './EducationCertifications'
 import { SkillsSection } from './SkillsSection'
+import { DecorativeBlob } from '@/components/ui/decorative-blob'
 
 const logger = createContextLogger('ResumePage')
 
@@ -60,10 +61,14 @@ export default function ResumePageContent() {
   return (
     <>
       <Navbar />
-      <main className="relative min-h-screen bg-background overflow-hidden">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="relative min-h-screen bg-background overflow-x-clip"
+      >
         {/* Decorative background elements */}
-        <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
+        <DecorativeBlob position="top-right" />
+        <DecorativeBlob position="bottom-left" />
 
         <div className="relative max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16 lg:pt-32 lg:pb-20 space-y-16">
           {/* Hero Header */}

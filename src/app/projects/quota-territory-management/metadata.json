@@ -3,9 +3,7 @@
   "title": "Intelligent Quota Management & Territory Planning",
   "slug": "quota-territory-management",
   "description": "Advanced quota setting and territory assignment system using predictive analytics and fairness algorithms. Optimized territory design increased forecast accuracy by 28% and reduced quota attainment variance by 32%.",
-  "image": "/images/projects/quota-management.jpg",
   "category": "Revenue Operations",
-  "featured": true,
   "metrics": {
     "forecastAccuracyImprovement": "28%",
     "quotaVarianceReduction": "32%",

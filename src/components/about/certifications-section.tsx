@@ -25,10 +25,8 @@ export function CertificationsSection({
   return (
     <section className={className}>
       <div className="text-center mb-12">
-        <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-4">
-          Certifications & Recognition
-        </h2>
-        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+        <h2 className="mb-4">Certifications & Recognition</h2>
+        <p className="max-w-3xl mx-auto">
           Professional certifications validating expertise in revenue operations and analytics
         </p>
       </div>
@@ -64,7 +62,7 @@ function CertificationCard({ certification }: CertificationCardProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground mb-4">{certification.description}</p>
+        <p className="mb-4">{certification.description}</p>
         <SkillTags skills={certification.skills} />
       </CardContent>
     </Card>

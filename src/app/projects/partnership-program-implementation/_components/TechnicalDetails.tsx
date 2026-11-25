@@ -38,13 +38,13 @@ export function TechnicalDetails() {
             key={index}
             className="bg-card border border-border rounded-2xl p-8 hover:border-primary/50 transition-all duration-300 ease-out"
           >
-            <h3 className="text-lg font-semibold text-foreground mb-4">{detail.title}</h3>
-            <p className="text-muted-foreground mb-6 leading-relaxed">{detail.description}</p>
+            <h3 className="mb-4">{detail.title}</h3>
+            <p className="mb-6">{detail.description}</p>
             <div className="flex flex-wrap gap-2">
               {detail.technologies.map((tech, i) => (
                 <span
                   key={i}
-                  className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm border border-primary/20"
+                  className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm border border-border"
                 >
                   {tech}
                 </span>

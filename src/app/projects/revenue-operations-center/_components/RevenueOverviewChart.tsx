@@ -1,6 +1,7 @@
 'use client'
 import { memo } from 'react'
-import { formatCurrencyCompact0 } from '@/lib/data-formatters'
+import { formatCompactCurrency } from '@/lib/data-formatters'
+import { CHART_BOX } from '@/components/charts/chart-skeleton'
 
 import { LazyLineChart as LineChart } from '@/components/charts/lazy-charts'
 import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
@@ -86,7 +87,7 @@ const chartColors = {
 
 const RevenueOverviewChart = memo(function RevenueOverviewChart() {
   return (
-    <div className="h-[var(--chart-height-md)]">
+    <div className={CHART_BOX.md}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
@@ -102,7 +103,7 @@ const RevenueOverviewChart = memo(function RevenueOverviewChart() {
             fontSize={12}
             tickLine={false}
             axisLine={{ stroke: chartColors.axis, strokeOpacity: 0.5 }}
-            tickFormatter={(value) => formatCurrencyCompact0(value)}
+            tickFormatter={(value) => formatCompactCurrency(Number(value))}
           />
           <Tooltip
             contentStyle={{
@@ -122,7 +123,7 @@ const RevenueOverviewChart = memo(function RevenueOverviewChart() {
                 total: 'Total Revenue',
                 target: 'Target',
               }
-              return [formatCurrencyCompact0(safeValue), labels[safeName] || safeName]
+              return [formatCompactCurrency(safeValue), labels[safeName] || safeName]
             }}
           />
           <Legend />
@@ -169,7 +170,7 @@ const RevenueOverviewChart = memo(function RevenueOverviewChart() {
           />
         </LineChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Multi-channel revenue performance tracking showing 34.2% YoY growth with consistent target
         outperformance
       </p>

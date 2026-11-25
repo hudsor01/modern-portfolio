@@ -10,8 +10,7 @@
  *   - the raw numeric value (e.g. 4.8) for animated counters such as the
  *     homepage NumberTicker, which formats the prefix/suffix itself.
  *
- * Per-surface labels intentionally differ ('Revenue Optimized' vs
- * 'Revenue Generated' vs 'Revenue Impact'); only the values are canonical.
+ * Labels are canonical too: every surface imports value and label from here.
  */
 
 /** Display strings. */
@@ -25,3 +24,28 @@ export const REVENUE_IMPACT_VALUE = 4.8
 export const TRANSACTION_GROWTH_VALUE = 432
 export const NETWORK_GROWTH_VALUE = 2217
 export const YEARS_EXPERIENCE_VALUE = 10
+
+/** Canonical labels. */
+export const REVENUE_IMPACT_LABEL = 'Revenue Impact'
+export const TRANSACTION_GROWTH_LABEL = 'Transaction Growth'
+export const NETWORK_GROWTH_LABEL = 'Network Growth'
+export const YEARS_EXPERIENCE_LABEL = 'Years Experience'
+
+/** The one context line, shown only with the 432% stat. */
+export const TRANSACTION_GROWTH_CONTEXT = 'On track year-over-year, per the Revenue KPI case study'
+
+export type StatKey = 'revenue' | 'transaction-growth' | 'network-growth' | 'years'
+
+export const STAT_LABELS: Record<StatKey, string> = {
+  revenue: REVENUE_IMPACT_LABEL,
+  'transaction-growth': TRANSACTION_GROWTH_LABEL,
+  'network-growth': NETWORK_GROWTH_LABEL,
+  years: YEARS_EXPERIENCE_LABEL,
+}
+
+export const STAT_VALUES: Record<StatKey, string> = {
+  revenue: REVENUE_IMPACT,
+  'transaction-growth': TRANSACTION_GROWTH,
+  'network-growth': NETWORK_GROWTH,
+  years: YEARS_EXPERIENCE,
+}

@@ -13,6 +13,11 @@ interface BlogFeaturedImageProps extends Omit<ImageProps, 'src' | 'onError'> {
   postTitle: string
   /** Optional category for richer fallback rendering. */
   postCategory?: string
+  /**
+   * `card` swaps the fallback for the large-type 16:10 cover built for /blog card
+   * thumbnails; the default is the 1200x630 share card.
+   */
+  fallbackVariant?: 'card'
 }
 
 /**
@@ -22,13 +27,35 @@ interface BlogFeaturedImageProps extends Omit<ImageProps, 'src' | 'onError'> {
  * lives in `<ImageWithFallback>` so project cards and any other
  * external-image surface compose the same pattern.
  */
+/**
+ * Most stored covers are already `/api/og?title=…` URLs (the pipeline writes the
+ * generated card as the post's featured image), so the variant has to be applied
+ * to the primary src too, not just to the error fallback. Anything else is kept.
+ */
+export function withCoverVariant(src: string, variant?: 'card'): string {
+  if (!variant || !src.startsWith('/api/og?')) return src
+  const params = new URLSearchParams(src.slice('/api/og?'.length))
+  params.set('variant', variant)
+  return `/api/og?${params.toString()}`
+}
+
 export function BlogFeaturedImage({
   postTitle,
   postCategory,
+  fallbackVariant,
   alt,
+  src,
   ...rest
 }: BlogFeaturedImageProps) {
   const params = new URLSearchParams({ title: postTitle })
   if (postCategory) params.set('category', postCategory)
-  return <ImageWithFallback {...rest} alt={alt} fallbackSrc={`/api/og?${params.toString()}`} />
+  if (fallbackVariant) params.set('variant', fallbackVariant)
+  return (
+    <ImageWithFallback
+      {...rest}
+      src={withCoverVariant(src, fallbackVariant)}
+      alt={alt}
+      fallbackSrc={`/api/og?${params.toString()}`}
+    />
+  )
 }

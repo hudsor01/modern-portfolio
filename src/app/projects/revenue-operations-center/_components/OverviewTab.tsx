@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { ChartSkeleton } from '@/components/charts/chart-skeleton'
 import { ChartLoadError } from '@/components/charts/chart-load-error'
 import { safeLazy } from '@/lib/safe-lazy'
+import { ChartHeader } from '@/components/ui/chart-container'
 
 const RevenueOverviewChart = dynamic(
   safeLazy(
@@ -34,23 +35,23 @@ export function OverviewTab() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
       {/* Revenue Overview */}
       <div className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out">
-        <div className="mb-6">
-          <h2 className="typography-h3 mb-2">Revenue Performance Overview</h2>
-          <p className="typography-muted">
-            Multi-channel revenue tracking with growth trends and target progress
-          </p>
-        </div>
+        <ChartHeader
+          title="Revenue Performance Overview"
+          description="Multi-channel revenue tracking with growth trends and target progress"
+          headingLevel={2}
+          className="mb-6"
+        />
         <RevenueOverviewChart />
       </div>
 
       {/* Operational Efficiency */}
       <div className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out">
-        <div className="mb-6">
-          <h2 className="typography-h3 mb-2">Operational Efficiency Metrics</h2>
-          <p className="typography-muted">
-            Key operational KPIs across sales, marketing, and partner channels
-          </p>
-        </div>
+        <ChartHeader
+          title="Operational Efficiency Metrics"
+          description="Key operational KPIs across sales, marketing, and partner channels"
+          headingLevel={2}
+          className="mb-6"
+        />
         <OperationalMetricsChart />
       </div>
     </div>

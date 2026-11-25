@@ -3,9 +3,9 @@ import type { APIRequestContext } from '@playwright/test'
 /**
  * Whether the server under test has a working database.
  *
- * Most of this suite needs no database — every test but 25 passes against an app
+ * Most of this suite needs no database — every test but 43 passes against an app
  * built and served with no `DATABASE_URL`, because the DB-backed routes degrade
- * to empty states. Those 25 (5 in audit-regressions, 20 in blog) genuinely need
+ * to empty states. Those 43 (5 in audit-regressions, 23 in blog, 2 in timezone-hydration, 4 in layout-stability, 3 in a11y-axe, 3 in a11y-typography, 3 in skip-link) genuinely need
  * seeded blog content: they read real post cards or posts, or assert 404
  * behaviour for a slug that has to be absent from a populated table.
  *
@@ -13,7 +13,7 @@ import type { APIRequestContext } from '@playwright/test'
  * all carry a `DATABASE_URL`, and Next loads `.env.local` + `.env` itself even
  * for a production build, so the app always has a database no matter what the
  * shell environment says. In CI it has none unless an `E2E_DATABASE_URL` secret
- * is configured, and those 25 fail with
+ * is configured, and those tests fail with
  * `Error: DATABASE_URL is required` from src/lib/env-validation.ts.
  *
  * So the tests ask the running server rather than guessing from env vars — the

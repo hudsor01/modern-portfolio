@@ -52,7 +52,16 @@ describe('formatCompactCurrency', () => {
   })
 
   it('omits symbol when showSymbol is false', () => {
-    expect(formatCompactCurrency(1_000_000, { showSymbol: false })).toBe('1.0M')
+    expect(formatCompactCurrency(1_000_000, { showSymbol: false })).toBe('1M')
+  })
+
+  it('trims trailing .0 and keeps meaningful decimals', () => {
+    expect(formatCompactCurrency(3_600_000)).toBe('$3.6M')
+    expect(formatCompactCurrency(3_000_000)).toBe('$3M')
+    expect(formatCompactCurrency(900_000)).toBe('$900K')
+    expect(formatCompactCurrency(0)).toBe('$0')
+    expect(formatCompactCurrency(1_200_000_000)).toBe('$1.2B')
+    expect(formatCurrency(3_600_000, { compact: true })).toBe('$3.6M')
   })
 })
 
@@ -85,6 +94,25 @@ describe('formatNumber', () => {
 
   it('appends suffix', () => {
     expect(formatNumber(100, { suffix: ' units' })).toBe('100 units')
+  })
+})
+
+describe('compact tier boundaries', () => {
+  it('promotes to the next tier instead of emitting 1000K / 1000M', () => {
+    expect(formatCompactCurrency(999_949)).toBe('$999.9K')
+    expect(formatCompactCurrency(999_950)).toBe('$1M')
+    expect(formatCompactCurrency(999_999)).toBe('$1M')
+    expect(formatCompactCurrency(999_950_000)).toBe('$1B')
+    expect(formatCompactCurrency(-999_999)).toBe('$-1M')
+    expect(formatCompactCurrency(999_999, { showSymbol: false })).toBe('1M')
+    expect(formatCompactNumber(999_950)).toBe('1M')
+    expect(formatCompactNumber(999_999)).toBe('1M')
+    expect(formatCompactNumber(999_950_000)).toBe('1B')
+    expect(formatCompactNumber(999_949)).toBe('999.9K')
+  })
+
+  it('leaves B at the top tier', () => {
+    expect(formatCompactNumber(1_500_000_000_000)).toBe('1500B')
   })
 })
 
@@ -141,11 +169,12 @@ describe('formatRelativeDate', () => {
 })
 
 describe('formatTimePeriod', () => {
-  // Use local-time Date constructors (year, monthIndex, day) to avoid the
-  // ISO-string-parses-as-UTC trap when the host is in a negative-offset zone
-  // (a literal "2026-01-01" parses as midnight UTC, which is 2025-12-31 PT).
-  const jan1 = new Date(2026, 0, 1)
-  const mar31 = new Date(2026, 2, 31)
+  // Date instances are rendered in America/Chicago, so fixtures are explicit
+  // Chicago-noon instants: the same calendar day on every host. A host-local
+  // constructor like `new Date(2026, 0, 1)` is midnight wherever the tests run,
+  // which on a UTC or Tokyo runner is still Dec 31 in Chicago.
+  const jan1 = new Date('2026-01-01T12:00:00-06:00')
+  const mar31 = new Date('2026-03-31T12:00:00-05:00')
 
   it('default short format same year', () => {
     expect(formatTimePeriod(jan1, mar31)).toMatch(/Jan-Mar 2026/)
@@ -157,6 +186,24 @@ describe('formatTimePeriod', () => {
 
   it('includeYear=false strips the year', () => {
     expect(formatTimePeriod(jan1, mar31, { includeYear: false })).toBe('Jan-Mar')
+  })
+
+  it('date-only strings keep their calendar day (not shifted into Chicago)', () => {
+    expect(formatTimePeriod('2025-01-01', '2025-03-31')).toBe('Jan-Mar 2025')
+    expect(formatTimePeriod('2025-01-01', '2025-03-31', { format: 'long' })).toBe(
+      'January - March 2025'
+    )
+    expect(formatTimePeriod('2025-01-01', '2026-02-01')).toMatch(/^Jan .?25-Feb .?26$/)
+    expect(formatTimePeriod('2025-01-01', '2025-03-31', { format: 'abbreviated' })).toBe(
+      '1/1-3/31/2025'
+    )
+  })
+
+  it('full ISO instants are still pinned to America/Chicago', () => {
+    // 2025-01-01T03:00Z is Dec 31 2024 21:00 in Chicago.
+    expect(formatTimePeriod('2025-01-01T03:00:00Z', '2025-03-31T12:00:00Z')).toMatch(
+      /^Dec .?24-Mar .?25$/
+    )
   })
 })
 

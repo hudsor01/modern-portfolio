@@ -64,69 +64,80 @@ label[for],
     scroll-margin-top: 5rem;
     border-bottom: 1px solid var(--color-border);
     padding-bottom: 0.5rem;
-    font-size: var(--font-size-3xl);
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: var(--letter-spacing-tight);
     border: none;
     padding-bottom: 0;
-    font-size: 1.5rem;
     margin-top: 2rem;
     margin-bottom: 1.5rem;
-    color: var(--color-foreground);
-  }
-
-  .dark .blog-content h1 {
-    color: white;
   }
 
   .blog-content h2 {
     scroll-margin-top: 5rem;
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: var(--letter-spacing-tight);
     margin-top: 2rem;
     margin-bottom: 1rem;
-    color: var(--color-foreground);
-  }
-
-  .dark .blog-content h2 {
-    color: white;
   }
 
   .blog-content h3 {
     scroll-margin-top: 5rem;
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: var(--letter-spacing-tight);
     margin-top: 1.5rem;
     margin-bottom: 0.75rem;
-    color: var(--color-foreground);
-  }
-
-  .dark .blog-content h3 {
-    color: white;
   }
 
   .blog-content h4 {
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-semibold);
     margin-top: 1.5rem;
     margin-bottom: 0.75rem;
-    color: var(--color-foreground);
   }
 
-  .dark .blog-content h4 {
-    color: white;
+  /* Reading column: ~70 characters per line at 18px, body larger than UI text,
+     and a three-step heading scale (h2 > h3 > h4) in the serif, none of it caps. */
+  .blog-content {
+    max-width: 42rem;
+  }
+
+  .blog-content p,
+  .blog-content li {
+    font-size: var(--font-size-xl);
+    line-height: 1.75;
   }
 
   .blog-content p {
-    margin-bottom: 1rem;
-    color: var(--color-muted-foreground);
+    margin-bottom: 1.25rem;
   }
 
-  .dark .blog-content p {
-    font-size: var(--font-size-sm);
-    color: var(--color-muted-foreground);
+  .blog-content h2 {
+    font-size: var(--font-size-4xl);
+  }
+
+  .blog-content h3 {
+    font-size: var(--font-size-3xl);
+  }
+
+  .blog-content h4,
+  .blog-content h5,
+  .blog-content h6 {
+    font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-tight);
+    text-transform: none;
+    line-height: var(--line-height-snug);
+    color: var(--color-foreground);
+  }
+
+  .blog-content a {
+    color: var(--color-primary);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25rem;
+    text-decoration-color: currentColor;
+  }
+
+  .blog-content a:hover {
+    color: var(--color-primary-hover);
+    text-decoration-thickness: 2px;
+  }
+
+  .blog-content a:focus-visible {
+    border-radius: var(--radius-sm);
   }
 
   .blog-content ul {
@@ -136,18 +147,10 @@ label[for],
     color: var(--color-muted-foreground);
   }
 
-  .dark .blog-content ul {
-    color: var(--color-muted-foreground);
-  }
-
   .blog-content ol {
     list-style-type: decimal;
     list-style-position: inside;
     margin-bottom: 1rem;
-    color: var(--color-muted-foreground);
-  }
-
-  .dark .blog-content ol {
     color: var(--color-muted-foreground);
   }
 
@@ -165,10 +168,6 @@ label[for],
     color: var(--color-muted-foreground);
   }
 
-  .dark .blog-content blockquote {
-    background-color: var(--color-primary-bg);
-    color: var(--color-muted-foreground);
-  }
   .blog-content img {
     border-radius: 0.5rem;
     margin: 1.5rem 0;
@@ -186,10 +185,6 @@ label[for],
     overflow: hidden;
   }
 
-  .dark .blog-content table {
-    border-color: var(--color-border);
-  }
-
   .blog-content th,
   .blog-content td {
     border: 1px solid var(--color-border);
@@ -197,18 +192,9 @@ label[for],
     text-align: left;
   }
 
-  .dark .blog-content th,
-  .dark .blog-content td {
-    border-color: var(--color-border);
-  }
-
   .blog-content th {
     background-color: var(--color-muted);
     font-weight: 600;
-  }
-
-  .dark .blog-content th {
-    background-color: var(--color-card);
   }
 
   .blog-content hr {
@@ -216,9 +202,6 @@ label[for],
     border-color: var(--color-border);
   }
 
-  .dark .blog-content hr {
-    border-color: var(--color-border);
-  }
 }
 
 /* ============================================
@@ -266,16 +249,20 @@ label[for],
 .aspect-square { aspect-ratio: 1 / 1; }
 .aspect-video { aspect-ratio: 16 / 9; }
 
-@custom-variant dark (&:is(.dark *));
-
 @theme {
+  /* Tailwind's own `font-sans` token: Spline first, so the utility matches body text. */
+  --font-sans: var(--font-spline), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* System-only stack, read by src/lib/tokens.ts. Not the Tailwind font-sans token above. */
   --font-family-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-family-mono: 'Fira Code', Consolas, monospace;
   --font-family-display: Georgia, 'Times New Roman', serif;
 
   --font-size-base: 0.875rem;
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.8125rem;
+  /* 12px floor at the 14px root; 0.857rem rounds to 11.998px */
+  --text-xs: calc(12rem / 14);
+  --text-xs--line-height: calc(16 / 12);
+  --font-size-xs: calc(12rem / 14);
+  --font-size-sm: calc(12rem / 14);
   --font-size-md: 0.875rem;
   --font-size-lg: 1rem;
   --font-size-xl: 1.125rem;
@@ -352,6 +339,9 @@ label[for],
   --color-secondary-hover: oklch(0.40 0.12 145);
   --color-secondary-foreground: oklch(0.98 0.005 250);
   --color-accent: oklch(0.55 0.12 55);
+  /* small copper text on tints only; fills use text-white */
+  --color-accent-text: oklch(0.48 0.12 55);
+  --color-warning-text: oklch(0.48 0.12 55);
   --color-accent-foreground: oklch(0.15 0.02 250);
   --color-muted: oklch(0.96 0.005 250);
   --color-muted-foreground: oklch(0.45 0.02 250);
@@ -367,7 +357,7 @@ label[for],
   --color-popover-foreground: oklch(0.18 0.02 250);
   --color-border: oklch(0.88 0.005 250);
   --color-border-hover: oklch(0.35 0.12 250 / 0.4);
-  --color-input: oklch(0.995 0.002 250);
+  --color-input: oklch(0.62 0.01 250); /* field edge: 3.49:1 vs background, 3.59:1 vs card (WCAG 1.4.11) */
   --color-ring: oklch(0.35 0.12 250);
 
   --color-chart-1: oklch(0.35 0.12 250);
@@ -471,114 +461,28 @@ label[for],
   color-scheme: light;
 }
 
-* {
-  border-color: var(--color-border);
-}
-
 *:focus-visible {
   outline: 2px solid var(--color-ring);
   outline-offset: 2px;
 }
 
-html {
-  font-size: var(--font-size-base, 0.875rem);
+/* Skip-link target: programmatically focusable, not an interactive control, so no page-wide ring. */
+main[tabindex="-1"]:focus-visible {
+  outline: none;
 }
 
-body {
-  font-family: var(--font-spline), system-ui, -apple-system, 'Segoe UI', sans-serif;
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: 'rlig' 1, 'calt' 1;
-  font-weight: var(--font-weight-regular, 400);
-  line-height: var(--line-height-normal, 1.5);
-}
-
-/* Headings use Playfair Display (serif) - loaded via Next.js */
-h1 {
-  font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
-  font-size: var(--font-size-6xl);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--letter-spacing-tight);
-  line-height: var(--line-height-tight);
-  color: var(--color-foreground);
-}
-
-h2 {
-  font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
-  font-size: var(--font-size-4xl);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-spacing-tight);
-  line-height: var(--line-height-tight);
-  color: var(--color-foreground);
-}
-
-h3 {
-  font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-spacing-tight);
-  line-height: var(--line-height-snug);
-  color: var(--color-foreground);
-}
-
-/* Subheadings use Spline Sans (sans-serif) with small caps style */
-h4 {
-  font-family: var(--font-spline), system-ui, sans-serif;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--letter-spacing-wider);
-  text-transform: uppercase;
-  line-height: var(--line-height-snug);
-  color: var(--color-muted-foreground);
-}
-
-h5, h6 {
-  font-family: var(--font-spline), system-ui, sans-serif;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--letter-spacing-wider);
-  text-transform: uppercase;
-  line-height: var(--line-height-snug);
-  color: var(--color-muted-foreground);
-}
-
-p {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-height-relaxed);
-  color: var(--color-muted-foreground);
-}
-
-small {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-regular);
-}
-
-strong, b {
-  font-weight: var(--font-weight-medium);
-}
-
+/* Transitions stay unlayered on purpose: moving them into @layer base would let the
+   `transition: all` rule at the top of this file win and change every link/button animation. */
 a {
   transition: color var(--motion-duration-fast) var(--motion-ease-out);
-  font-weight: var(--font-weight-regular);
 }
 
 button {
   transition: all var(--motion-duration-normal) var(--motion-ease-out);
-  font-weight: var(--font-weight-medium);
 }
 
 input, textarea, select {
   transition: all var(--motion-duration-normal) var(--motion-ease-out);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-regular);
-}
-
-label {
-  font-weight: var(--font-weight-medium);
-  font-size: var(--font-size-sm);
 }
 
 ::-webkit-scrollbar {
@@ -630,6 +534,10 @@ label {
   border-color: var(--color-border-hover);
   transform: translateY(-0.25rem);
   box-shadow: var(--shadow-md);
+}
+
+.funnel-stage {
+  clip-path: polygon(0 0, 100% 0, calc(100% - 1rem) 100%, 1rem 100%);
 }
 
 .hero-name-gradient {
@@ -995,7 +903,27 @@ label {
 @utility tracking-wider { letter-spacing: var(--letter-spacing-wider); }
 
 /* Font family utilities - using Next.js loaded fonts */
-@utility font-sans { font-family: var(--font-spline), system-ui, -apple-system, 'Segoe UI', sans-serif; }
+/* Running-text links only (A11Y-03). Never on nav, footer lists, cards, buttons
+   or badges (the /tools breadcrumb trail is the one exception: its links must read as links
+   without hover); no global a rule. Do not combine with another
+   text-<colour> class in cn() — tailwind-merge treats text-link as a text colour. */
+@utility text-link {
+  color: var(--color-primary);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25rem;
+  text-decoration-color: currentColor;
+
+  &:hover {
+    color: var(--color-primary-hover);
+    text-decoration-thickness: 2px;
+  }
+
+  &:focus-visible {
+    border-radius: var(--radius-sm);
+  }
+}
+
 @utility font-display { font-family: var(--font-playfair), Georgia, 'Times New Roman', serif; }
 @utility font-mono { font-family: var(--font-roboto-mono), 'Fira Code', Consolas, monospace; }
 
@@ -1003,10 +931,102 @@ label {
   * {
     border-color: var(--color-border);
     outline-color: var(--color-ring);
-    outline-width: 1px;
   }
+  html {
+    font-size: var(--font-size-base, 0.875rem);
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-spline), system-ui, -apple-system, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+    font-weight: var(--font-weight-regular, 400);
+    line-height: var(--line-height-normal, 1.5);
+  }
+
+  /* Headings use Playfair Display (serif) - loaded via Next.js */
+  h1 {
+    font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
+    font-size: var(--font-size-6xl);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-tight);
+    line-height: var(--line-height-tight);
+    color: var(--color-foreground);
+  }
+
+  h2 {
+    font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-tight);
+    line-height: var(--line-height-tight);
+    color: var(--color-foreground);
+  }
+
+  h3 {
+    font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-tight);
+    line-height: var(--line-height-snug);
+    color: var(--color-foreground);
+  }
+
+  /* Subheadings use Spline Sans (sans-serif) with small caps style */
+  h4 {
+    font-family: var(--font-spline), system-ui, sans-serif;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-wider);
+    text-transform: uppercase;
+    line-height: var(--line-height-snug);
+    color: var(--color-muted-foreground);
+  }
+
+  h5, h6 {
+    font-family: var(--font-spline), system-ui, sans-serif;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: var(--letter-spacing-wider);
+    text-transform: uppercase;
+    line-height: var(--line-height-snug);
+    color: var(--color-muted-foreground);
+  }
+
+  p {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-muted-foreground);
+  }
+
+  small {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-regular);
+  }
+
+  strong, b {
+    font-weight: var(--font-weight-medium);
+  }
+
+  a {
+    font-weight: var(--font-weight-regular);
+  }
+
+  button {
+    font-weight: var(--font-weight-medium);
+  }
+
+  input, textarea, select {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-regular);
+  }
+
+  label {
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
   }
 }

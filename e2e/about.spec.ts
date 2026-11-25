@@ -32,6 +32,18 @@ test.describe('/about page', () => {
     await expect(page.getByRole('link', { name: /view resume/i }).first()).toBeVisible()
   })
 
+  test('count-up stats settle on the canonical figures after scrolling into view', async ({
+    page,
+  }) => {
+    // Mid-count values ($2.8M+, 252%, ...) are an animation frame, not a defect: the
+    // counters must end on the canonical stats.ts values.
+    await page.getByRole('region', { name: /impact metrics/i }).scrollIntoViewIfNeeded()
+    const region = page.getByRole('region', { name: /impact metrics/i })
+    for (const figure of ['$4.8M+', '432%', '2,217%', '10+']) {
+      await expect(region.getByText(figure, { exact: true })).toBeVisible({ timeout: 15_000 })
+    }
+  })
+
   test('shows core stats once each on the page', async ({ page }) => {
     // Stats grid is the canonical location for these numbers; expertise narrative
     // should not restate them. Asserting once-and-only-once locks in the dedupe.
@@ -67,5 +79,23 @@ test.describe('/about page', () => {
     // FAQPage markup is only allowed for Q&As visible on the page; /about has none.
     expect(blob).not.toContain('"@type":"FAQPage"')
     expect(blob).toContain('"@type":"BreadcrumbList"')
+  })
+
+  test('each headline stat renders once with its canonical label (data-stat)', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'chromium', 'checked once, on chromium')
+    await page.setViewportSize({ width: 1440, height: 900 })
+    const labels: Record<string, string> = {
+      revenue: 'Revenue Impact',
+      'transaction-growth': 'Transaction Growth',
+      'network-growth': 'Network Growth',
+      years: 'Years Experience',
+    }
+    for (const [key, label] of Object.entries(labels)) {
+      await expect(page.locator(`[data-stat="${key}"]`)).toHaveCount(1)
+      await expect(page.locator(`[data-stat-label="${key}"]`)).toHaveText(label)
+    }
+    await expect(page.getByText('Projects Delivered')).toHaveCount(0)
   })
 })

@@ -11,7 +11,7 @@ export function NarrativeSections() {
       {/* Situation */}
       <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
-          <p className="text-lg leading-relaxed">
+          <p className="max-w-prose text-base">
             When I assessed the sales organization's enablement capabilities, I found a team
             struggling to keep up with growth. We had {formatNumber(125)} sales professionals across
             multiple segments, but new hire ramp time averaged 9 months—far too long in a
@@ -19,7 +19,7 @@ export function NarrativeSections() {
             firefighting than coaching. The root cause was clear: there was no systematic approach
             to skill development, content management, or performance coaching.
           </p>
-          <p className="leading-relaxed">
+          <p className="max-w-prose text-base">
             Training was ad-hoc and inconsistent. New hires received a week of classroom training
             and were then left to figure things out on their own. Sales content was scattered across
             12 different systems with no governance or version control—reps often used outdated
@@ -32,12 +32,12 @@ export function NarrativeSections() {
       {/* Task */}
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p className="max-w-prose text-base">
             I was tasked with building a comprehensive sales enablement platform that would
             accelerate new hire productivity, improve win rates, and enable systematic skill
             development across the entire sales organization. My specific objectives included:
           </p>
-          <ul className="list-disc list-inside space-y-2 ml-4">
+          <ul className="max-w-prose list-disc list-inside space-y-2 ml-4">
             <li>Reduce new hire ramp time from 9 months to under 5 months</li>
             <li>Improve overall win rates by at least 25%</li>
             <li>Create a centralized content library with governance and analytics</li>
@@ -51,7 +51,7 @@ export function NarrativeSections() {
       {/* Action */}
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p className="max-w-prose text-base">
             I designed and built a comprehensive sales enablement platform that transformed how the
             organization develops, enables, and coaches its sales team. The system combined learning
             management, content governance, and coaching analytics:
@@ -59,7 +59,7 @@ export function NarrativeSections() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <FeatureCard title="Learning & Development">
-              <ul className="list-disc list-inside space-y-1 text-sm">
+              <ul className="max-w-prose list-disc list-inside space-y-1">
                 <li>Role-specific learning paths with progressive skill building</li>
                 <li>Interactive modules with video, quizzes, and simulations</li>
                 <li>Competency assessments tied to performance milestones</li>
@@ -68,7 +68,7 @@ export function NarrativeSections() {
               </ul>
             </FeatureCard>
             <FeatureCard title="Content & Coaching">
-              <ul className="list-disc list-inside space-y-1 text-sm">
+              <ul className="max-w-prose list-disc list-inside space-y-1">
                 <li>Centralized content library with {formatNumber(450)}+ resources</li>
                 <li>Battle cards, case studies, and industry-specific playbooks</li>
                 <li>Manager coaching dashboards with rep performance insights</li>
@@ -78,7 +78,7 @@ export function NarrativeSections() {
             </FeatureCard>
           </div>
 
-          <p className="leading-relaxed mt-4">
+          <p className="max-w-prose text-base mt-4">
             I personally led the content strategy, designed the learning path architecture, and
             built the coaching analytics framework. I worked closely with top performers to document
             their winning approaches, transforming tribal knowledge into scalable training. The
@@ -91,7 +91,7 @@ export function NarrativeSections() {
       {/* Result */}
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p className="max-w-prose text-base">
             The sales enablement platform I built transformed how the organization develops its
             salesforce, delivering measurable improvements in productivity, win rates, and team
             retention:
@@ -117,10 +117,8 @@ export function NarrativeSections() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-secondary">
-              Quantified Business Outcomes I Delivered:
-            </h3>
-            <ul className="list-disc list-inside space-y-2 ml-4">
+            <h3>Quantified Business Outcomes I Delivered:</h3>
+            <ul className="max-w-prose list-disc list-inside space-y-2 ml-4">
               <li>Improved overall win rates from 52% to 70%—a 34% improvement</li>
               <li>
                 Reduced new hire ramp time from 9 months to 5 months—45% faster to full productivity
@@ -145,8 +143,8 @@ export function NarrativeSections() {
         <div className="space-y-4 text-muted-foreground">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
-              <h3 className="font-semibold text-accent-foreground">Enablement Strategy Insights</h3>
-              <ul className="list-disc list-inside space-y-2 text-sm">
+              <h3>Enablement Strategy Insights</h3>
+              <ul className="max-w-prose list-disc list-inside space-y-2">
                 <li>
                   Peer learning outperforms classroom training—I now design every program with
                   community elements built in
@@ -161,8 +159,8 @@ export function NarrativeSections() {
               </ul>
             </div>
             <div className="space-y-3">
-              <h3 className="font-semibold text-primary">Technical Insights</h3>
-              <ul className="list-disc list-inside space-y-2 text-sm">
+              <h3>Technical Insights</h3>
+              <ul className="max-w-prose list-disc list-inside space-y-2">
                 <li>
                   CRM integration is essential—learning paths should trigger based on deal stage and
                   skill gaps
@@ -175,7 +173,7 @@ export function NarrativeSections() {
               </ul>
             </div>
           </div>
-          <p className="leading-relaxed mt-4">
+          <p className="max-w-prose text-base mt-4">
             This project taught me that sales enablement is fundamentally about behavior change, not
             content delivery. The best content in the world fails if it doesn't change how reps
             sell. I now measure every enablement initiative by behavior change metrics, not just

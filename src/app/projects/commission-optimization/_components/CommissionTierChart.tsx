@@ -1,6 +1,6 @@
 'use client'
 import { memo } from 'react'
-import { formatCurrency } from '@/lib/data-formatters'
+import { formatCompactCurrency } from '@/lib/data-formatters'
 
 import { LazyComposedChart as ComposedChart } from '@/components/charts/lazy-charts'
 import {
@@ -75,7 +75,7 @@ const chartColors = {
 
 const CommissionTierChart = memo(function CommissionTierChart() {
   return (
-    <div className="h-[var(--chart-height-md)]">
+    <div className="h-full w-full">
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
@@ -92,7 +92,7 @@ const CommissionTierChart = memo(function CommissionTierChart() {
             fontSize={12}
             tickLine={false}
             axisLine={{ stroke: chartColors.axis, strokeOpacity: 0.5 }}
-            tickFormatter={(value) => formatCurrency(value)}
+            tickFormatter={(value) => formatCompactCurrency(Number(value))}
           />
           <YAxis
             yAxisId="percentage"
@@ -115,8 +115,10 @@ const CommissionTierChart = memo(function CommissionTierChart() {
             formatter={(value, name) => {
               const safeValue = Number(value ?? 0)
               const safeName = String(name ?? '')
-              if (safeName === 'totalEarnings') return [formatCurrency(safeValue), 'Total Earnings']
-              if (safeName === 'avgEarnings') return [formatCurrency(safeValue), 'Avg Earnings']
+              if (safeName === 'totalEarnings')
+                return [formatCompactCurrency(safeValue), 'Total Earnings']
+              if (safeName === 'avgEarnings')
+                return [formatCompactCurrency(safeValue), 'Avg Earnings']
               if (safeName === 'commissionRate') return [`${safeValue}%`, 'Commission Rate']
               if (safeName === 'roi') return [`${safeValue}x`, 'ROI']
               if (safeName === 'retentionRate') return [`${safeValue}%`, 'Retention Rate']
@@ -172,7 +174,7 @@ const CommissionTierChart = memo(function CommissionTierChart() {
           />
         </ComposedChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Commission tier analysis showing earnings distribution, partner retention rates,
         satisfaction scores, and commission rate optimization across performance tiers
       </p>

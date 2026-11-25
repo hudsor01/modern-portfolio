@@ -50,13 +50,13 @@ export function AlgorithmicApproachesGrid({ approaches }: AlgorithmicApproachesG
             variant: 'secondary',
           },
           {
-            value: formatPercentage(0.28),
-            label: 'Improvement in forecast accuracy',
+            value: formatPercentage(0.92),
+            label: 'Forecast accuracy (from 64%)',
             variant: 'primary',
           },
           {
-            value: formatPercentage(0.32),
-            label: 'Reduction in quota attainment variance',
+            value: formatPercentage(0.11),
+            label: 'Quota attainment variance (from 32%)',
             variant: 'secondary',
           },
           {
@@ -75,7 +75,7 @@ export function AlgorithmicApproachesGrid({ approaches }: AlgorithmicApproachesG
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-card border border-border rounded-xl p-6">
-            <h3 className="text-lg font-semibold mb-4">Machine Learning Models</h3>
+            <h3 className="mb-4">Machine Learning Models</h3>
             <ul className="space-y-2 text-muted-foreground">
               {mlModels.map((model) => (
                 <li key={model}>• {model}</li>
@@ -83,7 +83,7 @@ export function AlgorithmicApproachesGrid({ approaches }: AlgorithmicApproachesG
             </ul>
           </div>
           <div className="bg-card border border-border rounded-xl p-6">
-            <h3 className="text-lg font-semibold mb-4">Data & Analytics</h3>
+            <h3 className="mb-4">Data & Analytics</h3>
             <ul className="space-y-2 text-muted-foreground">
               {dataAnalytics.map((analytic) => (
                 <li key={analytic}>• {analytic}</li>

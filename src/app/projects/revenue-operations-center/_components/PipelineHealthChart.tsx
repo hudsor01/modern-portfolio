@@ -1,6 +1,7 @@
 'use client'
 import { memo } from 'react'
-import { formatCurrencyCompact0 } from '@/lib/data-formatters'
+import { formatCompactCurrency } from '@/lib/data-formatters'
+import { CHART_BOX } from '@/components/charts/chart-skeleton'
 
 import { LazyBarChart as BarChart } from '@/components/charts/lazy-charts'
 import { Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
@@ -68,7 +69,7 @@ const chartColors = {
 
 const PipelineHealthChart = memo(function PipelineHealthChart() {
   return (
-    <div className="h-[var(--chart-height-md)]">
+    <div className={CHART_BOX.md}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} vertical={false} />
@@ -111,7 +112,7 @@ const PipelineHealthChart = memo(function PipelineHealthChart() {
               const safeName = String(name ?? '')
               const safeValue = Number(value ?? 0)
               if (safeName === 'count') return [safeValue.toLocaleString(), 'Deal Count']
-              if (safeName === 'value') return [formatCurrencyCompact0(safeValue), 'Pipeline Value']
+              if (safeName === 'value') return [formatCompactCurrency(safeValue), 'Pipeline Value']
               if (safeName === 'health') return [`${safeValue}%`, 'Health Score']
               if (safeName === 'conversion') return [`${safeValue}%`, 'Conversion Rate']
               if (safeName === 'velocity') return [`${safeValue} days`, 'Avg Days in Stage']
@@ -135,7 +136,7 @@ const PipelineHealthChart = memo(function PipelineHealthChart() {
           />
         </BarChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Pipeline stage analysis showing 92.4% overall health score with optimized velocity and
         conversion tracking
       </p>

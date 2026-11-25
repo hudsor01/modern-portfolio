@@ -13,6 +13,7 @@ export const metadata = genMeta({
   path: '/projects/customer-lifetime-value',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
+  ogProject: 'customer-lifetime-value',
 })
 
 export default async function CustomerLifetimeValuePage() {

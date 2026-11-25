@@ -7,9 +7,11 @@ import { SectionCard } from '@/components/ui/section-card'
 import { ExternalLink, ArrowRight } from 'lucide-react'
 import { Github } from '@/components/ui/brand-icons'
 import Link from 'next/link'
-import { ProjectFeaturedImage } from '@/components/projects/project-featured-image'
+import { ProjectPreviewHero, ProjectPreviewLegend } from '@/components/projects/project-preview'
+import { buildProjectPreview } from '@/lib/project-preview'
 import type { Project } from '@/types/project'
 import { normalizeProjectForDisplay } from '@/types/project'
+import { DecorativeBlob } from '@/components/ui/decorative-blob'
 
 interface ProjectDetailClientBoundaryProps {
   slug: string
@@ -28,15 +30,16 @@ export default function ProjectDetailClientBoundary({
 }: ProjectDetailClientBoundaryProps) {
   // Use the server-provided data directly - no fetching needed
   const project = normalizeProjectForDisplay(initialProject)
+  const preview = buildProjectPreview(project)
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="relative overflow-hidden">
+      <main id="main-content" tabIndex={-1} className="relative overflow-x-clip">
         {/* Decorative background elements */}
-        <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
+        <DecorativeBlob position="top-right" />
+        <DecorativeBlob position="bottom-left" />
 
         <div className="relative pt-24 pb-16 lg:pt-32 lg:pb-20">
           {/* Hero Section */}
@@ -44,7 +47,7 @@ export default function ProjectDetailClientBoundary({
             <div className="max-w-4xl mx-auto">
               <Link
                 href="/projects"
-                className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
+                className="inline-flex items-center text-base text-muted-foreground hover:text-foreground transition-colors mb-8"
               >
                 <ArrowRight className="mr-2 h-4 w-4 rotate-180" />
                 Back to Projects
@@ -56,25 +59,25 @@ export default function ProjectDetailClientBoundary({
                   {project.featured && <Badge variant="default">Featured</Badge>}
                 </div>
 
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight">{project.title}</h1>
+                <h1>{project.title}</h1>
 
-                <p className="text-xl text-muted-foreground">{project.description}</p>
+                <p>{project.description}</p>
 
                 {/* Project meta */}
-                <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
+                <div className="flex flex-wrap gap-6 text-base text-muted-foreground">
                   {project.client && (
                     <div>
-                      <span className="font-medium">Client:</span> {project.client}
+                      <span className="font-semibold">Context:</span> {project.client}
                     </div>
                   )}
                   {project.duration && (
                     <div>
-                      <span className="font-medium">Duration:</span> {project.duration}
+                      <span className="font-semibold">Duration:</span> {project.duration}
                     </div>
                   )}
                   {project.year && (
                     <div>
-                      <span className="font-medium">Year:</span> {project.year}
+                      <span className="font-semibold">Year:</span> {project.year}
                     </div>
                   )}
                 </div>
@@ -101,23 +104,15 @@ export default function ProjectDetailClientBoundary({
             </div>
           </div>
 
-          {/* Project Image */}
-          {project.image && (
-            <div className="container mx-auto px-6 mb-16">
-              <div className="max-w-5xl mx-auto">
-                <div className="relative aspect-video rounded-lg overflow-hidden border">
-                  <ProjectFeaturedImage
-                    src={project.image}
-                    projectTitle={project.title}
-                    alt={project.title}
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                </div>
-              </div>
+          {/* Generated preview */}
+          <div className="container mx-auto px-6 mb-16">
+            <div className="max-w-5xl mx-auto">
+              <ProjectPreviewHero project={project} />
+              {preview.kind === 'rows' && preview.hasPaired && (
+                <ProjectPreviewLegend variant="caption" />
+              )}
             </div>
-          )}
+          </div>
 
           {/* Display Metrics */}
           {Array.isArray(project.displayMetrics) && project.displayMetrics.length > 0 && (
@@ -135,8 +130,10 @@ export default function ProjectDetailClientBoundary({
                       .filter(Boolean)
                       .map((metric, index) => (
                         <div key={index} className="text-center">
-                          <div className="text-3xl font-bold text-primary mb-2">{metric.value}</div>
-                          <div className="text-sm text-muted-foreground">{metric.label}</div>
+                          <div className="text-3xl font-semibold text-primary mb-2">
+                            {metric.value}
+                          </div>
+                          <div className="text-base text-muted-foreground">{metric.label}</div>
                         </div>
                       ))}
                   </div>
@@ -150,8 +147,8 @@ export default function ProjectDetailClientBoundary({
             <div className="container mx-auto px-6 mb-16">
               <div className="max-w-4xl mx-auto">
                 <SectionCard title="Overview">
-                  <div className="prose prose-gray dark:prose-invert max-w-none">
-                    <p className="text-lg leading-relaxed">{project.longDescription}</p>
+                  <div className="prose prose-gray max-w-none">
+                    <p>{project.longDescription}</p>
                   </div>
                 </SectionCard>
               </div>
@@ -205,7 +202,9 @@ export default function ProjectDetailClientBoundary({
                         <li key={index} className="flex items-start">
                           <span className="mr-2">•</span>
                           <span>
-                            {item.metric}: {item.before} → {item.after} ({item.improvement})
+                            {item.before === '' && item.after === ''
+                              ? `${item.metric}: ${item.improvement}`
+                              : `${item.metric}: ${item.before} → ${item.after} (${item.improvement})`}
                           </span>
                         </li>
                       ))}

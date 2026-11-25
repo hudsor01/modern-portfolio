@@ -19,7 +19,11 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
   return (
     <html lang="en">
       <body className="min-h-screen bg-background text-foreground">
-        <div className="flex min-h-screen items-center justify-center p-6">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="flex min-h-screen items-center justify-center p-6"
+        >
           <div className="w-full max-w-md space-y-4 text-center">
             <h1 className="text-2xl font-semibold">Something went wrong</h1>
             <p className="text-sm text-muted-foreground">
@@ -46,7 +50,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
               </pre>
             ) : null}
           </div>
-        </div>
+        </main>
       </body>
     </html>
   )

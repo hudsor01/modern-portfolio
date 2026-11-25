@@ -1,5 +1,6 @@
 import 'server-only'
 import { NextResponse } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 import { and, eq, isNull, lte } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { blogPosts } from '@/db/schema'
@@ -8,6 +9,15 @@ import { timingSafeEqualString } from '@/lib/timing-safe-equal'
 import { createContextLogger } from '@/lib/logger'
 
 const logger = createContextLogger('CronPublishScheduled')
+
+/** Sentry cron monitor; schedule must match this route's entry in vercel.json. */
+const MONITOR_SLUG = 'publish-scheduled'
+const MONITOR_CONFIG = {
+  schedule: { type: 'crontab' as const, value: '0 * * * *' },
+  checkinMargin: 10,
+  maxRuntime: 5,
+  timezone: 'UTC',
+}
 
 /**
  * Publish blog posts whose scheduled time has arrived.
@@ -35,6 +45,10 @@ const logger = createContextLogger('CronPublishScheduled')
  * Fails closed: with no CRON_SECRET configured the route 401s rather than
  * running unauthenticated. The endpoint is a public URL — an open version would
  * let anyone force-publish scheduled drafts ahead of their embargo.
+ *
+ * The work runs inside `Sentry.withMonitor` only after auth, so unauthenticated
+ * calls never create check-ins; it throws on failure so the check-in is `error`.
+ * No-op without an initialised Sentry client (tests, no DSN).
  */
 export async function GET(request: Request): Promise<NextResponse> {
   const cronSecret = env.CRON_SECRET
@@ -48,19 +62,25 @@ export async function GET(request: Request): Promise<NextResponse> {
   }
 
   try {
-    // `lte(scheduledAt, now)` — due, not merely scheduled. `isNull(deletedAt)`
-    // so a soft-deleted post cannot resurrect itself by reaching its date.
-    const published = await db
-      .update(blogPosts)
-      .set({ status: 'PUBLISHED', publishedAt: new Date(), updatedAt: new Date() })
-      .where(
-        and(
-          eq(blogPosts.status, 'SCHEDULED'),
-          isNull(blogPosts.deletedAt),
-          lte(blogPosts.scheduledAt, new Date())
-        )
-      )
-      .returning({ id: blogPosts.id, slug: blogPosts.slug })
+    const published = await Sentry.withMonitor(
+      MONITOR_SLUG,
+      async () => {
+        // `lte(scheduledAt, now)` — due, not merely scheduled. `isNull(deletedAt)`
+        // so a soft-deleted post cannot resurrect itself by reaching its date.
+        return db
+          .update(blogPosts)
+          .set({ status: 'PUBLISHED', publishedAt: new Date(), updatedAt: new Date() })
+          .where(
+            and(
+              eq(blogPosts.status, 'SCHEDULED'),
+              isNull(blogPosts.deletedAt),
+              lte(blogPosts.scheduledAt, new Date())
+            )
+          )
+          .returning({ id: blogPosts.id, slug: blogPosts.slug })
+      },
+      MONITOR_CONFIG
+    )
 
     if (published.length > 0) {
       logger.info('Published scheduled posts', {

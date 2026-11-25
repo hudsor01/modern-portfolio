@@ -41,7 +41,7 @@ type ChartEventHandler = (event: ChartClickEvent) => void
 type ChartMouseEventHandler = (event: ChartMouseEvent) => void
 
 // Format: { THEME_NAME: CSS_SELECTOR }
-const THEMES = { light: '', dark: '.dark' } as const
+const THEMES = { light: '' } as const
 
 export type ChartThemeConfig = {
   [k in string]: {
@@ -243,7 +243,7 @@ function ChartTooltipContent({
   return (
     <div
       className={cn(
-        'border-border/50 bg-background grid min-w-32 items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl',
+        'border-border bg-background grid min-w-32 items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl',
         className
       )}
     >

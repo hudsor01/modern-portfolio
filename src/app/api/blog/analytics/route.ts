@@ -12,6 +12,7 @@ import {
   transformToTagData,
   createErrorResponse,
 } from '@/lib/api-blog'
+import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
 
 // Enum must stay in lockstep with getStartDate's switch cases below.
 const timeRangeSchema = z.enum(['7d', '30d', '90d', '1y']).default('30d')
@@ -86,6 +87,7 @@ export async function GET(request: NextRequest) {
         where: isPublicPost,
         orderBy: desc(blogPosts.viewCount),
         limit: 5,
+        columns: BLOG_POST_COLUMNS,
         with: {
           author: true,
           category: true,

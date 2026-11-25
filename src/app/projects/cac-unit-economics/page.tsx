@@ -13,6 +13,7 @@ export const metadata = genMeta({
   path: '/projects/cac-unit-economics',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
+  ogProject: 'cac-unit-economics',
 })
 
 export default async function CACUnitEconomicsPage() {

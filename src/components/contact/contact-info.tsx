@@ -28,7 +28,7 @@ export function ContactInfo() {
           href={socialLinks.linkedin}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl hover:bg-primary/10 hover:border-primary/30 border border-transparent transition-all duration-300 ease-out group"
+          className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl hover:bg-primary/10 hover:border-primary/30 border border-border transition-all duration-300 ease-out group"
         >
           <Linkedin className="w-6 h-6 text-primary" />
           <div className="flex-1">
@@ -41,7 +41,7 @@ export function ContactInfo() {
           href={socialLinks.github}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl hover:bg-secondary/10 hover:border-secondary/30 border border-transparent transition-all duration-300 ease-out group"
+          className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl hover:bg-secondary/10 hover:border-secondary/30 border border-border transition-all duration-300 ease-out group"
         >
           <Github className="w-6 h-6 text-foreground" />
           <div className="flex-1">

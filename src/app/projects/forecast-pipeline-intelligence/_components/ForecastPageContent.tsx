@@ -5,8 +5,9 @@ import { TrendingUp, AlertTriangle, Zap, BarChart3 } from 'lucide-react'
 import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
-import { formatNumber, formatPercentage, formatTrend } from '@/lib/data-formatters'
+import { formatNumber, formatPercentage } from '@/lib/data-formatters'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
+import { ogImageUrl } from '@/lib/absolute-url'
 import { NarrativeSections } from './NarrativeSections'
 import { IntelligenceModulesGrid } from './IntelligenceModulesGrid'
 
@@ -17,16 +18,16 @@ export default function ForecastPipelineIntelligenceProject() {
       id: 'forecast-accuracy',
       icon: TrendingUp,
       label: 'Forecast Accuracy',
-      value: formatTrend(0.31, { format: 'percentage', showArrow: false }),
-      subtitle: 'Improvement',
+      value: formatPercentage(0.94),
+      subtitle: 'From 63%',
       variant: 'success' as const,
     },
     {
       id: 'slippage-reduction',
       icon: AlertTriangle,
       label: 'Slippage',
-      value: formatTrend(-0.26, { format: 'percentage', showArrow: false }),
-      subtitle: 'Reduction',
+      value: formatPercentage(0.19),
+      subtitle: 'From 26%',
       variant: 'secondary' as const,
     },
     {
@@ -96,8 +97,13 @@ export default function ForecastPipelineIntelligenceProject() {
   return (
     <>
       <ProjectJsonLd
+        image={ogImageUrl({
+          title: 'Forecast Accuracy & Pipeline Intelligence System',
+          subtitle: 'Revenue Operations Project',
+          project: 'forecast-pipeline-intelligence',
+        })}
         title="Forecast Accuracy & Pipeline Intelligence System"
-        description="Forecasting system that improved accuracy by 31% and reduced slippage by 26%"
+        description="Forecasting system that improved accuracy from 63% to 94% and reduced slippage from 26% to 19%"
         slug="forecast-pipeline-intelligence"
         category="Revenue Operations"
         datePublished="2025-11-19T00:00:00-06:00"
@@ -112,14 +118,14 @@ export default function ForecastPipelineIntelligenceProject() {
 
       <ProjectPageLayout
         title="Forecast Accuracy & Pipeline Intelligence System"
-        description="Enterprise forecasting and pipeline intelligence platform combining predictive analytics, deal health monitoring, and early warning systems. Improved forecast accuracy by 31% and reduced slippage by 26%."
+        description="Enterprise forecasting and pipeline intelligence platform combining predictive analytics, deal health monitoring, and early warning systems. Improved forecast accuracy from 63% to 94% and reduced deal slippage from 26% to 19%."
         tags={[
           {
-            label: `Accuracy: ${formatTrend(0.31, { format: 'percentage', showArrow: false })}`,
+            label: `Accuracy: ${formatPercentage(0.63)} → ${formatPercentage(0.94)}`,
             variant: 'primary',
           },
           {
-            label: `Slippage: ${formatTrend(-0.26, { format: 'percentage', showArrow: false })}`,
+            label: `Slippage: ${formatPercentage(0.26)} → ${formatPercentage(0.19)}`,
             variant: 'secondary',
           },
           { label: `${formatNumber(4200)}+ Deals Monitored`, variant: 'primary' },

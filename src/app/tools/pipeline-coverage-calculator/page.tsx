@@ -2,12 +2,15 @@ import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
 import { FAQPageJsonLd } from '@/components/seo/json-ld/faq-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
-import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { ToolBreadcrumb } from '@/components/tools/tool-breadcrumb'
+import { getTool, toolTrail, trailJsonLdItems } from '@/data/tools'
 import { generateMetadata as genMeta } from '@/app/shared-metadata'
 import { PipelineCoverageCalculator } from './_components/pipeline-coverage-calculator'
 
-const PATH = '/tools/pipeline-coverage-calculator'
-const TITLE = 'Pipeline Coverage Calculator — Win-Rate-Driven (Not the 3× Rule)'
+const TOOL = getTool('pipeline-coverage-calculator')
+const TRAIL = toolTrail(TOOL)
+const PATH = TOOL.href
+const TITLE = 'Pipeline Coverage Calculator: Win-Rate-Driven, Not the 3× Rule'
 const DESCRIPTION =
   'Free pipeline coverage calculator. Enter your win rate and revenue target to get the exact coverage ratio and qualified pipeline you actually need — driven by win rate, not the generic 3× rule.'
 
@@ -59,28 +62,20 @@ export const metadata = genMeta({
 export default function PipelineCoverageCalculatorPage() {
   return (
     <>
-      <BreadcrumbListJsonLd
-        items={[
-          { name: 'Home', url: SITE_ORIGIN },
-          { name: 'Pipeline Coverage Calculator', url: canonicalUrl(PATH) },
-        ]}
-      />
+      <BreadcrumbListJsonLd items={trailJsonLdItems(TRAIL)} />
       <FAQPageJsonLd faqs={FAQS} />
 
       <div className="min-h-screen bg-background">
         <Navbar />
-        <main id="main-content" className="max-w-5xl mx-auto px-6 lg:px-8 pt-24 pb-20 lg:pt-32">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="max-w-5xl mx-auto px-6 lg:px-8 pt-24 pb-20 lg:pt-32"
+        >
           <header className="mb-10">
-            <p className="text-sm text-muted-foreground mb-3">
-              <Link href="/" className="hover:text-primary">
-                Home
-              </Link>{' '}
-              / Pipeline Coverage Calculator
-            </p>
-            <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-4">
-              Pipeline Coverage Calculator
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-3xl leading-relaxed">
+            <ToolBreadcrumb trail={TRAIL} />
+            <h1 className="mb-4">Pipeline Coverage Calculator</h1>
+            <p className="max-w-3xl">
               How much pipeline do you actually need to hit your number? Not 3× — that’s a guess.
               The honest answer is driven by your <strong>win rate</strong>. Enter yours below to
               get the coverage ratio and qualified pipeline you really need.
@@ -90,22 +85,20 @@ export default function PipelineCoverageCalculatorPage() {
           <PipelineCoverageCalculator />
 
           <section className="mt-16 max-w-3xl">
-            <h2 className="text-2xl font-semibold text-foreground mb-4">
-              Why the “3× pipeline” rule is wrong for most teams
-            </h2>
+            <h2 className="mb-4">Why the “3× pipeline” rule is wrong for most teams</h2>
             <div className="space-y-4 text-muted-foreground leading-relaxed">
-              <p>
+              <p className="text-base">
                 The 3× rule is everywhere because it’s easy to remember — but it’s only correct for
                 a team winning roughly one in three qualified opportunities. The real relationship
                 is simple: <strong>required coverage ≈ 1 ÷ win rate.</strong>
               </p>
-              <p>
+              <p className="text-base">
                 If you win <strong>15%</strong> of opps, 3× coverage leaves you ~55% short of the
                 pipeline you need — you’ll miss quota while believing you’re covered. If you win{' '}
                 <strong>40%</strong>, 3× has your reps chasing 17% more pipeline than necessary,
                 burning capacity that should go into working live deals.
               </p>
-              <p>
+              <p className="text-base">
                 Coverage also only counts pipeline that can actually close. Stalled deals, no
                 compelling event, close dates three quarters in the past — strip them out with the
                 “% truly qualified” control, because covered-on-paper isn’t covered.
@@ -114,9 +107,7 @@ export default function PipelineCoverageCalculatorPage() {
           </section>
 
           <section className="mt-12 max-w-3xl">
-            <h2 className="text-2xl font-semibold text-foreground mb-6">
-              Frequently asked questions
-            </h2>
+            <h2 className="mb-6">Frequently asked questions</h2>
             <dl className="space-y-6">
               {FAQS.map((faq) => (
                 <div key={faq.question}>
@@ -128,7 +119,7 @@ export default function PipelineCoverageCalculatorPage() {
           </section>
 
           <section className="mt-12 pt-8 border-t border-border max-w-3xl">
-            <h2 className="text-xl font-semibold text-foreground mb-4">Related reading</h2>
+            <h2 className="mb-4">Related reading</h2>
             <ul className="space-y-2 text-primary">
               <li>
                 <Link

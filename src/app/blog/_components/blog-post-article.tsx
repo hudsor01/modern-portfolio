@@ -5,9 +5,8 @@ import { useEffect, useRef, useState } from 'react'
 
 import { Copy, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
-import { markdownToHtml, decodeHtmlEntities } from '@/lib/markdown'
+import { markdownToHtml, decodeHtmlEntities, stripLeadingTitleHeading } from '@/lib/markdown'
 import type { ContentType } from '@/types/blog'
 // Plain `dompurify` (browser-only). Module-load is side-effect-free —
 // the factory only touches `window` when `.sanitize()` is called. We
@@ -92,6 +91,8 @@ const DOMPURIFY_INLINE_CONFIG = {
 interface BlogContentProps {
   content: string
   contentType: ContentType
+  /** Post title: a body that opens by repeating it has that heading dropped at render. */
+  title?: string
   className?: string
   allowCopy?: boolean
 }
@@ -108,7 +109,6 @@ interface CodeBlockProps {
 // block (losing focus on the button). Copied state is per block for the same
 // reason — keyed by code string, identical blocks flipped together.
 function CodeBlock({ children, className, language = 'text', allowCopy }: CodeBlockProps) {
-  const { theme } = useTheme()
   const [copied, setCopied] = useState(false)
   const resetTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const codeString = String(children).replace(/\n$/, '')
@@ -142,12 +142,7 @@ function CodeBlock({ children, className, language = 'text', allowCopy }: CodeBl
           {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
         </Button>
       )}
-      <pre
-        className={cn(
-          'rounded-lg text-sm p-4 overflow-x-auto',
-          theme === 'dark' ? 'bg-background text-foreground' : 'bg-muted text-foreground'
-        )}
-      >
+      <pre className={cn('rounded-lg text-sm p-4 overflow-x-auto', 'bg-muted text-foreground')}>
         <code className={`language-${language}`}>{codeString}</code>
       </pre>
     </div>
@@ -157,6 +152,7 @@ function CodeBlock({ children, className, language = 'text', allowCopy }: CodeBl
 export function BlogPostArticle({
   content,
   contentType = 'MARKDOWN',
+  title,
   className,
   allowCopy = true,
 }: BlogContentProps) {
@@ -200,7 +196,7 @@ export function BlogPostArticle({
           key={index}
           // biome-ignore lint/security/noDangerouslySetInnerHtml: blog HTML from trusted token-gated DB, sanitized client-side via DOMPurify
           dangerouslySetInnerHTML={{ __html: sanitizeHtml(part, DOMPURIFY_INLINE_CONFIG) }}
-          className="prose prose-lg dark:prose-invert max-w-none"
+          className="prose prose-lg max-w-none"
         />
       )
     })
@@ -214,22 +210,25 @@ export function BlogPostArticle({
   // shipped with a literal <h1> matching the page title.
   const demoteH1 = (html: string): string =>
     html.replace(/<h1(\s[^>]*)?>/gi, '<h2$1>').replace(/<\/h1>/gi, '</h2>')
-  const processedContent = contentType === 'MARKDOWN' ? markdownToHtml(content) : demoteH1(content)
+  const renderedContent = contentType === 'MARKDOWN' ? markdownToHtml(content) : demoteH1(content)
+  const processedContent = title
+    ? stripLeadingTitleHeading(renderedContent, title)
+    : renderedContent
   const sanitizedContent = sanitizeHtml(processedContent, DOMPURIFY_CONFIG)
 
   return (
     <div
       className={cn(
         'blog-content animate-fade-in-up',
-        'prose prose-lg dark:prose-invert max-w-none',
-        'prose-headings:font-bold prose-headings:text-foreground dark:prose-headings:text-white',
-        'prose-p:text-muted-foreground dark:prose-p:text-muted-foreground prose-p:leading-relaxed',
-        'prose-a:text-primary dark:prose-a:text-primary prose-a:no-underline hover:prose-a:underline',
-        'prose-strong:text-foreground dark:prose-strong:text-white prose-strong:font-semibold',
-        'prose-code:text-accent prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded',
+        'prose prose-lg max-w-none',
+        'prose-headings:font-bold prose-headings:text-foreground',
+        'prose-p:text-muted-foreground prose-p:leading-relaxed',
+        'prose-a:text-primary prose-a:no-underline hover:prose-a:underline',
+        'prose-strong:text-foreground prose-strong:font-semibold',
+        'prose-code:text-accent-text prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded',
         'prose-blockquote:border-l-primary prose-blockquote:bg-primary/5 prose-blockquote:text-muted-foreground',
-        'prose-ul:text-muted-foreground dark:prose-ul:text-muted-foreground prose-ol:text-muted-foreground dark:prose-ol:text-muted-foreground',
-        'prose-li:text-muted-foreground dark:prose-li:text-muted-foreground',
+        'prose-ul:text-muted-foreground prose-ol:text-muted-foreground',
+        'prose-li:text-muted-foreground',
         'prose-img:rounded-lg prose-img:shadow-lg',
         className
       )}

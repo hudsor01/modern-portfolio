@@ -11,7 +11,7 @@ export function NarrativeSections() {
       {/* Situation */}
       <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
-          <p className="text-lg leading-relaxed">
+          <p className="max-w-prose text-base">
             When I inherited the partner operations function, I discovered a dangerous blind spot:
             we had 47 partners driving {formatPercentage(0.832)} of total revenue, but we had no
             systematic way to measure, compare, or optimize their performance. Partner investments
@@ -19,7 +19,7 @@ export function NarrativeSections() {
             significant resources while delivering minimal returns, while high-performers were
             under-supported.
           </p>
-          <p className="leading-relaxed">
+          <p className="max-w-prose text-base">
             The lack of visibility was causing real business problems. We couldn't identify which
             partners deserved tier upgrades, which needed intervention, or where to focus enablement
             resources. Partner satisfaction was declining because top performers felt undervalued,
@@ -32,13 +32,13 @@ export function NarrativeSections() {
       {/* Task */}
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p className="max-w-prose text-base">
             I was tasked with building a comprehensive partner intelligence platform that would
             provide complete visibility into partner performance, enable data-driven investment
             decisions, and optimize the partner program for maximum ROI. My specific objectives
             included:
           </p>
-          <ul className="list-disc list-inside space-y-2 ml-4">
+          <ul className="max-w-prose list-disc list-inside space-y-2 ml-4">
             <li>Create real-time visibility into partner performance across all tiers</li>
             <li>Build ROI-based partner tiering with objective advancement criteria</li>
             <li>Identify the top-performing partners driving 80% of revenue (Pareto analysis)</li>
@@ -55,7 +55,7 @@ export function NarrativeSections() {
       {/* Action */}
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p className="max-w-prose text-base">
             I designed and built a partner performance intelligence platform that transformed how we
             manage, measure, and optimize partner relationships. The system combined real-time
             analytics with strategic planning capabilities:
@@ -63,7 +63,7 @@ export function NarrativeSections() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <FeatureCard title="Analytics I Built">
-              <ul className="list-disc list-inside space-y-1 text-sm">
+              <ul className="max-w-prose list-disc list-inside space-y-1">
                 <li>Partner ROI calculator with full cost attribution</li>
                 <li>Win rate analysis by tier, segment, and deal type</li>
                 <li>Revenue contribution tracking with Pareto visualization</li>
@@ -72,7 +72,7 @@ export function NarrativeSections() {
               </ul>
             </FeatureCard>
             <FeatureCard title="Strategic Features">
-              <ul className="list-disc list-inside space-y-1 text-sm">
+              <ul className="max-w-prose list-disc list-inside space-y-1">
                 <li>Tier advancement recommendations based on objective criteria</li>
                 <li>Resource allocation optimization by partner potential</li>
                 <li>Early warning alerts for declining engagement or performance</li>
@@ -82,7 +82,7 @@ export function NarrativeSections() {
             </FeatureCard>
           </div>
 
-          <p className="leading-relaxed mt-4">
+          <p className="max-w-prose text-base mt-4">
             I personally led the data integration effort, connecting CRM, billing, and partner
             portal data into a unified analytics layer. I designed the tier scoring methodology,
             built the ROI calculation engine, and created the executive reporting framework. The
@@ -94,7 +94,7 @@ export function NarrativeSections() {
       {/* Result */}
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p className="max-w-prose text-base">
             The partner intelligence platform I built transformed channel management from
             relationship-driven to data-driven, delivering measurable improvements across every
             dimension of partner performance:
@@ -116,10 +116,8 @@ export function NarrativeSections() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-secondary">
-              Quantified Business Outcomes I Delivered:
-            </h3>
-            <ul className="list-disc list-inside space-y-2 ml-4">
+            <h3>Quantified Business Outcomes I Delivered:</h3>
+            <ul className="max-w-prose list-disc list-inside space-y-2 ml-4">
               <li>
                 Achieved {formatPercentage(0.832)} win rate for partner channel—18 points above
                 industry average (65-75%)
@@ -144,8 +142,8 @@ export function NarrativeSections() {
         <div className="space-y-4 text-muted-foreground">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
-              <h3 className="font-semibold text-accent-foreground">Partner Strategy Insights</h3>
-              <ul className="list-disc list-inside space-y-2 text-sm">
+              <h3>Partner Strategy Insights</h3>
+              <ul className="max-w-prose list-disc list-inside space-y-2">
                 <li>
                   The Pareto principle (80/20) applies universally to partner programs—focusing on
                   top performers yields disproportionate returns
@@ -161,8 +159,8 @@ export function NarrativeSections() {
               </ul>
             </div>
             <div className="space-y-3">
-              <h3 className="font-semibold text-primary">Technical Insights</h3>
-              <ul className="list-disc list-inside space-y-2 text-sm">
+              <h3>Technical Insights</h3>
+              <ul className="max-w-prose list-disc list-inside space-y-2">
                 <li>
                   Unified data architecture is essential—partner data scattered across systems makes
                   performance analysis impossible
@@ -178,7 +176,7 @@ export function NarrativeSections() {
               </ul>
             </div>
           </div>
-          <p className="leading-relaxed mt-4">
+          <p className="max-w-prose text-base mt-4">
             This project taught me that partner programs succeed or fail based on measurement rigor.
             You can't optimize what you don't measure, and most organizations under-invest in
             partner analytics. I now treat partner intelligence as a core competency, not a

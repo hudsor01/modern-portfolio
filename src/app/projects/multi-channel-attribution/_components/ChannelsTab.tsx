@@ -1,13 +1,14 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { ChartSkeleton } from '@/components/charts/chart-skeleton'
+import { CHART_BOX, ChartSkeleton } from '@/components/charts/chart-skeleton'
 
 import { channelPerformance } from '../data/constants'
 import { formatCurrency, formatPercent } from '../utils'
+import { ChartHeader } from '@/components/ui/chart-container'
 
 const TouchpointAnalysisChart = dynamic(() => import('./TouchpointAnalysisChart'), {
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="md" />,
   ssr: false,
 })
 
@@ -16,27 +17,25 @@ export function ChannelsTab() {
     <div className="space-y-6 mb-8">
       {/* Touchpoint Analysis */}
       <div className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out">
-        <div className="mb-4">
-          <h2 className="typography-h4 mb-1">Multi-Touch Attribution & Channel Performance</h2>
-          <p className="typography-small text-muted-foreground">
-            Advanced touchpoint analysis revealing true cross-channel contribution and ROI
-            optimization
-          </p>
-        </div>
-        <div className="h-[var(--chart-height-sm)]">
+        <ChartHeader
+          title="Multi-Touch Attribution & Channel Performance"
+          description="Advanced touchpoint analysis revealing true cross-channel contribution and ROI optimization"
+          headingLevel={2}
+          className="mb-4"
+        />
+        <div className={CHART_BOX.md}>
           <TouchpointAnalysisChart />
         </div>
       </div>
 
       {/* Channel Performance Table */}
       <div className="glass rounded-2xl p-6 hover:bg-white/[0.07] transition-all duration-300 ease-out">
-        <div className="mb-4">
-          <h2 className="typography-h4 mb-1">Channel Attribution & ROI Performance</h2>
-          <p className="typography-small text-muted-foreground">
-            Comprehensive channel analysis with multi-touch attribution insights and investment
-            optimization
-          </p>
-        </div>
+        <ChartHeader
+          title="Channel Attribution & ROI Performance"
+          description="Comprehensive channel analysis with multi-touch attribution insights and investment optimization"
+          headingLevel={2}
+          className="mb-4"
+        />
 
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -68,7 +67,7 @@ export function ChannelsTab() {
                         channel.roi >= 20
                           ? 'bg-success/20 text-success'
                           : channel.roi >= 10
-                            ? 'bg-warning/20 text-warning'
+                            ? 'bg-warning/20 text-warning-text'
                             : 'bg-destructive/20 text-destructive'
                       }`}
                     >

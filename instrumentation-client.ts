@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/nextjs'
+import { scheduleReplayLoad, shouldLoadReplay } from '@/lib/sentry-lazy-replay'
 import { parseSampleRate, resolveDataCollection, resolveEnvironment } from './sentry.shared'
 
 // Browser-side Sentry init. This MUST live here, not in a `sentry.client.config.ts`
@@ -19,6 +20,10 @@ const tracesSampleRate = parseSampleRate(process.env.NEXT_PUBLIC_SENTRY_TRACES_S
 // uneventful sessions therefore trades away error-replay coverage, so the default
 // is "a replay for every error, none otherwise". Raise the session rate only if
 // you want replay for UX research rather than debugging.
+//
+// The Replay integration is NOT part of Sentry.init: it is added after the load
+// event once the browser is idle (<= 2 s), from a same-origin chunk, so it stays
+// out of the first-load JS. See src/lib/sentry-lazy-replay.ts.
 const replaysSessionSampleRate = parseSampleRate(
   process.env.NEXT_PUBLIC_SENTRY_REPLAYS_SESSION_SAMPLE_RATE,
   0
@@ -28,8 +33,6 @@ const replaysOnErrorSampleRate = parseSampleRate(
   process.env.NEXT_PUBLIC_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE,
   1
 )
-
-const enableReplay = replaysSessionSampleRate > 0 || replaysOnErrorSampleRate > 0
 
 Sentry.init({
   dsn,
@@ -48,17 +51,6 @@ Sentry.init({
     // Forward console output as structured, searchable logs. `debug`/`info` are
     // deliberately excluded — they are dev noise and would dominate the stream.
     Sentry.consoleLoggingIntegration({ levels: ['log', 'warn', 'error'] }),
-    ...(enableReplay
-      ? [
-          Sentry.replayIntegration({
-            // Defaults, set explicitly: this is a public site but forms carry
-            // names/emails, and a replay must never become a PII leak.
-            maskAllText: true,
-            maskAllInputs: true,
-            blockAllMedia: true,
-          }),
-        ]
-      : []),
   ],
   dataCollection: resolveDataCollection(process.env.NEXT_PUBLIC_SENTRY_SEND_DEFAULT_PII),
   ignoreErrors: [
@@ -72,5 +64,16 @@ Sentry.init({
     /^NEXT_NOT_FOUND$/,
   ],
 })
+
+if (
+  shouldLoadReplay({
+    dsn,
+    nodeEnv: process.env.NODE_ENV,
+    sessionRate: replaysSessionSampleRate,
+    onErrorRate: replaysOnErrorSampleRate,
+  })
+) {
+  scheduleReplayLoad()
+}
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart

@@ -20,9 +20,7 @@ const SUBSECTIONS: Subsection[] = [
     body: "Most revenue operations problems aren't strategy problems—they're data quality problems. I spend more time in SQL and Python than PowerPoint because if the foundation is wrong, everything built on top collapses.",
     proof: (
       <>
-        Built the pipeline that now processes{' '}
-        <span className="text-foreground font-medium">$4.8M+ annually</span>. Started with Excel
-        macros. Graduated to Python automation. Now it runs without me.
+        Started with Excel macros. Graduated to Python automation. Now the pipeline runs without me.
       </>
     ),
     tags: ['SQL', 'Python', 'Excel', 'PowerBI', 'Tableau'],
@@ -68,11 +66,11 @@ export function ExpertiseNarrative({ className = '' }: ExpertiseNarrativeProps) 
       <div className="max-w-3xl mx-auto">
         {/* Opening Statement */}
         <div className="mb-16 lg:mb-20 animate-fade-in-up">
-          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
+          <h2 className="mb-6">
             I don't just use tools.
             <br />I build systems.
           </h2>
-          <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
+          <p>
             Ten years solving the same problem: turning messy data into decisions people actually
             trust.
           </p>
@@ -89,17 +87,15 @@ export function ExpertiseNarrative({ className = '' }: ExpertiseNarrativeProps) 
               <div className="mb-4 text-sm font-medium text-primary uppercase tracking-wider">
                 {s.eyebrow}
               </div>
-              <h3 className="font-display text-2xl md:text-3xl font-semibold text-foreground mb-4">
-                {s.heading}
-              </h3>
-              <p className="text-lg text-muted-foreground leading-relaxed mb-5">{s.body}</p>
-              <p className="text-base text-muted-foreground/80 leading-relaxed mb-6">{s.proof}</p>
+              <h3 className="mb-4">{s.heading}</h3>
+              <p className="mb-5">{s.body}</p>
+              <p className="mb-6">{s.proof}</p>
               <div className="flex flex-wrap gap-2">
                 {s.tags.map((tag) => (
                   <Badge
                     key={tag}
                     variant="outline"
-                    className="text-xs border-border/70 text-muted-foreground"
+                    className="text-xs border-border text-muted-foreground"
                   >
                     {tag}
                   </Badge>
@@ -113,7 +109,7 @@ export function ExpertiseNarrative({ className = '' }: ExpertiseNarrativeProps) 
             className="border-t border-border pt-12 lg:pt-16 animate-fade-in-up"
             style={{ animationDelay: '400ms' }}
           >
-            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed italic">
+            <p className="italic">
               "Every company says they're data-driven. Most are just spreadsheet-driven. I've spent
               10 years learning the difference."
             </p>

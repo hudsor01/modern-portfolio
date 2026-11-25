@@ -50,10 +50,12 @@ export function ogImageUrl(params: {
   title: string
   subtitle?: string
   category?: string
+  project?: string
 }): string {
   const q = new URLSearchParams()
   q.set('title', params.title)
   if (params.subtitle) q.set('subtitle', params.subtitle)
   if (params.category) q.set('category', params.category)
+  if (params.project) q.set('project', params.project)
   return canonicalUrl(`/api/og?${q.toString()}`)
 }

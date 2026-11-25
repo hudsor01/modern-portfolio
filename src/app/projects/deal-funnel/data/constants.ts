@@ -8,7 +8,7 @@ export interface FunnelStage {
 
 export interface PartnerConversion {
   group: string
-  avg_sales_cycle_days: number
+  median_days_to_close: number
 }
 
 export interface ConversionRate {
@@ -36,8 +36,8 @@ export const initialFunnelStages: FunnelStage[] = partnerProgramMetrics.dealFunn
 // fewer than 5 closed deals are omitted rather than shown on thin evidence.
 export const initialPartnerConversion: PartnerConversion[] = partnerProgramMetrics.partnerTiers
   .filter((t) => t.medianDaysToClose > 0)
-  .map((t) => ({ group: t.tier, avg_sales_cycle_days: t.medianDaysToClose }))
-  .sort((a, b) => a.avg_sales_cycle_days - b.avg_sales_cycle_days)
+  .map((t) => ({ group: t.tier, median_days_to_close: t.medianDaysToClose }))
+  .sort((a, b) => a.median_days_to_close - b.median_days_to_close)
 
 // ILLUSTRATIVE — NOT derived. The export is a point-in-time snapshot with no
 // stage-transition history, so quarter-over-quarter conversion between stages

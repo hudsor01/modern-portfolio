@@ -1,0 +1,100 @@
+// @vitest-environment jsdom
+import { describe, it, expect, afterEach } from 'vitest'
+import { render, screen, cleanup, within, fireEvent } from '@testing-library/react'
+import { PILLARS } from '@/lib/revops-maturity'
+import { RevOpsMaturityScorecard } from '../revops-maturity-scorecard'
+
+afterEach(async () => {
+  cleanup()
+  await new Promise((resolve) => setTimeout(resolve, 0))
+})
+
+const SCALE_NAMES = ['1 Not at all', '2 Rarely', '3 Somewhat', '4 Mostly', '5 Fully']
+
+describe('RevOpsMaturityScorecard layout', () => {
+  it('lays each legend out inside its fieldset (float-left) with a clearing content wrapper', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    const fieldsets = container.querySelectorAll('fieldset')
+    expect(fieldsets.length).toBe(PILLARS.length)
+    for (const fs of fieldsets) {
+      const legend = fs.querySelector(':scope > legend')
+      expect(legend?.className).toContain('float-left')
+      expect(legend?.className).toContain('w-full')
+      const content = legend?.nextElementSibling
+      expect(content?.className).toContain('clear-both')
+    }
+  })
+
+  it('gives every radio the full accessible name "<n> <label>"', () => {
+    render(<RevOpsMaturityScorecard />)
+    const radios = screen.getAllByRole('radio')
+    expect(radios.length % 5).toBe(0)
+    const names = radios.map((r) => r.getAttribute('aria-label'))
+    for (let i = 0; i < radios.length; i++) {
+      expect(names[i]).toBe(SCALE_NAMES[i % 5])
+    }
+    expect(screen.getAllByRole('radio', { name: '1 Not at all' }).length).toBe(radios.length / 5)
+  })
+
+  it('hides the word label below sm and shows it from sm up', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    const word = container.querySelector('label span.hidden')
+    expect(word?.className).toContain('sm:block')
+  })
+
+  it('renders the scale key once per pillar, mobile only, from SCALE', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    const keys = Array.from(container.querySelectorAll('fieldset')).map((fs) =>
+      within(fs as HTMLElement).getAllByText(SCALE_NAMES.join(' · '))
+    )
+    for (const k of keys) {
+      expect(k.length).toBe(1)
+      expect(k[0]?.className).toContain('sm:hidden')
+      expect(k[0]?.className).toContain('text-xs')
+    }
+    expect(keys.length).toBe(PILLARS.length)
+  })
+})
+
+describe('RevOpsMaturityScorecard selected option', () => {
+  it('marks the selected option with a primary border; unselected options keep border-border', () => {
+    render(<RevOpsMaturityScorecard />)
+    const first = screen.getAllByRole('radio', { name: '5 Fully' })[0] as HTMLInputElement
+    fireEvent.click(first)
+    const selected = first.closest('label')
+    expect(selected?.className).toContain('border-primary')
+    expect(selected?.className).not.toContain('border-border')
+    const sibling = screen.getAllByRole('radio', { name: '4 Mostly' })[0]?.closest('label')
+    expect(sibling?.className).toContain('border-border')
+    expect(sibling?.className).not.toMatch(/(^|\s)border-primary(\s|$)/)
+  })
+})
+
+describe('RevOpsMaturityScorecard keyboard focus', () => {
+  it('shows a ring on the label when its sr-only radio has focus-visible', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    const label = container.querySelector('fieldset label')
+    expect(label?.className).toContain('has-[:focus-visible]:ring-2')
+    expect(label?.className).toContain('has-[:focus-visible]:ring-ring')
+    expect(label?.className).toContain('has-[:focus-visible]:ring-offset-2')
+  })
+})
+
+describe('RevOpsMaturityScorecard weakest badge', () => {
+  it('shows no "weakest" badge when every pillar ties (the neutral default)', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    expect(container.textContent?.toLowerCase()).not.toContain('weakest')
+    expect(screen.getByText('Highest-ROI next move')).toBeTruthy()
+  })
+
+  it('badges exactly one pillar once a single pillar is uniquely lowest', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    const firstProcess = screen.getAllByRole('radio', { name: '1 Not at all' })[0]
+    if (!firstProcess) throw new Error('missing radio')
+    fireEvent.click(firstProcess)
+    const badges = Array.from(container.querySelectorAll('span')).filter(
+      (s) => s.textContent === 'weakest'
+    )
+    expect(badges).toHaveLength(1)
+  })
+})

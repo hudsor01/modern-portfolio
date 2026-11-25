@@ -12,14 +12,19 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 import { PROJECT_COUNT } from '@/data/projects'
-import { REVENUE_IMPACT, TRANSACTION_GROWTH, NETWORK_GROWTH, YEARS_EXPERIENCE } from '@/lib/stats'
+import { STAT_LABELS, STAT_VALUES, type StatKey } from '@/lib/stats'
 
-const EXPERIENCE_STATS = [
-  { label: 'Projects Delivered', value: YEARS_EXPERIENCE, icon: 'check-circle' },
-  { label: 'Revenue Generated', value: REVENUE_IMPACT, icon: 'dollar-sign' },
-  { label: 'Transaction Growth', value: TRANSACTION_GROWTH, icon: 'bar-chart' },
-  { label: 'Network Expansion', value: NETWORK_GROWTH, icon: 'rocket' },
-]
+const EXPERIENCE_STATS: { statKey: StatKey; label: string; value: string; icon: string }[] = [
+  { statKey: 'revenue', icon: 'dollar-sign' },
+  { statKey: 'transaction-growth', icon: 'bar-chart' },
+  { statKey: 'network-growth', icon: 'rocket' },
+  { statKey: 'years', icon: 'clock' },
+].map(({ statKey, icon }) => ({
+  statKey: statKey as StatKey,
+  label: STAT_LABELS[statKey as StatKey],
+  value: STAT_VALUES[statKey as StatKey],
+  icon,
+}))
 
 const CERTIFICATIONS = [
   {
@@ -58,7 +63,7 @@ const PERSONAL_INFO = {
   title: 'Revenue Operations Professional',
   location: 'Dallas, TX • Dallas-Fort Worth Metroplex • Remote & On-Site',
   email: 'hudsor01@icloud.com',
-  bio: `Started my career untangling spreadsheet chaos at a 50-person startup. Built my first automated pipeline with zero engineering support—just Excel, determination, and 3 YouTube tutorials. That pipeline now processes $4.8M+ annually.
+  bio: `Started my career untangling spreadsheet chaos at a 50-person startup. Built my first automated pipeline with zero engineering support—just Excel, determination, and 3 YouTube tutorials.
 
 Today, I architect revenue operations systems that transform data overwhelm into competitive advantage. Ten years working the messy middle—where sales meets marketing meets customer success—turning manual reporting nightmares into automated workflows that scale.
 
@@ -67,8 +72,8 @@ SalesLoft Admin certified (Level 1 & 2), HubSpot Revenue Operations certified, a
 
 export const dynamic = 'force-static'
 export const metadata: Metadata = generateMetadata(
-  'About — Revenue Operations Professional',
-  `Richard Hudson - Dallas, Texas Revenue Operations Professional serving Dallas-Fort Worth metroplex with 10+ years experience. SalesLoft Admin certified (Level 1 & 2) and HubSpot Revenue Operations certified. Partnership program implementation specialist with system integration experience. Expert in data analytics, process automation, and CRM optimization. $4.8M+ revenue generated across ${PROJECT_COUNT} projects, 432% transaction growth achieved.`,
+  'About: Revenue Operations Professional',
+  `Richard Hudson - Dallas, Texas Revenue Operations Professional serving Dallas-Fort Worth metroplex with ${STAT_VALUES.years} years experience. SalesLoft Admin certified (Level 1 & 2) and HubSpot Revenue Operations certified. Partnership program implementation specialist with system integration experience. Expert in data analytics, process automation, and CRM optimization. ${STAT_VALUES.revenue} revenue impact across ${PROJECT_COUNT} projects, ${STAT_VALUES['transaction-growth']} transaction growth.`,
   '/about'
 )
 
@@ -86,7 +91,7 @@ export default function AboutPage() {
       />
       <Navbar />
 
-      <main>
+      <main id="main-content" tabIndex={-1}>
         {/* 1. Hero - Personal Information */}
         <section aria-label="Introduction" className="pt-24 pb-16 lg:pt-32 lg:pb-20">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -121,10 +126,8 @@ export default function AboutPage() {
         {/* 5. Final CTA */}
         <section aria-label="Contact" className="py-20 lg:py-28">
           <div className="max-w-3xl mx-auto px-6 lg:px-8 text-center">
-            <h2 className="font-display text-3xl lg:text-5xl font-bold text-foreground mb-6">
-              Let's talk about your goals
-            </h2>
-            <p className="text-xl text-muted-foreground mb-10">
+            <h2 className="mb-6">Let's talk about your goals</h2>
+            <p className="mb-10">
               Ready to turn revenue operations into a competitive advantage? See the work, or get in
               touch directly.
             </p>

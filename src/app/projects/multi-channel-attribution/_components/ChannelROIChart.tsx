@@ -1,6 +1,6 @@
 'use client'
 import { memo } from 'react'
-import { formatCurrencyCompact0 } from '@/lib/data-formatters'
+import { formatCompactCurrency } from '@/lib/data-formatters'
 
 import { LazyScatterChart as ScatterChart } from '@/components/charts/lazy-charts'
 import { Scatter, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts'
@@ -69,7 +69,7 @@ const chartColors = {
 
 const ChannelROIChart = memo(function ChannelROIChart() {
   return (
-    <div className="h-[var(--chart-height-md)]">
+    <div className="h-full w-full">
       <ResponsiveContainer width="100%" height="100%">
         <ScatterChart data={normalizedData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
@@ -120,8 +120,8 @@ const ChannelROIChart = memo(function ChannelROIChart() {
                 [
                   `Attribution: ${payload.attribution}%`,
                   `ROI: ${payload.roi === 999 ? '∞' : `${payload.roi}x`}`,
-                  `Cost: ${formatCurrencyCompact0(payload.cost)}`,
-                  `Revenue: ${formatCurrencyCompact0(payload.revenue)}`,
+                  `Cost: ${formatCompactCurrency(payload.cost)}`,
+                  `Revenue: ${formatCompactCurrency(payload.revenue)}`,
                   `Conversions: ${payload.size.toLocaleString()}`,
                 ],
                 payload.channel,
@@ -136,7 +136,7 @@ const ChannelROIChart = memo(function ChannelROIChart() {
           </Scatter>
         </ScatterChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
+      <p className="mt-4 text-center italic">
         Channel attribution vs ROI scatter analysis revealing optimal investment allocation and
         performance optimization opportunities
       </p>

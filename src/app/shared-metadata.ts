@@ -1,8 +1,44 @@
 import type { Metadata } from 'next'
 import { canonicalUrl, SITE_ORIGIN, OG_IMAGE_SIZE, ogImageUrl } from '@/lib/absolute-url'
 import { PROJECT_COUNT } from '@/data/projects'
+import { REVENUE_IMPACT } from '@/lib/stats'
 
-const SITE_DESCRIPTION = `Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. $4.8M+ revenue impact across ${PROJECT_COUNT} projects.`
+export const BRAND = 'Richard Hudson'
+
+/**
+ * Append the brand exactly once as " | brand". Any existing separated brand
+ * suffix (" | ", " – ", " — ", " - ") is normalized first, so the result is
+ * idempotent and never doubles the brand.
+ */
+export function brandTitle(title: string): string {
+  const base = stripBrandSuffix(title)
+  return base ? `${base} | ${BRAND}` : BRAND
+}
+
+/**
+ * Remove a trailing brand suffix ("| Richard Hudson", en/em dash, hyphen).
+ * Deliberately regex-free so it is linear-time on adversarial DB input.
+ */
+export function stripBrandSuffix(title: string): string {
+  const trimmed = title.trim()
+  const brand = BRAND.toLowerCase()
+  if (!trimmed.toLowerCase().endsWith(brand)) return trimmed
+  const before = trimmed.slice(0, trimmed.length - brand.length).trimEnd()
+  if (before === '') return ''
+  const last = before.charAt(before.length - 1)
+  // Only a free-standing separator immediately before the brand marks it as a
+  // suffix. A title that merely ends with the name ("Interview with Richard
+  // Hudson") or glues a hyphen to a word ("Anti-Richard Hudson") is kept.
+  const isSeparator = last === '|' || last === '–' || last === '—' || last === '-'
+  const prev = before.charAt(before.length - 2)
+  const freeStanding = prev === '' || prev === ' ' || prev === '\t'
+  if (isSeparator && freeStanding) {
+    return before.slice(0, -1).trim()
+  }
+  return trimmed
+}
+
+const SITE_DESCRIPTION = `Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. ${REVENUE_IMPACT} revenue impact across ${PROJECT_COUNT} projects.`
 
 export const baseMetadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),
@@ -112,6 +148,10 @@ export interface PageMetadataOptions {
   subtitle?: string
   /** alt text for the OG image. Defaults to the page `title`. */
   ogAlt?: string
+  /** Bypass the root '%s | Richard Hudson' template; use for the home page whose title already leads with the brand. */
+  absoluteTitle?: boolean
+  /** Catalog project slug; switches the card to the generated results preview. */
+  ogProject?: string
   /** OpenGraph type. Defaults to `'website'`; case studies pass `'article'`. */
   ogType?: 'website' | 'article'
   keywords?: string[]
@@ -145,15 +185,27 @@ export function generateMetadata(
         }
       : titleOrOptions
 
-  const { title, ogTitle, subtitle, ogAlt, ogType = 'website', keywords, additional } = opts
+  const {
+    title,
+    ogTitle,
+    subtitle,
+    ogAlt,
+    ogProject,
+    ogType = 'website',
+    keywords,
+    additional,
+    absoluteTitle,
+  } = opts
   // Root canonical is the bare origin (no trailing slash) — `canonicalUrl('/')`
   // would yield '…com/', which Search Console treats as a distinct URL.
   const pageUrl = opts.path === '/' ? SITE_ORIGIN : canonicalUrl(opts.path)
-  const cardUrl = ogImageUrl({ title: ogTitle ?? title, subtitle })
+  const cardUrl = ogImageUrl({ title: ogTitle ?? title, subtitle, project: ogProject })
+  // Absolute titles (home) already carry the brand in their own shape.
+  const shareTitle = absoluteTitle ? title : brandTitle(title)
 
   return {
     ...baseMetadata,
-    title,
+    title: absoluteTitle ? { absolute: title } : title,
     description: opts.description,
     ...(keywords ? { keywords } : {}),
     alternates: {
@@ -162,20 +214,20 @@ export function generateMetadata(
     openGraph: {
       ...baseMetadata.openGraph,
       type: ogType,
-      title,
+      title: shareTitle,
       description: opts.description,
       url: pageUrl,
       images: [
         {
           url: cardUrl,
           ...OG_IMAGE_SIZE,
-          alt: ogAlt ?? title,
+          alt: ogAlt ?? (ogProject ? `${title} results preview` : title),
         },
       ],
     },
     twitter: {
       ...baseMetadata.twitter,
-      title,
+      title: shareTitle,
       description: opts.description,
       images: [cardUrl],
     },

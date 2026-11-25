@@ -7,6 +7,7 @@
 import type { BlogPostData } from '@/types/api'
 import { JsonLdScript } from '@/components/seo/json-ld-script'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
+import { getDisplayYearMonth } from '@/lib/data-formatters'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 
 /**
@@ -43,7 +44,7 @@ export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
       '@type': 'Person',
       name: 'Richard Hudson',
     },
-    copyrightYear: new Date().getFullYear(),
+    copyrightYear: getDisplayYearMonth().year,
     keywords: [
       'revenue operations',
       'data analytics',
@@ -153,7 +154,7 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
       '@type': 'Person',
       name: 'Richard Hudson',
     },
-    copyrightYear: new Date(post.createdAt).getFullYear(),
+    copyrightYear: getDisplayYearMonth(new Date(post.createdAt)).year,
     // Add tags as keywords
     ...(post.tags &&
       post.tags.length > 0 && {

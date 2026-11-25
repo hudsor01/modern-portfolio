@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/select'
 import { BarChart3, Search } from 'lucide-react'
 import type { Project } from '@/types/project'
+import { DecorativeBlob } from '@/components/ui/decorative-blob'
 
 interface ProjectsPageContentProps {
   initialProjects: Project[]
@@ -64,31 +65,30 @@ export function ProjectsPageContent({ initialProjects }: ProjectsPageContentProp
   })()
 
   return (
-    <main id="main-content" className="relative min-h-screen bg-background overflow-hidden">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="relative min-h-screen bg-background overflow-x-clip"
+    >
       {/* Decorative background elements */}
-      <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
+      <DecorativeBlob position="top-right" />
+      <DecorativeBlob position="bottom-left" />
 
       <div className="w-full relative z-10 px-6 lg:px-8 mx-auto max-w-7xl">
         {/* Hero Section */}
         <section className="pt-24 pb-16 lg:pt-32 lg:pb-20">
           {/* Eyebrow */}
-          <p className="text-center text-sm font-medium tracking-widest uppercase text-primary mb-6 animate-fade-in-up">
-            Portfolio
-          </p>
+          <p className="text-center tracking-widest uppercase mb-6 animate-fade-in-up">Portfolio</p>
 
           {/* Main Heading */}
-          <h1
-            className="font-display text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground text-center mb-6 animate-fade-in-up"
-            style={{ animationDelay: '80ms' }}
-          >
+          <h1 className="text-center mb-6 animate-fade-in-up" style={{ animationDelay: '80ms' }}>
             Revenue Operations
             <br className="hidden sm:block" /> Excellence
           </h1>
 
           {/* Subheading */}
           <p
-            className="text-lg lg:text-xl text-muted-foreground text-center max-w-2xl mx-auto mb-16 animate-fade-in-up"
+            className="text-center max-w-2xl mx-auto mb-16 animate-fade-in-up"
             style={{ animationDelay: '160ms' }}
           >
             Transforming data into actionable insights and driving measurable business results
@@ -109,14 +109,10 @@ export function ProjectsPageContent({ initialProjects }: ProjectsPageContentProp
           {/* Section Header */}
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
             <div>
-              <h2 className="font-display text-2xl lg:text-3xl font-semibold text-foreground mb-2">
-                All Case Studies
-              </h2>
-              <p className="text-muted-foreground">
-                Explore case studies in revenue operations and data analytics
-              </p>
+              <h2 className="mb-2">All Case Studies</h2>
+              <p>Explore case studies in revenue operations and data analytics</p>
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p>
               {filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'}
             </p>
           </div>
@@ -137,7 +133,7 @@ export function ProjectsPageContent({ initialProjects }: ProjectsPageContentProp
                 value={category}
                 onValueChange={(value) => setCategory(value === 'all' ? null : value)}
               >
-                <SelectTrigger className="w-full sm:w-48">
+                <SelectTrigger aria-label="Filter by category" className="w-full sm:w-48">
                   <SelectValue placeholder="All categories" />
                 </SelectTrigger>
                 <SelectContent>
@@ -160,10 +156,10 @@ export function ProjectsPageContent({ initialProjects }: ProjectsPageContentProp
               <div className="flex justify-center mb-4">
                 <BarChart3 className="h-10 w-10 text-muted-foreground" />
               </div>
-              <h3 className="font-display text-xl font-semibold text-foreground mb-2">
+              <h3 className="mb-2">
                 {initialProjects.length === 0 ? 'No projects yet' : 'No projects match your search'}
               </h3>
-              <p className="text-muted-foreground">
+              <p>
                 {initialProjects.length === 0
                   ? 'Projects are currently being updated'
                   : 'Try adjusting your search or filters'}
@@ -184,19 +180,14 @@ export function ProjectsPageContent({ initialProjects }: ProjectsPageContentProp
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {filteredProjects.map((project: Project, index: number) => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  index={index}
-                  priority={index < 2}
-                />
+                <ProjectCard key={project.id} project={project} index={index} />
               ))}
             </div>
           )}
         </section>
 
         {/* CTA Section */}
-        <ProjectCTASection totalProjects={sortedProjects.length} />
+        <ProjectCTASection />
       </div>
     </main>
   )

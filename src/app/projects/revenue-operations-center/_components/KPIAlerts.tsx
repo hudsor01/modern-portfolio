@@ -5,7 +5,7 @@ import { kpiAlerts, alertTypeStyles } from '../data/constants'
 export function KPIAlerts() {
   return (
     <div className="glass rounded-2xl p-6 mb-12">
-      <h3 className="typography-large mb-4">Real-Time Revenue Operations Alerts</h3>
+      <h2 className="typography-large mb-4 leading-snug">Real-Time Revenue Operations Alerts</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {kpiAlerts.map((alert, index) => {
           const IconComponent = alert.icon

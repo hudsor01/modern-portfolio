@@ -11,14 +11,14 @@ export function NarrativeSections() {
       {/* Situation */}
       <SectionCard title="Situation">
         <div className="space-y-4 text-muted-foreground">
-          <p className="text-lg leading-relaxed">
+          <p className="max-w-prose text-base">
             When I was brought in to assess the revenue forecasting function, I discovered a
             critical problem: the organization was flying blind. Forecast accuracy was hovering
             around 63%—essentially a coin flip—and deal slippage was rampant. The sales team would
             commit to quarterly numbers, but by quarter-end, 26% of committed deals had either
             pushed or fallen out entirely.
           </p>
-          <p className="leading-relaxed">
+          <p className="max-w-prose text-base">
             The root cause was clear: forecasting was based on gut feel and rep optimism rather than
             data-driven signals. There was no early warning system for at-risk deals, no objective
             deal health scoring, and no way to predict which deals would actually close. With over
@@ -32,12 +32,12 @@ export function NarrativeSections() {
       {/* Task */}
       <SectionCard title="Task">
         <div className="space-y-4 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p className="max-w-prose text-base">
             I was tasked with building an intelligent forecasting and pipeline intelligence system
             that would transform revenue prediction from art to science. My specific objectives
             included:
           </p>
-          <ul className="list-disc list-inside space-y-2 ml-4">
+          <ul className="max-w-prose list-disc list-inside space-y-2 ml-4">
             <li>Improve forecast accuracy from 63% to at least 90%</li>
             <li>Reduce deal slippage by at least 20% through early warning systems</li>
             <li>Build AI-powered deal health scoring using 50+ behavioral signals</li>
@@ -51,7 +51,7 @@ export function NarrativeSections() {
       {/* Action */}
       <SectionCard title="Action">
         <div className="space-y-4 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p className="max-w-prose text-base">
             I designed and built a comprehensive forecast intelligence platform from scratch,
             combining machine learning, behavioral analytics, and real-time data processing to
             create an early warning system for pipeline risk:
@@ -59,7 +59,7 @@ export function NarrativeSections() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <FeatureCard title="AI/ML Systems I Built">
-              <ul className="list-disc list-inside space-y-1 text-sm">
+              <ul className="max-w-prose list-disc list-inside space-y-1">
                 <li>Deal health scoring engine analyzing 50+ engagement signals</li>
                 <li>Predictive close date modeling using historical patterns</li>
                 <li>Anomaly detection for sudden engagement drops</li>
@@ -68,7 +68,7 @@ export function NarrativeSections() {
               </ul>
             </FeatureCard>
             <FeatureCard title="Pipeline Intelligence Features">
-              <ul className="list-disc list-inside space-y-1 text-sm">
+              <ul className="max-w-prose list-disc list-inside space-y-1">
                 <li>Real-time deal health dashboards with drill-down capability</li>
                 <li>Automated early warning alerts for at-risk deals</li>
                 <li>Executive forecasting dashboard with scenario planning</li>
@@ -78,7 +78,7 @@ export function NarrativeSections() {
             </FeatureCard>
           </div>
 
-          <p className="leading-relaxed mt-4">
+          <p className="max-w-prose text-base mt-4">
             I personally led the data science work to identify the most predictive signals, built
             the integration layer with Salesforce CRM, and designed the user experience for both
             individual reps and executives. The system was deployed in phases, starting with the
@@ -90,7 +90,7 @@ export function NarrativeSections() {
       {/* Result */}
       <SectionCard title="Result">
         <div className="space-y-6 text-muted-foreground">
-          <p className="leading-relaxed">
+          <p className="max-w-prose text-base">
             The forecast intelligence system I built transformed pipeline management from reactive
             firefighting to proactive revenue optimization, delivering measurable improvements that
             exceeded every target:
@@ -102,16 +102,8 @@ export function NarrativeSections() {
               label="Forecast Accuracy Achieved"
               variant="primary"
             />
-            <ResultCard
-              value={formatPercentage(0.31)}
-              label="Accuracy Improvement"
-              variant="secondary"
-            />
-            <ResultCard
-              value={formatPercentage(0.26)}
-              label="Slippage Reduction"
-              variant="primary"
-            />
+            <ResultCard value="+31 pts" label="Accuracy Improvement" variant="secondary" />
+            <ResultCard value="26% → 19%" label="Deal Slippage" variant="primary" />
             <ResultCard
               value={formatCurrency(12500000, { compact: true })}
               label="Revenue Protected"
@@ -120,10 +112,8 @@ export function NarrativeSections() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-secondary">
-              Quantified Business Outcomes I Delivered:
-            </h3>
-            <ul className="list-disc list-inside space-y-2 ml-4">
+            <h3>Quantified Business Outcomes I Delivered:</h3>
+            <ul className="max-w-prose list-disc list-inside space-y-2 ml-4">
               <li>Improved forecast accuracy from 63% to 94%—a 31 percentage point improvement</li>
               <li>
                 Reduced deal slippage from 26% to 19%—protecting {formatCurrency(12500000)} in
@@ -151,8 +141,8 @@ export function NarrativeSections() {
         <div className="space-y-4 text-muted-foreground">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-3">
-              <h3 className="font-semibold text-accent-foreground">Forecasting Insights</h3>
-              <ul className="list-disc list-inside space-y-2 text-sm">
+              <h3>Forecasting Insights</h3>
+              <ul className="max-w-prose list-disc list-inside space-y-2">
                 <li>
                   Buyer engagement patterns are more predictive than rep confidence—I now always
                   prioritize behavioral data over subjective assessments
@@ -168,8 +158,8 @@ export function NarrativeSections() {
               </ul>
             </div>
             <div className="space-y-3">
-              <h3 className="font-semibold text-primary">Technical Insights</h3>
-              <ul className="list-disc list-inside space-y-2 text-sm">
+              <h3>Technical Insights</h3>
+              <ul className="max-w-prose list-disc list-inside space-y-2">
                 <li>
                   Real-time data processing is essential—batch updates make predictions stale by the
                   time they're actionable
@@ -185,7 +175,7 @@ export function NarrativeSections() {
               </ul>
             </div>
           </div>
-          <p className="leading-relaxed mt-4">
+          <p className="max-w-prose text-base mt-4">
             This project taught me that the best forecasting systems don't just predict—they enable
             intervention. The value isn't in knowing a deal will slip; it's in preventing the slip.
             I now design every analytics system with action enablement as the primary success

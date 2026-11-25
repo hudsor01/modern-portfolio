@@ -13,6 +13,7 @@ export const metadata = genMeta({
   path: '/projects/partner-performance',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
+  ogProject: 'partner-performance',
 })
 
 export default async function PartnerPerformancePage() {

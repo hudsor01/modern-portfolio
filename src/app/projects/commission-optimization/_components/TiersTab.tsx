@@ -8,7 +8,7 @@ import { commissionTiers } from '../data/constants'
 import { formatCurrency, formatPercentage } from '@/lib/data-formatters'
 
 const CommissionTierChart = dynamic(() => import('./CommissionTierChart'), {
-  loading: () => <ChartSkeleton />,
+  loading: () => <ChartSkeleton height="lg" />,
   ssr: false,
 })
 
@@ -49,7 +49,7 @@ export function TiersTab() {
               {commissionTiers.map((tier, index) => (
                 <tr
                   key={index}
-                  className="border-b border-border/50 hover:bg-muted/50 transition-colors"
+                  className="border-b border-border hover:bg-muted/50 transition-colors"
                 >
                   <td className="py-4 px-4 font-medium">{tier.tier}</td>
                   <td className="py-4 px-4">{tier.count}</td>
@@ -62,7 +62,7 @@ export function TiersTab() {
                         tier.roi >= 4
                           ? 'bg-success/10 text-success'
                           : tier.roi >= 3
-                            ? 'bg-warning/10 text-warning'
+                            ? 'bg-warning/10 text-warning-text'
                             : 'bg-destructive/10 text-destructive'
                       }`}
                     >

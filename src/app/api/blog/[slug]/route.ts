@@ -9,10 +9,12 @@ import { isAdminRequest } from '@/lib/api-admin-auth'
 import { checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-rate-limit'
 import { transformToBlogPostData, createErrorResponse } from '@/lib/api-blog'
 import { updateBlogPostSchema } from '@/lib/schemas'
+import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
 
 const logger = createContextLogger('SlugAPI')
 
 const POST_WITH_RELATIONS = {
+  columns: BLOG_POST_COLUMNS,
   with: {
     author: true,
     category: true,
@@ -120,6 +122,7 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
 
     const existingPost = await db.query.blogPosts.findFirst({
       where: eq(blogPosts.slug, slug),
+      columns: { id: true, publishedAt: true },
     })
 
     if (!existingPost) {
@@ -252,7 +255,8 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
 
     const post = await db.query.blogPosts.findFirst({
       where: eq(blogPosts.slug, slug),
-      with: { tags: true },
+      columns: { id: true, authorId: true, categoryId: true },
+      with: { tags: { columns: { tagId: true } } },
     })
 
     if (!post) {

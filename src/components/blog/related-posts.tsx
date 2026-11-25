@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { and, desc, eq, isNull, ne } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { blogPosts } from '@/db/schema'
+import { BLOG_CONTENT_HEAD_EXTRAS } from '@/lib/blog-content-head'
+import { resolveExcerpt } from '@/lib/blog-excerpt'
 import { createContextLogger } from '@/lib/logger'
 import { selectRelatedPosts, type RelatedPostInput } from './related-posts-utils'
 
@@ -21,6 +23,7 @@ export async function RelatedPosts({ currentSlug, currentTags, limit = 3 }: Rela
     title: string
     excerpt: string | null
     publishedAt: Date | null
+    contentHead?: string | null
     tags: { tag: { name: string } }[]
   }
   let posts: PostRow[]
@@ -31,6 +34,7 @@ export async function RelatedPosts({ currentSlug, currentTags, limit = 3 }: Rela
         isNull(blogPosts.deletedAt),
         ne(blogPosts.slug, currentSlug)
       ),
+      extras: BLOG_CONTENT_HEAD_EXTRAS,
       columns: {
         slug: true,
         title: true,
@@ -60,7 +64,7 @@ export async function RelatedPosts({ currentSlug, currentTags, limit = 3 }: Rela
     title: p.title,
     tags: (p.tags ?? []).map((t) => t?.tag?.name).filter((n): n is string => !!n),
     publishedAt: p.publishedAt?.toISOString() ?? '1970-01-01',
-    excerpt: p.excerpt,
+    excerpt: resolveExcerpt({ excerpt: p.excerpt, content: p.contentHead }) || null,
   }))
 
   const current: RelatedPostInput & { excerpt: string | null } = {
@@ -75,23 +79,19 @@ export async function RelatedPosts({ currentSlug, currentTags, limit = 3 }: Rela
   if (related.length === 0) return null
 
   return (
-    <aside className="mt-16 pt-12 border-t border-border" aria-labelledby="related-posts-heading">
-      <h2 id="related-posts-heading" className="text-2xl font-semibold mb-6 text-foreground">
+    <aside className="mt-0 border-t border-border pt-10" aria-labelledby="related-posts-heading">
+      <h2 id="related-posts-heading" className="mb-6">
         Related reading
       </h2>
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid items-stretch gap-6 md:grid-cols-3">
         {related.map((post) => (
           <Link
             key={post.slug}
             href={`/blog/${post.slug}`}
-            className="group rounded-xl border border-border bg-card p-5 hover:border-primary transition-colors"
+            className="group flex h-full flex-col rounded-xl border border-border bg-card p-5 hover:border-primary transition-colors"
           >
-            <h3 className="font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">
-              {post.title}
-            </h3>
-            {post.excerpt && (
-              <p className="text-sm text-muted-foreground line-clamp-2">{post.excerpt}</p>
-            )}
+            <h3 className="mb-2 transition-colors">{post.title}</h3>
+            {post.excerpt && <p className="line-clamp-2">{post.excerpt}</p>}
           </Link>
         ))}
       </div>

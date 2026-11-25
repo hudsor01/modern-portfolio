@@ -372,3 +372,98 @@ test.describe('Blog SEO and Meta', () => {
     expect(types).toContain('BlogPosting')
   })
 })
+
+test.describe('Blog list cards (UI-07)', () => {
+  /**
+   * Image identity for a rendered cover: unwrap /_next/image?url=…, then use
+   * host + path (the pipeline reuses one photo with different query params).
+   * Generated /api/og covers keep their query, which is what makes them unique.
+   */
+  const coverKeys = (imgs: Element[]) =>
+    imgs.map((img) => {
+      const src = img.getAttribute('src') ?? ''
+      const outer = new URL(src, location.origin)
+      const inner = outer.pathname === '/_next/image' ? (outer.searchParams.get('url') ?? '') : src
+      const u = new URL(inner, location.origin)
+      return u.pathname === '/api/og' ? `${u.pathname}${u.search}` : `${u.host}${u.pathname}`
+    })
+
+  test.beforeEach(({ browserName }) => {
+    test.skip(browserName !== 'chromium', 'chromium-gated')
+  })
+
+  test('every card has one chip, a 3-line title clamp and a unique cover', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+
+    const checkPage = async (url: string) => {
+      await page.goto(url)
+      const cards = postCards(page)
+      await expect(cards.first()).toBeVisible()
+      const count = await cards.count()
+      for (let i = 0; i < count; i++) {
+        const card = cards.nth(i)
+        const chip = card.locator('span.uppercase.text-primary')
+        await expect(chip).toHaveCount(1)
+        expect(((await chip.textContent()) ?? '').trim().length).toBeGreaterThan(0)
+        await expect(card.locator('h2')).toHaveClass(/line-clamp-3/)
+      }
+      const keys = await page.locator('main a[href^="/blog/"] img').evaluateAll(coverKeys)
+      expect(keys.length).toBeGreaterThan(0)
+      expect(new Set(keys).size, keys.join('\n')).toBe(keys.length)
+      // No card excerpt may open with the author-bio boilerplate.
+      await expect(cards.filter({ hasText: /Texas Army National Guard/ })).toHaveCount(0)
+    }
+
+    await checkPage('/blog')
+    const next = page.locator('a[href*="page=2"]').first()
+    if ((await next.count()) > 0) await checkPage('/blog?page=2')
+  })
+
+  test('category page cards have a chip and unique covers', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+    await page.goto('/blog')
+    // /blog has no category links inside <main>; the footer's RevOps link is the stable entry.
+    const link = page.locator('a[href^="/blog/category/"]').first()
+    await expect(link).toBeAttached()
+    const href = (await link.getAttribute('href')) ?? ''
+    await page.goto(href)
+    const cards = page.locator('main a.group[href^="/blog/"]')
+    await expect(cards.first()).toBeVisible()
+    const count = await cards.count()
+    for (let i = 0; i < count; i++) {
+      await expect(cards.nth(i).locator('span.uppercase.text-primary')).toHaveCount(1)
+    }
+    const keys = await cards.locator('img').evaluateAll(coverKeys)
+    expect(keys.length).toBeGreaterThan(0)
+    expect(new Set(keys).size, keys.join('\n')).toBe(keys.length)
+    await expect(cards.filter({ hasText: /Texas Army National Guard/ })).toHaveCount(0)
+  })
+
+  test('/api/og card is served directly as an image', async ({ request }) => {
+    const res = await request.get('/api/og?title=Probe&category=Revenue%20Operations')
+    expect(res.status()).toBe(200)
+    expect(res.headers()['content-type']).toMatch(/^image\//)
+  })
+})
+
+test.describe('Blog post layout (UI-10)', () => {
+  test.beforeEach(({ browserName }) => {
+    test.skip(browserName !== 'chromium', 'chromium-gated')
+  })
+
+  test('back link sits under the header; date and reading time appear once', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await openFirstPost(page)
+
+    const box = await page.getByRole('link', { name: 'Back to Blog' }).boundingBox()
+    expect(box).not.toBeNull()
+    expect(box?.y ?? Infinity).toBeLessThanOrEqual(86)
+
+    const aside = page.locator('article aside')
+    await expect(aside.getByText('Published')).toHaveCount(0)
+    await expect(aside.getByText('Reading time')).toHaveCount(0)
+    await expect(page.locator('article header time')).toHaveCount(1)
+    await expect(page.locator('article header').getByText(/\d+ min read/)).toHaveCount(1)
+  })
+})

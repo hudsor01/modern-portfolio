@@ -6,6 +6,7 @@ import { ProjectPageLayout } from '@/components/projects/project-page-layout'
 import { MetricsGrid } from '@/components/projects/metrics-grid'
 import { SectionCard } from '@/components/ui/section-card'
 import { formatNumber, formatTrend } from '@/lib/data-formatters'
+import { ogImageUrl } from '@/lib/absolute-url'
 import { ProjectJsonLd } from '@/components/seo/json-ld/project-json-ld'
 import { NarrativeSections } from './NarrativeSections'
 import { PillarsGrid } from './PillarsGrid'
@@ -54,7 +55,6 @@ export default function SalesEnablementProject() {
         'Comprehensive assessment of sales skills across all stages and industries, with personalized development plans',
       achievements: [
         '45% faster ramp time for new hires',
-        'Identified 8 core competencies requiring focus',
         'Created role-specific development tracks',
       ],
     },
@@ -82,17 +82,18 @@ export default function SalesEnablementProject() {
       title: 'Peer Learning Community',
       description:
         'Created communities where sales professionals share wins, learn from peers, and celebrate successes',
-      achievements: [
-        '5,000+ peer interactions monthly',
-        'Top performers recognized and featured',
-        'Knowledge retention improved by 40%',
-      ],
+      achievements: ['Top performers recognized and featured'],
     },
   ]
 
   return (
     <>
       <ProjectJsonLd
+        image={ogImageUrl({
+          title: 'Sales Enablement & Coaching Platform',
+          subtitle: 'Revenue Operations Project',
+          project: 'sales-enablement',
+        })}
         title="Sales Enablement & Coaching Platform"
         description="Sales enablement platform that improved win rates by 34% and reduced ramp time by 45%"
         slug="sales-enablement"

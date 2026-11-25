@@ -2,12 +2,15 @@ import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
 import { FAQPageJsonLd } from '@/components/seo/json-ld/faq-json-ld'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
-import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { ToolBreadcrumb } from '@/components/tools/tool-breadcrumb'
+import { getTool, toolTrail, trailJsonLdItems } from '@/data/tools'
 import { generateMetadata as genMeta } from '@/app/shared-metadata'
 import { RevOpsMaturityScorecard } from './_components/revops-maturity-scorecard'
 
-const PATH = '/tools/revops-maturity-scorecard'
-const TITLE = 'RevOps Maturity Scorecard — Score Your Revenue Operations (Free, No Email)'
+const TOOL = getTool('revops-maturity-scorecard')
+const TRAIL = toolTrail(TOOL)
+const PATH = TOOL.href
+const TITLE = 'RevOps Maturity Scorecard: Score Your Revenue Operations'
 const DESCRIPTION =
   'Free RevOps maturity assessment. Score your revenue operations across process, data, technology, and alignment in two minutes — get your maturity level, percentile, and the single highest-ROI next move. No email required.'
 
@@ -30,7 +33,7 @@ const FAQS: Array<{ question: string; answer: string }> = [
   {
     question: 'What is the most common RevOps maturity mistake?',
     answer:
-      'Buying technology that is more mature than your data and process can support — automating a broken process just produces broken outputs faster, and AI or attribution tools inherit whatever quality your CRM data already has. The scorecard flags this "tools you can\'t feed" gap when your technology score outruns your data or process score.',
+      'Buying technology that is more mature than your data and process can support — automating a broken process just produces broken outputs faster, and AI or attribution tools inherit whatever quality your CRM data already has. The scorecard flags this “tools you can’t feed” gap when your technology score outruns your data or process score.',
   },
   {
     question: 'What is the average RevOps maturity level?',
@@ -65,28 +68,20 @@ export const metadata = genMeta({
 export default function RevOpsMaturityScorecardPage() {
   return (
     <>
-      <BreadcrumbListJsonLd
-        items={[
-          { name: 'Home', url: SITE_ORIGIN },
-          { name: 'RevOps Maturity Scorecard', url: canonicalUrl(PATH) },
-        ]}
-      />
+      <BreadcrumbListJsonLd items={trailJsonLdItems(TRAIL)} />
       <FAQPageJsonLd faqs={FAQS} />
 
       <div className="min-h-screen bg-background">
         <Navbar />
-        <main id="main-content" className="max-w-6xl mx-auto px-6 lg:px-8 pt-24 pb-20 lg:pt-32">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="max-w-5xl mx-auto px-6 lg:px-8 pt-24 pb-20 lg:pt-32"
+        >
           <header className="mb-10 max-w-3xl">
-            <p className="text-sm text-muted-foreground mb-3">
-              <Link href="/" className="hover:text-primary">
-                Home
-              </Link>{' '}
-              / RevOps Maturity Scorecard
-            </p>
-            <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-4">
-              RevOps Maturity Scorecard
-            </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed">
+            <ToolBreadcrumb trail={TRAIL} />
+            <h1 className="mb-4">RevOps Maturity Scorecard</h1>
+            <p>
               Where does your revenue engine actually stand? Rate your team across the four pillars
               that drive RevOps maturity — <strong>process, data, technology, and alignment</strong>{' '}
               — and get your maturity level, your percentile, and the single highest-ROI move to
@@ -97,24 +92,22 @@ export default function RevOpsMaturityScorecardPage() {
           <RevOpsMaturityScorecard />
 
           <section className="mt-16 max-w-3xl">
-            <h2 className="text-2xl font-semibold text-foreground mb-4">
-              Why your weakest pillar is your ceiling
-            </h2>
+            <h2 className="mb-4">Why your weakest pillar is your ceiling</h2>
             <div className="space-y-4 text-muted-foreground leading-relaxed">
-              <p>
+              <p className="text-base">
                 RevOps maturity isn’t an average you can buy your way out of — it’s gated by your
                 weakest pillar. A best-in-class tech stack sitting on dirty CRM data produces
                 confident, automated, wrong answers. That’s why the scorecard points you at the
                 lowest-scoring pillar instead of the one that’s most fun to improve.
               </p>
-              <p>
+              <p className="text-base">
                 The most expensive mistake is buying <strong>technology</strong> more mature than
                 your <strong>data</strong> and <strong>process</strong> can support. Automating a
                 broken process just makes broken outputs faster; AI and attribution tools inherit
                 whatever quality your data already has. The scorecard flags this “tools you can’t
                 feed” gap when it sees it.
               </p>
-              <p>
+              <p className="text-base">
                 The honest order of operations is almost always the same: document the process,
                 clean the data, then let technology automate what’s now repeatable — with alignment
                 making sure every team is optimizing the same revenue number.
@@ -123,9 +116,7 @@ export default function RevOpsMaturityScorecardPage() {
           </section>
 
           <section className="mt-12 max-w-3xl">
-            <h2 className="text-2xl font-semibold text-foreground mb-6">
-              Frequently asked questions
-            </h2>
+            <h2 className="mb-6">Frequently asked questions</h2>
             <dl className="space-y-6">
               {FAQS.map((faq) => (
                 <div key={faq.question}>
@@ -137,9 +128,7 @@ export default function RevOpsMaturityScorecardPage() {
           </section>
 
           <section className="mt-12 pt-8 border-t border-border max-w-3xl">
-            <h2 className="text-xl font-semibold text-foreground mb-4">
-              Related reading &amp; tools
-            </h2>
+            <h2 className="mb-4">Related reading &amp; tools</h2>
             <ul className="space-y-2 text-primary">
               <li>
                 <Link href="/tools/pipeline-coverage-calculator" className="hover:underline">

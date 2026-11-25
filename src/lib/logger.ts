@@ -3,6 +3,7 @@
  * Structured logging with different levels, error tracking, and performance monitoring
  */
 
+import * as Sentry from '@sentry/nextjs'
 import type { LogLevel, LogContext, LogEntry, Logger, LogTransport } from '@/types/monitoring'
 
 // Log level priorities for filtering
@@ -75,8 +76,6 @@ class ConsoleTransport implements LogTransport {
 class SentryTransport implements LogTransport {
   log(entry: LogEntry): void {
     if (!shouldLog(entry.level)) return
-
-    const Sentry = require('@sentry/nextjs') as typeof import('@sentry/nextjs')
 
     if (entry.level === 'error' || entry.level === 'fatal') {
       if (entry.error) {

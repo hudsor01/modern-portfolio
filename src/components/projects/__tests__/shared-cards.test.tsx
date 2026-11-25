@@ -19,28 +19,12 @@ describe('FeatureCard', () => {
     expect(screen.getByTestId('fc-child')).toBeTruthy()
   })
 
-  it('applies titleVariant=primary class by default', () => {
+  it('renders the title h3 without a colour utility (global h3 rule owns colour)', () => {
     render(<FeatureCard title="x">y</FeatureCard>)
     const heading = screen.getByText('x')
-    expect(heading.className).toContain('text-primary')
-  })
-
-  it('applies titleVariant=secondary class', () => {
-    render(
-      <FeatureCard title="x" titleVariant="secondary">
-        y
-      </FeatureCard>
-    )
-    expect(screen.getByText('x').className).toContain('text-secondary')
-  })
-
-  it('applies titleVariant=accent class', () => {
-    render(
-      <FeatureCard title="x" titleVariant="accent">
-        y
-      </FeatureCard>
-    )
-    expect(screen.getByText('x').className).toContain('text-accent-foreground')
+    expect(heading.tagName).toBe('H3')
+    expect(heading.className).toContain('mb-3')
+    expect(heading.className).not.toMatch(/text-primary|text-secondary|text-accent-foreground/)
   })
 
   it('forwards a custom className to the root', () => {
@@ -68,7 +52,7 @@ describe('ResultCard', () => {
     const { container } = render(<ResultCard value="v" label="l" />)
     const root = container.firstChild as HTMLElement
     expect(root.className).toContain('bg-primary/5')
-    expect(root.className).toContain('border-primary/20')
+    expect(root.className).toContain('border-border')
   })
 
   it('applies secondary variant styles', () => {

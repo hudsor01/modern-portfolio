@@ -89,15 +89,13 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 <AlertTriangle className="w-8 h-8 text-destructive" />
               </div>
 
-              <h3 className="typography-h4 text-foreground mb-4">Something went wrong</h3>
+              <h3 className="typography-h4 mb-4">Something went wrong</h3>
 
               {this.props.showErrorDetails &&
                 this.state.error &&
                 process.env.NODE_ENV === 'development' && (
                   <div className="mb-6 p-4 bg-destructive/5 border border-destructive/20 rounded-lg text-left">
-                    <p className="text-sm text-destructive mb-2 font-mono">
-                      {this.state.error.message}
-                    </p>
+                    <p className="mb-2 font-mono">{this.state.error.message}</p>
                     {this.state.errorInfo?.componentStack && (
                       <pre className="text-xs text-destructive overflow-auto max-h-32">
                         {this.state.errorInfo.componentStack}
@@ -106,7 +104,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                   </div>
                 )}
 
-              <p className="text-muted-foreground mb-8">
+              <p className="mb-8">
                 {process.env.NODE_ENV === 'development'
                   ? 'Check the console for more details.'
                   : 'Please refresh the page or try again later.'}

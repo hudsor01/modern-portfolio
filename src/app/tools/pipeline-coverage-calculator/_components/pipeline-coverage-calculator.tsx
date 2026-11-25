@@ -1,7 +1,14 @@
 'use client'
 
-import { useId, useMemo, useState } from 'react'
-import { computeCoverage, COVERAGE_PRESETS } from '@/lib/pipeline-coverage'
+import { useId, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import {
+  amountInputError,
+  caretAfterFormat,
+  computeCoverage,
+  COVERAGE_PRESETS,
+  formatGrouped,
+  sanitizeAmount,
+} from '@/lib/pipeline-coverage'
 
 const usd0 = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -23,7 +30,8 @@ function mult(n: number): string {
 /** Empty string → undefined; otherwise the parsed number (NaN-safe via the lib). */
 function parse(v: string): number | undefined {
   if (v.trim() === '') return undefined
-  const n = Number(v)
+  if (amountInputError(v) !== null) return Number.NaN
+  const n = Number(sanitizeAmount(v))
   return Number.isFinite(n) ? n : Number.NaN
 }
 
@@ -46,6 +54,8 @@ export function PipelineCoverageCalculator() {
   const [qualified, setQualified] = useState('100')
   const [safety, setSafety] = useState('0')
 
+  const hasAmountError = [target, avgDeal, currentPipe].some((v) => amountInputError(v) !== null)
+
   const result = useMemo(
     () =>
       computeCoverage({
@@ -63,21 +73,16 @@ export function PipelineCoverageCalculator() {
     <div className="grid gap-8 lg:grid-cols-2">
       {/* Inputs */}
       <div className="bg-card rounded-2xl p-6 sm:p-8 border border-border shadow-sm">
-        <h2 className="text-lg font-semibold text-foreground mb-6">Your numbers</h2>
+        <h2 className="mb-6">Your numbers</h2>
 
         <div className="space-y-5">
-          <Field id={ids.target} label="Revenue target (this period)" prefix="$">
-            <input
-              id={ids.target}
-              type="number"
-              min="0"
-              inputMode="numeric"
-              value={target}
-              onChange={(e) => setTarget(e.target.value)}
-              className={`${inputClass} pl-8`}
-              placeholder="1,000,000"
-            />
-          </Field>
+          <MoneyField
+            id={ids.target}
+            label="Revenue target (this period)"
+            value={target}
+            onValueChange={setTarget}
+            placeholder="1,000,000"
+          />
 
           <div>
             <Field id={ids.win} label="Win rate" suffix="%">
@@ -107,31 +112,21 @@ export function PipelineCoverageCalculator() {
             </div>
           </div>
 
-          <Field id={ids.deal} label="Average deal size (optional)" prefix="$">
-            <input
-              id={ids.deal}
-              type="number"
-              min="0"
-              inputMode="numeric"
-              value={avgDeal}
-              onChange={(e) => setAvgDeal(e.target.value)}
-              className={`${inputClass} pl-8`}
-              placeholder="50,000"
-            />
-          </Field>
+          <MoneyField
+            id={ids.deal}
+            label="Average deal size (optional)"
+            value={avgDeal}
+            onValueChange={setAvgDeal}
+            placeholder="50,000"
+          />
 
-          <Field id={ids.pipe} label="Open pipeline today (optional)" prefix="$">
-            <input
-              id={ids.pipe}
-              type="number"
-              min="0"
-              inputMode="numeric"
-              value={currentPipe}
-              onChange={(e) => setCurrentPipe(e.target.value)}
-              className={`${inputClass} pl-8`}
-              placeholder="3,000,000"
-            />
-          </Field>
+          <MoneyField
+            id={ids.pipe}
+            label="Open pipeline today (optional)"
+            value={currentPipe}
+            onValueChange={setCurrentPipe}
+            placeholder="3,000,000"
+          />
 
           <div className="grid grid-cols-2 gap-4">
             <Field id={ids.qual} label="% truly qualified" suffix="%">
@@ -158,7 +153,7 @@ export function PipelineCoverageCalculator() {
               />
             </Field>
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p>
             “% truly qualified” strips stalled/zombie deals from your current pipeline so the gap
             reflects what can actually close.
           </p>
@@ -167,30 +162,32 @@ export function PipelineCoverageCalculator() {
 
       {/* Results */}
       <div
-        className="bg-card rounded-2xl p-6 sm:p-8 border border-border shadow-sm"
+        className="bg-card rounded-2xl p-6 sm:p-8 border border-border shadow-sm lg:self-start"
         aria-live="polite"
       >
-        {!result.valid ? (
+        {hasAmountError ? (
           <div className="h-full flex items-center justify-center text-center">
-            <p className="text-muted-foreground">{result.error}</p>
+            <p>Fix the highlighted amount to see your coverage.</p>
+          </div>
+        ) : !result.valid ? (
+          <div className="h-full flex items-center justify-center text-center">
+            <p>{result.error}</p>
           </div>
         ) : (
           <div className="space-y-6">
             <div>
-              <p className="text-sm uppercase tracking-wider text-muted-foreground">
-                Required coverage
-              </p>
-              <p className="text-5xl font-bold text-primary tracking-tight">
+              <p className="uppercase tracking-wider">Required coverage</p>
+              <p className="mt-1 text-5xl font-bold text-primary tracking-tight">
                 {mult(result.requiredCoverage)}
               </p>
-              <p className="mt-1 text-foreground">
+              <p className="mt-1">
                 ≈ <strong>{money(result.requiredPipeline)}</strong> in qualified pipeline to hit{' '}
                 {money(parse(target) ?? 0)}.
               </p>
             </div>
 
             <div className="rounded-xl bg-muted/50 p-4 text-sm">
-              <p className="text-foreground">
+              <p>
                 The generic <strong>3× rule</strong> would tell you to build{' '}
                 {money(result.lazyThreeXPipeline)} —{' '}
                 {result.vsLazyThreeX > 0 ? (
@@ -218,13 +215,13 @@ export function PipelineCoverageCalculator() {
 
             {result.pipelineGap !== undefined && result.currentCoverage !== undefined && (
               <div className="rounded-xl border border-border p-4">
-                <p className="text-sm text-muted-foreground">
+                <p>
                   You have {mult(result.currentCoverage)} coverage today
                   {result.effectiveCurrentPipeline !== undefined &&
                     ` (${money(result.effectiveCurrentPipeline)} qualified)`}
                   .
                 </p>
-                <p className="mt-1 font-semibold">
+                <p className="mt-1">
                   {result.pipelineGap > 0.5 ? (
                     <span className="text-destructive">
                       Shortfall: build {money(result.pipelineGap)} more pipeline.
@@ -244,22 +241,91 @@ export function PipelineCoverageCalculator() {
   )
 }
 
+/**
+ * Money input that shows grouped digits, keeps the caret on the same digit when a
+ * grouping comma is inserted, and flags a disallowed value (sign, exponent,
+ * letters) instead of silently rewriting it. Invalid text is kept as typed.
+ */
+function MoneyField({
+  id,
+  label,
+  value,
+  onValueChange,
+  placeholder,
+}: {
+  id: string
+  label: string
+  value: string
+  onValueChange: (next: string) => void
+  placeholder: string
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const pendingCaret = useRef<number | null>(null)
+  const error = amountInputError(value)
+  const errorId = `${id}-error`
+  const display = error === null ? formatGrouped(value) : value
+
+  // No dependency list on purpose: restore the caret after every render that re-grouped the digits.
+  useLayoutEffect(() => {
+    const el = inputRef.current
+    if (pendingCaret.current !== null && el && document.activeElement === el) {
+      el.setSelectionRange(pendingCaret.current, pendingCaret.current)
+    }
+    pendingCaret.current = null
+  })
+
+  return (
+    <Field id={id} label={label} prefix="$" error={error} errorId={errorId}>
+      <input
+        ref={inputRef}
+        id={id}
+        type="text"
+        inputMode="decimal"
+        autoComplete="off"
+        value={display}
+        aria-invalid={error !== null}
+        aria-describedby={error !== null ? errorId : undefined}
+        onChange={(e) => {
+          const typed = e.target.value
+          if (amountInputError(typed) !== null) {
+            onValueChange(typed)
+            return
+          }
+          const next = formatGrouped(typed)
+          pendingCaret.current = caretAfterFormat(
+            typed,
+            e.target.selectionStart ?? typed.length,
+            next
+          )
+          onValueChange(sanitizeAmount(typed))
+        }}
+        className={`${inputClass} pl-8${error !== null ? ' border-destructive!' : ''}`}
+        placeholder={placeholder}
+      />
+    </Field>
+  )
+}
+
 function Field({
   id,
   label,
   prefix,
   suffix,
+  error,
+  errorId,
   children,
 }: {
   id: string
   label: string
   prefix?: string
   suffix?: string
+  error?: string | null
+  errorId?: string
   children: React.ReactNode
 }) {
   return (
     <div>
-      <label htmlFor={id} className="block text-sm font-medium text-foreground mb-1.5">
+      <label htmlFor={id} className="block leading-[calc(1.25/0.875)] text-foreground mb-1.5">
         {label}
       </label>
       <div className="relative">
@@ -275,6 +341,11 @@ function Field({
           </span>
         )}
       </div>
+      {error && (
+        <p id={errorId} role="alert" className="mt-1.5 text-sm text-destructive">
+          {error}
+        </p>
+      )}
     </div>
   )
 }

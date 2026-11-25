@@ -11,7 +11,8 @@ function mapToProject(showcase: (typeof showcaseProjects)[number]): Project {
     description: showcase.description,
     longDescription: showcase.longDescription,
     content: null,
-    image: showcase.image,
+    // Projects no longer carry a photo; the column is NOT NULL and no migration is run.
+    image: '',
     link: null,
     github: null,
     category: showcase.category,

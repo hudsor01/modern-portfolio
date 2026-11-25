@@ -18,7 +18,7 @@ export function InlineMarkdown({ value }: InlineMarkdownProps) {
         ) {
           const content = token.slice(2, -2)
           return (
-            <strong key={`${token}-${index}`} className="font-semibold text-foreground">
+            <strong key={`${token}-${index}`} className="text-foreground">
               {content}
             </strong>
           )

@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type { ReactElement, ReactNode } from 'react'
 import { PgDialect } from 'drizzle-orm/pg-core'
 import type { SQL } from 'drizzle-orm'
+import { buildOgCoverUrl } from '@/lib/blog-list'
 
 const mocks = vi.hoisted(() => ({
   postsFindMany: vi.fn(),
@@ -184,5 +185,55 @@ describe('/blog index', () => {
     expect(page2.posts.map((p) => p.id)).toEqual(
       Array.from({ length: 6 }, (_, i) => `post-${24 + i}`)
     )
+  })
+
+  it('reads only a bounded body prefix via extras', async () => {
+    await renderPage()
+    const query = mocks.postsFindMany.mock.calls[0]?.[0]
+    expect(Object.keys(query.extras)).toEqual(['contentHead'])
+    const { sql } = dialect.sqlToQuery(query.extras.contentHead.getSQL())
+    expect(sql).toContain('left(')
+    expect(sql).toContain('4000')
+  })
+
+  it('replaces a bio-boilerplate excerpt with a body-derived one, keeping bodies off the payload', async () => {
+    mocks.postsFindMany.mockResolvedValue([
+      {
+        ...cardRow(0),
+        excerpt:
+          'I spent six years in the Texas Army National Guard before moving into revenue work.',
+        contentHead:
+          '# Heading\n\nPipeline coverage explains most forecast misses in B2B teams.\n\nMore.',
+      },
+    ])
+    const props = await renderPage()
+    expect(props.posts[0]?.excerpt).toBe(
+      'Pipeline coverage explains most forecast misses in B2B teams.'
+    )
+    expect(JSON.stringify(props.posts)).not.toMatch(/content|author|email/i)
+  })
+
+  it('gives later posts with a duplicate cover a generated og cover', async () => {
+    const img = 'https://images.unsplash.com/photo-x'
+    mocks.postsFindMany.mockResolvedValue([
+      { ...cardRow(0), featuredImage: img },
+      { ...cardRow(1), featuredImage: img },
+    ])
+    const props = await renderPage()
+    expect(props.posts[0]?.featuredImage).toBe(img)
+    expect(props.posts[1]?.featuredImage).toBe(buildOgCoverUrl('Post 1', 'Revenue Operations'))
+  })
+
+  it('de-duplicates covers on the relevance-sorted search slice', async () => {
+    const img = 'https://images.unsplash.com/photo-x'
+    mocks.search.mockResolvedValue([{ id: 'post-1' }, { id: 'post-0' }])
+    mocks.postsFindMany.mockResolvedValue([
+      { ...cardRow(0), featuredImage: img },
+      { ...cardRow(1), featuredImage: img },
+    ])
+    const props = await renderPage({ q: 'forecast' })
+    expect(props.posts.map((p) => p.id)).toEqual(['post-1', 'post-0'])
+    expect(props.posts[0]?.featuredImage).toBe(img)
+    expect(props.posts[1]?.featuredImage).toBe(buildOgCoverUrl('Post 0', 'Revenue Operations'))
   })
 })

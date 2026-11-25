@@ -184,11 +184,6 @@ export const TIMING_CONSTANTS = {
   DIALOG_ANIMATION_EXTENDED: 1500,
 
   /**
-   * Loading state reset delay (for spinners/skeletons)
-   */
-  LOADING_STATE_RESET: 500,
-
-  /**
    * Typewriter character display delay
    */
   TYPEWRITER_CHAR_DELAY: 50,

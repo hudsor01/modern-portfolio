@@ -1,6 +1,6 @@
 'use client'
 import { memo } from 'react'
-import { formatCurrency } from '@/lib/data-formatters'
+import { formatCompactCurrency } from '@/lib/data-formatters'
 
 import { LazyComposedChart as ComposedChart } from '@/components/charts/lazy-charts'
 import {
@@ -26,7 +26,7 @@ const trendChartColors = {
 
 const CLVTrendChart = memo(function CLVTrendChart() {
   return (
-    <div className="h-[var(--chart-height-md)]">
+    <div className="h-full w-full">
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={clvTrendData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={trendChartColors.grid} vertical={false} />
@@ -45,7 +45,7 @@ const CLVTrendChart = memo(function CLVTrendChart() {
             fontSize={12}
             tickLine={false}
             axisLine={{ stroke: trendChartColors.axis, strokeOpacity: 0.5 }}
-            tickFormatter={(value) => formatCurrency(value)}
+            tickFormatter={(value) => formatCompactCurrency(Number(value))}
           />
           <Tooltip
             contentStyle={{
@@ -58,12 +58,13 @@ const CLVTrendChart = memo(function CLVTrendChart() {
             formatter={(value, name) => {
               const safeName = String(name ?? '')
               if (value === null) return ['N/A', safeName]
-              if (safeName === 'actual') return [formatCurrency(Number(value)), 'Actual CLV']
-              if (safeName === 'predicted') return [formatCurrency(Number(value)), 'Predicted CLV']
+              if (safeName === 'actual') return [formatCompactCurrency(Number(value)), 'Actual CLV']
+              if (safeName === 'predicted')
+                return [formatCompactCurrency(Number(value)), 'Predicted CLV']
               if (safeName === 'confidence_high')
-                return [formatCurrency(Number(value)), 'Upper Confidence']
+                return [formatCompactCurrency(Number(value)), 'Upper Confidence']
               if (safeName === 'confidence_low')
-                return [formatCurrency(Number(value)), 'Lower Confidence']
+                return [formatCompactCurrency(Number(value)), 'Lower Confidence']
               if (safeName === 'customers')
                 return [Number(value).toLocaleString(), 'Customer Count']
               return [String(value), safeName]
@@ -112,9 +113,9 @@ const CLVTrendChart = memo(function CLVTrendChart() {
           />
         </ComposedChart>
       </ResponsiveContainer>
-      <p className="mt-4 text-center text-sm italic text-muted-foreground">
-        CLV trend analysis with 24-month forecasting and 95% confidence intervals using BTYD
-        predictive modeling
+      <p className="mt-4 text-center italic">
+        CLV trend analysis with 24-month forecasting and confidence intervals using BTYD predictive
+        modeling
       </p>
     </div>
   )

@@ -9,6 +9,7 @@ import { NavigationBreadcrumbs } from '@/components/navigation/navigation-breadc
 import { Navbar } from '@/components/layout/navbar'
 import type { ProjectPageLayoutProps } from '@/types/design-system'
 import { designTokens } from '@/lib/tokens'
+import { DecorativeBlob } from '@/components/ui/decorative-blob'
 
 /**
  * Standardized Project Page Layout Component
@@ -39,11 +40,12 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
       <div
         ref={ref}
         // `relative` establishes the positioning context so the decorative
-        // -right-32/-left-32 blurs below are clipped by `overflow-hidden`.
+        // -right-32/-left-32 blurs below are clipped horizontally by `overflow-x-clip`
+        // (no scroll container, so sticky/vertical overflow behave normally).
         // Without it, absolute children escape to body coordinates and
         // produce horizontal page scroll on every project detail route
         // (browser audit 2026-05-10: scrollWidth>innerWidth at <=1024px).
-        className={cn('relative min-h-screen bg-background overflow-hidden', className)}
+        className={cn('relative min-h-screen bg-background overflow-x-clip', className)}
         {...props}
       >
         {/* Global site nav — these hardcoded project pages otherwise had only a
@@ -53,12 +55,12 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
         <Navbar />
 
         {/* Decorative background elements */}
-        <div className="absolute top-1/4 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 -left-32 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
+        <DecorativeBlob position="top-right" />
+        <DecorativeBlob position="bottom-left" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16 lg:pt-32 lg:pb-20">
           {/* Header Navigation */}
-          <header className="flex items-center justify-between mb-12" data-testid="project-header">
+          <div className="flex items-center justify-between mb-12" data-testid="project-header">
             {/* Back Navigation and Breadcrumbs */}
             <div className="flex flex-col gap-3">
               {/* Back Button */}
@@ -118,19 +120,17 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
                 </div>
               )}
             </div>
-          </header>
+          </div>
 
           {/* Main Content */}
-          <main id="main-content">
+          <main id="main-content" tabIndex={-1}>
             {/* Project Title Section */}
             <div className="mb-8 animate-fade-in-up" data-testid="project-title-section">
               <h1
-                className="font-display text-4xl md:text-5xl font-semibold text-foreground mb-4 tracking-tight"
+                className="mb-4"
                 data-testid="project-title"
                 style={{
-                  fontFamily: designTokens.typography.fontFamily.display,
                   fontSize: designTokens.typography.fontSize['4xl'],
-                  fontWeight: designTokens.typography.fontWeight.semibold,
                   lineHeight: designTokens.typography.lineHeight.tight,
                 }}
               >
@@ -138,7 +138,7 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
               </h1>
 
               <p
-                className="text-lg text-muted-foreground max-w-3xl mb-6 leading-relaxed"
+                className="max-w-3xl mb-6"
                 data-testid="project-description"
                 style={{
                   fontSize: designTokens.typography.fontSize.lg,
@@ -189,7 +189,7 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
                 style={{ marginBottom: designTokens.spacing['2xl'] }}
               >
                 <h2
-                  className="text-2xl font-semibold text-foreground mb-6"
+                  className="mb-6"
                   style={{
                     fontSize: designTokens.typography.fontSize['2xl'],
                     fontWeight: designTokens.typography.fontWeight.semibold,
@@ -222,14 +222,12 @@ export const ProjectPageLayout = React.forwardRef<HTMLDivElement, ProjectPageLay
                         </span>
                       </div>
                       <div className="space-y-1">
-                        <p className="text-2xl font-semibold tracking-tight">
+                        <p className="tracking-tight">
                           {typeof metric.value === 'number'
                             ? metric.value.toLocaleString()
                             : metric.value}
                         </p>
-                        {metric.subtitle && (
-                          <p className="text-sm text-muted-foreground">{metric.subtitle}</p>
-                        )}
+                        {metric.subtitle && <p>{metric.subtitle}</p>}
                       </div>
                     </div>
                   ))}

@@ -122,4 +122,98 @@ test.describe('/ homepage', () => {
     await expect(page.locator('main#main-content')).toHaveCount(1)
     await expect(page.locator('a[href="#main-content"]')).toHaveCount(1)
   })
+
+  test.describe('layout contracts (chromium)', () => {
+    test.beforeEach(({}, testInfo) => {
+      test.skip(testInfo.project.name !== 'chromium', 'geometry checked once, on chromium')
+    })
+
+    test('each headline stat renders once with its canonical label', async ({ page }) => {
+      await page.setViewportSize({ width: 1440, height: 900 })
+      const labels: Record<string, string> = {
+        revenue: 'Revenue Impact',
+        'transaction-growth': 'Transaction Growth',
+        'network-growth': 'Network Growth',
+        years: 'Years Experience',
+      }
+      for (const [key, label] of Object.entries(labels)) {
+        await expect(page.locator(`[data-stat="${key}"]`)).toHaveCount(1)
+        await expect(page.locator(`[data-stat-label="${key}"]`)).toHaveText(label)
+      }
+      await expect(
+        page.getByText('On track year-over-year, per the Revenue KPI case study')
+      ).toHaveCount(1)
+    })
+
+    test('hero CTAs stack full width at 390', async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 })
+      await page.goto('/')
+      await page.waitForLoadState('networkidle')
+      const hero = page.locator('main section').first()
+      const links = [
+        hero.getByRole('link', { name: /view my work/i }),
+        hero.getByRole('link', { name: /^resume$/i }),
+        hero.getByRole('link', { name: /let'?s talk/i }),
+      ]
+      const boxes = []
+      for (const l of links) {
+        const box = await l.boundingBox()
+        expect(box).not.toBeNull()
+        boxes.push(box!)
+      }
+      const wrapper = await links[0]!.locator('xpath=..').boundingBox()
+      expect(wrapper).not.toBeNull()
+      for (const b of boxes) {
+        expect(Math.abs(b.width - boxes[0]!.width)).toBeLessThanOrEqual(1)
+        expect(Math.abs(b.width - wrapper!.width)).toBeLessThanOrEqual(1)
+      }
+      expect(new Set(boxes.map((b) => Math.round(b.y))).size).toBe(3)
+    })
+
+    test('non-hero sections share one rhythm at 1440', async ({ page }) => {
+      await page.setViewportSize({ width: 1440, height: 900 })
+      await page.goto('/')
+      await page.waitForLoadState('networkidle')
+      const sections = page.locator('main#main-content > section')
+      const count = await sections.count()
+      expect(count).toBeGreaterThan(2)
+      let prevBottom: number | null = null
+      for (let i = 0; i < count; i++) {
+        const sec = sections.nth(i)
+        const box = await sec.boundingBox()
+        expect(box).not.toBeNull()
+        if (i > 0) {
+          const pad = await sec.evaluate((el) => {
+            const cs = getComputedStyle(el)
+            return [cs.paddingTop, cs.paddingBottom]
+          })
+          expect(pad).toEqual(['56px', '56px'])
+          expect(Math.abs(box!.y - prevBottom!)).toBeLessThanOrEqual(1)
+        }
+        prevBottom = box!.y + box!.height
+      }
+    })
+
+    test('Featured Work uses ProjectCards', async ({ page }) => {
+      const section = page.locator('main section', {
+        has: page.getByRole('heading', { level: 2, name: 'Featured Work' }),
+      })
+      await expect(section.locator('a[href^="/projects/"]')).toHaveCount(4)
+      for (const slug of [
+        'revenue-kpi',
+        'forecast-pipeline-intelligence',
+        'partnership-program-implementation',
+        'sales-enablement',
+      ]) {
+        const card = section.locator(`a[href="/projects/${slug}"]`).first()
+        await expect(card).toBeVisible()
+        await expect(card.locator('img')).toHaveCount(0)
+        const preview = card.locator('[data-slot="project-preview"][role="img"]')
+        await expect(preview).toHaveCount(1)
+        await expect(preview).toHaveAttribute('aria-label', /^(Results chart|Key metrics)\. .+\.$/)
+        await expect(card.locator('[data-slot="featured-badge"]')).toHaveCount(1)
+        await expect(card.getByRole('heading', { level: 3 })).toHaveCount(1)
+      }
+    })
+  })
 })

@@ -5,6 +5,7 @@ import { ChartSkeleton } from '@/components/charts/chart-skeleton'
 import { ChartLoadError } from '@/components/charts/chart-load-error'
 import dynamic from 'next/dynamic'
 import { safeLazy } from '@/lib/safe-lazy'
+import { ChartHeader } from '@/components/ui/chart-container'
 
 const LeadSourcePieChart = dynamic(
   safeLazy(
@@ -13,7 +14,7 @@ const LeadSourcePieChart = dynamic(
     () => <ChartLoadError height="md" />
   ),
   {
-    loading: () => <ChartSkeleton />,
+    loading: () => <ChartSkeleton height="lg" />,
     ssr: false,
   }
 )
@@ -37,19 +38,23 @@ export function ChartsGrid({ bestSource, leadSources, conversionSources }: Chart
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
       {/* Lead Source Distribution */}
       <div className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out">
-        <div className="mb-6">
-          <h2 className="typography-h3 mb-2">Lead Source Distribution</h2>
-          <p className="typography-muted">Breakdown of leads by acquisition channel</p>
-        </div>
+        <ChartHeader
+          title="Lead Source Distribution"
+          description="Breakdown of leads by acquisition channel"
+          headingLevel={2}
+          className="mb-6"
+        />
         <LeadSourcePieChart data={leadSources} />
       </div>
 
       {/* Channel Performance */}
       <div className="glass rounded-2xl p-8 hover:bg-white/[0.07] transition-all duration-300 ease-out">
-        <div className="mb-6">
-          <h2 className="typography-h3 mb-2">Channel Performance</h2>
-          <p className="typography-muted">Conversion rates by source</p>
-        </div>
+        <ChartHeader
+          title="Channel Performance"
+          description="Conversion rates by source"
+          headingLevel={2}
+          className="mb-6"
+        />
         <div className="space-y-4">
           {conversionSources.map((source) => {
             const Icon = source.icon
@@ -63,10 +68,8 @@ export function ChartsGrid({ bestSource, leadSources, conversionSources }: Chart
                     <Icon className="h-5 w-5 text-foreground" />
                   </div>
                   <div>
-                    <p className="font-medium">{source.source}</p>
-                    <p className="typography-small text-muted-foreground">
-                      {source.conversions} conversions
-                    </p>
+                    <p>{source.source}</p>
+                    <p className="typography-small">{source.conversions} conversions</p>
                   </div>
                 </div>
                 <div className="text-right">
