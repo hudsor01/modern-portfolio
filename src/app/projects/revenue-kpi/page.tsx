@@ -42,7 +42,7 @@ export default async function RevenueKPI() {
         description="Revenue KPI dashboard case study: CRM, billing and partner data unified into real-time dashboards, with $4.2M in added revenue and 94% forecast accuracy."
         slug="revenue-kpi"
         image={ogImageUrl({
-          title: 'Revenue KPI Dashboard: Partner Analytics & Business Intelligence',
+          title: 'Revenue KPI Dashboard Case Study',
           subtitle: 'Revenue Operations Project',
           project: 'revenue-kpi',
         })}

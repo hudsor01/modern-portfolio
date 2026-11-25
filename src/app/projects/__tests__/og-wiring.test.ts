@@ -27,8 +27,15 @@ function ogWiringErrors(slug: string, pageSrc: string, jsonLdSrc: string): strin
   }
   const title = firstGenMetaTitle(pageSrc)
   if (title === null) errors.push('page.tsx has no genMeta title literal')
-  else if (!jsonLdSrc.includes(`title: '${title}'`)) {
-    errors.push(`ProjectJsonLd file must contain title: '${title}'`)
+  else {
+    // Compare the title inside the ogImageUrl({ ... }) call itself. A plain
+    // "file contains title: '…'" check passed trivially when the JSON-LD sits in
+    // page.tsx next to genMeta, which let the two card URLs drift apart.
+    const at = jsonLdSrc.indexOf('ogImageUrl(')
+    const m = at === -1 ? null : /title:\s*'((?:[^'\\]|\\.)*)'/.exec(jsonLdSrc.slice(at))
+    if (!m || m[1] !== title) {
+      errors.push(`ogImageUrl title must equal the genMeta title '${title}'`)
+    }
   }
   return errors
 }
@@ -65,6 +72,11 @@ describe('og wiring detector', () => {
   })
   it('rejects a JSON-LD file without project:', () => {
     expect(ogWiringErrors('x', page, "ogImageUrl({ title: 'My Title' })").length).toBeGreaterThan(0)
+  })
+  it('rejects a stale ogImageUrl title even when the genMeta title is in the same file', () => {
+    const both =
+      "genMeta({ title: 'New', ogProject: 'x' }) ogImageUrl({ title: 'Old', project: 'x' })"
+    expect(ogWiringErrors('x', both, both).length).toBeGreaterThan(0)
   })
   it('rejects a duplicated ogProject and a mismatched title', () => {
     expect(ogWiringErrors('x', `${page} ogProject: 'x'`, jsonLd).length).toBeGreaterThan(0)
