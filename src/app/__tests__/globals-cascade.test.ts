@@ -211,4 +211,12 @@ describe('globals.css cascade', () => {
     )
     expect(html.some((r) => /scrollbar-gutter:\s*stable/.test(r.body))).toBe(true)
   })
+
+  it('cancels react-remove-scroll-bar margin compensation where the gutter is stable (WR-01)', () => {
+    // Layered !important is what beats the library's injected unlayered !important.
+    const lock = rules.find((r) => r.selector === 'body[data-scroll-locked]')
+    expect(lock?.parents).toEqual(['@layer base', '@supports (scrollbar-gutter: stable)'])
+    expect(lock?.body).toMatch(/margin-right:\s*0\s*!important/)
+    expect(lock?.body).toMatch(/--removed-body-scroll-bar-size:\s*0px\s*!important/)
+  })
 })

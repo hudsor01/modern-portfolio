@@ -955,6 +955,22 @@ input, textarea, select {
     scrollbar-gutter: stable;
   }
 
+  /*
+   * Radix Select/Dialog lock scroll through react-remove-scroll-bar, which sets
+   * body[data-scroll-locked] { margin-right: <gap>px !important } to fill the
+   * width a disappearing scrollbar frees. The stable gutter above means the
+   * scrollbar never frees that width, so the margin would shift the page left by
+   * the gutter. Layered !important beats the library's unlayered !important.
+   * Gated on support: without scrollbar-gutter the scrollbar does disappear and
+   * the library's margin is the right compensation.
+   */
+  @supports (scrollbar-gutter: stable) {
+    body[data-scroll-locked] {
+      margin-right: 0 !important;
+      --removed-body-scroll-bar-size: 0px !important;
+    }
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
