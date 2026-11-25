@@ -6,10 +6,13 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 
 export const dynamic = 'force-static'
 
+// Title ≤60 chars with the brand, description ≤160; one project name (the
+// catalog's) across title, H1, breadcrumb and JSON-LD. Figures come from the
+// write-up and are checked by project-page-copy-sourced.test.ts.
 export const metadata = genMeta({
-  title: 'Forecast Accuracy & Pipeline Intelligence System',
+  title: 'Forecast & Pipeline Intelligence Case Study',
   description:
-    'Enterprise forecasting and pipeline intelligence platform combining predictive analytics, deal health monitoring, and early warning systems. Improved forecast accuracy from 63% to 94% and reduced deal slippage from 26% to 19%.',
+    'Forecast and pipeline case study: predictive deal-health monitoring that raised forecast accuracy from 63% to 94% and cut deal slippage from 26% to 19%.',
   path: '/projects/forecast-pipeline-intelligence',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
@@ -26,7 +29,7 @@ export default async function ForecastPipelineIntelligencePage() {
           { name: 'Home', url: SITE_ORIGIN },
           { name: 'Projects', url: canonicalUrl('/projects') },
           {
-            name: 'Forecast Accuracy & Pipeline Intelligence',
+            name: 'Forecast & Pipeline Intelligence',
             url: canonicalUrl('/projects/forecast-pipeline-intelligence'),
           },
         ]}
