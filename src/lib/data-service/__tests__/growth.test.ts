@@ -87,6 +87,26 @@ describe('generateGrowthData: last completed quarter', () => {
     expect(spy).not.toHaveBeenCalled()
     spy.mockRestore()
   })
+
+  it('growth_rate is true year-over-year against the same quarter four rows earlier', () => {
+    const data = generateGrowthData(BASE_METRICS, 8, undefined, new Date('2026-11-25T18:00:00Z'))
+    for (let k = 4; k < data.length; k++) {
+      const current = data[k]
+      const yearAgo = data[k - 4]
+      if (!current || !yearAgo) throw new Error(`missing row ${k}`)
+      expect(current.quarter.slice(0, 2)).toBe(yearAgo.quarter.slice(0, 2))
+      expect(current.growth_rate).toBe(
+        Math.round((current.revenue / yearAgo.revenue - 1) * 100 * 100) / 100
+      )
+    }
+    for (let k = 0; k < 4; k++) {
+      const row = data[k]
+      if (!row) throw new Error(`missing row ${k}`)
+      // No year-ago row in the series: the annualised quarterly rate stands in.
+      const quarterlyPercent = Number(row.metadata?.quarterly_growth_rate)
+      expect(row.growth_rate).toBeCloseTo(quarterlyPercent * 4, 1)
+    }
+  })
 })
 
 describe('revenue-kpi regeneration (WR-04)', () => {
