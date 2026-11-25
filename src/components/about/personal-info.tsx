@@ -106,7 +106,7 @@ function ProfileImage() {
               alt="Richard Hudson - Revenue Operations Professional"
               fill
               className="object-cover"
-              priority
+              preload
               sizes="(max-width: 768px) 256px, 320px"
             />
           </div>

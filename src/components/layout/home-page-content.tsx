@@ -216,7 +216,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                             width={96}
                             height={96}
                             className="object-cover w-full h-full"
-                            priority
+                            preload
                           />
                         </div>
                         {/* Status indicator */}

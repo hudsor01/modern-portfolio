@@ -9,6 +9,7 @@ import { JsonLdScript } from '@/components/seo/json-ld-script'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
 import { getDisplayYearMonth } from '@/lib/data-formatters'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
+import { PERSON_ID } from '@/components/seo/json-ld/person-json-ld'
 
 /**
  * Blog Website JSON-LD Schema
@@ -20,10 +21,11 @@ export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
     '@type': 'Blog',
     name: 'Richard Hudson - Revenue Operations Blog',
     description:
-      'Expert insights on revenue operations, data analytics, and business process optimization from Richard Hudson, a seasoned RevOps professional.',
+      'Practical revenue operations guides on forecasting, pipeline health, Salesloft and CRM automation, attribution and SDR performance, by Richard Hudson.',
     url: `${SITE_ORIGIN}/blog`,
     publisher: {
       '@type': 'Person',
+      '@id': PERSON_ID,
       name: 'Richard Hudson',
       url: SITE_ORIGIN,
       sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
@@ -35,6 +37,7 @@ export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
     },
     author: {
       '@type': 'Person',
+      '@id': PERSON_ID,
       name: 'Richard Hudson',
       url: SITE_ORIGIN,
       sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],

@@ -237,3 +237,34 @@ describe('/blog index', () => {
     expect(props.posts[1]?.featuredImage).toBe(buildOgCoverUrl('Post 0', 'Revenue Operations'))
   })
 })
+
+describe('blog index canonical', () => {
+  beforeEach(() => {
+    mocks.categoriesFindMany.mockReset()
+    mocks.categoriesFindMany.mockResolvedValue(CATEGORIES)
+  })
+
+  async function canonicalFor(params: Record<string, string>) {
+    const { generateMetadata } = await import('../page')
+    const meta = await generateMetadata({ searchParams: Promise.resolve(params) })
+    return meta.alternates?.canonical
+  }
+
+  it('points a category filter at that category page, not /blog', async () => {
+    expect(await canonicalFor({ category: 'Revenue Operations' })).toBe(
+      'https://richardwhudsonjr.com/blog/category/revenue-operations'
+    )
+    expect(await canonicalFor({ category: 'Revenue Operations', page: '2' })).toBe(
+      'https://richardwhudsonjr.com/blog/category/revenue-operations'
+    )
+  })
+
+  it('keeps pages self-canonical and search and unknown categories on /blog', async () => {
+    expect(await canonicalFor({})).toBe('https://richardwhudsonjr.com/blog')
+    expect(await canonicalFor({ page: '2' })).toBe('https://richardwhudsonjr.com/blog?page=2')
+    expect(await canonicalFor({ q: 'forecast', category: 'Revenue Operations' })).toBe(
+      'https://richardwhudsonjr.com/blog'
+    )
+    expect(await canonicalFor({ category: 'Nope' })).toBe('https://richardwhudsonjr.com/blog')
+  })
+})
