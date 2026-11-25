@@ -15,17 +15,23 @@ import Link from 'next/link'
 import { Input } from '@/components/ui/input'
 import { Field, FieldError } from '@/components/ui/field'
 import { Label } from '@/components/ui/label'
+import { CONTACT_LIMITS, CONTACT_MINIMUMS, contactMessageLength } from '@/lib/schemas'
 import type { TanStackFieldApi, UseContactFormReturn } from '@/types/forms'
 
 interface ContactFormProps {
   form: UseContactFormReturn
 }
 
+// Browsers compile `pattern` with the `v` flag, where the schema's phone regex
+// verbatim is an invalid pattern and would be silently ignored. This class is
+// the v-flag-safe equivalent (digits, whitespace, + ( ) -).
+const PHONE_PATTERN = String.raw`[\d\s+\(\)\-]*`
+
 export function ContactForm({ form: formHook }: ContactFormProps) {
   const { form, submitStatus, isSubmitting, error } = formHook
 
   return (
-    <div className="flex h-full flex-col bg-card rounded-2xl p-8 border border-border shadow-sm">
+    <div className="relative flex h-full flex-col bg-card rounded-2xl p-8 border border-border shadow-sm">
       <h2 className="typography-h3 mb-6">Send a Message</h2>
 
       <form
@@ -71,6 +77,9 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
                     placeholder="Jane Smith"
+                    autoComplete="name"
+                    minLength={CONTACT_MINIMUMS.name}
+                    maxLength={CONTACT_LIMITS.name}
                     required
                     aria-invalid={(field.state.meta.errors?.length ?? 0) > 0}
                     className="pl-12"
@@ -98,6 +107,8 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
                     placeholder="jane@company.com"
+                    autoComplete="email"
+                    maxLength={CONTACT_LIMITS.email}
                     required
                     aria-invalid={(field.state.meta.errors?.length ?? 0) > 0}
                     className="pl-12"
@@ -128,6 +139,8 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
                     placeholder="Acme Inc."
+                    autoComplete="organization"
+                    maxLength={CONTACT_LIMITS.company}
                     aria-invalid={(field.state.meta.errors?.length ?? 0) > 0}
                     className="pl-12"
                   />
@@ -154,6 +167,9 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
                     placeholder="(555) 123-4567"
+                    autoComplete="tel"
+                    maxLength={CONTACT_LIMITS.phone}
+                    pattern={PHONE_PATTERN}
                     aria-invalid={(field.state.meta.errors?.length ?? 0) > 0}
                     className="pl-12"
                   />
@@ -179,6 +195,8 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
                   required
+                  minLength={CONTACT_MINIMUMS.message}
+                  maxLength={CONTACT_LIMITS.message}
                   rows={6}
                   className={`min-h-40 w-full flex-1 pl-12 pr-4 py-3 bg-background border rounded-xl focus:outline-hidden focus:ring-[3px] text-foreground placeholder-muted-foreground resize-none transition-all duration-300 ease-out ${
                     (field.state.meta.errors?.length ?? 0) > 0
@@ -188,11 +206,34 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                   placeholder="What would you like to discuss?"
                 />
                 <div className="absolute bottom-3 right-3 typography-small text-muted-foreground">
-                  {(field.state.value as string).length}/500
+                  {contactMessageLength(field.state.value as string)}/{CONTACT_LIMITS.message}
                 </div>
               </div>
               <FieldError>{field.state.meta.errors?.join(', ') ?? ''}</FieldError>
             </Field>
+          )}
+        />
+
+        {/* Honeypot: a trap for bots. Hidden from assistive tech and the Tab order
+            and never autofilled (the name matches no autofill heuristic). Never
+            `hidden`/`display:none`, because bots skip those. Enforced in
+            emailService.sendContactEmail. */}
+        <form.Field
+          name="honeypot"
+          children={(field: TanStackFieldApi<string>) => (
+            <div
+              aria-hidden="true"
+              className="absolute h-px w-px overflow-hidden whitespace-nowrap [clip-path:inset(50%)]"
+            >
+              <input
+                type="text"
+                name="honeypot"
+                tabIndex={-1}
+                autoComplete="off"
+                value={field.state.value as string}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+            </div>
           )}
         />
 

@@ -4,6 +4,9 @@ import { render, screen, fireEvent, cleanup } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { ContactForm } from '../contact-form'
 import type { UseContactFormReturn } from '@/types/forms'
+import { CONTACT_LIMITS, CONTACT_MINIMUMS } from '@/lib/schemas'
+
+let stubValues: Record<string, string> = {}
 
 function StubField({
   name,
@@ -19,7 +22,7 @@ function StubField({
 }) {
   return children({
     name,
-    state: { value: '', meta: { errors: [] } },
+    state: { value: stubValues[name] ?? '', meta: { errors: [] } },
     handleChange: () => {},
     handleBlur: () => {},
   })
@@ -27,13 +30,17 @@ function StubField({
 
 // Minimal stand-in for TanStack Form's `form` object — only the surface the
 // component actually touches (handleSubmit + Field render-prop).
-function createFormStub() {
+function createFormStub(values: Record<string, string> = {}) {
+  stubValues = values
   const handleSubmit = vi.fn()
   return { handleSubmit, Field: StubField }
 }
 
-function renderForm(overrides: Partial<UseContactFormReturn> = {}) {
-  const form = createFormStub()
+function renderForm(
+  overrides: Partial<UseContactFormReturn> = {},
+  values: Record<string, string> = {}
+) {
+  const form = createFormStub(values)
   const props: UseContactFormReturn = {
     form,
     formData: { name: '', email: '', message: '' },
@@ -45,6 +52,8 @@ function renderForm(overrides: Partial<UseContactFormReturn> = {}) {
     isSubmitting: false,
     resetForm: vi.fn(),
     error: null,
+    formAction: vi.fn(),
+    serverFieldErrors: {},
     ...overrides,
   } as UseContactFormReturn
   const utils = render(<ContactForm form={props} />)
@@ -72,6 +81,8 @@ describe('ContactForm', () => {
       isSubmitting: false,
       resetForm: vi.fn(),
       error: null,
+      formAction: vi.fn(),
+      serverFieldErrors: {},
     } as unknown as UseContactFormReturn
     const html = renderToStaticMarkup(<ContactForm form={props} />)
     expect(html).toContain('<noscript>')
@@ -91,7 +102,9 @@ describe('ContactForm', () => {
 
   it('placeholders never repeat their label (B-9)', () => {
     const { container } = renderForm()
-    for (const field of Array.from(container.querySelectorAll('input, textarea'))) {
+    for (const field of Array.from(
+      container.querySelectorAll('input:not([name="honeypot"]), textarea')
+    )) {
       const label = container.querySelector(`label[for="${field.id}"]`)?.textContent ?? ''
       const placeholder = field.getAttribute('placeholder') ?? ''
       const strip = (t: string) => t.replace(/[*\s]/g, '').toLowerCase()
@@ -103,7 +116,7 @@ describe('ContactForm', () => {
 
   it('centres each single-line field icon on the input height (B-9)', () => {
     const { container } = renderForm()
-    const inputs = Array.from(container.querySelectorAll('input'))
+    const inputs = Array.from(container.querySelectorAll('input:not([name="honeypot"])'))
     expect(inputs.length).toBe(4)
     for (const input of inputs) {
       // Input is h-9; the icon box must be the same h-9 and centre its content.
@@ -118,6 +131,7 @@ describe('ContactForm', () => {
     const { container } = renderForm()
     const card = container.firstElementChild as HTMLElement
     expect(card.className).toContain('h-full')
+    expect(card.className).toContain('relative')
     expect(container.querySelector('textarea')?.className).toContain('flex-1')
   })
 
@@ -214,5 +228,53 @@ describe('ContactForm', () => {
     const notice = screen.getByRole('link', { name: /privacy policy/i }).closest('p')!
     expect(notice.className).not.toContain('typography-small')
     expect(notice.className).toContain('leading-relaxed')
+  })
+
+  it('carries native limits and autocomplete tokens from CONTACT_LIMITS', () => {
+    const { container } = renderForm()
+    const q = (sel: string) => container.querySelector(sel) as HTMLInputElement
+    expect(q('#name').maxLength).toBe(CONTACT_LIMITS.name)
+    expect(q('#name').minLength).toBe(CONTACT_MINIMUMS.name)
+    expect(q('#name').autocomplete).toBe('name')
+    expect(q('#email').maxLength).toBe(CONTACT_LIMITS.email)
+    expect(q('#email').autocomplete).toBe('email')
+    expect(q('#company').maxLength).toBe(CONTACT_LIMITS.company)
+    expect(q('#company').autocomplete).toBe('organization')
+    expect(q('#phone').maxLength).toBe(CONTACT_LIMITS.phone)
+    expect(q('#phone').autocomplete).toBe('tel')
+    expect(q('#message').maxLength).toBe(CONTACT_LIMITS.message)
+    expect(q('#message').minLength).toBe(CONTACT_MINIMUMS.message)
+  })
+
+  it('phone pattern compiles under the v flag and filters input', () => {
+    const { container } = renderForm()
+    const p = container.querySelector('#phone')!.getAttribute('pattern')!
+    const re = new RegExp(`^(?:${p})$`, 'v')
+    expect(re.test('(555) 123-4567')).toBe(true)
+    expect(re.test('+1 555 123 4567')).toBe(true)
+    expect(re.test('abc')).toBe(false)
+  })
+
+  it('counts the message against CONTACT_LIMITS.message, CRLF as one', () => {
+    const empty = renderForm()
+    expect(empty.container.textContent).toContain(`0/${CONTACT_LIMITS.message}`)
+    cleanup()
+    const crlf = renderForm({}, { message: 'a\r\nb' })
+    expect(crlf.container.textContent).toContain(`3/${CONTACT_LIMITS.message}`)
+  })
+
+  it('renders exactly one unfocusable, unlabelled honeypot inside an aria-hidden wrapper', () => {
+    const { container } = renderForm()
+    const traps = container.querySelectorAll('input[name="honeypot"]')
+    expect(traps).toHaveLength(1)
+    const trap = traps[0] as HTMLInputElement
+    expect(trap.autocomplete).toBe('off')
+    expect(trap.tabIndex).toBe(-1)
+    expect(trap.id).toBe('')
+    expect(trap.labels?.length ?? 0).toBe(0)
+    expect(trap.hasAttribute('placeholder')).toBe(false)
+    expect(trap.type).toBe('text')
+    expect(trap.hasAttribute('hidden')).toBe(false)
+    expect(trap.closest('[aria-hidden="true"]')).not.toBeNull()
   })
 })
