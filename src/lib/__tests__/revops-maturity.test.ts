@@ -56,7 +56,7 @@ describe('scoreMaturity — overall scoring', () => {
   })
 })
 
-describe('scoreMaturity — weakest pillar (highest-ROI next move)', () => {
+describe('scoreMaturity — weakest pillar and its next move', () => {
   it('identifies the single lowest-scoring pillar', () => {
     const r = scoreMaturity(byPillar({ process: 4, data: 2, technology: 5, alignment: 3 }))
     expect(r.weakestPillar).toBe('data')
