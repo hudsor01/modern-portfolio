@@ -11,6 +11,9 @@ import {
   MAX_AMOUNT,
   percentFieldError,
   sanitizeAmount,
+  TARGET_REQUIRED_MESSAGE,
+  targetFieldError,
+  WIN_RATE_REQUIRED_MESSAGE,
   type CoverageInput,
 } from '@/lib/pipeline-coverage'
 
@@ -215,15 +218,47 @@ describe('amountInputError', () => {
   })
 })
 
+describe('targetFieldError', () => {
+  it('flags an empty or zero target as required', () => {
+    expect(TARGET_REQUIRED_MESSAGE).toBe('Enter a revenue target greater than $0.')
+    for (const empty of ['', '   ', '0', '0.00', '$0', '.']) {
+      expect(targetFieldError(empty)).toBe(TARGET_REQUIRED_MESSAGE)
+    }
+    expect(computeCoverage({ revenueTarget: 0, winRatePct: 25 }).error).toBe(
+      TARGET_REQUIRED_MESSAGE
+    )
+  })
+
+  it('keeps the amountInputError precedence ahead of the required check', () => {
+    expect(targetFieldError('abc')).toBe('Enter numbers only')
+    expect(targetFieldError('-0')).toBe(NEG)
+    expect(targetFieldError('0.0.0')).toBe('Use a single decimal point.')
+    expect(targetFieldError('10000000001')).toBe('Enter a target up to $10B')
+  })
+
+  it('accepts a positive target', () => {
+    expect(targetFieldError('0.5')).toBeNull()
+    expect(targetFieldError('1,000,000')).toBeNull()
+    expect(targetFieldError('10000000000')).toBeNull()
+  })
+})
+
 describe('percentFieldError', () => {
   const fields = ['win', 'qualified', 'safety'] as const
 
-  it('badInput is "Enter numbers only"; empty without badInput is fine', () => {
+  it('badInput is "Enter numbers only"; an empty optional field is fine', () => {
     for (const f of fields) {
       expect(percentFieldError('', true, f)).toBe('Enter numbers only')
-      expect(percentFieldError('', false, f)).toBeNull()
       expect(percentFieldError('-5', false, f)).toBe(NEG)
     }
+    expect(percentFieldError('', false, 'qualified')).toBeNull()
+    expect(percentFieldError('', false, 'safety')).toBeNull()
+  })
+
+  it('an empty win rate is required', () => {
+    expect(WIN_RATE_REQUIRED_MESSAGE).toBe('Enter a win rate.')
+    expect(percentFieldError('', false, 'win')).toBe(WIN_RATE_REQUIRED_MESSAGE)
+    expect(percentFieldError('  ', false, 'win')).toBe(WIN_RATE_REQUIRED_MESSAGE)
   })
 
   it('per-field range messages', () => {

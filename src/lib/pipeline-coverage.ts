@@ -68,7 +68,7 @@ export function computeCoverage(input: CoverageInput): CoverageResult {
   const winRatePct = input.winRatePct
 
   if (target === undefined) {
-    return invalid('Enter a revenue target greater than $0.')
+    return invalid(TARGET_REQUIRED_MESSAGE)
   }
   if (typeof winRatePct !== 'number' || !Number.isFinite(winRatePct) || winRatePct <= 0) {
     return invalid('Win rate must be greater than 0%.')
@@ -142,6 +142,8 @@ export function sanitizeAmount(v: string): string {
 export type AmountKind = 'target' | 'amount'
 
 export const NUMBERS_ONLY_MESSAGE = 'Enter numbers only'
+export const TARGET_REQUIRED_MESSAGE = 'Enter a revenue target greater than $0.'
+export const WIN_RATE_REQUIRED_MESSAGE = 'Enter a win rate.'
 export const NEGATIVE_MESSAGE = 'Negative amounts are not allowed. Enter a positive number.'
 /** Largest money amount any field accepts, in dollars. */
 export const MAX_AMOUNT = 10_000_000_000
@@ -167,13 +169,25 @@ export function amountInputError(raw: string, kind: AmountKind): string | null {
   return null
 }
 
+/**
+ * Why the revenue target field cannot be used, or null when it can: any
+ * amountInputError, then an empty or zero target. The target is required, so an
+ * empty field is an error on the field itself rather than only in the results.
+ */
+export function targetFieldError(raw: string): string | null {
+  const error = amountInputError(raw, 'target')
+  if (error !== null) return error
+  return Number(sanitizeAmount(raw)) > 0 ? null : TARGET_REQUIRED_MESSAGE
+}
+
 export type PercentField = 'win' | 'qualified' | 'safety'
 
 /**
  * Why a percent field's value cannot be used, or null when it can. `badInput` is the
  * input's `validity.badInput`: a type="number" input reports '' for malformed text,
- * so the flag is the only way to tell it from an empty field. An empty field is not
- * an error here (computeCoverage and the optional-field defaults handle it).
+ * so the flag is the only way to tell it from an empty field. An empty win rate is an
+ * error (the field is required); an empty optional field is not, since it falls back
+ * to its default in computeCoverage.
  */
 export function percentFieldError(
   raw: string,
@@ -181,7 +195,7 @@ export function percentFieldError(
   field: PercentField
 ): string | null {
   if (badInput) return NUMBERS_ONLY_MESSAGE
-  if (raw.trim() === '') return null
+  if (raw.trim() === '') return field === 'win' ? WIN_RATE_REQUIRED_MESSAGE : null
   const n = Number(raw)
   if (!Number.isFinite(n)) return NUMBERS_ONLY_MESSAGE
   if (n < 0) return NEGATIVE_MESSAGE

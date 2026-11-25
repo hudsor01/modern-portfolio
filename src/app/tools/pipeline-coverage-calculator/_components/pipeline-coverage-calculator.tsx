@@ -13,6 +13,7 @@ import {
   formatMultiple,
   percentFieldError,
   sanitizeAmount,
+  targetFieldError,
 } from '@/lib/pipeline-coverage'
 
 /** Empty string → undefined; otherwise the parsed number (NaN-safe via the lib). */
@@ -55,15 +56,18 @@ export function PipelineCoverageCalculator() {
   const [qualified, setQualified] = useState({ value: '100', badInput: false })
   const [safety, setSafety] = useState({ value: '0', badInput: false })
 
+  const targetError = targetFieldError(target)
+  const dealError = amountInputError(avgDeal, 'amount')
+  const pipeError = amountInputError(currentPipe, 'amount')
   const winError = percentFieldError(winRate.value, winRate.badInput, 'win')
   const qualError = percentFieldError(qualified.value, qualified.badInput, 'qualified')
   const safetyError = percentFieldError(safety.value, safety.badInput, 'safety')
   // DOM order, so the panel names the first failing field the user would meet.
   const fields = [
-    { id: ids.target, name: 'Revenue target', error: amountInputError(target, 'target') },
+    { id: ids.target, name: 'Revenue target', error: targetError },
     { id: ids.win, name: 'Win rate', error: winError },
-    { id: ids.deal, name: 'Average deal size', error: amountInputError(avgDeal, 'amount') },
-    { id: ids.pipe, name: 'Open pipeline today', error: amountInputError(currentPipe, 'amount') },
+    { id: ids.deal, name: 'Average deal size', error: dealError },
+    { id: ids.pipe, name: 'Open pipeline today', error: pipeError },
     { id: ids.qual, name: '% truly qualified', error: qualError },
     { id: ids.safety, name: 'Safety margin', error: safetyError },
   ]
@@ -95,6 +99,7 @@ export function PipelineCoverageCalculator() {
             value={target}
             onValueChange={setTarget}
             kind="target"
+            error={targetError}
             placeholder="1,000,000"
           />
 
@@ -145,6 +150,7 @@ export function PipelineCoverageCalculator() {
             value={avgDeal}
             onValueChange={setAvgDeal}
             kind="amount"
+            error={dealError}
             placeholder="50,000"
           />
 
@@ -154,6 +160,7 @@ export function PipelineCoverageCalculator() {
             value={currentPipe}
             onValueChange={setCurrentPipe}
             kind="amount"
+            error={pipeError}
             placeholder="3,000,000"
           />
 
@@ -307,9 +314,10 @@ export function PipelineCoverageCalculator() {
 
 /**
  * Money input that shows grouped digits, keeps the caret on the same digit when a
- * grouping comma is inserted, and flags a disallowed value (letters, a sign, a
- * repeated decimal point or an amount over $10B) instead of silently rewriting
- * it. Invalid text is kept as typed.
+ * grouping comma is inserted, and shows `error` (computed by the parent, so a
+ * required field can also flag an empty or zero value). A disallowed value
+ * (letters, a sign, a repeated decimal point or an amount over $10B) is kept as
+ * typed instead of being silently rewritten.
  */
 function MoneyField({
   id,
@@ -318,6 +326,7 @@ function MoneyField({
   onValueChange,
   placeholder,
   kind,
+  error,
 }: {
   id: string
   label: string
@@ -325,12 +334,12 @@ function MoneyField({
   onValueChange: (next: string) => void
   placeholder: string
   kind: AmountKind
+  error: string | null
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const pendingCaret = useRef<number | null>(null)
-  const error = amountInputError(value, kind)
   const errorId = `${id}-error`
-  const display = error === null ? formatGrouped(value) : value
+  const display = amountInputError(value, kind) === null ? formatGrouped(value) : value
 
   // No dependency list on purpose: restore the caret after every render that re-grouped the digits.
   useLayoutEffect(() => {

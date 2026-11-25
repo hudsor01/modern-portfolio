@@ -5,7 +5,8 @@ import { expect, test } from '@playwright/test'
  * Pipeline coverage calculator validation (F-17): letters (incl. 1e6, 1.5M) read
  * "Enter numbers only" while a negative has its own message, money fields cap at
  * $10B, malformed text in a percent field (validity.badInput) is flagged on that
- * field, the results panel names and focuses the failing field, and extreme
+ * field, an empty or zero required field (target, win rate) is flagged on the
+ * field too, the results panel names and focuses the failing field, and extreme
  * inputs render as a ceiling ("$1T+") rather than an absurd figure. Values are
  * never silently rewritten, and typing mid-string keeps the caret on the digit.
  */
@@ -93,6 +94,29 @@ test.describe('pipeline coverage amount validation', () => {
     await win.fill('30')
     await expect(win).toHaveAttribute('aria-invalid', 'false')
     await expect(page.locator('main').getByRole('alert')).toHaveCount(0)
+  })
+
+  test('an empty required field is flagged on the field and named in the panel', async ({
+    page,
+  }) => {
+    const alert = page.locator('main').getByRole('alert')
+    const target = page.getByLabel('Revenue target (this period)')
+    await target.fill('')
+    await expect(target).toHaveAttribute('aria-invalid', 'true')
+    await expect(alert).toHaveText('Enter a revenue target greater than $0.')
+    await expect(page.getByText('Fix “Revenue target” to see your coverage.')).toBeVisible()
+
+    await target.fill('1000000')
+    const win = page.getByLabel('Win rate')
+    await win.fill('')
+    await expect(win).toHaveAttribute('aria-invalid', 'true')
+    await expect(alert).toHaveText('Enter a win rate.')
+    expect(await win.getAttribute('aria-describedby')).toBe(await alert.getAttribute('id'))
+    await page
+      .locator('main [aria-live="polite"]')
+      .getByRole('button', { name: 'Win rate' })
+      .click()
+    await expect(win).toBeFocused()
   })
 
   test('out-of-range qualified rate is flagged', async ({ page }) => {

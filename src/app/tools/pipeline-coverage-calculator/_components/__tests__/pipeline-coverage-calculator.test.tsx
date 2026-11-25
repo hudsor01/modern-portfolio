@@ -203,6 +203,58 @@ describe('PipelineCoverageCalculator', () => {
     setBadInput(win, false)
     fireEvent.input(win, { target: { value: '' } })
     expect(screen.queryByText('Enter numbers only')).toBeNull()
+    expect(screen.getByRole('alert').textContent).toBe('Enter a win rate.')
+  })
+
+  it.each(['', '0'])(
+    'flags a revenue target of "%s" on the field and names it in the panel',
+    (v) => {
+      render(<PipelineCoverageCalculator />)
+      const target = getTarget()
+      fireEvent.change(target, { target: { value: v } })
+      expect(target.value).toBe(v)
+      const alert = screen.getByRole('alert')
+      expect(alert.textContent).toBe('Enter a revenue target greater than $0.')
+      expect(target.getAttribute('aria-invalid')).toBe('true')
+      expect(target.getAttribute('aria-describedby')).toBe(alert.id)
+      expect(target.className).toContain('border-destructive!')
+      expect(panelText()).toBe('Fix “Revenue target” to see your coverage.')
+      fireEvent.click(screen.getByRole('button', { name: 'Revenue target' }))
+      expect(document.activeElement).toBe(target)
+    }
+  )
+
+  it('flags an empty win rate on the field and names it in the panel', () => {
+    render(<PipelineCoverageCalculator />)
+    const win = screen.getByLabelText('Win rate') as HTMLInputElement
+    fireEvent.input(win, { target: { value: '' } })
+    const alert = screen.getByRole('alert')
+    expect(alert.textContent).toBe('Enter a win rate.')
+    expect(win.getAttribute('aria-invalid')).toBe('true')
+    expect(win.getAttribute('aria-describedby')).toBe(alert.id)
+    expect(win.className).toContain('border-destructive!')
+    expect(panelText()).toBe('Fix “Win rate” to see your coverage.')
+  })
+
+  it('a win rate of 0 is flagged on the field, not only in the panel', () => {
+    render(<PipelineCoverageCalculator />)
+    const win = screen.getByLabelText('Win rate') as HTMLInputElement
+    fireEvent.input(win, { target: { value: '0' } })
+    expect(screen.getByRole('alert').textContent).toBe('Win rate must be greater than 0%.')
+    expect(win.getAttribute('aria-invalid')).toBe('true')
+    expect(panelText()).toBe('Fix “Win rate” to see your coverage.')
+  })
+
+  it('leaves the optional money fields unflagged when empty', () => {
+    render(<PipelineCoverageCalculator />)
+    for (const label of ['Average deal size (optional)', 'Open pipeline today (optional)']) {
+      const input = screen.getByLabelText(label) as HTMLInputElement
+      fireEvent.change(input, { target: { value: '5' } })
+      fireEvent.change(input, { target: { value: '' } })
+      expect(input.getAttribute('aria-invalid')).toBe('false')
+    }
+    expect(screen.queryByRole('alert')).toBeNull()
+    expect(panelText()).toContain('Required coverage')
   })
 
   it('a preset clears a malformed win rate', () => {
