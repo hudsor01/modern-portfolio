@@ -1,6 +1,6 @@
 'use client'
 
-import { track } from '@vercel/analytics'
+import { trackEarly } from './track-early'
 import { useEffect, useRef } from 'react'
 
 /**
@@ -17,7 +17,7 @@ export function ReadComplete() {
     const observer = new IntersectionObserver((entries) => {
       if (entries.some((entry) => entry.isIntersecting)) {
         observer.disconnect()
-        track('Post Read', { target: window.location.pathname })
+        trackEarly('Post Read', { target: window.location.pathname })
       }
     })
     observer.observe(el)

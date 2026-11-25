@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
+import { NotFoundEvent } from '@/components/analytics/not-found-event'
 
 // Segment-level not-found for /projects/[slug]. Rendered when getProject
 // returns null and the page calls notFound(). HTTP 404 status comes from
@@ -29,10 +30,16 @@ export default function ProjectNotFound() {
           <p className="mb-6">
             The project you&apos;re looking for doesn&apos;t exist or may have been moved.
           </p>
-          <Link href="/projects" className="inline-block text-primary hover:underline">
+          <Link
+            data-track="CTA Click"
+            data-track-location="not-found"
+            href="/projects"
+            className="inline-block text-primary hover:underline"
+          >
             ← Browse all projects
           </Link>
         </div>
+        <NotFoundEvent kind="project" />
       </main>
     </div>
   )

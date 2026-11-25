@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
+import { NotFoundEvent } from '@/components/analytics/not-found-event'
 
 // Segment-level not-found for /blog/category/[slug]. Rendered when the
 // category lookup returns null and the page calls notFound(). HTTP 404
@@ -27,10 +28,16 @@ export default function BlogCategoryNotFound() {
           </p>
           <h1 className="mt-2 mb-4">Category not found</h1>
           <p className="mb-6">That category doesn&apos;t exist or may have been renamed.</p>
-          <Link href="/blog" className="inline-block text-primary hover:underline">
+          <Link
+            data-track="CTA Click"
+            data-track-location="not-found"
+            href="/blog"
+            className="inline-block text-primary hover:underline"
+          >
             ← Browse all posts
           </Link>
         </div>
+        <NotFoundEvent kind="category" />
       </main>
     </div>
   )
