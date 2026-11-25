@@ -3,11 +3,14 @@ import type { APIRequestContext } from '@playwright/test'
 /**
  * Whether the server under test has a working database.
  *
- * Most of this suite needs no database — every test but 43 passes against an app
- * built and served with no `DATABASE_URL`, because the DB-backed routes degrade
- * to empty states. Those 43 (5 in audit-regressions, 23 in blog, 2 in timezone-hydration, 4 in layout-stability, 3 in a11y-axe, 3 in a11y-typography, 3 in skip-link) genuinely need
- * seeded blog content: they read real post cards or posts, or assert 404
- * behaviour for a slug that has to be absent from a populated table.
+ * Most of this suite needs no database — every test but 47 passes against an
+ * app built and served with no `DATABASE_URL`, because the DB-backed routes
+ * degrade to empty states. Those 47 (5 in audit-regressions, 24 in blog, 1 in
+ * rss-feed, 2 in review-b-geometry, 2 in timezone-hydration, 4 in
+ * layout-stability, 3 in a11y-axe, 3 in a11y-typography, 3 in skip-link)
+ * genuinely need seeded blog content: they read real post cards or posts, or
+ * assert 404 behaviour for a slug that has to be absent from a populated
+ * table.
  *
  * Locally that is invisible — `.env`, `.env.local` and `.env.development.local`
  * all carry a `DATABASE_URL`, and Next loads `.env.local` + `.env` itself even
@@ -18,7 +21,8 @@ import type { APIRequestContext } from '@playwright/test'
  *
  * So the tests ask the running server rather than guessing from env vars — the
  * only signal that is true in both places. `/api/health` answers 200 only
- * when a `SELECT 1` succeeds (503 otherwise), so a 2xx is the signal. Add the secret and they start running with no code change.
+ * when a `SELECT 1` succeeds (503 otherwise), so a 2xx is the signal. Add the
+ * secret and they start running with no code change.
  *
  * Cached per worker process: this is one extra request, not one per test.
  */
