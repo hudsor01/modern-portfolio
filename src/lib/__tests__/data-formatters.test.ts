@@ -169,11 +169,12 @@ describe('formatRelativeDate', () => {
 })
 
 describe('formatTimePeriod', () => {
-  // Use local-time Date constructors (year, monthIndex, day) to avoid the
-  // ISO-string-parses-as-UTC trap when the host is in a negative-offset zone
-  // (a literal "2026-01-01" parses as midnight UTC, which is 2025-12-31 PT).
-  const jan1 = new Date(2026, 0, 1)
-  const mar31 = new Date(2026, 2, 31)
+  // Date instances are rendered in America/Chicago, so fixtures are explicit
+  // Chicago-noon instants: the same calendar day on every host. A host-local
+  // constructor like `new Date(2026, 0, 1)` is midnight wherever the tests run,
+  // which on a UTC or Tokyo runner is still Dec 31 in Chicago.
+  const jan1 = new Date('2026-01-01T12:00:00-06:00')
+  const mar31 = new Date('2026-03-31T12:00:00-05:00')
 
   it('default short format same year', () => {
     expect(formatTimePeriod(jan1, mar31)).toMatch(/Jan-Mar 2026/)
