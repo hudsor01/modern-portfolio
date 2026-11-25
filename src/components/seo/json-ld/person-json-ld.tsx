@@ -6,21 +6,28 @@ import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
 import { STAT_LABELS, STAT_VALUES } from '@/lib/stats'
 
+/** Stable node id, so other JSON-LD (ProfilePage on /about) can reference this Person. */
+export const PERSON_ID = `${SITE_ORIGIN}/#person`
+
+/** External profiles, shared with the /about ProfilePage. */
+export const PERSON_SAME_AS = [
+  'https://www.linkedin.com/in/hudsor01',
+  'https://github.com/hudsor01',
+  'https://twitter.com/hudsor01',
+] as const
+
 export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Person',
+    '@id': PERSON_ID,
     name: 'Richard Hudson',
     alternateName: 'Richard W. Hudson Jr.',
     jobTitle: 'Senior Revenue Operations Specialist',
     description: `Senior Revenue Operations Specialist in Dallas-Fort Worth with proven expertise in sales automation, partnership program development, and data-driven growth strategies. Salesloft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. ${STAT_VALUES.revenue} revenue impact, ${STAT_VALUES['transaction-growth']} transaction growth.`,
     url: SITE_ORIGIN,
     image: `${SITE_ORIGIN}/images/richard.jpg`,
-    sameAs: [
-      'https://www.linkedin.com/in/hudsor01',
-      'https://github.com/hudsor01',
-      'https://twitter.com/hudsor01',
-    ],
+    sameAs: [...PERSON_SAME_AS],
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Dallas',

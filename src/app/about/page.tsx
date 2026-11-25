@@ -1,5 +1,6 @@
 import { generateMetadata } from '@/app/shared-metadata'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
+import { ProfilePageJsonLd } from '@/components/seo/json-ld/profile-page-json-ld'
 import { Navbar } from '@/components/layout/navbar'
 import { PersonalInfo } from '@/components/about/personal-info'
 import { ExpertiseNarrative } from '@/components/about/expertise-narrative'
@@ -73,7 +74,9 @@ Salesloft Admin certified (Level 1 & 2), HubSpot Revenue Operations certified, a
 export const dynamic = 'force-static'
 export const metadata: Metadata = generateMetadata(
   'About: Revenue Operations Professional',
-  `Richard Hudson - Dallas, Texas Revenue Operations Professional serving Dallas-Fort Worth metroplex with ${STAT_VALUES.years} years experience. Salesloft Admin certified (Level 1 & 2) and HubSpot Revenue Operations certified. Partnership program implementation specialist with system integration experience. Expert in data analytics, process automation, and CRM optimization. ${STAT_VALUES.revenue} revenue impact across ${PROJECT_COUNT} projects, ${STAT_VALUES['transaction-growth']} transaction growth.`,
+  // ~155 characters: Google truncates snippets beyond that, so the old 424-character
+  // description lost everything after the first sentence.
+  `Revenue operations professional in Dallas-Fort Worth with ${STAT_VALUES.years} years of experience. Salesloft and HubSpot certified; ${STAT_VALUES.revenue} revenue impact across ${PROJECT_COUNT} projects.`,
   '/about'
 )
 
@@ -83,6 +86,7 @@ export default function AboutPage() {
       {/* No FAQPage markup here. Google's structured-data policy requires every
           marked-up Q&A to be visible on the page; the four that used to be
           emitted never were, and one restated headline metrics. */}
+      <ProfilePageJsonLd />
       <BreadcrumbListJsonLd
         items={[
           { name: 'Home', url: SITE_ORIGIN },
@@ -133,7 +137,7 @@ export default function AboutPage() {
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button asChild size="lg" className="h-12 px-8 text-base font-semibold">
-                <Link href="/projects">
+                <Link data-track="CTA Click" data-track-location="about-cta" href="/projects">
                   View Case Studies
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
@@ -144,7 +148,7 @@ export default function AboutPage() {
                 size="lg"
                 className="h-12 px-8 text-base font-semibold"
               >
-                <Link href="/contact">
+                <Link data-track="CTA Click" data-track-location="about-cta" href="/contact">
                   <Mail className="mr-2 h-5 w-5" />
                   Get in Touch
                 </Link>

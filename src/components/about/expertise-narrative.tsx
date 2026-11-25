@@ -67,8 +67,7 @@ export function ExpertiseNarrative({ className = '' }: ExpertiseNarrativeProps) 
         {/* Opening Statement */}
         <div className="mb-16 lg:mb-20 animate-fade-in-up">
           <h2 className="mb-6">
-            I don't just use tools.
-            <br />I build systems.
+            I don't just use tools. <br />I build systems.
           </h2>
           <p>
             Ten years solving the same problem: turning messy data into decisions people actually
