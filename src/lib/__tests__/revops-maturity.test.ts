@@ -34,7 +34,6 @@ describe('scoreMaturity — overall scoring', () => {
     expect(r.overallScore).toBeCloseTo(5, 6)
     expect(r.level).toBe(5)
     expect(r.tier).toBe('Optimized')
-    expect(r.percentile).toBe(97)
   })
 
   it('all 3s → level 3 Defined', () => {
@@ -62,17 +61,41 @@ describe('scoreMaturity — weakest pillar (highest-ROI next move)', () => {
     expect(r.nextMove).toMatch(/CRM hygiene|definitions/i)
   })
 
-  it('a shared lowest score is a tie: no weakest pillar, order-of-operations next move', () => {
+  it('a shared lowest score is a tie: no weakest pillar, advice for the tied pillars only', () => {
     const r = scoreMaturity(byPillar({ process: 2, data: 2, technology: 5, alignment: 5 }))
     expect(r.weakestPillar).toBeNull()
+    expect(r.weakestPillars).toEqual(['process', 'data'])
     expect(r.nextMove).toMatch(/tied/i)
-    expect(r.nextMove).toMatch(/document the process/i)
+    expect(r.nextMove).toContain('(Process and Data)')
+    expect(r.nextMove).toMatch(/document the process/)
+    expect(r.nextMove).toMatch(/clean the data/)
+    expect(r.nextMove).not.toMatch(/consolidate|shared revenue number|Technology|Alignment/)
   })
 
-  it('all four pillars neutral (the default state) names no weakest pillar', () => {
+  it('tie advice names only the tied pillars (Process 5, the rest 1)', () => {
+    const r = scoreMaturity(byPillar({ process: 5, data: 1, technology: 1, alignment: 1 }))
+    expect(r.weakestPillars).toEqual(['data', 'technology', 'alignment'])
+    expect(r.weakestPillar).toBeNull()
+    expect(r.nextMove).toContain('(Data, Technology and Alignment)')
+    expect(r.nextMove).toMatch(/clean the data/)
+    expect(r.nextMove).toMatch(/consolidate overlapping tools/)
+    expect(r.nextMove).toMatch(/shared revenue number/)
+    expect(r.nextMove).not.toMatch(/process/i)
+  })
+
+  it('all four pillars at 3 is a four-way tie', () => {
     const r = scoreMaturity(allAt(3))
     expect(r.weakestPillar).toBeNull()
-    expect(r.nextMove).not.toBe('')
+    expect(r.weakestPillars).toEqual(PILLARS.map((p) => p.id))
+    expect(r.nextMove).toMatch(/lowest pillars are tied/)
+    expect(r.nextMove).toContain('(Process, Data, Technology and Alignment)')
+  })
+
+  it('a single weakest pillar is reported in weakestPillars', () => {
+    const r = scoreMaturity(byPillar({ process: 4, data: 2, technology: 5, alignment: 3 }))
+    expect(r.weakestPillars).toEqual(['data'])
+    expect(r.weakestPillar).toBe('data')
+    expect(r.nextMove).toMatch(/CRM hygiene|definitions/i)
   })
 
   it('a tie above the minimum does not matter: the single lowest still wins', () => {
@@ -130,7 +153,9 @@ describe('scoreMaturity — partial / adversarial input', () => {
     expect(r.tier).toBe('')
     expect(r.weakestPillar).toBeNull()
     expect(r.nextMove).toBe('')
-    expect(r.percentile).toBe(0)
+    expect(r.answeredByPillar).toEqual({ process: 0, data: 0, technology: 0, alignment: 0 })
+    expect(r.everyPillarAnswered).toBe(false)
+    expect(r.weakestPillars).toEqual([])
     expect(r.techOverbuy).toBe(false)
   })
 
@@ -170,6 +195,26 @@ describe('scoreMaturity — partial / adversarial input', () => {
   })
 })
 
+describe('scoreMaturity — answered gate and no benchmark claims', () => {
+  it('one answer per pillar satisfies the gate', () => {
+    const r = scoreMaturity({ p1: 3, d1: 3, t1: 3, a1: 3 })
+    expect(r.answered).toBe(4)
+    expect(r.valid).toBe(false)
+    expect(r.everyPillarAnswered).toBe(true)
+    expect(r.answeredByPillar).toEqual({ process: 1, data: 1, technology: 1, alignment: 1 })
+  })
+
+  it('three pillars answered does not satisfy the gate', () => {
+    const r = scoreMaturity({ p1: 3, d1: 3, t1: 3 })
+    expect(r.everyPillarAnswered).toBe(false)
+  })
+
+  it('reports no percentile and the tier-5 blurb makes no population claim', () => {
+    expect('percentile' in scoreMaturity(allAt(3))).toBe(false)
+    expect(TIERS[4]!.blurb).not.toMatch(/in 10 teams|teams operate here/)
+  })
+})
+
 describe('levelForScore / tierForScore — band boundaries', () => {
   it('maps band edges to the right level', () => {
     expect(levelForScore(1.0)).toBe(1)
@@ -193,23 +238,6 @@ describe('levelForScore / tierForScore — band boundaries', () => {
   it('tierForScore returns the matching tier object', () => {
     expect(tierForScore(2.4)?.label).toBe('Emerging')
     expect(tierForScore(5)?.label).toBe('Optimized')
-  })
-})
-
-describe('percentile — directional benchmark', () => {
-  it('median (2.4) ≈ 50th percentile', () => {
-    const r = scoreMaturity(allAt(2.4))
-    expect(r.percentile).toBe(50)
-  })
-
-  it('monotonically increases with score', () => {
-    const p1 = scoreMaturity(allAt(1)).percentile
-    const p3 = scoreMaturity(allAt(3)).percentile
-    const p5 = scoreMaturity(allAt(5)).percentile
-    expect(p1).toBeLessThan(p3)
-    expect(p3).toBeLessThan(p5)
-    expect(p1).toBeGreaterThanOrEqual(1)
-    expect(p5).toBeLessThanOrEqual(99)
   })
 })
 

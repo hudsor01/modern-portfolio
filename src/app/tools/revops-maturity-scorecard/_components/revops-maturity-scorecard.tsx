@@ -123,10 +123,7 @@ export function RevOpsMaturityScorecard() {
             <span className="text-5xl font-bold text-primary tracking-tight">{result.level}</span>
             <span className="text-2xl font-semibold text-foreground">{result.tier}</span>
           </p>
-          <p className="mt-1">
-            Overall score {result.overallScore.toFixed(1)} / 5 · ~{result.percentile}th percentile
-            of B2B teams
-          </p>
+          <p className="mt-1">Overall score {result.overallScore.toFixed(1)} / 5</p>
           {tier && <p className="mt-3">{tier.blurb}</p>}
 
           {/* Per-pillar bars */}
