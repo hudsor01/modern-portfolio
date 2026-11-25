@@ -5,6 +5,7 @@ import { Navbar } from '@/components/layout/navbar'
 import { Download, FileText, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DecorativeBlob } from '@/components/ui/decorative-blob'
+import Link from 'next/link'
 
 const ResumeViewClient = React.memo(function ResumeViewClient() {
   const [isLoading, setIsLoading] = useState(true)
@@ -13,7 +14,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
   const handleDownload = () => {
     const link = document.createElement('a')
     link.href = '/Richard_Hudson_Revenue_Operations.pdf'
-    link.download = 'Richard Hudson - Revenue Operations Resume.pdf'
+    link.download = 'Richard_Hudson_Resume.pdf'
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -45,6 +46,9 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-4 justify-center">
               <Button
+                data-track="Resume Download"
+                data-track-location="resume-view"
+                data-track-target="/Richard_Hudson_Revenue_Operations.pdf"
                 onClick={handleDownload}
                 size="lg"
                 className="h-14 px-8 text-base font-medium"
@@ -59,10 +63,10 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
                 asChild
                 className="h-14 px-8 text-base font-semibold"
               >
-                <a href="/resume" className="flex items-center">
+                <Link href="/resume" className="flex items-center">
                   <FileText className="mr-2 h-5 w-5" />
                   View Web Version
-                </a>
+                </Link>
               </Button>
 
               <Button
@@ -72,6 +76,8 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
                 className="h-14 px-8 text-base font-semibold"
               >
                 <a
+                  data-track="Resume Open"
+                  data-track-location="resume-view"
                   href="/Richard_Hudson_Revenue_Operations.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -101,7 +107,12 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
                   <div className="text-center">
                     <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                     <p className="mb-4">Unable to display PDF in browser</p>
-                    <Button onClick={handleDownload}>
+                    <Button
+                      data-track="Resume Download"
+                      data-track-location="resume-view-fallback"
+                      data-track-target="/Richard_Hudson_Revenue_Operations.pdf"
+                      onClick={handleDownload}
+                    >
                       <Download className="mr-2 h-4 w-4" />
                       Download Instead
                     </Button>
@@ -122,6 +133,8 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
                   <p className="text-center p-8">
                     Your browser can't display PDFs inline.{' '}
                     <a
+                      data-track="Resume Open"
+                      data-track-location="resume-view-fallback"
                       href="/Richard_Hudson_Revenue_Operations.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
