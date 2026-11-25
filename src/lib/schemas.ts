@@ -22,10 +22,43 @@ if (typeof window !== 'undefined') {
 // BASE PRIMITIVE SCHEMAS
 // =======================
 
+/** The one source for contactFormSchema, every contact field's maxLength and the message counter. */
+export const CONTACT_LIMITS = {
+  name: 50,
+  email: 254,
+  company: 100,
+  phone: 20,
+  subject: 100,
+  message: 1000,
+} as const
+
+export const CONTACT_MINIMUMS = {
+  name: 2,
+  subject: 1,
+  message: 10,
+} as const
+
+/**
+ * multipart/form-data encoding sends textarea newlines as CRLF while the textarea value and
+ * maxlength count LF; normalising before the length check makes server acceptance equal the
+ * client count.
+ */
+export function normalizeNewlines(value: string): string {
+  return value.replace(/\r\n?/g, '\n')
+}
+
+/**
+ * Message length in UTF-16 units, the same measure maxlength enforces. Never count code points
+ * here: Zod's code-point count is equal or looser, so anything the UI allows is accepted.
+ */
+export function contactMessageLength(value: string): number {
+  return normalizeNewlines(value).length
+}
+
 // Email validation - single source of truth
 export const emailSchema = z
   .email('Please enter a valid email address')
-  .max(254, 'Email address is too long')
+  .max(CONTACT_LIMITS.email, 'Email address is too long')
 
 // URL validation. `protocol: /^https?$/` is the Zod 4 documented idiom
 // for rejecting `javascript:` / `data:` / `vbscript:` etc. at the schema
@@ -203,32 +236,44 @@ export const contactFormSchema = z
   .object({
     name: z
       .string()
-      .min(2, 'Name must be at least 2 characters long')
-      .max(50, 'Name cannot exceed 50 characters')
+      .min(CONTACT_MINIMUMS.name, `Name must be at least ${CONTACT_MINIMUMS.name} characters long`)
+      .max(CONTACT_LIMITS.name, `Name cannot exceed ${CONTACT_LIMITS.name} characters`)
       .trim(),
-    email: z.email('Please enter a valid email address').max(254, 'Email address is too long'),
+    email: z
+      .email('Please enter a valid email address')
+      .max(CONTACT_LIMITS.email, 'Email address is too long'),
     company: z
       .string()
-      .max(100, 'Company name cannot exceed 100 characters')
+      .max(
+        CONTACT_LIMITS.company,
+        `Company name cannot exceed ${CONTACT_LIMITS.company} characters`
+      )
       .trim()
       .optional()
       .or(z.literal('')),
     phone: z
       .string()
-      .max(20, 'Phone number cannot exceed 20 characters')
+      .max(CONTACT_LIMITS.phone, `Phone number cannot exceed ${CONTACT_LIMITS.phone} characters`)
       .regex(/^[\d\s+()-]*$/, 'Please enter a valid phone number')
       .optional()
       .or(z.literal('')),
     subject: z
       .string()
-      .min(1, 'Subject must be at least 1 character')
-      .max(100, 'Subject must not exceed 100 characters')
+      .min(
+        CONTACT_MINIMUMS.subject,
+        `Subject must be at least ${CONTACT_MINIMUMS.subject} character`
+      )
+      .max(CONTACT_LIMITS.subject, `Subject must not exceed ${CONTACT_LIMITS.subject} characters`)
       .trim()
       .optional(),
     message: z
       .string()
-      .min(10, 'Message must be at least 10 characters long')
-      .max(1000, 'Message cannot exceed 1000 characters')
+      .overwrite(normalizeNewlines)
+      .min(
+        CONTACT_MINIMUMS.message,
+        `Message must be at least ${CONTACT_MINIMUMS.message} characters long`
+      )
+      .max(CONTACT_LIMITS.message, `Message cannot exceed ${CONTACT_LIMITS.message} characters`)
       .trim(),
     honeypot: z.string().optional(),
   })

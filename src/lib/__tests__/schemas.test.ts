@@ -14,6 +14,10 @@ import {
   PostStatusSchema,
   ContentTypeSchema,
   contactFormSchema,
+  CONTACT_LIMITS,
+  CONTACT_MINIMUMS,
+  normalizeNewlines,
+  contactMessageLength,
   createBlogPostSchema,
   projectFilterSchema,
   viewTrackingSchema,
@@ -399,8 +403,76 @@ describe('contactFormSchema', () => {
     expect(contactFormSchema.safeParse({ ...valid, message: 'short' }).success).toBe(false)
   })
 
-  it('rejects message over 1000 chars', () => {
-    expect(contactFormSchema.safeParse({ ...valid, message: 'a'.repeat(1001) }).success).toBe(false)
+  it('rejects message over CONTACT_LIMITS.message chars', () => {
+    expect(
+      contactFormSchema.safeParse({ ...valid, message: 'a'.repeat(CONTACT_LIMITS.message + 1) })
+        .success
+    ).toBe(false)
+  })
+
+  it('exposes the limits and minimums as the single source', () => {
+    expect(CONTACT_LIMITS).toEqual({
+      name: 50,
+      email: 254,
+      company: 100,
+      phone: 20,
+      subject: 100,
+      message: 1000,
+    })
+    expect(CONTACT_MINIMUMS).toEqual({ name: 2, subject: 1, message: 10 })
+  })
+
+  it('normalizeNewlines and contactMessageLength collapse CRLF/CR to LF', () => {
+    expect(normalizeNewlines('a\r\nb\rc\nd')).toBe('a\nb\nc\nd')
+    expect(contactMessageLength('a\r\nb')).toBe(3)
+    expect(contactMessageLength('')).toBe(0)
+  })
+
+  it.each([
+    ['name', 'cannot exceed'],
+    ['company', 'cannot exceed'],
+    ['phone', 'cannot exceed'],
+    ['subject', 'must not exceed'],
+    ['message', 'cannot exceed'],
+  ] as const)('%s: exactly the limit passes, limit + 1 fails on the max rule', (field, text) => {
+    const fill = (n: number) => (field === 'phone' ? '1'.repeat(n) : 'a'.repeat(n))
+    const limit = CONTACT_LIMITS[field]
+    expect(contactFormSchema.safeParse({ ...valid, [field]: fill(limit) }).success).toBe(true)
+    const res = contactFormSchema.safeParse({ ...valid, [field]: fill(limit + 1) })
+    expect(res.success).toBe(false)
+    if (!res.success) {
+      expect(res.error.issues.some((i) => i.message.includes(text))).toBe(true)
+    }
+  })
+
+  it('rejects email over CONTACT_LIMITS.email on both schemas', () => {
+    const long = `${'a'.repeat(CONTACT_LIMITS.email - 10)}@example.com`
+    const a = contactFormSchema.safeParse({ ...valid, email: long })
+    const b = emailSchema.safeParse(long)
+    expect(a.success).toBe(false)
+    expect(b.success).toBe(false)
+    if (!a.success)
+      expect(a.error.issues.map((i) => i.message)).toContain('Email address is too long')
+    if (!b.success)
+      expect(b.error.issues.map((i) => i.message)).toContain('Email address is too long')
+  })
+
+  it('accepts a message that is over the limit only because of CRLF, normalised to LF', () => {
+    const raw = `${'a'.repeat(500)}\r\n${'a'.repeat(499)}`
+    expect(raw.length).toBe(1001)
+    const res = contactFormSchema.safeParse({ ...valid, message: raw })
+    expect(res.success).toBe(true)
+    if (res.success) {
+      expect(res.data.message.length).toBe(1000)
+      expect(res.data.message).not.toContain('\r')
+    }
+  })
+
+  it('still counts leading whitespace toward the message limit', () => {
+    expect(
+      contactFormSchema.safeParse({ ...valid, message: ` ${'a'.repeat(CONTACT_LIMITS.message)}` })
+        .success
+    ).toBe(false)
   })
 
   it('rejects malformed email', () => {
