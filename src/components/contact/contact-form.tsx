@@ -27,10 +27,6 @@ interface ContactFormProps {
 // the v-flag-safe equivalent (digits, whitespace, + ( ) -).
 const PHONE_PATTERN = String.raw`[\d\s+\(\)\-]*`
 
-// maxLength matches the server exactly (see CONTACT_LIMITS); minLength is only a
-// first pass that never blocks a valid value. It counts UTF-16 units before trim,
-// so the schema can still reject what it lets through (see CONTACT_MINIMUMS).
-
 /**
  * Text for a field's FieldError. TanStack errors render as themselves when a
  * string, else their `message`; anything else is dropped. Falls back to the
@@ -133,6 +129,11 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
                       onBlur={field.handleBlur}
                       placeholder="Jane Smith"
                       autoComplete="name"
+                      // Native lengths count UTF-16 units of the raw value; the
+                      // schema counts code points, max before trim and min after.
+                      // So maxLength is never looser than the server (see
+                      // CONTACT_LIMITS), and minLength never blocks a valid value
+                      // but can pass one the schema rejects (see CONTACT_MINIMUMS).
                       minLength={CONTACT_MINIMUMS.name}
                       maxLength={CONTACT_LIMITS.name}
                       required
