@@ -96,6 +96,41 @@ test.describe('pipeline coverage amount validation', () => {
     await expect(page.locator('main').getByRole('alert')).toHaveCount(0)
   })
 
+  // A malformed number input reports value '' just like an empty one, so these
+  // keystrokes change validity.badInput without changing the value.
+  test('a lone "e" in an empty percent field is flagged, and clearing it drops the flag', async ({
+    page,
+  }) => {
+    const alert = page.locator('main').getByRole('alert')
+    const panel = page.locator('main [aria-live="polite"]')
+    const win = page.getByLabel('Win rate')
+    await win.fill('')
+    await expect(alert).toHaveText('Enter a win rate.')
+    await win.press('e')
+    expect(await win.evaluate((e: HTMLInputElement) => e.validity.badInput)).toBe(true)
+    await expect(alert).toHaveText('Enter numbers only')
+    await expect(win).toHaveAttribute('aria-invalid', 'true')
+    await expect(panel).toContainText('Fix “Win rate” to see your coverage.')
+    await win.press('Backspace')
+    expect(await win.evaluate((e: HTMLInputElement) => e.validity.badInput)).toBe(false)
+    await expect(alert).toHaveText('Enter a win rate.')
+    await win.fill('25')
+    await expect(alert).toHaveCount(0)
+
+    const qualified = page.getByLabel('% truly qualified')
+    await qualified.fill('')
+    await qualified.pressSequentially('-25e')
+    await expect(alert).toHaveText('Enter numbers only')
+    await expect(qualified).toHaveAttribute('aria-invalid', 'true')
+    await qualified.press('ControlOrMeta+a')
+    await qualified.press('Delete')
+    await expect(qualified).toHaveValue('')
+    expect(await qualified.evaluate((e: HTMLInputElement) => e.validity.badInput)).toBe(false)
+    await expect(qualified).toHaveAttribute('aria-invalid', 'false')
+    await expect(alert).toHaveCount(0)
+    await expect(panel).toContainText('Required coverage')
+  })
+
   test('an empty required field is flagged on the field and named in the panel', async ({
     page,
   }) => {
