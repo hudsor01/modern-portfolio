@@ -78,6 +78,7 @@ async function submit(container: HTMLElement) {
 
 beforeEach(() => {
   submitMock.mockReset()
+  submitActionMock.mockReset()
   useActionStateMock.mockReset()
   useActionStateMock.mockImplementation(((...args: Parameters<typeof actual.useActionState>) =>
     actual.useActionState(...args)) as never)
