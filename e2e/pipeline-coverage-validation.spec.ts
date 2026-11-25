@@ -167,10 +167,10 @@ test.describe('pipeline coverage amount validation', () => {
   test('extreme inputs never print absurd figures', async ({ page }) => {
     await page.getByLabel('Revenue target (this period)').fill('10000000000')
     await page.getByLabel('Win rate').fill('0.0001')
-    const text = await page.locator('main [aria-live="polite"]').innerText()
-    expect(text).toContain('$1T+')
-    expect(text).toContain('1,000×+')
-    expect(text).not.toMatch(/[\d,]{5,}T/)
+    const panel = page.locator('main [aria-live="polite"]')
+    await expect(panel).toContainText('$1T+')
+    await expect(panel).toContainText('1,000×+')
+    await expect(panel).not.toContainText(/[\d,]{5,}T/)
   })
 
   test('typing a digit mid-string keeps the caret next to it', async ({ page }) => {
