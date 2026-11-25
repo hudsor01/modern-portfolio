@@ -3,41 +3,20 @@ import { sql } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { logger } from '@/lib/logger'
 
+// Public endpoint, so the body states only liveness; the DB error goes to the logger.
 export async function GET() {
   try {
     await db.execute(sql`SELECT 1`)
 
-    logger.info('Health check performed', { status: 'healthy' })
+    logger.info('Health check performed', { status: 'ok' })
 
-    return NextResponse.json(
-      {
-        status: 'healthy',
-        database: 'up',
-        timestamp: new Date().toISOString(),
-      },
-      {
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+    return NextResponse.json({ status: 'ok' }, { headers: { 'Cache-Control': 'no-store' } })
   } catch (error) {
     logger.error('Health check failed', error instanceof Error ? error : new Error(String(error)))
 
     return NextResponse.json(
-      {
-        status: 'unhealthy',
-        database: 'down',
-        timestamp: new Date().toISOString(),
-      },
-      {
-        status: 503,
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Content-Type': 'application/json',
-        },
-      }
+      { status: 'error' },
+      { status: 503, headers: { 'Cache-Control': 'no-store' } }
     )
   }
 }

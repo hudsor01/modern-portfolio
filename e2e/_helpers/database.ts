@@ -17,8 +17,8 @@ import type { APIRequestContext } from '@playwright/test'
  * `Error: DATABASE_URL is required` from src/lib/env-validation.ts.
  *
  * So the tests ask the running server rather than guessing from env vars — the
- * only signal that is true in both places. `/api/health` already reports
- * `{"database":"up"}`. Add the secret and they start running with no code change.
+ * only signal that is true in both places. `/api/health` answers 200 only
+ * when a `SELECT 1` succeeds (503 otherwise), so a 2xx is the signal. Add the secret and they start running with no code change.
  *
  * Cached per worker process: this is one extra request, not one per test.
  */
@@ -28,11 +28,9 @@ export function databaseAvailable(request: APIRequestContext): Promise<boolean> 
   cached ??= (async () => {
     try {
       const response = await request.get('/api/health')
-      if (!response.ok()) return false
-      const body = (await response.json()) as { database?: string }
-      return body.database === 'up'
+      return response.ok()
     } catch {
-      // Health endpoint unreachable or non-JSON — treat as "no database" rather
+      // Health endpoint unreachable — treat as "no database" rather
       // than failing here, so the skip reason stays accurate.
       return false
     }

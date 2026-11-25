@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Mock the db module before importing the route. The route calls
 // `db.execute(sql\`SELECT 1\`)` for the liveness probe — we control the
-// resolution to flip between healthy / unhealthy paths.
+// resolution to flip between ok / error paths.
 vi.mock('@/lib/db', () => ({
   db: {
     execute: vi.fn(),
@@ -33,44 +33,38 @@ describe('GET /api/health', () => {
     vi.clearAllMocks()
   })
 
-  it('returns 200 with healthy payload on successful db ping', async () => {
+  it('returns 200 with exactly { status: "ok" } on successful db ping', async () => {
     vi.mocked(db.execute).mockResolvedValueOnce({ rows: [{ '?column?': 1 }] } as never)
 
     const res = await GET()
 
     expect(res.status).toBe(200)
-    const body = await res.json()
-    expect(body).toMatchObject({ status: 'healthy', database: 'up' })
-    expect(typeof body.timestamp).toBe('string')
-    // Trimmed payload contract — no version/uptime/memory.
-    expect(body).not.toHaveProperty('version')
-    expect(body).not.toHaveProperty('uptime')
-    expect(body).not.toHaveProperty('memory')
+    expect(await res.json()).toEqual({ status: 'ok' })
+    expect(res.headers.get('Content-Type')).toContain('application/json')
   })
 
-  it('returns 503 with unhealthy payload when db.execute throws', async () => {
+  it('returns 503 with exactly { status: "error" } when db.execute throws', async () => {
     vi.mocked(db.execute).mockRejectedValueOnce(new Error('connection refused'))
 
     const res = await GET()
 
     expect(res.status).toBe(503)
     const body = await res.json()
-    expect(body).toMatchObject({ status: 'unhealthy', database: 'down' })
+    expect(body).toEqual({ status: 'error' })
     // Sanitized error contract — no stack or original message exposed.
     expect(JSON.stringify(body)).not.toContain('connection refused')
     expect(JSON.stringify(body)).not.toMatch(/at .+:\d+/)
   })
 
-  it('sets no-cache headers on success', async () => {
+  it('sets Cache-Control: no-store on success', async () => {
     vi.mocked(db.execute).mockResolvedValueOnce({ rows: [] } as never)
     const res = await GET()
-    expect(res.headers.get('Cache-Control')).toBe('no-cache, no-store, must-revalidate')
-    expect(res.headers.get('Content-Type')).toBe('application/json')
+    expect(res.headers.get('Cache-Control')).toBe('no-store')
   })
 
-  it('sets no-cache headers on failure', async () => {
+  it('sets Cache-Control: no-store on failure', async () => {
     vi.mocked(db.execute).mockRejectedValueOnce(new Error('boom'))
     const res = await GET()
-    expect(res.headers.get('Cache-Control')).toBe('no-cache, no-store, must-revalidate')
+    expect(res.headers.get('Cache-Control')).toBe('no-store')
   })
 })
