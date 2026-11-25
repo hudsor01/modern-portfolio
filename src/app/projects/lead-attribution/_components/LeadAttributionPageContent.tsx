@@ -155,11 +155,11 @@ export default function LeadAttribution() {
   return (
     <>
       <ProjectJsonLd
-        title="Lead Attribution & Marketing Analytics - Multi-Touch Attribution"
-        description="Comprehensive lead attribution analysis with multi-touch attribution modeling."
+        title="Marketing Attribution Platform"
+        description="Marketing attribution case study: multi-touch models that raised marketing ROI 34%, saved $480K a year and lifted lead-to-customer conversion 29%."
         slug="lead-attribution"
         image={ogImageUrl({
-          title: 'Lead Attribution: Multi-Touch Marketing Analytics',
+          title: 'Marketing Attribution Platform Case Study',
           subtitle: 'Revenue Operations Project',
           project: 'lead-attribution',
         })}
@@ -174,7 +174,7 @@ export default function LeadAttribution() {
         ]}
       />
       <ProjectPageLayout
-        title="Lead Attribution Analytics"
+        title="Marketing Attribution Platform"
         description="Understand your lead sources, optimize marketing spend, and improve conversion rates across all channels."
         tags={[
           { label: `Total Leads: ${formatNumber(totalLeads)}`, variant: 'primary' },
