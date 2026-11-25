@@ -28,6 +28,7 @@ const dbMocks = vi.hoisted(() => ({
   countWhere: vi.fn(),
   insertReturning: vi.fn(),
   insertVoid: vi.fn(),
+  insertValues: vi.fn(),
   update: vi.fn(),
 }))
 vi.mock('@/lib/db', () => {
@@ -49,7 +50,8 @@ vi.mock('@/lib/db', () => {
       },
       select: () => ({ from: () => fromBuilder() }),
       insert: () => ({
-        values: () => {
+        values: (v: unknown) => {
+          dbMocks.insertValues(v)
           const voidP = dbMocks.insertVoid()
           return {
             returning: () => dbMocks.insertReturning(),
@@ -296,6 +298,26 @@ describe('POST /api/blog', () => {
     authorId: sampleAuthorId,
     status: 'DRAFT' as const,
   }
+
+  it('stores an SEO title within 43 chars, derived when missing or too long', async () => {
+    await POST(
+      reqPost({
+        ...validBody,
+        metaTitle: 'Salesloft vs Outreach: How to Choose the Right Platform for Your Team',
+      })
+    )
+    expect(dbMocks.insertValues.mock.calls[0]?.[0]).toMatchObject({
+      metaTitle: 'Hello World',
+    })
+
+    resetSharedMocks()
+    vi.mocked(isAdminRequest).mockReturnValue(true)
+    dbMocks.findFirst.mockResolvedValueOnce(undefined).mockResolvedValueOnce(samplePost)
+    dbMocks.insertReturning.mockResolvedValue([{ id: samplePost.id }])
+    dbMocks.insertVoid.mockResolvedValue(undefined)
+    await POST(reqPost(validBody))
+    expect(dbMocks.insertValues.mock.calls[0]?.[0]).toMatchObject({ metaTitle: 'Hello World' })
+  })
 
   it('returns 401 when admin token missing', async () => {
     vi.mocked(isAdminRequest).mockReturnValueOnce(false)

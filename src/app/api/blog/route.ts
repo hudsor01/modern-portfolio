@@ -25,6 +25,7 @@ import {
 import { createBlogPostSchema, PostStatusSchema } from '@/lib/schemas'
 import { SITE_ORIGIN, canonicalUrl } from '@/lib/absolute-url'
 import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
+import { normalizeSeoTitle } from '@/lib/post-title'
 
 // POST/PUT contract asymmetry (kept here so a future admin client knows
 // what to send):
@@ -245,7 +246,10 @@ export async function POST(request: NextRequest) {
         // (via nullishText / featuredImageSchema), so no per-field
         // `|| null` coalesce is needed here. The DB always sees null
         // for cleared fields — single canonical state.
-        metaTitle: body.metaTitle,
+        // Stored ≤ 43 chars so `<metaTitle> | Richard Hudson` fits search
+        // results; derived from the title when the pipeline sends none or
+        // too long a one. Normalized, never rejected, so publishing can't fail.
+        metaTitle: normalizeSeoTitle(body.metaTitle, body.title),
         metaDescription: body.metaDescription,
         keywords: body.keywords,
         canonicalUrl: body.canonicalUrl,
