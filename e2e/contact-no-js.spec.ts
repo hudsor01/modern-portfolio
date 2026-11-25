@@ -7,27 +7,36 @@ import { test, expect, type Page, type Request } from '@playwright/test'
  * multipart/form-data document POST to /contact carrying the `$ACTION_` fields,
  * with an empty query string, and never a GET that puts the visitor's PII in the URL.
  *
- * Every non-GET request to /contact is aborted at the network layer, so no email
- * is sent and no contact_submissions row is written. The route matches on
- * pathname with a predicate: a glob such as '**\/contact' would miss
- * '/contact?name=...', which is precisely the regression this must catch.
+ * The guard fails closed: every non-GET/HEAD request, to any path on any origin,
+ * is aborted at the network layer and recorded, so no email is sent and no
+ * contact_submissions row is written even if the form's action ever resolves
+ * somewhere other than /contact (a trailing slash, a basePath, `action="/"`, a
+ * regression to /api/contact). The assertions then pin the one POST to /contact.
+ * Any navigation carrying a query string is recorded as a leak, whatever its path.
  */
 
 type ContactGuard = { posts: Request[]; leakedGets: string[] }
 
+const isMutation = (request: Request) => request.method() !== 'GET' && request.method() !== 'HEAD'
+
 async function guardContactDocument(page: Page): Promise<ContactGuard> {
   const state: ContactGuard = { posts: [], leakedGets: [] }
+  // A predicate matching every URL: a glob can miss query-string variants.
   await page.route(
-    (url) => url.pathname === '/contact',
+    () => true,
     async (route) => {
       const request = route.request()
-      if (request.method() === 'GET') {
-        if (new URL(request.url()).search !== '') state.leakedGets.push(request.url())
-        await route.continue()
+      if (isMutation(request)) {
+        state.posts.push(request)
+        await route.abort()
         return
       }
-      state.posts.push(request)
-      await route.abort()
+      if (request.isNavigationRequest() && new URL(request.url()).search !== '') {
+        state.leakedGets.push(request.url())
+      }
+      // fallback, not continue: routes registered before this one (the script
+      // abort in the pre-hydration spec) still get to handle GETs.
+      await route.fallback()
     }
   )
   return state
@@ -42,13 +51,14 @@ async function fillValid(page: Page) {
 async function submitAndExpectDocumentPost(page: Page, state: ContactGuard) {
   await fillValid(page)
   await Promise.all([
-    page.waitForEvent('requestfailed', (r) => new URL(r.url()).pathname === '/contact'),
+    page.waitForEvent('requestfailed', isMutation),
     page.getByRole('button', { name: /send message/i }).click(),
   ])
 
   expect(state.posts).toHaveLength(1)
   const [post] = state.posts
   if (!post) throw new Error('expected one aborted POST to /contact')
+  expect(new URL(post.url()).pathname).toBe('/contact')
   expect(post.method()).toBe('POST')
   expect(post.resourceType()).toBe('document')
   expect(new URL(post.url()).search).toBe('')
