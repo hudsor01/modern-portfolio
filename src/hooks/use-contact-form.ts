@@ -4,7 +4,7 @@
  */
 
 import type { SubmitEvent } from 'react'
-import { useActionState, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useActionState, useCallback, useMemo, useState } from 'react'
 import { useForm } from '@tanstack/react-form'
 import { track } from '@vercel/analytics'
 import { z } from 'zod'
@@ -126,16 +126,6 @@ export function useContactForm(): UseContactFormReturn {
     }
     return mapped
   }, [showActionState, actionState.validationErrors])
-
-  // A pre-hydration POST re-renders the page with a success state; track it once.
-  // JS-off sends nothing, by design.
-  const trackedProgressive = useRef(false)
-  useEffect(() => {
-    if (actionState.status === 'success' && !trackedProgressive.current) {
-      trackedProgressive.current = true
-      track('Contact Submitted', { location: 'contact-form' })
-    }
-  }, [actionState.status])
 
   // Calculate form progress
   const progress = calculateProgress(formData)

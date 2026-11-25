@@ -4,6 +4,15 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 vi.mock('next/headers', () => ({
   headers: vi.fn(),
 }))
+// redirect() throws in Next; the mock throws too so control flow matches.
+const redirectMock = vi.hoisted(() =>
+  vi.fn((path: string): never => {
+    throw new Error(`NEXT_REDIRECT ${path}`)
+  })
+)
+vi.mock('next/navigation', () => ({
+  redirect: redirectMock,
+}))
 vi.mock('@/lib/email-service', () => ({
   emailService: {
     sendContactEmail: vi.fn(),
@@ -131,6 +140,7 @@ describe('submitContactFormAction', () => {
 
   beforeEach(() => {
     sentryRecorded.length = 0
+    redirectMock.mockClear()
     vi.mocked(emailService.sendContactEmail).mockReset()
     mockHeaders({ 'x-forwarded-for': '1.2.3.4', 'user-agent': 'vitest' })
     vi.mocked(emailService.sendContactEmail).mockResolvedValue({ success: true })
@@ -138,7 +148,7 @@ describe('submitContactFormAction', () => {
 
   it('passes only the known field keys to sendContactEmail', async () => {
     const fd = buildForm({ $ACTION_KEY: 'k', evil: 'x' })
-    await submitContactFormAction(idle, fd)
+    await expect(submitContactFormAction(idle, fd)).rejects.toThrow('NEXT_REDIRECT')
 
     expect(emailService.sendContactEmail).toHaveBeenCalledOnce()
     const [data, clientId, opts] = vi.mocked(emailService.sendContactEmail).mock.calls[0] ?? []
@@ -153,19 +163,27 @@ describe('submitContactFormAction', () => {
     const fd = new FormData()
     fd.append('name', new Blob(['x']))
     fd.append('email', 'user@example.com')
-    await submitContactFormAction(idle, fd)
+    await expect(submitContactFormAction(idle, fd)).rejects.toThrow('NEXT_REDIRECT')
     const [data] = vi.mocked(emailService.sendContactEmail).mock.calls[0] ?? []
     expect(data).toEqual({ email: 'user@example.com' })
   })
 
-  it('maps success without a values echo', async () => {
-    const state = await submitContactFormAction(idle, buildForm())
-    expect(state).toEqual({
-      status: 'success',
-      success: true,
-      message: 'Form submitted successfully! I will get back to you soon.',
-    })
-    expect('values' in state).toBe(false)
+  it('redirects a success to /contact/sent (Post/Redirect/Get) instead of returning state', async () => {
+    await expect(submitContactFormAction(idle, buildForm())).rejects.toThrow(
+      'NEXT_REDIRECT /contact/sent'
+    )
+    expect(redirectMock).toHaveBeenCalledOnce()
+    expect(redirectMock).toHaveBeenCalledWith('/contact/sent')
+    // The redirect is thrown after the Sentry-wrapped submission resolved.
+    expect(sentryRecorded).toHaveLength(1)
+  })
+
+  it('redirects a discarded honeypot submission the same way, so a bot learns nothing', async () => {
+    // sendContactEmail answers a filled honeypot with { success: true } (email-service.test.ts).
+    vi.mocked(emailService.sendContactEmail).mockResolvedValue({ success: true })
+    await expect(submitContactFormAction(idle, buildForm({ honeypot: 'bot' }))).rejects.toThrow(
+      'NEXT_REDIRECT /contact/sent'
+    )
   })
 
   it('maps validation errors and echoes typed values without the honeypot', async () => {
@@ -186,6 +204,8 @@ describe('submitContactFormAction', () => {
       message: validBody.message,
     })
     expect(state.values && 'honeypot' in state.values).toBe(false)
+    // A failed no-JS submit re-renders /contact with its errors; it never redirects.
+    expect(redirectMock).not.toHaveBeenCalled()
   })
 
   it('maps retryAfter to an error state with values echoed', async () => {

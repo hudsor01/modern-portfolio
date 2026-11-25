@@ -63,7 +63,8 @@ export interface SubmitContactFormResult {
   retryAfter?: number
 }
 
-export type ContactActionStatus = 'idle' | 'success' | 'error'
+/** A progressive success redirects to /contact/sent, so the state is never 'success'. */
+export type ContactActionStatus = 'idle' | 'error'
 
 /**
  * `useActionState` state of the progressive contact form. It is serialised into
@@ -108,8 +109,9 @@ export interface UseContactFormReturn {
   serverFieldErrors: ContactFormErrors
   /**
    * True while the shown status came from a progressive (no-JS / pre-hydration)
-   * submit, i.e. the page was just loaded with the result. The banner then takes
-   * focus so the outcome is seen and announced.
+   * submit, i.e. the page was just loaded with its error. The error banner then
+   * takes focus so the outcome is seen and announced. (A progressive success
+   * redirects to /contact/sent instead.)
    */
   fromAction: boolean
 }

@@ -214,28 +214,28 @@ describe('ContactForm', () => {
     expect(screen.queryByRole('alert')).toBeNull()
   })
 
-  it.each([
-    ['success', 'status'],
-    ['error', 'alert'],
-  ] as const)('a progressive %s banner takes focus on load, without JS', (status, role) => {
-    const props = {
-      form: createFormStub(),
-      formData: {},
-      errors: {},
-      submitStatus: status,
-      isSubmitting: false,
-      error: null,
-      formAction: vi.fn(),
-      serverFieldErrors: {},
-      fromAction: true,
-    } as unknown as UseContactFormReturn
-    // SSR markup is what a no-JS browser gets: the native autofocus attribute must be in it.
-    const html = renderToStaticMarkup(<ContactForm form={props} />)
-    const banner = html.match(new RegExp(`<div role="${role}"[^>]*>`))?.[0] ?? ''
-    expect(banner).toContain('tabindex="-1"')
-    expect(banner).toContain('autofocus=""')
-    expect(banner).toContain('data-focus-target=""')
-  })
+  it.each([['error', 'alert']] as const)(
+    'a progressive %s banner takes focus on load, without JS',
+    (status, role) => {
+      const props = {
+        form: createFormStub(),
+        formData: {},
+        errors: {},
+        submitStatus: status,
+        isSubmitting: false,
+        error: null,
+        formAction: vi.fn(),
+        serverFieldErrors: {},
+        fromAction: true,
+      } as unknown as UseContactFormReturn
+      // SSR markup is what a no-JS browser gets: the native autofocus attribute must be in it.
+      const html = renderToStaticMarkup(<ContactForm form={props} />)
+      const banner = html.match(new RegExp(`<div role="${role}"[^>]*>`))?.[0] ?? ''
+      expect(banner).toContain('tabindex="-1"')
+      expect(banner).toContain('autofocus=""')
+      expect(banner).toContain('data-focus-target=""')
+    }
+  )
 
   it.each([
     ['success', 'status'],

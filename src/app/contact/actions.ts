@@ -3,6 +3,7 @@
 // Every export of a 'use server' file is a public endpoint, so helpers stay unexported.
 
 import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 import * as Sentry from '@sentry/nextjs'
 import { emailService } from '@/lib/email-service'
 import { getClientIdentifierFromHeaders, getClientUserAgent } from '@/lib/api-request'
@@ -10,6 +11,8 @@ import { createContextLogger } from '@/lib/logger'
 import type { ContactActionState, SubmitContactFormResult } from '@/types/forms'
 
 const logger = createContextLogger('ContactAction')
+
+const CONTACT_SENT_PATH = '/contact/sent'
 
 const CONTACT_FIELDS = ['name', 'email', 'company', 'phone', 'message', 'honeypot'] as const
 
@@ -82,6 +85,11 @@ export async function submitContactForm(data: unknown): Promise<SubmitContactFor
  * Server Action for the progressive (no-JS / pre-hydration) contact form.
  * Bound via useActionState so React SSR renders a POST multipart form; the
  * hydrated path still calls submitContactForm.
+ *
+ * Success redirects (Post/Redirect/Get) to the static /contact/sent page. For a
+ * progressive form submission Next answers redirect() with a 303, so the browser
+ * follows with a GET and a refresh or Back/Forward can never re-POST (and resend)
+ * the message. Errors still return state so /contact re-renders with them.
  */
 export async function submitContactFormAction(
   _prevState: ContactActionState,
@@ -100,7 +108,9 @@ export async function submitContactFormAction(
 
   const result = await runSubmission(data)
   if (result.success) {
-    return { status: 'success', ...result }
+    // redirect() throws, so it stays outside runSubmission's try/catch and its
+    // Sentry wrapper.
+    redirect(CONTACT_SENT_PATH)
   }
 
   // Echoed after runSubmission returns, outside withServerActionInstrumentation:

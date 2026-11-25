@@ -30,6 +30,7 @@ const PAGES = [
   '/tools/pipeline-coverage-calculator',
   '/tools/revops-maturity-scorecard',
   '/privacy',
+  '/contact/sent',
   '/this-page-does-not-exist',
 ]
 const WIDTHS = [360, 390, 768, 1440]

@@ -65,11 +65,12 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
     serverFieldErrors,
     fromAction,
   } = formHook
-  // A progressive (no-JS / pre-hydration) result arrives on a freshly loaded page
+  // A progressive (no-JS / pre-hydration) error arrives on a freshly loaded page
   // scrolled to the top, where a live region present at load is not reliably
   // announced. Native autofocus works without JS: it scrolls the banner into view
   // and moves focus there, so screen readers read it. React never calls focus()
   // on a div, so hydration cannot pull focus back after the user moves on.
+  // A progressive success never renders here: it redirects to /contact/sent.
   const resultFocus = fromAction
     ? ({ tabIndex: -1, autoFocus: true, 'data-focus-target': '' } as const)
     : {}
@@ -369,7 +370,6 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
           <div
             role="status"
             aria-live="polite"
-            {...resultFocus}
             className="flex items-center gap-2 text-success bg-success/10 p-4 rounded-xl"
           >
             <CheckCircle className="w-5 h-5" aria-hidden="true" />

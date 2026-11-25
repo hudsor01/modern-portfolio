@@ -275,11 +275,8 @@ describe('useContactForm', () => {
       expect(result.current.fromAction).toBe(false)
     })
 
-    it.each([
-      ['success', { status: 'success', success: true }],
-      ['error', errorState],
-    ] as const)('progressive %s is flagged fromAction', (_label, state) => {
-      driveActionState(state)
+    it('a progressive error is flagged fromAction', () => {
+      driveActionState(errorState)
       const { result } = renderHook(() => useContactForm())
       expect(result.current.fromAction).toBe(true)
     })
@@ -302,21 +299,12 @@ describe('useContactForm', () => {
     })
 
     it('resetForm clears fromAction', () => {
-      driveActionState({ status: 'success', success: true })
+      driveActionState(errorState)
       const { result } = renderHook(() => useContactForm())
       act(() => {
         result.current.resetForm()
       })
       expect(result.current.fromAction).toBe(false)
-    })
-
-    it('progressive success: status success and track fires once', () => {
-      driveActionState({ status: 'success', success: true })
-      const { result, rerender } = renderHook(() => useContactForm())
-      expect(result.current.submitStatus).toBe('success')
-      rerender()
-      expect(trackMock).toHaveBeenCalledTimes(1)
-      expect(trackMock).toHaveBeenCalledWith('Contact Submitted', { location: 'contact-form' })
     })
 
     it('progressive error: surfaces message, field errors and re-populates values', () => {
