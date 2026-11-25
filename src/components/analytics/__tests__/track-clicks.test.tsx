@@ -61,3 +61,32 @@ describe('TrackClicks', () => {
     expect(track).toHaveBeenCalledWith('CTA Click', { location: 'nav', target: '/contact' })
   })
 })
+
+describe('first-use tracking', () => {
+  it('sends the marked event once, on the first control used, with no entered value', async () => {
+    const { firstUseEvent } = await import('../track-clicks')
+    document.body.innerHTML =
+      '<div data-track-input="Tool Used" data-track-location="calc"><input id="a" value="42"><button id="b">x</button><p id="c">text</p></div>'
+    window.history.pushState({}, '', '/tools/calc')
+    const fired = new WeakSet<Element>()
+    expect(firstUseEvent(document.getElementById('c') as Element, fired)).toBeNull()
+    expect(firstUseEvent(document.getElementById('a') as Element, fired)).toEqual({
+      name: 'Tool Used',
+      data: { target: '/tools/calc', location: 'calc' },
+    })
+    expect(firstUseEvent(document.getElementById('b') as Element, fired)).toBeNull()
+  })
+
+  it('the listener tracks the first input event inside a marked container only once', () => {
+    track.mockClear()
+    render(<TrackClicks />)
+    document.body.insertAdjacentHTML(
+      'beforeend',
+      '<div data-track-input="Tool Used"><input id="i2"></div>'
+    )
+    const input = document.getElementById('i2') as HTMLInputElement
+    input.dispatchEvent(new Event('input', { bubbles: true }))
+    input.dispatchEvent(new Event('input', { bubbles: true }))
+    expect(track.mock.calls.filter((c) => c[0] === 'Tool Used')).toHaveLength(1)
+  })
+})
