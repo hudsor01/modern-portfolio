@@ -939,6 +939,8 @@ input, textarea, select {
   }
   html {
     font-size: var(--font-size-base, 0.875rem);
+    /* Keeps the width constant when the mobile menu locks html overflow. */
+    scrollbar-gutter: stable;
   }
 
   body {

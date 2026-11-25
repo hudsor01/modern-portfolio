@@ -192,4 +192,11 @@ describe('globals.css cascade', () => {
       expect(offenders).toEqual([])
     })
   })
+
+  it('reserves a stable scrollbar gutter on html inside @layer base (F-20)', () => {
+    const html = rules.filter(
+      (r) => r.selector === 'html' && r.parents.some((p) => p.startsWith('@layer base'))
+    )
+    expect(html.some((r) => /scrollbar-gutter:\s*stable/.test(r.body))).toBe(true)
+  })
 })

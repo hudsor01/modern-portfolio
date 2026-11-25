@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { asRoute, getRouteKey } from '@/lib/route-utils'
 import { navConfig } from '@/lib/site'
+import { useScrollLock } from '@/hooks/use-scroll-lock'
 
 // Single source of truth: navConfig.mainNav. Also consumed by
 // navigation-json-ld.tsx (SEO) — keeping one list prevents the two drifting.
@@ -24,6 +25,15 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const toggleRef = useRef<HTMLButtonElement>(null)
 
+  // A route change (link, browser back/forward) closes the menu. Adjusting state
+  // during render, keyed on the previous pathname, so navigating away and back
+  // never reopens it and no effect has to set state.
+  const [lastPathname, setLastPathname] = useState(pathname)
+  if (lastPathname !== pathname) {
+    setLastPathname(pathname)
+    setIsMobileMenuOpen(false)
+  }
+
   // Escape closes the open menu and hands focus back to the toggle that opened it.
   useEffect(() => {
     if (!isMobileMenuOpen) return
@@ -35,6 +45,21 @@ export function Navbar() {
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [isMobileMenuOpen])
+
+  // Widening to the desktop layout hides the mobile panel, so the menu must close
+  // and release the scroll lock. 48rem is Tailwind's md; rem in media queries uses
+  // the 16px initial font size, so this is 768px despite the 0.875rem html size.
+  useEffect(() => {
+    if (!isMobileMenuOpen) return
+    const mq = window.matchMedia('(min-width: 48rem)')
+    const onChange = (event: MediaQueryListEvent) => {
+      if (event.matches) setIsMobileMenuOpen(false)
+    }
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [isMobileMenuOpen])
+
+  useScrollLock(isMobileMenuOpen)
 
   const navbarClasses =
     'fixed top-0 left-0 right-0 z-50 w-full bg-card/95 backdrop-blur-sm border-b border-border shadow-sm'
@@ -131,7 +156,7 @@ export function Navbar() {
           id="mobile-menu"
           aria-label="Main menu"
           hidden={!isMobileMenuOpen}
-          className="md:hidden absolute top-16 left-0 right-0 bg-card border-b border-border shadow-lg"
+          className="md:hidden absolute top-16 left-0 right-0 bg-card border-b border-border shadow-lg max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain"
         >
           <div className="px-4 py-4 space-y-2">
             {navItems.map((item, index) => {
