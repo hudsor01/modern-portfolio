@@ -17,6 +17,7 @@ const dbMocks = vi.hoisted(() => ({
   findFirst: vi.fn(),
   insertVoid: vi.fn(),
   update: vi.fn(),
+  updateSet: vi.fn(),
   delete: vi.fn(),
 }))
 
@@ -31,7 +32,8 @@ vi.mock('@/lib/db', () => ({
       }),
     }),
     update: () => ({
-      set: () => {
+      set: (v: unknown) => {
+        dbMocks.updateSet(v)
         const p = dbMocks.update()
         return {
           where: () => p,
@@ -208,6 +210,37 @@ describe('PUT /api/blog/[slug]', () => {
     expect(res.status).toBe(200)
     const body = await res.json()
     expect(body).toMatchObject({ success: true, message: 'Blog post updated successfully' })
+  })
+
+  it('normalizes a too-long SEO title to 43 chars and derives a cleared one from the title', async () => {
+    const longTitle = 'A Post Title Long Enough That It Never Fits the Search Result Budget'
+    dbMocks.findFirst
+      .mockResolvedValueOnce({ ...samplePost, title: longTitle })
+      .mockResolvedValueOnce(samplePost)
+    dbMocks.update.mockResolvedValue(undefined)
+    await PUT(
+      reqPut('hello', {
+        metaTitle: 'Optimizing Customer Lifetime Value Calculations (Formulas + Python)',
+      }),
+      ctx('hello')
+    )
+    expect(dbMocks.updateSet.mock.calls[0]?.[0]).toMatchObject({
+      metaTitle: 'Optimizing Customer Lifetime Value',
+    })
+
+    dbMocks.updateSet.mockClear()
+    dbMocks.findFirst
+      .mockResolvedValueOnce({ ...samplePost, title: 'Short Stored Title' })
+      .mockResolvedValueOnce(samplePost)
+    await PUT(reqPut('hello', { metaTitle: null }), ctx('hello'))
+    expect(dbMocks.updateSet.mock.calls[0]?.[0]).toMatchObject({ metaTitle: 'Short Stored Title' })
+  })
+
+  it('leaves the stored SEO title alone when the update does not send one', async () => {
+    dbMocks.findFirst.mockResolvedValueOnce(samplePost).mockResolvedValueOnce(samplePost)
+    dbMocks.update.mockResolvedValue(undefined)
+    await PUT(reqPut('hello', { title: 'Updated' }), ctx('hello'))
+    expect(dbMocks.updateSet.mock.calls[0]?.[0]).not.toHaveProperty('metaTitle')
   })
 })
 
