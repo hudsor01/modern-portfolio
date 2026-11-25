@@ -91,4 +91,14 @@ export interface UseContactFormReturn {
   isSubmitting: boolean
   resetForm: () => void
   error: Error | null
+  /**
+   * Bind to `<form action>`. React SSR then emits a POST multipart form bound to
+   * the server action, so the form submits without JavaScript.
+   */
+  formAction: (formData: FormData) => void
+  /**
+   * First server validation message per field from a progressive submit; shown
+   * only when TanStack has none.
+   */
+  serverFieldErrors: ContactFormErrors
 }

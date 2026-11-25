@@ -12,13 +12,44 @@ vi.mock('@/lib/logger', () => ({
   },
 }))
 
-const { submitMock, trackMock } = vi.hoisted(() => ({ submitMock: vi.fn(), trackMock: vi.fn() }))
+const { submitMock, submitActionMock, trackMock, useActionStateMock, actual } = vi.hoisted(() => ({
+  submitMock: vi.fn(),
+  submitActionMock: vi.fn(),
+  trackMock: vi.fn(),
+  useActionStateMock: vi.fn(),
+  actual: { useActionState: undefined as unknown as typeof import('react').useActionState },
+}))
 vi.mock('@/app/contact/actions', () => ({
   submitContactForm: submitMock,
+  submitContactFormAction: submitActionMock,
 }))
 vi.mock('@vercel/analytics', () => ({ track: trackMock }))
+vi.mock('react', async (importOriginal) => {
+  const original = await importOriginal<typeof import('react')>()
+  actual.useActionState = original.useActionState
+  return { ...original, useActionState: useActionStateMock }
+})
 
 import { useContactForm } from '@/hooks/use-contact-form'
+import type { ContactActionState } from '@/types/forms'
+
+const dispatchMock = vi.fn()
+
+function driveActionState(state: ContactActionState, pending = false) {
+  useActionStateMock.mockImplementation(() => [state, dispatchMock, pending])
+}
+
+const errorState: ContactActionState = {
+  status: 'error',
+  error: 'Please check your form and try again.',
+  validationErrors: { phone: ['Please enter a valid phone number'] },
+  values: {
+    name: 'Jane Doe',
+    email: 'jane@example.com',
+    phone: 'abc',
+    message: 'Hello, I would like to talk.',
+  },
+}
 
 const validData = {
   name: 'Jane Doe',
@@ -29,6 +60,10 @@ const validData = {
 beforeEach(() => {
   submitMock.mockReset()
   trackMock.mockReset()
+  dispatchMock.mockReset()
+  useActionStateMock.mockReset()
+  useActionStateMock.mockImplementation(((...args: Parameters<typeof actual.useActionState>) =>
+    actual.useActionState(...args)) as never)
 })
 
 describe('useContactForm', () => {
@@ -140,5 +175,85 @@ describe('useContactForm', () => {
     expect(result.current.formData.name).toBe('')
     expect(result.current.submitStatus).toBe('idle')
     expect(result.current.error).toBeNull()
+  })
+
+  describe('progressive action state', () => {
+    it('passes the imported server action and an idle state to useActionState', () => {
+      driveActionState({ status: 'idle' })
+      const { result } = renderHook(() => useContactForm())
+      expect(useActionStateMock.mock.calls[0]?.[0]).toBe(submitActionMock)
+      expect(useActionStateMock.mock.calls[0]?.[1]).toEqual({ status: 'idle' })
+      expect(result.current.formAction).toBe(dispatchMock)
+    })
+
+    it('real useActionState: idle, no server field errors', () => {
+      const { result } = renderHook(() => useContactForm())
+      expect(result.current.submitStatus).toBe('idle')
+      expect(result.current.error).toBeNull()
+      expect(result.current.serverFieldErrors).toEqual({})
+    })
+
+    it('progressive success: status success and track fires once', () => {
+      driveActionState({ status: 'success', success: true })
+      const { result, rerender } = renderHook(() => useContactForm())
+      expect(result.current.submitStatus).toBe('success')
+      rerender()
+      expect(trackMock).toHaveBeenCalledTimes(1)
+      expect(trackMock).toHaveBeenCalledWith('Contact Submitted', { location: 'contact-form' })
+    })
+
+    it('progressive error: surfaces message, field errors and re-populates values', () => {
+      driveActionState(errorState)
+      const { result } = renderHook(() => useContactForm())
+      expect(result.current.submitStatus).toBe('error')
+      expect(result.current.error?.message).toBe('Please check your form and try again.')
+      expect(result.current.serverFieldErrors).toEqual({
+        phone: 'Please enter a valid phone number',
+      })
+      expect(result.current.formData.name).toBe('Jane Doe')
+      expect(result.current.formData.phone).toBe('abc')
+      expect(result.current.form.state.values.honeypot).toBe('')
+      expect(trackMock).not.toHaveBeenCalled()
+    })
+
+    it('hydrated success after a progressive error leaves fields empty and dismisses the error', async () => {
+      driveActionState(errorState)
+      submitMock.mockResolvedValue({ success: true })
+      const { result } = renderHook(() => useContactForm())
+      act(() => {
+        for (const [key, value] of Object.entries(validData)) {
+          result.current.form.setFieldValue(key as keyof typeof validData, value)
+        }
+        result.current.form.setFieldValue('phone', '')
+      })
+      await act(async () => {
+        await result.current.handleSubmit()
+      })
+      expect(result.current.submitStatus).toBe('success')
+      expect(result.current.error).toBeNull()
+      expect(result.current.serverFieldErrors).toEqual({})
+      for (const key of ['name', 'email', 'phone', 'message'] as const) {
+        expect(result.current.formData[key]).toBe('')
+      }
+    })
+
+    it('resetForm after a progressive error clears everything', () => {
+      driveActionState(errorState)
+      const { result } = renderHook(() => useContactForm())
+      act(() => {
+        result.current.resetForm()
+      })
+      expect(result.current.submitStatus).toBe('idle')
+      expect(result.current.error).toBeNull()
+      expect(result.current.serverFieldErrors).toEqual({})
+      expect(result.current.formData.name).toBe('')
+      expect(result.current.formData.phone).toBe('')
+    })
+
+    it('pending action marks the form as submitting', () => {
+      driveActionState({ status: 'idle' }, true)
+      const { result } = renderHook(() => useContactForm())
+      expect(result.current.isSubmitting).toBe(true)
+    })
   })
 })

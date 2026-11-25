@@ -4,15 +4,20 @@
  */
 
 import type { ChangeEvent, SubmitEvent } from 'react'
-import { useCallback, useMemo, useState } from 'react'
+import { useActionState, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useForm } from '@tanstack/react-form'
 import { track } from '@vercel/analytics'
 import { z } from 'zod'
 import { contactFormSchema } from '@/lib/schemas'
 import { handleHookError } from '@/lib/error-handling'
-import { submitContactForm } from '@/app/contact/actions'
+import { submitContactForm, submitContactFormAction } from '@/app/contact/actions'
 import type { ContactFormData } from '@/types/api'
-import type { ContactFormErrors, SubmitStatus, UseContactFormReturn } from '@/types/forms'
+import type {
+  ContactActionState,
+  ContactFormErrors,
+  SubmitStatus,
+  UseContactFormReturn,
+} from '@/types/forms'
 
 const initialFormData: ContactFormData = {
   name: '',
@@ -20,41 +25,62 @@ const initialFormData: ContactFormData = {
   company: '',
   phone: '',
   message: '',
+  honeypot: '',
 }
 
+const INITIAL_ACTION_STATE: ContactActionState = { status: 'idle' }
+
+const FIELD_KEYS = ['name', 'email', 'company', 'phone', 'message'] as const
+
 export function useContactForm(): UseContactFormReturn {
-  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>('idle')
-  const [error, setError] = useState<Error | null>(null)
+  // The first argument must be the imported server action itself. A client
+  // wrapper loses $$FORM_ACTION and SSR falls back to a javascript: URL, which
+  // breaks the no-JS path.
+  const [actionState, formAction, isActionPending] = useActionState(
+    submitContactFormAction,
+    INITIAL_ACTION_STATE
+  )
+  const [localStatus, setLocalStatus] = useState<SubmitStatus>('idle')
+  const [localError, setLocalError] = useState<Error | null>(null)
+  const [actionStateDismissed, setActionStateDismissed] = useState(false)
+  // useForm re-applies defaultValues on every render, so values seeded from a
+  // progressive result live in state and are cleared together with form.reset.
+  const [defaults, setDefaults] = useState<ContactFormData>(() => ({
+    ...initialFormData,
+    ...actionState.values,
+  }))
 
   const form = useForm({
-    defaultValues: initialFormData,
+    defaultValues: defaults,
     validators: {
       onChange: contactFormSchema,
     },
     onSubmit: async ({ value }) => {
-      setSubmitStatus('submitting')
-      setError(null)
+      setActionStateDismissed(true)
+      setLocalStatus('submitting')
+      setLocalError(null)
 
       try {
         const result = await submitContactForm(value)
 
         if (result.success) {
-          setSubmitStatus('success')
+          setLocalStatus('success')
           // Conversion event for Vercel Web Analytics: fires only after the server
           // action reports success, and carries no form content.
           track('Contact Submitted', { location: 'contact-form' })
-          form.reset()
+          setDefaults(initialFormData)
+          form.reset(initialFormData)
         } else {
-          setSubmitStatus('error')
-          setError(new Error(result.error || 'Submission failed'))
+          setLocalStatus('error')
+          setLocalError(new Error(result.error || 'Submission failed'))
         }
       } catch (err) {
         handleHookError(
           err,
           { operation: 'submitContactForm', component: 'useContactForm' },
-          setError
+          setLocalError
         )
-        setSubmitStatus('error')
+        setLocalStatus('error')
       }
     },
   })
@@ -79,9 +105,41 @@ export function useContactForm(): UseContactFormReturn {
     return mapped
   }, [formData])
 
+  const showActionState = !actionStateDismissed
+  const submitStatus: SubmitStatus =
+    localStatus !== 'idle' || !showActionState ? localStatus : actionState.status
+
+  const error = useMemo<Error | null>(() => {
+    if (localError) return localError
+    if (showActionState && actionState.status === 'error') {
+      return new Error(actionState.error ?? 'Submission failed')
+    }
+    return null
+  }, [localError, showActionState, actionState.status, actionState.error])
+
+  const serverFieldErrors = useMemo<ContactFormErrors>(() => {
+    const mapped: ContactFormErrors = {}
+    if (!showActionState || !actionState.validationErrors) return mapped
+    for (const key of FIELD_KEYS) {
+      const message = actionState.validationErrors[key]?.[0]
+      if (message) mapped[key] = message
+    }
+    return mapped
+  }, [showActionState, actionState.validationErrors])
+
+  // A pre-hydration POST re-renders the page with a success state; track it once.
+  // JS-off sends nothing, by design.
+  const trackedProgressive = useRef(false)
+  useEffect(() => {
+    if (actionState.status === 'success' && !trackedProgressive.current) {
+      trackedProgressive.current = true
+      track('Contact Submitted', { location: 'contact-form' })
+    }
+  }, [actionState.status])
+
   // Calculate form progress
   const progress = calculateProgress(formData)
-  const isSubmitting = submitStatus === 'submitting'
+  const isSubmitting = localStatus === 'submitting' || isActionPending
 
   const handleInputChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -104,9 +162,11 @@ export function useContactForm(): UseContactFormReturn {
   )
 
   function resetForm(): void {
-    form.reset()
-    setSubmitStatus('idle')
-    setError(null)
+    setDefaults(initialFormData)
+    form.reset(initialFormData)
+    setLocalStatus('idle')
+    setLocalError(null)
+    setActionStateDismissed(true)
   }
 
   return {
@@ -120,6 +180,8 @@ export function useContactForm(): UseContactFormReturn {
     isSubmitting,
     resetForm,
     error,
+    formAction,
+    serverFieldErrors,
   }
 }
 
