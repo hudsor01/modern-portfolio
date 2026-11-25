@@ -150,7 +150,7 @@ export const MAX_AMOUNT = 10_000_000_000
  * Why a typed or pasted money amount cannot be used, or null when it can.
  * Grouping commas, spaces and a leading "$" are formatting and allowed. Checks run
  * in this order so each failure gets one precise message: any character that is
- * not a digit, ".", ",", whitespace, "$" or "-" (letters, exponent notation like
+ * not a digit, ".", ",", whitespace, "$" or "-" (letters, scientific forms like
  * 1e6, suffixes like the M in 1.5M, "+") -> "Enter numbers only"; then a minus
  * sign -> the negative message; then a repeated decimal point; then a value above
  * MAX_AMOUNT ($10B). The cap applies to the revenue target and also to average
