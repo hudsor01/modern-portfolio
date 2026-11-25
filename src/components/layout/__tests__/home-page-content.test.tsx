@@ -101,6 +101,15 @@ describe('HomePageContent — ImpactMetric (regression #3)', () => {
     expect(dataValues.every((v) => v !== '0' && v !== null)).toBe(true)
   })
 
+  it('scopes the hero H1 size with the hero-title class and keeps its copy', () => {
+    render(<HomePageContent featuredProjects={featured} />)
+    const h1 = screen.getByRole('heading', { level: 1 })
+    expect(h1.className).toContain('hero-title')
+    expect(h1.textContent).toContain('Transforming')
+    expect(h1.textContent).toContain('Revenue')
+    expect(h1.textContent).toContain('Operations')
+  })
+
   it('styles the running-text mailto link with the shared text-link utility', () => {
     const { container } = render(<HomePageContent featuredProjects={featured} />)
     const link = container.querySelector('p a[href="mailto:hudsor01@icloud.com"]')

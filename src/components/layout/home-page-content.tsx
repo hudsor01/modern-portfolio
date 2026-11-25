@@ -143,7 +143,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
 
                 {/* Main Headline */}
                 <div className="space-y-4">
-                  <h1>
+                  <h1 className="hero-title">
                     Transforming{' '}
                     <span className="relative">
                       <span className="relative z-10 text-primary">Revenue</span>

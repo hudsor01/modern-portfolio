@@ -121,6 +121,18 @@ describe('globals.css cascade', () => {
     expect(h1?.body).toContain('font-size: var(--font-size-6xl)')
   })
 
+  it('scopes the hero H1 fluid size to a hero-title utility capped at the global h1 size', () => {
+    const m = css.match(/@utility\s+hero-title\s*\{([^}]*)\}/)
+    expect(m).not.toBeNull()
+    const fontSize = (m?.[1] ?? '').match(/font-size:\s*clamp\(([^;]*)\);/)
+    expect(fontSize).not.toBeNull()
+    const args = fontSize?.[1] ?? ''
+    expect(args.trim().endsWith('var(--font-size-6xl)')).toBe(true)
+    const min = args.trim().match(/^([\d.]+)rem\b/)
+    expect(min).not.toBeNull()
+    expect(Number(min?.[1])).toBeGreaterThanOrEqual(12 / 14)
+  })
+
   it('makes Tailwind font-sans resolve to Spline via the theme token (no shadowed custom utility)', () => {
     expect(css).toMatch(/@theme\s*\{[^}]*--font-sans:\s*var\(--font-spline\)/)
     expect(css).not.toMatch(/@utility\s+font-sans\b/)

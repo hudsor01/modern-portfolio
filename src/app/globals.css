@@ -823,6 +823,18 @@ input, textarea, select {
   text-wrap: balance;
 }
 
+/*
+ * Hero H1 fluid size (A11Y-05 / I-1). Hero-scoped: the global h1 rule in
+ * @layer base is untouched. Calibrated from a measured 6.086em-wide
+ * "Transforming" at 42px: 3rem is the horizontal space outside the H1
+ * (2 x px-6), 6.57 = 6.086 x 1.08 (8% headroom). The cap is the global h1
+ * size, so any viewport wider than ~318px renders exactly as before; the floor
+ * (1.75rem) stays far above the 12px text minimum.
+ */
+@utility hero-title {
+  font-size: clamp(1.75rem, calc((100vw - 3rem) / 6.57), var(--font-size-6xl));
+}
+
 @utility typography-h2 {
   scroll-margin-top: 5rem;
   border-bottom: 1px solid var(--color-border);
