@@ -1,8 +1,22 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { lowercasePathRedirect } from '@/lib/path-case'
 import { buildEnhancedCSP, shouldEmitUpgradeInsecureRequests } from '@/lib/csp-edge'
 
 export function proxy(request: NextRequest) {
+  // Mixed-case page paths 308 to lowercase. This runs first so a response that
+  // is only a redirect does no nonce/CSP work. 308 keeps the method. next.config
+  // redirects run before proxy, so an uppercase retired slug takes at most two
+  // hops (proxy lowercase, then the next.config 308). The target is the cloned
+  // request URL with only pathname replaced: origin and query are preserved and
+  // the redirect can never leave the site.
+  const lowered = lowercasePathRedirect(request.nextUrl.pathname)
+  if (lowered !== null) {
+    const url = request.nextUrl.clone()
+    url.pathname = lowered
+    return NextResponse.redirect(url, 308)
+  }
+
   const nonce = btoa(crypto.randomUUID())
   const isDev = process.env.NODE_ENV === 'development'
 
