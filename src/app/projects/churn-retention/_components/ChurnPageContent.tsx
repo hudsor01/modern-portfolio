@@ -91,11 +91,11 @@ export default function ChurnAnalysis() {
   return (
     <>
       <ProjectJsonLd
-        title="Partner Churn & Retention Analysis - Predictive Analytics"
-        description="Advanced churn prediction and retention analysis dashboard with partner lifecycle metrics, retention heatmaps, and predictive modeling for partner success optimization."
+        title="Partner Churn Prediction Model"
+        description="Partner churn case study: a prediction model with 89% accuracy that cut quarterly partner churn from 14.2% to 10.9% and lifted high-value retention to 92%."
         slug="churn-retention"
         image={ogImageUrl({
-          title: 'Partner Churn & Retention: Predictive Analytics',
+          title: 'Partner Churn Prediction Model Case Study',
           subtitle: 'Revenue Operations Project',
           project: 'churn-retention',
         })}
@@ -114,7 +114,7 @@ export default function ChurnAnalysis() {
         ]}
       />
       <ProjectPageLayout
-        title="Churn & Retention Analysis"
+        title="Partner Churn Prediction Model"
         description="Track partner churn rates and retention patterns to identify at-risk segments and improve partner success strategies."
         tags={[
           {
