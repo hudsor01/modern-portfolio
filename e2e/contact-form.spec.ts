@@ -14,7 +14,11 @@ import AxeBuilder from '@axe-core/playwright'
 type MutationGuard = {
   /** Aborted same-origin non-GET/HEAD requests to /contact. */
   contact: { method: string; resourceType: string; nextAction: boolean }[]
-  /** Aborted same-origin non-GET/HEAD requests to any other path. */
+  /**
+   * Aborted same-origin non-GET/HEAD requests to any other path. Platform
+   * telemetry under /_vercel/* (Web Analytics and Speed Insights beacons, sent on
+   * a deployed target) is aborted too, but not recorded: it is not a submit.
+   */
   elsewhere: string[]
 }
 
@@ -24,7 +28,9 @@ type MutationGuard = {
  * contact_submissions, whether the submit goes to /contact as a server-action
  * fetch, as a native document POST, or (after a regression) anywhere else.
  * Same-origin ones are recorded so tests can pin exactly one to /contact.
- * Cross-origin ones (Sentry envelopes) are aborted but not recorded.
+ * Cross-origin ones (Sentry envelopes) and same-origin /_vercel/* telemetry are
+ * aborted but not recorded, so the assertions hold against a deployed
+ * PLAYWRIGHT_BASE_URL as well as the local standalone server.
  * Installed in beforeEach, before the first navigation.
  */
 async function guardMutations(page: Page, baseURL: string | undefined): Promise<MutationGuard> {
@@ -48,7 +54,7 @@ async function guardMutations(page: Page, baseURL: string | undefined): Promise<
             resourceType: request.resourceType(),
             nextAction: Boolean(request.headers()['next-action']),
           })
-        } else {
+        } else if (!url.pathname.startsWith('/_vercel/')) {
           guard.elsewhere.push(request.url())
         }
       }
