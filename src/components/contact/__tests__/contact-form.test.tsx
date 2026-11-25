@@ -8,6 +8,7 @@ import { CONTACT_LIMITS, CONTACT_MINIMUMS } from '@/lib/schemas'
 
 let stubValues: Record<string, string> = {}
 let stubErrors: Record<string, unknown[]> = {}
+let stubDirty: Record<string, boolean> = {}
 
 function StubField({
   name,
@@ -16,14 +17,17 @@ function StubField({
   name: string
   children: (field: {
     name: string
-    state: { value: string; meta: { errors: unknown[] } }
+    state: { value: string; meta: { errors: unknown[]; isDirty: boolean } }
     handleChange: (v: string) => void
     handleBlur: () => void
   }) => React.ReactNode
 }) {
   return children({
     name,
-    state: { value: stubValues[name] ?? '', meta: { errors: stubErrors[name] ?? [] } },
+    state: {
+      value: stubValues[name] ?? '',
+      meta: { errors: stubErrors[name] ?? [], isDirty: stubDirty[name] ?? false },
+    },
     handleChange: () => {},
     handleBlur: () => {},
   })
@@ -37,6 +41,7 @@ function createFormStub(
 ) {
   stubValues = values
   stubErrors = errors
+  stubDirty = {}
   const handleSubmit = vi.fn()
   return { handleSubmit, Field: StubField }
 }
@@ -327,6 +332,26 @@ describe('ContactForm', () => {
     })
     expect(container.textContent).toContain('Please enter a valid phone number')
     expect(container.querySelector('#phone')!.getAttribute('aria-invalid')).toBe('true')
+  })
+
+  it('hides a server field error once that field is dirty, keeping the others', () => {
+    const form = createFormStub()
+    stubDirty = { phone: true }
+    const props = {
+      form,
+      formData: {},
+      errors: {},
+      submitStatus: 'error',
+      isSubmitting: false,
+      error: null,
+      formAction: vi.fn(),
+      serverFieldErrors: { phone: 'Server phone message', name: 'Server name message' },
+    } as unknown as UseContactFormReturn
+    const { container } = render(<ContactForm form={props} />)
+    expect(container.textContent).not.toContain('Server phone message')
+    expect(container.querySelector('#phone')!.getAttribute('aria-invalid')).toBe('false')
+    expect(container.textContent).toContain('Server name message')
+    expect(container.querySelector('#name')!.getAttribute('aria-invalid')).toBe('true')
   })
 
   it('client error wins over the server error and never renders [object Object]', () => {

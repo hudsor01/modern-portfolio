@@ -16,6 +16,8 @@ interface FieldMeta {
   touchedOrDirty: boolean
   touched: boolean
   dirty: boolean
+  /** True once the user has changed the value; stays true even if it is changed back. */
+  isDirty: boolean
   isPristine: boolean
   isValidating: boolean
 }

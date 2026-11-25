@@ -30,11 +30,16 @@ const PHONE_PATTERN = String.raw`[\d\s+\(\)\-]*`
 /**
  * Text for a field's FieldError. TanStack errors render as themselves when a
  * string, else their `message`; anything else is dropped. Falls back to the
- * server's (no-JS) field error only when TanStack has none.
+ * server's (no-JS) field error only when TanStack has none and the user has not
+ * changed the field since: the server judged the value it was sent, so once the
+ * field is dirty that message no longer describes what the field holds.
  */
-function fieldErrorText(errors: unknown[] | undefined, serverError: string | undefined): string {
+function fieldErrorText(
+  meta: { errors?: unknown[]; isDirty?: boolean },
+  serverError: string | undefined
+): string {
   const texts: string[] = []
-  for (const err of errors ?? []) {
+  for (const err of meta.errors ?? []) {
     if (typeof err === 'string') texts.push(err)
     else if (
       typeof err === 'object' &&
@@ -45,7 +50,8 @@ function fieldErrorText(errors: unknown[] | undefined, serverError: string | und
       texts.push(err.message)
   }
   const joined = texts.join(', ')
-  return joined !== '' ? joined : (serverError ?? '')
+  if (joined !== '') return joined
+  return meta.isDirty ? '' : (serverError ?? '')
 }
 
 export function ContactForm({ form: formHook }: ContactFormProps) {
@@ -90,7 +96,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
           <form.Field
             name="name"
             children={(field: TanStackFieldApi<string>) => {
-              const errorText = fieldErrorText(field.state.meta.errors, serverFieldErrors.name)
+              const errorText = fieldErrorText(field.state.meta, serverFieldErrors.name)
               const hasError = errorText !== ''
               return (
                 <Field data-invalid={hasError}>
@@ -124,7 +130,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
           <form.Field
             name="email"
             children={(field: TanStackFieldApi<string>) => {
-              const errorText = fieldErrorText(field.state.meta.errors, serverFieldErrors.email)
+              const errorText = fieldErrorText(field.state.meta, serverFieldErrors.email)
               const hasError = errorText !== ''
               return (
                 <Field data-invalid={hasError}>
@@ -160,7 +166,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
           <form.Field
             name="company"
             children={(field: TanStackFieldApi<string>) => {
-              const errorText = fieldErrorText(field.state.meta.errors, serverFieldErrors.company)
+              const errorText = fieldErrorText(field.state.meta, serverFieldErrors.company)
               const hasError = errorText !== ''
               return (
                 <Field data-invalid={hasError}>
@@ -192,7 +198,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
           <form.Field
             name="phone"
             children={(field: TanStackFieldApi<string>) => {
-              const errorText = fieldErrorText(field.state.meta.errors, serverFieldErrors.phone)
+              const errorText = fieldErrorText(field.state.meta, serverFieldErrors.phone)
               const hasError = errorText !== ''
               return (
                 <Field data-invalid={hasError}>
@@ -227,7 +233,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
         <form.Field
           name="message"
           children={(field: TanStackFieldApi<string>) => {
-            const errorText = fieldErrorText(field.state.meta.errors, serverFieldErrors.message)
+            const errorText = fieldErrorText(field.state.meta, serverFieldErrors.message)
             const hasError = errorText !== ''
             return (
               <Field className="flex-1" data-invalid={hasError}>
