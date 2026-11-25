@@ -9,6 +9,14 @@ import { STAT_LABELS, STAT_VALUES } from '@/lib/stats'
 /** Stable node id, so other JSON-LD (ProfilePage on /about) can reference this Person. */
 export const PERSON_ID = `${SITE_ORIGIN}/#person`
 
+/** Current role and employer (matches the résumé), shared by every Person node. */
+export const PERSON_JOB_TITLE = 'Data Analyst'
+export const PERSON_EMPLOYER = {
+  '@type': 'Organization',
+  name: 'HomeVestors of America, Inc.',
+  url: 'https://www.homevestors.com',
+} as const
+
 /** External profiles, shared with the /about ProfilePage. */
 export const PERSON_SAME_AS = [
   'https://www.linkedin.com/in/hudsor01',
@@ -23,8 +31,8 @@ export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
     '@id': PERSON_ID,
     name: 'Richard Hudson',
     alternateName: 'Richard W. Hudson Jr.',
-    jobTitle: 'Senior Revenue Operations Specialist',
-    description: `Senior Revenue Operations Specialist in Dallas-Fort Worth with proven expertise in sales automation, partnership program development, and data-driven growth strategies. Salesloft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. ${STAT_VALUES.revenue} revenue impact, ${STAT_VALUES['transaction-growth']} transaction growth.`,
+    jobTitle: PERSON_JOB_TITLE,
+    description: `Data Analyst at HomeVestors of America in Dallas-Fort Worth, with a background in revenue operations, sales automation and partnership program development. Salesloft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. ${STAT_VALUES.revenue} revenue impact, ${STAT_VALUES['transaction-growth']} transaction growth.`,
     url: SITE_ORIGIN,
     image: `${SITE_ORIGIN}/images/richard.jpg`,
     sameAs: [...PERSON_SAME_AS],
@@ -46,11 +54,7 @@ export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
         addressCountry: 'US',
       },
     },
-    worksFor: {
-      '@type': 'Organization',
-      name: 'Hudson Digital Solutions',
-      url: 'https://hudsondigitalsolutions.com',
-    },
+    worksFor: { ...PERSON_EMPLOYER },
     hasCredential: [
       {
         '@type': 'EducationalOccupationalCredential',

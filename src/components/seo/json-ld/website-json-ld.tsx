@@ -14,7 +14,7 @@ export function WebsiteJsonLd({ nonce }: { nonce?: string | null }) {
     name: 'Richard Hudson',
     alternateName: ['Richard W. Hudson Jr.', 'richardwhudsonjr.com'],
     description:
-      'Portfolio and experience of Richard Hudson, Senior Revenue Operations Specialist with proven track record in business growth strategies.',
+      'Portfolio and experience of Richard Hudson, Data Analyst at HomeVestors of America with a background in revenue operations.',
     url: SITE_ORIGIN,
     author: {
       '@type': 'Person',

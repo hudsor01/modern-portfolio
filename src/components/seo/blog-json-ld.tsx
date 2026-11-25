@@ -9,7 +9,11 @@ import { JsonLdScript } from '@/components/seo/json-ld-script'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
 import { getDisplayYearMonth } from '@/lib/data-formatters'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
-import { PERSON_ID } from '@/components/seo/json-ld/person-json-ld'
+import {
+  PERSON_EMPLOYER,
+  PERSON_ID,
+  PERSON_JOB_TITLE,
+} from '@/components/seo/json-ld/person-json-ld'
 
 /**
  * Blog Website JSON-LD Schema
@@ -29,11 +33,8 @@ export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
       name: 'Richard Hudson',
       url: SITE_ORIGIN,
       sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
-      jobTitle: 'Revenue Operations Professional',
-      worksFor: {
-        '@type': 'Organization',
-        name: 'Hudson Digital Solutions',
-      },
+      jobTitle: PERSON_JOB_TITLE,
+      worksFor: { ...PERSON_EMPLOYER },
     },
     author: {
       '@type': 'Person',
@@ -128,12 +129,9 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
       // the ProfilePage for this Person.
       url: `${SITE_ORIGIN}/about`,
       sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
-      jobTitle: 'Revenue Operations Professional',
+      jobTitle: PERSON_JOB_TITLE,
       description: post.author?.bio,
-      worksFor: {
-        '@type': 'Organization',
-        name: 'Hudson Digital Solutions',
-      },
+      worksFor: { ...PERSON_EMPLOYER },
     },
     // `logo` is an Organization property; a Person publisher takes `image`.
     publisher: {
