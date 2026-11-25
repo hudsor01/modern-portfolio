@@ -15,7 +15,10 @@ function setBadInput(input: HTMLInputElement, bad: boolean) {
   Object.defineProperty(input, 'validity', { value: { badInput: bad }, configurable: true })
 }
 const getTarget = () => screen.getByLabelText('Revenue target (this period)') as HTMLInputElement
-const panelText = () => document.querySelector('[aria-live="polite"]')?.textContent ?? ''
+const panel = () => screen.getByRole('region', { name: 'Your coverage' })
+const panelText = () => panel().textContent ?? ''
+/** The results live region: the only part of the panel announced as it changes. */
+const liveText = () => panel().querySelector('[aria-live="polite"]')?.textContent ?? ''
 
 describe('PipelineCoverageCalculator', () => {
   it('shows the revenue target with grouped digits and keeps grouping while typing', () => {
@@ -44,8 +47,8 @@ describe('PipelineCoverageCalculator', () => {
 
   it('does not stretch the result card to the input card height at lg', () => {
     const { container } = render(<PipelineCoverageCalculator />)
-    const results = container.querySelector('[aria-live="polite"]')
-    expect(results?.className).toContain('lg:self-start')
+    expect(container.contains(panel())).toBe(true)
+    expect(panel().className).toContain('lg:self-start')
   })
 
   it('flags a negative amount instead of silently turning it positive', () => {
@@ -153,7 +156,8 @@ describe('PipelineCoverageCalculator', () => {
     const { container } = render(<PipelineCoverageCalculator />)
     fireEvent.change(getTarget(), { target: { value: '10000000000' } })
     fireEvent.input(screen.getByLabelText('Win rate'), { target: { value: '0.0001' } })
-    const text = container.querySelector('[aria-live="polite"]')?.textContent ?? ''
+    expect(container.contains(panel())).toBe(true)
+    const text = liveText()
     expect(text).toContain('$1T+')
     expect(text).toContain('1,000×+')
     expect(text).not.toMatch(/[\d,]{5,}T/)
@@ -265,6 +269,61 @@ describe('PipelineCoverageCalculator', () => {
     expect(screen.getByRole('alert')).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: 'Mid-market (25%)' }))
     expect(screen.queryByRole('alert')).toBeNull()
+  })
+
+  it('announces each error once: the field alert, never the panel live region', () => {
+    render(<PipelineCoverageCalculator />)
+    const win = screen.getByLabelText('Win rate') as HTMLInputElement
+    fireEvent.input(win, { target: { value: '150' } })
+    expect(screen.getAllByRole('alert')).toHaveLength(1)
+    expect(panelText()).toBe('Fix “Win rate” to see your coverage.')
+    expect(liveText()).toBe('')
+    expect(panel().querySelectorAll('[aria-live]')).toHaveLength(1)
+    fireEvent.input(win, { target: { value: '25' } })
+    expect(screen.queryByRole('alert')).toBeNull()
+    expect(liveText()).toContain('Required coverage')
+  })
+
+  it('echoes a normalized win rate, never the raw text', () => {
+    render(<PipelineCoverageCalculator />)
+    const win = screen.getByLabelText('Win rate') as HTMLInputElement
+    fireEvent.input(win, { target: { value: '1e1' } })
+    expect(liveText()).toContain('at a 10% win rate')
+    expect(liveText()).not.toContain('1e1')
+    fireEvent.input(win, { target: { value: '025' } })
+    expect(liveText()).toContain('at a 25% win rate')
+  })
+
+  it('a hyphen inside an amount is an invalid character; a leading minus is negative', () => {
+    render(<PipelineCoverageCalculator />)
+    const target = getTarget()
+    fireEvent.change(target, { target: { value: '5-3' } })
+    expect(screen.getByRole('alert').textContent).toBe('Enter numbers only')
+    fireEvent.change(target, { target: { value: '−5' } })
+    expect(screen.getByRole('alert').textContent).toBe(NEG)
+  })
+
+  it.each([
+    ['', '25'],
+    ['0', '25'],
+    ['.', '25'],
+    ['$', '25'],
+    ['abc', '25'],
+    ['-5', '25'],
+    ['1.2.3', '25'],
+    ['10000000001', '25'],
+    ['1000000', ''],
+    ['1000000', '0'],
+    ['1000000', '-1'],
+    ['1000000', '101'],
+    ['1000000', '1e400'],
+  ])('target "%s" / win rate "%s": shows a field error and no result figures', (t, w) => {
+    render(<PipelineCoverageCalculator />)
+    fireEvent.change(getTarget(), { target: { value: t } })
+    fireEvent.input(screen.getByLabelText('Win rate'), { target: { value: w } })
+    expect(screen.getAllByRole('alert')).toHaveLength(1)
+    expect(panelText()).toMatch(/^Fix “(Revenue target|Win rate)” to see your coverage\.$/)
+    expect(liveText()).toBe('')
   })
 
   it('keeps the caret on the same digit when a comma is inserted mid-string', () => {

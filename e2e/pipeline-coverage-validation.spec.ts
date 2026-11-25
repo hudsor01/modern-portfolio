@@ -67,7 +67,7 @@ test.describe('pipeline coverage amount validation', () => {
     await expect(target).toHaveValue('10,000,000,000')
     await expect(target).toHaveAttribute('aria-invalid', 'false')
     await expect(page.locator('main').getByRole('alert')).toHaveCount(0)
-    await expect(page.locator('main [aria-live="polite"]')).toContainText('4.0×')
+    await expect(page.getByRole('region', { name: 'Your coverage' })).toContainText('4.0×')
   })
 
   test('malformed win rate is flagged on the percent field', async ({ page }) => {
@@ -86,7 +86,7 @@ test.describe('pipeline coverage amount validation', () => {
     expect(results.violations).toEqual([])
 
     await page
-      .locator('main [aria-live="polite"]')
+      .getByRole('region', { name: 'Your coverage' })
       .getByRole('button', { name: 'Win rate' })
       .click()
     await expect(win).toBeFocused()
@@ -102,7 +102,7 @@ test.describe('pipeline coverage amount validation', () => {
     page,
   }) => {
     const alert = page.locator('main').getByRole('alert')
-    const panel = page.locator('main [aria-live="polite"]')
+    const panel = page.getByRole('region', { name: 'Your coverage' })
     const win = page.getByLabel('Win rate')
     await win.fill('')
     await expect(alert).toHaveText('Enter a win rate.')
@@ -148,7 +148,7 @@ test.describe('pipeline coverage amount validation', () => {
     await expect(alert).toHaveText('Enter a win rate.')
     expect(await win.getAttribute('aria-describedby')).toBe(await alert.getAttribute('id'))
     await page
-      .locator('main [aria-live="polite"]')
+      .getByRole('region', { name: 'Your coverage' })
       .getByRole('button', { name: 'Win rate' })
       .click()
     await expect(win).toBeFocused()
@@ -164,10 +164,34 @@ test.describe('pipeline coverage amount validation', () => {
     await expect(page.getByText('Fix “% truly qualified” to see your coverage.')).toBeVisible()
   })
 
+  test('an error is announced once, by the field, and the rate is echoed normalized', async ({
+    page,
+  }) => {
+    const win = page.getByLabel('Win rate')
+    const live = page.getByRole('region', { name: 'Your coverage' }).locator('[aria-live="polite"]')
+    await win.fill('150')
+    await expect(page.locator('main').getByRole('alert')).toHaveCount(1)
+    await expect(page.getByText('Fix “Win rate” to see your coverage.')).toBeVisible()
+    await expect(live).toHaveText('')
+    await win.fill('1e1')
+    await expect(page.locator('main').getByRole('alert')).toHaveCount(0)
+    await expect(live).toContainText('at a 10% win rate')
+    await expect(live).not.toContainText('1e1')
+  })
+
+  test('a hyphen inside an amount reads as an invalid character', async ({ page }) => {
+    const target = page.getByLabel('Revenue target (this period)')
+    const alert = page.locator('main').getByRole('alert')
+    await target.fill('5-3')
+    await expect(alert).toHaveText('Enter numbers only')
+    await target.fill('-5')
+    await expect(alert).toHaveText(NEG)
+  })
+
   test('extreme inputs never print absurd figures', async ({ page }) => {
     await page.getByLabel('Revenue target (this period)').fill('10000000000')
     await page.getByLabel('Win rate').fill('0.0001')
-    const panel = page.locator('main [aria-live="polite"]')
+    const panel = page.getByRole('region', { name: 'Your coverage' })
     await expect(panel).toContainText('$1T+')
     await expect(panel).toContainText('1,000×+')
     await expect(panel).not.toContainText(/[\d,]{5,}T/)

@@ -11,6 +11,7 @@ import {
   formatGrouped,
   formatMoney,
   formatMultiple,
+  formatPercent,
   percentFieldError,
   sanitizeAmount,
   targetFieldError,
@@ -222,12 +223,15 @@ export function PipelineCoverageCalculator() {
         </div>
       </div>
 
-      {/* Results */}
+      {/* Results. Every invalid input is a field error (announced once, by the field's
+          alert), so the "Fix …" prompt sits outside the live region, which carries only
+          the results. computeCoverage is valid whenever no field reports an error. */}
       <div
+        role="region"
+        aria-label="Your coverage"
         className="bg-card rounded-2xl p-6 sm:p-8 border border-border shadow-sm lg:self-start"
-        aria-live="polite"
       >
-        {firstInvalid ? (
+        {firstInvalid && (
           <div className="h-full flex items-center justify-center text-center">
             <p>
               Fix “
@@ -241,72 +245,72 @@ export function PipelineCoverageCalculator() {
               ” to see your coverage.
             </p>
           </div>
-        ) : !result.valid ? (
-          <div className="h-full flex items-center justify-center text-center">
-            <p>{result.error}</p>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            <div>
-              <p className="uppercase tracking-wider">Required coverage</p>
-              <p className="mt-1 text-5xl font-bold text-primary tracking-tight">
-                {formatMultiple(result.requiredCoverage)}
-              </p>
-              <p className="mt-1">
-                ≈ <strong>{formatMoney(result.requiredPipeline)}</strong> in qualified pipeline to
-                hit {formatMoney(parse(target, 'target') ?? 0)}.
-              </p>
-            </div>
-
-            <div className="rounded-xl bg-muted/50 p-4 text-sm">
-              <p>
-                The generic <strong>3× rule</strong> would tell you to build{' '}
-                {formatMoney(result.lazyThreeXPipeline)} —{' '}
-                {result.vsLazyThreeX > 0 ? (
-                  <span className="text-destructive font-medium">
-                    {formatMoney(Math.abs(result.vsLazyThreeX))} too little
-                  </span>
-                ) : result.vsLazyThreeX < 0 ? (
-                  <span className="text-success font-medium">
-                    {formatMoney(Math.abs(result.vsLazyThreeX))} more than you need
-                  </span>
-                ) : (
-                  <span className="font-medium">exactly right (rare)</span>
-                )}{' '}
-                at a {winRate.value}% win rate.
-              </p>
-            </div>
-
-            {result.oppsNeeded !== undefined && result.dealsToWin !== undefined && (
-              <div className="text-sm text-foreground">
-                That’s ≈ <strong>{formatCount(result.oppsNeeded)}</strong> qualified opps in flight
-                to win the <strong>{formatCount(result.dealsToWin)}</strong> deals you need.
-              </div>
-            )}
-
-            {result.pipelineGap !== undefined && result.currentCoverage !== undefined && (
-              <div className="rounded-xl border border-border p-4">
-                <p>
-                  You have {formatMultiple(result.currentCoverage)} coverage today
-                  {result.effectiveCurrentPipeline !== undefined &&
-                    ` (${formatMoney(result.effectiveCurrentPipeline)} qualified)`}
-                  .
+        )}
+        <div aria-live="polite">
+          {!firstInvalid && (
+            <div className="space-y-6">
+              <div>
+                <p className="uppercase tracking-wider">Required coverage</p>
+                <p className="mt-1 text-5xl font-bold text-primary tracking-tight">
+                  {formatMultiple(result.requiredCoverage)}
                 </p>
                 <p className="mt-1">
-                  {result.pipelineGap > 0.5 ? (
-                    <span className="text-destructive">
-                      Shortfall: build {formatMoney(result.pipelineGap)} more pipeline.
-                    </span>
-                  ) : (
-                    <span className="text-success">
-                      Surplus: {formatMoney(Math.abs(result.pipelineGap))} above target coverage.
-                    </span>
-                  )}
+                  ≈ <strong>{formatMoney(result.requiredPipeline)}</strong> in qualified pipeline to
+                  hit {formatMoney(parse(target, 'target') ?? 0)}.
                 </p>
               </div>
-            )}
-          </div>
-        )}
+
+              <div className="rounded-xl bg-muted/50 p-4 text-sm">
+                <p>
+                  The generic <strong>3× rule</strong> would tell you to build{' '}
+                  {formatMoney(result.lazyThreeXPipeline)} —{' '}
+                  {result.vsLazyThreeX > 0 ? (
+                    <span className="text-destructive font-medium">
+                      {formatMoney(Math.abs(result.vsLazyThreeX))} too little
+                    </span>
+                  ) : result.vsLazyThreeX < 0 ? (
+                    <span className="text-success font-medium">
+                      {formatMoney(Math.abs(result.vsLazyThreeX))} more than you need
+                    </span>
+                  ) : (
+                    <span className="font-medium">exactly right (rare)</span>
+                  )}{' '}
+                  at a {formatPercent(result.winRate * 100)} win rate.
+                </p>
+              </div>
+
+              {result.oppsNeeded !== undefined && result.dealsToWin !== undefined && (
+                <div className="text-sm text-foreground">
+                  That’s ≈ <strong>{formatCount(result.oppsNeeded)}</strong> qualified opps in
+                  flight to win the <strong>{formatCount(result.dealsToWin)}</strong> deals you
+                  need.
+                </div>
+              )}
+
+              {result.pipelineGap !== undefined && result.currentCoverage !== undefined && (
+                <div className="rounded-xl border border-border p-4">
+                  <p>
+                    You have {formatMultiple(result.currentCoverage)} coverage today
+                    {result.effectiveCurrentPipeline !== undefined &&
+                      ` (${formatMoney(result.effectiveCurrentPipeline)} qualified)`}
+                    .
+                  </p>
+                  <p className="mt-1">
+                    {result.pipelineGap > 0.5 ? (
+                      <span className="text-destructive">
+                        Shortfall: build {formatMoney(result.pipelineGap)} more pipeline.
+                      </span>
+                    ) : (
+                      <span className="text-success">
+                        Surplus: {formatMoney(Math.abs(result.pipelineGap))} above target coverage.
+                      </span>
+                    )}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

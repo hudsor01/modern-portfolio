@@ -71,10 +71,10 @@ export function computeCoverage(input: CoverageInput): CoverageResult {
     return invalid(TARGET_REQUIRED_MESSAGE)
   }
   if (typeof winRatePct !== 'number' || !Number.isFinite(winRatePct) || winRatePct <= 0) {
-    return invalid('Win rate must be greater than 0%.')
+    return invalid(WIN_RATE_POSITIVE_MESSAGE)
   }
   if (winRatePct > 100) {
-    return invalid('Win rate can’t exceed 100%.')
+    return invalid(WIN_RATE_MAX_MESSAGE)
   }
 
   const winRate = winRatePct / 100
@@ -144,24 +144,31 @@ export type AmountKind = 'target' | 'amount'
 export const NUMBERS_ONLY_MESSAGE = 'Enter numbers only'
 export const TARGET_REQUIRED_MESSAGE = 'Enter a revenue target greater than $0.'
 export const WIN_RATE_REQUIRED_MESSAGE = 'Enter a win rate.'
+export const WIN_RATE_POSITIVE_MESSAGE = 'Win rate must be greater than 0%.'
+export const WIN_RATE_MAX_MESSAGE = 'Win rate can’t exceed 100%.'
 export const NEGATIVE_MESSAGE = 'Negative amounts are not allowed. Enter a positive number.'
 /** Largest money amount any field accepts, in dollars. */
 export const MAX_AMOUNT = 10_000_000_000
 
+/** One leading minus sign (hyphen or Unicode minus), optionally after "$" and spaces. */
+const LEADING_MINUS = /^(\s*(?:\$\s*)?)[-\u2212]/
+
 /**
  * Why a typed or pasted money amount cannot be used, or null when it can.
  * Grouping commas, spaces and a leading "$" are formatting and allowed. Checks run
- * in this order so each failure gets one precise message: any character that is
- * not a digit, ".", ",", whitespace, "$" or "-" (letters, scientific forms like
- * 1e6, suffixes like the M in 1.5M, "+") -> "Enter numbers only"; then a minus
- * sign -> the negative message; then a repeated decimal point; then a value above
- * MAX_AMOUNT ($10B). The cap applies to the revenue target and also to average
- * deal size and open pipeline: an uncapped open pipeline would make
- * `effectiveCurrentPipeline` and `currentCoverage` unbounded.
+ * in this order so each failure gets one precise message: after setting aside one
+ * leading minus sign ("-5", "−5", "$-5", "-$5"), any character that is not a digit,
+ * ".", ",", whitespace or "$" (letters, scientific forms like 1e6, suffixes like the
+ * M in 1.5M, "+", or a minus anywhere but the start, as in 5-3) -> "Enter numbers
+ * only"; then the leading minus -> the negative message; then a repeated decimal
+ * point; then a value above MAX_AMOUNT ($10B). The cap applies to the revenue
+ * target and also to average deal size and open pipeline: an uncapped open
+ * pipeline would make `effectiveCurrentPipeline` and `currentCoverage` unbounded.
  */
 export function amountInputError(raw: string, kind: AmountKind): string | null {
-  if (/[^\d.,\s$-]/.test(raw)) return NUMBERS_ONLY_MESSAGE
-  if (raw.includes('-')) return NEGATIVE_MESSAGE
+  const unsigned = raw.replace(LEADING_MINUS, '$1')
+  if (/[^\d.,\s$]/.test(unsigned)) return NUMBERS_ONLY_MESSAGE
+  if (unsigned !== raw) return NEGATIVE_MESSAGE
   if ((raw.match(/\./g) ?? []).length > 1) return 'Use a single decimal point.'
   if (Number(sanitizeAmount(raw)) > MAX_AMOUNT) {
     return kind === 'target' ? 'Enter a target up to $10B' : 'Enter an amount up to $10B'
@@ -200,8 +207,8 @@ export function percentFieldError(
   if (!Number.isFinite(n)) return NUMBERS_ONLY_MESSAGE
   if (n < 0) return NEGATIVE_MESSAGE
   if (field === 'win') {
-    if (n === 0) return 'Win rate must be greater than 0%.'
-    if (n > 100) return 'Win rate can’t exceed 100%.'
+    if (n === 0) return WIN_RATE_POSITIVE_MESSAGE
+    if (n > 100) return WIN_RATE_MAX_MESSAGE
   } else if (field === 'qualified') {
     if (n > 100) return 'Enter a percentage up to 100%.'
   } else if (n > 1000) {
@@ -239,6 +246,16 @@ export function formatMoney(n: number): string {
 export function formatMultiple(n: number): string {
   if (Math.round(n * 10) / 10 >= MAX_DISPLAY_MULTIPLE) return '1,000×+'
   return `${n.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}×`
+}
+
+/**
+ * A percentage as a person would write it, never as typed: "1e1" -> "10%",
+ * "33.3333" -> "33.33%", and a rate below 1% keeps two significant digits
+ * ("0.0001%") instead of rounding to "0%".
+ */
+export function formatPercent(n: number): string {
+  const digits = n < 1 ? { maximumSignificantDigits: 2 } : { maximumFractionDigits: 2 }
+  return `${n.toLocaleString('en-US', digits)}%`
 }
 
 export function formatCount(n: number): string {

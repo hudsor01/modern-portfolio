@@ -6,6 +6,7 @@ import {
   caretAfterFormat,
   formatCount,
   formatGrouped,
+  formatPercent,
   formatMoney,
   formatMultiple,
   MAX_AMOUNT,
@@ -13,6 +14,8 @@ import {
   sanitizeAmount,
   TARGET_REQUIRED_MESSAGE,
   targetFieldError,
+  WIN_RATE_MAX_MESSAGE,
+  WIN_RATE_POSITIVE_MESSAGE,
   WIN_RATE_REQUIRED_MESSAGE,
   type CoverageInput,
 } from '@/lib/pipeline-coverage'
@@ -200,10 +203,20 @@ describe('amountInputError', () => {
     expect(amountInputError('12abc', 'amount')).toBe('Enter numbers only')
   })
 
-  it('a negative gives its own message, different from letters', () => {
-    expect(amountInputError('-5', 'target')).toBe(NEG)
-    expect(amountInputError('5-', 'amount')).toBe(NEG)
+  it('a leading minus (hyphen or Unicode minus) gives its own message, different from letters', () => {
+    for (const negative of ['-5', '−5', ' -5', '$-5', '-$5', '$ −1,000', '-0']) {
+      expect(amountInputError(negative, 'target')).toBe(NEG)
+    }
     expect(amountInputError('-5', 'target')).not.toBe(amountInputError('abc', 'target'))
+  })
+
+  it('a minus anywhere but the start is an invalid character, hyphen or Unicode', () => {
+    for (const bad of ['5-3', '5-', '5−3', '--5', '-−5', '-5-', '1,000-']) {
+      expect(amountInputError(bad, 'amount')).toBe('Enter numbers only')
+    }
+    // Invalid characters still win over a leading minus.
+    expect(amountInputError('-abc', 'target')).toBe('Enter numbers only')
+    expect(amountInputError('−1e6', 'target')).toBe('Enter numbers only')
   })
 
   it('flags a repeated decimal point', () => {
@@ -274,6 +287,87 @@ describe('percentFieldError', () => {
     expect(percentFieldError('0', false, 'qualified')).toBeNull()
     expect(percentFieldError('1000', false, 'safety')).toBeNull()
     expect(percentFieldError('0', false, 'safety')).toBeNull()
+  })
+})
+
+describe('win-rate messages', () => {
+  it('computeCoverage and percentFieldError share one message per rule', () => {
+    expect(computeCoverage({ revenueTarget: 1, winRatePct: 0 }).error).toBe(
+      WIN_RATE_POSITIVE_MESSAGE
+    )
+    expect(percentFieldError('0', false, 'win')).toBe(WIN_RATE_POSITIVE_MESSAGE)
+    expect(computeCoverage({ revenueTarget: 1, winRatePct: 101 }).error).toBe(WIN_RATE_MAX_MESSAGE)
+    expect(percentFieldError('101', false, 'win')).toBe(WIN_RATE_MAX_MESSAGE)
+    expect(WIN_RATE_POSITIVE_MESSAGE).toBe('Win rate must be greater than 0%.')
+    expect(WIN_RATE_MAX_MESSAGE).toBe('Win rate can’t exceed 100%.')
+  })
+})
+
+describe('field errors cover every invalid computation', () => {
+  // Mirrors the calculator: a target with no field error is parsed with sanitizeAmount,
+  // a win rate with no field error with Number. Whenever neither field reports an
+  // error, computeCoverage must be valid, so the UI needs no "invalid result" branch.
+  const targets = [
+    '',
+    ' ',
+    '0',
+    '0.00',
+    '.',
+    '$',
+    '$0',
+    '-5',
+    '−5',
+    '5-3',
+    'abc',
+    '1e6',
+    '1.2.3',
+    '0.5',
+    '1',
+    '$2,000',
+    '1,000,000',
+    '10000000000',
+    '10000000001',
+  ]
+  const winRates = [
+    '',
+    ' ',
+    '0',
+    '-1',
+    '0.0001',
+    '1',
+    '25',
+    '1e1',
+    '100',
+    '100.5',
+    '101',
+    'Infinity',
+  ]
+  it.each(targets)('target "%s" across win rates', (t) => {
+    for (const w of winRates) {
+      const fieldsOk = targetFieldError(t) === null && percentFieldError(w, false, 'win') === null
+      const result = computeCoverage({
+        revenueTarget: Number(sanitizeAmount(t)),
+        winRatePct: w.trim() === '' ? Number.NaN : Number(w),
+      })
+      if (fieldsOk) expect(result.valid, `${t} / ${w}`).toBe(true)
+      if (!result.valid) expect(fieldsOk, `${t} / ${w}`).toBe(false)
+    }
+  })
+})
+
+describe('formatPercent', () => {
+  it('normalizes the rate instead of echoing what was typed', () => {
+    expect(formatPercent(Number('1e1'))).toBe('10%')
+    expect(formatPercent(25)).toBe('25%')
+    expect(formatPercent(33.33333)).toBe('33.33%')
+    expect(formatPercent(100)).toBe('100%')
+    expect(formatPercent(Number('025'))).toBe('25%')
+  })
+
+  it('keeps a sub-1% rate visible instead of rounding it to 0%', () => {
+    expect(formatPercent(0.5)).toBe('0.5%')
+    expect(formatPercent(0.0001)).toBe('0.0001%')
+    expect(formatPercent(0.00012345)).toBe('0.00012%')
   })
 })
 
