@@ -132,6 +132,8 @@ describe('ContactForm with the real hook', () => {
     await submit(container)
     await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(1))
     expect(submitMock.mock.calls[0]?.[0]).toMatchObject({ honeypot: '', name: 'Jane Doe' })
+    // The hook's handleSubmit prevented React's native form action.
+    expect(submitActionMock).not.toHaveBeenCalled()
   })
 
   it('blocks an emoji-only name the native minLength lets through, with no request (WR-06)', async () => {

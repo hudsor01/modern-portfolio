@@ -3,7 +3,7 @@
  * Consolidates validation, state management, and submission logic
  */
 
-import type { ChangeEvent, SubmitEvent } from 'react'
+import type { SubmitEvent } from 'react'
 import { useActionState, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useForm } from '@tanstack/react-form'
 import { track } from '@vercel/analytics'
@@ -141,24 +141,29 @@ export function useContactForm(): UseContactFormReturn {
   const progress = calculateProgress(formData)
   const isSubmitting = localStatus === 'submitting' || isActionPending
 
-  const handleInputChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const { name, value } = event.target
-      if (!name) return
-      form.setFieldValue(
-        name as keyof ContactFormData,
-        value as ContactFormData[keyof ContactFormData]
-      )
-    },
-    [form]
-  )
-
+  // The one hydrated submit path: bind it to `<form onSubmit>`. Both guards live
+  // here so no caller can reach TanStack's handleSubmit without them.
   const handleSubmit = useCallback(
-    async (event?: SubmitEvent<HTMLFormElement>) => {
-      event?.preventDefault()
+    async (event: SubmitEvent<HTMLFormElement>): Promise<void> => {
+      // Stops React's native form action too (react-dom checks defaultPrevented),
+      // so it must run first, even for a submit the guard below ignores.
+      event.preventDefault()
+      // Re-entry guard. TanStack's handleSubmit has none, and `isSubmitting` only
+      // disables the button after validation and a re-render, so a double click
+      // or a programmatic requestSubmit would start a second send.
+      // form.state.isSubmitting is set synchronously when handleSubmit starts and
+      // stays true until onSubmit settles.
+      if (isSubmitting || form.state.isSubmitting) return
+      // A bot that sets the trap's `.value` directly never fires onChange, so
+      // TanStack would submit an empty honeypot. Read it from the DOM, as the
+      // no-JS path does, so both paths judge the same filled form.
+      const trap = event.currentTarget.elements.namedItem('honeypot')
+      if (trap instanceof HTMLInputElement && trap.value !== '') {
+        form.setFieldValue('honeypot', trap.value)
+      }
       await form.handleSubmit()
     },
-    [form]
+    [form, isSubmitting]
   )
 
   function resetForm(): void {
@@ -173,7 +178,6 @@ export function useContactForm(): UseContactFormReturn {
     form,
     formData,
     errors,
-    handleInputChange,
     handleSubmit,
     submitStatus,
     progress,

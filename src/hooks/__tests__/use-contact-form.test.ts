@@ -30,10 +30,31 @@ vi.mock('react', async (importOriginal) => {
   return { ...original, useActionState: useActionStateMock }
 })
 
+import type { SubmitEvent } from 'react'
 import { useContactForm } from '@/hooks/use-contact-form'
 import type { ContactActionState } from '@/types/forms'
 
 const dispatchMock = vi.fn()
+
+/** A submit event from a real form holding the honeypot input, as the page renders it. */
+function submitEvent(honeypot = '') {
+  const formEl = document.createElement('form')
+  const trap = document.createElement('input')
+  trap.name = 'honeypot'
+  trap.value = honeypot
+  formEl.append(trap)
+  const preventDefault = vi.fn()
+  const event = { currentTarget: formEl, preventDefault } as unknown as SubmitEvent<HTMLFormElement>
+  return { event, preventDefault }
+}
+
+function fillValid(result: { current: ReturnType<typeof useContactForm> }) {
+  act(() => {
+    for (const [key, value] of Object.entries(validData)) {
+      result.current.form.setFieldValue(key as keyof typeof validData, value)
+    }
+  })
+}
 
 function driveActionState(state: ContactActionState, pending = false) {
   useActionStateMock.mockImplementation(() => [state, dispatchMock, pending])
@@ -111,7 +132,7 @@ describe('useContactForm', () => {
       }
     })
     await act(async () => {
-      await result.current.handleSubmit()
+      await result.current.handleSubmit(submitEvent().event)
     })
     expect(submitMock).toHaveBeenCalledTimes(1)
     expect(result.current.submitStatus).toBe('success')
@@ -129,7 +150,7 @@ describe('useContactForm', () => {
       }
     })
     await act(async () => {
-      await result.current.handleSubmit()
+      await result.current.handleSubmit(submitEvent().event)
     })
     expect(result.current.submitStatus).toBe('error')
     expect(result.current.error?.message).toBe('rate limited')
@@ -145,23 +166,83 @@ describe('useContactForm', () => {
       }
     })
     await act(async () => {
-      await result.current.handleSubmit()
+      await result.current.handleSubmit(submitEvent().event)
     })
     expect(result.current.submitStatus).toBe('error')
     expect(result.current.error).toBeInstanceOf(Error)
   })
 
-  it('handleInputChange writes through to the underlying form', () => {
+  it('handleSubmit prevents the native POST', async () => {
+    submitMock.mockResolvedValue({ success: true })
     const { result } = renderHook(() => useContactForm())
-    const fakeEvent = {
-      target: { name: 'name', value: 'Alice' },
-    } as unknown as React.ChangeEvent<HTMLInputElement>
-    act(() => {
-      result.current.handleInputChange(fakeEvent)
+    fillValid(result)
+    const { event, preventDefault } = submitEvent()
+    await act(async () => {
+      await result.current.handleSubmit(event)
     })
-    // formData is read from form.state.values at hook-call time. tanstack/form
-    // updates state synchronously; the value lands on form.state.values.
-    expect(result.current.form.state.values.name).toBe('Alice')
+    expect(preventDefault).toHaveBeenCalledTimes(1)
+  })
+
+  it('handleSubmit sends a honeypot set straight on the DOM (WR-02)', async () => {
+    submitMock.mockResolvedValue({ success: true })
+    const { result } = renderHook(() => useContactForm())
+    fillValid(result)
+    await act(async () => {
+      await result.current.handleSubmit(submitEvent('http://spam.example').event)
+    })
+    expect(submitMock).toHaveBeenCalledTimes(1)
+    expect(submitMock.mock.calls[0]?.[0]).toMatchObject({ honeypot: 'http://spam.example' })
+  })
+
+  it('handleSubmit leaves an empty honeypot alone', async () => {
+    submitMock.mockResolvedValue({ success: true })
+    const { result } = renderHook(() => useContactForm())
+    fillValid(result)
+    await act(async () => {
+      await result.current.handleSubmit(submitEvent().event)
+    })
+    expect(submitMock.mock.calls[0]?.[0]).toMatchObject({ honeypot: '', name: 'Jane Doe' })
+  })
+
+  it('handleSubmit ignores a re-entrant submit, still preventing its native POST (WR-07)', async () => {
+    let resolveSubmit: (value: { success: boolean }) => void = () => {}
+    submitMock.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveSubmit = resolve
+        })
+    )
+    const { result } = renderHook(() => useContactForm())
+    fillValid(result)
+    const first = submitEvent()
+    const second = submitEvent()
+    let firstDone: Promise<void> = Promise.resolve()
+    await act(async () => {
+      // Same render, so only TanStack's synchronous isSubmitting can stop the second.
+      firstDone = result.current.handleSubmit(first.event)
+      await result.current.handleSubmit(second.event)
+    })
+    expect(second.preventDefault).toHaveBeenCalledTimes(1)
+    expect(submitMock).toHaveBeenCalledTimes(1)
+    await act(async () => {
+      resolveSubmit({ success: true })
+      await firstDone
+    })
+    expect(result.current.submitStatus).toBe('success')
+    expect(submitMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('handleSubmit ignores a submit while a progressive action is pending', async () => {
+    driveActionState({ status: 'idle' }, true)
+    const { result } = renderHook(() => useContactForm())
+    fillValid(result)
+    const { event, preventDefault } = submitEvent('bot')
+    await act(async () => {
+      await result.current.handleSubmit(event)
+    })
+    expect(preventDefault).toHaveBeenCalledTimes(1)
+    expect(submitMock).not.toHaveBeenCalled()
+    expect(result.current.form.state.values.honeypot).toBe('')
   })
 
   it('resetForm restores defaults', () => {
@@ -214,7 +295,7 @@ describe('useContactForm', () => {
         result.current.form.setFieldValue('phone', '')
       })
       await act(async () => {
-        await result.current.handleSubmit()
+        await result.current.handleSubmit(submitEvent().event)
       })
       expect(result.current.submitStatus).toBe('error')
       expect(result.current.fromAction).toBe(false)
@@ -263,7 +344,7 @@ describe('useContactForm', () => {
         result.current.form.setFieldValue('phone', '')
       })
       await act(async () => {
-        await result.current.handleSubmit()
+        await result.current.handleSubmit(submitEvent().event)
       })
       expect(result.current.submitStatus).toBe('success')
       expect(result.current.error).toBeNull()

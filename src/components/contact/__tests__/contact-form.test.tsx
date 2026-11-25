@@ -33,19 +33,19 @@ function StubField({
   })
 }
 
-// Minimal stand-in for TanStack Form's `form` object — only the surface the
-// component actually touches (handleSubmit + Field render-prop).
+// Minimal stand-in for TanStack Form's `form` object. The component renders only
+// its Field render-prop; handleSubmit and setFieldValue are spies that must stay
+// untouched, because the hook's guarded handleSubmit is the only submit path.
 function createFormStub(
   values: Record<string, string> = {},
-  errors: Record<string, unknown[]> = {},
-  formState: { isSubmitting: boolean } = { isSubmitting: false }
+  errors: Record<string, unknown[]> = {}
 ) {
   stubValues = values
   stubErrors = errors
   stubDirty = {}
   const handleSubmit = vi.fn()
   const setFieldValue = vi.fn()
-  return { handleSubmit, setFieldValue, state: formState, Field: StubField }
+  return { handleSubmit, setFieldValue, Field: StubField }
 }
 
 function renderForm(
@@ -58,7 +58,6 @@ function renderForm(
     form,
     formData: { name: '', email: '', message: '' },
     errors: {},
-    handleInputChange: vi.fn(),
     handleSubmit: vi.fn(),
     submitStatus: 'idle',
     progress: 0,
@@ -88,7 +87,6 @@ describe('ContactForm', () => {
       form,
       formData: { name: '', email: '', message: '' },
       errors: {},
-      handleInputChange: vi.fn(),
       handleSubmit: vi.fn(),
       submitStatus: 'idle',
       progress: 0,
@@ -169,12 +167,16 @@ describe('ContactForm', () => {
     expect(screen.queryByText(/please accept/i)).toBeNull()
   })
 
-  it('invokes form.handleSubmit on form submit', () => {
-    const { form, container } = renderForm()
+  it("submits through the hook's guarded handleSubmit, never TanStack's directly", () => {
+    const handleSubmit = vi.fn()
+    const { form, container } = renderForm({ handleSubmit })
     const formEl = container.querySelector('form')
     expect(formEl).toBeTruthy()
     fireEvent.submit(formEl!)
-    expect(form.handleSubmit).toHaveBeenCalledTimes(1)
+    expect(handleSubmit).toHaveBeenCalledTimes(1)
+    expect(handleSubmit.mock.calls[0]?.[0]?.target).toBe(formEl)
+    expect(form.handleSubmit).not.toHaveBeenCalled()
+    expect(form.setFieldValue).not.toHaveBeenCalled()
   })
 
   it('renders the privacy notice with a new-tab link to /privacy', () => {
@@ -367,58 +369,19 @@ describe('ContactForm', () => {
     expect(html).not.toContain('javascript:')
   })
 
-  it('hydrated submit goes to TanStack once and never to formAction', () => {
+  it('a hydrated submit the hook prevents never reaches formAction', () => {
     const formAction = vi.fn()
-    const { form, container } = renderForm({ formAction })
-    fireEvent.submit(container.querySelector('form')!)
-    expect(form.handleSubmit).toHaveBeenCalledTimes(1)
-    expect(formAction).not.toHaveBeenCalled()
-  })
-
-  it('ignores a submit while the hook reports one in flight, still preventing the native POST', () => {
-    const formAction = vi.fn()
-    const { form, container } = renderForm({ isSubmitting: true, formAction })
-    const event = createEvent.submit(container.querySelector('form')!)
-    fireEvent(container.querySelector('form')!, event)
+    const handleSubmit = vi.fn((event: { preventDefault: () => void }) => event.preventDefault())
+    const { container } = renderForm({
+      formAction,
+      handleSubmit: handleSubmit as unknown as UseContactFormReturn['handleSubmit'],
+    })
+    const formEl = container.querySelector('form')!
+    const event = createEvent.submit(formEl)
+    fireEvent(formEl, event)
+    expect(handleSubmit).toHaveBeenCalledTimes(1)
     expect(event.defaultPrevented).toBe(true)
-    expect(form.handleSubmit).not.toHaveBeenCalled()
     expect(formAction).not.toHaveBeenCalled()
-  })
-
-  it('ignores a submit while TanStack is already submitting (before the re-render)', () => {
-    const form = createFormStub({}, {}, { isSubmitting: true })
-    const props = {
-      form,
-      formData: {},
-      errors: {},
-      submitStatus: 'idle',
-      isSubmitting: false,
-      error: null,
-      formAction: vi.fn(),
-      serverFieldErrors: {},
-      fromAction: false,
-    } as unknown as UseContactFormReturn
-    const { container } = render(<ContactForm form={props} />)
-    fireEvent.submit(container.querySelector('form')!)
-    expect(form.handleSubmit).not.toHaveBeenCalled()
-  })
-
-  it('copies a DOM-filled honeypot into the form before submitting', () => {
-    const { form, container } = renderForm()
-    const trap = container.querySelector('input[name="honeypot"]') as HTMLInputElement
-    trap.value = 'bot'
-    fireEvent.submit(container.querySelector('form')!)
-    expect(form.setFieldValue).toHaveBeenCalledWith('honeypot', 'bot')
-    expect(form.setFieldValue.mock.invocationCallOrder[0]).toBeLessThan(
-      form.handleSubmit.mock.invocationCallOrder[0]!
-    )
-  })
-
-  it('leaves an empty honeypot alone', () => {
-    const { form, container } = renderForm()
-    fireEvent.submit(container.querySelector('form')!)
-    expect(form.setFieldValue).not.toHaveBeenCalled()
-    expect(form.handleSubmit).toHaveBeenCalledTimes(1)
   })
 
   it('shows a server field error when TanStack has none', () => {

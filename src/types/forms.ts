@@ -3,7 +3,7 @@
  * Consolidated from src/lib/forms/form-types.ts
  */
 
-import type { ChangeEvent, SubmitEvent } from 'react'
+import type { SubmitEvent } from 'react'
 import type { ContactFormData } from './api'
 
 // ============================================================================
@@ -86,8 +86,12 @@ export interface UseContactFormReturn {
   form: any
   formData: ContactFormData
   errors: ContactFormErrors
-  handleInputChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
-  handleSubmit: (event?: SubmitEvent<HTMLFormElement>) => Promise<void>
+  /**
+   * The only hydrated submit path; bind to `<form onSubmit>`. Prevents the native
+   * POST, ignores a submit while one is in flight, and copies a DOM-filled
+   * honeypot into the form before handing off to TanStack.
+   */
+  handleSubmit: (event: SubmitEvent<HTMLFormElement>) => Promise<void>
   submitStatus: SubmitStatus
   progress: number
   isSubmitting: boolean

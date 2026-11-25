@@ -59,8 +59,16 @@ function fieldErrorText(
 }
 
 export function ContactForm({ form: formHook }: ContactFormProps) {
-  const { form, submitStatus, isSubmitting, error, formAction, serverFieldErrors, fromAction } =
-    formHook
+  const {
+    form,
+    handleSubmit,
+    submitStatus,
+    isSubmitting,
+    error,
+    formAction,
+    serverFieldErrors,
+    fromAction,
+  } = formHook
   // A progressive (no-JS / pre-hydration) result arrives on a freshly loaded page
   // scrolled to the top, where a live region present at load is not reliably
   // announced. Native autofocus works without JS: it scrolls the banner into view
@@ -81,28 +89,12 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
         data-track-location="contact-form"
         // SSR renders a multipart POST bound to submitContactFormAction, so a
         // submit before hydration or without JS posts to the server action and
-        // never puts fields in a URL. Once hydrated, preventDefault stops React's
-        // action (react-dom checks defaultPrevented) and TanStack submits via
+        // never puts fields in a URL. Once hydrated, the hook's handleSubmit
+        // prevents React's action (react-dom checks defaultPrevented), applies the
+        // re-entry and honeypot guards, and TanStack submits via
         // submitContactForm. Never set method/encType: React supplies them.
         action={formAction}
-        onSubmit={(e) => {
-          e.preventDefault()
-          // Re-entry guard. TanStack's handleSubmit has none, and `isSubmitting`
-          // only disables the button after validation and a re-render, so a double
-          // click or a programmatic requestSubmit would start a second send.
-          // form.state.isSubmitting is set synchronously when handleSubmit starts
-          // and stays true until onSubmit settles. preventDefault stays first so a
-          // guarded submit never falls through to React's native form action.
-          if (isSubmitting || form.state.isSubmitting) return
-          // A bot that sets the trap's `.value` directly never fires onChange, so
-          // TanStack would submit an empty honeypot. Read it from the DOM, as the
-          // no-JS path does, so both paths judge the same filled form.
-          const trap = e.currentTarget.elements.namedItem('honeypot')
-          if (trap instanceof HTMLInputElement && trap.value !== '') {
-            form.setFieldValue('honeypot', trap.value)
-          }
-          form.handleSubmit()
-        }}
+        onSubmit={handleSubmit}
         className="flex flex-1 flex-col gap-6"
       >
         <noscript>
