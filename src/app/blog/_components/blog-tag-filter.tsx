@@ -14,6 +14,7 @@ export function BlogTagFilter({ tags, selectedTag, tagCounts, onTagChange }: Tag
         <button
           key={tag}
           type="button"
+          aria-pressed={selectedTag === tag}
           onClick={() => onTagChange(tag)}
           className={`
             inline-flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ease-out
