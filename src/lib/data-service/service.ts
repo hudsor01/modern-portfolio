@@ -13,7 +13,7 @@ import { BASE_METRICS } from './generators/base'
 import { generateChurnData } from './generators/churn'
 import { generateLeadAttributionData } from './generators/lead-attribution'
 import { generateLeadTrendData } from './generators/lead-trends'
-import { generateGrowthData } from './generators/growth'
+import { generateGrowthData, REVENUE_TREND_QUARTERS } from './generators/growth'
 import { generateYearOverYearData } from './generators/year-over-year'
 import { generateTopPartnersData } from './generators/top-partners'
 import { DataCacheService, type CacheStats } from './cache'
@@ -86,7 +86,10 @@ export class AnalyticsDataService {
     return data
   }
 
-  async getGrowthData(quarters: number = 8, useCache: boolean = true): Promise<GrowthData[]> {
+  async getGrowthData(
+    quarters: number = REVENUE_TREND_QUARTERS,
+    useCache: boolean = true
+  ): Promise<GrowthData[]> {
     const cacheKey = `growth-data-${quarters}`
 
     if (useCache) {
@@ -175,7 +178,7 @@ export class AnalyticsDataService {
         this.getChurnData(12, false),
         this.getLeadAttributionData(false),
         this.getLeadTrendData(12, false),
-        this.getGrowthData(8, false),
+        this.getGrowthData(REVENUE_TREND_QUARTERS, false),
         this.getYearOverYearData(5, false),
         this.getTopPartnersData(15, false),
       ])
