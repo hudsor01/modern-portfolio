@@ -251,6 +251,16 @@ describe('display formatters', () => {
     expect(formatMoney(4e21)).toBe('$1T+')
   })
 
+  it('formatMoney applies the ceiling to the rounded figure it prints', () => {
+    expect(formatMoney(999_940_000_000)).toBe('$999.9B')
+    expect(formatMoney(999_950_000_000)).toBe('$1T+')
+    expect(formatMoney(999_960_000_000)).toBe('$1T+')
+    // A $10B target at a 1.00004% win rate needs about $999.96B of pipeline.
+    const r = computeCoverage({ revenueTarget: 10_000_000_000, winRatePct: 1.00004 })
+    expect(r.requiredPipeline).toBeLessThan(1e12)
+    expect(formatMoney(r.requiredPipeline)).toBe('$1T+')
+  })
+
   it('formatMultiple bounds at 1,000×+', () => {
     expect(formatMultiple(4)).toBe('4.0×')
     expect(formatMultiple(999.94)).toBe('999.9×')

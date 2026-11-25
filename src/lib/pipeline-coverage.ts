@@ -216,7 +216,10 @@ export const MAX_DISPLAY_COUNT = 1_000_000_000
 
 export function formatMoney(n: number): string {
   if (n >= MAX_DISPLAY_MONEY) return '$1T+'
-  return Math.abs(n) >= 1_000_000 ? usdCompact.format(n) : usd0.format(n)
+  if (Math.abs(n) < 1_000_000) return usd0.format(n)
+  // Compact notation rounds, so values just under the ceiling print "$1T": that is the ceiling.
+  const s = usdCompact.format(n)
+  return s === '$1T' ? '$1T+' : s
 }
 
 export function formatMultiple(n: number): string {
