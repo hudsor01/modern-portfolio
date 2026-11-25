@@ -6,10 +6,13 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 
 export const dynamic = 'force-static'
 
+// Title ≤60 chars with the brand, description ≤160; one project name (the
+// catalog's) across title, H1, breadcrumb and JSON-LD. Figures come from the
+// write-up and are checked by project-page-copy-sourced.test.ts.
 export const metadata = genMeta({
-  title: 'Commission & Incentive Optimization System',
+  title: 'Commission & Incentive Optimization',
   description:
-    'Advanced commission management and partner incentive optimization platform managing $254K+ commission structures. Automated tier adjustments with 23% average commission rate optimization and ROI-driven compensation strategy delivering 34.2% performance improvement and 87.5% automation efficiency.',
+    'Commission optimization case study: automated commission tracking cut weekly processing from 8.5 to 2.3 hours and disputes 68%, with 99.8% calculation accuracy.',
   path: '/projects/commission-optimization',
   subtitle: 'Revenue Operations Project',
   ogType: 'article',
