@@ -19,8 +19,6 @@ const SCALE = [
 
 const SCALE_KEY = SCALE.map((o) => `${o.value} ${o.label}`).join(' · ')
 
-const DEFAULT = 3
-
 /** Pillar score (1–5) → bar fill class. Weakest pillars read warmer. */
 function barColor(score: number): string {
   if (score < 2.6) return 'bg-destructive'
@@ -30,16 +28,14 @@ function barColor(score: number): string {
 
 export function RevOpsMaturityScorecard() {
   const groupName = useId()
-  const [answers, setAnswers] = useState<Record<string, number>>(() =>
-    Object.fromEntries(QUESTIONS.map((q) => [q.id, DEFAULT]))
-  )
+  const [answers, setAnswers] = useState<Record<string, number>>({})
 
   const result = useMemo(() => scoreMaturity(answers), [answers])
   const tier = tierForScore(result.overallScore)
 
   const setAnswer = (id: string, value: number) => setAnswers((prev) => ({ ...prev, [id]: value }))
 
-  const reset = () => setAnswers(Object.fromEntries(QUESTIONS.map((q) => [q.id, DEFAULT])))
+  const reset = () => setAnswers({})
 
   return (
     <div className="grid gap-8 lg:grid-cols-5">
@@ -108,7 +104,7 @@ export function RevOpsMaturityScorecard() {
           onClick={reset}
           className="text-sm text-muted-foreground hover:text-primary transition-colors underline underline-offset-4"
         >
-          Reset all to neutral
+          Reset answers
         </button>
       </div>
 
@@ -118,19 +114,31 @@ export function RevOpsMaturityScorecard() {
           className="lg:sticky lg:top-28 bg-card rounded-2xl p-6 sm:p-8 border border-border shadow-sm"
           aria-live="polite"
         >
-          <p className="uppercase tracking-wider">Your maturity level</p>
-          <p className="mt-1 flex items-baseline gap-2">
-            <span className="text-5xl font-bold text-primary tracking-tight">{result.level}</span>
-            <span className="text-2xl font-semibold text-foreground">{result.tier}</span>
+          <p className="text-sm text-muted-foreground">
+            {result.answered} of {result.total} answered
           </p>
-          <p className="mt-1">Overall score {result.overallScore.toFixed(1)} / 5</p>
-          {tier && <p className="mt-3">{tier.blurb}</p>}
+          <p className="mt-3 uppercase tracking-wider">Your maturity level</p>
+          {result.everyPillarAnswered ? (
+            <>
+              <p className="mt-1 flex items-baseline gap-2">
+                <span className="text-5xl font-bold text-primary tracking-tight">
+                  {result.level}
+                </span>
+                <span className="text-2xl font-semibold text-foreground">{result.tier}</span>
+              </p>
+              <p className="mt-1">Overall score {result.overallScore.toFixed(1)} / 5</p>
+              {tier && <p className="mt-3">{tier.blurb}</p>}
+            </>
+          ) : (
+            <p className="mt-3">Answer at least one question in each area to see your level.</p>
+          )}
 
           {/* Per-pillar bars */}
           <div className="mt-6 space-y-3">
             {PILLARS.map((pillar) => {
               const score = result.pillarScores[pillar.id as PillarId]
-              const isWeakest = result.weakestPillar === pillar.id
+              const isWeakest = result.everyPillarAnswered && result.weakestPillar === pillar.id
+              const unanswered = result.answeredByPillar[pillar.id as PillarId] === 0
               return (
                 <div key={pillar.id}>
                   <div className="flex items-center justify-between text-sm">
@@ -144,13 +152,17 @@ export function RevOpsMaturityScorecard() {
                         </span>
                       )}
                     </span>
-                    <span className="tabular-nums text-muted-foreground">{score.toFixed(1)}</span>
+                    <span className="tabular-nums text-muted-foreground">
+                      {unanswered ? 'Not answered' : score.toFixed(1)}
+                    </span>
                   </div>
                   <div className="mt-1 h-2 w-full rounded-full bg-muted overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all ${barColor(score)}`}
-                      style={{ width: `${(Math.min(5, Math.max(0, score)) / 5) * 100}%` }}
-                    />
+                    {!unanswered && (
+                      <div
+                        className={`h-full rounded-full transition-all ${barColor(score)}`}
+                        style={{ width: `${(Math.min(5, Math.max(0, score)) / 5) * 100}%` }}
+                      />
+                    )}
                   </div>
                 </div>
               )
@@ -158,7 +170,7 @@ export function RevOpsMaturityScorecard() {
           </div>
 
           {/* Highest-ROI next move */}
-          {result.nextMove && (
+          {result.everyPillarAnswered && result.nextMove && (
             <div className="mt-6 rounded-xl bg-muted/50 p-4">
               <p className="uppercase tracking-wider mb-1">Highest-ROI next move</p>
               <p>{result.nextMove}</p>
@@ -166,7 +178,7 @@ export function RevOpsMaturityScorecard() {
           )}
 
           {/* Tech-overbuy anti-pattern */}
-          {result.techOverbuy && (
+          {result.everyPillarAnswered && result.techOverbuy && (
             <div className="mt-4 rounded-xl border border-destructive/40 bg-destructive/5 p-4">
               <p>
                 <strong className="text-destructive">Watch out:</strong> your tooling maturity is

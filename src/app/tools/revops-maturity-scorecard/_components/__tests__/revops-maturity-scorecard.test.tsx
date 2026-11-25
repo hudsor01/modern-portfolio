@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, it, expect, afterEach } from 'vitest'
 import { render, screen, cleanup, within, fireEvent } from '@testing-library/react'
-import { PILLARS } from '@/lib/revops-maturity'
+import { PILLARS, QUESTIONS } from '@/lib/revops-maturity'
 import { RevOpsMaturityScorecard } from '../revops-maturity-scorecard'
 
 afterEach(async () => {
@@ -80,21 +80,89 @@ describe('RevOpsMaturityScorecard keyboard focus', () => {
   })
 })
 
-describe('RevOpsMaturityScorecard weakest badge', () => {
-  it('shows no "weakest" badge when every pillar ties (the neutral default)', () => {
+const answerAll = (name: string) => {
+  for (const r of screen.getAllByRole('radio', { name })) fireEvent.click(r)
+}
+
+const answerPillar = (container: HTMLElement, index: number, name: string) => {
+  const fieldset = container.querySelectorAll('fieldset')[index] as HTMLElement
+  for (const r of within(fieldset).getAllByRole('radio', { name })) fireEvent.click(r)
+}
+
+const PROMPT = 'Answer at least one question in each area to see your level.'
+
+describe('RevOpsMaturityScorecard answering', () => {
+  it('starts unanswered with a zero count and no level', () => {
     const { container } = render(<RevOpsMaturityScorecard />)
+    expect(screen.getAllByRole('radio').some((r) => (r as HTMLInputElement).checked)).toBe(false)
+    expect(screen.getByText(`0 of ${QUESTIONS.length} answered`)).toBeTruthy()
+    expect(screen.getByText(PROMPT)).toBeTruthy()
+    expect(screen.queryByText('Highest-ROI next move')).toBeNull()
+    expect(container.textContent).not.toContain('Overall score')
     expect(container.textContent?.toLowerCase()).not.toContain('weakest')
-    expect(screen.getByText('Highest-ROI next move')).toBeTruthy()
+    expect(screen.getAllByText('Not answered')).toHaveLength(PILLARS.length)
+  })
+
+  it('counts each answer but withholds the level until every pillar has one', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    fireEvent.click(screen.getAllByRole('radio', { name: '3 Somewhat' })[0] as HTMLElement)
+    expect(screen.getByText(`1 of ${QUESTIONS.length} answered`)).toBeTruthy()
+    expect(screen.getByText(PROMPT)).toBeTruthy()
+    expect(container.textContent).not.toContain('Overall score')
+  })
+
+  it('shows the level once each of the four pillars has an answer', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    for (const fs of Array.from(container.querySelectorAll('fieldset'))) {
+      fireEvent.click(
+        within(fs as HTMLElement).getAllByRole('radio', { name: '4 Mostly' })[0] as HTMLElement
+      )
+    }
+    expect(screen.getByText(`4 of ${QUESTIONS.length} answered`)).toBeTruthy()
+    expect(screen.queryByText(PROMPT)).toBeNull()
+    expect(container.textContent).toContain('Overall score 4.0 / 5')
+    expect(container.textContent).toContain('Managed')
+  })
+
+  it('shows no weakest badge when every pillar ties', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    answerAll('3 Somewhat')
+    expect(screen.getByText(`${QUESTIONS.length} of ${QUESTIONS.length} answered`)).toBeTruthy()
+    expect(container.textContent?.toLowerCase()).not.toContain('weakest')
+    expect(container.textContent).toContain('lowest pillars are tied')
   })
 
   it('badges exactly one pillar once a single pillar is uniquely lowest', () => {
     const { container } = render(<RevOpsMaturityScorecard />)
-    const firstProcess = screen.getAllByRole('radio', { name: '1 Not at all' })[0]
-    if (!firstProcess) throw new Error('missing radio')
-    fireEvent.click(firstProcess)
+    answerAll('3 Somewhat')
+    fireEvent.click(screen.getAllByRole('radio', { name: '1 Not at all' })[0] as HTMLElement)
     const badges = Array.from(container.querySelectorAll('span')).filter(
       (s) => s.textContent === 'weakest'
     )
     expect(badges).toHaveLength(1)
+  })
+
+  it('tie advice names only the tied pillars', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    answerPillar(container, 0, '5 Fully')
+    for (const i of [1, 2, 3]) answerPillar(container, i, '1 Not at all')
+    const move = screen.getByText('Highest-ROI next move').parentElement as HTMLElement
+    expect(move.textContent).toContain('Data, Technology and Alignment')
+    expect(move.textContent).not.toMatch(/process/i)
+  })
+
+  it('Reset answers returns to unanswered', () => {
+    render(<RevOpsMaturityScorecard />)
+    answerAll('2 Rarely')
+    fireEvent.click(screen.getByRole('button', { name: 'Reset answers' }))
+    expect(screen.getByText(`0 of ${QUESTIONS.length} answered`)).toBeTruthy()
+    expect(screen.getAllByRole('radio').some((r) => (r as HTMLInputElement).checked)).toBe(false)
+    expect(screen.getByText(PROMPT)).toBeTruthy()
+  })
+
+  it('makes no percentile or B2B-teams claim', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    answerAll('3 Somewhat')
+    expect(container.textContent).not.toMatch(/percentile|B2B teams/i)
   })
 })

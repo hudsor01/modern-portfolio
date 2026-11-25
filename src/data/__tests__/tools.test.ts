@@ -79,6 +79,28 @@ describe('tool catalog', () => {
     }
   })
 
+  it('makes no uncited benchmark or percentile claim (TOOL-03)', () => {
+    const files = [
+      'src/lib/revops-maturity.ts',
+      'src/app/tools/revops-maturity-scorecard/page.tsx',
+      'src/app/tools/revops-maturity-scorecard/_components/revops-maturity-scorecard.tsx',
+      'src/data/tools.ts',
+    ]
+    const banned = [
+      /percentile/i,
+      /B2B teams/i,
+      /published[^.]*benchmark/i,
+      /median team/i,
+      /in 10 teams/i,
+      /% of teams/i,
+    ]
+    for (const f of files) {
+      const src = read(f)
+      for (const re of banned) expect(re.test(src), `${f} matches ${re}`).toBe(false)
+    }
+    expect(getTool('revops-maturity-scorecard').outcome).not.toMatch(/percentile/i)
+  })
+
   it('has a hub path and an ISO hub date', () => {
     expect(TOOLS_HUB_PATH).toBe('/tools')
     expect(TOOLS_HUB_LAST_UPDATED).toMatch(/^\d{4}-\d{2}-\d{2}$/)
