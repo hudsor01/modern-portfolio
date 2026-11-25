@@ -212,6 +212,18 @@ describe('globals.css cascade', () => {
     expect(html.some((r) => /scrollbar-gutter:\s*stable/.test(r.body))).toBe(true)
   })
 
+  it('styles scrollbars with standard properties, never ::-webkit-scrollbar (WR-01)', () => {
+    // A custom webkit scrollbar takes space on overlay-scrollbar platforms, where
+    // Chromium and WebKit then drop the stable gutter under overflow: hidden.
+    expect(css).not.toMatch(/::-webkit-scrollbar/)
+    const html = rules.find(
+      (r) =>
+        r.selector === 'html' && r.parents.includes('@layer base') && /scrollbar-color/.test(r.body)
+    )
+    expect(html?.body).toMatch(/scrollbar-color:\s*var\(--color-border\)\s+var\(--color-muted\)/)
+    expect(html?.body).toMatch(/scrollbar-width:\s*thin/)
+  })
+
   it('cancels react-remove-scroll-bar margin compensation where the gutter is stable (WR-01)', () => {
     // Layered !important is what beats the library's injected unlayered !important.
     const lock = rules.find((r) => r.selector === 'body[data-scroll-locked]')

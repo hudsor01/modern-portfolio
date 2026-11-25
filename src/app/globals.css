@@ -490,23 +490,6 @@ input, textarea, select {
   transition: all var(--motion-duration-normal) var(--motion-ease-out);
 }
 
-::-webkit-scrollbar {
-  width: 0.5rem;
-}
-
-::-webkit-scrollbar-track {
-  background-color: var(--color-muted);
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: var(--color-border);
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-accent);
-}
-
 .portfolio-container {
   margin-inline: auto;
   max-width: 80rem;
@@ -953,6 +936,15 @@ input, textarea, select {
     font-size: var(--font-size-base, 0.875rem);
     /* Keeps the width constant when the mobile menu locks html overflow. */
     scrollbar-gutter: stable;
+    /*
+     * Standard scrollbar styling, never ::-webkit-scrollbar: a custom webkit
+     * scrollbar takes space even where the platform uses overlay scrollbars
+     * (macOS Chrome and Safari), and there the stable gutter is dropped as soon
+     * as overflow is hidden, so every scroll lock shifted the page. Inherited,
+     * so it styles inner scroll areas too.
+     */
+    scrollbar-color: var(--color-border) var(--color-muted);
+    scrollbar-width: thin;
   }
 
   /*
