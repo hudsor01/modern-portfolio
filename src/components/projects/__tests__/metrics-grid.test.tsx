@@ -49,7 +49,25 @@ describe('MetricsGrid', () => {
   it('applies the columns=4 grid class', () => {
     render(<MetricsGrid metrics={sampleMetrics} columns={4} />)
     const grid = screen.getByTestId('metrics-grid')
-    expect(grid.className).toContain('xl:grid-cols-4')
+    expect(grid.className).toContain('grid-cols-1')
+    expect(grid.className).toContain('md:grid-cols-2')
+    expect(grid.className).toContain('lg:grid-cols-4')
+    expect(grid.className).not.toContain('lg:grid-cols-3')
+    expect(grid.className).not.toContain('xl:grid-cols-4')
+  })
+
+  it('exposes data-columns on the grid root (default 3, explicit 4)', () => {
+    const { rerender } = render(<MetricsGrid metrics={sampleMetrics} />)
+    expect(screen.getByTestId('metrics-grid').getAttribute('data-columns')).toBe('3')
+    rerender(<MetricsGrid metrics={sampleMetrics} columns={4} />)
+    expect(screen.getByTestId('metrics-grid').getAttribute('data-columns')).toBe('4')
+  })
+
+  it('marks only the loading grid with data-loading', () => {
+    const { rerender } = render(<MetricsGrid metrics={sampleMetrics} loading={true} />)
+    expect(screen.getByTestId('metrics-grid').hasAttribute('data-loading')).toBe(true)
+    rerender(<MetricsGrid metrics={sampleMetrics} />)
+    expect(screen.getByTestId('metrics-grid').hasAttribute('data-loading')).toBe(false)
   })
 
   it('renders skeleton cards in loading state — count = min(columns*2, 8)', () => {
