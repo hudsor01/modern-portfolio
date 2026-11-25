@@ -33,15 +33,10 @@ test.describe('header', () => {
     const menu = page.locator('#mobile-menu')
     const openToggle = page.getByRole('button', { name: 'Open menu' })
 
-    const gutter = await page.evaluate(
-      () => getComputedStyle(document.documentElement).scrollbarGutter,
-    )
-    expect(gutter).toContain('stable')
-    const widthBefore = await page.evaluate(() => document.documentElement.clientWidth)
-
+    // No-layout-shift is checked with visible scrollbars in scroll-lock-layout.spec.ts:
+    // this file runs under --hide-scrollbars, where the gutter is 0px.
     await openToggle.click()
     await expect.poll(rootOverflow).toBe('hidden')
-    expect(await page.evaluate(() => document.documentElement.clientWidth)).toBe(widthBefore)
 
     await page.mouse.move(195, 700)
     await page.mouse.wheel(0, 600)
