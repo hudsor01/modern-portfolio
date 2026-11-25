@@ -58,7 +58,8 @@ Sourced from [`package.json`](package.json):
 | `bun run lint` / `lint:fix`         | Biome check (lint + format) over `src/`           |
 | `bun run format` / `format:fix`     | Biome format-only over `src/`                     |
 | `bun run typecheck`                 | `tsc --noEmit`                                    |
-| `bun run ci:quick`                  | `lint` + `typecheck` (the gate CI runs)           |
+| `bun run typecheck:e2e`             | `tsc --noEmit -p e2e` (the Playwright specs)      |
+| `bun run ci:quick`                  | `lint` + `typecheck` + `typecheck:e2e` (the gate CI runs) |
 | `bun test` / `test:watch`           | Vitest (unit/integration, jsdom)                  |
 | `bun run test:coverage`             | Vitest + v8 coverage                              |
 | `bun run e2e` / `e2e:ui` / `e2e:headed` / `e2e:chromium` / `e2e:report` | Playwright |

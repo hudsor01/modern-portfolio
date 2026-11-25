@@ -50,6 +50,7 @@ pre-push:
 
     # Typecheck the full project (~3-5s) — catches type errors that pre-commit
     # can't (Biome doesn't do type-checking, and pre-commit only sees staged
-    # files anyway). Same `tsc --noEmit` invocation as CI's quality job.
+    # files anyway). Same `tsc --noEmit` invocations as CI's quality job; the
+    # second covers e2e/, which the root tsconfig excludes.
     typecheck:
-      run: bun run typecheck
+      run: bun run typecheck && bun run typecheck:e2e

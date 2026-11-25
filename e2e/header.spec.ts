@@ -153,8 +153,10 @@ test.describe('header', () => {
         expect(b.height).toBeGreaterThan(0)
       }
       const sorted = [...boxes].sort((a, b) => a.left - b.left)
-      for (let i = 1; i < sorted.length; i += 1) {
-        expect(sorted[i - 1].right, `link ${i - 1} vs ${i}`).toBeLessThanOrEqual(sorted[i].left)
+      let prev: (typeof sorted)[number] | undefined
+      for (const [i, b] of sorted.entries()) {
+        if (prev) expect(prev.right, `link ${i - 1} vs ${i}`).toBeLessThanOrEqual(b.left)
+        prev = b
       }
 
       if (!m.wordmark || !m.nav || !m.cta || !m.container) throw new Error('header rects missing')

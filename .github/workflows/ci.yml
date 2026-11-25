@@ -119,6 +119,11 @@ jobs:
       - name: Type-check
         run: bun run typecheck
 
+      # e2e/ is excluded from the root tsconfig, and Playwright strips types
+      # without checking them, so the specs get their own project.
+      - name: Type-check e2e
+        run: bun run typecheck:e2e
+
   test:
     runs-on: ubuntu-latest
     needs: setup
