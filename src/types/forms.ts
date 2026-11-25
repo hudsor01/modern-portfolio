@@ -4,23 +4,22 @@
  */
 
 import type { SubmitEvent } from 'react'
+import type { AnyFieldMeta } from '@tanstack/react-form'
 import type { ContactFormData } from './api'
 
 // ============================================================================
 // TanStack Form Core Types
 // ============================================================================
 
-/** Field metadata state */
-interface FieldMeta {
-  errors?: (string | Error)[]
-  touchedOrDirty: boolean
-  touched: boolean
-  dirty: boolean
-  /** True once the user has changed the value; stays true even if it is changed back. */
-  isDirty: boolean
-  isPristine: boolean
-  isValidating: boolean
-}
+/**
+ * The field meta keys components read, picked from TanStack's own type so a key
+ * that does not exist at runtime cannot type-check. `isDirty` turns true once the
+ * user changes the value and stays true even if it is changed back.
+ */
+type FieldMeta = Pick<
+  AnyFieldMeta,
+  'errors' | 'isTouched' | 'isBlurred' | 'isDirty' | 'isPristine' | 'isValidating'
+>
 
 /** Field state containing value and metadata */
 interface FieldState<TValue = unknown> {
