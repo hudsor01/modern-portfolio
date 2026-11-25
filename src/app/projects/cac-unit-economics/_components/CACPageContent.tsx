@@ -61,11 +61,11 @@ export default function CACUnitEconomics() {
   return (
     <>
       <ProjectJsonLd
-        title="Customer Acquisition Cost Optimization & Unit Economics Dashboard"
-        description="Comprehensive CAC analysis and LTV:CAC ratio optimization that achieved 32% cost reduction through strategic partner channel optimization."
+        title="Customer Acquisition Cost Optimization"
+        description="CAC optimization case study: acquisition cost cut 32% through partner-channel and unit-economics work, with a 3.6:1 LTV:CAC ratio and 8.4-month payback."
         slug="cac-unit-economics"
         image={ogImageUrl({
-          title: 'Customer Acquisition Cost Optimization & Unit Economics Dashboard',
+          title: 'Customer Acquisition Cost Optimization',
           subtitle: 'Revenue Operations Project',
           project: 'cac-unit-economics',
         })}
@@ -75,7 +75,7 @@ export default function CACUnitEconomics() {
         tags={['CAC', 'Unit Economics', 'LTV', 'SaaS Metrics', 'Revenue Operations']}
       />
       <ProjectPageLayout
-        title="Customer Acquisition Cost Optimization & Unit Economics Dashboard"
+        title="Customer Acquisition Cost Optimization"
         description="Comprehensive CAC analysis and LTV:CAC ratio optimization that achieved 32% cost reduction through strategic partner channel optimization. Industry-benchmark 3.6:1 efficiency ratio with 8.4-month payback period across multi-tier SaaS products."
         tags={[
           { label: 'CAC Reduction: 32%', variant: 'primary' },
