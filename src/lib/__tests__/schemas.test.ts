@@ -420,6 +420,45 @@ describe('contactFormSchema', () => {
     }
   })
 
+  // Native minLength counts UTF-16 units on the raw value; the schema counts code points
+  // after trim. The native check may be looser, never stricter.
+  it('rejects one emoji as a name and five as a message, though each meets native minLength', () => {
+    expect('😀'.length).toBeGreaterThanOrEqual(CONTACT_MINIMUMS.name)
+    expect('😀'.repeat(5).length).toBeGreaterThanOrEqual(CONTACT_MINIMUMS.message)
+    const name = contactFormSchema.safeParse({ ...valid, name: '😀' })
+    const message = contactFormSchema.safeParse({ ...valid, message: '😀'.repeat(5) })
+    expect(name.success).toBe(false)
+    expect(message.success).toBe(false)
+    expect(contactFormSchema.safeParse({ ...valid, name: '😀😀' }).success).toBe(true)
+  })
+
+  it.each([
+    ['name', CONTACT_MINIMUMS.name],
+    ['message', CONTACT_MINIMUMS.message],
+  ] as const)('native minLength never blocks a %s the schema accepts', (field, min) => {
+    const samples = [
+      'a',
+      'ab',
+      ' a',
+      'é',
+      'e\u0301',
+      '😀',
+      '😀😀',
+      '  ab  ',
+      'a'.repeat(min - 1),
+      'a'.repeat(min),
+      ` ${'a'.repeat(min - 1)}`,
+      '😀'.repeat(Math.ceil(min / 2)),
+      '😀'.repeat(min),
+    ]
+    for (const value of samples) {
+      // tooShort: what minLength reports for a non-empty value under the minimum.
+      const nativeBlocks = value.length > 0 && value.length < min
+      const accepted = contactFormSchema.safeParse({ ...valid, [field]: value }).success
+      if (nativeBlocks) expect(accepted, JSON.stringify(value)).toBe(false)
+    }
+  })
+
   it('trims name and message and accepts them when the trimmed value meets the minimum', () => {
     const res = contactFormSchema.safeParse({
       ...valid,

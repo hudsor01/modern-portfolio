@@ -32,6 +32,14 @@ export const CONTACT_LIMITS = {
   message: 1000,
 } as const
 
+/**
+ * Contact form minima. The schema checks them in code points on the trimmed value; the native
+ * minLength mirrors them in UTF-16 units on the raw value, so it is never stricter than the
+ * server (it never blocks a valid submission) but can be looser: one emoji is 2 units and
+ * padding counts, so '😀' or '  a  ' pass minLength={2} and the schema rejects them. The
+ * hydrated path's TanStack validator (this same schema) catches that before any request; the
+ * no-JS path gets a server round trip with the field error. Parity is claimed for maxima only.
+ */
 export const CONTACT_MINIMUMS = {
   name: 2,
   subject: 1,
@@ -49,7 +57,8 @@ export function normalizeNewlines(value: string): string {
 
 /**
  * Message length in UTF-16 units, the same measure maxlength enforces. Never count code points
- * here: Zod's code-point count is equal or looser, so anything the UI allows is accepted.
+ * here: for the maximum, Zod's code-point count is equal or looser, so anything the UI allows
+ * is accepted. That holds for maxima only; see CONTACT_MINIMUMS for the minimum.
  */
 export function contactMessageLength(value: string): number {
   return normalizeNewlines(value).length

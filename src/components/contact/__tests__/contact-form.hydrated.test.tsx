@@ -133,4 +133,21 @@ describe('ContactForm with the real hook', () => {
     await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(1))
     expect(submitMock.mock.calls[0]?.[0]).toMatchObject({ honeypot: '', name: 'Jane Doe' })
   })
+
+  it('blocks an emoji-only name the native minLength lets through, with no request (WR-06)', async () => {
+    const { container } = render(<Harness />)
+    await fillValid(container)
+    await act(async () => {
+      fireEvent.change(field(container, 'name'), { target: { value: '😀' } })
+    })
+    // The native constraint is satisfied (2 UTF-16 units)...
+    expect(field(container, 'name').value.length).toBeGreaterThanOrEqual(
+      field(container, 'name').minLength
+    )
+    await submit(container)
+    // ...but the hydrated validator is the server's schema, so nothing is sent.
+    expect(submitMock).not.toHaveBeenCalled()
+    expect(field(container, 'name').getAttribute('aria-invalid')).toBe('true')
+    expect(container.textContent).toContain('Name must be at least')
+  })
 })
