@@ -7,6 +7,11 @@ import { TOOLS_HUB_PATH, tools, toolTrail, trailJsonLdItems } from '@/data/tools
 
 const TRAIL = toolTrail()
 
+// The root layout reads request headers (CSP nonce), which makes every route
+// dynamic unless it opts out. Nothing here varies per request, so serve the
+// prerendered HTML like the other static pages.
+export const dynamic = 'force-static'
+
 export const metadata = genMeta({
   title: 'RevOps Tools: Pipeline Coverage & Maturity',
   description:
@@ -31,7 +36,7 @@ export default function ToolsPage() {
         >
           <header className="mb-10 max-w-3xl">
             <ToolBreadcrumb trail={TRAIL} />
-            <h1 className="mb-4">Tools</h1>
+            <h1 className="mb-4">Free RevOps Tools</h1>
             <p>
               Two free revenue operations tools. Each runs in your browser and asks for no email.
             </p>

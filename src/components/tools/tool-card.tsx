@@ -36,12 +36,15 @@ export function ToolCard({ tool }: { tool: ToolEntry }) {
           <dd className="text-base text-foreground">{tool.effort}</dd>
         </div>
       </dl>
+      {/* Visible text names the tool: it is the link text search engines read
+          and the accessible name, so no aria-label is needed. */}
       <Link
+        data-track="Tool Click"
+        data-track-location="tools-hub"
         href={tool.href}
-        aria-label={`Open tool: ${tool.name}`}
         className="mt-auto inline-flex min-h-[44px] items-center justify-center gap-1.5 self-start rounded-lg bg-primary px-4 py-2 text-base font-semibold text-primary-foreground shadow-sm transition-all duration-300 ease-out hover:bg-primary/95 hover:shadow-md after:absolute after:inset-0 after:content-['']"
       >
-        Open tool
+        Open {tool.name}
         <ArrowRight
           className="size-4 transition-transform duration-300 group-hover:translate-x-0.5"
           aria-hidden="true"

@@ -20,14 +20,14 @@ function decode(s: string): string {
 const html = renderToStaticMarkup(<ToolsPage />)
 
 describe('/tools hub render', () => {
-  it('has one main#main-content[tabindex=-1] and one h1 "Tools"', () => {
+  it('has one main#main-content[tabindex=-1] and one h1 "Free RevOps Tools"', () => {
     expect(html.match(/<main[\s>]/g)).toHaveLength(1)
     const main = html.match(/<main[^>]*>/)?.[0] ?? ''
     expect(main).toContain('id="main-content"')
     expect(main).toContain('tabindex="-1"')
     const h1s = [...html.matchAll(/<h1[^>]*>(.*?)<\/h1>/g)]
     expect(h1s).toHaveLength(1)
-    expect(decode(h1s[0]?.[1] ?? '')).toBe('Tools')
+    expect(decode(h1s[0]?.[1] ?? '')).toBe('Free RevOps Tools')
   })
 
   it('lists every tool as an h2 in order inside one ul', () => {
@@ -40,12 +40,12 @@ describe('/tools hub render', () => {
     )
   })
 
-  it('has an Open tool link per tool', () => {
+  it('has an "Open <tool>" link per tool', () => {
     for (const tool of tools) {
       const re = new RegExp(`<a(?![^>]*aria-hidden)[^>]*href="${tool.href}"[^>]*>(.*?)</a>`)
       const m = html.match(re)
       expect(m).toBeTruthy()
-      expect(m?.[0] ?? '').toContain(`aria-label="Open tool: ${tool.name}"`)
+      expect((m?.[1] ?? '').replace(/<[^>]*>/g, '').trim()).toBe(`Open ${tool.name}`)
     }
   })
 
