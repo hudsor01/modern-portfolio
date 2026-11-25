@@ -137,10 +137,14 @@ const nextConfig = {
       // Note `:path*` matches zero-or-more segments, so this also covers the
       // bare index pages (/blog, /projects) — verified against a production
       // build, not assumed.
+      //
+      // Vercel's CDN takes its TTL from CDN-Cache-Control (1 hour), not from
+      // Cache-Control; s-maxage matches it so any other shared cache agrees
+      // (it said 60, which read as a 60-second edge TTL but never was one).
       {
         source: '/(projects|blog|tools)/:path*',
         headers: [
-          { key: 'Cache-Control', value: 's-maxage=60, stale-while-revalidate=86400' },
+          { key: 'Cache-Control', value: 's-maxage=3600, stale-while-revalidate=86400' },
           { key: 'CDN-Cache-Control', value: 'max-age=3600' },
         ],
       },
@@ -183,8 +187,15 @@ const nextConfig = {
         // Other security headers from the global /(.*) rule (nosniff, HSTS,
         // Referrer-Policy, Permissions-Policy) are preserved — Next.js
         // merges by header key, only colliding keys override.
+        //
+        // X-Robots-Tag: noindex keeps the résumé PDF out of search results so
+        // searches land on /resume (tracked, linked to the rest of the site);
+        // the PDF stays crawlable and downloadable (owner decision 2026-11-25).
         source: '/:path*\\.pdf',
-        headers: [{ key: 'X-Frame-Options', value: 'SAMEORIGIN' }],
+        headers: [
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'X-Robots-Tag', value: 'noindex' },
+        ],
       },
     ]
   },
