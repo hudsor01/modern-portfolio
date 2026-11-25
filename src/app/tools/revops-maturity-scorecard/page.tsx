@@ -35,7 +35,7 @@ const FAQS: Array<{ question: string; answer: string }> = [
   {
     question: 'What is the most common RevOps maturity mistake?',
     answer:
-      'Buying technology that is more mature than your data and process can support — automating a broken process just produces broken outputs faster, and AI or attribution tools inherit whatever quality your CRM data already has. The scorecard flags this “tools you can’t feed” gap when your technology score is a full level ahead of the weaker of your data and process scores and that weaker score is still below the Managed level.',
+      'Buying technology that is more mature than your data and process can support — automating a broken process just produces broken outputs faster, and AI or attribution tools inherit whatever quality your CRM data already has. The scorecard flags this “tools you can’t feed” gap when your technology score is at least a full level ahead of the weaker of your data and process scores and that weaker score is still below the Managed level.',
   },
   {
     question: 'How should I read my maturity level?',

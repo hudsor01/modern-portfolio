@@ -80,6 +80,11 @@ export interface MaturityResult {
    * foundation can feed a stronger stack, so it is not flagged.
    */
   techOverbuy: boolean
+  /**
+   * The overbuy foundation: the weaker of data and process (both when they tie)
+   * when `techOverbuy` is true, else empty.
+   */
+  overbuyFoundation: Array<'data' | 'process'>
   /** Valid answers per pillar. */
   answeredByPillar: Record<PillarId, number>
   /** True when every pillar has at least one valid answer — the gate for showing a level. */
@@ -454,6 +459,13 @@ export function scoreMaturity(answers: Partial<Record<string, number>>): Maturit
               : NEXT_MOVE[weakestPillar]
             : tiedNextMove(weakestPillars, weakestScore),
     techOverbuy,
+    overbuyFoundation: !techOverbuy
+      ? []
+      : Math.abs(pillarScores.data - pillarScores.process) <= TIE_EPSILON
+        ? ['data', 'process']
+        : pillarScores.data < pillarScores.process
+          ? ['data']
+          : ['process'],
     answeredByPillar: {
       process: byPillar.process.length,
       data: byPillar.data.length,

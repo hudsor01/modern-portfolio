@@ -31,12 +31,6 @@ function barColor(score: number): string {
   return 'bg-success'
 }
 
-/** The weaker of data and process (the overbuy foundation), or both when they tie. */
-function foundationLabel(scores: Record<PillarId, number>): string {
-  if (Math.abs(scores.data - scores.process) < 1e-9) return 'data and process'
-  return scores.data < scores.process ? 'data' : 'process'
-}
-
 /** "weakest" badge text class, in the same band as its bar; neutral from the Managed band up. */
 function badgeColor(score: number): string {
   if (score < LOW_BAND) return 'text-destructive'
@@ -210,9 +204,10 @@ export function RevOpsMaturityScorecard() {
               <div className="mt-4 rounded-xl border border-destructive/40 bg-destructive/5 p-4">
                 <p>
                   <strong className="text-destructive">Watch out:</strong> your tooling maturity is
-                  running a full level ahead of your {foundationLabel(result.pillarScores)} maturity
-                  — the classic <em>buying tools you can’t feed</em> trap. Fix the foundation before
-                  adding more stack, or the new tools inherit the same messy inputs.
+                  running at least a full level ahead of your{' '}
+                  {result.overbuyFoundation.join(' and ')} maturity — the classic{' '}
+                  <em>buying tools you can’t feed</em> trap. Fix the foundation before adding more
+                  stack, or the new tools inherit the same messy inputs.
                 </p>
               </div>
             )}

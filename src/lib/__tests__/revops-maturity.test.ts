@@ -358,6 +358,22 @@ describe('scoreMaturity — tech-overbuy anti-pattern', () => {
     expect(r.techOverbuy).toBe(true)
   })
 
+  it('reports the overbuy foundation: the weaker pillar, both on a tie, none without overbuy', () => {
+    expect(
+      scoreMaturity(byPillar({ process: 2, data: 5, technology: 4, alignment: 3 }))
+        .overbuyFoundation
+    ).toEqual(['process'])
+    expect(
+      scoreMaturity(byPillar({ process: 5, data: 2, technology: 4, alignment: 3 }))
+        .overbuyFoundation
+    ).toEqual(['data'])
+    expect(
+      scoreMaturity(byPillar({ process: 2, data: 2, technology: 4, alignment: 3 }))
+        .overbuyFoundation
+    ).toEqual(['data', 'process'])
+    expect(scoreMaturity(allAt(3)).overbuyFoundation).toEqual([])
+  })
+
   it('uses the WEAKER of data/process as the foundation', () => {
     // data high, process low → still overbuying relative to process
     const r = scoreMaturity(byPillar({ process: 2, data: 5, technology: 4, alignment: 3 }))

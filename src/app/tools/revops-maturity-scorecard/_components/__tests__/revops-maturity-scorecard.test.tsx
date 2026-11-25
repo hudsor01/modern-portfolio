@@ -240,7 +240,31 @@ describe('RevOpsMaturityScorecard answering', () => {
       .getByRole('region', { name: 'Your result' })
       .querySelectorAll('[aria-live]')[1]
     expect(advice?.textContent).toContain('Watch out:')
-    expect(advice?.textContent).toContain('a full level ahead of your process maturity')
+    expect(advice?.textContent).toContain('at least a full level ahead of your process maturity')
+  })
+
+  it('leaves the advice region untouched when a click does not change the advice', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    answerAll('5 Fully')
+    answerPillar(container, 0, '2 Rarely')
+    const advice = screen
+      .getByRole('region', { name: 'Your result' })
+      .querySelectorAll('[aria-live]')[1] as HTMLElement
+    const before = advice.innerHTML
+    const mutations: MutationRecord[] = []
+    const observer = new MutationObserver((records) => mutations.push(...records))
+    observer.observe(advice, { subtree: true, childList: true, characterData: true })
+    // Lowering one Data answer from 5 to 4 keeps Process (2.0) the weakest pillar and the
+    // overbuy foundation, so the advice text and its DOM must not change.
+    fireEvent.click(
+      within(container.querySelectorAll('fieldset')[1] as HTMLElement).getAllByRole('radio', {
+        name: '4 Mostly',
+      })[0] as HTMLElement
+    )
+    mutations.push(...observer.takeRecords())
+    observer.disconnect()
+    expect(advice.innerHTML).toBe(before)
+    expect(mutations).toHaveLength(0)
   })
 
   it('makes no percentile or B2B-teams claim', () => {
