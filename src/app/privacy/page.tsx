@@ -154,6 +154,10 @@ export default function PrivacyPage() {
               tool or the form is recorded.
             </p>
             <p>
+              Each article shows how many times it has been read. Opening an article adds one to
+              that count, stored with the article; nothing about you is stored with it.
+            </p>
+            <p>
               <ExternalLink href="https://vercel.com/docs/speed-insights/privacy-policy">
                 Vercel Speed Insights
               </ExternalLink>{' '}

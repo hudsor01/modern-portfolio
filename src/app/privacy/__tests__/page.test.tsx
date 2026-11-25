@@ -71,6 +71,7 @@ describe('/privacy page', () => {
     expect(text).toContain('Nothing you type into a tool or the form is recorded.')
     expect(text).toContain('never the address')
     expect(text).toContain('opening a page that doesn’t exist')
+    expect(text).toContain('Opening an article adds one to that count')
   })
 
   it('has a short description that mentions storage', () => {
