@@ -7,6 +7,8 @@ import { blogPosts } from '@/db/schema'
 import { createErrorResponse } from '@/lib/api-blog'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
 import { getDisplayYearMonth } from '@/lib/data-formatters'
+import { BLOG_CONTENT_HEAD_EXTRAS } from '@/lib/blog-content-head'
+import { resolveExcerpt } from '@/lib/blog-excerpt'
 
 const logger = createContextLogger('RssAPI')
 
@@ -21,15 +23,51 @@ const SITE_DESCRIPTION =
 
 /**
  * Blog RSS Feed API Route Handler
- * GET /api/blog/rss - Generate RSS feed for blog posts
+ * GET /api/blog/rss - the autodiscovery target. The bare URL and any
+ * unrecognised ?format= serve RSS 2.0 XML (the XML default); ?format=json
+ * serves the ApiResponse<RSSFeedData> JSON contract.
  */
+
+const CACHE_CONTROL = 'public, max-age=3600, s-maxage=7200'
+
+/** Clamp ?limit= into 1..100; anything that is not an integer falls back to 50. */
+function parseLimit(raw: string | null): number {
+  if (raw !== null && /^-?\d+$/.test(raw)) {
+    return Math.min(Math.max(Number(raw), 1), 100)
+  }
+  return 50
+}
+
+/**
+ * Escape a value for an XML text node or attribute. Strips characters that
+ * are illegal in XML 1.0 first, then escapes the five markup characters
+ * (ampersand first). The feed uses only unwrapped, escaped text nodes, so no
+ * input sequence can terminate or break out of anything.
+ */
+function isLegalXmlChar(code: number): boolean {
+  if (code < 0x20) return code === 0x09 || code === 0x0a || code === 0x0d
+  return code !== 0xfffe && code !== 0xffff
+}
+
+function escapeXml(value: string): string {
+  let legal = ''
+  for (const char of value) {
+    if (isLegalXmlChar(char.codePointAt(0) ?? 0)) legal += char
+  }
+  return legal
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
+}
 
 // GET /api/blog/rss - Generate RSS feed
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const format = searchParams.get('format') || 'json'
-    const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 100)
+    const format = searchParams.get('format') === 'json' ? 'json' : 'xml'
+    const limit = parseLimit(searchParams.get('limit'))
 
     const posts = await db.query.blogPosts.findMany({
       // Same public gate as /blog, the sitemap and GET /api/blog: soft-deleted
@@ -39,7 +77,8 @@ export async function GET(request: NextRequest) {
       limit,
       // Only what the feed renders. Never the body or the search index: a full
       // row is ~37 KB per post, so 25 posts made each feed fetch ~0.9 MB of
-      // database transfer.
+      // database transfer. The description is derived from a bounded
+      // 4000-char contentHead extra, never the whole body.
       columns: {
         title: true,
         slug: true,
@@ -48,23 +87,33 @@ export async function GET(request: NextRequest) {
         publishedAt: true,
         createdAt: true,
       },
+      extras: BLOG_CONTENT_HEAD_EXTRAS,
       with: {
         author: { columns: { name: true } },
         category: { columns: { name: true } },
       },
     })
 
+    const itemDate = (post: (typeof posts)[number]) => post.publishedAt ?? post.createdAt
+    const lastBuild = posts.length
+      ? new Date(Math.max(...posts.map((post) => itemDate(post).getTime())))
+      : new Date()
+
     const rssData: RSSFeedData = {
       title: SITE_TITLE,
       description: SITE_DESCRIPTION,
       link: `${SITE_URL}/blog`,
-      lastBuildDate: new Date().toISOString(),
+      lastBuildDate: lastBuild.toISOString(),
       language: 'en-us',
       posts: posts.map((post) => ({
         title: post.title,
         link: `${SITE_URL}/blog/${post.slug}`,
-        description: post.excerpt || post.metaDescription || '',
-        pubDate: post.publishedAt?.toISOString() || post.createdAt.toISOString(),
+        // Stored excerpt, else the body's first real paragraph, else a non-bio
+        // meta description: no bio boilerplate reaches a feed reader.
+        description:
+          resolveExcerpt({ excerpt: post.excerpt, content: post.contentHead }) ||
+          resolveExcerpt({ excerpt: post.metaDescription, content: null }),
+        pubDate: itemDate(post).toISOString(),
         author: post.author?.name || 'Richard Hudson',
         category: post.category?.name || 'Revenue Operations',
         guid: `${SITE_URL}/blog/${post.slug}`,
@@ -77,7 +126,7 @@ export async function GET(request: NextRequest) {
         status: 200,
         headers: {
           'Content-Type': 'application/rss+xml; charset=utf-8',
-          'Cache-Control': 'public, max-age=3600, s-maxage=7200',
+          'Cache-Control': CACHE_CONTROL,
         },
       })
     }
@@ -89,7 +138,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(response, {
       headers: {
-        'Cache-Control': 'public, max-age=3600, s-maxage=7200',
+        'Cache-Control': CACHE_CONTROL,
       },
     })
   } catch (error) {
@@ -106,16 +155,16 @@ function generateXmlFeed(data: RSSFeedData): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title><![CDATA[${data.title}]]></title>
-    <description><![CDATA[${data.description}]]></description>
-    <link>${data.link}</link>
-    <language>${data.language}</language>
-    <lastBuildDate>${data.lastBuildDate}</lastBuildDate>
-    <atom:link href="${SITE_URL}/api/blog/rss?format=xml" rel="self" type="application/rss+xml"/>
+    <title>${escapeXml(data.title)}</title>
+    <description>${escapeXml(data.description)}</description>
+    <link>${escapeXml(data.link)}</link>
+    <language>${escapeXml(data.language)}</language>
+    <lastBuildDate>${new Date(data.lastBuildDate).toUTCString()}</lastBuildDate>
+    <atom:link href="${escapeXml(`${SITE_URL}/api/blog/rss`)}" rel="self" type="application/rss+xml"/>
     <generator>Richard Hudson Portfolio Blog</generator>
     <webMaster>hudsor01@icloud.com (Richard Hudson)</webMaster>
     <managingEditor>hudsor01@icloud.com (Richard Hudson)</managingEditor>
-    <copyright>© ${year} Richard Hudson</copyright>
+    <copyright>${escapeXml(`© ${year} Richard Hudson`)}</copyright>
     <category>Revenue Operations</category>
     <category>Data Analytics</category>
     <category>Business Intelligence</category>
@@ -123,13 +172,13 @@ function generateXmlFeed(data: RSSFeedData): string {
       .map(
         (post) => `
     <item>
-      <title><![CDATA[${post.title}]]></title>
-      <link>${post.link}</link>
-      <description><![CDATA[${post.description}]]></description>
+      <title>${escapeXml(post.title)}</title>
+      <link>${escapeXml(post.link)}</link>
+      <description>${escapeXml(post.description)}</description>
       <pubDate>${new Date(post.pubDate).toUTCString()}</pubDate>
-      <author>hudsor01@icloud.com (${post.author})</author>
-      <category><![CDATA[${post.category}]]></category>
-      <guid isPermaLink="true">${post.guid}</guid>
+      <author>${escapeXml(`hudsor01@icloud.com (${post.author})`)}</author>
+      <category>${escapeXml(post.category ?? '')}</category>
+      <guid isPermaLink="true">${escapeXml(post.guid)}</guid>
     </item>`
       )
       .join('')}
