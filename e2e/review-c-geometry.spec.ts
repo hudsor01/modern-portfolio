@@ -20,7 +20,7 @@ test.describe('review C geometry', () => {
     await page.waitForLoadState('networkidle')
     const target = page.getByLabel('Revenue target (this period)')
     await expect(target).toHaveValue('1,000,000')
-    const result = page.locator('main [aria-live="polite"]')
+    const result = page.getByRole('region', { name: 'Your coverage' })
     const headline = result.getByText('4.0×')
     const size = await headline.evaluate((e) => Number.parseFloat(getComputedStyle(e).fontSize))
     expect(size).toBeGreaterThanOrEqual(36)
@@ -61,7 +61,7 @@ test.describe('review C geometry', () => {
   }) => {
     await page.goto('/tools/revops-maturity-scorecard')
     await page.waitForLoadState('networkidle')
-    const result = page.locator('main [aria-live="polite"]')
+    const result = page.getByRole('region', { name: 'Your result' })
     await expect(result).toContainText('0 of 16 answered')
     const groups = page.getByRole('radiogroup')
     await expect(groups).toHaveCount(16)

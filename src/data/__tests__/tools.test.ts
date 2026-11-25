@@ -101,6 +101,19 @@ describe('tool catalog', () => {
     expect(getTool('revops-maturity-scorecard').outcome).not.toMatch(/percentile/i)
   })
 
+  it('promises no weakest pillar or single best move the scorecard may not give', () => {
+    // A tie, an even profile or an all-Optimized profile has no weakest pillar, so the
+    // copy describes a next move that fits the scores instead.
+    const promises = [/your weakest pillar, and/i, /highest-ROI/i, /single (best|highest)/i]
+    const copy = [
+      getTool('revops-maturity-scorecard').outcome,
+      read('src/app/tools/revops-maturity-scorecard/page.tsx'),
+      read('src/app/tools/revops-maturity-scorecard/_components/revops-maturity-scorecard.tsx'),
+    ]
+    for (const text of copy)
+      for (const re of promises) expect(re.test(text), String(re)).toBe(false)
+  })
+
   it('has a hub path and an ISO hub date', () => {
     expect(TOOLS_HUB_PATH).toBe('/tools')
     expect(TOOLS_HUB_LAST_UPDATED).toMatch(/^\d{4}-\d{2}-\d{2}$/)

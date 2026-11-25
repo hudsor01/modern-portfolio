@@ -110,27 +110,34 @@ export function RevOpsMaturityScorecard() {
 
       {/* Results */}
       <div className="lg:col-span-2">
+        {/* Only the level is a live region: it changes when the result does, while the
+            answered count and scores change on every click and are read on demand. */}
         <div
+          role="region"
+          aria-label="Your result"
           className="lg:sticky lg:top-28 bg-card rounded-2xl p-6 sm:p-8 border border-border shadow-sm"
-          aria-live="polite"
         >
           <p className="text-sm text-muted-foreground">
             {result.answered} of {result.total} answered
           </p>
           <p className="mt-3 uppercase tracking-wider">Your maturity level</p>
-          {result.everyPillarAnswered ? (
-            <>
+          <div aria-live="polite" aria-atomic="true">
+            {result.everyPillarAnswered ? (
               <p className="mt-1 flex items-baseline gap-2">
                 <span className="text-5xl font-bold text-primary tracking-tight">
                   {result.level}
                 </span>
                 <span className="text-2xl font-semibold text-foreground">{result.tier}</span>
               </p>
+            ) : (
+              <p className="mt-3">Answer at least one question in each area to see your level.</p>
+            )}
+          </div>
+          {result.everyPillarAnswered && (
+            <>
               <p className="mt-1">Overall score {result.overallScore.toFixed(1)} / 5</p>
               {tier && <p className="mt-3">{tier.blurb}</p>}
             </>
-          ) : (
-            <p className="mt-3">Answer at least one question in each area to see your level.</p>
           )}
 
           {/* Per-pillar bars */}
@@ -169,10 +176,10 @@ export function RevOpsMaturityScorecard() {
             })}
           </div>
 
-          {/* Highest-ROI next move */}
+          {/* Next move */}
           {result.everyPillarAnswered && result.nextMove && (
             <div className="mt-6 rounded-xl bg-muted/50 p-4">
-              <p className="uppercase tracking-wider mb-1">Highest-ROI next move</p>
+              <p className="uppercase tracking-wider mb-1">Your next move</p>
               <p>{result.nextMove}</p>
             </div>
           )}

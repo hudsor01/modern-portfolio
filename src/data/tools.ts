@@ -50,7 +50,7 @@ export const tools: readonly ToolEntry[] = [
     icon: 'ClipboardCheck',
     summary: 'Rates your revenue operations across process, data, technology and alignment.',
     outcome:
-      'Your maturity level from 1 Ad-hoc to 5 Optimized, your overall score, your weakest pillar, and the single highest-ROI next move.',
+      'Your maturity level from 1 Ad-hoc to 5 Optimized, your overall score, a score for each pillar, and a next move that fits where you stand.',
     effort: `${QUESTIONS.length} statements to rate, about two minutes`,
   },
 ]

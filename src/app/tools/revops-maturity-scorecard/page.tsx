@@ -30,7 +30,7 @@ const FAQS: Array<{ question: string; answer: string }> = [
   {
     question: 'How do I assess my RevOps maturity?',
     answer:
-      'Rate your team honestly on 16 statements across the four pillars. The scorecard averages each pillar, rolls them into an overall level once every pillar has at least one answer, shows your weakest pillar, and gives you the single highest-ROI next move. It takes about two minutes and requires no email.',
+      'Rate your team honestly on 16 statements across the four pillars. The scorecard averages each pillar, rolls them into an overall level once every pillar has at least one answer, points out the pillar holding the others back when one is, and suggests a next move that fits your scores. It takes about two minutes and requires no email.',
   },
   {
     question: 'What is the most common RevOps maturity mistake?',
@@ -81,8 +81,8 @@ export default function RevOpsMaturityScorecardPage() {
             <p>
               Where does your revenue engine actually stand? Rate your team across the four pillars
               that drive RevOps maturity — <strong>process, data, technology, and alignment</strong>{' '}
-              — and get your maturity level, your weakest pillar, and the single highest-ROI move to
-              make next. Two minutes, no email.
+              — and get your maturity level, a score for each pillar, and a next move that fits
+              where you stand. Two minutes, no email.
             </p>
           </header>
 
@@ -98,8 +98,8 @@ export default function RevOpsMaturityScorecardPage() {
               <p className="text-base">
                 RevOps maturity isn’t an average you can buy your way out of — it’s gated by your
                 weakest pillar. A best-in-class tech stack sitting on dirty CRM data produces
-                confident, automated, wrong answers. That’s why the scorecard points you at the
-                lowest-scoring pillar instead of the one that’s most fun to improve.
+                confident, automated, wrong answers. That’s why, when one pillar trails the others,
+                the scorecard points you at it instead of the one that’s most fun to improve.
               </p>
               <p className="text-base">
                 The most expensive mistake is buying <strong>technology</strong> more mature than

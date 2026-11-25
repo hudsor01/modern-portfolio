@@ -97,7 +97,7 @@ describe('RevOpsMaturityScorecard answering', () => {
     expect(screen.getAllByRole('radio').some((r) => (r as HTMLInputElement).checked)).toBe(false)
     expect(screen.getByText(`0 of ${QUESTIONS.length} answered`)).toBeTruthy()
     expect(screen.getByText(PROMPT)).toBeTruthy()
-    expect(screen.queryByText('Highest-ROI next move')).toBeNull()
+    expect(screen.queryByText('Your next move')).toBeNull()
     expect(container.textContent).not.toContain('Overall score')
     expect(container.textContent?.toLowerCase()).not.toContain('weakest')
     expect(screen.getAllByText('Not answered')).toHaveLength(PILLARS.length)
@@ -129,7 +129,7 @@ describe('RevOpsMaturityScorecard answering', () => {
     answerAll('3 Somewhat')
     expect(screen.getByText(`${QUESTIONS.length} of ${QUESTIONS.length} answered`)).toBeTruthy()
     expect(container.textContent?.toLowerCase()).not.toContain('weakest')
-    const move = screen.getByText('Highest-ROI next move').parentElement as HTMLElement
+    const move = screen.getByText('Your next move').parentElement as HTMLElement
     expect(move.textContent).toContain('All four pillars score 3.0')
     expect(move.textContent).toContain('Raise them together')
     expect(move.textContent).not.toMatch(/lowest|tied/i)
@@ -140,7 +140,7 @@ describe('RevOpsMaturityScorecard answering', () => {
     answerAll('5 Fully')
     expect(container.textContent).toContain('Optimized')
     expect(container.textContent?.toLowerCase()).not.toContain('weakest')
-    const move = screen.getByText('Highest-ROI next move').parentElement as HTMLElement
+    const move = screen.getByText('Your next move').parentElement as HTMLElement
     expect(move.textContent).toContain('top of the scale')
     expect(move.textContent).not.toMatch(/lowest|tied|document the process|clean the data/i)
   })
@@ -152,7 +152,7 @@ describe('RevOpsMaturityScorecard answering', () => {
     expect(container.textContent).toContain('Optimized')
     expect(container.textContent).toContain('4.8') // Process 4.75
     expect(container.textContent?.toLowerCase()).not.toContain('weakest')
-    const move = screen.getByText('Highest-ROI next move').parentElement as HTMLElement
+    const move = screen.getByText('Your next move').parentElement as HTMLElement
     expect(move.textContent).toContain('no weak pillar to fix')
     expect(move.textContent).not.toMatch(
       /lowest|tied|before you buy|document your sales stages|document the process/i
@@ -173,7 +173,7 @@ describe('RevOpsMaturityScorecard answering', () => {
     const { container } = render(<RevOpsMaturityScorecard />)
     answerPillar(container, 0, '5 Fully')
     for (const i of [1, 2, 3]) answerPillar(container, i, '1 Not at all')
-    const move = screen.getByText('Highest-ROI next move').parentElement as HTMLElement
+    const move = screen.getByText('Your next move').parentElement as HTMLElement
     expect(move.textContent).toContain('Data, Technology and Alignment')
     expect(move.textContent).not.toMatch(/process/i)
   })
@@ -185,6 +185,32 @@ describe('RevOpsMaturityScorecard answering', () => {
     expect(screen.getByText(`0 of ${QUESTIONS.length} answered`)).toBeTruthy()
     expect(screen.getAllByRole('radio').some((r) => (r as HTMLInputElement).checked)).toBe(false)
     expect(screen.getByText(PROMPT)).toBeTruthy()
+  })
+
+  it('a near-Optimized weakest pillar gets refine advice, not the basics', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    answerAll('5 Fully')
+    answerPillar(container, 0, '4 Mostly')
+    const move = screen.getByText('Your next move').parentElement as HTMLElement
+    expect(move.textContent).toContain(
+      'Tighten stage exit criteria and audit them quarterly against won and lost deals'
+    )
+    expect(move.textContent).not.toMatch(/Document your sales stages|before you buy/)
+  })
+
+  it('announces only the level: the answered count and scores sit outside the live region', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    const region = screen.getByRole('region', { name: 'Your result' })
+    const live = region.querySelectorAll('[aria-live]')
+    expect(live).toHaveLength(1)
+    expect(container.querySelectorAll('[aria-live]')).toHaveLength(1)
+    expect(live[0]?.textContent).toBe(PROMPT)
+    fireEvent.click(screen.getAllByRole('radio', { name: '3 Somewhat' })[0] as HTMLElement)
+    expect(live[0]?.textContent).toBe(PROMPT)
+    expect(live[0]?.textContent).not.toMatch(/answered/)
+    answerAll('4 Mostly')
+    expect(live[0]?.textContent).toBe('4Managed')
+    expect(live[0]?.textContent).not.toMatch(/answered|Overall score/)
   })
 
   it('makes no percentile or B2B-teams claim', () => {
