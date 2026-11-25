@@ -139,22 +139,95 @@ export function sanitizeAmount(v: string): string {
   return `${cleaned.slice(0, dot + 1)}${cleaned.slice(dot + 1).replace(/\./g, '')}`
 }
 
+export type AmountKind = 'target' | 'amount'
+
+export const NUMBERS_ONLY_MESSAGE = 'Enter numbers only'
+export const NEGATIVE_MESSAGE = 'Negative amounts are not allowed. Enter a positive number.'
+/** Largest money amount any field accepts, in dollars. */
+export const MAX_AMOUNT = 10_000_000_000
+
 /**
  * Why a typed or pasted money amount cannot be used, or null when it can.
- * Grouping commas, spaces and a leading "$" are formatting and allowed; a sign,
- * exponent notation, letters (such as the "M" in "1.5M") and repeated decimal
- * points are rejected so the value is never silently reinterpreted.
+ * Grouping commas, spaces and a leading "$" are formatting and allowed. Checks run
+ * in this order so each failure gets one precise message: any character that is
+ * not a digit, ".", ",", whitespace, "$" or "-" (letters, exponent notation like
+ * 1e6, suffixes like the M in 1.5M, "+") -> "Enter numbers only"; then a minus
+ * sign -> the negative message; then a repeated decimal point; then a value above
+ * MAX_AMOUNT ($10B). The cap applies to the revenue target and also to average
+ * deal size and open pipeline: an uncapped open pipeline would make
+ * `effectiveCurrentPipeline` and `currentCoverage` unbounded.
  */
-export function amountInputError(raw: string): string | null {
-  if (raw.includes('-')) return 'Negative amounts are not allowed. Enter a positive number.'
-  if (/[eE]/.test(raw)) {
-    return 'Exponent notation (like 1e6) is not supported. Type the full number.'
-  }
-  if (/[^\d.,\s$]/.test(raw)) {
-    return 'Use digits only. Remove letters and symbols (for example the M in 1.5M).'
-  }
+export function amountInputError(raw: string, kind: AmountKind): string | null {
+  if (/[^\d.,\s$-]/.test(raw)) return NUMBERS_ONLY_MESSAGE
+  if (raw.includes('-')) return NEGATIVE_MESSAGE
   if ((raw.match(/\./g) ?? []).length > 1) return 'Use a single decimal point.'
+  if (Number(sanitizeAmount(raw)) > MAX_AMOUNT) {
+    return kind === 'target' ? 'Enter a target up to $10B' : 'Enter an amount up to $10B'
+  }
   return null
+}
+
+export type PercentField = 'win' | 'qualified' | 'safety'
+
+/**
+ * Why a percent field's value cannot be used, or null when it can. `badInput` is the
+ * input's `validity.badInput`: a type="number" input reports '' for malformed text,
+ * so the flag is the only way to tell it from an empty field. An empty field is not
+ * an error here (computeCoverage and the optional-field defaults handle it).
+ */
+export function percentFieldError(
+  raw: string,
+  badInput: boolean,
+  field: PercentField
+): string | null {
+  if (badInput) return NUMBERS_ONLY_MESSAGE
+  if (raw.trim() === '') return null
+  const n = Number(raw)
+  if (!Number.isFinite(n)) return NUMBERS_ONLY_MESSAGE
+  if (n < 0) return NEGATIVE_MESSAGE
+  if (field === 'win') {
+    if (n === 0) return 'Win rate must be greater than 0%.'
+    if (n > 100) return 'Win rate can’t exceed 100%.'
+  } else if (field === 'qualified') {
+    if (n > 100) return 'Enter a percentage up to 100%.'
+  } else if (n > 1000) {
+    return 'Enter a margin up to 1,000%.'
+  }
+  return null
+}
+
+const usd0 = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+})
+const usdCompact = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  notation: 'compact',
+  maximumFractionDigits: 1,
+})
+
+export const MAX_DISPLAY_MONEY = 1_000_000_000_000
+export const MAX_DISPLAY_MULTIPLE = 1_000
+export const MAX_DISPLAY_COUNT = 1_000_000_000
+
+// Display rule: a value at or above its ceiling renders as the ceiling followed by "+".
+
+export function formatMoney(n: number): string {
+  if (n >= MAX_DISPLAY_MONEY) return '$1T+'
+  return Math.abs(n) >= 1_000_000 ? usdCompact.format(n) : usd0.format(n)
+}
+
+export function formatMultiple(n: number): string {
+  if (Math.round(n * 10) / 10 >= MAX_DISPLAY_MULTIPLE) return '1,000×+'
+  return `${n.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}×`
+}
+
+export function formatCount(n: number): string {
+  const c = Math.ceil(n)
+  if (c >= MAX_DISPLAY_COUNT) return '1,000,000,000+'
+  return c.toLocaleString('en-US')
 }
 
 /** Display form of a raw amount: grouped integer digits, any decimal part kept as typed. */
