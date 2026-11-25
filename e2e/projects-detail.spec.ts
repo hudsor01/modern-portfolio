@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { PROJECT_SLUGS_ON_DISK } from './_helpers/project-slugs'
+import { expectedRevenueTrendTitle, inProgressQuarterLabel } from './_helpers/quarters'
 
 /**
  * Project Detail Pages E2E Tests
@@ -107,11 +108,16 @@ test.describe('Project detail pages — regression assertions', () => {
       .poll(() => surfaces.count(), { message: 'expected >= 4 recharts surfaces', timeout: 30000 })
       .toBeGreaterThanOrEqual(4)
 
-    // (a) derived trend title, no hardcoded 2024
+    // (a) trend title ends at the last completed quarter (F-21b). The page is built at
+    // deploy (force-static); the test runs against a same-day build.
+    const now = new Date()
     const trendTitle = page.getByText(/^(Quarterly|Monthly) Revenue · .+/).first()
     await expect(trendTitle, 'trend title is derived from data').toBeVisible()
-    expect(await trendTitle.textContent(), 'trend title has no hardcoded 2024').not.toContain(
-      '2024'
+    await expect(trendTitle, 'trend title ends at the last completed quarter (F-21b)').toHaveText(
+      expectedRevenueTrendTitle(now)
+    )
+    expect(await trendTitle.textContent(), 'no in-progress quarter').not.toContain(
+      inProgressQuarterLabel(now)
     )
 
     // (b) dual axis on Revenue Growth Metrics
