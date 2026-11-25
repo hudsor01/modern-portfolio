@@ -29,14 +29,14 @@ const SUBSECTIONS: Subsection[] = [
   {
     eyebrow: 'The Connective Tissue',
     heading: 'Making systems talk to each other',
-    body: 'Sales uses Salesforce. Marketing lives in HubSpot. Outbound runs through SalesLoft. Finance wants everything in a spreadsheet. My job is making all of this work together without anyone having to log into five different platforms.',
+    body: 'Sales uses Salesforce. Marketing lives in HubSpot. Outbound runs through Salesloft. Finance wants everything in a spreadsheet. My job is making all of this work together without anyone having to log into five different platforms.',
     proof: (
       <>
         <span className="text-foreground font-medium">90%+ workflow automation</span> achieved. What
         used to take 3 people 2 days now happens automatically every morning.
       </>
     ),
-    tags: ['Salesforce', 'HubSpot', 'SalesLoft', 'Zapier', 'API Integration'],
+    tags: ['Salesforce', 'HubSpot', 'Salesloft', 'Zapier', 'API Integration'],
     delayMs: 200,
   },
   {

@@ -38,7 +38,7 @@ export function stripBrandSuffix(title: string): string {
   return trimmed
 }
 
-const SITE_DESCRIPTION = `Revenue Operations Professional in Dallas-Fort Worth. SalesLoft Admin (L1/L2) and HubSpot RevOps certified. ${REVENUE_IMPACT} revenue impact across ${PROJECT_COUNT} projects.`
+const SITE_DESCRIPTION = `Revenue Operations Professional in Dallas-Fort Worth. Salesloft Admin (L1/L2) and HubSpot RevOps certified. ${REVENUE_IMPACT} revenue impact across ${PROJECT_COUNT} projects.`
 
 export const baseMetadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),
@@ -47,29 +47,6 @@ export const baseMetadata: Metadata = {
     template: '%s | Richard Hudson',
   },
   description: SITE_DESCRIPTION,
-  keywords: [
-    'revenue operations professional',
-    'revenue operations specialist',
-    'RevOps professional',
-    'Dallas RevOps professional',
-    'Fort Worth RevOps professional',
-    'Frisco RevOps professional',
-    'DFW RevOps professional',
-    'business optimization',
-    'growth strategies',
-    'sales automation',
-    'CRM optimization',
-    'partnership programs',
-    'business intelligence',
-    'marketing automation',
-    'sales optimization',
-    'Revenue Operations Professional Dallas',
-    'RevOps Fort Worth',
-    'Sales Automation Texas',
-    'Partnership Specialist DFW',
-    'SalesLoft Admin Certified',
-    'HubSpot Revenue Operations Certified',
-  ],
   authors: [{ name: 'Richard Hudson', url: SITE_ORIGIN }],
   creator: 'Richard Hudson',
   publisher: 'Richard Hudson',

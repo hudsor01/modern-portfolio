@@ -9,7 +9,10 @@ export function WebsiteJsonLd({ nonce }: { nonce?: string | null }) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'Richard Hudson - Senior Revenue Operations Specialist',
+    // Google reads WebSite `name` as the site name shown in results: keep it the
+    // plain brand, with other forms people search for as alternates.
+    name: 'Richard Hudson',
+    alternateName: ['Richard W. Hudson Jr.', 'richardwhudsonjr.com'],
     description:
       'Portfolio and experience of Richard Hudson, Senior Revenue Operations Specialist with proven track record in business growth strategies.',
     url: SITE_ORIGIN,
@@ -18,8 +21,8 @@ export function WebsiteJsonLd({ nonce }: { nonce?: string | null }) {
       name: 'Richard Hudson',
     },
     publisher: {
-      '@type': 'Organization',
-      name: 'Hudson Digital Solutions',
+      '@type': 'Person',
+      name: 'Richard Hudson',
       url: SITE_ORIGIN,
     },
     potentialAction: {

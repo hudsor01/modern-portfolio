@@ -33,7 +33,7 @@ const WHAT_I_BRING: WhatIBringItem[] = [
   {
     title: 'Bias for Action',
     description:
-      'Certified in SalesLoft & HubSpot, but I ship improvements before the certification arrives.',
+      'Certified in Salesloft & HubSpot, but I ship improvements before the certification arrives.',
     icon: Zap,
     color: 'text-accent',
   },

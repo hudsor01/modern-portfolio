@@ -37,7 +37,7 @@ describe('resume copy says each thing once (B-14)', () => {
   it('does not duplicate the Certifications list as chips', () => {
     const { container } = render(<AboutSection />)
     for (const cert of certifications) expect(container.textContent).not.toContain(cert)
-    expect(container.textContent).not.toContain('SalesLoft Certified Administrator')
+    expect(container.textContent).not.toContain('Salesloft Certified Administrator')
   })
 
   it('states the canonical years once and never "nearly a decade"', () => {

@@ -5,11 +5,11 @@ import { CertificationsSection } from '../certifications-section'
 
 const fixture = [
   {
-    name: 'SalesLoft Admin Certification',
-    issuer: 'SalesLoft',
+    name: 'Salesloft Admin Certification',
+    issuer: 'Salesloft',
     badge: '🏆',
     description: 'Validates expertise in admin configuration.',
-    skills: ['SalesLoft', 'Workflow', 'Cadences'],
+    skills: ['Salesloft', 'Workflow', 'Cadences'],
   },
   {
     name: 'HubSpot RevOps',
@@ -33,10 +33,10 @@ describe('CertificationsSection', () => {
 
   it('renders each certification name + issuer', () => {
     render(<CertificationsSection certifications={fixture} />)
-    expect(screen.getByText('SalesLoft Admin Certification')).toBeTruthy()
+    expect(screen.getByText('Salesloft Admin Certification')).toBeTruthy()
     expect(screen.getByText('HubSpot RevOps')).toBeTruthy()
-    // Issuer + skill string-equal "SalesLoft" / "HubSpot" — getAllByText accepts duplicates.
-    expect(screen.getAllByText('SalesLoft').length).toBeGreaterThanOrEqual(1)
+    // Issuer + skill string-equal "Salesloft" / "HubSpot" — getAllByText accepts duplicates.
+    expect(screen.getAllByText('Salesloft').length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByText('HubSpot').length).toBeGreaterThanOrEqual(1)
   })
 

@@ -45,8 +45,8 @@ describe('PersonJsonLd schema', () => {
   })
 
   it('contains all three credentials', () => {
-    expect(stringified).toContain('SalesLoft Admin Certification Level 1')
-    expect(stringified).toContain('SalesLoft Admin Certification Level 2')
+    expect(stringified).toContain('Salesloft Admin Certification Level 1')
+    expect(stringified).toContain('Salesloft Admin Certification Level 2')
     expect(stringified).toContain('HubSpot Revenue Operations Certification')
   })
 
@@ -170,7 +170,7 @@ describe('FAQPageJsonLd schema', () => {
     {
       question: 'What certifications does Richard Hudson hold?',
       answer:
-        'Richard holds SalesLoft Admin Certification and HubSpot Revenue Operations Certification.',
+        'Richard holds Salesloft Admin Certification and HubSpot Revenue Operations Certification.',
     },
   ]
 

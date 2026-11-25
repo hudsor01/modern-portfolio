@@ -28,16 +28,16 @@ const EXPERIENCE_STATS: { statKey: StatKey; label: string; value: string; icon: 
 
 const CERTIFICATIONS = [
   {
-    name: 'SalesLoft Admin Certification Level 1',
-    issuer: 'SalesLoft',
+    name: 'Salesloft Admin Certification Level 1',
+    issuer: 'Salesloft',
     badge: '/images/certifications/salesloft-admin-badge-1.png',
     description:
-      'Foundational administration and configuration of SalesLoft sales engagement platform',
+      'Foundational administration and configuration of Salesloft sales engagement platform',
     skills: ['Platform Setup', 'User Management', 'Basic Cadences', 'Email Templates'],
   },
   {
-    name: 'SalesLoft Admin Certification Level 2',
-    issuer: 'SalesLoft',
+    name: 'Salesloft Admin Certification Level 2',
+    issuer: 'Salesloft',
     badge: '/images/certifications/salesloft-admin-badge-2.png',
     description:
       'Advanced administration including complex automation, integrations, and advanced analytics',
@@ -67,13 +67,13 @@ const PERSONAL_INFO = {
 
 Today, I architect revenue operations systems that transform data overwhelm into competitive advantage. Ten years working the messy middle—where sales meets marketing meets customer success—turning manual reporting nightmares into automated workflows that scale.
 
-SalesLoft Admin certified (Level 1 & 2), HubSpot Revenue Operations certified, and obsessed with making complex systems feel simple.`,
+Salesloft Admin certified (Level 1 & 2), HubSpot Revenue Operations certified, and obsessed with making complex systems feel simple.`,
 }
 
 export const dynamic = 'force-static'
 export const metadata: Metadata = generateMetadata(
   'About: Revenue Operations Professional',
-  `Richard Hudson - Dallas, Texas Revenue Operations Professional serving Dallas-Fort Worth metroplex with ${STAT_VALUES.years} years experience. SalesLoft Admin certified (Level 1 & 2) and HubSpot Revenue Operations certified. Partnership program implementation specialist with system integration experience. Expert in data analytics, process automation, and CRM optimization. ${STAT_VALUES.revenue} revenue impact across ${PROJECT_COUNT} projects, ${STAT_VALUES['transaction-growth']} transaction growth.`,
+  `Richard Hudson - Dallas, Texas Revenue Operations Professional serving Dallas-Fort Worth metroplex with ${STAT_VALUES.years} years experience. Salesloft Admin certified (Level 1 & 2) and HubSpot Revenue Operations certified. Partnership program implementation specialist with system integration experience. Expert in data analytics, process automation, and CRM optimization. ${STAT_VALUES.revenue} revenue impact across ${PROJECT_COUNT} projects, ${STAT_VALUES['transaction-growth']} transaction growth.`,
   '/about'
 )
 

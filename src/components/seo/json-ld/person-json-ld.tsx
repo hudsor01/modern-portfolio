@@ -13,7 +13,7 @@ export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
     name: 'Richard Hudson',
     alternateName: 'Richard W. Hudson Jr.',
     jobTitle: 'Senior Revenue Operations Specialist',
-    description: `Senior Revenue Operations Specialist in Dallas-Fort Worth with proven expertise in sales automation, partnership program development, and data-driven growth strategies. SalesLoft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. ${STAT_VALUES.revenue} revenue impact, ${STAT_VALUES['transaction-growth']} transaction growth.`,
+    description: `Senior Revenue Operations Specialist in Dallas-Fort Worth with proven expertise in sales automation, partnership program development, and data-driven growth strategies. Salesloft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. ${STAT_VALUES.revenue} revenue impact, ${STAT_VALUES['transaction-growth']} transaction growth.`,
     url: SITE_ORIGIN,
     image: `${SITE_ORIGIN}/images/richard.jpg`,
     sameAs: [
@@ -42,25 +42,25 @@ export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
     worksFor: {
       '@type': 'Organization',
       name: 'Hudson Digital Solutions',
-      url: SITE_ORIGIN,
+      url: 'https://hudsondigitalsolutions.com',
     },
     hasCredential: [
       {
         '@type': 'EducationalOccupationalCredential',
-        name: 'SalesLoft Admin Certification Level 1',
+        name: 'Salesloft Admin Certification Level 1',
         credentialCategory: 'Professional Certification',
         recognizedBy: {
           '@type': 'Organization',
-          name: 'SalesLoft',
+          name: 'Salesloft',
         },
       },
       {
         '@type': 'EducationalOccupationalCredential',
-        name: 'SalesLoft Admin Certification Level 2',
+        name: 'Salesloft Admin Certification Level 2',
         credentialCategory: 'Professional Certification',
         recognizedBy: {
           '@type': 'Organization',
-          name: 'SalesLoft',
+          name: 'Salesloft',
         },
       },
       {
@@ -88,7 +88,7 @@ export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
       'Revenue Forecasting',
       'Salesforce Administration',
       'HubSpot Implementation',
-      'SalesLoft Configuration',
+      'Salesloft Configuration',
       'Process Automation',
       'Business Intelligence Dashboards',
       'Data Visualization',

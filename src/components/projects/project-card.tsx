@@ -41,6 +41,7 @@ export const ProjectCard = React.memo(function ProjectCard({
   return (
     <div className="animate-fade-in-up" style={{ animationDelay: `${index * 80}ms` }}>
       <Link
+        data-track="Project Click"
         href={`/projects/${project.slug || project.id}`}
         aria-labelledby={titleId}
         aria-describedby={model.kind === 'empty' ? undefined : previewId}
