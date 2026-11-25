@@ -234,11 +234,13 @@ export const ContentTypeSchema = z.enum(contentType.enumValues)
 
 export const contactFormSchema = z
   .object({
+    // Zod 4 runs checks and overwrites in chain order: max on the raw value (what maxLength
+    // counts), then trim, then min on the trimmed value so whitespace alone never passes.
     name: z
       .string()
-      .min(CONTACT_MINIMUMS.name, `Name must be at least ${CONTACT_MINIMUMS.name} characters long`)
       .max(CONTACT_LIMITS.name, `Name cannot exceed ${CONTACT_LIMITS.name} characters`)
-      .trim(),
+      .trim()
+      .min(CONTACT_MINIMUMS.name, `Name must be at least ${CONTACT_MINIMUMS.name} characters long`),
     email: z
       .email('Please enter a valid email address')
       .max(CONTACT_LIMITS.email, 'Email address is too long'),
@@ -259,22 +261,22 @@ export const contactFormSchema = z
       .or(z.literal('')),
     subject: z
       .string()
+      .max(CONTACT_LIMITS.subject, `Subject must not exceed ${CONTACT_LIMITS.subject} characters`)
+      .trim()
       .min(
         CONTACT_MINIMUMS.subject,
         `Subject must be at least ${CONTACT_MINIMUMS.subject} character`
       )
-      .max(CONTACT_LIMITS.subject, `Subject must not exceed ${CONTACT_LIMITS.subject} characters`)
-      .trim()
       .optional(),
     message: z
       .string()
       .overwrite(normalizeNewlines)
+      .max(CONTACT_LIMITS.message, `Message cannot exceed ${CONTACT_LIMITS.message} characters`)
+      .trim()
       .min(
         CONTACT_MINIMUMS.message,
         `Message must be at least ${CONTACT_MINIMUMS.message} characters long`
-      )
-      .max(CONTACT_LIMITS.message, `Message cannot exceed ${CONTACT_LIMITS.message} characters`)
-      .trim(),
+      ),
     honeypot: z.string().optional(),
   })
   .strict()

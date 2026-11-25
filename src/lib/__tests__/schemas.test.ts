@@ -403,6 +403,36 @@ describe('contactFormSchema', () => {
     expect(contactFormSchema.safeParse({ ...valid, message: 'short' }).success).toBe(false)
   })
 
+  // min runs after trim: whitespace never satisfies a minimum and never reaches the
+  // email or contact_submissions as an empty string.
+  it.each([
+    ['name', '   ', 'Name must be at least'],
+    ['name', '  a  ', 'Name must be at least'],
+    ['message', ' '.repeat(10), 'Message must be at least'],
+    ['message', '\r\n'.repeat(6), 'Message must be at least'],
+    ['message', `  ${'a'.repeat(9)}  `, 'Message must be at least'],
+    ['subject', '   ', 'Subject must be at least'],
+  ] as const)('%s %j fails the minimum after trimming', (field, value, text) => {
+    const res = contactFormSchema.safeParse({ ...valid, [field]: value })
+    expect(res.success).toBe(false)
+    if (!res.success) {
+      expect(res.error.issues.some((i) => i.message.includes(text))).toBe(true)
+    }
+  })
+
+  it('trims name and message and accepts them when the trimmed value meets the minimum', () => {
+    const res = contactFormSchema.safeParse({
+      ...valid,
+      name: '  Jo  ',
+      message: `  ${'a'.repeat(10)}  `,
+    })
+    expect(res.success).toBe(true)
+    if (res.success) {
+      expect(res.data.name).toBe('Jo')
+      expect(res.data.message).toBe('a'.repeat(10))
+    }
+  })
+
   it('rejects message over CONTACT_LIMITS.message chars', () => {
     expect(
       contactFormSchema.safeParse({ ...valid, message: 'a'.repeat(CONTACT_LIMITS.message + 1) })
