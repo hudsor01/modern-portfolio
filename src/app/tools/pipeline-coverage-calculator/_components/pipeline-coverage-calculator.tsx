@@ -23,7 +23,13 @@ function parse(v: string, kind: AmountKind): number | undefined {
   return Number.isFinite(n) ? n : Number.NaN
 }
 
-/** A percent input's text plus whether the browser reported malformed text (its badInput flag). */
+/**
+ * A percent input's text plus whether the browser reported malformed text (its badInput flag).
+ * The percent inputs read both on `onInput`, not `onChange`: a type="number" input reports
+ * value '' whether it is empty or holds malformed text, and React drops an `onChange` whose
+ * value did not change, so typing "e" into an empty field or clearing a flagged one would
+ * never update the flag. The native input event fires on every edit.
+ */
 function parsePercent(p: { value: string; badInput: boolean }): number | undefined {
   if (p.badInput) return Number.NaN
   if (p.value.trim() === '') return undefined
@@ -109,8 +115,11 @@ export function PipelineCoverageCalculator() {
                 value={winRate.value}
                 aria-invalid={winError !== null}
                 aria-describedby={winError !== null ? `${ids.win}-error` : undefined}
-                onChange={(e) =>
-                  setWinRate({ value: e.target.value, badInput: e.target.validity.badInput })
+                onInput={(e) =>
+                  setWinRate({
+                    value: e.currentTarget.value,
+                    badInput: e.currentTarget.validity.badInput,
+                  })
                 }
                 className={`${inputClass} pr-8${winError !== null ? ' border-destructive!' : ''}`}
                 placeholder="25"
@@ -164,8 +173,11 @@ export function PipelineCoverageCalculator() {
                 value={qualified.value}
                 aria-invalid={qualError !== null}
                 aria-describedby={qualError !== null ? `${ids.qual}-error` : undefined}
-                onChange={(e) =>
-                  setQualified({ value: e.target.value, badInput: e.target.validity.badInput })
+                onInput={(e) =>
+                  setQualified({
+                    value: e.currentTarget.value,
+                    badInput: e.currentTarget.validity.badInput,
+                  })
                 }
                 className={`${inputClass} pr-8${qualError !== null ? ' border-destructive!' : ''}`}
                 placeholder="100"
@@ -185,8 +197,11 @@ export function PipelineCoverageCalculator() {
                 value={safety.value}
                 aria-invalid={safetyError !== null}
                 aria-describedby={safetyError !== null ? `${ids.safety}-error` : undefined}
-                onChange={(e) =>
-                  setSafety({ value: e.target.value, badInput: e.target.validity.badInput })
+                onInput={(e) =>
+                  setSafety({
+                    value: e.currentTarget.value,
+                    badInput: e.currentTarget.validity.badInput,
+                  })
                 }
                 className={`${inputClass} pr-8${safetyError !== null ? ' border-destructive!' : ''}`}
                 placeholder="0"

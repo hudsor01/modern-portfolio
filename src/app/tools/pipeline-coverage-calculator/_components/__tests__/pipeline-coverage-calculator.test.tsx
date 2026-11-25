@@ -10,7 +10,7 @@ afterEach(async () => {
 
 const NEG = 'Negative amounts are not allowed. Enter a positive number.'
 
-/** jsdom never sets validity.badInput, so stub it before firing the change event. */
+/** jsdom never sets validity.badInput, so stub it before firing the input event. */
 function setBadInput(input: HTMLInputElement, bad: boolean) {
   Object.defineProperty(input, 'validity', { value: { badInput: bad }, configurable: true })
 }
@@ -99,7 +99,7 @@ describe('PipelineCoverageCalculator', () => {
     render(<PipelineCoverageCalculator />)
     const win = screen.getByLabelText('Win rate') as HTMLInputElement
     setBadInput(win, true)
-    fireEvent.change(win, { target: { value: '' } })
+    fireEvent.input(win, { target: { value: '' } })
     const alert = screen.getByRole('alert')
     expect(alert.textContent).toBe('Enter numbers only')
     expect(win.getAttribute('aria-invalid')).toBe('true')
@@ -107,7 +107,7 @@ describe('PipelineCoverageCalculator', () => {
     expect(win.className).toContain('border-destructive!')
     expect(panelText()).toBe('Fix “Win rate” to see your coverage.')
     setBadInput(win, false)
-    fireEvent.change(win, { target: { value: '30' } })
+    fireEvent.input(win, { target: { value: '30' } })
     expect(screen.queryByRole('alert')).toBeNull()
     expect(win.getAttribute('aria-invalid')).toBe('false')
     expect(panelText()).toContain('Required coverage')
@@ -118,25 +118,25 @@ describe('PipelineCoverageCalculator', () => {
     const win = screen.getByLabelText('Win rate') as HTMLInputElement
     const qual = screen.getByLabelText('% truly qualified') as HTMLInputElement
     const safety = screen.getByLabelText('Safety margin') as HTMLInputElement
-    fireEvent.change(win, { target: { value: '-5' } })
+    fireEvent.input(win, { target: { value: '-5' } })
     expect(screen.getByRole('alert').textContent).toBe(NEG)
-    fireEvent.change(win, { target: { value: '150' } })
+    fireEvent.input(win, { target: { value: '150' } })
     expect(screen.getByRole('alert').textContent).toBe('Win rate can’t exceed 100%.')
-    fireEvent.change(win, { target: { value: '25' } })
-    fireEvent.change(qual, { target: { value: '150' } })
+    fireEvent.input(win, { target: { value: '25' } })
+    fireEvent.input(qual, { target: { value: '150' } })
     expect(screen.getByRole('alert').textContent).toBe('Enter a percentage up to 100%.')
     expect(panelText()).toBe('Fix “% truly qualified” to see your coverage.')
-    fireEvent.change(qual, { target: { value: '100' } })
-    fireEvent.change(safety, { target: { value: '-1' } })
+    fireEvent.input(qual, { target: { value: '100' } })
+    fireEvent.input(safety, { target: { value: '-1' } })
     expect(screen.getByRole('alert').textContent).toBe(NEG)
-    fireEvent.change(safety, { target: { value: '1001' } })
+    fireEvent.input(safety, { target: { value: '1001' } })
     expect(screen.getByRole('alert').textContent).toBe('Enter a margin up to 1,000%.')
   })
 
   it('names the first failing field in DOM order when several are invalid', () => {
     render(<PipelineCoverageCalculator />)
     fireEvent.change(getTarget(), { target: { value: 'abc' } })
-    fireEvent.change(screen.getByLabelText('Win rate'), { target: { value: '150' } })
+    fireEvent.input(screen.getByLabelText('Win rate'), { target: { value: '150' } })
     expect(screen.getAllByRole('alert')).toHaveLength(2)
     expect(panelText()).toBe('Fix “Revenue target” to see your coverage.')
   })
@@ -144,7 +144,7 @@ describe('PipelineCoverageCalculator', () => {
   it('moves focus to the failing field from the panel button', () => {
     render(<PipelineCoverageCalculator />)
     const win = screen.getByLabelText('Win rate') as HTMLInputElement
-    fireEvent.change(win, { target: { value: '150' } })
+    fireEvent.input(win, { target: { value: '150' } })
     fireEvent.click(screen.getByRole('button', { name: 'Win rate' }))
     expect(document.activeElement).toBe(win)
   })
@@ -152,18 +152,64 @@ describe('PipelineCoverageCalculator', () => {
   it('bounds extreme output instead of printing absurd figures', () => {
     const { container } = render(<PipelineCoverageCalculator />)
     fireEvent.change(getTarget(), { target: { value: '10000000000' } })
-    fireEvent.change(screen.getByLabelText('Win rate'), { target: { value: '0.0001' } })
+    fireEvent.input(screen.getByLabelText('Win rate'), { target: { value: '0.0001' } })
     const text = container.querySelector('[aria-live="polite"]')?.textContent ?? ''
     expect(text).toContain('$1T+')
     expect(text).toContain('1,000×+')
     expect(text).not.toMatch(/[\d,]{5,}T/)
   })
 
+  // A type="number" input reports value '' both when empty and when it holds malformed
+  // text, so these transitions leave the value at '' and only the input event reports them.
+  it.each(['Win rate', '% truly qualified', 'Safety margin'])(
+    'flags malformed text typed into an empty %s field, although its value stays ""',
+    (label) => {
+      render(<PipelineCoverageCalculator />)
+      const input = screen.getByLabelText(label) as HTMLInputElement
+      fireEvent.input(input, { target: { value: '' } })
+      setBadInput(input, true)
+      fireEvent.input(input, { target: { value: '' } }) // a lone "e" typed into the empty field
+      const alert = screen.getByRole('alert')
+      expect(alert.textContent).toBe('Enter numbers only')
+      expect(input.getAttribute('aria-invalid')).toBe('true')
+      expect(input.getAttribute('aria-describedby')).toBe(alert.id)
+      expect(panelText()).toBe(`Fix “${label}” to see your coverage.`)
+    }
+  )
+
+  it.each(['% truly qualified', 'Safety margin'])(
+    'drops the malformed flag when a flagged %s field is cleared',
+    (label) => {
+      render(<PipelineCoverageCalculator />)
+      const input = screen.getByLabelText(label) as HTMLInputElement
+      setBadInput(input, true)
+      fireEvent.input(input, { target: { value: '' } })
+      expect(screen.getByRole('alert').textContent).toBe('Enter numbers only')
+      setBadInput(input, false)
+      fireEvent.input(input, { target: { value: '' } }) // select-all + Delete: still ''
+      expect(screen.queryByRole('alert')).toBeNull()
+      expect(input.getAttribute('aria-invalid')).toBe('false')
+      expect(input.className).not.toContain('border-destructive!')
+      expect(panelText()).toContain('Required coverage')
+    }
+  )
+
+  it('drops the malformed flag when a flagged Win rate is cleared', () => {
+    render(<PipelineCoverageCalculator />)
+    const win = screen.getByLabelText('Win rate') as HTMLInputElement
+    setBadInput(win, true)
+    fireEvent.input(win, { target: { value: '' } })
+    expect(screen.getByRole('alert').textContent).toBe('Enter numbers only')
+    setBadInput(win, false)
+    fireEvent.input(win, { target: { value: '' } })
+    expect(screen.queryByText('Enter numbers only')).toBeNull()
+  })
+
   it('a preset clears a malformed win rate', () => {
     render(<PipelineCoverageCalculator />)
     const win = screen.getByLabelText('Win rate') as HTMLInputElement
     setBadInput(win, true)
-    fireEvent.change(win, { target: { value: '' } })
+    fireEvent.input(win, { target: { value: '' } })
     expect(screen.getByRole('alert')).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: 'Mid-market (25%)' }))
     expect(screen.queryByRole('alert')).toBeNull()
