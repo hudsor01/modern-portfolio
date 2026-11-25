@@ -122,8 +122,11 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
     dateCreated: post.createdAt,
     author: {
       '@type': 'Person',
+      '@id': PERSON_ID,
       name: post.author?.name || 'Richard Hudson',
-      url: SITE_ORIGIN,
+      // Google recommends an author URL that identifies the author: /about is
+      // the ProfilePage for this Person.
+      url: `${SITE_ORIGIN}/about`,
       sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
       jobTitle: 'Revenue Operations Professional',
       description: post.author?.bio,
@@ -132,16 +135,13 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
         name: 'Hudson Digital Solutions',
       },
     },
+    // `logo` is an Organization property; a Person publisher takes `image`.
     publisher: {
       '@type': 'Person',
+      '@id': PERSON_ID,
       name: 'Richard Hudson',
       url: SITE_ORIGIN,
-      logo: {
-        '@type': 'ImageObject',
-        url: `${SITE_ORIGIN}/images/richard.jpg`,
-        width: 739,
-        height: 739,
-      },
+      image: `${SITE_ORIGIN}/images/richard.jpg`,
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
@@ -167,29 +167,9 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
           description: tag.description,
         })),
       }),
-    // Add interaction statistics
-    interactionStatistic: [
-      {
-        '@type': 'InteractionCounter',
-        interactionType: 'https://schema.org/ReadAction',
-        userInteractionCount: post.viewCount,
-      },
-      {
-        '@type': 'InteractionCounter',
-        interactionType: 'https://schema.org/LikeAction',
-        userInteractionCount: post.likeCount,
-      },
-      {
-        '@type': 'InteractionCounter',
-        interactionType: 'https://schema.org/ShareAction',
-        userInteractionCount: post.shareCount,
-      },
-      {
-        '@type': 'InteractionCounter',
-        interactionType: 'https://schema.org/CommentAction',
-        userInteractionCount: post.commentCount,
-      },
-    ],
+    // No interactionStatistic: the site has no likes, shares or comments, and the
+    // view counter is not a reliable read count, so publishing those numbers as
+    // engagement would misstate the page to search engines.
     // Add breadcrumb navigation
     breadcrumb: {
       '@type': 'BreadcrumbList',

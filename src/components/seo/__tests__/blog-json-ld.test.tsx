@@ -67,9 +67,16 @@ describe('BlogPostJsonLd', () => {
     expect(parsed.url).toBe('https://richardwhudsonjr.com/blog/test-post')
     expect(parsed.wordCount).toBe(1234)
     expect(parsed.timeRequired).toBe('PT5M')
-    // Interaction stats embedded
-    expect(Array.isArray(parsed.interactionStatistic)).toBe(true)
-    expect(parsed.interactionStatistic.length).toBe(4)
+    // No engagement counts: the site has no likes, shares or comments, and the
+    // view counter is not a reliable read count.
+    expect(parsed.interactionStatistic).toBeUndefined()
+    // Author and publisher are the sitewide Person; author URL is the /about profile.
+    expect(parsed.author['@id']).toBe('https://richardwhudsonjr.com/#person')
+    expect(parsed.author.url).toBe('https://richardwhudsonjr.com/about')
+    expect(parsed.publisher['@id']).toBe('https://richardwhudsonjr.com/#person')
+    // `logo` belongs to Organization; a Person publisher carries `image`.
+    expect(parsed.publisher.logo).toBeUndefined()
+    expect(parsed.publisher.image).toBe('https://richardwhudsonjr.com/images/richard.jpg')
   })
 
   it('includes a 3-item BreadcrumbList', () => {
