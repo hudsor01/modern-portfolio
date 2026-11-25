@@ -22,6 +22,70 @@ test.describe('header', () => {
     )
   })
 
+  test('mobile menu locks page scroll and releases it on close, navigation, back and desktop resize (F-20)', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/')
+    await page.waitForLoadState('networkidle')
+    const rootOverflow = () =>
+      page.evaluate(() => getComputedStyle(document.documentElement).overflow)
+    const menu = page.locator('#mobile-menu')
+    const openToggle = page.getByRole('button', { name: 'Open menu' })
+
+    const gutter = await page.evaluate(
+      () => getComputedStyle(document.documentElement).scrollbarGutter,
+    )
+    expect(gutter).toContain('stable')
+    const widthBefore = await page.evaluate(() => document.documentElement.clientWidth)
+
+    await openToggle.click()
+    await expect.poll(rootOverflow).toBe('hidden')
+    expect(await page.evaluate(() => document.documentElement.clientWidth)).toBe(widthBefore)
+
+    await page.mouse.move(195, 700)
+    await page.mouse.wheel(0, 600)
+    await expect
+      .poll(async () => {
+        await page.waitForTimeout(100)
+        return page.evaluate(() => window.scrollY)
+      })
+      .toBe(0)
+
+    const fits = await menu.evaluate((el) => {
+      const rect = el.getBoundingClientRect()
+      return rect.bottom <= window.innerHeight || el.scrollHeight > el.clientHeight
+    })
+    expect(fits).toBe(true)
+
+    await page.getByRole('button', { name: 'Close menu' }).click()
+    await expect.poll(rootOverflow).not.toBe('hidden')
+
+    // Navigation by link
+    await openToggle.click()
+    await expect.poll(rootOverflow).toBe('hidden')
+    await menu.getByRole('link', { name: 'About' }).click()
+    await expect(page).toHaveURL(/\/about$/)
+    await expect.poll(rootOverflow).not.toBe('hidden')
+    await expect(openToggle).toHaveAttribute('aria-expanded', 'false')
+
+    // Browser back while open
+    await openToggle.click()
+    await expect.poll(rootOverflow).toBe('hidden')
+    await page.goBack()
+    await expect(page).toHaveURL(/^[^?#]*\/(?:[?#].*)?$/)
+    await expect.poll(rootOverflow).not.toBe('hidden')
+    await expect(menu).toBeHidden()
+
+    // Desktop resize while open
+    await openToggle.click()
+    await expect.poll(rootOverflow).toBe('hidden')
+    await page.setViewportSize({ width: 1024, height: 800 })
+    await expect.poll(rootOverflow).not.toBe('hidden')
+    await page.setViewportSize({ width: 390, height: 844 })
+    await expect(openToggle).toHaveAttribute('aria-expanded', 'false')
+  })
+
   for (const [width, height] of [
     [1440, 900],
     [390, 844],
