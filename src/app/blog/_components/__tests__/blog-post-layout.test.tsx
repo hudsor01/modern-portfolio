@@ -97,10 +97,28 @@ describe('BlogPostLayout', () => {
     expect(cls).not.toContain('lg:py-14')
   })
 
-  it('omits the details card when there is nothing to list', () => {
+  it('keeps the details card with the reads count when nothing else is listed', () => {
     const { container } = render(
       <BlogPostLayout post={makePost({ wordCount: 0, content: '', category: undefined })} />
     )
-    expect(container.textContent).not.toContain('Post details')
+    expect(container.textContent).toContain('Post details')
+    expect(container.querySelectorAll('[data-post-reads]')).toHaveLength(1)
+  })
+
+  it.each([
+    [0, '0 reads'],
+    [1, '1 read'],
+    [1234, '1,234 reads'],
+  ])('shows viewCount %i as one sidebar element "%s" and never "views"', (viewCount, label) => {
+    const { container } = render(<BlogPostLayout post={makePost({ viewCount })} />)
+    const reads = container.querySelectorAll('[data-post-reads]')
+    expect(reads).toHaveLength(1)
+    const [read] = Array.from(reads)
+    expect(read?.textContent).toBe(label)
+    const aside = container.querySelector('aside')
+    expect(aside?.contains(read ?? null)).toBe(true)
+    expect(aside?.textContent).toContain('Word count')
+    expect(container.textContent).not.toContain('views')
+    expect(container.querySelector('header')?.textContent ?? '').not.toMatch(/\d[\d,]* reads?$/)
   })
 })

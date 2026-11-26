@@ -1,10 +1,11 @@
 import Link from 'next/link'
 import { BlogFeaturedImage } from '@/components/blog/blog-featured-image'
-import { ArrowLeft, CalendarDays, Clock, Eye } from 'lucide-react'
+import { ArrowLeft, CalendarDays, Clock } from 'lucide-react'
 import type { BlogPostData } from '@/types/api'
 import { BlogPostArticle } from './blog-post-article'
 import { InlineMarkdown } from './inline-markdown'
 import { formatDate } from '@/lib/data-formatters'
+import { formatReads } from '@/lib/format-reads'
 import type { ContentType } from '@/types/blog'
 import { Badge } from '@/components/ui/badge'
 import { CATEGORY_CHIP_CLASSES } from '@/lib/blog-list'
@@ -79,12 +80,6 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
                   <span className="inline-flex items-center gap-2">
                     <Clock className="icon-sm" />
                     {readingTime} min read
-                  </span>
-                )}
-                {post.viewCount > 0 && (
-                  <span className="inline-flex items-center gap-2">
-                    <Eye className="icon-sm" />
-                    {post.viewCount.toLocaleString()} views
                   </span>
                 )}
               </div>
@@ -177,19 +172,20 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
         </div>
 
         <aside className="space-y-6 lg:sticky lg:top-24 self-start">
-          {detailItems.length > 0 && (
-            <Card variant="outline" className="p-6">
-              <p className="uppercase tracking-wide">Post details</p>
-              <div className="mt-3 space-y-3 text-base">
-                {detailItems.map((detail) => (
-                  <div key={detail.label} className="flex items-center justify-between gap-4">
-                    <span className="text-muted-foreground">{detail.label}</span>
-                    <span className="font-semibold text-foreground">{detail.value}</span>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          )}
+          <Card variant="outline" className="p-6">
+            <p className="uppercase tracking-wide">Post details</p>
+            <div className="mt-3 space-y-3 text-base">
+              {detailItems.map((detail) => (
+                <div key={detail.label} className="flex items-center justify-between gap-4">
+                  <span className="text-muted-foreground">{detail.label}</span>
+                  <span className="font-semibold text-foreground">{detail.value}</span>
+                </div>
+              ))}
+              <p data-post-reads className="text-muted-foreground">
+                {formatReads(post.viewCount)}
+              </p>
+            </div>
+          </Card>
 
           {post.author?.bio && (
             <Card variant="outline" className="p-6">
