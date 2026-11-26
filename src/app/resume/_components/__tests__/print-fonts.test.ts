@@ -1,8 +1,9 @@
 // @vitest-environment node
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { brotliDecompressSync } from 'node:zlib'
 import { describe, expect, it, vi } from 'vitest'
-import { PRINT_FONT_FACES, preloadPrintFonts } from '@/lib/print-fonts'
+import { PRINT_FONT_FACES, PRINT_FONT_POSTSCRIPT_NAMES, preloadPrintFonts } from '@/lib/print-fonts'
 
 /**
  * The résumé PDF embeds static TrueType outlines, shipped as WOFF2
@@ -32,8 +33,14 @@ const EXPECTED_TABLES = [
   'head', 'hhea', 'hmtx', 'loca', 'maxp', 'name', 'post', 'prep',
 ] // biome-ignore format: dense lookup table
 
-/** Table tags from a WOFF2 table directory (header is 48 bytes). */
-function woff2Tables(data: Buffer): string[] {
+interface Woff2Table {
+  tag: string
+  /** Bytes the table occupies in the decompressed stream. */
+  size: number
+}
+
+/** The WOFF2 table directory (header is 48 bytes) and where it ends. */
+function woff2Directory(data: Buffer): { tables: Woff2Table[]; end: number } {
   let pos = 48
   const readBase128 = (): number => {
     let value = 0
@@ -44,7 +51,7 @@ function woff2Tables(data: Buffer): string[] {
     }
     throw new Error('invalid UIntBase128')
   }
-  const tags: string[] = []
+  const tables: Woff2Table[] = []
   const count = data.readUInt16BE(12)
   for (let i = 0; i < count; i++) {
     const flags = data.readUInt8(pos++)
@@ -57,12 +64,41 @@ function woff2Tables(data: Buffer): string[] {
       tag = WOFF2_KNOWN_TAGS[index] ?? ''
     }
     const version = flags >> 6
-    readBase128()
+    const origLength = readBase128()
     const transformed = tag === 'glyf' || tag === 'loca' ? version === 0 : version !== 0
-    if (transformed) readBase128()
-    tags.push(tag)
+    const size = transformed ? readBase128() : origLength
+    tables.push({ tag, size })
   }
-  return tags
+  return { tables, end: pos }
+}
+
+/** One table's bytes from the brotli-decoded WOFF2 stream (untransformed tables only). */
+function woff2Table(data: Buffer, tag: string): Buffer {
+  const { tables, end } = woff2Directory(data)
+  const stream = brotliDecompressSync(data.subarray(end, end + data.readUInt32BE(20)))
+  expect(stream.length).toBe(tables.reduce((sum, t) => sum + t.size, 0))
+  let offset = 0
+  for (const table of tables) {
+    if (table.tag === tag) return stream.subarray(offset, offset + table.size)
+    offset += table.size
+  }
+  throw new Error(`no ${tag} table`)
+}
+
+/** The Windows-platform (UTF-16BE) PostScript name, name ID 6. */
+function postScriptName(name: Buffer): string | undefined {
+  const count = name.readUInt16BE(2)
+  const strings = name.readUInt16BE(4)
+  for (let i = 0; i < count; i++) {
+    const record = 6 + i * 12
+    if (name.readUInt16BE(record) !== 3 || name.readUInt16BE(record + 6) !== 6) continue
+    const length = name.readUInt16BE(record + 8)
+    const start = strings + name.readUInt16BE(record + 10)
+    return Buffer.from(name.subarray(start, start + length))
+      .swap16()
+      .toString('utf16le')
+  }
+  return undefined
 }
 
 const withoutComments = css.replace(/\/\*[\s\S]*?\*\//g, '')
@@ -115,6 +151,21 @@ describe('résumé print fonts', () => {
     expect(declared).toEqual([...PRINT_FONT_FACES])
   })
 
+  it('each WOFF2 decodes to the PostScript name and weight its @font-face declares', () => {
+    const declared = fontFaces.map((body) => ({
+      weight: Number(body.match(/font-weight:\s*(\d+)/)?.[1]),
+      src: body.match(/url\('\.\/print-fonts\/([^']+)'\)/)?.[1] ?? '',
+    }))
+    expect(declared.map((face) => face.src.replace(/\.woff2$/, ''))).toEqual([
+      ...PRINT_FONT_POSTSCRIPT_NAMES,
+    ])
+    for (const face of declared) {
+      const data = readFileSync(join(FONT_DIR, face.src))
+      expect(woff2Table(data, 'OS/2').readUInt16BE(4)).toBe(face.weight)
+      expect(postScriptName(woff2Table(data, 'name'))).toBe(face.src.replace(/\.woff2$/, ''))
+    }
+  })
+
   it('loads nothing from another host (CSP font-src)', () => {
     expect(withoutComments).not.toMatch(/url\(\s*['"]?(https?:)?\/\//)
   })
@@ -127,8 +178,9 @@ describe('résumé print fonts', () => {
       const data = readFileSync(join(FONT_DIR, file))
       expect(data.readUInt32BE(0)).toBe(0x774f4632)
       expect(data.readUInt32BE(4)).toBe(0x00010000)
-      const tables = woff2Tables(data)
-      expect(tables).toHaveLength(data.readUInt16BE(12))
+      // Header length is the whole file, so a truncated file fails here.
+      expect(data.readUInt32BE(8)).toBe(data.length)
+      const tables = woff2Directory(data).tables.map((t) => t.tag)
       expect([...tables].sort()).toEqual([...EXPECTED_TABLES].sort())
       expect(tables).not.toContain('fvar')
       expect(tables).not.toContain('gvar')
