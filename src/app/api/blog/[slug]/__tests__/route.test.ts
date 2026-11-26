@@ -358,6 +358,28 @@ describe('PUT /api/blog/[slug]', () => {
     expect(dbMocks.updateSet.mock.calls[0]?.[0]).toMatchObject({ metaTitle: 'Short Stored Title' })
   })
 
+  it('fits over-long SEO text on PUT, leaves omitted fields out and clears on null', async () => {
+    const long = 'Revenue operations keeps the pipeline honest. '.repeat(30)
+    dbMocks.findFirst.mockResolvedValueOnce(samplePost).mockResolvedValueOnce(samplePost)
+    dbMocks.update.mockResolvedValue(undefined)
+    const res = await PUT(
+      reqPut('hello', {
+        ogTitle: long,
+        ogDescription: long,
+        twitterDescription: long,
+        featuredImageAlt: null,
+      }),
+      ctx('hello')
+    )
+    expect(res.status).toBe(200)
+    const set = dbMocks.updateSet.mock.calls[0]?.[0]
+    expect((set.ogTitle as string).length).toBeLessThanOrEqual(100)
+    expect((set.ogDescription as string).length).toBeLessThanOrEqual(300)
+    expect((set.twitterDescription as string).length).toBeLessThanOrEqual(200)
+    expect(set.featuredImageAlt).toBeNull()
+    expect(set).not.toHaveProperty('twitterTitle')
+  })
+
   it('leaves the stored SEO title alone when the update does not send one', async () => {
     dbMocks.findFirst.mockResolvedValueOnce(samplePost).mockResolvedValueOnce(samplePost)
     dbMocks.update.mockResolvedValue(undefined)

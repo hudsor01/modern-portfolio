@@ -15,6 +15,8 @@ import {
   metaDescriptionNeedsDerivation,
   normalizeStoredSeoText,
   opensWithAuthorBio,
+  fitStoredText,
+  STORED_TEXT_LIMITS,
 } from '@/lib/blog-excerpt'
 
 const logger = createContextLogger('SlugAPI')
@@ -180,19 +182,34 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
       }),
       ...(body.keywords && { keywords: body.keywords }),
       ...(body.canonicalUrl !== undefined && { canonicalUrl: body.canonicalUrl }),
-      // Social-card fields — schema accepts these on PUT (nullish in
-      // blogPostBaseShape), so the handler must spread them through or
-      // silently drop a valid client payload.
-      ...(body.ogTitle !== undefined && { ogTitle: body.ogTitle }),
-      ...(body.ogDescription !== undefined && { ogDescription: body.ogDescription }),
+      // ogTitle, ogDescription, twitterTitle and twitterDescription (and the
+      // images) are stored for API round-tripping and normalized on write, but
+      // intentionally not rendered: post pages derive every share surface from
+      // the one canonical normalized title, meta description and image
+      // (src/app/blog/[slug]/page.tsx), because separate per-surface values
+      // were how three SEO surfaces disagreed before. Omitted stays unwritten;
+      // null clears.
+      ...(body.ogTitle !== undefined && {
+        ogTitle: fitStoredText(body.ogTitle, STORED_TEXT_LIMITS.ogTitle),
+      }),
+      ...(body.ogDescription !== undefined && {
+        ogDescription: fitStoredText(body.ogDescription, STORED_TEXT_LIMITS.ogDescription),
+      }),
       ...(body.ogImage !== undefined && { ogImage: body.ogImage }),
-      ...(body.twitterTitle !== undefined && { twitterTitle: body.twitterTitle }),
+      ...(body.twitterTitle !== undefined && {
+        twitterTitle: fitStoredText(body.twitterTitle, STORED_TEXT_LIMITS.twitterTitle),
+      }),
       ...(body.twitterDescription !== undefined && {
-        twitterDescription: body.twitterDescription,
+        twitterDescription: fitStoredText(
+          body.twitterDescription,
+          STORED_TEXT_LIMITS.twitterDescription
+        ),
       }),
       ...(body.twitterImage !== undefined && { twitterImage: body.twitterImage }),
       ...(body.featuredImage !== undefined && { featuredImage: body.featuredImage }),
-      ...(body.featuredImageAlt !== undefined && { featuredImageAlt: body.featuredImageAlt }),
+      ...(body.featuredImageAlt !== undefined && {
+        featuredImageAlt: fitStoredText(body.featuredImageAlt, STORED_TEXT_LIMITS.featuredImageAlt),
+      }),
       ...(body.categoryId !== undefined && { categoryId: body.categoryId ?? null }),
       ...(body.publishedAt !== undefined && {
         publishedAt: body.publishedAt ? new Date(body.publishedAt) : null,

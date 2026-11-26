@@ -4,7 +4,7 @@ import type { ApiResponse, BlogCategoryData } from '@/types/api'
 import { db } from '@/lib/db'
 import { categories } from '@/db/schema'
 import { createContextLogger } from '@/lib/logger'
-import { fitMetaDescription } from '@/lib/blog-excerpt'
+import { fitMetaDescription, fitStoredText, STORED_TEXT_LIMITS } from '@/lib/blog-excerpt'
 import { generateSlug, createErrorResponse, transformToCategoryData } from '@/lib/api-blog'
 import { createCategorySchema } from '@/lib/schemas'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
@@ -87,7 +87,8 @@ export async function POST(request: NextRequest) {
       .values({
         name: body.name,
         slug,
-        description: body.description ?? null,
+        description:
+          fitStoredText(body.description, STORED_TEXT_LIMITS.taxonomyDescription) ?? null,
         color: body.color,
         icon: body.icon ?? null,
         // Any length is accepted and stored within the search budget (<= 43),
