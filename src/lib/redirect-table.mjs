@@ -23,6 +23,11 @@
  *   is byte-identical to the table value (URL parsing cannot normalize it
  *   into another path), it can never be protocol-relative, and the proxy can
  *   append the request query to it unchanged.
+ * - A path destination is never `/blog`. Both next.config redirects and the
+ *   proxy forward the request query on a table hit, and /blog answers a
+ *   non-canonical `?page=` with its own 308, so `/x?page=0 -> /blog?page=0 ->
+ *   /blog` would be two hops (on Vercel the first is the config redirect,
+ *   which the proxy cannot rewrite).
  * - A path destination is not itself a source. With the grammar above this
  *   makes it a fixed point of resolveSingleHop (src/lib/redirect-resolve.ts),
  *   so no entry can chain or loop, including `/a -> /a/`, `/a -> /A` and
@@ -57,6 +62,11 @@ function checkPathDestination(source, destination) {
   if (!PATH_DESTINATION.test(destination)) {
     throw new Error(
       `Redirect destination must be '/' or a literal lowercase path of a-z, 0-9, '-' and '/' with no trailing slash: ${source} -> ${destination}`
+    )
+  }
+  if (destination === '/blog') {
+    throw new Error(
+      `Redirect destination must not be /blog (its ?page canonicalization would add a second 308): ${source}`
     )
   }
 }

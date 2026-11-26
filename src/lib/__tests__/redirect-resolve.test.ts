@@ -8,20 +8,6 @@ import { RESUME_PDF_PATH } from '@/lib/resume-pdf'
 const resolve = (pathname: string, search = '') => resolveSingleHop(pathname, search, REDIRECT_MAP)
 
 describe('resolveSingleHop', () => {
-  it('canonicalizes the page param on a table hit that lands on /blog, in the same hop', () => {
-    const table = new Map([['/articles', '/blog']])
-    expect(resolveSingleHop('/Articles/', '?page=0&q=x', table)).toEqual({
-      kind: 'internal',
-      pathname: '/blog',
-      search: '?q=x',
-    })
-    expect(resolveSingleHop('/articles', '?page=2', table)).toEqual({
-      kind: 'internal',
-      pathname: '/blog',
-      search: '?page=2',
-    })
-  })
-
   it.each([
     ['/About/', '', '/about', ''],
     ['/about/', '', '/about', ''],

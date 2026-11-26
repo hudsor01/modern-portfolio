@@ -46,13 +46,9 @@ export function resolveSingleHop(
 
   const destination = table.get(canonical)
   if (destination !== undefined) {
-    if (destination.startsWith('https://')) {
-      return { kind: 'external', href: `${destination}${search}` }
-    }
-    // A table hit landing on /blog gets the same page canonicalization as a
-    // direct /blog request, so `?page=0` is dropped in this one hop instead of
-    // costing a second 308 at the destination.
-    return { kind: 'internal', pathname: destination, search: canonicalSearch(destination, search) }
+    return destination.startsWith('https://')
+      ? { kind: 'external', href: `${destination}${search}` }
+      : { kind: 'internal', pathname: destination, search }
   }
 
   if (canonical === '/blog') {
@@ -64,13 +60,6 @@ export function resolveSingleHop(
 
   if (canonical !== pathname) return { kind: 'internal', pathname: canonical, search }
   return null
-}
-
-/** `search` as it should land on `pathname`: /blog drops non-canonical page values. */
-function canonicalSearch(pathname: string, search: string): string {
-  if (pathname !== '/blog') return search
-  const target = pageParamRedirect(paramsFrom(search))
-  return target === null ? search : target.slice('/blog'.length)
 }
 
 /**

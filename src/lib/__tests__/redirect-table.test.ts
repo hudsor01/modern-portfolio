@@ -142,11 +142,18 @@ describe('buildRedirectTable', () => {
     ).not.toThrow()
   })
 
+  it('throws on a /blog destination, which would cost a second 308 for ?page=0', () => {
+    expect(() => build([{ source: '/articles', destination: '/blog' }])).toThrow(
+      'Redirect destination must not be /blog (its ?page canonicalization would add a second 308): /articles'
+    )
+    expect(() => build([{ source: '/articles', destination: '/blog/a-post' }])).not.toThrow()
+  })
+
   it('makes every accepted path destination a fixed point of resolveSingleHop, as the proxy emits it', () => {
     const table = build([
       { source: '/a', destination: '/b/c-d' },
       { source: '/b', destination: '/' },
-      { source: '/c', destination: '/blog' },
+      { source: '/c', destination: '/blog/a-post' },
     ])
     const map = new Map(table.map(({ source, destination }) => [source, destination]))
     for (const { destination } of table) {
@@ -155,15 +162,9 @@ describe('buildRedirectTable', () => {
       const emitted = new URL(destination, 'https://example.com').pathname
       expect(emitted, destination).toBe(destination)
       expect(resolveSingleHop(emitted, '', map), destination).toBeNull()
-    }
-    // A table hit forwards the query; the hop must already be canonical, so the
-    // emitted URL is a fixed point with the query too (no second 308).
-    for (const { source, destination } of table) {
-      const hop = resolveSingleHop(source, '?page=0&ref=qa', map)
-      expect(hop?.kind, source).toBe('internal')
-      if (hop?.kind !== 'internal') continue
-      expect(hop.pathname).toBe(destination)
-      expect(resolveSingleHop(hop.pathname, hop.search, map), `${source} ${hop.search}`).toBeNull()
+      // On Vercel an exact source is answered by the next.config redirect, which
+      // forwards the query unchanged; the landing URL must still be final.
+      expect(resolveSingleHop(emitted, '?page=0&ref=qa', map), `${destination}?page=0`).toBeNull()
     }
   })
 })
