@@ -1,6 +1,14 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
-import { isBioBoilerplate, resolveExcerpt, stripMarkdownToPlain } from '../blog-excerpt'
+import {
+  CONTENT_HEAD_CHARS,
+  contentHeadOf,
+  isBioBoilerplate,
+  LEDE_MAX,
+  resolveExcerpt,
+  resolvePostLede,
+  stripMarkdownToPlain,
+} from '../blog-excerpt'
 
 const BIO =
   'I spent six years in the Texas Army National Guard before moving into revenue operations and never looked back.'
@@ -126,5 +134,78 @@ describe('resolveExcerpt keeps real excerpts as plain text', () => {
   it('falls back to the body when a stored excerpt strips to nothing', () => {
     const content = 'A real opening paragraph that is long enough to qualify as an excerpt.'
     expect(resolveExcerpt({ excerpt: '![cover](https://x.test/a.png)', content })).toBe(content)
+  })
+})
+
+describe('contentHeadOf', () => {
+  it('returns short content unchanged and empty for null/undefined', () => {
+    expect(contentHeadOf('short')).toBe('short')
+    expect(contentHeadOf(null)).toBe('')
+    expect(contentHeadOf(undefined)).toBe('')
+  })
+
+  it('cuts at CONTENT_HEAD_CHARS code points without splitting a surrogate pair', () => {
+    expect(CONTENT_HEAD_CHARS).toBe(4000)
+    const emoji = '😀'.repeat(4010)
+    const head = contentHeadOf(emoji)
+    expect(Array.from(head)).toHaveLength(4000)
+    expect(head).toBe('😀'.repeat(4000))
+    expect(contentHeadOf('a'.repeat(4000))).toBe('a'.repeat(4000))
+    expect(contentHeadOf('a'.repeat(4001))).toBe('a'.repeat(4000))
+  })
+})
+
+describe('resolvePostLede', () => {
+  const PARA =
+    'Forecast accuracy depends on clean pipeline stages and honest close dates across every region.'
+
+  it('uses the excerpt, else the body prefix, else the meta description, at LEDE_MAX', () => {
+    expect(
+      resolvePostLede({
+        excerpt: 'A perfectly good summary of the post.',
+        content: '',
+        metaDescription: null,
+      })
+    ).toBe('A perfectly good summary of the post.')
+    expect(
+      resolvePostLede({ excerpt: null, content: `# H\n\n${PARA}`, metaDescription: null })
+    ).toBe(PARA)
+    expect(
+      resolvePostLede({
+        excerpt: null,
+        content: '',
+        metaDescription: 'x'.repeat(10) + ' meta description text here.',
+      })
+    ).toBe('xxxxxxxxxx meta description text here.')
+    const long = `${'word '.repeat(100)}end.`
+    expect(
+      resolvePostLede({ excerpt: long, content: null, metaDescription: null }).length
+    ).toBeLessThanOrEqual(LEDE_MAX)
+  })
+
+  it('matches resolveExcerpt over the prefix at LEDE_MAX', () => {
+    const content = `# H\n\n${PARA}`
+    expect(resolvePostLede({ excerpt: null, content, metaDescription: null })).toBe(
+      resolveExcerpt({ excerpt: null, content: contentHeadOf(content) }, { maxLength: LEDE_MAX })
+    )
+  })
+
+  it('is identical for a full body and its 4000-code-point prefix (page vs feed)', () => {
+    const late = `${'filler words\n\n'.repeat(400)}${PARA}\n\nMore.`
+    const emoji = `${'😀 '.repeat(50)}\n\n${'x'.repeat(3850)}\n\n${PARA}`
+    for (const body of [late, emoji]) {
+      const prefix = Array.from(body).slice(0, 4000).join('')
+      const page = resolvePostLede({
+        excerpt: null,
+        content: body,
+        metaDescription: 'Meta description fallback text here.',
+      })
+      const feed = resolvePostLede({
+        excerpt: null,
+        content: prefix,
+        metaDescription: 'Meta description fallback text here.',
+      })
+      expect(page).toBe(feed)
+    }
   })
 })

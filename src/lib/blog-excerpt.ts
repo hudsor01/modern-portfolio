@@ -10,6 +10,8 @@ const EXCERPT_MAX = 160
 export const LEDE_MAX = 320
 export const META_MAX = 160
 const MIN_PARAGRAPH_LENGTH = 40
+/** Body prefix, in code points, that every lede and feed description is derived from. */
+export const CONTENT_HEAD_CHARS = 4000
 
 export { isBioBoilerplate }
 
@@ -319,6 +321,37 @@ export function resolveExcerpt(
     if (out !== '') return out
   }
   return truncateAtBoundary(firstParagraph(input.content ?? ''), max)
+}
+
+/**
+ * The first CONTENT_HEAD_CHARS code points of a body, like Postgres
+ * `left(content, 4000)` (which counts characters, not UTF-16 units). Never
+ * splits a surrogate pair.
+ */
+export function contentHeadOf(content: string | null | undefined): string {
+  if (!content) return ''
+  if (content.length <= CONTENT_HEAD_CHARS) return content
+  return Array.from(content).slice(0, CONTENT_HEAD_CHARS).join('')
+}
+
+/**
+ * The post lede: stored excerpt, else the body's first real paragraph, else a
+ * non-bio meta description, at LEDE_MAX. The post page holds the full row and
+ * the RSS feed reads only `left(content, 4000)`; both resolve from the same
+ * bounded prefix, so page lede and feed description are identical by
+ * construction. The bound exists because whole-body feed reads caused the
+ * 2026-11-24 Neon egress outage.
+ */
+export function resolvePostLede(input: {
+  excerpt: string | null | undefined
+  content: string | null | undefined
+  metaDescription: string | null | undefined
+}): string {
+  const opts = { maxLength: LEDE_MAX }
+  return (
+    resolveExcerpt({ excerpt: input.excerpt, content: contentHeadOf(input.content) }, opts) ||
+    resolveExcerpt({ excerpt: input.metaDescription, content: null }, opts)
+  )
 }
 
 /**

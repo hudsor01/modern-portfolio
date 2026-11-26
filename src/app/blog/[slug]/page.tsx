@@ -15,7 +15,7 @@ import { withDbRetry } from '@/lib/db-retry'
 import { blogPosts } from '@/db/schema'
 import { canonicalUrl } from '@/lib/absolute-url'
 import { brandTitle } from '@/app/shared-metadata'
-import { LEDE_MAX, resolveExcerpt, resolveMetaDescription } from '@/lib/blog-excerpt'
+import { resolveMetaDescription, resolvePostLede } from '@/lib/blog-excerpt'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
 import { normalizeSeoTitle } from '@/lib/post-title'
@@ -69,10 +69,11 @@ const getBlogPost = cache(async (slug: string): Promise<BlogPostData | null> => 
     if (post.deletedAt) return null
 
     const data = transformToBlogPostData(post)
-    const lede = resolveExcerpt(
-      { excerpt: data.excerpt, content: data.content },
-      { maxLength: LEDE_MAX }
-    )
+    const lede = resolvePostLede({
+      excerpt: data.excerpt,
+      content: data.content,
+      metaDescription: data.metaDescription,
+    })
     const meta = resolveMetaDescription({
       metaDescription: data.metaDescription,
       excerpt: data.excerpt,
