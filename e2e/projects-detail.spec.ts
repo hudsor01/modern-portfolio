@@ -3,7 +3,7 @@ import { PROJECT_SLUGS_ON_DISK } from './_helpers/project-slugs'
 import {
   acceptableRevenueTrendTitles,
   inProgressQuarterLabel,
-  REVENUE_TREND_QUARTERS,
+  EXPECTED_TREND_QUARTERS,
 } from './_helpers/quarters'
 
 /**
@@ -103,11 +103,12 @@ test.describe('Project detail pages — regression assertions', () => {
     page,
   }) => {
     // (a) trend title ends at the last completed quarter (F-21b). The page is ISR
-    // (revalidate hourly), so it may trail a quarter rollover by up to
-    // REVENUE_TREND_MAX_LAG_MS, and a render older than its window is served stale
-    // once while it regenerates. Re-request until the server's render carries a
-    // window valid for now, so a build from an earlier quarter (or one left idle
-    // past a rollover) must actually regenerate for this to pass. The charts are
+    // regenerated on traffic (stale-while-revalidate) with no guaranteed freshness
+    // bound, so a render older than its window is served stale once while it
+    // regenerates, and the oracle accepts the previous window only near a rollover.
+    // Re-request until the server's render carries a window valid for now, so a
+    // build from an earlier quarter (or one left idle past a rollover) must
+    // actually regenerate for this to pass. The charts are
     // client-only, so the served window is read from the growth rows in the RSC
     // payload rather than from rendered HTML.
     const now = new Date()
@@ -122,7 +123,7 @@ test.describe('Project detail pages — regression assertions', () => {
             html.matchAll(/\\?"quarter\\?":\\?"(Q[1-4] \d{4})\\?"/g),
             (m) => m[1]
           )
-          if (served.length !== REVENUE_TREND_QUARTERS) return `${served.length} growth rows`
+          if (served.length !== EXPECTED_TREND_QUARTERS) return `${served.length} growth rows`
           return `Quarterly Revenue · ${served[0]}–${served[served.length - 1]}`
         },
         { message: 'served revenue window converges on the current one', timeout: 30000 }

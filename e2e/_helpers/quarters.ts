@@ -4,8 +4,11 @@
  * so the e2e fails if the generator drifts.
  */
 
-/** Mirrors src/lib/data-service/generators/growth.ts (owner rule A11Y-07). */
-export const REVENUE_TREND_QUARTERS = 7
+/**
+ * Expected series length; mirrors REVENUE_TREND_QUARTERS in
+ * src/lib/data-service/generators/growth.ts (owner rule A11Y-07) without importing it.
+ */
+export const EXPECTED_TREND_QUARTERS = 7
 
 function chicagoYearMonth(now: Date): { year: number; month: number } {
   const parts = new Intl.DateTimeFormat('en-US', {
@@ -22,9 +25,9 @@ export function inProgressQuarterLabel(now: Date = new Date()): string {
   return `Q${Math.floor(month / 3) + 1} ${year}`
 }
 
-export function lastCompletedQuarterLabels(
+function lastCompletedQuarterLabels(
   now: Date = new Date(),
-  count: number = REVENUE_TREND_QUARTERS
+  count: number = EXPECTED_TREND_QUARTERS
 ): string[] {
   const { year, month } = chicagoYearMonth(now)
   // Quarter index since year 0; the last completed one precedes the in-progress quarter.
@@ -46,13 +49,15 @@ export function expectedRevenueTrendTitle(now: Date = new Date()): string {
 export const REVENUE_KPI_REVALIDATE_SECONDS = 3600
 
 /**
- * Longest a served revenue-kpi page can trail the clock (WR-04): its ISR window,
- * plus the 8-minute in-memory analytics bundle a regeneration may reuse
- * (src/lib/data-service/service.ts), plus the 1-hour CDN-Cache-Control edge TTL
- * on /projects/* (next.config.js; a local standalone server has none, so this
- * only over-allows there).
+ * The window within which the e2e accepts the previous quarter's title (WR-04):
+ * the ISR window, plus the 8-minute in-memory analytics bundle a regeneration may
+ * reuse (src/lib/data-service/service.ts), plus the 1-hour CDN-Cache-Control edge
+ * TTL on /projects/* (next.config.js; a local standalone server has none, so this
+ * only over-allows there). ISR regenerates on traffic with no guaranteed bound, so
+ * an idle page can be older; that is why the spec re-requests until a render
+ * inside this window is served.
  */
-export const REVENUE_TREND_MAX_LAG_MS = (REVENUE_KPI_REVALIDATE_SECONDS + 8 * 60 + 3600) * 1000
+const REVENUE_TREND_MAX_LAG_MS = (REVENUE_KPI_REVALIDATE_SECONDS + 8 * 60 + 3600) * 1000
 
 /**
  * Titles a page regenerated on that schedule may correctly show at `now`: the
