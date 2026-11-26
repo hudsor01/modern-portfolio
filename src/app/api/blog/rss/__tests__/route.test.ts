@@ -168,7 +168,8 @@ describe('GET /api/blog/rss', () => {
     expect(xml).not.toContain('National Guard')
   })
 
-  it('description equals the post-page lede, including a paragraph after char 4000', async () => {
+  // The page-vs-feed equality is pinned in src/app/blog/[slug]/__tests__/post-metadata.test.ts.
+  it('description is resolvePostLede over the bounded contentHead', async () => {
     const para =
       'Forecast accuracy depends on clean pipeline stages and honest close dates across every region of the business.'
     const body = `${'😀 filler words\n\n'.repeat(300)}${para}\n\nMore text.`
