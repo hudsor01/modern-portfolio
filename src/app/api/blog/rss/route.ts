@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 import { blogPosts } from '@/db/schema'
 import { createErrorResponse } from '@/lib/api-blog'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
+import { CONTACT } from '@/lib/contact-info'
 import { getDisplayYearMonth } from '@/lib/data-formatters'
 import { BLOG_CONTENT_HEAD_EXTRAS } from '@/lib/blog-content-head'
 import { resolveExcerpt } from '@/lib/blog-excerpt'
@@ -162,8 +163,8 @@ function generateXmlFeed(data: RSSFeedData): string {
     <lastBuildDate>${new Date(data.lastBuildDate).toUTCString()}</lastBuildDate>
     <atom:link href="${escapeXml(`${SITE_URL}/api/blog/rss`)}" rel="self" type="application/rss+xml"/>
     <generator>Richard Hudson Portfolio Blog</generator>
-    <webMaster>hudsor01@icloud.com (Richard Hudson)</webMaster>
-    <managingEditor>hudsor01@icloud.com (Richard Hudson)</managingEditor>
+    <webMaster>${CONTACT.email} (Richard Hudson)</webMaster>
+    <managingEditor>${CONTACT.email} (Richard Hudson)</managingEditor>
     <copyright>${escapeXml(`© ${year} Richard Hudson`)}</copyright>
     <category>Revenue Operations</category>
     <category>Data Analytics</category>
@@ -176,7 +177,7 @@ function generateXmlFeed(data: RSSFeedData): string {
       <link>${escapeXml(post.link)}</link>
       <description>${escapeXml(post.description)}</description>
       <pubDate>${new Date(post.pubDate).toUTCString()}</pubDate>
-      <author>${escapeXml(`hudsor01@icloud.com (${post.author})`)}</author>
+      <author>${escapeXml(`${CONTACT.email} (${post.author})`)}</author>
       <category>${escapeXml(post.category ?? '')}</category>
       <guid isPermaLink="true">${escapeXml(post.guid)}</guid>
     </item>`

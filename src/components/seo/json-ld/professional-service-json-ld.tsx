@@ -2,7 +2,8 @@
 // project's OWASP-compliant serializer. See src/lib/json-ld-utils.ts.
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
-import { PERSON_ID } from './person-json-ld'
+import { CONTACT } from '@/lib/contact-info'
+import { PERSON_ID, PERSON_SAME_AS } from './person-json-ld'
 
 /**
  * ProfessionalService JSON-LD — Dallas-targeted local SEO signal.
@@ -30,14 +31,14 @@ export function ProfessionalServiceJsonLd({ nonce }: { nonce?: string | null }) 
     name: 'Richard Hudson — Revenue Operations Professional',
     image: `${SITE_ORIGIN}/images/richard.jpg`,
     url: SITE_ORIGIN,
-    email: 'hudsor01@icloud.com',
-    telephone: '+1-214-566-0279',
+    email: CONTACT.email,
+    telephone: CONTACT.phone.international,
     priceRange: '$$',
     address: {
       '@type': 'PostalAddress',
-      addressLocality: 'Dallas',
-      addressRegion: 'TX',
-      addressCountry: 'US',
+      addressLocality: CONTACT.location.city,
+      addressRegion: CONTACT.location.region,
+      addressCountry: CONTACT.location.country,
     },
     areaServed: [
       { '@type': 'City', name: 'Dallas' },
@@ -66,11 +67,7 @@ export function ProfessionalServiceJsonLd({ nonce }: { nonce?: string | null }) 
         provider: serviceProvider,
       },
     })),
-    sameAs: [
-      'https://www.linkedin.com/in/hudsor01',
-      'https://github.com/hudsor01',
-      'https://twitter.com/hudsor01',
-    ],
+    sameAs: [...PERSON_SAME_AS],
   }
 
   const html = safeJsonLdStringify(jsonLd)
