@@ -14,7 +14,9 @@ const BIO_MENTION = /Texas Army National Guard|deployment to Iraq/i
 // quote markers, a link's '[', quotes, and any entity left after the single
 // decode (`&amp;nbsp;` decodes to the literal `&nbsp;`). Dropped before the
 // opener test so the schema (raw text) agrees with the excerpt resolvers
-// (plain text). Stripped locally: no markdown helper may be imported.
+// (plain text) on entities, emphasis, headings, quotes and links. A bio hidden
+// in a code span or behind a leading image is not caught here; the resolvers
+// still discard the latter. Stripped locally: no markdown helper may be imported.
 const LEADING_MARKUP = /^(?:&(?:#\d+|#x[\da-f]+|[a-z]+);|[^\p{L}])+/iu
 
 /** True when the text is empty or opens with the author-bio boilerplate. */

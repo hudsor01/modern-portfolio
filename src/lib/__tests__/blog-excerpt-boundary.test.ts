@@ -539,6 +539,12 @@ describe('markdown stripping keeps literal underscores, asterisks and code', () 
     expect(stripMarkdownToPlain('A ``code with ` tick`` span.')).toBe('A code with ` tick span.')
   })
 
+  it('strips bold that spans a soft line break, like single emphasis', () => {
+    expect(
+      stripMarkdownToPlain('Keep **bold across\nlines** and __strong across\nlines__ readable.')
+    ).toBe('Keep bold across lines and strong across lines readable.')
+  })
+
   it('does not open a code span at an escaped backtick', () => {
     expect(stripMarkdownToPlain('\\`not code\\` and *em*')).toBe('`not code` and em')
   })
@@ -585,7 +591,7 @@ describe('markdown stripping keeps literal underscores, asterisks and code', () 
   })
 })
 
-describe('the schema bio check agrees with the resolvers', () => {
+describe('the schema bio check agrees with the resolvers on entities, emphasis and links', () => {
   const OPENER = 'served in the National Guard for six years before moving into RevOps.'
   it.each([
     `&#73; ${OPENER}`,
