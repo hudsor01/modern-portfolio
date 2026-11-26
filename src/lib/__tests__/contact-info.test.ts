@@ -27,17 +27,27 @@ const ROOT = process.cwd()
  *   binary), e2e/ (Playwright specs assert rendered output against literals,
  *   like __tests__), README.md, SECURITY.md, CLAUDE.md and .planning/ (prose
  *   docs outside the build).
- * - Allowed files: src/lib/contact-info.ts (the source itself) and
- *   src/data/redirects.json, whose profile destinations JSON cannot import
- *   and which 'profile redirects equal the CONTACT urls' pins to CONTACT.
+ * - Allowed file: src/lib/contact-info.ts (the source itself).
+ * - src/data/redirects.json is scanned with only its three profile
+ *   destinations removed: JSON cannot import CONTACT, and 'profile redirects
+ *   equal the CONTACT urls' pins those values. Any other literal in it (a
+ *   "why" string, a new entry) is still caught.
  */
 const SCAN_ROOTS = ['src', 'drizzle', 'scripts', 'next.config.js']
 const SCANNED_TYPES = /\.(ts|tsx|js|mjs|json|css|md|txt)$/
 const SKIPPED_DIRS = new Set(['__tests__', 'node_modules', '.next'])
-const ALLOWED_FILES = new Set([
-  join('src', 'lib', 'contact-info.ts'),
-  join('src', 'data', 'redirects.json'),
-])
+const ALLOWED_FILES = new Set([join('src', 'lib', 'contact-info.ts')])
+const REDIRECTS_JSON = join('src', 'data', 'redirects.json')
+const PINNED_PROFILE_URLS = [CONTACT.github.url, CONTACT.linkedin.url, CONTACT.twitter.url]
+
+/** File text as the scan sees it: redirects.json minus its CONTACT-pinned destinations. */
+function scannedText(file: string, text = readFileSync(join(ROOT, file), 'utf8')): string {
+  if (file !== REDIRECTS_JSON) return text
+  return PINNED_PROFILE_URLS.reduce(
+    (rest, url) => rest.replaceAll(`"destination": "${url}"`, '"destination": ""'),
+    text
+  )
+}
 
 function sourceFiles(path: string): string[] {
   if (!statSync(path).isDirectory()) return SCANNED_TYPES.test(path) ? [path] : []
@@ -187,9 +197,10 @@ describe('contact details have one source', () => {
     const files = scanFiles(SCAN_ROOTS).map((file) => relative(ROOT, file))
     expect(files).toContain('next.config.js')
     expect(files).toContain(join('src', 'app', 'globals.css'))
+    expect(files).toContain(REDIRECTS_JSON)
     const offenders = files
       .filter((file) => !ALLOWED_FILES.has(file))
-      .filter((file) => repeatsContact(readFileSync(join(ROOT, file), 'utf8')))
+      .filter((file) => repeatsContact(scannedText(file)))
     expect(
       offenders,
       `import CONTACT from '@/lib/contact-info' (relative path in drizzle/ and scripts/) instead of repeating contact details in: ${offenders.join(', ')}`
@@ -197,9 +208,28 @@ describe('contact details have one source', () => {
   })
 })
 
+describe('redirects.json scan', () => {
+  it('removes only the CONTACT-pinned profile destinations', () => {
+    const text = scannedText(REDIRECTS_JSON)
+    for (const url of PINNED_PROFILE_URLS) expect(text).not.toContain(url)
+    expect(text).toContain('"source": "/github"')
+  })
+
+  it('keeps every other value, so a contact literal in a "why" string is still scanned', () => {
+    const json = `[{ "source": "/github", "destination": "${CONTACT.github.url}", "why": "see github.com/hudsor01" }]`
+    const text = scannedText(REDIRECTS_JSON, json)
+    expect(text).not.toContain(`"destination": "${CONTACT.github.url}"`)
+    expect(text).toContain('see github.com/hudsor01')
+  })
+})
+
 describe('service area', () => {
-  it('reads as one list that starts at the CONTACT city', () => {
+  // SERVICE_AREA is a literal fact, not derived from the city, so a city change
+  // that leaves the area list behind fails here instead of rendering copy that
+  // contradicts itself on /contact.
+  it('starts at the CONTACT city and names a region that contains it', () => {
     expect(SERVICE_AREA.startsWith(`${CONTACT.location.city}, `)).toBe(true)
+    expect(SERVICE_AREA).toMatch(new RegExp(`the broader ${CONTACT.location.city}\\b[^,]*$`))
     expect(`Based in ${CONTACT.location.city}, serving ${SERVICE_AREA}`).toBe(
       'Based in Dallas, serving Dallas, Fort Worth, Frisco, and the broader Dallas-Fort Worth Metroplex'
     )
