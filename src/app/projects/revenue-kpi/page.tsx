@@ -10,9 +10,12 @@ import { generateMetadata as genMeta } from '@/app/shared-metadata'
 
 export const dynamic = 'force-static'
 // ISR (Node runtime): the revenue trend ends at the last completed quarter as of
-// render time (A11Y-07), so the page re-renders at most hourly to roll the window
-// over within an hour of a quarter boundary instead of at the next deploy. Matches
-// the 1-hour CDN-Cache-Control TTL next.config.js sets on /projects/*. Mirrored by
+// render time (A11Y-07). The page is regenerated in the background by the first
+// request that arrives more than an hour after its last render (stale-while-
+// revalidate), so after a quarter boundary the previous window is served until
+// such a request triggers the regeneration. No freshness bound is guaranteed: it
+// is traffic-driven, and no deploy is needed to advance. Matches the 1-hour
+// CDN-Cache-Control TTL next.config.js sets on /projects/*. Mirrored by
 // REVENUE_KPI_REVALIDATE_SECONDS in e2e/_helpers/quarters.ts.
 export const revalidate = 3600
 

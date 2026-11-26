@@ -13,9 +13,11 @@ export const REVENUE_TREND_QUARTERS = 7
 /**
  * Quarterly series ending at the last completed quarter on the America/Chicago
  * calendar, computed from the injected `now`. The revenue-kpi page is
- * prerendered and revalidated hourly (ISR), so the served window can trail a
- * quarter rollover by at most the regeneration lag, never shows an unfinished
- * quarter, and does not wait for a deploy to advance.
+ * prerendered and regenerated on traffic (ISR, stale-while-revalidate): the
+ * first request more than an hour after the last render still receives the
+ * previous window while a fresh one renders, so a rollover appears only after
+ * such a request, with no guaranteed bound. The window never shows an
+ * unfinished quarter and does not wait for a deploy to advance.
  */
 export function generateGrowthData(
   baseMetrics: Map<string, number>,
