@@ -25,3 +25,12 @@ export const CONTACT = {
 
 export const mailtoHref = `mailto:${CONTACT.email}`
 export const telHref = `tel:${CONTACT.phone.international.replaceAll('-', '')}`
+
+/**
+ * The local area served, as a list that reads after "serving" on /contact.
+ * Outside CONTACT on purpose: the résumé data hash covers all of CONTACT
+ * (src/lib/resume-source-hash.ts), and the résumé never prints this, so editing
+ * it must not mark the PDF stale. contact-info.test.ts pins it to start at
+ * CONTACT.location.city.
+ */
+export const SERVICE_AREA = `${CONTACT.location.city}, Fort Worth, Frisco, and the broader Dallas-Fort Worth Metroplex`
