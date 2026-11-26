@@ -1,23 +1,49 @@
+import { readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { expect, type Page, test } from '@playwright/test'
 
 /**
  * F-20 / WR-01: locking page scroll must not shift the layout. Playwright
  * launches headless Chromium with --hide-scrollbars, which makes the gutter 0px
  * and every width comparison vacuous, so this file (and only this file) drops
- * that flag. On macOS it also turns off overlay scrollbars, which replaces
- * Playwright's default disabled-features list there (accepted: the spec makes
- * only same-origin GETs); Linux keeps the defaults. launchOptions is
+ * that flag. macOS hosts also default to overlay scrollbars (Linux CI already
+ * uses classic ones), so there the file disables the OverlayScrollbar feature.
+ * Chromium keeps only the last --disable-features switch, and Playwright
+ * appends user args after its own, so the override repeats Playwright's list
+ * with OverlayScrollbar added rather than replacing it. launchOptions is
  * worker-scoped, and Playwright rejects worker options in a describe group,
  * hence a file of its own. Projects other than desktop Chromium are skipped by
  * a fixture-based skip before any browser launches. Every test first asserts
  * that the scrollbar occupies space. GET-only.
  */
+
+/**
+ * Playwright's default --disable-features entries, read from the installed
+ * playwright-core so an upgrade that changes them is picked up. Fails loudly
+ * rather than silently dropping them if the bundle layout changes.
+ */
+function playwrightDisabledFeatures(): string[] {
+  const bundlePath = createRequire(import.meta.url).resolve('playwright-core/lib/coreBundle')
+  const block = /disabledFeatures = \[([\s\S]*?)\]\.filter\(Boolean\)/.exec(
+    readFileSync(bundlePath, 'utf8'),
+  )?.[1]
+  const features = block ? [...block.matchAll(/^\s*"([^"]+)",?\s*$/gm)].map((m) => m[1] as string) : []
+  if (features.length === 0) {
+    throw new Error(
+      'scroll-lock-layout: could not read Playwright\'s default disabled features from playwright-core',
+    )
+  }
+  return features
+}
+
 test.use({
   launchOptions: {
     ignoreDefaultArgs: ['--hide-scrollbars'],
-    // macOS defaults to overlay scrollbars; Linux (CI) already has classic ones,
-    // and there Playwright's own disabled-features list stays intact.
-    ...(process.platform === 'darwin' ? { args: ['--disable-features=OverlayScrollbar'] } : {}),
+    ...(process.platform === 'darwin'
+      ? {
+          args: [`--disable-features=${[...playwrightDisabledFeatures(), 'OverlayScrollbar'].join(',')}`],
+        }
+      : {}),
   },
 })
 
