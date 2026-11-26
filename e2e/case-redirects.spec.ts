@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { RESUME_PDF_PATH } from '../src/lib/resume-pdf'
 
 test.describe('mixed-case path redirects', () => {
   test('/About 308s to /about and keeps the query', async ({ request, baseURL }) => {
@@ -27,7 +28,7 @@ test.describe('mixed-case path redirects', () => {
   })
 
   test('the resume PDF is never redirected', async ({ request }) => {
-    const res = await request.get('/Richard_Hudson_Revenue_Operations.pdf')
+    const res = await request.get(RESUME_PDF_PATH)
     expect(res.status()).toBe(200)
     expect(res.headers()['content-type']).toContain('application/pdf')
   })

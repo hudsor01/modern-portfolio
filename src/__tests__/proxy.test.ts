@@ -2,6 +2,7 @@
 import { getRelativeURL } from 'next/dist/shared/lib/router/utils/relativize-url'
 import { NextRequest } from 'next/server'
 import { describe, expect, it } from 'vitest'
+import { RESUME_PDF_PATH } from '@/lib/resume-pdf'
 import { config, proxy } from '@/proxy'
 
 const ORIGIN = 'https://richardwhudsonjr.com'
@@ -47,7 +48,7 @@ describe('proxy lowercase redirect', () => {
     expect(res.headers.get('content-security-policy')).toBeTruthy()
   })
 
-  it.each(['/API/Blog', '/Richard_Hudson_Revenue_Operations.pdf'])('passes %s through', (path) => {
+  it.each(['/API/Blog', RESUME_PDF_PATH])('passes %s through', (path) => {
     expect(run(path).headers.get('location')).toBeNull()
   })
 

@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
+import { RESUME_PDF_PATH } from '../src/lib/resume-pdf'
 
 /**
  * /resume print stylesheet E2E Tests
@@ -147,7 +148,7 @@ test.describe('résumé print stylesheet', () => {
   })
 
   test('the résumé PDF keeps its headers', async ({ request }) => {
-    const response = await request.get('/Richard_Hudson_Revenue_Operations.pdf')
+    const response = await request.get(RESUME_PDF_PATH)
     expect(response.status()).toBe(200)
     expect(response.headers()['x-frame-options']).toBe('SAMEORIGIN')
     expect(response.headers()['x-robots-tag']).toBe('noindex')
