@@ -84,6 +84,9 @@ export function truncateAtBoundary(text: string, max: number): string {
   const hardCut = run.hard
   const softEllipsis = !run.hard && run.soft
   t = t.slice(0, run.start).trimEnd()
+  // Nothing but ellipses: there is no text to keep, so let the caller fall
+  // back instead of emitting a lone '…'.
+  if (t === '') return ''
   if (!hardCut && !softEllipsis && t.length <= max) return t
   if (softEllipsis && t.length <= max - 1) return `${t.replace(TRAILING_PUNCTUATION, '')}…`
 
@@ -120,7 +123,13 @@ function firstParagraph(content: string): string {
     const plain = stripMarkdownToPlain(trimmed)
     // Posts that carry the bio excerpt usually open their body with the same
     // bio paragraph, so it can never be the replacement.
-    if (plain.length >= MIN_PARAGRAPH_LENGTH && !isBioBoilerplate(plain)) return plain
+    // A paragraph of nothing but ellipses has no text to show.
+    if (
+      plain.length >= MIN_PARAGRAPH_LENGTH &&
+      !isBioBoilerplate(plain) &&
+      trailingEllipsis(plain).start > 0
+    )
+      return plain
   }
   return ''
 }
@@ -142,9 +151,10 @@ export function resolveExcerpt(
   const max = opts.maxLength ?? EXCERPT_MAX
   if (!isBioBoilerplate(input.excerpt)) {
     const stored = stripMarkdownToPlain(input.excerpt as string)
-    // A stored excerpt that is only markup (e.g. a lone image) strips to
-    // nothing; fall through to the body like an empty one.
-    if (stored !== '') return truncateAtBoundary(stored, max)
+    // A stored excerpt that is only markup (e.g. a lone image) or only an
+    // ellipsis leaves nothing; fall through to the body like an empty one.
+    const out = truncateAtBoundary(stored, max)
+    if (out !== '') return out
   }
   return truncateAtBoundary(firstParagraph(input.content ?? ''), max)
 }
@@ -159,8 +169,8 @@ export function resolveMetaDescription(input: {
   content: string | null | undefined
 }): string {
   if (!isBioBoilerplate(input.metaDescription)) {
-    const plain = stripMarkdownToPlain(input.metaDescription as string)
-    if (plain !== '') return truncateAtBoundary(plain, META_MAX)
+    const out = truncateAtBoundary(stripMarkdownToPlain(input.metaDescription as string), META_MAX)
+    if (out !== '') return out
   }
   return resolveExcerpt({ excerpt: input.excerpt, content: input.content }, { maxLength: META_MAX })
 }

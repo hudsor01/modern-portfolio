@@ -174,3 +174,32 @@ describe('resolveMetaDescription', () => {
     ).toBe('Why pipeline reviews fail & what to do.')
   })
 })
+
+describe('ellipsis-only stored values', () => {
+  it('truncates nothing-but-ellipsis text to empty', () => {
+    for (const text of ['...', '…', ' … ... ', '.....']) {
+      expect(truncateAtBoundary(text, 160)).toBe('')
+    }
+  })
+
+  it('falls back to the body for an ellipsis-only excerpt', () => {
+    for (const excerpt of ['...', '…']) {
+      expect(resolveExcerpt({ excerpt, content: F1_PARA })).toBe(
+        'I see too many sales organizations treat "closed-lost" deals as final. They archive them in Salesforce, mark them as history, and move on.'
+      )
+    }
+  })
+
+  it('skips an ellipsis-only body paragraph', () => {
+    const content = `${'.'.repeat(60)}\n\n${F1_PARA}`
+    expect(resolveExcerpt({ excerpt: null, content }, { maxLength: LEDE_MAX })).toBe(F1_PARA)
+  })
+
+  it('falls back to the excerpt for an ellipsis-only meta', () => {
+    for (const metaDescription of ['...', '…']) {
+      expect(resolveMetaDescription({ metaDescription, excerpt: C_EXCERPT, content: '' })).toBe(
+        resolveExcerpt({ excerpt: C_EXCERPT, content: '' }, { maxLength: 160 })
+      )
+    }
+  })
+})
