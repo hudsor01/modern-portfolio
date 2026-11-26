@@ -579,6 +579,27 @@ describe('markdown stripping keeps literal underscores, asterisks and code', () 
     expect(performance.now() - started).toBeLessThan(100)
   })
 
+  it('strips 100,000-character bracket and link-opener runs in linear time', () => {
+    const inputs = [
+      '['.repeat(100_000),
+      '!['.repeat(50_000),
+      '[a]('.repeat(25_000),
+      '[a](b('.repeat(16_000),
+      '[a [b] c](u) '.repeat(7_000),
+    ]
+    const started = performance.now()
+    for (const input of inputs) stripMarkdownToPlain(input)
+    expect(performance.now() - started).toBeLessThan(250)
+  })
+
+  it('strips links whose destination has balanced parentheses or a title', () => {
+    expect(stripMarkdownToPlain('[link](https://en.wikipedia.org/wiki/Foo_(bar)) after')).toBe(
+      'link after'
+    )
+    expect(stripMarkdownToPlain('[t](http://x "title") z')).toBe('t z')
+    expect(stripMarkdownToPlain('![alt](a.png) [x](y)')).toBe('x')
+  })
+
   it('returns a stored meta with API names and arithmetic unchanged', () => {
     const metaDescription =
       'Map Stage__c to Forecast_Category__c, weight it 2 * 3 * 4, and audit lead_source weekly.'

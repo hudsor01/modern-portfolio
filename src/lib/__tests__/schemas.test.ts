@@ -309,7 +309,7 @@ describe('cutMetaInput', () => {
     expect(cutMetaInput('alpha beta gamma', 10)).toBe('alpha beta')
   })
 
-  it('never leaves a cut HTML entity or markdown marker as literal text', () => {
+  it('drops an entity or markdown marker straddling the bound with its word', () => {
     expect(cutMetaInput('Real meta &nbsp;&nbsp;', 15)).toBe('Real meta')
     expect(cutMetaInput('Real meta **bold**', 13)).toBe('Real meta')
   })
@@ -322,6 +322,20 @@ describe('cutMetaInput', () => {
 
   it('falls back to a code-point-safe hard cut when the window has no whitespace', () => {
     expect(cutMetaInput('x'.repeat(20), 12)).toBe('x'.repeat(12))
+  })
+
+  it('drops a partial entity left by a hard cut', () => {
+    expect(cutMetaInput('&nbsp;'.repeat(30), 100)).toBe('&nbsp;'.repeat(16))
+    expect(cutMetaInput('&#8212;'.repeat(30), 100)).toBe('&#8212;'.repeat(14))
+  })
+
+  it('only backs off to whitespace near the bound', () => {
+    expect(cutMetaInput(`a ${'x'.repeat(200)}`, 100)).toBe(`a ${'x'.repeat(98)}`)
+  })
+
+  it('returns an empty string for a non-positive bound', () => {
+    expect(cutMetaInput('abcdef', 0)).toBe('')
+    expect(cutMetaInput('abcdef', -2)).toBe('')
   })
 })
 

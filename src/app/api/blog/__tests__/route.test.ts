@@ -423,7 +423,8 @@ describe('POST /api/blog', () => {
   })
 
   it('never stores a lone surrogate when an emoji sits on the 160 cut', async () => {
-    const meta = `${'word '.repeat(31)}wor\u{1F600} tail text after the cut`
+    // No whitespace near 160, so the hard cut lands inside the emoji's surrogate pair.
+    const meta = `${'x'.repeat(158)}\u{1F600}${'y'.repeat(40)}`
     const res = await POST(reqPost({ ...validBody, metaDescription: meta }))
     expect(res.status).toBe(201)
     const stored = dbMocks.insertValues.mock.calls[0]?.[0]?.metaDescription as string

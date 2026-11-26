@@ -109,22 +109,26 @@ export const nullishText = (max: number, message?: string) =>
 // blog-excerpt, so longer input is cut here, never rejected.
 const META_INPUT_MAX = 100_000
 
+/** How far back cutMetaInput looks for whitespace before hard-cutting. */
+const META_CUT_BACKOFF = 64
+
 /**
  * Cuts `value` to at most `max` UTF-16 units without splitting a surrogate
- * pair, backing off to the last whitespace inside the window so an entity,
- * markdown marker or word straddling the bound is dropped whole rather than
- * left as literal text.
+ * pair. It backs off to whitespace within the last META_CUT_BACKOFF units so a
+ * word or entity straddling the bound is dropped whole; with no whitespace
+ * there it hard-cuts and drops a trailing partial HTML entity.
  */
 export function cutMetaInput(value: string, max: number): string {
+  if (max <= 0) return ''
   if (value.length <= max) return value
   let end = max
   const last = value.charCodeAt(end - 1)
   if (last >= 0xd800 && last <= 0xdbff) end -= 1
   else if (/\s/.test(value[end] as string)) return value.slice(0, end)
-  for (let i = end - 1; i > 0; i--) {
+  for (let i = end - 1; i > 0 && i >= end - META_CUT_BACKOFF; i--) {
     if (/\s/.test(value[i] as string)) return value.slice(0, i)
   }
-  return value.slice(0, end)
+  return value.slice(0, end).replace(/&#?[a-z0-9]*$/i, '')
 }
 
 const truncatingNullishText = (max: number) =>

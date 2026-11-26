@@ -94,6 +94,14 @@ function closingRun(text: string, from: number, length: number): number {
   return -1
 }
 
+// Inline images and links. Neither the text nor the destination may contain a
+// bracket, and the destination allows one level of balanced parentheses, so a
+// failed match stops at the next bracket: linear on long runs of `[` or `[a](`
+// (the old `[^\]]*` / `[^)]*` forms were quadratic there).
+const MD_DESTINATION = String.raw`\((?:[^()[\]]|\([^()[\]]*\))*\)`
+const MD_IMAGE = new RegExp(String.raw`!\[[^[\]]*\]` + MD_DESTINATION, 'g')
+const MD_LINK = new RegExp(String.raw`\[([^[\]]*)\]` + MD_DESTINATION, 'g')
+
 /**
  * Strip inline markdown to plain text, decode entities, collapse whitespace.
  * Code span contents are kept verbatim (no emphasis stripping, no entity
@@ -102,8 +110,8 @@ function closingRun(text: string, from: number, length: number): number {
 export function stripMarkdownToPlain(markdown: string): string {
   const codeSpans: string[] = []
   const stripped = protectLiterals(markdown.replace(PLACEHOLDER_CHAR, ''), codeSpans)
-    .replace(/!\[([^\]]*)\]\([^)]*\)/g, '')
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(MD_IMAGE, '')
+    .replace(MD_LINK, '$1')
     .replace(STRONG_STAR, '$1')
     .replace(STRONG_UNDERSCORE, '$1$2')
     .replace(EM_STAR, '$1')
