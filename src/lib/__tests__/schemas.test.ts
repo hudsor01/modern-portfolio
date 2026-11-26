@@ -19,6 +19,7 @@ import {
   normalizeNewlines,
   contactMessageLength,
   createBlogPostSchema,
+  updateBlogPostSchema,
   projectFilterSchema,
   viewTrackingSchema,
   paginationSchema,
@@ -854,6 +855,51 @@ describe('safeValidate', () => {
     expect(r.success).toBe(false)
     if (!r.success) {
       expect(r.error).toBeInstanceOf(z.ZodError)
+    }
+  })
+})
+
+const F1_META =
+  'I spent six years in the Texas Army National Guard as an Information Technology Specialist, including a deployment to Iraq. I learned quickly that when equ...'
+const F2_META =
+  'I spent six years in the Texas Army National Guard as an Information Technology Specialist. That service included a deployment to Iraq. In the military, am...'
+const F3_META =
+  'I spent six years as an IT Specialist in the Texas Army National Guard, including a deployment to Iraq. Soldiers don’t have the luxury of guessing. If your...'
+const C_META =
+  'Seven ways CRM pipeline data drifts from reality, the reports that catch each one, and the systems, metrics and weekly inspection that keep pipeline accurate.'
+
+describe('blog metaDescription bio guard', () => {
+  const base = {
+    title: 'Hello World',
+    content: 'This is content with at least one word.',
+    authorId: 'cm1234567890abcdefghijklm',
+  }
+  const BIO_MESSAGE = 'Meta description must not open with the author bio'
+
+  it.each([F1_META, F2_META, F3_META])('create rejects a bio meta (%#)', (metaDescription) => {
+    const result = createBlogPostSchema.safeParse({ ...base, metaDescription })
+    expect(result.success).toBe(false)
+    if (!result.success) expect(result.error.issues[0]?.message).toBe(BIO_MESSAGE)
+  })
+
+  it.each([C_META, '', null, undefined])('create accepts %j', (metaDescription) => {
+    const result = createBlogPostSchema.safeParse({ ...base, metaDescription })
+    expect(result.success).toBe(true)
+  })
+
+  it('create does not reject a whitespace-only meta on bio grounds', () => {
+    const result = createBlogPostSchema.safeParse({ ...base, metaDescription: '   ' })
+    if (!result.success) {
+      expect(result.error.issues.map((i) => i.message)).not.toContain(BIO_MESSAGE)
+    }
+  })
+
+  it('update rejects a bio meta and accepts null, blank and unrelated edits', () => {
+    const bad = updateBlogPostSchema.safeParse({ metaDescription: F3_META })
+    expect(bad.success).toBe(false)
+    if (!bad.success) expect(bad.error.issues[0]?.message).toBe(BIO_MESSAGE)
+    for (const body of [{ metaDescription: null }, { metaDescription: '' }, { title: 'New' }]) {
+      expect(updateBlogPostSchema.safeParse(body).success).toBe(true)
     }
   })
 })

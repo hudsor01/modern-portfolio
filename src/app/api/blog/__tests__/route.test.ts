@@ -336,6 +336,19 @@ describe('POST /api/blog', () => {
     expect(dbMocks.findFirst).not.toHaveBeenCalled()
   })
 
+  it('returns 400 for a bio-opener metaDescription', async () => {
+    const res = await POST(
+      reqPost({
+        ...validBody,
+        metaDescription:
+          'I spent six years in the Texas Army National Guard as an Information Technology Specialist, including a deployment to Iraq. I learned quickly that when equ...',
+      })
+    )
+    expect(res.status).toBe(400)
+    expect(await res.json()).toMatchObject({ success: false, error: 'Invalid request body' })
+    expect(dbMocks.insertValues).not.toHaveBeenCalled()
+  })
+
   it('returns 400 when body fails strict createBlogPostSchema validation', async () => {
     // Missing required fields (title, content, authorId) → schema reject.
     const res = await POST(reqPost({ excerpt: 'too short' }))

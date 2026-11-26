@@ -212,6 +212,35 @@ describe('PUT /api/blog/[slug]', () => {
     expect(body).toMatchObject({ success: true, message: 'Blog post updated successfully' })
   })
 
+  it('returns 400 for a bio-opener metaDescription', async () => {
+    const res = await PUT(
+      reqPut('hello', {
+        metaDescription:
+          'I spent six years in the Texas Army National Guard as an Information Technology Specialist. That service included a deployment to Iraq. In the military, am...',
+      }),
+      ctx('hello')
+    )
+    expect(res.status).toBe(400)
+    const body = await res.json()
+    expect(body.success).toBe(false)
+    expect(body.error).toContain('Meta description must not open with the author bio')
+    expect(dbMocks.update).not.toHaveBeenCalled()
+    expect(dbMocks.updateSet).not.toHaveBeenCalled()
+  })
+
+  it('accepts a normal metaDescription on PUT', async () => {
+    dbMocks.findFirst.mockResolvedValueOnce(samplePost).mockResolvedValueOnce(samplePost)
+    dbMocks.update.mockResolvedValue(undefined)
+    const res = await PUT(
+      reqPut('hello', {
+        metaDescription:
+          'Seven ways CRM pipeline data drifts from reality, the reports that catch each one, and the systems, metrics and weekly inspection that keep pipeline accurate.',
+      }),
+      ctx('hello')
+    )
+    expect(res.status).toBe(200)
+  })
+
   it('normalizes a too-long SEO title to 43 chars and derives a cleared one from the title', async () => {
     const longTitle = 'A Post Title Long Enough That It Never Fits the Search Result Budget'
     dbMocks.findFirst
