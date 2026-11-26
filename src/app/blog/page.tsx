@@ -28,6 +28,7 @@ import {
   parsePageParam,
 } from '@/lib/blog-pagination'
 import { resolveExcerpt } from '@/lib/blog-excerpt'
+import { CONTACT } from '@/lib/contact-info'
 import { getCategoryChipLabel, resolveListCovers } from '@/lib/blog-list'
 import { BLOG_CONTENT_HEAD_EXTRAS } from '@/lib/blog-content-head'
 import { DecorativeBlob } from '@/components/ui/decorative-blob'
@@ -100,7 +101,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      creator: '@hudsor01',
+      creator: CONTACT.twitter.handle,
       title: brandTitle(title),
       description: BLOG_DESCRIPTION,
       images: [BLOG_INDEX_OG_IMAGE_URL],

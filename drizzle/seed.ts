@@ -27,6 +27,7 @@ import type {
   Tag,
 } from '../src/db/schema'
 import { showcaseProjects } from '../src/data/projects'
+import { CONTACT } from '../src/lib/contact-info'
 import { featuredImageFor } from '../src/data/blog-featured-images'
 import { createScriptDb } from '../scripts/_db'
 
@@ -58,7 +59,7 @@ const SAMPLE_AUTHORS = [
     avatar: '/images/richard.jpg',
     website: 'https://richardwhudsonjr.com',
     twitter: 'hudsor01',
-    linkedin: 'https://www.linkedin.com/in/hudsor01',
+    linkedin: CONTACT.linkedin.url,
     github: 'hudsor01',
     metaDescription:
       'Revenue Operations expert specializing in data analytics and business intelligence for sustainable growth.',

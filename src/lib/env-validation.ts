@@ -5,6 +5,7 @@
 
 import { z } from 'zod'
 import { createContextLogger } from '@/lib/logger'
+import { CONTACT } from '@/lib/contact-info'
 
 const envLogger = createContextLogger('EnvValidation')
 
@@ -40,7 +41,7 @@ const envSchema = z.object({
   // Delivery recipient for contact-form submissions — a REAL inbox. The previous
   // default (hello@richardwhudsonjr.com) doesn't exist, so submissions had no
   // deliverable destination.
-  TO_EMAIL: z.email('TO_EMAIL must be a valid email').default('hudsor01@icloud.com'),
+  TO_EMAIL: z.email('TO_EMAIL must be a valid email').default(CONTACT.email),
   NEXT_PUBLIC_VERCEL_URL: z.string().optional(),
   ADMIN_API_TOKEN: z.string().min(32, 'ADMIN_API_TOKEN must be at least 32 characters').optional(),
   // Production seed gate — /api/seed returns 404 in production unless set to 'true'
