@@ -1,5 +1,4 @@
 import { isBioBoilerplate } from '@/lib/bio-boilerplate'
-import { decodeHtmlEntities } from '@/lib/markdown'
 
 /**
  * Excerpt helpers for blog cards. Pure, so they run on the server page and
@@ -12,6 +11,46 @@ export const META_MAX = 160
 const MIN_PARAGRAPH_LENGTH = 40
 
 export { isBioBoilerplate }
+
+/** Named entities that turn up in stored excerpts and metas. */
+const NAMED_ENTITIES: Record<string, string> = {
+  amp: '&',
+  lt: '<',
+  gt: '>',
+  quot: '"',
+  apos: "'",
+  nbsp: ' ',
+  hellip: '…',
+  mdash: '—',
+  ndash: '–',
+  lsquo: '‘',
+  rsquo: '’',
+  ldquo: '“',
+  rdquo: '”',
+}
+
+/**
+ * Decode numeric (decimal and hex) and common named HTML entities in one pass,
+ * so a double-encoded value (`&amp;nbsp;`) is decoded once, to `&nbsp;`.
+ * Unknown names and code points that are not valid characters (NUL, lone
+ * surrogates, above U+10FFFF) are left as written. Excerpts only: the blog
+ * body's code blocks use `decodeHtmlEntities` in markdown.ts, which undoes
+ * exactly what `marked` escapes.
+ */
+function decodeTextEntities(text: string): string {
+  return text.replace(/&(#\d+|#x[0-9a-f]+|[a-z]+);/gi, (entity: string, body: string) => {
+    if (body[0] !== '#') {
+      // hasOwn, so a name like `constructor` is not looked up on the prototype.
+      return (Object.hasOwn(NAMED_ENTITIES, body) && NAMED_ENTITIES[body]) || entity
+    }
+    const code =
+      body[1] === 'x' || body[1] === 'X'
+        ? Number.parseInt(body.slice(2), 16)
+        : Number(body.slice(1))
+    const valid = code > 0 && code <= 0x10ffff && (code < 0xd800 || code > 0xdfff)
+    return valid ? String.fromCodePoint(code) : entity
+  })
+}
 
 const ESCAPE_OPEN = '\uE000'
 const ESCAPE_CLOSE = '\uE001'
@@ -33,7 +72,7 @@ export function stripMarkdownToPlain(markdown: string): string {
     new RegExp(`${ESCAPE_OPEN}(\\d+)${ESCAPE_CLOSE}`, 'g'),
     (_m, code: string) => String.fromCharCode(Number(code))
   )
-  return decodeHtmlEntities(restored).replace(/\s+/g, ' ').trim()
+  return decodeTextEntities(restored).replace(/\s+/g, ' ').trim()
 }
 
 const FENCE_LINE = /^\s*(```|~~~)/
@@ -177,7 +216,8 @@ function firstParagraph(content: string): string {
 
 /**
  * Keep a real excerpt (normalised to plain text and truncated like a derived
- * one, so metadata never carries raw markdown or entities); replace boilerplate
+ * one, so metadata never carries raw markdown, numeric entities or the common
+ * named ones); replace boilerplate
  * or empty ones with the first real paragraph of the body, or '' when none
  * qualifies. `maxLength` defaults to EXCERPT_MAX (cards, feeds); the post-page
  * lede passes LEDE_MAX.

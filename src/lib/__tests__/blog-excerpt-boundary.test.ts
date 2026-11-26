@@ -349,3 +349,61 @@ describe('bio detection on plain text', () => {
     }
   })
 })
+
+describe('HTML entities in stored excerpts and metas', () => {
+  it('decodes numeric and common named entities', () => {
+    expect(
+      resolveMetaDescription({
+        metaDescription:
+          'Stage drift&#8217;s real cost&#x2014;and the &ldquo;fix&rdquo;: owners &amp; audits&nbsp;weekly',
+        excerpt: null,
+        content: null,
+      })
+    ).toBe('Stage drift’s real cost—and the “fix”: owners & audits weekly')
+  })
+
+  it('treats a trailing &hellip; as the author’s ellipsis', () => {
+    expect(
+      resolveExcerpt({ excerpt: 'Forecasts miss because every forecast&hellip;', content: '' })
+    ).toBe('Forecasts miss because every forecast…')
+  })
+
+  it('falls back when the stored meta is only an encoded ellipsis', () => {
+    for (const metaDescription of ['&hellip;', '&#8230;', '&#x2026;', '&nbsp;']) {
+      expect(resolveMetaDescription({ metaDescription, excerpt: C_EXCERPT, content: '' })).toBe(
+        resolveExcerpt({ excerpt: C_EXCERPT, content: '' }, { maxLength: 160 })
+      )
+    }
+  })
+
+  it('catches a bio opener hidden behind a leading &nbsp;', () => {
+    const excerpt = '&nbsp;I served in the National Guard for six years before moving into RevOps.'
+    expect(resolveExcerpt({ excerpt, content: F1_BODY }, { maxLength: LEDE_MAX })).toBe(F1_PARA)
+    const out = resolveMetaDescription({
+      metaDescription: excerpt,
+      excerpt: null,
+      content: F1_BODY,
+    })
+    expect(out.startsWith('I see too many sales organizations')).toBe(true)
+  })
+
+  it('decodes a double-encoded entity once', () => {
+    expect(
+      resolveMetaDescription({
+        metaDescription: 'Write &amp;nbsp; and &amp;amp; literally.',
+        excerpt: null,
+        content: null,
+      })
+    ).toBe('Write &nbsp; and &amp; literally.')
+  })
+
+  it('leaves unknown names and invalid code points as written', () => {
+    expect(
+      resolveMetaDescription({
+        metaDescription: 'Keep &bogus; &constructor; &#0; &#xD800; &#1114112; as written.',
+        excerpt: null,
+        content: null,
+      })
+    ).toBe('Keep &bogus; &constructor; &#0; &#xD800; &#1114112; as written.')
+  })
+})
