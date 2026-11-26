@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { asc, desc, eq, ilike, or, type SQL } from 'drizzle-orm'
 import type { ApiResponse, BlogTagData } from '@/types/api'
 import { createContextLogger } from '@/lib/logger'
+import { fitMetaDescription } from '@/lib/blog-excerpt'
 import { db } from '@/lib/db'
 import { tags } from '@/db/schema'
 import { generateSlug, createErrorResponse, transformToTagData } from '@/lib/api-blog'
@@ -98,7 +99,7 @@ export async function POST(request: NextRequest) {
         slug,
         description: body.description ?? null,
         color: body.color,
-        metaDescription: body.metaDescription ?? null,
+        metaDescription: fitMetaDescription(body.metaDescription) ?? null,
         postCount: 0,
         totalViews: 0,
       })
