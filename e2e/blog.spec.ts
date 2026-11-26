@@ -280,6 +280,17 @@ test.describe('Blog Post Reading', () => {
     await expect(page.locator('article').first()).toBeVisible()
   })
 
+  test('blog post sidebar shows one "N reads" count', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+    // The view beacon increments viewCount; abort it so this test never writes.
+    await page.route('**/api/blog/*/view', (route) => route.abort())
+    await openFirstPost(page)
+    const reads = page.locator('aside [data-post-reads]')
+    await expect(reads).toHaveCount(1)
+    await expect(reads).toHaveText(/^\d[\d,]* reads?$/)
+    await expect(page.locator('article header')).not.toContainText(/\bviews?\b/)
+  })
+
   test('blog post shows the author', async ({ page }) => {
     test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     await openFirstPost(page)
