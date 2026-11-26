@@ -44,7 +44,10 @@ interface BlogPostPageProps {
 }
 
 // The lede and meta description are resolved here once (bio-free, boundary-clean)
-// so the page, generateMetadata and JSON-LD all read the same values.
+// and returned as `excerpt` (up to LEDE_MAX) and `metaDescription` (up to
+// META_MAX). The page lede and the JSON-LD description read `excerpt`;
+// generateMetadata's description, og:description and twitter:description read
+// `metaDescription`, so the two can differ for a post with a long excerpt.
 // Drizzle relational query — deduplicated via React cache() across
 // generateMetadata + page render. Filters are inline so the database does the
 // status check; no post-fetch JS filtering.
