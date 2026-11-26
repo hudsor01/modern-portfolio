@@ -11,7 +11,11 @@ import { transformToBlogPostData, createErrorResponse, invalidBodyMessage } from
 import { updateBlogPostSchema } from '@/lib/schemas'
 import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
 import { normalizeSeoTitle } from '@/lib/post-title'
-import { normalizeStoredSeoText, opensWithAuthorBio } from '@/lib/blog-excerpt'
+import {
+  metaDescriptionNeedsDerivation,
+  normalizeStoredSeoText,
+  opensWithAuthorBio,
+} from '@/lib/blog-excerpt'
 
 const logger = createContextLogger('SlugAPI')
 
@@ -129,15 +133,17 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
       return NextResponse.json(createErrorResponse('Blog post not found'), { status: 404 })
     }
 
-    // A bio-opener excerpt or meta is re-derived from the body. Normalized,
-    // never rejected, so an update can't fail on SEO text. The stored body and
-    // excerpt are read only when needed: a bio field without new content, or a
-    // bio meta without a new excerpt (the meta prefers the post's excerpt).
+    // A bio-opener excerpt or meta is re-derived from the body, and an over-long
+    // meta is trimmed (re-derived only when it has no text of its own).
+    // Normalized, never rejected, so an update can't fail on SEO text. The
+    // stored body and excerpt are read only when needed: a bio field without new
+    // content, or a derived meta without a new excerpt (the meta prefers the
+    // post's excerpt).
     const bioExcerpt = opensWithAuthorBio(body.excerpt)
-    const bioMeta = opensWithAuthorBio(body.metaDescription)
+    const deriveMeta = metaDescriptionNeedsDerivation(body.metaDescription)
     const stored =
-      (body.content === undefined && (bioExcerpt || bioMeta)) ||
-      (bioMeta && body.excerpt === undefined)
+      (body.content === undefined && (bioExcerpt || deriveMeta)) ||
+      (deriveMeta && body.excerpt === undefined)
         ? await db.query.blogPosts.findFirst({
             where: eq(blogPosts.id, existingPost.id),
             columns: { content: true, excerpt: true },
