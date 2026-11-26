@@ -266,3 +266,16 @@ describe('hard cut after a finished sentence', () => {
     expect(truncateAtBoundary('Book the review with Dr. ...', 160)).toBe('Book the review with…')
   })
 })
+
+describe('no-space truncation', () => {
+  it('never splits a surrogate pair', () => {
+    const out = truncateAtBoundary(`${'x'.repeat(158)}😀${'y'.repeat(20)}`, 160)
+    expect(out).toBe(`${'x'.repeat(158)}…`)
+    expect(out).not.toMatch(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])/)
+  })
+
+  it('keeps a whole pair that fits', () => {
+    const out = truncateAtBoundary(`${'x'.repeat(157)}😀${'y'.repeat(20)}`, 160)
+    expect(out).toBe(`${'x'.repeat(157)}😀…`)
+  })
+})

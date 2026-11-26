@@ -55,6 +55,12 @@ function endsWithAbbreviation(text: string): boolean {
   return ABBREVIATION.test(text) || INITIAL.test(text)
 }
 
+/** `end`, moved back one unit if it would split a UTF-16 surrogate pair. */
+function codePointCut(text: string, end: number): number {
+  const code = text.charCodeAt(end - 1)
+  return code >= 0xd800 && code <= 0xdbff ? end - 1 : end
+}
+
 const FINAL_TERMINATOR = /[.!?][”"’')\]]?$/
 
 function endsWithSentence(text: string): boolean {
@@ -126,7 +132,7 @@ export function truncateAtBoundary(text: string, max: number): string {
     head = lastSpace > 0 ? t.slice(0, lastSpace) : t
   } else {
     const lastSpace = t.slice(0, max).lastIndexOf(' ')
-    head = lastSpace > 0 ? t.slice(0, lastSpace) : t.slice(0, max - 1)
+    head = lastSpace > 0 ? t.slice(0, lastSpace) : t.slice(0, codePointCut(t, max - 1))
   }
   return `${head.replace(TRAILING_PUNCTUATION, '')}…`
 }
