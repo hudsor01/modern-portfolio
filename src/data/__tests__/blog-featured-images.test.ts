@@ -35,3 +35,22 @@ describe('featuredImageFor', () => {
     )
   })
 })
+
+describe('DATA-03: Gong/Salesloft call-coaching post thumbnail', () => {
+  const slug = 'stop-guessing-how-we-turned-call-coaching-into-a-revenue-engine-using-gong-and-s'
+  const photoId = '1766066014237-00645c74e9c6'
+
+  it('maps to the relevant sales-floor photo with accurate alt text', () => {
+    const entry = BLOG_FEATURED_IMAGES.find((e) => e.slug === slug)
+    expect(entry).toBeDefined()
+    expect(entry?.photoId).toBe(photoId)
+    expect(entry?.alt).toBe(
+      'Sales development rep on a live call at a busy sales-floor workstation'
+    )
+    expect(featuredImageFor(slug).featuredImage).toContain(`photo-${photoId}`)
+  })
+
+  it('uses that photoId on exactly one entry', () => {
+    expect(BLOG_FEATURED_IMAGES.filter((e) => e.photoId === photoId)).toHaveLength(1)
+  })
+})
