@@ -16,6 +16,7 @@ import { WebsiteJsonLd } from '@/components/seo/json-ld/website-json-ld'
 import { NavigationJsonLd } from '@/components/seo/json-ld/navigation-json-ld'
 import { ReadingProgressBar } from './reading-progress'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
+import { CONTACT } from '@/lib/contact-info'
 
 // Luxury Minimalist Typography System
 const playfair = Playfair_Display({
@@ -67,9 +68,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
 
         {/* IndieWeb identity verification (rel=me) — used by Mastodon, Bridgy, IndieAuth */}
-        <link rel="me" href="https://www.linkedin.com/in/hudsor01" />
-        <link rel="me" href="https://github.com/hudsor01" />
-        <link rel="me" href="https://twitter.com/hudsor01" />
+        <link rel="me" href={CONTACT.linkedin.url} />
+        <link rel="me" href={CONTACT.github.url} />
+        <link rel="me" href={CONTACT.twitter.url} />
 
         {/* No third-party preconnects: next/font self-hosts the fonts, next/image
             proxies remote images through /_next/image, and Vercel Analytics and

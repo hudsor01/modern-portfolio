@@ -1,5 +1,6 @@
 'use client'
 
+import { CONTACT, mailtoHref } from '@/lib/contact-info'
 import {
   Mail,
   Send,
@@ -99,8 +100,8 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
             <Mail className="w-5 h-5 flex-shrink-0 text-primary" />
             <span>
               Prefer email? Write to{' '}
-              <a href="mailto:hudsor01@icloud.com" className="text-link">
-                hudsor01@icloud.com
+              <a href={mailtoHref} className="text-link">
+                {CONTACT.email}
               </a>
               .
             </span>

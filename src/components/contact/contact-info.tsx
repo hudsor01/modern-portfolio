@@ -2,14 +2,15 @@
 
 import { ArrowRight, MessageSquare } from 'lucide-react'
 import { Github, Linkedin } from '@/components/ui/brand-icons'
+import { CONTACT } from '@/lib/contact-info'
 
 // ============================================================================
 // Static Data
 // ============================================================================
 
 const socialLinks = {
-  linkedin: 'https://www.linkedin.com/in/hudsor01',
-  github: 'https://github.com/hudsor01',
+  linkedin: CONTACT.linkedin.url,
+  github: CONTACT.github.url,
 }
 
 // ============================================================================

@@ -32,6 +32,7 @@ import {
 import { DecorativeBlob } from '@/components/ui/decorative-blob'
 import { ProjectCard } from '@/components/projects/project-card'
 import type { Project } from '@/types/project'
+import { CONTACT, mailtoHref } from '@/lib/contact-info'
 
 // Animated counter with visual impact
 function ImpactMetric({
@@ -227,7 +228,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                       <div>
                         <h2>Richard Hudson</h2>
                         <p>Revenue Operations</p>
-                        <p className="mt-1">Dallas, TX</p>
+                        <p className="mt-1">{CONTACT.location.display}</p>
                       </div>
                     </div>
                   </div>
@@ -447,10 +448,10 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                 <a
                   data-track="Email Click"
                   data-track-location="home-cta"
-                  href="mailto:hudsor01@icloud.com"
+                  href={mailtoHref}
                   className="text-link"
                 >
-                  hudsor01@icloud.com
+                  {CONTACT.email}
                 </a>
               </p>
             </div>
@@ -474,7 +475,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                   <p>Revenue Operations Professional</p>
                 </div>
               </div>
-              <p>Based in Dallas, TX • Open to remote opportunities</p>
+              <p>{`Based in ${CONTACT.location.display} • Open to remote opportunities`}</p>
             </div>
           </div>
         </section>
