@@ -20,6 +20,8 @@ export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
 
   // Extract and validate query params
+  // The card shows the full post title as visible on-image text (alt text uses
+  // post.title); it is not a metadata title, so the SEO title budget does not apply.
   let title = searchParams.get('title') || 'Richard Hudson | Revenue Operations'
   let subtitle = searchParams.get('subtitle') || ''
   let category = searchParams.get('category') || ''

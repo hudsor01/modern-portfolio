@@ -101,6 +101,8 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
   const postSchema = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
+    // Full article title on purpose: headline names the article in structured
+    // data, it is not a search-result title, so the 60-char <title> budget does not apply.
     headline: post.title,
     description: post.excerpt || post.metaDescription,
     // safeFeaturedImageUrl re-validates at read time so a legacy or

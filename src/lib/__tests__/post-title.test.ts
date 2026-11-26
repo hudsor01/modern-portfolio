@@ -1,34 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
-import { normalizeSeoTitle, postDocumentTitle, SEO_TITLE_MAX, TITLE_BUDGET } from '@/lib/post-title'
-
-describe('postDocumentTitle', () => {
-  it('keeps the SEO title when it fits with the brand', () => {
-    expect(
-      postDocumentTitle('Lead Scoring That Works', 'Lead Scoring Models That Actually Work')
-    ).toBe('Lead Scoring That Works')
-  })
-
-  it('falls back to the post title when the branded SEO title would be truncated', () => {
-    const seo = 'Lead Scoring Models That Actually Work: Fit, Engagement, Validation'
-    const title = 'Lead Scoring Models That Actually Work'
-    expect(`${seo} | Richard Hudson`.length).toBeGreaterThan(TITLE_BUDGET)
-    expect(postDocumentTitle(seo, title)).toBe(title)
-  })
-
-  it('keeps the SEO title when the post title is no shorter', () => {
-    const long = 'A Very Long Post Title That Goes On And On About Revenue Operations'
-    expect(postDocumentTitle(`${long}: More`, `${long}: More Still`)).toBe(`${long}: More`)
-  })
-
-  it('strips a stored brand suffix and handles a missing metaTitle', () => {
-    expect(postDocumentTitle('Pipeline Velocity | Richard Hudson', 'Pipeline')).toBe(
-      'Pipeline Velocity'
-    )
-    expect(postDocumentTitle(null, 'Pipeline Velocity')).toBe('Pipeline Velocity')
-    expect(postDocumentTitle('', '')).toBe('Blog')
-  })
-})
+import { brandTitle } from '@/app/shared-metadata'
+import { normalizeSeoTitle, SEO_TITLE_MAX, TITLE_BUDGET } from '@/lib/post-title'
 
 describe('normalizeSeoTitle', () => {
   it('fits every stored SEO title within the budget', () => {
@@ -93,5 +66,38 @@ describe('normalizeSeoTitle', () => {
     const out = normalizeSeoTitle(s, s)
     expect(out).toBe('Revenue Operations Benchmarks Every Founder')
     expect(s.split(' ').slice(0, out.split(' ').length).join(' ')).toBe(out)
+  })
+
+  it('renders the legacy 60-char forecast metaTitle as a whole-word 59-char branded title', () => {
+    const out = normalizeSeoTitle(
+      'Forecast Accuracy Starts With Data Hygiene: Stage mapping an',
+      'Forecast Accuracy Starts With Data Hygiene: Stage mapping and duplicate rules'
+    )
+    expect(out).toBe('Forecast Accuracy Starts With Data Hygiene')
+    expect(brandTitle(out)).toHaveLength(59)
+  })
+
+  it('keeps every branded result within the budget for generated inputs', () => {
+    const words = 'alpha beta gamma delta epsilon zeta eta theta iota kappa lambda'.split(' ')
+    const make = (n: number) => {
+      let out = ''
+      for (let i = 0; out.length < n; i++) out += `${out ? ' ' : ''}${words[i % words.length]}`
+      return out.slice(0, n)
+    }
+    const metas: (string | null)[] = [null, '', ...[10, 43, 44, 60, 120].map(make)]
+    metas.push(`${make(30)}: ${make(40)}`, `${make(30)} (with a long trailing note)`)
+    metas.push('Pipeline Velocity | Richard Hudson')
+    for (const m of metas) {
+      for (const t of [
+        make(20),
+        make(43),
+        make(44),
+        make(60),
+        make(120),
+        `${make(25)}: ${make(60)}`,
+      ]) {
+        expect(brandTitle(normalizeSeoTitle(m, t)).length).toBeLessThanOrEqual(TITLE_BUDGET)
+      }
+    }
   })
 })

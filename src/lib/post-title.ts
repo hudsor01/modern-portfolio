@@ -6,22 +6,6 @@ import { brandTitle, stripBrandSuffix } from '@/app/shared-metadata'
  */
 export const TITLE_BUDGET = 60
 
-/**
- * The `<title>` segment for a blog post; the root template appends the brand.
- *
- * The pipeline's `metaTitle` is preferred. When it plus " | Richard Hudson"
- * runs past the budget, the post's own title is used instead if its branded
- * form is shorter, so search results show a whole title rather than a cut one.
- * If neither fits, the SEO title stays (Google then trims the brand).
- */
-export function postDocumentTitle(metaTitle: string | null | undefined, title: string): string {
-  const plain = stripBrandSuffix(title)
-  const seo = stripBrandSuffix(metaTitle || '') || plain || 'Blog'
-  if (brandTitle(seo).length <= TITLE_BUDGET) return seo
-  if (plain && brandTitle(plain).length < brandTitle(seo).length) return plain
-  return seo
-}
-
 /** Characters a title can use before the brand suffix pushes it past the budget (43). */
 export const SEO_TITLE_MAX = TITLE_BUDGET - (brandTitle('x').length - 1)
 
@@ -80,8 +64,10 @@ function cutAtWord(s: string, max: number): string {
 /**
  * The SEO title (`metaTitle`) to store for a post, at most SEO_TITLE_MAX
  * characters, so `<title> | Richard Hudson` fits search results (see the
- * pipeline title spec). Applied by POST/PUT /api/blog, so whatever the
- * publishing pipeline sends is stored compliant and publishing never fails.
+ * pipeline title spec). This is the single title rule: applied on write by
+ * POST/PUT /api/blog (and categories) so whatever the publishing pipeline sends
+ * is stored compliant, AND at read time for the post page <title>, og:title and
+ * twitter:title so legacy stored values render compliant without a data migration.
  *
  * In order: the given SEO title if it fits; else the post title if it fits;
  * else the SEO title without a trailing "(…)"; else its part before ": "; else

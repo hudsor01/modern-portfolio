@@ -14,11 +14,11 @@ import { db } from '@/lib/db'
 import { withDbRetry } from '@/lib/db-retry'
 import { blogPosts } from '@/db/schema'
 import { canonicalUrl } from '@/lib/absolute-url'
-import { brandTitle, stripBrandSuffix } from '@/app/shared-metadata'
+import { brandTitle } from '@/app/shared-metadata'
 import { LEDE_MAX, resolveExcerpt, resolveMetaDescription } from '@/lib/blog-excerpt'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
-import { postDocumentTitle } from '@/lib/post-title'
+import { normalizeSeoTitle } from '@/lib/post-title'
 
 // Force runtime rendering. notFound() inside Next.js 16's ISR-rendered
 // Server Components doesn't propagate HTTP 404 status to Vercel — the
@@ -132,11 +132,12 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   const ogImageAlt = ogImage.isFallback ? post.title : post.featuredImageAlt || post.title
 
   const postUrl = canonicalUrl(`/blog/${post.slug}`)
-  // Root template appends the brand; DB titles may already carry it. A metaTitle
-  // too long to survive search-result truncation with the brand gives way to the
-  // shorter post title (src/lib/post-title.ts).
-  const baseTitle = postDocumentTitle(post.metaTitle, post.title)
-  const shareTitle = brandTitle(stripBrandSuffix(post.title) || baseTitle)
+  // One canonical normalized title (src/lib/post-title.ts, the same rule applied
+  // on write) feeds <title> (the root template appends the brand), og:title and
+  // twitter:title, so legacy stored values render within the 60-char budget and
+  // shared previews show the short SEO title (intended).
+  const baseTitle = normalizeSeoTitle(post.metaTitle, post.title) || 'Blog'
+  const shareTitle = brandTitle(baseTitle)
   return {
     title: baseTitle,
     description: post.metaDescription,
