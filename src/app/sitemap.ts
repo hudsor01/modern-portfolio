@@ -5,8 +5,7 @@ import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 import { showcaseProjects } from '@/data/projects'
 import { tools, TOOLS_HUB_PATH, TOOLS_HUB_LAST_UPDATED } from '@/data/tools'
 import { PRIVACY_POLICY_LAST_UPDATED } from '@/app/privacy/policy-date'
-import blogRetiredSlugs from '@/data/blog-retired-slugs.json'
-import blogSlugRenames from '@/data/blog-slug-renames.json'
+import { REDIRECTED_BLOG_SLUGS } from '@/lib/redirects'
 
 const logger = createContextLogger('Sitemap')
 
@@ -54,20 +53,10 @@ const STATIC_LAST_MODIFIED = '2026-06-14T00:00:00.000Z'
 // emits the string as-is into the XML element value.
 const xmlSafeUrl = (url: string): string => url.replace(/&/g, '&amp;')
 
-// Slugs retired in the blog de-cannibalization cleanup. Each 308-redirects to
-// its canonical keeper in next.config.js, so they must NOT appear in the
-// sitemap — a sitemap URL that redirects is flagged "Page with redirect" in
-// Search Console. Keep in sync with next.config.js `redirects()`.
-const RETIRED_BLOG_SLUGS = new Set<string>([
-  'stop-guessing-how-we-crushed-forecasting-errors-by-34-in-one-quarter',
-  'stop-guessing-how-to-slash-forecast-variance-by-60-in-90-days',
-  'the-4-2m-you-left-on-the-table-why-your-closed-lost-deals-are-actually-sleeping-',
-  'stop-ignoring-your-dead-opportunities-how-we-revived-4-2m-in-lost-revenue-with-o',
-  // Every slug next.config.js redirects from the JSON maps. Retired posts are
-  // also soft-deleted, so this is a guard, not the only filter.
-  ...Object.keys(blogSlugRenames),
-  ...Object.keys(blogRetiredSlugs),
-])
+// A sitemap URL that redirects is flagged "Page with redirect" in Search Console,
+// so every blog source in the redirect table is excluded. The set derives from
+// the one table (src/data/redirects.json + the two slug maps). Retired posts are
+// also soft-deleted, so this is a guard, not the only filter.
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = SITE_ORIGIN
@@ -186,7 +175,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const rejectedFeaturedImages: Array<{ slug: string; stored: string }> = []
 
     blogPages = posts
-      .filter((post) => !RETIRED_BLOG_SLUGS.has(post.slug))
+      .filter((post) => !REDIRECTED_BLOG_SLUGS.has(post.slug))
       .map((post) => {
         // safeFeaturedImageUrl re-validates at read time. Shared with
         // BlogPostJsonLd so sitemap and JSON-LD can never diverge on

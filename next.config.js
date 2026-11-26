@@ -3,14 +3,17 @@
 import { withSentryConfig } from '@sentry/nextjs/config'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { buildRedirectTable } from './src/lib/redirect-table.mjs'
 
 const readJson = (file) => JSON.parse(readFileSync(join(process.cwd(), file), 'utf8'))
 
-// old slug -> current slug for renamed blog posts, and retired slug -> the
-// post it was merged into. Also read by src/app/sitemap.ts and
-// src/data/__tests__/blog-slug-renames.test.ts.
+// old slug -> current slug for renamed blog posts, retired slug -> the post it
+// was merged into, and the hand-written redirects. All three feed
+// buildRedirectTable below; src/lib/redirects.ts builds the same table for the
+// proxy, the sitemap and the tests.
 const BLOG_SLUG_RENAMES = readJson('src/data/blog-slug-renames.json')
 const BLOG_RETIRED_SLUGS = readJson('src/data/blog-retired-slugs.json')
+const HAND_WRITTEN_REDIRECTS = readJson('src/data/redirects.json')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -179,7 +182,7 @@ const nextConfig = {
         // together for browsers to render the PDF in a frame.
         //
         // NOTE: this rule applies to ALL .pdf paths under /public. Only one
-        // exists today (Richard_Hudson_Revenue_Operations.pdf). If a future PDF
+        // exists today (the résumé PDF). If a future PDF
         // should NOT be framable (e.g., signed contract, gated content),
         // narrow the source to the literal résumé filename and add an
         // explicit deny rule for the new path.
@@ -200,70 +203,17 @@ const nextConfig = {
     ]
   },
 
+  // One table: src/data/redirects.json (each entry's "why") plus the two blog
+  // slug maps, validated by src/lib/redirect-table.mjs. /github, /linkedin and
+  // /twitter moved here from vercel.json so there is a single source. On Vercel
+  // these match only the exact lowercase source, which is why the proxy
+  // resolves mixed-case and slash variants in one hop.
   async redirects() {
-    return [
-      // Legacy URL → home. /github, /linkedin, /twitter live in vercel.json
-      // so they redirect at the edge before hitting the Next.js server.
-      { source: '/home', destination: '/', permanent: true },
-
-      // Blog de-cannibalization: retire near-duplicate posts into one canonical
-      // pillar per topic so Google indexes a strong page instead of parking the
-      // whole cluster as "Discovered – currently not indexed". 308 (permanent)
-      // consolidates link equity into the keeper. The retired slugs are ALSO
-      // excluded from the sitemap (src/app/sitemap.ts RETIRED_BLOG_SLUGS) so we
-      // never advertise a URL that redirects.
-      // Forecast-accuracy cluster → keeper:
-      {
-        source: '/blog/stop-guessing-how-we-crushed-forecasting-errors-by-34-in-one-quarter',
-        destination: '/blog/stop-guessing-how-to-cut-sales-forecast-variance',
-        permanent: true,
-      },
-      {
-        source: '/blog/stop-guessing-how-to-slash-forecast-variance-by-60-in-90-days',
-        destination: '/blog/stop-guessing-how-to-cut-sales-forecast-variance',
-        permanent: true,
-      },
-      // Closed-lost / dead-deal reactivation cluster → keeper:
-      {
-        source:
-          '/blog/the-4-2m-you-left-on-the-table-why-your-closed-lost-deals-are-actually-sleeping-',
-        destination: '/blog/the-revenue-leak-youre-ignoring-how-to-resurrect-dead-deals',
-        permanent: true,
-      },
-      {
-        source:
-          '/blog/stop-ignoring-your-dead-opportunities-how-we-revived-4-2m-in-lost-revenue-with-o',
-        destination: '/blog/the-revenue-leak-youre-ignoring-how-to-resurrect-dead-deals',
-        permanent: true,
-      },
-      // Renamed RevOps pillar guide. Google indexed/ranked the OLD slug (~pos 40)
-      // but the post now lives at /blog/complete-guide-revenue-operations-strategy;
-      // the orphaned old slug 404s (and intermittently 500s when the not-found
-      // path hits a Neon hiccup), so GSC rejected its indexing request. 308 to
-      // preserve the existing ranking equity and stop the error.
-      {
-        source: '/blog/revenue-operations-best-practices-complete-guide',
-        destination: '/blog/complete-guide-revenue-operations-strategy',
-        permanent: true,
-      },
-      // Posts renamed when invented claims were edited out of their titles
-      // ("how-i-fixed-a-4m-...", "12-years-in-the-trenches", "your-title-here")
-      // or whose slug was cut mid-word at 80 characters. The DB holds the new
-      // slugs; these 308s keep every old link and indexed URL working.
-      ...Object.entries(BLOG_SLUG_RENAMES).map(([from, to]) => ({
-        source: `/blog/${from}`,
-        destination: `/blog/${to}`,
-        permanent: true,
-      })),
-      // Near-duplicate posts (up to nine per topic, from the old n8n
-      // generator) were merged into one keeper per topic and soft-deleted.
-      // Each retired URL 308s to the keeper that now carries its content.
-      ...Object.entries(BLOG_RETIRED_SLUGS).map(([from, to]) => ({
-        source: `/blog/${from}`,
-        destination: `/blog/${to}`,
-        permanent: true,
-      })),
-    ]
+    return buildRedirectTable({
+      handWritten: HAND_WRITTEN_REDIRECTS,
+      renames: BLOG_SLUG_RENAMES,
+      retired: BLOG_RETIRED_SLUGS,
+    }).map(({ source, destination }) => ({ source, destination, permanent: true }))
   },
 }
 
