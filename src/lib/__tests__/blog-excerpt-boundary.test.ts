@@ -1,9 +1,11 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
 import {
+  fitMetaDescription,
   isBioBoilerplate,
   LEDE_MAX,
   META_MAX,
+  metaDescriptionNeedsDerivation,
   normalizeStoredSeoText,
   opensWithAuthorBio,
   resolveExcerpt,
@@ -694,5 +696,112 @@ describe('normalizeStoredSeoText (what the admin API stores)', () => {
       metaDescription: meta,
       excerpt,
     })
+  })
+})
+
+const LONG_PROSE =
+  'Pipeline data drifts from reality in seven predictable ways. Each one has a report that catches it and a weekly inspection that keeps it honest. Teams that skip the inspection end up forecasting from stale stages and guessing at close dates.'
+const ONE_SENTENCE =
+  'Pipeline data drifts from reality in seven predictable ways and each one has a report that catches it and a weekly inspection that keeps it honest across every stage of the funnel'
+
+describe('over-long meta descriptions are trimmed, never rejected', () => {
+  const run = (
+    metaDescription: string | null | undefined,
+    excerpt: string | null | undefined = null,
+    content = ''
+  ) => normalizeStoredSeoText({ metaDescription, excerpt, content }).metaDescription
+
+  it('cuts at a sentence end with no ellipsis', () => {
+    expect(LONG_PROSE.length).toBeGreaterThan(META_MAX)
+    const out = run(LONG_PROSE) as string
+    expect(out.length).toBeLessThanOrEqual(META_MAX)
+    expect(out).not.toContain('…')
+    expect(out.endsWith('.')).toBe(true)
+  })
+
+  it('cuts one long sentence at a word with exactly one ellipsis', () => {
+    expect(ONE_SENTENCE.length).toBeGreaterThan(META_MAX)
+    const out = run(ONE_SENTENCE) as string
+    expect(out.length).toBeLessThanOrEqual(META_MAX)
+    expect(out.endsWith('…')).toBe(true)
+    expect(out.match(/…/g)).toHaveLength(1)
+    expect(out).not.toContain('...')
+  })
+
+  it('strips markdown', () => {
+    const out = run(`**${ONE_SENTENCE}** [link](https://example.com/x)`) as string
+    expect(out).not.toMatch(/\*\*|\]\(/)
+    expect(out.length).toBeLessThanOrEqual(META_MAX)
+  })
+
+  it('treats a trailing ASCII ellipsis as a hard cut', () => {
+    const out = run(`${ONE_SENTENCE.slice(0, 170)}...`) as string
+    expect(out.endsWith('…')).toBe(true)
+    expect(out).not.toContain('...')
+    expect(out.match(/…/g)).toHaveLength(1)
+    expect(out.length).toBeLessThanOrEqual(META_MAX)
+  })
+
+  it('returns 160-char, short, null and undefined metas as sent', () => {
+    const exact = 'a'.repeat(160)
+    expect(run(exact)).toBe(exact)
+    expect(run('Short **meta**')).toBe('Short **meta**')
+    expect(run(null)).toBeNull()
+    expect(run(undefined)).toBeUndefined()
+  })
+
+  it('falls back to the excerpt, then currentExcerpt, then the body, then null for markup-only', () => {
+    const markup = `${'<br/>'.repeat(40)}`
+    expect(run(markup, C_EXCERPT)).toBe(
+      resolveMetaDescription({ metaDescription: null, excerpt: C_EXCERPT, content: '' })
+    )
+    expect(
+      normalizeStoredSeoText({
+        metaDescription: markup,
+        excerpt: undefined,
+        content: '',
+        currentExcerpt: C_EXCERPT,
+      }).metaDescription
+    ).toBe(resolveMetaDescription({ metaDescription: null, excerpt: C_EXCERPT, content: '' }))
+    expect(run(markup, null, F1_BODY)).toBe(
+      resolveMetaDescription({ metaDescription: null, excerpt: null, content: F1_BODY })
+    )
+    expect(run(markup, null, '')).toBeNull()
+  })
+})
+
+describe('fitMetaDescription', () => {
+  it('returns null, undefined and short values as sent', () => {
+    expect(fitMetaDescription(null)).toBeNull()
+    expect(fitMetaDescription(undefined)).toBeUndefined()
+    expect(fitMetaDescription('Short meta')).toBe('Short meta')
+    expect(fitMetaDescription('a'.repeat(160))).toBe('a'.repeat(160))
+  })
+
+  it('trims an over-long value at a boundary', () => {
+    const out = fitMetaDescription(ONE_SENTENCE) as string
+    expect(out.length).toBeLessThanOrEqual(META_MAX)
+    expect(out.endsWith('…')).toBe(true)
+    expect(fitMetaDescription(LONG_PROSE)).toBe(
+      resolveMetaDescription({ metaDescription: LONG_PROSE, excerpt: null, content: null })
+    )
+  })
+
+  it('returns null when the over-long value has no text', () => {
+    expect(fitMetaDescription('<br/>'.repeat(40))).toBeNull()
+  })
+})
+
+describe('metaDescriptionNeedsDerivation', () => {
+  it('is true for a bio opener and for an over-long meta with no text of its own', () => {
+    expect(metaDescriptionNeedsDerivation(F1_META)).toBe(true)
+    expect(metaDescriptionNeedsDerivation('<br/>'.repeat(40))).toBe(true)
+  })
+
+  it('is false for an over-long meta with text, a short meta, null and undefined', () => {
+    expect(metaDescriptionNeedsDerivation(LONG_PROSE)).toBe(false)
+    expect(metaDescriptionNeedsDerivation('Short meta')).toBe(false)
+    expect(metaDescriptionNeedsDerivation(null)).toBe(false)
+    expect(metaDescriptionNeedsDerivation(undefined)).toBe(false)
   })
 })

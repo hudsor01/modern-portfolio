@@ -19,6 +19,8 @@ import {
   normalizeNewlines,
   contactMessageLength,
   createBlogPostSchema,
+  createCategorySchema,
+  createTagSchema,
   updateBlogPostSchema,
   projectFilterSchema,
   viewTrackingSchema,
@@ -895,11 +897,30 @@ describe('blog metaDescription accepts a bio opener (the routes normalize it)', 
     }
   })
 
-  it('still rejects a meta over 160 characters, naming the rule', () => {
-    const result = createBlogPostSchema.safeParse({ ...base, metaDescription: 'x'.repeat(161) })
-    expect(result.success).toBe(false)
-    if (!result.success) {
-      expect(result.error.issues[0]?.message).toBe('Meta description cannot exceed 160 characters')
+  it.each([161, 1000, 5000])(
+    'accepts a %i-character meta on every schema (never rejected)',
+    (length) => {
+      const meta = 'x'.repeat(length)
+      const expected = 'x'.repeat(Math.min(length, 1000))
+      const results = [
+        createBlogPostSchema.safeParse({ ...base, metaDescription: meta }),
+        updateBlogPostSchema.safeParse({ metaDescription: meta }),
+        createTagSchema.safeParse({ name: 'Tag', metaDescription: meta }),
+        createCategorySchema.safeParse({ name: 'Cat', metaDescription: meta }),
+      ]
+      for (const result of results) {
+        expect(result.success).toBe(true)
+        if (result.success) {
+          expect((result.data as { metaDescription?: string | null }).metaDescription).toBe(
+            expected
+          )
+        }
+      }
     }
+  )
+
+  it('still turns an empty meta into null', () => {
+    const result = createTagSchema.safeParse({ name: 'Tag', metaDescription: '' })
+    expect(result.success && result.data.metaDescription).toBeNull()
   })
 })
