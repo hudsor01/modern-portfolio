@@ -320,6 +320,17 @@ describe('POST /api/blog', () => {
     expect(dbMocks.insertValues.mock.calls[0]?.[0]).toMatchObject({ metaTitle: 'Hello World' })
   })
 
+  it('accepts a metaTitle over 100 characters and stores it within 43', async () => {
+    const long = `${'Revenue Operations Benchmarks Every Founder Should Track '.repeat(3)}Today`
+    const res = await POST(reqPost({ ...validBody, title: 'x'.repeat(120), metaTitle: long }))
+    expect(res.status).toBe(201)
+    const stored = String(
+      (dbMocks.insertValues.mock.calls[0]?.[0] as { metaTitle?: string } | undefined)?.metaTitle
+    )
+    expect(stored.length).toBeLessThanOrEqual(43)
+    expect(long.startsWith(stored)).toBe(true)
+  })
+
   it('returns 401 when admin token missing', async () => {
     vi.mocked(isAdminRequest).mockReturnValueOnce(false)
     const res = await POST(reqPost(validBody))

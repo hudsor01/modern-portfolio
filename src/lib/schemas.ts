@@ -103,7 +103,7 @@ export const nullishText = (max: number, message?: string) =>
     ])
     .optional()
 
-// Bound on the metaDescription text the routes normalize. It matches the
+// Bound on the metaTitle/metaDescription text the routes normalize. It matches the
 // content cap: the request body is already parsed by then, so this limits the
 // normalizer's work, not memory. Routes trim to the 160-char column via
 // blog-excerpt, so longer input is cut here, never rejected.
@@ -355,9 +355,10 @@ const blogPostBaseShape = {
   excerpt: nullishText(500),
   contentType: ContentTypeSchema,
   status: PostStatusSchema,
-  metaTitle: nullishText(100),
-  // Bio-opener and over-long metas are accepted here (cut to META_INPUT_MAX)
-  // and normalized by the routes, never rejected: publishing cannot fail on them.
+  metaTitle: truncatingNullishText(META_INPUT_MAX),
+  // Bio-opener and over-long metas (titles and descriptions) are accepted here
+  // (cut to META_INPUT_MAX) and normalized by the routes, never rejected:
+  // publishing cannot fail on them.
   metaDescription: truncatingNullishText(META_INPUT_MAX),
   keywords: z.array(z.string().min(1).max(50)).max(10, 'Cannot have more than 10 keywords'),
   canonicalUrl: nullishUrl(),
@@ -418,7 +419,7 @@ export const createCategorySchema = z
   .object({
     name: z.string().min(1, 'Name is required').max(60),
     description: nullishText(500),
-    metaTitle: nullishText(100),
+    metaTitle: truncatingNullishText(META_INPUT_MAX),
     metaDescription: truncatingNullishText(META_INPUT_MAX),
     color: hexColor.default('#6B7280'),
     icon: nullishText(50),
