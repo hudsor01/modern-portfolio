@@ -174,7 +174,7 @@ describe('resolvePostLede', () => {
       resolvePostLede({
         excerpt: null,
         content: '',
-        metaDescription: 'x'.repeat(10) + ' meta description text here.',
+        metaDescription: `${'x'.repeat(10)} meta description text here.`,
       })
     ).toBe('xxxxxxxxxx meta description text here.')
     const long = `${'word '.repeat(100)}end.`
