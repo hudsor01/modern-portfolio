@@ -414,6 +414,35 @@ describe('PUT /api/blog/[slug]', () => {
     }
   })
 
+  it('derives a bio meta from the kept stored excerpt when the sent excerpt normalizes away', async () => {
+    const bio = 'I served in the National Guard for six years before moving into RevOps.'
+    const storedExcerpt =
+      'Pipeline coverage is a ratio, not a promise. Track it weekly against weighted quota.'
+    dbMocks.findFirst
+      .mockResolvedValueOnce(samplePost) // existing-by-slug
+      .mockResolvedValueOnce({
+        content: 'A different opening paragraph from the body.',
+        excerpt: storedExcerpt,
+      })
+      .mockResolvedValueOnce(samplePost) // read-back
+    dbMocks.update.mockResolvedValue(undefined)
+    const res = await PUT(
+      reqPut('hello', {
+        excerpt: '-'.repeat(501),
+        metaDescription: bio,
+        content: 'A different opening paragraph from the body.',
+      }),
+      ctx('hello')
+    )
+    expect(res.status).toBe(200)
+    expect(dbMocks.findFirst.mock.calls[1]?.[0]).toMatchObject({
+      columns: { content: true, excerpt: true },
+    })
+    const set = dbMocks.updateSet.mock.calls[0]?.[0]
+    expect(set).not.toHaveProperty('excerpt')
+    expect(set).toMatchObject({ metaDescription: storedExcerpt })
+  })
+
   it('still clears a field sent as explicit null', async () => {
     dbMocks.findFirst.mockResolvedValueOnce(samplePost).mockResolvedValueOnce(samplePost)
     dbMocks.update.mockResolvedValue(undefined)

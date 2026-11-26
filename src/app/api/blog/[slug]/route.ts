@@ -156,22 +156,35 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
     // stored body and excerpt are read only when needed: a bio field without new
     // content, or a derived meta without a new excerpt (the meta prefers the
     // post's excerpt).
-    const bioExcerpt = opensWithAuthorBio(body.excerpt)
     const deriveMeta = metaDescriptionNeedsDerivation(body.metaDescription)
-    const stored =
-      (body.content === undefined && (bioExcerpt || deriveMeta)) ||
+    const loadStored = () =>
+      db.query.blogPosts.findFirst({
+        where: eq(blogPosts.id, existingPost.id),
+        columns: { content: true, excerpt: true },
+      })
+    const normalize = (
+      excerptInput: typeof body.excerpt,
+      current: { content: string; excerpt: string | null } | undefined
+    ) =>
+      normalizeStoredSeoText({
+        excerpt: excerptInput,
+        metaDescription: body.metaDescription,
+        content: body.content ?? current?.content,
+        currentExcerpt: current?.excerpt,
+      })
+    let stored =
+      (body.content === undefined && (opensWithAuthorBio(body.excerpt) || deriveMeta)) ||
       (deriveMeta && body.excerpt === undefined)
-        ? await db.query.blogPosts.findFirst({
-            where: eq(blogPosts.id, existingPost.id),
-            columns: { content: true, excerpt: true },
-          })
+        ? await loadStored()
         : undefined
-    const seoText = normalizeStoredSeoText({
-      excerpt: body.excerpt,
-      metaDescription: body.metaDescription,
-      content: body.content ?? stored?.content,
-      currentExcerpt: stored?.excerpt,
-    })
+    let seoText = normalize(body.excerpt, stored)
+    // A sent excerpt that normalizes to nothing is treated as omitted (the
+    // stored excerpt is kept, see unlessEmptied), so a derived meta must come
+    // from that kept excerpt, exactly as when the excerpt was not sent.
+    if (typeof body.excerpt === 'string' && seoText.excerpt === null) {
+      if (deriveMeta && stored === undefined) stored = await loadStored()
+      seoText = normalize(undefined, stored)
+    }
 
     const excerpt = unlessEmptied(body.excerpt, seoText.excerpt)
     const metaDescription = unlessEmptied(body.metaDescription, seoText.metaDescription)
