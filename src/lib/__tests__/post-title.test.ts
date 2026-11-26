@@ -1,6 +1,6 @@
 // @vitest-environment node
-import { readdirSync, readFileSync, statSync } from 'node:fs'
-import { join } from 'node:path'
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { brandTitle, displayPostTitle } from '@/lib/brand'
 import { normalizeSeoTitle, SEO_TITLE_MAX, TITLE_BUDGET } from '@/lib/post-title'
@@ -180,17 +180,75 @@ describe('browser safety', () => {
     expect(readFileSync(join(ROOT, 'src/lib/brand.ts'), 'utf8')).not.toMatch(/^\s*import\s/m)
   })
 
-  it('never imports @/lib/post-title from a client component', () => {
-    const offenders = files(join(ROOT, 'src')).filter((file) => {
-      const source = readFileSync(file, 'utf8')
-      return /^['"]use client['"]/m.test(source) && source.includes("'@/lib/post-title'")
-    })
+  // Follows every static import ('@/…' or relative, either quote style,
+  // including `export … from` re-exports and dynamic import()) from a module,
+  // so post-title.ts cannot reach the browser through an intermediate module.
+  const SRC = join(ROOT, 'src')
+  const POST_TITLE = join(SRC, 'lib', 'post-title.ts')
+  const SPECIFIER =
+    /(?:^|\s)(?:import|export)\s[^'"]*?from\s*['"]([^'"]+)['"]|import\s*\(\s*['"]([^'"]+)['"]\s*\)/g
+  const resolveImport = (from: string, spec: string): string | null => {
+    const base = spec.startsWith('@/')
+      ? join(SRC, spec.slice(2))
+      : spec.startsWith('.')
+        ? join(dirname(from), spec)
+        : null
+    if (base === null) return null
+    for (const candidate of [
+      base,
+      `${base}.ts`,
+      `${base}.tsx`,
+      join(base, 'index.ts'),
+      join(base, 'index.tsx'),
+    ]) {
+      if (existsSync(candidate) && statSync(candidate).isFile() && /\.tsx?$/.test(candidate)) {
+        return candidate
+      }
+    }
+    return null
+  }
+  const reaches = (entry: string): string[] | null => {
+    const seen = new Set<string>([entry])
+    const queue: string[][] = [[entry]]
+    while (queue.length > 0) {
+      const chain = queue.shift() as string[]
+      const file = chain[chain.length - 1] as string
+      if (file === POST_TITLE) return chain
+      for (const match of readFileSync(file, 'utf8').matchAll(SPECIFIER)) {
+        const next = resolveImport(file, (match[1] ?? match[2]) as string)
+        if (next !== null && !seen.has(next)) {
+          seen.add(next)
+          queue.push([...chain, next])
+        }
+      }
+    }
+    return null
+  }
+
+  it('keeps @/lib/post-title out of every client module graph', () => {
+    const clientModules = files(SRC).filter((file) =>
+      /^\s*['"]use client['"]/.test(readFileSync(file, 'utf8'))
+    )
+    expect(clientModules.length).toBeGreaterThan(0)
+    const offenders = clientModules
+      .map((file) => reaches(file))
+      .filter((chain): chain is string[] => chain !== null)
+      .map((chain) => chain.map((file) => file.slice(ROOT.length + 1)).join(' -> '))
     expect(offenders).toEqual([])
+  })
+
+  it('the import walk follows a real chain to post-title', () => {
+    // blog/[slug]/page.tsx is a server module that imports post-title; the walk
+    // must find it, proving the specifier pattern and path resolution work.
+    const chain = reaches(join(SRC, 'app', 'blog', '[slug]', 'page.tsx'))
+    expect(chain?.at(-1)).toBe(POST_TITLE)
   })
 
   it('loads and hard-cuts on whole code points where Intl.Segmenter is missing', async () => {
     vi.resetModules()
-    vi.stubGlobal('Intl', { ...Intl, Segmenter: undefined })
+    // Intl's members are non-enumerable, so a spread would drop them all; keep
+    // every member and hide only Segmenter.
+    vi.stubGlobal('Intl', Object.assign(Object.create(Intl), { Segmenter: undefined }))
     try {
       const { normalizeSeoTitle: cut } = await import('@/lib/post-title')
       const word = `${'a'.repeat(42)}😀tail`
