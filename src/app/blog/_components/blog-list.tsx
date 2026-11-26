@@ -174,7 +174,7 @@ export function BlogList({
                 }`}
               >
                 {post.featuredImage && (
-                  <div className="relative aspect-[16/10] overflow-hidden">
+                  <div className="relative aspect-16/10 overflow-hidden">
                     <BlogFeaturedImage
                       src={post.featuredImage}
                       alt={post.title}

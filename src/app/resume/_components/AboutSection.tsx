@@ -14,7 +14,7 @@ export function AboutSection() {
       <div className="bg-card border border-border rounded-2xl p-8 hover:border-primary/30 transition-all duration-300 print:border-0 print:bg-transparent print:p-0 print:rounded-none print:shadow-none">
         <div className="flex flex-col lg:flex-row items-center gap-8 print:block">
           {/* Profile Image */}
-          <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-xl overflow-hidden border-4 border-border shadow-xl shadow-primary/20 flex-shrink-0 print:hidden">
+          <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-xl overflow-hidden border-4 border-border shadow-xl shadow-primary/20 shrink-0 print:hidden">
             <Image
               src="/images/richard.jpg"
               alt="Richard Hudson"

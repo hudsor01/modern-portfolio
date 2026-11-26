@@ -111,7 +111,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
 
           {/* Featured Image */}
           {post.featuredImage && (
-            <figure className="relative mt-10 aspect-[16/9] overflow-hidden rounded-md border border-border shadow-sm">
+            <figure className="relative mt-10 aspect-video overflow-hidden rounded-md border border-border shadow-sm">
               <BlogFeaturedImage
                 src={post.featuredImage}
                 alt={post.featuredImageAlt || post.title}

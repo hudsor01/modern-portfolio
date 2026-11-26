@@ -43,7 +43,7 @@ export function EducationCertifications() {
             <li key={cert} className="flex items-center print:list-item">
               <span
                 aria-hidden="true"
-                className="w-2 h-2 bg-primary rounded-full mr-3 flex-shrink-0 print:hidden"
+                className="w-2 h-2 bg-primary rounded-full mr-3 shrink-0 print:hidden"
               />
               <p className="print:text-base print:leading-snug print:text-foreground">{cert}</p>
             </li>
