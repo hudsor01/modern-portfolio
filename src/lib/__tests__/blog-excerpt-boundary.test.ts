@@ -88,6 +88,28 @@ describe('truncateAtBoundary', () => {
     expect(truncateAtBoundary('Owners audit fields weekly… ...', 160)).toBe('Owners audit fields…')
   })
 
+  it('never ends in "..." but keeps an interior dot run as written', () => {
+    expect(truncateAtBoundary('Wait for it...... and then', 160)).toBe('Wait for it...... and then')
+    for (const text of [
+      'Wait for it...... and then ...',
+      `${'Stage definitions drift... '.repeat(10)}...`,
+      `${'alpha beta... '.repeat(20)}`,
+    ]) {
+      const out = truncateAtBoundary(text, 160)
+      expect(out.length).toBeLessThanOrEqual(160)
+      expect(out).not.toMatch(/\.\.\.$/)
+    }
+  })
+
+  it('renders an author\'s "..." as "…" when the cut lands on it', () => {
+    const text = `${'Stage definitions drift... '.repeat(10)}`.trim()
+    expect(truncateAtBoundary(text, 160)).toBe(
+      `${'Stage definitions drift... '.repeat(4)}Stage definitions drift…`
+    )
+    const quoted = `${'Reps said "it slipped..." '.repeat(10)}`.trim()
+    expect(truncateAtBoundary(quoted, 160)).toMatch(/slipped…"$/)
+  })
+
   it('handles long dot runs in linear time', () => {
     const dots = '.'.repeat(10_000)
     const inputs = [

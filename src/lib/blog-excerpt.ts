@@ -121,6 +121,10 @@ function codePointCut(text: string, end: number): number {
 }
 
 const FINAL_TERMINATOR = /[.!?][”"’')\]]?$/
+// A sentence that ends in an author's '...' (plus an optional closing quote or
+// bracket): rendered as '…' at a cut, so no output ends in a run that reads as
+// the pipeline's hard cut.
+const FINAL_DOT_RUN = /\.{3,}([”"’')\]]?)$/
 
 function endsWithSentence(text: string): boolean {
   const m = FINAL_TERMINATOR.exec(text)
@@ -159,7 +163,9 @@ function trailingEllipsis(t: string): { start: number; hard: boolean; soft: bool
  * second half of the window (no ellipsis); otherwise cuts at a word boundary
  * and appends exactly one '…'. A trailing ASCII '...' is the pipeline's hard
  * cut and may end mid-word, so its partial word is dropped; a stored '…' is an
- * author's ellipsis and is kept once. Output never contains '...'.
+ * author's ellipsis and is kept once. Output never ends in '...'; a dot run
+ * inside the kept text is the author's and is returned as written. Text with
+ * no letter or number returns '' so callers can fall back.
  */
 export function truncateAtBoundary(text: string, max: number): string {
   let t = text.trim()
@@ -184,7 +190,7 @@ export function truncateAtBoundary(text: string, max: number): string {
     if (end >= minEnd && !endsWithAbbreviation(t.slice(0, m.index + 1), t.slice(end)))
       sentenceEnd = end
   }
-  if (sentenceEnd > 0) return t.slice(0, sentenceEnd)
+  if (sentenceEnd > 0) return t.slice(0, sentenceEnd).replace(FINAL_DOT_RUN, '…$1')
 
   let head: string
   if (hardCut && t.length <= max - 1) {
