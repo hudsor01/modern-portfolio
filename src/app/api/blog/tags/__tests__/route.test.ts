@@ -17,6 +17,7 @@ const dbMocks = vi.hoisted(() => ({
   selectRows: vi.fn(),
   findFirst: vi.fn(),
   insertReturning: vi.fn(),
+  insertValues: vi.fn(),
 }))
 
 vi.mock('@/lib/db', () => {
@@ -36,9 +37,10 @@ vi.mock('@/lib/db', () => {
       query: { tags: { findFirst: dbMocks.findFirst } },
       select: selectChain,
       insert: () => ({
-        values: () => ({
-          returning: () => dbMocks.insertReturning(),
-        }),
+        values: (v: unknown) => {
+          dbMocks.insertValues(v)
+          return { returning: () => dbMocks.insertReturning() }
+        },
       }),
     },
   }
@@ -54,6 +56,7 @@ vi.mock('@/lib/logger', () => ({
   logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
 }))
 
+import { fitMetaDescription } from '@/lib/blog-excerpt'
 import { GET, POST } from '@/app/api/blog/tags/route'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
 import { isAdminRequest } from '@/lib/api-admin-auth'
@@ -157,5 +160,34 @@ describe('POST /api/blog/tags', () => {
       message: 'Blog tag created successfully',
       data: { name: 'rev-ops' },
     })
+  })
+
+  const PROSE_META =
+    'Pipeline data drifts from reality in seven predictable ways. Each one has a report that catches it and a weekly inspection that keeps it honest. Teams that skip the inspection end up forecasting from stale stages.'
+
+  it('trims a 161+ character meta at a boundary and returns 201', async () => {
+    expect(PROSE_META.length).toBeGreaterThan(160)
+    const res = await POST(reqPost({ name: 'rev-ops', metaDescription: PROSE_META }))
+    expect(res.status).toBe(201)
+    const stored = dbMocks.insertValues.mock.calls[0]?.[0]?.metaDescription as string
+    expect(stored.length).toBeLessThanOrEqual(160)
+    expect(stored).toBe(fitMetaDescription(PROSE_META))
+  })
+
+  it('stores a meta of 160 characters or fewer unchanged and an omitted one as null', async () => {
+    await POST(reqPost({ name: 'rev-ops', metaDescription: 'Short meta.' }))
+    expect(dbMocks.insertValues.mock.calls[0]?.[0]?.metaDescription).toBe('Short meta.')
+    await POST(reqPost({ name: 'rev-ops' }))
+    expect(dbMocks.insertValues.mock.calls[1]?.[0]?.metaDescription).toBeNull()
+  })
+
+  it('accepts a 5000-character meta and stores at most 160 characters', async () => {
+    const res = await POST(
+      reqPost({ name: 'rev-ops', metaDescription: `${'word '.repeat(1000)}end` })
+    )
+    expect(res.status).toBe(201)
+    const stored = dbMocks.insertValues.mock.calls[0]?.[0]?.metaDescription as string
+    expect(stored.length).toBeLessThanOrEqual(160)
+    expect(stored.match(/…/g)?.length ?? 0).toBeLessThanOrEqual(1)
   })
 })
