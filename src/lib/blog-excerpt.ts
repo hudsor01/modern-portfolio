@@ -40,9 +40,36 @@ const FENCE_LINE = /^\s*(```|~~~)/
 const NON_PROSE_START = /^(#|>|- |\* |\+ |\d+\. |\||!\[|<)/
 const HORIZONTAL_RULE = /^([-*_])(\s*\1){2,}$/
 
-const TRAILING_ELLIPSIS = /(?:\s*(?:\.{3,}|…))+$/
+const WHITESPACE = /\s/
 const TRAILING_PUNCTUATION = /[,;:.…\-–—\s]+$/
 const SENTENCE_END = /[.!?][”"’')\]]?(?=\s|$)/g
+
+/**
+ * Locate the trailing run of ellipses: any mix of '…' and runs of three or more
+ * '.', optionally separated by whitespace. Scans backwards once, so it is
+ * linear in the input; a regex with `\.{3,}` nested in a repeated group
+ * backtracks exponentially on a long dot run that is followed by more text.
+ */
+function trailingEllipsis(t: string): { start: number; hard: boolean; soft: boolean } {
+  let start = t.length
+  let hard = false
+  let soft = false
+  while (start > 0) {
+    let j = start
+    while (j > 0 && WHITESPACE.test(t[j - 1] as string)) j--
+    if (j > 0 && t[j - 1] === '…') {
+      soft = true
+      start = j - 1
+      continue
+    }
+    let k = j
+    while (k > 0 && t[k - 1] === '.') k--
+    if (j - k < 3) break
+    hard = true
+    start = k
+  }
+  return { start, hard, soft }
+}
 
 /**
  * Cut text to at most `max` characters. Prefers the last sentence end in the
@@ -53,14 +80,10 @@ const SENTENCE_END = /[.!?][”"’')\]]?(?=\s|$)/g
  */
 export function truncateAtBoundary(text: string, max: number): string {
   let t = text.trim()
-  let hardCut = false
-  let softEllipsis = false
-  const run = TRAILING_ELLIPSIS.exec(t)
-  if (run) {
-    if (run[0].includes('...')) hardCut = true
-    else softEllipsis = true
-    t = t.slice(0, run.index).trimEnd()
-  }
+  const run = trailingEllipsis(t)
+  const hardCut = run.hard
+  const softEllipsis = !run.hard && run.soft
+  t = t.slice(0, run.start).trimEnd()
   if (!hardCut && !softEllipsis && t.length <= max) return t
   if (softEllipsis && t.length <= max - 1) return `${t.replace(TRAILING_PUNCTUATION, '')}…`
 

@@ -86,6 +86,22 @@ describe('truncateAtBoundary', () => {
   it('treats a mixed trailing run as one hard cut', () => {
     expect(truncateAtBoundary('Owners audit fields weekly… ...', 160)).toBe('Owners audit fields…')
   })
+
+  it('handles long dot runs in linear time', () => {
+    const dots = '.'.repeat(10_000)
+    const inputs = [
+      `a ${dots} b`,
+      `Pipeline review checklist: stage definitions ${dots} page 4 of the playbook.`,
+      `Stage definitions drift ${dots}`,
+      `Stage definitions drift ${'... '.repeat(2_500)}`,
+    ]
+    const started = performance.now()
+    const outs = inputs.map((input) => truncateAtBoundary(input, 160))
+    expect(performance.now() - started).toBeLessThan(100)
+    for (const out of outs) expect(out.length).toBeLessThanOrEqual(160)
+    expect(outs[2]).toBe('Stage definitions…')
+    expect(outs[3]).toBe('Stage definitions…')
+  })
 })
 
 describe('resolveExcerpt caps', () => {
