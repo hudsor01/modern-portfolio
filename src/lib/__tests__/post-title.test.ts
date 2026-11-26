@@ -100,4 +100,50 @@ describe('normalizeSeoTitle', () => {
       }
     }
   })
+
+  describe('hard cut of a single over-long word', () => {
+    const isWellFormed = (text: string) => !/\p{Cs}/u.test(text)
+    const graphemes = (text: string) =>
+      [...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(text)].map(
+        ({ segment }) => segment
+      )
+
+    it('never splits a surrogate pair', () => {
+      // 30 × '😀' is 60 UTF-16 units; a slice(0, 43) would end in a lone high surrogate.
+      const out = normalizeSeoTitle(null, '😀'.repeat(30))
+      expect(isWellFormed(out)).toBe(true)
+      expect(out).toBe('😀'.repeat(21))
+      expect(out.length).toBeLessThanOrEqual(SEO_TITLE_MAX)
+    })
+
+    it('never splits an emoji at an odd cut point', () => {
+      // 'x' + 30 × '😀': unit 43 is the high half of the 22nd emoji.
+      const out = normalizeSeoTitle(null, `x${'😀'.repeat(30)}`)
+      expect(isWellFormed(out)).toBe(true)
+      expect(out).toBe(`x${'😀'.repeat(21)}`)
+    })
+
+    it('never splits a ZWJ emoji sequence', () => {
+      const family = '👨‍👩‍👧' // 8 UTF-16 units, one grapheme
+      const out = normalizeSeoTitle(null, family.repeat(10))
+      expect(out).toBe(family.repeat(5))
+      expect(graphemes(out).every((g) => g === family)).toBe(true)
+    })
+
+    it('keeps a combining mark with its base letter', () => {
+      const out = normalizeSeoTitle(null, `${'a'.repeat(42)}e\u0301tail`)
+      expect(out).toBe('a'.repeat(42))
+    })
+
+    it('cuts a long ASCII word at exactly the budget', () => {
+      const url = `https://example.com/${'x'.repeat(60)}`
+      expect(normalizeSeoTitle(null, url)).toBe(url.slice(0, SEO_TITLE_MAX))
+    })
+
+    it('stays within the brand budget with an emoji at the cut', () => {
+      const out = normalizeSeoTitle(`${'😀'.repeat(30)} tail`, 'x'.repeat(50))
+      expect(isWellFormed(out)).toBe(true)
+      expect(brandTitle(out).length).toBeLessThanOrEqual(TITLE_BUDGET)
+    })
+  })
 })

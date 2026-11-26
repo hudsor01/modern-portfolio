@@ -42,6 +42,29 @@ const TRAILING_FILLER = new Set([
   '–',
 ])
 
+const GRAPHEMES = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+
+/**
+ * Longest prefix of whole user-perceived characters (grapheme clusters) at most
+ * `max` UTF-16 units long, so a hard cut never splits a surrogate pair, an
+ * emoji ZWJ sequence, a flag or a base letter from its combining mark. `max`
+ * stays in UTF-16 units because that is what `.length` (and the budget) counts.
+ * If not even the first cluster fits, falls back to whole code points.
+ */
+function graphemeCut(s: string, max: number): string {
+  let end = 0
+  for (const { segment, index } of GRAPHEMES.segment(s)) {
+    if (index + segment.length > max) break
+    end = index + segment.length
+  }
+  if (end > 0) return s.slice(0, end)
+  for (const codePoint of s) {
+    if (end + codePoint.length > max) break
+    end += codePoint.length
+  }
+  return s.slice(0, end)
+}
+
 function tidy(s: string): string {
   return s.replace(/\s+/g, ' ').trim()
 }
@@ -56,9 +79,9 @@ function cutAtWord(s: string, max: number): string {
   }
   // Only a single word longer than `max` leaves nothing whole to keep; that
   // one word is hard-cut, the only case where a word is ever split.
-  if (kept.length === 0) return s.slice(0, max)
+  if (kept.length === 0) return graphemeCut(s, max)
   while (kept.length > 1 && TRAILING_FILLER.has(kept[kept.length - 1]!.toLowerCase())) kept.pop()
-  return kept.join(' ').replace(/[\s:;,.\-–—(&+]+$/, '') || s.slice(0, max)
+  return kept.join(' ').replace(/[\s:;,.\-–—(&+]+$/, '') || graphemeCut(s, max)
 }
 
 /**
