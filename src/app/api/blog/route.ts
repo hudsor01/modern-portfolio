@@ -21,6 +21,7 @@ import {
   buildBlogOrderBy,
   createErrorResponse,
   generateSlug,
+  invalidBodyMessage,
 } from '@/lib/api-blog'
 import { createBlogPostSchema, PostStatusSchema } from '@/lib/schemas'
 import { SITE_ORIGIN, canonicalUrl } from '@/lib/absolute-url'
@@ -213,7 +214,9 @@ export async function POST(request: NextRequest) {
     const parsed = createBlogPostSchema.safeParse(raw)
     if (!parsed.success) {
       logger.warn('Blog POST validation failed', { issues: z.flattenError(parsed.error) })
-      return NextResponse.json(createErrorResponse('Invalid request body'), { status: 400 })
+      return NextResponse.json(createErrorResponse(invalidBodyMessage(parsed.error)), {
+        status: 400,
+      })
     }
     const body = parsed.data
 

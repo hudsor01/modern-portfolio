@@ -13,6 +13,7 @@ import {
   sql,
   type SQL,
 } from 'drizzle-orm'
+import type { ZodError } from 'zod'
 import { db } from '@/lib/db'
 import { blogPosts, postTags, type BlogPost } from '@/db/schema'
 import type { BlogPostWithRelations } from '@/types/blog'
@@ -40,6 +41,18 @@ export function createErrorResponse(message: string): ApiResponse<never> {
     success: false,
     error: message,
   }
+}
+
+/**
+ * The 400 message for a rejected blog mutation body, naming every failing
+ * field so an API caller (the publishing pipeline) can see why it failed.
+ * Shared by POST /api/blog and PUT /api/blog/[slug] so both report alike.
+ */
+export function invalidBodyMessage(error: ZodError): string {
+  const details = error.issues.map((issue) =>
+    issue.path.length > 0 ? `${issue.path.join('.')}: ${issue.message}` : issue.message
+  )
+  return details.length > 0 ? `Invalid request body: ${details.join('; ')}` : 'Invalid request body'
 }
 
 export function transformToCategoryData(category: {

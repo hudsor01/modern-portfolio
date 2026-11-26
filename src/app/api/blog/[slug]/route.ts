@@ -7,7 +7,7 @@ import { authors, blogPosts, categories, postTags, tags, type NewBlogPost } from
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
 import { isAdminRequest } from '@/lib/api-admin-auth'
 import { checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-rate-limit'
-import { transformToBlogPostData, createErrorResponse } from '@/lib/api-blog'
+import { transformToBlogPostData, createErrorResponse, invalidBodyMessage } from '@/lib/api-blog'
 import { updateBlogPostSchema } from '@/lib/schemas'
 import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
 import { normalizeSeoTitle } from '@/lib/post-title'
@@ -113,11 +113,9 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
     // guard on the update path so POST and PUT have identical contracts.
     const parsed = updateBlogPostSchema.safeParse(rawBody)
     if (!parsed.success) {
-      const issue = parsed.error.issues[0]
-      const msg = issue
-        ? `Invalid request body: ${issue.path.join('.')}: ${issue.message}`
-        : 'Invalid request body'
-      return NextResponse.json(createErrorResponse(msg), { status: 400 })
+      return NextResponse.json(createErrorResponse(invalidBodyMessage(parsed.error)), {
+        status: 400,
+      })
     }
     const body = parsed.data
 

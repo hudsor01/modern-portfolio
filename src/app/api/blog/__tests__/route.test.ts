@@ -345,7 +345,11 @@ describe('POST /api/blog', () => {
       })
     )
     expect(res.status).toBe(400)
-    expect(await res.json()).toMatchObject({ success: false, error: 'Invalid request body' })
+    expect(await res.json()).toMatchObject({
+      success: false,
+      error:
+        'Invalid request body: metaDescription: Meta description must not open with the author bio',
+    })
     expect(dbMocks.insertValues).not.toHaveBeenCalled()
   })
 
@@ -354,12 +358,20 @@ describe('POST /api/blog', () => {
     const res = await POST(reqPost({ excerpt: 'too short' }))
     expect(res.status).toBe(400)
     const body = await res.json()
-    expect(body).toMatchObject({ success: false, error: 'Invalid request body' })
+    expect(body.success).toBe(false)
+    expect(body.error).toMatch(/^Invalid request body: /)
+    for (const field of ['title', 'content', 'authorId']) {
+      expect(body.error).toContain(`${field}: `)
+    }
   })
 
   it('rejects unknown fields (.strict() mass-assignment guard)', async () => {
     const res = await POST(reqPost({ ...validBody, isAdmin: true, internalFlag: 'pwn' }))
     expect(res.status).toBe(400)
+    const body = await res.json()
+    expect(body.error).toMatch(/^Invalid request body: Unrecognized keys?: /)
+    expect(body.error).toContain('isAdmin')
+    expect(body.error).toContain('internalFlag')
   })
 
   it('returns 409 when slug already exists', async () => {
