@@ -1,4 +1,6 @@
 // @vitest-environment node
+import { readdirSync, readFileSync, statSync } from 'node:fs'
+import { join, relative } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { computeResumeSourceHash, hashResumeSource, resumeSource } from '../resume-source-hash'
 
@@ -94,5 +96,27 @@ describe('canonical JSON', () => {
   it('respects array order', () => {
     expect(mutated((s) => s.experience.reverse())).not.toBe(base)
     expect(mutated((s) => s.certifications.reverse())).not.toBe(base)
+  })
+})
+
+describe('import boundary', () => {
+  /** Non-test .ts/.tsx files under `dir`. */
+  function sourceFiles(dir: string): string[] {
+    return readdirSync(dir).flatMap((name) => {
+      const path = join(dir, name)
+      if (statSync(path).isDirectory()) return name === '__tests__' ? [] : sourceFiles(path)
+      return /\.(ts|tsx)$/.test(name) ? [path] : []
+    })
+  }
+
+  // It imports node:crypto, which must never reach a client bundle, and a
+  // `server-only` import would throw under `bun scripts/resume-pdf.ts`. So no
+  // app code may import it: only its tests and the PDF script do.
+  it('is never imported by app code under src/', () => {
+    const importers = sourceFiles(join(process.cwd(), 'src'))
+      .filter((path) => !path.endsWith(join('lib', 'resume-source-hash.ts')))
+      .filter((path) => /['"][^'"]*resume-source-hash['"]/.test(readFileSync(path, 'utf8')))
+      .map((path) => relative(process.cwd(), path))
+    expect(importers).toEqual([])
   })
 })

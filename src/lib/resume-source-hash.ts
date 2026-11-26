@@ -9,7 +9,10 @@
  *
  * Imported by Vitest (src/lib/__tests__/resume-pdf-drift.test.ts) and
  * scripts/resume-pdf.ts only, never by app code, so the Node crypto module never
- * reaches the browser. Relative imports keep it resolvable from `bun scripts/…` too.
+ * reaches the browser; src/lib/__tests__/resume-source-hash.test.ts enforces
+ * that. (`server-only` is not an option: it throws outside the react-server
+ * condition, so `bun scripts/resume-pdf.ts` could not load it.) Relative imports
+ * keep it resolvable from `bun scripts/…` too.
  */
 import { createHash } from 'node:crypto'
 import {
