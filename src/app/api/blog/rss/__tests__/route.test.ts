@@ -191,6 +191,17 @@ describe('GET /api/blog/rss', () => {
     expect(xml).toContain(`<description>${lede}</description>`)
   })
 
+  it('drops a stored brand suffix from item titles', async () => {
+    dbMocks.findMany.mockResolvedValue([
+      { ...fakePosts[0], title: 'Pipeline Velocity Explained | Richard Hudson', contentHead: '' },
+    ])
+    const xml = await (await GET(req())).text()
+    expect(xml).toContain('<title>Pipeline Velocity Explained</title>')
+    expect(xml).not.toContain('Explained | Richard Hudson')
+    const json = await (await GET(req('?format=json'))).json()
+    expect(json.data.posts[0].title).toBe('Pipeline Velocity Explained')
+  })
+
   it('renders an empty description when every source is bio boilerplate', async () => {
     const bio = 'I spent 10 years in the Texas Army National Guard before moving into RevOps.'
     dbMocks.findMany.mockResolvedValue([

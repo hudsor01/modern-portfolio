@@ -18,7 +18,7 @@ import { brandTitle } from '@/app/shared-metadata'
 import { resolveMetaDescription, resolvePostLede } from '@/lib/blog-excerpt'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
-import { normalizeSeoTitle } from '@/lib/post-title'
+import { displayPostTitle, normalizeSeoTitle } from '@/lib/post-title'
 
 // Force runtime rendering. notFound() inside Next.js 16's ISR-rendered
 // Server Components doesn't propagate HTTP 404 status to Vercel — the
@@ -121,8 +121,10 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   // `category` flows through to /api/og when isFallback so the card
   // still renders the bronze category badge (the same `?category=…`
   // param that the pre-helper hand-rolled URL passed).
+  // Full title without a stored brand suffix: the card is not a search title.
+  const cardTitle = displayPostTitle(post.title)
   const ogImage = safeFeaturedImageUrl(post.featuredImage, {
-    title: post.title,
+    title: cardTitle,
     subtitle: 'Blog Post',
     category: post.category?.name,
   })
@@ -130,7 +132,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   // stored featuredImageAlt describes the absent hero (not the card),
   // so it's a misleading alt for screen readers / unfurlers. Use the
   // title — which is the visible text on the /api/og card.
-  const ogImageAlt = ogImage.isFallback ? post.title : post.featuredImageAlt || post.title
+  const ogImageAlt = ogImage.isFallback ? cardTitle : post.featuredImageAlt || cardTitle
 
   const postUrl = canonicalUrl(`/blog/${post.slug}`)
   // One canonical normalized title (src/lib/post-title.ts, the same rule applied
@@ -190,7 +192,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         items={[
           { name: 'Home', url: canonicalUrl('/') },
           { name: 'Blog', url: canonicalUrl('/blog') },
-          { name: post.title, url: canonicalUrl(`/blog/${post.slug}`) },
+          { name: displayPostTitle(post.title), url: canonicalUrl(`/blog/${post.slug}`) },
         ]}
       />
       <div className="min-h-screen bg-background">

@@ -85,6 +85,17 @@ function cutAtWord(s: string, max: number): string {
 }
 
 /**
+ * A stored post title without a trailing brand suffix (" | Richard Hudson"),
+ * full length otherwise. For surfaces that name the article rather than act as
+ * a search-result title (JSON-LD headline, breadcrumbs, the /api/og card, RSS
+ * item titles), so the 60-char budget does not apply but a stored brand would
+ * otherwise show twice. Falls back to the trimmed title if it is only the brand.
+ */
+export function displayPostTitle(title: string): string {
+  return stripBrandSuffix(title) || title.trim()
+}
+
+/**
  * The SEO title (`metaTitle`) to store for a post, at most SEO_TITLE_MAX
  * characters, so `<title> | Richard Hudson` fits search results (see the
  * pipeline title spec). This is the single title rule: applied on write by

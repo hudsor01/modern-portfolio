@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
 import { brandTitle } from '@/app/shared-metadata'
-import { normalizeSeoTitle, SEO_TITLE_MAX, TITLE_BUDGET } from '@/lib/post-title'
+import { displayPostTitle, normalizeSeoTitle, SEO_TITLE_MAX, TITLE_BUDGET } from '@/lib/post-title'
 
 describe('normalizeSeoTitle', () => {
   it('fits every stored SEO title within the budget', () => {
@@ -145,5 +145,22 @@ describe('normalizeSeoTitle', () => {
       expect(isWellFormed(out)).toBe(true)
       expect(brandTitle(out).length).toBeLessThanOrEqual(TITLE_BUDGET)
     })
+  })
+})
+
+describe('displayPostTitle', () => {
+  it('drops a stored brand suffix and keeps the full length', () => {
+    const long = `${'Forecast accuracy starts with data hygiene and stage mapping '.repeat(2).trim()}`
+    expect(displayPostTitle(`${long} | Richard Hudson`)).toBe(long)
+    expect(displayPostTitle('Pipeline Velocity – Richard Hudson')).toBe('Pipeline Velocity')
+    expect(displayPostTitle('  Pipeline Velocity  ')).toBe('Pipeline Velocity')
+  })
+
+  it('keeps a title that only ends with the name', () => {
+    expect(displayPostTitle('Interview with Richard Hudson')).toBe('Interview with Richard Hudson')
+  })
+
+  it('never returns empty for a title that is only the brand', () => {
+    expect(displayPostTitle('| Richard Hudson')).toBe('| Richard Hudson')
   })
 })

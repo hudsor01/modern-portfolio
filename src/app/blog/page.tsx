@@ -31,6 +31,7 @@ import { resolveExcerpt } from '@/lib/blog-excerpt'
 import { CONTACT } from '@/lib/contact-info'
 import { getCategoryChipLabel, resolveListCovers } from '@/lib/blog-list'
 import { BLOG_CONTENT_HEAD_EXTRAS } from '@/lib/blog-content-head'
+import { displayPostTitle } from '@/lib/post-title'
 import { DecorativeBlob } from '@/components/ui/decorative-blob'
 
 const logger = createContextLogger('BlogIndex')
@@ -435,7 +436,7 @@ export default async function BlogHomePage({
           nonce={nonce}
           name="Blog posts by Richard Hudson"
           items={listing.posts.map((post) => ({
-            name: post.title,
+            name: displayPostTitle(post.title),
             url: canonicalUrl(`/blog/${post.slug}`),
           }))}
         />

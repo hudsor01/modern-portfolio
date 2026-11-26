@@ -18,7 +18,7 @@ vi.mock('@/components/layout/navbar', () => ({ Navbar: () => null }))
 vi.mock('@/components/blog/related-posts', () => ({ RelatedPosts: () => null }))
 vi.mock('@/components/seo/blog-json-ld', () => ({ BlogPostJsonLd: vi.fn(() => null) }))
 vi.mock('@/components/seo/json-ld/breadcrumb-json-ld', () => ({
-  BreadcrumbListJsonLd: () => null,
+  BreadcrumbListJsonLd: vi.fn(() => null),
 }))
 vi.mock('../../_components/blog-post-layout', () => ({ BlogPostLayout: () => null }))
 
@@ -26,6 +26,7 @@ import { isValidElement, type ReactNode } from 'react'
 import { NextRequest } from 'next/server'
 import { GET as rssGET } from '@/app/api/blog/rss/route'
 import { BlogPostJsonLd } from '@/components/seo/blog-json-ld'
+import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import { CONTENT_HEAD_CHARS, LEDE_MAX, resolveExcerpt } from '@/lib/blog-excerpt'
 import type { BlogPostData } from '@/types/api'
 import BlogPostPage, { generateMetadata } from '../page'
@@ -84,20 +85,23 @@ describe('post metadata title normalization', () => {
   })
 })
 
-/** The `post` prop the rendered page hands BlogPostJsonLd: what the page shows as its lede. */
-function jsonLdPost(node: ReactNode): BlogPostData | undefined {
+/** Props of the first element of `type` in a rendered tree. */
+function propsOf<P>(node: ReactNode, type: unknown): P | undefined {
   if (Array.isArray(node)) {
     for (const child of node) {
-      const found = jsonLdPost(child)
+      const found = propsOf<P>(child, type)
       if (found) return found
     }
     return undefined
   }
   if (!isValidElement(node)) return undefined
-  const props = node.props as { post?: BlogPostData; children?: ReactNode }
-  if (node.type === BlogPostJsonLd) return props.post
-  return jsonLdPost(props.children)
+  const props = node.props as P & { children?: ReactNode }
+  if (node.type === type) return props
+  return propsOf<P>(props.children, type)
 }
+
+/** The `post` prop the rendered page hands BlogPostJsonLd: what the page shows as its lede. */
+const jsonLdPost = (node: ReactNode) => propsOf<{ post: BlogPostData }>(node, BlogPostJsonLd)?.post
 
 // The page holds the full row and RSS reads only left(content, 4000); both must
 // resolve the lede through resolvePostLede over the same CONTENT_HEAD_CHARS
@@ -149,5 +153,22 @@ describe('post lede matches the RSS description', () => {
 
     expect(pageLede).toBe('A meta fallback description for the post.')
     expect(feed.data.posts[0]?.description).toBe(pageLede)
+  })
+})
+
+describe('stored brand suffix on full-title surfaces', () => {
+  beforeEach(() => mocks.findFirst.mockReset())
+
+  it('drops it from the OG card title, its alt and the breadcrumb', async () => {
+    mocks.findFirst.mockResolvedValue(row(null, 'Pipeline Velocity Explained | Richard Hudson'))
+    const params = Promise.resolve({ slug: 'forecast' })
+    const meta = await generateMetadata({ params })
+    const image = ((meta.openGraph?.images ?? []) as { url: string; alt: string }[])[0]
+    expect(new URL(image?.url ?? '').searchParams.get('title')).toBe('Pipeline Velocity Explained')
+    expect(image?.alt).toBe('Pipeline Velocity Explained')
+
+    const page = await BlogPostPage({ params })
+    const crumbs = propsOf<{ items: { name: string }[] }>(page, BreadcrumbListJsonLd)?.items
+    expect(crumbs?.at(-1)?.name).toBe('Pipeline Velocity Explained')
   })
 })
