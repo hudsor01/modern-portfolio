@@ -5,11 +5,11 @@
  * Chromium prints /resume (print media, US Letter via the print stylesheet's
  * `@page`) from a local production build. The result is verified with poppler
  * (pages, page size, tagging, embedded fonts with ToUnicode maps, and the text
- * itself: every role, period, certification and contact value from the site
- * data, intact ligatures, no site chrome, no stale facts). Only when every
- * check passes does it write public/Richard_Hudson_Revenue_Operations.pdf and
- * scripts/resume-pdf.sha256 (the content hash pinned by
- * src/lib/__tests__/resume-pdf-drift.test.ts).
+ * itself: the summary, every role, period, bullet, skill, certification and
+ * contact value from the site data, intact ligatures, no site chrome, no stale
+ * facts). Only when every check passes does it write
+ * public/Richard_Hudson_Revenue_Operations.pdf and scripts/resume-pdf.sha256
+ * (the content hash pinned by src/lib/__tests__/resume-pdf-drift.test.ts).
  *
  * Local tooling only: it is never run in the Vercel build or CI, never starts
  * a server, and refuses any base URL that is not localhost.
@@ -30,8 +30,8 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium } from '@playwright/test'
-import { certifications, education, experience, headline } from '../src/app/resume/data/constants'
 import { CONTACT } from '../src/lib/contact-info'
+import { pdfTextContains, resumeTextExpectations } from '../src/lib/resume-pdf-text'
 import { computeResumeSourceHash } from '../src/lib/resume-source-hash'
 import { YEARS_EXPERIENCE, YEARS_EXPERIENCE_LABEL } from '../src/lib/stats'
 
@@ -179,16 +179,17 @@ function verifyPdf(pdf: string): number {
   check(`text (layout): ${JSON.stringify(years)}`, layout.includes(years))
 
   // Everything else is matched in reading order: multi-column print blocks
-  // interleave in -layout output.
-  const required = [
-    headline,
-    ...experience.flatMap((role) => [role.title, role.company, role.period]),
-    ...education.flatMap((e) => [e.degree, e.institution, e.period]),
-    ...certifications,
-    ...LIGATURE_CANARIES,
-  ]
-  for (const value of new Set(required)) {
-    check(`text (raw): ${JSON.stringify(value)}`, raw.includes(collapse(value)))
+  // interleave in -layout output. Every value the résumé prints is required
+  // (summary, each bullet, each skill), so a PDF printed from a build older
+  // than the data fails here even though the hash is computed from the data.
+  for (const expectation of resumeTextExpectations()) {
+    check(
+      `text (raw): ${expectation.source} ${JSON.stringify(expectation.value)}`,
+      pdfTextContains(rawText, expectation)
+    )
+  }
+  for (const value of LIGATURE_CANARIES) {
+    check(`text (raw): ligature canary ${JSON.stringify(value)}`, raw.includes(value))
   }
 
   for (const value of FORBIDDEN) {
