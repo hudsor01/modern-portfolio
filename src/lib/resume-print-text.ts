@@ -17,24 +17,79 @@
  * Tailwind), so className and layout edits never change it while every printed
  * word does. Nothing the résumé prints derives from the clock, so the text does
  * not change with the calendar either.
+ *
+ * Spacing is part of the text: text nodes are concatenated as they render
+ * (`{n}+{label}` reads "10+Years", `{n}+ {label}` reads "10+ Years"), and a
+ * single space is inserted only where a block-level element (by tag name, the
+ * same in jsdom and the browser) or a `<br>` starts or ends. React's `<!-- -->`
+ * separators in server HTML are comments, not text, so the served page and a
+ * jsdom render still read the same.
  */
 export function extractResumePrintText(root?: ParentNode | null): string {
   const start = root === undefined ? document.querySelector('main#main-content') : root
   if (!start) return ''
   const skippedTags = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEMPLATE'])
+  const blockTags = new Set([
+    'ADDRESS',
+    'ARTICLE',
+    'ASIDE',
+    'BLOCKQUOTE',
+    'BR',
+    'DD',
+    'DETAILS',
+    'DIALOG',
+    'DIV',
+    'DL',
+    'DT',
+    'FIELDSET',
+    'FIGCAPTION',
+    'FIGURE',
+    'FOOTER',
+    'FORM',
+    'H1',
+    'H2',
+    'H3',
+    'H4',
+    'H5',
+    'H6',
+    'HEADER',
+    'HGROUP',
+    'HR',
+    'LI',
+    'MAIN',
+    'NAV',
+    'OL',
+    'P',
+    'PRE',
+    'SECTION',
+    'SUMMARY',
+    'TABLE',
+    'TBODY',
+    'TD',
+    'TFOOT',
+    'TH',
+    'THEAD',
+    'TR',
+    'UL',
+  ])
   const parts: string[] = []
   const walk = (node: Node): void => {
     if (node.nodeType === 3) {
       parts.push(node.nodeValue ?? '')
       return
     }
+    let block = false
     if (node.nodeType === 1) {
       const element = node as Element
-      if (skippedTags.has(element.tagName.toUpperCase())) return
+      const tag = element.tagName.toUpperCase()
+      if (skippedTags.has(tag)) return
       if (element.classList.contains('print:hidden')) return
+      block = blockTags.has(tag)
     }
+    if (block) parts.push(' ')
     for (const child of Array.from(node.childNodes)) walk(child)
+    if (block) parts.push(' ')
   }
   walk(start as unknown as Node)
-  return parts.join(' ').replace(/\s+/g, ' ').trim()
+  return parts.join('').replace(/\s+/g, ' ').trim()
 }

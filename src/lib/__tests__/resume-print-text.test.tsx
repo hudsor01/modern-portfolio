@@ -1,6 +1,11 @@
 import { render } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import { describe, expect, it } from 'vitest'
 import { extractResumePrintText } from '../resume-print-text'
+import { hashResumePrintText } from '../resume-source-hash'
+
+const YEARS = 10
+const LABEL = 'Years Experience'
 
 describe('extractResumePrintText', () => {
   it('reads text in document order, skipping print:hidden and collapsing whitespace', () => {
@@ -66,7 +71,7 @@ describe('extractResumePrintText', () => {
     expect(extractResumePrintText(root)).toBe('One Two')
   })
 
-  it('joins separate text nodes with a space, as React renders adjacent values', () => {
+  it('keeps the spaces JSX renders between adjacent values', () => {
     render(
       <main id="main-content" tabIndex={-1}>
         <p>
@@ -75,6 +80,84 @@ describe('extractResumePrintText', () => {
       </main>
     )
     expect(extractResumePrintText()).toBe('10+ Years Experience | Dallas, TX')
+  })
+
+  it('concatenates adjacent text nodes and inline elements with no added space', () => {
+    render(
+      <main id="main-content" tabIndex={-1}>
+        <p>
+          {'10'}+{'Years'}
+        </p>
+        <p>
+          <span>a</span>
+          <span>b</span>
+          <strong>c</strong>
+        </p>
+      </main>
+    )
+    expect(extractResumePrintText()).toBe('10+Years abc')
+  })
+
+  it('separates block elements and <br> with one space', () => {
+    render(
+      <main id="main-content" tabIndex={-1}>
+        <h2>About</h2>
+        <p>One</p>
+        <ul>
+          <li>Two</li>
+          <li>Three</li>
+        </ul>
+        <div>
+          Four
+          <br />
+          Five
+        </div>
+      </main>
+    )
+    expect(extractResumePrintText()).toBe('About One Two Three Four Five')
+  })
+
+  it('changes its text and hash when only the spacing between values changes', () => {
+    const textOf = (node: ReactNode) => {
+      const { container, unmount } = render(<div>{node}</div>)
+      const text = extractResumePrintText(container)
+      unmount()
+      return text
+    }
+    const pairs: Array<[ReactNode, ReactNode]> = [
+      [
+        <p key="x">
+          {'a'}
+          {'b'}
+        </p>,
+        <p key="x">
+          {'a'} {'b'}
+        </p>,
+      ],
+      [
+        <p key="x">
+          {YEARS}+{LABEL}
+        </p>,
+        <p key="x">
+          {YEARS}+ {LABEL}
+        </p>,
+      ],
+      [
+        <p key="x">
+          <span>a</span>
+          <span>b</span>
+        </p>,
+        <p key="x">
+          <span>a</span> <span>b</span>
+        </p>,
+      ],
+    ]
+    for (const [tight, spaced] of pairs) {
+      const a = textOf(tight)
+      const b = textOf(spaced)
+      expect(a).not.toBe(b)
+      expect(hashResumePrintText(a)).not.toBe(hashResumePrintText(b))
+    }
   })
 
   it('reads an explicit root instead of the document main', () => {
