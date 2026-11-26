@@ -181,7 +181,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
                   <span className="font-semibold text-foreground">{detail.value}</span>
                 </div>
               ))}
-              <p data-post-reads className="text-muted-foreground">
+              <p data-post-reads className="text-base text-muted-foreground">
                 {formatReads(post.viewCount)}
               </p>
             </div>
