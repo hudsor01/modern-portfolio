@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/components/charts/lazy-charts', () => ({ LazyBarChart: () => null }))
 vi.mock('@/components/ui/chart', () => ({
-  ChartContainer: () => null,
+  ChartFrame: () => null,
   ChartTooltip: () => null,
   ChartTooltipContent: () => null,
 }))

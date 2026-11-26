@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/components/ui/chart-container', () => ({ ChartContainer: () => null }))
 vi.mock('@/components/ui/chart', () => ({
-  ChartContainer: () => null,
+  ChartFrame: () => null,
   ChartTooltip: () => null,
   ChartTooltipContent: () => null,
 }))

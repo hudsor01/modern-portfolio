@@ -1,8 +1,8 @@
 'use client'
 
-import { ChartContainer as ChartCard } from '@/components/ui/chart-container'
+import { ChartContainer } from '@/components/ui/chart-container'
 import {
-  ChartContainer,
+  ChartFrame,
   ChartTooltip,
   ChartTooltipContent,
   type ChartThemeConfig,
@@ -112,25 +112,25 @@ export default function TopPartnersChart({ partners }: TopPartnersChartProps) {
 
   if (!chartData.length) {
     return (
-      <ChartCard
+      <ChartContainer
         title={'Top Partners'}
         description="No data available"
         size="auto"
         headingLevel={2}
       >
         {null}
-      </ChartCard>
+      </ChartContainer>
     )
   }
 
   return (
-    <ChartCard
+    <ChartContainer
       title="Top Partners by Revenue"
       description="Leading revenue contributors this period"
       size="md"
       headingLevel={2}
     >
-      <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
+      <ChartFrame config={chartConfig} className="aspect-auto h-full w-full">
         <BarChart
           data={chartData}
           layout="vertical"
@@ -178,7 +178,7 @@ export default function TopPartnersChart({ partners }: TopPartnersChartProps) {
             ))}
           </Bar>
         </BarChart>
-      </ChartContainer>
-    </ChartCard>
+      </ChartFrame>
+    </ChartContainer>
   )
 }

@@ -25,7 +25,7 @@ vi.mock('recharts', () => ({
 }))
 
 vi.mock('@/components/ui/chart', () => ({
-  ChartContainer: passthrough,
+  ChartFrame: passthrough,
   ChartTooltip: () => null,
   ChartTooltipContent: () => null,
 }))
