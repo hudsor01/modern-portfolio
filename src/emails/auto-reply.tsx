@@ -66,5 +66,3 @@ export function AutoReplyEmail({ data }: AutoReplyProps) {
     </Html>
   )
 }
-
-export default AutoReplyEmail

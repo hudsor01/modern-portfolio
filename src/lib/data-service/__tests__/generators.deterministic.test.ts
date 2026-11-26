@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AnalyticsDataService } from '../service'
 import { BASE_METRICS } from '../generators/base'
 import { generateChurnData } from '../generators/churn'
-import { generateGrowthData } from '../generators/growth'
+import { generateGrowthData, REVENUE_TREND_QUARTERS } from '../generators/growth'
 import { generateLeadAttributionData } from '../generators/lead-attribution'
 import { generateLeadTrendData } from '../generators/lead-trends'
 import { generateTopPartnersData } from '../generators/top-partners'
@@ -40,6 +40,13 @@ describe('generators are deterministic', () => {
     })
   }
 
+  it('growth is deterministic for an injected now without fake timers', () => {
+    const now = new Date('2026-11-25T18:00:00Z')
+    expect(generateGrowthData(BASE_METRICS, undefined, undefined, now)).toEqual(
+      generateGrowthData(BASE_METRICS, undefined, undefined, now)
+    )
+  })
+
   it('never calls Math.random', () => {
     pinTime()
     const spy = vi.spyOn(Math, 'random')
@@ -56,7 +63,7 @@ describe('generators are deterministic', () => {
           churn: await s.getChurnData(12, false),
           leadAttribution: await s.getLeadAttributionData(false),
           leadTrends: await s.getLeadTrendData(12, false),
-          growth: await s.getGrowthData(8, false),
+          growth: await s.getGrowthData(REVENUE_TREND_QUARTERS, false),
           yearOverYear: await s.getYearOverYearData(5, false),
           topPartners: await s.getTopPartnersData(15, false),
         }

@@ -6,6 +6,8 @@ import { Download, FileText, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DecorativeBlob } from '@/components/ui/decorative-blob'
 import Link from 'next/link'
+import { CONTACT } from '@/lib/contact-info'
+import { headline } from '../data/constants'
 
 const ResumeViewClient = React.memo(function ResumeViewClient() {
   const [isLoading, setIsLoading] = useState(true)
@@ -41,7 +43,9 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
           {/* Header */}
           <div className="mb-12 text-center">
             <h1 className="mb-4">Richard Hudson - Resume</h1>
-            <p className="mb-8">Revenue Operations Professional | Dallas, TX</p>
+            <p className="mb-8">
+              {headline} | {CONTACT.location.display}
+            </p>
 
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-4 justify-center">

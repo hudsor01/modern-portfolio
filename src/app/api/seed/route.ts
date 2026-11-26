@@ -5,6 +5,7 @@ import { authors, blogPosts, categories } from '@/db/schema'
 import { logger } from '@/lib/logger'
 import { env } from '@/lib/env-validation'
 import { isAdminRequest } from '@/lib/api-admin-auth'
+import { CONTACT } from '@/lib/contact-info'
 
 export async function POST(request: NextRequest) {
   if (env.NODE_ENV === 'production' && env.ALLOW_SEED_IN_PRODUCTION !== 'true') {
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
         avatar:
           'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face&q=80',
         website: 'https://richardwhudsonjr.com',
-        linkedin: 'https://www.linkedin.com/in/hudsor01',
+        linkedin: CONTACT.linkedin.url,
       })
       .returning()
     const author = authorRows[0]

@@ -466,3 +466,56 @@ describe('emailService singleton', () => {
     expect(emailService).toBeInstanceOf(EmailService)
   })
 })
+
+describe('EmailService.sendContactEmail — honeypot', () => {
+  const botData = { ...validData, honeypot: 'bot-filled' }
+
+  function expectNoPii() {
+    expect(loggerWarnMock).toHaveBeenCalledTimes(1)
+    const args = loggerWarnMock.mock.calls[0] ?? []
+    expect(String(args[0])).toContain('honeypot')
+    const dump = JSON.stringify(args)
+    expect(dump).not.toContain(validData.email)
+    expect(dump).not.toContain(validData.name)
+    expect(dump).not.toContain(validData.message)
+  }
+
+  it('returns a silent success with no send and no insert when filled', async () => {
+    const { EmailService } = await import('@/lib/email-service')
+    const r = await new EmailService().sendContactEmail(botData)
+    expect(r).toEqual({ success: true })
+    expect(sendMock).not.toHaveBeenCalled()
+    expect(insertMock).not.toHaveBeenCalled()
+    expectNoPii()
+  })
+
+  it('discards before the mock-mode branch when no API key is set', async () => {
+    envMock.RESEND_API_KEY = ''
+    const { EmailService } = await import('@/lib/email-service')
+    const r = await new EmailService().sendContactEmail(botData)
+    expect(r).toEqual({ success: true })
+    expect(sendMock).not.toHaveBeenCalled()
+    expect(insertMock).not.toHaveBeenCalled()
+    expectNoPii()
+  })
+
+  it('follows the normal send path when the honeypot is empty', async () => {
+    sendMock
+      .mockResolvedValueOnce({ data: { id: 'contact-1' }, error: null })
+      .mockResolvedValueOnce({ data: { id: 'reply-1' }, error: null })
+    const { EmailService } = await import('@/lib/email-service')
+    const r = await new EmailService().sendContactEmail({ ...validData, honeypot: '' })
+    expect(r.success).toBe(true)
+    expect(sendMock).toHaveBeenCalledTimes(2)
+    expect(insertMock).toHaveBeenCalledTimes(1)
+    expect(loggerWarnMock).not.toHaveBeenCalled()
+  })
+
+  it('keeps the rate limit first for a filled honeypot', async () => {
+    rateCheckMock.mockReturnValue({ allowed: false, blocked: false, retryAfter: 1_000 })
+    const { EmailService } = await import('@/lib/email-service')
+    const r = await new EmailService().sendContactEmail(botData)
+    expect(r.success).toBe(false)
+    expect(r.error).toBe('Rate limit exceeded')
+  })
+})

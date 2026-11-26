@@ -7,6 +7,7 @@
 import type { BlogPostData } from '@/types/api'
 import { JsonLdScript } from '@/components/seo/json-ld-script'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
+import { CONTACT } from '@/lib/contact-info'
 import { getDisplayYearMonth } from '@/lib/data-formatters'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 import {
@@ -32,7 +33,7 @@ export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
       '@id': PERSON_ID,
       name: 'Richard Hudson',
       url: SITE_ORIGIN,
-      sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
+      sameAs: [CONTACT.linkedin.url, CONTACT.github.url],
       jobTitle: PERSON_JOB_TITLE,
       worksFor: { ...PERSON_EMPLOYER },
     },
@@ -41,7 +42,7 @@ export function BlogJsonLd({ nonce }: { nonce?: string | null } = {}) {
       '@id': PERSON_ID,
       name: 'Richard Hudson',
       url: SITE_ORIGIN,
-      sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
+      sameAs: [CONTACT.linkedin.url, CONTACT.github.url],
     },
     inLanguage: 'en-US',
     copyrightHolder: {
@@ -128,7 +129,7 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
       // Google recommends an author URL that identifies the author: /about is
       // the ProfilePage for this Person.
       url: `${SITE_ORIGIN}/about`,
-      sameAs: ['https://www.linkedin.com/in/hudsor01', 'https://github.com/hudsor01'],
+      sameAs: [CONTACT.linkedin.url, CONTACT.github.url],
       jobTitle: PERSON_JOB_TITLE,
       description: post.author?.bio,
       worksFor: { ...PERSON_EMPLOYER },

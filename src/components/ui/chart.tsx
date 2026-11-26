@@ -63,13 +63,13 @@ function useChart() {
   const context = React.useContext(ChartContext)
 
   if (!context) {
-    throw new Error('useChart must be used within a <ChartContainer />')
+    throw new Error('useChart must be used within a <ChartFrame />')
   }
 
   return context
 }
 
-function ChartContainer({
+function ChartFrame({
   id,
   className,
   children,
@@ -350,4 +350,4 @@ function getPayloadConfigFromPayload(
   return configLabelKey in config ? config[configLabelKey] : config[key as keyof typeof config]
 }
 
-export { ChartContainer, ChartTooltip, ChartTooltipContent }
+export { ChartFrame, ChartTooltip, ChartTooltipContent }

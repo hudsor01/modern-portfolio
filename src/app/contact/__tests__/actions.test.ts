@@ -4,19 +4,38 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 vi.mock('next/headers', () => ({
   headers: vi.fn(),
 }))
+// redirect() throws in Next; the mock throws too so control flow matches.
+const redirectMock = vi.hoisted(() =>
+  vi.fn((path: string): never => {
+    throw new Error(`NEXT_REDIRECT ${path}`)
+  })
+)
+vi.mock('next/navigation', () => ({
+  redirect: redirectMock,
+}))
 vi.mock('@/lib/email-service', () => ({
   emailService: {
     sendContactEmail: vi.fn(),
   },
 }))
+const sentryRecorded = vi.hoisted(() => [] as unknown[])
 vi.mock('@sentry/nextjs', () => ({
-  withServerActionInstrumentation: <T>(_name: string, _opts: unknown, fn: () => Promise<T>) => fn(),
+  withServerActionInstrumentation: async <T>(
+    _name: string,
+    _opts: unknown,
+    fn: () => Promise<T>
+  ) => {
+    const result = await fn()
+    sentryRecorded.push(result)
+    return result
+  },
 }))
 
-import { submitContactForm } from '@/app/contact/actions'
+import { submitContactForm, submitContactFormAction } from '@/app/contact/actions'
 import { headers } from 'next/headers'
 import { emailService } from '@/lib/email-service'
 import { getClientIdentifierFromHeaders } from '@/lib/api-request'
+import type { ContactActionState } from '@/types/forms'
 
 const validBody = {
   name: 'Test User',
@@ -101,5 +120,119 @@ describe('submitContactForm', () => {
       success: false,
       error: 'An unexpected error occurred. Please try again later.',
     })
+  })
+})
+
+describe('submitContactFormAction', () => {
+  const idle: ContactActionState = { status: 'idle' }
+
+  function buildForm(extra: Record<string, string> = {}) {
+    const fd = new FormData()
+    fd.append('name', 'Test User')
+    fd.append('email', 'user@example.com')
+    fd.append('company', 'Acme')
+    fd.append('phone', '+1 555 123 4567')
+    fd.append('message', validBody.message)
+    fd.append('honeypot', '')
+    for (const [k, v] of Object.entries(extra)) fd.append(k, v)
+    return fd
+  }
+
+  beforeEach(() => {
+    sentryRecorded.length = 0
+    redirectMock.mockClear()
+    vi.mocked(emailService.sendContactEmail).mockReset()
+    mockHeaders({ 'x-forwarded-for': '1.2.3.4', 'user-agent': 'vitest' })
+    vi.mocked(emailService.sendContactEmail).mockResolvedValue({ success: true })
+  })
+
+  it('passes only the known field keys to sendContactEmail', async () => {
+    const fd = buildForm({ $ACTION_KEY: 'k', evil: 'x' })
+    await expect(submitContactFormAction(idle, fd)).rejects.toThrow('NEXT_REDIRECT')
+
+    expect(emailService.sendContactEmail).toHaveBeenCalledOnce()
+    const [data, clientId, opts] = vi.mocked(emailService.sendContactEmail).mock.calls[0] ?? []
+    expect(Object.keys(data as object).sort()).toEqual(
+      ['company', 'email', 'honeypot', 'message', 'name', 'phone'].sort()
+    )
+    expect(clientId).toBe('1.2.3.4')
+    expect(opts).toEqual({ userAgent: 'vitest' })
+  })
+
+  it('drops File values under a field name', async () => {
+    const fd = new FormData()
+    fd.append('name', new Blob(['x']))
+    fd.append('email', 'user@example.com')
+    await expect(submitContactFormAction(idle, fd)).rejects.toThrow('NEXT_REDIRECT')
+    const [data] = vi.mocked(emailService.sendContactEmail).mock.calls[0] ?? []
+    expect(data).toEqual({ email: 'user@example.com' })
+  })
+
+  it('redirects a success to /contact/sent (Post/Redirect/Get) instead of returning state', async () => {
+    await expect(submitContactFormAction(idle, buildForm())).rejects.toThrow(
+      'NEXT_REDIRECT /contact/sent'
+    )
+    expect(redirectMock).toHaveBeenCalledOnce()
+    expect(redirectMock).toHaveBeenCalledWith('/contact/sent')
+    // The redirect is thrown after the Sentry-wrapped submission resolved.
+    expect(sentryRecorded).toHaveLength(1)
+  })
+
+  it('redirects a discarded honeypot submission the same way, so a bot learns nothing', async () => {
+    // sendContactEmail answers a filled honeypot with { success: true } (email-service.test.ts).
+    vi.mocked(emailService.sendContactEmail).mockResolvedValue({ success: true })
+    await expect(submitContactFormAction(idle, buildForm({ honeypot: 'bot' }))).rejects.toThrow(
+      'NEXT_REDIRECT /contact/sent'
+    )
+  })
+
+  it('maps validation errors and echoes typed values without the honeypot', async () => {
+    vi.mocked(emailService.sendContactEmail).mockResolvedValue({
+      success: false,
+      error: 'Validation error',
+      validationErrors: { phone: ['Please enter a valid phone number'] },
+    })
+    const state = await submitContactFormAction(idle, buildForm({ phone2: 'ignored' }))
+    expect(state.status).toBe('error')
+    expect(state.validationErrors?.phone?.[0]).toBe('Please enter a valid phone number')
+    expect(state.error).toBe('Please check your form and try again.')
+    expect(state.values).toEqual({
+      name: 'Test User',
+      email: 'user@example.com',
+      company: 'Acme',
+      phone: '+1 555 123 4567',
+      message: validBody.message,
+    })
+    expect(state.values && 'honeypot' in state.values).toBe(false)
+    // A failed no-JS submit re-renders /contact with its errors; it never redirects.
+    expect(redirectMock).not.toHaveBeenCalled()
+  })
+
+  it('maps retryAfter to an error state with values echoed', async () => {
+    vi.mocked(emailService.sendContactEmail).mockResolvedValue({
+      success: false,
+      error: 'Rate limit exceeded',
+      retryAfter: 90,
+    })
+    const state = await submitContactFormAction(idle, buildForm())
+    expect(state).toMatchObject({ status: 'error', retryAfter: 90 })
+    expect(state.values?.name).toBe('Test User')
+  })
+
+  it('rejects a non-FormData second argument without sending', async () => {
+    const state = await submitContactFormAction(idle, {} as unknown as FormData)
+    expect(state).toEqual({ status: 'error', success: false, error: 'Submission failed' })
+    expect(emailService.sendContactEmail).not.toHaveBeenCalled()
+  })
+
+  it('never lets echoed values reach the Sentry-recorded result', async () => {
+    vi.mocked(emailService.sendContactEmail).mockResolvedValue({
+      success: false,
+      error: 'Validation error',
+      validationErrors: { email: ['bad'] },
+    })
+    await submitContactFormAction(idle, buildForm())
+    expect(sentryRecorded).toHaveLength(1)
+    expect(sentryRecorded[0]).not.toHaveProperty('values')
   })
 })

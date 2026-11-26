@@ -3,6 +3,11 @@
  * Centralized data for the resume page
  */
 
+export const headline = 'Revenue Operations Professional'
+
+export const summary =
+  'Data and revenue operations professional with experience across digital marketing, business systems, partner operations and analytics, after six years as an IT specialist in the Texas Army National Guard. Proven expertise in developing SQL logic, optimizing sales funnels and building automated systems that scale.'
+
 export const experience = [
   {
     title: 'Data Analyst',

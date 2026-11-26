@@ -119,6 +119,11 @@ jobs:
       - name: Type-check
         run: bun run typecheck
 
+      # e2e/ is excluded from the root tsconfig, and Playwright strips types
+      # without checking them, so the specs get their own project.
+      - name: Type-check e2e
+        run: bun run typecheck:e2e
+
   test:
     runs-on: ubuntu-latest
     needs: setup
@@ -181,8 +186,9 @@ jobs:
   # tolerate. The DB-dependent tests (count and per-spec breakdown live in
   # e2e/_helpers/database.ts) read real post cards or posts, or assert 404s for
   # a slug that must be absent from a populated table.
-  # Those self-skip via e2e/_helpers/database.ts, which asks `/api/health`
-  # whether the running server actually has a database rather than guessing.
+  # Those self-skip via e2e/_helpers/database.ts, which treats a 2xx from
+  # `/api/health` (returned only when a DB ping succeeds; 503 otherwise) as
+  # "has a database" rather than guessing.
   #
   # Set an `E2E_DATABASE_URL` secret (a dedicated Neon branch, seeded with
   # `bun run db:seed`) and those tests start running with no code change. Without it

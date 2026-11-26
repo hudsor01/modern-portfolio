@@ -17,7 +17,7 @@ export const TOOLS_HUB_PATH = '/tools' as const
  * fails until the date and the pin there are updated together, so it cannot drift
  * silently. Tool pages' own lastmod is STATIC_LAST_MODIFIED, not this.
  */
-export const TOOLS_HUB_LAST_UPDATED = '2026-11-24'
+export const TOOLS_HUB_LAST_UPDATED = '2026-11-25'
 
 export type ToolIcon = 'Calculator' | 'ClipboardCheck'
 
@@ -50,7 +50,7 @@ export const tools: readonly ToolEntry[] = [
     icon: 'ClipboardCheck',
     summary: 'Rates your revenue operations across process, data, technology and alignment.',
     outcome:
-      'Your maturity level from 1 Ad-hoc to 5 Optimized, your overall score and percentile, your weakest pillar, and the single highest-ROI next move.',
+      'Your maturity level from 1 Ad-hoc to 5 Optimized, your overall score, a score for each pillar, and a next move that fits where you stand.',
     effort: `${QUESTIONS.length} statements to rate, about two minutes`,
   },
 ]

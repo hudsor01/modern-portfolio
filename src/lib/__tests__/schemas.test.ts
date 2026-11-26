@@ -7,14 +7,21 @@ import {
   cuidSchema,
   phoneSchema,
   colorSchema,
-  metaDescriptionSchema,
   keywordsSchema,
   dateSchema,
   datetimeSchema,
   PostStatusSchema,
   ContentTypeSchema,
   contactFormSchema,
+  CONTACT_LIMITS,
+  CONTACT_MINIMUMS,
+  normalizeNewlines,
+  contactMessageLength,
   createBlogPostSchema,
+  createCategorySchema,
+  createTagSchema,
+  cutMetaInput,
+  updateBlogPostSchema,
   projectFilterSchema,
   viewTrackingSchema,
   paginationSchema,
@@ -289,17 +296,46 @@ describe('colorSchema', () => {
   })
 })
 
-describe('metaDescriptionSchema', () => {
-  it('accepts strings up to 160 chars', () => {
-    expect(metaDescriptionSchema.safeParse('a'.repeat(160)).success).toBe(true)
+describe('cutMetaInput', () => {
+  it('returns input at or under the bound unchanged', () => {
+    expect(cutMetaInput('alpha beta', 10)).toBe('alpha beta')
   })
 
-  it('rejects strings over 160 chars', () => {
-    expect(metaDescriptionSchema.safeParse('a'.repeat(161)).success).toBe(false)
+  it('backs off to the last whitespace so a straddling word is dropped whole', () => {
+    expect(cutMetaInput('alpha beta gamma', 13)).toBe('alpha beta')
   })
 
-  it('accepts undefined', () => {
-    expect(metaDescriptionSchema.safeParse(undefined).success).toBe(true)
+  it('keeps the whole window when the bound lands on whitespace', () => {
+    expect(cutMetaInput('alpha beta gamma', 10)).toBe('alpha beta')
+  })
+
+  it('drops an entity or markdown marker straddling the bound with its word', () => {
+    expect(cutMetaInput('Real meta &nbsp;&nbsp;', 15)).toBe('Real meta')
+    expect(cutMetaInput('Real meta **bold**', 13)).toBe('Real meta')
+  })
+
+  it('never splits a surrogate pair', () => {
+    const cut = cutMetaInput(`${'x'.repeat(9)}\u{1F600}`, 10)
+    expect(cut).toBe('x'.repeat(9))
+    expect(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])/.test(cut)).toBe(false)
+  })
+
+  it('falls back to a code-point-safe hard cut when the window has no whitespace', () => {
+    expect(cutMetaInput('x'.repeat(20), 12)).toBe('x'.repeat(12))
+  })
+
+  it('drops a partial entity left by a hard cut', () => {
+    expect(cutMetaInput('&nbsp;'.repeat(30), 100)).toBe('&nbsp;'.repeat(16))
+    expect(cutMetaInput('&#8212;'.repeat(30), 100)).toBe('&#8212;'.repeat(14))
+  })
+
+  it('only backs off to whitespace near the bound', () => {
+    expect(cutMetaInput(`a ${'x'.repeat(200)}`, 100)).toBe(`a ${'x'.repeat(98)}`)
+  })
+
+  it('returns an empty string for a non-positive bound', () => {
+    expect(cutMetaInput('abcdef', 0)).toBe('')
+    expect(cutMetaInput('abcdef', -2)).toBe('')
   })
 })
 
@@ -399,8 +435,145 @@ describe('contactFormSchema', () => {
     expect(contactFormSchema.safeParse({ ...valid, message: 'short' }).success).toBe(false)
   })
 
-  it('rejects message over 1000 chars', () => {
-    expect(contactFormSchema.safeParse({ ...valid, message: 'a'.repeat(1001) }).success).toBe(false)
+  // min runs after trim: whitespace never satisfies a minimum and never reaches the
+  // email or contact_submissions as an empty string.
+  it.each([
+    ['name', '   ', 'Name must be at least'],
+    ['name', '  a  ', 'Name must be at least'],
+    ['message', ' '.repeat(10), 'Message must be at least'],
+    ['message', '\r\n'.repeat(6), 'Message must be at least'],
+    ['message', `  ${'a'.repeat(9)}  `, 'Message must be at least'],
+    ['subject', '   ', 'Subject must be at least'],
+  ] as const)('%s %j fails the minimum after trimming', (field, value, text) => {
+    const res = contactFormSchema.safeParse({ ...valid, [field]: value })
+    expect(res.success).toBe(false)
+    if (!res.success) {
+      expect(res.error.issues.some((i) => i.message.includes(text))).toBe(true)
+    }
+  })
+
+  // Native minLength counts UTF-16 units on the raw value; the schema counts code points
+  // after trim. The native check may be looser, never stricter.
+  it('rejects one emoji as a name and five as a message, though each meets native minLength', () => {
+    expect('😀'.length).toBeGreaterThanOrEqual(CONTACT_MINIMUMS.name)
+    expect('😀'.repeat(5).length).toBeGreaterThanOrEqual(CONTACT_MINIMUMS.message)
+    const name = contactFormSchema.safeParse({ ...valid, name: '😀' })
+    const message = contactFormSchema.safeParse({ ...valid, message: '😀'.repeat(5) })
+    expect(name.success).toBe(false)
+    expect(message.success).toBe(false)
+    expect(contactFormSchema.safeParse({ ...valid, name: '😀😀' }).success).toBe(true)
+  })
+
+  it.each([
+    ['name', CONTACT_MINIMUMS.name],
+    ['message', CONTACT_MINIMUMS.message],
+  ] as const)('native minLength never blocks a %s the schema accepts', (field, min) => {
+    const samples = [
+      'a',
+      'ab',
+      ' a',
+      'é',
+      'e\u0301',
+      '😀',
+      '😀😀',
+      '  ab  ',
+      'a'.repeat(min - 1),
+      'a'.repeat(min),
+      ` ${'a'.repeat(min - 1)}`,
+      '😀'.repeat(Math.ceil(min / 2)),
+      '😀'.repeat(min),
+    ]
+    for (const value of samples) {
+      // tooShort: what minLength reports for a non-empty value under the minimum.
+      const nativeBlocks = value.length > 0 && value.length < min
+      const accepted = contactFormSchema.safeParse({ ...valid, [field]: value }).success
+      if (nativeBlocks) expect(accepted, JSON.stringify(value)).toBe(false)
+    }
+  })
+
+  it('trims name and message and accepts them when the trimmed value meets the minimum', () => {
+    const res = contactFormSchema.safeParse({
+      ...valid,
+      name: '  Jo  ',
+      message: `  ${'a'.repeat(10)}  `,
+    })
+    expect(res.success).toBe(true)
+    if (res.success) {
+      expect(res.data.name).toBe('Jo')
+      expect(res.data.message).toBe('a'.repeat(10))
+    }
+  })
+
+  it('rejects message over CONTACT_LIMITS.message chars', () => {
+    expect(
+      contactFormSchema.safeParse({ ...valid, message: 'a'.repeat(CONTACT_LIMITS.message + 1) })
+        .success
+    ).toBe(false)
+  })
+
+  it('exposes the limits and minimums as the single source', () => {
+    expect(CONTACT_LIMITS).toEqual({
+      name: 50,
+      email: 254,
+      company: 100,
+      phone: 20,
+      subject: 100,
+      message: 1000,
+    })
+    expect(CONTACT_MINIMUMS).toEqual({ name: 2, subject: 1, message: 10 })
+  })
+
+  it('normalizeNewlines and contactMessageLength collapse CRLF/CR to LF', () => {
+    expect(normalizeNewlines('a\r\nb\rc\nd')).toBe('a\nb\nc\nd')
+    expect(contactMessageLength('a\r\nb')).toBe(3)
+    expect(contactMessageLength('')).toBe(0)
+  })
+
+  it.each([
+    ['name', 'cannot exceed'],
+    ['company', 'cannot exceed'],
+    ['phone', 'cannot exceed'],
+    ['subject', 'must not exceed'],
+    ['message', 'cannot exceed'],
+  ] as const)('%s: exactly the limit passes, limit + 1 fails on the max rule', (field, text) => {
+    const fill = (n: number) => (field === 'phone' ? '1'.repeat(n) : 'a'.repeat(n))
+    const limit = CONTACT_LIMITS[field]
+    expect(contactFormSchema.safeParse({ ...valid, [field]: fill(limit) }).success).toBe(true)
+    const res = contactFormSchema.safeParse({ ...valid, [field]: fill(limit + 1) })
+    expect(res.success).toBe(false)
+    if (!res.success) {
+      expect(res.error.issues.some((i) => i.message.includes(text))).toBe(true)
+    }
+  })
+
+  it('rejects email over CONTACT_LIMITS.email on both schemas', () => {
+    const long = `${'a'.repeat(CONTACT_LIMITS.email - 10)}@example.com`
+    const a = contactFormSchema.safeParse({ ...valid, email: long })
+    const b = emailSchema.safeParse(long)
+    expect(a.success).toBe(false)
+    expect(b.success).toBe(false)
+    if (!a.success)
+      expect(a.error.issues.map((i) => i.message)).toContain('Email address is too long')
+    if (!b.success)
+      expect(b.error.issues.map((i) => i.message)).toContain('Email address is too long')
+  })
+
+  it('accepts a message that is over the limit only because of CRLF, normalised to LF', () => {
+    const raw = `${'a'.repeat(500)}\r\n${'a'.repeat(499)}`
+    expect(raw.length).toBe(1001)
+    const res = contactFormSchema.safeParse({ ...valid, message: raw })
+    expect(res.success).toBe(true)
+    if (res.success) {
+      expect(res.data.message.length).toBe(1000)
+      expect(res.data.message).not.toContain('\r')
+    }
+  })
+
+  it('still counts leading whitespace toward the message limit', () => {
+    expect(
+      contactFormSchema.safeParse({ ...valid, message: ` ${'a'.repeat(CONTACT_LIMITS.message)}` })
+        .success
+    ).toBe(false)
   })
 
   it('rejects malformed email', () => {
@@ -714,5 +887,69 @@ describe('safeValidate', () => {
     if (!r.success) {
       expect(r.error).toBeInstanceOf(z.ZodError)
     }
+  })
+})
+
+const F1_META =
+  'I spent six years in the Texas Army National Guard as an Information Technology Specialist, including a deployment to Iraq. I learned quickly that when equ...'
+const F2_META =
+  'I spent six years in the Texas Army National Guard as an Information Technology Specialist. That service included a deployment to Iraq. In the military, am...'
+const F3_META =
+  'I spent six years as an IT Specialist in the Texas Army National Guard, including a deployment to Iraq. Soldiers don’t have the luxury of guessing. If your...'
+const C_META =
+  'Seven ways CRM pipeline data drifts from reality, the reports that catch each one, and the systems, metrics and weekly inspection that keep pipeline accurate.'
+
+describe('blog metaDescription accepts a bio opener (the routes normalize it)', () => {
+  const base = {
+    title: 'Hello World',
+    content: 'This is content with at least one word.',
+    authorId: 'cm1234567890abcdefghijklm',
+  }
+  const OPENER = 'I served in the National Guard for six years before moving into RevOps.'
+
+  it.each([
+    F1_META,
+    F2_META,
+    F3_META,
+    `**${OPENER}**`,
+    `&#73; spent six years in the Army National Guard and more`,
+    C_META,
+    '',
+    null,
+    undefined,
+  ])('create and update accept %j', (metaDescription) => {
+    for (const result of [
+      createBlogPostSchema.safeParse({ ...base, metaDescription }),
+      updateBlogPostSchema.safeParse({ metaDescription }),
+    ]) {
+      expect(result.success).toBe(true)
+    }
+  })
+
+  it.each([161, 1000, 5000, 100_001])(
+    'accepts a %i-character meta on every schema (never rejected)',
+    (length) => {
+      const meta = 'x'.repeat(length)
+      const expected = 'x'.repeat(Math.min(length, 100_000))
+      const results = [
+        createBlogPostSchema.safeParse({ ...base, metaDescription: meta }),
+        updateBlogPostSchema.safeParse({ metaDescription: meta }),
+        createTagSchema.safeParse({ name: 'Tag', metaDescription: meta }),
+        createCategorySchema.safeParse({ name: 'Cat', metaDescription: meta }),
+      ]
+      for (const result of results) {
+        expect(result.success).toBe(true)
+        if (result.success) {
+          expect((result.data as { metaDescription?: string | null }).metaDescription).toBe(
+            expected
+          )
+        }
+      }
+    }
+  )
+
+  it('still turns an empty meta into null', () => {
+    const result = createTagSchema.safeParse({ name: 'Tag', metaDescription: '' })
+    expect(result.success && result.data.metaDescription).toBeNull()
   })
 })

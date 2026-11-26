@@ -4,11 +4,13 @@ import type { ApiResponse, BlogCategoryData } from '@/types/api'
 import { db } from '@/lib/db'
 import { categories } from '@/db/schema'
 import { createContextLogger } from '@/lib/logger'
+import { fitMetaDescription } from '@/lib/blog-excerpt'
 import { generateSlug, createErrorResponse, transformToCategoryData } from '@/lib/api-blog'
 import { createCategorySchema } from '@/lib/schemas'
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
 import { isAdminRequest } from '@/lib/api-admin-auth'
 import { checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-rate-limit'
+import { normalizeSeoTitle } from '@/lib/post-title'
 
 const logger = createContextLogger('CategoriesAPI')
 
@@ -88,8 +90,10 @@ export async function POST(request: NextRequest) {
         description: body.description ?? null,
         color: body.color,
         icon: body.icon ?? null,
-        metaTitle: body.metaTitle ?? null,
-        metaDescription: body.metaDescription ?? null,
+        // Any length is accepted and stored within the search budget (<= 43),
+        // the same never-reject rule as post SEO titles.
+        metaTitle: body.metaTitle ? normalizeSeoTitle(body.metaTitle, body.name) : null,
+        metaDescription: fitMetaDescription(body.metaDescription) ?? null,
         keywords: body.keywords,
         postCount: 0,
         totalViews: 0,

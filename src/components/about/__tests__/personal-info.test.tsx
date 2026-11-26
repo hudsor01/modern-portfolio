@@ -16,9 +16,9 @@ describe('PersonalInfo', () => {
     cleanup()
   })
 
-  it('renders the name as an h1 and title as h2', () => {
+  it('renders "About <name>" as the h1 and title as h2', () => {
     render(<PersonalInfo personalInfo={fixture} />)
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(fixture.name)
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(`About ${fixture.name}`)
     expect(screen.getByRole('heading', { level: 2 }).textContent).toBe(fixture.title)
   })
 

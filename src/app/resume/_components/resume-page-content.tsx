@@ -13,6 +13,7 @@ import { ExperienceSection } from './ExperienceSection'
 import { EducationCertifications } from './EducationCertifications'
 import { SkillsSection } from './SkillsSection'
 import { DecorativeBlob } from '@/components/ui/decorative-blob'
+import { preloadPrintFonts } from '@/lib/print-fonts'
 
 const logger = createContextLogger('ResumePage')
 
@@ -31,6 +32,12 @@ export default function ResumePageContent() {
   useEffect(() => {
     // Set the PDF URL once on client side with proper encoding
     setPdfUrl('/Richard_Hudson_Revenue_Operations.pdf')
+  }, [])
+
+  // Warm the static print faces (print-fonts.css) after load so the first
+  // print already uses them; nothing on screen renders with them.
+  useEffect(() => {
+    preloadPrintFonts()
   }, [])
 
   const handleDownloadResume = async () => {
@@ -64,13 +71,15 @@ export default function ResumePageContent() {
       <main
         id="main-content"
         tabIndex={-1}
-        className="relative min-h-screen bg-background overflow-x-clip"
+        // Scopes the print-font override in print-fonts.css to this page.
+        data-resume-print
+        className="relative min-h-screen bg-background overflow-x-clip print:min-h-0 print:bg-transparent"
       >
         {/* Decorative background elements */}
         <DecorativeBlob position="top-right" />
         <DecorativeBlob position="bottom-left" />
 
-        <div className="relative max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16 lg:pt-32 lg:pb-20 space-y-16">
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16 lg:pt-32 lg:pb-20 space-y-16 print:max-w-none print:p-0 print:space-y-5">
           {/* Hero Header */}
           <div>
             <HeroHeader
@@ -81,21 +90,25 @@ export default function ResumePageContent() {
             />
           </div>
 
-          {showPdf ? (
-            // PDF viewer
-            <div className="bg-card border border-border rounded-2xl overflow-hidden animate-fade-in-up">
-              {pdfUrl && <ResumeViewer pdfUrl={pdfUrl} />}
-            </div>
-          ) : (
-            // Resume content
+          {/* Resume content. Always rendered so printing with the preview open
+              still prints the résumé: the preview hides it on screen only. */}
+          <div
+            ref={contentRef}
+            className={`space-y-16 animate-fade-in-up print:opacity-100 print:animate-none! print:space-y-5 ${isContentInView ? 'opacity-100' : 'opacity-0'}${showPdf ? ' hidden print:block' : ''}`}
+          >
+            <AboutSection />
+            <ExperienceSection />
+            <EducationCertifications />
+            <SkillsSection />
+          </div>
+
+          {showPdf && (
+            // PDF viewer: screen only, an embedded PDF prints blank or clipped
             <div
-              ref={contentRef}
-              className={`space-y-16 animate-fade-in-up ${isContentInView ? 'opacity-100' : 'opacity-0'}`}
+              data-resume-preview
+              className="bg-card border border-border rounded-2xl overflow-hidden animate-fade-in-up print:hidden"
             >
-              <AboutSection />
-              <ExperienceSection />
-              <EducationCertifications />
-              <SkillsSection />
+              {pdfUrl && <ResumeViewer pdfUrl={pdfUrl} />}
             </div>
           )}
         </div>

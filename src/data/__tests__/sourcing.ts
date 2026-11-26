@@ -13,13 +13,12 @@ import { join } from 'node:path'
 import {
   classifyRow,
   IMPROVEMENT_RE,
-  PAIR_RE,
   parseMeasure,
   type PreviewResultRow,
 } from '@/lib/project-preview'
 
-// One parser: re-exported so guards never grow a second copy of these.
-export { classifyRow, IMPROVEMENT_RE, PAIR_RE, parseMeasure }
+// One parser: the row classifier is re-exported so guards never grow a second copy.
+export { classifyRow }
 
 const PROJECTS_DIR = join(process.cwd(), 'src/app/projects')
 
@@ -447,7 +446,7 @@ export function unsourced(
 }
 
 /** Relative change of a paired row, as a rounded percent; null when unparseable. */
-export function relativeChange(before: string, after: string): number | null {
+function relativeChange(before: string, after: string): number | null {
   const b = parseMeasure(before)
   const a = parseMeasure(after)
   if (!b || !a || b.unit !== a.unit || b.value === 0) return null

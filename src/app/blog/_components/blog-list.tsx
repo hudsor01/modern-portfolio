@@ -174,7 +174,7 @@ export function BlogList({
                 }`}
               >
                 {post.featuredImage && (
-                  <div className="relative aspect-[16/10] overflow-hidden">
+                  <div className="relative aspect-16/10 overflow-hidden">
                     <BlogFeaturedImage
                       src={post.featuredImage}
                       alt={post.title}
@@ -198,9 +198,8 @@ export function BlogList({
                   <CardTitle as="h2" className="line-clamp-3 transition-colors">
                     <InlineMarkdown value={post.title} />
                   </CardTitle>
-                  <CardDescription className="line-clamp-3">
-                    {post.excerpt ? <InlineMarkdown value={post.excerpt} /> : ''}
-                  </CardDescription>
+                  {/* resolveExcerpt output (blog/page.tsx), already plain text. */}
+                  <CardDescription className="line-clamp-3">{post.excerpt ?? ''}</CardDescription>
                 </CardHeader>
                 <CardContent className="mt-auto">
                   <time

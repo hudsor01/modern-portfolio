@@ -5,27 +5,42 @@ import { SITE_ORIGIN } from '@/lib/absolute-url'
  * robots.txt policy.
  *
  * Authoritative since `public/robots.txt` was deleted (avoiding the dual-file
- * footgun). Three layers:
+ * footgun). Five groups:
  *
  *  1. Search-index allow-list — every major search/AI crawler that surfaces
- *     pages in human-facing results gets full access (Googlebot, Bingbot,
- *     OAI-SearchBot, Claude-SearchBot, PerplexityBot). These drive traffic.
+ *     pages in human-facing results (Googlebot, Bingbot, OAI-SearchBot,
+ *     Claude-SearchBot, PerplexityBot, ...). These drive traffic.
  *
  *  2. Social-preview allow-list — Twitterbot/LinkedInBot/facebookexternalhit
  *     need /api/og.
  *
- *  3. AI training opt-out — block bots that scrape for model training but
+ *  3. Default (`*`) — everyone not named elsewhere.
+ *
+ *  4. AI training opt-out — block bots that scrape for model training but
  *     don't drive traffic (GPTBot, ClaudeBot, Google-Extended,
  *     Applebot-Extended, CCBot, Bytespider). Blocking these has zero ranking
  *     impact and prevents Richard's writing from being ingested as training
  *     data without attribution.
  *
- *  4. SEO scrapers — block (no value, just bandwidth cost).
+ *  5. SEO scrapers — block (no value, just bandwidth cost).
+ *
+ * A crawler obeys only its most specific matching group (RFC 9309), so the
+ * `*` disallows never reach Googlebot or Bingbot; every named group must
+ * repeat the private paths itself. Named search and social crawlers may still
+ * fetch `/_next/` (JS, CSS, fonts, optimized images): Google needs those to
+ * render pages and index images, and advises against blocking them. Every
+ * other crawler (`*`) is kept out of `/_next/`. `/api/og` and `/api/blog/rss`
+ * stay crawlable because the longest matching rule wins and both are longer
+ * than `/api/`.
  */
+const PUBLIC_ALLOW = ['/', '/api/og', '/api/blog/rss']
+const PRIVATE_DISALLOW = ['/api/', '/admin/']
+const DEFAULT_DISALLOW = ['/api/', '/_next/', '/admin/']
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      // 1. Search/AI search crawlers: full access.
+      // 1. Search/AI search crawlers: public pages, no private paths.
       {
         userAgent: [
           'Googlebot',
@@ -38,22 +53,22 @@ export default function robots(): MetadataRoute.Robots {
           'Claude-SearchBot',
           'PerplexityBot',
         ],
-        allow: '/',
+        allow: PUBLIC_ALLOW,
+        disallow: PRIVATE_DISALLOW,
       },
 
       // 2. Social previews: need /api/og for OG image fetches.
       {
         userAgent: ['Twitterbot', 'LinkedInBot', 'facebookexternalhit'],
-        allow: ['/', '/api/og'],
-        disallow: [],
+        allow: PUBLIC_ALLOW,
+        disallow: PRIVATE_DISALLOW,
       },
 
-      // 3. Default: allow public pages, block /api and internals (with /api/og
-      //    explicitly allowed for any other crawler).
+      // 3. Default: the named groups' rules, plus no /_next/ assets.
       {
         userAgent: '*',
-        allow: ['/', '/api/og', '/api/blog/rss'],
-        disallow: ['/api/', '/_next/', '/admin/'],
+        allow: PUBLIC_ALLOW,
+        disallow: DEFAULT_DISALLOW,
       },
 
       // 4. AI training crawlers: opt out. These don't drive traffic; blocking

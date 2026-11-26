@@ -20,7 +20,7 @@ test.describe('review C geometry', () => {
     await page.waitForLoadState('networkidle')
     const target = page.getByLabel('Revenue target (this period)')
     await expect(target).toHaveValue('1,000,000')
-    const result = page.locator('main [aria-live="polite"]')
+    const result = page.getByRole('region', { name: 'Your coverage' })
     const headline = result.getByText('4.0×')
     const size = await headline.evaluate((e) => Number.parseFloat(getComputedStyle(e).fontSize))
     expect(size).toBeGreaterThanOrEqual(36)
@@ -56,14 +56,20 @@ test.describe('review C geometry', () => {
     }
   })
 
-  test('scorecard: the default all-neutral state flags no weakest pillar (C-5)', async ({
+  test('scorecard: rating every statement the same flags no weakest pillar (C-5)', async ({
     page,
   }) => {
     await page.goto('/tools/revops-maturity-scorecard')
     await page.waitForLoadState('networkidle')
-    const result = page.locator('main [aria-live="polite"]')
+    const result = page.getByRole('region', { name: 'Your result' })
+    await expect(result).toContainText('0 of 16 answered')
+    const groups = page.getByRole('radiogroup')
+    await expect(groups).toHaveCount(16)
+    for (let i = 0; i < 16; i++) await groups.nth(i).locator('label').nth(2).click()
+    await expect(result).toContainText('16 of 16 answered')
     await expect(result.getByText('weakest', { exact: true })).toHaveCount(0)
-    await expect(result.getByText(/lowest pillars are tied/)).toBeVisible()
+    await expect(result.getByText(/All four pillars score 3\.0/)).toBeVisible()
+    await expect(result).not.toContainText(/lowest pillars/)
   })
 
   test('footer: no empty grid cell beside the last link column at 390 (C-9)', async ({

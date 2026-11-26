@@ -1,0 +1,67 @@
+/*
+ * Static (non-variable) instances of the site's two families, used only when
+ * /resume is printed. next/font serves variable fonts, which Chromium embeds
+ * in a PDF as Type 3; these static instances (converted losslessly from the
+ * Google Fonts static TTFs to WOFF2 with fontTools ttLib.woff2 compress, no
+ * subsetting) embed as TrueType, so the résumé PDF (bun run resume:pdf, which
+ * fails on any Type 3) carries real, crisp, extractable fonts.
+ *
+ * Screen rendering never uses these families; the résumé page warms them
+ * after load so the first print has them. The files are bundled from the
+ * repo (hashed under /_next/static/media), never fetched from another host.
+ * Source: Google Fonts static instances, SIL OFL 1.1 (see print-fonts/OFL-*.txt).
+ */
+@font-face {
+  font-family: 'Spline Sans Print';
+  font-style: normal;
+  font-weight: 400;
+  font-display: fallback;
+  src: url('./print-fonts/SplineSans-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Spline Sans Print';
+  font-style: normal;
+  font-weight: 500;
+  font-display: fallback;
+  src: url('./print-fonts/SplineSans-Medium.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Spline Sans Print';
+  font-style: normal;
+  font-weight: 600;
+  font-display: fallback;
+  src: url('./print-fonts/SplineSans-SemiBold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Playfair Display Print';
+  font-style: normal;
+  font-weight: 500;
+  font-display: fallback;
+  src: url('./print-fonts/PlayfairDisplay-Medium.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Playfair Display Print';
+  font-style: normal;
+  font-weight: 600;
+  font-display: fallback;
+  src: url('./print-fonts/PlayfairDisplay-SemiBold.woff2') format('woff2');
+}
+
+/*
+ * next/font defines --font-spline and --font-playfair on <html> through a
+ * class; this selector outranks that class, and every font stack (including
+ * Tailwind's --font-sans) reads these two variables. `:has([data-resume-print])`
+ * limits the swap to the résumé page: the App Router keeps this stylesheet
+ * after client navigation, and other pages never warm these faces.
+ * resume-page-content.tsx warms the faces after load (preloadPrintFonts).
+ */
+@media print {
+  html:root:has([data-resume-print]) {
+    --font-spline: 'Spline Sans Print', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-playfair: 'Playfair Display Print', Georgia, 'Times New Roman', serif;
+  }
+}

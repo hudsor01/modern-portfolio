@@ -55,7 +55,7 @@ export function buildContactSubmissionRow(data: ContactFormData, delivery: Deliv
  * Builds a PII-free Error from a DB failure. DrizzleQueryError messages embed
  * the bound params (the submission), so only SQLSTATE / class name is kept.
  */
-export function toSafeStorageError(error: unknown): Error {
+function toSafeStorageError(error: unknown): Error {
   let code: string | undefined
   if (error instanceof DrizzleQueryError) {
     const causeCode = (error.cause as { code?: unknown } | undefined)?.code
@@ -134,6 +134,15 @@ export class EmailService {
 
       // Validate data
       const validatedData = await this.validateData(data)
+
+      // Honeypot: a filled trap field means a bot. The success response gives it no signal;
+      // nothing is sent or stored. This sits on the single canonical send path so the server
+      // action, the progressive action and POST /api/contact share it. The rate limit runs
+      // first, so a bot still spends its allowance.
+      if (typeof validatedData.honeypot === 'string' && validatedData.honeypot.length > 0) {
+        emailLogger.warn('Contact form honeypot tripped; submission discarded')
+        return { success: true }
+      }
 
       if (!this.resend) {
         return this.handleMockEmail(validatedData)

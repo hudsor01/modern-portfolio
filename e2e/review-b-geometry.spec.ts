@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { databaseAvailable, NEEDS_DATABASE } from './_helpers/database'
 
 /**
  * Phase 15 review group B (blog, blog post, contact, resume) geometry checks.
@@ -9,6 +10,7 @@ test.describe('review B geometry', () => {
   test('blog cards: cover is flush with the card top and dates share a baseline per row (B-1, B-2)', async ({
     page,
   }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     await page.goto('/blog')
     await page.waitForLoadState('networkidle')
     const cards = page.locator('[data-slot="card"]')
@@ -64,6 +66,7 @@ test.describe('review B geometry', () => {
   test('blog post: title appears once above the body and related reading sits on the article grid (B-3, B-6)', async ({
     page,
   }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     await page.goto('/blog')
     await page.waitForLoadState('networkidle')
     const href = await page.locator('main a[href^="/blog/"]').first().getAttribute('href')

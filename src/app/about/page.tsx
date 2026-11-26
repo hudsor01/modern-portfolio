@@ -10,6 +10,7 @@ import { WhatIBring } from '@/components/about/what-i-bring'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Mail } from 'lucide-react'
 import Link from 'next/link'
+import { CONTACT } from '@/lib/contact-info'
 import type { Metadata } from 'next'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 import { PROJECT_COUNT } from '@/data/projects'
@@ -62,8 +63,8 @@ const CERTIFICATIONS = [
 const PERSONAL_INFO = {
   name: 'Richard Hudson',
   title: 'Revenue Operations Professional',
-  location: 'Dallas, TX • Dallas-Fort Worth Metroplex • Remote & On-Site',
-  email: 'hudsor01@icloud.com',
+  location: `${CONTACT.location.display} • Dallas-Fort Worth Metroplex • Remote & On-Site`,
+  email: CONTACT.email,
   bio: `Started my career untangling spreadsheet chaos at a 50-person startup. Built my first automated pipeline with zero engineering support—just Excel, determination, and 3 YouTube tutorials.
 
 Today, I architect revenue operations systems that transform data overwhelm into competitive advantage. Ten years working the messy middle—where sales meets marketing meets customer success—turning manual reporting nightmares into automated workflows that scale.

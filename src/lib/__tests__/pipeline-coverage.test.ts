@@ -4,8 +4,19 @@ import {
   COVERAGE_PRESETS,
   amountInputError,
   caretAfterFormat,
+  formatCount,
   formatGrouped,
+  formatPercent,
+  formatMoney,
+  formatMultiple,
+  MAX_AMOUNT,
+  percentFieldError,
   sanitizeAmount,
+  TARGET_REQUIRED_MESSAGE,
+  targetFieldError,
+  WIN_RATE_MAX_MESSAGE,
+  WIN_RATE_POSITIVE_MESSAGE,
+  WIN_RATE_REQUIRED_MESSAGE,
   type CoverageInput,
 } from '@/lib/pipeline-coverage'
 
@@ -164,20 +175,259 @@ describe('amount input formatting', () => {
   })
 })
 
+const NEG = 'Negative amounts are not allowed. Enter a positive number.'
+
 describe('amountInputError', () => {
-  it('accepts plain, grouped, $-prefixed and decimal amounts', () => {
-    for (const ok of ['', '1000000', '1,000,000', '$2,000', ' 1 000 ', '1234.5', '1234.']) {
-      expect(amountInputError(ok)).toBeNull()
+  it('accepts plain, grouped, $-prefixed, decimal and exactly-$10B amounts', () => {
+    for (const ok of [
+      '',
+      '1000000',
+      '1,000,000',
+      '$2,000',
+      ' 1 000 ',
+      '1234.5',
+      '1234.',
+      '10000000000',
+      '10,000,000,000',
+      '$10,000,000,000.00',
+    ]) {
+      expect(amountInputError(ok, 'target')).toBeNull()
     }
   })
 
-  it('rejects negatives, exponent notation, letters and extra dots with a message', () => {
-    expect(amountInputError('-5')).toMatch(/negative/i)
-    expect(amountInputError('1e6')).toMatch(/exponent/i)
-    expect(amountInputError('1E6')).toMatch(/exponent/i)
-    expect(amountInputError('1.5M')).toMatch(/digits only/i)
-    expect(amountInputError('12abc')).toMatch(/digits only/i)
-    expect(amountInputError('1.2.3')).toMatch(/decimal point/i)
+  it('any invalid character gives "Enter numbers only"', () => {
+    for (const bad of ['abc-12,5e3x', '1e6', '1.5M', '+5']) {
+      expect(amountInputError(bad, 'target')).toBe('Enter numbers only')
+    }
+    expect(amountInputError('1E6', 'amount')).toBe('Enter numbers only')
+    expect(amountInputError('12abc', 'amount')).toBe('Enter numbers only')
+  })
+
+  it('a leading minus (hyphen or Unicode minus) gives its own message, different from letters', () => {
+    for (const negative of ['-5', '−5', ' -5', '$-5', '-$5', '$ −1,000', '-0']) {
+      expect(amountInputError(negative, 'target')).toBe(NEG)
+    }
+    expect(amountInputError('-5', 'target')).not.toBe(amountInputError('abc', 'target'))
+  })
+
+  it('a minus anywhere but the start is an invalid character, hyphen or Unicode', () => {
+    for (const bad of ['5-3', '5-', '5−3', '--5', '-−5', '-5-', '1,000-']) {
+      expect(amountInputError(bad, 'amount')).toBe('Enter numbers only')
+    }
+    // Invalid characters still win over a leading minus.
+    expect(amountInputError('-abc', 'target')).toBe('Enter numbers only')
+    expect(amountInputError('−1e6', 'target')).toBe('Enter numbers only')
+  })
+
+  it('flags a repeated decimal point', () => {
+    expect(amountInputError('1.2.3', 'target')).toBe('Use a single decimal point.')
+  })
+
+  it('caps at $10B with a per-kind message', () => {
+    expect(MAX_AMOUNT).toBe(10_000_000_000)
+    expect(amountInputError('10000000001', 'target')).toBe('Enter a target up to $10B')
+    expect(amountInputError('10000000000.5', 'target')).toBe('Enter a target up to $10B')
+    expect(amountInputError('10000000001', 'amount')).toBe('Enter an amount up to $10B')
+  })
+})
+
+describe('targetFieldError', () => {
+  it('flags an empty or zero target as required', () => {
+    expect(TARGET_REQUIRED_MESSAGE).toBe('Enter a revenue target greater than $0.')
+    for (const empty of ['', '   ', '0', '0.00', '$0', '.']) {
+      expect(targetFieldError(empty)).toBe(TARGET_REQUIRED_MESSAGE)
+    }
+    expect(computeCoverage({ revenueTarget: 0, winRatePct: 25 }).error).toBe(
+      TARGET_REQUIRED_MESSAGE
+    )
+  })
+
+  it('keeps the amountInputError precedence ahead of the required check', () => {
+    expect(targetFieldError('abc')).toBe('Enter numbers only')
+    expect(targetFieldError('-0')).toBe(NEG)
+    expect(targetFieldError('0.0.0')).toBe('Use a single decimal point.')
+    expect(targetFieldError('10000000001')).toBe('Enter a target up to $10B')
+  })
+
+  it('accepts a positive target', () => {
+    expect(targetFieldError('0.5')).toBeNull()
+    expect(targetFieldError('1,000,000')).toBeNull()
+    expect(targetFieldError('10000000000')).toBeNull()
+  })
+})
+
+describe('percentFieldError', () => {
+  const fields = ['win', 'qualified', 'safety'] as const
+
+  it('badInput is "Enter numbers only"; an empty optional field is fine', () => {
+    for (const f of fields) {
+      expect(percentFieldError('', true, f)).toBe('Enter numbers only')
+      expect(percentFieldError('-5', false, f)).toBe(NEG)
+    }
+    expect(percentFieldError('', false, 'qualified')).toBeNull()
+    expect(percentFieldError('', false, 'safety')).toBeNull()
+  })
+
+  it('an empty win rate is required', () => {
+    expect(WIN_RATE_REQUIRED_MESSAGE).toBe('Enter a win rate.')
+    expect(percentFieldError('', false, 'win')).toBe(WIN_RATE_REQUIRED_MESSAGE)
+    expect(percentFieldError('  ', false, 'win')).toBe(WIN_RATE_REQUIRED_MESSAGE)
+  })
+
+  it('per-field range messages', () => {
+    expect(percentFieldError('0', false, 'win')).toBe('Win rate must be greater than 0%.')
+    expect(percentFieldError('150', false, 'win')).toBe('Win rate can’t exceed 100%.')
+    expect(percentFieldError('150', false, 'qualified')).toBe('Enter a percentage up to 100%.')
+    expect(percentFieldError('1001', false, 'safety')).toBe('Enter a margin up to 1,000%.')
+  })
+
+  it('accepts in-range values', () => {
+    expect(percentFieldError('25', false, 'win')).toBeNull()
+    expect(percentFieldError('100', false, 'qualified')).toBeNull()
+    expect(percentFieldError('0', false, 'qualified')).toBeNull()
+    expect(percentFieldError('1000', false, 'safety')).toBeNull()
+    expect(percentFieldError('0', false, 'safety')).toBeNull()
+  })
+})
+
+describe('win-rate messages', () => {
+  it('computeCoverage and percentFieldError share one message per rule', () => {
+    expect(computeCoverage({ revenueTarget: 1, winRatePct: 0 }).error).toBe(
+      WIN_RATE_POSITIVE_MESSAGE
+    )
+    expect(percentFieldError('0', false, 'win')).toBe(WIN_RATE_POSITIVE_MESSAGE)
+    expect(computeCoverage({ revenueTarget: 1, winRatePct: 101 }).error).toBe(WIN_RATE_MAX_MESSAGE)
+    expect(percentFieldError('101', false, 'win')).toBe(WIN_RATE_MAX_MESSAGE)
+    expect(WIN_RATE_POSITIVE_MESSAGE).toBe('Win rate must be greater than 0%.')
+    expect(WIN_RATE_MAX_MESSAGE).toBe('Win rate can’t exceed 100%.')
+  })
+})
+
+describe('field errors cover every invalid computation', () => {
+  // Mirrors the calculator: a target with no field error is parsed with sanitizeAmount,
+  // a win rate with no field error with Number. Whenever neither field reports an
+  // error, computeCoverage must be valid, so the UI needs no "invalid result" branch.
+  const targets = [
+    '',
+    ' ',
+    '0',
+    '0.00',
+    '.',
+    '$',
+    '$0',
+    '-5',
+    '−5',
+    '5-3',
+    'abc',
+    '1e6',
+    '1.2.3',
+    '0.5',
+    '1',
+    '$2,000',
+    '1,000,000',
+    '10000000000',
+    '10000000001',
+  ]
+  const winRates = [
+    '',
+    ' ',
+    '0',
+    '-1',
+    '0.0001',
+    '1',
+    '25',
+    '1e1',
+    '100',
+    '100.5',
+    '101',
+    'Infinity',
+  ]
+  it.each(targets)('target "%s" across win rates', (t) => {
+    for (const w of winRates) {
+      const fieldsOk = targetFieldError(t) === null && percentFieldError(w, false, 'win') === null
+      const result = computeCoverage({
+        revenueTarget: Number(sanitizeAmount(t)),
+        winRatePct: w.trim() === '' ? Number.NaN : Number(w),
+      })
+      if (fieldsOk) expect(result.valid, `${t} / ${w}`).toBe(true)
+      if (!result.valid) expect(fieldsOk, `${t} / ${w}`).toBe(false)
+    }
+  })
+})
+
+describe('formatPercent', () => {
+  it('normalizes the rate instead of echoing what was typed', () => {
+    expect(formatPercent(Number('1e1'))).toBe('10%')
+    expect(formatPercent(25)).toBe('25%')
+    expect(formatPercent(33.33333)).toBe('33.33%')
+    expect(formatPercent(100)).toBe('100%')
+    expect(formatPercent(Number('025'))).toBe('25%')
+  })
+
+  it('stays short for tiny rates and never rounds up across 1% or 100%', () => {
+    expect(formatPercent(1e-30)).toBe('under 0.0001%')
+    expect(formatPercent(Number('1e-320'))).toBe('under 0.0001%')
+    expect(formatPercent(0.00009)).toBe('under 0.0001%')
+    expect(formatPercent(99.999)).toBe('99.99%')
+    expect(formatPercent(0.999)).toBe('0.99%')
+    expect(formatPercent(100)).toBe('100%')
+    for (const n of [1e-30, 1e-12, 0.00011, 0.5, 1, 33.3333, 99.999, 100]) {
+      expect(formatPercent(n).length).toBeLessThanOrEqual('under 0.0001%'.length)
+    }
+  })
+
+  it('keeps a sub-1% rate visible instead of rounding it to 0%', () => {
+    expect(formatPercent(0.5)).toBe('0.5%')
+    expect(formatPercent(0.0001)).toBe('0.0001%')
+    expect(formatPercent(0.00012345)).toBe('0.00012%')
+  })
+})
+
+describe('display formatters', () => {
+  it('formatMoney bounds at $1T+', () => {
+    expect(formatMoney(999_999)).toBe('$999,999')
+    expect(formatMoney(4_000_000_000)).toBe('$4B')
+    expect(formatMoney(25_000_000_000)).toBe('$25B')
+    expect(formatMoney(1e12)).toBe('$1T+')
+    expect(formatMoney(4e21)).toBe('$1T+')
+  })
+
+  it('formatMoney applies the ceiling to the rounded figure it prints', () => {
+    expect(formatMoney(999_940_000_000)).toBe('$999.9B')
+    expect(formatMoney(999_950_000_000)).toBe('$1T+')
+    expect(formatMoney(999_960_000_000)).toBe('$1T+')
+    // A $10B target at a 1.00004% win rate needs about $999.96B of pipeline.
+    const r = computeCoverage({ revenueTarget: 10_000_000_000, winRatePct: 1.00004 })
+    expect(r.requiredPipeline).toBeLessThan(1e12)
+    expect(formatMoney(r.requiredPipeline)).toBe('$1T+')
+  })
+
+  it('formatMultiple bounds at 1,000×+', () => {
+    expect(formatMultiple(4)).toBe('4.0×')
+    expect(formatMultiple(999.94)).toBe('999.9×')
+    expect(formatMultiple(999.96)).toBe('1,000×+')
+    expect(formatMultiple(1000)).toBe('1,000×+')
+    expect(formatMultiple(1e6)).toBe('1,000×+')
+  })
+
+  it('formatCount rounds up and bounds at 1,000,000,000+', () => {
+    expect(formatCount(12.2)).toBe('13')
+    expect(formatCount(1234)).toBe('1,234')
+    expect(formatCount(2e9)).toBe('1,000,000,000+')
+  })
+
+  it('extreme inputs keep the math and bound the display', () => {
+    const r = computeCoverage({ revenueTarget: 10_000_000_000, winRatePct: 0.0001 })
+    expect(r.valid).toBe(true)
+    expect(r.requiredPipeline).toBeCloseTo(1e16, -3)
+    expect(formatMoney(r.requiredPipeline)).toBe('$1T+')
+    expect(formatMultiple(r.requiredCoverage)).toBe('1,000×+')
+  })
+
+  it('never prints a runaway figure before the T', () => {
+    for (const n of [1e9, 5e11, 9.99e11, 1e12, 4e15, 4e21]) {
+      expect(formatMoney(n)).not.toMatch(/[\d,]{5,}T/)
+    }
   })
 })
 

@@ -27,7 +27,7 @@ export function PersonalInfo({ personalInfo, className = '' }: PersonalInfoProps
         <div className="space-y-8">
           <div>
             <AvailabilityBadge className="mb-6" />
-            <h1 className="mb-4">{personalInfo.name}</h1>
+            <h1 className="mb-4">About {personalInfo.name}</h1>
 
             <h2 className="mb-6">{personalInfo.title}</h2>
 

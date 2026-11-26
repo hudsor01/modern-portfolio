@@ -183,5 +183,3 @@ export const partnerProgramMetrics = {
     },
   ],
 } as const
-
-export type PartnerProgramMetrics = typeof partnerProgramMetrics

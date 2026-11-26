@@ -69,7 +69,7 @@ export function FeatureListGrid({
               <ul className="space-y-2">
                 {item.bullets.map((bullet) => (
                   <li key={bullet} className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-secondary mt-0.5 flex-shrink-0" />
+                    <Check className="h-4 w-4 text-secondary mt-0.5 shrink-0" />
                     <span>{bullet}</span>
                   </li>
                 ))}

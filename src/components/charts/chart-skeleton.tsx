@@ -13,10 +13,10 @@ export type ChartBoxSize = 'sm' | 'md' | 'lg' | 'xl'
  * strings so the Tailwind scanner keeps them.
  */
 export const CHART_BOX: Record<ChartBoxSize, string> = {
-  sm: 'w-full aspect-4/3 sm:aspect-video min-h-[var(--chart-height-sm)] max-h-[var(--chart-height-md)]',
-  md: 'w-full aspect-4/3 sm:aspect-video min-h-[var(--chart-height-md)] max-h-[var(--chart-height-lg)]',
-  lg: 'w-full aspect-4/3 sm:aspect-video min-h-[var(--chart-height-lg)] max-h-[var(--chart-height-xl)]',
-  xl: 'w-full aspect-4/3 sm:aspect-video min-h-[var(--chart-height-xl)] max-h-[var(--chart-height-xl)]',
+  sm: 'w-full aspect-4/3 sm:aspect-video min-h-(--chart-height-sm) max-h-(--chart-height-md)',
+  md: 'w-full aspect-4/3 sm:aspect-video min-h-(--chart-height-md) max-h-(--chart-height-lg)',
+  lg: 'w-full aspect-4/3 sm:aspect-video min-h-(--chart-height-lg) max-h-(--chart-height-xl)',
+  xl: 'w-full aspect-4/3 sm:aspect-video min-h-(--chart-height-xl) max-h-(--chart-height-xl)',
 } as const
 
 /** Shared loading placeholder for lazily-loaded project charts. */

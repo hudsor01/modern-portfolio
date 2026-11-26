@@ -121,6 +121,18 @@ describe('globals.css cascade', () => {
     expect(h1?.body).toContain('font-size: var(--font-size-6xl)')
   })
 
+  it('scopes the hero H1 fluid size to a hero-title utility capped at the global h1 size', () => {
+    const m = css.match(/@utility\s+hero-title\s*\{([^}]*)\}/)
+    expect(m).not.toBeNull()
+    const fontSize = (m?.[1] ?? '').match(/font-size:\s*clamp\(([^;]*)\);/)
+    expect(fontSize).not.toBeNull()
+    const args = fontSize?.[1] ?? ''
+    expect(args.trim().endsWith('var(--font-size-6xl)')).toBe(true)
+    const min = args.trim().match(/^([\d.]+)rem\b/)
+    expect(min).not.toBeNull()
+    expect(Number(min?.[1])).toBeGreaterThanOrEqual(12 / 14)
+  })
+
   it('makes Tailwind font-sans resolve to Spline via the theme token (no shadowed custom utility)', () => {
     expect(css).toMatch(/@theme\s*\{[^}]*--font-sans:\s*var\(--font-spline\)/)
     expect(css).not.toMatch(/@utility\s+font-sans\b/)
@@ -128,6 +140,12 @@ describe('globals.css cascade', () => {
 
   it('keeps the skip-link target focus rule unlayered', () => {
     const rule = rules.find((r) => r.selector === 'main[tabindex="-1"]:focus-visible')
+    expect(rule?.parents).toEqual([])
+    expect(rule?.body).toContain('outline: none')
+  })
+
+  it('keeps the on-load focus-target rule unlayered, so it beats *:focus-visible', () => {
+    const rule = rules.find((r) => r.selector === '[data-focus-target]:focus-visible')
     expect(rule?.parents).toEqual([])
     expect(rule?.body).toContain('outline: none')
   })
@@ -185,5 +203,32 @@ describe('globals.css cascade', () => {
       const offenders = rules.filter((r) => r.selector === 'a' && /text-decoration/.test(r.body))
       expect(offenders).toEqual([])
     })
+  })
+
+  it('reserves a stable scrollbar gutter on html inside @layer base (F-20)', () => {
+    const html = rules.filter(
+      (r) => r.selector === 'html' && r.parents.some((p) => p.startsWith('@layer base'))
+    )
+    expect(html.some((r) => /scrollbar-gutter:\s*stable/.test(r.body))).toBe(true)
+  })
+
+  it('styles scrollbars with standard properties, never ::-webkit-scrollbar (WR-01)', () => {
+    // A custom webkit scrollbar takes space on overlay-scrollbar platforms, where
+    // Chromium and WebKit then drop the stable gutter under overflow: hidden.
+    expect(css).not.toMatch(/::-webkit-scrollbar/)
+    const html = rules.find(
+      (r) =>
+        r.selector === 'html' && r.parents.includes('@layer base') && /scrollbar-color/.test(r.body)
+    )
+    expect(html?.body).toMatch(/scrollbar-color:\s*var\(--color-border\)\s+var\(--color-muted\)/)
+    expect(html?.body).toMatch(/scrollbar-width:\s*thin/)
+  })
+
+  it('cancels react-remove-scroll-bar margin compensation where the gutter is stable (WR-01)', () => {
+    // Layered !important is what beats the library's injected unlayered !important.
+    const lock = rules.find((r) => r.selector === 'body[data-scroll-locked]')
+    expect(lock?.parents).toEqual(['@layer base', '@supports (scrollbar-gutter: stable)'])
+    expect(lock?.body).toMatch(/margin-right:\s*0\s*!important/)
+    expect(lock?.body).toMatch(/--removed-body-scroll-bar-size:\s*0px\s*!important/)
   })
 })

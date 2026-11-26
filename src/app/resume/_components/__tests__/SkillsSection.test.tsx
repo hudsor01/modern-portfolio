@@ -36,4 +36,13 @@ describe('SkillsSection', () => {
     }
     expect(container.innerHTML).not.toContain('bg-muted/50')
   })
+
+  it('carries no utility that an important (!) twin already overrides', () => {
+    const { container } = render(<SkillsSection />)
+    for (const el of container.querySelectorAll('[class]')) {
+      const classes = new Set(el.getAttribute('class')?.split(/\s+/))
+      const dead = [...classes].filter((c) => !c.endsWith('!') && classes.has(`${c}!`))
+      expect(dead, el.tagName).toEqual([])
+    }
+  })
 })

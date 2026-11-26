@@ -13,11 +13,18 @@ describe('generators use the America/Chicago calendar', () => {
     vi.useFakeTimers({ toFake: ['Date'] })
     vi.setSystemTime(new Date('2026-10-01T03:00:00Z'))
     const growth = generateGrowthData(BASE_METRICS)
-    expect(growth[growth.length - 1]?.quarter).toBe('Q3 2026')
+    expect(growth[growth.length - 1]?.quarter).toBe('Q2 2026')
     const churn = generateChurnData(BASE_METRICS)
     expect(churn[churn.length - 1]?.month).toBe('Sep 2026')
     const leads = generateLeadTrendData()
     expect(leads[leads.length - 1]?.month).toBe('Sep')
+  })
+
+  it('moves the growth series to Q3 2026 once Chicago reaches Oct 1', () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-10-01T06:00:00Z'))
+    const growth = generateGrowthData(BASE_METRICS)
+    expect(growth[growth.length - 1]?.quarter).toBe('Q3 2026')
   })
 
   it('uses Dec 31 2026 as the latest year when UTC is already 2027', () => {

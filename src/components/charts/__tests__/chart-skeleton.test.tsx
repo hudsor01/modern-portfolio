@@ -10,8 +10,8 @@ describe('CHART_BOX', () => {
     expect(box).toContain('w-full')
     expect(box).toContain('aspect-4/3')
     expect(box).toContain('sm:aspect-video')
-    expect(box).toContain(`min-h-[var(--chart-height-${size})]`)
-    expect(box).toContain('max-h-[var(--chart-height-')
+    expect(box).toContain(`min-h-(--chart-height-${size})`)
+    expect(box).toContain('max-h-(--chart-height-')
   })
 })
 

@@ -1,10 +1,11 @@
 import Link from 'next/link'
 import { BlogFeaturedImage } from '@/components/blog/blog-featured-image'
-import { ArrowLeft, CalendarDays, Clock, Eye } from 'lucide-react'
+import { ArrowLeft, CalendarDays, Clock } from 'lucide-react'
 import type { BlogPostData } from '@/types/api'
 import { BlogPostArticle } from './blog-post-article'
 import { InlineMarkdown } from './inline-markdown'
 import { formatDate } from '@/lib/data-formatters'
+import { formatReads } from '@/lib/format-reads'
 import type { ContentType } from '@/types/blog'
 import { Badge } from '@/components/ui/badge'
 import { CATEGORY_CHIP_CLASSES } from '@/lib/blog-list'
@@ -81,12 +82,6 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
                     {readingTime} min read
                   </span>
                 )}
-                {post.viewCount > 0 && (
-                  <span className="inline-flex items-center gap-2">
-                    <Eye className="icon-sm" />
-                    {post.viewCount.toLocaleString()} views
-                  </span>
-                )}
               </div>
 
               {/* Title */}
@@ -94,12 +89,9 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
                 <InlineMarkdown value={post.title} />
               </h1>
 
-              {/* Excerpt */}
-              {post.excerpt && (
-                <p className="text-body-lg">
-                  <InlineMarkdown value={post.excerpt} />
-                </p>
-              )}
+              {/* Excerpt: resolveExcerpt output (getBlogPost), already plain text, so it
+                  renders as text. A markdown pass could only misread literal characters. */}
+              {post.excerpt && <p className="text-body-lg">{post.excerpt}</p>}
 
               <div className="mt-6 flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-3">
@@ -119,7 +111,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
 
           {/* Featured Image */}
           {post.featuredImage && (
-            <figure className="relative mt-10 aspect-[16/9] overflow-hidden rounded-md border border-border shadow-sm">
+            <figure className="relative mt-10 aspect-video overflow-hidden rounded-md border border-border shadow-sm">
               <BlogFeaturedImage
                 src={post.featuredImage}
                 alt={post.featuredImageAlt || post.title}
@@ -177,19 +169,20 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
         </div>
 
         <aside className="space-y-6 lg:sticky lg:top-24 self-start">
-          {detailItems.length > 0 && (
-            <Card variant="outline" className="p-6">
-              <p className="uppercase tracking-wide">Post details</p>
-              <div className="mt-3 space-y-3 text-base">
-                {detailItems.map((detail) => (
-                  <div key={detail.label} className="flex items-center justify-between gap-4">
-                    <span className="text-muted-foreground">{detail.label}</span>
-                    <span className="font-semibold text-foreground">{detail.value}</span>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          )}
+          <Card variant="outline" className="p-6">
+            <p className="uppercase tracking-wide">Post details</p>
+            <div className="mt-3 space-y-3 text-base">
+              {detailItems.map((detail) => (
+                <div key={detail.label} className="flex items-center justify-between gap-4">
+                  <span className="text-muted-foreground">{detail.label}</span>
+                  <span className="font-semibold text-foreground">{detail.value}</span>
+                </div>
+              ))}
+              <p data-post-reads className="text-base text-muted-foreground">
+                {formatReads(post.viewCount)}
+              </p>
+            </div>
+          </Card>
 
           {post.author?.bio && (
             <Card variant="outline" className="p-6">

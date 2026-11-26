@@ -14,7 +14,7 @@ export function KPIAlerts() {
               key={index}
               className={`flex items-center gap-3 p-4 rounded-xl border ${alertTypeStyles[alert.type as keyof typeof alertTypeStyles]}`}
             >
-              <IconComponent className="h-5 w-5 flex-shrink-0" />
+              <IconComponent className="h-5 w-5 shrink-0" />
               <span className="text-sm">{alert.message}</span>
             </div>
           )

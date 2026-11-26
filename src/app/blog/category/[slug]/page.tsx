@@ -225,7 +225,7 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
                     >
                       <Card className="hover-lift hover:border-primary/50 transition-all h-full overflow-hidden">
                         {post.featuredImage && (
-                          <div className="relative aspect-[16/10] overflow-hidden">
+                          <div className="relative aspect-16/10 overflow-hidden">
                             <BlogFeaturedImage
                               src={post.featuredImage}
                               alt={post.title}

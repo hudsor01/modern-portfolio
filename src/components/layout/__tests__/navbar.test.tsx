@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi, afterEach } from 'vitest'
-import { render, screen, fireEvent, cleanup } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, fireEvent, cleanup, act } from '@testing-library/react'
 
 // Stub next/navigation before importing the component (transitive import).
 vi.mock('next/navigation', () => ({
@@ -14,8 +14,34 @@ import { navConfig } from '@/lib/site'
 // queued React scheduler tasks drain before the jsdom environment is torn down;
 // otherwise a late task throws "window is not defined" (flaky "Errors 1 error").
 // doUnmock lives here so a failed assertion cannot leak a pathname mock.
+type MediaListener = (event: { matches: boolean }) => void
+const media = {
+  queries: [] as string[],
+  listeners: new Set<MediaListener>(),
+  fire(matches: boolean) {
+    for (const listener of [...media.listeners]) listener({ matches })
+  },
+}
+
+beforeEach(() => {
+  media.queries = []
+  media.listeners = new Set()
+  vi.stubGlobal('matchMedia', (query: string) => {
+    media.queries.push(query)
+    return {
+      matches: false,
+      media: query,
+      addEventListener: (_type: string, listener: MediaListener) => media.listeners.add(listener),
+      removeEventListener: (_type: string, listener: MediaListener) =>
+        media.listeners.delete(listener),
+    }
+  })
+})
+
 afterEach(async () => {
   cleanup()
+  vi.unstubAllGlobals()
+  document.documentElement.style.overflow = ''
   vi.doUnmock('next/navigation')
   vi.resetModules()
   await new Promise((resolve) => setTimeout(resolve, 0))
@@ -266,5 +292,106 @@ describe('Navbar — mobile menu dismissal', () => {
     fireEvent.click(scrim)
     expect(toggle.getAttribute('aria-expanded')).toBe('false')
     expect(container.querySelector('[data-testid="mobile-menu-scrim"]')).toBeNull()
+  })
+})
+
+describe('Navbar — mobile menu scroll lock (F-20)', () => {
+  const rootOverflow = () => document.documentElement.style.overflow
+  const open = () => {
+    const utils = render(<Navbar />)
+    fireEvent.click(screen.getByRole('button', { name: 'Open menu' }))
+    return utils
+  }
+
+  it('locks html overflow while open and not before', () => {
+    render(<Navbar />)
+    expect(rootOverflow()).toBe('')
+    fireEvent.click(screen.getByRole('button', { name: 'Open menu' }))
+    expect(rootOverflow()).toBe('hidden')
+  })
+
+  it('releases on the Close toggle', () => {
+    open()
+    fireEvent.click(screen.getByRole('button', { name: 'Close menu' }))
+    expect(rootOverflow()).toBe('')
+  })
+
+  it('releases on Escape', () => {
+    open()
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(rootOverflow()).toBe('')
+  })
+
+  it('releases on scrim click', () => {
+    open()
+    fireEvent.click(screen.getByTestId('mobile-menu-scrim'))
+    expect(rootOverflow()).toBe('')
+  })
+
+  it('releases on a mobile link click', () => {
+    const { container } = open()
+    const link = container.querySelector<HTMLAnchorElement>('#mobile-menu a')
+    link?.addEventListener('click', (e) => e.preventDefault())
+    fireEvent.click(link as HTMLAnchorElement)
+    expect(rootOverflow()).toBe('')
+  })
+
+  it('releases on unmount while open', () => {
+    const { unmount } = open()
+    expect(rootOverflow()).toBe('hidden')
+    unmount()
+    expect(rootOverflow()).toBe('')
+  })
+
+  it('closes and releases on a route change', async () => {
+    const nav = { pathname: '/blog' }
+    vi.resetModules()
+    vi.doMock('next/navigation', () => ({ usePathname: () => nav.pathname }))
+    const { Navbar: RouteNavbar } = await import('../navbar')
+    const { container, rerender } = render(<RouteNavbar />)
+    fireEvent.click(screen.getByRole('button', { name: 'Open menu' }))
+    expect(rootOverflow()).toBe('hidden')
+    nav.pathname = '/about'
+    rerender(<RouteNavbar />)
+    expect(rootOverflow()).toBe('')
+    expect(screen.getByRole('button', { name: 'Open menu' }).getAttribute('aria-expanded')).toBe(
+      'false'
+    )
+    expect(container.querySelector('#mobile-menu')?.hasAttribute('hidden')).toBe(true)
+  })
+
+  it('closes and releases when the viewport widens to md', () => {
+    const { container } = open()
+    expect(media.queries).toEqual(['(min-width: 48rem)'])
+    act(() => media.fire(true))
+    expect(rootOverflow()).toBe('')
+    expect(container.querySelector('#mobile-menu')?.hasAttribute('hidden')).toBe(true)
+  })
+
+  it('stays open and locked when the media query stops matching', () => {
+    const { container } = open()
+    act(() => media.fire(false))
+    expect(rootOverflow()).toBe('hidden')
+    expect(container.querySelector('#mobile-menu')?.hasAttribute('hidden')).toBe(false)
+  })
+
+  it('only listens to the media query while open', () => {
+    render(<Navbar />)
+    expect(media.queries).toEqual([])
+    fireEvent.click(screen.getByRole('button', { name: 'Open menu' }))
+    expect(media.listeners.size).toBe(1)
+    fireEvent.click(screen.getByRole('button', { name: 'Close menu' }))
+    expect(media.listeners.size).toBe(0)
+  })
+
+  it('panel scrolls internally with contained overscroll', () => {
+    const { container } = render(<Navbar />)
+    const cls = container.querySelector('#mobile-menu')?.className ?? ''
+    expect(cls).toContain('max-h-[calc(100dvh-4rem)]')
+    expect(cls).toContain('overflow-y-auto')
+    expect(cls).toContain('overscroll-contain')
+    expect(cls).toMatch(/(^|\s)bg-card(\s|$)/)
+    expect(cls).not.toContain('bg-card/')
+    expect(cls).not.toContain('backdrop-blur')
   })
 })

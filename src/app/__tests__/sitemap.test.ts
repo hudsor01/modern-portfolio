@@ -47,3 +47,9 @@ describe('sitemap tools entries', () => {
     expect(new Set(others.map((e) => String(e.lastModified))).size).toBe(1)
   })
 })
+
+describe('sitemap exclusions', () => {
+  it('omits the noindex /contact/sent thank-you page', () => {
+    expect(entries.some((e) => e.url.startsWith(`${SITE_ORIGIN}/contact/sent`))).toBe(false)
+  })
+})

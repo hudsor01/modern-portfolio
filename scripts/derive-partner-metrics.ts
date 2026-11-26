@@ -303,8 +303,6 @@ function main() {
 
   const body = `${banner}
 export const partnerProgramMetrics = ${JSON.stringify(out, null, 2)} as const
-
-export type PartnerProgramMetrics = typeof partnerProgramMetrics
 `
 
   const dest = join(process.cwd(), 'src/data/partner-program-metrics.ts')

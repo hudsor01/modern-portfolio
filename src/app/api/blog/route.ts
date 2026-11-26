@@ -21,11 +21,13 @@ import {
   buildBlogOrderBy,
   createErrorResponse,
   generateSlug,
+  invalidBodyMessage,
 } from '@/lib/api-blog'
 import { createBlogPostSchema, PostStatusSchema } from '@/lib/schemas'
 import { SITE_ORIGIN, canonicalUrl } from '@/lib/absolute-url'
 import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
 import { normalizeSeoTitle } from '@/lib/post-title'
+import { normalizeStoredSeoText } from '@/lib/blog-excerpt'
 
 // POST/PUT contract asymmetry (kept here so a future admin client knows
 // what to send):
@@ -213,7 +215,9 @@ export async function POST(request: NextRequest) {
     const parsed = createBlogPostSchema.safeParse(raw)
     if (!parsed.success) {
       logger.warn('Blog POST validation failed', { issues: z.flattenError(parsed.error) })
-      return NextResponse.json(createErrorResponse('Invalid request body'), { status: 400 })
+      return NextResponse.json(createErrorResponse(invalidBodyMessage(parsed.error)), {
+        status: 400,
+      })
     }
     const body = parsed.data
 
@@ -233,12 +237,20 @@ export async function POST(request: NextRequest) {
     const wordCount = body.content.split(/\s+/).length
     const readingTime = Math.ceil(wordCount / 200)
 
+    // An excerpt or meta that opens with the author bio is replaced by one
+    // derived from the body. Normalized, never rejected, so publishing can't fail.
+    const seoText = normalizeStoredSeoText({
+      excerpt: body.excerpt,
+      metaDescription: body.metaDescription,
+      content: body.content,
+    })
+
     const insertedRows = await db
       .insert(blogPosts)
       .values({
         title: body.title,
         slug,
-        excerpt: body.excerpt,
+        excerpt: seoText.excerpt,
         content: body.content,
         contentType: body.contentType,
         status: body.status,
@@ -250,7 +262,7 @@ export async function POST(request: NextRequest) {
         // results; derived from the title when the pipeline sends none or
         // too long a one. Normalized, never rejected, so publishing can't fail.
         metaTitle: normalizeSeoTitle(body.metaTitle, body.title),
-        metaDescription: body.metaDescription,
+        metaDescription: seoText.metaDescription,
         keywords: body.keywords,
         canonicalUrl: body.canonicalUrl,
         ogTitle: body.ogTitle,

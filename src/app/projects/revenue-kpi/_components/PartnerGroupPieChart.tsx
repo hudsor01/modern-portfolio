@@ -1,8 +1,8 @@
 'use client'
 
-import { ChartContainer as ChartCard } from '@/components/ui/chart-container'
+import { ChartContainer } from '@/components/ui/chart-container'
 import {
-  ChartContainer,
+  ChartFrame,
   ChartTooltip,
   ChartTooltipContent,
   type ChartThemeConfig,
@@ -52,25 +52,25 @@ export default function PartnerGroupPieChart({ groups }: PartnerGroupPieChartPro
 
   if (!chartData.length) {
     return (
-      <ChartCard
+      <ChartContainer
         title="Partner Revenue Contribution"
         description="No data available"
         size="auto"
         headingLevel={2}
       >
         {null}
-      </ChartCard>
+      </ChartContainer>
     )
   }
 
   return (
-    <ChartCard
+    <ChartContainer
       title="Partner Revenue Contribution"
       description="Revenue distribution by partner tier"
       size="md"
       headingLevel={2}
     >
-      <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
+      <ChartFrame config={chartConfig} className="aspect-auto h-full w-full">
         <PieChart>
           <Pie
             data={chartData}
@@ -98,7 +98,7 @@ export default function PartnerGroupPieChart({ groups }: PartnerGroupPieChartPro
           />
           <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
         </PieChart>
-      </ChartContainer>
-    </ChartCard>
+      </ChartFrame>
+    </ChartContainer>
   )
 }

@@ -5,6 +5,7 @@ import {
   PILLARS,
   QUESTIONS,
   scoreMaturity,
+  TIERS,
   tierForScore,
   type PillarId,
 } from '@/lib/revops-maturity'
@@ -19,27 +20,34 @@ const SCALE = [
 
 const SCALE_KEY = SCALE.map((o) => `${o.value} ${o.label}`).join(' · ')
 
-const DEFAULT = 3
+/** Upper bounds of the Emerging and Defined tiers: below them a pillar reads red, then amber. */
+const LOW_BAND = TIERS[1]!.max
+const MID_BAND = TIERS[2]!.max
 
 /** Pillar score (1–5) → bar fill class. Weakest pillars read warmer. */
 function barColor(score: number): string {
-  if (score < 2.6) return 'bg-destructive'
-  if (score < 3.4) return 'bg-warning'
+  if (score < LOW_BAND) return 'bg-destructive'
+  if (score < MID_BAND) return 'bg-warning'
   return 'bg-success'
+}
+
+/** "weakest" badge text class, in the same band as its bar; neutral from the Managed band up. */
+function badgeColor(score: number): string {
+  if (score < LOW_BAND) return 'text-destructive'
+  if (score < MID_BAND) return 'text-warning-text'
+  return 'text-muted-foreground'
 }
 
 export function RevOpsMaturityScorecard() {
   const groupName = useId()
-  const [answers, setAnswers] = useState<Record<string, number>>(() =>
-    Object.fromEntries(QUESTIONS.map((q) => [q.id, DEFAULT]))
-  )
+  const [answers, setAnswers] = useState<Record<string, number>>({})
 
   const result = useMemo(() => scoreMaturity(answers), [answers])
   const tier = tierForScore(result.overallScore)
 
   const setAnswer = (id: string, value: number) => setAnswers((prev) => ({ ...prev, [id]: value }))
 
-  const reset = () => setAnswers(Object.fromEntries(QUESTIONS.map((q) => [q.id, DEFAULT])))
+  const reset = () => setAnswers({})
 
   return (
     <div className="grid gap-8 lg:grid-cols-5">
@@ -74,7 +82,7 @@ export function RevOpsMaturityScorecard() {
                       return (
                         <label
                           key={opt.value}
-                          className={`flex flex-col items-center justify-center rounded-lg border px-1 py-2 cursor-pointer text-center transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-background ${
+                          className={`flex flex-col items-center justify-center rounded-lg border px-1 py-2 cursor-pointer text-center transition-colors has-focus-visible:ring-2 has-focus-visible:ring-ring has-focus-visible:ring-offset-2 has-focus-visible:ring-offset-background ${
                             selected
                               ? 'border-primary bg-primary/10 text-primary'
                               : 'border-border bg-background text-muted-foreground hover:border-primary/50'
@@ -108,32 +116,48 @@ export function RevOpsMaturityScorecard() {
           onClick={reset}
           className="text-sm text-muted-foreground hover:text-primary transition-colors underline underline-offset-4"
         >
-          Reset all to neutral
+          Reset answers
         </button>
       </div>
 
       {/* Results */}
       <div className="lg:col-span-2">
+        {/* Only the level is a live region: it changes when the result does, while the
+            answered count and scores change on every click and are read on demand. */}
         <div
+          role="region"
+          aria-label="Your result"
           className="lg:sticky lg:top-28 bg-card rounded-2xl p-6 sm:p-8 border border-border shadow-sm"
-          aria-live="polite"
         >
-          <p className="uppercase tracking-wider">Your maturity level</p>
-          <p className="mt-1 flex items-baseline gap-2">
-            <span className="text-5xl font-bold text-primary tracking-tight">{result.level}</span>
-            <span className="text-2xl font-semibold text-foreground">{result.tier}</span>
+          <p className="text-sm text-muted-foreground">
+            {result.answered} of {result.total} answered
           </p>
-          <p className="mt-1">
-            Overall score {result.overallScore.toFixed(1)} / 5 · ~{result.percentile}th percentile
-            of B2B teams
-          </p>
-          {tier && <p className="mt-3">{tier.blurb}</p>}
+          <div aria-live="polite" aria-atomic="true">
+            <p className="mt-3 uppercase tracking-wider">Your maturity level</p>
+            {result.everyPillarAnswered ? (
+              <p className="mt-1 flex items-baseline gap-2">
+                <span className="text-5xl font-bold text-primary tracking-tight">
+                  {result.level}
+                </span>{' '}
+                <span className="text-2xl font-semibold text-foreground">{result.tier}</span>
+              </p>
+            ) : (
+              <p className="mt-3">Answer at least one question in each area to see your level.</p>
+            )}
+          </div>
+          {result.everyPillarAnswered && (
+            <>
+              <p className="mt-1">Overall score {result.overallScore.toFixed(1)} / 5</p>
+              {tier && <p className="mt-3">{tier.blurb}</p>}
+            </>
+          )}
 
           {/* Per-pillar bars */}
           <div className="mt-6 space-y-3">
             {PILLARS.map((pillar) => {
               const score = result.pillarScores[pillar.id as PillarId]
-              const isWeakest = result.weakestPillar === pillar.id
+              const isWeakest = result.everyPillarAnswered && result.weakestPillar === pillar.id
+              const unanswered = result.answeredByPillar[pillar.id as PillarId] === 0
               return (
                 <div key={pillar.id}>
                   <div className="flex items-center justify-between text-sm">
@@ -142,43 +166,52 @@ export function RevOpsMaturityScorecard() {
                     >
                       {pillar.label}
                       {isWeakest && (
-                        <span className="ml-2 text-xs uppercase tracking-wide text-destructive">
+                        <span
+                          className={`ml-2 text-xs uppercase tracking-wide ${badgeColor(score)}`}
+                        >
                           weakest
                         </span>
                       )}
                     </span>
-                    <span className="tabular-nums text-muted-foreground">{score.toFixed(1)}</span>
+                    <span className="tabular-nums text-muted-foreground">
+                      {unanswered ? 'Not answered' : score.toFixed(1)}
+                    </span>
                   </div>
                   <div className="mt-1 h-2 w-full rounded-full bg-muted overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all ${barColor(score)}`}
-                      style={{ width: `${(Math.min(5, Math.max(0, score)) / 5) * 100}%` }}
-                    />
+                    {!unanswered && (
+                      <div
+                        className={`h-full rounded-full transition-all ${barColor(score)}`}
+                        style={{ width: `${(Math.min(5, Math.max(0, score)) / 5) * 100}%` }}
+                      />
+                    )}
                   </div>
                 </div>
               )
             })}
           </div>
 
-          {/* Highest-ROI next move */}
-          {result.nextMove && (
-            <div className="mt-6 rounded-xl bg-muted/50 p-4">
-              <p className="uppercase tracking-wider mb-1">Highest-ROI next move</p>
-              <p>{result.nextMove}</p>
-            </div>
-          )}
+          {/* Advice: its own live region, announced when the next move or the warning changes. */}
+          <div aria-live="polite" aria-atomic="true">
+            {result.everyPillarAnswered && result.nextMove && (
+              <div className="mt-6 rounded-xl bg-muted/50 p-4">
+                <p className="uppercase tracking-wider mb-1">Your next move</p>
+                <p>{result.nextMove}</p>
+              </div>
+            )}
 
-          {/* Tech-overbuy anti-pattern */}
-          {result.techOverbuy && (
-            <div className="mt-4 rounded-xl border border-destructive/40 bg-destructive/5 p-4">
-              <p>
-                <strong className="text-destructive">Watch out:</strong> your tooling maturity is
-                running ahead of your data and process maturity — the classic{' '}
-                <em>buying tools you can’t feed</em> trap. Fix the foundation before adding more
-                stack, or the new tools inherit the same messy inputs.
-              </p>
-            </div>
-          )}
+            {/* Tech-overbuy anti-pattern */}
+            {result.everyPillarAnswered && result.techOverbuy && (
+              <div className="mt-4 rounded-xl border border-destructive/40 bg-destructive/5 p-4">
+                <p>
+                  <strong className="text-destructive">Watch out:</strong> your tooling maturity is
+                  running at least a full level ahead of your{' '}
+                  {result.overbuyFoundation.join(' and ')} maturity — the classic{' '}
+                  <em>buying tools you can’t feed</em> trap. Fix the foundation before adding more
+                  stack, or the new tools inherit the same messy inputs.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

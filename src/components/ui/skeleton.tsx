@@ -60,7 +60,7 @@ function Skeleton({
         // edge fade. Keeps the shimmer UX without a color gradient (palette
         // rule forbids color-based gradients; masks are opacity-only).
         shimmer &&
-          'relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-foreground/10 before:[mask-image:linear-gradient(to_right,transparent_0%,black_50%,transparent_100%)]',
+          'relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-foreground/10 before:mask-[linear-gradient(to_right,transparent_0%,black_50%,transparent_100%)]',
         className
       )}
       {...props}

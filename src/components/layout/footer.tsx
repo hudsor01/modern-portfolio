@@ -56,7 +56,7 @@ export function Footer() {
   const currentYear = getDisplayYearMonth().year
 
   return (
-    <footer className="bg-card border-t border-border">
+    <footer className="bg-card border-t border-border print:hidden">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl py-12">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Brand / intro column */}

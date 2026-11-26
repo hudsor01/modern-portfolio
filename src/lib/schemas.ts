@@ -22,10 +22,52 @@ if (typeof window !== 'undefined') {
 // BASE PRIMITIVE SCHEMAS
 // =======================
 
+/** The one source for contactFormSchema, every contact field's maxLength and the message counter. */
+export const CONTACT_LIMITS = {
+  name: 50,
+  email: 254,
+  company: 100,
+  phone: 20,
+  subject: 100,
+  message: 1000,
+} as const
+
+/**
+ * Contact form minima. The schema checks them in code points on the trimmed value; the native
+ * minLength mirrors them in UTF-16 units on the raw value, so it is never stricter than the
+ * server (it never blocks a valid submission) but can be looser: one emoji is 2 units and
+ * padding counts, so '😀' or '  a  ' pass minLength={2} and the schema rejects them. The
+ * hydrated path's TanStack validator (this same schema) catches that before any request; the
+ * no-JS path gets a server round trip with the field error. Parity is claimed for maxima only.
+ */
+export const CONTACT_MINIMUMS = {
+  name: 2,
+  subject: 1,
+  message: 10,
+} as const
+
+/**
+ * multipart/form-data encoding sends textarea newlines as CRLF while the textarea value and
+ * maxlength count LF; normalising before the length check makes server acceptance equal the
+ * client count.
+ */
+export function normalizeNewlines(value: string): string {
+  return value.replace(/\r\n?/g, '\n')
+}
+
+/**
+ * Message length in UTF-16 units, the same measure maxlength enforces. Never count code points
+ * here: for the maximum, Zod's code-point count is equal or looser, so anything the UI allows
+ * is accepted. That holds for maxima only; see CONTACT_MINIMUMS for the minimum.
+ */
+export function contactMessageLength(value: string): number {
+  return normalizeNewlines(value).length
+}
+
 // Email validation - single source of truth
 export const emailSchema = z
   .email('Please enter a valid email address')
-  .max(254, 'Email address is too long')
+  .max(CONTACT_LIMITS.email, 'Email address is too long')
 
 // URL validation. `protocol: /^https?$/` is the Zod 4 documented idiom
 // for rejecting `javascript:` / `data:` / `vbscript:` etc. at the schema
@@ -57,6 +99,43 @@ export const nullishText = (max: number, message?: string) =>
       // Zod's .max accepts `undefined` for `message`, so the explicit
       // ternary was dead weight — pass `message` through unchanged.
       z.string().max(max, message),
+      z.null(),
+    ])
+    .optional()
+
+// Bound on the metaTitle/metaDescription text the routes normalize. It matches the
+// content cap: the request body is already parsed by then, so this limits the
+// normalizer's work, not memory. Routes trim to the 160-char column via
+// blog-excerpt, so longer input is cut here, never rejected.
+const META_INPUT_MAX = 100_000
+
+/** How far back cutMetaInput looks for whitespace before hard-cutting. */
+const META_CUT_BACKOFF = 64
+
+/**
+ * Cuts `value` to at most `max` UTF-16 units without splitting a surrogate
+ * pair. It backs off to whitespace within the last META_CUT_BACKOFF units so a
+ * word or entity straddling the bound is dropped whole; with no whitespace
+ * there it hard-cuts and drops a trailing partial HTML entity.
+ */
+export function cutMetaInput(value: string, max: number): string {
+  if (max <= 0) return ''
+  if (value.length <= max) return value
+  let end = max
+  const last = value.charCodeAt(end - 1)
+  if (last >= 0xd800 && last <= 0xdbff) end -= 1
+  else if (/\s/.test(value[end] as string)) return value.slice(0, end)
+  for (let i = end - 1; i > 0 && i >= end - META_CUT_BACKOFF; i--) {
+    if (/\s/.test(value[i] as string)) return value.slice(0, i)
+  }
+  return value.slice(0, end).replace(/&#?[a-z0-9]*$/i, '')
+}
+
+const truncatingNullishText = (max: number) =>
+  z
+    .union([
+      z.literal('').transform(() => null),
+      z.string().transform((value) => cutMetaInput(value, max)),
       z.null(),
     ])
     .optional()
@@ -161,15 +240,6 @@ export const colorSchema = z
   .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Must be a valid hex color')
   .optional()
 
-// Meta description with proper character limits. Used by blog post
-// schemas (where it's wrapped as `.nullish()` to support PATCH-clear)
-// and by SEO event schemas elsewhere. Keep the `.optional()` form
-// here as the leaf primitive; nullability is composed at the use site.
-export const metaDescriptionSchema = z
-  .string()
-  .max(160, 'Meta description cannot exceed 160 characters')
-  .optional()
-
 // Keywords array validation
 export const keywordsSchema = z
   .array(z.string().min(1).max(50))
@@ -201,35 +271,49 @@ export const ContentTypeSchema = z.enum(contentType.enumValues)
 
 export const contactFormSchema = z
   .object({
+    // Zod 4 runs checks and overwrites in chain order: max on the raw value (what maxLength
+    // counts), then trim, then min on the trimmed value so whitespace alone never passes.
     name: z
       .string()
-      .min(2, 'Name must be at least 2 characters long')
-      .max(50, 'Name cannot exceed 50 characters')
-      .trim(),
-    email: z.email('Please enter a valid email address').max(254, 'Email address is too long'),
+      .max(CONTACT_LIMITS.name, `Name cannot exceed ${CONTACT_LIMITS.name} characters`)
+      .trim()
+      .min(CONTACT_MINIMUMS.name, `Name must be at least ${CONTACT_MINIMUMS.name} characters long`),
+    email: z
+      .email('Please enter a valid email address')
+      .max(CONTACT_LIMITS.email, 'Email address is too long'),
     company: z
       .string()
-      .max(100, 'Company name cannot exceed 100 characters')
+      .max(
+        CONTACT_LIMITS.company,
+        `Company name cannot exceed ${CONTACT_LIMITS.company} characters`
+      )
       .trim()
       .optional()
       .or(z.literal('')),
     phone: z
       .string()
-      .max(20, 'Phone number cannot exceed 20 characters')
+      .max(CONTACT_LIMITS.phone, `Phone number cannot exceed ${CONTACT_LIMITS.phone} characters`)
       .regex(/^[\d\s+()-]*$/, 'Please enter a valid phone number')
       .optional()
       .or(z.literal('')),
     subject: z
       .string()
-      .min(1, 'Subject must be at least 1 character')
-      .max(100, 'Subject must not exceed 100 characters')
+      .max(CONTACT_LIMITS.subject, `Subject must not exceed ${CONTACT_LIMITS.subject} characters`)
       .trim()
+      .min(
+        CONTACT_MINIMUMS.subject,
+        `Subject must be at least ${CONTACT_MINIMUMS.subject} character`
+      )
       .optional(),
     message: z
       .string()
-      .min(10, 'Message must be at least 10 characters long')
-      .max(1000, 'Message cannot exceed 1000 characters')
-      .trim(),
+      .overwrite(normalizeNewlines)
+      .max(CONTACT_LIMITS.message, `Message cannot exceed ${CONTACT_LIMITS.message} characters`)
+      .trim()
+      .min(
+        CONTACT_MINIMUMS.message,
+        `Message must be at least ${CONTACT_MINIMUMS.message} characters long`
+      ),
     honeypot: z.string().optional(),
   })
   .strict()
@@ -271,8 +355,11 @@ const blogPostBaseShape = {
   excerpt: nullishText(500),
   contentType: ContentTypeSchema,
   status: PostStatusSchema,
-  metaTitle: nullishText(100),
-  metaDescription: nullishText(160, 'Meta description cannot exceed 160 characters'),
+  metaTitle: truncatingNullishText(META_INPUT_MAX),
+  // Bio-opener and over-long metas (titles and descriptions) are accepted here
+  // (cut to META_INPUT_MAX) and normalized by the routes, never rejected:
+  // publishing cannot fail on them.
+  metaDescription: truncatingNullishText(META_INPUT_MAX),
   keywords: z.array(z.string().min(1).max(50)).max(10, 'Cannot have more than 10 keywords'),
   canonicalUrl: nullishUrl(),
   // Social card image fields reuse featuredImageSchema — same host
@@ -323,7 +410,7 @@ export const createTagSchema = z
   .object({
     name: z.string().min(1, 'Name is required').max(60),
     description: nullishText(500),
-    metaDescription: nullishText(160, 'Meta description cannot exceed 160 characters'),
+    metaDescription: truncatingNullishText(META_INPUT_MAX),
     color: hexColor.default('#6B7280'),
   })
   .strict()
@@ -332,8 +419,8 @@ export const createCategorySchema = z
   .object({
     name: z.string().min(1, 'Name is required').max(60),
     description: nullishText(500),
-    metaTitle: nullishText(100),
-    metaDescription: nullishText(160, 'Meta description cannot exceed 160 characters'),
+    metaTitle: truncatingNullishText(META_INPUT_MAX),
+    metaDescription: truncatingNullishText(META_INPUT_MAX),
     color: hexColor.default('#6B7280'),
     icon: nullishText(50),
     keywords: z.array(z.string().min(1).max(50)).max(10).default([]),

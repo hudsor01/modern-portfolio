@@ -471,6 +471,11 @@ main[tabindex="-1"]:focus-visible {
   outline: none;
 }
 
+/* Status banners focused on load (the contact form's no-JS result): same reasoning. */
+[data-focus-target]:focus-visible {
+  outline: none;
+}
+
 /* Transitions stay unlayered on purpose: moving them into @layer base would let the
    `transition: all` rule at the top of this file win and change every link/button animation. */
 a {
@@ -483,23 +488,6 @@ button {
 
 input, textarea, select {
   transition: all var(--motion-duration-normal) var(--motion-ease-out);
-}
-
-::-webkit-scrollbar {
-  width: 0.5rem;
-}
-
-::-webkit-scrollbar-track {
-  background-color: var(--color-muted);
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: var(--color-border);
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-accent);
 }
 
 .portfolio-container {
@@ -818,6 +806,18 @@ input, textarea, select {
   text-wrap: balance;
 }
 
+/*
+ * Hero H1 fluid size (A11Y-05 / I-1). Hero-scoped: the global h1 rule in
+ * @layer base is untouched. Calibrated from a measured 6.086em-wide
+ * "Transforming" at 42px: 3rem is the horizontal space outside the H1
+ * (2 x px-6), 6.57 = 6.086 x 1.08 (8% headroom). The cap is the global h1
+ * size, so any viewport wider than ~318px renders exactly as before; the floor
+ * (1.75rem) stays far above the 12px text minimum.
+ */
+@utility hero-title {
+  font-size: clamp(1.75rem, calc((100vw - 3rem) / 6.57), var(--font-size-6xl));
+}
+
 @utility typography-h2 {
   scroll-margin-top: 5rem;
   border-bottom: 1px solid var(--color-border);
@@ -934,6 +934,33 @@ input, textarea, select {
   }
   html {
     font-size: var(--font-size-base, 0.875rem);
+    /* Keeps the width constant when the mobile menu locks html overflow. */
+    scrollbar-gutter: stable;
+    /*
+     * Standard scrollbar styling, never ::-webkit-scrollbar: a custom webkit
+     * scrollbar takes space even where the platform uses overlay scrollbars
+     * (macOS Chrome and Safari), and there the stable gutter is dropped as soon
+     * as overflow is hidden, so every scroll lock shifted the page. Inherited,
+     * so it styles inner scroll areas too.
+     */
+    scrollbar-color: var(--color-border) var(--color-muted);
+    scrollbar-width: thin;
+  }
+
+  /*
+   * Radix Select/Dialog lock scroll through react-remove-scroll-bar, which sets
+   * body[data-scroll-locked] { margin-right: <gap>px !important } to fill the
+   * width a disappearing scrollbar frees. The stable gutter above means the
+   * scrollbar never frees that width, so the margin would shift the page left by
+   * the gutter. Layered !important beats the library's unlayered !important.
+   * Gated on support: without scrollbar-gutter the scrollbar does disappear and
+   * the library's margin is the right compensation.
+   */
+  @supports (scrollbar-gutter: stable) {
+    body[data-scroll-locked] {
+      margin-right: 0 !important;
+      --removed-body-scroll-bar-size: 0px !important;
+    }
   }
 
   body {
@@ -1061,5 +1088,27 @@ input, textarea, select {
   label {
     font-weight: var(--font-weight-medium);
     font-size: var(--font-size-sm);
+  }
+}
+
+/* Print: /resume is the résumé PDF's source (page.pdf of this rendering). Layout and
+   sizes come from print: utilities on the components; this block holds only what a
+   utility cannot express. Element rules here are print-only, so the on-screen cascade
+   is unaffected. */
+@media print {
+  @page {
+    size: letter;
+    margin: 0.5in;
+  }
+
+  html {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* A white sheet, not the off-white screen canvas. */
+  html,
+  body {
+    background-color: transparent;
   }
 }

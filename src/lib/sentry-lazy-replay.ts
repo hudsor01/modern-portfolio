@@ -11,7 +11,7 @@
 
 // Defaults, set explicitly: this is a public site but forms carry names/emails,
 // and a replay must never become a PII leak.
-export const REPLAY_PRIVACY_OPTIONS = {
+const REPLAY_PRIVACY_OPTIONS = {
   maskAllText: true,
   maskAllInputs: true,
   blockAllMedia: true,

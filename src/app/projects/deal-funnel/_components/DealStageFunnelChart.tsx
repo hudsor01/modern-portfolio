@@ -23,7 +23,7 @@ const FUNNEL_COLORS = [
 ]
 
 /** Share of all opportunities (not a stage-to-stage rate: the stages are outcomes, not steps). */
-export function stageShares(stages: FunnelStage[]) {
+function stageShares(stages: FunnelStage[]) {
   const total = stages.reduce((sum, stage) => sum + stage.count, 0)
   return stages.map((stage) => ({
     stage: stage.name,

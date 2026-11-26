@@ -117,5 +117,3 @@ export function ContactNotificationEmail({ data, submittedAt }: ContactNotificat
     </Html>
   )
 }
-
-export default ContactNotificationEmail

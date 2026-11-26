@@ -72,7 +72,7 @@ test.describe('/contact page (no JavaScript)', () => {
       // The <noscript> contents become real DOM when JS is disabled,
       // so we can assert visibility on the fallback message.
       await expect(
-        page.getByText(/this form requires javascript/i)
+        page.getByText(/prefer email\? write to/i)
       ).toBeVisible()
 
       // And the mailto link inside the fallback should be reachable.

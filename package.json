@@ -17,7 +17,8 @@
     "format": "biome format src",
     "format:fix": "biome format --write src",
     "typecheck": "tsc --noEmit",
-    "ci:quick": "bun run lint && bun run typecheck",
+    "typecheck:e2e": "tsc --noEmit -p e2e",
+    "ci:quick": "bun run lint && bun run typecheck && bun run typecheck:e2e",
     "test": "vitest run --passWithNoTests",
     "test:tz": "TZ=UTC vitest run .tz.test && TZ=America/Los_Angeles vitest run .tz.test && TZ=Asia/Tokyo vitest run .tz.test",
     "test:watch": "vitest",
@@ -33,7 +34,8 @@
     "db:push": "bunx drizzle-kit push",
     "db:migrate": "bunx drizzle-kit migrate",
     "db:studio": "bunx drizzle-kit studio",
-    "db:seed": "bun run drizzle/seed.ts"
+    "db:seed": "bun run drizzle/seed.ts",
+    "resume:pdf": "bun scripts/resume-pdf.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.2.0",

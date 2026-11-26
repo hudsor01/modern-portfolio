@@ -5,6 +5,7 @@ import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-l
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 import { formatDate } from '@/lib/data-formatters'
 import { generateMetadata as genMeta } from '@/app/shared-metadata'
+import { CONTACT } from '@/lib/contact-info'
 import { PRIVACY_POLICY_LAST_UPDATED } from './policy-date'
 
 // Statements on this page describe what the code does today, except the ones
@@ -19,7 +20,7 @@ import { PRIVACY_POLICY_LAST_UPDATED } from './policy-date'
 // PRIVACY_POLICY_LAST_UPDATED in the same change.
 
 const PATH = '/privacy'
-const CONTACT_EMAIL = 'hudsor01@icloud.com'
+const CONTACT_EMAIL = CONTACT.email
 
 export const dynamic = 'force-static'
 

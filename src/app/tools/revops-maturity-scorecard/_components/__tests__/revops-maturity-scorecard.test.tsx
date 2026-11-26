@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, it, expect, afterEach } from 'vitest'
 import { render, screen, cleanup, within, fireEvent } from '@testing-library/react'
-import { PILLARS } from '@/lib/revops-maturity'
+import { PILLARS, QUESTIONS } from '@/lib/revops-maturity'
 import { RevOpsMaturityScorecard } from '../revops-maturity-scorecard'
 
 afterEach(async () => {
@@ -74,27 +74,202 @@ describe('RevOpsMaturityScorecard keyboard focus', () => {
   it('shows a ring on the label when its sr-only radio has focus-visible', () => {
     const { container } = render(<RevOpsMaturityScorecard />)
     const label = container.querySelector('fieldset label')
-    expect(label?.className).toContain('has-[:focus-visible]:ring-2')
-    expect(label?.className).toContain('has-[:focus-visible]:ring-ring')
-    expect(label?.className).toContain('has-[:focus-visible]:ring-offset-2')
+    expect(label?.className).toContain('has-focus-visible:ring-2')
+    expect(label?.className).toContain('has-focus-visible:ring-ring')
+    expect(label?.className).toContain('has-focus-visible:ring-offset-2')
   })
 })
 
-describe('RevOpsMaturityScorecard weakest badge', () => {
-  it('shows no "weakest" badge when every pillar ties (the neutral default)', () => {
+const answerAll = (name: string) => {
+  for (const r of screen.getAllByRole('radio', { name })) fireEvent.click(r)
+}
+
+const answerPillar = (container: HTMLElement, index: number, name: string) => {
+  const fieldset = container.querySelectorAll('fieldset')[index] as HTMLElement
+  for (const r of within(fieldset).getAllByRole('radio', { name })) fireEvent.click(r)
+}
+
+const PROMPT = 'Answer at least one question in each area to see your level.'
+
+describe('RevOpsMaturityScorecard answering', () => {
+  it('starts unanswered with a zero count and no level', () => {
     const { container } = render(<RevOpsMaturityScorecard />)
+    expect(screen.getAllByRole('radio').some((r) => (r as HTMLInputElement).checked)).toBe(false)
+    expect(screen.getByText(`0 of ${QUESTIONS.length} answered`)).toBeTruthy()
+    expect(screen.getByText(PROMPT)).toBeTruthy()
+    expect(screen.queryByText('Your next move')).toBeNull()
+    expect(container.textContent).not.toContain('Overall score')
     expect(container.textContent?.toLowerCase()).not.toContain('weakest')
-    expect(screen.getByText('Highest-ROI next move')).toBeTruthy()
+    expect(screen.getAllByText('Not answered')).toHaveLength(PILLARS.length)
+  })
+
+  it('counts each answer but withholds the level until every pillar has one', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    fireEvent.click(screen.getAllByRole('radio', { name: '3 Somewhat' })[0] as HTMLElement)
+    expect(screen.getByText(`1 of ${QUESTIONS.length} answered`)).toBeTruthy()
+    expect(screen.getByText(PROMPT)).toBeTruthy()
+    expect(container.textContent).not.toContain('Overall score')
+  })
+
+  it('shows the level once each of the four pillars has an answer', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    for (const fs of Array.from(container.querySelectorAll('fieldset'))) {
+      fireEvent.click(
+        within(fs as HTMLElement).getAllByRole('radio', { name: '4 Mostly' })[0] as HTMLElement
+      )
+    }
+    expect(screen.getByText(`4 of ${QUESTIONS.length} answered`)).toBeTruthy()
+    expect(screen.queryByText(PROMPT)).toBeNull()
+    expect(container.textContent).toContain('Overall score 4.0 / 5')
+    expect(container.textContent).toContain('Managed')
+  })
+
+  it('shows no weakest badge when every pillar ties', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    answerAll('3 Somewhat')
+    expect(screen.getByText(`${QUESTIONS.length} of ${QUESTIONS.length} answered`)).toBeTruthy()
+    expect(container.textContent?.toLowerCase()).not.toContain('weakest')
+    const move = screen.getByText('Your next move').parentElement as HTMLElement
+    expect(move.textContent).toContain('All four pillars score 3.0')
+    expect(move.textContent).toContain('Raise them together')
+    expect(move.textContent).not.toMatch(/lowest|tied/i)
+  })
+
+  it('gives no remedial advice when every pillar is at the top of the scale', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    answerAll('5 Fully')
+    expect(container.textContent).toContain('Optimized')
+    expect(container.textContent?.toLowerCase()).not.toContain('weakest')
+    const move = screen.getByText('Your next move').parentElement as HTMLElement
+    expect(move.textContent).toContain('top of the scale')
+    expect(move.textContent).not.toMatch(/lowest|tied|document the process|clean the data/i)
+  })
+
+  it('gives no weakest badge or remedial advice when the lowest pillar is in the Optimized band', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    answerAll('5 Fully')
+    fireEvent.click(screen.getAllByRole('radio', { name: '4 Mostly' })[0] as HTMLElement)
+    expect(container.textContent).toContain('Optimized')
+    expect(container.textContent).toContain('4.8') // Process 4.75
+    expect(container.textContent?.toLowerCase()).not.toContain('weakest')
+    const move = screen.getByText('Your next move').parentElement as HTMLElement
+    expect(move.textContent).toContain('no weak pillar to fix')
+    expect(move.textContent).not.toMatch(
+      /lowest|tied|before you buy|document your sales stages|document the process/i
+    )
   })
 
   it('badges exactly one pillar once a single pillar is uniquely lowest', () => {
     const { container } = render(<RevOpsMaturityScorecard />)
-    const firstProcess = screen.getAllByRole('radio', { name: '1 Not at all' })[0]
-    if (!firstProcess) throw new Error('missing radio')
-    fireEvent.click(firstProcess)
+    answerAll('3 Somewhat')
+    fireEvent.click(screen.getAllByRole('radio', { name: '1 Not at all' })[0] as HTMLElement)
     const badges = Array.from(container.querySelectorAll('span')).filter(
       (s) => s.textContent === 'weakest'
     )
     expect(badges).toHaveLength(1)
+  })
+
+  it('tie advice names only the tied pillars', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    answerPillar(container, 0, '5 Fully')
+    for (const i of [1, 2, 3]) answerPillar(container, i, '1 Not at all')
+    const move = screen.getByText('Your next move').parentElement as HTMLElement
+    expect(move.textContent).toContain('Data, Technology and Alignment')
+    expect(move.textContent).not.toMatch(/process/i)
+  })
+
+  it('Reset answers returns to unanswered', () => {
+    render(<RevOpsMaturityScorecard />)
+    answerAll('2 Rarely')
+    fireEvent.click(screen.getByRole('button', { name: 'Reset answers' }))
+    expect(screen.getByText(`0 of ${QUESTIONS.length} answered`)).toBeTruthy()
+    expect(screen.getAllByRole('radio').some((r) => (r as HTMLInputElement).checked)).toBe(false)
+    expect(screen.getByText(PROMPT)).toBeTruthy()
+  })
+
+  it('a near-Optimized weakest pillar gets refine advice, not the basics', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    answerAll('5 Fully')
+    answerPillar(container, 0, '4 Mostly')
+    const move = screen.getByText('Your next move').parentElement as HTMLElement
+    expect(move.textContent).toContain(
+      'Tighten stage exit criteria and audit them quarterly against won and lost deals'
+    )
+    expect(move.textContent).not.toMatch(/Document your sales stages|before you buy/)
+  })
+
+  it('tones the weakest badge like its bar and drops the overbuy warning on a Managed foundation', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    const badge = () =>
+      Array.from(container.querySelectorAll('span')).find((s) => s.textContent === 'weakest')
+    answerAll('5 Fully')
+    answerPillar(container, 0, '4 Mostly')
+    expect(badge()?.className).toContain('text-muted-foreground')
+    expect(badge()?.className).not.toContain('text-destructive')
+    expect(container.textContent).not.toContain('Watch out:')
+    answerPillar(container, 0, '3 Somewhat')
+    expect(badge()?.className).toContain('text-warning-text')
+    answerPillar(container, 0, '1 Not at all')
+    expect(badge()?.className).toContain('text-destructive')
+    expect(container.textContent).toContain('Watch out:')
+  })
+
+  it('announces the level and the advice, never the answered count or scores', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    const region = screen.getByRole('region', { name: 'Your result' })
+    const live = region.querySelectorAll('[aria-live]')
+    expect(live).toHaveLength(2)
+    expect(container.querySelectorAll('[aria-live]')).toHaveLength(2)
+    const [level, advice] = Array.from(live)
+    expect(level?.textContent).toBe(`Your maturity level${PROMPT}`)
+    expect(advice?.textContent).toBe('')
+    fireEvent.click(screen.getAllByRole('radio', { name: '3 Somewhat' })[0] as HTMLElement)
+    expect(level?.textContent).toBe(`Your maturity level${PROMPT}`)
+    for (const el of [level, advice]) expect(el?.textContent).not.toMatch(/answered|Overall score/)
+    answerAll('4 Mostly')
+    expect(level?.textContent).toBe('Your maturity level4 Managed')
+    expect(advice?.textContent).toContain('Your next move')
+    for (const el of [level, advice]) expect(el?.textContent).not.toMatch(/answered|Overall score/)
+  })
+
+  it('announces the overbuy warning and names the weaker foundation pillar', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    answerAll('5 Fully')
+    answerPillar(container, 0, '2 Rarely')
+    const advice = screen
+      .getByRole('region', { name: 'Your result' })
+      .querySelectorAll('[aria-live]')[1]
+    expect(advice?.textContent).toContain('Watch out:')
+    expect(advice?.textContent).toContain('at least a full level ahead of your process maturity')
+  })
+
+  it('leaves the advice region untouched when a click does not change the advice', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    answerAll('5 Fully')
+    answerPillar(container, 0, '2 Rarely')
+    const advice = screen
+      .getByRole('region', { name: 'Your result' })
+      .querySelectorAll('[aria-live]')[1] as HTMLElement
+    const before = advice.innerHTML
+    const mutations: MutationRecord[] = []
+    const observer = new MutationObserver((records) => mutations.push(...records))
+    observer.observe(advice, { subtree: true, childList: true, characterData: true })
+    // Lowering one Data answer from 5 to 4 keeps Process (2.0) the weakest pillar and the
+    // overbuy foundation, so the advice text and its DOM must not change.
+    fireEvent.click(
+      within(container.querySelectorAll('fieldset')[1] as HTMLElement).getAllByRole('radio', {
+        name: '4 Mostly',
+      })[0] as HTMLElement
+    )
+    mutations.push(...observer.takeRecords())
+    observer.disconnect()
+    expect(advice.innerHTML).toBe(before)
+    expect(mutations).toHaveLength(0)
+  })
+
+  it('makes no percentile or B2B-teams claim', () => {
+    const { container } = render(<RevOpsMaturityScorecard />)
+    answerAll('3 Somewhat')
+    expect(container.textContent).not.toMatch(/percentile|B2B teams/i)
   })
 })

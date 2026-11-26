@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { HeroHeader } from '../HeroHeader'
@@ -63,5 +65,20 @@ describe('HeroHeader', () => {
         expect(a.getAttribute('rel')).toBe('noopener noreferrer')
       }
     }
+  })
+
+  it('points social links at the contact details', () => {
+    render(<HeroHeader {...base} />)
+    const href = (label: string) => screen.getByLabelText(label).getAttribute('href')
+    expect(href('Email')).toBe('mailto:hudsor01@icloud.com')
+    expect(href('LinkedIn')).toBe('https://www.linkedin.com/in/hudsor01')
+    expect(href('GitHub')).toBe('https://github.com/hudsor01')
+    expect(href('Website')).toBe('https://richardwhudsonjr.com')
+  })
+
+  it('takes the website link from SITE_ORIGIN, not a literal', () => {
+    const source = readFileSync(join(__dirname, '..', 'HeroHeader.tsx'), 'utf8')
+    expect(source).toContain('href: SITE_ORIGIN')
+    expect(source).not.toContain('richardwhudsonjr.com')
   })
 })

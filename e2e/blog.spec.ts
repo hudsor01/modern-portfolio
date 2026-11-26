@@ -70,6 +70,18 @@ test.describe('Blog Listing Page', () => {
     await expect(page.getByRole('button', { name: /^All\b/ })).toBeVisible()
   })
 
+  test('category filter buttons expose aria-pressed and flip on click', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+    const allButton = page.getByRole('button', { name: /^All\b/ })
+    await expect(allButton).toHaveAttribute('aria-pressed', 'true')
+
+    const second = allButton.locator('xpath=..').getByRole('button').nth(1)
+    await expect(second).toHaveAttribute('aria-pressed', 'false')
+    await second.click()
+    await expect(second).toHaveAttribute('aria-pressed', 'true')
+    await expect(allButton).toHaveAttribute('aria-pressed', 'false')
+  })
+
   test('post cards show a title and publish date', async ({ page }) => {
     test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     const card = postCards(page).first()
@@ -227,9 +239,29 @@ test.describe('Blog pagination', () => {
     expect(response.status()).toBe(404)
   })
 
-  test('a junk page param renders the first page', async ({ page }) => {
+  test('non-canonical page params 308 to /blog', async ({ page }) => {
+    for (const value of ['abc', '0', '-1', '1']) {
+      const response = await page.request.get(`/blog?page=${value}`, { maxRedirects: 0 })
+      expect(response.status(), `?page=${value}`).toBe(308)
+      const target = new URL(response.headers().location ?? '', response.url())
+      expect(target.pathname).toBe('/blog')
+      expect(target.search).toBe('')
+    }
+
+    const kept = await page.request.get('/blog?q=pipeline&page=0', { maxRedirects: 0 })
+    expect(kept.status()).toBe(308)
+    const keptTarget = new URL(kept.headers().location ?? '', kept.url())
+    expect(keptTarget.pathname).toBe('/blog')
+    expect(keptTarget.search).toBe('?q=pipeline')
+  })
+
+  test('a junk page param lands on the rendered first page', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     const response = await page.goto('/blog?page=abc')
     expect(response?.status()).toBe(200)
+    const url = new URL(page.url())
+    expect(url.pathname).toBe('/blog')
+    expect(url.search).toBe('')
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
   })
 })
@@ -246,6 +278,18 @@ test.describe('Blog Post Reading', () => {
     await openFirstPost(page)
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
     await expect(page.locator('article').first()).toBeVisible()
+  })
+
+  test('blog post sidebar shows one "N reads" count', async ({ page }) => {
+    test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
+    // The view beacon increments viewCount; abort it so this test never writes.
+    await page.route('**/api/blog/*/view', (route) => route.abort())
+    await openFirstPost(page)
+    const reads = page.locator('aside [data-post-reads]')
+    await expect(reads).toHaveCount(1)
+    // "1 read", otherwise "N reads" (0 included): never "1 reads" or "2 read".
+    await expect(reads).toHaveText(/^(1 read|(?!1 )\d[\d,]* reads)$/)
+    await expect(page.locator('article header')).not.toContainText(/\bviews?\b/)
   })
 
   test('blog post shows the author', async ({ page }) => {

@@ -212,6 +212,128 @@ describe('PUT /api/blog/[slug]', () => {
     expect(body).toMatchObject({ success: true, message: 'Blog post updated successfully' })
   })
 
+  it('accepts a bio-opener meta and stores one derived from the stored body', async () => {
+    const bio =
+      'I spent six years in the Texas Army National Guard as an Information Technology Specialist. That service included a deployment to Iraq. In the military, am...'
+    const lede =
+      'Salesloft is one of the most powerful sales engagement platforms available. Most teams configure it poorly.'
+    dbMocks.findFirst
+      .mockResolvedValueOnce(samplePost) // existing-by-slug
+      .mockResolvedValueOnce({ content: `${bio}\n\n${lede}`, excerpt: null }) // stored body
+      .mockResolvedValueOnce(samplePost) // read-back
+    dbMocks.update.mockResolvedValue(undefined)
+    const res = await PUT(reqPut('hello', { metaDescription: bio }), ctx('hello'))
+    expect(res.status).toBe(200)
+    expect(dbMocks.findFirst.mock.calls[1]?.[0]).toMatchObject({
+      columns: { content: true, excerpt: true },
+    })
+    expect(dbMocks.updateSet.mock.calls[0]?.[0]).toMatchObject({ metaDescription: lede })
+  })
+
+  it('derives a bio-opener meta from the stored excerpt and leaves the omitted excerpt alone', async () => {
+    const bio = 'I served in the National Guard for six years before moving into RevOps.'
+    const storedExcerpt =
+      'Stage definitions drift from how buyers decide. Here is how to pin them down.'
+    dbMocks.findFirst
+      .mockResolvedValueOnce(samplePost)
+      .mockResolvedValueOnce({
+        content: 'A body paragraph that is long enough to be a lede.',
+        excerpt: storedExcerpt,
+      })
+      .mockResolvedValueOnce(samplePost)
+    dbMocks.update.mockResolvedValue(undefined)
+    const res = await PUT(reqPut('hello', { metaDescription: bio }), ctx('hello'))
+    expect(res.status).toBe(200)
+    const set = dbMocks.updateSet.mock.calls[0]?.[0]
+    expect(set).toMatchObject({ metaDescription: storedExcerpt })
+    expect(set).not.toHaveProperty('excerpt')
+  })
+
+  it('reads the stored excerpt for a bio meta sent with new content but no excerpt', async () => {
+    const bio = 'I served in the National Guard for six years before moving into RevOps.'
+    const storedExcerpt =
+      'Coverage is a ratio, not a promise. Track it weekly against weighted quota.'
+    dbMocks.findFirst
+      .mockResolvedValueOnce(samplePost)
+      .mockResolvedValueOnce({ content: 'old body', excerpt: storedExcerpt })
+      .mockResolvedValueOnce(samplePost)
+    dbMocks.update.mockResolvedValue(undefined)
+    const res = await PUT(
+      reqPut('hello', {
+        content: `${bio}\n\nA brand new opening paragraph that is long enough to count.`,
+        metaDescription: bio,
+      }),
+      ctx('hello')
+    )
+    expect(res.status).toBe(200)
+    expect(dbMocks.findFirst).toHaveBeenCalledTimes(3)
+    const set = dbMocks.updateSet.mock.calls[0]?.[0]
+    expect(set).toMatchObject({ metaDescription: storedExcerpt })
+    expect(set).not.toHaveProperty('excerpt')
+  })
+
+  it('derives a bio-opener meta and excerpt from new content without reading the stored body', async () => {
+    const bio = 'I served in the National Guard for six years before moving into RevOps.'
+    const lede =
+      'Pipeline coverage is a ratio, not a promise. Track it weekly against stage-weighted quota.'
+    dbMocks.findFirst.mockResolvedValueOnce(samplePost).mockResolvedValueOnce(samplePost)
+    dbMocks.update.mockResolvedValue(undefined)
+    const res = await PUT(
+      reqPut('hello', { content: `${bio}\n\n${lede}`, excerpt: bio, metaDescription: bio }),
+      ctx('hello')
+    )
+    expect(res.status).toBe(200)
+    expect(dbMocks.findFirst).toHaveBeenCalledTimes(2)
+    expect(dbMocks.updateSet.mock.calls[0]?.[0]).toMatchObject({
+      excerpt: lede,
+      metaDescription: lede,
+    })
+  })
+
+  it('accepts a normal metaDescription on PUT', async () => {
+    dbMocks.findFirst.mockResolvedValueOnce(samplePost).mockResolvedValueOnce(samplePost)
+    dbMocks.update.mockResolvedValue(undefined)
+    const res = await PUT(
+      reqPut('hello', {
+        metaDescription:
+          'Seven ways CRM pipeline data drifts from reality, the reports that catch each one, and the systems, metrics and weekly inspection that keep pipeline accurate.',
+      }),
+      ctx('hello')
+    )
+    expect(res.status).toBe(200)
+  })
+
+  it('trims an over-long prose meta on PUT with no extra stored read', async () => {
+    const prose =
+      'Pipeline data drifts from reality in seven predictable ways. Each one has a report that catches it and a weekly inspection that keeps it honest. Teams that skip the inspection end up forecasting from stale stages.'
+    dbMocks.findFirst.mockResolvedValueOnce(samplePost).mockResolvedValueOnce(samplePost)
+    dbMocks.update.mockResolvedValue(undefined)
+    const res = await PUT(reqPut('hello', { metaDescription: prose }), ctx('hello'))
+    expect(res.status).toBe(200)
+    // Cut at the last sentence end within 160 characters: no ellipsis.
+    expect(dbMocks.updateSet.mock.calls[0]?.[0]?.metaDescription).toBe(
+      'Pipeline data drifts from reality in seven predictable ways. Each one has a report that catches it and a weekly inspection that keeps it honest.'
+    )
+    expect(dbMocks.findFirst).toHaveBeenCalledTimes(2)
+  })
+
+  it('derives a markup-only over-long meta from the stored excerpt (one extra read)', async () => {
+    dbMocks.findFirst
+      .mockResolvedValueOnce(samplePost)
+      .mockResolvedValueOnce({
+        content: 'Body text.',
+        excerpt: 'A real stored excerpt that describes the post.',
+      })
+      .mockResolvedValueOnce(samplePost)
+    dbMocks.update.mockResolvedValue(undefined)
+    const res = await PUT(reqPut('hello', { metaDescription: '&nbsp;'.repeat(40) }), ctx('hello'))
+    expect(res.status).toBe(200)
+    expect(dbMocks.findFirst).toHaveBeenCalledTimes(3)
+    expect(dbMocks.updateSet.mock.calls[0]?.[0]?.metaDescription).toBe(
+      'A real stored excerpt that describes the post.'
+    )
+  })
+
   it('normalizes a too-long SEO title to 43 chars and derives a cleared one from the title', async () => {
     const longTitle = 'A Post Title Long Enough That It Never Fits the Search Result Budget'
     dbMocks.findFirst

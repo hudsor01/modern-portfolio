@@ -1,12 +1,23 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
+import { BASE_METRICS } from '@/lib/data-service/generators/base'
+import { generateGrowthData } from '@/lib/data-service/generators/growth'
 import { deriveRevenueTrendTitle } from '../chart-titles'
 
 describe('deriveRevenueTrendTitle', () => {
   it('quarterly', () => {
-    expect(deriveRevenueTrendTitle(['Q2 2025', 'Q3 2025', 'Q4 2026'])).toBe(
-      'Quarterly Revenue · Q2 2025–Q4 2026'
+    expect(deriveRevenueTrendTitle(['Q2 2025', 'Q3 2025', 'Q3 2026'])).toBe(
+      'Quarterly Revenue · Q2 2025–Q3 2026'
     )
+  })
+  it('titles the generated series by its own first and last completed quarter', () => {
+    const labels = generateGrowthData(
+      BASE_METRICS,
+      undefined,
+      undefined,
+      new Date('2026-11-25T18:00:00Z')
+    ).map((d) => d.quarter)
+    expect(deriveRevenueTrendTitle(labels)).toBe('Quarterly Revenue · Q1 2025–Q3 2026')
   })
   it('monthly without year', () => {
     expect(deriveRevenueTrendTitle(['Jan', 'Feb', 'Jun'])).toBe('Monthly Revenue · Jan–Jun')

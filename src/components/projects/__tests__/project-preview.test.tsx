@@ -36,7 +36,7 @@ describe('ProjectPreview', () => {
     const { container } = render(<ProjectPreview project={paired} size="card" />)
     const label = container.querySelector('[data-slot="preview-row"] span') as HTMLElement
     expect(label.className).not.toContain('truncate')
-    expect(label.className).toContain('break-words')
+    expect(label.className).toContain('wrap-break-word')
   })
 
   it('card rows: role, label, shapes only', () => {

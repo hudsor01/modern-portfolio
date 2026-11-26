@@ -20,7 +20,7 @@ export const MetricsGrid = React.forwardRef<HTMLDivElement, MetricsGridProps>(
       const gridClasses: Record<number, string> = {
         2: 'grid-cols-1 md:grid-cols-2',
         3: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
-        4: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+        4: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
       }
       return gridClasses[cols] || gridClasses[3]
     }
@@ -67,6 +67,8 @@ export const MetricsGrid = React.forwardRef<HTMLDivElement, MetricsGridProps>(
         className={cn('grid gap-6', getGridClasses(columns), className)}
         style={{ gap: designTokens.spacing.lg }}
         data-testid="metrics-grid"
+        data-columns={columns}
+        data-loading={loading ? '' : undefined}
         {...props}
       >
         {loading

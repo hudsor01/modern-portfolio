@@ -2,37 +2,40 @@
 
 import { useId, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import {
+  type AmountKind,
   amountInputError,
   caretAfterFormat,
   computeCoverage,
   COVERAGE_PRESETS,
+  formatCount,
   formatGrouped,
+  formatMoney,
+  formatMultiple,
+  formatPercent,
+  percentFieldError,
   sanitizeAmount,
+  targetFieldError,
 } from '@/lib/pipeline-coverage'
 
-const usd0 = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  maximumFractionDigits: 0,
-})
-const usdCompact = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  notation: 'compact',
-  maximumFractionDigits: 1,
-})
-function money(n: number): string {
-  return Math.abs(n) >= 1_000_000 ? usdCompact.format(n) : usd0.format(n)
-}
-function mult(n: number): string {
-  return `${n.toFixed(1)}×`
-}
 /** Empty string → undefined; otherwise the parsed number (NaN-safe via the lib). */
-function parse(v: string): number | undefined {
+function parse(v: string, kind: AmountKind): number | undefined {
   if (v.trim() === '') return undefined
-  if (amountInputError(v) !== null) return Number.NaN
+  if (amountInputError(v, kind) !== null) return Number.NaN
   const n = Number(sanitizeAmount(v))
   return Number.isFinite(n) ? n : Number.NaN
+}
+
+/**
+ * A percent input's text plus whether the browser reported malformed text (its badInput flag).
+ * The percent inputs read both on `onInput`, not `onChange`: a type="number" input reports
+ * value '' whether it is empty or holds malformed text, and React drops an `onChange` whose
+ * value did not change, so typing "e" into an empty field or clearing a flagged one would
+ * never update the flag. The native input event fires on every edit.
+ */
+function parsePercent(p: { value: string; badInput: boolean }): number | undefined {
+  if (p.badInput) return Number.NaN
+  if (p.value.trim() === '') return undefined
+  return Number(p.value)
 }
 
 const inputClass =
@@ -48,23 +51,38 @@ export function PipelineCoverageCalculator() {
     safety: useId(),
   }
   const [target, setTarget] = useState('1000000')
-  const [winRate, setWinRate] = useState('25')
+  const [winRate, setWinRate] = useState({ value: '25', badInput: false })
   const [avgDeal, setAvgDeal] = useState('')
   const [currentPipe, setCurrentPipe] = useState('')
-  const [qualified, setQualified] = useState('100')
-  const [safety, setSafety] = useState('0')
+  const [qualified, setQualified] = useState({ value: '100', badInput: false })
+  const [safety, setSafety] = useState({ value: '0', badInput: false })
 
-  const hasAmountError = [target, avgDeal, currentPipe].some((v) => amountInputError(v) !== null)
+  const targetError = targetFieldError(target)
+  const dealError = amountInputError(avgDeal, 'amount')
+  const pipeError = amountInputError(currentPipe, 'amount')
+  const winError = percentFieldError(winRate.value, winRate.badInput, 'win')
+  const qualError = percentFieldError(qualified.value, qualified.badInput, 'qualified')
+  const safetyError = percentFieldError(safety.value, safety.badInput, 'safety')
+  // DOM order, so the panel names the first failing field the user would meet.
+  const fields = [
+    { id: ids.target, name: 'Revenue target', error: targetError },
+    { id: ids.win, name: 'Win rate', error: winError },
+    { id: ids.deal, name: 'Average deal size', error: dealError },
+    { id: ids.pipe, name: 'Open pipeline today', error: pipeError },
+    { id: ids.qual, name: '% truly qualified', error: qualError },
+    { id: ids.safety, name: 'Safety margin', error: safetyError },
+  ]
+  const firstInvalid = fields.find((f) => f.error !== null)
 
   const result = useMemo(
     () =>
       computeCoverage({
-        revenueTarget: parse(target) ?? Number.NaN,
-        winRatePct: parse(winRate) ?? Number.NaN,
-        avgDealSize: parse(avgDeal),
-        currentPipeline: parse(currentPipe),
-        qualifiedRatePct: parse(qualified),
-        safetyMarginPct: parse(safety),
+        revenueTarget: parse(target, 'target') ?? Number.NaN,
+        winRatePct: parsePercent(winRate) ?? Number.NaN,
+        avgDealSize: parse(avgDeal, 'amount'),
+        currentPipeline: parse(currentPipe, 'amount'),
+        qualifiedRatePct: parsePercent(qualified),
+        safetyMarginPct: parsePercent(safety),
       }),
     [target, winRate, avgDeal, currentPipe, qualified, safety]
   )
@@ -81,20 +99,35 @@ export function PipelineCoverageCalculator() {
             label="Revenue target (this period)"
             value={target}
             onValueChange={setTarget}
+            kind="target"
+            error={targetError}
             placeholder="1,000,000"
           />
 
           <div>
-            <Field id={ids.win} label="Win rate" suffix="%">
+            <Field
+              id={ids.win}
+              label="Win rate"
+              suffix="%"
+              error={winError}
+              errorId={`${ids.win}-error`}
+            >
               <input
                 id={ids.win}
                 type="number"
                 min="0"
                 max="100"
                 inputMode="decimal"
-                value={winRate}
-                onChange={(e) => setWinRate(e.target.value)}
-                className={`${inputClass} pr-8`}
+                value={winRate.value}
+                aria-invalid={winError !== null}
+                aria-describedby={winError !== null ? `${ids.win}-error` : undefined}
+                onInput={(e) =>
+                  setWinRate({
+                    value: e.currentTarget.value,
+                    badInput: e.currentTarget.validity.badInput,
+                  })
+                }
+                className={`${inputClass} pr-8${winError !== null ? ' border-destructive!' : ''}`}
                 placeholder="25"
               />
             </Field>
@@ -103,7 +136,7 @@ export function PipelineCoverageCalculator() {
                 <button
                   key={p.id}
                   type="button"
-                  onClick={() => setWinRate(String(p.winRatePct))}
+                  onClick={() => setWinRate({ value: String(p.winRatePct), badInput: false })}
                   className="text-xs px-3 py-1 rounded-full border border-border bg-background text-muted-foreground hover:border-primary hover:text-primary transition-colors"
                 >
                   {p.label} ({p.winRatePct}%)
@@ -117,6 +150,8 @@ export function PipelineCoverageCalculator() {
             label="Average deal size (optional)"
             value={avgDeal}
             onValueChange={setAvgDeal}
+            kind="amount"
+            error={dealError}
             placeholder="50,000"
           />
 
@@ -125,30 +160,58 @@ export function PipelineCoverageCalculator() {
             label="Open pipeline today (optional)"
             value={currentPipe}
             onValueChange={setCurrentPipe}
+            kind="amount"
+            error={pipeError}
             placeholder="3,000,000"
           />
 
           <div className="grid grid-cols-2 gap-4">
-            <Field id={ids.qual} label="% truly qualified" suffix="%">
+            <Field
+              id={ids.qual}
+              label="% truly qualified"
+              suffix="%"
+              error={qualError}
+              errorId={`${ids.qual}-error`}
+            >
               <input
                 id={ids.qual}
                 type="number"
                 min="0"
                 max="100"
-                value={qualified}
-                onChange={(e) => setQualified(e.target.value)}
-                className={`${inputClass} pr-8`}
+                value={qualified.value}
+                aria-invalid={qualError !== null}
+                aria-describedby={qualError !== null ? `${ids.qual}-error` : undefined}
+                onInput={(e) =>
+                  setQualified({
+                    value: e.currentTarget.value,
+                    badInput: e.currentTarget.validity.badInput,
+                  })
+                }
+                className={`${inputClass} pr-8${qualError !== null ? ' border-destructive!' : ''}`}
                 placeholder="100"
               />
             </Field>
-            <Field id={ids.safety} label="Safety margin" suffix="%">
+            <Field
+              id={ids.safety}
+              label="Safety margin"
+              suffix="%"
+              error={safetyError}
+              errorId={`${ids.safety}-error`}
+            >
               <input
                 id={ids.safety}
                 type="number"
                 min="0"
-                value={safety}
-                onChange={(e) => setSafety(e.target.value)}
-                className={`${inputClass} pr-8`}
+                value={safety.value}
+                aria-invalid={safetyError !== null}
+                aria-describedby={safetyError !== null ? `${ids.safety}-error` : undefined}
+                onInput={(e) =>
+                  setSafety({
+                    value: e.currentTarget.value,
+                    badInput: e.currentTarget.validity.badInput,
+                  })
+                }
+                className={`${inputClass} pr-8${safetyError !== null ? ' border-destructive!' : ''}`}
                 placeholder="0"
               />
             </Field>
@@ -160,82 +223,94 @@ export function PipelineCoverageCalculator() {
         </div>
       </div>
 
-      {/* Results */}
+      {/* Results. Every invalid input is a field error (announced once, by the field's
+          alert), so the "Fix …" prompt sits outside the live region, which carries only
+          the results. computeCoverage is valid whenever no field reports an error. */}
       <div
+        role="region"
+        aria-label="Your coverage"
         className="bg-card rounded-2xl p-6 sm:p-8 border border-border shadow-sm lg:self-start"
-        aria-live="polite"
       >
-        {hasAmountError ? (
+        {firstInvalid && (
           <div className="h-full flex items-center justify-center text-center">
-            <p>Fix the highlighted amount to see your coverage.</p>
-          </div>
-        ) : !result.valid ? (
-          <div className="h-full flex items-center justify-center text-center">
-            <p>{result.error}</p>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            <div>
-              <p className="uppercase tracking-wider">Required coverage</p>
-              <p className="mt-1 text-5xl font-bold text-primary tracking-tight">
-                {mult(result.requiredCoverage)}
-              </p>
-              <p className="mt-1">
-                ≈ <strong>{money(result.requiredPipeline)}</strong> in qualified pipeline to hit{' '}
-                {money(parse(target) ?? 0)}.
-              </p>
-            </div>
-
-            <div className="rounded-xl bg-muted/50 p-4 text-sm">
-              <p>
-                The generic <strong>3× rule</strong> would tell you to build{' '}
-                {money(result.lazyThreeXPipeline)} —{' '}
-                {result.vsLazyThreeX > 0 ? (
-                  <span className="text-destructive font-medium">
-                    {money(Math.abs(result.vsLazyThreeX))} too little
-                  </span>
-                ) : result.vsLazyThreeX < 0 ? (
-                  <span className="text-success font-medium">
-                    {money(Math.abs(result.vsLazyThreeX))} more than you need
-                  </span>
-                ) : (
-                  <span className="font-medium">exactly right (rare)</span>
-                )}{' '}
-                at a {winRate}% win rate.
-              </p>
-            </div>
-
-            {result.oppsNeeded !== undefined && result.dealsToWin !== undefined && (
-              <div className="text-sm text-foreground">
-                That’s ≈ <strong>{Math.ceil(result.oppsNeeded).toLocaleString()}</strong> qualified
-                opps in flight to win the{' '}
-                <strong>{Math.ceil(result.dealsToWin).toLocaleString()}</strong> deals you need.
-              </div>
-            )}
-
-            {result.pipelineGap !== undefined && result.currentCoverage !== undefined && (
-              <div className="rounded-xl border border-border p-4">
-                <p>
-                  You have {mult(result.currentCoverage)} coverage today
-                  {result.effectiveCurrentPipeline !== undefined &&
-                    ` (${money(result.effectiveCurrentPipeline)} qualified)`}
-                  .
-                </p>
-                <p className="mt-1">
-                  {result.pipelineGap > 0.5 ? (
-                    <span className="text-destructive">
-                      Shortfall: build {money(result.pipelineGap)} more pipeline.
-                    </span>
-                  ) : (
-                    <span className="text-success">
-                      Surplus: {money(Math.abs(result.pipelineGap))} above target coverage.
-                    </span>
-                  )}
-                </p>
-              </div>
-            )}
+            <p>
+              Fix “
+              <button
+                type="button"
+                onClick={() => document.getElementById(firstInvalid.id)?.focus()}
+                className="text-link cursor-pointer"
+              >
+                {firstInvalid.name}
+              </button>
+              ” to see your coverage.
+            </p>
           </div>
         )}
+        <div aria-live="polite">
+          {!firstInvalid && (
+            <div className="space-y-6">
+              <div>
+                <p className="uppercase tracking-wider">Required coverage</p>
+                <p className="mt-1 text-5xl font-bold text-primary tracking-tight">
+                  {formatMultiple(result.requiredCoverage)}
+                </p>
+                <p className="mt-1">
+                  ≈ <strong>{formatMoney(result.requiredPipeline)}</strong> in qualified pipeline to
+                  hit {formatMoney(parse(target, 'target') ?? 0)}.
+                </p>
+              </div>
+
+              <div className="rounded-xl bg-muted/50 p-4 text-sm">
+                <p>
+                  The generic <strong>3× rule</strong> would tell you to build{' '}
+                  {formatMoney(result.lazyThreeXPipeline)} —{' '}
+                  {result.vsLazyThreeX > 0 ? (
+                    <span className="text-destructive font-medium">
+                      {formatMoney(Math.abs(result.vsLazyThreeX))} too little
+                    </span>
+                  ) : result.vsLazyThreeX < 0 ? (
+                    <span className="text-success font-medium">
+                      {formatMoney(Math.abs(result.vsLazyThreeX))} more than you need
+                    </span>
+                  ) : (
+                    <span className="font-medium">exactly right (rare)</span>
+                  )}{' '}
+                  at a win rate of {formatPercent(Number(winRate.value))}.
+                </p>
+              </div>
+
+              {result.oppsNeeded !== undefined && result.dealsToWin !== undefined && (
+                <div className="text-sm text-foreground">
+                  That’s ≈ <strong>{formatCount(result.oppsNeeded)}</strong> qualified opps in
+                  flight to win the <strong>{formatCount(result.dealsToWin)}</strong> deals you
+                  need.
+                </div>
+              )}
+
+              {result.pipelineGap !== undefined && result.currentCoverage !== undefined && (
+                <div className="rounded-xl border border-border p-4">
+                  <p>
+                    You have {formatMultiple(result.currentCoverage)} coverage today
+                    {result.effectiveCurrentPipeline !== undefined &&
+                      ` (${formatMoney(result.effectiveCurrentPipeline)} qualified)`}
+                    .
+                  </p>
+                  <p className="mt-1">
+                    {result.pipelineGap > 0.5 ? (
+                      <span className="text-destructive">
+                        Shortfall: build {formatMoney(result.pipelineGap)} more pipeline.
+                      </span>
+                    ) : (
+                      <span className="text-success">
+                        Surplus: {formatMoney(Math.abs(result.pipelineGap))} above target coverage.
+                      </span>
+                    )}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -243,8 +318,10 @@ export function PipelineCoverageCalculator() {
 
 /**
  * Money input that shows grouped digits, keeps the caret on the same digit when a
- * grouping comma is inserted, and flags a disallowed value (sign, exponent,
- * letters) instead of silently rewriting it. Invalid text is kept as typed.
+ * grouping comma is inserted, and shows `error` (computed by the parent, so a
+ * required field can also flag an empty or zero value). A disallowed value
+ * (letters, a sign, a repeated decimal point or an amount over $10B) is kept as
+ * typed instead of being silently rewritten.
  */
 function MoneyField({
   id,
@@ -252,18 +329,21 @@ function MoneyField({
   value,
   onValueChange,
   placeholder,
+  kind,
+  error,
 }: {
   id: string
   label: string
   value: string
   onValueChange: (next: string) => void
   placeholder: string
+  kind: AmountKind
+  error: string | null
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const pendingCaret = useRef<number | null>(null)
-  const error = amountInputError(value)
   const errorId = `${id}-error`
-  const display = error === null ? formatGrouped(value) : value
+  const display = amountInputError(value, kind) === null ? formatGrouped(value) : value
 
   // No dependency list on purpose: restore the caret after every render that re-grouped the digits.
   useLayoutEffect(() => {
@@ -287,7 +367,7 @@ function MoneyField({
         aria-describedby={error !== null ? errorId : undefined}
         onChange={(e) => {
           const typed = e.target.value
-          if (amountInputError(typed) !== null) {
+          if (amountInputError(typed, kind) !== null) {
             onValueChange(typed)
             return
           }

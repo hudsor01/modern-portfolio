@@ -1,8 +1,8 @@
 'use client'
 
-import { ChartContainer as ChartCard } from '@/components/ui/chart-container'
+import { ChartContainer } from '@/components/ui/chart-container'
 import {
-  ChartContainer,
+  ChartFrame,
   ChartTooltip,
   ChartTooltipContent,
   type ChartThemeConfig,
@@ -37,20 +37,20 @@ export default function RevenueBarChart({ data }: RevenueBarChartProps) {
 
   if (!chartData.length) {
     return (
-      <ChartCard title={title} description="No data available" size="auto" headingLevel={2}>
+      <ChartContainer title={title} description="No data available" size="auto" headingLevel={2}>
         {null}
-      </ChartCard>
+      </ChartContainer>
     )
   }
 
   return (
-    <ChartCard
+    <ChartContainer
       title={title}
       description="Revenue trend across the reported periods"
       size="md"
       headingLevel={2}
     >
-      <ChartContainer config={chartConfig} className="aspect-auto h-full w-full">
+      <ChartFrame config={chartConfig} className="aspect-auto h-full w-full">
         <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
           <defs>
             <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
@@ -95,7 +95,7 @@ export default function RevenueBarChart({ data }: RevenueBarChartProps) {
             fill="url(#revenueGradient)"
           />
         </AreaChart>
-      </ChartContainer>
-    </ChartCard>
+      </ChartFrame>
+    </ChartContainer>
   )
 }

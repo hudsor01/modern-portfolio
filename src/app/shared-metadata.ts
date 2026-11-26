@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { canonicalUrl, SITE_ORIGIN, OG_IMAGE_SIZE, ogImageUrl } from '@/lib/absolute-url'
 import { PROJECT_COUNT } from '@/data/projects'
 import { REVENUE_IMPACT } from '@/lib/stats'
+import { CONTACT } from '@/lib/contact-info'
 
 export const BRAND = 'Richard Hudson'
 
@@ -73,7 +74,7 @@ export const baseMetadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    creator: '@hudsor01',
+    creator: CONTACT.twitter.handle,
     title: 'Richard Hudson | Revenue Operations Professional',
     description: SITE_DESCRIPTION,
     images: ['/images/richard.jpg'],

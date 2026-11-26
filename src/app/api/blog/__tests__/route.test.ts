@@ -2,6 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest, NextResponse } from 'next/server'
 import { PgDialect } from 'drizzle-orm/pg-core'
+import { normalizeStoredSeoText } from '@/lib/blog-excerpt'
 
 // Disable rate limiting and CSRF guards by default — exercise them via
 // explicit overrides per test.
@@ -319,6 +320,17 @@ describe('POST /api/blog', () => {
     expect(dbMocks.insertValues.mock.calls[0]?.[0]).toMatchObject({ metaTitle: 'Hello World' })
   })
 
+  it('accepts a metaTitle over 100 characters and stores it within 43', async () => {
+    const long = `${'Revenue Operations Benchmarks Every Founder Should Track '.repeat(3)}Today`
+    const res = await POST(reqPost({ ...validBody, title: 'x'.repeat(120), metaTitle: long }))
+    expect(res.status).toBe(201)
+    const stored = String(
+      (dbMocks.insertValues.mock.calls[0]?.[0] as { metaTitle?: string } | undefined)?.metaTitle
+    )
+    expect(stored.length).toBeLessThanOrEqual(43)
+    expect(long.startsWith(stored)).toBe(true)
+  })
+
   it('returns 401 when admin token missing', async () => {
     vi.mocked(isAdminRequest).mockReturnValueOnce(false)
     const res = await POST(reqPost(validBody))
@@ -336,17 +348,131 @@ describe('POST /api/blog', () => {
     expect(dbMocks.findFirst).not.toHaveBeenCalled()
   })
 
+  it('accepts a bio-opener meta and excerpt and stores ones derived from the body', async () => {
+    const bio =
+      'I spent six years in the Texas Army National Guard as an Information Technology Specialist, including a deployment to Iraq. I learned quickly that when equ...'
+    const lede =
+      'Forecasts miss when stage definitions drift from how buyers actually decide. Here is how to fix it.'
+    const res = await POST(
+      reqPost({
+        ...validBody,
+        content: `${bio}\n\n${lede}`,
+        excerpt: bio,
+        metaDescription: bio,
+      })
+    )
+    expect(res.status).toBe(201)
+    expect(dbMocks.insertValues.mock.calls[0]?.[0]).toMatchObject({
+      excerpt: lede,
+      metaDescription: lede,
+    })
+  })
+
+  it('normalizes a bio excerpt sent without a meta and leaves the meta unset', async () => {
+    const bio = 'I served in the National Guard for six years before moving into RevOps.'
+    const lede =
+      'Win rates fall when discovery skips the economic buyer. Fix the qualification step.'
+    const res = await POST(reqPost({ ...validBody, content: `${bio}\n\n${lede}`, excerpt: bio }))
+    expect(res.status).toBe(201)
+    const values = dbMocks.insertValues.mock.calls[0]?.[0]
+    expect(values).toMatchObject({ excerpt: lede })
+    expect(values.metaDescription ?? null).toBeNull()
+  })
+
+  it('stores a normal meta and excerpt exactly as sent', async () => {
+    const meta =
+      'Seven ways CRM pipeline data drifts from reality, the reports that catch each one, and the systems that keep it accurate.'
+    const res = await POST(
+      reqPost({ ...validBody, excerpt: 'A short, real excerpt.', metaDescription: meta })
+    )
+    expect(res.status).toBe(201)
+    expect(dbMocks.insertValues.mock.calls[0]?.[0]).toMatchObject({
+      excerpt: 'A short, real excerpt.',
+      metaDescription: meta,
+    })
+  })
+
+  const PROSE_META =
+    'Pipeline data drifts from reality in seven predictable ways. Each one has a report that catches it and a weekly inspection that keeps it honest. Teams that skip the inspection end up forecasting from stale stages.'
+
+  it('trims a 161+ character prose meta at a sentence end and returns 201', async () => {
+    expect(PROSE_META.length).toBeGreaterThan(160)
+    const res = await POST(reqPost({ ...validBody, metaDescription: PROSE_META }))
+    expect(res.status).toBe(201)
+    const stored = dbMocks.insertValues.mock.calls[0]?.[0]?.metaDescription as string
+    expect(stored.length).toBeLessThanOrEqual(160)
+    expect(stored).toBe(
+      normalizeStoredSeoText({
+        excerpt: undefined,
+        metaDescription: PROSE_META,
+        content: validBody.content,
+      }).metaDescription
+    )
+  })
+
+  it('cuts a 161-character unbroken meta to 159 characters plus one ellipsis', async () => {
+    const res = await POST(reqPost({ ...validBody, metaDescription: 'x'.repeat(161) }))
+    expect(res.status).toBe(201)
+    expect(dbMocks.insertValues.mock.calls[0]?.[0]?.metaDescription).toBe(`${'x'.repeat(159)}…`)
+  })
+
+  it('accepts a 5000-character meta and stores at most 160 characters', async () => {
+    const res = await POST(reqPost({ ...validBody, metaDescription: `${'word '.repeat(1000)}end` }))
+    expect(res.status).toBe(201)
+    const stored = dbMocks.insertValues.mock.calls[0]?.[0]?.metaDescription as string
+    expect(stored.length).toBeLessThanOrEqual(160)
+    expect(stored.match(/…/g)?.length ?? 0).toBeLessThanOrEqual(1)
+  })
+
+  it('stores the real text when a long run of entities precedes it', async () => {
+    const meta = `${'&nbsp;'.repeat(170)} Real meta description for the post.`
+    const res = await POST(reqPost({ ...validBody, metaDescription: meta }))
+    expect(res.status).toBe(201)
+    expect(dbMocks.insertValues.mock.calls[0]?.[0]?.metaDescription).toBe(
+      'Real meta description for the post.'
+    )
+  })
+
+  it('never stores a lone surrogate when an emoji sits on the 160 cut', async () => {
+    // No whitespace near 160, so the hard cut lands inside the emoji's surrogate pair.
+    const meta = `${'x'.repeat(158)}\u{1F600}${'y'.repeat(40)}`
+    const res = await POST(reqPost({ ...validBody, metaDescription: meta }))
+    expect(res.status).toBe(201)
+    const stored = dbMocks.insertValues.mock.calls[0]?.[0]?.metaDescription as string
+    expect(stored.length).toBeLessThanOrEqual(160)
+    expect(
+      /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/.test(stored)
+    ).toBe(false)
+  })
+
+  it('names the field when a meta is genuinely invalid (wrong type)', async () => {
+    const res = await POST(reqPost({ ...validBody, metaDescription: 123 }))
+    expect(res.status).toBe(400)
+    const body = await res.json()
+    expect(body).toMatchObject({ success: false })
+    expect(body.error).toMatch(/^Invalid request body: .*metaDescription/)
+    expect(dbMocks.insertValues).not.toHaveBeenCalled()
+  })
+
   it('returns 400 when body fails strict createBlogPostSchema validation', async () => {
     // Missing required fields (title, content, authorId) → schema reject.
     const res = await POST(reqPost({ excerpt: 'too short' }))
     expect(res.status).toBe(400)
     const body = await res.json()
-    expect(body).toMatchObject({ success: false, error: 'Invalid request body' })
+    expect(body.success).toBe(false)
+    expect(body.error).toMatch(/^Invalid request body: /)
+    for (const field of ['title', 'content', 'authorId']) {
+      expect(body.error).toContain(`${field}: `)
+    }
   })
 
   it('rejects unknown fields (.strict() mass-assignment guard)', async () => {
     const res = await POST(reqPost({ ...validBody, isAdmin: true, internalFlag: 'pwn' }))
     expect(res.status).toBe(400)
+    const body = await res.json()
+    expect(body.error).toMatch(/^Invalid request body: Unrecognized keys?: /)
+    expect(body.error).toContain('isAdmin')
+    expect(body.error).toContain('internalFlag')
   })
 
   it('returns 409 when slug already exists', async () => {

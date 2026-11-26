@@ -32,6 +32,7 @@ import {
 import { DecorativeBlob } from '@/components/ui/decorative-blob'
 import { ProjectCard } from '@/components/projects/project-card'
 import type { Project } from '@/types/project'
+import { CONTACT, mailtoHref } from '@/lib/contact-info'
 
 // Animated counter with visual impact
 function ImpactMetric({
@@ -56,7 +57,7 @@ function ImpactMetric({
   return (
     <div className="group relative">
       <div className="flex items-start gap-4">
-        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+        <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
           <Icon className="w-6 h-6 text-primary" aria-hidden="true" />
         </div>
         <div>
@@ -143,11 +144,11 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
 
                 {/* Main Headline */}
                 <div className="space-y-4">
-                  <h1>
+                  <h1 className="hero-title">
                     Transforming{' '}
                     <span className="relative">
                       <span className="relative z-10 text-primary">Revenue</span>
-                      <span className="absolute bottom-2 left-0 w-full h-3 bg-primary/20 -z-0" />
+                      <span className="absolute bottom-2 left-0 w-full h-3 bg-primary/20 z-0" />
                     </span>{' '}
                     <br />
                     Operations
@@ -227,7 +228,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                       <div>
                         <h2>Richard Hudson</h2>
                         <p>Revenue Operations</p>
-                        <p className="mt-1">Dallas, TX</p>
+                        <p className="mt-1">{CONTACT.location.display}</p>
                       </div>
                     </div>
                   </div>
@@ -312,7 +313,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                     'Partner program development',
                   ].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-foreground">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center">
+                      <span className="shrink-0 w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center">
                         <Check className="w-3.5 h-3.5 text-secondary" aria-hidden="true" />
                       </span>
                       {item}
@@ -447,10 +448,10 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                 <a
                   data-track="Email Click"
                   data-track-location="home-cta"
-                  href="mailto:hudsor01@icloud.com"
+                  href={mailtoHref}
                   className="text-link"
                 >
-                  hudsor01@icloud.com
+                  {CONTACT.email}
                 </a>
               </p>
             </div>
@@ -474,7 +475,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                   <p>Revenue Operations Professional</p>
                 </div>
               </div>
-              <p>Based in Dallas, TX • Open to remote opportunities</p>
+              <p>{`Based in ${CONTACT.location.display} • Open to remote opportunities`}</p>
             </div>
           </div>
         </section>

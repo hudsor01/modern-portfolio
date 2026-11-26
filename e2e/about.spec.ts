@@ -26,7 +26,7 @@ test.describe('/about page', () => {
   })
 
   test('hero shows name and primary CTAs', async ({ page }) => {
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('Richard Hudson')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('About Richard Hudson')
     await expect(page.getByRole('link', { name: /view case studies/i }).first()).toBeVisible()
     // CTA is labelled "View Resume" (links to /resume); there is no download CTA here.
     await expect(page.getByRole('link', { name: /view resume/i }).first()).toBeVisible()

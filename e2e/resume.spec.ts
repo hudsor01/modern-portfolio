@@ -27,6 +27,10 @@ test.describe('Resume Page', () => {
     await expect(mainContent).toBeVisible()
   })
 
+  test('H1 is the résumé name, distinct from the About H1 (F-16)', async ({ page }) => {
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Richard Hudson')
+  })
+
   test('displays all resume sections when not in PDF view', async ({ page }) => {
     // Sections are the page's H2s (About, Experience, Education, Certifications,
     // Skills by area); job titles are H3s. "Experience" is visually hidden, so

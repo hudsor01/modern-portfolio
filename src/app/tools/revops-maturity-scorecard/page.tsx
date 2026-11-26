@@ -25,27 +25,27 @@ const FAQS: Array<{ question: string; answer: string }> = [
   {
     question: 'What are the levels of revenue operations maturity?',
     answer:
-      'This scorecard uses five levels: 1 Ad-hoc (heroics and spreadsheets), 2 Emerging (inconsistent process), 3 Defined (documented and mostly followed), 4 Managed (process, data, and tools reinforce each other), and 5 Optimized (a strategic, automated, aligned engine). Most B2B teams land between Emerging and Defined.',
+      'This scorecard uses five levels: 1 Ad-hoc (heroics and spreadsheets), 2 Emerging (inconsistent process), 3 Defined (documented and mostly followed), 4 Managed (process, data, and tools reinforce each other), and 5 Optimized (a strategic, automated, aligned engine).',
   },
   {
     question: 'How do I assess my RevOps maturity?',
     answer:
-      'Rate your team honestly on 16 statements across the four pillars. The scorecard averages each pillar, rolls them into an overall level, shows your weakest pillar, and gives you the single highest-ROI next move. It takes about two minutes and requires no email.',
+      'Rate your team honestly on 16 statements across the four pillars. The scorecard averages each pillar, rolls them into an overall level once every pillar has at least one answer, points out the pillar holding the others back when one is, and suggests a next move that fits your scores. It takes about two minutes and requires no email.',
   },
   {
     question: 'What is the most common RevOps maturity mistake?',
     answer:
-      'Buying technology that is more mature than your data and process can support — automating a broken process just produces broken outputs faster, and AI or attribution tools inherit whatever quality your CRM data already has. The scorecard flags this “tools you can’t feed” gap when your technology score outruns your data or process score.',
+      'Buying technology that is more mature than your data and process can support — automating a broken process just produces broken outputs faster, and AI or attribution tools inherit whatever quality your CRM data already has. The scorecard flags this “tools you can’t feed” gap when your technology score is at least a full level ahead of the weaker of your data and process scores and that weaker score is still below the Managed level.',
   },
   {
-    question: 'What is the average RevOps maturity level?',
+    question: 'How should I read my maturity level?',
     answer:
-      'Published B2B benchmarks put the median team around level 2.4 of 5 — Emerging to Defined — and only roughly 7% of teams operate at level 5. Your percentile in the scorecard is a directional estimate against those benchmarks, not an audited sample.',
+      'Read it against the level descriptions, not against other companies. Each of the five levels describes what revenue operations look like at that stage, and your level comes from the average of your four pillar scores. The scorecard does not compare you with other teams, so the level descriptions are the benchmark.',
   },
   {
     question: 'Why is the scorecard free with no email gate?',
     answer:
-      'A maturity score is only useful if you can act on it immediately. Gating the result behind a form adds friction and tempts inflated benchmarks. This one runs entirely in your browser, shows your result instantly, and never asks for an email.',
+      'A maturity score is only useful if you can act on it immediately. Gating the result behind a form adds friction and tempts inflated benchmarks. This one runs entirely in your browser, shows your result as you answer, and never asks for an email.',
   },
 ]
 
@@ -81,8 +81,8 @@ export default function RevOpsMaturityScorecardPage() {
             <p>
               Where does your revenue engine actually stand? Rate your team across the four pillars
               that drive RevOps maturity — <strong>process, data, technology, and alignment</strong>{' '}
-              — and get your maturity level, your percentile, and the single highest-ROI move to
-              make next. Two minutes, no email.
+              — and get your maturity level, a score for each pillar, and a next move that fits
+              where you stand. Two minutes, no email.
             </p>
           </header>
 
@@ -98,8 +98,8 @@ export default function RevOpsMaturityScorecardPage() {
               <p className="text-base">
                 RevOps maturity isn’t an average you can buy your way out of — it’s gated by your
                 weakest pillar. A best-in-class tech stack sitting on dirty CRM data produces
-                confident, automated, wrong answers. That’s why the scorecard points you at the
-                lowest-scoring pillar instead of the one that’s most fun to improve.
+                confident, automated, wrong answers. That’s why, when one pillar trails the others,
+                the scorecard points you at it instead of the one that’s most fun to improve.
               </p>
               <p className="text-base">
                 The most expensive mistake is buying <strong>technology</strong> more mature than

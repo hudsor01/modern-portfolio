@@ -57,7 +57,7 @@ test.describe('Projects Listing Page', () => {
   })
 
   test('search input filters projects', async ({ page }) => {
-    const searchInput = page.getByPlaceholder(/search/i)
+    const searchInput = page.getByRole('textbox', { name: 'Search projects' })
     await expect(searchInput).toBeVisible()
 
     const cards = page.locator('main article')

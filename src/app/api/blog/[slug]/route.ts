@@ -7,10 +7,15 @@ import { authors, blogPosts, categories, postTags, tags, type NewBlogPost } from
 import { validateCSRFOrRespond } from '@/lib/api-csrf'
 import { isAdminRequest } from '@/lib/api-admin-auth'
 import { checkRateLimitOrRespond, RateLimitPresets } from '@/lib/api-rate-limit'
-import { transformToBlogPostData, createErrorResponse } from '@/lib/api-blog'
+import { transformToBlogPostData, createErrorResponse, invalidBodyMessage } from '@/lib/api-blog'
 import { updateBlogPostSchema } from '@/lib/schemas'
 import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
 import { normalizeSeoTitle } from '@/lib/post-title'
+import {
+  metaDescriptionNeedsDerivation,
+  normalizeStoredSeoText,
+  opensWithAuthorBio,
+} from '@/lib/blog-excerpt'
 
 const logger = createContextLogger('SlugAPI')
 
@@ -113,11 +118,9 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
     // guard on the update path so POST and PUT have identical contracts.
     const parsed = updateBlogPostSchema.safeParse(rawBody)
     if (!parsed.success) {
-      const issue = parsed.error.issues[0]
-      const msg = issue
-        ? `Invalid request body: ${issue.path.join('.')}: ${issue.message}`
-        : 'Invalid request body'
-      return NextResponse.json(createErrorResponse(msg), { status: 400 })
+      return NextResponse.json(createErrorResponse(invalidBodyMessage(parsed.error)), {
+        status: 400,
+      })
     }
     const body = parsed.data
 
@@ -130,6 +133,29 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
       return NextResponse.json(createErrorResponse('Blog post not found'), { status: 404 })
     }
 
+    // A bio-opener excerpt or meta is re-derived from the body, and an over-long
+    // meta is trimmed (re-derived only when it has no text of its own).
+    // Normalized, never rejected, so an update can't fail on SEO text. The
+    // stored body and excerpt are read only when needed: a bio field without new
+    // content, or a derived meta without a new excerpt (the meta prefers the
+    // post's excerpt).
+    const bioExcerpt = opensWithAuthorBio(body.excerpt)
+    const deriveMeta = metaDescriptionNeedsDerivation(body.metaDescription)
+    const stored =
+      (body.content === undefined && (bioExcerpt || deriveMeta)) ||
+      (deriveMeta && body.excerpt === undefined)
+        ? await db.query.blogPosts.findFirst({
+            where: eq(blogPosts.id, existingPost.id),
+            columns: { content: true, excerpt: true },
+          })
+        : undefined
+    const seoText = normalizeStoredSeoText({
+      excerpt: body.excerpt,
+      metaDescription: body.metaDescription,
+      content: body.content ?? stored?.content,
+      currentExcerpt: stored?.excerpt,
+    })
+
     const wordCount = body.content ? body.content.split(/\s+/).length : undefined
     const readingTime = wordCount ? Math.ceil(wordCount / 200) : undefined
 
@@ -140,7 +166,7 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
     // `|| null` coalesce required.
     const updateData: Partial<NewBlogPost> = {
       ...(body.title && { title: body.title }),
-      ...(body.excerpt !== undefined && { excerpt: body.excerpt }),
+      ...(seoText.excerpt !== undefined && { excerpt: seoText.excerpt }),
       ...(body.content && { content: body.content, wordCount, readingTime }),
       ...(body.contentType && { contentType: body.contentType }),
       ...(body.status && { status: body.status }),
@@ -149,7 +175,9 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
       ...(body.metaTitle !== undefined && {
         metaTitle: normalizeSeoTitle(body.metaTitle, body.title || existingPost.title),
       }),
-      ...(body.metaDescription !== undefined && { metaDescription: body.metaDescription }),
+      ...(seoText.metaDescription !== undefined && {
+        metaDescription: seoText.metaDescription,
+      }),
       ...(body.keywords && { keywords: body.keywords }),
       ...(body.canonicalUrl !== undefined && { canonicalUrl: body.canonicalUrl }),
       // Social-card fields — schema accepts these on PUT (nullish in

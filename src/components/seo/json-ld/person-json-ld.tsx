@@ -4,6 +4,7 @@
  */
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
+import { CONTACT } from '@/lib/contact-info'
 import { STAT_LABELS, STAT_VALUES } from '@/lib/stats'
 
 /** Stable node id, so other JSON-LD (ProfilePage on /about) can reference this Person. */
@@ -19,9 +20,9 @@ export const PERSON_EMPLOYER = {
 
 /** External profiles, shared with the /about ProfilePage. */
 export const PERSON_SAME_AS = [
-  'https://www.linkedin.com/in/hudsor01',
-  'https://github.com/hudsor01',
-  'https://twitter.com/hudsor01',
+  CONTACT.linkedin.url,
+  CONTACT.github.url,
+  CONTACT.twitter.url,
 ] as const
 
 export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
@@ -38,12 +39,12 @@ export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
     sameAs: [...PERSON_SAME_AS],
     address: {
       '@type': 'PostalAddress',
-      addressLocality: 'Dallas',
-      addressRegion: 'TX',
-      addressCountry: 'US',
+      addressLocality: CONTACT.location.city,
+      addressRegion: CONTACT.location.region,
+      addressCountry: CONTACT.location.country,
     },
-    email: 'hudsor01@icloud.com',
-    telephone: '+1-214-566-0279',
+    email: CONTACT.email,
+    telephone: CONTACT.phone.international,
     workLocation: {
       '@type': 'Place',
       name: 'Dallas-Fort Worth Metroplex',

@@ -68,13 +68,13 @@ export function computeCoverage(input: CoverageInput): CoverageResult {
   const winRatePct = input.winRatePct
 
   if (target === undefined) {
-    return invalid('Enter a revenue target greater than $0.')
+    return invalid(TARGET_REQUIRED_MESSAGE)
   }
   if (typeof winRatePct !== 'number' || !Number.isFinite(winRatePct) || winRatePct <= 0) {
-    return invalid('Win rate must be greater than 0%.')
+    return invalid(WIN_RATE_POSITIVE_MESSAGE)
   }
   if (winRatePct > 100) {
-    return invalid('Win rate can’t exceed 100%.')
+    return invalid(WIN_RATE_MAX_MESSAGE)
   }
 
   const winRate = winRatePct / 100
@@ -139,22 +139,138 @@ export function sanitizeAmount(v: string): string {
   return `${cleaned.slice(0, dot + 1)}${cleaned.slice(dot + 1).replace(/\./g, '')}`
 }
 
+export type AmountKind = 'target' | 'amount'
+
+const NUMBERS_ONLY_MESSAGE = 'Enter numbers only'
+export const TARGET_REQUIRED_MESSAGE = 'Enter a revenue target greater than $0.'
+export const WIN_RATE_REQUIRED_MESSAGE = 'Enter a win rate.'
+export const WIN_RATE_POSITIVE_MESSAGE = 'Win rate must be greater than 0%.'
+export const WIN_RATE_MAX_MESSAGE = 'Win rate can’t exceed 100%.'
+const NEGATIVE_MESSAGE = 'Negative amounts are not allowed. Enter a positive number.'
+/** Largest money amount any field accepts, in dollars. */
+export const MAX_AMOUNT = 10_000_000_000
+
+/** One leading minus sign (hyphen or Unicode minus), optionally after "$" and spaces. */
+const LEADING_MINUS = /^(\s*(?:\$\s*)?)[-\u2212]/
+
 /**
  * Why a typed or pasted money amount cannot be used, or null when it can.
- * Grouping commas, spaces and a leading "$" are formatting and allowed; a sign,
- * exponent notation, letters (such as the "M" in "1.5M") and repeated decimal
- * points are rejected so the value is never silently reinterpreted.
+ * Grouping commas, spaces and a leading "$" are formatting and allowed. Checks run
+ * in this order so each failure gets one precise message: after setting aside one
+ * leading minus sign ("-5", "−5", "$-5", "-$5"), any character that is not a digit,
+ * ".", ",", whitespace or "$" (letters, scientific forms like 1e6, suffixes like the
+ * M in 1.5M, "+", or a minus anywhere but the start, as in 5-3) -> "Enter numbers
+ * only"; then the leading minus -> the negative message; then a repeated decimal
+ * point; then a value above MAX_AMOUNT ($10B). The cap applies to the revenue
+ * target and also to average deal size and open pipeline: an uncapped open
+ * pipeline would make `effectiveCurrentPipeline` and `currentCoverage` unbounded.
  */
-export function amountInputError(raw: string): string | null {
-  if (raw.includes('-')) return 'Negative amounts are not allowed. Enter a positive number.'
-  if (/[eE]/.test(raw)) {
-    return 'Exponent notation (like 1e6) is not supported. Type the full number.'
-  }
-  if (/[^\d.,\s$]/.test(raw)) {
-    return 'Use digits only. Remove letters and symbols (for example the M in 1.5M).'
-  }
+export function amountInputError(raw: string, kind: AmountKind): string | null {
+  const unsigned = raw.replace(LEADING_MINUS, '$1')
+  if (/[^\d.,\s$]/.test(unsigned)) return NUMBERS_ONLY_MESSAGE
+  if (unsigned !== raw) return NEGATIVE_MESSAGE
   if ((raw.match(/\./g) ?? []).length > 1) return 'Use a single decimal point.'
+  if (Number(sanitizeAmount(raw)) > MAX_AMOUNT) {
+    return kind === 'target' ? 'Enter a target up to $10B' : 'Enter an amount up to $10B'
+  }
   return null
+}
+
+/**
+ * Why the revenue target field cannot be used, or null when it can: any
+ * amountInputError, then an empty or zero target. The target is required, so an
+ * empty field is an error on the field itself rather than only in the results.
+ */
+export function targetFieldError(raw: string): string | null {
+  const error = amountInputError(raw, 'target')
+  if (error !== null) return error
+  return Number(sanitizeAmount(raw)) > 0 ? null : TARGET_REQUIRED_MESSAGE
+}
+
+export type PercentField = 'win' | 'qualified' | 'safety'
+
+/**
+ * Why a percent field's value cannot be used, or null when it can. `badInput` is the
+ * input's `validity.badInput`: a type="number" input reports '' for malformed text,
+ * so the flag is the only way to tell it from an empty field. An empty win rate is an
+ * error (the field is required); an empty optional field is not, since it falls back
+ * to its default in computeCoverage.
+ */
+export function percentFieldError(
+  raw: string,
+  badInput: boolean,
+  field: PercentField
+): string | null {
+  if (badInput) return NUMBERS_ONLY_MESSAGE
+  if (raw.trim() === '') return field === 'win' ? WIN_RATE_REQUIRED_MESSAGE : null
+  const n = Number(raw)
+  if (!Number.isFinite(n)) return NUMBERS_ONLY_MESSAGE
+  if (n < 0) return NEGATIVE_MESSAGE
+  if (field === 'win') {
+    if (n === 0) return WIN_RATE_POSITIVE_MESSAGE
+    if (n > 100) return WIN_RATE_MAX_MESSAGE
+  } else if (field === 'qualified') {
+    if (n > 100) return 'Enter a percentage up to 100%.'
+  } else if (n > 1000) {
+    return 'Enter a margin up to 1,000%.'
+  }
+  return null
+}
+
+const usd0 = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+})
+const usdCompact = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  notation: 'compact',
+  maximumFractionDigits: 1,
+})
+
+const MAX_DISPLAY_MONEY = 1_000_000_000_000
+const MAX_DISPLAY_MULTIPLE = 1_000
+const MAX_DISPLAY_COUNT = 1_000_000_000
+
+// Display rule: a value at or above its ceiling renders as the ceiling followed by "+".
+
+export function formatMoney(n: number): string {
+  if (n >= MAX_DISPLAY_MONEY) return '$1T+'
+  if (Math.abs(n) < 1_000_000) return usd0.format(n)
+  // Compact notation rounds, so values just under the ceiling print "$1T": that is the ceiling.
+  const s = usdCompact.format(n)
+  return s === '$1T' ? '$1T+' : s
+}
+
+export function formatMultiple(n: number): string {
+  if (Math.round(n * 10) / 10 >= MAX_DISPLAY_MULTIPLE) return '1,000×+'
+  return `${n.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}×`
+}
+
+/** Smallest percentage formatPercent prints as a number; anything smaller reads "under 0.0001%". */
+const MIN_DISPLAY_PERCENT = 0.0001
+
+/**
+ * A percentage as a person would write it, never as typed: "1e1" -> "10%",
+ * "33.3333" -> "33.33%", and a rate below 1% keeps two significant digits
+ * ("0.0001%") instead of rounding to "0%". Output stays short: a positive rate
+ * below MIN_DISPLAY_PERCENT reads "under 0.0001%", and rounding never carries a
+ * rate below 1% or 100% up to "1%" or "100%".
+ */
+export function formatPercent(n: number): string {
+  if (n > 0 && n < MIN_DISPLAY_PERCENT) return 'under 0.0001%'
+  const digits = n < 1 ? { maximumSignificantDigits: 2 } : { maximumFractionDigits: 2 }
+  const s = n.toLocaleString('en-US', digits)
+  if (n < 1 && s === '1') return '0.99%'
+  if (n < 100 && s === '100') return '99.99%'
+  return `${s}%`
+}
+
+export function formatCount(n: number): string {
+  const c = Math.ceil(n)
+  if (c >= MAX_DISPLAY_COUNT) return '1,000,000,000+'
+  return c.toLocaleString('en-US')
 }
 
 /** Display form of a raw amount: grouped integer digits, any decimal part kept as typed. */

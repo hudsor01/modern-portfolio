@@ -16,13 +16,44 @@ function firstValue(raw: string | string[] | undefined): string | undefined {
 
 /**
  * Parse `?page=`. Anything other than a plain positive integer (missing,
- * `abc`, `0`, `-1`, `1.5`, `2e3`) is page 1 rather than an error: the URL is
- * crawler-reachable and junk values should land on the canonical first page.
+ * `abc`, `0`, `-1`, `1.5`, `2e3`) is page 1 rather than an error. The /blog
+ * page redirects every non-canonical value first via `pageParamRedirect`, so
+ * this fallback only serves metadata and the render path after that check.
  */
 export function parsePageParam(raw: string | string[] | undefined): number {
   const value = firstValue(raw)?.trim()
   if (!value || !/^[1-9]\d{0,5}$/.test(value)) return 1
   return Number(value)
+}
+
+/**
+ * True only for the canonical form of a page >= 2: a single, untrimmed value
+ * matching `/^[1-9]\d{0,5}$/` that is not `1`. Page 1 is not canonical because
+ * `?page=1` duplicates the bare `/blog`; padded or signed values are not.
+ */
+export function isCanonicalPageParam(raw: string | string[] | undefined): boolean {
+  if (raw === undefined || Array.isArray(raw)) return false
+  return /^[1-9]\d{0,5}$/.test(raw) && raw !== '1'
+}
+
+/**
+ * Redirect target for a non-canonical `?page=`, or `null` when none is needed.
+ * Junk values redirect rather than render page 1 because the URLs are
+ * crawler-reachable duplicates of `/blog`. Only `page` is dropped; every other
+ * param is kept so filters and tracking survive. The target is always a
+ * same-origin path starting with `/blog`.
+ */
+export function pageParamRedirect(
+  params: Record<string, string | string[] | undefined>
+): string | null {
+  if (params.page === undefined || isCanonicalPageParam(params.page)) return null
+  const search = new URLSearchParams()
+  for (const [key, value] of Object.entries(params)) {
+    if (key === 'page' || value === undefined) continue
+    for (const item of [value].flat()) search.append(key, item)
+  }
+  const qs = search.toString()
+  return qs ? `/blog?${qs}` : '/blog'
 }
 
 /** Normalise `?category=` (a category name) to one trimmed value or `All`. */

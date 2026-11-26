@@ -11,26 +11,64 @@ import AxeBuilder from '@axe-core/playwright'
  * - Error handling
  */
 
+type MutationGuard = {
+  /** Aborted same-origin non-GET/HEAD requests to /contact. */
+  contact: { method: string; resourceType: string; nextAction: boolean }[]
+  /**
+   * Aborted same-origin non-GET/HEAD requests to any other path. Platform
+   * telemetry under /_vercel/* (Web Analytics and Speed Insights beacons, sent on
+   * a deployed target) is aborted too, but not recorded: it is not a submit.
+   */
+  elsewhere: string[]
+}
+
 /**
- * Abort every contact server-action POST at the network layer so e2e can
- * never send email or write contact_submissions. Returns a live hit counter.
+ * Fails closed: every non-GET/HEAD request, to any path on any origin, is
+ * aborted at the network layer, so e2e can never send email or write
+ * contact_submissions, whether the submit goes to /contact as a server-action
+ * fetch, as a native document POST, or (after a regression) anywhere else.
+ * Same-origin ones are recorded so tests can pin exactly one to /contact.
+ * Cross-origin ones (Sentry envelopes) and same-origin /_vercel/* telemetry are
+ * aborted but not recorded, so the assertions hold against a deployed
+ * PLAYWRIGHT_BASE_URL as well as the local standalone server.
+ * Installed in beforeEach, before the first navigation.
  */
-async function guardServerAction(page: Page) {
-  const counter = { count: 0 }
-  await page.route('**/contact', async (route) => {
-    const request = route.request()
-    if (request.method() === 'POST' && request.headers()['next-action']) {
-      counter.count += 1
+async function guardMutations(page: Page, baseURL: string | undefined): Promise<MutationGuard> {
+  if (!baseURL) throw new Error('guardMutations needs the configured baseURL')
+  const origin = new URL(baseURL).origin
+  const guard: MutationGuard = { contact: [], elsewhere: [] }
+  // A predicate matching every URL: a glob can miss query-string variants.
+  await page.route(
+    () => true,
+    async (route) => {
+      const request = route.request()
+      if (request.method() === 'GET' || request.method() === 'HEAD') {
+        await route.fallback()
+        return
+      }
+      const url = new URL(request.url())
+      if (url.origin === origin) {
+        if (url.pathname === '/contact') {
+          guard.contact.push({
+            method: request.method(),
+            resourceType: request.resourceType(),
+            nextAction: Boolean(request.headers()['next-action']),
+          })
+        } else if (!url.pathname.startsWith('/_vercel/')) {
+          guard.elsewhere.push(request.url())
+        }
+      }
       await route.abort()
-      return
     }
-    await route.continue()
-  })
-  return counter
+  )
+  return guard
 }
 
 test.describe('Contact Form', () => {
-  test.beforeEach(async ({ page }) => {
+  let guard: MutationGuard
+
+  test.beforeEach(async ({ page, baseURL }) => {
+    guard = await guardMutations(page, baseURL)
     await page.goto('/contact')
     await page.waitForLoadState('networkidle')
   })
@@ -59,8 +97,6 @@ test.describe('Contact Form', () => {
   })
 
   test('shows validation errors for empty required fields', async ({ page }) => {
-    const hits = await guardServerAction(page)
-
     // Click submit with nothing filled
     await page.getByRole('button', { name: /send message/i }).click()
 
@@ -72,7 +108,8 @@ test.describe('Contact Form', () => {
     await expect(nameInput).toBeFocused()
     expect(await nameInput.evaluate((el: HTMLInputElement) => el.validity.valueMissing)).toBe(true)
     await expect(page).toHaveURL(/\/contact/)
-    expect(hits.count).toBe(0)
+    expect(guard.contact).toHaveLength(0)
+    expect(guard.elsewhere).toEqual([])
   })
 
   test('validates email format', async ({ page }) => {
@@ -117,13 +154,30 @@ test.describe('Contact Form', () => {
 
   test('shows character count for message field', async ({ page }) => {
     // Verify character counter is present
-    await expect(page.getByText(/\/500/)).toBeVisible()
+    await expect(page.getByText(/\/1000/)).toBeVisible()
 
     // Type a message
     await page.getByLabel(/message/i).fill('Hello')
 
     // Verify character count updates
-    await expect(page.getByText(/5\/500/)).toBeVisible()
+    await expect(page.getByText(/5\/1000/)).toBeVisible()
+  })
+
+  test('message field stops at 1000 characters (typing and paste)', async ({ page }) => {
+    const message = page.getByLabel(/message/i)
+    await message.fill('a'.repeat(1001))
+    expect((await message.inputValue()).length).toBe(1000)
+    await expect(page.getByText(/1000\/1000/)).toBeVisible()
+
+    await message.focus()
+    await page.keyboard.press('End')
+    await page.keyboard.insertText('bbb')
+    expect((await message.inputValue()).length).toBe(1000)
+  })
+
+  test('a newline counts as one character', async ({ page }) => {
+    await page.getByLabel(/message/i).fill('line one\nline two')
+    await expect(page.getByText(/17\/1000/)).toBeVisible()
   })
 
   // Success-path coverage lives in unit tests. Interception is what keeps e2e
@@ -131,8 +185,6 @@ test.describe('Contact Form', () => {
   test('submit reaches the server action and is intercepted (never sends or stores)', async ({
     page,
   }) => {
-    const hits = await guardServerAction(page)
-
     await page.getByLabel(/^name/i).fill('E2E Test User')
     await page.getByLabel(/email/i).fill('e2e-test@example.com')
     await page.getByLabel(/message/i).fill('This is an automated E2E test message. Please ignore.')
@@ -146,7 +198,10 @@ test.describe('Contact Form', () => {
     // Aborted request surfaces as the form-level failure alert.
     const errorAlert = page.getByRole('alert').filter({ hasText: /failed to send message/i })
     await expect(errorAlert).toBeVisible({ timeout: 15000 })
-    expect(hits.count).toBe(1)
+    expect(guard.contact).toHaveLength(1)
+    // The hydrated path is a server-action fetch, never a native document POST.
+    expect(guard.contact[0]).toMatchObject({ resourceType: 'fetch', nextAction: true })
+    expect(guard.elsewhere).toEqual([])
   })
 
   test('keyboard navigation works correctly', async ({ page }) => {

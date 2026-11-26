@@ -52,7 +52,7 @@ export function IntelligenceModulesGrid({ modules }: IntelligenceModulesGridProp
               <ul className="space-y-2">
                 {module.capabilities.map((capability, idx) => (
                   <li key={idx} className="flex items-start gap-2 text-sm">
-                    <CheckCircle className="h-5 w-5 text-secondary mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5 text-secondary mt-0.5 shrink-0" />
                     <span>{capability}</span>
                   </li>
                 ))}

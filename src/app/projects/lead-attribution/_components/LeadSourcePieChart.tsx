@@ -122,7 +122,7 @@ const LeadSourcePieChart = memo(function LeadSourcePieChart({ data }: LeadSource
               className="flex items-center gap-3 p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-all duration-300 ease-out"
             >
               <div
-                className="w-4 h-4 rounded-full flex-shrink-0"
+                className="w-4 h-4 rounded-full shrink-0"
                 style={{ backgroundColor: source.color }}
               />
               <div className="flex-1 min-w-0">

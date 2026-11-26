@@ -22,6 +22,87 @@ test.describe('header', () => {
     )
   })
 
+  test('mobile menu locks page scroll and releases it on close, navigation, back and desktop resize (F-20)', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/')
+    await page.waitForLoadState('networkidle')
+    const rootOverflow = () =>
+      page.evaluate(() => getComputedStyle(document.documentElement).overflow)
+    const menu = page.locator('#mobile-menu')
+    const openToggle = page.getByRole('button', { name: 'Open menu' })
+
+    // No-layout-shift is checked with visible scrollbars in scroll-lock-layout.spec.ts:
+    // this file runs under --hide-scrollbars, where the gutter is 0px.
+    await openToggle.click()
+    await expect.poll(rootOverflow).toBe('hidden')
+
+    // "Stays at 0" needs a watch over a window, not a poll (a poll passes on its
+    // first 0 sample, before a late scroll lands). The listener starts before the
+    // wheel is dispatched and records the furthest scroll position for 500ms.
+    const maxScrollYOver500ms = () =>
+      page.evaluate(
+        () =>
+          new Promise<number>((resolve) => {
+            let max = window.scrollY
+            const onScroll = () => {
+              max = Math.max(max, window.scrollY)
+            }
+            window.addEventListener('scroll', onScroll, { passive: true })
+            setTimeout(() => {
+              window.removeEventListener('scroll', onScroll)
+              resolve(Math.max(max, window.scrollY))
+            }, 500)
+          }),
+      )
+    await page.mouse.move(195, 700)
+    const lockedWatch = maxScrollYOver500ms()
+    await page.mouse.wheel(0, 600)
+    expect(await lockedWatch, 'locked page does not scroll').toBe(0)
+
+    const fits = await menu.evaluate((el) => {
+      const rect = el.getBoundingClientRect()
+      return rect.bottom <= window.innerHeight || el.scrollHeight > el.clientHeight
+    })
+    expect(fits).toBe(true)
+
+    await page.getByRole('button', { name: 'Close menu' }).click()
+    await expect.poll(rootOverflow).not.toBe('hidden')
+
+    // Positive control: the same wheel at the same point scrolls the unlocked page,
+    // so the locked check above cannot pass because the event was swallowed.
+    await page.mouse.move(195, 700)
+    await page.mouse.wheel(0, 600)
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0)
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
+
+    // Navigation by link
+    await openToggle.click()
+    await expect.poll(rootOverflow).toBe('hidden')
+    await menu.getByRole('link', { name: 'About' }).click()
+    await expect(page).toHaveURL(/\/about$/)
+    await expect.poll(rootOverflow).not.toBe('hidden')
+    await expect(openToggle).toHaveAttribute('aria-expanded', 'false')
+
+    // Browser back while open
+    await openToggle.click()
+    await expect.poll(rootOverflow).toBe('hidden')
+    await page.goBack()
+    await expect(page).toHaveURL(/^[^?#]*\/(?:[?#].*)?$/)
+    await expect.poll(rootOverflow).not.toBe('hidden')
+    await expect(menu).toBeHidden()
+
+    // Desktop resize while open
+    await openToggle.click()
+    await expect.poll(rootOverflow).toBe('hidden')
+    await page.setViewportSize({ width: 1024, height: 800 })
+    await expect.poll(rootOverflow).not.toBe('hidden')
+    await page.setViewportSize({ width: 390, height: 844 })
+    await expect(openToggle).toHaveAttribute('aria-expanded', 'false')
+  })
+
   for (const [width, height] of [
     [1440, 900],
     [390, 844],
@@ -153,8 +234,10 @@ test.describe('header', () => {
         expect(b.height).toBeGreaterThan(0)
       }
       const sorted = [...boxes].sort((a, b) => a.left - b.left)
-      for (let i = 1; i < sorted.length; i += 1) {
-        expect(sorted[i - 1].right, `link ${i - 1} vs ${i}`).toBeLessThanOrEqual(sorted[i].left)
+      let prev: (typeof sorted)[number] | undefined
+      for (const [i, b] of sorted.entries()) {
+        if (prev) expect(prev.right, `link ${i - 1} vs ${i}`).toBeLessThanOrEqual(b.left)
+        prev = b
       }
 
       if (!m.wordmark || !m.nav || !m.cta || !m.container) throw new Error('header rects missing')

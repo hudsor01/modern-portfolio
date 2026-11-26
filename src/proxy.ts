@@ -1,8 +1,24 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { lowercasePathRedirect } from '@/lib/path-case'
 import { buildEnhancedCSP, shouldEmitUpgradeInsecureRequests } from '@/lib/csp-edge'
 
 export function proxy(request: NextRequest) {
+  // Mixed-case page paths 308 to lowercase. This runs first so a response that
+  // is only a redirect does no nonce/CSP work. 308 keeps the method. next.config
+  // redirects run first and match case-insensitively, so a mixed-case redirected
+  // source is answered there in one hop; the proxy lowercases only what they do
+  // not match. The target is the cloned request URL with only pathname
+  // replaced, so origin and query are preserved. Next strips that origin from
+  // the Location it sends, which is why lowercasePathRedirect refuses `//` and
+  // `\` paths: their lowercase form would be a protocol-relative, off-site URL.
+  const lowered = lowercasePathRedirect(request.nextUrl.pathname)
+  if (lowered !== null) {
+    const url = request.nextUrl.clone()
+    url.pathname = lowered
+    return NextResponse.redirect(url, 308)
+  }
+
   const nonce = btoa(crypto.randomUUID())
   const isDev = process.env.NODE_ENV === 'development'
 
