@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { CONTACT } from '../src/lib/contact-info'
 import { RESUME_PDF_PATH } from '../src/lib/resume-pdf'
+import { databaseAvailable, NEEDS_DATABASE } from './_helpers/database'
 
 // One 308 straight to the final URL, then the target answers 200 with no
 // further redirect. The local server matches config redirects
@@ -20,6 +21,14 @@ const SINGLE_HOP: Array<[string, string]> = [
   ['/api/health/', '/api/health'],
   ['/llms.txt/', '/llms.txt'],
 ]
+
+// Landing pages that answer 200 only with a database: /api/health is 503 when
+// its SELECT 1 fails, and a blog post 500s when getBlogPost cannot query. Their
+// 308 hop is still asserted unconditionally; only the landing check is gated.
+const LANDING_NEEDS_DATABASE: ReadonlySet<string> = new Set([
+  '/api/health',
+  '/blog/complete-guide-revenue-operations-strategy',
+])
 
 const EXTERNAL: Array<[string, string]> = [
   ['/Github/', CONTACT.github.url],
@@ -64,8 +73,17 @@ test.describe('mixed-case path redirects', () => {
       expect(res.status()).toBe(308)
       const target = new URL(res.headers().location ?? '', baseURL)
       expect(`${target.pathname}${target.search}`).toBe(expected)
+    })
+  }
 
-      const landed = await request.get(`${target.pathname}${target.search}`, { maxRedirects: 0 })
+  // One landing test per distinct target (several rows share `/` and `/about`).
+  for (const expected of new Set(SINGLE_HOP.map(([, target]) => target))) {
+    test(`${expected} answers 200 with no further redirect`, async ({ request }) => {
+      const { pathname } = new URL(expected, 'http://localhost')
+      if (LANDING_NEEDS_DATABASE.has(pathname)) {
+        test.skip(!(await databaseAvailable(request)), NEEDS_DATABASE)
+      }
+      const landed = await request.get(expected, { maxRedirects: 0 })
       expect(landed.status()).toBe(200)
       expect(landed.headers().location).toBeUndefined()
     })
