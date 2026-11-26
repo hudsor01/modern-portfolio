@@ -81,21 +81,25 @@ export default function ResumePageContent() {
             />
           </div>
 
-          {showPdf ? (
-            // PDF viewer
-            <div className="bg-card border border-border rounded-2xl overflow-hidden animate-fade-in-up">
-              {pdfUrl && <ResumeViewer pdfUrl={pdfUrl} />}
-            </div>
-          ) : (
-            // Resume content
+          {/* Resume content. Always rendered so printing with the preview open
+              still prints the résumé: the preview hides it on screen only. */}
+          <div
+            ref={contentRef}
+            className={`space-y-16 animate-fade-in-up print:opacity-100 print:animate-none! print:space-y-5 ${isContentInView ? 'opacity-100' : 'opacity-0'}${showPdf ? ' hidden print:block' : ''}`}
+          >
+            <AboutSection />
+            <ExperienceSection />
+            <EducationCertifications />
+            <SkillsSection />
+          </div>
+
+          {showPdf && (
+            // PDF viewer: screen only, an embedded PDF prints blank or clipped
             <div
-              ref={contentRef}
-              className={`space-y-16 animate-fade-in-up print:opacity-100 print:animate-none! print:space-y-5 ${isContentInView ? 'opacity-100' : 'opacity-0'}`}
+              data-resume-preview
+              className="bg-card border border-border rounded-2xl overflow-hidden animate-fade-in-up print:hidden"
             >
-              <AboutSection />
-              <ExperienceSection />
-              <EducationCertifications />
-              <SkillsSection />
+              {pdfUrl && <ResumeViewer pdfUrl={pdfUrl} />}
             </div>
           )}
         </div>

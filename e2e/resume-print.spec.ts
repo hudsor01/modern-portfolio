@@ -9,6 +9,8 @@ import { test, expect, type Page } from '@playwright/test'
  *     print-only contact line does not
  *   - Print media hides the chrome (navbar, footer, skip link, buttons) and shows
  *     the contact line rendered from CONTACT, the Experience heading and every role
+ *   - With the PDF preview open, print media still prints the résumé and hides
+ *     the embedded viewer
  *   - No printed text computes below the 12px floor
  *   - The page prints to at most two US Letter pages
  *   - The résumé PDF asset keeps its carve-out headers (SAMEORIGIN, noindex, no CSP)
@@ -86,6 +88,26 @@ test.describe('résumé print stylesheet', () => {
     for (const title of ROLE_TITLES) {
       await expect(page.getByRole('heading', { level: 3, name: title, exact: true })).toBeVisible()
     }
+  })
+
+  test('printing with the preview open prints the résumé, not the viewer', async ({ page }) => {
+    const c = chrome(page)
+    const experience = page.getByRole('heading', { level: 2, name: 'Experience' })
+    const viewer = page.locator('object[type="application/pdf"]')
+    await c.preview.click()
+    await expect(viewer).toHaveCount(1)
+    await expect(experience).toBeHidden()
+
+    await page.emulateMedia({ media: 'print' })
+    await expect(viewer).toBeHidden()
+    await expect(c.printContact).toBeVisible()
+    await expect(experience).toBeVisible()
+    for (const title of ROLE_TITLES) {
+      await expect(page.getByRole('heading', { level: 3, name: title, exact: true })).toBeVisible()
+    }
+
+    await page.emulateMedia({ media: 'screen' })
+    await expect(experience).toBeHidden()
   })
 
   test('no printed text is below 12px', async ({ page }) => {
