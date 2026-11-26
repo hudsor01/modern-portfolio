@@ -3,6 +3,8 @@ import { generateMetadata } from '@/app/shared-metadata'
 import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-ld'
 import ResumePageContent from './_components/resume-page-content'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+// Print-only static fonts for the résumé PDF; never referenced on screen.
+import './print-fonts.css'
 
 export const dynamic = 'force-static'
 

@@ -9,7 +9,7 @@
  * line) and must equal the current data exactly and in order, so a server
  * built from older data is refused whatever the edit was. The PDF is then
  * verified with poppler
- * (pages, page size, tagging, embedded fonts with ToUnicode maps, and the text
+ * (pages, page size, tagging, embedded non-Type-3 fonts with ToUnicode maps, and the text
  * itself: the summary, every role, period, bullet, skill, certification and
  * contact value from the site data, intact ligatures, no site chrome, no stale
  * facts). Only when every check passes does it write
@@ -170,6 +170,15 @@ function verifyPdf(pdf: string): number {
       emb === 'yes' && uni === 'yes',
       `emb ${emb}, uni ${uni}`
     )
+    // The print stylesheet swaps in static TrueType files; a Type 3 font means
+    // a variable web font reached the PDF instead.
+    check(`pdffonts: ${name} is not Type 3`, !/\bType 3\b/.test(row))
+  }
+  for (const family of ['SplineSans', 'PlayfairDisplay']) {
+    check(
+      `pdffonts: ${family} embedded`,
+      fontRows.some((row) => row.includes(family))
+    )
   }
 
   const rawText = run('pdftotext', ['-enc', 'UTF-8', pdf, '-'])
@@ -275,6 +284,24 @@ async function main(): Promise<void> {
         window.scrollTo(0, 0)
       })
       await page.evaluate(() => document.fonts.ready.then(() => true))
+      // The static print faces (src/app/resume/print-fonts.css) must be the
+      // ones laid out, so every weight is loaded before printing.
+      const printFaces = await page.evaluate(async () => {
+        const faces = [
+          '400 12px "Spline Sans Print"',
+          '500 12px "Spline Sans Print"',
+          '600 12px "Spline Sans Print"',
+          '500 12px "Playfair Display Print"',
+          '600 12px "Playfair Display Print"',
+        ]
+        const loaded = await Promise.all(faces.map((face) => document.fonts.load(face)))
+        return faces.filter((_, i) => !loaded[i]?.some((f) => f.status === 'loaded'))
+      })
+      check(
+        'print fonts: static Spline Sans and Playfair Display faces loaded',
+        printFaces.length === 0,
+        printFaces.length ? `missing ${printFaces.join(', ')}` : undefined
+      )
 
       const dom = await page.evaluate(() => {
         const hidden = (el: Element | null): boolean | null => {

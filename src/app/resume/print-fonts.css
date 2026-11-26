@@ -1,0 +1,62 @@
+/*
+ * Static (non-variable) instances of the site's two families, used only when
+ * /resume is printed. next/font serves variable fonts, which Chromium embeds
+ * in a PDF as Type 3; these static TrueType files embed as TrueType, so the
+ * résumé PDF (bun run resume:pdf) carries real, crisp, extractable fonts.
+ *
+ * Screen rendering never names these families, so browsers never fetch the
+ * files outside print. The files are bundled from the repo (hashed under
+ * /_next/static/media), never loaded from a third-party host.
+ * Source: Google Fonts static instances, SIL OFL 1.1 (see print-fonts/OFL-*.txt).
+ */
+@font-face {
+  font-family: 'Spline Sans Print';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('./print-fonts/SplineSans-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Spline Sans Print';
+  font-style: normal;
+  font-weight: 500;
+  font-display: block;
+  src: url('./print-fonts/SplineSans-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Spline Sans Print';
+  font-style: normal;
+  font-weight: 600;
+  font-display: block;
+  src: url('./print-fonts/SplineSans-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Playfair Display Print';
+  font-style: normal;
+  font-weight: 500;
+  font-display: block;
+  src: url('./print-fonts/PlayfairDisplay-Medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Playfair Display Print';
+  font-style: normal;
+  font-weight: 600;
+  font-display: block;
+  src: url('./print-fonts/PlayfairDisplay-SemiBold.ttf') format('truetype');
+}
+
+/*
+ * next/font defines --font-spline and --font-playfair on <html> through a
+ * class; `html:root` outranks that class, and every font stack (including
+ * Tailwind's --font-sans) reads these two variables.
+ */
+@media print {
+  html:root {
+    --font-spline: 'Spline Sans Print', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-playfair: 'Playfair Display Print', Georgia, 'Times New Roman', serif;
+  }
+}
