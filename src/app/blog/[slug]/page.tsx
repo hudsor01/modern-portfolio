@@ -15,7 +15,7 @@ import { withDbRetry } from '@/lib/db-retry'
 import { blogPosts } from '@/db/schema'
 import { canonicalUrl } from '@/lib/absolute-url'
 import { brandTitle, stripBrandSuffix } from '@/app/shared-metadata'
-import { resolveExcerpt } from '@/lib/blog-excerpt'
+import { LEDE_MAX, resolveExcerpt, resolveMetaDescription } from '@/lib/blog-excerpt'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
 import { postDocumentTitle } from '@/lib/post-title'
@@ -43,6 +43,8 @@ interface BlogPostPageProps {
   }>
 }
 
+// The lede and meta description are resolved here once (bio-free, boundary-clean)
+// so the page, generateMetadata and JSON-LD all read the same values.
 // Drizzle relational query — deduplicated via React cache() across
 // generateMetadata + page render. Filters are inline so the database does the
 // status check; no post-fetch JS filtering.
@@ -64,8 +66,16 @@ const getBlogPost = cache(async (slug: string): Promise<BlogPostData | null> => 
     if (post.deletedAt) return null
 
     const data = transformToBlogPostData(post)
-    const excerpt = resolveExcerpt({ excerpt: data.excerpt, content: data.content })
-    return { ...data, excerpt: excerpt || undefined }
+    const lede = resolveExcerpt(
+      { excerpt: data.excerpt, content: data.content },
+      { maxLength: LEDE_MAX }
+    )
+    const meta = resolveMetaDescription({
+      metaDescription: data.metaDescription,
+      excerpt: data.excerpt,
+      content: data.content,
+    })
+    return { ...data, excerpt: lede || undefined, metaDescription: meta || undefined }
   } catch (error) {
     // Distinguish "not found" (null) from "query failed" (re-throw).
     // Without this, a transient Neon outage would return null → trigger
@@ -126,10 +136,10 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   const shareTitle = brandTitle(stripBrandSuffix(post.title) || baseTitle)
   return {
     title: baseTitle,
-    description: post.metaDescription || post.excerpt,
+    description: post.metaDescription,
     openGraph: {
       title: shareTitle,
-      description: post.excerpt || post.metaDescription,
+      description: post.metaDescription,
       url: postUrl,
       siteName: 'Richard Hudson',
       images: [
@@ -151,7 +161,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     twitter: {
       card: 'summary_large_image',
       title: shareTitle,
-      description: post.excerpt || post.metaDescription,
+      description: post.metaDescription,
       images: [ogImage.url],
     },
     alternates: {
