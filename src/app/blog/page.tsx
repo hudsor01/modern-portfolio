@@ -16,7 +16,7 @@ import { createContextLogger } from '@/lib/logger'
 import type { BlogCategoryData } from '@/types/api'
 import type { BlogListPost } from '@/types/blog'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
-import { brandTitle } from '@/app/shared-metadata'
+import { brandTitle } from '@/lib/brand'
 import {
   ALL_CATEGORIES,
   BLOG_PAGE_SIZE,

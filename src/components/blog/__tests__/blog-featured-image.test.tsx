@@ -38,6 +38,20 @@ describe('BlogFeaturedImage fallback', () => {
     const swapped = (container.querySelector('img') as HTMLImageElement).getAttribute('src') ?? ''
     expect(swapped).not.toContain('variant')
   })
+
+  it('strips a stored brand suffix from the fallback card title', () => {
+    const { container } = render(
+      <BlogFeaturedImage
+        src="/gone.jpg"
+        alt="a"
+        postTitle="Pipeline Coverage Basics | Richard Hudson"
+        fill
+      />
+    )
+    fireEvent.error(container.querySelector('img') as HTMLImageElement)
+    const swapped = (container.querySelector('img') as HTMLImageElement).getAttribute('src') ?? ''
+    expect(new URL(swapped, 'http://x').searchParams.get('title')).toBe('Pipeline Coverage Basics')
+  })
 })
 
 describe('withCoverVariant', () => {

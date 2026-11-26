@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 vi.mock('@/components/layout/navbar', () => ({ Navbar: () => null }))
 
 import ToolsPage, { metadata } from '../page'
-import { brandTitle } from '@/app/shared-metadata'
+import { brandTitle } from '@/lib/brand'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
 import { tools } from '@/data/tools'
 

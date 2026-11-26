@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
-import { brandTitle } from '@/app/shared-metadata'
+import { brandTitle } from '@/lib/brand'
 import { displayPostTitle, normalizeSeoTitle, SEO_TITLE_MAX, TITLE_BUDGET } from '@/lib/post-title'
 
 describe('normalizeSeoTitle', () => {

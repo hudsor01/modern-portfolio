@@ -1,13 +1,8 @@
 // @vitest-environment node
 import { describe, it, expect, vi } from 'vitest'
 import type { Metadata } from 'next'
-import {
-  BRAND,
-  baseMetadata,
-  brandTitle,
-  stripBrandSuffix,
-  generateMetadata,
-} from '@/app/shared-metadata'
+import { baseMetadata, generateMetadata } from '@/app/shared-metadata'
+import { BRAND, brandTitle, stripBrandSuffix } from '@/lib/brand'
 
 function countBrand(s: string): number {
   return s.split(BRAND).length - 1

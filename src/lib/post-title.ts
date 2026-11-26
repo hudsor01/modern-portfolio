@@ -1,4 +1,4 @@
-import { brandTitle, stripBrandSuffix } from '@/app/shared-metadata'
+import { brandTitle, stripBrandSuffix } from '@/lib/brand'
 
 /**
  * Roughly what Google shows of a title before truncating (it measures pixels,
