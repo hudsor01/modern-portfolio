@@ -90,3 +90,30 @@ describe('stale location', () => {
     expect(offenders).toEqual([])
   })
 })
+
+describe('contact details have one source', () => {
+  const LITERALS = [
+    'hudsor01@icloud.com',
+    '+1-214-566-0279',
+    '214.566.0279',
+    '214-566-0279',
+    'linkedin.com/in/hudsor01',
+    'github.com/hudsor01',
+    'twitter.com/hudsor01',
+    "'@hudsor01'",
+  ]
+
+  it('no src file outside contact-info.ts repeats an email, phone or profile literal', () => {
+    const offenders = sourceFiles(join(ROOT, 'src'))
+      .map((file) => relative(ROOT, file))
+      .filter((file) => file !== join('src', 'lib', 'contact-info.ts'))
+      .filter((file) => {
+        const text = readFileSync(join(ROOT, file), 'utf8')
+        return LITERALS.some((literal) => text.includes(literal))
+      })
+    expect(
+      offenders,
+      `Import CONTACT from '@/lib/contact-info' instead of repeating contact details in: ${offenders.join(', ')}`
+    ).toEqual([])
+  })
+})
