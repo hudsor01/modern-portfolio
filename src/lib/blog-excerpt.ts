@@ -396,6 +396,60 @@ export function fitMetaDescription(raw: string | null | undefined): string | nul
 }
 
 /**
+ * SEO and descriptive text the admin API stores is normalized, never rejected,
+ * so publishing cannot fail on it (same rule as `normalizeSeoTitle` and
+ * `fitMetaDescription`). The limits match the DB columns (`ogDescription`
+ * varchar(300), `twitterDescription` varchar(200)) or the long-standing API caps.
+ */
+export const STORED_TEXT_LIMITS = {
+  excerpt: 500,
+  ogTitle: 100,
+  ogDescription: 300,
+  twitterTitle: 100,
+  twitterDescription: 200,
+  featuredImageAlt: 200,
+  taxonomyDescription: 500,
+} as const
+
+const KEYWORD_MAX = 50
+const KEYWORDS_MAX = 10
+
+/**
+ * Stored text as sent when it fits `max` (`undefined` = omitted, `null` =
+ * cleared); otherwise plain text cut on a sentence, else a word, boundary with
+ * one `…` (`null` when it has no text).
+ */
+export function fitStoredText<T extends string | null | undefined>(
+  raw: T,
+  max: number
+): T | string | null {
+  if (typeof raw !== 'string' || raw.length <= max) return raw
+  return truncateAtBoundary(stripMarkdownToPlain(raw), max) || null
+}
+
+/**
+ * Keywords as stored: each trimmed, empties dropped, an item over 50 chars cut
+ * to its longest whole-word prefix (a single over-long word is hard cut), the
+ * first 10 kept in order. Keywords are tags, not prose, so no ellipsis.
+ */
+export function fitKeywords(items: readonly string[]): string[] {
+  const out: string[] = []
+  for (const raw of items) {
+    let item = raw.trim()
+    if (item.length > KEYWORD_MAX) {
+      const window = item.slice(0, KEYWORD_MAX + 1)
+      const boundary = WHITESPACE.test(window[KEYWORD_MAX] as string)
+        ? KEYWORD_MAX
+        : window.lastIndexOf(' ', KEYWORD_MAX - 1)
+      item = item.slice(0, boundary > 0 ? boundary : codePointCut(item, KEYWORD_MAX)).trim()
+    }
+    if (item !== '') out.push(item)
+    if (out.length === KEYWORDS_MAX) break
+  }
+  return out
+}
+
+/**
  * True when the stored meta must come from the excerpt/body: a bio opener, or
  * an over-long meta with no text of its own. PUT uses it to know when to read
  * the stored post.
@@ -430,7 +484,7 @@ export function normalizeStoredSeoText<
 }): { excerpt: E | string | null; metaDescription: M | string | null } {
   const excerpt = opensWithAuthorBio(input.excerpt)
     ? resolveExcerpt({ excerpt: null, content: input.content }, { maxLength: LEDE_MAX }) || null
-    : input.excerpt
+    : fitStoredText(input.excerpt, STORED_TEXT_LIMITS.excerpt)
   const fallbackExcerpt = excerpt === undefined ? input.currentExcerpt : excerpt
   const metaDescription = opensWithAuthorBio(input.metaDescription)
     ? resolveMetaDescription({

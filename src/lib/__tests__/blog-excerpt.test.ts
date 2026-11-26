@@ -3,12 +3,17 @@ import { describe, expect, it } from 'vitest'
 import {
   CONTENT_HEAD_CHARS,
   contentHeadOf,
+  fitKeywords,
+  fitStoredText,
   isBioBoilerplate,
   LEDE_MAX,
   resolveExcerpt,
+  normalizeStoredSeoText,
   resolvePostLede,
+  STORED_TEXT_LIMITS,
   stripMarkdownToPlain,
 } from '../blog-excerpt'
+import { blogPosts } from '@/db/schema'
 
 const BIO =
   'I spent six years in the Texas Army National Guard before moving into revenue operations and never looked back.'
@@ -207,5 +212,76 @@ describe('resolvePostLede', () => {
       })
       expect(page).toBe(feed)
     }
+  })
+})
+
+describe('STORED_TEXT_LIMITS', () => {
+  it('never exceeds the varchar column bounds', () => {
+    expect(STORED_TEXT_LIMITS.ogDescription).toBeLessThanOrEqual(
+      (blogPosts.ogDescription as unknown as { length: number }).length
+    )
+    expect(STORED_TEXT_LIMITS.twitterDescription).toBeLessThanOrEqual(
+      (blogPosts.twitterDescription as unknown as { length: number }).length
+    )
+  })
+})
+
+describe('fitStoredText', () => {
+  const long = 'Revenue operations keeps the pipeline honest. '.repeat(40)
+
+  it('returns undefined and null as sent', () => {
+    expect(fitStoredText(undefined, 100)).toBeUndefined()
+    expect(fitStoredText(null, 100)).toBeNull()
+  })
+
+  it('returns a value within the limit exactly as sent', () => {
+    expect(fitStoredText('**Keep** me', 100)).toBe('**Keep** me')
+  })
+
+  it('cuts a longer value within the limit on a sentence or one ellipsis', () => {
+    for (const max of [100, 200, 300]) {
+      const out = fitStoredText(long, max) as string
+      expect(out.length).toBeLessThanOrEqual(max)
+      expect(out.endsWith('.') || out.endsWith('…')).toBe(true)
+    }
+    const words = fitStoredText('word '.repeat(100), 100) as string
+    expect(words.endsWith('…')).toBe(true)
+    expect(words.match(/…/g)).toHaveLength(1)
+  })
+
+  it('returns null for a longer value with no text', () => {
+    expect(fitStoredText('-'.repeat(600), 100)).toBeNull()
+  })
+})
+
+describe('fitKeywords', () => {
+  it('trims, drops empties, cuts long items on a word and caps at 10', () => {
+    const phrase = 'revenue operations strategy '.repeat(5)
+    const out = fitKeywords([
+      ' a ',
+      '',
+      '   ',
+      'x'.repeat(60),
+      phrase,
+      ...Array.from({ length: 15 }, (_, i) => `kw${i}`),
+    ])
+    expect(out).toHaveLength(10)
+    expect(out[0]).toBe('a')
+    expect(out[1]).toBe('x'.repeat(50))
+    expect(out[2]).toBe('revenue operations strategy revenue operations')
+    expect(out.every((k) => k.length >= 1 && k.length <= 50)).toBe(true)
+  })
+})
+
+describe('normalizeStoredSeoText excerpt fit', () => {
+  it('fits a non-bio excerpt over 500 and derives meta from it', () => {
+    const excerpt = 'Pipeline hygiene matters for forecast accuracy. '.repeat(40)
+    const out = normalizeStoredSeoText({
+      excerpt,
+      metaDescription: undefined,
+      content: 'body',
+    })
+    expect((out.excerpt as string).length).toBeLessThanOrEqual(STORED_TEXT_LIMITS.excerpt)
+    expect(out.excerpt).toBe(fitStoredText(excerpt, STORED_TEXT_LIMITS.excerpt))
   })
 })

@@ -953,3 +953,43 @@ describe('blog metaDescription accepts a bio opener (the routes normalize it)', 
     expect(result.success && result.data.metaDescription).toBeNull()
   })
 })
+
+describe('W3: SEO and descriptive text is normalized, never rejected', () => {
+  const base = { title: 'Test post', content: 'Some content', authorId: validCuid }
+  const long = 'x'.repeat(5000)
+  const keywords = [...Array.from({ length: 14 }, (_, i) => `kw${i}`), 'k'.repeat(70)]
+  const textFields = [
+    'excerpt',
+    'ogTitle',
+    'ogDescription',
+    'twitterTitle',
+    'twitterDescription',
+    'featuredImageAlt',
+  ] as const
+  const overLong = Object.fromEntries(textFields.map((f) => [f, long]))
+
+  it('accepts over-long text and keywords on create and update', () => {
+    expect(createBlogPostSchema.safeParse({ ...base, ...overLong, keywords }).success).toBe(true)
+    const upd = updateBlogPostSchema.safeParse({ ...overLong, keywords })
+    expect(upd.success).toBe(true)
+    if (upd.success) expect(upd.data.keywords).toHaveLength(10)
+  })
+
+  it('accepts over-long tag and category descriptions and keywords', () => {
+    expect(createTagSchema.safeParse({ name: 'Tag', description: long }).success).toBe(true)
+    const cat = createCategorySchema.safeParse({ name: 'Cat', description: long, keywords })
+    expect(cat.success).toBe(true)
+    if (cat.success) expect(cat.data.keywords.length).toBeLessThanOrEqual(10)
+  })
+
+  it('still rejects identity and invalid input', () => {
+    expect(createBlogPostSchema.safeParse({ ...base, title: 'a'.repeat(201) }).success).toBe(false)
+    expect(createTagSchema.safeParse({ name: 'a'.repeat(61) }).success).toBe(false)
+    expect(createCategorySchema.safeParse({ name: 'a'.repeat(61) }).success).toBe(false)
+    expect(createCategorySchema.safeParse({ name: 'Cat', icon: 'a'.repeat(51) }).success).toBe(
+      false
+    )
+    expect(createBlogPostSchema.safeParse({ ...base, rogue: 1 }).success).toBe(false)
+    expect(createBlogPostSchema.safeParse({ ...base, keywords: [1] }).success).toBe(false)
+  })
+})
