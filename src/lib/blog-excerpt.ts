@@ -178,15 +178,25 @@ function withEllipsis(head: string): string {
 const SENTENCE_END = /[.!?][”"’')\]]?(?=\s+[\p{Lu}\d“"‘'([]|\s*$)/gu
 // Text ending in one of these is mid-sentence even before a capital or a number
 // ("Dr. Jones", "the U.S. Army", "e.g. Salesforce", "since Jan. 2024",
-// "approx. 30%", "Fig. 3", "9 a.m. Eastern").
+// "approx. 30%", "Fig. 3", "9 a.m. Eastern", "Gov. Abbott", "the avg. Deal").
+// Titles, units and weekday forms that are not ordinary words. "Rep" is left
+// out on purpose: "each rep. The…" is a routine sentence end on a sales blog.
 const ABBREVIATION =
-  /\b(?:e\.g|i\.e|a\.m|p\.m|vs|etc|approx|est|cf|fig|figs|vol|pp|ch|sec|Mr|Mrs|Ms|Dr|Prof|Sgt|Lt|Capt|Col|St|Mt|Ft|U\.S|U\.K|Inc|Corp|Co|Ltd|Jr|Sr|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.$/i
+  /\b(?:e\.g|i\.e|a\.m|p\.m|vs|etc|approx|est|cf|fig|figs|vol|pp|ch|sec|avg|min|mins|max|hrs|Mr|Mrs|Ms|Dr|Prof|Sgt|Lt|Capt|Col|Gen|Gov|Sen|Rev|Dept|St|Ave|Blvd|Mt|Ft|U\.S|U\.K|Inc|Corp|Co|Ltd|Jr|Sr|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec|Mon|Tue|Tues|Wed|Thu|Thur|Thurs|Fri)\.$/i
 // "No."/"Nos." abbreviate "number" only before one ("ranks No. 1"). Before a
 // word they are the word "no" ending a sentence ("The answer was no. Then…").
 const NUMBER_ABBREVIATION = /\bnos?\.$/i
 // What follows the terminator: a number, or nothing known (end of the text, or
 // a cut that removed the continuation).
 const NUMBER_OR_UNKNOWN_NEXT = /^\s*(?:\d|$)/
+// Before a number, a period after any bare word of 1-4 letters is not trusted
+// as a sentence end, listed or not ("the avg. 30%", "a min. 3", "Dept. 4",
+// "2 hrs. 90%"): no fixed list can name every short abbreviation. "Q4. 2025",
+// "in 2024. The" and longer words ("Morocco. 3") still end a sentence. A short
+// word that really did end one ("every open deal. 30% of…") costs only a
+// word-boundary cut with an ellipsis, never a false finished sentence.
+const SHORT_WORD = /(?:^|[^\p{L}\p{N}])\p{L}{1,4}\.$/u
+const DIGIT_NEXT = /^\s*\d/
 const INITIAL = /(?:^|[\s(])\p{Lu}\.$/u
 
 /**
@@ -195,6 +205,7 @@ const INITIAL = /(?:^|[\s(])\p{Lu}\.$/u
  */
 function endsWithAbbreviation(text: string, rest = ''): boolean {
   if (ABBREVIATION.test(text) || INITIAL.test(text)) return true
+  if (DIGIT_NEXT.test(rest) && SHORT_WORD.test(text)) return true
   return NUMBER_ABBREVIATION.test(text) && NUMBER_OR_UNKNOWN_NEXT.test(rest)
 }
 

@@ -309,14 +309,57 @@ describe('abbreviations are not sentence ends', () => {
 
   it.each([
     ['a year', 'we closed the books on the second quarter. 2024 opened'],
-    ['a number', 'the stage review covered every open deal. 30% of them'],
+    ['a number', 'the stage review covered every open opportunity. 30% of them'],
+    ['a year, after a quarter', 'the plan we shipped in Q4. 2025 opened'],
+    ['a number, after a long word', 'the expansion team opened in Morocco. 3 deals'],
+    ['a capital, after a year', 'the cadence has held since we set it in 2024. The'],
+    ['a number, after "!"', 'every region hit its plan! 3 of them'],
+    ['the word "rep" before a capital', 'the new territory went to each rep. The'],
     ['the word "no" before a capital', 'the answer from every region was no. Then'],
     ['the word "no" before a quote', 'the answer from every region was no. “Stage'],
     ['a word ending in an abbreviation', 'the expansion team opened in Morocco. Then'],
   ])('still stops at a sentence end before %s', (_label, body) => {
     const text = `${lead} ${body} the reps who ignored the old definitions started to follow the new rules.`
-    const firstSentence = text.slice(0, text.indexOf('. ', lead.length) + 1)
+    const firstSentence = text.slice(0, lead.length + text.slice(lead.length).search(/[.!?] /) + 1)
     expect(truncateAtBoundary(text, 160)).toBe(firstSentence)
+  })
+})
+
+describe('short abbreviations before a number or a title', () => {
+  const lead = 'Our forecast review moved to a weekly cadence across every region last spring, and'
+  const rest = 'the reps who ignored the old definitions started to follow the new rules.'
+
+  it.each([
+    ['avg.', 'the team saw the avg. 30% drop in slippage that'],
+    ['min.', 'every rep now works with a min. 3 touches per account so'],
+    ['max.', 'the policy now holds reps to a max. 10 open deals per rep so'],
+    ['hrs.', 'every escalation now gets a reply within 2 hrs. 90% of'],
+    ['Rev.', 'the process moved to the Rev. 2 playbook after which'],
+    ['Dept.', 'the change shipped when our Dept. 4 team rebuilt the stages and'],
+    ['Gov.', 'the change matched the stance that Gov. Abbott took when'],
+    ['Sen.', 'the change matched the stance that Sen. Cornyn took when'],
+    ['Ave.', 'the review now runs from the Main St. office on Elm Ave. Tower 2 where'],
+    ['Wed.', 'the review now runs every week on Wed. Mornings work for'],
+    ['avg. (before a capital)', 'the dashboard now shows the team avg. Deal size so that'],
+  ])('does not stop after %s', (abbr, body) => {
+    const text = `${lead} ${body} ${rest}`
+    expect(text.length).toBeGreaterThan(160)
+    const out = truncateAtBoundary(text, 160)
+    expect(out.endsWith('…')).toBe(true)
+    expect(out.endsWith(abbr.split(' ')[0] as string)).toBe(false)
+    expect(out.length).toBeLessThanOrEqual(160)
+  })
+
+  // Before a digit, a period after any bare 1-4 letter word is not trusted as a
+  // sentence end: a short word there is as likely an abbreviation (`pct. 30`,
+  // `wk. 2`). The cost is a word-boundary cut with an ellipsis instead of a
+  // finished sentence, never a false finished sentence.
+  it('cuts with an ellipsis after a short word before a number', () => {
+    const text = `${lead} the stage review covered every open deal. 30% of them ${rest}`
+    const out = truncateAtBoundary(text, 160)
+    expect(out.endsWith('…')).toBe(true)
+    expect(out.endsWith('deal.')).toBe(false)
+    expect(out.length).toBeLessThanOrEqual(160)
   })
 })
 
