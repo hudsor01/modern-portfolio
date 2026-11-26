@@ -868,87 +868,38 @@ const F3_META =
 const C_META =
   'Seven ways CRM pipeline data drifts from reality, the reports that catch each one, and the systems, metrics and weekly inspection that keep pipeline accurate.'
 
-describe('blog metaDescription bio guard', () => {
+describe('blog metaDescription accepts a bio opener (the routes normalize it)', () => {
   const base = {
     title: 'Hello World',
     content: 'This is content with at least one word.',
     authorId: 'cm1234567890abcdefghijklm',
   }
-  const BIO_MESSAGE = 'Meta description must not open with the author bio'
-
-  it.each([F1_META, F2_META, F3_META])('create rejects a bio meta (%#)', (metaDescription) => {
-    const result = createBlogPostSchema.safeParse({ ...base, metaDescription })
-    expect(result.success).toBe(false)
-    if (!result.success) expect(result.error.issues[0]?.message).toBe(BIO_MESSAGE)
-  })
-
-  // Same fixtures as the excerpt resolvers' plain-text bio tests: the API must
-  // reject every meta the resolvers would discard.
   const OPENER = 'I served in the National Guard for six years before moving into RevOps.'
+
   it.each([
+    F1_META,
+    F2_META,
+    F3_META,
     `**${OPENER}**`,
-    `*${OPENER}*`,
-    `[${OPENER}](https://x.test)`,
-    `> ${OPENER}`,
-    `&nbsp;${OPENER}`,
-  ])('create and update reject a wrapped bio meta %j', (metaDescription) => {
+    `&#73; spent six years in the Army National Guard and more`,
+    C_META,
+    '',
+    null,
+    undefined,
+  ])('create and update accept %j', (metaDescription) => {
     for (const result of [
       createBlogPostSchema.safeParse({ ...base, metaDescription }),
       updateBlogPostSchema.safeParse({ metaDescription }),
     ]) {
-      expect(result.success).toBe(false)
-      if (!result.success) expect(result.error.issues[0]?.message).toBe(BIO_MESSAGE)
+      expect(result.success).toBe(true)
     }
   })
 
-  // A numeric entity that encodes a letter: the resolvers decode it to
-  // "I spent…" and discard the meta, so the API must reject it too.
-  it.each([
-    '&#73; spent six years in the Army National Guard and more',
-    '&#x49; served in the National Guard for six years before RevOps.',
-    '**&#73; served in the National Guard for six years before RevOps.**',
-  ])('create and update reject an entity-encoded bio meta %j', (metaDescription) => {
-    for (const result of [
-      createBlogPostSchema.safeParse({ ...base, metaDescription }),
-      updateBlogPostSchema.safeParse({ metaDescription }),
-    ]) {
-      expect(result.success).toBe(false)
-      if (!result.success) expect(result.error.issues[0]?.message).toBe(BIO_MESSAGE)
-    }
-  })
-
-  it.each(['&nbsp;', '&amp;#73; spent six years in the Army National Guard and more'])(
-    'create does not reject %j on bio grounds',
-    (metaDescription) => {
-      expect(createBlogPostSchema.safeParse({ ...base, metaDescription }).success).toBe(true)
-    }
-  )
-
-  it.each(['— a recap', '**Forecasts miss because stages are fiction.**'])(
-    'create accepts a wrapped or punctuation-led normal meta %j',
-    (metaDescription) => {
-      expect(createBlogPostSchema.safeParse({ ...base, metaDescription }).success).toBe(true)
-    }
-  )
-
-  it.each([C_META, '', null, undefined])('create accepts %j', (metaDescription) => {
-    const result = createBlogPostSchema.safeParse({ ...base, metaDescription })
-    expect(result.success).toBe(true)
-  })
-
-  it('create does not reject a whitespace-only meta on bio grounds', () => {
-    const result = createBlogPostSchema.safeParse({ ...base, metaDescription: '   ' })
+  it('still rejects a meta over 160 characters, naming the rule', () => {
+    const result = createBlogPostSchema.safeParse({ ...base, metaDescription: 'x'.repeat(161) })
+    expect(result.success).toBe(false)
     if (!result.success) {
-      expect(result.error.issues.map((i) => i.message)).not.toContain(BIO_MESSAGE)
-    }
-  })
-
-  it('update rejects a bio meta and accepts null, blank and unrelated edits', () => {
-    const bad = updateBlogPostSchema.safeParse({ metaDescription: F3_META })
-    expect(bad.success).toBe(false)
-    if (!bad.success) expect(bad.error.issues[0]?.message).toBe(BIO_MESSAGE)
-    for (const body of [{ metaDescription: null }, { metaDescription: '' }, { title: 'New' }]) {
-      expect(updateBlogPostSchema.safeParse(body).success).toBe(true)
+      expect(result.error.issues[0]?.message).toBe('Meta description cannot exceed 160 characters')
     }
   })
 })

@@ -11,6 +11,7 @@ import { transformToBlogPostData, createErrorResponse, invalidBodyMessage } from
 import { updateBlogPostSchema } from '@/lib/schemas'
 import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
 import { normalizeSeoTitle } from '@/lib/post-title'
+import { normalizeStoredSeoText, opensWithAuthorBio } from '@/lib/blog-excerpt'
 
 const logger = createContextLogger('SlugAPI')
 
@@ -128,6 +129,25 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
       return NextResponse.json(createErrorResponse('Blog post not found'), { status: 404 })
     }
 
+    // A bio-opener excerpt or meta is re-derived from the body. Normalized,
+    // never rejected, so an update can't fail on SEO text. The stored body (and
+    // excerpt, which the meta may come from) is read only when such a field
+    // arrives without new content.
+    const stored =
+      body.content === undefined &&
+      (opensWithAuthorBio(body.excerpt) || opensWithAuthorBio(body.metaDescription))
+        ? await db.query.blogPosts.findFirst({
+            where: eq(blogPosts.id, existingPost.id),
+            columns: { content: true, excerpt: true },
+          })
+        : undefined
+    const seoText = normalizeStoredSeoText({
+      excerpt: body.excerpt,
+      metaDescription: body.metaDescription,
+      content: body.content ?? stored?.content,
+      currentExcerpt: stored?.excerpt,
+    })
+
     const wordCount = body.content ? body.content.split(/\s+/).length : undefined
     const readingTime = wordCount ? Math.ceil(wordCount / 200) : undefined
 
@@ -138,7 +158,7 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
     // `|| null` coalesce required.
     const updateData: Partial<NewBlogPost> = {
       ...(body.title && { title: body.title }),
-      ...(body.excerpt !== undefined && { excerpt: body.excerpt }),
+      ...(seoText.excerpt !== undefined && { excerpt: seoText.excerpt }),
       ...(body.content && { content: body.content, wordCount, readingTime }),
       ...(body.contentType && { contentType: body.contentType }),
       ...(body.status && { status: body.status }),
@@ -147,7 +167,9 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
       ...(body.metaTitle !== undefined && {
         metaTitle: normalizeSeoTitle(body.metaTitle, body.title || existingPost.title),
       }),
-      ...(body.metaDescription !== undefined && { metaDescription: body.metaDescription }),
+      ...(seoText.metaDescription !== undefined && {
+        metaDescription: seoText.metaDescription,
+      }),
       ...(body.keywords && { keywords: body.keywords }),
       ...(body.canonicalUrl !== undefined && { canonicalUrl: body.canonicalUrl }),
       // Social-card fields — schema accepts these on PUT (nullish in

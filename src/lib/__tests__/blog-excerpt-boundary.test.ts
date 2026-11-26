@@ -1,9 +1,11 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
-import { opensWithBio } from '../bio-boilerplate'
 import {
   isBioBoilerplate,
   LEDE_MAX,
+  META_MAX,
+  normalizeStoredSeoText,
+  opensWithAuthorBio,
   resolveExcerpt,
   resolveMetaDescription,
   stripMarkdownToPlain,
@@ -591,7 +593,7 @@ describe('markdown stripping keeps literal underscores, asterisks and code', () 
   })
 })
 
-describe('the schema bio check agrees with the resolvers on entities, emphasis and links', () => {
+describe('opensWithAuthorBio agrees with the resolvers', () => {
   const OPENER = 'served in the National Guard for six years before moving into RevOps.'
   it.each([
     `&#73; ${OPENER}`,
@@ -602,6 +604,9 @@ describe('the schema bio check agrees with the resolvers on entities, emphasis a
     `&amp;nbsp;I ${OPENER}`,
     `I ${OPENER}`,
     `[I ${OPENER}](https://x.test)`,
+    `![x](https://x.test/a.png) I ${OPENER}`,
+    `\`&#73;\` ${OPENER}`,
+    F1_META,
     'Forecasts miss because stages are fiction.',
   ])('judges %j the same way', (metaDescription) => {
     const resolverDiscards = !resolveMetaDescription({
@@ -609,6 +614,85 @@ describe('the schema bio check agrees with the resolvers on entities, emphasis a
       excerpt: null,
       content: null,
     })
-    expect(opensWithBio(metaDescription)).toBe(resolverDiscards)
+    expect(opensWithAuthorBio(metaDescription)).toBe(resolverDiscards)
+  })
+
+  it.each(['', '   ', '&nbsp;', '&#160; &nbsp;', '—', null, undefined])(
+    'does not call blank or markup-only %j a bio',
+    (text) => {
+      expect(opensWithAuthorBio(text)).toBe(false)
+    }
+  )
+})
+
+describe('normalizeStoredSeoText (what the admin API stores)', () => {
+  it.each([
+    [F1_META, F1_EXCERPT, F1_BODY],
+    [F2_META, F2_EXCERPT, F2_BODY],
+    [F3_META, F3_EXCERPT, F3_BODY],
+  ])(
+    'replaces a live bio meta and excerpt with ones derived from the body (%#)',
+    (meta, excerpt, body) => {
+      const out = normalizeStoredSeoText({ metaDescription: meta, excerpt, content: body })
+      for (const value of [out.metaDescription, out.excerpt]) {
+        expect(typeof value).toBe('string')
+        expect(opensWithAuthorBio(value)).toBe(false)
+        expect(value).not.toMatch(/National Guard|\.\.\.$/)
+      }
+      expect(out.excerpt).toBe(
+        resolveExcerpt({ excerpt: null, content: body }, { maxLength: LEDE_MAX })
+      )
+      expect(out.metaDescription).toBe(
+        resolveMetaDescription({ metaDescription: null, excerpt: out.excerpt, content: body })
+      )
+      expect((out.metaDescription ?? '').length).toBeLessThanOrEqual(META_MAX)
+      expect((out.excerpt ?? '').length).toBeLessThanOrEqual(LEDE_MAX)
+    }
+  )
+
+  it('derives the meta from a kept non-bio excerpt before the body', () => {
+    const out = normalizeStoredSeoText({
+      metaDescription: F1_META,
+      excerpt: C_EXCERPT,
+      content: F1_BODY,
+    })
+    expect(out.excerpt).toBe(C_EXCERPT)
+    expect(out.metaDescription).toBe(
+      resolveMetaDescription({ metaDescription: null, excerpt: C_EXCERPT, content: F1_BODY })
+    )
+  })
+
+  it('uses the stored excerpt for the meta when the excerpt was omitted (PUT)', () => {
+    const out = normalizeStoredSeoText({
+      metaDescription: F2_META,
+      excerpt: undefined,
+      content: F2_BODY,
+      currentExcerpt: C_EXCERPT,
+    })
+    expect(out.excerpt).toBeUndefined()
+    expect(out.metaDescription).toBe(
+      resolveMetaDescription({ metaDescription: null, excerpt: C_EXCERPT, content: F2_BODY })
+    )
+  })
+
+  it('stores null when the body yields nothing usable', () => {
+    expect(
+      normalizeStoredSeoText({ metaDescription: F3_META, excerpt: F3_EXCERPT, content: '' })
+    ).toEqual({
+      metaDescription: null,
+      excerpt: null,
+    })
+  })
+
+  it.each([
+    [C_META, C_EXCERPT],
+    [null, null],
+    [undefined, undefined],
+    ['&nbsp;', '—'],
+  ])('keeps non-bio, cleared and omitted values as sent (%j)', (meta, excerpt) => {
+    expect(normalizeStoredSeoText({ metaDescription: meta, excerpt, content: F1_BODY })).toEqual({
+      metaDescription: meta,
+      excerpt,
+    })
   })
 })

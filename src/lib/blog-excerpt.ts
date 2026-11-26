@@ -328,3 +328,46 @@ export function resolveMetaDescription(input: {
   }
   return resolveExcerpt({ excerpt: input.excerpt, content: input.content }, { maxLength: META_MAX })
 }
+
+/**
+ * True when a raw stored excerpt or meta opens with the author bio as the
+ * resolvers read it (markdown stripped, entities decoded). Blank or
+ * markup-only text is not a bio: the resolvers already replace it.
+ */
+export function opensWithAuthorBio(raw: string | null | undefined): boolean {
+  const plain = stripMarkdownToPlain(raw ?? '')
+  return plain.trim() !== '' && isBioBoilerplate(plain)
+}
+
+/**
+ * SEO text as the admin API stores it: normalized, never rejected, so
+ * publishing cannot fail on it (the same rule as `normalizeSeoTitle`). An
+ * excerpt or meta description that opens with the author bio is replaced by
+ * one derived from the body: the excerpt at `LEDE_MAX`, the meta at `META_MAX`
+ * (from the kept or derived excerpt, else the body), each cut on a sentence,
+ * else a word, boundary with one `…`; `null` when the body yields nothing.
+ * Every other value, including `undefined` (field omitted on PUT) and `null`
+ * (field cleared), is returned as sent.
+ */
+export function normalizeStoredSeoText<
+  E extends string | null | undefined,
+  M extends string | null | undefined,
+>(input: {
+  excerpt: E
+  metaDescription: M
+  content: string | null | undefined
+  /** Excerpt the meta may be derived from when `excerpt` was omitted (PUT). */
+  currentExcerpt?: string | null
+}): { excerpt: E | string | null; metaDescription: M | string | null } {
+  const excerpt = opensWithAuthorBio(input.excerpt)
+    ? resolveExcerpt({ excerpt: null, content: input.content }, { maxLength: LEDE_MAX }) || null
+    : input.excerpt
+  const metaDescription = opensWithAuthorBio(input.metaDescription)
+    ? resolveMetaDescription({
+        metaDescription: null,
+        excerpt: excerpt === undefined ? input.currentExcerpt : excerpt,
+        content: input.content,
+      }) || null
+    : input.metaDescription
+  return { excerpt, metaDescription }
+}

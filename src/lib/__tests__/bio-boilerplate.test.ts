@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
-import { isBioBoilerplate, opensWithBio } from '../bio-boilerplate'
+import { isBioBoilerplate } from '../bio-boilerplate'
 
 const F1_META =
   'I spent six years in the Texas Army National Guard as an Information Technology Specialist, including a deployment to Iraq. I learned quickly that when equ...'
@@ -73,32 +73,5 @@ describe('isBioBoilerplate', () => {
   it('does not flag a late mention', () => {
     const text = `Pipeline reviews fail when ${'x'.repeat(200)} Texas Army National Guard`
     expect(isBioBoilerplate(text)).toBe(false)
-  })
-})
-
-describe('opensWithBio (raw stored text, as the schema sees it)', () => {
-  it('decodes entities once before the check', () => {
-    for (const text of [
-      '&#73; spent six years in the Army National Guard and more',
-      '&#x49; served in the National Guard for six years before RevOps.',
-      '&nbsp;I served in the National Guard for six years before RevOps.',
-      '**&#73; served in the National Guard for six years before RevOps.**',
-      F1_META,
-    ]) {
-      expect(opensWithBio(text)).toBe(true)
-    }
-  })
-
-  it('decodes only once, as the resolvers do', () => {
-    // "&amp;#73;" decodes to the literal text "&#73;", not to "I".
-    expect(opensWithBio('&amp;#73; spent six years in the Army National Guard and more')).toBe(
-      false
-    )
-  })
-
-  it('does not flag blank, entity-only or normal text', () => {
-    for (const text of ['', '   ', '&nbsp;', '&#160; &nbsp;', '—', C_META]) {
-      expect(opensWithBio(text)).toBe(false)
-    }
   })
 })

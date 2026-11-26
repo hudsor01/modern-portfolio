@@ -212,20 +212,40 @@ describe('PUT /api/blog/[slug]', () => {
     expect(body).toMatchObject({ success: true, message: 'Blog post updated successfully' })
   })
 
-  it('returns 400 for a bio-opener metaDescription', async () => {
+  it('accepts a bio-opener meta and stores one derived from the stored body', async () => {
+    const bio =
+      'I spent six years in the Texas Army National Guard as an Information Technology Specialist. That service included a deployment to Iraq. In the military, am...'
+    const lede =
+      'Salesloft is one of the most powerful sales engagement platforms available. Most teams configure it poorly.'
+    dbMocks.findFirst
+      .mockResolvedValueOnce(samplePost) // existing-by-slug
+      .mockResolvedValueOnce({ content: `${bio}\n\n${lede}`, excerpt: null }) // stored body
+      .mockResolvedValueOnce(samplePost) // read-back
+    dbMocks.update.mockResolvedValue(undefined)
+    const res = await PUT(reqPut('hello', { metaDescription: bio }), ctx('hello'))
+    expect(res.status).toBe(200)
+    expect(dbMocks.findFirst.mock.calls[1]?.[0]).toMatchObject({
+      columns: { content: true, excerpt: true },
+    })
+    expect(dbMocks.updateSet.mock.calls[0]?.[0]).toMatchObject({ metaDescription: lede })
+  })
+
+  it('derives a bio-opener meta and excerpt from new content without reading the stored body', async () => {
+    const bio = 'I served in the National Guard for six years before moving into RevOps.'
+    const lede =
+      'Pipeline coverage is a ratio, not a promise. Track it weekly against stage-weighted quota.'
+    dbMocks.findFirst.mockResolvedValueOnce(samplePost).mockResolvedValueOnce(samplePost)
+    dbMocks.update.mockResolvedValue(undefined)
     const res = await PUT(
-      reqPut('hello', {
-        metaDescription:
-          'I spent six years in the Texas Army National Guard as an Information Technology Specialist. That service included a deployment to Iraq. In the military, am...',
-      }),
+      reqPut('hello', { content: `${bio}\n\n${lede}`, excerpt: bio, metaDescription: bio }),
       ctx('hello')
     )
-    expect(res.status).toBe(400)
-    const body = await res.json()
-    expect(body.success).toBe(false)
-    expect(body.error).toContain('Meta description must not open with the author bio')
-    expect(dbMocks.update).not.toHaveBeenCalled()
-    expect(dbMocks.updateSet).not.toHaveBeenCalled()
+    expect(res.status).toBe(200)
+    expect(dbMocks.findFirst).toHaveBeenCalledTimes(2)
+    expect(dbMocks.updateSet.mock.calls[0]?.[0]).toMatchObject({
+      excerpt: lede,
+      metaDescription: lede,
+    })
   })
 
   it('accepts a normal metaDescription on PUT', async () => {

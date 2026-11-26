@@ -336,19 +336,45 @@ describe('POST /api/blog', () => {
     expect(dbMocks.findFirst).not.toHaveBeenCalled()
   })
 
-  it('returns 400 for a bio-opener metaDescription', async () => {
+  it('accepts a bio-opener meta and excerpt and stores ones derived from the body', async () => {
+    const bio =
+      'I spent six years in the Texas Army National Guard as an Information Technology Specialist, including a deployment to Iraq. I learned quickly that when equ...'
+    const lede =
+      'Forecasts miss when stage definitions drift from how buyers actually decide. Here is how to fix it.'
     const res = await POST(
       reqPost({
         ...validBody,
-        metaDescription:
-          'I spent six years in the Texas Army National Guard as an Information Technology Specialist, including a deployment to Iraq. I learned quickly that when equ...',
+        content: `${bio}\n\n${lede}`,
+        excerpt: bio,
+        metaDescription: bio,
       })
     )
+    expect(res.status).toBe(201)
+    expect(dbMocks.insertValues.mock.calls[0]?.[0]).toMatchObject({
+      excerpt: lede,
+      metaDescription: lede,
+    })
+  })
+
+  it('stores a normal meta and excerpt exactly as sent', async () => {
+    const meta =
+      'Seven ways CRM pipeline data drifts from reality, the reports that catch each one, and the systems that keep it accurate.'
+    const res = await POST(
+      reqPost({ ...validBody, excerpt: 'A short, real excerpt.', metaDescription: meta })
+    )
+    expect(res.status).toBe(201)
+    expect(dbMocks.insertValues.mock.calls[0]?.[0]).toMatchObject({
+      excerpt: 'A short, real excerpt.',
+      metaDescription: meta,
+    })
+  })
+
+  it('names the field when a meta is genuinely invalid (too long)', async () => {
+    const res = await POST(reqPost({ ...validBody, metaDescription: 'x'.repeat(161) }))
     expect(res.status).toBe(400)
     expect(await res.json()).toMatchObject({
       success: false,
-      error:
-        'Invalid request body: metaDescription: Meta description must not open with the author bio',
+      error: 'Invalid request body: metaDescription: Meta description cannot exceed 160 characters',
     })
     expect(dbMocks.insertValues).not.toHaveBeenCalled()
   })

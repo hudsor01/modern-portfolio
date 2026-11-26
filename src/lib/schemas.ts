@@ -7,7 +7,6 @@
 
 import { z } from 'zod'
 import { postStatus, contentType } from '@/db/schema'
-import { opensWithBio } from '@/lib/bio-boilerplate'
 import { FEATURED_IMAGE_ALLOWED_HOSTS } from './featured-image-hosts'
 
 // Zod 4 probes `new Function('')` at schema construction to decide whether to
@@ -329,14 +328,9 @@ const blogPostBaseShape = {
   contentType: ContentTypeSchema,
   status: PostStatusSchema,
   metaTitle: nullishText(100),
-  // Null, blank and entity-only values pass; only a real bio opener is
-  // rejected (also when wrapped in markdown, quotes or a leading entity, or
-  // spelled with numeric entities, as the excerpt resolvers see it), so the
-  // pipeline cannot re-introduce the author bio as meta.
-  metaDescription: nullishText(160, 'Meta description cannot exceed 160 characters').refine(
-    (v) => v == null || !opensWithBio(v),
-    { message: 'Meta description must not open with the author bio' }
-  ),
+  // A bio-opener meta is accepted here and normalized by the routes
+  // (`normalizeStoredSeoText`), never rejected: publishing cannot fail on it.
+  metaDescription: nullishText(160, 'Meta description cannot exceed 160 characters'),
   keywords: z.array(z.string().min(1).max(50)).max(10, 'Cannot have more than 10 keywords'),
   canonicalUrl: nullishUrl(),
   // Social card image fields reuse featuredImageSchema — same host

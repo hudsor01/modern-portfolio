@@ -1,9 +1,7 @@
 /**
- * The one HTML entity decoder for stored excerpts and metas, shared by the
- * excerpt resolvers (`blog-excerpt.ts`) and the schema's bio check
- * (`bio-boilerplate.ts`), so both judge the same characters. It must stay
- * import-free: `schemas.ts` reaches it through `bio-boilerplate.ts` and ships
- * to every client that loads the contact form.
+ * The one HTML entity decoder for stored excerpts and metas, used by the
+ * excerpt and meta resolvers (`blog-excerpt.ts`) and the markdown stripper
+ * that feeds the author-bio check. Import-free.
  *
  * Not for the blog body: its code blocks use `decodeHtmlEntities` in
  * markdown.ts, which undoes exactly what `marked` escapes.
