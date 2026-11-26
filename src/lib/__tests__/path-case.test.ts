@@ -42,6 +42,19 @@ describe('lowercasePathRedirect', () => {
     }
   )
 
+  // Slash canonicalization belongs to resolveSingleHop (src/lib/redirect-resolve.ts),
+  // which strips trailing slashes before calling this.
+  it.each([
+    ['/About/', '/about/'],
+    ['/About//', '/about//'],
+  ])('does not strip trailing slashes: %s', (input, expected) => {
+    expect(lowercasePathRedirect(input)).toBe(expected)
+  })
+
+  it('returns null for a lowercase path with a trailing slash', () => {
+    expect(lowercasePathRedirect('/about/')).toBeNull()
+  })
+
   it.each(['/About', '/Blog/Some-Post', '/About/', '/Tools/Pipeline-Coverage'])(
     'is idempotent (no loop): %s',
     (input) => {
