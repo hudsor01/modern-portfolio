@@ -287,7 +287,8 @@ test.describe('Blog Post Reading', () => {
     await openFirstPost(page)
     const reads = page.locator('aside [data-post-reads]')
     await expect(reads).toHaveCount(1)
-    await expect(reads).toHaveText(/^\d[\d,]* reads?$/)
+    // "1 read", otherwise "N reads" (0 included): never "1 reads" or "2 read".
+    await expect(reads).toHaveText(/^(1 read|(?!1 )\d[\d,]* reads)$/)
     await expect(page.locator('article header')).not.toContainText(/\bviews?\b/)
   })
 
