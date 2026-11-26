@@ -176,8 +176,10 @@ export function resolveExcerpt(
   opts: { maxLength?: number } = {}
 ): string {
   const max = opts.maxLength ?? EXCERPT_MAX
-  if (!isBioBoilerplate(input.excerpt)) {
-    const stored = stripMarkdownToPlain(input.excerpt as string)
+  // Bio detection runs on the plain text, so markup or a leading entity
+  // (`**I spent…**`, `&nbsp;I spent…`) cannot hide the opener.
+  const stored = stripMarkdownToPlain(input.excerpt ?? '')
+  if (!isBioBoilerplate(stored)) {
     // A stored excerpt that is only markup (e.g. a lone image) or only an
     // ellipsis leaves nothing; fall through to the body like an empty one.
     const out = truncateAtBoundary(stored, max)
@@ -195,8 +197,9 @@ export function resolveMetaDescription(input: {
   excerpt: string | null | undefined
   content: string | null | undefined
 }): string {
-  if (!isBioBoilerplate(input.metaDescription)) {
-    const out = truncateAtBoundary(stripMarkdownToPlain(input.metaDescription as string), META_MAX)
+  const stored = stripMarkdownToPlain(input.metaDescription ?? '')
+  if (!isBioBoilerplate(stored)) {
+    const out = truncateAtBoundary(stored, META_MAX)
     if (out !== '') return out
   }
   return resolveExcerpt({ excerpt: input.excerpt, content: input.content }, { maxLength: META_MAX })

@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
 import {
+  isBioBoilerplate,
   LEDE_MAX,
   resolveExcerpt,
   resolveMetaDescription,
@@ -277,5 +278,30 @@ describe('no-space truncation', () => {
   it('keeps a whole pair that fits', () => {
     const out = truncateAtBoundary(`${'x'.repeat(157)}😀${'y'.repeat(20)}`, 160)
     expect(out).toBe(`${'x'.repeat(157)}😀…`)
+  })
+})
+
+describe('bio detection on plain text', () => {
+  // Trips only the opener rule (no "Texas Army National Guard" or "deployment
+  // to Iraq" mention), which raw markdown emphasis would hide.
+  const OPENER = 'I served in the National Guard for six years before moving into RevOps.'
+  const WRAPPED = [`**${OPENER}**`, `*${OPENER}*`, `[${OPENER}](https://x.test)`]
+
+  it('uses fixtures the raw text check misses', () => {
+    expect(isBioBoilerplate(OPENER)).toBe(true)
+    for (const text of WRAPPED) expect(isBioBoilerplate(text)).toBe(false)
+  })
+
+  it('skips a markdown-wrapped bio excerpt', () => {
+    for (const excerpt of WRAPPED) {
+      expect(resolveExcerpt({ excerpt, content: F1_BODY }, { maxLength: LEDE_MAX })).toBe(F1_PARA)
+    }
+  })
+
+  it('skips a markdown-wrapped bio meta', () => {
+    for (const metaDescription of WRAPPED) {
+      const out = resolveMetaDescription({ metaDescription, excerpt: F1_EXCERPT, content: F1_BODY })
+      expect(out.startsWith('I see too many sales organizations')).toBe(true)
+    }
   })
 })
