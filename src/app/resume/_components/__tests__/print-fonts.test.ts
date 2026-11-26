@@ -5,8 +5,9 @@ import { describe, expect, it, vi } from 'vitest'
 import { PRINT_FONT_FACES, preloadPrintFonts } from '@/lib/print-fonts'
 
 /**
- * The résumé PDF embeds static TrueType fonts (src/app/resume/print-fonts.css)
- * instead of the variable next/font files, which Chromium writes as Type 3.
+ * The résumé PDF embeds static TrueType outlines, shipped as WOFF2
+ * (src/app/resume/print-fonts.css), instead of the variable next/font files,
+ * which Chromium writes as Type 3.
  * These guards keep those faces print-only, self-hosted, static and licensed.
  */
 const RESUME = join(process.cwd(), 'src', 'app', 'resume')
@@ -14,6 +15,55 @@ const CSS_FILE = join(RESUME, 'print-fonts.css')
 const FONT_DIR = join(RESUME, 'print-fonts')
 const css = readFileSync(CSS_FILE, 'utf8')
 const PRINT_FAMILIES = ['Spline Sans Print', 'Playfair Display Print']
+
+// WOFF2 known-tag table (W3C WOFF2 section 5), indexed by the directory flags.
+const WOFF2_KNOWN_TAGS = [
+  'cmap', 'head', 'hhea', 'hmtx', 'maxp', 'name', 'OS/2', 'post', 'cvt ', 'fpgm',
+  'glyf', 'loca', 'prep', 'CFF ', 'VORG', 'EBDT', 'EBLC', 'gasp', 'hdmx', 'kern',
+  'LTSH', 'PCLT', 'VDMX', 'vhea', 'vmtx', 'BASE', 'GDEF', 'GPOS', 'GSUB', 'EBSC',
+  'JSTF', 'MATH', 'CBDT', 'CBLC', 'COLR', 'CPAL', 'SVG ', 'sbix', 'acnt', 'avar',
+  'bdat', 'bloc', 'bsln', 'cvar', 'fdsc', 'feat', 'fmtx', 'fvar', 'gvar', 'hsty',
+  'just', 'lcar', 'mort', 'morx', 'opbd', 'prop', 'trak', 'Zapf', 'Silf', 'Glat',
+  'Gloc', 'Feat', 'Sill',
+] // biome-ignore format: dense lookup table
+
+const EXPECTED_TABLES = [
+  'GDEF', 'GPOS', 'GSUB', 'OS/2', 'STAT', 'cmap', 'gasp', 'glyf',
+  'head', 'hhea', 'hmtx', 'loca', 'maxp', 'name', 'post', 'prep',
+] // biome-ignore format: dense lookup table
+
+/** Table tags from a WOFF2 table directory (header is 48 bytes). */
+function woff2Tables(data: Buffer): string[] {
+  let pos = 48
+  const readBase128 = (): number => {
+    let value = 0
+    for (let i = 0; i < 5; i++) {
+      const byte = data.readUInt8(pos++)
+      value = value * 128 + (byte & 0x7f)
+      if ((byte & 0x80) === 0) return value
+    }
+    throw new Error('invalid UIntBase128')
+  }
+  const tags: string[] = []
+  const count = data.readUInt16BE(12)
+  for (let i = 0; i < count; i++) {
+    const flags = data.readUInt8(pos++)
+    const index = flags & 0x3f
+    let tag: string
+    if (index === 63) {
+      tag = data.toString('latin1', pos, pos + 4)
+      pos += 4
+    } else {
+      tag = WOFF2_KNOWN_TAGS[index] ?? ''
+    }
+    const version = flags >> 6
+    readBase128()
+    const transformed = tag === 'glyf' || tag === 'loca' ? version === 0 : version !== 0
+    if (transformed) readBase128()
+    tags.push(tag)
+  }
+  return tags
+}
 
 const withoutComments = css.replace(/\/\*[\s\S]*?\*\//g, '')
 const fontFaces = [...withoutComments.matchAll(/@font-face\s*\{([^}]*)\}/g)].map((m) => m[1] ?? '')
@@ -27,11 +77,11 @@ describe('résumé print fonts', () => {
       src: body.match(/url\('\.\/print-fonts\/([^']+)'\)/)?.[1],
     }))
     expect(faces).toEqual([
-      { family: 'Spline Sans Print', weight: '400', src: 'SplineSans-Regular.ttf' },
-      { family: 'Spline Sans Print', weight: '500', src: 'SplineSans-Medium.ttf' },
-      { family: 'Spline Sans Print', weight: '600', src: 'SplineSans-SemiBold.ttf' },
-      { family: 'Playfair Display Print', weight: '500', src: 'PlayfairDisplay-Medium.ttf' },
-      { family: 'Playfair Display Print', weight: '600', src: 'PlayfairDisplay-SemiBold.ttf' },
+      { family: 'Spline Sans Print', weight: '400', src: 'SplineSans-Regular.woff2' },
+      { family: 'Spline Sans Print', weight: '500', src: 'SplineSans-Medium.woff2' },
+      { family: 'Spline Sans Print', weight: '600', src: 'SplineSans-SemiBold.woff2' },
+      { family: 'Playfair Display Print', weight: '500', src: 'PlayfairDisplay-Medium.woff2' },
+      { family: 'Playfair Display Print', weight: '600', src: 'PlayfairDisplay-SemiBold.woff2' },
     ])
     for (const face of faces) expect(existsSync(join(FONT_DIR, face.src ?? ''))).toBe(true)
   })
@@ -69,15 +119,17 @@ describe('résumé print fonts', () => {
     expect(withoutComments).not.toMatch(/url\(\s*['"]?(https?:)?\/\//)
   })
 
-  it('ships static (non-variable) TrueType files with their OFL licences', () => {
-    const fonts = readdirSync(FONT_DIR).filter((f) => f.endsWith('.ttf'))
+  it('ships static (non-variable) WOFF2 files with their OFL licences', () => {
+    expect(readdirSync(FONT_DIR).filter((f) => f.endsWith('.ttf'))).toEqual([])
+    const fonts = readdirSync(FONT_DIR).filter((f) => f.endsWith('.woff2'))
     expect(fonts).toHaveLength(5)
     for (const file of fonts) {
       const data = readFileSync(join(FONT_DIR, file))
-      expect(data.readUInt32BE(0)).toBe(0x00010000)
-      const tables = Array.from({ length: data.readUInt16BE(4) }, (_, i) =>
-        data.toString('latin1', 12 + 16 * i, 16 + 16 * i)
-      )
+      expect(data.readUInt32BE(0)).toBe(0x774f4632)
+      expect(data.readUInt32BE(4)).toBe(0x00010000)
+      const tables = woff2Tables(data)
+      expect(tables).toHaveLength(data.readUInt16BE(12))
+      expect([...tables].sort()).toEqual([...EXPECTED_TABLES].sort())
       expect(tables).not.toContain('fvar')
       expect(tables).not.toContain('gvar')
     }
