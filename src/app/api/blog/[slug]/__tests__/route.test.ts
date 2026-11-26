@@ -310,9 +310,10 @@ describe('PUT /api/blog/[slug]', () => {
     dbMocks.update.mockResolvedValue(undefined)
     const res = await PUT(reqPut('hello', { metaDescription: prose }), ctx('hello'))
     expect(res.status).toBe(200)
-    const stored = dbMocks.updateSet.mock.calls[0]?.[0]?.metaDescription as string
-    expect(stored.length).toBeLessThanOrEqual(160)
-    expect(stored.match(/…/g)?.length ?? 0).toBeLessThanOrEqual(1)
+    // Cut at the last sentence end within 160 characters: no ellipsis.
+    expect(dbMocks.updateSet.mock.calls[0]?.[0]?.metaDescription).toBe(
+      'Pipeline data drifts from reality in seven predictable ways. Each one has a report that catches it and a weekly inspection that keeps it honest.'
+    )
     expect(dbMocks.findFirst).toHaveBeenCalledTimes(2)
   })
 
