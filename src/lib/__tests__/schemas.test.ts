@@ -882,6 +882,32 @@ describe('blog metaDescription bio guard', () => {
     if (!result.success) expect(result.error.issues[0]?.message).toBe(BIO_MESSAGE)
   })
 
+  // Same fixtures as the excerpt resolvers' plain-text bio tests: the API must
+  // reject every meta the resolvers would discard.
+  const OPENER = 'I served in the National Guard for six years before moving into RevOps.'
+  it.each([
+    `**${OPENER}**`,
+    `*${OPENER}*`,
+    `[${OPENER}](https://x.test)`,
+    `> ${OPENER}`,
+    `&nbsp;${OPENER}`,
+  ])('create and update reject a wrapped bio meta %j', (metaDescription) => {
+    for (const result of [
+      createBlogPostSchema.safeParse({ ...base, metaDescription }),
+      updateBlogPostSchema.safeParse({ metaDescription }),
+    ]) {
+      expect(result.success).toBe(false)
+      if (!result.success) expect(result.error.issues[0]?.message).toBe(BIO_MESSAGE)
+    }
+  })
+
+  it.each(['— a recap', '**Forecasts miss because stages are fiction.**'])(
+    'create accepts a wrapped or punctuation-led normal meta %j',
+    (metaDescription) => {
+      expect(createBlogPostSchema.safeParse({ ...base, metaDescription }).success).toBe(true)
+    }
+  )
+
   it.each([C_META, '', null, undefined])('create accepts %j', (metaDescription) => {
     const result = createBlogPostSchema.safeParse({ ...base, metaDescription })
     expect(result.success).toBe(true)

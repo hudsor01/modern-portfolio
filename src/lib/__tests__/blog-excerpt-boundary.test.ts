@@ -327,13 +327,13 @@ describe('no-space truncation', () => {
 
 describe('bio detection on plain text', () => {
   // Trips only the opener rule (no "Texas Army National Guard" or "deployment
-  // to Iraq" mention), which raw markdown emphasis would hide.
+  // to Iraq" mention), which raw markdown emphasis used to hide.
   const OPENER = 'I served in the National Guard for six years before moving into RevOps.'
   const WRAPPED = [`**${OPENER}**`, `*${OPENER}*`, `[${OPENER}](https://x.test)`]
 
-  it('uses fixtures the raw text check misses', () => {
+  it('flags the wrapped fixtures on raw text too, as the schema does', () => {
     expect(isBioBoilerplate(OPENER)).toBe(true)
-    for (const text of WRAPPED) expect(isBioBoilerplate(text)).toBe(false)
+    for (const text of WRAPPED) expect(isBioBoilerplate(text)).toBe(true)
   })
 
   it('skips a markdown-wrapped bio excerpt', () => {

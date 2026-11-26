@@ -42,6 +42,34 @@ describe('isBioBoilerplate', () => {
     expect(isBioBoilerplate(C_META)).toBe(false)
   })
 
+  it('flags an opener wrapped in markdown, quotes or a leading entity', () => {
+    const opener = 'I served in the National Guard for six years before moving into RevOps.'
+    for (const text of [
+      `**${opener}**`,
+      `*${opener}*`,
+      `_${opener}_`,
+      `__${opener}__`,
+      `## ${opener}`,
+      `> ${opener}`,
+      `> **${opener}**`,
+      `[${opener}](https://x.test)`,
+      `“${opener}”`,
+      `&nbsp;${opener}`,
+      `&#160;&nbsp; *${opener}*`,
+    ]) {
+      expect(isBioBoilerplate(text)).toBe(true)
+    }
+  })
+
+  it('treats punctuation-only text as text, not as empty', () => {
+    for (const text of ['—', '...', '**', '&nbsp;']) expect(isBioBoilerplate(text)).toBe(false)
+  })
+
+  it('does not flag wrapped normal text', () => {
+    expect(isBioBoilerplate('**Forecasts miss because stages are fiction.**')).toBe(false)
+    expect(isBioBoilerplate('> I worked with our IT specialist on the migration.')).toBe(false)
+  })
+
   it('does not flag a late mention', () => {
     const text = `Pipeline reviews fail when ${'x'.repeat(200)} Texas Army National Guard`
     expect(isBioBoilerplate(text)).toBe(false)

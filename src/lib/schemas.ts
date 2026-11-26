@@ -330,7 +330,9 @@ const blogPostBaseShape = {
   status: PostStatusSchema,
   metaTitle: nullishText(100),
   // Blank/null pass (isBioBoilerplate('') is true); only a real bio opener is
-  // rejected, so the pipeline cannot re-introduce the author bio as meta.
+  // rejected (also when wrapped in markdown, quotes or a leading entity, as the
+  // excerpt resolvers see it), so the pipeline cannot re-introduce the author
+  // bio as meta.
   metaDescription: nullishText(160, 'Meta description cannot exceed 160 characters').refine(
     (v) => v == null || v.trim() === '' || !isBioBoilerplate(v),
     { message: 'Meta description must not open with the author bio' }
