@@ -1,3 +1,4 @@
+import { CONTACT } from '@/lib/contact-info'
 import type { SiteConfig } from '@/types/seo'
 
 // Site identity (name, description, social links, author). URL fields
@@ -10,13 +11,13 @@ export const siteConfig: SiteConfig = {
   description:
     'Senior Revenue Operations Leader & Full-Stack Developer showcasing enterprise analytics platforms, data visualizations, and technical projects.',
   links: {
-    github: 'https://github.com/hudsor01',
-    linkedin: 'https://www.linkedin.com/in/hudsor01',
-    twitter: 'https://twitter.com/hudsor01',
+    github: CONTACT.github.url,
+    linkedin: CONTACT.linkedin.url,
+    twitter: CONTACT.twitter.url,
   },
   author: {
     name: 'Richard Hudson',
-    email: 'hudsor01@icloud.com',
+    email: CONTACT.email,
   },
 }
 
