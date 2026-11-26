@@ -171,8 +171,9 @@ function verifyPdf(pdf: string): number {
       emb === 'yes' && uni === 'yes',
       `emb ${emb}, uni ${uni}`
     )
-    // The print stylesheet swaps in static TrueType files; a Type 3 font means
-    // a variable web font reached the PDF instead.
+    // The print stylesheet swaps in static (non-variable) WOFF2 faces with
+    // TrueType outlines; a Type 3 font means a variable web font reached the
+    // PDF instead.
     check(`pdffonts: ${name} is not Type 3`, !/\bType 3\b/.test(row))
   }
   // Only the static print faces may be embedded: a fallback font (say, for a

@@ -1,8 +1,10 @@
 /*
  * Static (non-variable) instances of the site's two families, used only when
  * /resume is printed. next/font serves variable fonts, which Chromium embeds
- * in a PDF as Type 3; these static TrueType files embed as TrueType, so the
- * résumé PDF (bun run resume:pdf) carries real, crisp, extractable fonts.
+ * in a PDF as Type 3; these static instances (converted losslessly from the
+ * Google Fonts static TTFs to WOFF2 with fontTools ttLib.woff2 compress, no
+ * subsetting) embed as TrueType, so the résumé PDF (bun run resume:pdf, which
+ * fails on any Type 3) carries real, crisp, extractable fonts.
  *
  * Screen rendering never uses these families; the résumé page warms them
  * after load so the first print has them. The files are bundled from the
@@ -14,7 +16,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: fallback;
-  src: url('./print-fonts/SplineSans-Regular.ttf') format('truetype');
+  src: url('./print-fonts/SplineSans-Regular.woff2') format('woff2');
 }
 
 @font-face {
@@ -22,7 +24,7 @@
   font-style: normal;
   font-weight: 500;
   font-display: fallback;
-  src: url('./print-fonts/SplineSans-Medium.ttf') format('truetype');
+  src: url('./print-fonts/SplineSans-Medium.woff2') format('woff2');
 }
 
 @font-face {
@@ -30,7 +32,7 @@
   font-style: normal;
   font-weight: 600;
   font-display: fallback;
-  src: url('./print-fonts/SplineSans-SemiBold.ttf') format('truetype');
+  src: url('./print-fonts/SplineSans-SemiBold.woff2') format('woff2');
 }
 
 @font-face {
@@ -38,7 +40,7 @@
   font-style: normal;
   font-weight: 500;
   font-display: fallback;
-  src: url('./print-fonts/PlayfairDisplay-Medium.ttf') format('truetype');
+  src: url('./print-fonts/PlayfairDisplay-Medium.woff2') format('woff2');
 }
 
 @font-face {
@@ -46,7 +48,7 @@
   font-style: normal;
   font-weight: 600;
   font-display: fallback;
-  src: url('./print-fonts/PlayfairDisplay-SemiBold.ttf') format('truetype');
+  src: url('./print-fonts/PlayfairDisplay-SemiBold.woff2') format('woff2');
 }
 
 /*
