@@ -586,6 +586,8 @@ describe('markdown stripping keeps literal underscores, asterisks and code', () 
       '[a]('.repeat(25_000),
       '[a](b('.repeat(16_000),
       '[a [b] c](u) '.repeat(7_000),
+      '[a]([b]('.repeat(12_000),
+      '[a](['.repeat(20_000),
     ]
     const started = performance.now()
     for (const input of inputs) stripMarkdownToPlain(input)
@@ -598,6 +600,9 @@ describe('markdown stripping keeps literal underscores, asterisks and code', () 
     )
     expect(stripMarkdownToPlain('[t](http://x "title") z')).toBe('t z')
     expect(stripMarkdownToPlain('![alt](a.png) [x](y)')).toBe('x')
+    expect(stripMarkdownToPlain('[x](https://example.com/?a[]=1) y')).toBe('x y')
+    expect(stripMarkdownToPlain('[x](u "title [1]") y')).toBe('x y')
+    expect(stripMarkdownToPlain('[x](u[1]) y')).toBe('x y')
   })
 
   it('returns a stored meta with API names and arithmetic unchanged', () => {

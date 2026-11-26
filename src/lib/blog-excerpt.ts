@@ -94,11 +94,12 @@ function closingRun(text: string, from: number, length: number): number {
   return -1
 }
 
-// Inline images and links. Neither the text nor the destination may contain a
-// bracket, and the destination allows one level of balanced parentheses, so a
-// failed match stops at the next bracket: linear on long runs of `[` or `[a](`
-// (the old `[^\]]*` / `[^)]*` forms were quadratic there).
-const MD_DESTINATION = String.raw`\((?:[^()[\]]|\([^()[\]]*\))*\)`
+// Inline images and links. The text may not contain a bracket, and the
+// destination allows one level of balanced parentheses or brackets (`?a[]=1`,
+// a `"title [1]"`), each item starting with a distinct character, so a failed
+// match backtracks over at most one item at a time: linear on long runs of `[`
+// or `[a](` (the old `[^\]]*` / `[^)]*` forms were quadratic there).
+const MD_DESTINATION = String.raw`\((?:[^()[\]]|\([^()[\]]*\)|\[[^()[\]]*\])*\)`
 const MD_IMAGE = new RegExp(String.raw`!\[[^[\]]*\]` + MD_DESTINATION, 'g')
 const MD_LINK = new RegExp(String.raw`\[([^[\]]*)\]` + MD_DESTINATION, 'g')
 
