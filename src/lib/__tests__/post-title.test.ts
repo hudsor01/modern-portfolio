@@ -231,9 +231,20 @@ describe('browser safety', () => {
     return null
   }
 
+  // The directive may follow comments (lazy-charts.tsx opens with a JSDoc). A
+  // block comment ends at its first `*/`, so the pattern is linear and cannot
+  // merge comments around code into one prologue.
+  const USE_CLIENT = /^(?:\s|\/\/[^\n]*\n|\/\*(?:[^*]|\*(?!\/))*\*\/)*['"]use client['"]/
+
+  it('detects the client directive only in the prologue, in linear time', () => {
+    expect(USE_CLIENT.test("/** doc */\n// note\n'use client'")).toBe(true)
+    expect(USE_CLIENT.test("/* a */ code /* b */ 'use client'")).toBe(false)
+    const started = performance.now()
+    expect(USE_CLIENT.test(`${'/* c */'.repeat(5000)}\nexport const x = 1`)).toBe(false)
+    expect(performance.now() - started).toBeLessThan(500)
+  })
+
   it('keeps @/lib/post-title out of every client module graph', () => {
-    // The directive may follow comments (lazy-charts.tsx opens with a JSDoc).
-    const USE_CLIENT = /^(?:\s|\/\/[^\n]*\n|\/\*[\s\S]*?\*\/)*['"]use client['"]/
     const clientModules = files(SRC).filter((file) => USE_CLIENT.test(readFileSync(file, 'utf8')))
     expect(clientModules).toContain(join(SRC, 'components', 'charts', 'lazy-charts.tsx'))
     const offenders = clientModules
