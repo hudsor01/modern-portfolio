@@ -55,6 +55,13 @@ function endsWithAbbreviation(text: string): boolean {
   return ABBREVIATION.test(text) || INITIAL.test(text)
 }
 
+const FINAL_TERMINATOR = /[.!?][”"’')\]]?$/
+
+function endsWithSentence(text: string): boolean {
+  const m = FINAL_TERMINATOR.exec(text)
+  return m !== null && !endsWithAbbreviation(text.slice(0, m.index + 1))
+}
+
 /**
  * Locate the trailing run of ellipses: any mix of '…' and runs of three or more
  * '.', optionally separated by whitespace. Scans backwards once, so it is
@@ -100,6 +107,9 @@ export function truncateAtBoundary(text: string, max: number): string {
   if (t === '') return ''
   if (!hardCut && !softEllipsis && t.length <= max) return t
   if (softEllipsis && t.length <= max - 1) return `${t.replace(TRAILING_PUNCTUATION, '')}…`
+  // A hard cut that lands just after a finished sentence cut nothing mid-word:
+  // keep that sentence whole rather than dropping its last word.
+  if (hardCut && t.length <= max && endsWithSentence(t)) return t
 
   const minEnd = Math.ceil(max / 2)
   let sentenceEnd = -1

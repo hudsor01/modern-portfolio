@@ -251,3 +251,18 @@ describe('abbreviations are not sentence ends', () => {
     }
   })
 })
+
+describe('hard cut after a finished sentence', () => {
+  it('keeps the short sentence whole', () => {
+    expect(truncateAtBoundary('Forecasts miss when stages lie. ...', 160)).toBe(
+      'Forecasts miss when stages lie.'
+    )
+    expect(truncateAtBoundary('Forecasts miss when stages lie! ...', 160)).toBe(
+      'Forecasts miss when stages lie!'
+    )
+  })
+
+  it('still drops the partial word after an abbreviation', () => {
+    expect(truncateAtBoundary('Book the review with Dr. ...', 160)).toBe('Book the review with…')
+  })
+})
