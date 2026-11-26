@@ -13,8 +13,13 @@
  * itself: the summary, every role, period, bullet, skill, certification and
  * contact value from the site data, intact ligatures, no site chrome, no stale
  * facts). Only when every check passes does it write
- * public/ + RESUME_PDF_FILENAME and scripts/resume-pdf.sha256
- * (the content hash pinned by src/lib/__tests__/resume-pdf-drift.test.ts).
+ * public/ + RESUME_PDF_FILENAME and scripts/resume-pdf.sha256, two lines pinned
+ * by src/lib/__tests__/resume-pdf-drift.test.ts:
+ *   1. the résumé data hash (computeResumeSourceHash);
+ *   2. the print-text hash: every word the served /resume renders outside
+ *      `print:hidden` (extractResumePrintText), so text typed into the résumé
+ *      components (headings, separators, the About line template) is pinned
+ *      too. The drift test recomputes it from the same components in jsdom.
  *
  * Local tooling only: it is never run in the Vercel build or CI, never starts
  * a server, and refuses any base URL that is not localhost.
@@ -44,7 +49,8 @@ import {
 import { PRINT_FONT_FACES, PRINT_FONT_POSTSCRIPT_NAMES } from '../src/lib/print-fonts'
 import { RESUME_PDF_FILENAME } from '../src/lib/resume-pdf'
 import { pdfTextContains, resumeTextExpectations } from '../src/lib/resume-pdf-text'
-import { computeResumeSourceHash } from '../src/lib/resume-source-hash'
+import { extractResumePrintText } from '../src/lib/resume-print-text'
+import { computeResumeSourceHash, hashResumePrintText } from '../src/lib/resume-source-hash'
 import { YEARS_EXPERIENCE, YEARS_EXPERIENCE_LABEL } from '../src/lib/stats'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
@@ -264,6 +270,7 @@ async function main(): Promise<void> {
 
   const workDir = mkdtempSync(join(tmpdir(), 'resume-pdf-'))
   const tmpPdf = join(workDir, 'resume.pdf')
+  let printTextHash = ''
   try {
     const browser = await chromium.launch()
     try {
@@ -288,6 +295,17 @@ async function main(): Promise<void> {
         )
       }
       console.log('PASS  served /resume matches the résumé data exactly')
+      // Line 2 of the hash file: the served page's print text, which the drift
+      // test recomputes from the same components in jsdom. The explicit
+      // `undefined` root selects the page's main#main-content.
+      const printText = await page.evaluate(extractResumePrintText, undefined)
+      if (printText === '') {
+        throw new Refusal(
+          `refusing to print: ${resumeUrl.href} has no print text under main#main-content. Nothing was written.`
+        )
+      }
+      printTextHash = hashResumePrintText(printText)
+      console.log(`PASS  served /resume print text read (${printText.length} characters)`)
       await page.evaluate(async () => {
         for (let y = 0; y < document.documentElement.scrollHeight; y += 400) {
           window.scrollTo(0, y)
@@ -362,13 +380,14 @@ async function main(): Promise<void> {
     }
 
     copyFileSync(tmpPdf, PDF_OUT)
-    const hash = computeResumeSourceHash()
-    writeFileSync(HASH_OUT, `${hash}\n`)
+    const dataHash = computeResumeSourceHash()
+    writeFileSync(HASH_OUT, `${dataHash}\n${printTextHash}\n`)
     console.log(`\nWrote ${PDF_OUT}`)
     console.log(`  pages: ${pages}`)
     console.log(`  bytes: ${statSync(PDF_OUT).size}`)
     console.log(`Wrote ${HASH_OUT}`)
-    console.log(`  sha256: ${hash}`)
+    console.log(`  sha256 (data):       ${dataHash}`)
+    console.log(`  sha256 (print text): ${printTextHash}`)
   } finally {
     rmSync(workDir, { recursive: true, force: true })
   }

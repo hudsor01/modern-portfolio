@@ -2,10 +2,13 @@
  * Content hash of everything the résumé PDF prints, so a test can tell when
  * public/ + RESUME_PDF_FILENAME is stale.
  *
- * It hashes data values (canonical JSON of the imported constants), not file
- * bytes: comments and formatting in the source files do not change it.
- * Content-only guard: layout and print-CSS changes do not trip it either, so
- * regenerate the PDF after those by judgement.
+ * Two hashes, one per line of scripts/resume-pdf.sha256:
+ *   1. the data values (canonical JSON of the imported constants), not file
+ *      bytes: comments and formatting in the source files do not change it;
+ *   2. the print text the résumé components render (hashResumePrintText over
+ *      extractResumePrintText), which catches text typed into the components.
+ * Content-only guard: layout and print-CSS changes trip neither, so regenerate
+ * the PDF after those by judgement.
  *
  * Imported by Vitest (src/lib/__tests__/resume-pdf-drift.test.ts) and
  * scripts/resume-pdf.ts only, never by app code, so the Node crypto module never
@@ -58,7 +61,16 @@ export function hashResumeSource(source: unknown): string {
   return createHash('sha256').update(canonicalJson(source)).digest('hex')
 }
 
-/** Hash of the current résumé data; what scripts/resume-pdf.sha256 must hold. */
+/** Hash of the current résumé data; line 1 of scripts/resume-pdf.sha256. */
 export function computeResumeSourceHash(): string {
   return hashResumeSource(resumeSource())
+}
+
+/**
+ * sha256 hex of the UTF-8 print text (extractResumePrintText in
+ * resume-print-text.ts); line 2 of scripts/resume-pdf.sha256. Lives here so
+ * node:crypto stays out of the self-contained, browser-run extractor.
+ */
+export function hashResumePrintText(text: string): string {
+  return createHash('sha256').update(text, 'utf8').digest('hex')
 }

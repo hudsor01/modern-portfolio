@@ -50,10 +50,20 @@ describe('extractResumePrintText', () => {
   })
 
   it('skips script, style and noscript content', () => {
-    const { container } = render(<div />)
-    container.innerHTML =
-      '<p>One</p><script>var hidden = 1</script><style>p{color:red}</style><noscript>No JS</noscript><p>Two</p>'
-    expect(extractResumePrintText(container)).toBe('One Two')
+    // Built with the DOM API: React would not render a script's text content.
+    const root = document.createElement('div')
+    const add = (tag: string, text: string): void => {
+      const el = document.createElement(tag)
+      el.textContent = text
+      root.append(el)
+    }
+    add('p', 'One')
+    add('script', 'var hidden = 1')
+    add('style', 'p{color:red}')
+    add('noscript', 'No JS')
+    add('template', 'Inert')
+    add('p', 'Two')
+    expect(extractResumePrintText(root)).toBe('One Two')
   })
 
   it('joins separate text nodes with a space, as React renders adjacent values', () => {
