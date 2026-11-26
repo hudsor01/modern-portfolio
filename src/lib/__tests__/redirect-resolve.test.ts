@@ -49,6 +49,7 @@ describe('resolveSingleHop', () => {
     ['/blog', '?page=1', ''],
     ['/blog', '?page=0&tag=a&tag=b', '?tag=a&tag=b'],
     ['/blog', '?page=2&page=3', ''],
+    ['/blog', '?__proto__=x&page=0', '?__proto__=x'],
   ])('canonicalizes the /blog page param: %s%s', (pathname, search, expectedSearch) => {
     expect(resolve(pathname, search)).toEqual({
       kind: 'internal',
@@ -119,9 +120,14 @@ describe('resolveSingleHop', () => {
   })
 
   it('reaches a fixed point after one internal hop', () => {
-    for (const path of ['/About/', '/HOME/', '/Blog/?page=abc&q=x', '/api/health/', '/llms.txt/']) {
-      const [pathname, query = ''] = path.split('?')
-      const hit = resolve(pathname, query ? `?${query}` : '')
+    for (const [pathname, search] of [
+      ['/About/', ''],
+      ['/HOME/', ''],
+      ['/Blog/', '?page=abc&q=x'],
+      ['/api/health/', ''],
+      ['/llms.txt/', ''],
+    ] as const) {
+      const hit = resolve(pathname, search)
       expect(hit?.kind).toBe('internal')
       if (hit?.kind === 'internal') expect(resolve(hit.pathname, hit.search)).toBeNull()
     }
