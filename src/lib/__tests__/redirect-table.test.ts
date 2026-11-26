@@ -72,6 +72,12 @@ describe('buildRedirectTable', () => {
     ['/b c', 'whitespace'],
     ['/b\tc', 'tab'],
     ['/b\nc', 'newline'],
+    ['/x/../a', 'dot-dot segment that URL parsing folds back to the source'],
+    ['/./a', 'dot segment'],
+    ['/a/.', 'trailing dot segment'],
+    ['/x/%2e%2e/a', 'percent-encoded dot-dot segment'],
+    ['/b%2fc', 'percent-encoding'],
+    ['/b.html', 'dot in a segment'],
   ])('throws on an unsafe path destination %j (%s)', (destination) => {
     expect(() => build([{ source: '/a', destination }])).toThrow('/a')
   })
@@ -98,7 +104,31 @@ describe('buildRedirectTable', () => {
     ['/', 'root'],
     ['', 'empty'],
   ])('throws on a non-literal source %j (%s)', (source) => {
-    expect(() => build([{ source, destination: '/x' }])).toThrow(source)
+    expect(() => build([{ source, destination: '/x' }])).toThrow(
+      `Redirect source must be a literal lowercase path of a-z, 0-9, '-' and '/' with no trailing slash: ${source}`
+    )
+  })
+
+  it.each(['/api', '/api/health'])(
+    'throws on a source under the never-case-folded /api prefix %j',
+    (source) => {
+      expect(() => build([{ source, destination: '/x' }])).toThrow(
+        `Redirect source must not be under /api: ${source}`
+      )
+    }
+  )
+
+  it.each(['/_next', '/_next/static'])(
+    'rejects a /_next source through the source grammar %j',
+    (source) => {
+      expect(() => build([{ source, destination: '/x' }])).toThrow(
+        `Redirect source must be a literal lowercase path of a-z, 0-9, '-' and '/' with no trailing slash: ${source}`
+      )
+    }
+  )
+
+  it('still accepts sources that merely start with the letters api', () => {
+    expect(() => build([{ source: '/apis', destination: '/x' }])).not.toThrow()
   })
 
   it('accepts a canonical path, the root and a plain https URL', () => {
@@ -112,7 +142,7 @@ describe('buildRedirectTable', () => {
     ).not.toThrow()
   })
 
-  it('makes every accepted path destination a fixed point of resolveSingleHop', () => {
+  it('makes every accepted path destination a fixed point of resolveSingleHop, as the proxy emits it', () => {
     const table = build([
       { source: '/a', destination: '/b/c-d' },
       { source: '/b', destination: '/' },
@@ -120,7 +150,11 @@ describe('buildRedirectTable', () => {
     ])
     const map = new Map(table.map(({ source, destination }) => [source, destination]))
     for (const { destination } of table) {
-      expect(resolveSingleHop(destination, '', map), destination).toBeNull()
+      // The proxy builds its Location with new URL(); resolve the destination
+      // the same way so URL normalization cannot hide a loop.
+      const emitted = new URL(destination, 'https://example.com').pathname
+      expect(emitted, destination).toBe(destination)
+      expect(resolveSingleHop(emitted, '', map), destination).toBeNull()
     }
   })
 })

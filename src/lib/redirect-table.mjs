@@ -13,19 +13,29 @@
  *   literally, and dots, `%` and uppercase, which resolveSingleHop never
  *   case-folds, so a mixed-case request would miss the entry.
  * - Sources are unique.
- * - A path destination contains no `//`, `\`, `?`, `#`, whitespace or control
- *   character, so it can never become a protocol-relative (off-site) Location
- *   and the proxy can append the request query to it unchanged. It must also
- *   be canonical: lowercase and without a trailing slash (or exactly `/`).
- * - A path destination is not itself a source. With the canonical rule above
- *   this makes it a fixed point of resolveSingleHop (src/lib/redirect-resolve.ts),
- *   so no entry can chain or loop, including `/a -> /a/` and `/a -> /A`.
+ * - Sources are never under `/api`, and the grammar above already excludes
+ *   `/_next` (underscore): resolveSingleHop never case-folds either prefix,
+ *   so a mixed-case request would miss such an entry.
+ * - A path destination is `/` or the same literal grammar as a source
+ *   (segments of `a-z`, `0-9` and `-`). That excludes `//`, `\`, `?`, `#`,
+ *   `%`, dot segments (`.`, `..`), whitespace, control characters, uppercase
+ *   and a trailing slash, so the Location the proxy builds with `new URL()`
+ *   is byte-identical to the table value (URL parsing cannot normalize it
+ *   into another path), it can never be protocol-relative, and the proxy can
+ *   append the request query to it unchanged.
+ * - A path destination is not itself a source. With the grammar above this
+ *   makes it a fixed point of resolveSingleHop (src/lib/redirect-resolve.ts),
+ *   so no entry can chain or loop, including `/a -> /a/`, `/a -> /A` and
+ *   `/a -> /x/../a`.
  * - Any other destination is an absolute https URL with a host and no query,
  *   fragment or whitespace. These come only from this table; no request value
  *   ever chooses a host.
  */
 
 const SOURCE = /^\/[a-z0-9-]+(?:\/[a-z0-9-]+)*$/
+const PATH_DESTINATION = /^\/(?:[a-z0-9-]+(?:\/[a-z0-9-]+)*)?$/
+const API_PREFIX = /^\/api(?:\/|$)/
+
 /**
  * True for whitespace, a C0 control character or DEL anywhere in `value`.
  * @param {string} value
@@ -44,16 +54,9 @@ function hasUnsafeChar(value) {
  * @param {string} destination
  */
 function checkPathDestination(source, destination) {
-  if (destination.startsWith('//') || destination.includes('\\')) {
-    throw new Error(`Redirect destination must not start with '//' or contain '\\': ${source}`)
-  }
-  if (/[?#]/.test(destination) || hasUnsafeChar(destination)) {
-    throw new Error(`Redirect destination must be a plain path (no query or fragment): ${source}`)
-  }
-  const canonical = (destination.replace(/\/+$/, '') || '/').toLowerCase()
-  if (canonical !== destination) {
+  if (!PATH_DESTINATION.test(destination)) {
     throw new Error(
-      `Redirect destination must be lowercase with no trailing slash: ${source} -> ${destination}`
+      `Redirect destination must be '/' or a literal lowercase path of a-z, 0-9, '-' and '/' with no trailing slash: ${source} -> ${destination}`
     )
   }
 }
@@ -107,6 +110,9 @@ export function buildRedirectTable({ handWritten, renames, retired }) {
       throw new Error(
         `Redirect source must be a literal lowercase path of a-z, 0-9, '-' and '/' with no trailing slash: ${source}`
       )
+    }
+    if (API_PREFIX.test(source)) {
+      throw new Error(`Redirect source must not be under /api: ${source}`)
     }
     if (sources.has(source)) throw new Error(`Duplicate redirect source: ${source}`)
     sources.add(source)

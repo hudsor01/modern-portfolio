@@ -28,22 +28,24 @@ describe('blog slug redirects', () => {
     }
   })
 
-  // buildRedirectTable only checks exact strings; this runs the proxy's real
-  // resolver, so a destination it would canonicalize again fails here too.
+  // The proxy emits new URL(destination, origin); run the real resolver on
+  // that URL-normalized path, so a destination URL parsing would rewrite
+  // (dot segments, encodings) fails here as well as in the builder.
   it('sends every internal redirect to a resolveSingleHop fixed point', () => {
     const internal = REDIRECTS.filter(({ destination }) => destination.startsWith('/'))
     expect(internal.length).toBeGreaterThan(0)
     for (const { destination } of internal) {
-      expect(resolveSingleHop(destination, '', REDIRECT_MAP), destination).toBeNull()
+      const emitted = new URL(destination, 'https://richardwhudsonjr.com').pathname
+      expect(emitted, destination).toBe(destination)
+      expect(resolveSingleHop(emitted, '', REDIRECT_MAP), destination).toBeNull()
     }
   })
 
-  it('gives each old URL exactly one destination', () => {
-    for (const [from] of renameEntries) expect(Object.hasOwn(retired, from)).toBe(false)
-  })
-
-  // Only the entries of src/data/redirects.json, not the two generated maps.
-  it('points hand-written blog redirects at slugs that are not renamed or retired', () => {
+  // Duplicate sources, and destinations that are themselves sources, already
+  // make buildRedirectTable throw when @/lib/redirects is imported above, so
+  // they are not restated here. This checks what the builder does not: the
+  // hand-written blog destinations use the current slug grammar.
+  it('points hand-written blog redirects at well-formed current slugs', () => {
     const handWrittenSources = new Set(handWritten.map(({ source }) => source))
     const blog = REDIRECTS.filter(
       ({ source, destination }) =>
@@ -53,8 +55,7 @@ describe('blog slug redirects', () => {
     for (const { destination } of blog) {
       const slug = destination.slice('/blog/'.length)
       expect(slug, destination).toMatch(SLUG)
-      expect(Object.hasOwn(renames, slug), destination).toBe(false)
-      expect(Object.hasOwn(retired, slug), destination).toBe(false)
+      expect(slug.length, destination).toBeLessThanOrEqual(100)
     }
   })
 })
