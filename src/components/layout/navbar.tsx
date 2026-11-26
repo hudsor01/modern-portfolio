@@ -62,7 +62,7 @@ export function Navbar() {
   useScrollLock(isMobileMenuOpen)
 
   const navbarClasses =
-    'fixed top-0 left-0 right-0 z-50 w-full bg-card/95 backdrop-blur-sm border-b border-border shadow-sm'
+    'fixed top-0 left-0 right-0 z-50 w-full bg-card/95 backdrop-blur-sm border-b border-border shadow-sm print:hidden'
 
   return (
     <header className={navbarClasses}>

@@ -28,7 +28,7 @@ export function DecorativeBlob({ position, size = 'md', className }: DecorativeB
     <div
       aria-hidden="true"
       className={cn(
-        'pointer-events-none absolute rounded-full blur-3xl',
+        'pointer-events-none absolute rounded-full blur-3xl print:hidden',
         POSITION[position],
         SIZE[size],
         className
