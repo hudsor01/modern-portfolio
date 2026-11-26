@@ -9,7 +9,7 @@ export function SkillsSection() {
   return (
     <section className="print:break-inside-avoid">
       <div className="text-center mb-12 print:text-left print:mb-0">
-        <h2 className="look-h3 typography-h2 border-none pb-0 mb-4 print:font-display print:text-xl print:font-semibold print:text-primary print:border-b print:border-solid print:border-accent print:pb-0.5 print:mb-1.5 print:break-after-avoid print:text-xl! print:pb-0.5! print:border-accent!">
+        <h2 className="look-h3 typography-h2 border-none pb-0 mb-4 print:font-display print:font-semibold print:text-primary print:border-b print:border-solid print:mb-1.5 print:break-after-avoid print:text-xl! print:pb-0.5! print:border-accent!">
           Skills by area
         </h2>
         <p className="max-w-2xl mx-auto print:hidden">Tools and methods grouped by focus area.</p>
