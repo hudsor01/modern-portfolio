@@ -13,6 +13,7 @@ import { ExperienceSection } from './ExperienceSection'
 import { EducationCertifications } from './EducationCertifications'
 import { SkillsSection } from './SkillsSection'
 import { DecorativeBlob } from '@/components/ui/decorative-blob'
+import { preloadPrintFonts } from '@/lib/print-fonts'
 
 const logger = createContextLogger('ResumePage')
 
@@ -31,6 +32,12 @@ export default function ResumePageContent() {
   useEffect(() => {
     // Set the PDF URL once on client side with proper encoding
     setPdfUrl('/Richard_Hudson_Revenue_Operations.pdf')
+  }, [])
+
+  // Warm the static print faces (print-fonts.css) after load so the first
+  // print already uses them; nothing on screen renders with them.
+  useEffect(() => {
+    preloadPrintFonts()
   }, [])
 
   const handleDownloadResume = async () => {
@@ -64,6 +71,8 @@ export default function ResumePageContent() {
       <main
         id="main-content"
         tabIndex={-1}
+        // Scopes the print-font override in print-fonts.css to this page.
+        data-resume-print
         className="relative min-h-screen bg-background overflow-x-clip print:min-h-0 print:bg-transparent"
       >
         {/* Decorative background elements */}

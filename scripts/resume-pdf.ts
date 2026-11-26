@@ -41,6 +41,7 @@ import {
   extractResumeStructure,
   firstResumeDifference,
 } from '../src/lib/resume-dom-structure'
+import { PRINT_FONT_FACES, PRINT_FONT_POSTSCRIPT_NAMES } from '../src/lib/print-fonts'
 import { pdfTextContains, resumeTextExpectations } from '../src/lib/resume-pdf-text'
 import { computeResumeSourceHash } from '../src/lib/resume-source-hash'
 import { YEARS_EXPERIENCE, YEARS_EXPERIENCE_LABEL } from '../src/lib/stats'
@@ -174,10 +175,19 @@ function verifyPdf(pdf: string): number {
     // a variable web font reached the PDF instead.
     check(`pdffonts: ${name} is not Type 3`, !/\bType 3\b/.test(row))
   }
+  // Only the static print faces may be embedded: a fallback font (say, for a
+  // glyph the print faces lack) would mean the layout left them.
+  const embedded = fontRows.map((row) =>
+    (row.trim().split(/\s+/)[0] ?? '').replace(/^[A-Z]{6}\+/, '')
+  )
+  const allowed: readonly string[] = PRINT_FONT_POSTSCRIPT_NAMES
+  for (const name of embedded) {
+    check(`pdffonts: ${name} is a static print face`, allowed.includes(name))
+  }
   for (const family of ['SplineSans', 'PlayfairDisplay']) {
     check(
       `pdffonts: ${family} embedded`,
-      fontRows.some((row) => row.includes(family))
+      embedded.some((name) => name.startsWith(family))
     )
   }
 
@@ -286,17 +296,13 @@ async function main(): Promise<void> {
       await page.evaluate(() => document.fonts.ready.then(() => true))
       // The static print faces (src/app/resume/print-fonts.css) must be the
       // ones laid out, so every weight is loaded before printing.
-      const printFaces = await page.evaluate(async () => {
-        const faces = [
-          '400 12px "Spline Sans Print"',
-          '500 12px "Spline Sans Print"',
-          '600 12px "Spline Sans Print"',
-          '500 12px "Playfair Display Print"',
-          '600 12px "Playfair Display Print"',
-        ]
-        const loaded = await Promise.all(faces.map((face) => document.fonts.load(face)))
-        return faces.filter((_, i) => !loaded[i]?.some((f) => f.status === 'loaded'))
-      })
+      const printFaces = await page.evaluate(
+        async (faces) => {
+          const loaded = await Promise.all(faces.map((face) => document.fonts.load(face)))
+          return faces.filter((_, i) => !loaded[i]?.some((f) => f.status === 'loaded'))
+        },
+        [...PRINT_FONT_FACES]
+      )
       check(
         'print fonts: static Spline Sans and Playfair Display faces loaded',
         printFaces.length === 0,

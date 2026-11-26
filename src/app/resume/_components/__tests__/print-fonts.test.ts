@@ -1,7 +1,8 @@
 // @vitest-environment node
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+import { PRINT_FONT_FACES, preloadPrintFonts } from '@/lib/print-fonts'
 
 /**
  * The résumé PDF embeds static TrueType fonts (src/app/resume/print-fonts.css)
@@ -46,6 +47,24 @@ describe('résumé print fonts', () => {
     }
   })
 
+  it('overrides both next/font variables, only on the résumé page, above the next/font class', () => {
+    const block = outsideFontFaces.match(/@media print\s*\{\s*([^{]+)\{([^}]*)\}/)
+    expect(block?.[1]?.trim()).toBe('html:root:has([data-resume-print])')
+    expect(block?.[2]).toMatch(/--font-spline:\s*'Spline Sans Print'/)
+    expect(block?.[2]).toMatch(/--font-playfair:\s*'Playfair Display Print'/)
+    const page = readFileSync(join(RESUME, '_components', 'resume-page-content.tsx'), 'utf8')
+    expect(page).toContain('data-resume-print')
+  })
+
+  it('declares exactly the faces the page warms and resume:pdf requires', () => {
+    const declared = fontFaces.map((body) => {
+      const family = body.match(/font-family:\s*'([^']+)'/)?.[1]
+      const weight = body.match(/font-weight:\s*(\d+)/)?.[1]
+      return `${weight} 1em "${family}"`
+    })
+    expect(declared).toEqual([...PRINT_FONT_FACES])
+  })
+
   it('loads nothing from another host (CSP font-src)', () => {
     expect(withoutComments).not.toMatch(/url\(\s*['"]?(https?:)?\/\//)
   })
@@ -67,5 +86,40 @@ describe('résumé print fonts', () => {
         'SIL Open Font License, Version 1.1'
       )
     }
+  })
+})
+
+describe('preloadPrintFonts', () => {
+  const fakeWindow = (readyState: DocumentReadyState) => {
+    const load = vi.fn(() => Promise.resolve([] as FontFace[]))
+    const listeners: Array<() => void> = []
+    const idle: Array<() => void> = []
+    const win = {
+      document: { readyState, fonts: { load } as unknown as FontFaceSet },
+      addEventListener: vi.fn((_: string, cb: () => void) => listeners.push(cb)),
+      setTimeout: vi.fn(),
+      requestIdleCallback: vi.fn((cb: () => void) => {
+        idle.push(cb)
+        return 1
+      }),
+    }
+    return { win, load, listeners, idle }
+  }
+
+  it('waits for load, then idle, then loads every print face', () => {
+    const { win, load, listeners, idle } = fakeWindow('loading')
+    preloadPrintFonts(win as never)
+    expect(load).not.toHaveBeenCalled()
+    for (const cb of listeners) cb()
+    expect(load).not.toHaveBeenCalled()
+    for (const cb of idle) cb()
+    expect(load.mock.calls.map((c) => (c as unknown[])[0])).toEqual([...PRINT_FONT_FACES])
+  })
+
+  it('schedules straight away when the page has already loaded', () => {
+    const { win, idle, listeners } = fakeWindow('complete')
+    preloadPrintFonts(win as never)
+    expect(listeners).toHaveLength(0)
+    expect(idle).toHaveLength(1)
   })
 })
