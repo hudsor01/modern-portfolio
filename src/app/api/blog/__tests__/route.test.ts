@@ -2,6 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest, NextResponse } from 'next/server'
 import { PgDialect } from 'drizzle-orm/pg-core'
+import { normalizeStoredSeoText } from '@/lib/blog-excerpt'
 
 // Disable rate limiting and CSRF guards by default — exercise them via
 // explicit overrides per test.
@@ -380,13 +381,42 @@ describe('POST /api/blog', () => {
     })
   })
 
-  it('names the field when a meta is genuinely invalid (too long)', async () => {
+  const PROSE_META =
+    'Pipeline data drifts from reality in seven predictable ways. Each one has a report that catches it and a weekly inspection that keeps it honest. Teams that skip the inspection end up forecasting from stale stages.'
+
+  it('trims a 161+ character prose meta at a sentence end and returns 201', async () => {
+    expect(PROSE_META.length).toBeGreaterThan(160)
+    const res = await POST(reqPost({ ...validBody, metaDescription: PROSE_META }))
+    expect(res.status).toBe(201)
+    const stored = dbMocks.insertValues.mock.calls[0]?.[0]?.metaDescription as string
+    expect(stored.length).toBeLessThanOrEqual(160)
+    expect(stored).toBe(
+      normalizeStoredSeoText({
+        excerpt: undefined,
+        metaDescription: PROSE_META,
+        content: validBody.content,
+      }).metaDescription
+    )
+  })
+
+  it('cuts a 161-character unbroken meta to 159 characters plus one ellipsis', async () => {
     const res = await POST(reqPost({ ...validBody, metaDescription: 'x'.repeat(161) }))
+    expect(res.status).toBe(201)
+    expect(dbMocks.insertValues.mock.calls[0]?.[0]?.metaDescription).toBe(`${'x'.repeat(159)}…`)
+  })
+
+  it('accepts a 5000-character meta and stores at most 160 characters', async () => {
+    const res = await POST(reqPost({ ...validBody, metaDescription: `${'word '.repeat(1000)}end` }))
+    expect(res.status).toBe(201)
+    const stored = dbMocks.insertValues.mock.calls[0]?.[0]?.metaDescription as string
+    expect(stored.length).toBeLessThanOrEqual(160)
+    expect(stored.match(/…/g)?.length ?? 0).toBeLessThanOrEqual(1)
+  })
+
+  it('names the field when a meta is genuinely invalid (wrong type)', async () => {
+    const res = await POST(reqPost({ ...validBody, metaDescription: 123 }))
     expect(res.status).toBe(400)
-    expect(await res.json()).toMatchObject({
-      success: false,
-      error: 'Invalid request body: metaDescription: Meta description cannot exceed 160 characters',
-    })
+    expect(await res.json()).toMatchObject({ success: false })
     expect(dbMocks.insertValues).not.toHaveBeenCalled()
   })
 

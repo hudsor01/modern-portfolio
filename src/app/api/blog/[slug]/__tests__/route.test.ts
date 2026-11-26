@@ -303,6 +303,36 @@ describe('PUT /api/blog/[slug]', () => {
     expect(res.status).toBe(200)
   })
 
+  it('trims an over-long prose meta on PUT with no extra stored read', async () => {
+    const prose =
+      'Pipeline data drifts from reality in seven predictable ways. Each one has a report that catches it and a weekly inspection that keeps it honest. Teams that skip the inspection end up forecasting from stale stages.'
+    dbMocks.findFirst.mockResolvedValueOnce(samplePost).mockResolvedValueOnce(samplePost)
+    dbMocks.update.mockResolvedValue(undefined)
+    const res = await PUT(reqPut('hello', { metaDescription: prose }), ctx('hello'))
+    expect(res.status).toBe(200)
+    const stored = dbMocks.updateSet.mock.calls[0]?.[0]?.metaDescription as string
+    expect(stored.length).toBeLessThanOrEqual(160)
+    expect(stored.match(/…/g)?.length ?? 0).toBeLessThanOrEqual(1)
+    expect(dbMocks.findFirst).toHaveBeenCalledTimes(2)
+  })
+
+  it('derives a markup-only over-long meta from the stored excerpt (one extra read)', async () => {
+    dbMocks.findFirst
+      .mockResolvedValueOnce(samplePost)
+      .mockResolvedValueOnce({
+        content: 'Body text.',
+        excerpt: 'A real stored excerpt that describes the post.',
+      })
+      .mockResolvedValueOnce(samplePost)
+    dbMocks.update.mockResolvedValue(undefined)
+    const res = await PUT(reqPut('hello', { metaDescription: '&nbsp;'.repeat(40) }), ctx('hello'))
+    expect(res.status).toBe(200)
+    expect(dbMocks.findFirst).toHaveBeenCalledTimes(3)
+    expect(dbMocks.updateSet.mock.calls[0]?.[0]?.metaDescription).toBe(
+      'A real stored excerpt that describes the post.'
+    )
+  })
+
   it('normalizes a too-long SEO title to 43 chars and derives a cleared one from the title', async () => {
     const longTitle = 'A Post Title Long Enough That It Never Fits the Search Result Budget'
     dbMocks.findFirst
