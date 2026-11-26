@@ -255,6 +255,21 @@ test.describe('Blog pagination', () => {
     expect(keptTarget.search).toBe('?q=pipeline')
   })
 
+  test('mixed-case and trailing-slash page params 308 to the final URL in one hop', async ({
+    page,
+  }) => {
+    for (const [path, expected] of [
+      ['/Blog?page=0', '/blog'],
+      ['/blog/?page=0', '/blog'],
+      ['/Blog/?page=abc&q=x', '/blog?q=x'],
+    ] as const) {
+      const response = await page.request.get(path, { maxRedirects: 0 })
+      expect(response.status(), path).toBe(308)
+      const target = new URL(response.headers().location ?? '', response.url())
+      expect(`${target.pathname}${target.search}`, path).toBe(expected)
+    }
+  })
+
   test('a junk page param lands on the rendered first page', async ({ page }) => {
     test.skip(!(await databaseAvailable(page.request)), NEEDS_DATABASE)
     const response = await page.goto('/blog?page=abc')

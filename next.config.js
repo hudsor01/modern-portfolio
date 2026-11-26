@@ -27,6 +27,15 @@ const nextConfig = {
   compress: true,
   basePath: '',
   trailingSlash: false,
+  // The proxy owns slash canonicalization (resolveSingleHop in
+  // src/lib/redirect-resolve.ts). Next's built-in slash redirect ran before
+  // everything and kept the case, so `/About/` took two 308s and `/Github/`
+  // three. The trailingSlash setting above still controls the URLs Next
+  // generates. Paths the proxy matcher excludes (`/_next/static/...`,
+  // `/_next/image`, `/favicon.ico`) are no longer slash-redirected: a
+  // trailing-slash variant of one now answers 404/200 instead of 308, which is
+  // accepted.
+  skipTrailingSlashRedirect: true,
 
   // React Compiler. This DOES need `babel-plugin-react-compiler`, which is a
   // declared devDependency — Next lists it as an optional peer, and bun used to
