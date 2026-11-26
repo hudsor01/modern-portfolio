@@ -339,6 +339,30 @@ export function opensWithAuthorBio(raw: string | null | undefined): boolean {
   return plain.trim() !== '' && isBioBoilerplate(plain)
 }
 
+function isOverLong(raw: string | null | undefined): raw is string {
+  return typeof raw === 'string' && raw.length > META_MAX
+}
+
+/**
+ * Taxonomy (tag/category) meta as stored: returned as sent unless longer than
+ * `META_MAX`, then trimmed on a sentence, else a word, boundary with one `…`
+ * (`null` when it has no text). Taxonomy has no excerpt/body to fall back to.
+ */
+export function fitMetaDescription(raw: string | null | undefined): string | null | undefined {
+  if (!isOverLong(raw)) return raw
+  return resolveMetaDescription({ metaDescription: raw, excerpt: null, content: null }) || null
+}
+
+/**
+ * True when the stored meta must come from the excerpt/body: a bio opener, or
+ * an over-long meta with no text of its own. PUT uses it to know when to read
+ * the stored post.
+ */
+export function metaDescriptionNeedsDerivation(raw: string | null | undefined): boolean {
+  if (opensWithAuthorBio(raw)) return true
+  return isOverLong(raw) && truncateAtBoundary(stripMarkdownToPlain(raw), META_MAX) === ''
+}
+
 /**
  * SEO text as the admin API stores it: normalized, never rejected, so
  * publishing cannot fail on it (the same rule as `normalizeSeoTitle`). An
@@ -346,6 +370,9 @@ export function opensWithAuthorBio(raw: string | null | undefined): boolean {
  * one derived from the body: the excerpt at `LEDE_MAX`, the meta at `META_MAX`
  * (from the kept or derived excerpt, else the body), each cut on a sentence,
  * else a word, boundary with one `…`; `null` when the body yields nothing.
+ * A meta longer than `META_MAX` is trimmed the same way (markdown stripped, cut
+ * on a sentence, else a word, boundary with one `…`), falling back to the
+ * excerpt/body when it has no text of its own; it is never rejected.
  * Every other value, including `undefined` (field omitted on PUT) and `null`
  * (field cleared), is returned as sent.
  */
@@ -362,12 +389,19 @@ export function normalizeStoredSeoText<
   const excerpt = opensWithAuthorBio(input.excerpt)
     ? resolveExcerpt({ excerpt: null, content: input.content }, { maxLength: LEDE_MAX }) || null
     : input.excerpt
+  const fallbackExcerpt = excerpt === undefined ? input.currentExcerpt : excerpt
   const metaDescription = opensWithAuthorBio(input.metaDescription)
     ? resolveMetaDescription({
         metaDescription: null,
-        excerpt: excerpt === undefined ? input.currentExcerpt : excerpt,
+        excerpt: fallbackExcerpt,
         content: input.content,
       }) || null
-    : input.metaDescription
+    : isOverLong(input.metaDescription)
+      ? resolveMetaDescription({
+          metaDescription: input.metaDescription,
+          excerpt: fallbackExcerpt,
+          content: input.content,
+        }) || null
+      : input.metaDescription
   return { excerpt, metaDescription }
 }

@@ -751,7 +751,7 @@ describe('over-long meta descriptions are trimmed, never rejected', () => {
   })
 
   it('falls back to the excerpt, then currentExcerpt, then the body, then null for markup-only', () => {
-    const markup = `${'<br/>'.repeat(40)}`
+    const markup = '&nbsp;'.repeat(40)
     expect(run(markup, C_EXCERPT)).toBe(
       resolveMetaDescription({ metaDescription: null, excerpt: C_EXCERPT, content: '' })
     )
@@ -788,14 +788,14 @@ describe('fitMetaDescription', () => {
   })
 
   it('returns null when the over-long value has no text', () => {
-    expect(fitMetaDescription('<br/>'.repeat(40))).toBeNull()
+    expect(fitMetaDescription('&nbsp;'.repeat(40))).toBeNull()
   })
 })
 
 describe('metaDescriptionNeedsDerivation', () => {
   it('is true for a bio opener and for an over-long meta with no text of its own', () => {
     expect(metaDescriptionNeedsDerivation(F1_META)).toBe(true)
-    expect(metaDescriptionNeedsDerivation('<br/>'.repeat(40))).toBe(true)
+    expect(metaDescriptionNeedsDerivation('&nbsp;'.repeat(40))).toBe(true)
   })
 
   it('is false for an over-long meta with text, a short meta, null and undefined', () => {

@@ -103,6 +103,19 @@ export const nullishText = (max: number, message?: string) =>
     ])
     .optional()
 
+// Memory bound for admin metaDescription input. Routes trim to the 160-char
+// column via blog-excerpt, so longer input is sliced here, never rejected.
+const META_INPUT_MAX = 1000
+
+const truncatingNullishText = (max: number) =>
+  z
+    .union([
+      z.literal('').transform(() => null),
+      z.string().transform((value) => value.slice(0, max)),
+      z.null(),
+    ])
+    .optional()
+
 /**
  * URL-flavoured sibling of `nullishText`. Accepts undefined / null /
  * '' / a valid URL up to 2048 chars. Empty string transforms to null
@@ -328,9 +341,9 @@ const blogPostBaseShape = {
   contentType: ContentTypeSchema,
   status: PostStatusSchema,
   metaTitle: nullishText(100),
-  // A bio-opener meta is accepted here and normalized by the routes
-  // (`normalizeStoredSeoText`), never rejected: publishing cannot fail on it.
-  metaDescription: nullishText(160, 'Meta description cannot exceed 160 characters'),
+  // Bio-opener and over-long metas are accepted here (sliced to META_INPUT_MAX)
+  // and normalized by the routes, never rejected: publishing cannot fail on them.
+  metaDescription: truncatingNullishText(META_INPUT_MAX),
   keywords: z.array(z.string().min(1).max(50)).max(10, 'Cannot have more than 10 keywords'),
   canonicalUrl: nullishUrl(),
   // Social card image fields reuse featuredImageSchema — same host
@@ -381,7 +394,7 @@ export const createTagSchema = z
   .object({
     name: z.string().min(1, 'Name is required').max(60),
     description: nullishText(500),
-    metaDescription: nullishText(160, 'Meta description cannot exceed 160 characters'),
+    metaDescription: truncatingNullishText(META_INPUT_MAX),
     color: hexColor.default('#6B7280'),
   })
   .strict()
@@ -391,7 +404,7 @@ export const createCategorySchema = z
     name: z.string().min(1, 'Name is required').max(60),
     description: nullishText(500),
     metaTitle: nullishText(100),
-    metaDescription: nullishText(160, 'Meta description cannot exceed 160 characters'),
+    metaDescription: truncatingNullishText(META_INPUT_MAX),
     color: hexColor.default('#6B7280'),
     icon: nullishText(50),
     keywords: z.array(z.string().min(1).max(50)).max(10).default([]),
