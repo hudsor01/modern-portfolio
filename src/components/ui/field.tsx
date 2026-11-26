@@ -5,6 +5,8 @@ import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
 
+// `*:` child variants sort before plain utilities, so a direct child's own width
+// or flex class overrides `*:w-full` (the old `[&>*]:` form sorted after them).
 const fieldVariants = cva('group/field flex w-full gap-3 data-[invalid=true]:text-destructive', {
   variants: {
     orientation: {
