@@ -141,11 +141,13 @@ const truncatingNullishText = (max: number) =>
     ])
     .optional()
 
-// Keywords are normalized, never rejected: items are cut to META_INPUT_MAX, then
-// trimmed, de-emptied, cut to 50 chars and capped at 10 by fitKeywords.
-const keywordsInput = z
-  .array(z.string().transform((value) => cutMetaInput(value, META_INPUT_MAX)))
-  .transform(fitKeywords)
+// Keywords are normalized, never rejected: fitKeywords trims, drops empties, cuts
+// each item to 50 chars and keeps the first 10. There is no item-count cap: a
+// .max() would turn an over-long list back into a 400 on SEO text, the class of
+// failure this normalization exists to remove. Instead no item gets per-item
+// work in Zod (only the string type check), and fitKeywords stops reading once
+// it has kept 10, so a huge list costs one pass of type checks.
+const keywordsInput = z.array(z.string()).transform(fitKeywords)
 
 /**
  * URL-flavoured sibling of `nullishText`. Accepts undefined / null /

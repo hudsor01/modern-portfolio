@@ -430,7 +430,9 @@ export function fitStoredText<T extends string | null | undefined>(
 /**
  * Keywords as stored: each trimmed, empties dropped, an item over 50 chars cut
  * to its longest whole-word prefix (a single over-long word is hard cut), the
- * first 10 kept in order. Keywords are tags, not prose, so no ellipsis.
+ * first 10 kept in order. Keywords are tags, not prose, so no ellipsis. Items
+ * after the 10th kept one are never read, so the cost is bounded by where the
+ * first 10 non-empty items end, not by the list length.
  */
 export function fitKeywords(items: readonly string[]): string[] {
   const out: string[] = []

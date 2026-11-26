@@ -271,6 +271,23 @@ describe('fitKeywords', () => {
     expect(out[2]).toBe('revenue operations strategy revenue operations')
     expect(out.every((k) => k.length >= 1 && k.length <= 50)).toBe(true)
   })
+
+  it('stops reading items once 10 are kept', () => {
+    const items = [
+      '',
+      ...Array.from({ length: 12 }, (_, i) => `kw${i}`),
+      ...Array(10_000).fill('x'),
+    ]
+    const read = new Set<number>()
+    const counted = new Proxy(items, {
+      get(target, key, receiver) {
+        if (typeof key === 'string' && /^\d+$/.test(key)) read.add(Number(key))
+        return Reflect.get(target, key, receiver)
+      },
+    })
+    expect(fitKeywords(counted)).toEqual(Array.from({ length: 10 }, (_, i) => `kw${i}`))
+    expect(Math.max(...read)).toBe(10)
+  })
 })
 
 describe('normalizeStoredSeoText excerpt fit', () => {

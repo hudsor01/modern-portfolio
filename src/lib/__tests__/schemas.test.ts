@@ -975,6 +975,22 @@ describe('W3: SEO and descriptive text is normalized, never rejected', () => {
     if (upd.success) expect(upd.data.keywords).toHaveLength(10)
   })
 
+  it('fits a huge keyword list instead of rejecting it', () => {
+    const huge = 'k'.repeat(200_000)
+    const many = ['first', ...Array<string>(50_000).fill(huge)]
+    const upd = updateBlogPostSchema.safeParse({ keywords: many })
+    expect(upd.success).toBe(true)
+    if (upd.success) {
+      expect(upd.data.keywords).toHaveLength(10)
+      expect(upd.data.keywords?.[0]).toBe('first')
+      expect(upd.data.keywords?.[1]).toBe('k'.repeat(50))
+    }
+  })
+
+  it('still rejects a non-string keyword', () => {
+    expect(updateBlogPostSchema.safeParse({ keywords: ['ok', 5] }).success).toBe(false)
+  })
+
   it('accepts over-long tag and category descriptions and keywords', () => {
     expect(createTagSchema.safeParse({ name: 'Tag', description: long }).success).toBe(true)
     const cat = createCategorySchema.safeParse({ name: 'Cat', description: long, keywords })
