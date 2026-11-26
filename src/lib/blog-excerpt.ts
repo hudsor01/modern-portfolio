@@ -1,3 +1,4 @@
+import { isBioBoilerplate } from '@/lib/bio-boilerplate'
 import { decodeHtmlEntities } from '@/lib/markdown'
 
 /**
@@ -5,19 +6,12 @@ import { decodeHtmlEntities } from '@/lib/markdown'
  * are unit-tested without a database. Output is always plain text.
  */
 
-const MAX_EXCERPT_LENGTH = 160
+export const EXCERPT_MAX = 160
+export const LEDE_MAX = 320
+export const META_MAX = 160
 const MIN_PARAGRAPH_LENGTH = 40
-const BOILERPLATE_SCAN_LENGTH = 400
-const BIO_OPENER = /^I (spent|served|worked)\b.{0,80}\b(Army National Guard|National Guard)\b/i
-const BIO_MENTION = /Texas Army National Guard/i
 
-/** True when the excerpt is empty or opens with the author-bio boilerplate. */
-export function isBioBoilerplate(excerpt: string | null | undefined): boolean {
-  const text = (excerpt ?? '').trim().slice(0, BOILERPLATE_SCAN_LENGTH)
-  if (text === '') return true
-  if (BIO_OPENER.test(text)) return true
-  return BIO_MENTION.test(text.slice(0, MAX_EXCERPT_LENGTH))
-}
+export { isBioBoilerplate }
 
 const ESCAPE_OPEN = '\uE000'
 const ESCAPE_CLOSE = '\uE001'
@@ -46,12 +40,48 @@ const FENCE_LINE = /^\s*(```|~~~)/
 const NON_PROSE_START = /^(#|>|- |\* |\+ |\d+\. |\||!\[|<)/
 const HORIZONTAL_RULE = /^([-*_])(\s*\1){2,}$/
 
-function truncate(text: string): string {
-  if (text.length <= MAX_EXCERPT_LENGTH) return text
-  const window = text.slice(0, MAX_EXCERPT_LENGTH + 1)
-  const lastSpace = window.lastIndexOf(' ')
-  const head = lastSpace > 0 ? window.slice(0, lastSpace) : text.slice(0, MAX_EXCERPT_LENGTH)
-  return `${head.replace(/[,;:.\-–—\s]+$/, '')}…`
+const TRAILING_ELLIPSIS = /(?:\s*(?:\.{3,}|…))+$/
+const TRAILING_PUNCTUATION = /[,;:.…\-–—\s]+$/
+const SENTENCE_END = /[.!?][”"’')\]]?(?=\s|$)/g
+
+/**
+ * Cut text to at most `max` characters. Prefers the last sentence end in the
+ * second half of the window (no ellipsis); otherwise cuts at a word boundary
+ * and appends exactly one '…'. A trailing ASCII '...' is the pipeline's hard
+ * cut and may end mid-word, so its partial word is dropped; a stored '…' is an
+ * author's ellipsis and is kept once. Output never contains '...'.
+ */
+export function truncateAtBoundary(text: string, max: number): string {
+  let t = text.trim()
+  let hardCut = false
+  let softEllipsis = false
+  const run = TRAILING_ELLIPSIS.exec(t)
+  if (run) {
+    if (run[0].includes('...')) hardCut = true
+    else softEllipsis = true
+    t = t.slice(0, run.index).trimEnd()
+  }
+  if (!hardCut && !softEllipsis && t.length <= max) return t
+  if (softEllipsis && t.length <= max - 1) return `${t.replace(TRAILING_PUNCTUATION, '')}…`
+
+  const window = t.slice(0, max + 1)
+  const minEnd = Math.ceil(max / 2)
+  let sentenceEnd = -1
+  for (const m of window.matchAll(SENTENCE_END)) {
+    const end = (m.index ?? 0) + m[0].length
+    if (end <= max && end >= minEnd) sentenceEnd = end
+  }
+  if (sentenceEnd > 0) return t.slice(0, sentenceEnd)
+
+  let head: string
+  if (hardCut && t.length <= max - 1) {
+    const lastSpace = t.lastIndexOf(' ')
+    head = lastSpace > 0 ? t.slice(0, lastSpace) : t
+  } else {
+    const lastSpace = t.slice(0, max).lastIndexOf(' ')
+    head = lastSpace > 0 ? t.slice(0, lastSpace) : t.slice(0, max - 1)
+  }
+  return `${head.replace(TRAILING_PUNCTUATION, '')}…`
 }
 
 function firstParagraph(content: string): string {
@@ -76,17 +106,38 @@ function firstParagraph(content: string): string {
  * Keep a real excerpt (normalised to plain text and truncated like a derived
  * one, so metadata never carries raw markdown or entities); replace boilerplate
  * or empty ones with the first real paragraph of the body, or '' when none
- * qualifies.
+ * qualifies. `maxLength` defaults to EXCERPT_MAX (cards, feeds); the post-page
+ * lede passes LEDE_MAX.
  */
-export function resolveExcerpt(input: {
-  excerpt: string | null | undefined
-  content: string | null | undefined
-}): string {
+export function resolveExcerpt(
+  input: {
+    excerpt: string | null | undefined
+    content: string | null | undefined
+  },
+  opts: { maxLength?: number } = {}
+): string {
+  const max = opts.maxLength ?? EXCERPT_MAX
   if (!isBioBoilerplate(input.excerpt)) {
     const stored = stripMarkdownToPlain(input.excerpt as string)
     // A stored excerpt that is only markup (e.g. a lone image) strips to
     // nothing; fall through to the body like an empty one.
-    if (stored !== '') return truncate(stored)
+    if (stored !== '') return truncateAtBoundary(stored, max)
   }
-  return truncate(firstParagraph(input.content ?? ''))
+  return truncateAtBoundary(firstParagraph(input.content ?? ''), max)
+}
+
+/**
+ * Meta description: the stored one when it is real (not bio, not blank),
+ * as plain text within META_MAX; otherwise derived like an excerpt.
+ */
+export function resolveMetaDescription(input: {
+  metaDescription: string | null | undefined
+  excerpt: string | null | undefined
+  content: string | null | undefined
+}): string {
+  if (!isBioBoilerplate(input.metaDescription)) {
+    const plain = stripMarkdownToPlain(input.metaDescription as string)
+    if (plain !== '') return truncateAtBoundary(plain, META_MAX)
+  }
+  return resolveExcerpt({ excerpt: input.excerpt, content: input.content }, { maxLength: META_MAX })
 }

@@ -1,0 +1,160 @@
+// @vitest-environment node
+import { describe, expect, it } from 'vitest'
+import {
+  LEDE_MAX,
+  resolveExcerpt,
+  resolveMetaDescription,
+  truncateAtBoundary,
+} from '../blog-excerpt'
+
+const F1_EXCERPT =
+  'I spent six years in the Texas Army National Guard as an Information Technology Specialist, including a deployment to Iraq. I learned quickly that when equipment fails in the field, you don’t ignore it. You fix it, or you replace it. You do not leave it to rust.'
+const F1_META =
+  'I spent six years in the Texas Army National Guard as an Information Technology Specialist, including a deployment to Iraq. I learned quickly that when equ...'
+const F1_PARA =
+  'I see too many sales organizations treat "closed-lost" deals as final. They archive them in Salesforce, mark them as history, and move on. This is a waste of resources.'
+const F1_BODY = [
+  '# Re-engagement campaigns',
+  F1_EXCERPT,
+  'Sales pipelines are no different.',
+  F1_PARA,
+].join('\n\n')
+
+const F2_META =
+  'I spent six years in the Texas Army National Guard as an Information Technology Specialist. That service included a deployment to Iraq. In the military, am...'
+const F2_EXCERPT =
+  'I spent six years in the Texas Army National Guard as an Information Technology Specialist. That service included a deployment to Iraq. In the military, ambiguity gets people hurt. If your orders aren’t clear, your radio isn’t working, or your data is wrong, the mission fails. I carry that mindset i'
+const F2_BODY = [
+  '# Salesloft admin basics',
+  `${F2_EXCERPT}nto every system I manage.`,
+  'Salesloft is one of the most powerful sales engagement platforms available. But I see it configured poorly more often than I care to admit. I’ve held roles ranging from Business Systems Specialist to Revenue Operations Consultant.',
+].join('\n\n')
+
+const F3_META =
+  'I spent six years as an IT Specialist in the Texas Army National Guard, including a deployment to Iraq. Soldiers don’t have the luxury of guessing. If your...'
+const F3_EXCERPT =
+  'I spent six years as an IT Specialist in the Texas Army National Guard, including a deployment to Iraq. Soldiers don’t have the luxury of guessing. If your gear is dirty, it jams. If your intel is wrong, you get hurt. The same logic applies to revenue operations. I’ve spent the last nine years fixin'
+const F3_BODY = [
+  'I spent six years as an IT Specialist in the Texas Army National Guard, including a deployment to Iraq. Soldiers don’t have the luxury of guessing. The same logic applies to revenue operations. I’ve spent the last nine years fixing broken systems.',
+  'When I look at a pipeline, I don’t just see opportunities. I see noise, duplicates and stages that mean different things to different reps.',
+].join('\n\n')
+
+const C_EXCERPT =
+  'A pipeline can show healthy coverage and green dashboards and still miss badly, because the CRM records what reps say instead of what buyers do. Here are the seven ways pipeline data goes wrong, how to detect each one, and how to keep it accurate.'
+const C_META =
+  'Seven ways CRM pipeline data drifts from reality, the reports that catch each one, and the systems, metrics and weekly inspection that keep pipeline accurate.'
+
+describe('truncateAtBoundary', () => {
+  it('returns short text unchanged', () => {
+    expect(truncateAtBoundary('Short.', 160)).toBe('Short.')
+  })
+
+  it('prefers a sentence end without an ellipsis', () => {
+    expect(truncateAtBoundary(F1_PARA, 160)).toBe(
+      'I see too many sales organizations treat "closed-lost" deals as final. They archive them in Salesforce, mark them as history, and move on.'
+    )
+  })
+
+  it('cuts at a word boundary with one ellipsis when no sentence ends in range', () => {
+    const text = `${'alpha beta gamma '.repeat(13)}`.trim()
+    expect(text.length).toBeGreaterThan(160)
+    const out = truncateAtBoundary(text, 160)
+    expect(out.length).toBeLessThanOrEqual(160)
+    expect(out.endsWith('…')).toBe(true)
+    const head = out.slice(0, -1)
+    expect(text.startsWith(head)).toBe(true)
+    expect(text[head.length]).toBe(' ')
+    expect(out).not.toMatch(/……|\.\.\./)
+    expect(out).not.toMatch(/[,;:.\-–—]…$/)
+  })
+
+  it('drops the partial word of an ASCII hard cut', () => {
+    expect(
+      truncateAtBoundary(
+        'Pipelines decay when nobody owns stage definitions and nobody audits the fields reps actually use when equ...',
+        160
+      )
+    ).toBe(
+      'Pipelines decay when nobody owns stage definitions and nobody audits the fields reps actually use when…'
+    )
+  })
+
+  it('keeps a stored unicode ellipsis once', () => {
+    expect(truncateAtBoundary('Forecasts miss because…', 160)).toBe('Forecasts miss because…')
+  })
+
+  it('treats a mixed trailing run as one hard cut', () => {
+    expect(truncateAtBoundary('Owners audit fields weekly… ...', 160)).toBe('Owners audit fields…')
+  })
+})
+
+describe('resolveExcerpt caps', () => {
+  it('cuts the control excerpt to its first sentence at 160 but keeps it whole as a lede', () => {
+    const short = resolveExcerpt({ excerpt: C_EXCERPT, content: '' })
+    expect(short).toHaveLength(144)
+    expect(short.endsWith('do.')).toBe(true)
+    expect(resolveExcerpt({ excerpt: C_EXCERPT, content: '' }, { maxLength: LEDE_MAX })).toBe(
+      C_EXCERPT
+    )
+  })
+
+  it('replaces the live bio excerpts with a bio-free lede', () => {
+    expect(resolveExcerpt({ excerpt: F1_EXCERPT, content: F1_BODY }, { maxLength: LEDE_MAX })).toBe(
+      F1_PARA
+    )
+    const f2 = resolveExcerpt({ excerpt: F2_EXCERPT, content: F2_BODY }, { maxLength: LEDE_MAX })
+    expect(f2.startsWith('Salesloft is one of the most powerful')).toBe(true)
+    const f3 = resolveExcerpt({ excerpt: F3_EXCERPT, content: F3_BODY }, { maxLength: LEDE_MAX })
+    expect(f3.startsWith('When I look at a pipeline')).toBe(true)
+    for (const out of [f2, f3]) expect(out).not.toContain('National Guard')
+  })
+})
+
+describe('resolveMetaDescription', () => {
+  it('replaces the bio meta with the first real sentences', () => {
+    expect(
+      resolveMetaDescription({ metaDescription: F1_META, excerpt: F1_EXCERPT, content: F1_BODY })
+    ).toBe(
+      'I see too many sales organizations treat "closed-lost" deals as final. They archive them in Salesforce, mark them as history, and move on.'
+    )
+    const f2 = resolveMetaDescription({
+      metaDescription: F2_META,
+      excerpt: F2_EXCERPT,
+      content: F2_BODY,
+    })
+    expect(f2.startsWith('Salesloft is one of the most powerful')).toBe(true)
+    expect(f2.length).toBeLessThanOrEqual(160)
+    const f3 = resolveMetaDescription({
+      metaDescription: F3_META,
+      excerpt: F3_EXCERPT,
+      content: F3_BODY,
+    })
+    expect(f3.startsWith('When I look at a pipeline')).toBe(true)
+    expect(f3.length).toBeLessThanOrEqual(160)
+  })
+
+  it('passes a clean stored meta through unchanged', () => {
+    expect(C_META).toHaveLength(158)
+    expect(
+      resolveMetaDescription({ metaDescription: C_META, excerpt: C_EXCERPT, content: '' })
+    ).toBe(C_META)
+  })
+
+  it('falls back to the excerpt for blank metas', () => {
+    for (const metaDescription of [null, '', '   ']) {
+      expect(resolveMetaDescription({ metaDescription, excerpt: C_EXCERPT, content: '' })).toBe(
+        resolveExcerpt({ excerpt: C_EXCERPT, content: '' }, { maxLength: 160 })
+      )
+    }
+  })
+
+  it('returns a stored meta as plain text', () => {
+    expect(
+      resolveMetaDescription({
+        metaDescription: 'Why **pipeline** reviews fail &amp; what to do.',
+        excerpt: null,
+        content: null,
+      })
+    ).toBe('Why pipeline reviews fail & what to do.')
+  })
+})

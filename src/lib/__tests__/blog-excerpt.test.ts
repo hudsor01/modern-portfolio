@@ -65,7 +65,7 @@ describe('resolveExcerpt', () => {
     const para = 'word, '.repeat(50).trim()
     const out = resolveExcerpt({ excerpt: null, content: para })
     expect(out.endsWith('…')).toBe(true)
-    expect(out.length).toBeLessThanOrEqual(161)
+    expect(out.length).toBeLessThanOrEqual(160)
     expect(out).not.toMatch(/[,;:.\-–—]…$/)
   })
 
@@ -114,8 +114,8 @@ describe('resolveExcerpt keeps real excerpts as plain text', () => {
       excerpt: `${'Forecast accuracy matters. '.repeat(20)}`,
       content: '',
     })
-    expect(out.length).toBeLessThanOrEqual(161)
-    expect(out.endsWith('…')).toBe(true)
+    expect(out.length).toBeLessThanOrEqual(160)
+    expect(out.endsWith('matters.')).toBe(true)
   })
 
   it('leaves a clean short excerpt unchanged', () => {
