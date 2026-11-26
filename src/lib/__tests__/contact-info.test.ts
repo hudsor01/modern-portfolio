@@ -3,11 +3,12 @@ import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { CONTACT, mailtoHref, telHref } from '@/lib/contact-info'
+import { REDIRECT_MAP } from '@/lib/redirects'
 import { siteConfig } from '@/lib/site'
 
 /**
  * Guard for CONTENT-02. The literals below are the independent oracle for
- * CONTACT. Static files that cannot import CONTACT (llms.txt, vercel.json,
+ * CONTACT. Static files that cannot import CONTACT (llms.txt,
  * security.txt) are pinned to it here.
  */
 const ROOT = process.cwd()
@@ -21,8 +22,6 @@ function sourceFiles(dir: string): string[] {
     return /\.(ts|tsx)$/.test(name) ? [path] : []
   })
 }
-
-const noWww = (url: string) => url.replace('www.', '')
 
 describe('CONTACT', () => {
   it('holds the owner contact details', () => {
@@ -66,14 +65,15 @@ describe('static files agree with CONTACT', () => {
     expect(llms).toContain(CONTACT.github.url)
   })
 
-  it('vercel.json redirects point at the profile links', () => {
-    const { redirects } = JSON.parse(readFileSync(join(ROOT, 'vercel.json'), 'utf8')) as {
-      redirects: { source: string; destination: string }[]
-    }
-    const dest = (source: string) => redirects.find((r) => r.source === source)?.destination ?? ''
-    expect(noWww(dest('/github'))).toBe(noWww(CONTACT.github.url))
-    expect(noWww(dest('/linkedin'))).toBe(noWww(CONTACT.linkedin.url))
-    expect(noWww(dest('/twitter'))).toBe(noWww(CONTACT.twitter.url))
+  it('profile redirects equal the CONTACT urls', () => {
+    expect(REDIRECT_MAP.get('/github')).toBe(CONTACT.github.url)
+    expect(REDIRECT_MAP.get('/linkedin')).toBe(CONTACT.linkedin.url)
+    expect(REDIRECT_MAP.get('/twitter')).toBe(CONTACT.twitter.url)
+  })
+
+  it('vercel.json has no redirects', () => {
+    const config = JSON.parse(readFileSync(join(ROOT, 'vercel.json'), 'utf8')) as object
+    expect('redirects' in config).toBe(false)
   })
 
   it('security.txt contact is the mailto link', () => {

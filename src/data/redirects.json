@@ -1,0 +1,47 @@
+[
+  {
+    "source": "/home",
+    "destination": "/",
+    "why": "Legacy URL to home."
+  },
+  {
+    "source": "/blog/stop-guessing-how-we-crushed-forecasting-errors-by-34-in-one-quarter",
+    "destination": "/blog/stop-guessing-how-to-cut-sales-forecast-variance",
+    "why": "Blog de-cannibalization: near-duplicate posts retire into one canonical pillar per topic so Google indexes a strong page instead of parking the cluster as 'Discovered - currently not indexed'. 308 consolidates link equity into the keeper. Forecast-accuracy cluster."
+  },
+  {
+    "source": "/blog/stop-guessing-how-to-slash-forecast-variance-by-60-in-90-days",
+    "destination": "/blog/stop-guessing-how-to-cut-sales-forecast-variance",
+    "why": "Blog de-cannibalization, forecast-accuracy cluster (see the entry above)."
+  },
+  {
+    "source": "/blog/the-4-2m-you-left-on-the-table-why-your-closed-lost-deals-are-actually-sleeping-",
+    "destination": "/blog/the-revenue-leak-youre-ignoring-how-to-resurrect-dead-deals",
+    "why": "Blog de-cannibalization, closed-lost / dead-deal reactivation cluster."
+  },
+  {
+    "source": "/blog/stop-ignoring-your-dead-opportunities-how-we-revived-4-2m-in-lost-revenue-with-o",
+    "destination": "/blog/the-revenue-leak-youre-ignoring-how-to-resurrect-dead-deals",
+    "why": "Blog de-cannibalization, closed-lost / dead-deal reactivation cluster."
+  },
+  {
+    "source": "/blog/revenue-operations-best-practices-complete-guide",
+    "destination": "/blog/complete-guide-revenue-operations-strategy",
+    "why": "Renamed RevOps pillar guide. Google indexed/ranked the old slug (~pos 40) but the post now lives at the new one; the orphaned old slug 404s (and intermittently 500s when the not-found path hits a Neon hiccup), so GSC rejected its indexing request. 308 preserves ranking equity and stops the error."
+  },
+  {
+    "source": "/github",
+    "destination": "https://github.com/hudsor01",
+    "why": "Profile shortcut; destination must equal CONTACT.github.url, pinned by contact-info.test.ts. Moved from vercel.json."
+  },
+  {
+    "source": "/linkedin",
+    "destination": "https://www.linkedin.com/in/hudsor01",
+    "why": "Profile shortcut; destination must equal CONTACT.linkedin.url, pinned by contact-info.test.ts. Moved from vercel.json."
+  },
+  {
+    "source": "/twitter",
+    "destination": "https://twitter.com/hudsor01",
+    "why": "Profile shortcut; destination must equal CONTACT.twitter.url, pinned by contact-info.test.ts. Moved from vercel.json."
+  }
+]
