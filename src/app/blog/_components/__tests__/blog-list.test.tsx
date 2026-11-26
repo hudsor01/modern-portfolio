@@ -113,4 +113,13 @@ describe('BlogList cards', () => {
     ])
     expect(container.textContent).not.toMatch(/Alpha|Beta|Gamma/)
   })
+
+  // Card excerpts are resolveExcerpt output (blog/page.tsx), already plain text.
+  it('renders the card excerpt as plain text, not markdown', () => {
+    const excerpt = 'Track lead_source and deal_stage, keep *must* literal and leave ** alone.'
+    const { container } = renderList([post({ excerpt })])
+    const description = container.querySelector('[data-slot="card-description"]')
+    expect(description?.textContent).toBe(excerpt)
+    expect(description?.querySelectorAll('em, strong')).toHaveLength(0)
+  })
 })

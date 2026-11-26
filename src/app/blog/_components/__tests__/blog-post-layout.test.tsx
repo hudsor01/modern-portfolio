@@ -121,4 +121,14 @@ describe('BlogPostLayout', () => {
     expect(container.textContent).not.toContain('views')
     expect(container.querySelector('header')?.textContent ?? '').not.toMatch(/\d[\d,]* reads?$/)
   })
+
+  // The lede is resolveExcerpt output, already plain text: a markdown pass can
+  // only misread literal characters (snake_case, an author's escaped *must*).
+  it('renders the lede as plain text, not markdown', () => {
+    const excerpt = 'Track lead_source and deal_stage, keep *must* literal and leave ** alone.'
+    const { container } = render(<BlogPostLayout post={makePost({ excerpt })} />)
+    const lede = container.querySelector('p.text-body-lg')
+    expect(lede?.textContent).toBe(excerpt)
+    expect(lede?.querySelectorAll('em, strong')).toHaveLength(0)
+  })
 })

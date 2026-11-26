@@ -89,12 +89,9 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
                 <InlineMarkdown value={post.title} />
               </h1>
 
-              {/* Excerpt */}
-              {post.excerpt && (
-                <p className="text-body-lg">
-                  <InlineMarkdown value={post.excerpt} />
-                </p>
-              )}
+              {/* Excerpt: resolveExcerpt output (getBlogPost), already plain text, so it
+                  renders as text. A markdown pass could only misread literal characters. */}
+              {post.excerpt && <p className="text-body-lg">{post.excerpt}</p>}
 
               <div className="mt-6 flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-3">

@@ -198,9 +198,8 @@ export function BlogList({
                   <CardTitle as="h2" className="line-clamp-3 transition-colors">
                     <InlineMarkdown value={post.title} />
                   </CardTitle>
-                  <CardDescription className="line-clamp-3">
-                    {post.excerpt ? <InlineMarkdown value={post.excerpt} /> : ''}
-                  </CardDescription>
+                  {/* resolveExcerpt output (blog/page.tsx), already plain text. */}
+                  <CardDescription className="line-clamp-3">{post.excerpt ?? ''}</CardDescription>
                 </CardHeader>
                 <CardContent className="mt-auto">
                   <time
