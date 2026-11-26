@@ -1090,3 +1090,25 @@ input, textarea, select {
     font-size: var(--font-size-sm);
   }
 }
+
+/* Print: /resume is the résumé PDF's source (page.pdf of this rendering). Layout and
+   sizes come from print: utilities on the components; this block holds only what a
+   utility cannot express. Element rules here are print-only, so the on-screen cascade
+   is unaffected. */
+@media print {
+  @page {
+    size: letter;
+    margin: 0.5in;
+  }
+
+  html {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* A white sheet, not the off-white screen canvas. */
+  html,
+  body {
+    background-color: transparent;
+  }
+}

@@ -64,13 +64,13 @@ export default function ResumePageContent() {
       <main
         id="main-content"
         tabIndex={-1}
-        className="relative min-h-screen bg-background overflow-x-clip"
+        className="relative min-h-screen bg-background overflow-x-clip print:min-h-0 print:bg-transparent"
       >
         {/* Decorative background elements */}
         <DecorativeBlob position="top-right" />
         <DecorativeBlob position="bottom-left" />
 
-        <div className="relative max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16 lg:pt-32 lg:pb-20 space-y-16">
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16 lg:pt-32 lg:pb-20 space-y-16 print:max-w-none print:p-0 print:space-y-5">
           {/* Hero Header */}
           <div>
             <HeroHeader
@@ -90,7 +90,7 @@ export default function ResumePageContent() {
             // Resume content
             <div
               ref={contentRef}
-              className={`space-y-16 animate-fade-in-up ${isContentInView ? 'opacity-100' : 'opacity-0'}`}
+              className={`space-y-16 animate-fade-in-up print:opacity-100 print:animate-none! print:space-y-5 ${isContentInView ? 'opacity-100' : 'opacity-0'}`}
             >
               <AboutSection />
               <ExperienceSection />
