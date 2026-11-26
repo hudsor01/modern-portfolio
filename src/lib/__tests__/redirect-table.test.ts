@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest'
 import { CONTACT } from '../contact-info'
 import { buildRedirectTable } from '../redirect-table.mjs'
+import { resolveSingleHop } from '../redirect-resolve'
 import retired from '@/data/blog-retired-slugs.json'
 import renames from '@/data/blog-slug-renames.json'
 import { REDIRECT_MAP, REDIRECTED_BLOG_SLUGS, REDIRECTS } from '../redirects'
@@ -49,6 +50,78 @@ describe('buildRedirectTable', () => {
     expect(() => build([{ source: '/x', destination: 'http://example.com' }])).toThrow('/x')
     expect(() => build([{ source: '/y', destination: 'javascript:alert(1)' }])).toThrow('/y')
     expect(() => build([{ source: '/z', destination: 'example.com' }])).toThrow('/z')
+  })
+
+  it.each([
+    ['/a/', 'trailing-slash loop back to the source'],
+    ['/a//', 'trailing-slash run'],
+    ['/A', 'case-folding loop back to the source'],
+    ['/About', 'uppercase destination'],
+    ['/b/', 'trailing slash on a non-source'],
+  ])('throws on a non-canonical destination %s (%s)', (destination) => {
+    expect(() => build([{ source: '/a', destination }])).toThrow('/a')
+  })
+
+  it.each([
+    ['//evil.com', 'protocol-relative'],
+    ['//evil.com/x', 'protocol-relative with a path'],
+    ['/\\evil.com', 'backslash'],
+    ['/b\\c', 'inner backslash'],
+    ['/b?x=1', 'query'],
+    ['/b#top', 'fragment'],
+    ['/b c', 'whitespace'],
+    ['/b\tc', 'tab'],
+    ['/b\nc', 'newline'],
+  ])('throws on an unsafe path destination %j (%s)', (destination) => {
+    expect(() => build([{ source: '/a', destination }])).toThrow('/a')
+  })
+
+  it.each([
+    ['https://example.com/x?y=1', 'query'],
+    ['https://example.com/x#y', 'fragment'],
+    ['https://example.com/x y', 'whitespace'],
+    ['https://', 'no host'],
+    ['https://user:pass@example.com', 'credentials'],
+  ])('throws on an unsafe external destination %j (%s)', (destination) => {
+    expect(() => build([{ source: '/a', destination }])).toThrow('/a')
+  })
+
+  it.each([
+    ['/blog/:slug', 'path-to-regexp param'],
+    ['/blog/:path*', 'path-to-regexp wildcard'],
+    ['/blog/(.*)', 'regex group'],
+    ['/blog/*', 'star'],
+    ['/old.html', 'dot'],
+    ['/caf%c3%a9', 'percent-encoding'],
+    ['/a//b', 'empty segment'],
+    ['/a_b', 'underscore'],
+    ['/', 'root'],
+    ['', 'empty'],
+  ])('throws on a non-literal source %j (%s)', (source) => {
+    expect(() => build([{ source, destination: '/x' }])).toThrow(source)
+  })
+
+  it('accepts a canonical path, the root and a plain https URL', () => {
+    expect(() =>
+      build([
+        { source: '/a', destination: '/b/c-d' },
+        { source: '/b', destination: '/' },
+        { source: '/c', destination: 'https://example.com/x' },
+        { source: '/old-slug-', destination: '/new' },
+      ])
+    ).not.toThrow()
+  })
+
+  it('makes every accepted path destination a fixed point of resolveSingleHop', () => {
+    const table = build([
+      { source: '/a', destination: '/b/c-d' },
+      { source: '/b', destination: '/' },
+      { source: '/c', destination: '/blog' },
+    ])
+    const map = new Map(table.map(({ source, destination }) => [source, destination]))
+    for (const { destination } of table) {
+      expect(resolveSingleHop(destination, '', map), destination).toBeNull()
+    }
   })
 })
 
