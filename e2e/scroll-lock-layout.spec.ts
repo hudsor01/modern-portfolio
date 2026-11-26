@@ -18,22 +18,28 @@ import { expect, type Page, test } from '@playwright/test'
  */
 
 /**
- * Playwright's default --disable-features entries, read from the installed
- * playwright-core so an upgrade that changes them is picked up. Fails loudly
- * rather than silently dropping them if the bundle layout changes.
+ * Playwright's default --disable-features entries, read from the playwright-core
+ * that the installed @playwright/test actually loads, so an upgrade that changes
+ * them is picked up. Every array element must be a plain string literal; any
+ * other shape (a conditional, a spread) throws instead of being dropped.
  */
 function playwrightDisabledFeatures(): string[] {
-  const bundlePath = createRequire(import.meta.url).resolve('playwright-core/lib/coreBundle')
-  const block = /disabledFeatures = \[([\s\S]*?)\]\.filter\(Boolean\)/.exec(
-    readFileSync(bundlePath, 'utf8'),
-  )?.[1]
-  const features = block ? [...block.matchAll(/^\s*"([^"]+)",?\s*$/gm)].map((m) => m[1] as string) : []
-  if (features.length === 0) {
+  const fromTest = createRequire(createRequire(import.meta.url).resolve('@playwright/test/package.json'))
+  const fromPlaywright = createRequire(fromTest.resolve('playwright/package.json'))
+  const bundle = readFileSync(fromPlaywright.resolve('playwright-core/lib/coreBundle'), 'utf8')
+  const block = /disabledFeatures = \[([\s\S]*?)\]\.filter\(Boolean\)/.exec(bundle)?.[1]
+  const elements = (block ?? '')
+    .replace(/\/\/[^\n]*/g, '')
+    .split(',')
+    .map((element) => element.trim())
+    .filter(Boolean)
+  const features = elements.map((element) => /^"([^"]+)"$/.exec(element)?.[1])
+  if (features.length === 0 || features.some((feature) => feature === undefined)) {
     throw new Error(
-      'scroll-lock-layout: could not read Playwright\'s default disabled features from playwright-core',
+      `scroll-lock-layout: cannot read Playwright's default disabled features (${elements.join(' | ') || 'none found'})`,
     )
   }
-  return features
+  return features as string[]
 }
 
 test.use({
