@@ -8,19 +8,26 @@ import { siteConfig } from '@/lib/site'
 
 /**
  * Guard for CONTENT-02. The literals below are the independent oracle for
- * CONTACT. Static files that cannot import CONTACT (llms.txt,
- * security.txt) are pinned to it here.
+ * CONTACT. Static files that cannot import CONTACT (llms.txt, security.txt)
+ * are pinned to it here; vercel.json no longer holds redirects, and the
+ * profile redirects are pinned via REDIRECT_MAP.
  */
 const ROOT = process.cwd()
+
+const SKIPPED_DIRS = new Set(['__tests__', 'node_modules', '.next'])
 
 function sourceFiles(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
     const path = join(dir, name)
     if (statSync(path).isDirectory()) {
-      return name === '__tests__' ? [] : sourceFiles(path)
+      return SKIPPED_DIRS.has(name) ? [] : sourceFiles(path)
     }
-    return /\.(ts|tsx)$/.test(name) ? [path] : []
+    return /\.(ts|tsx|js|mjs)$/.test(name) ? [path] : []
   })
+}
+
+function scanFiles(roots: string[]): string[] {
+  return roots.flatMap((root) => sourceFiles(join(ROOT, root)))
 }
 
 describe('CONTACT', () => {
@@ -38,6 +45,9 @@ describe('CONTACT', () => {
     expect(CONTACT.github.display).toBe('github.com/hudsor01')
     expect(CONTACT.twitter.url).toBe('https://twitter.com/hudsor01')
     expect(CONTACT.twitter.handle).toBe('@hudsor01')
+    expect(CONTACT.github.username).toBe('hudsor01')
+    expect(CONTACT.linkedin.username).toBe('hudsor01')
+    expect(CONTACT.twitter.username).toBe('hudsor01')
   })
 
   it('derives mailto and tel hrefs', () => {
@@ -63,6 +73,13 @@ describe('static files agree with CONTACT', () => {
     const llms = readFileSync(join(ROOT, 'public/llms.txt'), 'utf8')
     expect(llms).toContain(CONTACT.linkedin.url)
     expect(llms).toContain(CONTACT.github.url)
+  })
+
+  it('llms.txt states the CONTACT location and no other base city', () => {
+    const llms = readFileSync(join(ROOT, 'public/llms.txt'), 'utf8')
+    const match = /based in ([A-Z][A-Za-z .]+, [A-Z]{2})\b/.exec(llms)
+    expect(match?.[1]).toBe(CONTACT.location.display)
+    expect(llms).not.toMatch(/\bPlano\b/)
   })
 
   it('profile redirects equal the CONTACT urls', () => {
@@ -101,10 +118,14 @@ describe('contact details have one source', () => {
     'github.com/hudsor01',
     'twitter.com/hudsor01',
     "'@hudsor01'",
+    'Based in Dallas',
+    'Dallas, TX',
+    "'hudsor01'",
+    '"hudsor01"',
   ]
 
-  it('no src file outside contact-info.ts repeats an email, phone or profile literal', () => {
-    const offenders = sourceFiles(join(ROOT, 'src'))
+  it('no source file outside contact-info.ts repeats a contact or location literal', () => {
+    const offenders = scanFiles(['src', 'drizzle', 'scripts'])
       .map((file) => relative(ROOT, file))
       .filter((file) => file !== join('src', 'lib', 'contact-info.ts'))
       .filter((file) => {
@@ -113,7 +134,7 @@ describe('contact details have one source', () => {
       })
     expect(
       offenders,
-      `Import CONTACT from '@/lib/contact-info' instead of repeating contact details in: ${offenders.join(', ')}`
+      `import CONTACT from '@/lib/contact-info' (relative path in drizzle/ and scripts/) instead of repeating contact details in: ${offenders.join(', ')}`
     ).toEqual([])
   })
 })
