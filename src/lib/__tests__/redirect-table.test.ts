@@ -156,6 +156,15 @@ describe('buildRedirectTable', () => {
       expect(emitted, destination).toBe(destination)
       expect(resolveSingleHop(emitted, '', map), destination).toBeNull()
     }
+    // A table hit forwards the query; the hop must already be canonical, so the
+    // emitted URL is a fixed point with the query too (no second 308).
+    for (const { source, destination } of table) {
+      const hop = resolveSingleHop(source, '?page=0&ref=qa', map)
+      expect(hop?.kind, source).toBe('internal')
+      if (hop?.kind !== 'internal') continue
+      expect(hop.pathname).toBe(destination)
+      expect(resolveSingleHop(hop.pathname, hop.search, map), `${source} ${hop.search}`).toBeNull()
+    }
   })
 })
 
