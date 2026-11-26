@@ -203,3 +203,51 @@ describe('ellipsis-only stored values', () => {
     }
   })
 })
+
+describe('abbreviations are not sentence ends', () => {
+  const lead = 'Our forecast review moved to a weekly cadence across every region last spring, and'
+
+  it.each([
+    [
+      'Dr.',
+      `${lead} then we met with Dr. Jones to rebuild the stage definitions that reps had quietly redefined over time.`,
+    ],
+    [
+      'e.g.',
+      `${lead} we audited every integration, e.g. Salesforce and Outreach, to find the fields that reps no longer trusted.`,
+    ],
+    [
+      'U.S.',
+      `${lead} we split the U.S. Enterprise team from mid-market so each segment carried its own conversion benchmarks.`,
+    ],
+    [
+      'vs.',
+      `${lead} we compared this quarter vs. Last quarter for every stage so the drift showed up before the commit call.`,
+    ],
+    [
+      'J.',
+      `${lead} we asked J. Smith to own the definitions so every stage change went through one accountable reviewer.`,
+    ],
+  ])('does not stop after %s', (abbr, text) => {
+    expect(text.length).toBeGreaterThan(160)
+    const out = truncateAtBoundary(text, 160)
+    expect(out.endsWith('…')).toBe(true)
+    expect(out.endsWith(abbr)).toBe(false)
+    expect(out.length).toBeLessThanOrEqual(160)
+  })
+
+  it('does not stop at a period followed by a lowercase word', () => {
+    const text = `${lead} the version 2. rollout covered every team, region and segment before the quarterly commit call in June.`
+    const out = truncateAtBoundary(text, 160)
+    expect(out.endsWith('…')).toBe(true)
+  })
+
+  it('still stops at a real sentence end before a capital, digit or quote', () => {
+    for (const next of ['Then', '40%', '“Stage']) {
+      const text = `${lead} we rebuilt the stage definitions from scratch. ${next} the reps who ignored the old ones started to follow the new rules.`
+      expect(truncateAtBoundary(text, 160)).toBe(
+        `${lead} we rebuilt the stage definitions from scratch.`
+      )
+    }
+  })
+})

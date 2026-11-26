@@ -42,7 +42,18 @@ const HORIZONTAL_RULE = /^([-*_])(\s*\1){2,}$/
 
 const WHITESPACE = /\s/
 const TRAILING_PUNCTUATION = /[,;:.…\-–—\s]+$/
-const SENTENCE_END = /[.!?][”"’')\]]?(?=\s|$)/g
+// A terminator (plus an optional closing quote or bracket) that is followed by
+// the start of a new sentence (capital, digit, opening quote or bracket) or by
+// the end of the text. A lowercase continuation means it was not a sentence end.
+const SENTENCE_END = /[.!?][”"’')\]]?(?=\s+[\p{Lu}\d“"‘'([]|\s*$)/gu
+// Text ending in one of these is mid-sentence even before a capital ("Dr. Jones",
+// "the U.S. Army", "e.g. Salesforce").
+const ABBREVIATION = /\b(?:e\.g|i\.e|vs|etc|Mr|Mrs|Ms|Dr|St|U\.S|Inc|Jr|Sr)\.$/i
+const INITIAL = /(?:^|[\s(])\p{Lu}\.$/u
+
+function endsWithAbbreviation(text: string): boolean {
+  return ABBREVIATION.test(text) || INITIAL.test(text)
+}
 
 /**
  * Locate the trailing run of ellipses: any mix of '…' and runs of three or more
@@ -90,12 +101,12 @@ export function truncateAtBoundary(text: string, max: number): string {
   if (!hardCut && !softEllipsis && t.length <= max) return t
   if (softEllipsis && t.length <= max - 1) return `${t.replace(TRAILING_PUNCTUATION, '')}…`
 
-  const window = t.slice(0, max + 1)
   const minEnd = Math.ceil(max / 2)
   let sentenceEnd = -1
-  for (const m of window.matchAll(SENTENCE_END)) {
-    const end = (m.index ?? 0) + m[0].length
-    if (end <= max && end >= minEnd) sentenceEnd = end
+  for (const m of t.matchAll(SENTENCE_END)) {
+    const end = m.index + m[0].length
+    if (end > max) break
+    if (end >= minEnd && !endsWithAbbreviation(t.slice(0, m.index + 1))) sentenceEnd = end
   }
   if (sentenceEnd > 0) return t.slice(0, sentenceEnd)
 
