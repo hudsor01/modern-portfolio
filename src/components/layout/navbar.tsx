@@ -167,7 +167,7 @@ export function Navbar() {
                   href={asRoute(item.href)}
                   onClick={() => setIsMobileMenuOpen(false)}
                   aria-current={current}
-                  className={`block w-full text-left px-4 py-3 rounded-lg transition-all duration-300 ease-out text-base min-h-[44px] flex items-center ${
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-300 ease-out text-base min-h-[44px] flex items-center ${
                     current
                       ? 'text-primary bg-primary/5'
                       : 'text-muted-foreground hover:text-foreground hover:bg-muted'
