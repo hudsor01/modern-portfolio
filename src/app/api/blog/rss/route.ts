@@ -10,7 +10,7 @@ import { CONTACT } from '@/lib/contact-info'
 import { getDisplayYearMonth } from '@/lib/data-formatters'
 import { BLOG_CONTENT_HEAD_EXTRAS } from '@/lib/blog-content-head'
 import { resolvePostLede } from '@/lib/blog-excerpt'
-import { displayPostTitle } from '@/lib/post-title'
+import { displayPostTitle } from '@/lib/brand'
 
 const logger = createContextLogger('RssAPI')
 

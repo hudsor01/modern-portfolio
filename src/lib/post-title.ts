@@ -42,7 +42,19 @@ const TRAILING_FILLER = new Set([
   '–',
 ])
 
-const GRAPHEMES = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+// Created on first use and only where Intl.Segmenter exists, so importing this
+// module can never throw (Firefox lacks Segmenter before 125). Without it the
+// cut falls back to whole code points, which still never splits a surrogate pair.
+let graphemes: Intl.Segmenter | null | undefined
+function graphemeSegmenter(): Intl.Segmenter | null {
+  if (graphemes === undefined) {
+    graphemes =
+      typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function'
+        ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+        : null
+  }
+  return graphemes
+}
 
 /**
  * Longest prefix of whole user-perceived characters (grapheme clusters) at most
@@ -53,11 +65,14 @@ const GRAPHEMES = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
  */
 function graphemeCut(s: string, max: number): string {
   let end = 0
-  for (const { segment, index } of GRAPHEMES.segment(s)) {
-    if (index + segment.length > max) break
-    end = index + segment.length
+  const segmenter = graphemeSegmenter()
+  if (segmenter !== null) {
+    for (const { segment, index } of segmenter.segment(s)) {
+      if (index + segment.length > max) break
+      end = index + segment.length
+    }
+    if (end > 0) return s.slice(0, end)
   }
-  if (end > 0) return s.slice(0, end)
   for (const codePoint of s) {
     if (end + codePoint.length > max) break
     end += codePoint.length
@@ -82,17 +97,6 @@ function cutAtWord(s: string, max: number): string {
   if (kept.length === 0) return graphemeCut(s, max)
   while (kept.length > 1 && TRAILING_FILLER.has(kept[kept.length - 1]!.toLowerCase())) kept.pop()
   return kept.join(' ').replace(/[\s:;,.\-–—(&+]+$/, '') || graphemeCut(s, max)
-}
-
-/**
- * A stored post title without a trailing brand suffix (" | Richard Hudson"),
- * full length otherwise. For surfaces that name the article rather than act as
- * a search-result title (JSON-LD headline, breadcrumbs, the /api/og card, RSS
- * item titles), so the 60-char budget does not apply but a stored brand would
- * otherwise show twice. Falls back to the trimmed title if it is only the brand.
- */
-export function displayPostTitle(title: string): string {
-  return stripBrandSuffix(title) || title.trim()
 }
 
 /**

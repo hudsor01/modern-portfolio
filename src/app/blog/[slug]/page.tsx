@@ -18,7 +18,8 @@ import { brandTitle } from '@/lib/brand'
 import { resolveMetaDescription, resolvePostLede } from '@/lib/blog-excerpt'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
-import { displayPostTitle, normalizeSeoTitle } from '@/lib/post-title'
+import { displayPostTitle } from '@/lib/brand'
+import { normalizeSeoTitle } from '@/lib/post-title'
 
 // Force runtime rendering. notFound() inside Next.js 16's ISR-rendered
 // Server Components doesn't propagate HTTP 404 status to Vercel — the

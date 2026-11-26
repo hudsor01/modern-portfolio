@@ -10,7 +10,7 @@ import { SITE_ORIGIN } from '@/lib/absolute-url'
 import { CONTACT } from '@/lib/contact-info'
 import { getDisplayYearMonth } from '@/lib/data-formatters'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
-import { displayPostTitle } from '@/lib/post-title'
+import { displayPostTitle } from '@/lib/brand'
 import {
   PERSON_EMPLOYER,
   PERSON_ID,

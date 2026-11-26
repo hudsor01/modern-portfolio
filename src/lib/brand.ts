@@ -1,5 +1,5 @@
 /**
- * The site brand and the two title helpers built on it. Dependency-free so
+ * The site brand and the title helpers built on it. Dependency-free so
  * client components (blog cover fallbacks) can strip a stored brand suffix
  * without pulling site metadata, project data or stats into their bundle.
  */
@@ -37,4 +37,15 @@ export function stripBrandSuffix(title: string): string {
     return before.slice(0, -1).trim()
   }
   return trimmed
+}
+
+/**
+ * A stored post title without a trailing brand suffix (" | Richard Hudson"),
+ * full length otherwise. For surfaces that name the article rather than act as
+ * a search-result title (JSON-LD headline, breadcrumbs, the /api/og card, RSS
+ * item titles), so the 60-char budget does not apply but a stored brand would
+ * otherwise show twice. Falls back to the trimmed title if it is only the brand.
+ */
+export function displayPostTitle(title: string): string {
+  return stripBrandSuffix(title) || title.trim()
 }

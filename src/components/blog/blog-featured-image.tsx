@@ -2,7 +2,7 @@
 
 import type { ImageProps } from 'next/image'
 import { ImageWithFallback } from '@/components/ui/image-with-fallback'
-import { displayPostTitle } from '@/lib/post-title'
+import { displayPostTitle } from '@/lib/brand'
 
 interface BlogFeaturedImageProps extends Omit<ImageProps, 'src' | 'onError'> {
   src: string

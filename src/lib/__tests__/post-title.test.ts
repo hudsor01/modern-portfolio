@@ -1,7 +1,9 @@
 // @vitest-environment node
-import { describe, expect, it } from 'vitest'
-import { brandTitle } from '@/lib/brand'
-import { displayPostTitle, normalizeSeoTitle, SEO_TITLE_MAX, TITLE_BUDGET } from '@/lib/post-title'
+import { readdirSync, readFileSync, statSync } from 'node:fs'
+import { join } from 'node:path'
+import { describe, expect, it, vi } from 'vitest'
+import { brandTitle, displayPostTitle } from '@/lib/brand'
+import { normalizeSeoTitle, SEO_TITLE_MAX, TITLE_BUDGET } from '@/lib/post-title'
 
 describe('normalizeSeoTitle', () => {
   it('fits every stored SEO title within the budget', () => {
@@ -162,5 +164,42 @@ describe('displayPostTitle', () => {
 
   it('never returns empty for a title that is only the brand', () => {
     expect(displayPostTitle('| Richard Hudson')).toBe('| Richard Hudson')
+  })
+})
+
+describe('browser safety', () => {
+  const ROOT = process.cwd()
+  const files = (dir: string): string[] =>
+    readdirSync(dir).flatMap((name) => {
+      const path = join(dir, name)
+      if (name === '__tests__' || name === 'node_modules') return []
+      return statSync(path).isDirectory() ? files(path) : /\.(ts|tsx)$/.test(name) ? [path] : []
+    })
+
+  it('keeps src/lib/brand.ts free of imports, so client components can use it', () => {
+    expect(readFileSync(join(ROOT, 'src/lib/brand.ts'), 'utf8')).not.toMatch(/^\s*import\s/m)
+  })
+
+  it('never imports @/lib/post-title from a client component', () => {
+    const offenders = files(join(ROOT, 'src')).filter((file) => {
+      const source = readFileSync(file, 'utf8')
+      return /^['"]use client['"]/m.test(source) && source.includes("'@/lib/post-title'")
+    })
+    expect(offenders).toEqual([])
+  })
+
+  it('loads and hard-cuts on whole code points where Intl.Segmenter is missing', async () => {
+    vi.resetModules()
+    vi.stubGlobal('Intl', { ...Intl, Segmenter: undefined })
+    try {
+      const { normalizeSeoTitle: cut } = await import('@/lib/post-title')
+      const word = `${'a'.repeat(42)}😀tail`
+      const out = cut(word, word)
+      expect(out.length).toBeLessThanOrEqual(SEO_TITLE_MAX)
+      expect(out).not.toMatch(/[\uD800-\uDBFF]$/)
+    } finally {
+      vi.unstubAllGlobals()
+      vi.resetModules()
+    }
   })
 })
