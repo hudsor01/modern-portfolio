@@ -130,12 +130,14 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
     }
 
     // A bio-opener excerpt or meta is re-derived from the body. Normalized,
-    // never rejected, so an update can't fail on SEO text. The stored body (and
-    // excerpt, which the meta may come from) is read only when such a field
-    // arrives without new content.
+    // never rejected, so an update can't fail on SEO text. The stored body and
+    // excerpt are read only when needed: a bio field without new content, or a
+    // bio meta without a new excerpt (the meta prefers the post's excerpt).
+    const bioExcerpt = opensWithAuthorBio(body.excerpt)
+    const bioMeta = opensWithAuthorBio(body.metaDescription)
     const stored =
-      body.content === undefined &&
-      (opensWithAuthorBio(body.excerpt) || opensWithAuthorBio(body.metaDescription))
+      (body.content === undefined && (bioExcerpt || bioMeta)) ||
+      (bioMeta && body.excerpt === undefined)
         ? await db.query.blogPosts.findFirst({
             where: eq(blogPosts.id, existingPost.id),
             columns: { content: true, excerpt: true },

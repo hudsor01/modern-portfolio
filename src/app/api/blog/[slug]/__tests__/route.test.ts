@@ -230,6 +230,48 @@ describe('PUT /api/blog/[slug]', () => {
     expect(dbMocks.updateSet.mock.calls[0]?.[0]).toMatchObject({ metaDescription: lede })
   })
 
+  it('derives a bio-opener meta from the stored excerpt and leaves the omitted excerpt alone', async () => {
+    const bio = 'I served in the National Guard for six years before moving into RevOps.'
+    const storedExcerpt =
+      'Stage definitions drift from how buyers decide. Here is how to pin them down.'
+    dbMocks.findFirst
+      .mockResolvedValueOnce(samplePost)
+      .mockResolvedValueOnce({
+        content: 'A body paragraph that is long enough to be a lede.',
+        excerpt: storedExcerpt,
+      })
+      .mockResolvedValueOnce(samplePost)
+    dbMocks.update.mockResolvedValue(undefined)
+    const res = await PUT(reqPut('hello', { metaDescription: bio }), ctx('hello'))
+    expect(res.status).toBe(200)
+    const set = dbMocks.updateSet.mock.calls[0]?.[0]
+    expect(set).toMatchObject({ metaDescription: storedExcerpt })
+    expect(set).not.toHaveProperty('excerpt')
+  })
+
+  it('reads the stored excerpt for a bio meta sent with new content but no excerpt', async () => {
+    const bio = 'I served in the National Guard for six years before moving into RevOps.'
+    const storedExcerpt =
+      'Coverage is a ratio, not a promise. Track it weekly against weighted quota.'
+    dbMocks.findFirst
+      .mockResolvedValueOnce(samplePost)
+      .mockResolvedValueOnce({ content: 'old body', excerpt: storedExcerpt })
+      .mockResolvedValueOnce(samplePost)
+    dbMocks.update.mockResolvedValue(undefined)
+    const res = await PUT(
+      reqPut('hello', {
+        content: `${bio}\n\nA brand new opening paragraph that is long enough to count.`,
+        metaDescription: bio,
+      }),
+      ctx('hello')
+    )
+    expect(res.status).toBe(200)
+    expect(dbMocks.findFirst).toHaveBeenCalledTimes(3)
+    const set = dbMocks.updateSet.mock.calls[0]?.[0]
+    expect(set).toMatchObject({ metaDescription: storedExcerpt })
+    expect(set).not.toHaveProperty('excerpt')
+  })
+
   it('derives a bio-opener meta and excerpt from new content without reading the stored body', async () => {
     const bio = 'I served in the National Guard for six years before moving into RevOps.'
     const lede =

@@ -356,6 +356,17 @@ describe('POST /api/blog', () => {
     })
   })
 
+  it('normalizes a bio excerpt sent without a meta and leaves the meta unset', async () => {
+    const bio = 'I served in the National Guard for six years before moving into RevOps.'
+    const lede =
+      'Win rates fall when discovery skips the economic buyer. Fix the qualification step.'
+    const res = await POST(reqPost({ ...validBody, content: `${bio}\n\n${lede}`, excerpt: bio }))
+    expect(res.status).toBe(201)
+    const values = dbMocks.insertValues.mock.calls[0]?.[0]
+    expect(values).toMatchObject({ excerpt: lede })
+    expect(values.metaDescription ?? null).toBeNull()
+  })
+
   it('stores a normal meta and excerpt exactly as sent', async () => {
     const meta =
       'Seven ways CRM pipeline data drifts from reality, the reports that catch each one, and the systems that keep it accurate.'
