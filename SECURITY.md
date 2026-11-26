@@ -145,7 +145,13 @@ These are publicly documented so reporters don't waste cycles on them:
   ignore `'unsafe-inline'`, which would block Next's framework-generated inline
   hydration scripts (`self.__next_f.push`) and break hydration on the
   prerendered pages. `experimental.sri` (hash-based) does not cover those
-  dynamically-generated inline scripts either. The residual XSS surface is low:
+  dynamically-generated inline scripts either. Measured on the deployed
+  Next.js 16.4.6 build (2026-11-26): each prerendered page carries 3 inline
+  scripts — Turbopack's chunk bootstrap, the `__next_f` init and the RSC flight
+  payload — and the first and last differ per page and per deployment, so
+  hashes would need a per-route manifest built after every deploy and served by
+  the proxy. Revisit if Next.js emits CSP hashes for its inline scripts or the
+  site moves to dynamic rendering. The residual XSS surface is low:
   no user-generated HTML is rendered, and inline JSON-LD is escaped via
   `safeJsonLdStringify`. The rest of the policy (`object-src`, `base-uri`,
   `form-action`, `frame-ancestors 'none'`, `upgrade-insecure-requests`) covers

@@ -122,8 +122,8 @@ export const BLOG_FEATURED_IMAGES: readonly BlogFeaturedImage[] = [
   },
   {
     slug: 'stop-guessing-how-we-turned-call-coaching-into-a-revenue-engine-using-gong-and-s',
-    photoId: '1642177437932-75d846ad48f3',
-    alt: 'Sales-call audio waveforms in conversation-intelligence software',
+    photoId: '1766066014237-00645c74e9c6',
+    alt: 'Sales development rep on a live call at a busy sales-floor workstation',
   },
   {
     slug: 'pipeline-velocity-the-8-week-bleed-killing-your-q4-revenue',
