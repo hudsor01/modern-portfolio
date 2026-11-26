@@ -21,6 +21,21 @@ import {
 
 const logger = createContextLogger('SlugAPI')
 
+/**
+ * PUT semantics for normalized text: a string the client sent that normalizes
+ * to nothing (an over-long value with no text, or a bio opener with no body to
+ * derive from) is treated as omitted, so it never clears a stored value. Only
+ * an explicit `null` clears. POST has nothing stored, so it keeps the `null`.
+ */
+function unlessEmptied<T>(sent: unknown, normalized: T | null | undefined): T | null | undefined {
+  return typeof sent === 'string' && normalized === null ? undefined : normalized
+}
+
+/** fitStoredText under the PUT rule above. */
+function fitForUpdate(sent: string | null | undefined, max: number): string | null | undefined {
+  return unlessEmptied(sent, fitStoredText(sent, max))
+}
+
 const POST_WITH_RELATIONS = {
   columns: BLOG_POST_COLUMNS,
   with: {
@@ -158,6 +173,20 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
       currentExcerpt: stored?.excerpt,
     })
 
+    const excerpt = unlessEmptied(body.excerpt, seoText.excerpt)
+    const metaDescription = unlessEmptied(body.metaDescription, seoText.metaDescription)
+    const ogTitle = fitForUpdate(body.ogTitle, STORED_TEXT_LIMITS.ogTitle)
+    const ogDescription = fitForUpdate(body.ogDescription, STORED_TEXT_LIMITS.ogDescription)
+    const twitterTitle = fitForUpdate(body.twitterTitle, STORED_TEXT_LIMITS.twitterTitle)
+    const twitterDescription = fitForUpdate(
+      body.twitterDescription,
+      STORED_TEXT_LIMITS.twitterDescription
+    )
+    const featuredImageAlt = fitForUpdate(
+      body.featuredImageAlt,
+      STORED_TEXT_LIMITS.featuredImageAlt
+    )
+
     const wordCount = body.content ? body.content.split(/\s+/).length : undefined
     const readingTime = wordCount ? Math.ceil(wordCount / 200) : undefined
 
@@ -168,7 +197,7 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
     // `|| null` coalesce required.
     const updateData: Partial<NewBlogPost> = {
       ...(body.title && { title: body.title }),
-      ...(seoText.excerpt !== undefined && { excerpt: seoText.excerpt }),
+      ...(excerpt !== undefined && { excerpt }),
       ...(body.content && { content: body.content, wordCount, readingTime }),
       ...(body.contentType && { contentType: body.contentType }),
       ...(body.status && { status: body.status }),
@@ -177,9 +206,7 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
       ...(body.metaTitle !== undefined && {
         metaTitle: normalizeSeoTitle(body.metaTitle, body.title || existingPost.title),
       }),
-      ...(seoText.metaDescription !== undefined && {
-        metaDescription: seoText.metaDescription,
-      }),
+      ...(metaDescription !== undefined && { metaDescription }),
       ...(body.keywords && { keywords: body.keywords }),
       ...(body.canonicalUrl !== undefined && { canonicalUrl: body.canonicalUrl }),
       // ogTitle, ogDescription, twitterTitle and twitterDescription (and the
@@ -187,29 +214,16 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
       // intentionally not rendered: post pages derive every share surface from
       // the one canonical normalized title, meta description and image
       // (src/app/blog/[slug]/page.tsx), because separate per-surface values
-      // were how three SEO surfaces disagreed before. Omitted stays unwritten;
-      // null clears.
-      ...(body.ogTitle !== undefined && {
-        ogTitle: fitStoredText(body.ogTitle, STORED_TEXT_LIMITS.ogTitle),
-      }),
-      ...(body.ogDescription !== undefined && {
-        ogDescription: fitStoredText(body.ogDescription, STORED_TEXT_LIMITS.ogDescription),
-      }),
+      // were how three SEO surfaces disagreed before. Omitted (or sent but
+      // normalized to nothing, see unlessEmptied) stays unwritten; null clears.
+      ...(ogTitle !== undefined && { ogTitle }),
+      ...(ogDescription !== undefined && { ogDescription }),
       ...(body.ogImage !== undefined && { ogImage: body.ogImage }),
-      ...(body.twitterTitle !== undefined && {
-        twitterTitle: fitStoredText(body.twitterTitle, STORED_TEXT_LIMITS.twitterTitle),
-      }),
-      ...(body.twitterDescription !== undefined && {
-        twitterDescription: fitStoredText(
-          body.twitterDescription,
-          STORED_TEXT_LIMITS.twitterDescription
-        ),
-      }),
+      ...(twitterTitle !== undefined && { twitterTitle }),
+      ...(twitterDescription !== undefined && { twitterDescription }),
       ...(body.twitterImage !== undefined && { twitterImage: body.twitterImage }),
       ...(body.featuredImage !== undefined && { featuredImage: body.featuredImage }),
-      ...(body.featuredImageAlt !== undefined && {
-        featuredImageAlt: fitStoredText(body.featuredImageAlt, STORED_TEXT_LIMITS.featuredImageAlt),
-      }),
+      ...(featuredImageAlt !== undefined && { featuredImageAlt }),
       ...(body.categoryId !== undefined && { categoryId: body.categoryId ?? null }),
       ...(body.publishedAt !== undefined && {
         publishedAt: body.publishedAt ? new Date(body.publishedAt) : null,

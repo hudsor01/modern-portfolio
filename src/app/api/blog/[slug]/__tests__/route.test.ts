@@ -380,6 +380,49 @@ describe('PUT /api/blog/[slug]', () => {
     expect(set).not.toHaveProperty('twitterTitle')
   })
 
+  it('treats an over-long value with no text as omitted, never as a clear', async () => {
+    const dashes = '-'.repeat(101)
+    dbMocks.findFirst
+      .mockResolvedValueOnce(samplePost)
+      .mockResolvedValueOnce({ content: '', excerpt: null })
+      .mockResolvedValueOnce(samplePost)
+    dbMocks.update.mockResolvedValue(undefined)
+    const res = await PUT(
+      reqPut('hello', {
+        ogTitle: dashes,
+        ogDescription: '-'.repeat(301),
+        twitterTitle: dashes,
+        twitterDescription: '-'.repeat(201),
+        featuredImageAlt: '-'.repeat(201),
+        excerpt: '-'.repeat(501),
+        metaDescription: '&nbsp;'.repeat(40),
+      }),
+      ctx('hello')
+    )
+    expect(res.status).toBe(200)
+    const set = dbMocks.updateSet.mock.calls[0]?.[0]
+    for (const field of [
+      'ogTitle',
+      'ogDescription',
+      'twitterTitle',
+      'twitterDescription',
+      'featuredImageAlt',
+      'excerpt',
+      'metaDescription',
+    ]) {
+      expect(set, field).not.toHaveProperty(field)
+    }
+  })
+
+  it('still clears a field sent as explicit null', async () => {
+    dbMocks.findFirst.mockResolvedValueOnce(samplePost).mockResolvedValueOnce(samplePost)
+    dbMocks.update.mockResolvedValue(undefined)
+    await PUT(reqPut('hello', { ogTitle: null, featuredImageAlt: null }), ctx('hello'))
+    const set = dbMocks.updateSet.mock.calls[0]?.[0]
+    expect(set.ogTitle).toBeNull()
+    expect(set.featuredImageAlt).toBeNull()
+  })
+
   it('leaves the stored SEO title alone when the update does not send one', async () => {
     dbMocks.findFirst.mockResolvedValueOnce(samplePost).mockResolvedValueOnce(samplePost)
     dbMocks.update.mockResolvedValue(undefined)
