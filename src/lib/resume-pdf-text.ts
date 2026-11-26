@@ -1,9 +1,10 @@
 /**
  * The text the résumé PDF must contain, and how to look for it in pdftotext
  * output. Used by scripts/resume-pdf.ts to refuse a PDF that does not print
- * every summary sentence, bullet and skill from the current data (which is
- * also what catches a PDF printed from a stale build), and unit-tested in
- * src/lib/__tests__/resume-pdf-text.test.ts.
+ * every summary sentence, bullet and skill from the current data, and
+ * unit-tested in src/lib/__tests__/resume-pdf-text.test.ts. Containment only
+ * catches added or reworded data; a stale build after a removal, shortening or
+ * reorder is refused by the served-structure check (resume-dom-structure.ts).
  *
  * Dependency-free apart from the résumé data. Relative imports keep it
  * resolvable from `bun scripts/…` too.

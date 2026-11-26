@@ -3,7 +3,12 @@
  * cannot drift from the site.
  *
  * Chromium prints /resume (print media, US Letter via the print stylesheet's
- * `@page`) from a local production build. The result is verified with poppler
+ * `@page`) from a local production build. Before printing, the served page is
+ * read back as structured data (every role, company, location, period and
+ * bullet, education, certifications, skills, headline, summary and contact
+ * line) and must equal the current data exactly and in order, so a server
+ * built from older data is refused whatever the edit was. The PDF is then
+ * verified with poppler
  * (pages, page size, tagging, embedded fonts with ToUnicode maps, and the text
  * itself: the summary, every role, period, bullet, skill, certification and
  * contact value from the site data, intact ligatures, no site chrome, no stale
@@ -31,6 +36,11 @@ import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium } from '@playwright/test'
 import { CONTACT } from '../src/lib/contact-info'
+import {
+  expectedResumeStructure,
+  extractResumeStructure,
+  firstResumeDifference,
+} from '../src/lib/resume-dom-structure'
 import { pdfTextContains, resumeTextExpectations } from '../src/lib/resume-pdf-text'
 import { computeResumeSourceHash } from '../src/lib/resume-source-hash'
 import { YEARS_EXPERIENCE, YEARS_EXPERIENCE_LABEL } from '../src/lib/stats'
@@ -78,6 +88,13 @@ function fail(message: string): never {
   console.error(`resume:pdf: ${message}`)
   process.exit(1)
 }
+
+/**
+ * A deliberate refusal to print. Thrown (not `fail`) inside the browser block
+ * so the `finally` blocks still close the browser and remove the work dir;
+ * reported as a one-line message rather than a stack trace.
+ */
+class Refusal extends Error {}
 
 function argValue(flag: string): string | undefined {
   const args = process.argv.slice(2)
@@ -180,8 +197,9 @@ function verifyPdf(pdf: string): number {
 
   // Everything else is matched in reading order: multi-column print blocks
   // interleave in -layout output. Every value the résumé prints is required
-  // (summary, each bullet, each skill), so a PDF printed from a build older
-  // than the data fails here even though the hash is computed from the data.
+  // (summary, each bullet, each skill). Containment cannot see a removal, a
+  // shortening or a reorder; the served-structure check in main() refuses a
+  // stale build before anything is printed.
   for (const expectation of resumeTextExpectations()) {
     check(
       `text (raw): ${expectation.source} ${JSON.stringify(expectation.value)}`,
@@ -233,8 +251,22 @@ async function main(): Promise<void> {
       await page.goto(resumeUrl.href, { waitUntil: 'networkidle' })
       const landed = new URL(page.url())
       if (!LOCAL_HOSTS.has(landed.hostname)) {
-        throw new Error(`refusing to print ${landed.origin}: /resume redirected off localhost`)
+        throw new Refusal(`refusing to print ${landed.origin}: /resume redirected off localhost`)
       }
+      // The PDF is stamped with a hash of the current data, so the page must
+      // have been built from exactly that data: same values, same order.
+      const difference = firstResumeDifference(
+        expectedResumeStructure(),
+        await page.evaluate(extractResumeStructure)
+      )
+      if (difference) {
+        throw new Refusal(
+          `refusing to print: ${resumeUrl.href} does not match the résumé data, so the server ` +
+            `was built from older data (first difference: ${difference}). Rebuild, restart the ` +
+            'server and run again. Nothing was written.'
+        )
+      }
+      console.log('PASS  served /resume matches the résumé data exactly')
       await page.evaluate(async () => {
         for (let y = 0; y < document.documentElement.scrollHeight; y += 400) {
           window.scrollTo(0, y)
@@ -308,6 +340,7 @@ async function main(): Promise<void> {
 }
 
 main().catch((error: unknown) => {
-  console.error(error)
+  if (error instanceof Refusal) console.error(`resume:pdf: ${error.message}`)
+  else console.error(error)
   process.exit(1)
 })
