@@ -5,6 +5,7 @@ import {
   LEDE_MAX,
   resolveExcerpt,
   resolveMetaDescription,
+  stripMarkdownToPlain,
   truncateAtBoundary,
 } from '../blog-excerpt'
 
@@ -470,5 +471,72 @@ describe('punctuation-only stored values', () => {
     for (const text of ['Q3', '40%', '— Q3 recap …']) {
       expect(truncateAtBoundary(text, 160)).not.toBe('')
     }
+  })
+})
+
+describe('markdown stripping keeps literal underscores, asterisks and code', () => {
+  it.each([
+    'Map Stage__c to Forecast_Category__c before every pipeline review.',
+    'Score = 2 * 3 * 4 for the model',
+    'Track lead_source and deal_stage on every record.',
+    'Leave a ** b ** c and x __ y __ z alone.',
+    'An unclosed `tick and a lone * stay.',
+  ])('leaves %j unchanged', (text) => {
+    expect(stripMarkdownToPlain(text)).toBe(text)
+  })
+
+  it('keeps code span contents verbatim and drops only the backticks', () => {
+    expect(stripMarkdownToPlain('Use `Amount__c` and keep `Close_Date__c` honest.')).toBe(
+      'Use Amount__c and keep Close_Date__c honest.'
+    )
+    expect(stripMarkdownToPlain('Write `**not bold**`, `a\\_b` and `&amp;` literally.')).toBe(
+      'Write **not bold**, a\\_b and &amp; literally.'
+    )
+    expect(stripMarkdownToPlain('A ``code with ` tick`` span.')).toBe('A code with ` tick span.')
+  })
+
+  it('does not open a code span at an escaped backtick', () => {
+    expect(stripMarkdownToPlain('\\`not code\\` and *em*')).toBe('`not code` and em')
+  })
+
+  it('still strips bounded emphasis', () => {
+    expect(
+      stripMarkdownToPlain('**bold**, __strong__, *em*, _em_, ***both***, _lead_source here_')
+    ).toBe('bold, strong, em, em, both, lead_source here')
+    expect(stripMarkdownToPlain('Fix **`Stage__c`** first.')).toBe('Fix Stage__c first.')
+  })
+
+  it('closes emphasis at the first marker that can close it', () => {
+    expect(stripMarkdownToPlain('**a **b** c')).toBe('**a b c')
+    expect(stripMarkdownToPlain('__Map Stage__c weekly__ now')).toBe('Map Stage__c weekly now')
+  })
+
+  it('strips unclosed markers and backtick runs in linear time', () => {
+    const inputs = [
+      '**a '.repeat(5_000),
+      ' __a'.repeat(5_000),
+      '*a '.repeat(6_000),
+      ' _a'.repeat(6_000),
+      '` '.repeat(10_000),
+      Array.from({ length: 150 }, (_, i) => `${'`'.repeat(i + 1)}x`).join(' '),
+    ]
+    const started = performance.now()
+    for (const input of inputs) stripMarkdownToPlain(input)
+    expect(performance.now() - started).toBeLessThan(100)
+  })
+
+  it('returns a stored meta with API names and arithmetic unchanged', () => {
+    const metaDescription =
+      'Map Stage__c to Forecast_Category__c, weight it 2 * 3 * 4, and audit lead_source weekly.'
+    expect(resolveMetaDescription({ metaDescription, excerpt: null, content: null })).toBe(
+      metaDescription
+    )
+    expect(
+      resolveMetaDescription({
+        metaDescription: 'Use `Amount__c` and keep `Close_Date__c` honest.',
+        excerpt: null,
+        content: null,
+      })
+    ).toBe('Use Amount__c and keep Close_Date__c honest.')
   })
 })

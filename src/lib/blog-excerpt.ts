@@ -54,25 +54,109 @@ function decodeTextEntities(text: string): string {
 
 const ESCAPE_OPEN = '\uE000'
 const ESCAPE_CLOSE = '\uE001'
+const CODE_OPEN = '\uE002'
+const CODE_CLOSE = '\uE003'
+// Placeholder characters are removed from the input first, so every
+// placeholder in the working text is one this function inserted.
+const PLACEHOLDER_CHAR = /[\uE000-\uE003]/g
+const ESCAPE_PLACEHOLDER = new RegExp(`${ESCAPE_OPEN}(\\d+)${ESCAPE_CLOSE}`, 'g')
+const CODE_PLACEHOLDER = new RegExp(`${CODE_OPEN}(\\d+)${CODE_CLOSE}`)
+const ESCAPABLE = new Set('\\`*_{}[]()#+-.!')
 
-/** Strip inline markdown to plain text, decode entities, collapse whitespace. */
+// Emphasis, CommonMark-style: an opening marker must be followed by a
+// non-space and a closing marker preceded by one, so `2 * 3 * 4` and
+// `a ** b` stay literal. `_` and `__` also never open or close inside a word,
+// so `Stage__c`, `Forecast_Category__c` and `lead_source` stay literal.
+// Each body stops at the next marker that could open or close (an intraword
+// `_`/`__` can do neither, so it may sit inside), which keeps every rule linear:
+// an opener never rescans the text past a marker that failed to close it.
+const STRONG_STAR = /\*\*(?=\S)((?:(?!\*\*).)+?)(?<=\S)\*\*/g
+const STRONG_UNDERSCORE =
+  /(^|[^\p{L}\p{N}_])__(?=\S)((?:(?!__).|(?<=[\p{L}\p{N}])__(?=[\p{L}\p{N}]))+?)(?<=\S)__(?![\p{L}\p{N}_])/gu
+const EM_STAR = /(?<!\*)\*(?=[^\s*])([^*]*?[^\s*])\*(?!\*)/g
+const EM_UNDERSCORE =
+  /(^|[^\p{L}\p{N}_])_(?=[^\s_])((?:[^_]|(?<=[\p{L}\p{N}])_(?=[\p{L}\p{N}]))*?[^\s_])_(?![\p{L}\p{N}_])/gu
+
+/**
+ * Replace backslash escapes and code spans with placeholders, scanning left to
+ * right as CommonMark does: an escaped backtick opens nothing, and a backslash
+ * inside a code span is literal. A code span is a run of N backticks closed by
+ * the next run of exactly N; a run with no closer is literal text. Code span
+ * contents are pushed to `codeSpans` and restored verbatim at the end.
+ */
+function protectLiterals(markdown: string, codeSpans: string[]): string {
+  // Run lengths known to have no closer from some point on. Text only moves
+  // forward, so a length with no closer stays closer-less, which keeps the
+  // scan from re-searching the rest of the text for every unmatched run.
+  const unclosed = new Set<number>()
+  let out = ''
+  let i = 0
+  while (i < markdown.length) {
+    const ch = markdown[i] as string
+    const next = markdown[i + 1]
+    if (ch === '\\' && next !== undefined && ESCAPABLE.has(next)) {
+      out += `${ESCAPE_OPEN}${next.charCodeAt(0)}${ESCAPE_CLOSE}`
+      i += 2
+      continue
+    }
+    if (ch !== '`') {
+      out += ch
+      i++
+      continue
+    }
+    let runEnd = i
+    while (markdown[runEnd] === '`') runEnd++
+    const length = runEnd - i
+    const close = unclosed.has(length) ? -1 : closingRun(markdown, runEnd, length)
+    if (close < 0) {
+      unclosed.add(length)
+      out += markdown.slice(i, runEnd)
+      i = runEnd
+      continue
+    }
+    out += `${CODE_OPEN}${codeSpans.push(markdown.slice(runEnd, close)) - 1}${CODE_CLOSE}`
+    i = close + length
+  }
+  return out
+}
+
+/** Index of the next run of exactly `length` backticks at or after `from`, or -1. */
+function closingRun(text: string, from: number, length: number): number {
+  let start = text.indexOf('`', from)
+  while (start >= 0) {
+    let end = start
+    while (text[end] === '`') end++
+    if (end - start === length) return start
+    start = text.indexOf('`', end)
+  }
+  return -1
+}
+
+/**
+ * Strip inline markdown to plain text, decode entities, collapse whitespace.
+ * Code span contents are kept verbatim (no emphasis stripping, no entity
+ * decoding); only their backticks are dropped.
+ */
 export function stripMarkdownToPlain(markdown: string): string {
-  const stripped = markdown
-    .replace(
-      /\\([\\`*_{}[\]()#+\-.!])/g,
-      (_m, ch: string) => `${ESCAPE_OPEN}${ch.charCodeAt(0)}${ESCAPE_CLOSE}`
-    )
+  const codeSpans: string[] = []
+  const stripped = protectLiterals(markdown.replace(PLACEHOLDER_CHAR, ''), codeSpans)
     .replace(/!\[([^\]]*)\]\([^)]*\)/g, '')
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
-    .replace(/`([^`]*)`/g, '$1')
-    .replace(/(\*\*|__)(.+?)\1/g, '$2')
-    .replace(/\*([^*]+)\*/g, '$1')
-    .replace(/(^|[^\w])_([^_]+)_(?=$|[^\w])/g, '$1$2')
-  const restored = stripped.replace(
-    new RegExp(`${ESCAPE_OPEN}(\\d+)${ESCAPE_CLOSE}`, 'g'),
-    (_m, code: string) => String.fromCharCode(Number(code))
-  )
-  return decodeTextEntities(restored).replace(/\s+/g, ' ').trim()
+    .replace(STRONG_STAR, '$1')
+    .replace(STRONG_UNDERSCORE, '$1$2')
+    .replace(EM_STAR, '$1')
+    .replace(EM_UNDERSCORE, '$1$2')
+    .replace(ESCAPE_PLACEHOLDER, (_m, code: string) => String.fromCharCode(Number(code)))
+  // split() with a capture group puts each code span index at an odd position.
+  // Decoding the text between spans separately means a decoded entity can
+  // never be read back as a placeholder.
+  const plain = stripped
+    .split(CODE_PLACEHOLDER)
+    .map((part, index) =>
+      index % 2 === 0 ? decodeTextEntities(part) : (codeSpans[Number(part)] ?? '')
+    )
+    .join('')
+  return plain.replace(/\s+/g, ' ').trim()
 }
 
 const FENCE_LINE = /^\s*(```|~~~)/
