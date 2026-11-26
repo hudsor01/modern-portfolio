@@ -6,6 +6,7 @@ import { ContactForm } from '@/components/contact/contact-form'
 import { ContactInfo } from '@/components/contact/contact-info'
 import { FeaturedProjects, type FeaturedProject } from '@/components/contact/featured-projects'
 import { AvailabilityBadge } from '@/components/ui/availability-badge'
+import { CONTACT } from '@/lib/contact-info'
 import { REVENUE_IMPACT, REVENUE_IMPACT_LABEL } from '@/lib/stats'
 import { useContactForm } from '@/hooks/use-contact-form'
 import { DecorativeBlob } from '@/components/ui/decorative-blob'
@@ -43,8 +44,9 @@ export default function ContactPageClient({
                 manager, or industry peer, I'd love to hear from you.
               </p>
               <p className="max-w-3xl mx-auto mb-8">
-                Based in Dallas, serving Dallas, Fort Worth, Frisco, and the broader Dallas-Fort
-                Worth Metroplex — remote engagements welcome anywhere in the US.
+                Based in {CONTACT.location.city}, serving {CONTACT.location.city}, Fort Worth,
+                Frisco, and the broader Dallas-Fort Worth Metroplex — remote engagements welcome
+                anywhere in the US.
               </p>
 
               {/* Quick Stats */}
