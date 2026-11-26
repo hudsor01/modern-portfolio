@@ -36,7 +36,7 @@ export interface NumberFormatOptions extends Intl.NumberFormatOptions {
  * Every date the site renders is pinned to this zone so server and client
  * output agree regardless of the runtime timezone.
  */
-export const DISPLAY_TIME_ZONE = 'America/Chicago'
+const DISPLAY_TIME_ZONE = 'America/Chicago'
 
 /** Calendar-date-only strings (YYYY-MM-DD) keep their day: formatted in UTC. */
 const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/
@@ -454,20 +454,3 @@ export function formatDuration(
 
   return format === 'long' ? `${seconds} second${seconds !== 1 ? 's' : ''}` : `${seconds}s`
 }
-
-/**
- * Registry of all available formatters for dynamic usage
- */
-export const formatters = {
-  currency: formatCurrency,
-  compactCurrency: formatCompactCurrency,
-  percentage: formatPercentage,
-  number: formatNumber,
-  compactNumber: formatCompactNumber,
-  date: formatDate,
-  relativeDate: formatRelativeDate,
-  timePeriod: formatTimePeriod,
-  trend: formatTrend,
-  growthIndicator: formatGrowthIndicator,
-  duration: formatDuration,
-} as const

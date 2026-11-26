@@ -2,7 +2,7 @@ import { sql } from 'drizzle-orm'
 import { blogPosts } from '@/db/schema'
 
 /** Longest body prefix read from Postgres for list-card excerpt derivation. */
-export const CONTENT_HEAD_CHARS = 4000
+const CONTENT_HEAD_CHARS = 4000
 
 /**
  * Relational-query `extras`: only a bounded prefix of the post body is read,

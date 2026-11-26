@@ -6,7 +6,7 @@ import { decodeTextEntities } from '@/lib/text-entities'
  * are unit-tested without a database. Output is always plain text.
  */
 
-export const EXCERPT_MAX = 160
+const EXCERPT_MAX = 160
 export const LEDE_MAX = 320
 export const META_MAX = 160
 const MIN_PARAGRAPH_LENGTH = 40

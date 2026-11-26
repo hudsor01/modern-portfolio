@@ -141,12 +141,12 @@ export function sanitizeAmount(v: string): string {
 
 export type AmountKind = 'target' | 'amount'
 
-export const NUMBERS_ONLY_MESSAGE = 'Enter numbers only'
+const NUMBERS_ONLY_MESSAGE = 'Enter numbers only'
 export const TARGET_REQUIRED_MESSAGE = 'Enter a revenue target greater than $0.'
 export const WIN_RATE_REQUIRED_MESSAGE = 'Enter a win rate.'
 export const WIN_RATE_POSITIVE_MESSAGE = 'Win rate must be greater than 0%.'
 export const WIN_RATE_MAX_MESSAGE = 'Win rate can’t exceed 100%.'
-export const NEGATIVE_MESSAGE = 'Negative amounts are not allowed. Enter a positive number.'
+const NEGATIVE_MESSAGE = 'Negative amounts are not allowed. Enter a positive number.'
 /** Largest money amount any field accepts, in dollars. */
 export const MAX_AMOUNT = 10_000_000_000
 
@@ -229,9 +229,9 @@ const usdCompact = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 1,
 })
 
-export const MAX_DISPLAY_MONEY = 1_000_000_000_000
-export const MAX_DISPLAY_MULTIPLE = 1_000
-export const MAX_DISPLAY_COUNT = 1_000_000_000
+const MAX_DISPLAY_MONEY = 1_000_000_000_000
+const MAX_DISPLAY_MULTIPLE = 1_000
+const MAX_DISPLAY_COUNT = 1_000_000_000
 
 // Display rule: a value at or above its ceiling renders as the ceiling followed by "+".
 
@@ -249,7 +249,7 @@ export function formatMultiple(n: number): string {
 }
 
 /** Smallest percentage formatPercent prints as a number; anything smaller reads "under 0.0001%". */
-export const MIN_DISPLAY_PERCENT = 0.0001
+const MIN_DISPLAY_PERCENT = 0.0001
 
 /**
  * A percentage as a person would write it, never as typed: "1e1" -> "10%",

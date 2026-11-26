@@ -55,7 +55,7 @@ export function buildContactSubmissionRow(data: ContactFormData, delivery: Deliv
  * Builds a PII-free Error from a DB failure. DrizzleQueryError messages embed
  * the bound params (the submission), so only SQLSTATE / class name is kept.
  */
-export function toSafeStorageError(error: unknown): Error {
+function toSafeStorageError(error: unknown): Error {
   let code: string | undefined
   if (error instanceof DrizzleQueryError) {
     const causeCode = (error.cause as { code?: unknown } | undefined)?.code

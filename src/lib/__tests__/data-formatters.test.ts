@@ -12,7 +12,6 @@ import {
   formatTrend,
   formatGrowthIndicator,
   formatDuration,
-  formatters,
 } from '@/lib/data-formatters'
 
 describe('formatCurrency', () => {
@@ -264,13 +263,5 @@ describe('formatDuration', () => {
 
   it('long format singular', () => {
     expect(formatDuration(60_000, { format: 'long' })).toBe('1 minute')
-  })
-})
-
-describe('formatters registry', () => {
-  it('exposes all named formatters', () => {
-    expect(formatters.currency).toBe(formatCurrency)
-    expect(formatters.percentage).toBe(formatPercentage)
-    expect(formatters.number).toBe(formatNumber)
   })
 })
