@@ -31,9 +31,10 @@ const ESCAPABLE = new Set('\\`*_{}[]()#+-.!')
 // Each body stops at the next marker that could open or close (an intraword
 // `_`/`__` can do neither, so it may sit inside), which keeps every rule linear:
 // an opener never rescans the text past a marker that failed to close it.
-const STRONG_STAR = /\*\*(?=\S)((?:(?!\*\*).)+?)(?<=\S)\*\*/g
+// Bodies may span a soft line break (`[\s\S]`), as single emphasis already can.
+const STRONG_STAR = /\*\*(?=\S)((?:(?!\*\*)[\s\S])+?)(?<=\S)\*\*/g
 const STRONG_UNDERSCORE =
-  /(^|[^\p{L}\p{N}_])__(?=\S)((?:(?!__).|(?<=[\p{L}\p{N}])__(?=[\p{L}\p{N}]))+?)(?<=\S)__(?![\p{L}\p{N}_])/gu
+  /(^|[^\p{L}\p{N}_])__(?=\S)((?:(?!__)[\s\S]|(?<=[\p{L}\p{N}])__(?=[\p{L}\p{N}]))+?)(?<=\S)__(?![\p{L}\p{N}_])/gu
 const EM_STAR = /(?<!\*)\*(?=[^\s*])([^*]*?[^\s*])\*(?!\*)/g
 const EM_UNDERSCORE =
   /(^|[^\p{L}\p{N}_])_(?=[^\s_])((?:[^_]|(?<=[\p{L}\p{N}])_(?=[\p{L}\p{N}]))*?[^\s_])_(?![\p{L}\p{N}_])/gu
