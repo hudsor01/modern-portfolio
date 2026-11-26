@@ -81,6 +81,13 @@ const HORIZONTAL_RULE = /^([-*_])(\s*\1){2,}$/
 
 const WHITESPACE = /\s/
 const TRAILING_PUNCTUATION = /[,;:.…\-–—\s]+$/
+const LETTER_OR_NUMBER = /[\p{L}\p{N}]/u
+
+/** `head` without trailing punctuation, plus one '…'; '' when nothing is left. */
+function withEllipsis(head: string): string {
+  const body = head.replace(TRAILING_PUNCTUATION, '')
+  return body === '' ? '' : `${body}…`
+}
 // A terminator (plus an optional closing quote or bracket) that is followed by
 // the start of a new sentence (capital, digit, opening quote or bracket) or by
 // the end of the text. A lowercase continuation means it was not a sentence end.
@@ -160,11 +167,11 @@ export function truncateAtBoundary(text: string, max: number): string {
   const hardCut = run.hard
   const softEllipsis = !run.hard && run.soft
   t = t.slice(0, run.start).trimEnd()
-  // Nothing but ellipses: there is no text to keep, so let the caller fall
-  // back instead of emitting a lone '…'.
-  if (t === '') return ''
+  // Nothing but ellipses, punctuation or dashes: there is no text to keep, so
+  // let the caller fall back instead of emitting a lone '…' or '—'.
+  if (!LETTER_OR_NUMBER.test(t)) return ''
   if (!hardCut && !softEllipsis && t.length <= max) return t
-  if (softEllipsis && t.length <= max - 1) return `${t.replace(TRAILING_PUNCTUATION, '')}…`
+  if (softEllipsis && t.length <= max - 1) return withEllipsis(t)
   // A hard cut that lands just after a finished sentence cut nothing mid-word:
   // keep that sentence whole rather than dropping its last word.
   if (hardCut && t.length <= max && endsWithSentence(t)) return t
@@ -187,7 +194,7 @@ export function truncateAtBoundary(text: string, max: number): string {
     const lastSpace = t.slice(0, max).lastIndexOf(' ')
     head = lastSpace > 0 ? t.slice(0, lastSpace) : t.slice(0, codePointCut(t, max - 1))
   }
-  return `${head.replace(TRAILING_PUNCTUATION, '')}…`
+  return withEllipsis(head)
 }
 
 function firstParagraph(content: string): string {
@@ -203,11 +210,11 @@ function firstParagraph(content: string): string {
     const plain = stripMarkdownToPlain(trimmed)
     // Posts that carry the bio excerpt usually open their body with the same
     // bio paragraph, so it can never be the replacement.
-    // A paragraph of nothing but ellipses has no text to show.
+    // A paragraph of nothing but ellipses, punctuation or dashes has no text to show.
     if (
       plain.length >= MIN_PARAGRAPH_LENGTH &&
       !isBioBoilerplate(plain) &&
-      trailingEllipsis(plain).start > 0
+      LETTER_OR_NUMBER.test(plain)
     )
       return plain
   }

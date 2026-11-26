@@ -407,3 +407,46 @@ describe('HTML entities in stored excerpts and metas', () => {
     ).toBe('Keep &bogus; &constructor; &#0; &#xD800; &#1114112; as written.')
   })
 })
+
+describe('punctuation-only stored values', () => {
+  const PUNCTUATION_ONLY = ['— …', '- …', ', ...', '-- ...', '—', '-', ' ; ', '“”', '&mdash;']
+
+  it('truncates to empty instead of a lone ellipsis or dash', () => {
+    // truncateAtBoundary takes plain text; the resolvers decode '&mdash;' first.
+    for (const text of PUNCTUATION_ONLY.filter((t) => !t.startsWith('&'))) {
+      expect(truncateAtBoundary(text, 160)).toBe('')
+    }
+  })
+
+  it('falls back to the body for a punctuation-only excerpt', () => {
+    for (const excerpt of PUNCTUATION_ONLY) {
+      expect(resolveExcerpt({ excerpt, content: F1_PARA }, { maxLength: LEDE_MAX })).toBe(F1_PARA)
+    }
+  })
+
+  it('falls back to the excerpt for a punctuation-only meta', () => {
+    for (const metaDescription of PUNCTUATION_ONLY) {
+      expect(resolveMetaDescription({ metaDescription, excerpt: C_EXCERPT, content: '' })).toBe(
+        resolveExcerpt({ excerpt: C_EXCERPT, content: '' }, { maxLength: 160 })
+      )
+    }
+  })
+
+  it('skips a punctuation-only body paragraph', () => {
+    for (const filler of ['='.repeat(60), '— '.repeat(30), `${'. '.repeat(25)}…`]) {
+      const content = `${filler}\n\n${F1_PARA}`
+      expect(resolveExcerpt({ excerpt: null, content }, { maxLength: LEDE_MAX })).toBe(F1_PARA)
+    }
+  })
+
+  it('never ends a word-boundary cut in a lone ellipsis', () => {
+    // The only space is right after the dash, so the word cut keeps just '—'.
+    expect(truncateAtBoundary(`— ${'x'.repeat(200)}`, 160)).toBe('')
+  })
+
+  it('still keeps short text that has a letter or number', () => {
+    for (const text of ['Q3', '40%', '— Q3 recap …']) {
+      expect(truncateAtBoundary(text, 160)).not.toBe('')
+    }
+  })
+})
