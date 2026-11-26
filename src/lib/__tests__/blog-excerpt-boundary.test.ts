@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
+import { opensWithBio } from '../bio-boilerplate'
 import {
   isBioBoilerplate,
   LEDE_MAX,
@@ -581,5 +582,27 @@ describe('markdown stripping keeps literal underscores, asterisks and code', () 
         content: null,
       })
     ).toBe('Use Amount__c and keep Close_Date__c honest.')
+  })
+})
+
+describe('the schema bio check agrees with the resolvers', () => {
+  const OPENER = 'served in the National Guard for six years before moving into RevOps.'
+  it.each([
+    `&#73; ${OPENER}`,
+    `&#x49; ${OPENER}`,
+    `**&#73; ${OPENER}**`,
+    `&nbsp;I ${OPENER}`,
+    `&amp;#73; ${OPENER}`,
+    `&amp;nbsp;I ${OPENER}`,
+    `I ${OPENER}`,
+    `[I ${OPENER}](https://x.test)`,
+    'Forecasts miss because stages are fiction.',
+  ])('judges %j the same way', (metaDescription) => {
+    const resolverDiscards = !resolveMetaDescription({
+      metaDescription,
+      excerpt: null,
+      content: null,
+    })
+    expect(opensWithBio(metaDescription)).toBe(resolverDiscards)
   })
 })

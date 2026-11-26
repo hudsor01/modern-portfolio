@@ -901,6 +901,29 @@ describe('blog metaDescription bio guard', () => {
     }
   })
 
+  // A numeric entity that encodes a letter: the resolvers decode it to
+  // "I spent…" and discard the meta, so the API must reject it too.
+  it.each([
+    '&#73; spent six years in the Army National Guard and more',
+    '&#x49; served in the National Guard for six years before RevOps.',
+    '**&#73; served in the National Guard for six years before RevOps.**',
+  ])('create and update reject an entity-encoded bio meta %j', (metaDescription) => {
+    for (const result of [
+      createBlogPostSchema.safeParse({ ...base, metaDescription }),
+      updateBlogPostSchema.safeParse({ metaDescription }),
+    ]) {
+      expect(result.success).toBe(false)
+      if (!result.success) expect(result.error.issues[0]?.message).toBe(BIO_MESSAGE)
+    }
+  })
+
+  it.each(['&nbsp;', '&amp;#73; spent six years in the Army National Guard and more'])(
+    'create does not reject %j on bio grounds',
+    (metaDescription) => {
+      expect(createBlogPostSchema.safeParse({ ...base, metaDescription }).success).toBe(true)
+    }
+  )
+
   it.each(['— a recap', '**Forecasts miss because stages are fiction.**'])(
     'create accepts a wrapped or punctuation-led normal meta %j',
     (metaDescription) => {
