@@ -23,12 +23,14 @@ import {
   skills,
   summary,
 } from '../app/resume/data/constants'
-import { CONTACT } from './contact-info'
+import { CONTACT, mailtoHref, telHref } from './contact-info'
 import { YEARS_EXPERIENCE, YEARS_EXPERIENCE_LABEL } from './stats'
 
 export interface ResumeStructure {
   headline: string
   contact: string
+  /** The print contact line's link targets (the PDF keeps them as link annotations). */
+  contactLinks: string[]
   about: { overview: string; summary: string }
   experience: {
     title: string
@@ -58,6 +60,7 @@ export function expectedResumeStructure(): ResumeStructure {
         CONTACT.linkedin.display,
       ].join(' | ')
     ),
+    contactLinks: [telHref, mailtoHref, CONTACT.linkedin.url],
     about: {
       overview: clean(
         `${YEARS_EXPERIENCE} ${YEARS_EXPERIENCE_LABEL} | ${CONTACT.location.display}`
@@ -87,7 +90,8 @@ export function expectedResumeStructure(): ResumeStructure {
 
 /**
  * Read the résumé from the rendered /resume DOM (`document`). Uses DOM text
- * (`textContent`), so CSS text-transform and print visibility do not matter.
+ * (`textContent`), so CSS text-transform and print visibility do not matter,
+ * plus the contact line's link targets, which text alone would not show.
  *
  * Self-contained on purpose: scripts/resume-pdf.ts passes it to Playwright's
  * `page.evaluate`, which serialises the function source and runs it in the
@@ -115,6 +119,9 @@ export function extractResumeStructure(): ResumeStructure {
   return {
     headline: text(h1?.nextElementSibling),
     contact: text(main?.querySelector('[data-print-contact]')),
+    contactLinks: Array.from(main?.querySelectorAll('[data-print-contact] a') ?? []).map(
+      (a) => a.getAttribute('href') ?? ''
+    ),
     about: { overview: text(aboutParagraphs[0]), summary: text(aboutParagraphs[1]) },
     experience: Array.from(experienceList?.children ?? []).map((card) => {
       const title = card.querySelector('h3')

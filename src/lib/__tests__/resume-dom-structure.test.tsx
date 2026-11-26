@@ -6,6 +6,7 @@ import { ExperienceSection } from '@/app/resume/_components/ExperienceSection'
 import { HeroHeader } from '@/app/resume/_components/HeroHeader'
 import { SkillsSection } from '@/app/resume/_components/SkillsSection'
 import { experience } from '../../app/resume/data/constants'
+import { CONTACT, mailtoHref, telHref } from '../contact-info'
 import {
   expectedResumeStructure,
   extractResumeStructure,
@@ -73,6 +74,31 @@ describe('extractResumeStructure', () => {
     expect(served.education.every((e) => e.period !== '' && e.focus !== '')).toBe(true)
     expect(served.certifications.length).toBeGreaterThan(0)
     expect(served.skills.every((g) => g.items.length > 0)).toBe(true)
+  })
+
+  it('reads the print contact line link targets', () => {
+    renderResume()
+    expect(extractResumeStructure().contactLinks).toEqual([
+      telHref,
+      mailtoHref,
+      CONTACT.linkedin.url,
+    ])
+  })
+
+  // The PDF keeps these hrefs as link annotations. A server built before a
+  // link target changed (same display text) must not pass.
+  it('fails a served page whose contact link target is stale but whose text matches', () => {
+    renderResume()
+    const linkedin = document.querySelector<HTMLAnchorElement>(
+      `[data-print-contact] a[href="${CONTACT.linkedin.url}"]`
+    )
+    expect(linkedin).not.toBeNull()
+    linkedin?.setAttribute('href', 'https://www.linkedin.com/in/stale-profile')
+    const served = extractResumeStructure()
+    expect(served.contact).toBe(expectedResumeStructure().contact)
+    expect(firstResumeDifference(expectedResumeStructure(), served)).toBe(
+      `resume.contactLinks[2]: expected ${JSON.stringify(CONTACT.linkedin.url)}, served "https://www.linkedin.com/in/stale-profile"`
+    )
   })
 
   it('reads an empty structure when the page has no résumé', () => {
@@ -168,7 +194,7 @@ describe('firstResumeDifference', () => {
     )
   })
 
-  it('names a changed headline, summary, location or contact line', () => {
+  it('names a changed headline, summary, location, contact line or contact link', () => {
     const cases: [string, (s: ResumeStructure) => void][] = [
       ['headline', (s) => (s.headline = 'Old headline')],
       ['about.summary', (s) => (s.about.summary = `${s.about.summary} Extra.`)],
@@ -180,6 +206,8 @@ describe('firstResumeDifference', () => {
         },
       ],
       ['contact', (s) => (s.contact = s.contact.replace('Dallas', 'Plano'))],
+      ['contactLinks[0]', (s) => (s.contactLinks[0] = 'tel:+10000000000')],
+      ['contactLinks[1]', (s) => (s.contactLinks[1] = 'mailto:old@example.com')],
     ]
     for (const [path, edit] of cases) {
       expect(firstResumeDifference(expected, servedWith(edit))).toMatch(
