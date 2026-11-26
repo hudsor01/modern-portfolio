@@ -1,6 +1,6 @@
 /**
  * Content hash of everything the résumé PDF prints, so a test can tell when
- * public/Richard_Hudson_Revenue_Operations.pdf is stale.
+ * public/ + RESUME_PDF_FILENAME is stale.
  *
  * It hashes data values (canonical JSON of the imported constants), not file
  * bytes: comments and formatting in the source files do not change it.

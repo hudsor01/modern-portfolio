@@ -1,5 +1,6 @@
 'use client'
 
+import { RESUME_PDF_DOWNLOAD_NAME, RESUME_PDF_PATH } from '@/lib/resume-pdf'
 import { useEffect, useState, useRef } from 'react'
 
 import { useToast } from '@/hooks/use-sonner-toast'
@@ -31,7 +32,7 @@ export default function ResumePageContent() {
 
   useEffect(() => {
     // Set the PDF URL once on client side with proper encoding
-    setPdfUrl('/Richard_Hudson_Revenue_Operations.pdf')
+    setPdfUrl(RESUME_PDF_PATH)
   }, [])
 
   // Warm the static print faces (print-fonts.css) after load so the first
@@ -46,8 +47,8 @@ export default function ResumePageContent() {
 
     try {
       const a = document.createElement('a')
-      a.href = '/Richard_Hudson_Revenue_Operations.pdf'
-      a.download = 'Richard_Hudson_Resume.pdf'
+      a.href = RESUME_PDF_PATH
+      a.download = RESUME_PDF_DOWNLOAD_NAME
       document.body.appendChild(a)
       a.click()
       a.remove()

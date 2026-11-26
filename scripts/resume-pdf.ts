@@ -13,7 +13,7 @@
  * itself: the summary, every role, period, bullet, skill, certification and
  * contact value from the site data, intact ligatures, no site chrome, no stale
  * facts). Only when every check passes does it write
- * public/Richard_Hudson_Revenue_Operations.pdf and scripts/resume-pdf.sha256
+ * public/ + RESUME_PDF_FILENAME and scripts/resume-pdf.sha256
  * (the content hash pinned by src/lib/__tests__/resume-pdf-drift.test.ts).
  *
  * Local tooling only: it is never run in the Vercel build or CI, never starts
@@ -42,12 +42,13 @@ import {
   firstResumeDifference,
 } from '../src/lib/resume-dom-structure'
 import { PRINT_FONT_FACES, PRINT_FONT_POSTSCRIPT_NAMES } from '../src/lib/print-fonts'
+import { RESUME_PDF_FILENAME } from '../src/lib/resume-pdf'
 import { pdfTextContains, resumeTextExpectations } from '../src/lib/resume-pdf-text'
 import { computeResumeSourceHash } from '../src/lib/resume-source-hash'
 import { YEARS_EXPERIENCE, YEARS_EXPERIENCE_LABEL } from '../src/lib/stats'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
-const PDF_OUT = join(ROOT, 'public', 'Richard_Hudson_Revenue_Operations.pdf')
+const PDF_OUT = join(ROOT, 'public', RESUME_PDF_FILENAME)
 const HASH_OUT = join(ROOT, 'scripts', 'resume-pdf.sha256')
 const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '::1', '[::1]'])
 

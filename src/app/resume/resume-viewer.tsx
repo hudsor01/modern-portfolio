@@ -1,5 +1,6 @@
 'use client'
 
+import { RESUME_PDF_DOWNLOAD_NAME } from '@/lib/resume-pdf'
 import { useState, useEffect } from 'react'
 
 interface ResumeViewerProps {
@@ -78,7 +79,7 @@ export function ResumeViewer({ pdfUrl }: ResumeViewerProps) {
             </a>
             <a
               href={pdfUrl}
-              download="Richard_Hudson_Resume.pdf"
+              download={RESUME_PDF_DOWNLOAD_NAME}
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-secondary/10 text-foreground border border-border rounded-xl hover:bg-secondary/20 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

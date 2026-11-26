@@ -3,6 +3,7 @@
  * Hero section with profile image, action buttons, and social links
  */
 
+import { RESUME_PDF_PATH } from '@/lib/resume-pdf'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { FileDown, Mail, Globe, Eye } from 'lucide-react'
@@ -82,7 +83,7 @@ export function HeroHeader({
           className="min-h-[44px] px-6 w-full sm:w-auto"
           data-track="Resume Download"
           data-track-location="resume-hero"
-          data-track-target="/Richard_Hudson_Revenue_Operations.pdf"
+          data-track-target={RESUME_PDF_PATH}
           onClick={onDownloadResume}
           disabled={isDownloading}
         >
