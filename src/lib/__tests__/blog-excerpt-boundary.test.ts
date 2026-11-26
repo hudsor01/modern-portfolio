@@ -229,12 +229,44 @@ describe('abbreviations are not sentence ends', () => {
       'J.',
       `${lead} we asked J. Smith to own the definitions so every stage change went through one accountable reviewer.`,
     ],
+    [
+      'Jan.',
+      `${lead} the new process has run since Jan. 2024 without a single missed commit call across any of the regions.`,
+    ],
+    [
+      'No.',
+      `${lead} the team now ranks No. 1 in forecast accuracy across every region we track in the quarterly review.`,
+    ],
+    [
+      'approx.',
+      `${lead} we cut approx. 30% of stale pipeline before the quarterly commit call so the forecast reflected reality.`,
+    ],
+    [
+      'Fig.',
+      `${lead} see Fig. 3 for the full stage conversion picture that the old dashboards had hidden from every rep.`,
+    ],
+    [
+      'a.m.',
+      `${lead} the review now starts at 9 a.m. Eastern so every region can join before the first customer calls.`,
+    ],
+    [
+      'Inc.',
+      `${lead} we moved the Acme Inc. Renewal team onto the same stage definitions as the new business reps.`,
+    ],
+    [
+      'U.K.',
+      `${lead} we split the U.K. Enterprise team from mid-market so each segment carried its own conversion benchmarks.`,
+    ],
   ])('does not stop after %s', (abbr, text) => {
     expect(text.length).toBeGreaterThan(160)
     const out = truncateAtBoundary(text, 160)
     expect(out.endsWith('…')).toBe(true)
     expect(out.endsWith(abbr)).toBe(false)
     expect(out.length).toBeLessThanOrEqual(160)
+  })
+
+  it('drops the partial word when a hard cut lands after "No."', () => {
+    expect(truncateAtBoundary('The team now ranks No. ...', 160)).toBe('The team now ranks…')
   })
 
   it('does not stop at a period followed by a lowercase word', () => {
@@ -250,6 +282,18 @@ describe('abbreviations are not sentence ends', () => {
         `${lead} we rebuilt the stage definitions from scratch.`
       )
     }
+  })
+
+  it.each([
+    ['a year', 'we closed the books on the second quarter. 2024 opened'],
+    ['a number', 'the stage review covered every open deal. 30% of them'],
+    ['the word "no" before a capital', 'the answer from every region was no. Then'],
+    ['the word "no" before a quote', 'the answer from every region was no. “Stage'],
+    ['a word ending in an abbreviation', 'the expansion team opened in Morocco. Then'],
+  ])('still stops at a sentence end before %s', (_label, body) => {
+    const text = `${lead} ${body} the reps who ignored the old definitions started to follow the new rules.`
+    const firstSentence = text.slice(0, text.indexOf('. ', lead.length) + 1)
+    expect(truncateAtBoundary(text, 160)).toBe(firstSentence)
   })
 })
 

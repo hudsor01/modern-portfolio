@@ -46,13 +46,26 @@ const TRAILING_PUNCTUATION = /[,;:.…\-–—\s]+$/
 // the start of a new sentence (capital, digit, opening quote or bracket) or by
 // the end of the text. A lowercase continuation means it was not a sentence end.
 const SENTENCE_END = /[.!?][”"’')\]]?(?=\s+[\p{Lu}\d“"‘'([]|\s*$)/gu
-// Text ending in one of these is mid-sentence even before a capital ("Dr. Jones",
-// "the U.S. Army", "e.g. Salesforce").
-const ABBREVIATION = /\b(?:e\.g|i\.e|vs|etc|Mr|Mrs|Ms|Dr|St|U\.S|Inc|Jr|Sr)\.$/i
+// Text ending in one of these is mid-sentence even before a capital or a number
+// ("Dr. Jones", "the U.S. Army", "e.g. Salesforce", "since Jan. 2024",
+// "approx. 30%", "Fig. 3", "9 a.m. Eastern").
+const ABBREVIATION =
+  /\b(?:e\.g|i\.e|a\.m|p\.m|vs|etc|approx|est|cf|fig|figs|vol|pp|ch|sec|Mr|Mrs|Ms|Dr|Prof|Sgt|Lt|Capt|Col|St|Mt|Ft|U\.S|U\.K|Inc|Corp|Co|Ltd|Jr|Sr|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.$/i
+// "No."/"Nos." abbreviate "number" only before one ("ranks No. 1"). Before a
+// word they are the word "no" ending a sentence ("The answer was no. Then…").
+const NUMBER_ABBREVIATION = /\bnos?\.$/i
+// What follows the terminator: a number, or nothing known (end of the text, or
+// a cut that removed the continuation).
+const NUMBER_OR_UNKNOWN_NEXT = /^\s*(?:\d|$)/
 const INITIAL = /(?:^|[\s(])\p{Lu}\.$/u
 
-function endsWithAbbreviation(text: string): boolean {
-  return ABBREVIATION.test(text) || INITIAL.test(text)
+/**
+ * True when `text` (which ends at a terminator) ends in an abbreviation rather
+ * than a sentence. `rest` is the text after the terminator; '' means unknown.
+ */
+function endsWithAbbreviation(text: string, rest = ''): boolean {
+  if (ABBREVIATION.test(text) || INITIAL.test(text)) return true
+  return NUMBER_ABBREVIATION.test(text) && NUMBER_OR_UNKNOWN_NEXT.test(rest)
 }
 
 /** `end`, moved back one unit if it would split a UTF-16 surrogate pair. */
@@ -122,7 +135,8 @@ export function truncateAtBoundary(text: string, max: number): string {
   for (const m of t.matchAll(SENTENCE_END)) {
     const end = m.index + m[0].length
     if (end > max) break
-    if (end >= minEnd && !endsWithAbbreviation(t.slice(0, m.index + 1))) sentenceEnd = end
+    if (end >= minEnd && !endsWithAbbreviation(t.slice(0, m.index + 1), t.slice(end)))
+      sentenceEnd = end
   }
   if (sentenceEnd > 0) return t.slice(0, sentenceEnd)
 
