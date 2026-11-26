@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { FileDown, Mail, Globe, Eye } from 'lucide-react'
 import { Github, Linkedin } from '@/components/ui/brand-icons'
 import { AvailabilityBadge } from '@/components/ui/availability-badge'
+import { SITE_ORIGIN } from '@/lib/absolute-url'
 import { CONTACT, mailtoHref, telHref } from '@/lib/contact-info'
 import { headline } from '../data/constants'
 
@@ -20,7 +21,7 @@ const socials = [
     Icon: Linkedin,
   },
   { label: 'GitHub', href: CONTACT.github.url, external: true, Icon: Github },
-  { label: 'Website', href: 'https://richardwhudsonjr.com', external: true, Icon: Globe },
+  { label: 'Website', href: SITE_ORIGIN, external: true, Icon: Globe },
 ]
 
 interface HeroHeaderProps {
