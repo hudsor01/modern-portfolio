@@ -185,15 +185,21 @@ describe('browser safety', () => {
   // so post-title.ts cannot reach the browser through an intermediate module.
   const SRC = join(ROOT, 'src')
   const POST_TITLE = join(SRC, 'lib', 'post-title.ts')
+  // Static `import … from` / `export … from`, side-effect `import '…'` and
+  // dynamic `import('…')`, after start, whitespace or `;`.
   const SPECIFIER =
-    /(?:^|\s)(?:import|export)\s[^'"]*?from\s*['"]([^'"]+)['"]|import\s*\(\s*['"]([^'"]+)['"]\s*\)/g
+    /(?:^|[\s;])(?:import|export)\s[^'"]*?from\s*['"]([^'"]+)['"]|(?:^|[\s;])import\s*['"]([^'"]+)['"]|import\s*\(\s*['"]([^'"]+)['"]\s*\)/g
+  const specifiers = (source: string): string[] =>
+    [...source.matchAll(SPECIFIER)].map((m) => (m[1] ?? m[2] ?? m[3]) as string)
   const resolveImport = (from: string, spec: string): string | null => {
-    const base = spec.startsWith('@/')
+    const raw = spec.startsWith('@/')
       ? join(SRC, spec.slice(2))
       : spec.startsWith('.')
         ? join(dirname(from), spec)
         : null
-    if (base === null) return null
+    if (raw === null) return null
+    // moduleResolution "bundler" maps a `.js`/`.jsx` specifier to the TS file.
+    const base = raw.replace(/\.jsx?$/, '')
     for (const candidate of [
       base,
       `${base}.ts`,
@@ -207,15 +213,15 @@ describe('browser safety', () => {
     }
     return null
   }
-  const reaches = (entry: string): string[] | null => {
+  const reaches = (entry: string, target = POST_TITLE): string[] | null => {
     const seen = new Set<string>([entry])
     const queue: string[][] = [[entry]]
     while (queue.length > 0) {
       const chain = queue.shift() as string[]
       const file = chain[chain.length - 1] as string
-      if (file === POST_TITLE) return chain
-      for (const match of readFileSync(file, 'utf8').matchAll(SPECIFIER)) {
-        const next = resolveImport(file, (match[1] ?? match[2]) as string)
+      if (file === target) return chain
+      for (const spec of specifiers(readFileSync(file, 'utf8'))) {
+        const next = resolveImport(file, spec)
         if (next !== null && !seen.has(next)) {
           seen.add(next)
           queue.push([...chain, next])
@@ -226,10 +232,10 @@ describe('browser safety', () => {
   }
 
   it('keeps @/lib/post-title out of every client module graph', () => {
-    const clientModules = files(SRC).filter((file) =>
-      /^\s*['"]use client['"]/.test(readFileSync(file, 'utf8'))
-    )
-    expect(clientModules.length).toBeGreaterThan(0)
+    // The directive may follow comments (lazy-charts.tsx opens with a JSDoc).
+    const USE_CLIENT = /^(?:\s|\/\/[^\n]*\n|\/\*[\s\S]*?\*\/)*['"]use client['"]/
+    const clientModules = files(SRC).filter((file) => USE_CLIENT.test(readFileSync(file, 'utf8')))
+    expect(clientModules).toContain(join(SRC, 'components', 'charts', 'lazy-charts.tsx'))
     const offenders = clientModules
       .map((file) => reaches(file))
       .filter((chain): chain is string[] => chain !== null)
@@ -239,9 +245,25 @@ describe('browser safety', () => {
 
   it('the import walk follows a real chain to post-title', () => {
     // blog/[slug]/page.tsx is a server module that imports post-title; the walk
-    // must find it, proving the specifier pattern and path resolution work.
+    // must find it, proving the alias branch and path resolution work.
     const chain = reaches(join(SRC, 'app', 'blog', '[slug]', 'page.tsx'))
     expect(chain?.at(-1)).toBe(POST_TITLE)
+  })
+
+  it('the import walk follows relative and .js specifiers', () => {
+    const schemas = join(SRC, 'lib', 'schemas.ts')
+    const hosts = join(SRC, 'lib', 'featured-image-hosts.ts')
+    expect(reaches(schemas, hosts)?.at(-1)).toBe(hosts)
+    expect(resolveImport(schemas, './featured-image-hosts.js')).toBe(hosts)
+  })
+
+  it('captures side-effect, same-line and dynamic import specifiers', () => {
+    expect(specifiers("import '@/lib/post-title'")).toEqual(['@/lib/post-title'])
+    expect(specifiers("'use client';import { a } from '@/lib/post-title'")).toEqual([
+      '@/lib/post-title',
+    ])
+    expect(specifiers('export * from "./post-title.js"')).toEqual(['./post-title.js'])
+    expect(specifiers("const m = await import('@/lib/post-title')")).toEqual(['@/lib/post-title'])
   })
 
   it('loads and hard-cuts on whole code points where Intl.Segmenter is missing', async () => {
