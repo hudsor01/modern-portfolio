@@ -211,7 +211,9 @@ async function main(): Promise<void> {
 
   const resumeUrl = new URL('/resume', base)
   try {
-    const res = await fetch(resumeUrl, { signal: AbortSignal.timeout(5000) })
+    // No redirects: a local server that sends /resume off-host must not be
+    // followed, let alone printed.
+    const res = await fetch(resumeUrl, { redirect: 'manual', signal: AbortSignal.timeout(5000) })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
   } catch (error) {
     fail(
@@ -229,6 +231,10 @@ async function main(): Promise<void> {
       const page = await browser.newPage()
       await page.emulateMedia({ media: 'print', reducedMotion: 'reduce' })
       await page.goto(resumeUrl.href, { waitUntil: 'networkidle' })
+      const landed = new URL(page.url())
+      if (!LOCAL_HOSTS.has(landed.hostname)) {
+        throw new Error(`refusing to print ${landed.origin}: /resume redirected off localhost`)
+      }
       await page.evaluate(async () => {
         for (let y = 0; y < document.documentElement.scrollHeight; y += 400) {
           window.scrollTo(0, y)
