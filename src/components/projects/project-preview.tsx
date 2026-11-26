@@ -121,7 +121,7 @@ function Thumb({ model }: { model: ProjectPreviewModel }) {
         {/* Headline figure straight from the source: bars would need a comparison
             this model does not have, and drawing one would invent a number. */}
         <div className="flex h-full items-center justify-center text-center">
-          <span className="text-base font-semibold leading-tight tabular-nums text-foreground break-words">
+          <span className="text-base font-semibold leading-tight tabular-nums text-foreground wrap-break-word">
             {model.items[0]?.value}
           </span>
         </div>
@@ -249,7 +249,7 @@ export function ProjectPreview({ project, size, model: given, id }: ProjectPrevi
                 : 'flex items-baseline justify-between gap-2 text-xs'
             }
           >
-            <span className="min-w-0 break-words font-normal text-muted-foreground">
+            <span className="min-w-0 wrap-break-word font-normal text-muted-foreground">
               {row.metric}
             </span>
             <span

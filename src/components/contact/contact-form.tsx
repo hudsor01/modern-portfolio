@@ -97,7 +97,7 @@ export function ContactForm({ form: formHook }: ContactFormProps) {
       >
         <noscript>
           <div className="flex items-center gap-2 text-foreground bg-muted p-4 rounded-xl mb-2 border border-border">
-            <Mail className="w-5 h-5 flex-shrink-0 text-primary" />
+            <Mail className="w-5 h-5 shrink-0 text-primary" />
             <span>
               Prefer email? Write to{' '}
               <a href={mailtoHref} className="text-link">

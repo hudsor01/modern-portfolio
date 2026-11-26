@@ -57,7 +57,7 @@ function ImpactMetric({
   return (
     <div className="group relative">
       <div className="flex items-start gap-4">
-        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+        <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
           <Icon className="w-6 h-6 text-primary" aria-hidden="true" />
         </div>
         <div>
@@ -148,7 +148,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                     Transforming{' '}
                     <span className="relative">
                       <span className="relative z-10 text-primary">Revenue</span>
-                      <span className="absolute bottom-2 left-0 w-full h-3 bg-primary/20 -z-0" />
+                      <span className="absolute bottom-2 left-0 w-full h-3 bg-primary/20 z-0" />
                     </span>{' '}
                     <br />
                     Operations
@@ -313,7 +313,7 @@ export default function HomePageContent({ featuredProjects }: { featuredProjects
                     'Partner program development',
                   ].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-foreground">
-                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center">
+                      <span className="shrink-0 w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center">
                         <Check className="w-3.5 h-3.5 text-secondary" aria-hidden="true" />
                       </span>
                       {item}
